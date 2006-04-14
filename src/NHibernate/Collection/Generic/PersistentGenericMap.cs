@@ -103,13 +103,9 @@ namespace NHibernate.Collection.Generic
 
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
-
 			if( persister.HasOrdering )
 			{
-				// TODO: find an implementation of IDictionary<TKey,TValue> that maintains
-				// the order the items were inserted
-				throw new NotImplementedException( "have not coded the IDictionary<TKey,TValue> that maintains order" );
-				//this.map = new ListDictionary();
+				throw new NotSupportedException( "have not coded the IDictionary<TKey,TValue> that maintains order" );
 			}
 			else
 			{

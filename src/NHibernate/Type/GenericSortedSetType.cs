@@ -42,11 +42,6 @@ namespace NHibernate.Type
 			return new PersistentGenericSortedSet<T>( session, comparer );
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof( ISet<T> ); }
-		}
-
 		/// <summary>
 		/// Wraps an <see cref="ISet&lt;T&gt;"/> in a <see cref="PersistentGenericSortedSet&lt;T&gt;"/>.
 		/// </summary>

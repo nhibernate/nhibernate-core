@@ -498,6 +498,7 @@
     </EmbeddedResource>
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Collection\AbstractPersistentCollection.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericSortedDictionary.cs" />
     <Compile Include="Collection\Generic\PersistentGenericSet.cs" />
     <Compile Include="Collection\Generic\PersistentGenericBag.cs">
       <SubType>Code</SubType>
@@ -508,6 +509,7 @@
     <Compile Include="Collection\Generic\PersistentGenericMap.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Collection\Generic\PersistentGenericSortedList.cs" />
     <Compile Include="Collection\Generic\PersistentGenericSortedSet.cs" />
     <Compile Include="Collection\Generic\PersistentGenericIdentifierBag.cs" />
     <Compile Include="Collection\PersistentArrayHolder.cs" />
@@ -585,7 +587,9 @@
     <Compile Include="Tuple\VersionProperty.cs" />
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\BaseCharType.cs" />
+    <Compile Include="Type\GenericSortedDictionaryType.cs" />
     <Compile Include="Type\GenericIdentifierBagType.cs" />
+    <Compile Include="Type\GenericSortedListType.cs" />
     <Compile Include="Type\GenericSortedSetType.cs" />
     <Compile Include="Type\GenericSetType.cs" />
     <Compile Include="Type\ForeignKeyDirection.cs" />

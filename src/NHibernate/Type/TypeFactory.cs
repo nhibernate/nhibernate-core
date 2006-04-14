@@ -770,6 +770,29 @@ namespace NHibernate.Type
 
 #if NET_2_0
 
+		private static PersistentCollectionType CreateCollectionType(
+			System.Type genericCollectionType,
+			string role,
+			string propertyRef,
+			params System.Type[] typeArguments )
+		{
+			return ( PersistentCollectionType ) Activator.CreateInstance(
+				genericCollectionType.MakeGenericType( typeArguments ),
+				role, propertyRef );
+		}
+
+		private static PersistentCollectionType CreateSortedCollectionType(
+			System.Type genericCollectionType,
+			string role,
+			string propertyRef,
+			object comparer,
+			params System.Type[] typeArguments )
+		{
+			return ( PersistentCollectionType ) Activator.CreateInstance(
+				genericCollectionType.MakeGenericType( typeArguments ),
+				role, propertyRef, comparer );
+		}
+
 		/// <summary>
 		/// Creates a new <see cref="PersistentCollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IList`1"/> with bag semantics.
@@ -784,9 +807,7 @@ namespace NHibernate.Type
 		/// </returns>
 		public static PersistentCollectionType GenericBag( string role, string propertyRef, System.Type elementClass )
 		{
-			return ( PersistentCollectionType ) Activator.CreateInstance(
-				typeof( GenericBagType<> ).MakeGenericType( elementClass ),
-				role, propertyRef );
+			return CreateCollectionType( typeof( GenericBagType<> ), role, propertyRef, elementClass );
 		}
 
 		/// <summary>
@@ -804,9 +825,7 @@ namespace NHibernate.Type
 		/// </returns>
 		public static PersistentCollectionType GenericIdBag( string role, string propertyRef, System.Type elementClass )
 		{
-			return ( PersistentCollectionType ) Activator.CreateInstance(
-				typeof( GenericIdentifierBagType<> ).MakeGenericType( elementClass ),
-				role, propertyRef );
+			return CreateCollectionType( typeof( GenericIdentifierBagType<> ), role, propertyRef, elementClass );
 		}
 
 		/// <summary>
@@ -824,9 +843,7 @@ namespace NHibernate.Type
 		/// </returns>
 		public static PersistentCollectionType GenericList( string role, string propertyRef, System.Type elementClass )
 		{
-			return ( PersistentCollectionType ) Activator.CreateInstance(
-				typeof( GenericListType<> ).MakeGenericType( elementClass ),
-				role, propertyRef );
+			return CreateCollectionType( typeof( GenericListType<> ), role, propertyRef, elementClass );
 		}
 
 		/// <summary>
@@ -847,12 +864,18 @@ namespace NHibernate.Type
 		/// </returns>
 		public static PersistentCollectionType GenericMap( string role, string propertyRef, System.Type indexClass, System.Type elementClass )
 		{
-			return ( PersistentCollectionType ) Activator.CreateInstance(
-				typeof( GenericMapType<,> ).MakeGenericType( indexClass, elementClass ),
-				role, propertyRef );
+			return CreateCollectionType( typeof( GenericMapType<,> ), role, propertyRef, indexClass, elementClass );
 		}
 
-		// TODO: deal with a sorted GenericMap
+		public static PersistentCollectionType GenericSortedList( string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass )
+		{
+			return CreateSortedCollectionType( typeof( GenericSortedListType<,> ), role, propertyRef, comparer, indexClass, elementClass );
+		}
+
+		public static PersistentCollectionType GenericSortedDictionary( string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass )
+		{
+			return CreateSortedCollectionType( typeof( GenericSortedDictionaryType<,> ), role, propertyRef, comparer, indexClass, elementClass );
+		}
 
 		/// <summary>
 		/// Creates a new <see cref="PersistentCollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet`1" />.
@@ -861,9 +884,7 @@ namespace NHibernate.Type
 		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
 		public static PersistentCollectionType GenericSet( string role, string propertyRef, System.Type elementClass )
 		{
-			return ( PersistentCollectionType ) Activator.CreateInstance(
-				typeof( GenericSetType<> ).MakeGenericType( elementClass ),
-				role, propertyRef );
+			return CreateCollectionType( typeof( GenericSetType<> ), role, propertyRef, elementClass );
 		}
 
 		/// <summary>
@@ -873,9 +894,7 @@ namespace NHibernate.Type
 		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
 		public static PersistentCollectionType GenericSortedSet( string role, string propertyRef, object comparer, System.Type elementType )
 		{
-			return ( PersistentCollectionType ) Activator.CreateInstance(
-				typeof( GenericSortedSetType<> ).MakeGenericType( elementType ),
-				role, propertyRef, comparer );
+			return CreateSortedCollectionType( typeof( GenericSortedSetType<> ), role, propertyRef, comparer, elementType );
 		}
 
 #endif
