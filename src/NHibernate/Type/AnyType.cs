@@ -37,7 +37,7 @@ namespace NHibernate.Type
 	///	simple_table					4
 	///	
 	///</remarks>
-	public class ObjectType : AbstractType, IAbstractComponentType, IAssociationType
+	public class AnyType : AbstractType, IAbstractComponentType, IAssociationType
 	{
 		private readonly IType identifierType;
 		private readonly IType metaType;
@@ -47,14 +47,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="metaType"></param>
 		/// <param name="identifierType"></param>
-		internal ObjectType( IType metaType, IType identifierType )
+		internal AnyType( IType metaType, IType identifierType )
 		{
 			this.identifierType = identifierType;
 			this.metaType = metaType;
 		}
 
 		/// <summary></summary>
-		internal ObjectType()
+		internal AnyType()
 			: this( NHibernateUtil.Class, NHibernateUtil.Serializable )
 		{
 		}
@@ -220,7 +220,7 @@ namespace NHibernate.Type
 					session.GetEntityIdentifier( value ) );
 		}
 
-		public override bool IsObjectType
+		public override bool IsAnyType
 		{
 			get { return true; }
 		}
@@ -239,7 +239,7 @@ namespace NHibernate.Type
 
 		public string[] PropertyNames
 		{
-			get { return ObjectType.PROPERTY_NAMES; }
+			get { return AnyType.PROPERTY_NAMES; }
 		}
 
 		public object GetPropertyValue( Object component, int i, ISessionImplementor session )
@@ -301,7 +301,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Not really relevant to ObjectType, since it cannot be "joined"
+		/// Not really relevant to AnyType, since it cannot be "joined"
 		/// </summary>
 		public bool UseLHSPrimaryKey
 		{

@@ -445,7 +445,6 @@
     <Compile Include="Type\MetaType.cs" />
     <Compile Include="Type\MutableType.cs" />
     <Compile Include="Type\NullableType.cs" />
-    <Compile Include="Type\ObjectType.cs" />
     <Compile Include="Type\OneToOneType.cs" />
     <Compile Include="Type\PersistentEnumType.cs" />
     <Compile Include="Type\SByteType.cs" />
@@ -585,6 +584,7 @@
     <Compile Include="Tuple\StandardProperty.cs" />
     <Compile Include="Tuple\VersionProperty.cs" />
     <Compile Include="Type\AnsiCharType.cs" />
+    <Compile Include="Type\AnyType.cs" />
     <Compile Include="Type\BaseCharType.cs" />
     <Compile Include="Type\CollectionType.cs" />
     <Compile Include="Type\GenericSortedDictionaryType.cs" />

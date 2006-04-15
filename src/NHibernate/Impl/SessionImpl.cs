@@ -1099,7 +1099,7 @@ namespace NHibernate.Impl
 			{
 				return null;
 			}
-			else if( type.IsEntityType || type.IsObjectType )
+			else if( type.IsEntityType || type.IsAnyType )
 			{
 				return ( IsUnsaved( value, earlyInsert, self ) ) ? null : value;
 			}

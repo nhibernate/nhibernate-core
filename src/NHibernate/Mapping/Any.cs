@@ -34,7 +34,7 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override IType Type
 		{
-			get { return new ObjectType( metaType, identifierType ); }
+			get { return new AnyType( metaType, identifierType ); }
 			set { throw new NotSupportedException( "cannot set type of an Any" ); }
 		}
 

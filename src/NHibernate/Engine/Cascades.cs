@@ -555,7 +555,7 @@ namespace NHibernate.Engine
 				{
 					if( ( ( IAssociationType ) type ).ForeignKeyDirection.CascadeNow( cascadeTo ) )
 					{
-						if( type.IsEntityType || type.IsObjectType )
+						if( type.IsEntityType || type.IsAnyType )
 						{
 							action.Cascade( session, child, anything );
 						}
@@ -575,7 +575,7 @@ namespace NHibernate.Engine
 							IType elemType = persister.ElementType;
 
 							// cascade to current collection elements
-							if ( elemType.IsEntityType || elemType.IsObjectType || elemType.IsComponentType )
+							if ( elemType.IsEntityType || elemType.IsAnyType || elemType.IsComponentType )
 							{
 								CascadeCollection( action, style, pctype, elemType, child, cascadeVia, session, anything );
 							}

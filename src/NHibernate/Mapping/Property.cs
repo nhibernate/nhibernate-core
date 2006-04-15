@@ -87,7 +87,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				IType type = propertyValue.Type;
-				if( type.IsComponentType && !type.IsObjectType )
+				if( type.IsComponentType && !type.IsAnyType )
 				{
 					IAbstractComponentType actype = ( IAbstractComponentType ) propertyValue.Type;
 					int length = actype.Subtypes.Length;

@@ -151,7 +151,7 @@ namespace NHibernate.Type
 		///Gets a value indicating if the implementation is an "object" type
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not a "object" type.</value>
-		public virtual bool IsObjectType
+		public virtual bool IsAnyType
 		{
 			get { return false; }
 		}

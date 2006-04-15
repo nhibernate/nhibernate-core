@@ -36,9 +36,9 @@ namespace NHibernate.Type
 		bool IsEntityType { get; }
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.IsObjectType"]/*'
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsAnyType"]/*'
 		/// /> 
-		bool IsObjectType { get; }
+		bool IsAnyType { get; }
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'

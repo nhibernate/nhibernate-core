@@ -165,7 +165,7 @@ namespace NHibernate
 		/// <summary>
 		/// NHibernate System.Object type
 		/// </summary>
-		public static readonly IType Object = new ObjectType();
+		public static readonly IType Object = new AnyType();
 
 
 //		/// <summary>
@@ -213,7 +213,7 @@ namespace NHibernate
 		/// <returns></returns>
 		public static IType Any( IType metaType, IType identifierType )
 		{
-			return new ObjectType( metaType, identifierType );
+			return new AnyType( metaType, identifierType );
 		}
 
 		/// <summary>
