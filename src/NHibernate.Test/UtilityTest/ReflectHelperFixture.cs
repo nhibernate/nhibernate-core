@@ -42,6 +42,13 @@ namespace NHibernate.Test.UtilityTest
 			System.Type sameType = ReflectHelper.TypeFromAssembly( "System.Web.HttpRequest", "System.Web" );
 			Assert.AreEqual( httpRequest, sameType, "should be the exact same Type" );
 		}
+
+		[Test]
+		public void SystemTypes()
+		{
+			System.Type int32 = ReflectHelper.ClassForName( "System.Int32" );
+			Assert.AreEqual( typeof( System.Int32 ), int32 );
+		}
 	}
 
 	public class ARhf

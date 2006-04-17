@@ -141,8 +141,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static System.Type ClassForName( string name )
 		{
-			AssemblyQualifiedTypeName parsedName = AssemblyQualifiedTypeName.Parse( name,
-				Assembly.GetExecutingAssembly().FullName );
+			AssemblyQualifiedTypeName parsedName = AssemblyQualifiedTypeName.Parse( name );
 			System.Type result = TypeFromAssembly( parsedName );
 			if( result == null )
 			{
@@ -172,27 +171,39 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static System.Type TypeFromAssembly( AssemblyQualifiedTypeName name )
 		{
-			if( name.Assembly == null )
-			{
-				name = new AssemblyQualifiedTypeName( name.Type, Assembly.GetExecutingAssembly().FullName );
-			}
-
 			try
 			{
-				// Try to get the types from an already loaded assembly
+				// Try to get the type from an already loaded assembly
 				System.Type type = System.Type.GetType( name.ToString() );
 
-				// If the type is null then the assembly is not loaded.
+				if( type != null )
+				{
+					return type;
+				}
+
+				if( name.Assembly == null )
+				{
+					// No assembly was specified for the type, so just fail
+					log.Warn( "Could not load type " + name + ". Possible cause: no assembly name specified." );
+					return null;
+				}
+
+				// Use the partial name because we don't know the public key, version,
+				// culture-info of the assembly on the local machine.
+				Assembly assembly = Assembly.LoadWithPartialName( name.Assembly );
+
+				if( assembly == null )
+				{
+					log.Warn( "Could not load type " + name + ". Possible cause: incorrect assembly name specified." );
+					return null;
+				}
+			
+				type = assembly.GetType( name.Type );
+
 				if( type == null )
 				{
-					// Use the partial name because we don't know the public key, version,
-					// culture-info of the assembly on the local machine.
-					Assembly assembly = Assembly.LoadWithPartialName( name.Assembly );
-				
-					if( assembly != null )
-					{
-						type = assembly.GetType( name.Type );
-					}
+					log.Warn( "Could not load type " + name + "." );
+					return null;
 				}
 
 				return type;
@@ -201,7 +212,7 @@ namespace NHibernate.Util
 			{
 				if( log.IsErrorEnabled )
 				{
-					log.Error( name + " could not be loaded.", e );
+					log.Error( "Could not load type " + name + ".", e );
 				}
 				return null;
 			}
