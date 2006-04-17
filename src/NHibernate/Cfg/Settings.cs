@@ -41,28 +41,24 @@ namespace NHibernate.Cfg
 		private bool _prepareSql;
 		private int _commandTimeout;
 
-		/// <summary></summary>
 		public bool IsShowSqlEnabled
 		{
 			get { return _showSql; }
 			set { _showSql = value; }
 		}
 
-		/// <summary></summary>
 		public bool IsOuterJoinFetchEnabled
 		{
 			get { return _outerJoinFetchEnabled; }
 			set { _outerJoinFetchEnabled = value; }
 		}
 
-		/// <summary></summary>
 		public bool IsScrollableResultSetsEnabled
 		{
 			get { return scrollableResultSetsEnabled; }
 			set { scrollableResultSetsEnabled = value; }
 		}
 
-		/// <summary></summary>
 		public bool IsGetGeneratedKeysEnabled
 		{
 			get { return getGeneratedKeysEnabled; }
@@ -75,98 +71,84 @@ namespace NHibernate.Cfg
 			set { _minimalPutsEnabled = value; }
 		}
 
-		/// <summary></summary>
 		public int BatchSize
 		{
 			get { return batchSize; }
 			set { batchSize = value; }
 		}
 
-		/// <summary></summary>
 		public int MaximumFetchDepth
 		{
 			get { return maximumFetchDepth; }
 			set { maximumFetchDepth = value; }
 		}
 
-		/// <summary></summary>
 		public bool IsAutoCreateSchema
 		{
 			get { return autoCreateSchema; }
 			set { autoCreateSchema = value; }
 		}
 
-		/// <summary></summary>
 		public bool IsAutoDropSchema
 		{
 			get { return autoDropSchema; }
 			set { autoDropSchema = value; }
 		}
 
-		/// <summary></summary>
 		public bool IsAutoUpdateSchema
 		{
 			get { return autoCreateSchema; }
 			set { autoCreateSchema = value; }
 		}
 
-		/// <summary></summary>
 		public int StatementFetchSize
 		{
 			get { return statementFetchSize; }
 			set { statementFetchSize = value; }
 		}
 
-		/// <summary></summary>
 		public IDictionary QuerySubstitutions
 		{
 			get { return _querySubstitutions; }
 			set { _querySubstitutions = value; }
 		}
 
-		/// <summary></summary>
 		public Dialect.Dialect Dialect
 		{
 			get { return _dialect; }
 			set { _dialect = value; }
 		}
 
-		/// <summary></summary>
 		public string DefaultSchemaName
 		{
 			get { return _defaultSchemaName; }
 			set { _defaultSchemaName = value; }
 		}
 
-		/// <summary></summary>
 		public IsolationLevel IsolationLevel
 		{
 			get { return _isolationLevel; }
 			set { _isolationLevel = value; }
 		}
 
-		/// <summary></summary>
 		public IConnectionProvider ConnectionProvider
 		{
 			get { return _connectionProvider; }
 			set { _connectionProvider = value; }
 		}
 
-		/// <summary></summary>
 		public ITransactionFactory TransactionFactory
 		{
 			get { return _transactionFactory; }
 			set { _transactionFactory = value; }
 		}
 
-		/// <summary></summary>
 		public string SessionFactoryName
 		{
 			get { return _sessionFactoryName; }
 			set { _sessionFactoryName = value; }
 		}
 
-		/// <summary></summary> 
 		public ICacheProvider CacheProvider
 		{
 			get { return _cacheProvider; }
@@ -185,14 +167,13 @@ namespace NHibernate.Cfg
 			set { _queryCacheFactory = value; }
 		}
 
-		/// <summary></summary>
 		public bool PrepareSql
 		{
 			get { return _prepareSql; }
 			set { _prepareSql = value; }
 		}
 
-		/// <summary></summary>
+        // TODO: This property isn't actually used anywhere, need to check/rewrite
 		public int CommandTimeout
 		{
 			get { return _commandTimeout; }
