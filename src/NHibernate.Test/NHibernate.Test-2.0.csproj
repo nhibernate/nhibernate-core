@@ -333,12 +333,14 @@
     <Compile Include="TypesTest\TimestampTypeFixture.cs" />
     <Compile Include="TypesTest\TypeFactoryFixture.cs" />
     <Compile Include="TypesTest\TypeFixtureBase.cs" />
+    <Compile Include="UtilityTest\AssemblyQualifiedTypeNameFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapSequencedFixture.cs" />
     <Compile Include="UtilityTest\JoinedEnumerableFixture.cs" />
     <Compile Include="UtilityTest\ReflectHelperFixture.cs" />
     <Compile Include="UtilityTest\SequencedHashMapFixture.cs" />
     <Compile Include="UtilityTest\StringHelperFixture.cs" />
+    <Compile Include="UtilityTest\StringTokenizerFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CompositeCollection\BaseClassA.hbm.xml" />
