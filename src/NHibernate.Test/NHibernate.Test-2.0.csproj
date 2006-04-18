@@ -341,6 +341,7 @@
     <Compile Include="UtilityTest\SequencedHashMapFixture.cs" />
     <Compile Include="UtilityTest\StringHelperFixture.cs" />
     <Compile Include="UtilityTest\StringTokenizerFixture.cs" />
+    <Compile Include="UtilityTest\TypeNameParserFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CompositeCollection\BaseClassA.hbm.xml" />

@@ -141,7 +141,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static System.Type ClassForName( string name )
 		{
-			AssemblyQualifiedTypeName parsedName = AssemblyQualifiedTypeName.Parse( name );
+			AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse( name );
 			System.Type result = TypeFromAssembly( parsedName );
 			if( result == null )
 			{
