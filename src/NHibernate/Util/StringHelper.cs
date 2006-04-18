@@ -527,7 +527,11 @@ namespace NHibernate.Util
 			string result = Truncate( UnqualifyEntityName( description ), AliasTruncateLength )
 				.ToLower( CultureInfo.InvariantCulture )
 				.Replace( '/', '_' ) // entityNames may now include slashes for the representations
-				.Replace( '+', '_' ); // classname may be an inner class
+				.Replace( '+', '_' ) // classname may be an inner class
+				.Replace( '[', '_' ) // classname may contain brackets
+				.Replace( ']', '_' )
+				.Replace( '`', '_' ) // classname may contain backticks (generic types)
+				;
 
 			if( char.IsDigit( result, result.Length - 1 ) )
 			{

@@ -80,5 +80,16 @@ namespace NHibernate.Test.UtilityTest
 				Assert.AreEqual( qual[i], result[i], "Qualified names differ" );
 			}
 		}
+
+		[Test]
+		public void GenerateAliasForGenericTypeName()
+		{
+			string typeName = "A`1[B]";
+			string alias = StringHelper.GenerateAlias( typeName, 10 );
+
+			Assert.IsFalse( alias.Contains( "`" ), "alias '{0}' should not contain backticks",     alias );
+			Assert.IsFalse( alias.Contains( "[" ), "alias '{0}' should not contain left bracket",  alias );
+			Assert.IsFalse( alias.Contains( "]" ), "alias '{0}' should not contain right bracket", alias );
+		}
 	}
 }
