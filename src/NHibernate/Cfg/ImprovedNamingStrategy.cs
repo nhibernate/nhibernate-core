@@ -17,14 +17,14 @@ namespace NHibernate.Cfg
 		private ImprovedNamingStrategy()
 		{
 		}
-		
+
 		#region INamingStrategy Members
 		/// <summary>
 		/// Return the unqualified class name, mixed case converted to underscores
 		/// </summary>
 		/// <param name="className"></param>
 		/// <returns></returns>
-		public string ClassToTableName(string className)
+		public string ClassToTableName( string className )
 		{
 			return AddUnderscores( StringHelper.Unqualify( className ) );
 		}
@@ -34,7 +34,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public string PropertyToColumnName(string propertyName)
+		public string PropertyToColumnName( string propertyName )
 		{
 			return AddUnderscores( StringHelper.Unqualify( propertyName ) );
 		}
@@ -44,7 +44,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="tableName"></param>
 		/// <returns></returns>
-		public string TableName(string tableName)
+		public string TableName( string tableName )
 		{
 			return AddUnderscores( tableName );
 		}
@@ -54,7 +54,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="columnName"></param>
 		/// <returns></returns>
-		public string ColumnName(string columnName)
+		public string ColumnName( string columnName )
 		{
 			return AddUnderscores( columnName );
 		}
@@ -65,7 +65,7 @@ namespace NHibernate.Cfg
 		/// <param name="className"></param>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public string PropertyToTableName(string className, string propertyName)
+		public string PropertyToTableName( string className, string propertyName )
 		{
 			return AddUnderscores( StringHelper.Unqualify( propertyName ) );
 		}
@@ -74,12 +74,12 @@ namespace NHibernate.Cfg
 		private string AddUnderscores( string name )
 		{
 			char[] chars = name.Replace( '.', '_' ).ToCharArray();
-			StringBuilder buf = new StringBuilder( chars.Length ) ;
+			StringBuilder buf = new StringBuilder( chars.Length );
 
 			char prev = 'A';
 			foreach( char c in chars )
 			{
-				if ( c != '_' && char.IsUpper( c ) && !char.IsUpper( prev ) )
+				if( c != '_' && char.IsUpper( c ) && !char.IsUpper( prev ) )
 				{
 					buf.Append( '_' );
 				}

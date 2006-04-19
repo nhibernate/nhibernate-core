@@ -162,11 +162,6 @@ namespace NHibernate.Util
 			return Parse( text, null, null );
 		}
 
-		public static AssemblyQualifiedTypeName Parse( string text, string defaultAssembly )
-		{
-			return Parse( text, null, defaultAssembly );
-		}
-
 		public static AssemblyQualifiedTypeName Parse( string text, string defaultNamespace, string defaultAssembly )
 		{
 			return new TypeNameParser().ParseTypeName( text, defaultNamespace, defaultAssembly );

@@ -74,7 +74,7 @@ namespace NHibernate.Test.UtilityTest
 		public void ParseWithDefaultAssemblyUnused()
 		{
 			string defaultAssembly = "DefaultAssembly";
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeType, AnotherAssembly", defaultAssembly );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeType, AnotherAssembly", null, defaultAssembly );
 			Assert.AreEqual( "SomeType", tn.Type );
 			Assert.AreEqual( "AnotherAssembly", tn.Assembly );
 		}
@@ -83,7 +83,7 @@ namespace NHibernate.Test.UtilityTest
 		public void ParseWithDefaultAssembly()
 		{
 			string defaultAssembly = "SomeAssembly";
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeType", defaultAssembly );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeType", null, defaultAssembly );
 			Assert.AreEqual( "SomeType", tn.Type );
 			Assert.AreEqual( defaultAssembly, tn.Assembly );
 		}
