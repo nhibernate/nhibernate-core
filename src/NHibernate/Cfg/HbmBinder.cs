@@ -58,37 +58,9 @@ namespace NHibernate.Cfg
 			{
 				return null;
 			}
-			int commaPosn = className.IndexOf( ',' );
-			int dotPosn = className.IndexOf( '.' );
 
-			// Check for namespace; ok to have a dot after the comma as it's part of the assembly name
-			bool needNamespace = ( dotPosn == -1 || ( commaPosn > -1 && dotPosn > commaPosn ) ) && mapping.DefaultNamespace != null;
-			// Add if we don't have any commas and a default exists
-			bool needAssembly = commaPosn == -1 && mapping.DefaultAssembly != null;
-
-			if( needNamespace == false && needAssembly == false )
-			{
-				return className;
-			}
-			else
-			{
-				StringBuilder sb = new StringBuilder();
-
-				if( needNamespace )
-				{
-					sb.Append( mapping.DefaultNamespace );
-					sb.Append( "." );
-				}
-
-				sb.Append( className );
-
-				if( needAssembly )
-				{
-					sb.Append( ", " );
-					sb.Append( mapping.DefaultAssembly );
-				}
-				return sb.ToString();
-			}
+			return TypeNameParser.Parse( className, mapping.DefaultNamespace, mapping.DefaultAssembly )
+				.ToString();
 		}
 
 		/// <summary>
