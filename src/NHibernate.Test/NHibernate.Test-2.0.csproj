@@ -105,6 +105,8 @@
     <Compile Include="GenericTest\MapGeneric\A.cs" />
     <Compile Include="GenericTest\MapGeneric\B.cs" />
     <Compile Include="GenericTest\MapGeneric\MapGenericFixture.cs" />
+    <Compile Include="GenericTest\Overall\A.cs" />
+    <Compile Include="GenericTest\Overall\Fixture.cs" />
     <Compile Include="GenericTest\SetGeneric\A.cs" />
     <Compile Include="GenericTest\SetGeneric\B.cs" />
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
@@ -442,6 +444,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CollectionTest\IdBagFixture.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GenericTest\Overall\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
