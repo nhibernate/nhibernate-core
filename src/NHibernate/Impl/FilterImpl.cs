@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -22,7 +24,6 @@ namespace NHibernate.Impl
 			this.collection = collection;
 		}
 
-		/// <summary></summary>
 		public override IEnumerable Enumerable()
 		{
 			VerifyParameters();
@@ -30,7 +31,13 @@ namespace NHibernate.Impl
 			return Session.EnumerableFilter( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
 		}
 
-		/// <summary></summary>
+		public override IEnumerable<T> Enumerable<T>()
+		{
+			VerifyParameters();
+			IDictionary namedParams = NamedParams;
+			return Session.EnumerableFilter<T>( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
+		}
+
 		public override IList List()
 		{
 			VerifyParameters();
@@ -38,7 +45,14 @@ namespace NHibernate.Impl
 			return Session.Filter( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
 		}
 
-		public override IType[ ] TypeArray()
+		public override IList<T> List<T>()
+		{
+			VerifyParameters();
+			IDictionary namedParams = NamedParams;
+			return Session.Filter<T>( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
+		}
+
+		public override IType[] TypeArray()
 		{
 			IList typeList = Types;
 			int size = typeList.Count;

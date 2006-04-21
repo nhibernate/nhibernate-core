@@ -20,6 +20,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -195,7 +196,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private IBatcher batcher;
 
-		#region System.Runtime.Serialization.ISerializable Members 
+		#region System.Runtime.Serialization.ISerializable Members
 
 		/// <summary>
 		/// Constructor used to recreate the Session during the deserialization.
@@ -232,13 +233,13 @@ namespace NHibernate.Impl
 			this.nullifiables = ( ISet ) info.GetValue( "nullifiables", typeof( ISet ) );
 			this.interceptor = ( IInterceptor ) info.GetValue( "interceptor", typeof( IInterceptor ) );
 
-			this.insertions = ( ArrayList ) info.GetValue(  "insertions", typeof( ArrayList ) );
+			this.insertions = ( ArrayList ) info.GetValue( "insertions", typeof( ArrayList ) );
 			this.deletions = ( ArrayList ) info.GetValue( "deletions", typeof( ArrayList ) );
 			this.updates = ( ArrayList ) info.GetValue( "updates", typeof( ArrayList ) );
 
 			this.collectionCreations = ( ArrayList ) info.GetValue( "collectionCreations", typeof( ArrayList ) );
-			this.collectionUpdates   = ( ArrayList ) info.GetValue( "collectionUpdates",   typeof( ArrayList ) );
-			this.collectionRemovals  = ( ArrayList ) info.GetValue( "collectionRemovals",  typeof( ArrayList ) );
+			this.collectionUpdates = ( ArrayList ) info.GetValue( "collectionUpdates", typeof( ArrayList ) );
+			this.collectionRemovals = ( ArrayList ) info.GetValue( "collectionRemovals", typeof( ArrayList ) );
 		}
 
 		/// <summary>
@@ -303,7 +304,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		#region System.Runtime.Serialization.IDeserializationCallback Members 
+		#region System.Runtime.Serialization.IDeserializationCallback Members
 
 		/// <summary>
 		/// Once the entire object graph has been deserialized then we can hook the
@@ -399,8 +400,8 @@ namespace NHibernate.Impl
 		/// <param name="interceptor"></param>
 		internal SessionImpl( IDbConnection connection, SessionFactoryImpl factory, bool autoClose, long timestamp, IInterceptor interceptor )
 		{
-			if(interceptor == null)
-				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
+			if( interceptor == null )
+				throw new ArgumentNullException( "interceptor", "The interceptor can not be null" );
 
 			this.connection = connection;
 			connect = connection == null;
@@ -640,7 +641,7 @@ namespace NHibernate.Impl
 		private EntityEntry AddEntry(
 			object obj,
 			Status status,
-			object[ ] loadedState,
+			object[] loadedState,
 			object id,
 			object version,
 			LockMode lockMode,
@@ -915,8 +916,8 @@ namespace NHibernate.Impl
 				cascading--;
 			}
 
-			object[ ] values = persister.GetPropertyValues( theObj );
-			IType[ ] types = persister.PropertyTypes;
+			object[] values = persister.GetPropertyValues( theObj );
+			IType[] types = persister.PropertyTypes;
 
 			bool substitute = false;
 			if( !replicate )
@@ -1076,7 +1077,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void NullifyTransientReferences( object[ ] values, IType[ ] types, bool earlyInsert, object self )
+		private void NullifyTransientReferences( object[] values, IType[] types, bool earlyInsert, object self )
 		{
 			for( int i = 0; i < types.Length; i++ )
 			{
@@ -1106,8 +1107,8 @@ namespace NHibernate.Impl
 			else if( type.IsComponentType )
 			{
 				IAbstractComponentType actype = ( IAbstractComponentType ) type;
-				object[ ] subvalues = actype.GetPropertyValues( value, this );
-				IType[ ] subtypes = actype.Subtypes;
+				object[] subvalues = actype.GetPropertyValues( value, this );
+				IType[] subtypes = actype.Subtypes;
 				bool substitute = false;
 				for( int i = 0; i < subvalues.Length; i++ )
 				{
@@ -1259,11 +1260,11 @@ namespace NHibernate.Impl
 				log.Debug( "deleting " + MessageHelper.InfoString( persister, entry.Id ) );
 			}
 
-			IType[ ] propTypes = persister.PropertyTypes;
+			IType[] propTypes = persister.PropertyTypes;
 
 			object version = entry.Version;
 
-			object[ ] loadedState;
+			object[] loadedState;
 			if( entry.LoadedState == null )
 			{
 				//ie the object came in from Update()
@@ -1273,7 +1274,7 @@ namespace NHibernate.Impl
 			{
 				loadedState = entry.LoadedState;
 			}
-			entry.DeletedState = new object[loadedState.Length];
+			entry.DeletedState = new object[ loadedState.Length ];
 			TypeFactory.DeepCopy( loadedState, propTypes, persister.PropertyUpdateability, entry.DeletedState );
 
 			interceptor.OnDelete( obj, entry.Id, entry.DeletedState, persister.PropertyNames, propTypes );
@@ -1388,10 +1389,10 @@ namespace NHibernate.Impl
 		/// Thrown when a non-nullable property contains a value that would
 		/// persist the value of null to the database.
 		/// </exception>
-		private static void CheckNullability( object[ ] values, IEntityPersister persister, bool isUpdate )
+		private static void CheckNullability( object[] values, IEntityPersister persister, bool isUpdate )
 		{
-			bool[ ] nullability = persister.PropertyNullability;
-			bool[ ] checkability = isUpdate ? persister.PropertyUpdateability : persister.PropertyInsertability;
+			bool[] nullability = persister.PropertyNullability;
+			bool[] checkability = isUpdate ? persister.PropertyUpdateability : persister.PropertyInsertability;
 
 			for( int i = 0; i < values.Length; i++ )
 			{
@@ -1699,8 +1700,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static object[ ] NoArgs = new object[0];
-		private static IType[ ] NoTypes = new IType[0];
+		private static object[] NoArgs = new object[ 0 ];
+		private static IType[] NoTypes = new IType[ 0 ];
 
 		/// <summary>
 		/// Retrieve a list of persistent objects using a Hibernate query
@@ -1709,7 +1710,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IList Find( string query )
 		{
-			return Find( query, new QueryParameters( ) );
+			return Find( query, new QueryParameters() );
 		}
 
 		public IList Find( string query, object value, IType type )
@@ -1717,12 +1718,26 @@ namespace NHibernate.Impl
 			return Find( query, new QueryParameters( type, value ) );
 		}
 
-		public IList Find( string query, object[ ] values, IType[ ] types )
+		public IList Find( string query, object[] values, IType[] types )
 		{
 			return Find( query, new QueryParameters( types, values ) );
 		}
 
 		public IList Find( string query, QueryParameters parameters )
+		{
+			IList results = new ArrayList();
+			Find( query, parameters, results );
+			return results;
+		}
+
+		public IList<T> Find<T>( string query, QueryParameters parameters )
+		{
+			List<T> results = new List<T>();
+			Find( query, parameters, results );
+			return results;
+		}
+
+		private void Find( string query, QueryParameters parameters, IList results )
 		{
 			CheckIsOpen();
 
@@ -1734,45 +1749,37 @@ namespace NHibernate.Impl
 
 			parameters.ValidateParameters();
 
-			QueryTranslator[ ] q = GetQueries( query, false );
-
-			IList results = new ArrayList();
+			QueryTranslator[] q = GetQueries( query, false );
 
 			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 
 			//execute the queries and return all result lists as a single list
 			try
 			{
-				for( int i = 0; i < q.Length; i++ )
+				for( int i = q.Length - 1; i >= 0; i-- )
 				{
-					IList currentResults;
-					try
-					{
-						currentResults = q[ i ].List( this, parameters );
-					}
-					catch( Exception e )
-					{
-						throw new ADOException( "Could not execute query", e );
-					}
-
-					for( int j = 0; j < results.Count; j++ )
-					{
-						currentResults.Add( results[ j ] );
-					}
-					results = currentResults;
+					ArrayHelper.AddAll( results, q[ i ].List( this, parameters ) );
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch( Exception e )
+			{
+				throw Convert( e, "Could not execute query" );
 			}
 			finally
 			{
 				dontFlushFromFind--;
 			}
-			return results;
 		}
 
-		private QueryTranslator[ ] GetQueries( string query, bool scalar )
+		private QueryTranslator[] GetQueries( string query, bool scalar )
 		{
 			// take the union of the query spaces (ie the queried tables)
-			QueryTranslator[ ] q = factory.GetQuery( query, scalar );
+			QueryTranslator[] q = factory.GetQuery( query, scalar );
 			HashedSet qs = new HashedSet();
 			for( int i = 0; i < q.Length; i++ )
 			{
@@ -1791,12 +1798,57 @@ namespace NHibernate.Impl
 
 		public IEnumerable Enumerable( string query, object value, IType type )
 		{
-			return Enumerable( query, new object[ ] {value}, new IType[ ] {type} );
+			return Enumerable( query, new object[] { value }, new IType[] { type } );
 		}
 
-		public IEnumerable Enumerable( string query, object[ ] values, IType[ ] types )
+		public IEnumerable Enumerable( string query, object[] values, IType[] types )
 		{
 			return Enumerable( query, new QueryParameters( types, values ) );
+		}
+
+		public IEnumerable<T> Enumerable<T>( string query, QueryParameters parameters )
+		{
+			CheckIsOpen();
+
+			if( log.IsDebugEnabled )
+			{
+				log.Debug( "GetEnumerable: " + query );
+				parameters.LogParameters( factory );
+			}
+
+			QueryTranslator[] q = GetQueries( query, true );
+
+			if( q.Length == 0 )
+			{
+				return new List<T>();
+			}
+
+			IEnumerable[] results = new IEnumerable[ q.Length ];
+
+			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+			//execute the queries and return all results as a single enumerable
+			try
+			{
+				for( int i = 0; i < q.Length; i++ )
+				{
+					results[ i ] = q[ i ].GetEnumerable( parameters, this );
+				}
+
+				return new GenericJoinedEnumerable<T>( results );
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "Could not execute query" );
+			}
+			finally
+			{
+				dontFlushFromFind--;
+			}
 		}
 
 		public IEnumerable Enumerable( string query, QueryParameters parameters )
@@ -1809,7 +1861,7 @@ namespace NHibernate.Impl
 				parameters.LogParameters( factory );
 			}
 
-			QueryTranslator[ ] q = GetQueries( query, true );
+			QueryTranslator[] q = GetQueries( query, true );
 
 			if( q.Length == 0 )
 			{
@@ -1817,11 +1869,11 @@ namespace NHibernate.Impl
 			}
 
 			IEnumerable result = null;
-			IEnumerable[ ] results = null;
+			IEnumerable[] results = null;
 			bool many = q.Length > 1;
 			if( many )
 			{
-				results = new IEnumerable[q.Length];
+				results = new IEnumerable[ q.Length ];
 			}
 
 			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -1866,10 +1918,10 @@ namespace NHibernate.Impl
 
 		public int Delete( string query, object value, IType type )
 		{
-			return Delete( query, new object[ ] {value}, new IType[ ] {type} );
+			return Delete( query, new object[] { value }, new IType[] { type } );
 		}
 
-		public int Delete( string query, object[ ] values, IType[ ] types )
+		public int Delete( string query, object[] values, IType[] types )
 		{
 			CheckIsOpen();
 
@@ -1913,7 +1965,7 @@ namespace NHibernate.Impl
 			EntityKey key = new EntityKey( id, persister );
 			CheckUniqueness( key, obj );
 			AddEntity( key, obj );
-			Object[ ] values = persister.GetPropertyValues( obj );
+			Object[] values = persister.GetPropertyValues( obj );
 			TypeFactory.DeepCopy( values, persister.PropertyTypes, persister.PropertyUpdateability, values );
 			object version = Versioning.GetVersion( values, persister );
 			EntityEntry newEntry = AddEntry( obj, Status.Loaded, values, id, version, LockMode.None, true, persister, false );
@@ -1965,7 +2017,7 @@ namespace NHibernate.Impl
 				try
 				{
 					Cascades.Cascade( this, objPersister, obj, Cascades.CascadingAction.ActionLock,
-					                  CascadePoint.CascadeOnLock, lockMode );
+									  CascadePoint.CascadeOnLock, lockMode );
 				}
 				finally
 				{
@@ -2240,7 +2292,7 @@ namespace NHibernate.Impl
 		/// <param name="values"></param>
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
-		public void PostHydrate( IEntityPersister persister, object id, object[ ] values, object obj, LockMode lockMode )
+		public void PostHydrate( IEntityPersister persister, object id, object[] values, object obj, LockMode lockMode )
 		{
 			//persister.SetIdentifier( obj, id );
 			object version = Versioning.GetVersion( values, persister );
@@ -2277,17 +2329,24 @@ namespace NHibernate.Impl
 		}
 
 #if NET_2_0
-		public T Load<T>(object id)
+		public T Load<T>( object id )
 		{
-			CheckIsOpen();
+			return ( T ) Load( typeof( T ), id );
+		}
 
-			if (id == null)
-			{
-				throw new ArgumentNullException("id", "null is not a valid identifier");
-			}
-			object result = DoLoadByClass(typeof(T), id, true, true);
-			ObjectNotFoundException.ThrowIfNull(result, id, typeof(T));
-			return (T)result;
+		public T Load<T>( object id, LockMode lockMode )
+		{
+			return ( T ) Load( typeof( T ), id, lockMode );
+		}
+
+		public T Get<T>( object id )
+		{
+			return ( T ) Get( typeof( T ), id );
+		}
+
+		public T Get<T>( object id, LockMode lockMode )
+		{
+			return ( T ) Get( typeof( T ), id, lockMode );
 		}
 #endif
 
@@ -2521,25 +2580,7 @@ namespace NHibernate.Impl
 
 			return DoLoad( clazz, id, lockMode, false );
 		}
-#if NET_2_0
-		public T Load<T>(object id, LockMode lockMode)
-		{
-			CheckIsOpen();
 
-			if (lockMode == LockMode.Write)
-			{
-				throw new HibernateException("Invalid lock mode for Load()");
-			}
-
-			if (lockMode == LockMode.None)
-			{
-				// we don't necessarily need to hit the db in this case
-				return Load<T>(id);
-			}
-
-			return (T)DoLoad(typeof(T), id, lockMode, false);
-		}
-#endif
 		/// <summary>
 		/// Load the data for the object with the specified id into a newly created object
 		/// using "for update", if supported. A new key will be assigned to the object.
@@ -2667,8 +2708,8 @@ namespace NHibernate.Impl
 			AddEntry( result, Status.Loading, null, id, null, LockMode.None, true, subclassPersister, false );
 			AddEntity( new EntityKey( id, persister ), result );
 
-			IType[ ] types = subclassPersister.PropertyTypes;
-			object[ ] values = entry.Assemble( result, id, subclassPersister, interceptor, this ); // intializes result by side-effect
+			IType[] types = subclassPersister.PropertyTypes;
+			object[] values = entry.Assemble( result, id, subclassPersister, interceptor, this ); // intializes result by side-effect
 
 			TypeFactory.DeepCopy( values, types, subclassPersister.PropertyUpdateability, values );
 			object version = Versioning.GetVersion( values, subclassPersister );
@@ -2753,7 +2794,7 @@ namespace NHibernate.Impl
 			{
 				persister.Cache.Remove( id );
 			}
-			
+
 			EvictCachedCollections( persister, id );
 			object result = persister.Load( id, theObj, lockMode, this );
 			UnresolvableObjectException.ThrowIfNull( result, id, persister.MappedClass );
@@ -2774,8 +2815,8 @@ namespace NHibernate.Impl
 			}
 			IEntityPersister persister = e.Persister;
 			object id = e.Id;
-			object[ ] hydratedState = e.LoadedState;
-			IType[ ] types = persister.PropertyTypes;
+			object[] hydratedState = e.LoadedState;
+			IType[] types = persister.PropertyTypes;
 
 			if( log.IsDebugEnabled )
 			{
@@ -2939,7 +2980,7 @@ namespace NHibernate.Impl
 		{
 			foreach( IExecutable executable in executables )
 			{
-				object[ ] spaces = executable.PropertySpaces;
+				object[] spaces = executable.PropertySpaces;
 				for( int i = 0; i < spaces.Length; i++ )
 				{
 					if( theSet.Contains( spaces[ i ] ) )
@@ -3067,7 +3108,7 @@ namespace NHibernate.Impl
 			proxiesByKey.Remove( key );
 		}
 
-		public void PostUpdate( object obj, object[ ] updatedState, object nextVersion )
+		public void PostUpdate( object obj, object[] updatedState, object nextVersion )
 		{
 			EntityEntry entry = GetEntry( obj );
 			if( entry == null )
@@ -3156,7 +3197,7 @@ namespace NHibernate.Impl
 			Status status = entry.Status;
 			CheckId( obj, persister, entry.Id );
 
-			object[ ] values;
+			object[] values;
 			if( status == Status.Deleted )
 			{
 				//grab its state saved at deletion
@@ -3167,7 +3208,7 @@ namespace NHibernate.Impl
 				//grab its current state
 				values = persister.GetPropertyValues( obj );
 			}
-			IType[ ] types = persister.PropertyTypes;
+			IType[] types = persister.PropertyTypes;
 
 			bool substitute = false;
 
@@ -3190,9 +3231,9 @@ namespace NHibernate.Impl
 			bool cannotDirtyCheck;
 			bool interceptorHandledDirtyCheck;
 			bool dirtyCheckDoneBySelect = false;
-			object[ ] currentPersistentState = null;
+			object[] currentPersistentState = null;
 
-			int[ ] dirtyProperties = interceptor.FindDirty( obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types );
+			int[] dirtyProperties = interceptor.FindDirty( obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types );
 
 			if( dirtyProperties == null )
 			{
@@ -3270,10 +3311,10 @@ namespace NHibernate.Impl
 				object nextVersion = GetNextVersion( persister, values, entry );
 
 				// get the updated snapshot by cloning current state
-				object[ ] updatedState = null;
+				object[] updatedState = null;
 				if( status == Status.Loaded )
 				{
-					updatedState = new object[values.Length];
+					updatedState = new object[ values.Length ];
 					TypeFactory.DeepCopy( values, types, persister.PropertyCheckability, updatedState );
 				}
 
@@ -3316,9 +3357,9 @@ namespace NHibernate.Impl
 			IEntityPersister persister,
 			bool cannotDirtyCheck,
 			Status status,
-			int[ ] dirtyProperties,
-			object[ ] values,
-			IType[ ] types )
+			int[] dirtyProperties,
+			object[] values,
+			IType[] types )
 		{
 			if( !persister.IsMutable )
 			{
@@ -3346,7 +3387,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private object GetNextVersion( IEntityPersister persister, object[ ] values, EntityEntry entry )
+		private object GetNextVersion( IEntityPersister persister, object[] values, EntityEntry entry )
 		{
 			if( persister.IsVersioned )
 			{
@@ -3589,7 +3630,7 @@ namespace NHibernate.Impl
 			foreach( DictionaryEntry e in IdentityMap.ConcurrentEntries( collectionEntries ) )
 			{
 				CollectionEntry ce = ( CollectionEntry ) e.Value;
-				if( ! ce.reached && ! ce.ignore )
+				if( !ce.reached && !ce.ignore )
 				{
 					UpdateUnreachableCollection( ( IPersistentCollection ) e.Key );
 				}
@@ -4503,13 +4544,13 @@ namespace NHibernate.Impl
 
 		public ICollection Filter( object collection, string filter )
 		{
-			QueryParameters qp = new QueryParameters( new IType[1], new object[1] );
+			QueryParameters qp = new QueryParameters( new IType[ 1 ], new object[ 1 ] );
 			return Filter( collection, filter, qp );
 		}
 
 		public ICollection Filter( object collection, string filter, object value, IType type )
 		{
-			QueryParameters qp = new QueryParameters( new IType[ ] {null, type}, new object[ ] {null, value} );
+			QueryParameters qp = new QueryParameters( new IType[] { null, type }, new object[] { null, value } );
 			return Filter( collection, filter, qp );
 		}
 
@@ -4521,12 +4562,12 @@ namespace NHibernate.Impl
 		/// <param name="values"></param>
 		/// <param name="types"></param>
 		/// <returns></returns>
-		public ICollection Filter( object collection, string filter, object[ ] values, IType[ ] types )
+		public ICollection Filter( object collection, string filter, object[] values, IType[] types )
 		{
 			CheckIsOpen();
 
-			object[ ] vals = new object[values.Length + 1];
-			IType[ ] typs = new IType[values.Length + 1];
+			object[] vals = new object[ values.Length + 1 ];
+			IType[] typs = new IType[ values.Length + 1 ];
 			Array.Copy( values, 0, vals, 1, values.Length );
 			Array.Copy( types, 0, typs, 1, types.Length );
 			QueryParameters qp = new QueryParameters( typs, vals );
@@ -4639,17 +4680,10 @@ namespace NHibernate.Impl
 			return ( coll == null ) ? null : GetCollectionEntry( coll );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="filter"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
-		public IList Filter( object collection, string filter, QueryParameters parameters )
+		public void Filter( object collection, string filter, QueryParameters parameters, IList results )
 		{
-			string[ ] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
-			QueryTranslator[ ] filters = new QueryTranslator[concreteFilters.Length];
+			string[] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
+			QueryTranslator[] filters = new QueryTranslator[ concreteFilters.Length ];
 
 			for( int i = 0; i < concreteFilters.Length; i++ )
 			{
@@ -4663,45 +4697,46 @@ namespace NHibernate.Impl
 
 			dontFlushFromFind++; // stops flush being called multiple times if this method is recursively called
 
-			IList results = new ArrayList();
 			try
 			{
-				for( int i = 0; i < concreteFilters.Length; i++ )
+				for( int i = filters.Length - 1; i >= 0; i-- )
 				{
-					IList currentResults;
-					try
-					{
-						currentResults = filters[ i ].List( this, parameters );
-					}
-					catch( Exception e )
-					{
-						throw new ADOException( "could not execute query", e );
-					}
-					foreach( object res in results )
-					{
-						currentResults.Add( res );
-					}
-					results = currentResults;
+					ArrayHelper.AddAll( results, filters[ i ].List( this, parameters ) );
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch( Exception e )
+			{
+				throw Convert( e, "could not execute query" );
 			}
 			finally
 			{
 				dontFlushFromFind--;
 			}
+		}
+
+		public IList Filter( object collection, string filter, QueryParameters parameters )
+		{
+			ArrayList results = new ArrayList();
+			Filter( collection, filter, parameters, results );
 			return results;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="filter"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
+		public IList<T> Filter<T>( object collection, string filter, QueryParameters parameters )
+		{
+			List<T> results = new List<T>();
+			Filter( collection, filter, parameters, results );
+			return results;
+		}
+
 		public IEnumerable EnumerableFilter( object collection, string filter, QueryParameters parameters )
 		{
-			string[ ] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
-			QueryTranslator[ ] filters = new QueryTranslator[concreteFilters.Length];
+			string[] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
+			QueryTranslator[] filters = new QueryTranslator[ concreteFilters.Length ];
 
 			for( int i = 0; i < concreteFilters.Length; i++ )
 			{
@@ -4718,11 +4753,11 @@ namespace NHibernate.Impl
 			}
 
 			IEnumerable result = null;
-			IEnumerable[ ] results = null;
+			IEnumerable[] results = null;
 			bool many = filters.Length > 1;
 			if( many )
 			{
-				results = new IEnumerable[filters.Length];
+				results = new IEnumerable[ filters.Length ];
 			}
 
 			// execute the queries and return all results as a single enumerable
@@ -4745,11 +4780,48 @@ namespace NHibernate.Impl
 			return many ? new JoinedEnumerable( results ) : result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
+		public IEnumerable<T> EnumerableFilter<T>( object collection, string filter, QueryParameters parameters )
+		{
+			string[] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
+			QueryTranslator[] filters = new QueryTranslator[ concreteFilters.Length ];
+
+			for( int i = 0; i < concreteFilters.Length; i++ )
+			{
+				filters[ i ] = GetFilterTranslator(
+					collection,
+					concreteFilters[ i ],
+					parameters,
+					true );
+			}
+
+			if( filters.Length == 0 )
+			{
+				return new List<T>( 0 );
+			}
+
+			IEnumerable[] results = new IEnumerable[ filters.Length ];
+
+			// execute the queries and return all results as a single enumerable
+			for( int i = 0; i < filters.Length; i++ )
+			{
+				try
+				{
+					results[ i ] = filters[ i ].GetEnumerable( parameters, this );
+				}
+				catch( HibernateException )
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch( Exception e )
+				{
+					throw Convert( e, "could not execute query" );
+				}
+			}
+
+			return new GenericJoinedEnumerable<T>( results );
+		}
+
 		public ICriteria CreateCriteria( System.Type persistentClass )
 		{
 			CheckIsOpen();
@@ -4757,12 +4829,23 @@ namespace NHibernate.Impl
 			return new CriteriaImpl( persistentClass, this );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="criteria"></param>
-		/// <returns></returns>
 		public IList Find( CriteriaImpl criteria )
+		{
+			ArrayList results = new ArrayList();
+			Find( criteria, results );
+			return results;
+		}
+
+#if NET_2_0
+		public IList<T> Find<T>( CriteriaImpl criteria )
+		{
+			List<T> results = new List<T>();
+			Find( criteria, results );
+			return results;
+		}
+#endif
+
+		private void Find( CriteriaImpl criteria, IList results )
 		{
 			// The body of this method is modified from H2.1 version, because the Java version
 			// used factory.GetImplementors which returns a list of implementor class names
@@ -4774,10 +4857,10 @@ namespace NHibernate.Impl
 			//
 			// The solution was to add SessionFactoryImpl.GetImplementorClasses method
 			// which returns an array of System.Types instead of just class names.
-			System.Type[ ] implementors = factory.GetImplementorClasses( criteria.CriteriaClass );
+			System.Type[] implementors = factory.GetImplementorClasses( criteria.CriteriaClass );
 			int size = implementors.Length;
 
-			CriteriaLoader[ ] loaders = new CriteriaLoader[size];
+			CriteriaLoader[] loaders = new CriteriaLoader[ size ];
 			ISet spaces = new HashedSet();
 
 			for( int i = 0; i < size; i++ )
@@ -4796,39 +4879,28 @@ namespace NHibernate.Impl
 
 			AutoFlushIfRequired( spaces );
 
-			IList results = new ArrayList();
 			dontFlushFromFind++;
+
 			try
 			{
-				for( int i = 0; i < size; i++ )
+				for( int i = size - 1; i >= 0; i-- )
 				{
-					IList currentResults;
-					try
-					{
-						currentResults = loaders[ i ].List( this );
-					}
-					catch( HibernateException )
-					{
-						// Do not call Convert on HibernateExceptions
-						throw;
-					}
-					catch( Exception sqle )
-					{
-						throw Convert( sqle, "Unable to perform find" );
-					}
-					foreach( object result in results )
-					{
-						currentResults.Add( result );
-					}
-					results = currentResults;
+					ArrayHelper.AddAll( results, loaders[ i ].List( this ) );
 				}
+			}
+			catch( HibernateException )
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch( Exception sqle )
+			{
+				throw Convert( sqle, "Unable to perform find" );
 			}
 			finally
 			{
 				dontFlushFromFind--;
 			}
-
-			return results;
 		}
 
 		private IOuterJoinLoadable GetOuterJoinLoadable( System.Type clazz )
@@ -4973,7 +5045,7 @@ namespace NHibernate.Impl
 			EvictCachedCollections( persister.PropertyTypes, id );
 		}
 
-		private void EvictCachedCollections( IType[ ] types, object id )
+		private void EvictCachedCollections( IType[] types, object id )
 		{
 			foreach( IType type in types )
 			{
@@ -5001,9 +5073,9 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		/// <param name="batchSize"></param>
 		/// <returns></returns>
-		public object[ ] GetCollectionBatch( ICollectionPersister collectionPersister, object id, int batchSize )
+		public object[] GetCollectionBatch( ICollectionPersister collectionPersister, object id, int batchSize )
 		{
-			object[ ] keys = new object[batchSize];
+			object[] keys = new object[ batchSize ];
 			keys[ 0 ] = id;
 			int i = 0;
 			foreach( CollectionEntry ce in collectionEntries.Values )
@@ -5027,9 +5099,9 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		/// <param name="batchSize"></param>
 		/// <returns></returns>
-		public object[ ] GetClassBatch( System.Type clazz, object id, int batchSize )
+		public object[] GetClassBatch( System.Type clazz, object id, int batchSize )
 		{
-			object[ ] ids = new object[batchSize];
+			object[] ids = new object[ batchSize ];
 			ids[ 0 ] = id;
 			int i = 0;
 			foreach( EntityKey key in batchLoadableEntityKeys.Keys )
@@ -5071,7 +5143,7 @@ namespace NHibernate.Impl
 		{
 			CheckIsOpen();
 
-			return new SqlQueryImpl( sql, new string[ ] {returnAlias}, new System.Type[ ] {returnClass}, this, null );
+			return new SqlQueryImpl( sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, null );
 		}
 
 		/// <summary>
@@ -5081,7 +5153,7 @@ namespace NHibernate.Impl
 		/// <param name="returnAliases"></param>
 		/// <param name="returnClasses"></param>
 		/// <returns></returns>
-		public IQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses )
+		public IQuery CreateSQLQuery( string sql, string[] returnAliases, System.Type[] returnClasses )
 		{
 			CheckIsOpen();
 
@@ -5096,30 +5168,51 @@ namespace NHibernate.Impl
 		/// <param name="returnClasses"></param>
 		/// <param name="querySpaces"></param>
 		/// <returns></returns>
-		public IQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses, ICollection querySpaces )
+		public IQuery CreateSQLQuery( string sql, string[] returnAliases, System.Type[] returnClasses, ICollection querySpaces )
 		{
 			CheckIsOpen();
 
 			return new SqlQueryImpl( sql, returnAliases, returnClasses, this, querySpaces );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sqlQuery"></param>
-		/// <param name="aliases"></param>
-		/// <param name="classes"></param>
-		/// <param name="queryParameters"></param>
-		/// <param name="querySpaces"></param>
-		/// <returns></returns>
-		public IList FindBySQL( string sqlQuery, string[ ] aliases, System.Type[ ] classes, QueryParameters queryParameters, ICollection querySpaces )
+		public IList FindBySQL(
+			string sqlQuery,
+			string[] aliases,
+			System.Type[] classes,
+			QueryParameters queryParameters,
+			ICollection querySpaces )
+		{
+			IList results = new ArrayList();
+			FindBySQL( sqlQuery, aliases, classes, queryParameters, querySpaces, results );
+			return results;
+		}
+
+		public IList<T> FindBySQL<T>(
+			string sqlQuery,
+			string[] aliases,
+			System.Type[] classes,
+			QueryParameters queryParameters,
+			ICollection querySpaces )
+		{
+			List<T> results = new List<T>();
+			FindBySQL( sqlQuery, aliases, classes, queryParameters, querySpaces, results );
+			return results;
+		}
+
+		public void FindBySQL(
+			string sqlQuery,
+			string[] aliases,
+			System.Type[] classes,
+			QueryParameters queryParameters,
+			ICollection querySpaces,
+			IList results )
 		{
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "SQL Query: " + sqlQuery );
 			}
 
-			ISqlLoadable[ ] persisters = new ISqlLoadable[classes.Length];
+			ISqlLoadable[] persisters = new ISqlLoadable[ classes.Length ];
 			for( int i = 0; i < classes.Length; i++ )
 			{
 				persisters[ i ] = GetSqlLoadable( classes[ i ] );
@@ -5134,7 +5227,7 @@ namespace NHibernate.Impl
 			dontFlushFromFind++;
 			try
 			{
-				return loader.List( this, queryParameters );
+				ArrayHelper.AddAll( results, loader.List( this, queryParameters ) );
 			}
 			catch( HibernateException )
 			{
@@ -5155,7 +5248,7 @@ namespace NHibernate.Impl
 		private ISqlLoadable GetSqlLoadable( System.Type clazz )
 		{
 			IEntityPersister cp = GetClassPersister( clazz );
-			if( ! ( cp is ISqlLoadable ) )
+			if( !( cp is ISqlLoadable ) )
 			{
 				throw new MappingException( string.Format( "class persister is not ISqlLoadable: {0}", clazz.FullName ) );
 			}
@@ -5475,7 +5568,7 @@ namespace NHibernate.Impl
 					// to which copy (merge) is going to be cascaded, and then copying. This is
 					// more efficient, but not possible in NH currently.
 					NHibernateUtil.Initialize( result );
-					
+
 					target = Unproxy( result );
 					copiedAlready[ obj ] = target;
 					if( target == obj )
@@ -5497,7 +5590,7 @@ namespace NHibernate.Impl
 			}
 
 			// no need to handle the version differently
-			object[ ] copiedValues = TypeFactory.Copy(
+			object[] copiedValues = TypeFactory.Copy(
 				persister.GetPropertyValues( obj ),
 				persister.GetPropertyValues( target ),
 				persister.PropertyTypes,
@@ -5524,7 +5617,7 @@ namespace NHibernate.Impl
 		{
 			if( _isAlreadyDisposed || closed )
 			{
-				throw new ObjectDisposedException("ISession", "Session was disposed of or closed" );
+				throw new ObjectDisposedException( "ISession", "Session was disposed of or closed" );
 			}
 		}
 	}

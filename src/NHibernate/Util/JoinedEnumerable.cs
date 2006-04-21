@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -148,5 +149,24 @@ namespace NHibernate.Util
 		}
 
 		#endregion
+	}
+
+	public class GenericJoinedEnumerable<T> : JoinedEnumerable, IEnumerable<T>, IEnumerator<T>
+	{
+		public GenericJoinedEnumerable( IEnumerable[] enumerables )
+			: base( enumerables )
+		{
+		}
+
+		IEnumerator<T> IEnumerable<T>.GetEnumerator()
+		{
+			Reset();
+			return this;
+		}
+
+		T IEnumerator<T>.Current
+		{
+			get { return ( T ) this.Current; }
+		}
 	}
 }

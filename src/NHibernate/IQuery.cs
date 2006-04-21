@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+
 using NHibernate.Type;
 
 namespace NHibernate
@@ -83,6 +85,13 @@ namespace NHibernate
 		IEnumerable Enumerable();
 
 		/// <summary>
+		/// Strongly-typed version of <see cref="Enumerable()"/>.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		IEnumerable<T> Enumerable<T>();
+
+		/// <summary>
 		/// Return the query results as an <see cref="IList"/>. If the query contains multiple results per row,
 		/// the results are returned in an instance of <c>object[]</c>.
 		/// </summary>
@@ -91,6 +100,11 @@ namespace NHibernate
 		/// or if you want to fill the 2nd level cache.
 		/// </remarks>
 		IList List();
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="List()"/>.
+		/// </summary>
+		IList<T> List<T>();
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches

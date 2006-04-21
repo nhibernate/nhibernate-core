@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 
 using NHibernate.Type;
@@ -350,6 +351,7 @@ namespace NHibernate
 		/// <param name="query">A query expressed in Hibernate's query language</param>
 		/// <returns>A distinct list of instances</returns>
 		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
+		[Obsolete( "Use ISession.CreateQuery().List()" )]
 		IList Find( string query );
 
 		/// <summary>
@@ -360,6 +362,7 @@ namespace NHibernate
 		/// <param name="type">The Hibernate type of the value</param>
 		/// <returns>A distinct list of instances</returns>
 		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
+		[Obsolete( "Use ISession.CreateQuery().SetXYZ().List()" )]
 		IList Find( string query, object value, IType type );
 
 		/// <summary>
@@ -370,7 +373,8 @@ namespace NHibernate
 		/// <param name="types">An array of Hibernate types of the values</param>
 		/// <returns>A distinct list of instances</returns>
 		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
-		IList Find( string query, object[ ] values, IType[ ] types );
+		[Obsolete( "Use ISession.CreateQuery().SetXYZ().List()" )]
+		IList Find( string query, object[] values, IType[] types );
 
 		/// <summary>
 		/// Execute a query and return the results in an interator.
@@ -388,6 +392,7 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="query">The query string</param>
 		/// <returns>An enumerator</returns>
+		[Obsolete( "Use ISession.CreateQuery().Enumerable()" )]
 		IEnumerable Enumerable( string query );
 
 		/// <summary>
@@ -409,6 +414,7 @@ namespace NHibernate
 		/// <param name="value">A value to be written to a "?" placeholder in the query string</param>
 		/// <param name="type">The hibernate type of the value</param>
 		/// <returns>An enumerator</returns>
+		[Obsolete( "Use ISession.CreateQuery().SetXYZ().Enumerable()" )]
 		IEnumerable Enumerable( string query, object value, IType type );
 
 		/// <summary>
@@ -430,7 +436,8 @@ namespace NHibernate
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of hibernate types of the values</param>
 		/// <returns>An enumerator</returns>
-		IEnumerable Enumerable( string query, object[ ] values, IType[ ] types );
+		[Obsolete( "Use ISession.CreateQuery().SetXYZ().Enumerable()" )]
+		IEnumerable Enumerable( string query, object[] values, IType[] types );
 
 		/// <summary>
 		/// Apply a filter to a persistent collection.
@@ -443,6 +450,7 @@ namespace NHibernate
 		/// <param name="collection">A persistent collection to filter</param>
 		/// <param name="filter">A filter query string</param>
 		/// <returns>The resulting collection</returns>
+		[Obsolete( "Use ISession.CreateFilter().List()" )]
 		ICollection Filter( object collection, string filter );
 
 		/// <summary>
@@ -458,6 +466,7 @@ namespace NHibernate
 		/// <param name="value">A value to be written to a "?" placeholder in the query</param>
 		/// <param name="type">The hibernate type of value</param>
 		/// <returns>A collection</returns>
+		[Obsolete( "Use ISession.CreateFilter().SetXYZ().List()" )]
 		ICollection Filter( object collection, string filter, object value, IType type );
 
 		/// <summary>
@@ -473,7 +482,8 @@ namespace NHibernate
 		/// <param name="values">The values to be written to "?" placeholders in the query</param>
 		/// <param name="types">The hibernate types of the values</param>
 		/// <returns>A collection</returns>
-		ICollection Filter( object collection, string filter, object[ ] values, IType[ ] types );
+		[Obsolete( "Use ISession.CreateFilter().SetXYZ().List()" )]
+		ICollection Filter( object collection, string filter, object[] values, IType[] types );
 
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -652,5 +662,17 @@ namespace NHibernate
 		/// <param name="lockMode">the lock mode</param>
 		/// <returns>a persistent instance or null</returns>
 		object Get( System.Type clazz, object id, LockMode lockMode );
+
+#if NET_2_0
+		/// <summary>
+		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
+		/// </summary>
+		T Get<T>( object id );
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Get(System.Type, object, LockMode)" />
+		/// </summary>
+		T Get<T>( object id, LockMode lockMode );
+#endif
 	}
 }

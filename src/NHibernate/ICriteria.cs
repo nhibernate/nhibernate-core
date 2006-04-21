@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+
 using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.Transform;
@@ -86,6 +88,11 @@ namespace NHibernate
 		/// </summary>
 		/// <returns></returns>
 		IList List();
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="List()" />.
+		/// </summary>
+		IList<T> List<T>();
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches

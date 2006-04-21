@@ -8,6 +8,7 @@ using NHibernate.Transform;
 using NHibernate.Util;
 
 using NExpression = NHibernate.Expression;
+using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -95,6 +96,11 @@ namespace NHibernate.Impl
 			public IList List()
 			{
 				return root.List();
+			}
+
+			public IList<T> List<T>()
+			{
+				return root.List<T>();
 			}
 
 			public object UniqueResult()
@@ -267,6 +273,11 @@ namespace NHibernate.Impl
 		public IList List()
 		{
 			return session.Find( this );
+		}
+
+		public IList<T> List<T>()
+		{
+			return session.Find<T>( this );
 		}
 
 		public IEnumerable IterateExpressionEntries()

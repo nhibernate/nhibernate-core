@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -18,20 +20,12 @@ namespace NHibernate.Impl
 	/// &lt;/sql-query-name&gt;
 	/// </code>
 	/// </example>
-	internal class SqlQueryImpl : AbstractQueryImpl
+	public class SqlQueryImpl : AbstractQueryImpl
 	{
 		private readonly System.Type[] returnClasses;
 		private readonly string[] returnAliases;
 		private readonly ICollection querySpaces;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="returnAliases"></param>
-		/// <param name="returnClasses"></param>
-		/// <param name="session"></param>
-		/// <param name="querySpaces"></param>
 		public SqlQueryImpl( string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session, ICollection querySpaces) : base( sql, session )
 		{
 			this.returnClasses = returnClasses;
@@ -39,25 +33,16 @@ namespace NHibernate.Impl
 			this.querySpaces = querySpaces;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public string[] ReturnAliases
 		{
 			get { return returnAliases; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public System.Type[] ReturnClasses
 		{
 			get { return returnClasses; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override IType[] ReturnTypes
 		{
 			get
@@ -72,19 +57,26 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public override IList List()
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
 			return Session.FindBySQL( BindParameterLists( namedParams ), returnAliases, returnClasses, GetQueryParameters( namedParams ), querySpaces );
 		}
+
+		public override IList<T> List<T>()
+		{
+			VerifyParameters();
+			IDictionary namedParams = NamedParams;
+			return Session.FindBySQL<T>( BindParameterLists( namedParams ), returnAliases, returnClasses, GetQueryParameters( namedParams ), querySpaces );
+		}
 		
-		/// <summary></summary>
 		public override IEnumerable Enumerable()
+		{
+			throw new NotSupportedException( "SQL queries do not currently support enumeration" );
+		}
+
+		public override IEnumerable<T> Enumerable<T>()
 		{
 			throw new NotSupportedException( "SQL queries do not currently support enumeration" );
 		}

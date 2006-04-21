@@ -4,6 +4,7 @@ using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -175,6 +176,11 @@ namespace NHibernate.Engine
 		IList Find( string query, QueryParameters parameters );
 
 		/// <summary>
+		/// Strongly-typed version of <see cref="Find()" />
+		/// </summary>
+		IList<T> Find<T>( string query, QueryParameters queryParameters );
+
+		/// <summary>
 		/// Execute an <c>Iterate()</c> query
 		/// </summary>
 		/// <param name="query"></param>
@@ -183,22 +189,29 @@ namespace NHibernate.Engine
 		IEnumerable Enumerable( string query, QueryParameters parameters );
 
 		/// <summary>
+		/// Strongly-typed version of <see cref="Enumerable()" />
+		/// </summary>
+		IEnumerable<T> Enumerable<T>( string query, QueryParameters queryParameters );
+
+		/// <summary>
 		/// Execute a filter
 		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="filter"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
 		IList Filter( object collection, string filter, QueryParameters parameters );
+
+		/// <summary>
+		/// Execute a filter (strongly-typed version).
+		/// </summary>
+		IList<T> Filter<T>( object collection, string filter, QueryParameters parameters );
 
 		/// <summary>
 		/// Collection from a filter
 		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="filter"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
 		IEnumerable EnumerableFilter( object collection, string filter, QueryParameters parameters );
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="EnumerableFilter()" />
+		/// </summary>
+		IEnumerable<T> EnumerableFilter<T>( object collection, string filter, QueryParameters parameters );
 
 		/// <summary>
 		/// Get the <c>IEntityPersister</c> for an object
@@ -211,32 +224,21 @@ namespace NHibernate.Engine
 		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object identity.
 		/// Must be called before <c>PostHydrate()</c>
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="obj"></param>
-		/// <param name="lockMode"></param>
 		void AddUninitializedEntity( EntityKey key, object obj, LockMode lockMode );
 
 		/// <summary>
 		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading
 		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
-		/// <param name="values"></param>
-		/// <param name="obj"></param>
-		/// <param name="lockMode"></param>
 		void PostHydrate( IEntityPersister persister, object id, object[ ] values, object obj, LockMode lockMode );
 
 		/// <summary>
 		/// Perform the second step of 2-phase load (ie. fully initialize the entity instance)
 		/// </summary>
-		/// <param name="obj"></param>
 		void InitializeEntity( object obj );
 
 		/// <summary>
 		/// Get the entity instance associated with the given <c>EntityKey</c>
 		/// </summary>
-		/// <param name="key"></param>
-		/// <returns></returns>
 		object GetEntity( EntityKey key );
 
 		/// <summary>
@@ -252,8 +254,6 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Return the existing proxy associated with the given object. (Slower than the form above)
 		/// </summary>
-		/// <param name="impl"></param>
-		/// <returns></returns>
 		object ProxyFor( object impl );
 
 		/// <summary>
@@ -266,96 +266,66 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Return the identifier of the persistent object, or null if transient
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		object GetEntityIdentifier( object obj );
 
 		/// <summary>
 		/// Return the identifer of the persistent or transient object, or throw
 		/// an exception if the instance is "unsaved"
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		object GetEntityIdentifierIfNotUnsaved( object obj );
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		bool IsSaved( object obj );
 
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
 		object Instantiate( System.Type clazz, object id );
 
 		/// <summary>
 		/// Set the lock mode of the entity to the given lock mode
 		/// </summary>
-		/// <param name="entity"></param>
-		/// <param name="lockMode"></param>
 		void SetLockMode( object entity, LockMode lockMode );
 
 		/// <summary>
 		/// Get the current version of the entity
 		/// </summary>
-		/// <param name="entity"></param>
 		object GetVersion( object entity );
 
 		/// <summary>
 		/// Get the lock mode of the entity
 		/// </summary>
-		/// <param name="entity"></param>
-		/// <returns></returns>
 		LockMode GetLockMode( object entity );
 
 		/// <summary>
 		/// Get the collection orphans (entities which were removed from
 		/// the collection
 		/// </summary>
-		/// <param name="coll"></param>
-		/// <returns></returns>
 		ICollection GetOrphans( IPersistentCollection coll );
 
 		/// <summary>
 		/// Get a batch of uninitialized collection keys for this role
 		/// </summary>
-		/// <param name="collectionPersister"></param>
-		/// <param name="id"></param>
-		/// <param name="batchSize"></param>
-		/// <returns></returns>
 		object[] GetCollectionBatch( ICollectionPersister collectionPersister, object id, int batchSize );
 
 		/// <summary>
 		/// Get a batch of unloaded identifiers for this class
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="batchSize"></param>
-		/// <returns></returns>
 		object[] GetClassBatch( System.Type clazz, object id, int batchSize );
 
 		/// <summary>
 		/// Register the entity as batch loadable, if enabled
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
 		void ScheduleBatchLoad( System.Type clazz, object id );
 
 		/// <summary>
 		/// Execute an SQL Query
 		/// </summary>
-		/// <param name="sqlQuery"></param>
-		/// <param name="aliases"></param>
-		/// <param name="classes"></param>
-		/// <param name="queryParameters"></param>
-		/// <param name="querySpaces"></param>
-		/// <returns></returns>
 		IList FindBySQL( string sqlQuery, string[] aliases, System.Type[] classes, QueryParameters queryParameters, ICollection querySpaces );
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="FindBySQL()" />
+		/// </summary>
+		IList<T> FindBySQL<T>( string sqlQuery, string[] aliases, System.Type[] classes, QueryParameters queryParameters, ICollection querySpaces );
 
 		/// <summary>
 		/// new in 2.1 no javadoc

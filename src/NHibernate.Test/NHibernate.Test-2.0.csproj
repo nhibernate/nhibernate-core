@@ -105,6 +105,7 @@
     <Compile Include="GenericTest\MapGeneric\A.cs" />
     <Compile Include="GenericTest\MapGeneric\B.cs" />
     <Compile Include="GenericTest\MapGeneric\MapGenericFixture.cs" />
+    <Compile Include="GenericTest\Methods\Fixture.cs" />
     <Compile Include="GenericTest\Overall\A.cs" />
     <Compile Include="GenericTest\Overall\Fixture.cs" />
     <Compile Include="GenericTest\SetGeneric\A.cs" />
