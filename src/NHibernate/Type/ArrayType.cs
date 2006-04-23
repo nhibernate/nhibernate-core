@@ -144,5 +144,10 @@ namespace NHibernate.Type
 			}
 			return result;
 		}
+
+		public override object Instantiate()
+		{
+			throw new NotSupportedException("ArrayType.Instantiate()");
+		}
 	}
 }

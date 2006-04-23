@@ -85,17 +85,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
-			if( persister.HasOrdering )
-			{
-				// if this Persister has an Ordering then use the ListDictionary because
-				// it maintains items in the Dictionary in the same order as they were 
-				// added.
-				this.map = new ListDictionary();
-			}
-			else
-			{
-				this.map = new Hashtable();
-			}
+			this.map = ( IDictionary ) persister.CollectionType.Instantiate();
 		}
 
 		public int Count

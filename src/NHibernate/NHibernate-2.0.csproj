@@ -496,7 +496,6 @@
     </EmbeddedResource>
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Collection\AbstractPersistentCollection.cs" />
-    <Compile Include="Collection\Generic\PersistentGenericSortedDictionary.cs" />
     <Compile Include="Collection\Generic\PersistentGenericSet.cs" />
     <Compile Include="Collection\Generic\PersistentGenericBag.cs">
       <SubType>Code</SubType>
@@ -507,8 +506,6 @@
     <Compile Include="Collection\Generic\PersistentGenericMap.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collection\Generic\PersistentGenericSortedList.cs" />
-    <Compile Include="Collection\Generic\PersistentGenericSortedSet.cs" />
     <Compile Include="Collection\Generic\PersistentGenericIdentifierBag.cs" />
     <Compile Include="Collection\PersistentArrayHolder.cs" />
     <Compile Include="Collection\PersistentBag.cs" />
@@ -516,8 +513,6 @@
     <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
-    <Compile Include="Collection\PersistentSortedMap.cs" />
-    <Compile Include="Collection\PersistentSortedSet.cs" />
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />

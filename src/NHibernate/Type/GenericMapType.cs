@@ -65,6 +65,11 @@ namespace NHibernate.Type
 		// virtual since that was where most of the logic was.  A different/better way might be to
 		// have a Copy on the base collection that handles the standard checks and then a DoCopy
 		// that performs the actual copy.
+
+		public override object Instantiate()
+		{
+			return new Dictionary<TKey, TValue>();
+		}
 	}
 }
 #endif

@@ -170,13 +170,10 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		private CollectionType collectionType = new SetType( null, null );
 		public NHibernate.Type.CollectionType CollectionType
 		{
-			get
-			{
-				// TODO:  Add CollectionPersisterStub.CollectionType getter implementation
-				return null;
-			}
+			get { return collectionType; }
 		}
 
 		public void UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session)

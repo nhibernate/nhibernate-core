@@ -61,5 +61,9 @@ namespace NHibernate.Type
 			( ( IList ) collection ).Clear();
 		}
 
+		public override object Instantiate()
+		{
+			return new ArrayList();
+		}
 	}
 }

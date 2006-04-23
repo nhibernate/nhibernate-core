@@ -224,7 +224,7 @@ namespace NHibernate.Collection.Generic
 
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			list = new System.Collections.Generic.List<T>();
+			list = ( IList<T> ) persister.CollectionType.Instantiate();
 		}
 
 		/// <summary>

@@ -103,14 +103,7 @@ namespace NHibernate.Collection.Generic
 
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
-			if( persister.HasOrdering )
-			{
-				throw new NotSupportedException( "have not coded the IDictionary<TKey,TValue> that maintains order" );
-			}
-			else
-			{
-				this.map = new Dictionary<TKey, TValue>();
-			}
+			this.map = ( IDictionary<TKey, TValue> ) persister.CollectionType.Instantiate();
 		}
 
 		public override bool EqualsSnapshot( NHibernate.Type.IType elementType )

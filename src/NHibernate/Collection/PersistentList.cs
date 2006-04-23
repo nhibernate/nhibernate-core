@@ -103,7 +103,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
-			this.list = new ArrayList();
+			this.list = ( IList ) persister.CollectionType.Instantiate();
 		}
 
 		public int Count

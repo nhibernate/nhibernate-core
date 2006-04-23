@@ -24,14 +24,9 @@ namespace NHibernate.Type
 			get { return comparer; }
 		}
 
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override object Instantiate()
 		{
-			return new PersistentGenericSortedList<TKey, TValue>( session, comparer );
-		}
-
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
-		{
-			return new PersistentGenericSortedList<TKey, TValue>( session, ( IDictionary<TKey, TValue> ) collection, comparer );
+			return new SortedList<TKey, TValue>( comparer );
 		}
 	}
 }

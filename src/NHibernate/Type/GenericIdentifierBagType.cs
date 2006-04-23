@@ -29,5 +29,10 @@ namespace NHibernate.Type
 		{
 			get { return typeof( IList<T> ); }
 		}
+
+		public override object Instantiate()
+		{
+			return new List<T>();
+		}
 	}
 }

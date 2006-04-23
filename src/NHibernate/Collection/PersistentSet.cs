@@ -99,7 +99,8 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// This constructor is NOT meant to be called from user code.
 		/// </summary>
-		public PersistentSet( ISessionImplementor session ) : base( session )
+		public PersistentSet( ISessionImplementor session )
+			: base( session )
 		{
 		}
 
@@ -110,7 +111,8 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
-		public PersistentSet( ISessionImplementor session, ISet collection ) : base( session )
+		public PersistentSet( ISessionImplementor session, ISet collection )
+			: base( session )
 		{
 			internalSet = collection;
 			SetInitialized();
@@ -126,7 +128,7 @@ namespace NHibernate.Collection
 		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
 			BeforeInitialize( persister );
-			object[ ] array = ( object[ ] ) disassembled;
+			object[] array = ( object[] ) disassembled;
 			for( int i = 0; i < array.Length; i++ )
 			{
 				internalSet.Add( persister.ElementType.Assemble( array[ i ], Session, owner ) );
@@ -136,14 +138,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
-			if( persister.HasOrdering )
-			{
-				internalSet = new ListSet();
-			}
-			else
-			{
-				internalSet = new HashedSet();
-			}
+			internalSet = ( ISet ) persister.CollectionType.Instantiate();
 		}
 
 		#region System.Collections.ICollection Members
@@ -317,7 +312,7 @@ namespace NHibernate.Collection
 
 		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
 		{
-			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
+			object element = role.ReadElement( rs, owner, descriptor.SuffixedElementAliases, Session );
 			tempList.Add( element );
 			return element;
 		}
@@ -352,7 +347,7 @@ namespace NHibernate.Collection
 
 		public override object Disassemble( ICollectionPersister persister )
 		{
-			object[ ] result = new object[internalSet.Count];
+			object[] result = new object[ internalSet.Count ];
 			int i = 0;
 
 			foreach( object obj in internalSet )
@@ -414,12 +409,12 @@ namespace NHibernate.Collection
 			throw new NotImplementedException( "Sets don't have indexes" );
 		}
 
-		public override object GetElement(object entry)
+		public override object GetElement( object entry )
 		{
 			return entry;
 		}
 
-		public override object GetSnapshotElement(object entry, int i)
+		public override object GetSnapshotElement( object entry, int i )
 		{
 			throw new NotSupportedException( "Sets don't support updating by element" );
 		}

@@ -4,6 +4,7 @@ using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using Iesi.Collections;
 
 namespace NHibernate.Type
 {
@@ -75,5 +76,9 @@ namespace NHibernate.Type
 			( ( Iesi.Collections.ISet ) collection ).Clear();
 		}
 
+		public override object Instantiate()
+		{
+			return new HashedSet();
+		}
 	}
 }

@@ -151,7 +151,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				internalSet = new HashedSet<T>();
+				internalSet = ( ISet<T> ) persister.CollectionType.Instantiate();
 			}
 		}
 

@@ -61,7 +61,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize( ICollectionPersister persister )
 		{
-			this.bag = new ArrayList();
+			this.bag = ( IList ) persister.CollectionType.Instantiate();
 		}
 
 		public override bool EqualsSnapshot( IType elementType )

@@ -278,7 +278,7 @@ namespace NHibernate.Type
 			ICollectionPersister cp = session.Factory.GetCollectionPersister( role );
 
 			ICollection result = target == null
-				? (ICollection)Instantiate( session, cp )
+				? ( ICollection ) Instantiate( session, cp )
 				: ( ICollection ) target;
 			Clear( result );
 
@@ -392,5 +392,10 @@ namespace NHibernate.Type
 				return id;
 			}
 		}
+
+		/// <summary>
+		/// Instantiate an empty instance of the "underlying" collection (not a wrapper)
+		/// </summary>
+		public abstract object Instantiate();
 	}
 }

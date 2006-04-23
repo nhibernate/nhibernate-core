@@ -26,33 +26,14 @@ namespace NHibernate.Type
 			this.comparer = comparer;
 		}
 
-		/// <summary>
-		/// Instantiates a new <see cref="IPersistentCollection"/> for the sorted map.
-		/// </summary>
-		/// <param name="session">The current <see cref="ISessionImplementor"/> for the map.</param>
-		/// <param name="persister"></param>
-		/// <returns></returns>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public IComparer Comparer
 		{
-			PersistentSortedMap sortedMap = new PersistentSortedMap( session, comparer );
-			return sortedMap;
+			get { return comparer; }
 		}
 
-		//public System.Type ReturnedClass {get;} -> was overridden in H2.0.3
-		// because they have different Interfaces for Sorted/UnSorted - since .NET
-		// doesn't have that I don't need to override it.
-
-		/// <summary>
-		/// Wraps an <see cref="IDictionary"/> in a <see cref="PersistentSortedMap"/>.
-		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
-		/// <param name="collection">The unwrapped <see cref="IDictionary"/>.</param>
-		/// <returns>
-		/// An <see cref="PersistentSortedMap"/> that wraps the non NHibernate <see cref="IDictionary"/>.
-		/// </returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override object Instantiate()
 		{
-			return new PersistentSortedMap( session, ( IDictionary ) collection, comparer );
+			return new SortedList( comparer );
 		}
 	}
 }

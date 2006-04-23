@@ -61,5 +61,9 @@ namespace NHibernate.Type
 			( ( IList ) collection ).Add( element );
 		}
 
+		public override object Instantiate()
+		{
+			return new ArrayList();
+		}
 	}
 }
