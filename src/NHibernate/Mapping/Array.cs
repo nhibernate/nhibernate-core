@@ -9,28 +9,21 @@ namespace NHibernate.Mapping
 	{
 		private System.Type elementClass;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="owner"></param>
 		public Array( PersistentClass owner ) : base( owner )
 		{
 		}
 
-		/// <summary></summary>
 		public System.Type ElementClass
 		{
 			get { return elementClass; }
 			set { elementClass = value; }
 		}
 
-		/// <summary></summary>
-		public override CollectionType CollectionType
+		public override CollectionType DefaultCollectionType
 		{
 			get { return TypeFactory.Array( Role, ReferencedPropertyName, ElementClass ); }
 		}
 
-		/// <summary></summary>
 		public override bool IsArray
 		{
 			get { return true; }

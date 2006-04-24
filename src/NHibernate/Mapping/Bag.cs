@@ -19,14 +19,14 @@ namespace NHibernate.Mapping
 		/// Gets the appropriate <see cref="CollectionType"/> that is 
 		/// specialized for this bag mapping.
 		/// </summary>
-		public override CollectionType CollectionType
+		public override CollectionType DefaultCollectionType
 		{
 			get
 			{
 #if NET_2_0
-				if (this.IsGeneric)
+				if( this.IsGeneric )
 				{
-					return TypeFactory.GenericBag( Role, ReferencedPropertyName, this.GenericArguments[0] );
+					return TypeFactory.GenericBag( Role, ReferencedPropertyName, this.GenericArguments[ 0 ] );
 				}
 				else
 				{
@@ -42,7 +42,7 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <remarks>Should we create an index on the key columns?</remarks>
-		public override void CreatePrimaryKey( )
+		public override void CreatePrimaryKey()
 		{
 		}
 	}

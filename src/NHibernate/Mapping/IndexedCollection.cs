@@ -8,33 +8,25 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public abstract class IndexedCollection : Collection
 	{
-		/// <summary></summary>
 		public const string DefaultIndexColumnName = "idx";
 
 		private SimpleValue index;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="owner"></param>
 		protected IndexedCollection( PersistentClass owner ) : base( owner )
 		{
 		}
 
-		/// <summary></summary>
 		public SimpleValue Index
 		{
 			get { return index; }
 			set { index = value; }
 		}
 
-		/// <summary></summary>
 		public override bool IsIndexed
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public override void CreatePrimaryKey()
 		{
 			if ( !IsOneToMany )
@@ -56,10 +48,6 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
 		public override void Validate( IMapping mapping )
 		{
 			base.Validate( mapping );

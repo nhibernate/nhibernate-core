@@ -9,51 +9,52 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class Set : Collection
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="owner"></param>
 		public Set( PersistentClass owner ) : base( owner )
 		{
 		}
 
-		/// <summary>
-		/// <see cref="Collection.IsSet"/>
-		/// </summary>
 		public override bool IsSet
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// <see cref="Collection.Type"/>
-		/// </summary>
-		public override CollectionType CollectionType
+		public override CollectionType DefaultCollectionType
 		{
 			get
 			{
 #if NET_2_0
 				if( this.IsGeneric )
 				{
-					return IsSorted ?
-						TypeFactory.GenericSortedSet( Role, ReferencedPropertyName, Comparer, this.GenericArguments[ 0 ] ) :
-						TypeFactory.GenericSet( Role, ReferencedPropertyName, this.GenericArguments[ 0 ] );
+					if( IsSorted )
+					{
+						return TypeFactory.GenericSortedSet( Role, ReferencedPropertyName, Comparer, this.GenericArguments[ 0 ] );
+					}
+					else if( HasOrder )
+					{
+						throw new MappingException( "Cannot use order-by with generic set, no appropriate collection implementation is available" );
+					}
+					else
+					{
+						return TypeFactory.GenericSet( Role, ReferencedPropertyName, this.GenericArguments[ 0 ] );
+					}
+				}
+#endif
+				// Non-generic
+				if( IsSorted )
+				{
+					return TypeFactory.SortedSet( Role, ReferencedPropertyName, ( System.Collections.IComparer ) Comparer );
+				}
+				else if( HasOrder )
+				{
+					return TypeFactory.OrderedSet( Role, ReferencedPropertyName );
 				}
 				else
 				{
-					return IsSorted ?
-							TypeFactory.SortedSet( Role, ReferencedPropertyName, ( System.Collections.IComparer ) Comparer ) :
-							TypeFactory.Set( Role, ReferencedPropertyName );
+					return TypeFactory.Set( Role, ReferencedPropertyName );
 				}
-#else
-				return IsSorted ?
-					TypeFactory.SortedSet( Role, ReferencedPropertyName, ( IComparer ) Comparer ) :
-					TypeFactory.Set( Role, ReferencedPropertyName );
-#endif
 			}
 		}
 
-		/// <summary></summary>
 		public override void CreatePrimaryKey()
 		{
 			if ( !IsOneToMany )

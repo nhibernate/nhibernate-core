@@ -15,8 +15,7 @@ namespace NHibernate.Mapping
 		/// Initializes a new instance of the <see cref="PersistentMap"/> class.
 		/// </summary>
 		/// <param name="owner">The <see cref="PersistentClass"/> that contains this map mapping.</param>
-		public Map(PersistentClass owner)
-			: base(owner)
+		public Map( PersistentClass owner ) : base( owner )
 		{
 		}
 
@@ -24,36 +23,46 @@ namespace NHibernate.Mapping
 		/// Gets the appropriate <see cref="CollectionType"/> that is 
 		/// specialized for this list mapping.
 		/// </summary>
-		public override CollectionType CollectionType
+		public override CollectionType DefaultCollectionType
 		{
 			get
 			{
 #if NET_2_0
-				if (this.IsGeneric)
+				if( this.IsGeneric )
 				{
-					return TypeFactory.GenericMap( Role, ReferencedPropertyName, this.GenericArguments[0], this.GenericArguments[1] );
-					// TODO: deal with sorting
+					if( HasOrder )
+					{
+						throw new MappingException( "Cannot use order-by with generic map, no appropriate collection implementation is available" );
+					}
+					else if( IsSorted )
+					{
+						throw new MappingException( "Use collection-type='sorted-list/sorted-dictionary' to choose implementation for generic map" );
+					}
+					else
+					{
+						return TypeFactory.GenericMap( Role, ReferencedPropertyName, this.GenericArguments[ 0 ], this.GenericArguments[ 1 ] );
+					}
+				}
+#endif
+				if( HasOrder )
+				{
+					return TypeFactory.OrderedMap( Role, ReferencedPropertyName );
+				}
+				else if( IsSorted )
+				{
+					return TypeFactory.SortedMap( Role, ReferencedPropertyName, ( IComparer ) Comparer );
 				}
 				else
 				{
-					return IsSorted ? 
-							TypeFactory.SortedMap( Role, ReferencedPropertyName, ( IComparer ) Comparer ) : 
-							TypeFactory.Map( Role, ReferencedPropertyName );
+					return TypeFactory.Map( Role, ReferencedPropertyName );
 				}
-#else
-
-				return IsSorted ?
-					TypeFactory.SortedMap( Role, ReferencedPropertyName, ( IComparer ) Comparer ) :
-					TypeFactory.Map( Role, ReferencedPropertyName );
-#endif
 			}
 		}
 
-		/// <summary></summary>
-		public override void CreateAllKeys( )
+		public override void CreateAllKeys()
 		{
 			base.CreateAllKeys();
-			if ( !IsInverse )
+			if( !IsInverse )
 			{
 				Index.CreateForeignKey();
 			}

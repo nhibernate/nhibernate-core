@@ -92,7 +92,7 @@ namespace NHibernate.Type
 			RegisterType( typeof( DateTime ), NHibernateUtil.DateTime, "datetime" );
 			RegisterType( typeof( Decimal ), NHibernateUtil.Decimal, "big_decimal" );
 			RegisterType( typeof( Double ), NHibernateUtil.Double, "double" );
-			RegisterType( typeof( Guid ), NHibernateUtil.Guid, null );
+			RegisterType( typeof( Guid ), NHibernateUtil.Guid, "guid" );
 			RegisterType( typeof( Int16 ), NHibernateUtil.Int16, "short" );
 			RegisterType( typeof( Int32 ), NHibernateUtil.Int32, "integer" );
 			RegisterType( typeof( Int64 ), NHibernateUtil.Int64, "long" );
@@ -484,12 +484,6 @@ namespace NHibernate.Type
 
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="precision"></param>
-		/// <param name="scale"></param>
-		/// <returns></returns>
 		public static NullableType GetDecimalType( byte precision, byte scale )
 		{
 			string key = GetKeyForPrecisionScaleBased( NHibernateUtil.Decimal.Name, precision, scale );
@@ -755,6 +749,19 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>
+		/// that maintains insertion order of elements.
+		/// </summary>
+		/// <param name="role">The role the collection is in.</param>
+		/// <returns>
+		/// A <see cref="OrderedMapType"/> for the specified role.
+		/// </returns>
+		public static CollectionType OrderedMap( string role, string propertyRef )
+		{
+			return new OrderedMapType( role, propertyRef );
+		}
+
+		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.ISet"/>
 		/// that is sorted by an <see cref="IComparer"/>.
 		/// </summary>
@@ -766,6 +773,11 @@ namespace NHibernate.Type
 		public static CollectionType SortedSet( string role, string propertyRef, IComparer comparer )
 		{
 			return new SortedSetType( role, propertyRef, comparer );
+		}
+
+		public static CollectionType OrderedSet( string role, string propertyRef )
+		{
+			return new OrderedSetType( role, propertyRef );
 		}
 
 #if NET_2_0
