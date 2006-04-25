@@ -66,12 +66,12 @@ namespace NHibernate.Type
 			return ( ICollection ) collection;
 		}
 
-		protected override void Add( ICollection collection, object element )
+		protected override void Add( object collection, object element )
 		{
 			( ( Iesi.Collections.ISet ) collection ).Add( element );
 		}
 
-		protected override void Clear( ICollection collection )
+		protected override void Clear( object collection )
 		{
 			( ( Iesi.Collections.ISet ) collection ).Clear();
 		}

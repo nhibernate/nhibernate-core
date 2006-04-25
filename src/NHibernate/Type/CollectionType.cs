@@ -262,7 +262,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		public virtual object InstantiateResult( object original )
+		{
+			return Instantiate();
+		}
+
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
 		{
 			if ( original == null )
 			{
@@ -274,17 +279,37 @@ namespace NHibernate.Type
 				return target;
 			}
 
-			IList originalCopy = new ArrayList( ( ICollection ) original );
-			ICollectionPersister cp = session.Factory.GetCollectionPersister( role );
+			object result = target == null || target == original
+				? InstantiateResult( original )
+				: target;
 
-			ICollection result = target == null
-				? ( ICollection ) Instantiate( session, cp )
-				: ( ICollection ) target;
+			//for arrays, replaceElements() may return a different reference, since
+			//the array length might not match
+			result = ReplaceElements( original, result, owner, copyCache, session );
+
+			if( original == target )
+			{
+				//get the elements back into the target
+				//TODO: this is a little inefficient, don't need to do a whole
+				//      deep replaceElements() call
+				ReplaceElements( result, target, owner, copyCache, session );
+				result = target;
+			}
+
+			return result;
+		}
+
+		public virtual object ReplaceElements( object original, object target, object owner, IDictionary copyCache,
+			ISessionImplementor session )
+		{
+			object result = target;
 			Clear( result );
 
-			foreach ( object obj in originalCopy )
+			// copy elements into newly empty target collection
+			ICollectionPersister cp = session.Factory.GetCollectionPersister( role );
+			foreach( object obj in ( IEnumerable ) original )
 			{
-				Add( result, CopyElement( cp, obj, session, owner, copiedAlready ) );
+				Add( result, CopyElement( cp, obj, session, owner, copyCache ) );
 			}
 
 			return result;
@@ -302,14 +327,14 @@ namespace NHibernate.Type
 
 		// Methods added in NH
 
-		protected virtual void Clear( ICollection collection )
+		protected virtual void Clear( object collection )
 		{
 			throw new NotImplementedException(
 				"CollectionType.Clear was not overriden for type "
 				+ GetType().FullName );
 		}
 
-		protected virtual void Add( ICollection collection, object element )
+		protected virtual void Add( object collection, object element )
 		{
 			throw new NotImplementedException(
 				"CollectionType.Add was not overriden for type "

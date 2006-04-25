@@ -76,10 +76,11 @@
 		<xs:attribute name="persister" type="xs:string" use="optional" />
 		<xs:attribute name="batch-size" type="xs:positiveInteger" use="optional" default="1" />
 		<xs:attribute name="check" type="xs:string" use="optional" />
-		<xs:attribute name="generic" type="xs:boolean" use="optional" default="false">
+		<xs:attribute name="collection-type" type="xs:string" use="optional" />
+		<xs:attribute name="generic" type="xs:boolean" use="optional">
 			<xs:annotation>
 				<xs:documentation>The concrete collection should use a generic version or an object-based version.</xs:documentation>
-			</xs:annotation>      
+			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:complexType name="cacheType">

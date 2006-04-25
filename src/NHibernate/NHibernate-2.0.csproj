@@ -582,6 +582,7 @@
     <Compile Include="Type\AnyType.cs" />
     <Compile Include="Type\BaseCharType.cs" />
     <Compile Include="Type\CollectionType.cs" />
+    <Compile Include="Type\CustomCollectionType.cs" />
     <Compile Include="Type\OrderedSetType.cs" />
     <Compile Include="Type\OrderedMapType.cs" />
     <Compile Include="Type\GenericSortedDictionaryType.cs" />
@@ -599,6 +600,7 @@
     <Compile Include="Type\GenericMapType.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UserTypes\IUserCollectionType.cs" />
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Util\CollectionHelper.cs" />
     <Compile Include="Util\TypeNameParser.cs" />

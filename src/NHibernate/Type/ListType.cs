@@ -51,12 +51,12 @@ namespace NHibernate.Type
 			return new PersistentList( session, ( IList ) collection );
 		}
 
-		protected override void Add( ICollection collection, object element )
+		protected override void Add( object collection, object element )
 		{
 			( ( IList ) collection ).Add( element );
 		}
 
-		protected override void Clear( ICollection collection )
+		protected override void Clear( object collection )
 		{
 			( ( IList ) collection ).Clear();
 		}

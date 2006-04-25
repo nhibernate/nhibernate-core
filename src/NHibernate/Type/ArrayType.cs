@@ -111,38 +111,38 @@ namespace NHibernate.Type
 		// Not ported - ToString( object value, ISessionFactoryImplementor factory )
 		// - PesistentCollectionType implementation is able to handle arrays too in .NET
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="original"></param>
-		/// <param name="target"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <param name="copiedAlready"></param>
-		/// <returns></returns>
-		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		public override object ReplaceElements( object original, object target, object owner, IDictionary copyCache, ISessionImplementor session )
 		{
-			if ( original == null ) 
+			return base.ReplaceElements( original, target, owner, copyCache, session );
+		}
+
+		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
+		{
+			System.Array originalArray = ( System.Array ) original;
+			System.Array targetArray = ( System.Array ) target;
+
+			int length = originalArray.Length;
+			if( length != targetArray.Length )
 			{
-				return null;
+				//note: this affects the return value!
+				targetArray = ( System.Array ) InstantiateResult( original );
 			}
-			if ( original == target )
-			{
-				return target;
-			}
-			
-			System.Array orig = ( System.Array ) original;
-			int length = orig.Length;
-			System.Array result = System.Array.CreateInstance( elementClass, length );
 
 			IType elemType = GetElementType( session.Factory );
-			for ( int i = 0; i < length; i++ )
+			
+			for( int i = 0; i < length; i++ )
 			{
-				result.SetValue(
-					elemType.Copy( orig.GetValue( i ), null, session, owner, copiedAlready ),
+				targetArray.SetValue(
+					elemType.Copy( originalArray.GetValue( i ), null, session, owner, copyCache ),
 					i );
 			}
-			return result;
+
+			return targetArray;
+		}
+
+		public override object InstantiateResult( object original )
+		{
+			return System.Array.CreateInstance( elementClass, ( ( System.Array ) original ).Length );
 		}
 
 		public override object Instantiate()

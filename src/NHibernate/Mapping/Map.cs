@@ -19,6 +19,34 @@ namespace NHibernate.Mapping
 		{
 		}
 
+		public override CollectionType CollectionType
+		{
+			get
+			{
+#if NET_2_0
+				if( IsGeneric && IsSorted )
+				{
+					if( TypeName == "sorted-list" )
+					{
+						return TypeFactory.GenericSortedList( Role, ReferencedPropertyName, Comparer,
+							GenericArguments[ 0 ], GenericArguments[ 1 ] );
+					}
+					else if( TypeName == "sorted-dictionary" )
+					{
+						return TypeFactory.GenericSortedDictionary( Role, ReferencedPropertyName, Comparer,
+							GenericArguments[ 0 ], GenericArguments[ 1 ] );
+					}
+					else
+					{
+						throw new MappingException(
+							"Use collection-type='sorted-list/sorted-dictionary' to choose implementation for generic map" );
+					}
+				}
+#endif
+				return base.CollectionType;
+			}
+		}
+
 		/// <summary>
 		/// Gets the appropriate <see cref="CollectionType"/> that is 
 		/// specialized for this list mapping.
@@ -36,11 +64,11 @@ namespace NHibernate.Mapping
 					}
 					else if( IsSorted )
 					{
-						throw new MappingException( "Use collection-type='sorted-list/sorted-dictionary' to choose implementation for generic map" );
+						throw new AssertionFailure( "Error in NH: should not get here (Mapping.Map.DefaultCollectionType)" );
 					}
 					else
 					{
-						return TypeFactory.GenericMap( Role, ReferencedPropertyName, this.GenericArguments[ 0 ], this.GenericArguments[ 1 ] );
+						return TypeFactory.GenericMap( Role, ReferencedPropertyName, GenericArguments[ 0 ], GenericArguments[ 1 ] );
 					}
 				}
 #endif

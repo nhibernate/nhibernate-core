@@ -1073,5 +1073,29 @@ namespace NHibernate.Type
 			}
 			return copied;
 		}
+
+		public static CollectionType CustomCollection( string typeName, string role, string referencedPropertyName )
+		{
+			System.Type typeClass;
+			try
+			{
+				typeClass = ReflectHelper.ClassForName( typeName );
+			}
+			catch( TypeLoadException tle )
+			{
+				throw new MappingException( "user collection type class not found: " + typeName, tle );
+			}
+
+			if( typeof( CollectionType ).IsAssignableFrom( typeClass ) )
+			{
+				// If a type derives from CollectionType, use it unwrapped (changed compared to H3).
+				return ( CollectionType ) Activator.CreateInstance( typeClass );
+			}
+			else
+			{
+				return null;
+				//return new CustomCollectionType( typeClass, role, propertyRef, embedded );
+			}
+		}
 	}
 }

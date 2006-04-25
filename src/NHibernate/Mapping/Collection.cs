@@ -41,6 +41,7 @@ namespace NHibernate.Mapping
 		private FetchMode fetchMode;
 		private System.Type collectionPersisterClass;
 		private string referencedPropertyName;
+		private string typeName;
 
 #if NET_2_0
 		private bool isGeneric;
@@ -153,9 +154,19 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
-		public CollectionType CollectionType
+		public virtual CollectionType CollectionType
 		{
-			get { return DefaultCollectionType; }
+			get
+			{
+				if( typeName == null )
+				{
+					return DefaultCollectionType;
+				}
+				else
+				{
+					return TypeFactory.CustomCollection( typeName, Role, ReferencedPropertyName );
+				}
+			}
 		}
 
 		public abstract CollectionType DefaultCollectionType { get; }
@@ -324,6 +335,12 @@ namespace NHibernate.Mapping
 		public bool[] ColumnUpdateability
 		{
 			get { return ArrayHelper.EmptyBoolArray; }
+		}
+
+		public string TypeName
+		{
+			get { return typeName; }
+			set { typeName = value; }
 		}
 	}
 }

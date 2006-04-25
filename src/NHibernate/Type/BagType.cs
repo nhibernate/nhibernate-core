@@ -29,7 +29,7 @@ namespace NHibernate.Type
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister"></param>
 		/// <returns>A new <see cref="NHibernate.Collection.PersistentBag"/>.</returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
 			return new PersistentBag( session );
 		}
@@ -50,15 +50,15 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
 		{
-			return new PersistentBag( session, (ICollection)collection );
+			return new PersistentBag( session, ( ICollection ) collection );
 		}
 
-		protected override void Add(ICollection collection, object element)
+		protected override void Add( object collection, object element )
 		{
 			( ( IList ) collection ).Add( element );
 		}
 
-		protected override void Clear(ICollection collection)
+		protected override void Clear( object collection )
 		{
 			( ( IList ) collection ).Clear();
 		}

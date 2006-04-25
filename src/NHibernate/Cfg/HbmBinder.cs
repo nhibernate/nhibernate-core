@@ -646,6 +646,12 @@ namespace NHibernate.Cfg
 					"could not instantiate collection persister class: {0}" );
 			}
 
+			XmlAttribute typeNode = node.Attributes[ "collection-type" ];
+			if( typeNode != null )
+			{
+				model.TypeName = typeNode.Value;
+			}
+
 			// FETCH STRATEGY
 			InitOuterJoinFetchSetting( node, model );
 

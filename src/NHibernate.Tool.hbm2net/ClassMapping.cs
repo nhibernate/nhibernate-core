@@ -7,7 +7,7 @@ using log4net;
 using NHibernate.Type;
 using NHibernate.Util;
 using CompositeUserType = NHibernate.ICompositeUserType;
-using UserType = NHibernate.IUserType;
+using IUserType = NHibernate.IUserType;
 using Type = NHibernate.Type.TypeType;
 using Element = System.Xml.XmlElement;
 using MultiMap = System.Collections.Hashtable;
@@ -614,9 +614,9 @@ namespace NHibernate.Tool.hbm2net
 
 				clazz = ReflectHelper.ClassForName(type);
 				
-				if (typeof(UserType).IsAssignableFrom(clazz))
+				if (typeof(IUserType).IsAssignableFrom(clazz))
 				{
-					UserType ut = (UserType) SupportClass.CreateNewInstance(clazz);
+					IUserType ut = (IUserType) SupportClass.CreateNewInstance(clazz);
 					log.Debug("Resolved usertype: " + type + " to " + ut.ReturnedType.Name);
 					string t = clazzToName(ut.ReturnedType);
 					return t;

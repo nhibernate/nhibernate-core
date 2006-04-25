@@ -51,12 +51,12 @@ namespace NHibernate.Type
 			return new PersistentIdentifierBag( session, ( ICollection ) collection );
 		}
 
-		protected override void Clear( ICollection collection )
+		protected override void Clear( object collection )
 		{
 			( ( IList ) collection ).Clear();
 		}
 
-		protected override void Add( ICollection collection, object element )
+		protected override void Add( object collection, object element )
 		{
 			( ( IList ) collection ).Add( element );
 		}

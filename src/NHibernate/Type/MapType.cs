@@ -63,13 +63,13 @@ namespace NHibernate.Type
 			return new PersistentMap( session, ( IDictionary ) collection );
 		}
 
-		protected override void Add( ICollection collection, object element )
+		protected override void Add( object collection, object element )
 		{
 			DictionaryEntry de = ( DictionaryEntry ) element;
 			( ( IDictionary ) collection ).Add( de.Key, de.Value );
 		}
 
-		protected override void Clear( ICollection collection )
+		protected override void Clear( object collection )
 		{
 			( ( IDictionary ) collection ).Clear();
 		}
