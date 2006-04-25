@@ -243,9 +243,9 @@ namespace Iesi.Collections
 			if(a == null && b == null)
 				return null;
 			else if(a == null)
-				return (Set)b.Clone();
+				return (ISet)b.Clone();
 			else if(b == null)
-				return (Set)a.Clone();
+				return (ISet)a.Clone();
 			else
 				return a.ExclusiveOr(b);
 		}
