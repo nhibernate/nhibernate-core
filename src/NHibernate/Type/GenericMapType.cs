@@ -10,6 +10,7 @@ using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
+using System.Collections;
 
 namespace NHibernate.Type
 {
@@ -59,12 +60,18 @@ namespace NHibernate.Type
 			return new PersistentGenericMap<TKey, TValue>( session, ( IDictionary<TKey, TValue> ) collection );
 		}
 
-		//TODO: Add() & Clear() methods - need to see if these should be refactored back into
-		// their own version of Copy or a DoCopy.  The Copy() method used to be spread out amongst
-		// the various collections, but since they all had common code Add() and Clear() were made
-		// virtual since that was where most of the logic was.  A different/better way might be to
-		// have a Copy on the base collection that handles the standard checks and then a DoCopy
-		// that performs the actual copy.
+		protected override void Add( object collection, object element )
+		{
+			( ( IDictionary<TKey, TValue> ) collection ).Add( ( KeyValuePair<TKey, TValue> ) element );
+		}
+
+		protected override object CopyElement( ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		{
+			KeyValuePair<TKey, TValue> pair = ( KeyValuePair<TKey, TValue> ) element;
+			return new KeyValuePair<TKey, TValue>(
+				( TKey ) persister.IndexType.Copy( pair.Key, null, session, owner, copiedAlready ),
+				( TValue ) persister.ElementType.Copy( pair.Value, null, session, owner, copiedAlready ) );
+		}
 
 		public override object Instantiate()
 		{

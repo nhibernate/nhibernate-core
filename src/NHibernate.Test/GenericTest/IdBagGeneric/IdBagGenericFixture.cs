@@ -60,6 +60,33 @@ namespace NHibernate.Test.GenericTest.IdBagGeneric
 			s.Flush();
 			s.Close();
 		}
+
+		[Test]
+		public void Copy()
+		{
+			A a = new A();
+			a.Name = "original A";
+			a.Items = new List<string>();
+
+			a.Items.Add( "b1" );
+			a.Items.Add( "b2" );
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.SaveOrUpdateCopy( a );
+				t.Commit();
+			}
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				A loadedA = s.Get<A>( a.Id );
+				Assert.IsNotNull( loadedA );
+				s.Delete( loadedA );
+				t.Commit();
+			}
+		}
 	}
 }
 #endif

@@ -74,7 +74,7 @@ namespace NHibernate.Type
 			( ( IDictionary ) collection ).Clear();
 		}
 
-		protected override object CopyElement(ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready)
+		protected override object CopyElement( ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready )
 		{
 			DictionaryEntry de = ( DictionaryEntry ) element;
 			return new DictionaryEntry(

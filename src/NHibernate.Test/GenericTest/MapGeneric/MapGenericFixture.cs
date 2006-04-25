@@ -65,6 +65,38 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			s.Flush();
 			s.Close();
 		}
+
+		[Test]
+		public void Copy()
+		{
+			A a = new A();
+			a.Name = "original A";
+			a.Items = new Dictionary<string, B>();
+
+			B b1 = new B();
+			b1.Name = "b1";
+			a.Items[ "b1" ] = b1;
+
+			B b2 = new B();
+			b2.Name = "b2";
+			a.Items[ "b2" ] = b2;
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.SaveOrUpdateCopy( a );
+				t.Commit();
+			}
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				A loadedA = s.Get<A>( a.Id );
+				Assert.IsNotNull( loadedA );
+				s.Delete( loadedA );
+				t.Commit();
+			}
+		}
 	}
 }
 #endif
