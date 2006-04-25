@@ -699,9 +699,9 @@ namespace NHibernate.Cfg
 			else
 			{
 				model.IsSorted = true;
-				string comparatorClassName = FullClassName( sortedAtt.Value, mappings );
 				if( !sortedAtt.Value.Equals( "natural" ) )
 				{
+					string comparatorClassName = FullClassName( sortedAtt.Value, mappings );
 					try
 					{
 						model.Comparer = Activator.CreateInstance( ReflectHelper.ClassForName( comparatorClassName ) );

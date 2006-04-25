@@ -10,6 +10,18 @@
 			<index column="idx" type="String" />
 			<one-to-many class="B" />
 		</map>
+
+		<map name="SortedList" generic="true" collection-type="sorted-list" sort="natural">
+			<key column="a_id" />
+			<index column="idx" type="string" />
+			<element column="elt" type="int" />
+		</map>
+
+		<map name="SortedDictionary" generic="true" collection-type="sorted-dictionary" sort="natural">
+			<key column="a_id" />
+			<index column="idx" type="string" />
+			<element column="elt" type="int" />
+		</map>
 	</class>
 	<class name="B" table="b" lazy="false">
 		<id name="Id" column="id" unsaved-value="null">

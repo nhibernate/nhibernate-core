@@ -12,6 +12,9 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 		private string _name;
 		private IDictionary<string, B> _items;
 
+		private IDictionary<string, int> _sortedList;
+		private IDictionary<string, int> _sortedDictionary;
+
 		public A() { }
 
 		public int? Id
@@ -32,6 +35,17 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			set { _items = value; }
 		}
 
+		public IDictionary<string, int> SortedList
+		{
+			get { return _sortedList; }
+			set { _sortedList = value; }
+		}
+
+		public IDictionary<string, int> SortedDictionary
+		{
+			get { return _sortedDictionary; }
+			set { _sortedDictionary = value; }
+		}
 	}
 }
 #endif

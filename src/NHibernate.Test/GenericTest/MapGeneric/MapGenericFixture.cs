@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
+using NHibernate.Collection.Generic;
 
 namespace NHibernate.Test.GenericTest.MapGeneric
 {
@@ -23,9 +24,9 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using( ISession s = sessions.OpenSession() )
 			{
-				s.Delete("from A");
+				s.Delete( "from A" );
 				s.Flush();
 			}
 		}
@@ -35,7 +36,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 		{
 			A a = new A();
 			a.Name = "first generic type";
-			a.Items = new Dictionary<string,B>();
+			a.Items = new Dictionary<string, B>();
 			B firstB = new B();
 			firstB.Name = "first b";
 			B secondB = new B();
@@ -45,18 +46,18 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			a.Items.Add( "second", secondB );
 
 			ISession s = OpenSession();
-			s.SaveOrUpdate(a);
+			s.SaveOrUpdate( a );
 			// this flush should test how NH wraps a generic collection with its
 			// own persistent collection
 			s.Flush();
 			s.Close();
-			Assert.IsNotNull(a.Id);
+			Assert.IsNotNull( a.Id );
 			// should have cascaded down to B
-			Assert.IsNotNull(firstB.Id);
-			Assert.IsNotNull(secondB.Id);
+			Assert.IsNotNull( firstB.Id );
+			Assert.IsNotNull( secondB.Id );
 
 			s = OpenSession();
-			a = s.Load<A>(a.Id );
+			a = s.Load<A>( a.Id );
 			B thirdB = new B();
 			thirdB.Name = "third B";
 			// ensuring the correct generic type was constructed
@@ -94,6 +95,43 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 				A loadedA = s.Get<A>( a.Id );
 				Assert.IsNotNull( loadedA );
 				s.Delete( loadedA );
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void SortedCollections()
+		{
+			A a = new A();
+			a.SortedDictionary = new SortedDictionary<string, int>();
+			a.SortedList = new SortedList<string, int>();
+
+			a.SortedDictionary[ "10" ] = 5;
+			a.SortedList[ "20" ] = 10;
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				s.Save( a );
+				t.Commit();
+			}
+
+			using( ISession s = OpenSession() )
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				a = s.Load<A>( a.Id );
+				PersistentGenericMap<string, int> sd = a.SortedDictionary as PersistentGenericMap<string, int>;
+				Assert.IsNotNull( sd );
+				// This is a hack to check that the internal collection is a SortedDictionary<,>.
+				// The hack works because PersistentGenericMap.Entries() returns the internal collection
+				// casted to IEnumerable
+				Assert.IsTrue( sd.Entries() is SortedDictionary<string, int> );
+
+				PersistentGenericMap<string, int> sl = a.SortedList as PersistentGenericMap<string, int>;
+				Assert.IsNotNull( sl );
+				// This is a hack, see above
+				Assert.IsTrue( sl.Entries() is SortedList<string, int> );
+
 				t.Commit();
 			}
 		}
