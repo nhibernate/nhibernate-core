@@ -11,7 +11,6 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 	[TestFixture]
 	public class MapGenericFixture : TestCase
 	{
-
 		protected override System.Collections.IList Mappings
 		{
 			get { return new string[] { "GenericTest.MapGeneric.MapGenericFixture.hbm.xml" }; }

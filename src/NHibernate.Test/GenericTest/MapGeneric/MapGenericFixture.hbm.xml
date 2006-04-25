@@ -5,19 +5,19 @@
 			<generator class="native" />
 		</id>
 		<property name="Name" column="aname" />
-		<map name="Items" cascade="all-delete-orphan" generic="true">
+		<map name="Items" cascade="all-delete-orphan">
 			<key column="a_id" />
 			<index column="idx" type="String" />
 			<one-to-many class="B" />
 		</map>
 
-		<map name="SortedList" generic="true" collection-type="sorted-list" sort="natural">
+		<map name="SortedList" collection-type="sorted-list" sort="natural">
 			<key column="a_id" />
 			<index column="idx" type="string" />
 			<element column="elt" type="int" />
 		</map>
 
-		<map name="SortedDictionary" generic="true" collection-type="sorted-dictionary" sort="natural">
+		<map name="SortedDictionary" collection-type="sorted-dictionary" sort="natural">
 			<key column="a_id" />
 			<index column="idx" type="string" />
 			<element column="elt" type="int" />
