@@ -601,9 +601,10 @@ namespace NHibernate.Cfg
 		}
 
 		/// <remarks>
-		/// Called for all collections
+		/// Called for all collections. <paramref name="containingType" /> parameter
+		/// was added in NH to allow for reflection related to generic types.
 		/// </remarks>
-		public static void BindCollection( XmlNode node, Mapping.Collection model, string className, string path, Mappings mappings )
+		public static void BindCollection( XmlNode node, Mapping.Collection model, string className, string path, System.Type containingType, Mappings mappings )
 		{
 			// ROLENAME
 			model.Role = StringHelper.Qualify( className, path );
@@ -721,27 +722,30 @@ namespace NHibernate.Cfg
 			}
 
 #if NET_2_0
+			bool? isGeneric = null;
+
 			XmlAttribute genericAtt = node.Attributes[ "generic" ];
+			if( genericAtt != null )
+			{
+				isGeneric = bool.Parse( genericAtt.Value );
+			}
 
 			System.Type collectionType = null;
-			
-			// Determine whether the collection is generic
-			if( genericAtt == null )
+
+			if( !isGeneric.HasValue )
 			{
-				collectionType = ReflectHelper.ReflectedPropertyClass( model.OwnerClass, path, PropertyAccess( node, mappings ) );
-				model.IsGeneric = collectionType.IsGenericType;
+				collectionType = GetPropertyType( node, mappings, containingType, GetPropertyName( node ) );
+				isGeneric = collectionType.IsGenericType;
 			}
-			else
-			{
-				model.IsGeneric = Boolean.Parse( genericAtt.Value );
-			}
+
+			model.IsGeneric = isGeneric ?? false;
 
 			if( model.IsGeneric )
 			{
 				// Determine the generic arguments using reflection
 				if( collectionType == null )
 				{
-					collectionType = ReflectHelper.ReflectedPropertyClass( model.OwnerClass, path, PropertyAccess( node, mappings ) );
+					collectionType = GetPropertyType( node, mappings, containingType, GetPropertyName( node ) );
 				}
 				System.Type[] genericArguments = collectionType.GetGenericArguments();
 				model.GenericArguments = genericArguments;
@@ -942,9 +946,9 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// Called for arrays and primitive arrays
 		/// </remarks>
-		public static void BindArray( XmlNode node, Array model, string prefix, string path, Mappings mappings )
+		public static void BindArray( XmlNode node, Array model, string prefix, string path, System.Type containingType, Mappings mappings )
 		{
-			BindCollection( node, model, prefix, path, mappings );
+			BindCollection( node, model, prefix, path, containingType, mappings );
 
 			XmlAttribute att = node.Attributes[ "element-class" ];
 
@@ -1030,7 +1034,7 @@ namespace NHibernate.Cfg
 				IValue value = null;
 				if( collectType != null )
 				{
-					Mapping.Collection collection = collectType.Create( subnode, className, subpath, model.Owner, mappings );
+					Mapping.Collection collection = collectType.Create( subnode, className, subpath, model.Owner, model.ComponentClass, mappings );
 					mappings.AddCollection( collection );
 					value = collection;
 				}
@@ -1312,7 +1316,7 @@ namespace NHibernate.Cfg
 				IValue value = null;
 				if( collectType != null )
 				{
-					Mapping.Collection collection = collectType.Create( subnode, model.Name, propertyName, model, mappings );
+					Mapping.Collection collection = collectType.Create( subnode, model.Name, propertyName, model, model.MappedClass, mappings );
 					mappings.AddCollection( collection );
 					value = collection;
 				}
@@ -1801,7 +1805,7 @@ namespace NHibernate.Cfg
 		private abstract class CollectionType
 		{
 			private string xmlTag;
-			public abstract Mapping.Collection Create( XmlNode node, string className, string path, PersistentClass owner, Mappings mappings );
+			public abstract Mapping.Collection Create( XmlNode node, string className, string path, PersistentClass owner, System.Type containingType, Mappings mappings );
 
 			public CollectionType( string xmlTag )
 			{
@@ -1822,10 +1826,10 @@ namespace NHibernate.Cfg
 				{
 				}
 
-				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
+				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, System.Type containingType, Mappings mappings )
 				{
 					Map map = new Map( owner );
-					HbmBinder.BindCollection( node, map, prefix, path, mappings );
+					HbmBinder.BindCollection( node, map, prefix, path, containingType, mappings );
 					return map;
 				}
 			}
@@ -1839,10 +1843,10 @@ namespace NHibernate.Cfg
 				{
 				}
 
-				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
+				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, System.Type containingType, Mappings mappings )
 				{
 					Set setCollection = new Set( owner );
-					HbmBinder.BindCollection( node, setCollection, prefix, path, mappings );
+					HbmBinder.BindCollection( node, setCollection, prefix, path, containingType, mappings );
 					return setCollection;
 				}
 			}
@@ -1856,10 +1860,10 @@ namespace NHibernate.Cfg
 				{
 				}
 
-				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
+				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, System.Type containingType, Mappings mappings )
 				{
 					List list = new List( owner );
-					HbmBinder.BindCollection( node, list, prefix, path, mappings );
+					HbmBinder.BindCollection( node, list, prefix, path, containingType, mappings );
 					return list;
 				}
 			}
@@ -1873,10 +1877,10 @@ namespace NHibernate.Cfg
 				{
 				}
 
-				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
+				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, System.Type containingType, Mappings mappings )
 				{
 					Bag bag = new Bag( owner );
-					HbmBinder.BindCollection( node, bag, prefix, path, mappings );
+					HbmBinder.BindCollection( node, bag, prefix, path, containingType, mappings );
 					return bag;
 				}
 
@@ -1891,10 +1895,10 @@ namespace NHibernate.Cfg
 				{
 				}
 
-				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
+				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, System.Type containingType, Mappings mappings )
 				{
 					IdentifierBag bag = new IdentifierBag( owner );
-					HbmBinder.BindCollection( node, bag, prefix, path, mappings );
+					HbmBinder.BindCollection( node, bag, prefix, path, containingType, mappings );
 					return bag;
 				}
 
@@ -1909,10 +1913,10 @@ namespace NHibernate.Cfg
 				{
 				}
 
-				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
+				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, System.Type containingType, Mappings mappings )
 				{
 					Array array = new Array( owner );
-					HbmBinder.BindArray( node, array, prefix, path, mappings );
+					HbmBinder.BindArray( node, array, prefix, path, containingType, mappings );
 					return array;
 				}
 			}
@@ -1926,10 +1930,10 @@ namespace NHibernate.Cfg
 				{
 				}
 
-				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, Mappings mappings )
+				public override Mapping.Collection Create( XmlNode node, string prefix, string path, PersistentClass owner, System.Type containingType, Mappings mappings )
 				{
 					PrimitiveArray array = new PrimitiveArray( owner );
-					HbmBinder.BindArray( node, array, prefix, path, mappings );
+					HbmBinder.BindArray( node, array, prefix, path, containingType, mappings );
 					return array;
 				}
 			}
