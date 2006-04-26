@@ -120,7 +120,7 @@ namespace Eg
             <para>
                 <literal>Cat</literal> has an implicit default (no-argument) constructor. All 
                 persistent classes must have a default constructor (which may be non-public) so 
-                NHibernate can instantiate them using <literal>ConstructorInfo.Invoke(null)</literal>.
+                NHibernate can instantiate them using <literal>Activator.CreateInstance()</literal>.
             </para>
         </sect2>
 
@@ -170,14 +170,14 @@ namespace Eg
             <title>Prefer non-sealed classes and virtual methods (optional)</title>
             <para>
                 A central feature of NHibernate, <emphasis>proxies</emphasis>, depends upon the
-                persistent class being non-sealed and all its methods, properties and
+                persistent class being non-sealed and all its public methods, properties and
                 events declared as virtual. Another possibility is for the class to implement
                 an interface that declares all public members.
             </para>
             <para>
                 You can persist <literal>sealed</literal> classes that do not implement an interface
                 and don't have virtual members with NHibernate, but you won't be able to use proxies
-                - which will limit your options for performance tuning somewhat.
+                - which will limit your options for performance tuning.
             </para>
         </sect2>
         

@@ -148,8 +148,7 @@
                  <literal>auto-import="false"</literal>. NHibernate will throw an exception if you attempt
                  to assign two classes to the same "imported" name.
              </para>
- 
- </sect2>
+        </sect2>
 
         <sect2 id="mapping-declaration-class">
             <title>class</title>
@@ -398,9 +397,9 @@
             
             <programlistingco>
                 <areaspec>
-                    <area id="id1" coords="2 50"/>
+                    <area id="id1" coords="2 50" />
                     <area id="id2" coords="3 50" />
-                    <area id="id3" coords="4 50"/>
+                    <area id="id3" coords="4 50" />
                     <area id="id4" coords="5 50" />
                     <area id="id5" coords="6 50" />
                 </areaspec>
@@ -926,7 +925,7 @@
             <para>
                 Version numbers may be of type <literal>Int64</literal>, <literal>Int32</literal>,
                 <literal>Int16</literal>, <literal>Ticks</literal>, <literal>Timestamp</literal>, 
-                or <literal>TimeSpan</literal>.
+                or <literal>TimeSpan</literal> (or their nullable counterparts in .NET 2.0).
             </para>
 
         </sect2>
@@ -1105,20 +1104,27 @@
             </para>
 
             <para>
+                NHibernate supports .NET 2.0 <literal>Nullable</literal> types. These types are
+                mostly treated the same as plain non-<literal>Nullable</literal> types internally.
+                For example, a property of type <literal>Nullable&lt;Int32&gt;</literal> can be mapped
+                using <literal>type="Int32"</literal> or <literal>type="System.Int32"</literal>.
+            </para>
+
+            <para>
                 If you do not specify a type, NHibernate will use reflection upon the named
                 property to take a guess at the correct NHibernate type. NHibernate will try to
                 interpret the name of the return class of the property getter using rules 2, 3,
                 4 in that order. However, this is not always enough.
                 In certain cases you will still need the <literal>type</literal>
-                attribute. (For example, to distinguish between <literal>NHibernate.DateTime</literal> and
-                <literal>NHibernate.Timestamp</literal>, or to specify a custom type.)
+                attribute. (For example, to distinguish between <literal>NHibernateUtil.DateTime</literal> and
+                <literal>NHibernateUtil.Timestamp</literal>, or to specify a custom type.)
             </para>
             
             <para>
                 The <literal>access</literal> attribute lets you control how NHibernate will access
                 the value of the property at runtime.  The value of the <literal>access</literal> attribute should
                 be text formatted as <literal>access-strategy.naming-strategy</literal>.  The 
-                <literal>.naming-stragey</literal> is not always required.
+                <literal>.naming-strategy</literal> is not always required.
                 <table>
                     <title>Access Strategies</title>
                     <tgroup cols="2">

@@ -5,40 +5,49 @@
         <title>Persistent Collections</title>
 
         <para>
-            This section does not contain much example C# code. We assume you already know
-            how to use .NET collections framework. If so, there's not really anything more
-            to know - with a single caveat, you may use .NET collections the same way you
-            always have.
+            NHibernate requires that persistent collection-valued fields be declared
+            as an interface type, for example:
         </para>
+        
+        <programlisting><![CDATA[public class Product
+{
+    private string serialNumber;
+    private ISet parts = new HashedSet();
+    
+    public ISet Parts
+    {
+        get { return parts; }
+        set { parts = value; }
+    }
 
+    public string SerialNumber
+    {
+        get { return serialNumber; }
+        set { serialNumber = value; }
+    }
+}]]></programlisting>
+        
         <para>
-            NHibernate can persist instances of
-            <literal>System.Collections.IDictionary</literal>,
-            <literal>Iesi.Collections.ISet</literal>,
+            The actual interface might be <literal>Iesi.Collections.ISet</literal>,
+            <literal>System.Collections.ICollection</literal>,
             <literal>System.Collections.IList</literal>,
-            and any array of persistent entities or values. Properties of type
-            <literal>System.Collections.ICollection</literal> or
-            <literal>System.Collections.IList</literal>
-            may also be persisted with "bag" semantics.
+            <literal>System.Collections.IDictionary</literal>,
+            <literal>System.Collections.Generic.ICollection&lt;T&gt;</literal>,
+            <literal>System.Collections.Generic.IList&lt;T&gt;</literal>,
+            <literal>System.Collections.Generic.IDictionary&lt;K, V&gt;</literal>,
+            <literal>Iesi.Collections.Generic.ISet&lt;T&gt;</literal>
+            or ... anything you like! (Where "anything you like" means you will
+            have to write an implementation of <literal>NHibernate.UserType.IUserCollectionType</literal>.)
         </para>
-
+        
         <para>
-            Now the caveat: persistent collections do not retain any extra semantics added by the class
-            implementing the collection interface (eg. iteration order of a <literal>ListDictionary</literal>).
-            The persistent collections actually behave like
-            <literal>Hashtable</literal>,
-            <literal>HashedSet</literal> and
-            <literal>ArrayList</literal>
-            respectively (with the exception of <literal>SortedList</literal> and <literal>SortedSet</literal>
-            which do retain the sort order).
-            Furthermore, the type of a property holding a collection must be
-            the interface type (ie. <literal>IDictionary</literal>, <literal>ISet</literal> or
-            <literal>IList</literal>; never <literal>Hashtable</literal>, <literal>SortedSet</literal> or
-            <literal>ArrayList</literal>). This restriction exists because, when you're not looking,
-            NHibernate sneakily replaces your instances of <literal>IDictionary</literal>, <literal>ISet</literal>
-            and <literal>IList</literal> with instances of its own persistent implementations of
-            <literal>IDictionary</literal>, <literal>ISet</literal> or <literal>IList</literal>. (So also be careful
-            when using <literal>==</literal> on your collections.)
+            Notice how we initialized the instance variable with an instance of
+            <literal>HashedSet</literal>. This is the best way to initialize collection
+            valued properties of newly instantiated (non-persistent) instances. When
+            you make the instance persistent - by calling <literal>Save()</literal>,
+            for example - NHibernate will actually replace the <literal>HashedSet</literal>
+            with an instance of NHibernate's own implementation of <literal>ISet</literal>.
+            Watch out for errors like this:
         </para>
 
         <programlisting><![CDATA[Cat cat = new DomesticCat();
@@ -48,24 +57,23 @@ ISet kittens = new HashedSet();
 kittens.Add(kitten);
 cat.Kittens = kittens;
 session.Save(cat);
-kittens = cat.Kittens; //Okay, kittens collection is a Set
+kittens = cat.Kittens; //Okay, kittens collection is an ISet
 HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
 
         <para>
-            Collections obey the usual rules for value types: no shared
-            references, created and deleted along with containing entity. Due to the underlying
-            relational model, they do not support null value semantics; NHibernate does not
-            distinguish between a null collection reference and an empty collection.
+            Collection instances have the usual behavior of value types. They are automatically
+            persisted when referenced by a persistent object and automatically deleted when
+            unreferenced. If a collection is passed from one persistent object to another,
+            its elements might be moved from one table to another. Two entities may not share
+            a reference to the same collection instance. Due to the underlying relational model,
+            collection-valued properties do not support null value semantics; NHibernate does
+            not distinguish between a null collection reference and an empty collection.
         </para>
 
         <para>
-            Collections are automatically persisted when referenced by a persistent object
-            and automatically deleted when unreferenced. If a collection is passed from one
-            persistent object to another, its elements might be moved from one table to
-            another. You shouldn't have to worry much about any of this. Just use
-            NHibernate's collections the same way you use ordinary .NET collections, but
-            make sure you understand the semantics of bidirectional associations (discussed
-            later) before using them.
+            You shouldn't have to worry much about any of this. Just use NHibernate's collections
+            the same way you use ordinary .NET collections, but make sure you understand the
+            semantics of bidirectional associations (discussed later) before using them.
         </para>
 
         <para>
@@ -135,6 +143,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 <area id="mappingcollection10" coords="11 65"/>
                 <area id="mappingcollection11" coords="12 65"/>
                 <area id="mappingcollection12" coords="13 65"/>
+                <area id="mappingcollection13" coords="14 65"/>
             </areaspec>
             <programlisting><![CDATA[<map
     name="propertyName"
@@ -149,6 +158,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
     fetch="select|join"
     batch-size="N"
     access="field|property|ClassName"
+    generic="true|false"
 >
 
     <key .... />
@@ -175,8 +185,9 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
                 <callout arearefs="mappingcollection4">
                     <para>
-                        <literal>lazy</literal> (optional - defaults to <literal>false</literal>)
-                        enable lazy initialization (not used for arrays)
+                        <literal>lazy</literal> (optional - defaults to <literal>true</literal>)
+                        may be used to disable lazy fetching and specify that the association
+                        is always eagerly fetched.
                     </para>
                 </callout>
                 <callout arearefs="mappingcollection5">
@@ -227,6 +238,13 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                     <para>
                         <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                         strategy NHibernate should use for accessing the property value.
+                    </para>
+                </callout>
+                <callout arearefs="mappingcollection13">
+                    <para>
+                        <literal>generic</literal> (optional): Choose between generic and non-generic collection
+                        interface. If this option is not specified, NHibernate will use reflection to choose
+                        the interface.
                     </para>
                 </callout>
             </calloutlist>
