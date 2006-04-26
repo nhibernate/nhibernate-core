@@ -114,7 +114,16 @@ namespace NHibernate.Util
 		/// </returns>
 		public static IType ReflectedPropertyType( System.Type theClass, string name, string access )
 		{
-			return TypeFactory.HeuristicType( GetGetter( theClass, name, access ).ReturnType.AssemblyQualifiedName );
+			System.Type propertyClass = ReflectedPropertyClass( theClass, name, access );
+
+			System.Type heuristicClass = propertyClass;
+
+			if( propertyClass.IsGenericType
+				&& propertyClass.GetGenericTypeDefinition().Equals( typeof( Nullable<> ) ) )
+			{
+				heuristicClass = propertyClass.GetGenericArguments()[ 0 ];
+			}
+			return TypeFactory.HeuristicType( heuristicClass.AssemblyQualifiedName );
 		}
 
 		/// <summary>

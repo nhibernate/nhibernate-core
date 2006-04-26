@@ -40,7 +40,7 @@ namespace NHibernate.Type
 		 * "System.DateTime" -> instance of DateTimeType
 		 * "System.DateTime, fully assembly name" -> instance of DateTimeType
 		 * "DateTime" -> instance of DateTimeType
-		 * "System.Decimal" -> instance of DecimaType with default p,s
+		 * "System.Decimal" -> instance of DecimalType with default p,s
 		 * "Decimal" -> instance of DecimalType with default p,s
 		 * "Decimal(p, s)" -> instance of DecimalType with specified p,s
 		 * "String" -> instance of StringType with default l
@@ -68,6 +68,16 @@ namespace NHibernate.Type
 			{
 				typeByTypeOfName[ additionalName ] = nhibernateType;
 			}
+
+#if NET_2_0
+			if( systemType.IsValueType )
+			{
+				// Also register Nullable<systemType> for ValueTypes
+				System.Type nullableType = typeof( Nullable<> ).MakeGenericType( systemType );
+				typeByTypeOfName[ nullableType.FullName ]              = nhibernateType;
+				typeByTypeOfName[ nullableType.AssemblyQualifiedName ] = nhibernateType;
+			}
+#endif
 		}
 
 		/// <summary></summary>
@@ -105,25 +115,6 @@ namespace NHibernate.Type
 			RegisterType( typeof( UInt16 ), NHibernateUtil.UInt16, null );
 			RegisterType( typeof( UInt32 ), NHibernateUtil.UInt32, null );
 			RegisterType( typeof( UInt64 ), NHibernateUtil.UInt64, null );
-
-#if NET_2_0
-			RegisterType( typeof( Nullable<Boolean> ), NHibernateUtil.Boolean, "Boolean?" );
-			RegisterType( typeof( Nullable<Byte> ), NHibernateUtil.Byte, "Byte?" );
-			RegisterType( typeof( Nullable<Char> ), NHibernateUtil.Character, "Char?" );
-			RegisterType( typeof( Nullable<DateTime> ), NHibernateUtil.DateTime, "DateTime?" );
-			RegisterType( typeof( Nullable<Decimal> ), NHibernateUtil.Decimal, "Decimal?" );
-			RegisterType( typeof( Nullable<Double> ), NHibernateUtil.Double, "Double?" );
-			RegisterType( typeof( Nullable<Guid> ), NHibernateUtil.Guid, "Guid?" );
-			RegisterType( typeof( Nullable<Int16> ), NHibernateUtil.Int16, "Int16?" );
-			RegisterType( typeof( Nullable<Int32> ), NHibernateUtil.Int32, "Int32?" );
-			RegisterType( typeof( Nullable<Int64> ), NHibernateUtil.Int64, "Int64?" );
-			RegisterType( typeof( Nullable<SByte> ), NHibernateUtil.SByte, "SByte?" );
-			RegisterType( typeof( Nullable<Single> ), NHibernateUtil.Single, "Single?" );
-			RegisterType( typeof( Nullable<TimeSpan> ), NHibernateUtil.TimeSpan, "TimeSpan?" );
-			RegisterType( typeof( Nullable<UInt16> ), NHibernateUtil.UInt16, "UInt16?" );
-			RegisterType( typeof( Nullable<UInt32> ), NHibernateUtil.UInt32, "UInt32?" );
-			RegisterType( typeof( Nullable<UInt64> ), NHibernateUtil.UInt64, "UInt64?" );
-#endif
 
 			// add the mappings of the NHibernate specific names that are used in type=""
 			typeByTypeOfName[ NHibernateUtil.AnsiString.Name ] = NHibernateUtil.AnsiString;
