@@ -8,6 +8,7 @@ Breaking Changes:
       public members are virtual). Validation can be disabled by setting
       hibernate.use_proxy_validator property to false.
     * ISession.Get/Load now obey where="..." attribute of <class>.
+    * Assemblies are signed using a new, publicly available, key.
 
 Build 1.0.2.0
 ========================
