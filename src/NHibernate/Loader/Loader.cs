@@ -252,7 +252,7 @@ namespace NHibernate.Loader
 			{
 				return new EntityKey( 
 					optionalId,
-					session.GetPersister( optionalObject ) // TODO H3: session.GetEntityPersister( optionalEntityName, optionalObject )
+					session.GetEntityPersister( optionalObject ) // TODO H3: session.GetEntityPersister( optionalEntityName, optionalObject )
 					// TODO H3: session.getEntityMode()
 					);
 			}

@@ -111,7 +111,7 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				persister = session.GetPersister(instance);
+				persister = session.GetEntityPersister(instance);
 			}
 			catch (MappingException e)
 			{

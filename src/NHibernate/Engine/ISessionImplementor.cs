@@ -220,7 +220,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		IEntityPersister GetPersister( object obj );
+		IEntityPersister GetEntityPersister( object obj );
 
 		/// <summary>
 		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object identity.

@@ -40,7 +40,7 @@ namespace NHibernate.Id
 					);
 			}
 
-			object id = session.GetPersister( obj ).GetIdentifier( obj );
+			object id = session.GetEntityPersister( obj ).GetIdentifier( obj );
 			if( id == null )
 			{
 				throw new IdentifierGenerationException(

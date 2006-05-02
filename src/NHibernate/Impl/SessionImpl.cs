@@ -739,7 +739,7 @@ namespace NHibernate.Impl
 
 		private object SaveWithGeneratedIdentifier( object obj, Cascades.CascadingAction action, object anything )
 		{
-			IEntityPersister persister = GetPersister( obj );
+			IEntityPersister persister = GetEntityPersister( obj );
 			try
 			{
 				object id = persister.IdentifierGenerator.Generate( this, obj );
@@ -816,7 +816,7 @@ namespace NHibernate.Impl
 				}
 			}
 
-			DoSave( theObj, id, GetPersister( theObj ), false, Cascades.CascadingAction.ActionSaveUpdate, null );
+			DoSave( theObj, id, GetEntityPersister( theObj ), false, Cascades.CascadingAction.ActionSaveUpdate, null );
 
 			ReassociateProxy( obj, id );
 		}
@@ -1172,7 +1172,7 @@ namespace NHibernate.Impl
 			EntityEntry e = GetEntry( obj );
 			if( e == null )
 			{
-				return GetPersister( obj ).IsUnsaved( obj );
+				return GetEntityPersister( obj ).IsUnsaved( obj );
 			}
 
 			return e.Status == Status.Saving || (
@@ -1201,7 +1201,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug( "deleting a transient instance" );
 
-				persister = GetPersister( obj );
+				persister = GetEntityPersister( obj );
 				object id = persister.GetIdentifier( obj );
 
 				if( id == null )
@@ -1477,7 +1477,7 @@ namespace NHibernate.Impl
 
 			object theObj = UnproxyAndReassociate( obj );
 
-			IEntityPersister persister = GetPersister( theObj );
+			IEntityPersister persister = GetEntityPersister( theObj );
 
 			if( IsEntryFor( theObj ) )
 			{
@@ -1533,7 +1533,7 @@ namespace NHibernate.Impl
 			{
 				// the object is transient
 				object isUnsaved = interceptor.IsUnsaved( theObj );
-				IEntityPersister persister = GetPersister( theObj );
+				IEntityPersister persister = GetEntityPersister( theObj );
 				if( isUnsaved == null )
 				{
 					// use unsaved-value
@@ -1601,7 +1601,7 @@ namespace NHibernate.Impl
 			EntityEntry e = GetEntry( theObj );
 			if( e == null )
 			{
-				IEntityPersister persister = GetPersister( theObj );
+				IEntityPersister persister = GetEntityPersister( theObj );
 				persister.SetIdentifier( theObj, id );
 				DoUpdate( theObj, id, persister );
 			}
@@ -2002,7 +2002,7 @@ namespace NHibernate.Impl
 			EntityEntry e = GetEntry( obj );
 			if( e == null )
 			{
-				IEntityPersister objPersister = GetPersister( obj );
+				IEntityPersister objPersister = GetEntityPersister( obj );
 				object id = objPersister.GetIdentifier( obj );
 
 				if( !IsSaved( obj ) )
@@ -2265,7 +2265,7 @@ namespace NHibernate.Impl
 
 			// can't use e.persister since it is null after addUninitializedEntity 
 			// (when this method is called)
-			IEntityPersister p = GetPersister( impl );
+			IEntityPersister p = GetEntityPersister( impl );
 			return ProxyFor( p, new EntityKey( e.Id, p ), impl );
 		}
 
@@ -2755,7 +2755,7 @@ namespace NHibernate.Impl
 
 			if( e == null )
 			{
-				persister = GetPersister( theObj );
+				persister = GetEntityPersister( theObj );
 				id = persister.GetIdentifier( theObj );
 				if( log.IsDebugEnabled )
 				{
@@ -3482,7 +3482,7 @@ namespace NHibernate.Impl
 			return lastResultForClass;
 		}
 
-		public IEntityPersister GetPersister( object obj )
+		public IEntityPersister GetEntityPersister( object obj )
 		{
 			return GetClassPersister( obj.GetType() );
 		}
@@ -3562,7 +3562,7 @@ namespace NHibernate.Impl
 				return !( bool ) isUnsaved;
 			}
 
-			return !GetPersister( obj ).IsUnsaved( obj );
+			return !GetEntityPersister( obj ).IsUnsaved( obj );
 		}
 
 		/// <summary>
@@ -3600,7 +3600,7 @@ namespace NHibernate.Impl
 						ThrowTransientObjectException( obj );
 					}
 
-					IEntityPersister persister = GetPersister( obj );
+					IEntityPersister persister = GetEntityPersister( obj );
 					if( persister.IsUnsaved( obj ) )
 					{
 						ThrowTransientObjectException( obj );
@@ -5395,7 +5395,7 @@ namespace NHibernate.Impl
 				return;
 			}
 
-			IEntityPersister persister = GetPersister( theObj );
+			IEntityPersister persister = GetEntityPersister( theObj );
 			if( persister.IsUnsaved( theObj ) )
 			{
 				//TODO: generate a new id value for brand new objects
