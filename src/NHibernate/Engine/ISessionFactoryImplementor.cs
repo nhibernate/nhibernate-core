@@ -16,7 +16,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Get the persister for a class
 		/// </summary>
-		IEntityPersister GetPersister( System.Type clazz );
+		IEntityPersister GetEntityPersister( System.Type clazz );
 
 		/// <summary>
 		/// Get the persister for the named class
@@ -24,7 +24,7 @@ namespace NHibernate.Engine
 		/// <param name="className">The name of the class that is persisted.</param>
 		/// <returns>The <see cref="IEntityPersister"/> for the class.</returns>
 		/// <exception cref="MappingException">If no <see cref="IEntityPersister"/> can be found.</exception>
-		IEntityPersister GetPersister( string className );
+		IEntityPersister GetEntityPersister( string className );
 
 		/// <summary>
 		/// Get the persister for the named class
@@ -35,7 +35,7 @@ namespace NHibernate.Engine
 		/// <returns>The <see cref="IEntityPersister"/> for the class.</returns>
 		/// <exception cref="MappingException">If no <see cref="IEntityPersister"/> can be found
 		/// and throwIfNotFound is true.</exception>
-		IEntityPersister GetPersister( string className, bool throwIfNotFound );
+		IEntityPersister GetEntityPersister( string className, bool throwIfNotFound );
 		
 		/// <summary>
 		/// Get the persister object for a collection role

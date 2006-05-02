@@ -380,7 +380,7 @@ namespace NHibernate.Impl
 			{
 				try
 				{
-					e.Persister = factory.GetPersister( e.ClassName );
+					e.Persister = factory.GetEntityPersister( e.ClassName );
 				}
 				catch( MappingException me )
 				{
@@ -2122,7 +2122,7 @@ namespace NHibernate.Impl
 
 		public object Instantiate( System.Type clazz, object id )
 		{
-			return Instantiate( factory.GetPersister( clazz ), id );
+			return Instantiate( factory.GetEntityPersister( clazz ), id );
 		}
 
 		/// <summary>
@@ -3476,7 +3476,7 @@ namespace NHibernate.Impl
 		{
 			if( lastClass != theClass )
 			{
-				lastResultForClass = factory.GetPersister( theClass );
+				lastResultForClass = factory.GetEntityPersister( theClass );
 				lastClass = theClass;
 			}
 			return lastResultForClass;
@@ -4033,7 +4033,7 @@ namespace NHibernate.Impl
 					{
 						log.Debug( "caching collection: " + MessageHelper.InfoString( persister, lce.Id ) );
 					}
-					IEntityPersister ownerPersister = factory.GetPersister( persister.OwnerClass );
+					IEntityPersister ownerPersister = factory.GetEntityPersister( persister.OwnerClass );
 					object version;
 					IComparer versionComparator;
 					if( ownerPersister.IsVersioned )
@@ -4310,7 +4310,7 @@ namespace NHibernate.Impl
 		public object GetCollectionOwner( object key, ICollectionPersister collectionPersister )
 		{
 			//TODO: Give collection persister a reference to the owning class persister
-			return GetEntity( new EntityKey( key, factory.GetPersister( collectionPersister.OwnerClass ) ) );
+			return GetEntity( new EntityKey( key, factory.GetEntityPersister( collectionPersister.OwnerClass ) ) );
 		}
 
 		public IDbConnection Connection
@@ -5356,7 +5356,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object LoadByUniqueKey( System.Type clazz, string uniqueKeyPropertyName, object id )
 		{
-			IUniqueKeyLoadable persister = ( IUniqueKeyLoadable ) Factory.GetPersister( clazz );
+			IUniqueKeyLoadable persister = ( IUniqueKeyLoadable ) Factory.GetEntityPersister( clazz );
 			try
 			{
 				// TODO: Implement caching?! proxies?!

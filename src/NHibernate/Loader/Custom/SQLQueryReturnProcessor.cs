@@ -38,7 +38,7 @@ namespace NHibernate.Loader.Custom
 
 		private ISqlLoadable GetSQLLoadable( string entityName )
 		{
-			IEntityPersister persister = Factory.GetPersister( entityName );
+			IEntityPersister persister = Factory.GetEntityPersister( entityName );
 			ISqlLoadable result = persister as ISqlLoadable;
 			if( result == null )
 			{

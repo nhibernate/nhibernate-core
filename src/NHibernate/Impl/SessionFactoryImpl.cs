@@ -529,12 +529,12 @@ namespace NHibernate.Impl
 			return OpenSession( interceptor );
 		}
 
-		public IEntityPersister GetPersister( string className )
+		public IEntityPersister GetEntityPersister( string className )
 		{
-			return GetPersister( className, true );
+			return GetEntityPersister( className, true );
 		}
 
-		public IEntityPersister GetPersister( string className, bool throwIfNotFound )
+		public IEntityPersister GetEntityPersister( string className, bool throwIfNotFound )
 		{
 			// TODO: H2.1 has the code below, an equivalent for .NET would be useful
 			//if( className.StartsWith( "[" ) )
@@ -555,7 +555,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="theClass"></param>
 		/// <returns></returns>
-		public IEntityPersister GetPersister( System.Type theClass )
+		public IEntityPersister GetEntityPersister( System.Type theClass )
 		{
 			IEntityPersister result = classPersisters[ theClass ] as IEntityPersister;
 			if( result == null )
@@ -713,7 +713,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IType GetIdentifierType( System.Type objectClass )
 		{
-			return GetPersister( objectClass ).IdentifierType;
+			return GetEntityPersister( objectClass ).IdentifierType;
 		}
 
 		/// <summary>
@@ -723,7 +723,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public string GetIdentifierPropertyName( System.Type objectClass )
 		{
-			return GetPersister( objectClass ).IdentifierPropertyName;
+			return GetEntityPersister( objectClass ).IdentifierPropertyName;
 		}
 
 		public IType[ ] GetReturnTypes( String queryString )
@@ -744,7 +744,7 @@ namespace NHibernate.Impl
 
 		public IClassMetadata GetClassMetadata( System.Type persistentClass )
 		{
-			return GetPersister( persistentClass ).ClassMetadata;
+			return GetEntityPersister( persistentClass ).ClassMetadata;
 		}
 
 		public ICollectionMetadata GetCollectionMetadata( string roleName )
@@ -910,7 +910,7 @@ namespace NHibernate.Impl
 
 		public void Evict( System.Type persistentClass, object id )
 		{
-			IEntityPersister p = GetPersister( persistentClass );
+			IEntityPersister p = GetEntityPersister( persistentClass );
 			if( p.HasCache )
 			{
 				if( log.IsDebugEnabled )
@@ -923,7 +923,7 @@ namespace NHibernate.Impl
 
 		public void Evict( System.Type persistentClass )
 		{
-			IEntityPersister p = GetPersister( persistentClass );
+			IEntityPersister p = GetEntityPersister( persistentClass );
 			if( p.HasCache )
 			{
 				if( log.IsDebugEnabled )
@@ -968,7 +968,7 @@ namespace NHibernate.Impl
 
 		public IType GetPropertyType( System.Type persistentClass, string propertyName )
 		{
-			return GetPersister( persistentClass ).GetPropertyType( propertyName );
+			return GetEntityPersister( persistentClass ).GetPropertyType( propertyName );
 		}
 
 		/// <summary></summary>

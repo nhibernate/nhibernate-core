@@ -94,7 +94,7 @@ namespace NHibernate.Loader.Criteria
 
 			foreach( System.Type entityName in criteriaEntityNames.Values )
 			{
-				result.AddAll( Factory.GetPersister( entityName ).QuerySpaces );
+				result.AddAll( Factory.GetEntityPersister( entityName ).QuerySpaces );
 			}
 			return result;
 		}
@@ -194,7 +194,7 @@ namespace NHibernate.Loader.Criteria
 
 		private System.Type GetPathEntityName( string path ) 
 		{
-			IQueryable persister = ( IQueryable ) Factory.GetPersister( rootEntityName );
+			IQueryable persister = ( IQueryable ) Factory.GetEntityPersister( rootEntityName );
 			StringTokenizer tokens = new StringTokenizer( path, ".", false );
 			string componentPath = "";
 
@@ -207,7 +207,7 @@ namespace NHibernate.Loader.Criteria
 				if ( type.IsAssociationType ) 
 				{
 					IAssociationType atype = ( IAssociationType ) type;
-					persister = ( IQueryable ) Factory.GetPersister(
+					persister = ( IQueryable ) Factory.GetEntityPersister(
 						atype.GetAssociatedClass( Factory )
 						);
 					componentPath = "";
@@ -576,7 +576,7 @@ namespace NHibernate.Loader.Criteria
 
 		private IPropertyMapping GetPropertyMapping( System.Type entityName ) 
 		{
-			return ( IPropertyMapping ) sessionFactory.GetPersister( entityName );
+			return ( IPropertyMapping ) sessionFactory.GetEntityPersister( entityName );
 		}
 
 		//TODO: use these in methods above

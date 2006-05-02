@@ -364,7 +364,7 @@ namespace NHibernate.Hql
 		{
 			// Slightly altered from H2.1 to avoid needlessly throwing
 			// and catching a MappingException.
-			return ( IQueryable ) Factory.GetPersister(
+			return ( IQueryable ) Factory.GetEntityPersister(
 				Factory.GetImportedClassName( className ),
 				false );
 		}
@@ -373,7 +373,7 @@ namespace NHibernate.Hql
 		{
 			try
 			{
-				return ( IQueryable ) Factory.GetPersister( clazz );
+				return ( IQueryable ) Factory.GetEntityPersister( clazz );
 			}
 			catch( Exception )
 			{

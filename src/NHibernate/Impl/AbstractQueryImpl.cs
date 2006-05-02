@@ -687,7 +687,7 @@ namespace NHibernate.Impl
 			{
 				try
 				{
-					session.Factory.GetPersister( clazz );
+					session.Factory.GetEntityPersister( clazz );
 				}
 				catch( MappingException )
 				{

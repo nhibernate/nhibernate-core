@@ -59,7 +59,7 @@ namespace NHibernate.Loader.Custom
 			persisters = new ILoadable[ entityNames.Length ];
 			for( int i = 0; i < entityNames.Length; i++ )
 			{
-				persisters[ i ] = ( ILoadable ) factory.GetPersister( entityNames[ i ] );
+				persisters[ i ] = ( ILoadable ) factory.GetEntityPersister( entityNames[ i ] );
 			}
 
 			IType[] scalarTypes = customQuery.ScalarTypes;

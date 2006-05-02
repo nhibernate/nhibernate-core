@@ -953,7 +953,7 @@ namespace NHibernate.Persister.Entity
 			for( int i = 0; i < subclasses.Length; i++ )
 			{
 				frag.AddValue(
-					( ( IQueryable ) Factory.GetPersister( subclasses[ i ] ) ).DiscriminatorSQLValue
+					( ( IQueryable ) Factory.GetEntityPersister( subclasses[ i ] ) ).DiscriminatorSQLValue
 					);
 			}
 
@@ -1054,7 +1054,7 @@ namespace NHibernate.Persister.Entity
 				System.Type[] subclasses = SubclassClosure;
 				for ( int i=0; i<subclasses.Length; i++ ) 
 				{
-					IQueryable queryable = (IQueryable) Factory.GetPersister( subclasses[i] );
+					IQueryable queryable = (IQueryable) Factory.GetEntityPersister( subclasses[i] );
 					
 					// TODO H3:
 //					if ( !queryable.IsAbstract )

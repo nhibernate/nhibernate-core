@@ -66,14 +66,14 @@ namespace NHibernate.Type
 			else
 			{
 				return session.Factory
-					.GetPersister( AssociatedClass )
+					.GetEntityPersister( AssociatedClass )
 					.GetPropertyValue( value, uniqueKeyPropertyName );
 			}
 		}
 
 		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
 		{
-			IEntityPersister persister = factory.GetPersister( associatedClass );
+			IEntityPersister persister = factory.GetEntityPersister( associatedClass );
 			if( value == null )
 			{
 				return "null";
@@ -197,7 +197,7 @@ namespace NHibernate.Type
 
 		public IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory )
 		{
-			return ( IJoinable ) factory.GetPersister( associatedClass );
+			return ( IJoinable ) factory.GetEntityPersister( associatedClass );
 		}
 
 		protected IType GetIdentifierType( ISessionImplementor session )

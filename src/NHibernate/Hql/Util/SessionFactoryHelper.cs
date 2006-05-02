@@ -20,7 +20,7 @@ namespace NHibernate.Hql.Util
 
 			try 
 			{
-				return ( IQueryable ) sfi.GetPersister( importedClassName );
+				return ( IQueryable ) sfi.GetEntityPersister( importedClassName );
 			}
 			catch ( MappingException )
 			{

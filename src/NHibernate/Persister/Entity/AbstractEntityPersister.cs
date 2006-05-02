@@ -1231,7 +1231,7 @@ namespace NHibernate.Persister.Entity
 			if( uniqueKeyType.IsEntityType )
 			{
 				System.Type type = ( ( EntityType ) uniqueKeyType ).AssociatedClass;
-				uniqueKeyType = Factory.GetPersister( type ).IdentifierType;
+				uniqueKeyType = Factory.GetEntityPersister( type ).IdentifierType;
 			}
 
 			return new EntityLoader( this, columns, uniqueKeyType, 1, LockMode.None, Factory, enabledFilters );
