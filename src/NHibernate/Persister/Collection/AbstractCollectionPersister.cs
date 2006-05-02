@@ -23,7 +23,7 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
-	public abstract class AbstractCollectionPersister : ICollectionMetadata, IQueryableCollection
+	public abstract class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection
 	{
 		private readonly string role;
 
@@ -34,10 +34,10 @@ namespace NHibernate.Persister.Collection
 		private readonly SqlString sqlDeleteRowString;
 
 		// TODO H3:
-//		private readonly SqlString sqlSelectSizeString;
-//		private readonly SqlString sqlSelectRowByIndexString;
-//		private readonly SqlString sqlDetectRowByIndexString;
-//		private readonly SqlString sqlDetectRowByElementString;
+		//		private readonly SqlString sqlSelectSizeString;
+		//		private readonly SqlString sqlSelectRowByIndexString;
+		//		private readonly SqlString sqlDetectRowByIndexString;
+		//		private readonly SqlString sqlDetectRowByElementString;
 
 		private readonly string sqlOrderByString;
 		protected readonly string sqlWhereString;
@@ -86,7 +86,7 @@ namespace NHibernate.Persister.Collection
 
 		protected readonly string identifierColumnName;
 		private readonly string identifierColumnAlias;
-		
+
 		private readonly Dialect.Dialect dialect;
 		//private readonly SQLExceptionConverter sqlExceptionConverter;
 		private readonly ISessionFactoryImplementor factory;
@@ -94,6 +94,9 @@ namespace NHibernate.Persister.Collection
 		private readonly IEntityPersister elementPersister;
 
 		private ICollectionInitializer initializer;
+
+		private IDictionary collectionPropertyColumnAliases = new Hashtable();
+		private IDictionary collectionPropertyColumnNames = new Hashtable();
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( ICollectionPersister ) );
 
@@ -123,8 +126,8 @@ namespace NHibernate.Persister.Collection
 
 			keyType = collection.Key.Type;
 			int keySpan = collection.Key.ColumnSpan;
-			keyColumnNames = new string[keySpan];
-			string[] keyAliases = new string[keySpan];
+			keyColumnNames = new string[ keySpan ];
+			string[] keyAliases = new string[ keySpan ];
 			int k = 0;
 			foreach( Column col in collection.Key.ColumnCollection )
 			{
@@ -163,10 +166,10 @@ namespace NHibernate.Persister.Collection
 			}
 
 			qualifiedTableName = table.GetQualifiedName( dialect, factory.DefaultSchema );
-			elementColumnAliases = new string[elementSpan];
-			elementColumnNames = new string[elementSpan];
-			elementFormulaTemplates = new string[elementSpan];
-			elementFormulas = new string[elementSpan];
+			elementColumnAliases = new string[ elementSpan ];
+			elementColumnNames = new string[ elementSpan ];
+			elementFormulaTemplates = new string[ elementSpan ];
+			elementFormulas = new string[ elementSpan ];
 			int j = 0;
 			foreach( ISelectable selectable in element.ColumnCollection )
 			{
@@ -193,9 +196,9 @@ namespace NHibernate.Persister.Collection
 
 				indexType = indexedCollection.Index.Type;
 				int indexSpan = indexedCollection.Index.ColumnSpan;
-				indexColumnNames = new string[indexSpan];
+				indexColumnNames = new string[ indexSpan ];
 
-				string[] indexAliases = new string[indexSpan];
+				string[] indexAliases = new string[ indexSpan ];
 				int i = 0;
 				foreach( Column indexCol in indexedCollection.Index.ColumnCollection )
 				{
@@ -285,6 +288,8 @@ namespace NHibernate.Persister.Collection
 					elementPropertyMapping = new ElementPropertyMapping( elementColumnNames, elementType );
 				}
 			}
+
+			InitCollectionPropertyMap();
 		}
 
 		public void Initialize( object key, ISessionImplementor session )
@@ -437,15 +442,15 @@ namespace NHibernate.Persister.Collection
 			IndexType.NullSafeSet( st, idx, i, session );
 			return i + indexColumnNames.Length;
 		}
-		
+
 		protected int WriteElementToWhere( IDbCommand st, object elt, int i, ISessionImplementor session )
 		{
 			// TODO H3:
-//			if( elementIsPureFormula )
-//			{
-//				throw new AssertionFailure( "cannot use a formula-based element in the where condition" );
-//			}
-			
+			//			if( elementIsPureFormula )
+			//			{
+			//				throw new AssertionFailure( "cannot use a formula-based element in the where condition" );
+			//			}
+
 			ElementType.NullSafeSet( st, elt, i, session );
 			return i + elementColumnAliases.Length;
 		}
@@ -453,11 +458,11 @@ namespace NHibernate.Persister.Collection
 		protected int WriteIndexToWhere( IDbCommand st, object index, int i, ISessionImplementor session )
 		{
 			// TODO H3:
-//			if( indexContainsFormula )
-//			{
-//				throw new AssertionFailure( "cannot use a formula-based index in the where condition" );
-//			}
-			
+			//			if( indexContainsFormula )
+			//			{
+			//				throw new AssertionFailure( "cannot use a formula-based index in the where condition" );
+			//			}
+
 			IndexType.NullSafeSet( st, index, i, session );
 			return i + indexColumnAliases.Length;
 		}
@@ -486,6 +491,21 @@ namespace NHibernate.Persister.Collection
 		public bool IsArray
 		{
 			get { return array; }
+		}
+
+		public string IdentifierColumnName
+		{
+			get
+			{
+				if( hasIdentifier )
+				{
+					return identifierColumnName;
+				}
+				else
+				{
+					return null;
+				}
+			}
 		}
 
 		public string SelectFragment( string alias, string columnSuffix )
@@ -662,8 +682,8 @@ namespace NHibernate.Persister.Collection
 							}
 							i++;
 						}
-					} 
-						//TODO: change to SqlException
+					}
+					//TODO: change to SqlException
 					catch( Exception e )
 					{
 						session.Batcher.AbortBatch( e );
@@ -726,7 +746,7 @@ namespace NHibernate.Persister.Collection
 								else
 								{
 									loc = WriteKey( st, id, loc, session );
-									
+
 									if( deleteByIndex )
 									{
 										WriteIndexToWhere( st, entry, loc, session );
@@ -739,8 +759,8 @@ namespace NHibernate.Persister.Collection
 								session.Batcher.AddToBatch( -1 );
 								count++;
 							}
-						} 
-							// TODO: change to SqlException
+						}
+						// TODO: change to SqlException
 						catch( Exception e )
 						{
 							session.Batcher.AbortBatch( e );
@@ -1034,7 +1054,7 @@ namespace NHibernate.Persister.Collection
 		{
 			return FilterFragment( alias );
 		}
-		
+
 		public string GetManyToManyFilterFragment( string alias, IDictionary enabledFilters )
 		{
 			return string.Empty;
@@ -1082,6 +1102,61 @@ namespace NHibernate.Persister.Collection
 		public string OneToManyFilterFragment( string alias )
 		{
 			return string.Empty;
+		}
+
+		public string[] GetCollectionPropertyColumnAliases( string propertyName, string suffix )
+		{
+			string[] rawAliases = ( string[] ) collectionPropertyColumnAliases[ propertyName ];
+
+			if( rawAliases == null )
+			{
+				return null;
+			}
+
+			string[] result = new string[ rawAliases.Length ];
+			for( int i = 0; i < rawAliases.Length; i++ )
+			{
+				result[ i ] = new Alias( suffix ).ToUnquotedAliasString( rawAliases[ i ], dialect );
+			}
+			return result;
+		}
+
+		public void InitCollectionPropertyMap()
+		{
+			InitCollectionPropertyMap( "key", keyType, keyColumnAliases, keyColumnNames );
+			InitCollectionPropertyMap( "element", elementType, elementColumnAliases, elementColumnNames );
+
+			if( hasIndex )
+			{
+				InitCollectionPropertyMap( "index", indexType, indexColumnAliases, indexColumnNames );
+			}
+
+			if( hasIdentifier )
+			{
+				InitCollectionPropertyMap(
+					"id",
+					identifierType,
+					new string[] { identifierColumnAlias },
+					new string[] { identifierColumnName } );
+			}
+		}
+
+		private void InitCollectionPropertyMap( string aliasName, IType type, string[] columnAliases, string[] columnNames )
+		{
+			collectionPropertyColumnAliases[ aliasName ] = columnAliases;
+			collectionPropertyColumnNames[ aliasName ] = columnNames;
+
+			if( type.IsComponentType )
+			{
+				IAbstractComponentType ct = ( IAbstractComponentType ) type;
+				string[] propertyNames = ct.PropertyNames;
+				for( int i = 0; i < propertyNames.Length; i++ )
+				{
+					string name = propertyNames[ i ];
+					collectionPropertyColumnAliases[ aliasName + "." + name ] = columnAliases[ i ];
+					collectionPropertyColumnNames[ aliasName + "." + name ] = columnNames[ i ];
+				}
+			}
 		}
 	}
 }

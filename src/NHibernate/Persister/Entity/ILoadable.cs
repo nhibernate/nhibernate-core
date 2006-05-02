@@ -21,8 +21,6 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the concrete subclass corresponding to the given discriminator value
 		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		System.Type GetSubclassForDiscriminatorValue( object value );
 
 		/// <summary>
@@ -33,23 +31,26 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the result set aliases used for the identifier columns, given a suffix
 		/// </summary>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
 		string[] GetIdentifierAliases( string suffix );
 
 		/// <summary>
 		/// Get the result set aliases used for the property columns, given a suffix (properties of this class, only).
 		/// </summary>
-		/// <param name="suffix"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		string[] GetPropertyAliases( string suffix, int i );
+
+		/// <summary>
+		/// Get the result set column names mapped for this property (properties of this class, only).
+		/// </summary>
+		string[] GetPropertyColumnNames( int i );
 
 		/// <summary>
 		/// Get the alias used for the discriminator column, given a suffix
 		/// </summary>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
 		string GetDiscriminatorAlias( string suffix );
+
+		/// <value>
+		/// the column name for the discriminator as specified in the mapping.
+		/// </value>
+		string DiscriminatorColumnName { get; }
 	}
 }

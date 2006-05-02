@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+
 using NHibernate.Collection;
+using NHibernate.Engine.Query;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
-using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -320,12 +322,12 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Execute an SQL Query
 		/// </summary>
-		IList FindBySQL( string sqlQuery, string[] aliases, System.Type[] classes, QueryParameters queryParameters, ICollection querySpaces );
+		IList List( NativeSQLQuerySpecification spec, QueryParameters queryParameters );
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="FindBySQL()" />
+		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
 		/// </summary>
-		IList<T> FindBySQL<T>( string sqlQuery, string[] aliases, System.Type[] classes, QueryParameters queryParameters, ICollection querySpaces );
+		IList<T> List<T>( NativeSQLQuerySpecification spec, QueryParameters queryParameters );
 
 		/// <summary>
 		/// new in 2.1 no javadoc

@@ -36,90 +36,6 @@ namespace NHibernate.Util
 			return true;
 		}
 
-		/// <summary>
-		/// Compares two byte[] arrays for equality.
-		/// </summary>
-		/// <param name="lhs">The byte[] array on the Left Hand Side </param>
-		/// <param name="rhs">The byte[] array on the Right Hand Side</param>
-		/// <returns>true if they contain the same items</returns>
-		public static bool Equals( byte[] lhs, byte[] rhs )
-		{
-			// just for luck, check for reference equality
-			if( lhs == rhs )
-			{
-				return true;
-			}
-
-			// if they don't have the same reference and one of them
-			// is null, then they are not Equal
-			if( lhs == null || rhs == null )
-			{
-				return false;
-			}
-
-			// if they don't have the same length they are not equal
-			if( lhs.Length != rhs.Length )
-			{
-				return false;
-			}
-
-			// move through every object in the array and hope that it 
-			// implements the Equals method correctly
-			for( int i = 0; i < lhs.Length; i++ )
-			{
-				if( lhs[ i ].Equals( rhs[ i ] ) == false )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		/// <summary>
-		/// Compares two object arrays for equality.
-		/// </summary>
-		/// <param name="lhs">The object array on the Left Hand Side </param>
-		/// <param name="rhs">The object array on the Right Hand Side</param>
-		/// <returns>true if they contain the same items</returns>
-		/// <remarks>
-		/// This relies on the objects in the array implementing the method Equals(object)
-		/// correctly.
-		/// </remarks>
-		public static bool Equals( Array lhs, Array rhs )
-		{
-			// just for luck, check for reference equality
-			if( lhs == rhs )
-			{
-				return true;
-			}
-
-			// if they don't have the same reference and one of them
-			// is null, then they are not Equal
-			if( lhs == null || rhs == null )
-			{
-				return false;
-			}
-
-			// if they don't have the same length they are not equal
-			if( lhs.Length != rhs.Length )
-			{
-				return false;
-			}
-
-			// move through every object in the array and hope that it 
-			// implements the Equals method correctly
-			for( int i = 0; i < lhs.Length; i++ )
-			{
-				if( lhs.GetValue( i ).Equals( rhs.GetValue( i ) ) == false )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
 		public static string[] ToStringArray( object[] objects )
 		{
 			int length = objects.Length;
@@ -295,6 +211,13 @@ namespace NHibernate.Util
 			{
 				return batchSize / 2;
 			}
+		}
+
+		public static IType[] ToTypeArray( IList list )
+		{
+			IType[] result = new IType[ list.Count ];
+			list.CopyTo( result, 0 );
+			return result;
 		}
 	}
 }

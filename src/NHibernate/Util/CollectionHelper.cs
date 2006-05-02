@@ -122,6 +122,33 @@ namespace NHibernate.Util
 
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
 
+		public static bool CollectionEquals( ICollection c1, ICollection c2 )
+		{
+			if( c1 == c2 )
+			{
+				return true;
+			}
+
+			if( c1.Count != c2.Count )
+			{
+				return false;
+			}
+
+			IEnumerator e1 = c1.GetEnumerator();
+			IEnumerator e2 = c2.GetEnumerator();
+
+			while( e1.MoveNext() )
+			{
+				e2.MoveNext();
+				if( !object.Equals( e1.Current, e2.Current ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		private CollectionHelper() {}
 	}
 }

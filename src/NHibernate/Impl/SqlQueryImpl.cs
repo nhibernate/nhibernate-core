@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Type;
+using NHibernate.Loader.Custom;
 
 namespace NHibernate.Impl
 {
@@ -22,53 +24,104 @@ namespace NHibernate.Impl
 	/// </example>
 	public class SqlQueryImpl : AbstractQueryImpl
 	{
-		private readonly System.Type[] returnClasses;
-		private readonly string[] returnAliases;
+		private readonly IList queryReturns;
+		private readonly IList scalarQueryReturns;
 		private readonly ICollection querySpaces;
 
-		public SqlQueryImpl( string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session, ICollection querySpaces) : base( sql, session )
+		public SqlQueryImpl(
+			string sql,
+			string[] returnAliases,
+			System.Type[] returnClasses,
+			LockMode[] lockModes,
+			ISessionImplementor session,
+			ICollection querySpaces )
+			: base( sql, session )
 		{
-			this.returnClasses = returnClasses;
-			this.returnAliases = returnAliases;
+			// TODO : this constructor form is *only* used from constructor directly below us; can it go away?
+			scalarQueryReturns = null;
+			queryReturns = new ArrayList( returnAliases.Length );
+			for( int i = 0; i < returnAliases.Length; i++ )
+			{
+				SQLQueryRootReturn ret = new SQLQueryRootReturn(
+					returnAliases[ i ],
+					returnClasses[ i ].AssemblyQualifiedName,
+					lockModes == null ? LockMode.None : lockModes[ i ] );
+				queryReturns.Add( ret );
+			}
+
 			this.querySpaces = querySpaces;
+		}
+
+		public SqlQueryImpl(
+			string sql,
+			string[] returnAliases,
+			System.Type[] returnClasses,
+			ISessionImplementor session )
+			: this( sql, returnAliases, returnClasses, null, session, null )
+		{
+		}
+
+		public SqlQueryImpl( string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session, ICollection querySpaces )
+			: this( sql, returnAliases, returnClasses, null, session, querySpaces )
+		{
+		}
+
+		private SQLQueryReturn[] GetQueryReturns()
+		{
+			SQLQueryReturn[] result = new SQLQueryReturn[ queryReturns.Count ];
+			queryReturns.CopyTo( result, 0 );
+			return result;
+		}
+
+		private SQLQueryScalarReturn[] GetQueryScalarReturns()
+		{
+			if( scalarQueryReturns == null )
+			{
+				return null;
+			}
+
+			SQLQueryScalarReturn[] result = new SQLQueryScalarReturn[ scalarQueryReturns.Count ];
+			scalarQueryReturns.CopyTo( result, 0 );
+			return result;
 		}
 
 		public string[] ReturnAliases
 		{
-			get { return returnAliases; }
-		}
-
-		public System.Type[] ReturnClasses
-		{
-			get { return returnClasses; }
+			get { throw new NotSupportedException( "SQL queries do not currently support returning aliases" ); }
 		}
 
 		public override IType[] ReturnTypes
 		{
-			get
-			{
-				IType[] types = new IType[ returnClasses.Length ];
-				for ( int i = 0; i < returnClasses.Length; i++ )
-				{
-					types[ i ] = NHibernateUtil.Entity( returnClasses[ i ] );
-				}
-
-				return types;
-			}
+			get { throw new NotSupportedException( "not yet implemented for SQL queries" ); }
 		}
 
 		public override IList List()
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.FindBySQL( BindParameterLists( namedParams ), returnAliases, returnClasses, GetQueryParameters( namedParams ), querySpaces );
+			NativeSQLQuerySpecification spec = GenerateQuerySpecification( namedParams );
+			QueryParameters qp = GetQueryParameters( namedParams );
+
+			return Session.List( spec, qp );
 		}
 
 		public override IList<T> List<T>()
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.FindBySQL<T>( BindParameterLists( namedParams ), returnAliases, returnClasses, GetQueryParameters( namedParams ), querySpaces );
+			NativeSQLQuerySpecification spec = GenerateQuerySpecification( namedParams );
+			QueryParameters qp = GetQueryParameters( namedParams );
+
+			return Session.List<T>( spec, qp );
+		}
+
+		public NativeSQLQuerySpecification GenerateQuerySpecification( IDictionary parameters )
+		{
+			return new NativeSQLQuerySpecification(
+				BindParameterLists( NamedParams ),
+				GetQueryReturns(),
+				GetQueryScalarReturns(),
+				querySpaces );
 		}
 		
 		public override IEnumerable Enumerable()

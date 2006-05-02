@@ -526,7 +526,7 @@ namespace NHibernate.Hql
 			}
 		}
 
-		internal int[ ] GetNamedParameterLocs( string name )
+		public override int[ ] GetNamedParameterLocs( string name )
 		{
 			object o = namedParameters[ name ];
 			if( o == null )
@@ -988,34 +988,6 @@ namespace NHibernate.Hql
 		{
 			pathAliases.Add( path, alias );
 			pathJoins.Add( path, join.Copy() );
-		}
-
-		protected override int BindNamedParameters( IDbCommand ps, IDictionary namedParams, int start, ISessionImplementor session )
-		{
-			if( namedParams != null )
-			{
-				// assumes that types are all of span 1
-				int result = 0;
-				foreach( DictionaryEntry e in namedParams )
-				{
-					string name = ( string ) e.Key;
-					TypedValue typedval = ( TypedValue ) e.Value;
-					int[ ] locs = GetNamedParameterLocs( name );
-					for( int i = 0; i < locs.Length; i++ )
-					{
-						// Hack: parametercollection starts at 0
-						//typedval.Type.NullSafeSet(ps, typedval.Value, Impl.AdoHack.ParameterPos(locs[i] + start), session);
-						typedval.Type.NullSafeSet( ps, typedval.Value, ( locs[ i ] + start ), session );
-						// end-of Hack
-					}
-					result += locs.Length;
-				}
-				return result;
-			}
-			else
-			{
-				return 0;
-			}
 		}
 
 		public IList List( ISessionImplementor session, QueryParameters queryParameters )

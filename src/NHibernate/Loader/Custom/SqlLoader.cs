@@ -27,9 +27,9 @@ namespace NHibernate.Loader.Custom
 		private readonly IDictionary namedParameters = new Hashtable( 4 );
 		private readonly string sqlQuery;
 		private readonly IDictionary alias2Persister;
-		private readonly string[ ] aliases;
+		private readonly string[] aliases;
 		private ISet querySpaces = new HashedSet();
-		private IType[ ] resultTypes;
+		private IType[] resultTypes;
 
 		private SqlString sql;
 		private IEntityAliases[] entityDescriptors;
@@ -51,7 +51,7 @@ namespace NHibernate.Loader.Custom
 			set { sql = value; }
 		}
 
-		protected override LockMode[] GetLockModes(IDictionary lockModes)
+		protected override LockMode[] GetLockModes( IDictionary lockModes )
 		{
 			return this.lockModes;
 		}
@@ -77,7 +77,7 @@ namespace NHibernate.Loader.Custom
 			get { return collectionPersisters; }
 		}
 
-		public SqlLoader( string[ ] aliases, ISqlLoadable[ ] persisters, ISessionFactoryImplementor factory, string sqlQuery, ICollection additionalQuerySpaces )
+		public SqlLoader( string[] aliases, ISqlLoadable[] persisters, ISessionFactoryImplementor factory, string sqlQuery, ICollection additionalQuerySpaces )
 			: base( factory )
 		{
 			this.sqlQuery = sqlQuery;
@@ -102,14 +102,14 @@ namespace NHibernate.Loader.Custom
 			{
 				querySpaces.AddAll( additionalQuerySpaces );
 			}
-			resultTypes = ( IType[ ] ) resultTypeList.ToArray( typeof( IType ) );
+			resultTypes = ( IType[] ) resultTypeList.ToArray( typeof( IType ) );
 
 			RenderStatement( persisters );
 
 			PostInstantiate();
 		}
 
-		private void RenderStatement( ILoadable[ ] persisters )
+		private void RenderStatement( ILoadable[] persisters )
 		{
 			int loadables = persisters.Length;
 
@@ -126,7 +126,7 @@ namespace NHibernate.Loader.Custom
 			return List( session, queryParameters, querySpaces, resultTypes );
 		}
 
-		protected override object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
+		protected override object GetResultColumnOrRow( object[] row, IDataReader rs, ISessionImplementor session )
 		{
 			if( EntityPersisters.Length == 1 )
 			{
@@ -208,7 +208,7 @@ namespace NHibernate.Loader.Custom
 						// but that requires more exposure of the internal maps of the persister...
 						// but it should be possible as propertyname should be unique for all persisters
 
-						string[ ] columnAliases;
+						string[] columnAliases;
 
 						/*
 						if ( AbstractEntityPersister.ENTITY_CLASS.Equals( propertyName )
@@ -320,7 +320,7 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		protected int[ ] GetNamedParameterLocs( string name )
+		protected int[] GetNamedParameterLocs( string name )
 		{
 			object o = namedParameters[ name ];
 			if( o == null )
@@ -330,7 +330,7 @@ namespace NHibernate.Loader.Custom
 
 			if( o is int )
 			{
-				return new int[ ] {( int ) o};
+				return new int[] { ( int ) o };
 			}
 			else
 			{
@@ -359,7 +359,7 @@ namespace NHibernate.Loader.Custom
 					string name = ( string ) de.Key;
 					TypedValue typedval = ( TypedValue ) de.Value;
 					IType type = typedval.Type;
-					int[ ] locs = GetNamedParameterLocs( name );
+					int[] locs = GetNamedParameterLocs( name );
 					for( int i = 0; i < locs.Length; i++ )
 					{
 						type.NullSafeSet( st, typedval.Value, locs[ i ] + start, session );
@@ -414,7 +414,7 @@ namespace NHibernate.Loader.Custom
 					int paramIndex = 0;
 
 					sql = SqlString.Clone();
-					int[ ] paramIndexes = sql.ParameterIndexes;
+					int[] paramIndexes = sql.ParameterIndexes;
 
 					// if there are no Parameters in the SqlString then there is no reason to 
 					// bother with this code.
@@ -422,13 +422,13 @@ namespace NHibernate.Loader.Custom
 					{
 						for( int i = 0; i < parameters.PositionalParameterTypes.Length; i++ )
 						{
-							string[ ] colNames = new string[parameters.PositionalParameterTypes[ i ].GetColumnSpan( factory )];
+							string[] colNames = new string[ parameters.PositionalParameterTypes[ i ].GetColumnSpan( factory ) ];
 							for( int j = 0; j < colNames.Length; j++ )
 							{
 								colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
 							}
 
-							Parameter[ ] sqlParameters = Parameter.GenerateParameters( factory, colNames, parameters.PositionalParameterTypes[ i ] );
+							Parameter[] sqlParameters = Parameter.GenerateParameters( factory, colNames, parameters.PositionalParameterTypes[ i ] );
 
 							foreach( Parameter param in sqlParameters )
 							{
@@ -448,7 +448,7 @@ namespace NHibernate.Loader.Custom
 							{
 								string name = ( string ) e.Key;
 								TypedValue typedval = ( TypedValue ) e.Value;
-								int[ ] locs = GetNamedParameterLocs( name );
+								int[] locs = GetNamedParameterLocs( name );
 
 								for( int i = 0; i < locs.Length; i++ )
 								{
@@ -475,14 +475,14 @@ namespace NHibernate.Loader.Custom
 							for( int i = 0; i < paramTypeList.Count; i++ )
 							{
 								IType type = ( IType ) paramTypeList[ i ];
-								string[ ] colNames = new string[type.GetColumnSpan( factory )];
+								string[] colNames = new string[ type.GetColumnSpan( factory ) ];
 
 								for( int j = 0; j < colNames.Length; j++ )
 								{
 									colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
 								}
 
-								Parameter[ ] sqlParameters = Parameter.GenerateParameters( factory, colNames, type );
+								Parameter[] sqlParameters = Parameter.GenerateParameters( factory, colNames, type );
 
 								foreach( Parameter param in sqlParameters )
 								{

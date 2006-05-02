@@ -109,7 +109,7 @@ namespace NHibernate.Type
 				return false;
 			}
 
-			return ArrayHelper.Equals( ( byte[ ] ) x, ( byte[ ] ) y );
+			return CollectionHelper.CollectionEquals( ( byte[ ] ) x, ( byte[ ] ) y );
 		}
 
 		public override string Name

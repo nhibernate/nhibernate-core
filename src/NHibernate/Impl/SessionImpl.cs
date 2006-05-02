@@ -21,6 +21,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using NHibernate.Engine.Query;
 
 namespace NHibernate.Impl
 {
@@ -5173,6 +5174,72 @@ namespace NHibernate.Impl
 			CheckIsOpen();
 
 			return new SqlQueryImpl( sql, returnAliases, returnClasses, this, querySpaces );
+		}
+
+		public IList List( NativeSQLQuerySpecification spec, QueryParameters queryParameters )
+		{
+			ArrayList results = new ArrayList();
+			List( spec, queryParameters, results );
+			return results;
+		}
+
+		public IList<T> List<T>( NativeSQLQuerySpecification spec, QueryParameters queryParameters )
+		{
+			List<T> results = new List<T>();
+			List( spec, queryParameters, results );
+			return results;
+		}
+
+		public void List( NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results )
+		{
+			SQLCustomQuery query = new SQLCustomQuery(
+				spec.SqlQueryReturns,
+				spec.SqlQueryScalarReturns,
+				spec.QueryString,
+				spec.QuerySpaces,
+				factory );
+			ListCustomQuery( query, queryParameters, results );
+		}
+
+		public void ListCustomQuery( ICustomQuery customQuery, QueryParameters queryParameters, IList results )
+		{
+			CheckIsOpen();
+
+			CustomLoader loader = new CustomLoader( customQuery, factory );
+			AutoFlushIfRequired( loader.QuerySpaces );
+
+			dontFlushFromFind++;
+			try
+			{
+				ArrayHelper.AddAll( results, loader.List( this, queryParameters ) );
+			}
+			finally
+			{
+				dontFlushFromFind--;
+			}
+		}
+
+		public IList<T> ListCustomQuery<T>( ICustomQuery customQuery, QueryParameters queryParameters )
+		{
+			CheckIsOpen();
+
+			CustomLoader loader = new CustomLoader( customQuery, factory );
+			AutoFlushIfRequired( loader.QuerySpaces );
+
+			dontFlushFromFind++;
+			bool success = false;
+			try
+			{
+				IList results = loader.List( this, queryParameters );
+				success = true;
+				List<T> typedResults = new List<T>();
+				ArrayHelper.AddAll( typedResults, results );
+				return typedResults;
+			}
+			finally
+			{
+				dontFlushFromFind--;
+			}
 		}
 
 		public IList FindBySQL(

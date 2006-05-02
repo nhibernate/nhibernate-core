@@ -518,6 +518,8 @@
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
     <Compile Include="Engine\EntityKey.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
+    <Compile Include="Engine\Query\NativeSQLQuerySpecification.cs" />
+    <Compile Include="Engine\Query\ParameterParser.cs" />
     <Compile Include="Expression\ICriteriaQuery.cs" />
     <Compile Include="Hql\Util\SessionFactoryHelper.cs">
       <SubType>Code</SubType>
@@ -536,7 +538,19 @@
     <Compile Include="Loader\Criteria\CriteriaJoinWalker.cs" />
     <Compile Include="Loader\Criteria\CriteriaLoader.cs" />
     <Compile Include="Loader\Criteria\CriteriaQueryTranslator.cs" />
+    <Compile Include="Loader\Custom\ColumnCollectionAliases.cs" />
+    <Compile Include="Loader\Custom\ColumnEntityAliases.cs" />
+    <Compile Include="Loader\Custom\CustomLoader.cs" />
+    <Compile Include="Loader\Custom\ICustomQuery.cs" />
+    <Compile Include="Loader\Custom\SQLCustomQuery.cs" />
     <Compile Include="Loader\Custom\SqlLoader.cs" />
+    <Compile Include="Loader\Custom\SQLQueryCollectionReturn.cs" />
+    <Compile Include="Loader\Custom\SQLQueryJoinReturn.cs" />
+    <Compile Include="Loader\Custom\SQLQueryParser.cs" />
+    <Compile Include="Loader\Custom\SQLQueryReturn.cs" />
+    <Compile Include="Loader\Custom\SQLQueryReturnProcessor.cs" />
+    <Compile Include="Loader\Custom\SQLQueryRootReturn.cs" />
+    <Compile Include="Loader\Custom\SQLQueryScalarReturn.cs" />
     <Compile Include="Loader\DefaultEntityAliases.cs" />
     <Compile Include="Loader\Entity\AbstractEntityLoader.cs" />
     <Compile Include="Loader\Entity\BatchingEntityLoader.cs" />
@@ -558,6 +572,7 @@
     <Compile Include="Persister\Collection\ElementPropertyMapping.cs" />
     <Compile Include="Persister\Collection\ICollectionPersister.cs" />
     <Compile Include="Persister\Collection\IQueryableCollection.cs" />
+    <Compile Include="Persister\Collection\ISqlLoadableCollection.cs" />
     <Compile Include="Persister\Collection\OneToManyPersister.cs" />
     <Compile Include="Persister\Entity\AbstractEntityPersister.cs" />
     <Compile Include="Persister\Entity\AbstractPropertyMapping.cs" />

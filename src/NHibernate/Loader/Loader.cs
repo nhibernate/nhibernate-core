@@ -1328,13 +1328,41 @@ namespace NHibernate.Loader
 		/// <param name="namedParams">The named parameters (key) and the values to set.</param>
 		/// <param name="session">The <see cref="ISession"/> this Loader is using.</param>
 		/// <param name="start"></param>
-		/// <remarks>
-		/// This has an empty implementation on this superclass and should be implemented by
-		/// sublcasses (queries) which allow named parameters.
-		/// </remarks>
 		protected virtual int BindNamedParameters( IDbCommand st, IDictionary namedParams, int start, ISessionImplementor session )
 		{
-			return 0;
+			if( namedParams != null )
+			{
+				// assumes that types are all of span 1
+				int result = 0;
+				foreach( DictionaryEntry e in namedParams )
+				{
+					string name = ( string ) e.Key;
+					TypedValue typedval = ( TypedValue ) e.Value;
+					int[] locs = GetNamedParameterLocs( name );
+					for( int i = 0; i < locs.Length; i++ )
+					{
+						if( log.IsDebugEnabled )
+						{
+							log.Debug(
+								"BindNamedParameters() " +
+								typedval.Value + " -> " + name +
+								" [" + ( locs[ i ] + start ) + "]" );
+						}
+						typedval.Type.NullSafeSet( st, typedval.Value, locs[ i ] + start, session );
+					}
+					result += locs.Length;
+				}
+				return result;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		public virtual int[] GetNamedParameterLocs( string name )
+		{
+			throw new AssertionFailure( "no named parameters" );
 		}
 
 		/// <summary>
