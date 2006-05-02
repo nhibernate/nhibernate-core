@@ -18,6 +18,7 @@ using NHibernate.Loader.Entity;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Property;
+using NHibernate.Property.Bulk;
 using NHibernate.Proxy;
 using NHibernate.SqlCommand;
 using NHibernate.Tuple;

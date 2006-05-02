@@ -8,7 +8,7 @@ using Microsoft.CSharp;
 using NHibernate.Persister.Entity;
 using NHibernate.Property;
 
-namespace NHibernate.Persister
+namespace NHibernate.Property.Bulk
 {
 	/// <summary>
 	/// Factory that generate object based on IGetSetHelper needed to replace the use
@@ -174,7 +174,7 @@ namespace NHibernate.Persister
 		private const string header =
 			"using System;\n" +
 				"using NHibernate.Property;\n" +
-				"namespace NHibernate.Persister {\n";
+				"namespace NHibernate.Property.Bulk {\n";
 
 		private const string classDef =
 			"public class GetSetHelper_{0} : IGetSetHelper {{\n" +

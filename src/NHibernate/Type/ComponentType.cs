@@ -5,6 +5,7 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Property;
+using NHibernate.Property.Bulk;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 

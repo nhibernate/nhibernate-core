@@ -303,8 +303,6 @@
     <Compile Include="ObjectDeletedException.cs" />
     <Compile Include="ObjectNotFoundException.cs" />
     <Compile Include="PersistentObjectException.cs" />
-    <Compile Include="Persister\GetSetHelperFactory.cs" />
-    <Compile Include="Persister\IGetSetHelper.cs" />
     <Compile Include="Persister\PersisterFactory.cs" />
     <Compile Include="PropertyAccessException.cs" />
     <Compile Include="PropertyNotFoundException.cs" />
@@ -587,6 +585,8 @@
     <Compile Include="Persister\Entity\JoinedSubclassEntityPersister.cs" />
     <Compile Include="Persister\Entity\LoadableConstants.cs" />
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
+    <Compile Include="Property\Bulk\GetSetHelperFactory.cs" />
+    <Compile Include="Property\Bulk\IGetSetHelper.cs" />
     <Compile Include="Tuple\EntityMetamodel.cs" />
     <Compile Include="Tuple\IdentifierProperty.cs" />
     <Compile Include="Tuple\Property.cs" />
