@@ -210,10 +210,8 @@ namespace NHibernate.Persister.Entity
 		/// Return the values of the mapped properties of the object
 		/// </summary>
 		/// <remarks>
-		/// Use the IGetSetHelper if available
+		/// Uses the access optimizer, if available.
 		/// </remarks>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		public virtual object[] GetPropertyValues( object obj )
 		{
 			if( optimizer != null && optimizer.AccessOptimizer != null )

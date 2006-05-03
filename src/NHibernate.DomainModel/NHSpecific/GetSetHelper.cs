@@ -3,8 +3,8 @@ using System;
 namespace NHibernate.DomainModel.NHSpecific
 {
 	/// <summary>
-	/// Test the ability of GetSetHelperFactory to generate code that can set
-    /// a value type from a null.
+	/// Test the ability of CodeDOM bytecode provider to generate code that
+	/// can set a value type from a null.
 	/// </summary>
     public class GetSetHelper
     {

@@ -492,7 +492,7 @@
       <SubType>
       </SubType>
     </EmbeddedResource>
-    <Compile Include="Bytecode\CodeDom\GetSetHelperFactory.cs" />
+    <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />
     <Compile Include="Bytecode\IBytecodeProvider.cs" />
     <Compile Include="Bytecode\IInstantiationOptimizer.cs" />

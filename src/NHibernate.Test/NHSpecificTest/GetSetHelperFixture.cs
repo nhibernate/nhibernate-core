@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest 
 {
     /// <summary>
-    /// Test the ability of GetSetHelperFactory to generate code that can set
+    /// Test the ability of BytecodeProviderImpl to generate code that can set
     /// a value type from a null.
     /// </summary>
 	[TestFixture]

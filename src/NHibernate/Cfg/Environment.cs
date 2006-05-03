@@ -196,7 +196,7 @@ namespace NHibernate.Cfg
 		{
 			switch( providerName )
 			{
-				case "codedom": return new Bytecode.CodeDom.GetSetHelperFactory();
+				case "codedom": return new Bytecode.CodeDom.BytecodeProviderImpl();
 				case "null": return new Bytecode.NullBytecodeProvider();
 				default:
 					log.Warn( "unrecognized bytecode provider [" + providerName + "], using null by default" );

@@ -11,18 +11,13 @@ using NHibernate.Property;
 namespace NHibernate.Bytecode.CodeDom
 {
 	/// <summary>
-	/// Factory that generate object based on IGetSetHelper needed to replace the use
-	/// of reflection.
+	/// CodeDOM-based bytecode provider.
 	/// </summary>
-	/// <remarks>
-	/// Used in <see cref="AbstractEntityPersister"/> and
-	/// <see cref="NHibernate.Type.ComponentType"/>
-	/// </remarks>
-	public class GetSetHelperFactory : IBytecodeProvider
+	public class BytecodeProviderImpl : IBytecodeProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( GetSetHelperFactory ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( BytecodeProviderImpl ) );
 
-		public GetSetHelperFactory()
+		public BytecodeProviderImpl()
 		{
 		}
 
@@ -41,8 +36,8 @@ namespace NHibernate.Bytecode.CodeDom
 		{
 			private CompilerParameters cp = new CompilerParameters();
 			private System.Type mappedClass;
-			private ISetter[] setters;
 			private IGetter[] getters;
+			private ISetter[] setters;
 
 			/// <summary>
 			/// ctor
@@ -156,11 +151,11 @@ namespace NHibernate.Bytecode.CodeDom
 
 				Assembly assembly = res.CompiledAssembly;
 				System.Type[] types = assembly.GetTypes();
-				IReflectionOptimizer getset = ( IReflectionOptimizer ) assembly.CreateInstance( types[ 0 ].FullName, false,
+				IReflectionOptimizer optimizer = ( IReflectionOptimizer ) assembly.CreateInstance( types[ 0 ].FullName, false,
 																				  BindingFlags.CreateInstance, null, new object[] { setters, getters },
 																				  CultureInfo.InvariantCulture, null );
 
-				return getset;
+				return optimizer;
 			}
 
 			private const string header =
