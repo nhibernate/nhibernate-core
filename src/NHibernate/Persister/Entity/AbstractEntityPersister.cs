@@ -18,15 +18,15 @@ using NHibernate.Loader.Entity;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
 using NHibernate.Property;
-using NHibernate.Property.Bulk;
 using NHibernate.Proxy;
 using NHibernate.SqlCommand;
 using NHibernate.Tuple;
 using NHibernate.Type;
 using NHibernate.Util;
 
-using Array=System.Array;
-using Environment=NHibernate.Cfg.Environment;
+using Array = System.Array;
+using Environment = NHibernate.Cfg.Environment;
+using NHibernate.Bytecode;
 
 namespace NHibernate.Persister.Entity
 {
@@ -69,8 +69,8 @@ namespace NHibernate.Persister.Entity
 		// the identifier property
 		private readonly bool hasEmbeddedIdentifier;
 
-		private readonly string[ ] rootTableKeyColumnNames;
-		private readonly string[ ] identifierAliases;
+		private readonly string[] rootTableKeyColumnNames;
+		private readonly string[] identifierAliases;
 		private readonly int identifierColumnSpan;
 
 		private readonly ISetter identifierSetter;
@@ -85,8 +85,8 @@ namespace NHibernate.Persister.Entity
 		// other properties (for this concrete class only, not the subclass closure)
 		private readonly int hydrateSpan;
 
-		private readonly IGetter[ ] getters;
-		private readonly ISetter[ ] setters;
+		private readonly IGetter[] getters;
+		private readonly ISetter[] setters;
 
 		private readonly Hashtable gettersByPropertyName = new Hashtable();
 		private readonly Hashtable settersByPropertyName = new Hashtable();
@@ -103,7 +103,7 @@ namespace NHibernate.Persister.Entity
 
 		private readonly Hashtable lockers = new Hashtable();
 
-		private readonly IGetSetHelper getset = null;
+		private readonly IReflectionOptimizer optimizer = null;
 
 		private readonly EntityMetamodel entityMetamodel;
 
@@ -113,43 +113,43 @@ namespace NHibernate.Persister.Entity
 
 		// the number of columns that the property spans
 		// the array is indexed as propertyColumnSpans[propertyIndex] = ##
-		private readonly int[ ] propertyColumnSpans;
+		private readonly int[] propertyColumnSpans;
 		// the names of the columns for the property
 		// the array is indexed as propertyColumnNames[propertyIndex][columnIndex] = "columnName"
-		private readonly string[ ][ ] propertyColumnNames;
+		private readonly string[][] propertyColumnNames;
 		// the alias names for the columns of the property.  This is used in the AS portion for 
 		// selecting a column.  It is indexed the same as propertyColumnNames
-		private readonly string[ ][ ] propertyColumnAliases;
+		private readonly string[][] propertyColumnAliases;
 		//private readonly string[ ] propertyFormulaTemplates;
-		private readonly string[ ][ ] propertyColumnFormulaTemplates;
+		private readonly string[][] propertyColumnFormulaTemplates;
 
-		private readonly bool[ ][ ] propertyColumnInsertable;
-		private readonly bool[ ][ ] propertyColumnUpdateable;
-		private readonly bool[ ] propertyUniqueness;
+		private readonly bool[][] propertyColumnInsertable;
+		private readonly bool[][] propertyColumnUpdateable;
+		private readonly bool[] propertyUniqueness;
 
 		private readonly bool hasFormulaProperties;
 
 		// the closure of all columns used by the entire hierarchy including
 		// subclasses and superclasses of this class
-		private readonly string[ ] subclassColumnClosure;
-		private readonly string[ ] subclassFormulaTemplateClosure;
-		private readonly string[ ] subclassFormulaClosure;
-		private readonly string[ ] subclassColumnAliasClosure;
-		private readonly string[ ] subclassFormulaAliasClosure;
+		private readonly string[] subclassColumnClosure;
+		private readonly string[] subclassFormulaTemplateClosure;
+		private readonly string[] subclassFormulaClosure;
+		private readonly string[] subclassColumnAliasClosure;
+		private readonly string[] subclassFormulaAliasClosure;
 
 		// the closure of all properties in the entire hierarchy including
 		// subclasses and superclasses of this class
-		private readonly string[ ][ ] subclassPropertyFormulaTemplateClosure;
-		private readonly string[ ][ ] subclassPropertyColumnNameClosure;
-		private readonly bool[ ] subclassPropertyNullabilityClosure;
-		private readonly string[ ] subclassPropertyNameClosure;
-		private readonly IType[ ] subclassPropertyTypeClosure;
-		private readonly FetchMode[ ] subclassPropertyFetchModeClosure;
+		private readonly string[][] subclassPropertyFormulaTemplateClosure;
+		private readonly string[][] subclassPropertyColumnNameClosure;
+		private readonly bool[] subclassPropertyNullabilityClosure;
+		private readonly string[] subclassPropertyNameClosure;
+		private readonly IType[] subclassPropertyTypeClosure;
+		private readonly FetchMode[] subclassPropertyFetchModeClosure;
 
 		// temporarily 'protected' instead of 'private readonly'
-		protected bool[ ] propertyDefinedOnSubclass;
+		protected bool[] propertyDefinedOnSubclass;
 
-		private readonly Cascades.CascadeStyle[ ] subclassPropertyCascadeStyleClosure;
+		private readonly Cascades.CascadeStyle[] subclassPropertyCascadeStyleClosure;
 		private IDictionary loaders = new Hashtable();
 
 		protected SqlString GetLockString( LockMode lockMode )
@@ -180,7 +180,7 @@ namespace NHibernate.Persister.Entity
 				.ToSqlStringFragment( false );
 		}
 
-		public virtual Cascades.CascadeStyle[ ] PropertyCascadeStyles
+		public virtual Cascades.CascadeStyle[] PropertyCascadeStyles
 		{
 			get { return entityMetamodel.CascadeStyles; }
 		}
@@ -189,23 +189,20 @@ namespace NHibernate.Persister.Entity
 		/// Set the given values to the mapped properties of the given object
 		/// </summary>
 		/// <remarks>
-		/// Use the IGetSetHelper if available
+		/// Use the access optimizer if available
 		/// </remarks>
-		/// <param name="obj"></param>
-		/// <param name="values"></param>
-		public virtual void SetPropertyValues( object obj, object[ ] values )
+		public virtual void SetPropertyValues( object obj, object[] values )
 		{
-			if( getset == null )
+			if( optimizer != null && optimizer.AccessOptimizer != null )
 			{
-				//TODO: optimizer implementation
+				optimizer.AccessOptimizer.SetPropertyValues( obj, values );
+			}
+			else
+			{
 				for( int j = 0; j < HydrateSpan; j++ )
 				{
 					Setters[ j ].Set( obj, values[ j ] );
 				}
-			}
-			else
-			{
-				getset.SetPropertyValues( obj, values );
 			}
 		}
 
@@ -217,22 +214,21 @@ namespace NHibernate.Persister.Entity
 		/// </remarks>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public virtual object[ ] GetPropertyValues( object obj )
+		public virtual object[] GetPropertyValues( object obj )
 		{
-			if( getset == null )
+			if( optimizer != null && optimizer.AccessOptimizer != null )
+			{
+				return optimizer.AccessOptimizer.GetPropertyValues( obj );
+			}
+			else
 			{
 				int span = HydrateSpan;
-				//TODO: optimizer implementation
-				object[ ] result = new object[span];
+				object[] result = new object[ span ];
 				for( int j = 0; j < span; j++ )
 				{
 					result[ j ] = Getters[ j ].Get( obj );
 				}
 				return result;
-			}
-			else
-			{
-				return getset.GetPropertyValues( obj );
 			}
 		}
 
@@ -258,7 +254,7 @@ namespace NHibernate.Persister.Entity
 			Setters[ i ].Set( obj, value );
 		}
 
-		private void LogDirtyProperties( int[ ] props )
+		private void LogDirtyProperties( int[] props )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -278,9 +274,9 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public virtual int[ ] FindDirty( object[ ] x, object[ ] y, object obj, ISessionImplementor session )
+		public virtual int[] FindDirty( object[] x, object[] y, object obj, ISessionImplementor session )
 		{
-			int[ ] props = TypeFactory.FindDirty(
+			int[] props = TypeFactory.FindDirty(
 				entityMetamodel.Properties, x, y, propertyColumnUpdateable, false, session );
 
 			if( props == null )
@@ -302,9 +298,9 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public virtual int[ ] FindModified( object[ ] old, object[ ] current, object obj, ISessionImplementor session )
+		public virtual int[] FindModified( object[] old, object[] current, object obj, ISessionImplementor session )
 		{
-			int[ ] props = TypeFactory.FindModified(
+			int[] props = TypeFactory.FindModified(
 				entityMetamodel.Properties, old, current, propertyColumnUpdateable, false, session );
 			if( props == null )
 			{
@@ -391,17 +387,17 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected virtual ISetter[ ] Setters
+		protected virtual ISetter[] Setters
 		{
 			get { return setters; }
 		}
 
-		protected virtual IGetter[ ] Getters
+		protected virtual IGetter[] Getters
 		{
 			get { return getters; }
 		}
 
-		public virtual IType[ ] PropertyTypes
+		public virtual IType[] PropertyTypes
 		{
 			get { return entityMetamodel.PropertyTypes; }
 		}
@@ -411,12 +407,12 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.IdentifierProperty.Type; }
 		}
 
-		public override string[ ] IdentifierColumnNames
+		public override string[] IdentifierColumnNames
 		{
 			get { return rootTableKeyColumnNames; }
 		}
 
-		public string[ ] IdentifierAliases
+		public string[] IdentifierAliases
 		{
 			get { return identifierAliases; }
 		}
@@ -504,7 +500,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		/// <summary></summary>
-		public virtual string[ ] PropertyNames
+		public virtual string[] PropertyNames
 		{
 			get { return entityMetamodel.PropertyNames; }
 		}
@@ -618,8 +614,8 @@ namespace NHibernate.Persister.Entity
 
 			if( IsPolymorphic )
 			{
-				AddPropertyPath( PathExpressionParser.EntityClass, DiscriminatorType, new string[ ] {DiscriminatorColumnName},
-				                 null
+				AddPropertyPath( PathExpressionParser.EntityClass, DiscriminatorType, new string[] { DiscriminatorColumnName },
+								 null
 					// TODO H3: new string[ ] { DiscriminatorFormulaTemplate }
 					);
 			}
@@ -638,8 +634,8 @@ namespace NHibernate.Persister.Entity
 
 			sqlWhereString = persistentClass.Where;
 			sqlWhereStringTemplate = sqlWhereString == null ?
-			                         null :
-			                         Template.RenderWhereStringTemplate( sqlWhereString, Dialect );
+									 null :
+									 Template.RenderWhereStringTemplate( sqlWhereString, Dialect );
 
 			batchSize = persistentClass.BatchSize;
 			constructor = ReflectHelper.GetDefaultConstructor( mappedClass );
@@ -674,20 +670,8 @@ namespace NHibernate.Persister.Entity
 			if( persistentClass.HasIdentifierProperty && prox != null )
 			{
 				Mapping.Property idProperty = persistentClass.IdentifierProperty;
-
-				PropertyInfo getIdPropertyInfo = idProperty.GetGetter( prox ).Property;
-
-				if( getIdPropertyInfo != null )
-				{
-					proxyGetIdentifierMethod = getIdPropertyInfo.GetGetMethod( true );
-				}
-
-				PropertyInfo setIdPropertyInfo = idProperty.GetSetter( prox ).Property;
-
-				if( setIdPropertyInfo != null )
-				{
-					proxySetIdentifierMethod = setIdPropertyInfo.GetSetMethod( true );
-				}
+				proxyGetIdentifierMethod = idProperty.GetGetter( prox ).Method;
+				proxySetIdentifierMethod = idProperty.GetSetter( prox ).Method;
 			}
 
 			// HYDRATE SPAN
@@ -696,8 +680,8 @@ namespace NHibernate.Persister.Entity
 			// IDENTIFIER 
 
 			identifierColumnSpan = persistentClass.Identifier.ColumnSpan;
-			rootTableKeyColumnNames = new string[identifierColumnSpan];
-			identifierAliases = new string[identifierColumnSpan];
+			rootTableKeyColumnNames = new string[ identifierColumnSpan ];
+			identifierAliases = new string[ identifierColumnSpan ];
 
 			int i = 0;
 			foreach( Column col in idValue.ColumnCollection )
@@ -735,11 +719,11 @@ namespace NHibernate.Persister.Entity
 
 			// PROPERTIES 
 
-			getters = new IGetter[hydrateSpan];
-			setters = new ISetter[hydrateSpan];
-			string[ ] setterNames = new string[hydrateSpan];
-			string[ ] getterNames = new string[hydrateSpan];
-			System.Type[ ] classes = new System.Type[hydrateSpan];
+			getters = new IGetter[ hydrateSpan ];
+			setters = new ISetter[ hydrateSpan ];
+			string[] setterNames = new string[ hydrateSpan ];
+			string[] getterNames = new string[ hydrateSpan ];
+			System.Type[] classes = new System.Type[ hydrateSpan ];
 
 			i = 0;
 
@@ -767,13 +751,13 @@ namespace NHibernate.Persister.Entity
 			}
 
 			// PROPERTIES (FROM ABSTRACTENTITYPERSISTER SUBCLASSES)
-			propertyColumnNames = new string[HydrateSpan][ ];
-			propertyColumnAliases = new string[HydrateSpan][ ];
-			propertyColumnSpans = new int[HydrateSpan];
-			propertyColumnFormulaTemplates = new string[HydrateSpan][ ];
-			propertyColumnUpdateable = new bool[HydrateSpan][ ];
-			propertyColumnInsertable = new bool[HydrateSpan][ ];
-			propertyUniqueness = new bool[HydrateSpan];
+			propertyColumnNames = new string[ HydrateSpan ][];
+			propertyColumnAliases = new string[ HydrateSpan ][];
+			propertyColumnSpans = new int[ HydrateSpan ];
+			propertyColumnFormulaTemplates = new string[ HydrateSpan ][];
+			propertyColumnUpdateable = new bool[ HydrateSpan ][];
+			propertyColumnInsertable = new bool[ HydrateSpan ][];
+			propertyUniqueness = new bool[ HydrateSpan ];
 
 			HashedSet thisClassProperties = new HashedSet();
 			i = 0;
@@ -785,9 +769,9 @@ namespace NHibernate.Persister.Entity
 
 				int span = prop.ColumnSpan;
 				propertyColumnSpans[ i ] = span;
-				string[ ] colNames = new string[span];
-				string[ ] colAliases = new string[span];
-				string[ ] templates = new string[span];
+				string[] colNames = new string[ span ];
+				string[] colAliases = new string[ span ];
+				string[] templates = new string[ span ];
 
 				int k = 0;
 				foreach( ISelectable thing in prop.ColumnCollection )
@@ -817,10 +801,7 @@ namespace NHibernate.Persister.Entity
 			hasFormulaProperties = foundFormula;
 
 			// NH: reflection optimizer works with custom accessors
-			if( /*!foundCustomAccessor &&*/ Environment.UseReflectionOptimizer )
-			{
-				getset = GetSetHelperFactory.Create( MappedClass, Setters, Getters );
-			}
+			optimizer = Environment.BytecodeProvider.GetReflectionOptimizer( MappedClass, Getters, Setters );
 
 			// SUBCLASS PROPERTY CLOSURE
 
@@ -846,10 +827,10 @@ namespace NHibernate.Persister.Entity
 				propNullables.Add( prop.IsOptional || isDefinedBySubclass ); //TODO: is this completely correct?
 				types.Add( prop.Type );
 
-				string[ ] cols = new string[prop.ColumnSpan];
-				string[ ] forms = new string[prop.ColumnSpan];
-				int[ ] colnos = new int[prop.ColumnSpan];
-				int[ ] formnos = new int[prop.ColumnSpan];
+				string[] cols = new string[ prop.ColumnSpan ];
+				string[] forms = new string[ prop.ColumnSpan ];
+				int[] colnos = new int[ prop.ColumnSpan ];
+				int[] formnos = new int[ prop.ColumnSpan ];
 				int l = 0;
 
 				foreach( ISelectable thing in prop.ColumnCollection )
@@ -888,32 +869,32 @@ namespace NHibernate.Persister.Entity
 				cascades.Add( prop.CascadeStyle );
 			}
 
-			subclassColumnClosure = ( string[ ] ) columns.ToArray( typeof( string ) );
-			subclassFormulaClosure = ( string[ ] ) formulas.ToArray( typeof( string ) );
-			subclassFormulaTemplateClosure = ( string[ ] ) formulaTemplates.ToArray( typeof( string ) );
-			subclassPropertyTypeClosure = ( IType[ ] ) types.ToArray( typeof( IType ) );
-			subclassColumnAliasClosure = ( string[ ] ) aliases.ToArray( typeof( string ) );
-			subclassFormulaAliasClosure = ( string[ ] ) formulaAliases.ToArray( typeof( string ) );
-			subclassPropertyNameClosure = ( string[ ] ) names.ToArray( typeof( string ) );
-			subclassPropertyNullabilityClosure = ( bool[ ] ) propNullables.ToArray( typeof( bool ) );
+			subclassColumnClosure = ( string[] ) columns.ToArray( typeof( string ) );
+			subclassFormulaClosure = ( string[] ) formulas.ToArray( typeof( string ) );
+			subclassFormulaTemplateClosure = ( string[] ) formulaTemplates.ToArray( typeof( string ) );
+			subclassPropertyTypeClosure = ( IType[] ) types.ToArray( typeof( IType ) );
+			subclassColumnAliasClosure = ( string[] ) aliases.ToArray( typeof( string ) );
+			subclassFormulaAliasClosure = ( string[] ) formulaAliases.ToArray( typeof( string ) );
+			subclassPropertyNameClosure = ( string[] ) names.ToArray( typeof( string ) );
+			subclassPropertyNullabilityClosure = ( bool[] ) propNullables.ToArray( typeof( bool ) );
 			subclassPropertyFormulaTemplateClosure = ArrayHelper.To2DStringArray( subclassTemplates );
-			subclassPropertyColumnNameClosure = ( string[ ][ ] ) propColumns.ToArray( typeof( string[ ] ) );
+			subclassPropertyColumnNameClosure = ( string[][] ) propColumns.ToArray( typeof( string[] ) );
 
-			subclassPropertyCascadeStyleClosure = new Cascades.CascadeStyle[cascades.Count];
+			subclassPropertyCascadeStyleClosure = new Cascades.CascadeStyle[ cascades.Count ];
 			int m = 0;
 			foreach( Cascades.CascadeStyle cs in cascades )
 			{
 				subclassPropertyCascadeStyleClosure[ m++ ] = cs;
 			}
 
-			subclassPropertyFetchModeClosure = new FetchMode[joinedFetchesList.Count];
+			subclassPropertyFetchModeClosure = new FetchMode[ joinedFetchesList.Count ];
 			m = 0;
 			foreach( FetchMode qq in joinedFetchesList )
 			{
 				subclassPropertyFetchModeClosure[ m++ ] = qq;
 			}
 
-			propertyDefinedOnSubclass = new bool[definedBySubclass.Count];
+			propertyDefinedOnSubclass = new bool[ definedBySubclass.Count ];
 			m = 0;
 			foreach( bool val in definedBySubclass )
 			{
@@ -960,7 +941,7 @@ namespace NHibernate.Persister.Entity
 						if( subclassProxy == null )
 						{
 							throw new MappingException( "All subclasses must also have proxies: "
-							                            + mappedClass.Name );
+														+ mappedClass.Name );
 						}
 
 						if( !subclass.MappedClass.Equals( subclassProxy ) )
@@ -1011,18 +992,18 @@ namespace NHibernate.Persister.Entity
 			{
 				// Fetch embedded identifier property names from the "virtual" identifier component
 				IAbstractComponentType componentId = ( IAbstractComponentType ) IdentifierType;
-				string[ ] idPropertyNames = componentId.PropertyNames;
-				string[ ] idAliases = IdentifierAliases;
+				string[] idPropertyNames = componentId.PropertyNames;
+				string[] idAliases = IdentifierAliases;
 
 				for( int i = 0; i < idPropertyNames.Length; i++ )
 				{
-					subclassPropertyAliases[ idPropertyNames[ i ] ] = new string[ ] {idAliases[ i ]};
+					subclassPropertyAliases[ idPropertyNames[ i ] ] = new string[] { idAliases[ i ] };
 				}
 			}
 
 			if( IsPolymorphic )
 			{
-				subclassPropertyAliases[ PathExpressionParser.EntityClass ] = new string[ ] {DiscriminatorAlias};
+				subclassPropertyAliases[ PathExpressionParser.EntityClass ] = new string[] { DiscriminatorAlias };
 			}
 		}
 
@@ -1038,8 +1019,8 @@ namespace NHibernate.Persister.Entity
 				}
 				else
 				{
-					string[ ] aliases = new string[prop.ColumnSpan];
-					string[ ] cols = new string[prop.ColumnSpan];
+					string[] aliases = new string[ prop.ColumnSpan ];
+					string[] cols = new string[ prop.ColumnSpan ];
 					int l = 0;
 					foreach( ISelectable thing in prop.ColumnCollection )
 					{
@@ -1058,11 +1039,11 @@ namespace NHibernate.Persister.Entity
 		{
 			SqlString lockString = GenerateLockString( null, null );
 			SqlString lockExclusiveString = Dialect.SupportsForUpdate ?
-			                                GenerateLockString( lockString, " for update" ) :
-			                                GenerateLockString( lockString, null );
+											GenerateLockString( lockString, " for update" ) :
+											GenerateLockString( lockString, null );
 			SqlString lockExclusiveNowaitString = Dialect.SupportsForUpdateNoWait ?
-			                                      GenerateLockString( lockString, " for update nowait" ) :
-			                                      GenerateLockString( lockExclusiveString, null );
+												  GenerateLockString( lockString, " for update nowait" ) :
+												  GenerateLockString( lockExclusiveString, null );
 
 			lockers.Add( LockMode.Read, lockString );
 			lockers.Add( LockMode.Upgrade, lockExclusiveString );
@@ -1091,17 +1072,17 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.IsExplicitPolymorphism; }
 		}
 
-		public virtual bool[ ] PropertyUpdateability
+		public virtual bool[] PropertyUpdateability
 		{
 			get { return entityMetamodel.PropertyUpdateability; }
 		}
 
-		public virtual bool[ ] PropertyCheckability
+		public virtual bool[] PropertyCheckability
 		{
 			get { return entityMetamodel.PropertyCheckability; }
 		}
 
-		public virtual bool[ ] PropertyNullability
+		public virtual bool[] PropertyNullability
 		{
 			get { return entityMetamodel.PropertyNullability; }
 		}
@@ -1116,7 +1097,7 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.IsDynamicInsert; }
 		}
 
-		public virtual bool[ ] PropertyInsertability
+		public virtual bool[] PropertyInsertability
 		{
 			get { return entityMetamodel.PropertyInsertability; }
 		}
@@ -1146,10 +1127,10 @@ namespace NHibernate.Persister.Entity
 			get { return hasEmbeddedIdentifier; }
 		}
 
-		public bool[ ] GetNotNullInsertableColumns( object[ ] fields )
+		public bool[] GetNotNullInsertableColumns( object[] fields )
 		{
-			bool[ ] notNull = new bool[fields.Length];
-			bool[ ] insertable = PropertyInsertability;
+			bool[] notNull = new bool[ fields.Length ];
+			bool[] insertable = PropertyInsertability;
 
 			for( int i = 0; i < fields.Length; i++ )
 			{
@@ -1208,8 +1189,8 @@ namespace NHibernate.Persister.Entity
 
 		protected void CreateUniqueKeyLoaders()
 		{
-			IType[ ] propertyTypes = PropertyTypes;
-			string[ ] propertyNames = PropertyNames;
+			IType[] propertyTypes = PropertyTypes;
+			string[] propertyNames = PropertyNames;
 
 			// TODO: Does not handle components, or properties of a joined subclass
 			for( int i = 0; i < entityMetamodel.PropertySpan; i++ )
@@ -1227,7 +1208,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private EntityLoader CreateUniqueKeyLoader( IType uniqueKeyType, string[ ] columns, IDictionary enabledFilters )
+		private EntityLoader CreateUniqueKeyLoader( IType uniqueKeyType, string[] columns, IDictionary enabledFilters )
 		{
 			if( uniqueKeyType.IsEntityType )
 			{
@@ -1253,16 +1234,16 @@ namespace NHibernate.Persister.Entity
 			get { return batchSize > 1; }
 		}
 
-		public string[ ] GetSubclassPropertyColumnAliases( string propertyName, string suffix )
+		public string[] GetSubclassPropertyColumnAliases( string propertyName, string suffix )
 		{
-			string[ ] rawAliases = ( string[ ] ) subclassPropertyAliases[ propertyName ];
+			string[] rawAliases = ( string[] ) subclassPropertyAliases[ propertyName ];
 
 			if( rawAliases == null )
 			{
 				return null;
 			}
 
-			string[ ] result = new string[rawAliases.Length];
+			string[] result = new string[ rawAliases.Length ];
 			for( int i = 0; i < rawAliases.Length; i++ )
 			{
 				result[ i ] = new Alias( suffix ).ToUnquotedAliasString( rawAliases[ i ], Dialect );
@@ -1270,7 +1251,7 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
-		public string[ ] KeyColumnNames
+		public string[] KeyColumnNames
 		{
 			get { return IdentifierColumnNames; }
 		}
@@ -1283,10 +1264,10 @@ namespace NHibernate.Persister.Entity
 		public string SelectFragment( string alias, string suffix )
 		{
 			return IdentifierSelectFragment( alias, suffix ) +
-			       PropertySelectFragment( alias, suffix );
+				   PropertySelectFragment( alias, suffix );
 		}
 
-		public string[ ] GetIdentifierAliases( string suffix )
+		public string[] GetIdentifierAliases( string suffix )
 		{
 			// NOTE: this assumes something about how PropertySelectFragment is implemented by the subclass!
 			// was toUnqotedAliasStrings( getIdentiferColumnNames() ) before - now tried
@@ -1294,7 +1275,7 @@ namespace NHibernate.Persister.Entity
 			return new Alias( suffix ).ToAliasStrings( IdentifierAliases, dialect );
 		}
 
-		public string[ ] GetPropertyAliases( string suffix, int i )
+		public string[] GetPropertyAliases( string suffix, int i )
 		{
 			// NOTE: this assumes something about how pPropertySelectFragment is implemented by the subclass!
 			return new Alias( suffix ).ToUnquotedAliasStrings( propertyColumnAliases[ i ], dialect );
@@ -1306,8 +1287,8 @@ namespace NHibernate.Persister.Entity
 			// was toUnqotedAliasStrings( getdiscriminatorColumnName() ) before - now tried
 			// to remove that unquoting and missing aliases..		
 			return HasSubclasses ?
-			       new Alias( suffix ).ToAliasString( DiscriminatorAlias, dialect ) :
-			       null;
+				   new Alias( suffix ).ToAliasString( DiscriminatorAlias, dialect ) :
+				   null;
 		}
 
 		protected abstract string DiscriminatorAlias { get; }
@@ -1468,7 +1449,7 @@ namespace NHibernate.Persister.Entity
 			return id;
 		}
 
-		public object[ ] GetCurrentPersistentState( object id, object version, ISessionImplementor session )
+		public object[] GetCurrentPersistentState( object id, object version, ISessionImplementor session )
 		{
 			if( !HasSelectBeforeUpdate )
 			{
@@ -1480,9 +1461,9 @@ namespace NHibernate.Persister.Entity
 				log.Debug( "Getting current persistent state for: " + MessageHelper.InfoString( this, id ) );
 			}
 
-			IType[ ] types = PropertyTypes;
-			object[ ] values = new object[types.Length];
-			bool[ ] includeProperty = PropertyUpdateability;
+			IType[] types = PropertyTypes;
+			object[] values = new object[ types.Length ];
+			bool[] includeProperty = PropertyUpdateability;
 			try
 			{
 				IDbCommand st = session.Batcher.PrepareCommand( ConcreteSelectString );
@@ -1572,9 +1553,9 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="dirtyProperties"></param>
 		/// <returns></returns>
-		protected bool[ ] GetPropertiesToUpdate( int[ ] dirtyProperties )
+		protected bool[] GetPropertiesToUpdate( int[] dirtyProperties )
 		{
-			bool[ ] propsToUpdate = new bool[HydrateSpan];
+			bool[] propsToUpdate = new bool[ HydrateSpan ];
 			for( int j = 0; j < dirtyProperties.Length; j++ )
 			{
 				propsToUpdate[ dirtyProperties[ j ] ] = true;
@@ -1595,7 +1576,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the column names for the numbered property of <em>this</em> class
 		/// </summary>
-		public string[ ] GetPropertyColumnNames( int i )
+		public string[] GetPropertyColumnNames( int i )
 		{
 			return propertyColumnNames[ i ];
 		}
@@ -1632,13 +1613,13 @@ namespace NHibernate.Persister.Entity
 
 		public abstract void Delete( object id, object version, object obj, ISessionImplementor session );
 
-		public abstract object[ ] PropertySpaces { get; }
+		public abstract object[] PropertySpaces { get; }
 
-		public abstract void Insert( object id, object[ ] fields, object obj, ISessionImplementor session );
+		public abstract void Insert( object id, object[] fields, object obj, ISessionImplementor session );
 
-		public abstract object Insert( object[ ] fields, object obj, ISessionImplementor session );
+		public abstract object Insert( object[] fields, object obj, ISessionImplementor session );
 
-		public abstract void Update( object id, object[ ] fields, int[ ] dirtyFields, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session );
+		public abstract void Update( object id, object[] fields, int[] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session );
 
 		public abstract IType DiscriminatorType { get; }
 
@@ -1659,9 +1640,9 @@ namespace NHibernate.Persister.Entity
 				.SetSuffix( suffix )
 				.SetUsedAliases( IdentifierAliases );
 
-			int[ ] columnTableNumbers = SubclassColumnTableNumberClosure;
-			string[ ] columnAliases = SubclassColumnAliasClosure;
-			string[ ] columns = SubclassColumnClosure;
+			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
+			string[] columnAliases = SubclassColumnAliasClosure;
+			string[] columns = SubclassColumnClosure;
 
 			for( int i = 0; i < columns.Length; i++ )
 			{
@@ -1669,9 +1650,9 @@ namespace NHibernate.Persister.Entity
 				select.AddColumn( subalias, columns[ i ], columnAliases[ i ] );
 			}
 
-			int[ ] formulaTableNumbers = SubclassFormulaTableNumberClosure;
-			string[ ] formulaTemplates = SubclassFormulaTemplateClosure;
-			string[ ] formulaAliases = SubclassFormulaAliasClosure;
+			int[] formulaTableNumbers = SubclassFormulaTableNumberClosure;
+			string[] formulaTemplates = SubclassFormulaTemplateClosure;
+			string[] formulaAliases = SubclassFormulaAliasClosure;
 
 			for( int i = 0; i < formulaTemplates.Length; i++ )
 			{
@@ -1687,55 +1668,55 @@ namespace NHibernate.Persister.Entity
 			return select.ToSqlStringFragment();
 		}
 
-		protected abstract int[ ] SubclassColumnTableNumberClosure { get; }
-		protected abstract int[ ] SubclassFormulaTableNumberClosure { get; }
+		protected abstract int[] SubclassColumnTableNumberClosure { get; }
+		protected abstract int[] SubclassFormulaTableNumberClosure { get; }
 
-		protected string[ ] SubclassColumnClosure
+		protected string[] SubclassColumnClosure
 		{
 			get { return subclassColumnClosure; }
 		}
 
-		protected string[ ] SubclassColumnAliasClosure
+		protected string[] SubclassColumnAliasClosure
 		{
 			get { return subclassColumnAliasClosure; }
 		}
 
-		protected string[ ] SubclassFormulaTemplateClosure
+		protected string[] SubclassFormulaTemplateClosure
 		{
 			get { return subclassFormulaTemplateClosure; }
 		}
 
-		protected string[ ] SubclassFormulaAliasClosure
+		protected string[] SubclassFormulaAliasClosure
 		{
 			get { return subclassFormulaAliasClosure; }
 		}
 
-		protected string[ ] SubclassFormulaClosure
+		protected string[] SubclassFormulaClosure
 		{
 			get { return subclassFormulaClosure; }
 		}
 
-		protected string[ ] SubclassPropertyNameClosure
+		protected string[] SubclassPropertyNameClosure
 		{
 			get { return subclassPropertyNameClosure; }
 		}
 
-		protected IType[ ] SubclassPropertyTypeClosure
+		protected IType[] SubclassPropertyTypeClosure
 		{
 			get { return subclassPropertyTypeClosure; }
 		}
 
-		protected string[ ][ ] SubclassPropertyColumnNameClosure
+		protected string[][] SubclassPropertyColumnNameClosure
 		{
 			get { return subclassPropertyColumnNameClosure; }
 		}
 
-		protected string[ ][ ] SubclassPropertyFormulaTemplateClosure
+		protected string[][] SubclassPropertyFormulaTemplateClosure
 		{
 			get { return subclassPropertyFormulaTemplateClosure; }
 		}
 
-		protected abstract int Dehydrate( object id, object[ ] fields, bool[ ] includeProperty, int table, IDbCommand statement, ISessionImplementor session );
+		protected abstract int Dehydrate( object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement, ISessionImplementor session );
 
 		/// <summary>
 		/// Persist an object, using a natively generated identifier
@@ -1746,7 +1727,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected object InsertImpl( object[ ] fields, bool[ ] notNull, SqlString sql, object obj, ISessionImplementor session )
+		protected object InsertImpl( object[] fields, bool[] notNull, SqlString sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -1820,12 +1801,12 @@ namespace NHibernate.Persister.Entity
 
 		public abstract string TableName { get; }
 
-		public string[ ] ToColumns( string name, int i )
+		public string[] ToColumns( string name, int i )
 		{
 			string alias = Alias( name, GetSubclassPropertyTableNumber( i ) );
-			string[ ] cols = GetSubclassPropertyColumnNames( i );
-			string[ ] templates = SubclassPropertyFormulaTemplateClosure[ i ];
-			string[ ] result = new string[cols.Length];
+			string[] cols = GetSubclassPropertyColumnNames( i );
+			string[] templates = SubclassPropertyFormulaTemplateClosure[ i ];
+			string[] result = new string[ cols.Length ];
 
 			for( int j = 0; j < cols.Length; j++ )
 			{
@@ -1869,7 +1850,7 @@ namespace NHibernate.Persister.Entity
 			return index == -1 ? 0 : GetSubclassPropertyTableNumber( index );
 		}
 
-		public override string[ ] ToColumns( string alias, string propertyName )
+		public override string[] ToColumns( string alias, string propertyName )
 		{
 			return base.ToColumns( Alias( alias, GetSubclassPropertyTableNumber( propertyName ) ), propertyName );
 		}
@@ -1884,7 +1865,7 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract int GetSubclassPropertyTableNumber( int i );
 
-		public bool IsUnsavedVersion( object[ ] values )
+		public bool IsUnsavedVersion( object[] values )
 		{
 			if( !IsVersioned )
 			{
@@ -1905,7 +1886,7 @@ namespace NHibernate.Persister.Entity
 			get { return hasFormulaProperties; }
 		}
 
-		protected string[ ] GetPropertyColumnAliases( int i )
+		protected string[] GetPropertyColumnAliases( int i )
 		{
 			return propertyColumnAliases[ i ];
 		}
@@ -1930,7 +1911,7 @@ namespace NHibernate.Persister.Entity
 			return subclassPropertyTypeClosure.Length;
 		}
 
-		public string[ ] GetSubclassPropertyColumnNames( int i )
+		public string[] GetSubclassPropertyColumnNames( int i )
 		{
 			return subclassPropertyColumnNameClosure[ i ];
 		}
@@ -1969,7 +1950,7 @@ namespace NHibernate.Persister.Entity
 		{
 		}
 
-		public string[ ] GetPropertyColumnNames( string propertyName )
+		public string[] GetPropertyColumnNames( string propertyName )
 		{
 			return GetColumnNames( propertyName );
 		}
@@ -2013,7 +1994,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public abstract string FilterFragment( string alias );
-		
+
 		public string FilterFragment( string alias, IDictionary enabledFilters )
 		{
 			return FilterFragment( alias );
@@ -2021,21 +2002,21 @@ namespace NHibernate.Persister.Entity
 
 		protected string GenerateTableAlias( string rootAlias, int tableNumber )
 		{
-			if ( tableNumber == 0 )
+			if( tableNumber == 0 )
 			{
 				return rootAlias;
 			}
-			
+
 			StringBuilder buf = new StringBuilder().Append( rootAlias );
-			if ( !rootAlias.EndsWith( "_" ) )
+			if( !rootAlias.EndsWith( "_" ) )
 			{
 				buf.Append( '_' );
 			}
-			
+
 			return buf.Append( tableNumber ).Append( '_' ).ToString();
 		}
 
-		public virtual string GenerateFilterConditionAlias( string rootAlias ) 
+		public virtual string GenerateFilterConditionAlias( string rootAlias )
 		{
 			return rootAlias;
 		}
@@ -2052,7 +2033,7 @@ namespace NHibernate.Persister.Entity
 					MessageHelper.InfoString( this, id, Factory )
 					);
 			}
-			
+
 			IUniqueEntityLoader loader = GetAppropriateLoader( lockMode, session );
 			return loader.Load( id, optionalObject, session );
 		}
@@ -2060,21 +2041,21 @@ namespace NHibernate.Persister.Entity
 		private IUniqueEntityLoader GetAppropriateLoader( LockMode lockMode, ISessionImplementor session )
 		{
 			IDictionary enabledFilters = CollectionHelper.EmptyMap; // TODO H3: session.EnabledFilters;
-//			if( queryLoader != null )
-//			{
-//				return queryLoader;
-//			}
-//			else
+			//			if( queryLoader != null )
+			//			{
+			//				return queryLoader;
+			//			}
+			//			else
 			if( enabledFilters == null || enabledFilters.Count == 0 )
 			{
-//				if( session.FetchProfile != null && LockMode.Upgrade.GreaterThan( lockMode ) )
-//				{
-//					return ( IUniqueEntityLoader ) loaders[ session.FetchProfile ];
-//				}
-//				else
-//				{
-					return ( IUniqueEntityLoader ) loaders[ lockMode ];
-//				}
+				//				if( session.FetchProfile != null && LockMode.Upgrade.GreaterThan( lockMode ) )
+				//				{
+				//					return ( IUniqueEntityLoader ) loaders[ session.FetchProfile ];
+				//				}
+				//				else
+				//				{
+				return ( IUniqueEntityLoader ) loaders[ lockMode ];
+				//				}
 			}
 			else
 			{
@@ -2089,7 +2070,7 @@ namespace NHibernate.Persister.Entity
 			loaders.Add( LockMode.Upgrade, CreateEntityLoader( LockMode.Upgrade ) );
 			loaders.Add( LockMode.UpgradeNoWait, CreateEntityLoader( LockMode.UpgradeNoWait ) );
 		}
-		
+
 		public object[] QuerySpaces
 		{
 			get { return PropertySpaces; }

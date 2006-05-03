@@ -5,11 +5,11 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Property;
-using NHibernate.Property.Bulk;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
 using Environment = NHibernate.Cfg.Environment;
+using NHibernate.Bytecode;
 
 namespace NHibernate.Type
 {
@@ -27,12 +27,12 @@ namespace NHibernate.Type
 		private readonly FetchMode[] joinedFetch;
 		private ISetter parentSetter;
 		private IGetter parentGetter;
-		private IGetSetHelper getset = null;
+		private IReflectionOptimizer optimizer = null;
 
 		public override SqlType[] SqlTypes( IMapping mapping )
 		{
 			//not called at runtime so doesn't matter if its slow :)
-			SqlType[] sqlTypes = new SqlType[GetColumnSpan( mapping )];
+			SqlType[] sqlTypes = new SqlType[ GetColumnSpan( mapping ) ];
 			int n = 0;
 			for( int i = 0; i < propertySpan; i++ )
 			{
@@ -56,16 +56,16 @@ namespace NHibernate.Type
 		}
 
 		public ComponentType( System.Type componentClass,
-		                      string[] propertyNames,
-		                      IGetter[] propertyGetters,
-		                      ISetter[] propertySetters,
-		                      // currently not used, see the comment near the end of the method body
-		                      bool foundCustomAcessor,
-		                      IType[] propertyTypes,
+							  string[] propertyNames,
+							  IGetter[] propertyGetters,
+							  ISetter[] propertySetters,
+			// currently not used, see the comment near the end of the method body
+							  bool foundCustomAcessor,
+							  IType[] propertyTypes,
 							  bool[] nullabilities,
-		                      FetchMode[] joinedFetch,
-		                      Cascades.CascadeStyle[] cascade,
-		                      string parentProperty )
+							  FetchMode[] joinedFetch,
+							  Cascades.CascadeStyle[] cascade,
+							  string parentProperty )
 		{
 			this.componentClass = componentClass;
 			this.propertyTypes = propertyTypes;
@@ -73,9 +73,9 @@ namespace NHibernate.Type
 			propertySpan = propertyNames.Length;
 			getters = propertyGetters;
 			setters = propertySetters;
-			string[] getterNames = new string[propertySpan];
-			string[] setterNames = new string[propertySpan];
-			System.Type[] propTypes = new System.Type[propertySpan];
+			string[] getterNames = new string[ propertySpan ];
+			string[] setterNames = new string[ propertySpan ];
+			System.Type[] propTypes = new System.Type[ propertySpan ];
 			for( int i = 0; i < propertySpan; i++ )
 			{
 				getterNames[ i ] = getters[ i ].PropertyName;
@@ -99,10 +99,7 @@ namespace NHibernate.Type
 			this.joinedFetch = joinedFetch;
 
 			// NH: reflection optimizer works with custom accessors
-			if( /*!foundCustomAcessor &&*/ Environment.UseReflectionOptimizer )
-			{
-				this.getset = GetSetHelperFactory.Create( componentClass, setters, getters );
-			}
+			this.optimizer = Environment.BytecodeProvider.GetReflectionOptimizer( componentClass, getters, setters );
 		}
 
 		/// <summary></summary>
@@ -205,7 +202,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					bool[] subcheckable = new bool[len];
+					bool[] subcheckable = new bool[ len ];
 					Array.Copy( checkable, loc, subcheckable, 0, len );
 					bool dirty = propertyTypes[ i ].IsDirty( xvalues[ i ], yvalues[ i ], subcheckable, session );
 					if( dirty )
@@ -277,7 +274,7 @@ namespace NHibernate.Type
 		{
 			if( value == null )
 			{
-				return new object[propertySpan];
+				return new object[ propertySpan ];
 			}
 			else
 			{
@@ -295,7 +292,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
 		{
-			return NullSafeGet( rs, new string[] {name}, session, owner );
+			return NullSafeGet( rs, new string[] { name }, session, owner );
 		}
 
 		/// <summary>
@@ -332,51 +329,41 @@ namespace NHibernate.Type
 			return GetPropertyValues( component );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <remarks>
-		/// Use the IGetSetHelper if available
+		/// Use the access optimizer if available
 		/// </remarks>
-		/// <param name="component"></param>
-		/// <returns></returns>
 		public object[] GetPropertyValues( object component )
 		{
-			if( getset == null )
+			if( optimizer != null && optimizer.AccessOptimizer != null )
 			{
-				object[] values = new object[propertySpan];
+				return optimizer.AccessOptimizer.GetPropertyValues( component );
+			}
+			else
+			{
+				object[] values = new object[ propertySpan ];
 				for( int i = 0; i < propertySpan; i++ )
 				{
 					values[ i ] = GetPropertyValue( component, i );
 				}
 				return values;
 			}
-			else
-			{
-				return getset.GetPropertyValues( component );
-			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <remarks>
-		/// Use the IGetSetHelper if available
+		/// Use the access optimizer if available
 		/// </remarks>
-		/// <param name="component"></param>
-		/// <param name="values"></param>
 		public void SetPropertyValues( object component, object[] values )
 		{
-			if( this.getset == null )
+			if( optimizer != null && optimizer.AccessOptimizer != null )
+			{
+				optimizer.AccessOptimizer.SetPropertyValues( component, values );
+			}
+			else
 			{
 				for( int i = 0; i < propertySpan; i++ )
 				{
 					setters[ i ].Set( component, values[ i ] );
 				}
-			}
-			else
-			{
-				this.getset.SetPropertyValues( component, values );
 			}
 		}
 
@@ -578,7 +565,7 @@ namespace NHibernate.Type
 			else
 			{
 				object[] values = ( object[] ) obj;
-				object[] assembled = new object[values.Length];
+				object[] assembled = new object[ values.Length ];
 				for( int i = 0; i < propertyTypes.Length; i++ )
 				{
 					assembled[ i ] = propertyTypes[ i ].Assemble( values[ i ], session, owner );
@@ -617,7 +604,7 @@ namespace NHibernate.Type
 		{
 			int begin = 0;
 			bool notNull = false;
-			object[] values = new object[propertySpan];
+			object[] values = new object[ propertySpan ];
 			for( int i = 0; i < propertySpan; i++ )
 			{
 				int length = propertyTypes[ i ].GetColumnSpan( session.Factory );
@@ -675,7 +662,7 @@ namespace NHibernate.Type
 			for( int i = 0; i < currentValues.Length; i++ )
 			{
 				int len = propertyTypes[ i ].GetColumnSpan( session.Factory );
-				bool[] subcheckable = new bool[len];
+				bool[] subcheckable = new bool[ len ];
 				Array.Copy( checkable, loc, subcheckable, 0, len );
 				if( propertyTypes[ i ].IsModified( oldValues[ i ], currentValues[ i ], subcheckable, session ) )
 				{

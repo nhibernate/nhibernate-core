@@ -28,17 +28,15 @@ namespace NHibernate.Property
 		string PropertyName { get; }
 
 		/// <summary>
-		/// When implemented by a class, gets the <see cref="PropertyInfo"/> for the Property.
+		/// When implemented by a class, gets the <see cref="MethodInfo"/> for the <c>set</c>
+		/// accessor of the property.
 		/// </summary>
-		/// <value>
-		/// The <see cref="PropertyInfo"/> for the Property.
-		/// </value>
 		/// <remarks>
-		/// This is an optional operation - if it is not implemented then 
-		/// <c>null</c> is an acceptable value to return.  It is used by
-		/// the Proxies to determine which setter to intercept as the
-		/// &lt;id&gt; property.
+		/// This is an optional operation - if the <see cref="ISetter"/> is not 
+		/// for a property <c>set</c> then <c>null</c> is an acceptable value to return.
+		/// It is used by the proxies to determine which setter to intercept for the
+		/// identifier property.
 		/// </remarks>
-		PropertyInfo Property { get; }
+		MethodInfo Method { get; }
 	}
 }

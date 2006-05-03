@@ -25,7 +25,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
 			Assert.AreEqual( typeof(Int32), fieldGetter.ReturnType, "returns Int32." );
-			Assert.IsNull( fieldGetter.Property, "no PropertyInfo for fields." );
+			Assert.IsNull( fieldGetter.Method, "no MethodInfo for fields." );
 			Assert.IsNull( fieldGetter.PropertyName, "no Property Names for fields." );
 			Assert.AreEqual( 7, fieldGetter.Get( obj ), "Get() for Int32" );
 		}
@@ -38,7 +38,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
 			Assert.AreEqual( typeof(DateTime), fieldGetter.ReturnType, "returns DateTime." );
-			Assert.IsNull( fieldGetter.Property, "no PropertyInfo for fields." );
+			Assert.IsNull( fieldGetter.Method, "no MethodInfo for fields." );
 			Assert.IsNull( fieldGetter.PropertyName, "no Property Names for fields." );
 			Assert.AreEqual( DateTime.Parse( "2000-01-01" ), fieldGetter.Get( obj ), "Get() for DateTime" );
 		}
@@ -51,7 +51,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
 			Assert.AreEqual( typeof(Boolean), fieldGetter.ReturnType, "returns Boolean." );
-			Assert.IsNull( fieldGetter.Property, "no PropertyInfo for fields." );
+			Assert.IsNull( fieldGetter.Method, "no MethodInfo for fields." );
 			Assert.IsNull( fieldGetter.PropertyName, "no Property Names for fields." );
 			Assert.AreEqual( true, fieldGetter.Get( obj ), "Get() for Boolean" );
 		}
@@ -64,7 +64,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
 			Assert.AreEqual( typeof(Int64), fieldGetter.ReturnType, "returns Int64." );
-			Assert.IsNull( fieldGetter.Property, "no PropertyInfo for fields." );
+			Assert.IsNull( fieldGetter.Method, "no MethodInfo for fields." );
 			Assert.IsNull( fieldGetter.PropertyName, "no Property Names for fields." );
 			Assert.AreEqual( Int64.MaxValue, fieldGetter.Get( obj ), "Get() for Int64" );
 		}
@@ -77,7 +77,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.IsNotNull( fieldGetter, "should have found getter" );
 			Assert.AreEqual( typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field." );
 			Assert.AreEqual( typeof(TimeSpan), fieldGetter.ReturnType, "returns DateTime." );
-			Assert.IsNull( fieldGetter.Property, "no PropertyInfo for fields." );
+			Assert.IsNull( fieldGetter.Method, "no MethodInfo for fields." );
 			Assert.IsNull( fieldGetter.PropertyName, "no Property Names for fields." );
 			Assert.AreEqual( new TimeSpan( DateTime.Parse( "2001-01-01" ).Ticks ), fieldGetter.Get( obj ), "Get() for TimeSpan" );
 		}

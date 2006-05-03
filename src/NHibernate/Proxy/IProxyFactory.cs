@@ -25,11 +25,12 @@ namespace NHibernate.Proxy
 		/// <summary>
 		/// Create a new proxy
 		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		INHibernateProxy GetProxy(
-			object id,
-			ISessionImplementor session );
+		/// <param name="id">The id value for the proxy to be generated.</param>
+		/// <param name="session">The session to which the generated proxy will be
+		/// associated.</param>
+		/// <returns>The generated proxy.</returns>
+		/// <exception cref="HibernateException">Indicates problems generating
+		/// requested proxy.</exception>
+		INHibernateProxy GetProxy( object id, ISessionImplementor session );
 	}
 }

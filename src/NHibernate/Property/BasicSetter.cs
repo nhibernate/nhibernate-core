@@ -76,9 +76,9 @@ namespace NHibernate.Property
 		/// Gets the <see cref="PropertyInfo"/> for the mapped Property.
 		/// </summary>
 		/// <value>The <see cref="PropertyInfo"/> for the mapped Property.</value>
-		public PropertyInfo Property
+		public MethodInfo Method
 		{
-			get { return property; }
+			get { return property.GetSetMethod( true ); }
 		}
 
 		#endregion

@@ -36,17 +36,15 @@ namespace NHibernate.Property
 		string PropertyName { get; }
 
 		/// <summary>
-		/// When implemented by a class, gets the <see cref="PropertyInfo"/> for the Property.
+		/// When implemented by a class, gets the <see cref="MethodInfo"/> for the <c>get</c>
+		/// accessor of the property.
 		/// </summary>
-		/// <value>
-		/// The <see cref="PropertyInfo"/> for the Property.
-		/// </value>
 		/// <remarks>
 		/// This is an optional operation - if the <see cref="IGetter"/> is not 
-		/// for a Property <c>get</c> then <c>null</c> is an acceptable value to return.
-		/// It is used by the Proxies to determine which getter to intercept as the
-		/// &lt;id&gt; property.
+		/// for a property <c>get</c> then <c>null</c> is an acceptable value to return.
+		/// It is used by the proxies to determine which getter to intercept for the
+		/// identifier property.
 		/// </remarks>
-		PropertyInfo Property { get; }
+		MethodInfo Method { get; }
 	}
 }

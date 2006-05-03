@@ -5,6 +5,7 @@ using System.Configuration;
 
 using log4net;
 using NHibernate.Util;
+using NHibernate.Bytecode;
 
 namespace NHibernate.Cfg
 {
@@ -92,12 +93,12 @@ namespace NHibernate.Cfg
 		// NHibernate-specific properties
 		public const string PrepareSql = "hibernate.prepare_sql";
 		public const string CommandTimeout = "hibernate.command_timeout";
-		public const string PropertyUseReflectionOptimizer = "hibernate.use_reflection_optimizer";
+		public const string PropertyBytecodeProvider = "hibernate.bytecode.provider";
 		public const string UseProxyValidator = "hibernate.use_proxy_validator";
 
 		private static IDictionary GlobalProperties;
 
-		private static bool EnableReflectionOptimizer;
+		private static IBytecodeProvider BytecodeProviderInstance;
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 
@@ -115,18 +116,10 @@ namespace NHibernate.Cfg
 			log.Info( "NHibernate " + Environment.Version );
 
 			GlobalProperties = new Hashtable();
-			GlobalProperties[ PropertyUseReflectionOptimizer ] = true.ToString();
-
 			LoadGlobalPropertiesFromAppConfig();
-
 			VerifyProperties( GlobalProperties );
 
-			EnableReflectionOptimizer = PropertiesHelper.GetBoolean( PropertyUseReflectionOptimizer, GlobalProperties );
-
-			if( EnableReflectionOptimizer )
-			{
-				log.Info( "Using reflection optimizer" );
-			}
+			BytecodeProviderInstance = BuildBytecodeProvider( GlobalProperties );
 		}
 
 		private static void LoadGlobalPropertiesFromAppConfig()
@@ -176,20 +169,39 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Enables or disables use of the reflection optimizer.
+		/// The bytecode provider to use.
 		/// </summary>
 		/// <remarks>
 		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
 		/// of the application configuration file by default. Since it is not
 		/// always convenient to configure NHibernate through the application
 		/// configuration file, it is also possible to set the property value
-		/// manually. This should only be done before a session factory is
-		/// created, otherwise the change may not take effect.
+		/// manually. This should only be done before a configuration object
+		/// is created, otherwise the change may not take effect.
 		/// </remarks>
-		public static bool UseReflectionOptimizer
+		public static IBytecodeProvider BytecodeProvider
 		{
-			get { return EnableReflectionOptimizer; }
-			set { EnableReflectionOptimizer = value; }
+			get { return BytecodeProviderInstance; }
+			set { BytecodeProviderInstance = value; }
+		}
+
+		public static IBytecodeProvider BuildBytecodeProvider( IDictionary properties )
+		{
+			string provider = PropertiesHelper.GetString( Environment.PropertyBytecodeProvider, properties, "codedom" );
+			log.Info( "Bytecode provider name : " + provider );
+			return BuildBytecodeProvider( provider );
+		}
+
+		private static IBytecodeProvider BuildBytecodeProvider( string providerName )
+		{
+			switch( providerName )
+			{
+				case "codedom": return new Bytecode.CodeDom.GetSetHelperFactory();
+				case "null": return new Bytecode.NullBytecodeProvider();
+				default:
+					log.Warn( "unrecognized bytecode provider [" + providerName + "], using null by default" );
+					return new Bytecode.NullBytecodeProvider();
+			}
 		}
 	}
 }

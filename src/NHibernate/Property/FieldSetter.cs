@@ -76,7 +76,7 @@ namespace NHibernate.Property
 		/// Gets the <see cref="PropertyInfo"/> for the Property.
 		/// </summary>
 		/// <value><c>null</c> since this is a Field - not a Property.</value>
-		public PropertyInfo Property
+		public MethodInfo Method
 		{
 			get { return null; }
 		}

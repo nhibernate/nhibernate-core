@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 
 			public System.Type ReturnType { get { return theClass; } }
 			public string PropertyName { get { return propertyName; } }
-			public PropertyInfo Property { get { return null; } } // Optional operation (return null)
+			public MethodInfo Method { get { return null; } } // Optional operation (return null)
 
 		}
 
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 			}
 
 			public string PropertyName { get { return propertyName; } }
-			public PropertyInfo Property { get { return null; } } // Optional operation
+			public MethodInfo Method { get { return null; } } // Optional operation
 		}
 
 	}

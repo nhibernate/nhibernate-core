@@ -70,9 +70,9 @@ namespace NHibernate.Property
 		/// <value>
 		/// The <see cref="PropertyInfo"/> for the Property.
 		/// </value>
-		public PropertyInfo Property
+		public MethodInfo Method
 		{
-			get { return property; }
+			get { return property.GetGetMethod( true ); }
 		}
 
 		#endregion
