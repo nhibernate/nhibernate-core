@@ -37,5 +37,15 @@ namespace NHibernate.Impl
 			}
 			return result;
 		}
+
+		public string Role
+		{
+			get { return role; }
+		}
+
+		public object Key
+		{
+			get { return key; }
+		}
 	}
 }

@@ -3873,13 +3873,15 @@ namespace NHibernate.Impl
 			private readonly IPersistentCollection collection;
 			private readonly object id;
 			private readonly object resultSetId;
+			private readonly ICollectionPersister persister;
 
-			internal LoadingCollectionEntry( CollectionKey key, IPersistentCollection collection, object id, object resultSetId )
+			internal LoadingCollectionEntry( CollectionKey key, IPersistentCollection collection, object id, ICollectionPersister persister, object resultSetId )
 			{
 				this.key = key;
 				this.collection = collection;
 				this.id = id;
 				this.resultSetId = resultSetId;
+				this.persister = persister;
 			}
 
 			public CollectionKey Key
@@ -3901,6 +3903,11 @@ namespace NHibernate.Impl
 			{
 				get { return resultSetId; }
 			}
+
+			public ICollectionPersister Persister
+			{
+				get { return persister; }
+			}
 		}
 
 
@@ -3909,9 +3916,9 @@ namespace NHibernate.Impl
 			return ( LoadingCollectionEntry ) loadingCollections[ collectionKey ];
 		}
 
-		private void AddLoadingCollectionEntry( CollectionKey key, IPersistentCollection collection, object id, object resultSetId )
+		private void AddLoadingCollectionEntry( CollectionKey key, IPersistentCollection collection, ICollectionPersister persister, object resultSetId )
 		{
-			loadingCollections.Add( key, new LoadingCollectionEntry( key, collection, id, resultSetId ) );
+			loadingCollections.Add( key, new LoadingCollectionEntry( key, collection, key.Key, persister, resultSetId ) );
 		}
 
 		public IPersistentCollection GetLoadingCollection( ICollectionPersister persister, object id, object resultSetId )
@@ -3953,7 +3960,7 @@ namespace NHibernate.Impl
 				}
 				pc.BeforeInitialize( persister );
 				pc.BeginRead();
-				AddLoadingCollectionEntry( ckey, pc, id, resultSetId );
+				AddLoadingCollectionEntry( ckey, pc, persister, resultSetId );
 				return pc;
 			}
 			else
@@ -3981,7 +3988,7 @@ namespace NHibernate.Impl
 			IList resultSetCollections = null;
 			foreach( LoadingCollectionEntry lce in loadingCollections.Values )
 			{
-				if( lce.ResultSetId == resultSetId )
+				if( lce.ResultSetId == resultSetId && lce.Persister == persister )
 				{
 					if( resultSetCollections == null )
 					{
