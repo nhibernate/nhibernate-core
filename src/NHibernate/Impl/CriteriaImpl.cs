@@ -8,7 +8,9 @@ using NHibernate.Transform;
 using NHibernate.Util;
 
 using NExpression = NHibernate.Expression;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 
 namespace NHibernate.Impl
 {
@@ -98,10 +100,12 @@ namespace NHibernate.Impl
 				return root.List();
 			}
 
+#if NET_2_0
 			public IList<T> List<T>()
 			{
 				return root.List<T>();
 			}
+#endif
 
 			public object UniqueResult()
 			{
@@ -275,10 +279,12 @@ namespace NHibernate.Impl
 			return session.Find( this );
 		}
 
+#if NET_2_0
 		public IList<T> List<T>()
 		{
 			return session.Find<T>( this );
 		}
+#endif
 
 		public IEnumerable IterateExpressionEntries()
 		{

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 
 using NHibernate.Type;
 
@@ -84,12 +86,14 @@ namespace NHibernate
 		/// </remarks>
 		IEnumerable Enumerable();
 
+#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable()"/>.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IEnumerable<T> Enumerable<T>();
+#endif
 
 		/// <summary>
 		/// Return the query results as an <see cref="IList"/>. If the query contains multiple results per row,
@@ -101,10 +105,12 @@ namespace NHibernate
 		/// </remarks>
 		IList List();
 
+#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="List()"/>.
 		/// </summary>
 		IList<T> List<T>();
+#endif
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches

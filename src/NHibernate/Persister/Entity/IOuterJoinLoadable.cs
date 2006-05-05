@@ -16,7 +16,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the name of the column used as a discriminator
 		/// </summary>
-		string DiscriminatorColumnName { get; }
+		//string DiscriminatorColumnName { get; }
 
 		/// <summary>
 		/// How many properties are there, for this class and all subclasses? (optional operation)

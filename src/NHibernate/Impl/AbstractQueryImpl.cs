@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
@@ -955,8 +957,12 @@ namespace NHibernate.Impl
 
 		// Remaining methods of IQuery interface - left for children to implement
 		public abstract IEnumerable Enumerable();
+#if NET_2_0
 		public abstract IEnumerable<T> Enumerable<T>();
+#endif
 		public abstract IList List();
+#if NET_2_0
 		public abstract IList<T> List<T>();
+#endif
 	}
 }

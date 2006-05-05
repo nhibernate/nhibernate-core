@@ -1,5 +1,7 @@
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 
 using NHibernate.Engine;
 using NHibernate.Expression;
@@ -89,10 +91,12 @@ namespace NHibernate
 		/// <returns></returns>
 		IList List();
 
+#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="List()" />.
 		/// </summary>
 		IList<T> List<T>();
+#endif
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches

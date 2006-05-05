@@ -1,5 +1,7 @@
 using System;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 using System.Text;
 using NHibernate.Util;
 using NHibernate.Hql;
@@ -90,7 +92,7 @@ namespace NHibernate.Engine.Query
 							}
 							catch( FormatException e )
 							{
-								throw new QueryException( "ejb3-style positional param was not an integral ordinal" );
+								throw new QueryException( "ejb3-style positional param was not an integral ordinal", e );
 							}
 							recognizer.Ejb3PositionalParameter( param, indx );
 							indx = chopLocation - 1;

@@ -84,7 +84,8 @@ namespace NHibernate.Persister.Collection
 		private readonly IIdentifierGenerator identifierGenerator;
 		protected readonly bool hasIdentifier;
 
-		protected readonly string identifierColumnName;
+		//protected readonly string identifierColumnName;
+		private readonly string identifierColumnName;
 		private readonly string identifierColumnAlias;
 
 		private readonly Dialect.Dialect dialect;

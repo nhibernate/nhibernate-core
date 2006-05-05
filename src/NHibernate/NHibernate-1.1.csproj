@@ -80,11 +80,6 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "HashCodeProvider"
-                    AssemblyName = "HashCodeProvider"
-                    HintPath = "..\..\lib\HashCodeProvider.dll"
-                />
-                <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
                     HintPath = "..\..\lib\net\log4net.dll"
@@ -155,6 +150,11 @@
                 />
                 <File
                     RelPath = "IDatabinder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IdentityHashCodeProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -339,6 +339,36 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Bytecode\IAccessOptimizer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Bytecode\IBytecodeProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Bytecode\IInstantiationOptimizer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Bytecode\IReflectionOptimizer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Bytecode\NullBytecodeProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Bytecode\CodeDom\BytecodeProviderImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cache\CachedItem.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -504,17 +534,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\ArrayHolder.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\Bag.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collection\IdentifierBag.cs"
+                    RelPath = "Collection\AbstractPersistentCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -524,32 +544,32 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\List.cs"
+                    RelPath = "Collection\PersistentArrayHolder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\Map.cs"
+                    RelPath = "Collection\PersistentBag.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\PersistentCollection.cs"
+                    RelPath = "Collection\PersistentIdentifierBag.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\Set.cs"
+                    RelPath = "Collection\PersistentList.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\SortedMap.cs"
+                    RelPath = "Collection\PersistentMap.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collection\SortedSet.cs"
+                    RelPath = "Collection\PersistentSet.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -754,6 +774,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Engine\EntityKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\IBatcher.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -784,11 +809,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Engine\Key.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Engine\OptimisticLockMode.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -815,6 +835,16 @@
                 />
                 <File
                     RelPath = "Engine\Versioning.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\Query\NativeSQLQuerySpecification.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\Query\ParameterParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1264,21 +1294,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Impl\SessionFactoryImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SessionImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Impl\ScheduledCollectionAction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1320,6 +1335,21 @@
                 />
                 <File
                     RelPath = "Impl\ScheduledUpdate.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionFactoryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionFactoryObjectFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SessionImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1444,7 +1474,67 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Loader\Custom\ColumnCollectionAliases.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\ColumnEntityAliases.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\CustomLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\ICustomQuery.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SQLCustomQuery.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Loader\Custom\SqlLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SQLQueryCollectionReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SQLQueryJoinReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SQLQueryParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SQLQueryReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SQLQueryReturnProcessor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SQLQueryRootReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\SQLQueryScalarReturn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1675,16 +1765,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Persister\GetSetHelperFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Persister\IGetSetHelper.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Persister\PersisterFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1721,6 +1801,11 @@
                 />
                 <File
                     RelPath = "Persister\Collection\IQueryableCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Collection\ISqlLoadableCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2285,6 +2370,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\AnyType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\ArrayType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2325,7 +2415,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Type\CharBooleanType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CharType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Type\ClobType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CollectionType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2341,6 +2446,11 @@
                 />
                 <File
                     RelPath = "Type\CultureInfoType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\CustomCollectionType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2391,16 +2501,6 @@
                 />
                 <File
                     RelPath = "Type\GuidType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharBooleanType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\CharType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2499,17 +2599,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\ObjectType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Type\OneToOneType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\PersistentCollectionType.cs"
+                    RelPath = "Type\OrderedMapType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\OrderedSetType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2624,6 +2724,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "UserTypes\IUserCollectionType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Util\ADOExceptionReporter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2693,6 +2798,11 @@
                 />
                 <File
                     RelPath = "Util\StringTokenizer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\TypeNameParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -118,11 +118,14 @@ namespace NHibernate.Util
 
 			System.Type heuristicClass = propertyClass;
 
+#if NET_2_0
 			if( propertyClass.IsGenericType
 				&& propertyClass.GetGenericTypeDefinition().Equals( typeof( Nullable<> ) ) )
 			{
 				heuristicClass = propertyClass.GetGenericArguments()[ 0 ];
 			}
+#endif
+
 			return TypeFactory.HeuristicType( heuristicClass.AssemblyQualifiedName );
 		}
 

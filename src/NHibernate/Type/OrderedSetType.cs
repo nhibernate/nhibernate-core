@@ -15,11 +15,10 @@ namespace NHibernate.Type
 	public class OrderedSetType : SetType
 	{
 		/// <summary>
-		/// Initializes a new instance of a <see cref="SortedMapType"/> class for
-		/// a specific role using the <see cref="IComparer"/> to do the sorting.
+		/// Initializes a new instance of a <see cref="OrderedSetType"/> class
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		/// <param name="comparer">The <see cref="IComparer"/> to use for the sorting.</param>
+		/// <param name="propertyRef"></param>
 		public OrderedSetType( string role, string propertyRef )
 			: base( role, propertyRef )
 		{

@@ -56,7 +56,7 @@ namespace NHibernate.Persister.Collection
 			}
 			if( hasIdentifier )
 			{
-				insert.AddColumn( new string[ ] {identifierColumnName}, IdentifierType );
+				insert.AddColumn( new string[ ] {IdentifierColumnName}, IdentifierType );
 			}
 			insert.AddColumn( ElementColumnNames, ElementType );
 
@@ -74,7 +74,7 @@ namespace NHibernate.Persister.Collection
 				.AddColumns( ElementColumnNames, ElementType );
 			if( hasIdentifier )
 			{
-				update.AddWhereFragment( new string[] { identifierColumnName }, IdentifierType, " = " );
+				update.AddWhereFragment( new string[] { IdentifierColumnName }, IdentifierType, " = " );
 			}
 			else if( HasIndex /* && !indexContainsFormula */ )
 			{
@@ -100,7 +100,7 @@ namespace NHibernate.Persister.Collection
 			delete.SetTableName( qualifiedTableName );
 			if( hasIdentifier )
 			{
-				delete.AddWhereFragment( new string[] { identifierColumnName }, IdentifierType, " = " );
+				delete.AddWhereFragment( new string[] { IdentifierColumnName }, IdentifierType, " = " );
 			}
 			else if( HasIndex /*&& !indexContainsFormula*/ )
 			{

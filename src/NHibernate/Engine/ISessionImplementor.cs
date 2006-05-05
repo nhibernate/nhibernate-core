@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 
 using NHibernate.Collection;
 using NHibernate.Engine.Query;
@@ -177,10 +179,12 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		IList Find( string query, QueryParameters parameters );
 
+#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="Find()" />
 		/// </summary>
 		IList<T> Find<T>( string query, QueryParameters queryParameters );
+#endif
 
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
@@ -190,30 +194,36 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		IEnumerable Enumerable( string query, QueryParameters parameters );
 
+#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable()" />
 		/// </summary>
 		IEnumerable<T> Enumerable<T>( string query, QueryParameters queryParameters );
+#endif
 
 		/// <summary>
 		/// Execute a filter
 		/// </summary>
 		IList Filter( object collection, string filter, QueryParameters parameters );
 
+#if NET_2_0
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
 		/// </summary>
 		IList<T> Filter<T>( object collection, string filter, QueryParameters parameters );
+#endif
 
 		/// <summary>
 		/// Collection from a filter
 		/// </summary>
 		IEnumerable EnumerableFilter( object collection, string filter, QueryParameters parameters );
 
+#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="EnumerableFilter()" />
 		/// </summary>
 		IEnumerable<T> EnumerableFilter<T>( object collection, string filter, QueryParameters parameters );
+#endif
 
 		/// <summary>
 		/// Get the <c>IEntityPersister</c> for an object
@@ -324,10 +334,12 @@ namespace NHibernate.Engine
 		/// </summary>
 		IList List( NativeSQLQuerySpecification spec, QueryParameters queryParameters );
 
+#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
 		/// </summary>
 		IList<T> List<T>( NativeSQLQuerySpecification spec, QueryParameters queryParameters );
+#endif
 
 		/// <summary>
 		/// new in 2.1 no javadoc

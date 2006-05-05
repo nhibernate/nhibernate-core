@@ -20,7 +20,9 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 using NHibernate.Engine.Query;
 
 namespace NHibernate.Impl
@@ -1731,12 +1733,14 @@ namespace NHibernate.Impl
 			return results;
 		}
 
+#if NET_2_0
 		public IList<T> Find<T>( string query, QueryParameters parameters )
 		{
 			List<T> results = new List<T>();
 			Find( query, parameters, results );
 			return results;
 		}
+#endif
 
 		private void Find( string query, QueryParameters parameters, IList results )
 		{
@@ -1807,6 +1811,7 @@ namespace NHibernate.Impl
 			return Enumerable( query, new QueryParameters( types, values ) );
 		}
 
+#if NET_2_0
 		public IEnumerable<T> Enumerable<T>( string query, QueryParameters parameters )
 		{
 			CheckIsOpen();
@@ -1851,6 +1856,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind--;
 			}
 		}
+#endif
 
 		public IEnumerable Enumerable( string query, QueryParameters parameters )
 		{
@@ -4734,12 +4740,14 @@ namespace NHibernate.Impl
 			return results;
 		}
 
+#if NET_2_0
 		public IList<T> Filter<T>( object collection, string filter, QueryParameters parameters )
 		{
 			List<T> results = new List<T>();
 			Filter( collection, filter, parameters, results );
 			return results;
 		}
+#endif
 
 		public IEnumerable EnumerableFilter( object collection, string filter, QueryParameters parameters )
 		{
@@ -4788,6 +4796,7 @@ namespace NHibernate.Impl
 			return many ? new JoinedEnumerable( results ) : result;
 		}
 
+#if NET_2_0
 		public IEnumerable<T> EnumerableFilter<T>( object collection, string filter, QueryParameters parameters )
 		{
 			string[] concreteFilters = QueryTranslator.ConcreteQueries( filter, factory );
@@ -4829,6 +4838,7 @@ namespace NHibernate.Impl
 
 			return new GenericJoinedEnumerable<T>( results );
 		}
+#endif
 
 		public ICriteria CreateCriteria( System.Type persistentClass )
 		{
@@ -5190,12 +5200,14 @@ namespace NHibernate.Impl
 			return results;
 		}
 
+#if NET_2_0
 		public IList<T> List<T>( NativeSQLQuerySpecification spec, QueryParameters queryParameters )
 		{
 			List<T> results = new List<T>();
 			List( spec, queryParameters, results );
 			return results;
 		}
+#endif
 
 		public void List( NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results )
 		{
@@ -5226,6 +5238,7 @@ namespace NHibernate.Impl
 			}
 		}
 
+#if NET_2_0
 		public IList<T> ListCustomQuery<T>( ICustomQuery customQuery, QueryParameters queryParameters )
 		{
 			CheckIsOpen();
@@ -5248,6 +5261,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind--;
 			}
 		}
+#endif
 
 		public IList FindBySQL(
 			string sqlQuery,
@@ -5261,6 +5275,7 @@ namespace NHibernate.Impl
 			return results;
 		}
 
+#if NET_2_0
 		public IList<T> FindBySQL<T>(
 			string sqlQuery,
 			string[] aliases,
@@ -5272,6 +5287,7 @@ namespace NHibernate.Impl
 			FindBySQL( sqlQuery, aliases, classes, queryParameters, querySpaces, results );
 			return results;
 		}
+#endif
 
 		public void FindBySQL(
 			string sqlQuery,

@@ -48,9 +48,9 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		string GetDiscriminatorAlias( string suffix );
 
-		/// <value>
-		/// the column name for the discriminator as specified in the mapping.
-		/// </value>
+		/// <summary>
+		/// Get the name of the column used as a discriminator
+		/// </summary>
 		string DiscriminatorColumnName { get; }
 	}
 }
