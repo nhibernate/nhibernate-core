@@ -119,6 +119,10 @@ namespace NHibernate.Driver
 						}
 					}
 				}
+				else
+				{
+					log.Error( "Invalid timeout of '" + envTimeout + "' specified, ignoring" );
+				}
 			}
 
 			StringBuilder builder = new StringBuilder( sqlString.SqlParts.Length*15 );
