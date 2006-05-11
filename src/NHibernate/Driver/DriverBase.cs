@@ -101,7 +101,7 @@ namespace NHibernate.Driver
 			if( envTimeout != null )
 			{
 				int timeout = Convert.ToInt32( envTimeout );
-				if( timeout > 0 )
+				if( timeout >= 0 )
 				{
 					if( log.IsDebugEnabled )
 					{
