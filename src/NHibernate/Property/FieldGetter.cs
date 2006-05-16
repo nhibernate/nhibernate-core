@@ -1,12 +1,13 @@
 using System;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace NHibernate.Property
 {
 	/// <summary>
 	/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>get</c>.
 	/// </summary>
-	public sealed class FieldGetter : IGetter
+	public sealed class FieldGetter : IGetter, IOptimizableGetter
 	{
 		private readonly FieldInfo field;
 		private readonly System.Type clazz;
@@ -74,5 +75,10 @@ namespace NHibernate.Property
 		}
 
 		#endregion
+
+		public void Emit( ILGenerator il )
+		{
+			il.Emit( OpCodes.Ldfld, field ); 
+		}
 	}
 }

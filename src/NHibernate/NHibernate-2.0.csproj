@@ -489,14 +489,17 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
-      <SubType>
-      </SubType>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />
     <Compile Include="Bytecode\IBytecodeProvider.cs" />
     <Compile Include="Bytecode\IInstantiationOptimizer.cs" />
     <Compile Include="Bytecode\IReflectionOptimizer.cs" />
+    <Compile Include="Bytecode\Lightweight\AccessOptimizer.cs" />
+    <Compile Include="Bytecode\Lightweight\BytecodeProviderImpl.cs" />
+    <Compile Include="Bytecode\Lightweight\Delegates.cs" />
+    <Compile Include="Bytecode\Lightweight\ReflectionOptimizer.cs" />
     <Compile Include="Bytecode\NullBytecodeProvider.cs" />
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Collection\AbstractPersistentCollection.cs" />
@@ -591,6 +594,8 @@
     <Compile Include="Persister\Entity\JoinedSubclassEntityPersister.cs" />
     <Compile Include="Persister\Entity\LoadableConstants.cs" />
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
+    <Compile Include="Property\IOptimizableGetter.cs" />
+    <Compile Include="Property\IOptimizableSetter.cs" />
     <Compile Include="Tuple\EntityMetamodel.cs" />
     <Compile Include="Tuple\IdentifierProperty.cs" />
     <Compile Include="Tuple\Property.cs" />
@@ -633,7 +638,6 @@
     <Content Include="NamespaceSummary.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Bytecode\Lightweight\" />
     <Folder Include="Loader\Hql\" />
     <Folder Include="Properties\" />
   </ItemGroup>

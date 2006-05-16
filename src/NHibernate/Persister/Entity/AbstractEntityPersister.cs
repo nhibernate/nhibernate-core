@@ -195,7 +195,17 @@ namespace NHibernate.Persister.Entity
 		{
 			if( optimizer != null && optimizer.AccessOptimizer != null )
 			{
-				optimizer.AccessOptimizer.SetPropertyValues( obj, values );
+				try
+				{
+					optimizer.AccessOptimizer.SetPropertyValues( obj, values );
+				}
+				catch( InvalidCastException e )
+				{
+					throw new MappingException(
+						"Invalid mapping information specified for type " + obj.GetType()
+						+ ", check your mapping file for property type mismatches",
+						e );
+				}
 			}
 			else
 			{
@@ -370,10 +380,16 @@ namespace NHibernate.Persister.Entity
 				}
 
 				object result;
-				//TODO: optimizer implementation
 				try
 				{
-					result = constructor.Invoke( null );
+					if( optimizer != null && optimizer.InstantiationOptimizer != null )
+					{
+						result = optimizer.InstantiationOptimizer.CreateInstance();
+					}
+					else
+					{
+						result = constructor.Invoke( null );
+					}
 				}
 				catch( Exception e )
 				{
@@ -799,7 +815,10 @@ namespace NHibernate.Persister.Entity
 			hasFormulaProperties = foundFormula;
 
 			// NH: reflection optimizer works with custom accessors
-			optimizer = Environment.BytecodeProvider.GetReflectionOptimizer( MappedClass, Getters, Setters );
+			if( Environment.UseReflectionOptimizer )
+			{
+				optimizer = Environment.BytecodeProvider.GetReflectionOptimizer( MappedClass, Getters, Setters );
+			}
 
 			// SUBCLASS PROPERTY CLOSURE
 

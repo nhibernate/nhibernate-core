@@ -184,18 +184,9 @@ namespace NHibernate.Bytecode.CodeDom
 
 			private const string startSetMethod =
 				"public void SetPropertyValues(object obj, object[] values) {{\n" +
-				"  {0} t = ({0})obj;\n" +
-				"  try\n" +
-				"  {{\n";
+				"  {0} t = ({0})obj;\n";
 
 			private const string closeSetMethod =
-				"  }\n" +
-				"  catch( InvalidCastException ice )\n" +
-				"  {\n" +
-				"    throw new MappingException(\n" +
-				"      \"Invalid mapping information specified for type \" + obj.GetType() + \", check your mapping file for property type mismatches\",\n" +
-				"      ice);\n" +
-				"  }\n" +
 				"}\n";
 
 			private const string startGetMethod =

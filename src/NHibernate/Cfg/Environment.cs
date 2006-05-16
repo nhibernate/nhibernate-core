@@ -93,12 +93,16 @@ namespace NHibernate.Cfg
 		// NHibernate-specific properties
 		public const string PrepareSql = "hibernate.prepare_sql";
 		public const string CommandTimeout = "hibernate.command_timeout";
+		
 		public const string PropertyBytecodeProvider = "hibernate.bytecode.provider";
+		public const string PropertyUseReflectionOptimizer = "hibernate.use_reflection_optimizer";
+		
 		public const string UseProxyValidator = "hibernate.use_proxy_validator";
 
 		private static IDictionary GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;
+		private static bool EnableReflectionOptimizer;
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
 
@@ -116,10 +120,17 @@ namespace NHibernate.Cfg
 			log.Info( "NHibernate " + Environment.Version );
 
 			GlobalProperties = new Hashtable();
+			GlobalProperties[ PropertyUseReflectionOptimizer ] = "true";
 			LoadGlobalPropertiesFromAppConfig();
 			VerifyProperties( GlobalProperties );
 
 			BytecodeProviderInstance = BuildBytecodeProvider( GlobalProperties );
+			EnableReflectionOptimizer = PropertiesHelper.GetBoolean( PropertyUseReflectionOptimizer, GlobalProperties );
+
+			if( EnableReflectionOptimizer )
+			{
+				log.Info( "Using reflection optimizer" );
+			}
 		}
 
 		private static void LoadGlobalPropertiesFromAppConfig()
@@ -185,9 +196,32 @@ namespace NHibernate.Cfg
 			set { BytecodeProviderInstance = value; }
 		}
 
+		/// <summary>
+		/// Whether to enable the use of reflection optimizer
+		/// </summary>
+		/// <remarks>
+		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// of the application configuration file by default. Since it is not
+		/// always convenient to configure NHibernate through the application
+		/// configuration file, it is also possible to set the property value
+		/// manually. This should only be done before a configuration object
+		/// is created, otherwise the change may not take effect.
+		/// </remarks>
+		public static bool UseReflectionOptimizer
+		{
+			get { return EnableReflectionOptimizer; }
+			set { EnableReflectionOptimizer = value; }
+		}
+
 		public static IBytecodeProvider BuildBytecodeProvider( IDictionary properties )
 		{
-			string provider = PropertiesHelper.GetString( Environment.PropertyBytecodeProvider, properties, "codedom" );
+#if NET_2_0
+			string defaultBytecodeProvider = "lcg";
+#else
+			string defaultBytecodeProvider = "codedom";
+#endif
+			string provider = PropertiesHelper.GetString( Environment.PropertyBytecodeProvider, properties,
+				defaultBytecodeProvider );
 			log.Info( "Bytecode provider name : " + provider );
 			return BuildBytecodeProvider( provider );
 		}
@@ -197,6 +231,9 @@ namespace NHibernate.Cfg
 			switch( providerName )
 			{
 				case "codedom": return new Bytecode.CodeDom.BytecodeProviderImpl();
+#if NET_2_0
+				case "lcg": return new Bytecode.Lightweight.BytecodeProviderImpl();
+#endif
 				case "null": return new Bytecode.NullBytecodeProvider();
 				default:
 					log.Warn( "unrecognized bytecode provider [" + providerName + "], using null by default" );

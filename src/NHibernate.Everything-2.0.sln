@@ -1,10 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual C# Express 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections-2.0", "Iesi.Collections\Iesi.Collections-2.0.csproj", "{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test-2.0", "Iesi.Collections.Test\Iesi.Collections.Test-2.0.csproj", "{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}"
-EndProject
+# Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate-2.0", "NHibernate\NHibernate-2.0.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel-2.0", "NHibernate.DomainModel\NHibernate.DomainModel-2.0.csproj", "{5C649B55-1B3F-4C38-9998-1B043E94A244}"
@@ -59,14 +55,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}.Release|Any CPU.Build.0 = Release|Any CPU
-		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.ActiveCfg = Release|Any CPU

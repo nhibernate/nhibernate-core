@@ -98,8 +98,11 @@ namespace NHibernate.Type
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
 
-			// NH: reflection optimizer works with custom accessors
-			this.optimizer = Environment.BytecodeProvider.GetReflectionOptimizer( componentClass, getters, setters );
+			if( Environment.UseReflectionOptimizer )
+			{
+				// NH: reflection optimizer works with custom accessors
+				this.optimizer = Environment.BytecodeProvider.GetReflectionOptimizer( componentClass, getters, setters );
+			}
 		}
 
 		/// <summary></summary>
@@ -356,7 +359,17 @@ namespace NHibernate.Type
 		{
 			if( optimizer != null && optimizer.AccessOptimizer != null )
 			{
-				optimizer.AccessOptimizer.SetPropertyValues( component, values );
+				try
+				{
+					optimizer.AccessOptimizer.SetPropertyValues( component, values );
+				}
+				catch( InvalidCastException e )
+				{
+					throw new MappingException(
+						"Invalid mapping information specified for type " + component.GetType()
+						+ ", check your mapping file for property type mismatches",
+						e );
+				}
 			}
 			else
 			{
@@ -485,7 +498,16 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Activator.CreateInstance( componentClass, true );
+				object result;
+				if( optimizer != null && optimizer.InstantiationOptimizer != null )
+				{
+					result = optimizer.InstantiationOptimizer.CreateInstance();
+				}
+				else
+				{
+					result = Activator.CreateInstance( componentClass, true );
+				}
+				return result;
 			}
 			catch( Exception e )
 			{

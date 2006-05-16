@@ -447,7 +447,7 @@
     <EmbeddedResource Include="CollectionTest\IdBagFixture.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GenericTest\Overall\Mappings.hbm.xml" />
+    <EmbeddedResource Include="GenericTest\Overall\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

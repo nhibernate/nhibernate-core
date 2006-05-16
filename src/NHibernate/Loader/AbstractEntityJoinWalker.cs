@@ -24,7 +24,8 @@ namespace NHibernate.Loader
 		protected void InitAll(
 			SqlString whereString,
 			string orderByString,
-			LockMode lockMode )		{
+			LockMode lockMode )
+		{
 			WalkEntityTree( persister, Alias );
 			IList allAssociations = new ArrayList();
 			foreach( object obj in associations )
@@ -40,7 +41,8 @@ namespace NHibernate.Loader
 					JoinType.LeftOuterJoin,
 					Factory,
 					CollectionHelper.EmptyMap
-					) );
+					) );
+
 			InitPersisters( allAssociations, lockMode );
 			InitStatementString( whereString, orderByString, lockMode );
 		}
@@ -50,7 +52,8 @@ namespace NHibernate.Loader
 			SqlString whereString,
 			string orderByString,
 			string groupByString,
-			LockMode lockMode )
+			LockMode lockMode )
+
 		{
 			WalkEntityTree( persister, Alias );
 			Persisters = new ILoadable[0];
@@ -60,7 +63,8 @@ namespace NHibernate.Loader
 		private void InitStatementString(
 			SqlString condition,
 			string orderBy,
-			LockMode lockMode )
+			LockMode lockMode )
+
 		{
 			InitStatementString( null, condition, orderBy, "", lockMode );
 		}
@@ -70,7 +74,8 @@ namespace NHibernate.Loader
 			SqlString condition,
 			string orderBy,
 			string groupBy,
-			LockMode lockMode )
+			LockMode lockMode )
+
 		{
 			int joins = CountEntityPersisters( associations );
 			Suffixes = BasicLoader.GenerateSuffixes( joins + 1 );
@@ -99,9 +104,11 @@ namespace NHibernate.Loader
 //			if( Factory.IsCommentsEnabled )
 //			{
 //				select.SetComment( Comment );
-//			}
+//			}
+
 			SqlString = select.ToSqlString();
-		}
+		}
+
 		/// <summary>
 		/// Don't bother with the discriminator, unless overridden by subclass
 		/// </summary>
@@ -136,5 +143,6 @@ namespace NHibernate.Loader
 		public override string ToString()
 		{
 			return GetType().FullName + '(' + Persister.ClassName + ')';
-		}	}
+		}
+	}
 }

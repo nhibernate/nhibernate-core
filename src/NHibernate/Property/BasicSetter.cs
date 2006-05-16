@@ -1,12 +1,13 @@
 using System;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace NHibernate.Property
 {
 	/// <summary>
 	/// An <see cref="ISetter"/> for a Property <c>set</c>.
 	/// </summary>
-	public sealed class BasicSetter : ISetter
+	public sealed class BasicSetter : ISetter, IOptimizableSetter
 	{
 		private System.Type clazz;
 		private PropertyInfo property;
@@ -23,6 +24,11 @@ namespace NHibernate.Property
 			this.clazz = clazz;
 			this.property = property;
 			this.propertyName = propertyName;
+		}
+
+		public PropertyInfo Property
+		{
+			get { return property; }
 		}
 
 		#region ISetter Members
@@ -71,7 +77,7 @@ namespace NHibernate.Property
 		{
 			get { return property.Name; }
 		}
-
+		
 		/// <summary>
 		/// Gets the <see cref="PropertyInfo"/> for the mapped Property.
 		/// </summary>
@@ -82,5 +88,10 @@ namespace NHibernate.Property
 		}
 
 		#endregion
+
+		public void Emit( ILGenerator il )
+		{
+			il.EmitCall( OpCodes.Callvirt, Method, null ); 
+		}
 	}
 }

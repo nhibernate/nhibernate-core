@@ -1,12 +1,13 @@
 using System;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace NHibernate.Property
 {
 	/// <summary>
 	/// An <see cref="IGetter"/> for a Property <c>get</c>.
 	/// </summary>
-	public sealed class BasicGetter : IGetter
+	public sealed class BasicGetter : IGetter, IOptimizableGetter
 	{
 		private System.Type clazz;
 		private PropertyInfo property;
@@ -23,6 +24,11 @@ namespace NHibernate.Property
 			this.clazz = clazz;
 			this.property = property;
 			this.propertyName = propertyName;
+		}
+
+		public PropertyInfo Property
+		{
+			get { return property; }
 		}
 
 		#region IGetter Members
@@ -76,5 +82,10 @@ namespace NHibernate.Property
 		}
 
 		#endregion
+
+		public void Emit( ILGenerator il )
+		{
+			il.EmitCall( OpCodes.Callvirt, Method, null ); 
+		}
 	}
 }
