@@ -110,9 +110,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// </summary>
 		private GetPropertyValuesInvoker GenerateGetPropertyValuesMethod( IGetter[] getters )
 		{
-			System.Type methodTargetType = mappedType.IsInterface ? typeof( object ) : mappedType;
 			System.Type[] methodArguments = new System.Type[] { typeof( object ), typeof( GetterCallback ) };
-
 			DynamicMethod method = CreateDynamicMethod( typeof( object[] ), methodArguments );
 
 			ILGenerator il = method.GetILGenerator();
@@ -147,7 +145,7 @@ namespace NHibernate.Bytecode.Lightweight
 					// using the getter's emitted IL code
 					il.Emit( OpCodes.Ldloc, thisLocal ); 
 					optimizableGetter.Emit( il );
-					EnsureBoxed( il, getter.ReturnType ); 
+					EmitUtil.EmitBoxIfNeeded( il, getter.ReturnType ); 
 				}
 				else
 				{
@@ -170,14 +168,6 @@ namespace NHibernate.Bytecode.Lightweight
 			il.Emit( OpCodes.Ret );
 
 			return ( GetPropertyValuesInvoker ) method.CreateDelegate( typeof( GetPropertyValuesInvoker ) );
-		}
-
-		public static void EnsureBoxed( ILGenerator il, System.Type type )
-		{
-			if( type.IsValueType )
-			{
-				il.Emit( OpCodes.Box, type );
-			}
 		}
 
 		/// <summary>
@@ -215,34 +205,7 @@ namespace NHibernate.Bytecode.Lightweight
 					il.Emit( OpCodes.Ldc_I4, i );
 					il.Emit( OpCodes.Ldelem_Ref );
 
-					if( valueType.IsValueType )
-					{
-						// If the value is null, replace by a new instance of valueType
-						Label isNull = il.DefineLabel();
-						Label done = il.DefineLabel();
-
-						il.Emit( OpCodes.Dup );
-						il.Emit( OpCodes.Brfalse_S, isNull );
-						il.Emit( OpCodes.Unbox, valueType );
-						il.Emit( OpCodes.Br_S, done );
-
-						il.MarkLabel( isNull );
-
-						il.Emit( OpCodes.Pop );
-						LocalBuilder local = il.DeclareLocal( valueType );
-						il.Emit( OpCodes.Ldloca, local );
-						il.Emit( OpCodes.Dup );
-						il.Emit( OpCodes.Initobj, valueType );
-						
-						il.MarkLabel( done );
-
-						il.Emit( OpCodes.Ldobj, valueType ); 
-
-					}
-					else
-					{
-						il.Emit( OpCodes.Castclass, valueType ); 
-					}
+					EmitUtil.PreparePropertyForSet( il, valueType );
 
 					// using the setter's emitted IL
 					optimizableSetter.Emit( il );

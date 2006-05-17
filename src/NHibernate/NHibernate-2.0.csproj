@@ -501,6 +501,7 @@
     <Compile Include="Bytecode\Lightweight\Delegates.cs" />
     <Compile Include="Bytecode\Lightweight\ReflectionOptimizer.cs" />
     <Compile Include="Bytecode\NullBytecodeProvider.cs" />
+    <Compile Include="Bytecode\EmitUtil.cs" />
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Collection\AbstractPersistentCollection.cs" />
     <Compile Include="Collection\Generic\PersistentGenericSet.cs" />

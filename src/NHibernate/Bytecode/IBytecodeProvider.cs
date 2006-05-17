@@ -1,6 +1,5 @@
 using System;
 
-using NHibernate.Proxy;
 using NHibernate.Property;
 
 namespace NHibernate.Bytecode
