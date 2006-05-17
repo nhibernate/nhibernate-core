@@ -551,7 +551,6 @@
     <Compile Include="Loader\Custom\CustomLoader.cs" />
     <Compile Include="Loader\Custom\ICustomQuery.cs" />
     <Compile Include="Loader\Custom\SQLCustomQuery.cs" />
-    <Compile Include="Loader\Custom\SqlLoader.cs" />
     <Compile Include="Loader\Custom\SQLQueryCollectionReturn.cs" />
     <Compile Include="Loader\Custom\SQLQueryJoinReturn.cs" />
     <Compile Include="Loader\Custom\SQLQueryParser.cs" />
