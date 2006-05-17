@@ -49,6 +49,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -94,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="convert.vm" />
     <None Include="NHibernate.Tool.hbm2net.Tests.build" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -101,6 +103,7 @@
     <Compile Include="ResourceHelper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SimpleMappingFileConfigFileNoOutputArgsTests.cs" />
     <Compile Include="SimpleMappingFileNoConfigNoOutputArgsTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -117,6 +120,9 @@
       <Project>{136FFE16-EE3B-4556-90FB-E265113CB13F}</Project>
       <Name>NHibernate.Tool.hbm2net-2.0</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="config.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
