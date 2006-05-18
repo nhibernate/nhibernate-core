@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	public class GenericMapType<TKey, TValue> : MapType
 	{
 		/// <summary>
-		/// Initializes a new instance of a <see cref="GenericMapType"/> class for
+		/// Initializes a new instance of a <see cref="GenericMapType{TKey, TValue}"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>

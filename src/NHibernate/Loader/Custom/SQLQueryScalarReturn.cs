@@ -8,7 +8,7 @@ namespace NHibernate.Loader.Custom
 		private IType type;
 		private string columnAlias;
 
-		public SQLQueryScalarReturn( string alias, IType type )
+		public SQLQueryScalarReturn( string columnAlias, IType type )
 		{
 			this.type = type;
 			this.columnAlias = columnAlias;

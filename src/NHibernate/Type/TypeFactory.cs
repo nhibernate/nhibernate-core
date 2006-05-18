@@ -884,7 +884,7 @@ namespace NHibernate.Type
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet{T}" />.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
-		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
+		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
 		public static CollectionType GenericSet( string role, string propertyRef, System.Type elementClass )
 		{
 			return CreateCollectionType( typeof( GenericSetType<> ), role, propertyRef, elementClass );
@@ -894,7 +894,7 @@ namespace NHibernate.Type
 		/// Creates a new <see cref="CollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet{T}" />.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
-		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
+		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
 		public static CollectionType GenericSortedSet( string role, string propertyRef, object comparer, System.Type elementType )
 		{
 			return CreateSortedCollectionType( typeof( GenericSortedSetType<> ), role, propertyRef, comparer, elementType );

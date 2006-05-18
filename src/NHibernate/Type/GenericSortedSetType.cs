@@ -15,7 +15,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// An <see cref="IType"/> that maps a sorted <see cref="ISet&lt;T&gt;"/> collection
+	/// An <see cref="IType"/> that maps a sorted <see cref="ISet{T}"/> collection
 	/// to the database.
 	/// </summary>
 	public class GenericSortedSetType<T> : GenericSetType<T>
@@ -23,7 +23,7 @@ namespace NHibernate.Type
 		private IComparer<T> comparer;
 
 		/// <summary>
-		/// Initializes a new instance of a <see cref="GenericSortedSetType"/> class for
+		/// Initializes a new instance of a <see cref="GenericSortedSetType{T}"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>

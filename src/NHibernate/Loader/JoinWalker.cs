@@ -4,6 +4,7 @@ using System.Text;
 
 using Iesi.Collections;
 
+using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;

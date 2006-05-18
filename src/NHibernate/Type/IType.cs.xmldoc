@@ -18,11 +18,11 @@
 		<remarks>This does not necessarily imply that the type actually represents an association.</remarks>
 	</member>
 	
-	<member name="P:IType.IsPersistentCollectionType">
+	<member name="P:IType.IsCollectionType">
 		<summary>
 			When implemented by a class, gets a value indicating if the implementor is a collection type
 		</summary>
-		<value>true if this is a <see cref="PersistentCollectionType"/>.</value>
+		<value>true if this is a <see cref="CollectionType"/>.</value>
 	</member>
 	
 	<member name="P:IType.IsComponentType">

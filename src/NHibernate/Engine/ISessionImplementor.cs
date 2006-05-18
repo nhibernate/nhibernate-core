@@ -181,7 +181,7 @@ namespace NHibernate.Engine
 
 #if NET_2_0
 		/// <summary>
-		/// Strongly-typed version of <see cref="Find()" />
+		/// Strongly-typed version of <see cref="Find(string, QueryParameters)" />
 		/// </summary>
 		IList<T> Find<T>( string query, QueryParameters queryParameters );
 #endif
@@ -196,7 +196,7 @@ namespace NHibernate.Engine
 
 #if NET_2_0
 		/// <summary>
-		/// Strongly-typed version of <see cref="Enumerable()" />
+		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
 		/// </summary>
 		IEnumerable<T> Enumerable<T>( string query, QueryParameters queryParameters );
 #endif
@@ -220,7 +220,7 @@ namespace NHibernate.Engine
 
 #if NET_2_0
 		/// <summary>
-		/// Strongly-typed version of <see cref="EnumerableFilter()" />
+		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
 		/// </summary>
 		IEnumerable<T> EnumerableFilter<T>( object collection, string filter, QueryParameters parameters );
 #endif

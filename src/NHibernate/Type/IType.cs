@@ -21,7 +21,7 @@ namespace NHibernate.Type
 		bool IsAssociationType { get; }
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.IsPersistentCollectionType"]/*'
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsCollectionType"]/*'
 		/// /> 
 		bool IsCollectionType { get; }
 

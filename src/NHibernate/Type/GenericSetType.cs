@@ -1,6 +1,7 @@
 #if NET_2_0
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using Iesi.Collections.Generic;
@@ -20,7 +21,7 @@ namespace NHibernate.Type
 	public class GenericSetType<T> : SetType
 	{
 		/// <summary>
-		/// Initializes a new instance of a <see cref="GenericSetType"/> class for
+		/// Initializes a new instance of a <see cref="GenericSetType{T}"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
@@ -44,10 +45,10 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps an <see cref="IList&lt;T&gt;"/> in a <see cref="PersistentGenericSet&lt;T&gt;"/>.
+		/// Wraps an <see cref="IList{T}"/> in a <see cref="PersistentGenericSet&lt;T&gt;"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
-		/// <param name="collection">The unwrapped <see cref="IList&lt;T&gt;"/>.</param>
+		/// <param name="collection">The unwrapped <see cref="IList{T}"/>.</param>
 		/// <returns>
 		/// An <see cref="PersistentGenericSet&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList&lt;T&gt;"/>.
 		/// </returns>

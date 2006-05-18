@@ -9,7 +9,7 @@ using NHibernate.Hql;
 namespace NHibernate.Engine.Query
 {
 	/// <summary>
-	/// The single available method <see cref="ParameterParser.Parse()" />
+	/// The single available method <see cref="ParameterParser.Parse" />
 	/// is responsible for parsing a query string and recognizing tokens in
 	/// relation to parameters (either named, ejb3-style, or ordinal) and
 	/// providing callbacks about such recognitions.

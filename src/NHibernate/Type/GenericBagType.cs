@@ -14,13 +14,13 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// An <see cref="IType"/> that maps an <see cref="IList&lt;T&gt;"/> collection
+	/// An <see cref="IType"/> that maps an <see cref="IList{T}"/> collection
 	/// to the database using bag semantics.
 	/// </summary>
 	public class GenericBagType<T> : BagType
 	{
 		/// <summary>
-		/// Initializes a new instance of a <see cref="GenericBagType"/> class for
+		/// Initializes a new instance of a <see cref="GenericBagType{T}"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
