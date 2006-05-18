@@ -55,11 +55,75 @@
 		These are used to set the correct attributes in AssemblyInfo.cs.  
 	-->
 	<property name="project.company" value="NHibernate.org" />
-	<property name="project.version.major" value="1" overwrite="false" />
-	<property name="project.version.minor" value="0" overwrite="false" />
-	<property name="project.version.build" value="2" overwrite="false" />
-	<property name="project.version.revision" value="0" overwrite="false" />
-	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
+
+	<!--
+		Version number computation
+		
+		JBoss product versioning guidelines (http://wiki.jboss.org/wiki/Wiki.jsp?page=JBossProductVersioning)
+		say we are supposed to use version numbers formatted like major.minor.patch.qualifier, where
+		qualifier is alphanumeric (Alpha#, Beta#, CR#, GA, SP#), and the numeric part may be anything, e.g.
+		a time/date stamp, a SVN revision number and so on.
+		
+		I'm only going to use simple sequential numbers for now and the script below is used to translate
+		the alphanumeric version into a numeric assembly version: x.y.z.qN is translated into x.y.z.(base+N)
+		where base is 1000 for Alpha, 2000 for Beta, 3000 for CR, and 4000 for both GA and SP (so GA is
+		effectively SP0).
+	-->
+
+	<property name="project.version" value="1.2.0.Alpha1" overwrite="false" />
+
+	<!-- Compute and set project.version.numeric from project.version if it hasn't been set already -->
+	<if test="${not property::exists('project.version.numeric')}">
+
+		<script language="C#">
+			<code><![CDATA[
+				public const int BaseAlpha = 1000;
+				public const int BaseBeta  = 2000;
+				public const int BaseCR    = 3000;
+				public const int BaseGA    = 4000;
+				// SP is same as GA because GA has no number and SP's start with 1.
+				public const int BaseSP    = 4000;
+
+				public static void ScriptMain(Project project)
+				{
+					project.Properties["project.version.numeric"] = ToNumericVersion(
+						project.Properties["project.version"]);
+				}
+
+				public static string ToNumericVersion(string version)
+				{
+					int qualifierStart = version.LastIndexOf('.') + 1;
+					int qualifierNumberStart = version.IndexOfAny(
+						"0123456789".ToCharArray(),
+						qualifierStart);
+
+					if (qualifierNumberStart < 0) qualifierNumberStart = version.Length;
+
+					string qualifier = version.Substring(qualifierStart, qualifierNumberStart - qualifierStart);
+					int qualifierNumber = qualifierNumberStart < version.Length
+						? int.Parse(version.Substring(qualifierNumberStart))
+						: 0;
+
+					int revisionBase;
+
+					switch (qualifier)
+					{
+						case "Alpha": revisionBase = BaseAlpha; break;
+						case "Beta":  revisionBase = BaseBeta; break;
+						case "CR":    revisionBase = BaseCR; break;
+						case "GA":    revisionBase = BaseGA; break;
+						case "SP":    revisionBase = BaseSP; break;
+
+						default: throw new BuildException("Unknown version qualifier " + qualifier);
+					}
+
+					string revisionNumber = (revisionBase + qualifierNumber).ToString();
+
+					return version.Substring(0, qualifierStart) + revisionNumber;
+				}
+			]]></code>
+		</script>
+	</if>
 
 	<!-- debug|release -->
 	<property name="build.defines" value="" />

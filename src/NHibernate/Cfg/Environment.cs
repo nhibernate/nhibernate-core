@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Reflection;
 
 using log4net;
 using NHibernate.Util;
@@ -32,12 +33,25 @@ namespace NHibernate.Cfg
 	/// </remarks>
 	public sealed class Environment
 	{
+		private static string cachedVersion;
+
 		/// <summary>
 		/// NHibernate version (informational).
 		/// </summary>
 		public static string Version
 		{
-			get { return "1.1-alpha1"; }
+			get
+			{
+				if( cachedVersion == null )
+				{
+					Assembly thisAssembly = Assembly.GetExecutingAssembly();
+					AssemblyInformationalVersionAttribute[] attrs = ( AssemblyInformationalVersionAttribute[] )
+						thisAssembly.GetCustomAttributes( typeof( AssemblyInformationalVersionAttribute ), false );
+
+					cachedVersion = attrs[ 0 ].InformationalVersion + " (" + thisAssembly.GetName().Version + ")";
+				}
+				return cachedVersion;
+			}
 		}
 
 		public const string ConnectionProvider = "hibernate.connection.provider";
@@ -117,7 +131,11 @@ namespace NHibernate.Cfg
 
 		static Environment()
 		{
-			log.Info( "NHibernate " + Environment.Version );
+			// Computing the version string is a bit expensive, so do it only if logging is enabled.
+			if( log.IsInfoEnabled )
+			{
+				log.Info( "NHibernate " + Environment.Version );
+			}
 
 			GlobalProperties = new Hashtable();
 			GlobalProperties[ PropertyUseReflectionOptimizer ] = "true";
