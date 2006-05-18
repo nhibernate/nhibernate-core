@@ -798,15 +798,15 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an 
-		/// <see cref="System.Collections.Generic.IList`1"/> with bag semantics.
+		/// <see cref="System.Collections.Generic.IList{T}"/> with bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
-		/// <see cref="System.Collections.Generic.IList`1"/> with.
+		/// <see cref="System.Collections.Generic.IList{T}"/> with.
 		/// </param>
 		/// <returns>
-		/// A <see cref="GenericBagType`1"/> for the specified role.
+		/// A <see cref="GenericBagType{T}"/> for the specified role.
 		/// </returns>
 		public static CollectionType GenericBag( string role, string propertyRef, System.Type elementClass )
 		{
@@ -815,16 +815,16 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an 
-		/// <see cref="System.Collections.Generic.IList`1"/> with identifier
+		/// <see cref="System.Collections.Generic.IList{T}"/> with identifier
 		/// bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
-		/// <see cref="System.Collections.Generic.IList`1"/> with.
+		/// <see cref="System.Collections.Generic.IList{T}"/> with.
 		/// </param>
 		/// <returns>
-		/// A <see cref="GenericIdentifierBagType`1"/> for the specified role.
+		/// A <see cref="GenericIdentifierBagType{T}"/> for the specified role.
 		/// </returns>
 		public static CollectionType GenericIdBag( string role, string propertyRef, System.Type elementClass )
 		{
@@ -881,7 +881,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet`1" />.
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet{T}" />.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>
@@ -891,7 +891,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet`1" />.
+		/// Creates a new <see cref="CollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet{T}" />.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <returns>A <see cref="GenericSetType" /> for the specified role.</returns>

@@ -30,7 +30,7 @@ namespace NHibernate.Collection.Generic
 	public class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, ISet
 	{
 		/// <summary>
-		/// The <see cref="ISet`1"/> that NHibernate is wrapping.
+		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
 		/// </summary>
 		protected ISet<T> internalSet;
 
