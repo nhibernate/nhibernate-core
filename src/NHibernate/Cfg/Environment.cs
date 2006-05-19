@@ -48,7 +48,14 @@ namespace NHibernate.Cfg
 					AssemblyInformationalVersionAttribute[] attrs = ( AssemblyInformationalVersionAttribute[] )
 						thisAssembly.GetCustomAttributes( typeof( AssemblyInformationalVersionAttribute ), false );
 
-					cachedVersion = attrs[ 0 ].InformationalVersion + " (" + thisAssembly.GetName().Version + ")";
+					if( attrs != null && attrs.Length > 0 )
+					{
+						cachedVersion = thisAssembly.GetName().Version.ToString() + " (" + attrs[ 0 ].InformationalVersion + ")";
+					}
+					else
+					{
+						cachedVersion = thisAssembly.GetName().Version.ToString();
+					}
 				}
 				return cachedVersion;
 			}
