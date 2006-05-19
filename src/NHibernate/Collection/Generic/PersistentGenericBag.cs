@@ -23,7 +23,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="T">The type of the element the bag should hold.</typeparam>
 	/// <remarks>The underlying collection used is an <see cref="List&lt;T&gt;"/></remarks>
 	[Serializable]
-	class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, System.Collections.IList
+	public class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, System.Collections.IList
 	{
 		private IList<T> bag;
 
