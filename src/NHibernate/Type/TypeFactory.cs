@@ -1084,8 +1084,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return null;
-				//return new CustomCollectionType( typeClass, role, propertyRef, embedded );
+				return new CustomCollectionType( typeClass, role, referencedPropertyName );
 			}
 		}
 	}
