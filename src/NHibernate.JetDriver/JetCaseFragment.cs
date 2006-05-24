@@ -7,19 +7,14 @@ namespace NHibernate.JetDriver
 {
 	/// <summary>
 	/// Jet engine doesn't support CASE ... WHEN ... END syntax, but has a proprietary "Switch". 
-	/// 
-	/// <p>
-	/// Author: <a href="mailto:lukask@welldatatech.com">Lukas Krejci</a>
-	/// </p>
 	/// </summary>
+	/// <remarks>
+	/// Author: <a href="mailto:lukask@welldatatech.com">Lukas Krejci</a>
+	/// </remarks>
 	public class JetCaseFragment : CaseFragment
 	{
 		private Dialect.Dialect dialect;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dialect"></param>
 		public JetCaseFragment( Dialect.Dialect dialect )
 		{
 			this.dialect = dialect;
@@ -29,35 +24,17 @@ namespace NHibernate.JetDriver
 
 		private IList cases = new ArrayList();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="returnColumnName"></param>
-		/// <returns></returns>
 		public override CaseFragment SetReturnColumnName( string returnColumnName )
 		{
 			this.returnColumnName = returnColumnName;
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="returnColumnName"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
 		public override CaseFragment SetReturnColumnName( string returnColumnName, string suffix )
 		{
 			return SetReturnColumnName( new Alias( suffix ).ToAliasString( returnColumnName, dialect ) );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="columnName"></param>
-		/// <param name="columnValue"></param>
-		/// <returns></returns>
 		public override CaseFragment AddWhenColumnNotNull( string alias, string columnName, string columnValue )
 		{
 			string key = alias + StringHelper.Dot + columnName + " is not null";
@@ -66,7 +43,6 @@ namespace NHibernate.JetDriver
 			return this;
 		}
 
-		/// <summary></summary>
 		public override SqlString ToSqlStringFragment()
 		{
 			StringBuilder buf = new StringBuilder( cases.Count * 15 + 10 );

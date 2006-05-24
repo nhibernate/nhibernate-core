@@ -29,14 +29,10 @@ namespace NHibernate.Cache
 		private ICache cache;
 		private int _nextLockId;
 
-		/// <summary></summary>
 		public ReadWriteCache()
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public ICache Cache
 		{
 			get { return cache; }
@@ -75,9 +71,6 @@ namespace NHibernate.Cache
 		/// problem would be caught by the update-time version-checking, if 
 		/// the data is versioned or timestamped.
 		/// </remarks>
-		/// <param name="key"></param>
-		/// <param name="txTimestamp"></param>
-		/// <returns></returns>
 		public object Get( object key, long txTimestamp )
 		{
 			lock( _lockObject )
@@ -134,8 +127,6 @@ namespace NHibernate.Cache
 		/// locks by transactions which simultaneously attempt to write to an
 		/// item.
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="version"></param>
 		public ISoftLock Lock( object key, object version )
 		{
 			lock( _lockObject )
@@ -170,9 +161,6 @@ namespace NHibernate.Cache
 		/// invalidated. (Otherwise, a stale item might be re-added if the
 		/// database is operating in repeatable read isolation mode.)
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="txTimestamp"></param>
 		/// <returns>Whether the item was actually put into the cache</returns>
 		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator )
 		{
@@ -240,11 +228,6 @@ namespace NHibernate.Cache
 			cache.Put( key, @lock );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="clientLock"></param>
 		public void Release( object key, ISoftLock clientLock )
 		{
 			lock( _lockObject )
@@ -285,26 +268,16 @@ namespace NHibernate.Cache
 			cache.Put( key, @lock );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void Clear()
 		{
 			cache.Clear();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
 		public void Remove( object key )
 		{
 			cache.Remove( key );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void Destroy()
 		{
 			try
@@ -321,10 +294,6 @@ namespace NHibernate.Cache
 		/// Re-cache the updated state, if and only if there there are
 		/// no other concurrent soft locks. Release our lock.
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="version"></param>
-		/// <param name="clientLock"></param>
 		public void AfterUpdate( object key, object value, object version, ISoftLock clientLock )
 		{
 			lock( _lockObject )
@@ -370,12 +339,6 @@ namespace NHibernate.Cache
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="version"></param>
 		public void AfterInsert( object key, object value, object version )
 		{
 			lock( _lockObject )
@@ -406,30 +369,16 @@ namespace NHibernate.Cache
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
 		public void Evict( object key )
 		{
 			// NOOP
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
 		public void Insert( object key, object value )
 		{
 			// NOOP
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
 		public void Update( object key, object value )
 		{
 			// NOOP
