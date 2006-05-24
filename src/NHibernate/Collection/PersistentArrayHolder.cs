@@ -33,12 +33,7 @@ namespace NHibernate.Collection
 		private ArrayList tempList;
 
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="array"></param>
-		internal PersistentArrayHolder( ISessionImplementor session, object array ) : base( session )
+		public PersistentArrayHolder( ISessionImplementor session, object array ) : base( session )
 		{
 			this.array = (Array) array;
 			SetInitialized();

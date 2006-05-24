@@ -26,8 +26,7 @@ namespace NHibernate.Collection.Generic
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		internal PersistentGenericList(ISessionImplementor session)
-			: base(session)
+		public PersistentGenericList(ISessionImplementor session) : base(session)
 		{
 		}
 
@@ -37,7 +36,7 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
 		/// <param name="coll">The <see cref="IList&lt;T&gt;"/> to wrap.</param>
-		internal PersistentGenericList(ISessionImplementor session, IList<T> coll)
+		public PersistentGenericList(ISessionImplementor session, IList<T> coll)
 			: base(session)
 		{
 			list = coll;

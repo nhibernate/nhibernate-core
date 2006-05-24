@@ -29,7 +29,7 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error.</param>
 		/// <param name="identifier">The identifier of the object that caused the exception.</param>
 		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
-		internal UnresolvableObjectException( string message, object identifier, System.Type clazz )
+		public UnresolvableObjectException( string message, object identifier, System.Type clazz )
 			: base( message )
 		{
 			this.identifier = identifier;

@@ -13,7 +13,7 @@ namespace NHibernate.Impl
 	/// <remarks>
 	/// This is the IteratorImpl in H2.0.3
 	/// </remarks>
-	internal class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
+	public class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( EnumerableImpl ) );
 

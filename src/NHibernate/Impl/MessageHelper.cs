@@ -12,7 +12,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Helper methods for rendering log messages and exception messages
 	/// </summary>
-	internal sealed class MessageHelper
+	public sealed class MessageHelper
 	{
 
 		private MessageHelper()

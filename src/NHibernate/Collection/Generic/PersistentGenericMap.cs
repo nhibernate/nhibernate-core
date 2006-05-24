@@ -28,8 +28,7 @@ namespace NHibernate.Collection.Generic
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the map is in.</param>
-		internal PersistentGenericMap( ISessionImplementor session )
-			: base( session )
+		public PersistentGenericMap( ISessionImplementor session ) : base( session )
 		{
 		}
 
@@ -40,7 +39,7 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
 		/// <param name="map">The <see cref="IDictionary&lt;TKey,TValue&gt;"/> to wrap.</param>
-		internal PersistentGenericMap( ISessionImplementor session, IDictionary<TKey, TValue> map )
+		public PersistentGenericMap( ISessionImplementor session, IDictionary<TKey, TValue> map )
 			: base( session )
 		{
 			this.map = map;

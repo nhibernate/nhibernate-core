@@ -82,7 +82,7 @@ namespace NHibernate.Collection
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		internal PersistentList(ISessionImplementor session)
+		public PersistentList(ISessionImplementor session)
 			: base(session)
 		{
 		}
@@ -93,7 +93,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
 		/// <param name="list">The <see cref="IList"/> to wrap.</param>
-		internal PersistentList(ISessionImplementor session, IList list)
+		public PersistentList(ISessionImplementor session, IList list)
 			: base(session)
 		{
 			this.list = list;

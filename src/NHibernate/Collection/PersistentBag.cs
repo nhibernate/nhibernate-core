@@ -19,11 +19,11 @@ namespace NHibernate.Collection
 	{
 		private IList bag;
 
-		internal PersistentBag( ISessionImplementor session ) : base( session )
+		public PersistentBag( ISessionImplementor session ) : base( session )
 		{
 		}
 
-		internal PersistentBag( ISessionImplementor session, ICollection coll ) : base( session )
+		public PersistentBag( ISessionImplementor session, ICollection coll ) : base( session )
 		{
 			bag = coll as IList;
 

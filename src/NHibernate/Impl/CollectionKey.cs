@@ -4,7 +4,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Impl
 {
 	[Serializable]
-	internal sealed class CollectionKey
+	public sealed class CollectionKey
 	{
 		private string role;
 		private object key;

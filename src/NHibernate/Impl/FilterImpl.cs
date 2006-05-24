@@ -11,7 +11,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Implementation of the <see cref="IQuery"/> interface for collection filters.
 	/// </summary>
-	internal class FilterImpl : QueryImpl
+	public class FilterImpl : QueryImpl
 	{
 		private object collection;
 

@@ -30,11 +30,11 @@ namespace NHibernate.Collection
 		private IList values;	//element
 		private IDictionary identifiers; //index -> id 
 
-		internal PersistentIdentifierBag( ISessionImplementor session ) : base( session )
+		public PersistentIdentifierBag( ISessionImplementor session ) : base( session )
 		{
 		}
 
-		internal PersistentIdentifierBag( ISessionImplementor session, ICollection coll ) : base( session )
+		public PersistentIdentifierBag( ISessionImplementor session, ICollection coll ) : base( session )
 		{
 			IList list = coll as IList;
 

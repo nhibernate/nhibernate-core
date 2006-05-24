@@ -9,10 +9,10 @@ namespace NHibernate.Impl
 	/// A cached instance of a persistent class
 	/// </summary>
 	[Serializable]
-	internal class CacheEntry
+	public sealed class CacheEntry
 	{
-		private object[ ] state;
-		private System.Type subclass;
+		private readonly object[ ] state;
+		private readonly System.Type subclass;
 
 		/// <summary></summary>
 		public System.Type Subclass

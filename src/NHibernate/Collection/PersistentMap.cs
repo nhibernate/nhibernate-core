@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -59,7 +58,7 @@ namespace NHibernate.Collection
 			return map == collection;
 		}
 
-		internal PersistentMap( ) : base( )
+		public PersistentMap( ) : base( )
 		{
 		}
 
@@ -67,7 +66,7 @@ namespace NHibernate.Collection
 		/// Construct an uninitialized PersistentMap.
 		/// </summary>
 		/// <param name="session">The ISession the PersistentMap should be a part of.</param>
-		internal PersistentMap( ISessionImplementor session ) : base( session )
+		public PersistentMap( ISessionImplementor session ) : base( session )
 		{
 		}
 
@@ -76,7 +75,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session">The ISession the PersistentMap should be a part of.</param>
 		/// <param name="map">The IDictionary that contains the initial values.</param>
-		internal PersistentMap( ISessionImplementor session, IDictionary map ) : base( session )
+		public PersistentMap( ISessionImplementor session, IDictionary map ) : base( session )
 		{
 			this.map = map;
 			SetInitialized();
