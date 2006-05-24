@@ -1,3 +1,4 @@
+#if NET_2_0
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.Overall
 {
 	[TestFixture]
-	[Ignore("Generic entities not supported")]
+	[Ignore( "Generic entities not supported" )]
 	public class Fixture : TestCase
 	{
 		protected override IList Mappings
@@ -44,3 +45,4 @@ namespace NHibernate.Test.GenericTest.Overall
 		}
 	}
 }
+#endif

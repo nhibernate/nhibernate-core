@@ -1,3 +1,4 @@
+#if NET_2_0
 using System;
 
 using log4net;
@@ -40,3 +41,4 @@ namespace NHibernate.Bytecode.Lightweight
 		}
 	}
 }
+#endif

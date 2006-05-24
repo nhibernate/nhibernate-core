@@ -1,3 +1,4 @@
+#if NET_2_0
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace NHibernate.Test.GenericTest.Methods
 		}
 
 		private One one;
-		
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
@@ -142,3 +143,5 @@ namespace NHibernate.Test.GenericTest.Methods
 		}
 	}
 }
+
+#endif

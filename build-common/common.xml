@@ -36,7 +36,11 @@
 	<property name="clover.enabled" value="false" overwrite="false" />
 	<property name="clover.src" value="src\CloverSrc" />
 	<property name="clover.db" value="${clover.src}\clover.cdb" />
-	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET for Visual Studio" />
+
+	<property name="clover.framework" value=".NET 1.1" if="${nant.settings.currentframework == 'net-1.1'}" />
+	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-2.0'}" />
+
+	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET 2.0 for ${clover.framework}" />
 	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
 
 	<if test="${clover.enabled}">
@@ -157,7 +161,7 @@
 
 		<property name="build.root.dir" value="${root.dir}/build/${build.name}" />
 		<property name="build.dir" value="${build.root.dir}" />
-		<property name="bin.dir" value="${build.dir}/bin/${framework::get-target-framework()}" />
+		<property name="bin.dir" value="${build.dir}/bin/${nant.settings.currentframework}" dynamic="true" />
 	</target>
 
 	<target name="set-framework-configuration">
@@ -203,26 +207,8 @@
 		<echo message="" />
 	</target>
 
-	<target name="build-with-clover" description="Builds current config with Clover coverage">
-		<!-- 
-			mark this as being a clover enabled build and then just let the normal build
-			process take place
-		-->
-		<property name="clover.enabled" value="true" />
-	</target>
-	
-	<target name="build-without-clover" description="Ensures the build is done without Clover coverage">
-		<!--
-			This does not really need to be called unless the clover.enabled property has been explicitly 
-			set to true by some other means since clover.enabled defaults to false.  It is my intention
-			to first do a clover build to get the coverage then to do a non-clover build to get the 
-			clover-free dlls.
-		-->
-		<property name="clover.enabled" value="false" />
-	</target>
-
 	<target name="common.init"
-		depends="set-project-configuration set-framework-configuration"
+		depends="set-framework-configuration set-project-configuration"
 		description="Initializes build properties">
 
 		<fileset id="project.sources" failonempty="true">

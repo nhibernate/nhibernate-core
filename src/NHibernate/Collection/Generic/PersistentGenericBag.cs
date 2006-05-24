@@ -1,9 +1,7 @@
-//#if NET_2_0
+#if NET_2_0
 
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -32,7 +30,7 @@ namespace NHibernate.Collection.Generic
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
-		internal PersistentGenericBag( ISessionImplementor session )
+		public PersistentGenericBag( ISessionImplementor session )
 			: base( session )
 		{
 		}
@@ -43,7 +41,7 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
 		/// <param name="coll">The <see cref="IList&lt;T&gt;"/> to wrap.</param>
-		internal PersistentGenericBag( ISessionImplementor session, IList<T> coll )
+		public PersistentGenericBag( ISessionImplementor session, IList<T> coll )
 			: base( session )
 		{
 			bag = coll;
@@ -514,4 +512,4 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
-//#endif
+#endif

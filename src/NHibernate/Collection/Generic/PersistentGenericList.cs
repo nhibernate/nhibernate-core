@@ -1,9 +1,8 @@
-//#if NET_2_0
+#if NET_2_0
 
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -459,4 +458,4 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
-//#endif
+#endif

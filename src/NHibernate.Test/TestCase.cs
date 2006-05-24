@@ -10,6 +10,7 @@ using NHibernate.Connection;
 using NHibernate.Tool.hbm2ddl;
 
 using NUnit.Framework;
+using System.Security.Permissions;
 
 namespace NHibernate.Test
 {
@@ -20,8 +21,7 @@ namespace NHibernate.Test
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
 
-		private static readonly ILog log =
-			LogManager.GetLogger( typeof( TestCase ) );
+		private static readonly ILog log = LogManager.GetLogger( typeof( TestCase ) );
 
 		private ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;

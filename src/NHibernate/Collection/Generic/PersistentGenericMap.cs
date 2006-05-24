@@ -1,4 +1,4 @@
-//#if NET_2_0
+#if NET_2_0
 
 using System;
 using System.Collections.Generic;
@@ -447,4 +447,4 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
-//#endif
+#endif

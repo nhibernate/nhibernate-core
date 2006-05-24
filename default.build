@@ -48,8 +48,8 @@
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
 			if="${run.performance.tests}" />
-		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />
-		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" />
+		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" /> -->
+		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" /> -->
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
@@ -65,7 +65,7 @@
 
 	<target
 		name="build-external"
-		depends="init" 
+		depends="init"
 		description="Builds code that NHibernate depends on but is not a core piece of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
 	>
 		<nant target="build">
@@ -73,12 +73,14 @@
 		</nant>
 	</target>
 
-	<target name="prepare-build-directory">
+	<target name="recreate-build-directory">
 		<echo message="Current Directory is ${project::get-base-directory()}" />
 		<echo message="Build Directory is ${build.dir}" />
 
 		<!-- Prepare build directory -->
+		<delete dir="${bin.dir}" failonerror="false" />
 		<mkdir dir="${bin.dir}" />
+		<call target="copy-referenced-assemblies" />
 	</target>
 
 	<target name="copy-referenced-assemblies">
@@ -124,7 +126,7 @@
 	</target>
 
 	<target name="build"
-		depends="init prepare-build-directory copy-referenced-assemblies"
+		depends="init recreate-build-directory"
 		description="Builds NHibernate in the current configuration">
 
 		<nant target="build">
@@ -133,57 +135,32 @@
 
 	</target>
 
-	<target name="test" depends="build" description="Runs all NHibernate tests">
-
-		<nant target="test">
-			<buildfiles refid="buildfiles.tests" />
-		</nant>
-
-		<if test="${nunit2report.installed}">
-			<mkdir dir="${build.dir}/testresults" />
-			<nunit2report out="${build.dir}/testresults/index.html" format="Frames" todir="${build.dir}/testresults">
-				<fileset>
-					<include name="${build.dir}\bin\*results.xml" />
-				</fileset>
-			</nunit2report>
-		</if>
-		
-		<!-- if this was a clover enabled build then generate the clover reports for it -->
-		<call target="coverage-report" if="${clover.enabled}" />
-		
-		<!-- 
-			Clean up all of the non-essential assemblies and files that get put in the
-			bin folder to run the test fixtures and that are generated during the running
-			of the test fixtures.
-		-->
-		<delete> 
-			<fileset basedir="${bin.dir}">
-
-				<!-- Any hbm.xml and cfg.xml files in the bin are for testing purposes -->
-				<include name="*.hbm.xml" />
-				<include name="*.cfg.xml" />
-
-				<!-- The MyTest Assembly was used in the AssemblyOrderer fixtures -->
-				<include name="MyTest*.dll" />
-				<include name="MyTest*.pdb" />
-
-				<!-- 
-					Remove test related assemblies and files so the bin directory is 
-					clean and ready for the downloader to use. Leave test results for
- 					CruiseControl.NET (we exclude them from package)	
-				-->
-				<include name="Iesi.Collections.Test.*" />
-				<include name="NHibernate.DomainModel.*" />
-				<include name="NHibernate.Examples.*" />
-				<include name="NHibernate.Test.*" />
-				<include name="nunit.framework.*" />
-				<exclude name="*-results.xml" />
-
+	<target name="test-report" if="${nunit2report.installed}">
+		<mkdir dir="${build.dir}/testresults" />
+		<nunit2report out="${build.dir}/testresults/index.html" format="Frames" todir="${build.dir}/testresults">
+			<fileset>
+				<include name="${bin.dir}/*results.xml" />
 			</fileset>
-		</delete>
+		</nunit2report>
+	</target>
+
+	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework">
+		<foreach item="File" property="buildfile">
+			<in>
+				<items refid="buildfiles.tests" />
+			</in>
+			<do>
+				<exec program="nant.exe">
+					<arg value="-f:${buildfile}" />
+					<arg value="-t:${nant.settings.currentframework}" />
+					<arg value="test" />
+				</exec>
+			</do>
+		</foreach>
 	</target>
 	
-	<target name="coverage-report" description="Builds the Test Coverage reports">
+	<target name="coverage-report" description="Builds the Test Coverage reports"
+		 if="${clover.enabled}">
 
 		<mkdir dir="${build.dir}/clover" />
 		<clover-setup 
@@ -216,6 +193,10 @@
 	</target>
 
 	<target name="doc-api" depends="init" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
+		<!-- Force .NET 1.1 configuration because NDoc fails with .NET 2.0 assemblies -->
+		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
+		<call target="set-net-1.1-framework-configuration" />
+
 		<ndoc>
 			<assemblies basedir="${bin.dir}">
 				<include name="NHibernate.dll" />
@@ -268,14 +249,14 @@
 					<property name="EditorBrowsableFilter" value="Off" />
 					<property name="UseNDocXmlFile" value="" />
 				</documenter>
-			</documenters> 
+			</documenters>
 		</ndoc>
 		<copy todir="${build.dir}/doc">
 			<fileset basedir="${build.dir}/doc/temp">
 				<include name="*.chm" />
 			</fileset>
 		</copy>
-		
+
 		<if test="${vshik.installed}">
 			<ndoc>
 				<assemblies basedir="${bin.dir}">
@@ -318,7 +299,7 @@
 						<property name="EditorBrowsableFilter" value="Off" />
 						<property name="UseNDocXmlFile" value="" />
 					</documenter>
-				</documenters> 
+				</documenters>
 			</ndoc>
 
 			<copy todir="${build.dir}/doc/help2">
@@ -334,80 +315,111 @@
 		</if>
 
 		<delete dir="${build.dir}/doc/temp" />
-		
+
+		<!-- Restore the original framework configuration -->
+		<call target="set-${current.framework.saved}-framework-configuration" />
 	</target>
 
-	<target name="merge">
-		<if test="${property::exists('merge.targetplatform')}">
-			<exec program="ilmerge.exe" basedir="external-bin" useruntimeengine="true">
-				<arg value="/ndebug:${build.debug}" />
-				<arg value="/lib:${bin.dir}" />
-				<arg value="/targetplatform:${merge.targetplatform}" />
-				<arg value="/keyfile:src/NHibernate.snk" if="${sign}" />
-				<arg value="/out:${build.dir}/NHibernate.dll" />
-				<arg value="NHibernate.dll" />
-				<arg value="HashCodeProvider.dll" />
-			</exec>
+	<target name="build-all-frameworks" depends="init">
+		<!-- Save the current framework -->
+		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
 
-			<!-- clean up -->
-			<delete file="${bin.dir}/NHibernate.dll" />
-			<delete file="${bin.dir}/HashCodeProvider.dll" />
-			<delete file="${bin.dir}/HashCodeProvider.license.txt" />
-			<move file="${build.dir}/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
-		</if>
+		<!-- Execute build for each framework -->
+		<foreach item="String" delim=" " property="framework" in="net-1.1 net-2.0">
+			<call target="set-${framework}-framework-configuration" />
+			<call target="build" />
+		</foreach>
+
+		<!-- Reset the current framework to the saved value -->
+		<call target="set-${current.framework.saved}-framework-configuration" />
 	</target>
 
-	<target name="package" depends="test doc merge" description="Creates Zip files for the File Release System on SourceForge">
-		
+	<target name="binaries" depends="init">
+		<property name="clover.enabled" value="false" />
+
+		<call target="build-all-frameworks" />
+
 		<!-- Copy and rename the license -->
 		<copy file="lgpl.txt" tofile="${bin.dir}/NHibernate.license.txt"  />
+	</target>
 
+	<target name="test-all-frameworks" depends="init">
+		<!-- Save the current framework -->
+		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
+
+		<!-- Execute build for each framework -->
+		<foreach item="String" delim=" " property="framework" in="net-1.1 net-2.0">
+			<call target="set-${framework}-framework-configuration" />
+			<call target="test" />
+		</foreach>
+
+		<!-- Reset the current framework to the saved value -->
+		<call target="set-${current.framework.saved}-framework-configuration" />
+	</target>
+
+	<target name="reports" depends="init">
+		<property name="clover.enabled" value="false" />
+		<call target="test-all-frameworks" />
+		<call target="test-report" />
+		<call target="coverage-report" />
+	</target>
+
+	<target name="sources" depends="init">
 		<copy todir="${build.dir}">
 			<fileset>
 				<!-- copy dlls used by this build -->
-				<include name="${lib.dir}/*"  />
-				<include name="${lib.family.dir}/*" />
-				<include name="${lib.framework.dir}/*" />
+				<include name="${lib.dir}/**"  />
 				<include name="external-bin/ILMerge.exe" />
 
 				<!-- copy all of the NHibernate source -->
-				<include name="src/Iesi.Collections.*/**" />
-				<include name="src/NHibernate/**" />
-				<include name="src/NHibernate.DomainModel/**" />
-				<include name="src/NHibernate.Eg/**" />
-				<include name="src/NHibernate.Examples.*/**" />
-				<include name="src/NHibernate.Test*/**" />
-				
-				<include name="NHibernateSolution.build" />
+				<include name="src/NHibernate*/**" />
+				<include name="src/Iesi*/**" />
+				<include name="src/Nullables*/**" />
+				<include name="src/*.*" />
+
+				<include name="build-common/**" />
+
+				<include name="*.build" />
 				<include name="gfdl.txt" />
 				<include name="lgpl.txt" />
 				<include name="releasenotes.txt" />
 				<include name="readme.html" />
-				
+
 				<!-- exclude the Clover modified source files. -->
 				<exclude name="${clover.src}/**" />
-				
+
 				<!-- exclude ReSharper stuff -->
 				<exclude name="**/_ReSharper*/**" />
 				<exclude name="**/*.resharperoptions" />
-				
+
 				<!-- exclude VS.NET stuff -->
 				<exclude name="**/*.suo" />
-				<exclude name="**/*proj.user" />
+				<exclude name="**/*.user" />
 				<exclude name="**/bin/**" />
 				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
 
-		<zip zipfile="${nant.project.basedir}/build/${build.name}-clover-${nant.settings.currentframework}.zip" ziplevel="9">
+		<!-- Generate AssemblyInfo.cs files for Visual Studio -->
+		<nant buildfile="${build.dir}/default.build" target="visual-studio" />
+	</target>
+
+	<target name="package" depends="init test-all-frameworks binaries doc sources"
+		description="Creates Zip files for the File Release System on SourceForge">
+
+		<property name="zip.output.dir" value="${project::get-base-directory()}/build/" />
+		<property name="zip.file.name" value="${zip.output.dir}/${build.name}.zip" />
+
+		<!--
+			Don't zip reports - temporarily disabled
+		<zip zipfile="${project::get-base-directory()}/build/${build.name}-clover-${nant.settings.currentframework}.zip" ziplevel="9">
 			<fileset basedir="${build.dir}">
 				<include name="clover/**" />
 			</fileset>
 		</zip>
+		-->
 
-		<property name="project.zip-path" value="${nant.project.basedir}/build/${build.name}-${nant.settings.currentframework}.zip" />
-
-		<zip zipfile="${project.zip-path}" ziplevel="9">
+		<zip zipfile="${zip.file.name}" ziplevel="9">
 			<fileset basedir="${build.dir}">
 				<include name="**/*" />
 				<exclude name="clover/**" />
@@ -416,7 +428,7 @@
 			</fileset>
 		</zip>
 
-		<echo message="Created a '${project.config}' package as file://${project.zip-path}" />
+		<echo message="Created a '${project.config}' package in file://${zip.file.name}" />
 		
 	</target>
 

@@ -1,11 +1,6 @@
+#if NET_2_0
 using System;
 using System.Collections.Generic;
-using System.Text;
-
-using NHibernate.Collection;
-using NHibernate.Collection.Generic;
-using NHibernate.Engine;
-using NHibernate.Persister.Collection;
 
 namespace NHibernate.Type
 {
@@ -30,3 +25,4 @@ namespace NHibernate.Type
 		}
 	}
 }
+#endif

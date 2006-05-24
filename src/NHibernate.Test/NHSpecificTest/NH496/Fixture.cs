@@ -1,4 +1,7 @@
 using System;
+
+using NHibernate.Bytecode;
+
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH496
@@ -15,6 +18,10 @@ namespace NHibernate.Test.NHSpecificTest.NH496
 		[ExpectedException( typeof( MappingException ) )]
 		public void CRUD()
 		{
+			if( Cfg.Environment.BytecodeProvider is NullBytecodeProvider )
+			{
+				Assert.Ignore( "This test only runs with a non-null bytecode provider" );
+			}
 			WronglyMappedClass obj = new WronglyMappedClass();
 			obj.SomeInt = 10;
 

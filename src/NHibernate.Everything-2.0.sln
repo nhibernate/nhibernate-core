@@ -53,6 +53,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections-2.0", "Ies
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test-2.0", "Iesi.Collections.Test\Iesi.Collections.Test-2.0.csproj", "{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9BDB5C84-14EC-4384-B423-9E319675B3CA}"
+	ProjectSection(SolutionItems) = preProject
+		..\build-common\common-project.xml = ..\build-common\common-project.xml
+		..\build-common\common.xml = ..\build-common\common.xml
+		..\default.build = ..\default.build
+		..\nightly.build = ..\nightly.build
+		..\release.build = ..\release.build
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
