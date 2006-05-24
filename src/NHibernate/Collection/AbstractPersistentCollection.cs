@@ -627,6 +627,11 @@ namespace NHibernate.Collection
 			get { return session; }
 		}
 
+		public virtual bool IsSnapshotEmpty( ICollection snapshot )
+		{
+			return snapshot.Count == 0;
+		}
+
 		#region - Hibernate Collection Proxy Classes
 
 		/*

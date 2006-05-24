@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using log4net;
 using NHibernate.Collection;
+using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -690,17 +692,28 @@ namespace NHibernate.Engine
 
 		private static void DeleteOrphans( IPersistentCollection pc, ISessionImplementor session )
 		{
+			ICollection orphans;
 			if( pc.WasInitialized ) // can't be any orphans if it was not initialized
 			{
-				ICollection orphanColl = session.GetOrphans( pc );
-				foreach( object obj in orphanColl )
+				CollectionEntry ce = session.GetCollectionEntry( pc );
+				orphans = ce == null ? CollectionHelper.EmptyCollection :
+				          ce.GetOrphans( pc );
+			}
+			else
+			{
+				orphans = CollectionHelper.EmptyCollection;
+			}
+
+			foreach( object orphan in orphans )
+			{
+				if( orphan != null )
 				{
-					session.Delete( obj );
+					session.Delete( orphan );
 				}
 			}
 		}
 
-		internal static ICollection GetLoadedElementsCollection( CollectionType collectionType, object collection )
+		public static ICollection GetLoadedElementsCollection( CollectionType collectionType, object collection )
 		{
 			if ( CollectionIsInitialized( collection ) )
 			{
@@ -715,7 +728,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		internal static ICollection GetAllElementsCollection( CollectionType collectionType, object collection )
+		private static ICollection GetAllElementsCollection( CollectionType collectionType, object collection )
 		{
 			return collectionType.GetElementsCollection( collection );
 		}

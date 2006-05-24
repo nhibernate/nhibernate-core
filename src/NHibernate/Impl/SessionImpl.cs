@@ -674,12 +674,11 @@ namespace NHibernate.Impl
 			return entityEntries.Contains( obj );
 		}
 
-		private CollectionEntry GetCollectionEntry( IPersistentCollection coll )
+		public CollectionEntry GetCollectionEntry( IPersistentCollection coll )
 		{
 			return ( CollectionEntry ) collectionEntries[ coll ];
 		}
 
-		/// <summary></summary>
 		public bool IsOpen
 		{
 			get { return !closed; }
@@ -3642,7 +3641,7 @@ namespace NHibernate.Impl
 			foreach( DictionaryEntry e in IdentityMap.ConcurrentEntries( collectionEntries ) )
 			{
 				CollectionEntry ce = ( CollectionEntry ) e.Value;
-				if( !ce.reached && !ce.ignore )
+				if( !ce.IsReached && !ce.IsIgnore )
 				{
 					UpdateUnreachableCollection( ( IPersistentCollection ) e.Key );
 				}
@@ -3657,17 +3656,17 @@ namespace NHibernate.Impl
 				IPersistentCollection coll = ( IPersistentCollection ) me.Key;
 				CollectionEntry ce = ( CollectionEntry ) me.Value;
 
-				if( ce.dorecreate )
+				if( ce.IsDorecreate )
 				{
-					collectionCreations.Add( new ScheduledCollectionRecreate( coll, ce.currentPersister, ce.currentKey, this ) );
+					collectionCreations.Add( new ScheduledCollectionRecreate( coll, ce.CurrentPersister, ce.CurrentKey, this ) );
 				}
-				if( ce.doremove )
+				if( ce.IsDoremove )
 				{
-					collectionRemovals.Add( new ScheduledCollectionRemove( ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this ) );
+					collectionRemovals.Add( new ScheduledCollectionRemove( ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty( coll ), this ) );
 				}
-				if( ce.doupdate )
+				if( ce.IsDoupdate )
 				{
-					collectionUpdates.Add( new ScheduledCollectionUpdate( coll, ce.loadedPersister, ce.loadedKey, ce.SnapshotIsEmpty, this ) );
+					collectionUpdates.Add( new ScheduledCollectionUpdate( coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty( coll ), this ) );
 				}
 			}
 		}
@@ -3691,9 +3690,9 @@ namespace NHibernate.Impl
 				{
 					keysToRemove.Add( me.Key );
 				}
-				else if( ce.reached )
+				else if( ce.IsReached )
 				{
-					collectionsByKey[ new CollectionKey( ce.currentPersister.Role, ce.currentKey ) ] = pc;
+					collectionsByKey[ new CollectionKey( ce.CurrentPersister.Role, ce.CurrentKey ) ] = pc;
 				}
 			}
 
@@ -3731,7 +3730,7 @@ namespace NHibernate.Impl
 		/// <param name="coll"></param>
 		/// <param name="type"></param>
 		/// <param name="owner"></param>
-		internal void UpdateReachableCollection( IPersistentCollection coll, IType type, object owner )
+		public void UpdateReachableCollection( IPersistentCollection coll, IType type, object owner )
 		{
 			CollectionEntry ce = GetCollectionEntry( coll );
 
@@ -3741,22 +3740,22 @@ namespace NHibernate.Impl
 				throw new HibernateException( string.Format( "Found two representations of same collection: {0}", coll.CollectionSnapshot.Role ) );
 			}
 
-			if( ce.reached )
+			if( ce.IsReached )
 			{
 				// we've been here before
 				throw new HibernateException( string.Format( "Found shared references to a collection: {0}", coll.CollectionSnapshot.Role ) );
 			}
-			ce.reached = true;
+			ce.IsReached = true;
 
 			ICollectionPersister persister = GetCollectionPersister( ( ( CollectionType ) type ).Role );
-			ce.currentPersister = persister;
-			ce.currentKey = GetEntityIdentifier( owner ); //TODO: better to pass the id in as an argument?
+			ce.CurrentPersister = persister;
+			ce.CurrentKey = GetEntityIdentifier( owner ); //TODO: better to pass the id in as an argument?
 
 			if( log.IsDebugEnabled )
 			{
 				log.Debug(
-					"Collection found: " + MessageHelper.InfoString( persister, ce.currentKey ) +
-						", was: " + MessageHelper.InfoString( ce.loadedPersister, ce.loadedKey )
+					"Collection found: " + MessageHelper.InfoString( persister, ce.CurrentKey ) +
+						", was: " + MessageHelper.InfoString( ce.LoadedPersister, ce.LoadedKey )
 					);
 			}
 
@@ -3771,17 +3770,17 @@ namespace NHibernate.Impl
 		{
 			CollectionEntry entry = GetCollectionEntry( coll );
 
-			if( log.IsDebugEnabled && entry.loadedPersister != null )
+			if( log.IsDebugEnabled && entry.LoadedPersister != null )
 			{
-				log.Debug( "collection dereferenced: " + MessageHelper.InfoString( entry.loadedPersister, entry.loadedKey ) );
+				log.Debug( "collection dereferenced: " + MessageHelper.InfoString( entry.LoadedPersister, entry.LoadedKey ) );
 			}
 
 			// do a check
-			if( entry.loadedPersister != null && entry.loadedPersister.HasOrphanDelete )
+			if( entry.LoadedPersister != null && entry.LoadedPersister.HasOrphanDelete )
 			{
 				EntityKey key = new EntityKey(
-					entry.loadedKey,
-					GetClassPersister( entry.loadedPersister.OwnerClass ) );
+					entry.LoadedKey,
+					GetClassPersister( entry.LoadedPersister.OwnerClass ) );
 
 				object owner = GetEntity( key );
 
@@ -3801,8 +3800,8 @@ namespace NHibernate.Impl
 			}
 
 			// do the work
-			entry.currentPersister = null;
-			entry.currentKey = null;
+			entry.CurrentPersister = null;
+			entry.CurrentKey = null;
 
 			PrepareCollectionForUpdate( coll, entry );
 		}
@@ -3816,40 +3815,40 @@ namespace NHibernate.Impl
 		/// <param name="entry"></param>
 		private void PrepareCollectionForUpdate( IPersistentCollection coll, CollectionEntry entry )
 		{
-			if( entry.processed )
+			if( entry.IsProcessed )
 			{
 				throw new AssertionFailure( "collection was processed twice by flush()" );
 			}
 
-			entry.processed = true;
+			entry.IsProcessed = true;
 
 			// it is or was referenced _somewhere_
-			if( entry.loadedPersister != null || entry.currentPersister != null )
+			if( entry.LoadedPersister != null || entry.CurrentPersister != null )
 			{
 				if(
-					entry.loadedPersister != entry.currentPersister || //if either its role changed,
-						!entry.currentPersister.KeyType.Equals( entry.loadedKey, entry.currentKey ) // or its key changed
+					entry.LoadedPersister != entry.CurrentPersister || //if either its role changed,
+						!entry.CurrentPersister.KeyType.Equals( entry.LoadedKey, entry.CurrentKey ) // or its key changed
 					)
 				{
 					// do a check
 					if(
-						entry.loadedPersister != null &&
-							entry.currentPersister != null &&
-							entry.loadedPersister.HasOrphanDelete )
+						entry.LoadedPersister != null &&
+							entry.CurrentPersister != null &&
+							entry.LoadedPersister.HasOrphanDelete )
 					{
 						throw new HibernateException( "Don't dereference a collection with cascade=\"all-delete-orphan\": " + coll.CollectionSnapshot.Role );
 					}
 
 					// do the work
-					if( entry.currentPersister != null )
+					if( entry.CurrentPersister != null )
 					{
-						entry.dorecreate = true; //we will need to create new entries
+						entry.IsDorecreate = true; //we will need to create new entries
 					}
 
-					if( entry.loadedPersister != null )
+					if( entry.LoadedPersister != null )
 					{
-						entry.doremove = true; // we will need to remove the old entres
-						if( entry.dorecreate )
+						entry.IsDoremove = true; // we will need to remove the old entres
+						if( entry.IsDorecreate )
 						{
 							log.Debug( "forcing collection initialization" );
 							coll.ForceInitialization();
@@ -3859,7 +3858,7 @@ namespace NHibernate.Impl
 				else if( entry.Dirty )
 				{
 					// else if it's elements changed
-					entry.doupdate = true;
+					entry.IsDoupdate = true;
 				}
 			}
 		}
@@ -3873,7 +3872,7 @@ namespace NHibernate.Impl
 		internal bool CollectionIsDirty( IPersistentCollection coll )
 		{
 			CollectionEntry entry = GetCollectionEntry( coll );
-			return entry.initialized && entry.Dirty; //( entry.dirty || coll.hasQueuedAdds() ); 
+			return coll.WasInitialized && entry.Dirty; //( entry.dirty || coll.hasQueuedAdds() ); 
 		}
 
 		private sealed class LoadingCollectionEntry
@@ -3942,8 +3941,7 @@ namespace NHibernate.Impl
 				IPersistentCollection pc = GetCollection( ckey );
 				if( pc != null )
 				{
-					CollectionEntry ce = GetCollectionEntry( pc );
-					if( ce.initialized )
+					if( pc.WasInitialized )
 					{
 						log.Debug( "collection already initialized: ignoring" );
 						return null; //ignore this row of results! Note the early exit
@@ -4045,7 +4043,7 @@ namespace NHibernate.Impl
 					ce.PostInitialize( lce.Collection );
 				}
 
-				if( noQueueAdds && persister.HasCache && !ce.doremove )
+				if( noQueueAdds && persister.HasCache && !ce.IsDoremove )
 				{
 					if( log.IsDebugEnabled )
 					{
@@ -4130,7 +4128,7 @@ namespace NHibernate.Impl
 		{
 			collectionEntries[ collection ] = entry;
 
-			CollectionKey ck = new CollectionKey( entry.loadedPersister, key );
+			CollectionKey ck = new CollectionKey( entry.LoadedPersister, key );
 			IPersistentCollection old = ( IPersistentCollection ) collectionsByKey[ ck ];
 			collectionsByKey[ ck ] = collection;
 
@@ -4265,21 +4263,13 @@ namespace NHibernate.Impl
 
 		public object GetLoadedCollectionKey( IPersistentCollection coll )
 		{
-			return GetCollectionEntry( coll ).loadedKey;
+			return GetCollectionEntry( coll ).LoadedKey;
 		}
 
 		public bool IsInverseCollection( IPersistentCollection collection )
 		{
 			CollectionEntry ce = GetCollectionEntry( collection );
-			return ce != null && ce.loadedPersister.IsInverse;
-		}
-
-		private static readonly ICollection EmptyCollection = new ArrayList( 0 );
-
-		public ICollection GetOrphans( IPersistentCollection coll )
-		{
-			CollectionEntry ce = GetCollectionEntry( coll );
-			return ce.IsNew ? EmptyCollection : coll.GetOrphans( ce.Snapshot );
+			return ce != null && ce.LoadedPersister.IsInverse;
 		}
 
 		/// <summary>
@@ -4296,16 +4286,16 @@ namespace NHibernate.Impl
 				throw new HibernateException( "collection was evicted" );
 			}
 
-			if( !ce.initialized )
+			if( !collection.WasInitialized )
 			{
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( "initializing collection " + MessageHelper.InfoString( ce.loadedPersister, ce.loadedKey ) );
+					log.Debug( "initializing collection " + MessageHelper.InfoString( ce.LoadedPersister, ce.LoadedKey ) );
 				}
 
 				log.Debug( "checking second-level cache" );
 
-				bool foundInCache = InitializeCollectionFromCache( ce.loadedKey, GetCollectionOwner( ce ), ce.loadedPersister, collection );
+				bool foundInCache = InitializeCollectionFromCache( ce.LoadedKey, GetCollectionOwner( ce ), ce.LoadedPersister, collection );
 
 				if( foundInCache )
 				{
@@ -4314,7 +4304,7 @@ namespace NHibernate.Impl
 				else
 				{
 					log.Debug( "collection not cached" );
-					ce.loadedPersister.Initialize( ce.loadedKey, this );
+					ce.LoadedPersister.Initialize( ce.LoadedKey, this );
 					log.Debug( "collection initialized" );
 				}
 			}
@@ -4322,7 +4312,7 @@ namespace NHibernate.Impl
 
 		private object GetCollectionOwner( CollectionEntry ce )
 		{
-			return GetCollectionOwner( ce.loadedKey, ce.loadedPersister );
+			return GetCollectionOwner( ce.LoadedKey, ce.LoadedPersister );
 		}
 
 		public object GetCollectionOwner( object key, ICollectionPersister collectionPersister )
@@ -4617,7 +4607,7 @@ namespace NHibernate.Impl
 			}
 
 			CollectionEntry entry = GetCollectionEntryOrNull( collection );
-			ICollectionPersister roleBeforeFlush = ( entry == null ) ? null : entry.loadedPersister;
+			ICollectionPersister roleBeforeFlush = ( entry == null ) ? null : entry.LoadedPersister;
 
 			QueryTranslator filterTranslator;
 			if( roleBeforeFlush == null )
@@ -4627,7 +4617,7 @@ namespace NHibernate.Impl
 				// database to query
 				Flush();
 				entry = GetCollectionEntryOrNull( collection );
-				ICollectionPersister roleAfterFlush = ( entry == null ) ? null : entry.loadedPersister;
+				ICollectionPersister roleAfterFlush = ( entry == null ) ? null : entry.LoadedPersister;
 
 				if( roleAfterFlush == null )
 				{
@@ -4645,7 +4635,7 @@ namespace NHibernate.Impl
 					// might need to run a different filter entirely after the flush
 					// because the collection role may have changed
 					entry = GetCollectionEntryOrNull( collection );
-					ICollectionPersister roleAfterFlush = ( entry == null ) ? null : entry.loadedPersister;
+					ICollectionPersister roleAfterFlush = ( entry == null ) ? null : entry.LoadedPersister;
 					if( roleBeforeFlush != roleAfterFlush )
 					{
 						if( roleAfterFlush == null )
@@ -4657,8 +4647,8 @@ namespace NHibernate.Impl
 				}
 			}
 
-			parameters.PositionalParameterValues[ 0 ] = entry.loadedKey;
-			parameters.PositionalParameterTypes[ 0 ] = entry.loadedPersister.KeyType;
+			parameters.PositionalParameterValues[ 0 ] = entry.LoadedKey;
+			parameters.PositionalParameterTypes[ 0 ] = entry.LoadedPersister.KeyType;
 
 			return filterTranslator;
 
@@ -5049,12 +5039,12 @@ namespace NHibernate.Impl
 			collectionEntries.Remove( collection );
 			if( log.IsDebugEnabled )
 			{
-				log.Debug( "evicting collection: " + MessageHelper.InfoString( ce.loadedPersister, ce.loadedKey ) );
+				log.Debug( "evicting collection: " + MessageHelper.InfoString( ce.LoadedPersister, ce.LoadedKey ) );
 			}
-			if( ce.loadedPersister != null && ce.loadedKey != null )
+			if( ce.LoadedPersister != null && ce.LoadedKey != null )
 			{
 				//TODO: is this 100% correct?
-				collectionsByKey.Remove( new CollectionKey( ce.loadedPersister.Role, ce.loadedKey ) );
+				collectionsByKey.Remove( new CollectionKey( ce.LoadedPersister.Role, ce.LoadedKey ) );
 			}
 		}
 
@@ -5101,11 +5091,13 @@ namespace NHibernate.Impl
 			object[] keys = new object[ batchSize ];
 			keys[ 0 ] = id;
 			int i = 0;
-			foreach( CollectionEntry ce in collectionEntries.Values )
+			foreach( DictionaryEntry de in collectionEntries )
 			{
-				if( !ce.initialized && ce.loadedPersister == collectionPersister && !id.Equals( ce.loadedKey ) )
+				IPersistentCollection collection = ( IPersistentCollection ) de.Key;
+				CollectionEntry ce = ( CollectionEntry ) de.Value;
+				if( !collection.WasInitialized && ce.LoadedPersister == collectionPersister && !id.Equals( ce.LoadedKey ) )
 				{
-					keys[ ++i ] = ce.loadedKey;
+					keys[ ++i ] = ce.LoadedKey;
 					if( i == batchSize - 1 )
 					{
 						return keys;
@@ -5252,11 +5244,9 @@ namespace NHibernate.Impl
 			AutoFlushIfRequired( loader.QuerySpaces );
 
 			dontFlushFromFind++;
-			bool success = false;
 			try
 			{
 				IList results = loader.List( this, queryParameters );
-				success = true;
 				List<T> typedResults = new List<T>();
 				ArrayHelper.AddAll( typedResults, results );
 				return typedResults;
@@ -5267,16 +5257,6 @@ namespace NHibernate.Impl
 			}
 		}
 #endif
-
-		private ISqlLoadable GetSqlLoadable( System.Type clazz )
-		{
-			IEntityPersister cp = GetClassPersister( clazz );
-			if( !( cp is ISqlLoadable ) )
-			{
-				throw new MappingException( string.Format( "class persister is not ISqlLoadable: {0}", clazz.FullName ) );
-			}
-			return ( ISqlLoadable ) cp;
-		}
 
 		/// <summary></summary>
 		public void Clear()

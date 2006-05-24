@@ -274,5 +274,7 @@ namespace NHibernate.Collection
 		/// Get the snapshot value of the given collection entry
 		/// </summary>
 		object GetSnapshotElement( object entry, int i );
+
+		bool IsSnapshotEmpty( ICollection snapshot );
 	}
 }

@@ -309,12 +309,6 @@ namespace NHibernate.Engine
 		LockMode GetLockMode( object entity );
 
 		/// <summary>
-		/// Get the collection orphans (entities which were removed from
-		/// the collection
-		/// </summary>
-		ICollection GetOrphans( IPersistentCollection coll );
-
-		/// <summary>
 		/// Get a batch of uninitialized collection keys for this role
 		/// </summary>
 		object[] GetCollectionBatch( ICollectionPersister collectionPersister, object id, int batchSize );
@@ -369,5 +363,7 @@ namespace NHibernate.Engine
 		/// <param name="entity">The entity for which to locate the EntityEntry.</param>
 		/// <returns>The EntityEntry for the given entity.</returns>
 		EntityEntry GetEntry( object entity );
+
+		CollectionEntry GetCollectionEntry( IPersistentCollection collection );
 	}
 }
