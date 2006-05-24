@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+				   namespace="NHibernate.Test.NHSpecificTest.NH552"
+				   assembly="NHibernate.Test">
+	<class name="Question" table="QUESTION">
+		<id name="Id" type="long">
+			<generator class="assigned"/>
+		</id>
+		<set name="Answers" inverse="true">
+			<key column="Question"/>
+			<one-to-many class="Answer"/>
+		</set>
+	</class>
+
+	<class name="Answer" table="ANSWER">
+		<id name="Id" type="long">
+			<generator class="assigned"/>
+		</id>
+		<many-to-one name="Question" not-null="true" />
+	</class>
+</hibernate-mapping>

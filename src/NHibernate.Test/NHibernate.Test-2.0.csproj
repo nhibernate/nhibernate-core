@@ -250,6 +250,8 @@
     <Compile Include="NHSpecificTest\NH523\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH525\Classes.cs" />
     <Compile Include="NHSpecificTest\NH525\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH552\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH552\Model.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -448,6 +450,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="GenericTest\Overall\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH552\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
