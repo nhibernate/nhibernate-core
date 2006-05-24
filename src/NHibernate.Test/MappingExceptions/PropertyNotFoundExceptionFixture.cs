@@ -35,5 +35,12 @@ namespace NHibernate.Test.MappingExceptions
 
 			Assert.IsTrue( excCaught, "Should have caught the MappingException that contains the property not found exception." );
 		}
+
+		[Test]
+		public void ConstructWithNullType()
+		{
+			new PropertyNotFoundException( null, "someField" );
+			new PropertyNotFoundException( null, "SomeProperty", "getter" );
+		}
 	}
 }

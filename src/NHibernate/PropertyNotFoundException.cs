@@ -19,7 +19,7 @@ namespace NHibernate
 		/// ("getter" or "setter")</param>
 		public PropertyNotFoundException( System.Type type, string propertyName, string accessorType )
 			: base( String.Format( "Could not find a {0} for property '{1}' in class '{2}'",
-				accessorType, propertyName, type.FullName
+				accessorType, propertyName, type
 				) )
 		{
 		}
@@ -32,7 +32,7 @@ namespace NHibernate
 		/// <param name="fieldName">The name of the missing property</param>
 		public PropertyNotFoundException( System.Type type, string fieldName )
 			: base( String.Format( "Could not find field '{0}' in class '{1}'",
-				fieldName, type.FullName ) )
+				fieldName, type ) )
 		{
 		}
 
