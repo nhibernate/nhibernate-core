@@ -121,6 +121,7 @@ namespace NHibernate.Util
 		}
 
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
+		public static readonly ICollection EmptyCollection = EmptyMap;
 
 		public static bool CollectionEquals( ICollection c1, ICollection c2 )
 		{
