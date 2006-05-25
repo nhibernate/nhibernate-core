@@ -7,7 +7,7 @@ namespace NHibernate.Transform
 	/// Implementors define a strategy for transforming criteria query
 	/// results into the actual application-visible query result list.
 	/// </summary>
-	/// <remarks>see NHibernate.Criteria#setResultTransformer(ResultTransformer)</remarks>
+	/// <seealso cref="NHibernate.ICriteria.SetResultTransformer(IResultTransformer)" />
 	public interface IResultTransformer
 	{
 		/// <summary>
