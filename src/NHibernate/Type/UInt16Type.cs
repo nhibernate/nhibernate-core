@@ -108,7 +108,7 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		public object Seed
 		{
-			get { return ( ushort ) 0; }
+			get { return ( ushort ) 1; }
 		}
 
 		public IComparer Comparator

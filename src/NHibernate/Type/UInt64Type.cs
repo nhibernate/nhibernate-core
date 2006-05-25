@@ -67,7 +67,7 @@ namespace NHibernate.Type
 
 		public virtual object Seed
 		{
-			get { return ( ulong ) 0; }
+			get { return ( ulong ) 1; }
 		}
 
 		public virtual IComparer Comparator

@@ -103,7 +103,7 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		public virtual object Seed
 		{
-			get { return 0; }
+			get { return 1; }
 		}
 
 		public IComparer Comparator
