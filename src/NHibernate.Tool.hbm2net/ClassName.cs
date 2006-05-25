@@ -109,34 +109,27 @@ namespace NHibernate.Tool.hbm2net
 		*/
 		private void  initFullyQualifiedName(string fqn)
 		{
-			this.fullyQualifiedName = fqn;
-			if (fullyQualifiedName.IndexOf(",")>0)
-				fullyQualifiedName = fullyQualifiedName.Substring(0,fullyQualifiedName.IndexOf(","));
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( fqn );
+
+			this.fullyQualifiedName = tn.Type;
+
 			if (!Primitive)
 			{
-				if ((Object) fqn != null)
+				int lastDot = fullyQualifiedName.LastIndexOf(".");
+				if (lastDot < 0)
 				{
-					int lastDot = fqn.LastIndexOf(".");
-					if (lastDot < 0)
-					{
-						name = fqn;
-						packageName = null;
-					}
-					else
-					{
-						name = fqn.Substring( lastDot + 1 );
-						packageName = fqn.Substring(0, lastDot);
-					}
+					name = fullyQualifiedName;
+					packageName = null;
 				}
 				else
 				{
-					name = fqn;
-					packageName = null;
+					name = fullyQualifiedName.Substring( lastDot + 1 );
+					packageName = fullyQualifiedName.Substring(0, lastDot);
 				}
 			}
 			else
 			{
-				name = fqn;
+				name = fullyQualifiedName;
 				packageName = null;
 			}
 		}
