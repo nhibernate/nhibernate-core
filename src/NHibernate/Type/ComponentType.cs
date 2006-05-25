@@ -592,7 +592,7 @@ namespace NHibernate.Type
 				{
 					assembled[ i ] = propertyTypes[ i ].Assemble( values[ i ], session, owner );
 				}
-				object result = Instantiate();
+				object result = Instantiate( owner, session );
 				SetPropertyValues( result, assembled );
 				return result;
 			}

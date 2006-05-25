@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH548"
+				   default-lazy="false">
+	<class name="MainObject" table="Main" >
+
+		<cache usage="read-write" />
+
+		<id name="ID" access="nosetter.lowercase-underscore" >
+			<!-- unsaved-value="0" > -->
+			<generator class="native" />
+		</id>
+
+		<property name="Name" />
+
+		<component name="Component" class="ComponentObject" access="nosetter.camelcase-underscore">
+			<parent name="Parent"/>
+			<property name="Note" />
+		</component>
+
+	</class>
+</hibernate-mapping>

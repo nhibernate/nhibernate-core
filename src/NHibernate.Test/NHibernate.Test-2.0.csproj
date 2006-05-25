@@ -252,6 +252,9 @@
     <Compile Include="NHSpecificTest\NH523\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH525\Classes.cs" />
     <Compile Include="NHSpecificTest\NH525\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH548\ComponentObject.cs" />
+    <Compile Include="NHSpecificTest\NH548\MainObject.cs" />
+    <Compile Include="NHSpecificTest\NH548\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH552\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH552\Model.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
@@ -458,6 +461,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH467\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH548\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
