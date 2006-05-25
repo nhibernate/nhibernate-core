@@ -179,7 +179,7 @@ namespace NHibernate.Util
 		/// <remarks>
 		/// Attempts to get a reference to the type from an already loaded assembly.  If the 
 		/// type cannot be found then the assembly is loaded using
-		/// <see cref="Assembly.LoadWithPartialName(string)" />.
+		/// <see cref="Assembly.Load(string)" />.
 		/// </remarks>
 		public static System.Type TypeFromAssembly( AssemblyQualifiedTypeName name )
 		{
@@ -200,9 +200,7 @@ namespace NHibernate.Util
 					return null;
 				}
 
-				// Use the partial name because we don't know the public key, version,
-				// culture-info of the assembly on the local machine.
-				Assembly assembly = Assembly.LoadWithPartialName( name.Assembly );
+				Assembly assembly = Assembly.Load( name.Assembly );
 
 				if( assembly == null )
 				{
