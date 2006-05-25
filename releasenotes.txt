@@ -9,6 +9,8 @@ Breaking Changes:
       hibernate.use_proxy_validator property to false.
     * ISession.Get/Load now obey where="..." attribute of <class>.
     * Assemblies are signed using a new, publicly available, key.
+    * Assembly.LoadWithPartialName is no longer used to load assemblies. If you want NH to load
+      an assembly from the GAC, use <qualifyAssembly> element in the configuration file.
 
 Build 1.0.2.0
 ========================
