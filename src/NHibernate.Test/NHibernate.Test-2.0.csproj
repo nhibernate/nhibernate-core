@@ -235,6 +235,8 @@
     <Compile Include="NHSpecificTest\NH464\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH464\Promotion.cs" />
     <Compile Include="NHSpecificTest\NH464\PromotionWindow.cs" />
+    <Compile Include="NHSpecificTest\NH467\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH467\Model.cs" />
     <Compile Include="NHSpecificTest\NH479\Classes.cs" />
     <Compile Include="NHSpecificTest\NH479\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH47Fixture.cs" />
@@ -453,6 +455,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH552\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH467\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

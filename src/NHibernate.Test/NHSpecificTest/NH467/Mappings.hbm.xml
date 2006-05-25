@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH467"
+				   default-lazy="true">
+
+	<class name="User" table="`user`" where="is_active=1">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" />
+		<property name="IsActive" column="is_active" />
+	</class>
+
+	<class name="Employee">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+
+		<many-to-one name="User" column="user_id" />
+	</class>
+</hibernate-mapping>
