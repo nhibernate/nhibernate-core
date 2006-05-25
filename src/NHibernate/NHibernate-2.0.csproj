@@ -522,8 +522,10 @@
     <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
+    <Compile Include="Dialect\ASADialect.cs" />
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
+    <Compile Include="Driver\ASAClientDriver.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
     <Compile Include="Engine\EntityKey.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
