@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
 
-using NHibernate.Collection;
-using NHibernate.Engine;
-using NHibernate.Persister.Collection;
 using Iesi.Collections;
 
 namespace NHibernate.Type
@@ -11,6 +8,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Extends the <see cref="SetType" /> to provide sorting.
 	/// </summary>
+	[Serializable]
 	public class SortedSetType : SetType
 	{
 		private IComparer comparer;

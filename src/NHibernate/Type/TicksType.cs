@@ -13,6 +13,7 @@ namespace NHibernate.Type
 	/// This is the recommended way to "timestamp" a column.  The System.DateTime.Ticks 
 	/// is accurate to 100-nanosecond intervals. 
 	/// </remarks>
+	[Serializable]
 	public class TicksType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>

@@ -12,6 +12,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="Array"/> collection
 	/// to the database.
 	/// </summary>
+	[Serializable]
 	public class ArrayType : CollectionType
 	{
 		private readonly System.Type elementClass;

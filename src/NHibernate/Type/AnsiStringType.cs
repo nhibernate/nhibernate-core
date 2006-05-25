@@ -10,6 +10,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.String"/> Property 
 	/// to a <see cref="DbType.AnsiString"/> column.
 	/// </summary>
+	[Serializable]
 	public class AnsiStringType : ImmutableType, IDiscriminatorType
 	{
 		/// <summary></summary>

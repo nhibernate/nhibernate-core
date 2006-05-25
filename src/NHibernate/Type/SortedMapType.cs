@@ -10,6 +10,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Extends the <see cref="MapType" /> to provide sorting.
 	/// </summary>
+	[Serializable]
 	public class SortedMapType : MapType
 	{
 		private IComparer comparer;

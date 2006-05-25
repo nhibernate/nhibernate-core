@@ -13,7 +13,7 @@ using NHibernate.Bytecode;
 
 namespace NHibernate.Type
 {
-	/// <summary></summary>
+	[Serializable]
 	public class ComponentType : AbstractType, IAbstractComponentType
 	{
 		private readonly System.Type componentClass;

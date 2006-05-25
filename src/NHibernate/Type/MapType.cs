@@ -11,6 +11,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IDictionary"/> collection
 	/// to the database.
 	/// </summary>
+	[Serializable]
 	public class MapType : CollectionType
 	{
 		/// <summary>

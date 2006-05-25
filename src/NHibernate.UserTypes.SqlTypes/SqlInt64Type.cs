@@ -5,6 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public class SqlInt64Type : SqlTypesType
 	{
 		public SqlInt64Type() : base( new Int64SqlType() )

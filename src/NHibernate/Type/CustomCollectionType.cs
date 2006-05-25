@@ -14,6 +14,7 @@ namespace NHibernate.Type
 	/// </summary>
 	/// <seealso cref="IPersistentCollection"/>
 	/// <seealso cref="IUserCollectionType"/>
+	[Serializable]
 	public class CustomCollectionType : CollectionType
 	{
 		private readonly IUserCollectionType userType;

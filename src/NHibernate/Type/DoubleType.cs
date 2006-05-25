@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.Double"/> Property 
 	/// to a <see cref="DbType.Double"/> column.
 	/// </summary>
+	[Serializable]
 	public class DoubleType : ValueTypeType
 	{
 		/// <summary></summary>

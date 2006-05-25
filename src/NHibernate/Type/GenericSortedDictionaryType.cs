@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
+	[Serializable]
 	public class GenericSortedDictionaryType<TKey, TValue> : GenericMapType<TKey, TValue>
 	{
 		private IComparer<TKey> comparer;

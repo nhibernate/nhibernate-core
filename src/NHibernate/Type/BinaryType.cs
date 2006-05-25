@@ -11,6 +11,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// BinaryType.
 	/// </summary>
+	[Serializable]
 	public class BinaryType : MutableType
 	{
 		/// <summary></summary>

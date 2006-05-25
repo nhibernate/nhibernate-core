@@ -5,6 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public class SqlDateTimeType : SqlTypesType
 	{
 		public SqlDateTimeType() : base( new DateTimeSqlType() )

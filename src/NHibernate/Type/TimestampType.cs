@@ -26,6 +26,7 @@ namespace NHibernate.Type
 	/// Please review the documentation of your Database server.
 	/// </p>
 	/// </remarks>
+	[Serializable]
 	public class TimestampType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>

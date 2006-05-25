@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -9,6 +10,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IList"/> collection
 	/// using bag semantics with an identifier to the database.
 	/// </summary>
+	[Serializable]
 	public class IdentifierBagType : CollectionType
 	{
 		/// <summary>

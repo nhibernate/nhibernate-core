@@ -6,6 +6,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public class SqlBinaryType : SqlTypesType
 	{
 		public SqlBinaryType() : base( new BinarySqlType() )

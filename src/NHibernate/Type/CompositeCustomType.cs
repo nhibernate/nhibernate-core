@@ -11,6 +11,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Summary description for CompositeCustomType.
 	/// </summary>
+	[Serializable]
 	public class CompositeCustomType : AbstractType, IAbstractComponentType
 	{
 		private readonly ICompositeUserType userType;

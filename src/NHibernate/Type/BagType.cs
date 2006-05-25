@@ -11,6 +11,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IList"/> collection
 	/// using bag semantics to the database.
 	/// </summary>
+	[Serializable]
 	public class BagType : CollectionType
 	{
 		/// <summary>

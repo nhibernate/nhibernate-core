@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Globalization;
 using NHibernate.SqlTypes;
@@ -12,6 +13,7 @@ namespace NHibernate.Type
 	/// CultureInfoType stores the culture name (not the Culture ID) of the 
 	/// <see cref="System.Globalization.CultureInfo"/> in the DB.
 	/// </remarks>
+	[Serializable]
 	public class CultureInfoType : ImmutableType, ILiteralType
 	{
 		/// <summary></summary>

@@ -11,6 +11,7 @@ namespace NHibernate.Type
 	/// A <see cref="MapType" /> implemented using a collection that maintains
 	/// the order in which elements are inserted into it.
 	/// </summary>
+	[Serializable]
 	public class OrderedMapType : MapType
 	{
 		/// <summary>

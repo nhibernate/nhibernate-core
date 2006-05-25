@@ -18,6 +18,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="ISet&lt;T&gt;"/> collection
 	/// to the database.
 	/// </summary>
+	[Serializable]
 	public class GenericSetType<T> : SetType
 	{
 		/// <summary>

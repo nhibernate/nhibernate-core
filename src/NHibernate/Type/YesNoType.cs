@@ -1,3 +1,4 @@
+using System;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -14,10 +15,11 @@ namespace NHibernate.Type
 	/// in ADO.NET there is not one specifically for char, so you need to tell schema
 	/// export to create a char(1) column.
 	/// </remarks>
+	[Serializable]
 	public class YesNoType : CharBooleanType
 	{
 		/// <summary></summary>
-		internal YesNoType() : base( new AnsiStringFixedLengthSqlType( 1 ) )
+		public YesNoType() : base( new AnsiStringFixedLengthSqlType( 1 ) )
 		{
 		}
 

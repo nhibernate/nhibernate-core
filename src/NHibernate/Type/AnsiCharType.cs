@@ -7,6 +7,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.Char"/> Property 
 	/// to a <c>DbType.AnsiStringFixedLength</c> column.
 	/// </summary>
+	[Serializable]
 	public class AnsiCharType : BaseCharType
 	{
 		internal AnsiCharType() : base( new AnsiStringFixedLengthSqlType( 1 ) )

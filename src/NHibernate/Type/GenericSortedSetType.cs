@@ -11,6 +11,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps a sorted <see cref="ISet{T}"/> collection
 	/// to the database.
 	/// </summary>
+	[Serializable]
 	public class GenericSortedSetType<T> : GenericSetType<T>
 	{
 		private IComparer<T> comparer;

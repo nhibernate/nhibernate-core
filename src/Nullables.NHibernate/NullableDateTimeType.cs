@@ -9,6 +9,7 @@ namespace Nullables.NHibernate
 	/// <summary>
 	/// A NHibernate <see cref="IType"/> for a <see cref="NullableDateTime"/>.
 	/// </summary>
+	[Serializable]
 	public class NullableDateTimeType : NullableTypesType
 	{
 		public NullableDateTimeType() : base( new DateTimeSqlType() )

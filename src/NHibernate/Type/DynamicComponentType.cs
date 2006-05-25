@@ -11,6 +11,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Handles "dynamic" components, represented as <c>&lt;map&gt;</c>s
 	/// </summary>
+	[Serializable]
 	public class DynamicComponentType : AbstractType, IAbstractComponentType
 	{
 		private string[ ] propertyNames;

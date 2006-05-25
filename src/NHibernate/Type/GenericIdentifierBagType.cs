@@ -9,6 +9,7 @@ using NHibernate.Persister.Collection;
 
 namespace NHibernate.Type
 {
+	[Serializable]
 	public class GenericIdentifierBagType<T> : IdentifierBagType
 	{
 		public GenericIdentifierBagType( string role, string propertyRef )

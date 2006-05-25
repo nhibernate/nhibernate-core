@@ -12,6 +12,7 @@ namespace NHibernate.Type
 	/// Verify through your database's documentation if there is a column type that
 	/// matches up with the capabilities of <see cref="System.Single" />  
 	/// </remarks>
+	[Serializable]
 	public class SingleType : ValueTypeType
 	{
 		/// <summary></summary>

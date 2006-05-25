@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 
 using NHibernate.Engine;
@@ -8,6 +9,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// A many-to-one association to an entity
 	/// </summary>
+	[Serializable]
 	public class ManyToOneType : EntityType, IAssociationType
 	{
 		private IType GetReferencedType( IMapping mapping )

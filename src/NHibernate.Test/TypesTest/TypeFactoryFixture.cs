@@ -1,19 +1,17 @@
 using System;
-
+using System.Reflection;
 using NHibernate.Type;
 
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest 
 {
-
 	/// <summary>
 	/// Test Fixture for TypeFactory.
 	/// </summary>
 	[TestFixture]
 	public class TypeFactoryFixture 
 	{
-
 		/// <summary>
 		/// Test that calling GetGuidType multiple times returns the
 		/// exact same GuidType object by reference.
@@ -37,6 +35,21 @@ namespace NHibernate.Test.TypesTest
 			NullableType string30 = TypeFactory.GetStringType(30);
 
 			Assert.IsFalse(string25==string30, "string25 & string30 should be different strings");
+		}
+		
+		[Test]
+		public void AllITypesAreSerializable()
+		{
+			Assembly nhibernate = typeof (IType).Assembly;
+			System.Type[] allTypes = nhibernate.GetTypes();
+			
+			foreach( System.Type type in allTypes )
+			{
+				if( type.IsClass && !type.IsAbstract && typeof( IType ).IsAssignableFrom( type ) )
+				{
+					Assert.IsTrue( type.IsSerializable, "Type {0} should be serializable", type );
+				}
+			}
 		}
 
 #if NET_2_0

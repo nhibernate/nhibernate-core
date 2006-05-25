@@ -37,6 +37,7 @@ namespace NHibernate.Type
 	///	simple_table					4
 	///	
 	///</remarks>
+	[Serializable]
 	public class AnyType : AbstractType, IAbstractComponentType, IAssociationType
 	{
 		private readonly IType identifierType;

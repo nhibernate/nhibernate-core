@@ -2,16 +2,13 @@ using System;
 
 using Iesi.Collections;
 
-using NHibernate.Collection;
-using NHibernate.Engine;
-using NHibernate.Persister.Collection;
-
 namespace NHibernate.Type
 {
 	/// <summary>
 	/// A <see cref="SetType" /> implemented using a collection that maintains
 	/// the order in which elements are inserted into it.
 	/// </summary>
+	[Serializable]
 	public class OrderedSetType : SetType
 	{
 		/// <summary>

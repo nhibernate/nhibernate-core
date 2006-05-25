@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.Guid"/> Property 
 	/// to a <see cref="DbType.Guid"/> column.
 	/// </summary>
+	[Serializable]
 	public class GuidType : ValueTypeType, IDiscriminatorType
 	{
 		/// <summary></summary>

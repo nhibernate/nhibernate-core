@@ -9,6 +9,7 @@ namespace Nullables.NHibernate
 	/// <summary>
 	/// A NHibernate <see cref="IType"/> for a <see cref="NullableGuid"/>.
 	/// </summary>
+	[Serializable]
 	public class NullableGuidType : NullableTypesType
 	{
 		public NullableGuidType() : base( new GuidSqlType() )

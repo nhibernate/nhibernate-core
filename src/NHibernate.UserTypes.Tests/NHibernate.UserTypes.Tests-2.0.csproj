@@ -123,6 +123,7 @@
     <Compile Include="EmptyStringFixture.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SerializabilityFixture.cs" />
     <Compile Include="SqlTypesClass.cs">
       <SubType>Code</SubType>
     </Compile>

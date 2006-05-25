@@ -7,6 +7,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
+	[Serializable]
 	public class MetaType : AbstractType
 	{
 		private readonly IDictionary values;

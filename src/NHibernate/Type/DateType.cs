@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// Maps the Year, Month, and Day of a <see cref="System.DateTime"/> Property to a 
 	/// <see cref="DbType.Date"/> column
 	/// </summary>
+	[Serializable]
 	public class DateType : ValueTypeType, IIdentifierType, ILiteralType
 	{
 		/// <summary></summary>

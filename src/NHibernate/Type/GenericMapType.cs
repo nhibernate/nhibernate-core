@@ -18,6 +18,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IDictionary&lt;TKey,Tvalue&gt;"/> collection
 	/// to the database.
 	/// </summary>
+	[Serializable]
 	public class GenericMapType<TKey, TValue> : MapType
 	{
 		/// <summary>

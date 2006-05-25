@@ -14,6 +14,7 @@ namespace NHibernate.Type
 	/// An <see cref="IType"/> that maps an <see cref="IList&lt;T&gt;"/> collection
 	/// to the database using list semantics.
 	/// </summary>
+	[Serializable]
 	public class GenericListType<T> : ListType
 	{
 		/// <summary>
