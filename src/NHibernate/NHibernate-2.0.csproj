@@ -526,6 +526,7 @@
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
     <Compile Include="Driver\ASAClientDriver.cs" />
+    <Compile Include="Driver\FirebirdClientDriver.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
     <Compile Include="Engine\EntityKey.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
