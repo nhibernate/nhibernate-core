@@ -1,4 +1,5 @@
 using System.Data;
+using System.Globalization;
 using System.Text;
 using NHibernate.Cfg;
 using NHibernate.SqlCommand;
@@ -207,6 +208,7 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+
 		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
@@ -216,50 +218,51 @@ namespace NHibernate.Dialect
 		public override SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
 		{
 			/*
-			 * "select * from (select row_number() over(orderby_clause) as rownum, "
+		     * "select * from (select row_number() over(orderby_clause) as rownum, "
 			 * querySqlString_without select
 			 * " ) as tempresult where rownum between ? and ?"
 			 */
-			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			bool isInOrderBy = false;
-			StringBuilder orderByStringBuilder = new StringBuilder();
+			string rownumClause = GetRowNumber( querySqlString );
 
-			// build a new query and extract the order by part
+			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+			pagingBuilder.Add( "select * from (" );
+
+			bool isFirstSelect = true;
+
+			// build a new query and add the rownumber()
 			foreach( object sqlPart in querySqlString.SqlParts )
 			{
 				string sqlPartString = sqlPart as string;
 				if( sqlPartString != null )
 				{
-					if( sqlPartString.ToLower( System.Globalization.CultureInfo.InvariantCulture ).TrimStart().StartsWith( "order by" ) )
+					if( sqlPartString.ToLower( CultureInfo.InvariantCulture ).TrimStart().StartsWith( "select" ) && isFirstSelect )
 					{
-						isInOrderBy = true;
+						// Add the rownum to the first select part
+						sqlPartString = sqlPartString.Insert(
+							sqlPartString.ToLower( CultureInfo.InvariantCulture ).IndexOf( "select ", 0 ) + 7, rownumClause );
+						pagingBuilder.Add( sqlPartString );
+						isFirstSelect = false;
 					}
-				}
-
-				if( isInOrderBy && sqlPart is string )
-				{
-					orderByStringBuilder.Append( ( string ) sqlPart );
+					else
+					{
+						// add the other string components
+						pagingBuilder.AddObject( sqlPart );
+					}
 				}
 				else
 				{
+					// add non string components
 					pagingBuilder.AddObject( sqlPart );
 				}
 			}
-
-			string rownumClause = "rownumber() over(" + orderByStringBuilder.ToString() + ") as rownum, ";
-			// Add the rownum clause first, right after the original select
-			pagingBuilder.Insert( 1, rownumClause );
+    
 			// Add the rest
-			pagingBuilder.Insert( 0, "select * from (" );
-			pagingBuilder.Add( ") as tempresult " );
-			
-			// Add the where clause
-			pagingBuilder.Add( "where rownum " );
+			pagingBuilder.Add( ") as tempresult where rownum " );
 
 			if( hasOffset )
 			{
 				pagingBuilder.Add( "between " );
-				pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) ).Add("+1");
+				pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) ).Add( "+1" );
 				pagingBuilder.Add( " and " );
 				pagingBuilder.Add( new Parameter( "p2", new Int32SqlType() ) );
 			}
@@ -268,10 +271,39 @@ namespace NHibernate.Dialect
 				pagingBuilder.Add( "<= " );
 				pagingBuilder.Add( new Parameter( "p1", new Int32SqlType() ) );
 			}
-
+    
 			return pagingBuilder.ToSqlString();
 		}
-		
+
+		private static string GetRowNumber( SqlString sql )
+		{
+			bool isInOrderBy = false;
+			StringBuilder orderByStringBuilder = new StringBuilder()
+				.Append( "rownumber() over(" );
+
+			// extract the order by part
+			foreach( object sqlPart in sql.SqlParts )
+			{
+				string sqlPartString = sqlPart as string;
+				if( sqlPartString != null )
+				{
+					if( sqlPartString.ToLower().TrimStart().StartsWith( "order by" ) )
+					{
+						isInOrderBy = true;
+					}
+				}
+    
+				if( isInOrderBy && sqlPartString != null )
+				{
+					orderByStringBuilder.Append( sqlPartString );
+				}
+			}
+			
+			orderByStringBuilder.Append( ") as rownum, " );
+
+			return orderByStringBuilder.ToString();
+		}
+
 		public override string ForUpdateString
 		{
 			get { return " for read only with rs"; }
