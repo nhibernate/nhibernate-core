@@ -27,12 +27,12 @@ namespace NHibernate.Collection
 			return clonedMap;
 		}
 
-		public override ICollection GetOrphans( object snapshot )
+		public override ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
 			IDictionary sn = ( IDictionary ) snapshot;
 			ArrayList result = new ArrayList( sn.Values.Count );
 			result.AddRange( sn.Values );
-			AbstractPersistentCollection.IdentityRemoveAll( result, map.Values, Session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, map.Values, entityName, Session );
 			return result;
 		}
 

@@ -351,7 +351,7 @@ namespace NHibernate.Collection
 			return map;
 		}
 
-		public override ICollection GetOrphans( object snapshot )
+		public override ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
 			/*
 			IDictionary sn = ( IDictionary ) GetSnapshot();

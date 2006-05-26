@@ -539,14 +539,14 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="snapshot"></param>
 		/// <returns></returns>
-		public abstract ICollection GetOrphans( object snapshot );
+		public abstract ICollection GetOrphans( object snapshot, System.Type entityName );
 
-		public static void IdentityRemoveAll( IList list, ICollection collection, ISessionImplementor session )
+		public static void IdentityRemoveAll( IList list, ICollection collection, System.Type entityName, ISessionImplementor session )
 		{
 			IEnumerator enumer = collection.GetEnumerator();
 			while( enumer.MoveNext() )
 			{
-				IdentityRemove( list, enumer.Current, session );
+				IdentityRemove( list, enumer.Current, entityName, session );
 			}
 		}
 
@@ -595,9 +595,11 @@ namespace NHibernate.Collection
 			throw new NotSupportedException();
 		}
 
-		public static void IdentityRemove( IList list, object obj, ISessionImplementor session )
+		public static void IdentityRemove( IList list, object obj, System.Type entityName, ISessionImplementor session )
 		{
 			int indexOfEntityToRemove = -1;
+			
+			IType idType = session.Factory.GetEntityPersister( entityName ).IdentifierType;
 
 			if( session.IsSaved( obj ) )
 			{
@@ -605,7 +607,7 @@ namespace NHibernate.Collection
 				for( int i = 0; i < list.Count; i++ )
 				{
 					object idOfOld = session.GetEntityIdentifierIfNotUnsaved( list[ i ] );
-					if( idOfCurrent.Equals( idOfOld ) )
+					if( idType.Equals( idOfOld, idOfCurrent ) )
 					{
 						// in hibernate this used the Iterator to remove the item - since in .NET
 						// the Enumerator is read only we have to change the implementation slightly. 

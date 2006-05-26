@@ -392,13 +392,13 @@ namespace NHibernate.Collection.Generic
 			return bag == collection;
 		}
 
-		public override System.Collections.ICollection GetOrphans( object snapshot )
+		public override System.Collections.ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
 			System.Collections.IList sn = ( System.Collections.IList ) snapshot;
 			System.Collections.ArrayList result = new System.Collections.ArrayList();
 			result.AddRange( sn );
 			// HACK: careful with cast here...
-			AbstractPersistentCollection.IdentityRemoveAll( result, ( System.Collections.ICollection ) bag, Session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, ( System.Collections.ICollection ) bag, entityName, Session );
 			return result;
 		}
 

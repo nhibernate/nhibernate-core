@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<hibernate-mapping namespace="NHibernate.Test.NHSpecificTest.NH607" default-cascade="save-update"  assembly="NHibernate.Test" xmlns="urn:nhibernate-mapping-2.0">
+
+	<!--class: Package-->
+	<class name="Package" lazy="false" table="Package">
+		<id name="Id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<bag name="PackageItems" inverse="false" lazy="true" cascade="all-delete-orphan">
+			<key column="ref_package" />
+			<one-to-many class="PackageItem" />
+		</bag>
+	</class>
+
+	<!--class: PackageItem-->
+	<class name="PackageItem" lazy="false" table="PackageItem">
+		<id name="Id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="Package" column="ref_package" />
+		<bag name="PackagePartyParticipants" lazy="true" cascade="all-delete-orphan">
+			<key column="ref_packageItem" />
+			<one-to-many class="PPP" />
+		</bag>
+	</class>
+
+	<!--class: PPP-->
+	<class name="PPP" lazy="false" table="PPP">
+		<id name="Id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="PackageItem" column="ref_packageItem" />
+		<many-to-one name="PackageParty" column="ref_packageParty"  />
+	</class>
+
+	<!--class: PackageParty-->
+	<class name="PackageParty" lazy="false" table="Relation" >
+		<id name="Id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<bag name="ParticipatingPackages" lazy="true" cascade="all-delete-orphan">
+			<key column="ref_packageParty" />
+			<one-to-many class="PPP" />
+		</bag>
+
+	</class>
+
+</hibernate-mapping>

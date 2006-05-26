@@ -37,12 +37,12 @@ namespace NHibernate.Collection
 			return clonedList;
 		}
 
-		public override ICollection GetOrphans( object snapshot )
+		public override ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
 			IList sn = ( IList ) snapshot;
 			ArrayList result = new ArrayList( sn.Count );
 			result.AddRange( sn );
-			AbstractPersistentCollection.IdentityRemoveAll( result, list, Session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, list, entityName, Session );
 			return result;
 		}
 

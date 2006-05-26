@@ -1,23 +1,24 @@
 #if NET_2_0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
-using NHibernate.Loader;
 
 namespace NHibernate.Collection.Generic
 {
 	/// <summary>
-	/// A persistent wrapper for an <see cref="IList&lt;T&gt;"/>
+	/// A persistent wrapper for an <see cref="IList{T}&lt;T&gt;"/>
 	/// </summary>
 	/// <typeparam name="T">The type of the element the list should hold.</typeparam>
 	/// <remarks>The underlying collection used is a <see cref="List&lt;T&gt;"/></remarks>
 	[Serializable]
-	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, System.Collections.IList
+	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		private IList<T> list;
 
@@ -26,18 +27,18 @@ namespace NHibernate.Collection.Generic
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		public PersistentGenericList(ISessionImplementor session) : base(session)
+		public PersistentGenericList( ISessionImplementor session ) : base( session )
 		{
 		}
 
 		/// <summary>
 		/// Initializes an instance of the <see cref="PersistentGenericList&lt;T&gt;"/>
-		/// that wraps an existing <see cref="IList&lt;T&gt;"/> in the <paramref name="session"/>.
+		/// that wraps an existing <see cref="IList{T}&lt;T&gt;"/> in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
-		/// <param name="coll">The <see cref="IList&lt;T&gt;"/> to wrap.</param>
-		public PersistentGenericList(ISessionImplementor session, IList<T> coll)
-			: base(session)
+		/// <param name="coll">The <see cref="IList{T}&lt;T&gt;"/> to wrap.</param>
+		public PersistentGenericList( ISessionImplementor session, IList<T> coll )
+			: base( session )
 		{
 			list = coll;
 			SetInitialized();
@@ -46,35 +47,35 @@ namespace NHibernate.Collection.Generic
 
 		#region IList<T> Members
 
-		public int IndexOf(T item)
+		public int IndexOf( T item )
 		{
 			Read();
-			return list.IndexOf(item);
+			return list.IndexOf( item );
 		}
 
-		public void Insert(int index, T item)
+		public void Insert( int index, T item )
 		{
 			Write();
-			list.Insert(index, item);
+			list.Insert( index, item );
 		}
 
-		public void RemoveAt(int index)
+		public void RemoveAt( int index )
 		{
 			Write();
-			list.RemoveAt(index);
+			list.RemoveAt( index );
 		}
 
-		public T this[int index]
+		public T this[ int index ]
 		{
 			get
 			{
 				Read();
-				return list[index];
+				return list[ index ];
 			}
 			set
 			{
 				Write();
-				list[index] = value;
+				list[ index ] = value;
 			}
 		}
 
@@ -82,14 +83,14 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection<T> Members
 
-		public void Add(T item)
+		public void Add( T item )
 		{
 			// we could potentially do a QueueAdd here but essentially
 			// won't be <list> mappings don't support inverse collections
-			if (!QueueAdd(item))
+			if( !QueueAdd( item ) )
 			{
 				Write();
-				list.Add(item);
+				list.Add( item );
 			}
 		}
 
@@ -99,16 +100,16 @@ namespace NHibernate.Collection.Generic
 			list.Clear();
 		}
 
-		public bool Contains(T item)
+		public bool Contains( T item )
 		{
 			Read();
-			return list.Contains(item);
+			return list.Contains( item );
 		}
 
-		public void CopyTo(T[] array, int arrayIndex)
+		public void CopyTo( T[] array, int arrayIndex )
 		{
 			Read();
-			list.CopyTo(array, arrayIndex);
+			list.CopyTo( array, arrayIndex );
 		}
 
 		public int Count
@@ -125,10 +126,10 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		public bool Remove(T item)
+		public bool Remove( T item )
 		{
 			Write();
-			return list.Remove(item);
+			return list.Remove( item );
 		}
 
 		#endregion
@@ -145,56 +146,58 @@ namespace NHibernate.Collection.Generic
 
 		#region IEnumerable Members
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
-			return (System.Collections.IEnumerator)list.GetEnumerator();
+			return ( IEnumerator ) list.GetEnumerator();
 		}
 
 		#endregion
 
 		#region AbstractPersistentCollection Members
 
-		public override void DelayedAddAll(System.Collections.ICollection coll)
+		public override void DelayedAddAll( ICollection coll )
 		{
-			foreach (object obj in coll)
+			foreach( object obj in coll )
 			{
-				list.Add((T)obj);
+				list.Add( ( T ) obj );
 			}
 		}
+
 		public override bool Empty
 		{
-			get { return list.Count==0; }
+			get { return list.Count == 0; }
 		}
 
-		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
+		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
 		{
-			BeforeInitialize(persister);
-			object[] array = (object[])disassembled;
-			for (int i = 0; i < array.Length; i++)
+			BeforeInitialize( persister );
+			object[] array = ( object[] ) disassembled;
+			for( int i = 0; i < array.Length; i++ )
 			{
-				object element = persister.ElementType.Assemble( array[i], this.Session, owner);
-				list.Add((element == null ? default(T) : (T)element));
+				object element = persister.ElementType.Assemble( array[ i ], this.Session, owner );
+				list.Add( ( element == null ? default( T ) : ( T ) element ) );
 			}
 			SetInitialized();
 		}
 
-		public override System.Collections.IEnumerable Entries()
+		public override IEnumerable Entries()
 		{
-			return (System.Collections.IEnumerable)list;
+			return ( IEnumerable ) list;
 		}
 
-        public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor,
+		                                 object owner )
 		{
-            object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, this.Session);
-			int index = (int)persister.ReadIndex(reader, descriptor.SuffixedIndexAliases, this.Session);
+			object element = persister.ReadElement( reader, owner, descriptor.SuffixedElementAliases, this.Session );
+			int index = ( int ) persister.ReadIndex( reader, descriptor.SuffixedIndexAliases, this.Session );
 
 			// pad with null from the current last element up to the new index
-			for (int i = list.Count; i <= index; i++)
+			for( int i = list.Count; i <= index; i++ )
 			{
-				list.Insert(i, default(T));
+				list.Insert( i, default( T ) );
 			}
-			list[index] = (element==null ? default(T) : (T)element);
+			list[ index ] = ( element == null ? default( T ) : ( T ) element );
 			return element;
 		}
 
@@ -204,23 +207,23 @@ namespace NHibernate.Collection.Generic
 //			persister.WriteIndex(st, i, writeOrder, this.Session);
 //		}
 
-        public override object GetElement(object entry)
-        {
-            return entry;
-        }
+		public override object GetElement( object entry )
+		{
+			return entry;
+		}
 
-        public override object GetSnapshotElement(object entry, int i)
-        {
-            IList<T> sn = (IList<T>)GetSnapshot();
-            return sn[i];
-        }
+		public override object GetSnapshotElement( object entry, int i )
+		{
+			IList<T> sn = ( IList<T> ) GetSnapshot();
+			return sn[ i ];
+		}
 
-		public override object GetIndex(object entry, int i)
+		public override object GetIndex( object entry, int i )
 		{
 			return i;
 		}
 
-		public override void BeforeInitialize(ICollectionPersister persister)
+		public override void BeforeInitialize( ICollectionPersister persister )
 		{
 			list = ( IList<T> ) persister.CollectionType.Instantiate();
 		}
@@ -234,24 +237,23 @@ namespace NHibernate.Collection.Generic
 		/// of the list or if one of the elements in the collection is
 		/// dirty.
 		/// </returns>
-		public override bool EqualsSnapshot(IType elementType)
+		public override bool EqualsSnapshot( IType elementType )
 		{
-			IList<T> sn = (IList<T>)GetSnapshot();
-			if (sn.Count != list.Count)
+			IList<T> sn = ( IList<T> ) GetSnapshot();
+			if( sn.Count != list.Count )
 			{
 				return false;
 			}
 
-			for (int i = 0; i < list.Count; i++)
+			for( int i = 0; i < list.Count; i++ )
 			{
-				if( elementType.IsDirty( list[i], sn[i], this.Session ) )
+				if( elementType.IsDirty( list[ i ], sn[ i ], this.Session ) )
 				{
 					return false;
 				}
 			}
 
 			return true;
-
 		}
 
 		/// <summary>
@@ -259,58 +261,58 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
-		/// A new <see cref="IList&lt;T&gt;"/> that contains Deep Copies of the 
+		/// A new <see cref="IList{T}&lt;T&gt;"/> that contains Deep Copies of the 
 		/// Elements stored in this wrapped collection.
 		/// </returns>
-		protected override System.Collections.ICollection Snapshot(ICollectionPersister persister)
+		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
-            System.Collections.Generic.List<T> clonedList = new System.Collections.Generic.List<T>(list.Count);
-			foreach (T obj in list)
+			List<T> clonedList = new List<T>( list.Count );
+			foreach( T obj in list )
 			{
-				clonedList.Add((T)persister.ElementType.DeepCopy(obj));
+				clonedList.Add( ( T ) persister.ElementType.DeepCopy( obj ) );
 			}
 			return clonedList;
 		}
 
-		public override object Disassemble(ICollectionPersister persister)
+		public override object Disassemble( ICollectionPersister persister )
 		{
 			int length = list.Count;
 			object[] result = new object[length];
-			for (int i = 0; i < length; i++)
+			for( int i = 0; i < length; i++ )
 			{
-				result[i] = persister.ElementType.Disassemble(list[i], this.Session);
+				result[ i ] = persister.ElementType.Disassemble( list[ i ], this.Session );
 			}
 			return result;
 		}
 
-		public override bool EntryExists(object entry, int i)
+		public override bool EntryExists( object entry, int i )
 		{
 			return entry != null;
 		}
 
-		public override bool NeedsInserting(object entry, int i, NHibernate.Type.IType elemType)
+		public override bool NeedsInserting( object entry, int i, IType elemType )
 		{
-			IList<T> sn = (IList<T>)GetSnapshot();
-			return list[i] != null && (i >= sn.Count || sn[i] == null);
+			IList<T> sn = ( IList<T> ) GetSnapshot();
+			return list[ i ] != null && ( i >= sn.Count || sn[ i ] == null );
 		}
 
-		public override bool NeedsUpdating(object entry, int i, NHibernate.Type.IType elemType)
+		public override bool NeedsUpdating( object entry, int i, IType elemType )
 		{
-			IList<T> sn = (IList<T>)GetSnapshot();
-			return i < sn.Count && sn[i] != null && list[i] != null && elemType.IsDirty(list[i], sn[i], this.Session);
+			IList<T> sn = ( IList<T> ) GetSnapshot();
+			return i < sn.Count && sn[ i ] != null && list[ i ] != null && elemType.IsDirty( list[ i ], sn[ i ], this.Session );
 		}
 
-		public override System.Collections.ICollection GetDeletes(NHibernate.Type.IType elemType, bool indexIsFormula)
+		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
-            System.Collections.Generic.List<int> deletes = new System.Collections.Generic.List<int>();
-			IList<T> sn = (IList<T>)GetSnapshot();
+			List<int> deletes = new List<int>();
+			IList<T> sn = ( IList<T> ) GetSnapshot();
 			int end;
 
-			if (sn.Count > list.Count)
+			if( sn.Count > list.Count )
 			{
-				for (int i = list.Count; i < sn.Count; i++)
+				for( int i = list.Count; i < sn.Count; i++ )
 				{
-					deletes.Add(i);
+					deletes.Add( i );
 				}
 				end = list.Count;
 			}
@@ -319,17 +321,17 @@ namespace NHibernate.Collection.Generic
 				end = sn.Count;
 			}
 
-			for (int i = 0; i < end; i++)
+			for( int i = 0; i < end; i++ )
 			{
-				if (list[i] == null && sn[i] != null)
+				if( list[ i ] == null && sn[ i ] != null )
 				{
-					deletes.Add(i);
+					deletes.Add( i );
 				}
 			}
-			return (System.Collections.ICollection)deletes;
+			return ( ICollection ) deletes;
 		}
 
-		public override bool IsWrapper(object collection)
+		public override bool IsWrapper( object collection )
 		{
 			return list == collection;
 		}
@@ -342,12 +344,12 @@ namespace NHibernate.Collection.Generic
 		/// An <see cref="System.Collections.ICollection"/> that contains all of the elements
 		/// that have been orphaned.
 		/// </returns>
-		public override System.Collections.ICollection GetOrphans(object snapshot)
+		public override ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
-			IList<T> sn = (IList<T>)snapshot;
-            System.Collections.Generic.List<T> result = new System.Collections.Generic.List<T>(sn.Count);
-			result.AddRange(sn);
-			AbstractPersistentCollection.IdentityRemoveAll(result, (System.Collections.ICollection)list, this.Session);
+			IList<T> sn = ( IList<T> ) snapshot;
+			List<T> result = new List<T>( sn.Count );
+			result.AddRange( sn );
+			IdentityRemoveAll( result, ( ICollection ) list, entityName, this.Session );
 			return result;
 		}
 
@@ -363,69 +365,66 @@ namespace NHibernate.Collection.Generic
 		// can just use "this" so we don't duplicate the Read/Write 
 		// logic.
 
-		int System.Collections.IList.Add(object value)
+		int IList.Add( object value )
 		{
 			// can't perform a Queued Addition because the non-generic
 			// IList interface requires the index the object was added
 			// at to be returned
 			Write();
-			return ((System.Collections.IList)list).Add(value);
+			return ( ( IList ) list ).Add( value );
 		}
 
-		void System.Collections.IList.Clear()
+		void IList.Clear()
 		{
 			this.Clear();
 		}
 
-		bool System.Collections.IList.Contains(object value)
+		bool IList.Contains( object value )
 		{
 			Read();
-			return ((System.Collections.IList)list).Contains(value);
+			return ( ( IList ) list ).Contains( value );
 		}
 
-		int System.Collections.IList.IndexOf(object value)
+		int IList.IndexOf( object value )
 		{
 			Read();
-			return ((System.Collections.IList)list).IndexOf(value);
+			return ( ( IList ) list ).IndexOf( value );
 		}
 
-		void System.Collections.IList.Insert(int index, object value)
+		void IList.Insert( int index, object value )
 		{
 			Write();
-			((System.Collections.IList)list).Insert(index, value);
+			( ( IList ) list ).Insert( index, value );
 		}
 
-		bool System.Collections.IList.IsFixedSize
+		bool IList.IsFixedSize
 		{
 			get { return false; }
 		}
 
-		bool System.Collections.IList.IsReadOnly
+		bool IList.IsReadOnly
 		{
 			get { return false; }
 		}
 
-		void System.Collections.IList.Remove(object value)
+		void IList.Remove( object value )
 		{
 			Write();
-			((System.Collections.IList)list).Remove(value);
+			( ( IList ) list ).Remove( value );
 		}
 
-		void System.Collections.IList.RemoveAt(int index)
+		void IList.RemoveAt( int index )
 		{
-			this.RemoveAt(index);
+			this.RemoveAt( index );
 		}
 
-		object System.Collections.IList.this[int index]
+		object IList.this[ int index ]
 		{
-			get
-			{
-				return this[index];
-			}
+			get { return this[ index ]; }
 			set
 			{
 				Write();
-				((System.Collections.IList)list)[index] = value;
+				( ( IList ) list )[ index ] = value;
 			}
 		}
 
@@ -433,23 +432,23 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection Members
 
-		void System.Collections.ICollection.CopyTo(Array array, int index)
+		void ICollection.CopyTo( Array array, int index )
 		{
 			Read();
-			((System.Collections.IList)list).CopyTo(array, index);
+			( ( IList ) list ).CopyTo( array, index );
 		}
 
-		int System.Collections.ICollection.Count
+		int ICollection.Count
 		{
 			get { return this.Count; }
 		}
 
-		bool System.Collections.ICollection.IsSynchronized
+		bool ICollection.IsSynchronized
 		{
 			get { return false; }
 		}
 
-		object System.Collections.ICollection.SyncRoot
+		object ICollection.SyncRoot
 		{
 			get { return this; }
 		}
@@ -457,4 +456,5 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
+
 #endif

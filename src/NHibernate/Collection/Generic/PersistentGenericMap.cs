@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -71,7 +70,7 @@ namespace NHibernate.Collection.Generic
 
 		public override System.Collections.IEnumerable Entries()
 		{
-			return map as System.Collections.IEnumerable;
+			return map;
 		}
 
 		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner )
@@ -105,7 +104,7 @@ namespace NHibernate.Collection.Generic
 			this.map = ( IDictionary<TKey, TValue> ) persister.CollectionType.Instantiate();
 		}
 
-		public override bool EqualsSnapshot( NHibernate.Type.IType elementType )
+		public override bool EqualsSnapshot( IType elementType )
 		{
 			IDictionary<TKey, TValue> xmap = ( IDictionary<TKey, TValue> ) GetSnapshot();
 			if( xmap.Count != this.map.Count )
@@ -169,7 +168,7 @@ namespace NHibernate.Collection.Generic
 
 		public override System.Collections.ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
-			System.Collections.Generic.IList<TKey> deletes = new System.Collections.Generic.List<TKey>();
+			IList<TKey> deletes = new List<TKey>();
 			foreach( KeyValuePair<TKey, TValue> e in ( IDictionary<TKey, TValue> ) GetSnapshot() )
 			{
 				TKey key = e.Key;
@@ -186,12 +185,12 @@ namespace NHibernate.Collection.Generic
 			return map == collection;
 		}
 
-		public override System.Collections.ICollection GetOrphans( object snapshot )
+		public override System.Collections.ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
 			IDictionary<TKey, TValue> sn = ( IDictionary<TKey, TValue> ) snapshot;
-			System.Collections.Generic.List<TValue> result = new System.Collections.Generic.List<TValue>( sn.Values.Count );
+			List<TValue> result = new List<TValue>( sn.Values.Count );
 			result.AddRange( sn.Values );
-			AbstractPersistentCollection.IdentityRemoveAll( result, ( System.Collections.ICollection ) map.Values, Session );
+			AbstractPersistentCollection.IdentityRemoveAll( result, ( System.Collections.ICollection ) map.Values, entityName, Session );
 			return result;
 		}
 

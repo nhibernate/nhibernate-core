@@ -268,7 +268,7 @@ namespace NHibernate.Collection
 		/// An <see cref="ICollection"/> that contains all of the elements
 		/// that have been orphaned.
 		/// </returns>
-		ICollection GetOrphans( object snapshot );
+		ICollection GetOrphans( object snapshot, System.Type entityName );
 
 		/// <summary>
 		/// Get the snapshot value of the given collection entry

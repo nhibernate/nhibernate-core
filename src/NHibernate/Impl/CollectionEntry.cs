@@ -416,13 +416,13 @@ namespace NHibernate.Impl
 			set { processed = value; }
 		}
 
-		public ICollection GetOrphans( IPersistentCollection collection )
+		public ICollection GetOrphans( System.Type entityName, IPersistentCollection collection )
 		{
 			if( snapshot == null )
 			{
 				throw new AssertionFailure( "no collection snapshot for orphan delete" );
 			}
-			return collection.GetOrphans( snapshot );
+			return collection.GetOrphans( snapshot, entityName );
 		}
 	}
 }

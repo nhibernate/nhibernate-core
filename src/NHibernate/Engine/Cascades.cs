@@ -686,18 +686,19 @@ namespace NHibernate.Engine
 				// We can do the cast since orphan-delete does not apply to:
 				// 1. newly instatiated collections
 				// 2. arrays ( we can't track orphans for detached arrays)
-				DeleteOrphans( child as IPersistentCollection, session );
+				System.Type entityName = collectionType.GetAssociatedClass( session.Factory );
+				DeleteOrphans( entityName, child as IPersistentCollection, session );
 			}
 		}
 
-		private static void DeleteOrphans( IPersistentCollection pc, ISessionImplementor session )
+		private static void DeleteOrphans( System.Type entityName, IPersistentCollection pc, ISessionImplementor session )
 		{
 			ICollection orphans;
 			if( pc.WasInitialized ) // can't be any orphans if it was not initialized
 			{
 				CollectionEntry ce = session.GetCollectionEntry( pc );
 				orphans = ce == null ? CollectionHelper.EmptyCollection :
-				          ce.GetOrphans( pc );
+				          ce.GetOrphans( entityName, pc );
 			}
 			else
 			{

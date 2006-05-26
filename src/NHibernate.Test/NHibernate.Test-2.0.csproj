@@ -257,6 +257,12 @@
     <Compile Include="NHSpecificTest\NH548\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH552\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH552\Model.cs" />
+    <Compile Include="NHSpecificTest\NH607\Package.cs" />
+    <Compile Include="NHSpecificTest\NH607\PackageItem.cs" />
+    <Compile Include="NHSpecificTest\NH607\PackageParty.cs" />
+    <Compile Include="NHSpecificTest\NH607\PersistentObject.cs" />
+    <Compile Include="NHSpecificTest\NH607\PPP.cs" />
+    <Compile Include="NHSpecificTest\NH607\Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -464,6 +470,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH548\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH607\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

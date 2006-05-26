@@ -69,7 +69,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="snapshot"></param>
 		/// <returns></returns>
-		public override ICollection GetOrphans( object snapshot )
+		public override ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
 			object[ ] sn = ( object[ ] ) snapshot;
 			object[ ] arr = ( object[ ] ) array;
@@ -80,7 +80,7 @@ namespace NHibernate.Collection
 			}
 			for( int i = 0; i < sn.Length; i++ )
 			{
-				AbstractPersistentCollection.IdentityRemove( result, arr[ i ], Session );
+				AbstractPersistentCollection.IdentityRemove( result, arr[ i ], entityName, Session );
 			}
 			return result;
 		}
