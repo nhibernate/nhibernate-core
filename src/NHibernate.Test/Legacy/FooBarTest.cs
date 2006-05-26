@@ -76,8 +76,10 @@ namespace NHibernate.Test.Legacy
 				s.Save( many );
 				s.Flush();
 
-				Assert.AreEqual( 0, many.V );
-				Assert.AreEqual( 1, one.V );
+				// Versions are incremented compared to Hibernate because they start from 1
+				// in NH.
+				Assert.AreEqual( 1, many.V );
+				Assert.AreEqual( 2, one.V );
 
 				s.Delete( many );
 				s.Delete( one );
@@ -104,8 +106,9 @@ namespace NHibernate.Test.Legacy
 					g2id = s.Save( g2 );
 					t.Commit();
 
-					Assert.AreEqual( 0, g.Version );
-					Assert.AreEqual( 0, g2.Version );
+					// Versions are initialized to 1 in NH.
+					Assert.AreEqual( 1, g.Version );
+					Assert.AreEqual( 1, g2.Version );
 				}
 			}
 
@@ -3446,12 +3449,14 @@ namespace NHibernate.Test.Legacy
 				g = ( GlarchProxy ) s.Load( typeof( Glarch ), gid );
 				s.Lock( g, LockMode.Upgrade );
 				g2 = ( GlarchProxy ) s.Load( typeof( Glarch ), g2id );
-				Assert.IsTrue( g.Version == 1, "version" );
-				Assert.IsTrue( g.DerivedVersion == 1, "version" );
-				Assert.IsTrue( g2.Version == 0, "version" );
+
+				// Versions are initialized to 1 in NH (not to 0 like in Hibernate)
+				Assert.AreEqual( 2, g.Version, "version" );
+				Assert.AreEqual( 2, g.DerivedVersion, "version" );
+				Assert.AreEqual( 1, g2.Version, "version" );
 				g.Name = "foo";
 				Assert.IsTrue(
-					s.Find( "from g in class Glarch where g.Version=2" ).Count == 1,
+					s.Find( "from g in class Glarch where g.Version=3" ).Count == 1,
 					"find by version"
 					);
 				g.Name = "bar";
@@ -3464,9 +3469,9 @@ namespace NHibernate.Test.Legacy
 			{
 				g = ( GlarchProxy ) s.Load( typeof( Glarch ), gid );
 				g2 = ( GlarchProxy ) s.Load( typeof( Glarch ), g2id );
-				Assert.IsTrue( g.Version == 3, "version" );
-				Assert.IsTrue( g.DerivedVersion == 3, "version" );
-				Assert.IsTrue( g2.Version == 0, "version" );
+				Assert.AreEqual( 4, g.Version, "version" );
+				Assert.AreEqual( 4, g.DerivedVersion, "version" );
+				Assert.AreEqual( 1, g2.Version, "version" );
 				g.Next = null;
 				g2.Next = g;
 				s.Delete( g2 );
@@ -3596,7 +3601,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual( 1, g.Strings.Count );
 			Assert.AreEqual( 1, g.ProxyArray.Length );
 			Assert.AreEqual( 1, g.ProxySet.Count );
-			Assert.AreEqual( 1, g.Version, "version collection before" );
+			Assert.AreEqual( 2, g.Version, "version collection before" );
 			s.Flush();
 			s.Close();
 
@@ -3607,20 +3612,20 @@ namespace NHibernate.Test.Legacy
 			IEnumerator enumer = g.ProxySet.GetEnumerator();
 			enumer.MoveNext();
 			Assert.AreSame( g, enumer.Current );
-			Assert.AreEqual( 1, g.Version, "versioned collection before" );
+			Assert.AreEqual( 2, g.Version, "versioned collection before" );
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
 			g = ( GlarchProxy ) s.Load( typeof( Glarch ), gid );
-			Assert.AreEqual( 1, g.Version, "versioned collection before" );
+			Assert.AreEqual( 2, g.Version, "versioned collection before" );
 			g.Strings.Add( "bar" );
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
 			g = ( GlarchProxy ) s.Load( typeof( Glarch ), gid );
-			Assert.AreEqual( 2, g.Version, "versioned collection after" );
+			Assert.AreEqual( 3, g.Version, "versioned collection after" );
 			Assert.AreEqual( 2, g.Strings.Count, "versioned collection after" );
 			g.ProxyArray = null;
 			s.Flush();
@@ -3628,7 +3633,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			g = ( GlarchProxy ) s.Load( typeof( Glarch ), gid );
-			Assert.AreEqual( 3, g.Version, "versioned collection after" );
+			Assert.AreEqual( 4, g.Version, "versioned collection after" );
 			Assert.AreEqual( 0, g.ProxyArray.Length, "version collection after" );
 			g.FooComponents = new ArrayList();
 			g.ProxyArray = null;
@@ -3637,7 +3642,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			g = ( GlarchProxy ) s.Load( typeof( Glarch ), gid );
-			Assert.AreEqual( 4, g.Version, "versioned collection after" );
+			Assert.AreEqual( 5, g.Version, "versioned collection after" );
 			s.Delete( g );
 			s.Flush();
 			s.Close();
