@@ -120,6 +120,7 @@ namespace NHibernate.Type
 			typeByTypeOfName[ NHibernateUtil.AnsiString.Name ] = NHibernateUtil.AnsiString;
 			getTypeDelegatesWithLength.Add( NHibernateUtil.AnsiString.Name, new GetNullableTypeWithLength( GetAnsiStringType ) );
 
+			typeByTypeOfName[ NHibernateUtil.AnsiChar.Name ] = NHibernateUtil.AnsiChar;
 			typeByTypeOfName[ NHibernateUtil.BinaryBlob.Name ] = NHibernateUtil.BinaryBlob;
 			typeByTypeOfName[ NHibernateUtil.StringClob.Name ] = NHibernateUtil.StringClob;
 			typeByTypeOfName[ NHibernateUtil.Date.Name ] = NHibernateUtil.Date;

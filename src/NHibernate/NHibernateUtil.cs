@@ -184,6 +184,7 @@ namespace NHibernate
 			throw new NotSupportedException();
 		}
 
+		public static readonly NullableType AnsiChar = new AnsiCharType();
 
 		/// <summary>
 		/// A NHibernate persistent enum type
@@ -208,7 +209,7 @@ namespace NHibernate
 		/// <summary>
 		/// A NHibernate serializable type
 		/// </summary>
-		/// <param name="metaType">a type mapping <see cref="Type.IType"/> to a single column</param>
+		/// <param name="metaType">a type mapping <see cref="IType"/> to a single column</param>
 		/// <param name="identifierType">the entity identifier type</param>
 		/// <returns></returns>
 		public static IType Any( IType metaType, IType identifierType )
