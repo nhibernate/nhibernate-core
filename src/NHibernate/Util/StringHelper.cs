@@ -524,6 +524,13 @@ namespace NHibernate.Util
 
 		private static string GenerateAliasRoot( string description )
 		{
+			// Remove any generic arguments attached to description
+			int indexOfBacktick = description.IndexOf( '`' );
+			if( indexOfBacktick > 0 )
+			{
+				description = Truncate( description, indexOfBacktick );
+			}
+			
 			string result = Truncate( UnqualifyEntityName( description ), AliasTruncateLength )
 				.ToLower( CultureInfo.InvariantCulture )
 				.Replace( '/', '_' ) // entityNames may now include slashes for the representations
