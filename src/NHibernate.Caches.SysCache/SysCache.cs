@@ -1,4 +1,5 @@
 #region License
+
 //
 //  SysCache - A cache provider for NHibernate using System.Web.Caching.Cache.
 //
@@ -16,14 +17,19 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
+
 #endregion
 
 using System;
 using System.Collections;
 using System.Web;
-using AspCache = System.Web.Caching; // clash with new NHibernate namespace below
+using System.Web.Caching;
+
 using log4net;
+
 using NHibernate.Cache;
+
+using AspCache = System.Web.Caching; // clash with new NHibernate namespace below
 
 namespace NHibernate.Caches.SysCache
 {
@@ -34,10 +40,11 @@ namespace NHibernate.Caches.SysCache
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( SysCache ) );
 		private string _region;
-		private AspCache.Cache _cache;
+		private System.Web.Caching.Cache _cache;
 		private TimeSpan _expiration;
-		private AspCache.CacheItemPriority _priority;
-		private Hashtable _map;
+		private CacheItemPriority _priority;
+		// The name of the cache key used to clear the cache. All cached items depend on this key.
+		private string _rootCacheKey;
 		private static readonly TimeSpan _defaultExpiration = TimeSpan.FromSeconds( 300 );
 		private static readonly string _cacheKeyPrefix = "NHibernate-Cache:";
 
@@ -74,8 +81,10 @@ namespace NHibernate.Caches.SysCache
 		public SysCache( string region, IDictionary properties )
 		{
 			_region = region;
-			_map = new Hashtable();
 			_cache = HttpRuntime.Cache;
+
+			StoreRootCacheKey();
+
 			Configure( properties );
 		}
 
@@ -88,13 +97,13 @@ namespace NHibernate.Caches.SysCache
 					log.Debug( "configuring cache with default values" );
 				}
 				_expiration = _defaultExpiration;
-				_priority = AspCache.CacheItemPriority.Default;
+				_priority = CacheItemPriority.Default;
 			}
 			else
 			{
-				if( props["priority"] != null )
+				if( props[ "priority" ] != null )
 				{
-					int priority = Convert.ToInt32( props["priority"] );
+					int priority = Convert.ToInt32( props[ "priority" ] );
 					if( priority < 1 || priority > 5 )
 					{
 						if( log.IsWarnEnabled )
@@ -103,7 +112,7 @@ namespace NHibernate.Caches.SysCache
 						}
 						throw new IndexOutOfRangeException( "priority must be between 1 and 5" );
 					}
-					_priority = (AspCache.CacheItemPriority)priority;
+					_priority = ( CacheItemPriority ) priority;
 					if( log.IsDebugEnabled )
 					{
 						log.Debug( "new priority: " + _priority.ToString() );
@@ -111,13 +120,13 @@ namespace NHibernate.Caches.SysCache
 				}
 				else
 				{
-					_priority = AspCache.CacheItemPriority.Default;
+					_priority = CacheItemPriority.Default;
 				}
-				if( props["expiration"] != null )
+				if( props[ "expiration" ] != null )
 				{
 					try
 					{
-						int seconds = Convert.ToInt32( props["expiration"] );
+						int seconds = Convert.ToInt32( props[ "expiration" ] );
 						_expiration = TimeSpan.FromSeconds( seconds );
 						if( log.IsDebugEnabled )
 						{
@@ -200,34 +209,28 @@ namespace NHibernate.Caches.SysCache
 			{
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( String.Format("updating value of key '{0}' to '{1}'.", cacheKey, value.ToString() ) );
+					log.Debug( String.Format( "updating value of key '{0}' to '{1}'.", cacheKey, value.ToString() ) );
 				}
-				_cache[ cacheKey ] = new DictionaryEntry( key, value );
+
+				// Remove the key to re-add it again below
+				_cache.Remove( cacheKey );
 			}
 			else
 			{
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( String.Format("adding new data: key={0}&value={1}", cacheKey, value.ToString() ) );
+					log.Debug( String.Format( "adding new data: key={0}&value={1}", cacheKey, value.ToString() ) );
 				}
-				_map.Add( cacheKey, value );
-				_cache.Add(
-					cacheKey, new DictionaryEntry( key, value ), null,
-					DateTime.Now.Add(_expiration), AspCache.Cache.NoSlidingExpiration, _priority,
-					new AspCache.CacheItemRemovedCallback( CacheItemRemoved )
-				);
 			}
-		}
 
-		/// <summary>
-		/// make sure the Hashtable is in sync with the cache by using the callback.
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="reason"></param>
-		public void CacheItemRemoved( string key, object value, AspCache.CacheItemRemovedReason reason )
-		{
-			_map.Remove( key );
+			_cache.Add(
+				cacheKey,
+				new DictionaryEntry( key, value ),
+				new CacheDependency( null, new string[] {_rootCacheKey} ),
+				DateTime.Now.Add( _expiration ),
+				System.Web.Caching.Cache.NoSlidingExpiration,
+				_priority,
+				null );
 		}
 
 		/// <summary></summary>
@@ -243,19 +246,44 @@ namespace NHibernate.Caches.SysCache
 			{
 				log.Debug( "removing item with key: " + cacheKey );
 			}
-			_map.Remove( cacheKey ); // possibly not needed now that callbacks are used
 			_cache.Remove( cacheKey );
 		}
 
 		/// <summary></summary>
 		public void Clear()
 		{
-			ArrayList keys = new ArrayList( _map.Keys );
-			foreach( object key in keys )
-			{
-				_cache.Remove( key.ToString() );
-			}
-			_map.Clear();
+			RemoveRootCacheKey();
+
+			StoreRootCacheKey();
+		}
+
+		/// <summary>
+		/// Generate a unique root key for all cache items to be dependant upon
+		/// </summary>
+		/// <returns></returns>
+		private string GenerateRootCacheKey()
+		{
+			return GetCacheKey( Guid.NewGuid() );
+		}
+
+		/// <summary></summary>
+		private void StoreRootCacheKey()
+		{
+			_rootCacheKey = GenerateRootCacheKey();
+			_cache.Add(
+				_rootCacheKey,
+				_rootCacheKey,
+				null,
+				System.Web.Caching.Cache.NoAbsoluteExpiration,
+				System.Web.Caching.Cache.NoSlidingExpiration,
+				CacheItemPriority.Default,
+				null );
+		}
+
+		/// <summary></summary>
+		private void RemoveRootCacheKey()
+		{
+			_cache.Remove( _rootCacheKey );
 		}
 
 		/// <summary></summary>

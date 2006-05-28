@@ -22,6 +22,8 @@
 
 using System;
 using System.Collections;
+using System.Threading;
+
 using NHibernate.Cache;
 using NUnit.Framework;
 
@@ -237,6 +239,57 @@ namespace NHibernate.Caches.SysCache.Tests
 			cache.Put( obj1, obj1 );
 			Assert.AreEqual( obj1, cache.Get( obj1 ) );
 			Assert.IsNull( cache.Get( obj2 ) );
+		}
+
+		[Test]
+		public void TestObjectExpiration()
+		{
+			const int expirySeconds = 3;
+			const string key = "key";
+			SomeObject obj = new SomeObject();
+
+			obj.Id = 2;
+
+			Hashtable localProps = new Hashtable();
+			localProps.Add( "expiration", expirySeconds );
+
+			ICache cache = provider.BuildCache( "nunit", localProps );
+			
+			Assert.IsNull( cache.Get(obj) );
+			cache.Put( key, obj );
+
+			// Wait
+			Thread.Sleep(TimeSpan.FromSeconds( expirySeconds + 2 ));
+
+			// Check it expired
+			Assert.IsNull( cache.Get( key ) );
+		}
+
+		[Test]
+		public void TestObjectExpirationAfterUpdate()
+		{
+			const int expirySeconds = 3;
+			const string key = "key";
+			SomeObject obj = new SomeObject();
+
+			obj.Id = 2;
+
+			Hashtable localProps = new Hashtable();
+			localProps.Add( "expiration", expirySeconds );
+
+			ICache cache = provider.BuildCache( "nunit", localProps );
+			
+			Assert.IsNull( cache.Get(obj) );
+			cache.Put( key, obj );
+
+			// This forces an object update
+			cache.Put( key, obj );
+
+			// Wait
+			Thread.Sleep(TimeSpan.FromSeconds( expirySeconds + 2 ));
+
+			// Check it expired
+			Assert.IsNull( cache.Get( key ) );
 		}
 	}
 }
