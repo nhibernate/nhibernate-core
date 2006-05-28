@@ -585,6 +585,14 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
+                            <entry>PostgreSQL 8.1</entry> 
+                            <entry><literal>NHibernate.Dialect.PostgreSQL81Dialect</literal></entry>
+                            <entry>
+                                This dialect supports <literal>FOR UPDATE NOWAIT</literal>
+                                available in PostgreSQL 8.1.
+                            </entry>
+                        </row>
+                        <row>
                             <entry>MySQL</entry> 
                             <entry><literal>NHibernate.Dialect.MySQLDialect</literal></entry>
                             <entry></entry>
