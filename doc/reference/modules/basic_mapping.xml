@@ -284,11 +284,10 @@
                     </callout>    
                     <callout arearefs="class15">
                         <para>
-                            <literal>lazy</literal> (optional): Setting <literal>lazy="true"</literal> is a shortcut 
-                            equalivalent to specifying the name of the class itself as the <literal>proxy</literal>
-                            interface.
+                            <literal>lazy</literal> (optional): Lazy fetching may be completely disabled by setting
+                            <literal>lazy="false"</literal>.
                         </para>
-                    </callout>    
+                    </callout>
                 </calloutlist>
             </programlistingco>
            
@@ -382,6 +381,12 @@
                 Keep in mind that a version or timestamp property should never be null, no matter
                 what <literal>unsaved-value</literal> strategy, or an instance will be detected as
                 transient.
+            </para>
+
+            <para>
+                Beginning with NHibernate 1.2.0, version numbers start with 1, not 0 as in previous
+                versions. This was done to allow using 0 as <literal>unsaved-value</literal> for the
+                version property.
             </para>
         </sect2>
 
@@ -1686,11 +1691,10 @@
                     </callout>
                     <callout arearefs="subclass4">
                         <para>
-                            <literal>lazy</literal> (optional): Setting <literal>lazy="true"</literal> is a shortcut 
-                            equalivalent to specifying the name of the class itself as the <literal>proxy</literal>
-                            interface.
+                            <literal>lazy</literal> (optional, defaults to <literal>true</literal>): Setting
+                            <literal>lazy="false"</literal> disables the use of lazy fetching.
                         </para>
-                    </callout>    
+                    </callout>
                 </calloutlist>
             </programlistingco>
 
