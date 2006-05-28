@@ -19,6 +19,8 @@
 			<include name="log4net.dll" />
 			<include name="nunit.framework.dll"/>
 			<include name="NHibernate.UserTypes.SqlTypes.dll" />
+			<include name="Nullables.dll" />
+			<include name="Nullables.NHibernate.dll" />
 		</assemblyfileset>
 	</target>
 

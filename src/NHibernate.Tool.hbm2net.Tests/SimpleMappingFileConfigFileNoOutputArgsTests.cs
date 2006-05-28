@@ -17,12 +17,12 @@ namespace NHibernate.Tool.hbm2net.Tests
 		FileInfo configFile;
 		FileInfo templateFile;
 		const string MappingFileResourceName = "Simple.hbm.xml";
-		const string ExpectedFileResourceName = "DomainModel.csharp";
+		const string ExpectedFileResourceName = "Simple.csharp";
 		const string TemplateFileResourceName = "convert.vm";
 
 // TODO: Need to move this into method as it will depend on the supplied options in the config file e.g. the
 // supplied package and renderer.
-		static string ExpectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"DomainModel.cs");
+		static string ExpectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"Simple.cs");
 
 		[SetUp]
 		public void Init() 
@@ -41,7 +41,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 
 		private static void AssertFile()
 		{
-			Assert.IsTrue(File.Exists(ExpectedFileName));
+			Assert.IsTrue(File.Exists(ExpectedFileName), "File not found: {0}", ExpectedFileName);
 			using(StreamReader sr = File.OpenText(ExpectedFileName))
 			{
 				Assert.AreEqual(ResourceHelper.GetResource(ExpectedFileResourceName), sr.ReadToEnd());

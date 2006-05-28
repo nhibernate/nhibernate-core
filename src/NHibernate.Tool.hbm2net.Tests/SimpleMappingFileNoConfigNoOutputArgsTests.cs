@@ -9,7 +9,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 	{
 		FileInfo mappingFile;
 		const string MappingFileResourceName = "Simple.hbm.xml";
-		const string ExpectedFileResourceName = "DomainModel.csharp";
+		const string ExpectedFileResourceName = "Simple.csharp";
 
 		[SetUp]
 		public void Init() {}
@@ -24,7 +24,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 
 		private static void AssertFile()
 		{
-			string expectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"NHibernate\DomainModel\Simple, NHibernate\DomainModel.cs");
+			string expectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"NHibernate\DomainModel\Simple.cs");
 			Assert.IsTrue(File.Exists(expectedFileName));
 			using(StreamReader sr = File.OpenText(expectedFileName))
 			{

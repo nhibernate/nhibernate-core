@@ -97,6 +97,7 @@
     <None Include="App.config" />
     <EmbeddedResource Include="convert.vm" />
     <None Include="NHibernate.Tool.hbm2net.Tests.build" />
+    <EmbeddedResource Include="Simple.csharp" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -111,9 +112,6 @@
     <Compile Include="TestHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="DomainModel.csharp">
-      <SubType>Code</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Simple.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
