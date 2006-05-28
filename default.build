@@ -37,10 +37,10 @@
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
 		<include name="NHibernate.UserTypes.Oracle/NHibernate.UserTypes.Oracle.build" />
 		<include name="NHibernate.UserTypes.SqlTypes/NHibernate.UserTypes.SqlTypes.build" />
-		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
 		<include name="Nullables/Nullables.build" />
 		<include name="Nullables.NHibernate/Nullables.NHibernate.build" />
 		<include name="Nullables.Tests/Nullables.Tests.build" />
+		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
 	</fileset>
 
 	<fileset id="buildfiles.tests" basedir="src">
@@ -199,8 +199,13 @@
 
 		<ndoc>
 			<assemblies basedir="${bin.dir}">
-				<include name="NHibernate.dll" />
 				<include name="Iesi.Collections.dll" />
+				<include name="NHibernate*.dll" />
+				<include name="Nullables*.dll" />
+
+				<exclude name="*Test*" />
+				<exclude name="NHibernate.DomainModel.dll" />
+				<exclude name="NHibernate.Examples.dll" />
 			</assemblies>
 			<summaries>
 				<include name="src/NHibernate/NamespaceSummary.xml" />
