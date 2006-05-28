@@ -565,56 +565,73 @@ ISession session = sessions.OpenSession(conn);
                 <tgroup cols="2">
                     <colspec colwidth="1*"/>
                     <colspec colwidth="2.5*"/>
+                    <colspec colwidth="2.5*"/>
                     <thead>
                         <row>
                             <entry>RDBMS</entry>
                             <entry>Dialect</entry>
+                            <entry>Remarks</entry>
                         </row>
                     </thead>
                     <tbody>
                         <row>
                             <entry>DB2</entry> 
                             <entry><literal>NHibernate.Dialect.DB2Dialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>PostgreSQL</entry> 
                             <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>MySQL</entry> 
                             <entry><literal>NHibernate.Dialect.MySQLDialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>Oracle (any version)</entry> 
                             <entry><literal>NHibernate.Dialect.OracleDialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>Oracle 9/10g</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle9Dialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>Sybase Adaptive Server Enterprise</entry> 
                             <entry><literal>NHibernate.Dialect.SybaseDialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>Sybase Adaptive Server Anywhere</entry>
                             <entry><literal>NHibernate.Dialect.ASADialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 2000</entry> 
                             <entry><literal>NHibernate.Dialect.MsSql2000Dialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 7</entry> 
                             <entry><literal>NHibernate.Dialect.MsSql7Dialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>Firebird</entry> 
                             <entry><literal>NHibernate.Dialect.FirebirdDialect</literal></entry>
+                            <entry>
+                                Set <literal>hibernate.driver_class</literal> to
+                                <literal>NHibernate.Driver.FirebirdClientDriver</literal>
+                                for Firebird ADO.NET provider 2.0.
+                            </entry>
                         </row>
                         <row>
                             <entry>SQLite</entry>
                             <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
+                            <entry></entry>
                         </row>
                     </tbody>
                 </tgroup>
