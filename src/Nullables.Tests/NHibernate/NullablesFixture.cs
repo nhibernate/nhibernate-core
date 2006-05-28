@@ -67,7 +67,7 @@ namespace Nullables.Tests.NHibernate
 
 			s = sessions.OpenSession();
 			nullNC = (NullablesClass)s.Find( "from NullablesClass" )[0];
-			Assert.AreEqual( 0, nullNC.Version, "no changes to write at last flush - version should not have changed" );
+			Assert.AreEqual( 1, nullNC.Version, "no changes to write at last flush - version should not have changed" );
 
 			q = s.CreateQuery( "from NullablesClass as nc where nc.Int32Prop = :int32Prop" );
 			q.SetParameter( "int32Prop", new NullableInt32( Int32.MaxValue) , Nullables.NHibernate.NullablesTypes.NullableInt32 );
