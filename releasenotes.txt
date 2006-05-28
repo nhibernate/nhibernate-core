@@ -1,16 +1,66 @@
 Build 1.2.0.Alpha1
 ========================
 
-Breaking Changes:
-    * Entities and collections are lazy by default. Change by setting
-      default-lazy="false" in <hibernate-mapping>.
-    * Types used as proxies are now validated (a check is done that all
-      public members are virtual). Validation can be disabled by setting
-      hibernate.use_proxy_validator property to false.
+Important Breaking Changes:
+    * Entities and collections are lazy by default. Change by setting default-lazy="false"
+      in <hibernate-mapping>.
+    * Types used as proxies are now validated (a check is done that all public members are
+      virtual). Validation can be disabled by setting hibernate.use_proxy_validator to false.
     * ISession.Get/Load now obey where="..." attribute of <class>.
     * Assemblies are signed using a new, publicly available, key.
     * Assembly.LoadWithPartialName is no longer used to load assemblies. If you want NH to load
-      an assembly from the GAC, use <qualifyAssembly> element in the configuration file.
+      an assembly from the GAC, use <qualifyAssembly> element in the configuration file to
+      specify its fully qualified name. This change will primarily affect loading of ADO.NET
+      data provider assemblies.
+
+Patches Applied:
+
+    * [NH-595] - Possible bug in SessionImpl.EndLoadingCollections method
+
+Bugs Fixed:
+
+    * [NH-242] - Hbm2Net looks for template file in the current directory but should in the program directory
+    * [NH-467] - Many-to-one ignores "WHERE" class mapping element on associated Class
+    * [NH-511] - IVersionType.Seed should be set to 1 instead of 0 for integer types
+    * [NH-532] - PropertyNotFoundException ctor throws NullReferenceException
+    * [NH-538] - config.AddDirectory doesn't work
+    * [NH-540] - Register of AnsiChar type
+    * [NH-544] - Small Issue about Iesi.Collection.Set
+    * [NH-548] - Component Parent set to null on 2nd-level cache hit
+    * [NH-550] - Incorrect SQL Generated when using SetMaxResults() with DB2
+    * [NH-551] - Unable to use DB2 in .NET 1.1 when 1.1 & 2.0 installed side by side
+    * [NH-552] - Collection of "nullifiables" not updated when object saved back
+    * [NH-560] - Bad alias generated for Generic class
+    * [NH-563] - Exception in NDataReader.cs when loading BinaryBlob
+    * [NH-571] - class keyword in WHERE broken for table-per-subclass mappings
+    * [NH-574] - sort="natural" doen't work when namespace and assemply were set
+    * [NH-579] - Cannot load class="System.DayOfWeek"
+    * [NH-580] - Possible bug in hbm2net
+    * [NH-582] - All IType implementations should be serializable
+    * [NH-607] - session.GetEntityIdentifierIfNotUnsaved can return null
+    * [NH-609] - SysCache re-caches items without expiration policy
+
+New Features:
+
+    * [NH-449] - SQL Server 2005 dialect
+    * [NH-553] - Driver for Adaptive Server Anywhere 9.0
+
+Tasks:
+
+    * [NH-155] - Look at TableHiLoGenerator Impl
+
+Improvements:
+
+    * [NH-179] - Add Proxy Validator
+    * [NH-243] - Hbm2Net is unable to extent with own renderer
+    * [NH-259] - Type-Safe Collections
+    * [NH-338] - Support .NET 2.0 CLR/BCL features, esp Generics and Nullable Types
+    * [NH-353] - Assembly.LoadWithPartialName is obsolete in .NET2
+    * [NH-416] - Change default laziness of classes and collections to "true" to match Hibernate 3.1
+    * [NH-441] - Make proxy validator optional
+    * [NH-457] - SysCache slidingExpiration property doesn't work properly
+    * [NH-547] - Add IL-based reflection optimizer
+    * [NH-602] - Support for new Firebird provider
 
 Build 1.0.2.0
 ========================
