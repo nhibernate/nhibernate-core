@@ -58,7 +58,7 @@ namespace Nullables.Tests.NHibernate
 			Assert.AreEqual( NullableSByte.Default, nullNC.SByteProp );
 			Assert.AreEqual( NullableSingle.Default, nullNC.SingleProp );
 
-			Assert.AreEqual( 0, nullNC.Version );
+			Assert.AreEqual( 1, nullNC.Version );
 
 			// don't change anything but flush it - should not increment
 			// the version because there were no changes
