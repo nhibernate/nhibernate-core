@@ -211,8 +211,8 @@ ISession session = sessions.OpenSession(conn);
                         <emphasis role="strong">eg.</emphasis> 
                         <literal>full.classname.of.ConnectionProvider</literal> if the Provider 
                         is built into NHibernate, or <literal>full.classname.of.ConnectionProvider, 
-                        assembly</literal> if using an implementation of IConnectionProvider not 
-                        included in NHibernate.
+                        assembly</literal> if using an implementation of <literal>IConnectionProvider</literal>
+                        not included in NHibernate.
                     </para>
                 </entry>
             </row>
@@ -228,9 +228,9 @@ ISession session = sessions.OpenSession(conn);
                         if using an implementation of IDriver not included in NHibernate.
                     </para>
                     <para>
-						This is usually not needed, most of the time the <literal>hibernate.dialect</literal> will
-						take care of setting the IDriver using a sensible default.  See the API documentation of the
-						specific IDialect for the defaults.
+                        This is usually not needed, most of the time the <literal>hibernate.dialect</literal> will
+                        take care of setting the <literal>IDriver</literal> using a sensible default.  See the API
+                        documentation of the specific dialect for the defaults.
                     </para>
                 </entry>
             </row>
@@ -413,6 +413,22 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>hibernate.bytecode.provider</literal>
+                        </entry>
+                        <entry>
+                            Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
+                            Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
+                            to use lightweight code generation (supported on .NET 2.0 only), and <literal>
+                            codedom</literal> to use CodeDOM-based code generation (supported on .NET 1.1, has problems
+                            with generic types on .NET 2.0). 
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>null</literal> | <literal>lcg</literal> | <literal>codedom</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>hibernate.cache.provider_class</literal>
                         </entry>
                         <entry>
@@ -514,6 +530,19 @@ ISession session = sessions.OpenSession(conn);
                             </para>
                         </entry>
                     </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.use_proxy_validator</literal>
+                        </entry>
+                        <entry>
+                            Enables or disables validation of interfaces or classes specified
+                            as proxies. Enabled by default.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
                 </tbody>
             </tgroup>
         </table>
@@ -564,8 +593,12 @@ ISession session = sessions.OpenSession(conn);
                             <entry><literal>NHibernate.Dialect.Oracle9Dialect</literal></entry>
                         </row>
                         <row>
-                            <entry>Sybase</entry> 
+                            <entry>Sybase Adaptive Server Enterprise</entry> 
                             <entry><literal>NHibernate.Dialect.SybaseDialect</literal></entry>
+                        </row>
+                        <row>
+                            <entry>Sybase Adaptive Server Anywhere</entry>
+                            <entry><literal>NHibernate.Dialect.ASADialect</literal></entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 2000</entry> 
