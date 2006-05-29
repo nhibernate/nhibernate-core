@@ -55,6 +55,10 @@
 						information, read (on the MSDN):
 						<ulink url="http://msdn.microsoft.com/library/en-us/cpguide/html/cpconcacheapis.asp">Caching Application Data</ulink>.
 					</para>
+					<para>
+						Note that SysCache should only be used in ASP.NET applications. For more details, see
+						<ulink url="http://support.microsoft.com/kb/917411">this knowledge base article</ulink>.
+					</para>
 				</listitem>
 			</itemizedlist>
 		</para>
