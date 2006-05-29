@@ -40,7 +40,7 @@ namespace NHibernate.Connection
 				catch( Exception e )
 				{
 					log.Fatal( "Could not instantiate connection provider", e );
-					throw new HibernateException( "Could not instantiate connection provider: " + providerClass );
+					throw new HibernateException( "Could not instantiate connection provider: " + providerClass, e );
 				}
 			}
 			else
