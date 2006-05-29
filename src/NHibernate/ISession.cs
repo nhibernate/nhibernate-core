@@ -1,8 +1,5 @@
 using System;
 using System.Collections;
-#if NET_2_0
-using System.Collections.Generic;
-#endif
 using System.Data;
 
 using NHibernate.Type;
@@ -211,9 +208,9 @@ namespace NHibernate
 		/// assuming that the instance exists.
 		/// </summary>
 		/// <remarks>
-		/// You should not use this method to determine if an instance exists (use <see cref="Find" />
-		/// instead). Use this only to retrieve an instance that you assume exists, where non-existence
-		/// would be an actual error.
+		/// You should not use this method to determine if an instance exists (use a query or
+		/// <see cref="Get(System.Type, object)" /> instead). Use this only to retrieve an instance
+		/// that you assume exists, where non-existence would be an actual error.
 		/// </remarks>
 		/// <param name="theType">A persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
@@ -236,9 +233,9 @@ namespace NHibernate
 		/// assuming that the instance exists.
 		/// </summary>
 		/// <remarks>
-		/// You should not use this method to determine if an instance exists (use <see cref="Find" />
-		/// instead). Use this only to retrieve an instance that you assume exists, where non-existence
-		/// would be an actual error.
+		/// You should not use this method to determine if an instance exists (use a query or
+		/// <see cref="Get{T}(object)" /> instead). Use this only to retrieve an instance that you
+		/// assume exists, where non-existence would be an actual error.
 		/// </remarks>
 		/// <typeparam name="T">A persistent class</typeparam>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
@@ -352,7 +349,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="query">A query expressed in Hibernate's query language</param>
 		/// <returns>A distinct list of instances</returns>
-		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
+		/// <remarks>See <see cref="IQuery.List()"/> for implications of <c>cache</c> usage.</remarks>
 		[Obsolete( "Use ISession.CreateQuery().List()" )]
 		IList Find( string query );
 
@@ -363,7 +360,7 @@ namespace NHibernate
 		/// <param name="value">A value to be bound to a "?" placeholder</param>
 		/// <param name="type">The Hibernate type of the value</param>
 		/// <returns>A distinct list of instances</returns>
-		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
+		/// <remarks>See <see cref="IQuery.List()"/> for implications of <c>cache</c> usage.</remarks>
 		[Obsolete( "Use ISession.CreateQuery().SetXYZ().List()" )]
 		IList Find( string query, object value, IType type );
 
@@ -374,7 +371,7 @@ namespace NHibernate
 		/// <param name="values">An array of values to be bound to the "?" placeholders</param>
 		/// <param name="types">An array of Hibernate types of the values</param>
 		/// <returns>A distinct list of instances</returns>
-		/// <remarks>See <see cref="IQuery.List"/> for implications of <c>cache</c> usage.</remarks>
+		/// <remarks>See <see cref="IQuery.List()"/> for implications of <c>cache</c> usage.</remarks>
 		[Obsolete( "Use ISession.CreateQuery().SetXYZ().List()" )]
 		IList Find( string query, object[] values, IType[] types );
 
