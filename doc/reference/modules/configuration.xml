@@ -623,6 +623,11 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
+                            <entry>Microsoft SQL Server 2005</entry> 
+                            <entry><literal>NHibernate.Dialect.MsSql2005Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
                             <entry>Microsoft SQL Server 7</entry> 
                             <entry><literal>NHibernate.Dialect.MsSql7Dialect</literal></entry>
                             <entry></entry>
