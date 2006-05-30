@@ -22,6 +22,10 @@ namespace NHibernate.Id
 	///			<description><see cref="Assigned"/></description>
 	///		</item>
 	///		<item>
+	///			<term>counter</term>
+	///			<description><see cref="CounterGenerator"/></description>
+	///		</item>
+	///		<item>
 	///			<term>foreign</term>
 	///			<description><see cref="ForeignGenerator"/></description>
 	///		</item>
@@ -74,7 +78,7 @@ namespace NHibernate.Id
 		/// ensures it is the correct <see cref="System.Type"/>.
 		/// </summary>
 		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>
-		/// <param name="clazz">The <see cref="System.Type"/> the value should be converted to.</param>
+		/// <param name="type">The <see cref="IIdentifierType"/> the value should be converted to.</param>
 		/// <returns>
 		/// The value for the identifier.
 		/// </returns>
@@ -82,19 +86,18 @@ namespace NHibernate.Id
 		/// Thrown if there is any problem getting the value from the <see cref="IDataReader"/>
 		/// or with converting it to the <see cref="System.Type"/>.
 		/// </exception>
-		public static object Get( IDataReader rs, System.Type clazz )
+		public static object Get( IDataReader rs, IType type )
 		{
 			// here is an interesting one: 
 			// - MsSql's @@identity returns a Decimal
 			// - MySql LAST_IDENITY() returns an Int64 			
 			try
 			{
-				object identityValue = rs[ 0 ];
-				return Convert.ChangeType( identityValue, clazz );
+				return type.NullSafeGet( rs, rs.GetName( 0 ), null, null );
 			}
 			catch( Exception e )
 			{
-				throw new IdentifierGenerationException( "this id generator generates Int64, Int32, Int16", e );
+				throw new IdentifierGenerationException( "could not retrieve identifier value", e );
 			}
 		}
 
@@ -127,6 +130,7 @@ namespace NHibernate.Id
 			idgenerators.Add( "uuid.string", typeof( UUIDStringGenerator ) );
 			idgenerators.Add( "hilo", typeof( TableHiLoGenerator ) );
 			idgenerators.Add( "assigned", typeof( Assigned ) );
+			idgenerators.Add( "counter", typeof( CounterGenerator ) );
 			idgenerators.Add( "identity", typeof( IdentityGenerator ) );
 			idgenerators.Add( "increment", typeof( IncrementGenerator ) );
 			idgenerators.Add( "sequence", typeof( SequenceGenerator ) );

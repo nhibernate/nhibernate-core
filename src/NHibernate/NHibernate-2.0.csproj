@@ -632,6 +632,9 @@
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Util\CollectionHelper.cs" />
     <Compile Include="Util\TypeNameParser.cs" />
+    <None Include="nhibernate-generic.xsx">
+      <DependentUpon>nhibernate-generic.xsd</DependentUpon>
+    </None>
     <None Include="nhibernate-mapping-2.0.xsx">
       <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>
     </None>

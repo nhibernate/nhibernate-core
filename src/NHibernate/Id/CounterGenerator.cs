@@ -12,7 +12,6 @@ namespace NHibernate.Id
 		// (short)0 by default
 		private static short counter;
 
-		/// <summary></summary>
 		protected short Count
 		{
 			get
@@ -28,15 +27,9 @@ namespace NHibernate.Id
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cache"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		public object Generate( ISessionImplementor cache, object obj )
 		{
-			return ( DateTime.Now.Ticks << 16 ) + Count;
+			return unchecked ( ( DateTime.Now.Ticks << 16 ) + Count );
 		}
 
 	}

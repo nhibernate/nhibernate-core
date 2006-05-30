@@ -43,7 +43,7 @@ namespace NHibernate.Id
 		public const string Schema = "schema";
 
 		private string sequenceName;
-		private System.Type returnClass;
+		private IType type;
 		private string sql;
 
 		#region IConfigurable Members
@@ -63,7 +63,7 @@ namespace NHibernate.Id
 			{
 				sequenceName = schemaName + '.' + sequenceName;
 			}
-			returnClass = type.ReturnedClass;
+			this.type = type;
 			sql = dialect.GetSequenceNextValString( sequenceName );
 		}
 
@@ -85,9 +85,8 @@ namespace NHibernate.Id
 			try
 			{
 				reader = session.Batcher.ExecuteReader( cmd );
-				object result = null;
 				reader.Read();
-				result = IdentifierGeneratorFactory.Get( reader, returnClass );
+				object result = IdentifierGeneratorFactory.Get( reader, type );
 
 				log.Debug( "sequence ID generated: " + result );
 				return result;
