@@ -56,22 +56,8 @@
 		<include name="Nullables.Tests/Nullables.Tests.build" />
 	</fileset>
 
-	<fileset id="buildfiles.external" basedir="src">
-		<include name="HashCodeProvider/HashCodeProvider.build" />
-	</fileset>
-
 	<target name="init" depends="common.init"
 		description="Initializes build properties" />
-
-	<target
-		name="build-external"
-		depends="init"
-		description="Builds code that NHibernate depends on but is not a core piece of NHibernate.  The built dll/exes will be distributed in the lib folder so there should be no need for a user to build it."
-	>
-		<nant target="build">
-			<buildfiles refid="buildfiles.external" />
-		</nant>
-	</target>
 
 	<target name="recreate-build-directory">
 		<echo message="Current Directory is ${project::get-base-directory()}" />
@@ -374,7 +360,6 @@
 			<fileset>
 				<!-- copy dlls used by this build -->
 				<include name="${lib.dir}/**"  />
-				<include name="external-bin/ILMerge.exe" />
 
 				<!-- copy all of the NHibernate source -->
 				<include name="src/NHibernate*/**" />
