@@ -1124,7 +1124,7 @@ namespace NHibernate.Persister.Entity
 			IGetter getter = ( IGetter ) gettersByPropertyName[ propertyName ];
 			if( getter == null )
 			{
-				throw new HibernateException( "unmapped property: " + propertyName );
+				throw new HibernateException( "unmapped property: " + mappedClass + "." + propertyName );
 			}
 			return getter.Get( obj );
 		}
@@ -1134,7 +1134,7 @@ namespace NHibernate.Persister.Entity
 			ISetter setter = ( ISetter ) settersByPropertyName[ propertyName ];
 			if( setter == null )
 			{
-				throw new HibernateException( "unmapped property: " + propertyName );
+				throw new HibernateException( "unmapped property: " + mappedClass + "." + propertyName );
 			}
 			setter.Set( obj, value );
 		}
