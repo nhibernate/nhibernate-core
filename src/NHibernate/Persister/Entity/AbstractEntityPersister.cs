@@ -1451,7 +1451,7 @@ namespace NHibernate.Persister.Entity
 				{
 					throw new HibernateException( "The database returned no natively generated identity value" );
 				}
-				id = IdentifierGeneratorFactory.Get( rs, IdentifierType );
+				id = IdentifierGeneratorFactory.Get( rs, IdentifierType, session );
 			}
 			finally
 			{

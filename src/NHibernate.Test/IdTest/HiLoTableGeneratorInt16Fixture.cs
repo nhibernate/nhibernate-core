@@ -1,7 +1,5 @@
 using System;
 
-using NHibernate.Id;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.IdTest
@@ -20,18 +18,17 @@ namespace NHibernate.Test.IdTest
 			Int16 id;
 			ISession s = OpenSession();
 			HiLoInt16Class b = new HiLoInt16Class();
-			s.Save(b);
+			s.Save( b );
 			s.Flush();
 			id = b.Id;
 			s.Close();
 
 			s = OpenSession();
-			b = (HiLoInt16Class)s.Load(typeof(HiLoInt16Class), b.Id);
-			Assert.AreEqual(id, b.Id);
-			s.Delete(b);
+			b = ( HiLoInt16Class ) s.Load( typeof( HiLoInt16Class ), b.Id );
+			Assert.AreEqual( id, b.Id );
+			s.Delete( b );
 			s.Flush();
 			s.Close();
 		}
-
 	}
 }

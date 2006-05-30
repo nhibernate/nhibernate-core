@@ -86,7 +86,7 @@ namespace NHibernate.Id
 			{
 				reader = session.Batcher.ExecuteReader( cmd );
 				reader.Read();
-				object result = IdentifierGeneratorFactory.Get( reader, type );
+				object result = IdentifierGeneratorFactory.Get( reader, type, session );
 
 				log.Debug( "sequence ID generated: " + result );
 				return result;

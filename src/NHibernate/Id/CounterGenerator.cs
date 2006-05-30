@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.CompilerServices;
+
 using NHibernate.Engine;
 
 namespace NHibernate.Id
@@ -14,16 +16,14 @@ namespace NHibernate.Id
 
 		protected short Count
 		{
+			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
-				lock( typeof( CounterGenerator ) )
+				if( counter < 0 )
 				{
-					if( counter < 0 )
-					{
-						counter = 0;
-					}
-					return counter++;
+					counter = 0;
 				}
+				return counter++;
 			}
 		}
 

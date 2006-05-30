@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 
+using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -79,6 +80,7 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>
 		/// <param name="type">The <see cref="IIdentifierType"/> the value should be converted to.</param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> the value is retrieved in.</param>
 		/// <returns>
 		/// The value for the identifier.
 		/// </returns>
@@ -86,14 +88,14 @@ namespace NHibernate.Id
 		/// Thrown if there is any problem getting the value from the <see cref="IDataReader"/>
 		/// or with converting it to the <see cref="System.Type"/>.
 		/// </exception>
-		public static object Get( IDataReader rs, IType type )
+		public static object Get( IDataReader rs, IType type, ISessionImplementor session )
 		{
 			// here is an interesting one: 
 			// - MsSql's @@identity returns a Decimal
 			// - MySql LAST_IDENITY() returns an Int64 			
 			try
 			{
-				return type.NullSafeGet( rs, rs.GetName( 0 ), null, null );
+				return type.NullSafeGet( rs, rs.GetName( 0 ), session, null );
 			}
 			catch( Exception e )
 			{
@@ -224,21 +226,55 @@ namespace NHibernate.Id
 		/// </exception>
 		public static object CreateNumber( long value, System.Type type )
 		{
-			if( type == typeof( long ) )
+			// Convert.ChangeType would be better here, but it fails if the value does not fit
+			// in the destination type, while we need the value to be truncated in this case.
+
+			if( type == typeof( byte ) )
 			{
-				return value;
+				return ( byte ) value;
 			}
-			else if( type == typeof( int ) )
+			else if( type == typeof( sbyte ) )
 			{
-				return ( int ) value;
+				return ( sbyte ) value;
 			}
 			else if( type == typeof( short ) )
 			{
 				return ( short ) value;
 			}
+			else if( type == typeof( ushort ) )
+			{
+				return ( ushort ) value;
+			}
+			else if( type == typeof( int ) )
+			{
+				return ( int ) value;
+			}
+			else if( type == typeof( uint ) )
+			{
+				return ( uint ) value;
+			}
+			else if( type == typeof( long ) )
+			{
+				return ( long ) value;
+			}
+			else if( type == typeof( ulong ) )
+			{
+				return ( ulong ) value;
+			}
+			else if( type == typeof( decimal ) )
+			{
+				return ( decimal ) value;
+			}
 			else
 			{
-				throw new IdentifierGenerationException( "this id generator generates Int64, Int32, Int16" );
+				try
+				{
+					return Convert.ChangeType( value, type );
+				}
+				catch( Exception e )
+				{
+					throw new IdentifierGenerationException( "could not convert generated value to type " + type, e );
+				}
 			}
 		}
 	}
