@@ -64,7 +64,7 @@ namespace NHibernate.Test.MappingExceptions
 			}
 			catch( MappingException me )
 			{
-				Assert.IsTrue( me.Message.Contains( resource + errorPosition ) );
+				Assert.IsTrue( me.Message.IndexOf( resource + errorPosition ) >= 0 );
 			}
 		}
 	}
