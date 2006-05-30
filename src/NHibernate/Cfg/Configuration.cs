@@ -332,7 +332,26 @@ namespace NHibernate.Cfg
 			return AddXml( xml );
 		}
 
-		// Not ported - addURL(URL)
+		/// <summary>
+		/// Read mappings from a URL.
+		/// </summary>
+		/// <param name="url">a URL</param>
+		/// <returns>This configuration object.</returns>
+		public Configuration AddUrl( string url )
+		{
+			// AddFile works for URLs currently
+			return AddFile( url );
+		}
+
+		/// <summary>
+		/// Read mappings from a URL.
+		/// </summary>
+		/// <param name="url">a <see cref="Uri" /> to read the mappings from.</param>
+		/// <returns>This configuration object.</returns>
+		public Configuration AddUrl( Uri url )
+		{
+			return AddUrl( url.AbsolutePath );
+		}
 
 		public Configuration AddDocument( XmlDocument doc )
 		{
