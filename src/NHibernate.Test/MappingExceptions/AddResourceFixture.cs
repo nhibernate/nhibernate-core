@@ -24,7 +24,7 @@ namespace NHibernate.Test.MappingExceptions
 			}
 			catch( MappingException me ) 
 			{
-				Assert.AreEqual( "Resource: " + resource + " not found", me.Message );
+				Assert.AreEqual( "Resource not found: " + resource, me.Message );
 			}
 		}
 
@@ -47,6 +47,24 @@ namespace NHibernate.Test.MappingExceptions
 			{
 				Assert.IsTrue( me.InnerException is MappingException );
 				Assert.AreEqual( "duplicate import: A", me.InnerException.Message );
+			}
+		}
+		
+		[Test]
+		public void AddInvalidXml()
+		{
+			string resource = "NHibernate.Test.MappingExceptions.A.Invalid.hbm.xml";
+			string errorPosition = "(10,4)";
+
+			Configuration cfg = new Configuration();
+			try
+			{
+				cfg.AddResource( resource, this.GetType().Assembly );
+				Assert.Fail( "Should have thrown an exception" );
+			}
+			catch( MappingException me )
+			{
+				Assert.IsTrue( me.Message.Contains( resource + errorPosition ) );
 			}
 		}
 	}

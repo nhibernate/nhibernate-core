@@ -13,13 +13,13 @@ namespace NHibernate.Test.CfgTest
 	[TestFixture]
 	public class HbmBinderFixture
 	{
-		private XmlDocument LoadAndValidate( string xml )
+		private XmlDocument LoadAndValidate( string xml, string name )
 		{
 			using( StringReader stringReader = new StringReader( xml ) )
 			{
 				XmlTextReader xmlReader = new XmlTextReader( stringReader );
 				Configuration cfg = new Configuration();
-				return cfg.LoadMappingDocument( xmlReader );
+				return cfg.LoadMappingDocument( xmlReader, name );
 			}
 		}
 
@@ -41,7 +41,7 @@ namespace NHibernate.Test.CfgTest
 		private void CheckDefaultUnsavedValue( string versionTag )
 		{
 			string XML = GetXmlForTesting( versionTag );
-			XmlDocument document = LoadAndValidate( XML );
+			XmlDocument document = LoadAndValidate( XML, versionTag );
 			XmlNode node = document.GetElementsByTagName( versionTag )[0];
 			SimpleValue model = new SimpleValue();
 			HbmBinder.MakeVersion( node, model );

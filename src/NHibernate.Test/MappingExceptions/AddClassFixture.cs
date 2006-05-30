@@ -22,7 +22,7 @@ namespace NHibernate.Test.MappingExceptions
 			}
 			catch( MappingException me ) 
 			{
-				Assert.AreEqual( "Resource: " + typeof(A).FullName + ".hbm.xml not found", me.Message );
+				Assert.AreEqual( "Resource not found: " + typeof(A).FullName + ".hbm.xml", me.Message );
 			}
 		}
 
