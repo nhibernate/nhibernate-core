@@ -1,5 +1,7 @@
 using System;
+using System.Data;
 using System.Text;
+
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -9,6 +11,13 @@ namespace NHibernate.Dialect
 	/// </summary>
 	public class MsSql2005Dialect : MsSql2000Dialect
 	{
+		public MsSql2005Dialect()
+		{
+			RegisterColumnType( DbType.String, 1073741823, "NVARCHAR(MAX)" );
+			RegisterColumnType( DbType.AnsiString, 2147483647, "VARCHAR(MAX)" );
+			RegisterColumnType( DbType.Binary, 2147483647, "VARBINARY(MAX)" );
+		}
+
 		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
@@ -27,20 +36,20 @@ namespace NHibernate.Dialect
 		///    ORDER BY __hibernate_row_nr__
 		/// </code>
 		/// </remarks>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
+		public override SqlString GetLimitString( SqlString querySqlString, int offset, int last )
 		{
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			StringBuilder orderByStringBuilder = new StringBuilder();
 			string distinctStr = string.Empty;
 
-			foreach (object sqlPart in querySqlString.SqlParts )
+			foreach( object sqlPart in querySqlString.SqlParts )
 			{
 				string sqlPartString = sqlPart as string;
-				if( sqlPartString!=null )
+				if( sqlPartString != null )
 				{
 					string loweredString = sqlPartString.ToLower();
-					int orderByIndex = loweredString.IndexOf("order by");
-					if( orderByIndex!=-1 )
+					int orderByIndex = loweredString.IndexOf( "order by" );
+					if( orderByIndex != -1 )
 					{
 						// if we find a new "order by" then we need to ignore
 						// the previous one since it was probably used for a subquery
@@ -68,17 +77,21 @@ namespace NHibernate.Dialect
 
 			string orderby = orderByStringBuilder.ToString();
 			// if no ORDER BY is specified use fake ORDER BY field to avoid errors 
-			if( orderby==null || orderby.Length==0 ) 
+			if( orderby == null || orderby.Length == 0 )
 			{
 				orderby = "ORDER BY CURRENT_TIMESTAMP";
 			}
 
 			string beginning =
-				string.Format("WITH query AS (SELECT {0}TOP {1} ROW_NUMBER() OVER ({2}) as __hibernate_row_nr__, ",
-							  distinctStr, last, orderby);
+				string.Format(
+					"WITH query AS (SELECT {0}TOP {1} ROW_NUMBER() OVER ({2}) as __hibernate_row_nr__, ",
+					distinctStr,
+					last,
+					orderby );
 			string ending =
-				string.Format(") SELECT * FROM query WHERE __hibernate_row_nr__ > {0} ORDER BY __hibernate_row_nr__",
-							  offset);
+				string.Format(
+					") SELECT * FROM query WHERE __hibernate_row_nr__ > {0} ORDER BY __hibernate_row_nr__",
+					offset );
 
 			pagingBuilder.Insert( 0, beginning );
 			pagingBuilder.Add( ending );
@@ -91,9 +104,9 @@ namespace NHibernate.Dialect
 		/// functionallity.
 		/// </summary>
 		/// <value><c>true</c></value>
-		public override	bool SupportsLimit
+		public override bool SupportsLimit
 		{
-			get	{ return true; }
+			get { return true; }
 		}
 
 		/// <summary>
@@ -101,9 +114,9 @@ namespace NHibernate.Dialect
 		/// functionallity with an offset.
 		/// </summary>
 		/// <value><c>true</c></value>
-		public override	bool SupportsLimitOffset
+		public override bool SupportsLimitOffset
 		{
-			get	{ return true; }
+			get { return true; }
 		}
 	}
 }
