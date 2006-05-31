@@ -1,10 +1,9 @@
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// A NHibernate Driver for using the Firebird data provider located in
-	/// <c>FirebirdSql.Data.FirebirdClient</c> assembly.
+	/// A NHibernate Driver for using the FirebirdSql.Data.Firebird DataProvider.
 	/// </summary>
-	public class FirebirdClientDriver : ReflectionBasedDriver
+	public class FirebirdDriver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FirebirdDriver"/> class.
@@ -12,10 +11,10 @@ namespace NHibernate.Driver
 		/// <exception cref="HibernateException">
 		/// Thrown when the <c>FirebirdSql.Data.Firebird</c> assembly can not be loaded.
 		/// </exception>
-		public FirebirdClientDriver() : base(
-			"FirebirdSql.Data.FirebirdClient",
-			"FirebirdSql.Data.FirebirdClient.FbConnection",
-			"FirebirdSql.Data.FirebirdClient.FbCommand" )
+		public FirebirdDriver() : base(
+			"FirebirdSql.Data.Firebird",
+			"FirebirdSql.Data.Firebird.FbConnection",
+			"FirebirdSql.Data.Firebird.FbCommand" )
 		{
 		}
 
