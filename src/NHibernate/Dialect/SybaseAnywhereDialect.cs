@@ -11,7 +11,7 @@ namespace NHibernate.Dialect
 	/// This dialect probably will not work with schema-export.  If anyone out there
 	/// can fill in the ctor with DbTypes to Strings that would be helpful.
 	/// </p>
-	/// The ASADialect defaults the following configuration properties:
+	/// The SybaseAnywhereDialect defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
 	///			<term>Property</term>
@@ -31,10 +31,10 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class ASADialect : Dialect
+	public class SybaseAnywhereDialect : Dialect
 	{
 		/// <summary></summary>
-		public ASADialect() : base()
+		public SybaseAnywhereDialect() : base()
 		{
 			/* Java mapping was:
 			

@@ -614,7 +614,7 @@ ISession session = sessions.OpenSession(conn);
                         </row>
                         <row>
                             <entry>Sybase Adaptive Server Anywhere</entry>
-                            <entry><literal>NHibernate.Dialect.ASADialect</literal></entry>
+                            <entry><literal>NHibernate.Dialect.SybaseAnywhereDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
