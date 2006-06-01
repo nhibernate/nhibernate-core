@@ -263,8 +263,8 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets a <see cref="System.Type[]"/> that contains the arguments needed
-		/// to construct an instance of a closed type.
+		/// Gets or sets an array of <see cref="System.Type"/> that contains the arguments
+		/// needed to construct an instance of a closed type.
 		/// </summary>
 		public System.Type[] GenericArguments
 		{
