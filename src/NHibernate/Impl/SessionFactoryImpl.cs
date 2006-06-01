@@ -282,7 +282,7 @@ namespace NHibernate.Impl
 		private int strongRefIndex = 0;
 
 		[NonSerialized]
-		private readonly IDictionary softQueryCache = new Hashtable(); //TODO: make soft reference map
+		private readonly IDictionary softQueryCache = new WeakHashtable();
 		// both keys and values may be soft since value keeps a hard ref to the key (and there is a hard ref to MRU values)
 
 		/// <summary>

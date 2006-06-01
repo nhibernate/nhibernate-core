@@ -87,5 +87,13 @@ namespace NHibernate.Test.UtilityTest
 				Assert.AreSame( value, de.Value );
 			}
 		}
+		
+		[Test]
+		public void RetrieveNonExistentItem()
+		{
+			WeakHashtable table = Create();
+			object obj = table[ new object() ];
+			Assert.IsNull( obj );
+		}
 	}
 }

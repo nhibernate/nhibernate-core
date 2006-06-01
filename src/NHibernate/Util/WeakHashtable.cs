@@ -59,6 +59,10 @@ namespace NHibernate.Util
 		
 		public static object Unwrap( object value )
 		{
+			if( value == null )
+			{
+				return null;
+			}
 			return ( ( WeakRefWrapper ) value ).Target;
 		}
 	}
