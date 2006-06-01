@@ -34,8 +34,7 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public Oracle9Dialect() : base()
 		{
-			//			DefaultProperties[Cfg.Environment.UseStreamsForBinary] = "true";
-			DefaultProperties[ Cfg.Environment.PrepareSql ] = "false";
+			DefaultProperties[ Environment.PrepareSql ] = "false";
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.OracleClientDriver";
 
 			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );
@@ -164,17 +163,10 @@ namespace NHibernate.Dialect
 			get { return " cascade constraints"; }
 		}
 
-		/// <summary></summary>
-		public override bool SupportsForUpdateNoWait
-		{
-			get { return true; }
-		}
-
 		public override string ForUpdateNowaitString
 		{
 			get { return " for update nowait"; }
 		}
-
 
 		/// <summary></summary>
 		public override bool SupportsSequences
@@ -230,15 +222,24 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override bool SupportsForUpdateOf
-		{
-			get { return false; }
-		}
-
-		/// <summary></summary>
 		public override bool UseMaxForLimit
 		{
 			get { return true; }
+		}
+
+		public override bool ForUpdateOfColumns
+		{
+			get { return true; }
+		}
+
+		public override string GetForUpdateString( string aliases )
+		{
+			return ForUpdateString + " of " + aliases;
+		}
+
+		public override string GetForUpdateNowaitString( string aliases )
+		{
+			return ForUpdateString + " of " + aliases + " nowait";
 		}
 	}
 }

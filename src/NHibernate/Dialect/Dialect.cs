@@ -176,15 +176,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Does this dialect support the <c>FOR UDPATE</c> syntax?
-		/// </summary>
-		public virtual bool SupportsForUpdate
-		{
-			get { return true; }
-		}
-
-
-		/// <summary>
 		/// Retrieves the <c>FOR UPDATE</c> syntax specific to this dialect
 		/// </summary>
 		/// <value>The appropriate <c>FOR UPDATE</c> clause string.</value>
@@ -206,32 +197,16 @@ namespace NHibernate.Dialect
 		{
 			if( lockMode == LockMode.Upgrade )
 			{
-				return SupportsForUpdate ? ForUpdateString : string.Empty;
+				return ForUpdateString;
 			}
 			else if( lockMode == LockMode.UpgradeNoWait )
 			{
-				return SupportsForUpdateNoWait ? ForUpdateNowaitString : string.Empty;
+				return  ForUpdateNowaitString;
 			}
 			else
 			{
 				return string.Empty;
 			}
-		}
-
-		/// <summary>
-		/// Does this dialect support the <c>FOR UDPATE OF</c> syntax?
-		/// </summary>
-		public virtual bool SupportsForUpdateOf
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// Does this dialect support the Oracle-style <c>FOR UPDATE NOWAIT</c> syntax?
-		/// </summary>
-		public virtual bool SupportsForUpdateNoWait
-		{
-			get { return false; }
 		}
 
 		/// <summary>
@@ -391,7 +366,7 @@ namespace NHibernate.Dialect
 		/// The syntax that returns the identity value of the last insert, if native
 		/// key generation is supported
 		/// </summary>
-		public virtual string IdentitySelectString( string identityColumn, string tableName )
+		public virtual string GetIdentitySelectString( string identityColumn, string tableName )
 		{
 			throw new MappingException( "Dialect does not support identity key generation" );
 		}
@@ -968,14 +943,11 @@ namespace NHibernate.Dialect
 			get { return 10; }
 		}
 
-		public bool ForUpdateOfColumns
+		public virtual bool ForUpdateOfColumns
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public class CountQueryFunctionInfo : ISQLFunction
 		{
 			#region ISQLFunction Members
@@ -1010,7 +982,6 @@ namespace NHibernate.Dialect
 			#endregion
 		}
 
-		/// <summary></summary>
 		public class AvgQueryFunctionInfo : ISQLFunction
 		{
 			#region ISQLFunction Members
@@ -1067,6 +1038,16 @@ namespace NHibernate.Dialect
 			}
 
 			#endregion
+		}
+
+		public virtual string GetForUpdateNowaitString( string aliases )
+		{
+			return GetForUpdateString( aliases );
+		}
+		
+		public virtual string GetForUpdateString( string aliases )
+		{
+			return ForUpdateString;
 		}
 	}
 }

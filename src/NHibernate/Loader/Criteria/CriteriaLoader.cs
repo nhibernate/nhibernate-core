@@ -117,7 +117,7 @@ namespace NHibernate.Loader.Criteria
 					}
 				}
 
-				return sqlSelectString + new ForUpdateFragment( dialect, lockModes, keyColumnNames ).ToSqlStringFragment();
+				return sqlSelectString.Append( new ForUpdateFragment( dialect, lockModes, keyColumnNames ).ToSqlStringFragment() );
 			}
 		}
 

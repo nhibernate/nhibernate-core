@@ -152,8 +152,8 @@ namespace NHibernate.JetDriver
 */
 			//although theoretically Access should support outer joins, it has some severe 
 			//limitations on complexity of the SQL statements, so we better switch it off.
-			DefaultProperties[ Cfg.Environment.MaxFetchDepth ] = "0";
-			DefaultProperties[ Cfg.Environment.PrepareSql ] = "false";
+			DefaultProperties[ Environment.MaxFetchDepth ] = "0";
+			DefaultProperties[ Environment.PrepareSql ] = "false";
 
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.JetDriver";
 		}
@@ -166,28 +166,24 @@ namespace NHibernate.JetDriver
 			get { return "lcase"; }
 		}
 
-		/// <summary></summary>
 		public override string AddColumnString
 		{
 			get { return "add"; }
 		}
 
-		/// <summary></summary>
 		public override string NullColumnString
 		{
 			get { return " null"; }
 		}
 
-		/// <summary></summary>
 		public override bool QualifyIndexName
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
-		public override bool SupportsForUpdate
+		public override string ForUpdateString
 		{
-			get { return false; }
+			get { return string.Empty; }
 		}
 
 		/// <summary>
@@ -198,7 +194,6 @@ namespace NHibernate.JetDriver
 		/// <returns>null.</returns>
         public override SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
 		{
-			//return insertSql.Append( "; " + IdentitySelectString );
 			return null;
 		}
 
@@ -209,7 +204,7 @@ namespace NHibernate.JetDriver
 		}
 
 		/// <summary></summary>
-		public override string IdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString( string identityColumn, string tableName )
 		{
 			return "select @@identity";
 		}

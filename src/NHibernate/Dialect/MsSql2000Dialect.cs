@@ -182,10 +182,9 @@ namespace NHibernate.Dialect
 			return String.Format( dropTable, tableName );
 		}
 
-		/// <summary></summary>
-		public override bool SupportsForUpdate
+		public override string ForUpdateString
 		{
-			get { return false; }
+			get { return string.Empty; }
 		}
 
 		/// <summary>
@@ -205,7 +204,7 @@ namespace NHibernate.Dialect
 		/// <returns>A new SqlString with <c>; SELECT SCOPE_IDENTITY()</c> at the end.</returns>
 		public override SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
 		{
-			return insertSql.Append( "; " + IdentitySelectString( identityColumn, tableName ) );
+			return insertSql.Append( "; " + GetIdentitySelectString( identityColumn, tableName ) );
 		}
 
 		/// <summary></summary>
@@ -215,7 +214,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string IdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString( string identityColumn, string tableName )
 		{
 			return "select SCOPE_IDENTITY()";
 		}

@@ -359,7 +359,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			// add any special text that is contained in the forUpdateFragment
-			if( forUpdateFragment != null )
+			if( forUpdateFragment != null && forUpdateFragment != string.Empty )
 			{
 				sqlBuilder.Add( forUpdateFragment );
 			}

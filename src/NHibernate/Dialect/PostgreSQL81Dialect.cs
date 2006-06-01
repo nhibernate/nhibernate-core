@@ -11,9 +11,14 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class PostgreSQL81Dialect : PostgreSQLDialect
 	{
-		public override bool SupportsForUpdateNoWait
+		public override string ForUpdateNowaitString
 		{
-			get { return true; }
+			get { return "for update nowait"; }
+		}
+
+		public override string GetForUpdateNowaitString( string aliases )
+		{
+			return "for update of " + aliases + " nowait";
 		}
 	}
 }

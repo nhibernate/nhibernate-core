@@ -71,55 +71,36 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		protected override string CascadeConstraintsString
 		{
 			get { return " cascade"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sequenceName"></param>
-		/// <returns></returns>
 		public override string GetSequenceNextValString( string sequenceName )
 		{
 			return string.Concat( "select nextval ('", sequenceName, "')" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sequenceName"></param>
-		/// <returns></returns>
 		public override string GetCreateSequenceString( string sequenceName )
 		{
 			return "create sequence " + sequenceName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sequenceName"></param>
-		/// <returns></returns>
 		public override string GetDropSequenceString( string sequenceName )
 		{
 			return "drop sequence " + sequenceName;
 		}
 
-		/// <summary></summary>
 		public override bool SupportsSequences
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public override bool SupportsLimit
 		{
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public override bool BindLimitParametersInReverseOrder
 		{
 			get { return true; }
@@ -147,10 +128,9 @@ namespace NHibernate.Dialect
 			return pagingBuilder.ToSqlString();
 		}
 
-		/// <summary></summary>
-		public override bool SupportsForUpdateOf
+		public override string GetForUpdateString( string aliases )
 		{
-			get { return true; }
+			return ForUpdateString + " of " + aliases;
 		}
 	}
 }

@@ -577,7 +577,7 @@ namespace NHibernate.Persister.Entity
 		/// <remarks>This is not a NHibernate Command because the SQL contains no parameters.</remarks>
 		public string SqlIdentitySelect( string identityColumn, string tableName )
 		{
-			return factory.Dialect.IdentitySelectString( identityColumn, tableName );
+			return factory.Dialect.GetIdentitySelectString( identityColumn, tableName );
 		}
 
 		public virtual IIdentifierGenerator IdentifierGenerator
@@ -1055,12 +1055,8 @@ namespace NHibernate.Persister.Entity
 		protected void InitLockers()
 		{
 			SqlString lockString = GenerateLockString( null, null );
-			SqlString lockExclusiveString = Dialect.SupportsForUpdate ?
-											GenerateLockString( lockString, " for update" ) :
-											GenerateLockString( lockString, null );
-			SqlString lockExclusiveNowaitString = Dialect.SupportsForUpdateNoWait ?
-												  GenerateLockString( lockString, " for update nowait" ) :
-												  GenerateLockString( lockExclusiveString, null );
+			SqlString lockExclusiveString = GenerateLockString( lockString, Dialect.ForUpdateString );
+			SqlString lockExclusiveNowaitString = GenerateLockString( lockString, Dialect.ForUpdateNowaitString );
 
 			lockers.Add( LockMode.Read, lockString );
 			lockers.Add( LockMode.Upgrade, lockExclusiveString );

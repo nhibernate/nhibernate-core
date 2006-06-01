@@ -44,7 +44,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// 
 		/// </summary>
-		public override string IdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString( string identityColumn, string tableName )
 		{
 			return "select last_insert_rowid()";
 		}
@@ -59,9 +59,9 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override bool SupportsForUpdate
+		public override string ForUpdateString
 		{
-			get { return false; }
+			get { return string.Empty; }
 		}
 
 		// TODO: SQLite actually does support subselects, but gives syntax errors

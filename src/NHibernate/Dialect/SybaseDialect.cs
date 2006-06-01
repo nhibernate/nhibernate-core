@@ -78,9 +78,9 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override bool SupportsForUpdate
+		public override string ForUpdateString
 		{
-			get { return false; }
+			get { return string.Empty; }
 		}
 
 		/// <summary></summary>
@@ -90,7 +90,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string IdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString( string identityColumn, string tableName )
 		{
 			return "select @@identity";
 		}

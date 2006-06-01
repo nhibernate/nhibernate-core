@@ -1,8 +1,7 @@
 using System.Data;
-using System.Text;
 
 using NHibernate.Cfg;
-using NHibernate.Util;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
@@ -24,7 +23,6 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class FirebirdDialect : Dialect
 	{
-		/// <summary></summary>
 		public FirebirdDialect() : base()
 		{
 			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );
@@ -36,7 +34,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.Binary, 2147483647, "BLOB SUB_TYPE 0" ); // should use the IType.BlobType
 			RegisterColumnType( DbType.Boolean, "SMALLINT" );
 			RegisterColumnType( DbType.Byte, "SMALLINT" );
-			RegisterColumnType( DbType.Currency, "DECIMAL(16,4)" );
+            RegisterColumnType( DbType.Currency, "DECIMAL(18,4)" );
+            RegisterColumnType( DbType.Guid, "CHAR(38)" );
 			RegisterColumnType( DbType.Date, "DATE" );
 			RegisterColumnType( DbType.DateTime, "TIMESTAMP" );
 			RegisterColumnType( DbType.Decimal, "DECIMAL(18,5)" ); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
@@ -53,6 +52,77 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.String, 1073741823, "BLOB SUB_TYPE 1" ); // should use the IType.ClobType
 			RegisterColumnType( DbType.Time, "TIME" );
 
+            // Firebird server embedded functions
+            RegisterFunction("upper", new StandardSQLFunction());
+            RegisterFunction("substring", new StandardSQLFunction());
+            RegisterFunction("today", new NoArgSQLFunction(NHibernateUtil.Date,false));
+            RegisterFunction("yesterday", new NoArgSQLFunction(NHibernateUtil.Date, false));
+            RegisterFunction("tomorrow", new NoArgSQLFunction(NHibernateUtil.Date, false));
+            RegisterFunction("now", new NoArgSQLFunction(NHibernateUtil.DateTime, false));
+            RegisterFunction("nullif", new StandardSQLFunction());
+
+			// External Firebird and Interbase standard UDFs
+			//Conditional Logic Functions
+			RegisterFunction( "invl", new StandardSQLFunction() );
+			RegisterFunction( "snvl", new StandardSQLFunction() );
+			//Mathematical Functions
+			RegisterFunction( "abs", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "bin_and", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction( "bin_or", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction( "bin_xor", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction( "bin_and", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction( "ceiling", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "div", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "dpower", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "floor", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "ln", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "log", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "log10", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "modulo", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "pi", new NoArgSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "rand", new NoArgSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "round", new StandardSQLFunction() );
+			RegisterFunction( "sing", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "sqtr", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "truncate", new StandardSQLFunction() );
+			//Date and Time Functions
+			RegisterFunction( "dow", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "sdow", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction( "addday", new StandardSQLFunction( NHibernateUtil.DateTime ) );
+			RegisterFunction( "addhour", new StandardSQLFunction( NHibernateUtil.DateTime ) );
+			RegisterFunction( "addmillisecond", new StandardSQLFunction( NHibernateUtil.DateTime ) );
+			RegisterFunction( "addminute", new StandardSQLFunction( NHibernateUtil.DateTime ) );
+			RegisterFunction( "addmonth", new StandardSQLFunction( NHibernateUtil.DateTime ) );
+			RegisterFunction( "addsecond", new StandardSQLFunction( NHibernateUtil.DateTime ) );
+			RegisterFunction( "addweek", new StandardSQLFunction( NHibernateUtil.DateTime ) );
+			RegisterFunction( "addyear", new StandardSQLFunction( NHibernateUtil.DateTime ) );
+			RegisterFunction( "getexacttimestamp", new NoArgSQLFunction( NHibernateUtil.DateTime ) );
+			//String and Character Functions
+			RegisterFunction( "ascii_char", new StandardSQLFunction() );
+			RegisterFunction( "ascii_val", new StandardSQLFunction( NHibernateUtil.Int16 ) );
+			RegisterFunction( "lpad", new StandardSQLFunction() );
+			RegisterFunction( "ltrim", new StandardSQLFunction() );
+			RegisterFunction( "sright", new StandardSQLFunction() );
+			RegisterFunction( "rpad", new StandardSQLFunction() );
+			RegisterFunction( "rtrim", new StandardSQLFunction() );
+			RegisterFunction( "strlen", new StandardSQLFunction( NHibernateUtil.Int16 ) );
+			RegisterFunction( "substr", new StandardSQLFunction() );
+			RegisterFunction( "substrlen", new StandardSQLFunction( NHibernateUtil.Int16 ) );
+			//BLOB Functions
+			RegisterFunction( "string2blob", new StandardSQLFunction() );
+			//Trigonometric Functions
+			RegisterFunction( "acos", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "asin", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "atan", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "atan2", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "cos", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "cosh", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "cot", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "sin", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "sinh", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "tan", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "tanh", new StandardSQLFunction( NHibernateUtil.Double ) );
+
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.FirebirdDriver";
 		}
 
@@ -62,45 +132,39 @@ namespace NHibernate.Dialect
 			get { return "add"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sequenceName"></param>
-		/// <returns></returns>
 		public override string GetSequenceNextValString( string sequenceName )
 		{
 			return string.Format( "select gen_id({0}, 1 ) from RDB$DATABASE", sequenceName );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sequenceName"></param>
-		/// <returns></returns>
 		public override string GetCreateSequenceString( string sequenceName )
 		{
 			return string.Format( "create generator {0}", sequenceName );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sequenceName"></param>
-		/// <returns></returns>
 		public override string GetDropSequenceString( string sequenceName )
 		{
 			return string.Format( "drop generator {0}", sequenceName );
 		}
 
-		/// <summary></summary>
 		public override bool SupportsSequences
 		{
 			get { return true; }
 		}
-		
+
 		public override string ForUpdateString
 		{
 			get { return " with lock"; }
+		}
+
+		public override bool ForUpdateOfColumns
+		{
+			get { return true; }
+		}
+
+		public override string GetForUpdateString( string aliases )
+		{
+			return " for update of " + aliases + " with lock";
 		}
 	}
 }

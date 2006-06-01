@@ -60,38 +60,33 @@ namespace NHibernate.Dialect
 			DefaultProperties[ Environment.PrepareSql ] = "false";
 		}
 
-		/// <summary></summary>
 		public override string AddColumnString
 		{
 			get { return "add"; }
 		}
 
-		/// <summary></summary>
 		public override string NullColumnString
 		{
 			get { return " null"; }
 		}
 
-		/// <summary></summary>
 		public override bool QualifyIndexName
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
-		public override bool SupportsForUpdate
+		public override string ForUpdateString
 		{
-			get { return false; }
+			get { return string.Empty; }
 		}
 
-		/// <summary></summary>
 		public override bool SupportsIdentityColumns
 		{
 			get { return true; }
 		}
 
 		/// <summary></summary>
-		public override string IdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString( string identityColumn, string tableName )
 		{
 			return "select @@identity";
 		}
@@ -115,11 +110,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public override bool DropConstraints
 		{
-			get
-			{
-				return false;
-			}
+			get { return false; }
 		}
-
 	}
 }
