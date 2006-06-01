@@ -632,6 +632,9 @@
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Util\CollectionHelper.cs" />
     <Compile Include="Util\TypeNameParser.cs" />
+    <Compile Include="Util\WeakHashtable.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <None Include="nhibernate-generic.xsx">
       <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>
