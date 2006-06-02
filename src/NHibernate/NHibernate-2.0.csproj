@@ -522,11 +522,13 @@
     <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
+    <Compile Include="Dialect\IngresDialect.cs" />
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
     <Compile Include="Dialect\SybaseAnywhereDialect.cs" />
     <Compile Include="Driver\ASAClientDriver.cs" />
     <Compile Include="Driver\FirebirdClientDriver.cs" />
+    <Compile Include="Driver\IngresDriver.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
     <Compile Include="Engine\EntityKey.cs" />
     <Compile Include="Engine\JoinHelper.cs" />

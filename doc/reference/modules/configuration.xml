@@ -646,6 +646,11 @@ ISession session = sessions.OpenSession(conn);
                             <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
                             <entry></entry>
                         </row>
+                        <row>
+                            <entry>Ingres 3.0</entry>
+                            <entry><literal>NHibernate.Dialect.IngresDialect</literal></entry>
+                            <entry></entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
