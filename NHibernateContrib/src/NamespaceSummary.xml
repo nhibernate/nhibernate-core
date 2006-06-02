@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" ?>
+<namespaces>
+	<namespace name="NHibernate.Caches.Prevalence">NHibernate Contribution - Read the Documentation for more information</namespace>
+	<namespace name="NHibernate.Caches.SysCache">NHibernate Contribution - Read the Documentation for more information</namespace>
+	<namespace name="NHibernate.Mapping.Attributes">NHibernate Contribution - Read the Documentation for more information</namespace>
+	<namespace name="Nullables">NHibernate Contribution - Read the Documentation for more information</namespace>
+	<namespace name="Nullables.NHibernate">NHibernate Contribution - Read the Documentation for more information</namespace>
+	<namespace name="Nullables.TypeConverters">NHibernate Contribution - Read the Documentation for more information</namespace>
+</namespaces>

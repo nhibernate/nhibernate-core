@@ -1,0 +1,565 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="NHibernateContribSolution" 
+	default="build"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+	<!-- 
+		Use this to determine if the key file NHibernate.key should be used to 
+		sign the Assemblies.  This defaults to false since users doing their own
+		build have _no_ copy of the private key.  If they do their own private
+		builds then they should make their own key 
+	-->
+	<property name="sign" value="false" overwrite="false" />
+
+	<!-- 
+		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
+		then change this to true.  It generates a nice looking html report for the test files
+	-->
+	<property name="nunit2report.installed" value="false" overwrite="false" />
+
+	<!--
+		if Visual Studio Help Integration Kit has been installed
+		then change this to true or include -D:vshik.installed=true in the command line.
+		It generates Visual Studio.NET 2003 documentation.
+	-->
+	<property name="vshik.installed" value="false" overwrite="false" />
+	
+	<!--
+		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
+	-->
+	<property name="clover.enabled" value="false" />
+	<property name="clover.src" value="src\CloverSrc" />
+	<property name="clover.db" value="${clover.src}\clover.cdb" />
+	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET for Visual Studio" />
+	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
+
+
+	<!-- 
+		These are used to set the correct Attributes in AssemblyInfo.cs.  
+	-->
+	<property name="project.name" value="NHibernateContrib" />
+	<property name="project.company" value="NHibernate.org" />
+	<property name="project.version.major" value="1" overwrite="false" />
+	<property name="project.version.minor" value="0" overwrite="false" />
+	<property name="project.version.build" value="2" overwrite="false" />
+	<property name="project.version.revision" value="0" overwrite="false" />
+	<property name="project.version" value="${project.version.major}.${project.version.minor}.${project.version.build}.${project.version.revision}" />
+	
+	<!-- default configuration -->
+	<property name="project.config" value="debug" overwrite="false" />
+
+	<!-- debug|release -->
+	<property name="build.defines" value="" />
+
+	<!-- platform specific properties. These are the defaults -->
+	<property name="current.build.defines" value="${build.defines}" />
+
+	<!-- properties used to connect to database for testing -->
+	<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2000Dialect" />
+	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" />
+	<property name="nhibernate.connection.connection_string" value="Server=(local);initial catalog=nhibernate;Integrated Security=SSPI" />
+
+
+
+
+	<!-- named project configurations -->
+	<target name="debug" description="Perform a 'debug' build">
+		<property name="project.config" value="debug" />
+		<property name="build.debug" value="true" />
+		<property name="build.name" value="${project.name}-${project.version}-${project.config}" />
+		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
+	</target>
+	
+	<target name="release" description="Perform a 'release' build">
+		<property name="project.config" value="release" />
+		<property name="build.debug" value="false" />
+		<property name="build.name" value="${project.name}-${project.version}" />
+		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
+	</target>
+	
+	<target name="init" description="Initializes build properties">
+		<call target="${project.config}" />
+		<call target="set-runtime-configuration" />
+	</target>
+	
+	<target name="clean" depends="init" description="Deletes current build">
+		<delete dir="${build.dir}" failonerror="false" />
+	</target>
+	
+	<target name="clean-bin" depends="init" description="Deletes the current bin folder">
+		<delete dir="${build.dir}/bin" failonerror="false" />
+	</target>
+	
+	<target name="cleanall" description="Deletes every build configuration">
+		<echo message="Deleting all builds from all configurations" />
+		<delete dir="build" failonerror="false" />
+	</target>
+	
+	<target name="build-with-clover" depends="init" description="Builds current config with Clover coverage">
+		<!-- 
+			mark this as being a clover enabled build and then just let the normal build
+			process take place
+		-->
+		<property name="clover.enabled" value="true" />
+	</target>
+	
+	<target name="build-without-clover" depends="init" description="Ensures the build is done without Clover coverage">
+		<!--
+			This does not really need to be called unless the clover.enabled property has been explicitly 
+			set to true by some other means since clover.enabled defaults to false.  It is my intention
+			to first do a clover build to get the coverage then to do a non-clover build to get the 
+			clover-free dlls.
+		-->
+		<property name="clover.enabled" value="false" />
+	</target>
+	
+	<target name="build" depends="init" description="Builds current configuration">
+		<echo message="Current Directory is ${nant.project.basedir}" />
+		
+		<echo message="Build Directory is ${build.dir}" />
+		
+		<!-- prepare build directory -->
+		<mkdir dir="${build.dir}/bin" />
+		
+		<copy file="lgpl.txt" tofile="${build.dir}/bin/NHibernateContrib.license.txt" />
+		
+		<!-- copy framework-neutral libraries -->
+		<copy todir="${build.dir}/bin">
+			<fileset basedir="lib">
+				<include name="nant/**" />
+				<include name="Bamboo.*" />
+			</fileset>
+		</copy>
+		
+		<!-- copy framework-specific libraries -->
+		<copy todir="${build.dir}/bin">
+			<fileset basedir="${lib.dir}">
+				<include name="NHibernate.*" />
+				<include name="Iesi.Collections.*" />
+				<include name="log4net.*" />
+				<include name="nunit.framework.*" />
+				<include name="Castle.*" />
+				<include name="NVelocity.*" />
+			</fileset>
+		</copy>
+		
+		<nant target="build">
+			<buildfiles>
+				<include name="src/Nullables/Nullables.build" />
+				<include name="src/Nullables.NHibernate/Nullables.NHibernate.build" />
+				<include name="src/Nullables.Tests/Nullables.Tests.build" />
+				<include name="src/NHibernate.Caches/SysCache/syscache.build" />
+				<include name="src/NHibernate.Mapping.Attributes/NHibernate.Mapping.Attributes.build" />
+				<include name="src/NHibernate.Mapping.Attributes/Test/NHibernate.Mapping.Attributes.Test.build" />
+				<include name="src/NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />
+				<include name="src/NHibernate.Tool.hbm2net.Console/NHibernate.Tool.hbm2net.Console.build" />
+				<include name="src/NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
+				<include name="src/NHibernate.Tasks/NHibernate.Tasks.build" />
+				<include name="src/NHibernate.Caches/Prevalence/prevalencecache.build" />
+				<include name="src/NHibernate.JetDriver/NHibernate.JetDriver.build" />
+				<include name="src/NHibernate.UserTypes.Oracle/NHibernate.UserTypes.Oracle.build" />
+				<include name="src/NHibernate.UserTypes.SqlTypes/NHibernate.UserTypes.SqlTypes.build" />
+				<include name="src/NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
+			</buildfiles>
+		</nant>
+	</target>
+
+	<target name="put-connection-settings-into-app-config">
+		<!-- make sure the config file is writable -->
+		<attrib file="${app.config}" readonly="false" />
+		
+		<!-- 
+			Tell nhibernate how to connect to the test database.
+		-->
+		<xmlpoke
+			file="${app.config}"
+			xpath="/configuration/nhibernate/add[@key='hibernate.dialect']/@value"
+			value="${nhibernate.dialect}" 
+		/>
+		<xmlpoke
+			file="${app.config}"
+			xpath="/configuration/nhibernate/add[@key='hibernate.connection.driver_class']/@value"
+			value="${nhibernate.connection.driver_class}" 
+		/>
+		<xmlpoke
+			file="${app.config}"
+			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
+			value="${nhibernate.connection.connection_string}" 
+		/>
+	</target>
+
+	<target name="remove-connection-settings-from-app-config">
+		<xmlpoke
+			file="${app.config}"
+			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
+			value="conn string here" 
+		/>
+	</target>
+
+	<target name="test" depends="build" description="Runs the tests contained in Nullables.Tests" >
+
+		<!-- Run Nullables.Tests -->
+		<property name="app.config" value="${build.dir}/bin/Nullables.Tests.dll.config" />
+		<call target="put-connection-settings-into-app-config" />
+		<nant target="test" buildfile="src/Nullables.Tests/Nullables.Tests.build" />
+		<call target="remove-connection-settings-from-app-config" />
+
+		<!-- Run NHibernate.UserTypes.Tests -->
+		<property name="app.config" value="${build.dir}/bin/NHibernate.UserTypes.Tests.dll.config" />
+		<call target="put-connection-settings-into-app-config" />
+		<nant target="test" buildfile="src/NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
+		<call target="remove-connection-settings-from-app-config" />
+
+		<!-- Run the rest of the tests -->
+		<nant target="test">
+			<buildfiles>
+				<include name="src/NHibernate.Caches/SysCache/syscache.build" />
+				<include name="src/NHibernate.Caches/Prevalence/prevalencecache.build" />
+				<include name="src/NHibernate.Mapping.Attributes/Test/NHibernate.Mapping.Attributes.Test.build" />
+				<include name="src/NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
+			</buildfiles>
+		</nant>
+
+		<!-- if this was a clover enabled build then generate the clover reports for it -->
+		<call target="coverage-report" if="${clover.enabled}" />
+		
+		<!-- 
+			Clean up all of the non-essential assemblies and files that get put in the
+			bin folder to run the test fixtures and that are generated during the running
+			of the test fixtures.
+		-->
+		<delete> 
+			<fileset basedir="${build.dir}/bin">
+				
+				<!-- Any hbm.xml and cfg.xml files in the bin are for testing purposes -->
+				<include name="*.hbm.xml" />
+				<include name="*.cfg.xml" />
+				
+				<!-- Directories left from tests  -->
+				<include name="a_region/**" />
+				<include name="nhibernate/**" />
+				<include name="nunit/**" />
+				<include name="nunit1/**" />
+				<include name="nunit2/**" />
+				
+				<!-- 
+					Remove test related assemblies and files so the bin directory is 
+					clean and ready for the downloader to use. Leave test results for
+					CruiseControl.NET (we exclude them from package)
+				-->
+				<include name="*.Tests.*" />
+				<include name="*.Test.*" />
+				<include name="nunit.framework.*" />
+				<exclude name="*-results.xml" />
+				
+			</fileset>
+		</delete>
+		
+	</target>
+	
+	<target name="coverage-report" description="Builds the Test Coverage reports">
+		
+		<mkdir dir="${build.dir}/clover" />
+		<clover-setup 
+			initstring="${clover.db}"
+			flushinterval="1000"
+		>
+			<fileset basedir="src">
+				<exclude name="**/*Fixture.cs"/>
+				<exclude name="**/NHibernate.Mapping.Attributes/Generator/**/*.cs"/>
+				<exclude name="**/NHibernate.Mapping.Attributes/Refly/**/*.cs"/>
+				<exclude name="**/NHibernate.Mapping.Attributes/Test/**/*.cs"/>
+				<include name="**/*.cs"/>
+			</fileset>
+		</clover-setup>
+		<clover-report>
+			<current title="NHibernateContrib Clover Report" output="${build.dir}/clover" >
+				<format type="html" orderby="Alpha" />
+			</current>
+		</clover-report>
+		<clover-check target="50%" haltOnFailure="false" property="covered" messageProperty="coverage.message"/>
+		<!--if test="${covered}">
+			<echo message="Clover target met! :)"/>
+		</if>
+		<ifnot test="${covered}">
+			<echo message="Clover target failed = ${coverage.message} :("/>
+		</ifnot-->
+	</target>
+
+	<target name="doc-reference" depends="init" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
+
+		<assemblyfileset id="ndoc.assemblies" basedir="${build.dir}/bin">
+			<include name="NHibernate.Caches.SysCache.dll" />
+			<include name="NHibernate.Caches.Prevalence.dll" />
+			<include name="Nullables.dll" />				
+			<include name="Nullables.NHibernate.dll" />
+			<include name="NHibernate.Tool.hbm2ddl.dll" />
+			<include name="NHibernate.Tool.hbm2net.dll" />
+			<include name="NHibernate.Mapping.Attributes.dll" />
+			<include name="NHibernate.JetDriver.dll" />
+			<include name="NHibernate.UserTypes.Oracle.dll" />
+			<include name="NHibernate.UserTypes.SqlTypes.dll" />
+		</assemblyfileset>
+
+		<ndoc>
+			<assemblies refid="ndoc.assemblies" />
+			<summaries>
+				<include name="src/NamespaceSummary.xml" />
+			</summaries>
+			<documenters>
+				<documenter name="MSDN">
+					<property name="OutputDirectory" value="${build.dir}/doc/temp" />
+					<property name="HtmlHelpName" value="NHibernateContrib.Reference" />
+					<property name="IncludeFavorites" value="False" />
+					<property name="Title" value="NHibernateContrib Class Library - v.${project.version}" />
+					<property name="SplitTOCs" value="False" />
+					<property name="DefaulTOC" value="" />
+					<property name="IncludeHierarchy" value="False" />
+					<property name="ShowVisualBasic" value="False" />
+					<property name="RootPageContainsNamespaces" value="False" />
+					<property name="SortTOCByNamespace" value="True" />
+					<property name="OutputTarget" value="HtmlHelp" />
+					<property name="HeaderHtml" value="" />
+					<property name="FooterHtml" value="" />
+					<property name="FilesToInclude" value="" />
+					<property name="LinkToSdkDocVersion" value="SDK_v1_1" />
+					<property name="ShowMissingSummaries" value="${build.debug}" />
+					<property name="ShowMissingRemarks" value="${build.debug}" />
+					<property name="ShowMissingParams" value="${build.debug}" />
+					<property name="ShowMissingReturns" value="${build.debug}" />
+					<property name="ShowMissingValues" value="${build.debug}" />
+					<property name="DocumentInternals" value="False" />
+					<property name="DocumentProtected" value="True" />
+					<property name="DocumentPrivates" value="False" />
+					<property name="DocumentProtectedInternalAsProtected" value="False" />
+					<property name="DocumentEmptyNamespaces" value="False" />
+					<property name="IncludeAssemblyVersion" value="False" />
+					<property name="CopyrightText" value="NHibernate contributions are licensed under GNU LGPL." />
+					<property name="CopyrightHref" value="http://www.nhibernate.org/" />
+					<property name="FeedbackEmailAddress" value="nhibernate-development@lists.sourceforge.net" />
+					<property name="ReferencesPath" value="" />
+					<property name="SkipNamespacesWithoutSummaries" value="False" />
+					<property name="UseNamespaceDocSummaries" value="False" />
+					<property name="AutoPropertyBackerSummaries" value="False" />
+					<property name="AutoDocumentConstructors" value="True" />
+					<property name="DocumentAttributes" value="True" />
+					<property name="ShowTypeIdInAttributes" value="False" />
+					<property name="DocumentedAttributes" value="" />
+					<property name="GetExternalSummaries" value="True" />
+					<property name="EditorBrowsableFilter" value="Off" />
+					<property name="UseNDocXmlFile" value="" />
+				</documenter>
+			</documenters> 
+		</ndoc>
+		<copy todir="${build.dir}/doc">
+			<fileset basedir="${build.dir}/doc/temp">
+				<include name="*.chm" />
+			</fileset>
+		</copy>
+
+		<if test="${vshik.installed}">
+			<ndoc>
+				<assemblies refid="ndoc.assemblies" />
+				<summaries>
+					<include name="src/NamespaceSummary.xml" />
+				</summaries>
+				<documenters>
+					<documenter name="VS.NET 2003">
+						<property name="OutputDirectory" value="${build.dir}/doc/temp" />
+						<property name="HtmlHelpName" value="NHibernateContrib.Reference" />
+						<property name="Title" value="NHibernateContrib Class Library - v.${project.version}" />
+						<property name="HeaderHtml" value="" />
+						<property name="FooterHtml" value="" />
+						<property name="LinkToSdkDocVersion" value="SDK_v1_1" />
+						<property name="ShowMissingSummaries" value="${build.debug}" />
+						<property name="ShowMissingRemarks" value="${build.debug}" />
+						<property name="ShowMissingParams" value="${build.debug}" />
+						<property name="ShowMissingReturns" value="${build.debug}" />
+						<property name="ShowMissingValues" value="${build.debug}" />
+						<property name="DocumentInternals" value="False" />
+						<property name="DocumentProtected" value="True" />
+						<property name="DocumentPrivates" value="False" />
+						<property name="DocumentProtectedInternalAsProtected" value="False" />
+						<property name="DocumentEmptyNamespaces" value="False" />
+						<property name="CopyrightText" value="NHibernate contributions are licensed under GNU LGPL." />
+						<property name="CopyrightHref" value="http://www.nhibernate.org/" />
+						<property name="FeedbackEmailAddress" value="nhibernate-development@lists.sourceforge.net" />
+						<property name="ReferencesPath" value="" />
+						<property name="SkipNamespacesWithoutSummaries" value="False" />
+						<property name="UseNamespaceDocSummaries" value="False" />
+						<property name="AutoPropertyBackerSummaries" value="False" />
+						<property name="AutoDocumentConstructors" value="True" />
+						<property name="DocumentAttributes" value="True" />
+						<property name="ShowTypeIdInAttributes" value="False" />
+						<property name="DocumentedAttributes" value="" />
+						<property name="EditorBrowsableFilter" value="Off" />
+						<property name="UseNDocXmlFile" value="" />
+					</documenter>
+				</documenters> 
+			</ndoc>
+
+			<copy todir="${build.dir}/doc">
+				<fileset basedir="${build.dir}/doc/temp">
+					<include name="*.HxS" />
+				</fileset>
+			</copy>
+			<copy todir="${build.dir}/doc">
+				<fileset basedir="doc/Help2">
+					<include name="*" />
+				</fileset>
+			</copy>
+		</if>
+
+		<delete dir="${build.dir}/doc/temp" />
+
+	</target>
+
+	<target name="package" depends="test doc-reference" description="Creates Zip files for the File Release System on SourceForge">
+		<copy todir="${build.dir}">
+			<fileset>
+				<!-- copy framework neutral dlls -->
+				<include name="lib/*" />
+				<include name="${lib.dir}/**" />
+				
+				<!-- exclude the Clover modified source files. -->
+				<exclude name="${clover.src}/**" />
+				
+				<!-- exclude ReSharper stuff -->
+				<exclude name="**/_ReSharper*" />
+				<exclude name="**/*.resharperoptions" />
+				
+				<!-- copy all of the source -->
+				<include name="src/**" />
+				
+				<include name="NHibernateContribSolution.build" />
+				<include name="lgpl.txt" />
+				<include name="releasenotes.txt" />
+				<include name="readme.html" />
+				
+				<!-- exclude VS.NET stuff -->
+				<exclude name="**/*.suo" />
+				<exclude name="**/*j.user" />
+				<exclude name="**/bin/**" />
+				<exclude name="**/obj/**" />
+				
+				<!-- exclude any keys that exist on the build machine -->
+				<exclude name="**/*.snk" />
+				
+				<!-- exclude bin/nant directory because it's not needed -->
+				<exclude name="bin/nant/**" />
+
+			</fileset>
+		</copy>
+
+		<!-- put clover files in a separated zip file -->
+		<zip zipfile="${nant.project.basedir}/build/${project.name}-clover-${project.version}.zip">
+			<fileset basedir="${build.dir}">
+				<include name="clover/**" />
+			</fileset>
+		</zip>
+
+		<property name="project.zip-path" value="${nant.project.basedir}/build/${build.name}.zip" />
+
+		<zip zipfile="${project.zip-path}">
+			<fileset basedir="${build.dir}">
+				<include name="**/*" />
+				<exclude name="clover/**" />
+				<exclude name="bin/log.txt" />
+				<exclude name="bin/*-results.xml" />
+			</fileset>
+		</zip>
+
+		<!-- delete the directory that was used to create the zip -->
+		<!--<delete dir="${build.dir}" />-->
+		
+		<echo message="Create a '${project.config}' package as file://${project.zip-path}" />
+		
+	</target>
+	
+	<!-- Framework specific configuration -->
+	<target name="set-runtime-configuration">
+		<!--
+			We are not building for anything but the .net 1.1 framework right now
+			I've been goofing around with mono but am having problems with nant 0.85
+			and nunit-2.2 related tasks. Probably something simple, but I think I've 
+			followed all the instructions to get that working...
+		-->
+		<call target="set-net-1.1-runtime-configuration" />
+		<!--
+		<ifnot propertyexists="current.runtime.config">
+			<ifnot propertyexists="nant.settings.currentframework">
+				<fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
+			</ifnot>
+			<ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
+				<fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NAnt." />
+			</ifnot>
+			<call target="set-${nant.settings.currentframework}-runtime-configuration"/>
+		</ifnot>
+		<ifnot propertyexists="current.runtime.version">
+			<ifnot propertyexists="nant.settings.currentframework">
+				<fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
+			</ifnot>
+			<ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
+				<fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NDoc." />
+			</ifnot>
+			<call target="set-${nant.settings.currentframework}-runtime-configuration" />
+		</ifnot>
+		<ifnot targetexists="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration">
+			<fail message="The ${current.runtime.config}-${current.runtime.version} runtime is not supported by NDoc." />
+		</ifnot>
+		<call target="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration"/>
+		-->
+	</target>
+
+	<target name="set-runtime-configuration-flags">
+		<property name="current.runtime.config.net" value="false" />
+		<property name="current.runtime.config.netcf" value="false" />
+		<property name="current.runtime.config.mono" value="false" />
+		<property name="current.runtime.config.sscli" value="false" />
+		<property name="current.runtime.config.${current.runtime.config}" value="true" />
+		<property name="current.runtime.net-1.0" value="false" />
+		<property name="current.runtime.net-1.1" value="false" />
+		<property name="current.runtime.net-1.2" value="false" />
+		<property name="current.runtime.netcf-1.0" value="false" />
+		<property name="current.runtime.mono-1.0" value="false" />
+		<property name="current.runtime.sscli-1.0" value="false" />
+		<property name="current.runtime.${current.runtime.config}-${current.runtime.version}" value="true" />
+	</target>
+
+	<target name="set-net-1.1-runtime-configuration">
+		<property name="current.runtime.config" value="net" /> 
+		<property name="current.runtime.version" value="1.1" /> 
+		<property name="current.runtime.description" value="Microsoft .NET Framework 1.1" /> 
+		<property name="current.build.defines" value="${build.defines}NET,NET_1_1" /> 
+		<property name="link.sdkdoc.version" value="SDK_v1_1" /> 
+		<property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" /> 
+		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" /> 
+		<call target="set-runtime-configuration-flags" /> 
+	</target>
+
+	<target name="set-mono-1.0-runtime-configuration">
+		<property name="current.runtime.config" value="mono" />
+		<property name="current.runtime.version" value="1.0" />
+		<property name="current.runtime.description" value="Mono 1.0" />
+		<property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
+		<property name="link.sdkdoc.version" value="MsdnOnline" />
+		<property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" />
+		<property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+		<call target="set-runtime-configuration-flags" />
+	</target>
+
+	<target name="fxcop" depends="init" description="Run fxcop for CruiseControl.NET">
+		<exec program="${fxcop.exe}" 
+			commandline="/f:${build.dir}\bin\nhibernate.*.dll /f:${build.dir}\bin\nullables*.dll /o:${build.dir}\bin\fxcop-results.xml"
+			failonerror="false"/>
+	</target>
+
+	<target name="simian" depends="init" description="Run Simian for CruiseControl.NET">
+		<exec program="${simian.exe}" verbose="true" 
+			commandline="-recurse=src/*.cs -formatter=xml:${build.dir}\bin\simian-results.xml -failOnDuplication-"
+			failonerror="false"/>
+	</target>
+
+</project>

@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate.Tool.hbm2net" 
+	default="build" 
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+
+	<!--
+		Required properties:
+			* build.dir				- (path) root level to build to, assemblies will go in ${build.dir}/bin
+			* build.debug			- (true|false) debug build?
+			* current.build.defines - framework-specific build defines
+			* project.version		- full project version
+			* project.version.major	- the major number of the build
+			* project.version.minor - the minor number of the build
+			* project.version.build - the build number
+			* project.company       - value to use for AssemblyCompanyAttribute
+	-->
+	
+	<target name="build" description="Library to Generate Classes from hbm.xml files.">
+		<!-- ensure the AssemblyInfo is writable -->
+		<attrib file="AssemblyInfo.cs" readonly="false" />
+		
+		<asminfo output="AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.CompilerServices" />
+			</imports>
+			<attributes>
+				<!-- 
+					looks like NVelocity is not CLSCompliant, instead of going through and finding
+					each item that returns/uses NVelocity just mark this Assembly and non-compliant.
+					Mostly used from NAnt anyway and that doesn't seem to care about CLSCompliant
+				-->					
+				<attribute type="CLSCompliantAttribute" value="false" />
+				<attribute type="AssemblyTitleAttribute" value="${nant.project.name} for ${current.runtime.description}" />
+				<attribute type="AssemblyDescriptionAttribute" value="Library to Generate Classes from NHibernate ${project.version} hbm.xml files." />
+				<attribute type="AssemblyCompanyAttribute" value="${project.company}" />
+				<attribute type="AssemblyProductAttribute" value="${nant.project.name}" />
+				<attribute type="AssemblyCopyrightAttribute" value="Licensed under LGPL." />
+				<attribute type="AssemblyVersionAttribute" value="0.1.0.0" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="0.1" />
+				<attribute type="AssemblyFileVersionAttribute" value="0.1.0.0" />
+				<attribute type="AssemblyDelaySignAttribute" value="false" />
+			</attributes>
+		</asminfo>
+		
+		<csc
+			target="library"
+			define="${current.build.defines}" 
+			debug="${build.debug}"
+			output="${build.dir}/bin/${nant.project.name}.dll"
+			doc="${build.dir}/bin/${nant.project.name}.xml"
+		>
+			<nowarn>
+				<warning number="1591" />
+				<warning number="1574" />
+				<warning number="1573" />
+				<warning number="1572" />
+				<warning number="1570" />
+				<warning number="1030" />
+				<warning number="0618" />
+				<warning number="1589" />
+				<warning number="0169" />
+			</nowarn>
+			<sources>
+				<include name="*.cs" />
+			</sources>
+			<resources prefix="NHibernate.Tool.hbm2net" dynamicprefix="true">
+				<include name="*.vm" />
+			</resources>
+			<references basedir="${build.dir}/bin">
+				 <include name="Iesi.Collections.dll" />
+				 <include name="NHibernate.dll" />
+				 <include name="NVelocity.dll" />
+				 <include name="log4net.dll" />
+			</references>
+		</csc>
+	</target>
+	
+</project>

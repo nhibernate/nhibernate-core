@@ -1,0 +1,184 @@
+<html>
+
+	<body>
+
+		<h1>Welcome to NHibernateContrib.</h1>
+
+		<hr>
+
+		<p>
+			The NHibernateContrib is various programs contributed to <a title="NHibernate web-site" href="http://www.nhibernate.org">NHibernate</a> by members of the NHibernate team or by the end users.  The projects in here are not considered core pieces of NHibernate but they extend it in a useful way.
+		</p>
+
+		<p>
+			The current projects are:
+		</p>
+
+		<ul>
+
+			<li>
+
+				Nullables: A library of Nullable version of the ValueTypes in net-1.1.  It is meant to serve as 
+
+				a bridge until .net-2.0 comes out with their own Nullables.
+
+			</li>
+
+			<li>
+
+				Nullables.NHibernate:  A library of NHibernate Types for the Nullables.
+
+			</li>
+
+			<li>
+
+				Nullables.Tests:  A library of NUnit Tests for Nullables and Nullables.NHibernate.
+
+			</li>
+
+			<li>
+
+				BantamTech.SysCache:  A pluggable cache provider for NHibernate which leverages the ASP.NET Cache object.
+
+			</li>
+
+		</ul>
+
+		
+
+		
+
+		</li>
+
+		<h2>Latest Version</h2>
+
+		<p>
+
+			Details of the latest version of NHibernateContrib can be found on SourceForge at 
+
+			<a href="http://sourceforge.net/projects/nhibernate">http://sourceforge.net/projects/nhibernate</a>.
+
+		</p>
+
+		<h2>Documentation</h2>
+
+		<p>
+
+			The API of the components in NHibernateContrib is in MSDN format thanks to 
+
+			<a href="http://sourceforge.net/projects/ndoc">NDoc</a>.
+
+		</p>
+
+		<P>
+
+			The help can also be integrated into Visual Studio.NET using the following steps.
+
+		</P>
+
+		<ul>
+
+			<li>
+
+				Download and install H2Reg from <a href="http://helpware.net/mshelp2/h2reg.htm">http://helpware.net/mshelp2/h2reg.htm</a>
+
+			</li>
+
+			<li>
+
+				Register the NHibernate help collection before registering NHibernateContrib 
+
+				help. The NHibernateContrib help is registered as a plug-in to the NHibernate 
+
+				help, so if this is not installed first, NHibernateContrib help will not be 
+
+				accessible.
+
+			</li>
+
+			<li>
+
+				Copy H2Reg.exe and H2Reg.ini from the H2Reg installation folder (typically C:\Program Files\HelpWare\H2Reg) to
+
+				the NHibernateContrib sdk folder (e.g. C:\NHibernateContrib\doc\sdk).
+
+			</li>
+
+			<li>
+
+				Register the help collection from the command line using the following command from the NHibernate sdk folder.
+
+			</li>
+
+		</ul>
+
+		<blockquote>
+
+			<code>
+
+				H2Reg -r CmdFile=NHibernateContrib.ini
+
+			</code>
+
+		</blockquote>
+
+		<ul>
+
+			<li>
+
+				If you need to unregister the help collection, the command is as follows:
+
+			</li>
+
+		</ul>
+
+		<blockquote>
+
+			<code>
+
+				H2Reg -u CmdFile=NHibernateContrib.ini
+
+			</code>
+
+		</blockquote>
+
+		<h2>Bug Reports</h2>
+
+		<p>
+
+			As we mentioned before, this software is still being developed. So if you do 
+
+			find any bugs please use the 
+
+			<a href="http://jira.nhibernate.org/">JIRA bug tracker</a> and put them in the contrib component.
+
+		</p>
+
+		<h2>Licenses</h2>
+
+		<p>
+
+			This software is distributed under the terms of the FSF Lesser Gnu Public 
+
+			License (see lgpl.txt).
+
+		</p>
+
+		<p>
+
+			This product uses software developed by the Apache Software Foundation 
+
+			(http://www.apache.org/).
+
+		</p>
+
+		<ul>
+
+			<li>log4net</li>
+
+		</ul>
+
+	</body>
+
+</html>
+

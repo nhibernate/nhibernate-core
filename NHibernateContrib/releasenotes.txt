@@ -1,0 +1,122 @@
+Build 1.0.2.0
+========================
+
+Bugs Fixed:
+
+    * [NH-451] - Query cache does not work correctly with SysCache
+    * [NH-454] - Caching problem with parent pointers in collections
+    * [NH-458] - Hbm2Net doesn't generate files
+    * [NH-472] - Duplicate line in hbm2net source
+    * [NH-500] - Mismatch of assembly versions causing loading errors
+
+New Features:
+
+    * [NH-460] - Add NHibernate.JetDriver in the documentation
+
+Improvements:
+
+    * [NH-501] - Hbm2DdlTask.cs uses log4net instead of NAnt logging
+    * [NH-502] - hbm2net becomes library
+
+Build 1.0.1.0
+========================
+
+- [NH-312] - Types from namespace System.Data.SqlTypes can now be used for
+  nullable database columns. Usage is similar to Nullables, use
+  type="NHibernate.UserTypes.SqlTypes.Sql*Type, NHibernate.UserTypes.SqlTypes".
+- [NH-430] - Oracle BFILE user type. (Xianfeng Lu)
+  Use type="NHibernate.UserTypes.Oracle.BFileType, NHibernate.UserTypes.Oracle"
+  and see the documentation of the type.
+- [NH-437] - MS Access Dialect and Driver (Lukas Krejci)
+  To use, specify dialect as NHibernate.JetDriver.JetDialect and use OLEDB
+  connection string (Jet dialect derives from OleDbDialect).
+
+Build 1.0.0.0
+========================
+- Updated to NHibernate 1.0
+- Small enhancements to NHibernate.Mapping.Attributes
+
+Build 0.99.3.0 (1.0-rc3)
+========================
+- NHibernate.Mapping.Attributes updated to reflect nhibernate-mapping
+  schema changes.
+- [NH-95] - Updated NVelocity template of the hbm2net tool.
+  (Carlos Guzmán Álvarez)
+
+Build 0.99.2.0 (1.0-rc2)
+========================
+- NHibernate.Mapping.Attributes:
+  - Can now be easily customized (breaking change).
+  - Supports using any object in <discriminator-value>
+    (and formatted enum)
+  - Component can now be set through properties by using: ComponentPropertyAttribute.
+
+Build 0.99.1.0 (1.0-rc1)
+========================
+- Merged documentation with NHibernate documentation.
+- Added Parse to Nullable* types.
+- Added a IUserType for strings to convert empty strings to NULLs in
+  the database and vice versa. See the documentation for
+  Nullables.NHibernate.EmptyStringType and EmptyAnsiStringType for details
+  and usage information.
+- NHibernate.Mapping.Attributes now throws an exception if a required attribute
+  value was not set.
+
+Build 0.9.1.0
+========================
+- Updated to NHibernate 0.9.1.
+- NHibernate.Mapping.Attributes provides a facility to map nullables types.
+- The file "nhibernate-mapping.xsd" is now embedded in NHibernate.Mapping.Attributes.dll (=> HbmSerializer.HbmXsdPath has been removed)
+
+Build 0.9.0.0
+========================
+- Updated to NHibernate 0.9 (including updated log4net and Castle.DynamicProxy)
+- New implementation of NHibernate.Mapping.Attributes (Pierre Henri Kuaté). The sources of the original implementation are still available in the NHibernate.Mapping.Attributes.Deprecated directory.
+- Cache provider libraries now use the version number of NHibernateContrib.
+
+Build 0.8.4.0
+======================== 
+- Updated to NHibernate 0.8.4
+
+Build 0.8.3.0
+======================== 
+- Updated to NHibernate 0.8.3
+
+Build 0.8.2.0
+======================== 
+- Updated to NHibernate 0.8.2
+
+Build 0.8.1.0
+======================== 
+- Updated to NHibernate 0.8.1
+
+Build 0.8.0.0
+======================== 
+- Added NullableChar
+- Marked all assemblies except hbm2net as [CLSCompliant(true)].
+- Modified NHibernateContrib Assemblies Version to not be tied to NHibernate version.
+- Renamed net2hbm to NHibernate.Mapping.Attributes
+- Renamed BantamTech.SysCache to NHibernate.Caches.SysCache
+- Upgraded to nant-0.85-rc3 and nunit-2.2.0.
+
+Build 0.7.0.0
+======================== 
+- Added NullableSByte (Sergey Koshcheyev).
+- Added support for the access attribute on the prooerty and id tags in hbm2net (John Morris).
+- Added the generator parameter attribute to support generator params on the id tag (John Morris).
+- Added a collection one to many attribute (John Morris).
+- Added a Cache Provider that uses Bamboo.Prevalence (Kevin Williams).
+- Fixed Nullable NHibernate Types and conversion issues with Oracle (Donald Mull).
+- Fixed problem in BantamTech.SysCache fails to resolve two entities of different types with the same primary key (Kevin Williams).
+- Modified the Nullables.Value getter to throw an InvalidOperationException when there is no value (null) (Donald Mull).
+
+
+Build 0.6.0.0
+======================== 
+- Moved NHibernate.Tasks and NHibernate.Tool.hbm2net from the NHibernate package to the NHibernateContrib package.
+- Added NHibernate.Tool.Net2Hbm that enables classes to be mapped with Attributes instead of hbm.xml files - contributed by John Morris.
+
+Build 0.5.0.0
+======================== 
+- Initial release of Nullables and Nullables.NHibernate - contributed by Donald Mull
+- Initial relase of BantamTech.SysCache in NHibernateContrib - contributed by Kevin Williams

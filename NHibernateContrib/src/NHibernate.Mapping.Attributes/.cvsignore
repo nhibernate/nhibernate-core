@@ -1,0 +1,9 @@
+bin
+obj
+.#*
+*.user
+*.xsx
+*.suo
+CloverSrc
+_ReSharper*
+*.resharperoptions

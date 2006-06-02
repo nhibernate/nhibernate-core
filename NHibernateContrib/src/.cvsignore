@@ -1,0 +1,6 @@
+*.suo
+*.snk
+CloverSrc
+_ReSharper*
+*.resharperoptions
+
