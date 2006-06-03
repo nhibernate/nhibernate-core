@@ -23,6 +23,12 @@ namespace NHibernate.Util
 				return true;
 			}
 			
+			WeakRefWrapper that = obj as WeakRefWrapper;
+			if( that == null )
+			{
+				return false;
+			}
+			
 			object target = Target;
 			if( target == null )
 			{
@@ -30,8 +36,6 @@ namespace NHibernate.Util
 				// and this was checked above.
 				return false;
 			}
-			
-			WeakRefWrapper that = obj as WeakRefWrapper;
 			
 			return hashCode == that.hashCode &&
 			       Equals( target, that.Target );
@@ -151,7 +155,7 @@ namespace NHibernate.Util
 				}
 			}
 			
-			foreach( WeakRefWrapper key in deadKeys )
+			foreach( object key in deadKeys )
 			{
 				innerHashtable.Remove( key );
 			}

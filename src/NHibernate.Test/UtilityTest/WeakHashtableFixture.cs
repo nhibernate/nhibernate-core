@@ -95,5 +95,14 @@ namespace NHibernate.Test.UtilityTest
 			object obj = table[ new object() ];
 			Assert.IsNull( obj );
 		}
+		
+		[Test]
+		public void WeakRefWrapperEquals()
+		{
+			object obj = new object();
+			Assert.AreEqual( new WeakRefWrapper( obj ), new WeakRefWrapper( obj ) );
+			Assert.IsFalse( new WeakRefWrapper( obj ).Equals( null ) );
+			Assert.IsFalse( new WeakRefWrapper( obj ).Equals( 10 ) );
+		}
 	}
 }
