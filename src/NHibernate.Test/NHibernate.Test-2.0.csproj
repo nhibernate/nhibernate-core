@@ -317,6 +317,9 @@
     <Compile Include="TestCase.cs" />
     <Compile Include="TestTestCase.cs" />
     <Compile Include="TransactionTest\TransactionFixture.cs" />
+    <Compile Include="TypeParameters\DefaultValueIntegerType.cs" />
+    <Compile Include="TypeParameters\TypeParameterTest.cs" />
+    <Compile Include="TypeParameters\Widget.cs" />
     <Compile Include="TypesTest\BinaryBlobClass.cs" />
     <Compile Include="TypesTest\BinaryBlobTypeFixture.cs" />
     <Compile Include="TypesTest\BinaryClass.cs" />
@@ -477,6 +480,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MappingExceptions\A.Invalid.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TypeParameters\Widget.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

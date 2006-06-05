@@ -630,6 +630,7 @@
     <Compile Include="Type\GenericMapType.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UserTypes\IParameterizedType.cs" />
     <Compile Include="UserTypes\IUserCollectionType.cs" />
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Util\CollectionHelper.cs" />

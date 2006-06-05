@@ -32,6 +32,7 @@ namespace NHibernate.Cfg
 		private const string nsParam = nsPrefix + ":param";
 		private const string nsIndex = nsPrefix + ":index";
 		private const string nsGenerator = nsPrefix + ":generator";
+        private const string nsType = nsPrefix + ":type";
 		private const string nsCollectionId = nsPrefix + ":collection-id";
 		private const string nsClass = nsPrefix + ":class";
 		private const string nsSubclass = nsPrefix + ":subclass";
@@ -1134,29 +1135,42 @@ namespace NHibernate.Cfg
 			model.Type = componentType;
 		}
 
-		private static IType GetTypeFromXML( XmlNode node )
-		{
-			IType type;
-			XmlAttribute typeNode = node.Attributes[ "type" ];
+        private static IType GetTypeFromXML(XmlNode node)
+        {
+            IType type;
+            XmlAttribute typeAttribute = node.Attributes["type"];
 
-			if( typeNode == null )
-			{
-				typeNode = node.Attributes[ "id-type" ]; //for an any
-			}
-			if( typeNode == null )
-			{
-				return null; //we will have to use reflection
-			}
-			else
-			{
-				type = TypeFactory.HeuristicType( typeNode.Value );
-				if( type == null )
-				{
-					throw new MappingException( "could not interpret type: " + typeNode.Value );
-				}
-			}
-			return type;
-		}
+            if (typeAttribute == null)
+            {
+                typeAttribute = node.Attributes["id-type"]; //for an any
+            }
+            string typeName = null;
+            IDictionary parameters = null;
+            if (typeAttribute != null)
+            {
+                typeName = typeAttribute.Value;
+            }
+            else
+            {
+                XmlNode typeNode = node.SelectSingleNode(nsType, nsmgr);
+                if (typeNode == null)//we will have to use reflection
+                    return null;
+                XmlAttribute nameAttribute = typeNode.Attributes["name"];//we know it exists because the schema validate it
+                typeName = nameAttribute.Value;
+                parameters = new Hashtable();
+                foreach (XmlNode childNode in typeNode.ChildNodes)
+                {
+                    parameters.Add(childNode.Attributes["name"].Value,
+                        childNode.InnerText.Trim());
+                }
+            }
+            type = TypeFactory.HeuristicType(typeName, parameters);
+            if (type == null)
+            {
+                throw new MappingException("could not interpret type: " + typeAttribute.Value);
+            }
+            return type;
+        }
 
 		private static void InitOuterJoinFetchSetting( XmlNode node, IFetchable model )
 		{

@@ -4,6 +4,7 @@ using System.Globalization;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Tuple;
+using NHibernate.UserTypes;
 using NHibernate.Util;
 
 namespace NHibernate.Type
@@ -337,96 +338,109 @@ namespace NHibernate.Type
 		}
 
 
-		/// <summary>
-		/// Uses heuristics to deduce a NHibernate type given a string naming the 
-		/// type. 
-		/// </summary>
-		/// <param name="typeName"></param>
-		/// <returns>An instance of <c>NHibernate.Type.IType</c></returns>
-		/// <remarks>
-		/// When looking for the NHibernate type it will look in the cache of the Basic types first.
-		/// If it doesn't find it in the cache then it uses the typeName to get a reference to the
-		/// Class (Type in .NET).  Once we get the reference to the .NET class we check to see if it
-		/// implements IType, ICompositeUserType, IUserType, ILifecycle (Association), or 
-		/// IPersistentEnum.  If none of those are implemented then we will serialize the Type to the
-		/// database using NHibernate.Type.SerializableType(typeName)  
-		/// </remarks>
-		public static IType HeuristicType( string typeName )
-		{
-			IType type = TypeFactory.Basic( typeName );
+        /// <summary>
+        /// Uses heuristics to deduce a NHibernate type given a string naming the 
+        /// type. 
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns>An instance of <c>NHibernate.Type.IType</c></returns>
+        /// <remarks>
+        /// When looking for the NHibernate type it will look in the cache of the Basic types first.
+        /// If it doesn't find it in the cache then it uses the typeName to get a reference to the
+        /// Class (Type in .NET).  Once we get the reference to the .NET class we check to see if it
+        /// implements IType, ICompositeUserType, IUserType, ILifecycle (Association), or 
+        /// IPersistentEnum.  If none of those are implemented then we will serialize the Type to the
+        /// database using NHibernate.Type.SerializableType(typeName)  
+        /// </remarks>
+        public static IType HeuristicType(string typeName)
+        {
+            return HeuristicType(typeName, null);
+        }
 
-			if( type == null )
-			{
-				string[] parsedTypeName;
-				TypeClassification typeClassification = GetTypeClassification( typeName );
-				if( typeClassification == TypeClassification.Length )
-				{
-					parsedTypeName = typeName.Split( lengthSplit );
-				}
-				else if( typeClassification == TypeClassification.PrecisionScale )
-				{
-					parsedTypeName = typeName.Split( precisionScaleSplit );
-				}
-				else
-				{
-					parsedTypeName = new string[] { typeName };
-				}
+        /// <summary>
+        /// Uses heuristics to deduce a NHibernate type given a string naming the 
+        /// type. 
+        /// </summary>
+        /// <param name="typeName">the type name</param>
+        /// <param name="parameters">parameters for the type</param>
+        /// <returns>An instance of <c>NHibernate.Type.IType</c></returns>
+        public static IType HeuristicType(string typeName, IDictionary parameters)
+        {
+            IType type = TypeFactory.Basic(typeName);
+
+            if (type == null)
+            {
+                string[] parsedTypeName;
+                TypeClassification typeClassification = GetTypeClassification(typeName);
+                if (typeClassification == TypeClassification.Length)
+                {
+                    parsedTypeName = typeName.Split(lengthSplit);
+                }
+                else if (typeClassification == TypeClassification.PrecisionScale)
+                {
+                    parsedTypeName = typeName.Split(precisionScaleSplit);
+                }
+                else
+                {
+                    parsedTypeName = new string[] { typeName };
+                }
 
 
-				System.Type typeClass;
-				try
-				{
-					typeClass = ReflectHelper.ClassForName( parsedTypeName[ 0 ] ); //typeName);
-				}
-				catch( Exception )
-				{
-					typeClass = null;
-				}
+                System.Type typeClass;
+                try
+                {
+                    typeClass = ReflectHelper.ClassForName(parsedTypeName[0]); //typeName);
+                }
+                catch (Exception)
+                {
+                    typeClass = null;
+                }
 
-				if( typeClass != null )
-				{
-					if( typeof( IType ).IsAssignableFrom( typeClass ) )
-					{
-						try
-						{
-							type = ( IType ) Activator.CreateInstance( typeClass );
-						}
-						catch( Exception e )
-						{
-							throw new MappingException( "Could not instantiate IType " + typeClass.Name + ": " + e, e );
-						}
-					}
-					else if( typeof( ICompositeUserType ).IsAssignableFrom( typeClass ) )
-					{
-						type = new CompositeCustomType( typeClass );
-					}
-					else if( typeof( IUserType ).IsAssignableFrom( typeClass ) )
-					{
-						type = new CustomType( typeClass );
-					}
-					else if( typeof( ILifecycle ).IsAssignableFrom( typeClass ) )
-					{
-						type = NHibernateUtil.Entity( typeClass );
-					}
-					else if( typeClass.IsEnum )
-					{
-						type = NHibernateUtil.Enum( typeClass );
-					}
-					else if( typeClass.IsSerializable )
-					{
-						if( typeClassification == TypeClassification.Length )
-						{
-							type = GetSerializableType( typeClass, Int32.Parse( parsedTypeName[ 1 ] ) );
-						}
-						else
-						{
-							type = GetSerializableType( typeClass );
-						}
-					}
-				}
-			}
-			return type;
-		}
+                if (typeClass != null)
+                {
+                    if (typeof(IType).IsAssignableFrom(typeClass))
+                    {
+                        try
+                        {
+                            type = (IType)Activator.CreateInstance(typeClass);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
+                        }
+                        InjectParameters(type, parameters);
+                    }
+                    else if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))
+                    {
+                        type = new CompositeCustomType(typeClass, parameters);
+                    }
+                    else if (typeof(IUserType).IsAssignableFrom(typeClass))
+                    {
+                        type = new CustomType(typeClass, parameters);
+                    }
+                    else if (typeof(ILifecycle).IsAssignableFrom(typeClass))
+                    {
+                        type = NHibernateUtil.Entity(typeClass);
+                    }
+                    else if (typeClass.IsEnum)
+                    {
+                        type = NHibernateUtil.Enum(typeClass);
+                    }
+                    else if (typeClass.IsSerializable)
+                    {
+                        if (typeClassification == TypeClassification.Length)
+                        {
+                            type = GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
+                        }
+                        else
+                        {
+                            type = GetSerializableType(typeClass);
+                        }
+                    }
+                }
+            }
+            return type;
+        }
 
 		/// <summary>
 		/// 
@@ -1088,5 +1102,20 @@ namespace NHibernate.Type
 				return new CustomCollectionType( typeClass, role, referencedPropertyName );
 			}
 		}
+
+        public static void InjectParameters(Object type, IDictionary parameters)
+        {
+            if (type is IParameterizedType)
+            {
+                ((IParameterizedType)type).SetParameterValues(parameters);
+            }
+            else if (parameters != null && !(parameters.Count == 0))
+            {
+                throw new MappingException(
+                        "type is not parameterized: " +
+                        type.GetType().Name
+                    );
+            }
+        }
 	}
 }

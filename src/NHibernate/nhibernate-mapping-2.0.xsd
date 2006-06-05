@@ -401,6 +401,7 @@
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="type" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="access" type="xs:string"/>
@@ -916,4 +917,12 @@
 			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
 		</xs:complexType>
 	</xs:element>
+	  <xs:element name="type">
+    <xs:complexType>
+      <xs:sequence>  
+        <xs:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Reflection;
 using log4net;
@@ -21,7 +22,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="userTypeClass"></param>
-		public CompositeCustomType( System.Type userTypeClass )
+		public CompositeCustomType( System.Type userTypeClass, IDictionary parameters )
 		{
 			name = userTypeClass.Name;
 
@@ -45,6 +46,7 @@ namespace NHibernate.Type
 			{
 				throw new MappingException( name + " must implement NHibernate.ICompositeUserType", ice );
 			}
+		    TypeFactory.InjectParameters(userType,parameters);
 			if( !userType.ReturnedClass.IsSerializable )
 			{
 				LogManager.GetLogger( typeof( CustomType ) ).Warn( "custom type is not Serializable: " + userTypeClass );

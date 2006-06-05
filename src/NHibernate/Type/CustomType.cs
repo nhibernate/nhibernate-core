@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Reflection;
 using log4net;
@@ -28,7 +29,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="userTypeClass"></param>
-		public CustomType( System.Type userTypeClass )
+		public CustomType( System.Type userTypeClass, IDictionary parameters )
 		{
 			name = userTypeClass.Name;
 
@@ -60,6 +61,7 @@ namespace NHibernate.Type
 			{
 				throw new MappingException( userTypeClass.Name + " must implement NHibernate.IUserType", ice );
 			}
+		    TypeFactory.InjectParameters(userType,parameters);
 			sqlTypes = userType.SqlTypes;
 			if( !userType.ReturnedType.IsSerializable )
 			{

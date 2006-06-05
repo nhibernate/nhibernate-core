@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+                   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+                   xmlns='urn:nhibernate-mapping-2.0'
+                   default-lazy='false'>
+  <class name="NHibernate.Test.TypeParameters.Widget, NHibernate.Test"
+         table="STRANGE_TYPED_OBJECT">
+    <id name="Id"
+        column="ID">
+      <generator class="increment"/>
+    </id>
+    <property name="ValueOne"
+              column="VALUE_ONE">
+      <type name="NHibernate.Test.TypeParameters.DefaultValueIntegerType, NHibernate.Test">
+        <param name="default">1</param>
+      </type>
+    </property>
+    <property name="ValueTwo"
+              column="VALUE_TWO">
+      <type name="NHibernate.Test.TypeParameters.DefaultValueIntegerType, NHibernate.Test">
+        <param name="default">2</param>
+      </type>
+    </property>
+    <property name="ValueThree"
+              column="VALUE_THREE">
+      <type name="NHibernate.Test.TypeParameters.DefaultValueIntegerType, NHibernate.Test">
+        <param name="default">-1</param>
+      </type>
+    </property>
+    <property name="ValueFour"
+              column="VALUE_FOUR">
+      <type name="NHibernate.Test.TypeParameters.DefaultValueIntegerType, NHibernate.Test">
+        <param name="default">-5</param>
+      </type>
+    </property>
+    <property name="Str"/>
+  </class>
+</hibernate-mapping>

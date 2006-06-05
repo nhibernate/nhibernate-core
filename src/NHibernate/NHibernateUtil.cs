@@ -249,11 +249,11 @@ namespace NHibernate
 		{
 			if( typeof( ICompositeUserType ).IsAssignableFrom( userTypeClass ) )
 			{
-				return new CompositeCustomType( userTypeClass );
+				return new CompositeCustomType( userTypeClass, null );
 			}
 			else
 			{
-				return new CustomType( userTypeClass );
+                return new CustomType(userTypeClass, null);
 			}
 		}
 
