@@ -352,6 +352,12 @@
     <Compile Include="TypesTest\TimestampTypeFixture.cs" />
     <Compile Include="TypesTest\TypeFactoryFixture.cs" />
     <Compile Include="TypesTest\TypeFixtureBase.cs" />
+    <Compile Include="UserCollection\Email.cs" />
+    <Compile Include="UserCollection\MyList.cs" />
+    <Compile Include="UserCollection\MyListType.cs" />
+    <Compile Include="UserCollection\PersistentMylist.cs" />
+    <Compile Include="UserCollection\User.cs" />
+    <Compile Include="UserCollection\UserCollectionTypeTest.cs" />
     <Compile Include="UtilityTest\AssemblyQualifiedTypeNameFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapSequencedFixture.cs" />
@@ -483,6 +489,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TypeParameters\Widget.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UserCollection\UserPermissions.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

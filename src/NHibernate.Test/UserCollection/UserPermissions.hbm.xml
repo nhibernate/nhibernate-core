@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!-- 
+  This mapping is a basic example of how to write a UserCollectionType.
+-->
+<hibernate-mapping xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+				   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+				   xmlns='urn:nhibernate-mapping-2.0'
+				   default-lazy='false'>
+
+	<import class="Permission"/>
+
+	<class name="NHibernate.Test.UserCollection.User, NHibernate.Test"
+		   table="`Users`">
+		<id name="UserName">
+			<generator class="assigned"/>
+		</id>
+		<list name="EmailAddresses"
+			  fetch="join"
+			  cascade="all-delete-orphan"
+			  collection-type="NHibernate.Test.UserCollection.MyListType, NHibernate.Test">
+			<key column="userName"/>
+			<index column="displayOrder"/>
+			<one-to-many class="NHibernate.Test.UserCollection.Email, NHibernate.Test"/>
+		</list>
+	</class>
+
+	<class name="NHibernate.Test.UserCollection.Email, NHibernate.Test">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Address"/>
+	</class>
+
+</hibernate-mapping>
