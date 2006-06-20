@@ -1,32 +1,34 @@
 #if NET_2_0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 
 using NHibernate.Engine;
-using NHibernate.Type;
-using NHibernate.Persister.Collection;
 using NHibernate.Loader;
+using NHibernate.Persister.Collection;
+using NHibernate.Type;
 
 namespace NHibernate.Collection.Generic
 {
 	/// <summary>
 	/// An unordered, unkeyed collection that can contain the same element
 	/// multiple times. The .NET collections API, has no <c>Bag</c>.
-	/// The <see cref="ICollection&lt;T&gt;" /> interface closely resembles bag semantics,
+	/// The <see cref="ICollection{T}" /> interface closely resembles bag semantics,
 	/// however NHibernate for net-1.1 used <see cref="System.Collections.IList"/> so 
-	/// <see cref="IList&lt;T&gt;"/> is used to ensure the easiest transition
+	/// <see cref="IList{T}"/> is used to ensure the easiest transition
 	/// to generics.
 	/// </summary>
 	/// <typeparam name="T">The type of the element the bag should hold.</typeparam>
-	/// <remarks>The underlying collection used is an <see cref="List&lt;T&gt;"/></remarks>
+	/// <remarks>The underlying collection used is an <see cref="List{T}"/></remarks>
 	[Serializable]
-	public class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, System.Collections.IList
+	public class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		private IList<T> bag;
 
 		/// <summary>
-		/// Initializes an instance of the <see cref="PersistentGenericBag&lt;T&gt;"/>
+		/// Initializes an instance of the <see cref="PersistentGenericBag{T}"/>
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
@@ -36,11 +38,11 @@ namespace NHibernate.Collection.Generic
 		}
 
 		/// <summary>
-		/// Initializes an instance of the <see cref="PersistentGenericBag&lt;T&gt;"/>
-		/// that wraps an existing <see cref="IList&lt;T&gt;"/> in the <paramref name="session"/>.
+		/// Initializes an instance of the <see cref="PersistentGenericBag{T}"/>
+		/// that wraps an existing <see cref="IList{T}"/> in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
-		/// <param name="coll">The <see cref="IList&lt;T&gt;"/> to wrap.</param>
+		/// <param name="coll">The <see cref="IList{T}"/> to wrap.</param>
 		public PersistentGenericBag( ISessionImplementor session, IList<T> coll )
 			: base( session )
 		{
@@ -48,8 +50,8 @@ namespace NHibernate.Collection.Generic
 
 			if( bag == null )
 			{
-				bag = new System.Collections.Generic.List<T>();
-				( ( System.Collections.Generic.List<T> ) bag ).AddRange( coll );
+				bag = new List<T>();
+				( ( List<T> ) bag ).AddRange( coll );
 			}
 			SetInitialized();
 			IsDirectlyAccessible = true;
@@ -154,10 +156,10 @@ namespace NHibernate.Collection.Generic
 
 		#region IEnumerable Members
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
-			return ( System.Collections.IEnumerator ) bag.GetEnumerator();
+			return bag.GetEnumerator();
 		}
 
 		#endregion
@@ -200,12 +202,13 @@ namespace NHibernate.Collection.Generic
 			return !persister.IsOneToMany;
 		}
 
-		public override System.Collections.IEnumerable Entries()
+		public override IEnumerable Entries()
 		{
-			return ( ( System.Collections.IEnumerable ) bag );
+			return bag;
 		}
 
-		public override object ReadFrom( System.Data.IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner )
+		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor,
+		                                 object owner )
 		{
 			object element = persister.ReadElement( reader, owner, descriptor.SuffixedElementAliases, Session );
 			// TODO: to make this more net-2.0 friendly the value returned from persister.ReadElement
@@ -234,7 +237,6 @@ namespace NHibernate.Collection.Generic
 		{
 			IList<T> sn = ( IList<T> ) GetSnapshot();
 			return sn[ i ];
-
 		}
 
 		public override void BeforeInitialize( ICollectionPersister persister )
@@ -266,7 +268,7 @@ namespace NHibernate.Collection.Generic
 		/// in the <paramref name="list"/>.
 		/// </summary>
 		/// <param name="element">The element to find in the list.</param>
-		/// <param name="list">The <see cref="ICollection&lt;T&gt;"/> to search.</param>
+		/// <param name="list">The <see cref="ICollection{T}"/> to search.</param>
 		/// <param name="elementType">The <see cref="IType"/> that can determine equality.</param>
 		/// <returns>
 		/// The number of occurrences of the element in the list.
@@ -285,9 +287,9 @@ namespace NHibernate.Collection.Generic
 			return result;
 		}
 
-		protected override System.Collections.ICollection Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot( ICollectionPersister persister )
 		{
-			System.Collections.Generic.List<T> clonedList = new System.Collections.Generic.List<T>();
+			List<T> clonedList = new List<T>();
 			foreach( T obj in bag )
 			{
 				clonedList.Add( ( T ) persister.ElementType.DeepCopy( obj ) );
@@ -299,7 +301,7 @@ namespace NHibernate.Collection.Generic
 		public override object Disassemble( ICollectionPersister persister )
 		{
 			int length = bag.Count;
-			object[] result = new object[ length ];
+			object[] result = new object[length];
 
 			int i = 0;
 			foreach( T item in bag )
@@ -318,7 +320,7 @@ namespace NHibernate.Collection.Generic
 
 		public override bool NeedsInserting( object entry, int i, IType elemType )
 		{
-			System.Collections.IList sn = ( System.Collections.IList ) GetSnapshot();
+			IList sn = ( IList ) GetSnapshot();
 			if( sn.Count > i && elemType.Equals( sn[ i ], entry ) )
 			{
 				// a shortcut if its location didn't change
@@ -343,10 +345,10 @@ namespace NHibernate.Collection.Generic
 			return false;
 		}
 
-		public override System.Collections.ICollection GetDeletes( IType elemType, bool indexIsFormula )
+		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
-			System.Collections.ArrayList deletes = new System.Collections.ArrayList();
-			System.Collections.IList sn = ( System.Collections.IList ) GetSnapshot();
+			ArrayList deletes = new ArrayList();
+			IList sn = ( IList ) GetSnapshot();
 
 			int i = 0;
 
@@ -392,14 +394,22 @@ namespace NHibernate.Collection.Generic
 			return bag == collection;
 		}
 
-		public override System.Collections.ICollection GetOrphans( object snapshot, System.Type entityName )
+		public override ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
-			System.Collections.IList sn = ( System.Collections.IList ) snapshot;
-			System.Collections.ArrayList result = new System.Collections.ArrayList();
+			IList sn = ( IList ) snapshot;
+			ArrayList result = new ArrayList();
 			result.AddRange( sn );
 			// HACK: careful with cast here...
-			AbstractPersistentCollection.IdentityRemoveAll( result, ( System.Collections.ICollection ) bag, entityName, Session );
+			IdentityRemoveAll( result, ( ICollection ) bag, entityName, Session );
 			return result;
+		}
+
+		public override void DelayedAddAll( ICollection coll )
+		{
+			foreach( T obj in coll )
+			{
+				bag.Add( obj );
+			}
 		}
 
 		#endregion
@@ -414,12 +424,12 @@ namespace NHibernate.Collection.Generic
 		// can just use "this" so we don't duplicate the Read/Write 
 		// logic.
 
-		int System.Collections.IList.Add( object value )
+		int IList.Add( object value )
 		{
 			if( !QueueAdd( value ) )
 			{
 				Write();
-				return ( ( System.Collections.IList ) bag ).Add( value );
+				return ( ( IList ) bag ).Add( value );
 			}
 			else
 			{
@@ -427,60 +437,57 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		void System.Collections.IList.Clear()
+		void IList.Clear()
 		{
 			this.Clear();
 		}
 
-		bool System.Collections.IList.Contains( object value )
+		bool IList.Contains( object value )
 		{
 			Read();
-			return ( ( System.Collections.IList ) bag ).Contains( value );
+			return ( ( IList ) bag ).Contains( value );
 		}
 
-		int System.Collections.IList.IndexOf( object value )
+		int IList.IndexOf( object value )
 		{
 			Read();
-			return ( ( System.Collections.IList ) bag ).IndexOf( value );
+			return ( ( IList ) bag ).IndexOf( value );
 		}
 
-		void System.Collections.IList.Insert( int index, object value )
+		void IList.Insert( int index, object value )
 		{
 			Write();
-			( ( System.Collections.IList ) bag ).Insert( index, value );
+			( ( IList ) bag ).Insert( index, value );
 		}
 
-		bool System.Collections.IList.IsFixedSize
+		bool IList.IsFixedSize
 		{
 			get { return false; }
 		}
 
-		bool System.Collections.IList.IsReadOnly
+		bool IList.IsReadOnly
 		{
 			get { return false; }
 		}
 
-		void System.Collections.IList.Remove( object value )
+		void IList.Remove( object value )
 		{
 			Write();
-			( ( System.Collections.IList ) bag ).Remove( value );
+			( ( IList ) bag ).Remove( value );
 		}
 
-		void System.Collections.IList.RemoveAt( int index )
+		void IList.RemoveAt( int index )
 		{
 			this.RemoveAt( index );
 		}
 
-		object System.Collections.IList.this[ int index ]
+		object IList.this[ int index ]
 		{
-			get
-			{
-				return this[ index ];
-			}
+			get { return this[ index ]; }
 			set
 			{
 				Write();
-				( ( System.Collections.IList ) bag )[ index ] = value;
+				( ( IList ) bag )[ index ] = value;
 			}
 		}
 
@@ -488,23 +495,23 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection Members
 
-		void System.Collections.ICollection.CopyTo( Array array, int index )
+		void ICollection.CopyTo( Array array, int index )
 		{
 			Read();
-			( ( System.Collections.IList ) bag ).CopyTo( array, index );
+			( ( IList ) bag ).CopyTo( array, index );
 		}
 
-		int System.Collections.ICollection.Count
+		int ICollection.Count
 		{
 			get { return this.Count; }
 		}
 
-		bool System.Collections.ICollection.IsSynchronized
+		bool ICollection.IsSynchronized
 		{
 			get { return false; }
 		}
 
-		object System.Collections.ICollection.SyncRoot
+		object ICollection.SyncRoot
 		{
 			get { return this; }
 		}
@@ -512,4 +519,5 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
+
 #endif
