@@ -70,7 +70,6 @@ namespace NHibernate.Dialect
 			RegisterFunction( "bin_and", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction( "bin_or", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction( "bin_xor", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction( "bin_and", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction( "ceiling", new StandardSQLFunction( NHibernateUtil.Double ) );
 			RegisterFunction( "div", new StandardSQLFunction( NHibernateUtil.Double ) );
 			RegisterFunction( "dpower", new StandardSQLFunction( NHibernateUtil.Double ) );
