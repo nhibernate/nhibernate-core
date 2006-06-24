@@ -49,6 +49,35 @@
 	</abstract>
 
 
+	<section id="mapping-attributes-new">
+		<title>What's new?</title>
+		<formalpara>
+			<title>NHibernate 1.2.0</title>
+			<para>introduces many changes and improvements:</para>
+		</formalpara>
+		<itemizedlist>
+			<listitem>
+				<para><classname>RawXmlAttribute</classname> is a new attribute allowing to insert xml as-is in the mapping. This feature can be very useful to do complex mapping (eg: components). It may also be used to quickly move the mapping from xml files to attributes. Usage: <literal>[RawXml(After=typeof(ComponentAttribute), Content="&lt;component name="..."&gt;...&lt;/component&gt;")]</literal>. <methodname>After</methodname> tells after which kind of mapping the xml should be inserted and it is optional (in which case the xml is inserted on the top of the mapping). Note: At the moment, all raw xmls are prefixed by a <literal>&lt;!----&gt;</literal>; this is a known "issue".</para>
+			</listitem>
+			<listitem>
+				<para>It is possible to register patterns (using Regular Expressions) to automatically transform fully qualified names of properties types into something else. Eg: <literal>HbmSerializer.Default.HbmWriter.Patterns.Add(@"Namespace.(\S+), Assembly", "$1");</literal> will map all properties with a not-qualified type name.</para>
+			</listitem>
+			<listitem>
+				<para>Two methods have been added to allow writing: <literal>cfg.AddInputStream( HbmSerializer.Default.Serialize(typeof(XXX)) )</literal> and <literal>cfg.AddInputStream( HbmSerializer.Default.Serialize(typeof(XXX).Assembly) )</literal>. So it is no longer required to create a MemoryStream for these simple cases.</para>
+			</listitem>
+			<listitem>
+				<para>Two <methodname>WriteUserDefinedContent()</methodname> methods have been added to <classname>HbmWriter</classname>. They improve the extensibility of this library; it is now very easy to create a .NET attribute and integrate it in the mapping.</para>
+			</listitem>
+			<listitem>
+				<para>A notable "bug" fix is the re-ordering of (joined-)subclasses; This operation may be required when a subclass extends another subclass. In this case, the extended class mapping must come before the extending class mapping. Note that the re-ordering takes place only for "top-level" classes (that is not nested in other mapped classes). Anyway, it is quite unusual to put a interdependent mapped subclasses in a mapped class.</para>
+			</listitem>
+			<listitem>
+				<para>There are also many other little changes; refer to the release notes for more details.</para>
+			</listitem>
+	</section>
+
+
+
 	<section id="mapping-attributes-howto">
 		<title>How to use it?</title>
 		<formalpara>
@@ -65,16 +94,12 @@
     }</programlisting>
 		<para>After this step, you use <classname>NHibernate.Mapping.Attributes.HbmSerializer</classname>: (here, we use <methodname>Default</methodname> which is an instance you can use if you don't need/want to create it yourself).</para>
 		<programlisting>
-    System.IO.MemoryStream stream = new System.IO.MemoryStream(); // where the xml will be written
-    NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true; // Enable validation (optional)
-    // Here, we serialize all decorated classes (but you can also do it class by class)
-    NHibernate.Mapping.Attributes.HbmSerializer.Default.Serialize(
-        stream, System.Reflection.Assembly.GetExecutingAssembly() );
-    stream.Position = 0; // Rewind
     NHibernate.Cfg.Configuration cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure();
-    cfg.AddInputStream(stream); // Use the stream here
-    stream.Close();
+    NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true; // Enable validation (optional)
+    // Here, we serialize all decorated classes (but you can also do it class by class)
+    cfg.AddInputStream( NHibernate.Mapping.Attributes.HbmSerializer.Default.Serialize(
+        System.Reflection.Assembly.GetExecutingAssembly() ); );
     // Now you can use this configuration to build your SessionFactory...</programlisting>
 		<note>
 			<para>
