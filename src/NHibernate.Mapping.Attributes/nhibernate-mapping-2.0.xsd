@@ -76,10 +76,11 @@
 		<xs:attribute name="persister" type="xs:string" use="optional" />
 		<xs:attribute name="batch-size" type="xs:positiveInteger" use="optional" default="1" />
 		<xs:attribute name="check" type="xs:string" use="optional" />
-		<xs:attribute name="generic" type="xs:boolean" use="optional" default="false">
+		<xs:attribute name="collection-type" type="xs:string" use="optional" />
+		<xs:attribute name="generic" type="xs:boolean" use="optional">
 			<xs:annotation>
 				<xs:documentation>The concrete collection should use a generic version or an object-based version.</xs:documentation>
-			</xs:annotation>      
+			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:complexType name="cacheType">
@@ -400,6 +401,7 @@
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="type" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="access" type="xs:string"/>
@@ -618,14 +620,8 @@
 					<xs:element ref="many-to-any"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="access" type="xs:string"/>
-			<xs:attribute name="table" type="xs:string"/>
-			<xs:attribute name="schema" type="xs:string"/>
-			<xs:attribute name="lazy" type="xs:boolean" default="false"/>
-			<xs:attribute name="cascade" type="cascadeStyle"/>
+			<xs:attributeGroup ref="baseCollectionAttributes" />
 			<xs:attribute name="order-by" type="xs:string"/>
-			<xs:attribute name="where" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="index">
@@ -921,4 +917,12 @@
 			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
 		</xs:complexType>
 	</xs:element>
+	  <xs:element name="type">
+    <xs:complexType>
+      <xs:sequence>  
+        <xs:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

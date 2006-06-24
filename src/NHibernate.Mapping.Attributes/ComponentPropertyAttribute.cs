@@ -4,24 +4,17 @@
 //
 namespace NHibernate.Mapping.Attributes
 {
-	/// <summary> Use this attribute to define a "component" on a property/field. If you set properties of [DynamicComponent], they will be ignored. </summary>
-	[System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field, AllowMultiple=true)]
+	/// <summary> Use this attribute to define a "component" on a property/field. </summary>
+	[System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field, AllowMultiple=false)]
 	[System.Serializable]
-	public class ComponentPropertyAttribute : DynamicComponentAttribute
+	public class ComponentPropertyAttribute : System.Attribute
 	{
 		private System.Type _componentType;
 		private string _propertyName;
 
 
-		/// <summary> Default constructor (position=0) </summary>
-		public ComponentPropertyAttribute() : 
-				base(0)
-		{
-		}
-
-		/// <summary> Constructor taking the position of the attribute. </summary>
-		public ComponentPropertyAttribute(int position) : 
-				base(position)
+		/// <summary> Default constructor </summary>
+		public ComponentPropertyAttribute()
 		{
 		}
 

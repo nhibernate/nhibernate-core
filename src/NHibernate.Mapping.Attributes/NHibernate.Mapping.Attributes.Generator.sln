@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Mapping.Attribut
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test-1.1", "Test\Test-1.1.csproj", "{A6585067-79C1-41A9-A006-A83C3A800B21}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test-1.1", "..\NHibernate.Mapping.Attributes.Test\NHibernate.Mapping.Attributes.Test-1.1.csproj", "{A6585067-79C1-41A9-A006-A83C3A800B21}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

@@ -89,28 +89,37 @@ namespace NHibernate.Mapping.Attributes.Generator
 					this.{0} = value.FullName + "", "" + value.Assembly.GetName().Name", pd.Name) ) );
 					}
 
-					// Add the object property (to allow setting this attribute with any object + handle conversion of enum values)
-					if(Utils.IsSystemEnum(attElt.Name, attribMember, memberType))
+					// Add the object property (to allow setting this attribute with any object)
+					if(Utils.IsSystemObject(attElt.Name, attribMember, memberType))
 					{
-						log.Debug("  Create object version + EnumFormat for <" + attElt.Name + "> <" + attribMember.Name + ">");
+						bool IsSystemEnum = Utils.IsSystemEnum(attElt.Name, attribMember, memberType);
+						log.Debug("  Create object version " + (IsSystemEnum?"+ EnumFormat ":"") + "for <" + attElt.Name + "> <" + attribMember.Name + ">");
 						Refly.CodeDom.PropertyDeclaration pdType = cd.AddProperty(typeof(object), pd.Name + "Object");
 						pdType.Doc.Summary.AddText(AnnotationToString(attribMember.Annotation)); // Create the <summary />
 						pdType.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(
 							"return this." +  pd.Name) );
-						pdType.Set.Add( new Refly.CodeDom.Expressions.SnippetExpression( string.Format(
+						// handle conversion of enum values
+						if(IsSystemEnum)
+							pdType.Set.Add( new Refly.CodeDom.Expressions.SnippetExpression( string.Format(
 				@"if(value is System.Enum)
 					this.{0} = System.Enum.Format(value.GetType(), value, this.{0}EnumFormat);
 				else
-					this.{0} = value.ToString()", pd.Name) ) );
+					this.{0} = value==null ? ""null"" : value.ToString()", pd.Name) ) );
+						else
+							pdType.Set.Add( new Refly.CodeDom.Expressions.SnippetExpression( string.Format(
+								@"this.{0} = value==null ? ""null"" : value.ToString()", pd.Name) ) );
 
 						// Add the field xxxEnumFormat to set the string to use when formatting an Enum
-						Refly.CodeDom.FieldDeclaration fdEnumFormat = cd.AddField(
-							typeof(string), (fd.Name + "EnumFormat").ToLower() );
-						// Set the default value
-						fdEnumFormat.InitExpression = new Refly.CodeDom.Expressions.SnippetExpression("\"g\"");
-						// Add its public property with a comment
-						Refly.CodeDom.PropertyDeclaration pdEnumFormat = cd.AddProperty(fdEnumFormat, true, true, false);
-						pdEnumFormat.Doc.Summary.AddText("'format' used by System.Enum.Format() in " + pdType.Name); // Create the <summary />
+						if(IsSystemEnum)
+						{
+							Refly.CodeDom.FieldDeclaration fdEnumFormat = cd.AddField(
+								typeof(string), (fd.Name + "EnumFormat").ToLower() );
+							// Set the default value
+							fdEnumFormat.InitExpression = new Refly.CodeDom.Expressions.SnippetExpression("\"g\"");
+							// Add its public property with a comment
+							Refly.CodeDom.PropertyDeclaration pdEnumFormat = cd.AddProperty(fdEnumFormat, true, true, false);
+							pdEnumFormat.Doc.Summary.AddText("'format' used by System.Enum.Format() in " + pdType.Name); // Create the <summary />
+						}
 					}
 				}
 

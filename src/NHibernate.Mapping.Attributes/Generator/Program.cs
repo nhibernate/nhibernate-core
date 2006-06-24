@@ -97,6 +97,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 "outer",
 "param",
 "parent",
+"patterns",
 "persister",
 "polymorphism",
 "primitive",
@@ -180,17 +181,30 @@ namespace NHibernate.Mapping.Attributes.Generator
 				hbmWriter.Attributes = System.Reflection.TypeAttributes.Public;
 				hbmWriter.Doc.Summary.AddText(" Write a XmlSchemaElement from attributes in a System.Type. "); // Create the <summary />
 
-				Refly.CodeDom.FieldDeclaration fd = hbmWriter.AddField("HbmWriterHelper", "DefaultHelper");
-				// Add the unspecified value (to know if specified by the user)
-				fd.InitExpression = new Refly.CodeDom.Expressions.SnippetExpression("new HbmWriterHelperEx()");
+				Refly.CodeDom.FieldDeclaration fdDefaultHelper = hbmWriter.AddField("HbmWriterHelper", "DefaultHelper");
+				fdDefaultHelper.InitExpression = new Refly.CodeDom.Expressions.SnippetExpression("new HbmWriterHelperEx()");
 				// Add its public property with a comment
-				Refly.CodeDom.PropertyDeclaration pd = hbmWriter.AddProperty(fd, true, true, false);
-				pd.Doc.Summary.AddText(" Gets or sets the HbmWriterHelper used by HbmWriter "); // Create the <summary />
+				Refly.CodeDom.PropertyDeclaration pdDefaultHelper = hbmWriter.AddProperty(fdDefaultHelper, true, true, false);
+				pdDefaultHelper.Doc.Summary.AddText(" Gets or sets the HbmWriterHelper used by HbmWriter "); // Create the <summary />
+
+				Refly.CodeDom.FieldDeclaration fd = hbmWriter.AddField(typeof(System.Collections.Hashtable), "Patterns");
+				// Add its public property with a comment
+				Refly.CodeDom.PropertyDeclaration pd = hbmWriter.AddProperty(fd, false, true, false);
+				pd.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_patterns==null)
+				{
+					_patterns = new System.Collections.Hashtable();
+					_patterns.Add(@""Nullables.Nullable(\w+), Nullables"", ""Nullables.NHibernate.Nullable$1Type, Nullables.NHibernate"");
+					_patterns.Add(@""System.Data.SqlTypes.Sql(\w+), System.Data"", ""NHibernate.UserTypes.SqlTypes.Sql$1Type, NHibernate.UserTypes.SqlTypes"");
+				}
+				return _patterns;") );
+				pd.Doc.Summary.AddText(" Gets or sets the Patterns to convert properties types (the key is the pattern string and the value is the replacement string) "); // Create the <summary />
 
 				HbmWriterGenerator.FillFindAttributedMembers(hbmWriter.AddMethod("FindAttributedMembers"));
 				HbmWriterGenerator.FillGetSortedAttributes(hbmWriter.AddMethod("GetSortedAttributes"));
 				HbmWriterGenerator.FillIsNextElement(hbmWriter.AddMethod("IsNextElement"), schema.Items);
 				HbmWriterGenerator.FillGetXmlEnumValue(hbmWriter.AddMethod("GetXmlEnumValue"));
+				HbmWriterGenerator.FillWriteUserDefinedContent( hbmWriter.AddMethod("WriteUserDefinedContent"),
+					hbmWriter.AddMethod("WriteUserDefinedContent") );
 
 
 				log.Info("Browse Schema.Items (Count=" + schema.Items.Count + ")");
@@ -225,6 +239,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 						log.Debug("Generate Attribute and ElementWriter for Element: " + elt.Name);
 						AttributeAndEnumGenerator.GenerateAttribute(elt, nd.AddClass(eltName + "Attribute"), type);
 						HbmWriterGenerator.GenerateElementWriter(elt, eltName, hbmWriter.AddMethod("Write" + eltName), type);
+						if(Utils.IsRoot(eltName))
+							HbmWriterGenerator.FillWriteNestedTypes(eltName, hbmWriter.AddMethod("WriteNested" + eltName + "Types"));
 					}
 					else if(obj is System.Xml.Schema.XmlSchemaComplexType)
 					{

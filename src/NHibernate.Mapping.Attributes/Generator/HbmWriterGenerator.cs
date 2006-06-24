@@ -34,7 +34,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 			if(schemaEltIsRoot)
 			{
 				method.Body.Add(Refly.CodeDom.Stm.Snippet(string.Format(
-					@"object[] attributes = {1}.GetCustomAttributes(typeof({0}Attribute), true);
+					@"object[] attributes = {1}.GetCustomAttributes(typeof({0}Attribute), false);
 			if(attributes.Length == 0)
 				return;
 			{0}Attribute attribute = attributes[0] as {0}Attribute;
@@ -94,23 +94,37 @@ namespace NHibernate.Mapping.Attributes.Generator
 							method.Body.Add(Refly.CodeDom.Stm.Snippet(@"else
 			{
 				System.Type type = null;
-				string typeName = string.Empty;
 				if(member is System.Reflection.PropertyInfo)
 					type = (member as System.Reflection.PropertyInfo).PropertyType;
 				else if(member is System.Reflection.FieldInfo)
 					type = (member as System.Reflection.FieldInfo).FieldType;
-				typeName = type.FullName + "", "" + type.Assembly.GetName().Name;
-				if(type!=null && System.Text.RegularExpressions.Regex.IsMatch(typeName, @""Nullables.Nullable(\w+), Nullables""))
-					writer.WriteAttributeString( ""type"",
-						System.Text.RegularExpressions.Regex.Replace(typeName,
-							@""Nullables.Nullable(\w+), Nullables"",
-							""Nullables.NHibernate.Nullable$1Type, Nullables.NHibernate"") );
+				if(type != null) // Transform using RegularExpressions
+				{
+					string typeName = type.FullName + "", "" + type.Assembly.GetName().Name;
+					foreach(System.Collections.DictionaryEntry pattern in Patterns)
+					{
+						if(System.Text.RegularExpressions.Regex.IsMatch(typeName, pattern.Key as string))
+						{
+							writer.WriteAttributeString( ""type"",
+								System.Text.RegularExpressions.Regex.Replace(typeName,
+									pattern.Key as string,
+									pattern.Value as string) );
+							break;
+						}
+					}
+				}
 			}"));
 						}
 					}
 				}
 
 				// Add the elements
+				method.Body.Add(Refly.CodeDom.Stm.Snippet(
+						schemaEltIsRoot ? @"
+			WriteUserDefinedContent(writer, type, null, attribute);" : @"
+			WriteUserDefinedContent(writer, member, null, attribute);"
+					));
+
 				if(type.Particle is System.Xml.Schema.XmlSchemaSequence)
 				{
 					System.Xml.Schema.XmlSchemaSequence seq = (schemaElt.SchemaType as System.Xml.Schema.XmlSchemaComplexType).Particle as System.Xml.Schema.XmlSchemaSequence;
@@ -149,8 +163,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 							if(Utils.IsRoot(memberName))
 							{
 								method.Body.Add(Refly.CodeDom.Stm.Snippet( string.Format(
-									@"foreach(System.Type nestedType in type.GetNestedTypes(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
-				Write{0}(writer, nestedType);", memberName ) ));
+									@"WriteNested{0}Types(writer, type);", memberName ) ));
 							}
 							else
 							{
@@ -160,7 +173,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 			", memberName, listName, attributeName ) +"{"
 								+ string.Format(
 			@"
-				object[] objects = member.GetCustomAttributes(typeof({2}), true);
+				object[] objects = member.GetCustomAttributes(typeof({2}), false);
 				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
@@ -173,6 +186,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 									memberName, listName, attributeName ) + @"
 			}" ));
 							}
+							method.Body.Add(Refly.CodeDom.Stm.Snippet(
+								"WriteUserDefinedContent(writer, type, typeof(" + attributeName + "), attribute);" ));
 						}
 						else
 						{
@@ -194,6 +209,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 						Write" + memberName + @"(writer, member, memberAttrib as " + attributeName + @", attribute);
 				}" ) + @"
 			}" ));
+							method.Body.Add(Refly.CodeDom.Stm.Snippet(
+								"WriteUserDefinedContent(writer, member, typeof(" + attributeName + "), attribute);" ));
 						}
 					}
 				}
@@ -202,7 +219,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				{
 					method.Body.Add(Refly.CodeDom.Stm.Snippet(@"
 			// Write the content of this element (mixed=""true"")
-			writer.WriteRaw(attribute.Content);"));
+			writer.WriteString(attribute.Content);"));
 				}
 			}
 			else
@@ -220,6 +237,54 @@ namespace NHibernate.Mapping.Attributes.Generator
 
 			method.Body.Add(Refly.CodeDom.Stm.Snippet(@"
 			writer.WriteEndElement();"));
+		}
+
+
+		/// <summary> Generate a Writer method for a XmlSchemaElement. </summary>
+		public static void FillWriteNestedTypes(string schemaEltName, Refly.CodeDom.MethodDeclaration method)
+		{
+			method.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.Overloaded;
+			method.Doc.Summary.AddText(" Write " + schemaEltName + " XML Elements from nested mapped classes in a not-mapped class. "); // Create the <summary />
+			method.Signature.Parameters.Add(typeof(System.Xml.XmlWriter), "writer");
+			method.Signature.Parameters.Add(typeof(System.Type), "type");
+
+			method.Body.Add(Refly.CodeDom.Stm.Snippet(
+			@"foreach(System.Type nestedType in type.GetNestedTypes(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
+			{
+				if(nestedType.GetCustomAttributes(typeof(ClassAttribute), false).Length != 0)
+					continue;"
++ (schemaEltName!="Component" ? "" : @"
+				if(nestedType.GetCustomAttributes(typeof(SubclassAttribute), false).Length != 0)
+					continue;
+				if(nestedType.GetCustomAttributes(typeof(JoinedSubclassAttribute), false).Length != 0)
+					continue;")
++ string.Format(@"
+				if(nestedType.GetCustomAttributes(typeof({0}Attribute), false).Length == 0)
+					WriteNested{0}Types(writer, nestedType); // Not mapped (try its nested types)
+				else // Mapped
+					Write{0}(writer, nestedType);
+			", schemaEltName ) + "}" ));
+		}
+
+
+		/// <summary> Generate the empty method WriteUserDefinedContent(). </summary>
+		public static void FillWriteUserDefinedContent(Refly.CodeDom.MethodDeclaration methodType, Refly.CodeDom.MethodDeclaration methodMember)
+		{
+			Refly.CodeDom.MethodDeclaration method = methodType;
+			method.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.Overloaded;
+			method.Doc.Summary.AddText(" Write user-defined content; should be of the specified contentAttributeType. "); // Create the <summary />
+			method.Signature.Parameters.Add(typeof(System.Xml.XmlWriter), "writer");
+			method.Signature.Parameters.Add(typeof(System.Type), "classType");
+			method.Signature.Parameters.Add(typeof(System.Type), "contentAttributeType");
+			method.Signature.Parameters.Add("BaseAttribute", "parentAttribute");
+			method = methodMember;
+			method.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.Overloaded;
+			method.Doc.Summary.AddText(" Write user-defined content; should be of the specified contentAttributeType. "); // Create the <summary />
+			method.Signature.Parameters.Add(typeof(System.Xml.XmlWriter), "writer");
+			method.Signature.Parameters.Add(typeof(System.Reflection.MemberInfo), "memberInfo");
+			method.Signature.Parameters.Add(typeof(System.Type), "contentAttributeType");
+			method.Signature.Parameters.Add("BaseAttribute", "parentAttribute");
+			// Both empty
 		}
 
 
@@ -380,10 +445,10 @@ namespace NHibernate.Mapping.Attributes.Generator
 					if( attribute != null )
 						return attribute.Name;
 					else
-						throw new System.ApplicationException( string.Format( ""{0} is missing XmlEnumAttribute on {1} value."", enumType, enumValue ) );
+						throw new MappingException( string.Format( ""{0} is missing XmlEnumAttribute on {1} value. Please, contact the NHibernate team to fix this issue."", enumType, enumValue ) );
 				}
 			}
-			throw new System.MissingFieldException(enumType.ToString(), enumValue.ToString());"));
+			throw new MappingException( string.Format( ""{0} doesn't contain the field {1}. Please, contact the NHibernate team to fix this issue."", enumType, enumValue ) );"));
 			// -----------------------------------------------------------------
 		}
 

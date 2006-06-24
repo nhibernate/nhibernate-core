@@ -39,7 +39,11 @@ namespace NHibernate.Mapping.Attributes.Generator
 		/// <summary> Returns "true" or "false" for the AttributeUsage of this element. </summary>
 		public static string AllowMultipleValue(string elt)
 		{
-			return "true"; // TODO: Put back the following code?
+			if( elt=="hibernate-mapping" || elt=="class"
+				|| elt=="subclass" || elt=="joined-subclass" )
+				return "false";
+
+			return "true"; // TODO: Put back the following code? (harder to maintain)
 
 			/*// Note : <property> and <many-to-one> are here because of <nested-composite-element>
 			if( elt=="meta" || elt=="import" || elt=="param"
@@ -67,7 +71,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 				return false;
 
 			if(attribMember.Name == "name" || attribMember.Name == "proxy")
-				return parentEltName=="class" || parentEltName=="subclass" || parentEltName=="joined-subclass";
+				return parentEltName=="class" || parentEltName=="subclass"
+					|| parentEltName=="joined-subclass" || parentEltName == "type";
 
 			if(attribMember.Name == "extends")
 				return parentEltName=="subclass" || parentEltName == "joined-subclass";
@@ -75,7 +80,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 			// Note : Easier to write and it can't hurt :D (and ATM they are all System.Type)
 			if( attribMember.Name == "access" || attribMember.Name == "default-access"
 				|| attribMember.Name == "extends" || attribMember.Name == "id-type"
-				|| attribMember.Name == "meta-type" || attribMember.Name == "persister" )
+				|| attribMember.Name == "meta-type" || attribMember.Name == "persister"
+				|| attribMember.Name == "collection-type" )
 				return true;
 
 			if(attribMember.Name == "class")
@@ -96,6 +102,17 @@ namespace NHibernate.Mapping.Attributes.Generator
 		}
 
 
+		/// <summary> Tells if the attribute can take any object (easier to write/maintain and compile-time checking). </summary>
+		public static bool IsSystemObject(string parentEltName, System.Xml.Schema.XmlSchemaAttribute attribMember, string attribType)
+		{
+			if(attribType != "System.String")
+				return false;
+
+			return attribMember.Name == "unsaved-value"
+				|| IsSystemEnum(parentEltName, attribMember, attribType);
+		}
+
+
 		/// <summary> Tells if the attribute's type must be convert from a System.Enum value (easier to write/maintain and compile-time checking). </summary>
 		public static bool IsSystemEnum(string parentEltName, System.Xml.Schema.XmlSchemaAttribute attribMember, string attribType)
 		{
@@ -103,7 +120,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 		}
 
 
-		/// <summary> Tells if this element has itself as a sub-element. </summary>
+		/// <summary> Tells if this (non-root) element has itself as a sub-element. </summary>
 		public static bool CanContainItself(string name)
 		{
 			return name == "DynamicComponent" || name == "NestedCompositeElement";

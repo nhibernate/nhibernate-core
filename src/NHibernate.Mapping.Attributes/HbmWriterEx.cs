@@ -10,50 +10,112 @@ namespace NHibernate.Mapping.Attributes
 	/// </summary>
 	public class HbmWriterEx : HbmWriter
 	{
-		public override void WriteDynamicComponent(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, DynamicComponentAttribute attribute, BaseAttribute parentAttribute)
+		public virtual System.Collections.ArrayList FindSystemAttributedMembers(System.Type attributeType, System.Type classType)
 		{
-			if(attribute is ComponentPropertyAttribute)
+			// Return all members from the classType (and its base types) decorated with this attributeType
+			System.Collections.ArrayList list = new System.Collections.ArrayList();
+			System.Reflection.BindingFlags bindings = System.Reflection.BindingFlags.Instance
+				| System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly;
+
+			System.Type type = classType;
+			while( type != null )
 			{
-				ComponentPropertyAttribute attrib = attribute as ComponentPropertyAttribute;
-				System.Type componentType = attrib.ComponentType;
-				if(componentType == null)
-					if(member is System.Reflection.FieldInfo)
-						componentType = (member as System.Reflection.FieldInfo).FieldType;
-					else // It MUST be a PropertyInfo
-						componentType = (member as System.Reflection.PropertyInfo).PropertyType;
+				foreach( System.Reflection.MemberInfo member in type.GetMembers(bindings) )
+					if( member.GetCustomAttributes(attributeType, false).Length > 0 )
+						list.Add(member);
 
-				object[] componentAttributes = componentType.GetCustomAttributes(typeof(ComponentAttribute), true);
-				if(componentAttributes.Length == 0)
-					throw new System.ApplicationException(componentType.FullName + " doesn't have the attribute [Component]!");
-				ComponentAttribute componentAttribute = componentAttributes[0] as ComponentAttribute;
+				type = type.BaseType;
+				if( type!=null && ( type.IsDefined(typeof(ComponentAttribute), false) || type.IsDefined(typeof(ClassAttribute), false)
+					|| type.IsDefined(typeof(SubclassAttribute), false) || type.IsDefined(typeof(JoinedSubclassAttribute), false) ) )
+					break; // don't use members of a mapped base class
+			}
 
-				string componentName = attrib.PropertyName;
-				if(componentName == null)
-					componentName = member.Name; // Default value
+			return list;
+		}
 
-				if(componentAttribute.Name != null && componentAttribute.Name != componentName)
-					// Because, it will be used by the default implementation of "WriteComponent()"
-					throw new System.ApplicationException(componentType.FullName + " MUST have a [Component] with a 'null' Name (or the name '" + componentName + "')");
 
-				// Get the helper to set the componentName
-				HbmWriterHelperEx helper = this.DefaultHelper as HbmWriterHelperEx;
-				if(helper == null)
-					throw new System.ApplicationException("DefaultHelper must be a HbmWriterHelperEx (or a subType) to use [ComponentPropertyAttribute]");
+		public override void WriteUserDefinedContent(System.Xml.XmlWriter writer, System.Type classType, System.Type contentAttributeType, BaseAttribute parentAttribute)
+		{
+			base.WriteUserDefinedContent(writer, classType, contentAttributeType, parentAttribute);
 
-				// Set the value that will be returned when WriteComponent() will call Get_Component_Name_DefaultValue()
-				string savedValue = helper.DefaultValue;
-				helper.DefaultValue = componentName;
-				try
+			System.Collections.ArrayList RawXmlList = FindSystemAttributedMembers( typeof(RawXmlAttribute), classType );
+			foreach( System.Reflection.MemberInfo member in RawXmlList )
+			{
+				RawXmlAttribute rawXml = member.GetCustomAttributes(typeof(RawXmlAttribute), false)[0] as RawXmlAttribute;
+				if(contentAttributeType != rawXml.After)
+					continue;
+				if(rawXml.Content==null)
+					throw new MappingException("You must specify the content of the RawXmlAttribute on the member: " + member.Name + " of the class " + member.DeclaringType.FullName);
+
+				System.Xml.XmlTextWriter textWriter = writer as System.Xml.XmlTextWriter;
+				if(textWriter != null) // Hack to restore indentation after writing the raw XML
 				{
-					WriteComponent(writer, componentType);
+					textWriter.WriteStartElement("!----"); // Write <!---->
+					textWriter.Flush();
+					textWriter.BaseStream.Flush(); // Note: Seek doesn't work properly here; so the started elt can't be removed
 				}
-				finally
+
+				writer.WriteRaw(rawXml.Content);
+
+				if(textWriter != null) // Hack to restore indentation after writing the raw XML
 				{
-					helper.DefaultValue = savedValue;
+					textWriter.WriteEndElement();
+					textWriter.Flush();
+					textWriter.BaseStream.Flush();
+					textWriter.BaseStream.Seek(-8, System.IO.SeekOrigin.Current); // Remove </!---->
 				}
 			}
-			else
-				base.WriteDynamicComponent(writer, member, attribute, parentAttribute);
+
+			if(contentAttributeType == typeof(ComponentAttribute))
+			{
+				System.Collections.ArrayList ComponentPropertyList = FindSystemAttributedMembers( typeof(ComponentPropertyAttribute), classType );
+				foreach( System.Reflection.MemberInfo member in ComponentPropertyList )
+				{
+					object[] objects = member.GetCustomAttributes(typeof(ComponentPropertyAttribute), false);
+					WriteComponentProperty(writer, member, objects[0] as ComponentPropertyAttribute, parentAttribute);
+				}
+			}
+		}
+
+
+		public virtual void WriteComponentProperty(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ComponentPropertyAttribute attrib, BaseAttribute parentAttribute)
+		{
+			System.Type componentType = attrib.ComponentType;
+			if(componentType == null)
+				if(member is System.Reflection.FieldInfo)
+					componentType = (member as System.Reflection.FieldInfo).FieldType;
+				else // It MUST be a PropertyInfo
+					componentType = (member as System.Reflection.PropertyInfo).PropertyType;
+
+			object[] componentAttributes = componentType.GetCustomAttributes(typeof(ComponentAttribute), false);
+			if(componentAttributes.Length == 0)
+				throw new MappingException(componentType.FullName + " doesn't have the attribute [Component]!");
+			ComponentAttribute componentAttribute = componentAttributes[0] as ComponentAttribute;
+
+			string componentName = attrib.PropertyName;
+			if(componentName == null)
+				componentName = member.Name; // Default value
+
+			if(componentAttribute.Name != null && componentAttribute.Name != componentName)
+				// Because, it will be used by the default implementation of "WriteComponent()"
+				throw new MappingException(componentType.FullName + " must have a [Component] with a 'null' Name (or the name '" + componentName + "')");
+
+			// Get the helper to set the componentName
+			HbmWriterHelperEx helper = this.DefaultHelper as HbmWriterHelperEx;
+			if(helper == null)
+				throw new MappingException("DefaultHelper must be a HbmWriterHelperEx (or a subType) to use [ComponentProperty]");
+
+			// Set the value that will be returned when WriteComponent() will call Get_Component_Name_DefaultValue()
+			string savedValue = helper.DefaultValue;
+			helper.DefaultValue = componentName;
+			try
+			{
+				WriteComponent(writer, componentType);
+			}
+			finally
+			{
+				helper.DefaultValue = savedValue;
+			}
 		}
 	}
 }

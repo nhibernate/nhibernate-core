@@ -217,6 +217,9 @@
     <Compile Include="MapAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MappingException.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MetaAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -253,6 +256,9 @@
     <Compile Include="PropertyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RawXmlAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SetAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -260,6 +266,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TimestampAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TypeAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="UnsavedValueType.cs">

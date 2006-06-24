@@ -301,6 +301,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MappingException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MetaAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -365,6 +370,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "RawXmlAttribute.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SetAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -376,6 +386,11 @@
                 />
                 <File
                     RelPath = "TimestampAttribute.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypeAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
