@@ -1,11 +1,11 @@
 //
-// Test
+// NHibernate.Mapping.Attributes.Test
 // This product is under the terms of the GNU Lesser General Public License.
 //
 namespace NHibernate.Mapping.Attributes.Test
 {
 	/// <summary>
-	/// Tests for 
+	/// Simple tests using serialization to compare the results with reference files
 	/// </summary>
 	[NUnit.Framework.TestFixture]
 	public class Tests
@@ -16,6 +16,7 @@ namespace NHibernate.Mapping.Attributes.Test
 		{
 			// Enable validation of generated XML files
 			HbmSerializer.Default.Validate = true;
+			HbmSerializer.Default.HbmWriter.Patterns.Add(@"X\+(\S+), NHibernate.Mapping.Attributes.Test", "X+$1, NHMA.Test");
 		}
 
 

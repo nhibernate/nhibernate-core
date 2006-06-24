@@ -1,8 +1,17 @@
+//
+// NHibernate.Mapping.Attributes.Test
+// This product is under the terms of the GNU Lesser General Public License.
+//
 using System;
 //using System.Collections;
 //using System.Collections.Specialized;
 using NHMA = NHibernate.Mapping.Attributes;
 
+/*\
+ * The mapping used in the following classes has no meaning for NHibernate;
+ * it is here for the sole purpose of testing NHibernate.Mapping.Attributes
+ * in all possible usage cases.
+\*/
 
 namespace NHibernate.Mapping.Attributes.Test.DomainModel
 {
@@ -26,7 +35,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	// Note: this attribute is used when you serialize this class (not the assembly)
  [NHMA.HibernateMapping(-1, DefaultLazy=true, DefaultCascade=Mapping.Attributes.CascadeStyle.None, Schema="Schema", DefaultAccessType=typeof(int), AutoImport=true, Namespace="NH", Assembly="NH")]
  [NHMA.Class(DiscriminatorValue="base", NameType=typeof(Baz), Mutable=false, Polymorphism=NHMA.PolymorphismType.Explicit, ProxyType=typeof(Baz), PersisterType=typeof(Baz), BatchSize=9, Check="0" ,Where="1")]
- public class Baz : /*INamed,*/ IComparable
+ public class Baz
  {
 	#region NestingComponent + NestedBaz + Discriminator
 	[NHMA.Component(-1, Name="BazComponent", ClassType=typeof(NestingComponent), Update=false, Insert=false, AccessType=typeof(int))]
@@ -49,18 +58,21 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 				[NHMA.Parent(5, Name="Baz")]
 				[NHMA.Property(6, Name="Name", Length=64, NotNull=false, Unique=false, Update=false, Insert=false, Formula="Formula")]
 					[NHMA.Column(7, Name="name", Length=56)]
-				[NHMA.Property(8, Name="Count", Column="count_", TypeType=typeof(int))]
-				[NHMA.NestedCompositeElement(9, Name="Subcomponent", ClassType=typeof(FooComponent), AccessType=typeof(int))]
-					[NHMA.Property(10, Name="Name", Column="x_")]
-					[NHMA.Property(11, Name="Count", Column="y_", TypeType=typeof(int))]
+					[NHMA.Type(8, NameType=typeof(bool))]
+						[NHMA.Param(9, Name="Property.Type1")]
+						[NHMA.Param(10, Name="Property.Type2", Content="Content")]
+				[NHMA.Property(11, Name="Count", Column="count_", TypeType=typeof(int))]
+				[NHMA.NestedCompositeElement(12, Name="Subcomponent", ClassType=typeof(FooComponent), AccessType=typeof(int))]
+					[NHMA.Property(13, Name="Name", Column="x_")]
+					[NHMA.Property(14, Name="Count", Column="y_", TypeType=typeof(int))]
 		private System.Collections.IList _list;
 
 
 		[NHMA.DynamicComponent(AccessType=typeof(Foo))]
-			[NHMA.ComponentProperty(1, ComponentType=typeof(CompAddress), PropertyName="CompPropAddress")]
+// TODO: No longer supported:			[NHMA.ComponentProperty(1, ComponentType=typeof(CompAddress), PropertyName="CompPropAddress")]
 			[NHMA.DynamicComponent(7, Name="NestedDynComponent", Update=false, Insert=false, AccessType=typeof(int))]
 				[NHMA.Property(8)]
-// TODO: Not supported: (will be used by both [DynComp]
+// When ComponentProperty was a BaseAttribute: TODO: Not supported: (will be used by both [DynComp])
 //			[NHMA.ComponentProperty(9, ComponentType=typeof(CompAddress), PropertyName="LastAddress")]
 		public System.Collections.IList List
 		{
@@ -148,7 +160,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for Code
 	/// </summary>
-	[NHMA.Id(-4, Name="Code", TypeType=typeof(string), Access="field.camelcase-underscore", AccessType=typeof(int), Column="Id", Length=8, UnsavedValue="null")]
+	[NHMA.Id(-4, Name="Code", TypeType=typeof(string), Access="field.camelcase-underscore", AccessType=typeof(int), Column="Id", Length=8, UnsavedValueObject="null")]
 		[NHMA.Column(-3, Name="baz_id", Length=32)]
 		[NHMA.Generator(-2, Class="uuid.hex")]
 			[NHMA.Param(-1, Name="property", Content="Y")]
@@ -169,7 +181,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for count
 	/// </summary>
-	[NHMA.Version(Column="count_count", Name="Count", UnsavedValue="0", AccessType=typeof(int), TypeType=typeof(int))]
+	[NHMA.Version(Column="count_count", Name="Count", UnsavedValueObject=0, AccessType=typeof(int), TypeType=typeof(int))]
 	public Int32 Count
 	{
 		get
@@ -217,7 +229,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for stringList
 	/// </summary>
-	[NHMA.List(0, Table="string_list", BatchSize=7, Check="Check", AccessType=typeof(int), PersisterType=typeof(Foo))]
+	[NHMA.List(0, Generic=false, Table="string_list", BatchSize=7, Check="Check", AccessType=typeof(int), PersisterType=typeof(Foo))]
 		[NHMA.Key(1)]
 			[NHMA.Column(2, Name="id", Length=16)]
 		[NHMA.Index(3, Column="`i`")]
@@ -460,7 +472,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	 /// <summary>
 	 /// Get/set for manyToAny
 	 /// </summary>
-	[NHMA.List(0, Lazy=true)]
+	[NHMA.List(0, Lazy=true, CollectionTypeType=typeof(System.Collections.ArrayList))]
 		[NHMA.Key(1, Column="baz")]
 		[NHMA.Index(2, Column="ind")]
 		[NHMA.ManyToAny(3, IdTypeType=typeof(string))]
@@ -674,7 +686,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for bag
 	/// </summary>
-	[NHMA.Bag(-2, Name="Bag", OrderBy="x", Where="1", Lazy=true, Check="0", AccessType=typeof(Foo), PersisterType=typeof(string), Cascade=NHMA.CascadeStyle.All)]
+	[NHMA.Bag(-2, Name="Bag", Generic=false, OrderBy="x", Where="1", Lazy=true, Check="0", AccessType=typeof(Foo), PersisterType=typeof(string), Cascade=NHMA.CascadeStyle.All)]
 		[NHMA.Key(-1, Column="baz")]
 			[NHMA.Column(Name="`baz_id@#$`", NotNull=true, Unique=false, UniqueKey="1")]
 		[NHMA.Element(1, Column="`name!`", TypeType=typeof(string))]
@@ -730,7 +742,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for idFooBag
 	/// </summary>
-	[NHMA.IdBag(0, Name="IdFooBag", Lazy=true, Table="baz_id_foo", Cascade=NHMA.CascadeStyle.All, AccessType=typeof(int), Schema="null", OrderBy="1", Where="1")]
+	[NHMA.IdBag(0, Name="IdFooBag", Lazy=true, Generic=false, CollectionTypeType=typeof(bool), Table="baz_id_foo", Cascade=NHMA.CascadeStyle.All, AccessType=typeof(int), Schema="null", OrderBy="1", Where="1")]
 		[NHMA.CollectionId(1, Column="pkid", TypeType=typeof(System.Int64), Length=8)]
 			[NHMA.Generator(2, Class="hilo")]
 		[NHMA.Key(3, Column="baz")]
@@ -750,7 +762,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for byteBag
 	/// </summary>
-	[NHMA.IdBag(0, Lazy=true, Table="baz_byte_bag", Cascade=NHMA.CascadeStyle.All)]
+	[NHMA.IdBag(0, Lazy=true, Inverse=true, Table="baz_byte_bag", Cascade=NHMA.CascadeStyle.All)]
 		[NHMA.CollectionId(1, Column="pkid", TypeType=typeof(System.Int64))]
 			[NHMA.Generator(2, Class="hilo")]
 		[NHMA.Key(3, Column="baz")]
@@ -767,83 +779,6 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 		}
 	}
 	
-	#endregion
-
-	#region SetDefaults()
-/*
-	 public void SetDefaults() 
-	 {
-		 DateTime today = new DateTime( DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day );
-
-		 StringSet = new Iesi.Collections.HashedSet();
-		 StringSet.Add( "foo" );
-		 StringSet.Add( "bar" );
-		 StringSet.Add( "baz" );
-
-		 StringDateMap = new SortedList();
-		 StringDateMap.Add( "now", DateTime.Now );
-		 StringDateMap.Add( "never", null );
-		 // according to SQL Server the big bag happened in 1753 ;)
-		 StringDateMap.Add( "big bang", new DateTime( 1753, 01, 01) );
-		 //StringDateMap.Add( "millenium", new DateTime( 2000, 01, 01 ) );
-		 ArrayList list = new ArrayList();
-		 list.AddRange( StringSet ); 
-		 StringList = list;
-		 IntArray = new int[] { 1,3,3,7 };
-		 FooArray =new Foo[0];
-		 StringArray = (String[]) list.ToArray(typeof(string) );
-		 Customs = new ArrayList();
-		 Customs.Add( new String[] { "foo", "bar" } );
-		 Customs.Add( new String[] { "A", "B" } );
-		 Customs.Add( new String[] { "1", "2" } );
-		
-		 FooSet = new Iesi.Collections.HashedSet();
-		 Components = new FooComponent[] {
-											 new FooComponent("foo", 42, null, null),
-											 new FooComponent("bar", 88, null, new FooComponent("sub", 69, null, null) )
-										 };
-		 TimeArray = new DateTime[] {
-										new DateTime(),
-										new DateTime(),
-										new DateTime(), // H2.1 has null here, but it's illegal on .NET
-										new DateTime(0)
-									};
-
-		 Count = 667;
-		 Name="Bazza";
-		 TopComponents = new ArrayList();
-		 TopComponents.Add( new FooComponent("foo", 11, new DateTime[] { today, new DateTime(2123,1,1) }, null) );
-		 TopComponents.Add( new FooComponent("bar", 22, new DateTime[] { new DateTime(2007,2,3), new DateTime(1945,6,1) }, null) );
-		 TopComponents.Add( null );
-		 Bag = new ArrayList();
-		 Bag.Add("duplicate");
-		 Bag.Add("duplicate");
-		 Bag.Add("duplicate");
-		 Bag.Add("unique");
-		 
-		 //TODO: SET - verify right implementation
-		 Cached = new Iesi.Collections.ListSet();
-
-		 CompositeElement ce = new CompositeElement();
-		 ce.Foo = "foo";
-		 ce.Bar = "bar";
-		 CompositeElement ce2 = new CompositeElement();
-		 ce2.Foo = "fooxxx";
-		 ce2.Bar = "barxxx";
-		 Cached.Add( ce );
-		 Cached.Add( ce2 );
-		 CachedMap = new SortedList();
-		 CachedMap.Add(this, ce);
-	 }*/
-	#endregion
-
-	#region IComparable Members
-
-	 public int CompareTo(object obj)
-	 {
-		 return ( (Baz) obj ).Code.CompareTo(Code);
-	 }
-
 	#endregion
  }
 
@@ -964,20 +899,23 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set { _id = value; }
 		}
 
+		[NHMA.Property(-1)]
+			[NHMA.Type(NameType=typeof(Foo))]
+				[NHMA.Param(1, Name="Property.Type", Content="Param")]
 		public Foo Foo
 		{
 			get { return _foo; }
 			set { _foo = value; }
 		}
 
-		[NHMA.Timestamp(0, Column="`timestamp`", UnsavedValue="0", AccessType=typeof(bool))]
+		[NHMA.Timestamp(0, Column="`timestamp`", UnsavedValueObject=true, AccessType=typeof(bool))]
 		public DateTime Timestamp
 		{
 			get { return _timestamp; }
 			set { _timestamp = value; }
 		}
 
-		[NHMA.Set(-2, Generic=true, Inverse=true, Cascade=NHMA.CascadeStyle.All, OuterJoin=NHMA.OuterJoinStrategy.True, AccessType=typeof(bool), Where="1=1", PersisterType=typeof(Foo), SortType=typeof(bool))]
+		[NHMA.Set(-2, Generic=true, Inverse=true, CollectionTypeType=typeof(Stuff), Cascade=NHMA.CascadeStyle.All, OuterJoin=NHMA.OuterJoinStrategy.True, AccessType=typeof(bool), Where="1=1", PersisterType=typeof(Foo), SortType=typeof(bool))]
 			[NHMA.Key(-1, Column="col")]
 			[NHMA.OneToMany(ClassType=typeof(int))]
 		public Iesi.Collections.ISet Set
@@ -996,7 +934,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set {  }
 		}
 
-		[NHMA.ComponentProperty(0, ComponentType=typeof(CompAddress), PropertyName="MyCompAddressTwo")]
+		[NHMA.ComponentProperty(ComponentType=typeof(CompAddress), PropertyName="MyCompAddressTwo")]
 		public string MyCompAddress2
 		{
 			get { return null;  }
@@ -1005,3 +943,101 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	}
 	#endregion
 }
+
+
+
+#region Subclasses & JoinedSubclasses to test HbmSerializer.MapSubclasses() and classes nesting
+/* Disabled because the original order (determined by the compiler) may vary and influence the final result
+
+public class S
+{
+	[NHMA.Subclass(ExtendsType=typeof(Sub_Sub_SubA_1))]
+	private class Sub_Sub_Sub_SubA_1 : Sub_Sub_SubA_1 {}
+	[NHMA.Subclass(ExtendsType=typeof(SubA_1))]
+	private class Sub_SubA_1 : SubA_1 {}
+	[NHMA.Subclass(ExtendsType=typeof(SubA_2))]
+	private class Sub_Sub_A_2 : SubA_2 {}
+	[NHMA.Subclass(ExtendsType=typeof(Sub_SubA_1))]
+	private class Sub_Sub_SubA_1 : Sub_SubA_1 {}
+	[NHMA.Subclass(ExtendsType=typeof(A))]
+	private class SubA_2 : A {}
+	[NHMA.Subclass(ExtendsType=typeof(A))]
+	private class SubA_1 : A {}
+	[NHMA.Subclass(ExtendsType=typeof(Guid))]
+	private class A {}
+}
+
+class JS
+{
+	[NHMA.JoinedSubclass(ExtendsType=typeof(Sub_Sub_SubA_1))]
+	private class Sub_Sub_Sub_SubA_1 : Sub_Sub_SubA_1 {}
+	[NHMA.JoinedSubclass(ExtendsType=typeof(SubA_1))]
+	private class Sub_SubA_1 : SubA_1 {}
+	[NHMA.JoinedSubclass(ExtendsType=typeof(SubA_2))]
+	internal class Sub_Sub_A_2 : SubA_2 {}
+	[NHMA.JoinedSubclass(ExtendsType=typeof(Sub_SubA_1))]
+	private class Sub_Sub_SubA_1 : Sub_SubA_1 {}
+	[NHMA.JoinedSubclass(ExtendsType=typeof(A))]
+	internal class SubA_2 : A {}
+	[NHMA.JoinedSubclass(ExtendsType=typeof(A))]
+	private class SubA_1 : A {}
+	[NHMA.JoinedSubclass(ExtendsType=typeof(Guid))]
+	internal class A {}
+}/**/
+
+
+// Test mapping of nested classes
+internal class X
+{
+	[NHMA.Subclass(ExtendsType=typeof(Guid))]
+	private class PrivS
+	{
+		[NHMA.Class]
+		private class PrivC
+		{
+			[NHMA.Subclass(ExtendsType=typeof(Guid))]
+			internal class IntS : PrivS
+			{
+				[NHMA.Component(Name="CompX")]
+				private class Comp {}
+
+				[NHMA.Class]
+				internal class IntC : PrivC
+				{
+					[NHMA.Id]
+						[NHMA.Generator(1, Class="")]
+					[NHMA.RawXml(After=typeof(NHMA.IdAttribute), Content=@"<version name="""" />")]
+					public int _id = -1;
+				}
+			}
+
+			[NHMA.RawXml(Content=@"
+    <id>
+      <generator class="""" />
+    </id>")]
+			public int id = -1;
+		}
+
+		[NHMA.JoinedSubclass(ExtendsType=typeof(Guid))]
+		private class PrivJ
+		{
+			private class C
+			{
+				[NHMA.JoinedSubclass(ExtendsType=typeof(Guid))]
+				internal class IntJ : PrivJ
+				{
+					[NHMA.Key]
+					public int _id = -1;
+				}
+			}
+			[NHMA.Key]
+			[NHMA.Property] // Test HbmWriter.Patterns
+			public PrivC userPattern = new PrivC();
+
+			[NHMA.Property] // Test HbmWriter.Patterns
+			public System.Data.SqlTypes.SqlDateTime sqlPattern = new System.Data.SqlTypes.SqlDateTime();
+		}
+	}
+}
+/**/
+#endregion
