@@ -580,6 +580,11 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
+                            <entry>DB2 for iSeries (OS/400)</entry> 
+                            <entry><literal>NHibernate.Dialect.DB2400Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
                             <entry>PostgreSQL</entry> 
                             <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
                             <entry></entry>
