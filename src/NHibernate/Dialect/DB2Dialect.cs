@@ -18,10 +18,6 @@ namespace NHibernate.Dialect
 	///			<description>Default Value</description>
 	///		</listheader>
 	///		<item>
-	///			<term>hibernate.use_outer_join</term>
-	///			<description><c>true</c></description>
-	///		</item>
-	///		<item>
 	///			<term>hibernate.connection.driver_class</term>
 	///			<description><see cref="NHibernate.Driver.DB2Driver" /></description>
 	///		</item>
