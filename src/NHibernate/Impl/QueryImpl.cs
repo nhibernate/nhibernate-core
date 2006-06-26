@@ -37,6 +37,13 @@ namespace NHibernate.Impl
 			return Session.Find( BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
 		}
 
+		public override void List( IList results )
+		{
+			VerifyParameters();
+			IDictionary namedParams = NamedParams;
+			Session.Find( BindParameterLists( namedParams ), GetQueryParameters( namedParams ), results );
+		}
+
 #if NET_2_0
 		public override IList<T> List<T>()
 		{

@@ -91,6 +91,12 @@ namespace NHibernate
 		/// <returns></returns>
 		IList List();
 
+		/// <summary>
+		/// Get the results and fill the <see cref="IList"/>
+		/// </summary>
+		/// <param name="results">The list to fill with the results.</param>
+		void List( IList results );
+
 #if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="List()" />.

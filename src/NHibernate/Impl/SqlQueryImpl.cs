@@ -107,6 +107,16 @@ namespace NHibernate.Impl
 			return Session.List( spec, qp );
 		}
 
+		public override void List( IList results )
+		{
+			VerifyParameters();
+			IDictionary namedParams = NamedParams;
+			NativeSQLQuerySpecification spec = GenerateQuerySpecification( namedParams );
+			QueryParameters qp = GetQueryParameters( namedParams );
+
+			Session.List( spec, qp, results );
+		}
+
 #if NET_2_0
 		public override IList<T> List<T>()
 		{

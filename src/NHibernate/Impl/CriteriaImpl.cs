@@ -100,6 +100,11 @@ namespace NHibernate.Impl
 				return root.List();
 			}
 
+			public void List( IList results )
+			{
+				root.List( results );
+			}
+
 #if NET_2_0
 			public IList<T> List<T>()
 			{
@@ -277,6 +282,11 @@ namespace NHibernate.Impl
 		public IList List()
 		{
 			return session.Find( this );
+		}
+
+		public void List( IList results )
+		{
+			session.Find( this, results );
 		}
 
 #if NET_2_0

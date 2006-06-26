@@ -961,6 +961,7 @@ namespace NHibernate.Impl
 		public abstract IEnumerable<T> Enumerable<T>();
 #endif
 		public abstract IList List();
+		public abstract void List( IList results );
 #if NET_2_0
 		public abstract IList<T> List<T>();
 #endif

@@ -179,6 +179,8 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		IList Find( string query, QueryParameters parameters );
 
+		void Find( string query, QueryParameters parameters, IList results );
+
 #if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="Find(string, QueryParameters)" />
@@ -327,6 +329,8 @@ namespace NHibernate.Engine
 		/// Execute an SQL Query
 		/// </summary>
 		IList List( NativeSQLQuerySpecification spec, QueryParameters queryParameters );
+
+		void List( NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results );
 
 #if NET_2_0
 		/// <summary>

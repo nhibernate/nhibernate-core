@@ -1746,7 +1746,7 @@ namespace NHibernate.Impl
 		}
 #endif
 
-		private void Find( string query, QueryParameters parameters, IList results )
+		public void Find( string query, QueryParameters parameters, IList results )
 		{
 			CheckIsOpen();
 
@@ -4858,7 +4858,7 @@ namespace NHibernate.Impl
 		}
 #endif
 
-		private void Find( CriteriaImpl criteria, IList results )
+		public void Find( CriteriaImpl criteria, IList results )
 		{
 			// The body of this method is modified from H2.1 version, because the Java version
 			// used factory.GetImplementors which returns a list of implementor class names
