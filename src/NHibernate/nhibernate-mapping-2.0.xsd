@@ -63,7 +63,7 @@
 		<xs:attribute name="access" type="xs:string" use="optional"/>
 		<xs:attribute name="table" type="xs:string" use="optional"/>
 		<xs:attribute name="schema" type="xs:string" use="optional"/>
-		<xs:attribute name="lazy" type="xs:boolean" use="optional" default="false">
+		<xs:attribute name="lazy" type="xs:boolean" use="optional">
 			<xs:annotation>
 				<xs:documentation>Enable the lazy loading of this collection</xs:documentation>
 			</xs:annotation>
