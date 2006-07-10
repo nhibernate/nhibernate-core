@@ -1,1 +1,0 @@
-NAnt -buildfile:release.build
