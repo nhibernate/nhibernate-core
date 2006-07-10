@@ -339,6 +339,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Bytecode\EmitUtil.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Bytecode\IAccessOptimizer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -599,6 +604,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\DB2400Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\DB2Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -615,6 +625,11 @@
                 />
                 <File
                     RelPath = "Dialect\GenericDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\IngresDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -679,12 +694,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\SybaseAnywhereDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\SybaseDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Dialect\TypeNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\ASAClientDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\DB2400Driver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -699,12 +729,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Driver\FirebirdClientDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Driver\FirebirdDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Driver\IDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\IngresDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1499,11 +1539,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Loader\Custom\SqlLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Loader\Custom\SQLQueryCollectionReturn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1926,6 +1961,16 @@
                 />
                 <File
                     RelPath = "Property\IGetter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Property\IOptimizableGetter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Property\IOptimizableSetter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2724,6 +2769,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "UserTypes\IParameterizedType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UserTypes\IUserCollectionType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2803,6 +2853,11 @@
                 />
                 <File
                     RelPath = "Util\TypeNameParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\WeakHashtable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

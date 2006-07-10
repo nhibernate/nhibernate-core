@@ -109,16 +109,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ClassNameTests.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "config.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "convert.vm"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "DomainModel.csharp"
-                    SubType = "Code"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -129,6 +129,10 @@
                     RelPath = "ResourceHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Simple.csharp"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Simple.hbm.xml"

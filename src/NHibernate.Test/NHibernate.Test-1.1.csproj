@@ -196,6 +196,18 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CollectionTest\A.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CollectionTest\IdBagFixture.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CollectionTest\IdBagFixture.hbm.xml"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "CompositeCollection\BaseClassA.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1489,6 +1501,25 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TypeParameters\DefaultValueIntegerType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypeParameters\TypeParameterTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypeParameters\Widget.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypeParameters\Widget.hbm.xml"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "TypesTest\BinaryBlobClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1691,6 +1722,40 @@
                     RelPath = "TypesTest\TypeFixtureBase.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserCollection\Email.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserCollection\MyList.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserCollection\MyListType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserCollection\PersistentMylist.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserCollection\User.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserCollection\UserCollectionTypeTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserCollection\UserPermissions.hbm.xml"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "UtilityTest\AssemblyQualifiedTypeNameFixture.cs"
