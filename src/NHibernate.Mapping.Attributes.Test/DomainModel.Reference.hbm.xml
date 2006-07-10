@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Generated from NHibernate.Mapping.Attributes on 2006-06-22 08:22:57Z.-->
+<!--Generated from NHibernate.Mapping.Attributes on 2006-07-10 11:31:39Z.-->
 <hibernate-mapping auto-import="true" default-lazy="true" xmlns="urn:nhibernate-mapping-2.0">
   <class name="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" proxy="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" discriminator-value="base" mutable="false" polymorphism="explicit" persister="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" where="1" batch-size="9" check="0">
     <id name="Code" access="Int32" column="Id" type="String" length="8" unsaved-value="null">
@@ -256,7 +256,8 @@
   <subclass name="X+PrivS, NHibernate.Mapping.Attributes.Test" extends="Guid" />
   <joined-subclass name="X+PrivS+PrivJ, NHibernate.Mapping.Attributes.Test" extends="Guid">
     <key />
-    <property name="pattern" type="X+PrivS+PrivC, NHMA.Test" />
+    <property name="userPattern" type="X+PrivS+PrivC, NHMA.Test" />
+    <property name="sqlPattern" type="NHibernate.UserTypes.SqlTypes.SqlDateTimeType, NHibernate.UserTypes.SqlTypes" />
     <joined-subclass name="X+PrivS+PrivJ+C+IntJ, NHibernate.Mapping.Attributes.Test" extends="Guid">
       <key />
     </joined-subclass>
