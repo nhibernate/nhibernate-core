@@ -66,6 +66,33 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			s.Close();
 		}
 
+		// NH-669
+		[Test]
+		public void UpdatesToSimpleMap()
+		{
+			A a = new A();
+			a.Name = "A";
+
+			using( ISession s = OpenSession() )
+			{
+				s.Save( a );
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				a = s.Load<A>( a.Id );
+				a.SortedList.Add("abc", 10);
+				s.Flush();
+			}
+
+			using( ISession s = OpenSession() )
+			{
+				s.Delete("from A");
+				s.Flush();
+			}
+		}
+
 		[Test]
 		public void Copy()
 		{
