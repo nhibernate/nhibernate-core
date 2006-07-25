@@ -169,7 +169,7 @@ namespace NHibernate.Persister.Entity
 
 		public virtual object IdentifierSpace
 		{
-			get { return entityMetamodel.RootType.AssemblyQualifiedName; }
+			get { return entityMetamodel.RootTypeAssemblyQualifiedName; }
 		}
 
 		public virtual string IdentifierSelectFragment( string name, string suffix )

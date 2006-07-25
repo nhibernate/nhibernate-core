@@ -26,6 +26,7 @@ namespace NHibernate.Tuple
 		//private string rootName;
 		private System.Type type;
 		private System.Type rootType;
+		private string rootTypeAssemblyQualifiedName;
 
 		private EntityType entityType;
 
@@ -91,7 +92,8 @@ namespace NHibernate.Tuple
 			//entityType = TypeFactory.manyToOne( name );
 			type = persistentClass.MappedClass;
 			rootType = persistentClass.RootClazz.MappedClass;
-			entityType = TypeFactory.ManyToOne( type );
+			rootTypeAssemblyQualifiedName = rootType.AssemblyQualifiedName;
+			entityType = TypeFactory.ManyToOne(type);
 
 			identifierProperty = PropertyFactory.BuildIdentifierProperty(
 				persistentClass,
@@ -344,6 +346,11 @@ namespace NHibernate.Tuple
 		public System.Type RootType
 		{
 			get { return rootType; }
+		}
+
+		public string RootTypeAssemblyQualifiedName
+		{
+			get { return rootTypeAssemblyQualifiedName; }
 		}
 
 		public EntityType EntityType
