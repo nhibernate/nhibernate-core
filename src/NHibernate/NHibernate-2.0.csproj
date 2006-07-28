@@ -532,6 +532,7 @@
     <Compile Include="Driver\FirebirdClientDriver.cs" />
     <Compile Include="Driver\IngresDriver.cs" />
     <Compile Include="Driver\ReflectionBasedDriver.cs" />
+    <Compile Include="Driver\SQLite20Driver.cs" />
     <Compile Include="Driver\SqlServerCeDriver.cs" />
     <Compile Include="Engine\EntityKey.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
