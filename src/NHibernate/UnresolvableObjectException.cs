@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace NHibernate
 {
@@ -8,7 +9,7 @@ namespace NHibernate
 	/// loading an association.
 	/// </summary>
 	[Serializable]
-	public class UnresolvableObjectException : HibernateException, ISerializable
+	public class UnresolvableObjectException : HibernateException
 	{
 		private readonly object identifier;
 		private readonly System.Type clazz;
@@ -61,6 +62,8 @@ namespace NHibernate
 
 		#region ISerializable Members
 
+		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
+		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData (info, context);

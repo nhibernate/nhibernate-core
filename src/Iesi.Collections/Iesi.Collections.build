@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+﻿<?xml version="1.0" ?>
 
 <project 
 	name="Iesi.Collections" 
@@ -16,8 +16,9 @@
 			value="Enhanced Collections for .NET.  Code was published at http://www.codeproject.com/csharp/sets.asp" />
 		<property name="assembly.copyright"
 			value="Declaration of code in public domain can be found in comment by Jason Smith at http://www.codeproject.com/csharp/sets.asp#xx703510xx.  Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith." />
-		<property name="assembly.version" value="1.0.0.2" />
+		<property name="assembly.version" value="1.0.0.3" />
 		<property name="assembly.version.informational" value="1.0" />
+		<property name="assembly.allow-partially-trusted-callers" value="true" />
 
 		<property name="clover.instrument" value="true" />
 

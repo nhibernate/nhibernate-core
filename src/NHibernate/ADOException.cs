@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 using NHibernate.SqlCommand;
 
@@ -52,6 +53,8 @@ namespace NHibernate
 			this.sql = ( SqlString ) info.GetValue( "sql", typeof( SqlString ) );
 		}
 
+		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
+		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData( info, context );

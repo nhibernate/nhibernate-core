@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 using Iesi.Collections;
 
@@ -211,7 +212,7 @@ namespace NHibernate.Impl
 		/// begins.  I don't know how to add logic in ISerializable.GetObjectData and have .net
 		/// write all of the serializable fields out.
 		/// </remarks>
-		protected SessionImpl( SerializationInfo info, StreamingContext context )
+		private SessionImpl( SerializationInfo info, StreamingContext context )
 		{
 			this.autoClose = info.GetBoolean( "autoClose" );
 			this.timestamp = info.GetInt64( "timestamp" );
@@ -255,6 +256,8 @@ namespace NHibernate.Impl
 		/// has complete control and what is serialized and those attributes are ignored.  However, 
 		/// this method should be in synch with the attributes for easy readability.
 		/// </remarks>
+		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
+		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
 		void ISerializable.GetObjectData( SerializationInfo info, StreamingContext context )
 		{
 			log.Debug( "writting session to serializer" );
@@ -4493,7 +4496,7 @@ namespace NHibernate.Impl
 		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
 		/// to call any methods that could potentially bring this Session back to life.
 		/// </remarks>
-		protected void Dispose( bool isDisposing )
+		private void Dispose( bool isDisposing )
 		{
 			if( _isAlreadyDisposed )
 			{

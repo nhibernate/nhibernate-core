@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace NHibernate
 {
@@ -7,7 +8,7 @@ namespace NHibernate
 	/// Thrown if Hibernate can't instantiate an entity or component class at runtime.
 	/// </summary>
 	[Serializable]
-	public class InstantiationException : HibernateException, ISerializable
+	public class InstantiationException : HibernateException
 	{
 		private System.Type type;
 		
@@ -76,6 +77,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
+		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData( info, context );
