@@ -701,7 +701,7 @@ namespace NHibernate.Persister.Entity
 			foreach( Column col in idValue.ColumnCollection )
 			{
 				rootTableKeyColumnNames[ i ] = col.GetQuotedName( factory.Dialect );
-				identifierAliases[ i ] = col.GetAlias( Dialect );
+				identifierAliases[ i ] = col.GetAlias( Dialect, persistentClass.RootTable );
 				i++;
 			}
 
