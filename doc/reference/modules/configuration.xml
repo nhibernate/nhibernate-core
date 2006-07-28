@@ -630,7 +630,11 @@ ISession session = sessions.OpenSession(conn);
                         <row>
                             <entry>Microsoft SQL Server 2005</entry> 
                             <entry><literal>NHibernate.Dialect.MsSql2005Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>
+								Set <literal>hibernate.driver_class</literal> to
+								<literal>NHibernate.Driver.SqlServerCeDriver</literal>
+								for SQL Server 2005 Everywhere Edition.
+							</entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 7</entry> 
@@ -649,7 +653,11 @@ ISession session = sessions.OpenSession(conn);
                         <row>
                             <entry>SQLite</entry>
                             <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
-                            <entry></entry>
+							<entry>
+								Set <literal>hibernate.driver_class</literal> to
+								<literal>NHibernate.Driver.SQLite20Driver</literal>
+								for System.Data.SQLite provider for .NET 2.0.
+							</entry>
                         </row>
                         <row>
                             <entry>Ingres 3.0</entry>
