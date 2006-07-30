@@ -34,8 +34,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.Binary, 2147483647, "BLOB SUB_TYPE 0" ); // should use the IType.BlobType
 			RegisterColumnType( DbType.Boolean, "SMALLINT" );
 			RegisterColumnType( DbType.Byte, "SMALLINT" );
-            RegisterColumnType( DbType.Currency, "DECIMAL(18,4)" );
-            RegisterColumnType( DbType.Guid, "CHAR(38)" );
+			RegisterColumnType( DbType.Currency, "DECIMAL(18,4)" );
 			RegisterColumnType( DbType.Date, "DATE" );
 			RegisterColumnType( DbType.DateTime, "TIMESTAMP" );
 			RegisterColumnType( DbType.Decimal, "DECIMAL(18,5)" ); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
@@ -52,14 +51,14 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.String, 1073741823, "BLOB SUB_TYPE 1" ); // should use the IType.ClobType
 			RegisterColumnType( DbType.Time, "TIME" );
 
-            // Firebird server embedded functions
-            RegisterFunction("upper", new StandardSQLFunction());
-            RegisterFunction("substring", new StandardSQLFunction());
-            RegisterFunction("today", new NoArgSQLFunction(NHibernateUtil.Date,false));
-            RegisterFunction("yesterday", new NoArgSQLFunction(NHibernateUtil.Date, false));
-            RegisterFunction("tomorrow", new NoArgSQLFunction(NHibernateUtil.Date, false));
-            RegisterFunction("now", new NoArgSQLFunction(NHibernateUtil.DateTime, false));
-            RegisterFunction("nullif", new StandardSQLFunction());
+			// Firebird server embedded functions
+			RegisterFunction("upper", new StandardSQLFunction());
+			RegisterFunction("substring", new StandardSQLFunction());
+			RegisterFunction("today", new NoArgSQLFunction(NHibernateUtil.Date,false));
+			RegisterFunction("yesterday", new NoArgSQLFunction(NHibernateUtil.Date, false));
+			RegisterFunction("tomorrow", new NoArgSQLFunction(NHibernateUtil.Date, false));
+			RegisterFunction("now", new NoArgSQLFunction(NHibernateUtil.DateTime, false));
+			RegisterFunction("nullif", new StandardSQLFunction());
 
 			// External Firebird and Interbase standard UDFs
 			//Conditional Logic Functions
