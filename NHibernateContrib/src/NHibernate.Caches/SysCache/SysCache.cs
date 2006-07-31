@@ -21,6 +21,7 @@
 using System;
 using System.Collections;
 using System.Web;
+
 using AspCache = System.Web.Caching; // clash with new NHibernate namespace below
 using log4net;
 using NHibernate.Cache;
@@ -38,9 +39,9 @@ namespace NHibernate.Caches.SysCache
 		private DateTime _absExpiration;
 		private TimeSpan _slidingExpiration;
 		private AspCache.CacheItemPriority _priority;
-		private Hashtable _map;
 		private static readonly TimeSpan _defaultRelativeExpiration = TimeSpan.FromSeconds( 300 );
 		private static readonly string _cacheKeyPrefix = "NHibernate-Cache:";
+		private string _rootCacheKey;
 
 		/// <summary>
 		/// default constructor
@@ -79,8 +80,10 @@ namespace NHibernate.Caches.SysCache
 		public SysCache( string region, IDictionary properties )
 		{
 			_region = region;
-			_map = new Hashtable();
 			_cache = HttpRuntime.Cache;
+
+			StoreRootCacheKey();
+
 			Configure( properties );
 		}
 
@@ -211,15 +214,13 @@ namespace NHibernate.Caches.SysCache
 		/// <returns></returns>
 		public object Get( object key )
 		{
+			const string NOT = "not ";
+
 			if( key == null )
 			{
 				return null;
 			}
 			string cacheKey = GetCacheKey( key );
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( String.Format( "Fetching object '{0}' from the cache.", cacheKey ) );
-			}
 
 			object obj = _cache.Get( cacheKey );
 			if( obj == null )
@@ -228,15 +229,19 @@ namespace NHibernate.Caches.SysCache
 			}
 
 			DictionaryEntry de = ( DictionaryEntry ) obj;
+			object returnValue = null;
 
 			if( key.Equals( de.Key ) )
 			{
-				return de.Value;
+				returnValue = de.Value;
 			}
-			else
+
+			if( log.IsDebugEnabled )
 			{
-				return null;
+				log.Debug( String.Format( "Attempted to fetch object '{0}' from the cache - {1}FOUND", cacheKey, returnValue == null ? NOT : string.Empty ) );
 			}
+
+			return returnValue;
 		}
 
 		/// <summary></summary>
@@ -255,36 +260,27 @@ namespace NHibernate.Caches.SysCache
 			string cacheKey = GetCacheKey( key );
 			if( _cache[ cacheKey ] != null )
 			{
+				// Cache item already exists, remove it in preperation for adding it again (otherwise the sliding refresh doesn't work)
 				if( log.IsDebugEnabled )
 				{
 					log.Debug( String.Format("updating value of key '{0}' to '{1}'.", cacheKey, value.ToString() ) );
 				}
-				_cache[ cacheKey ] = new DictionaryEntry( key, value );
+
+				_cache.Remove( cacheKey );
 			}
 			else
 			{
 				if( log.IsDebugEnabled )
 				{
-					log.Debug( String.Format("adding new data: key={0}&value={1}", cacheKey, value.ToString() ) );
+					log.Debug( String.Format("adding new data: key={0}&value={1}&sliding={2}", cacheKey, value.ToString(), _slidingExpiration.ToString() ) );
 				}
-				_map.Add( cacheKey, value );
-				_cache.Add(
-					cacheKey, new DictionaryEntry( key, value ), null,
-					_absExpiration, _slidingExpiration, _priority,
-					new AspCache.CacheItemRemovedCallback( CacheItemRemoved )
-				);
 			}
-		}
 
-		/// <summary>
-		/// make sure the Hashtable is in sync with the cache by using the callback.
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="reason"></param>
-		public void CacheItemRemoved( string key, object value, AspCache.CacheItemRemovedReason reason )
-		{
-			_map.Remove( key );
+			// Now add the item with expiration policy
+			_cache.Add(
+				cacheKey, new DictionaryEntry( key, value ), new AspCache.CacheDependency(null, new string[] { _rootCacheKey }), AspCache.Cache.NoAbsoluteExpiration,
+				_slidingExpiration, _priority, null
+			);
 		}
 
 		/// <summary></summary>
@@ -300,19 +296,37 @@ namespace NHibernate.Caches.SysCache
 			{
 				log.Debug( "removing item with key: " + cacheKey );
 			}
-			_map.Remove( cacheKey ); // possibly not needed now that callbacks are used
 			_cache.Remove( cacheKey );
 		}
 
 		/// <summary></summary>
 		public void Clear()
 		{
-			ArrayList keys = new ArrayList( _map.Keys );
-			foreach( object key in keys )
-			{
-				_cache.Remove( key.ToString() );
-			}
-			_map.Clear();
+			RemoveRootCacheKey();
+
+			StoreRootCacheKey();
+		}
+
+		/// <summary>
+		/// Generate a unique root key for all cache items to be dependant upon
+		/// </summary>
+		/// <returns></returns>
+		private string GenerateRootCacheKey()
+		{
+			return GetCacheKey(Guid.NewGuid());
+		}
+
+		/// <summary></summary>
+		private void StoreRootCacheKey()
+		{
+			_rootCacheKey = GenerateRootCacheKey();
+			_cache.Add(_rootCacheKey, _rootCacheKey, null, AspCache.Cache.NoAbsoluteExpiration, AspCache.Cache.NoSlidingExpiration, AspCache.CacheItemPriority.Default, null);
+		}
+
+		/// <summary></summary>
+		private void RemoveRootCacheKey()
+		{
+			_cache.Remove(_rootCacheKey);
 		}
 
 		/// <summary></summary>
