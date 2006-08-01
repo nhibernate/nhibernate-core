@@ -89,7 +89,7 @@ namespace NHibernate.Cfg
 			object old = classes[ persistentClass.MappedClass ];
 			if( old != null )
 			{
-				log.Warn( "duplicate class mapping: " + persistentClass.MappedClass.Name );
+				throw new MappingException( "duplicate class mapping: " + persistentClass.MappedClass.Name );
 			}
 			classes[ persistentClass.MappedClass ] = persistentClass;
 		}

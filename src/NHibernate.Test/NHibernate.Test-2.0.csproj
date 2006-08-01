@@ -20,7 +20,7 @@
     <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -141,6 +141,11 @@
     <Compile Include="MappingExceptions\AddClassFixture.cs" />
     <Compile Include="MappingExceptions\AddResourceFixture.cs" />
     <Compile Include="MappingExceptions\AddXmlFileFixture.cs" />
+    <EmbeddedResource Include="MappingExceptions\DuplicateClassMapping.hbm.xml">
+      <SubType>
+      </SubType>
+    </EmbeddedResource>
+    <Compile Include="MappingExceptions\DuplicateClassMappingFixture.cs" />
     <Compile Include="MappingExceptions\MissingDefCtor.cs" />
     <Compile Include="MappingExceptions\MissingDefCtorFixture.cs" />
     <Compile Include="MappingExceptions\PropertyNotFoundExceptionFixture.cs" />
@@ -298,6 +303,8 @@
     <Compile Include="QueryTest\NamedParametersFixture.cs" />
     <Compile Include="QueryTest\PositionalParametersFixture.cs" />
     <Compile Include="QueryTest\QueryParametersFixture.cs" />
+    <Compile Include="SecondLevelCacheTest\Item.cs" />
+    <Compile Include="SecondLevelCacheTest\SecondLevelCacheTest.cs" />
     <Compile Include="SessionCacheTest.cs" />
     <Compile Include="SqlCommandTest\InFragmentFixture.cs" />
     <Compile Include="SqlCommandTest\SqlDeleteBuilderFixture.cs" />
@@ -492,6 +499,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="UserCollection\UserPermissions.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SecondLevelCacheTest\Item.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<class name="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test">
+		<cache usage="read-write"/>
+		<id name="Id">
+			<generator class="identity"/>
+		</id>
+
+		<set name="Children"
+			 table="Item"
+			 cascade="all-delete-orphan"
+			 lazy="true">
+			<cache usage="read-write"/>
+			<key column="ParentId"/>
+			<one-to-many class="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test"/>
+		</set>
+	</class>
+</hibernate-mapping>
