@@ -1377,6 +1377,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SecondLevelCacheTest\Item.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SecondLevelCacheTest\Item.hbm.xml"
+                    SubType = "Code"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SecondLevelCacheTest\SecondLevelCacheTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommandTest\InFragmentFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
