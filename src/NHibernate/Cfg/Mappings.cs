@@ -89,7 +89,7 @@ namespace NHibernate.Cfg
 			object old = classes[ persistentClass.MappedClass ];
 			if( old != null )
 			{
-				throw new MappingException( "duplicate class mapping: " + persistentClass.MappedClass.Name );
+				throw new DuplicateMappingException( "class/entity" , persistentClass.MappedClass.Name );
 			}
 			classes[ persistentClass.MappedClass ] = persistentClass;
 		}
@@ -103,7 +103,7 @@ namespace NHibernate.Cfg
 			object old = collections[ collection.Role ];
 			if( old != null )
 			{
-				log.Warn( "duplicate collection role: " + collection.Role );
+				throw new DuplicateMappingException("collection role", collection.Role);
 			}
 			collections[ collection.Role ] = collection;
 		}
@@ -183,7 +183,13 @@ namespace NHibernate.Cfg
 			// prevent this error one of the classes needs to have the attribute "
 			if( imports.Contains( rename ) && ( string ) imports[ rename ] != className )
 			{
-				throw new MappingException( "duplicate import: " + rename );
+				object existing = imports[rename];
+				throw new DuplicateMappingException("duplicate import: " + rename +
+						" refers to both " + className +
+						" and " + existing +
+						" (try using auto-import=\"false\")",
+						"import",
+						rename);
 			}
 			imports[ rename ] = className;
 		}

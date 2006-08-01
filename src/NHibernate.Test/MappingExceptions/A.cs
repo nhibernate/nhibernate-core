@@ -1,4 +1,5 @@
 using System;
+using Iesi.Collections;
 
 namespace NHibernate.Test.MappingExceptions
 {
@@ -9,6 +10,13 @@ namespace NHibernate.Test.MappingExceptions
 	{
 		private int _id;
 		private string _name;
+		ISet children = new HashedSet();
+
+		public ISet Children
+		{
+			get { return children; }
+			set { children = value; }
+		}
 
 		private A()
 		{

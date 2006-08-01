@@ -14,7 +14,8 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="MappingException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public MappingException( string message ) : base( message )
+		public MappingException(string message)
+			: base(message)
 		{
 		}
 
@@ -26,7 +27,8 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public MappingException( Exception innerException ) : base( innerException )
+		public MappingException(Exception innerException)
+			: base(innerException)
 		{
 		}
 
@@ -39,7 +41,8 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public MappingException( string message, Exception innerException ) : base( message, innerException )
+		public MappingException(string message, Exception innerException)
+			: base(message, innerException)
 		{
 		}
 
@@ -54,7 +57,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected MappingException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected MappingException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
 		{
 		}
 	}

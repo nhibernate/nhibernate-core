@@ -145,7 +145,7 @@
       <SubType>
       </SubType>
     </EmbeddedResource>
-    <Compile Include="MappingExceptions\DuplicateClassMappingFixture.cs" />
+    <Compile Include="MappingExceptions\DuplicateMappingFixture.cs" />
     <Compile Include="MappingExceptions\MissingDefCtor.cs" />
     <Compile Include="MappingExceptions\MissingDefCtorFixture.cs" />
     <Compile Include="MappingExceptions\PropertyNotFoundExceptionFixture.cs" />
@@ -502,6 +502,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SecondLevelCacheTest\Item.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MappingExceptions\DuplicateCollectionMapping.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
