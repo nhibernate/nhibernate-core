@@ -252,7 +252,7 @@ namespace NHibernate.Cfg
 		{
 			if ( queries.Contains( name ) || sqlqueries.Contains( name ) )
 			{
-				throw new MappingException( string.Format( "Duplicate query named: {0}", name ) );
+				throw new DuplicateMappingException( "query / sql-query", name);
 			}
 		}
 

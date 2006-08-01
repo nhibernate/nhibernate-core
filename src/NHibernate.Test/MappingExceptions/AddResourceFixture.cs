@@ -1,5 +1,5 @@
 using System;
-
+using System.Reflection;
 using NHibernate.Cfg;
 
 using NUnit.Framework;
@@ -46,7 +46,10 @@ namespace NHibernate.Test.MappingExceptions
 			catch( MappingException me ) 
 			{
 				Assert.IsTrue( me.InnerException is MappingException );
-				Assert.AreEqual( "duplicate import: A", me.InnerException.Message );
+				string expected = string.Format(
+					"duplicate import: A refers to both NHibernate.Test.MappingExceptions.A, {0} and Some other class (try using auto-import=\"false\")",
+					Assembly.GetExecutingAssembly().FullName);
+				Assert.AreEqual(expected, me.InnerException.Message);
 			}
 		}
 		
