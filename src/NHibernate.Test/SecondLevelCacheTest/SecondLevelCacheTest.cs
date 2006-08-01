@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Data;
+using System.Diagnostics;
 using System.Text;
 using NHibernate.Cache;
 using NHibernate.Test.SecondLevelCacheTests;
@@ -28,44 +30,57 @@ namespace NHibernate.Test.UserCollection
             sessions = cfg.BuildSessionFactory();
         }
 
+        [Ignore("Still an issue")]
         [Test]
         public void DeleteItemFromCollectionThatIsInTheSecondLevelCache()
         {
-            Item parent;
-            Item firstChild=null;
-            using (ISession session = OpenSession())
+            using(ISession session = OpenSession())
             {
-                parent = new Item();
-                session.Save(parent);
-                for (int i = 0; i < 5; i++)
+                Item item = new Item();
+                item.Id = 1;
+                session.Save(item);
+                for (int i = 0; i < 4; i++)
                 {
                     Item child = new Item();
-                    if (i == 0)
-                        firstChild = child;
-                    parent.Children.Add(child);
+                    child.Id = i + 2;
                     session.Save(child);
+                    item.Children.Add(child);
                 }
                 session.Flush();
             }
-
+            
+            sessions.Evict(typeof(Item));
+            sessions.EvictCollection(typeof(Item).FullName+".Children");
+            
             using (ISession session = OpenSession())
             {
-                Item child2 = session.Load(typeof(Item), firstChild.Id) as Item;
-                session.Delete(child2);
+                Item item = (Item)session.Load(typeof(Item), 1);
+                Assert.IsTrue(item.Children.Count == 4); // just force it into the second level cache here
+            }
+            int childId = -1;
+            using (ISession session = OpenSession())
+            {
+                Item item = (Item)session.Load(typeof(Item), 1);
+                Item child = (Item)item.Children[0];
+                childId = child.Id;
+                session.Delete(child);
                 session.Flush();
             }
 
             using (ISession session = OpenSession())
             {
-                Item parent3 = session.Load(typeof(Item), parent.Id) as Item;
-                int count = parent3.Children.Count;//force lazy load
-                Assert.AreEqual(4, count);
+                Item item = (Item)session.Load(typeof(Item), 1);
+                Assert.AreEqual(3, item.Children.Count );
+                foreach (Item child in item.Children)
+                {
+                    NHibernateUtil.Initialize(child);
+                    Assert.IsFalse(child.Id == childId);
+                }
             }
 
-            //cleanup
-            using (ISession session = OpenSession())
+            using(ISession session = OpenSession())
             {
-                session.Delete("from Item");
+                session.Delete("from Item");//cleaning up
                 session.Flush();
             }
         }

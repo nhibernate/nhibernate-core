@@ -3,16 +3,14 @@
 	<class name="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test">
 		<cache usage="read-write"/>
 		<id name="Id">
-			<generator class="identity"/>
+			<generator class="assigned"/>
 		</id>
-
-		<set name="Children"
+		<bag name="Children"
 			 table="Item"
-			 cascade="all-delete-orphan"
 			 lazy="true">
 			<cache usage="read-write"/>
 			<key column="ParentId"/>
 			<one-to-many class="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test"/>
-		</set>
+		</bag>
 	</class>
 </hibernate-mapping>

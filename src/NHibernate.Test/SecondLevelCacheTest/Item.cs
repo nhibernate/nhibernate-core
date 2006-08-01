@@ -8,7 +8,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
     public class Item
     {
         int id;
-        ISet children = new HashedSet();
+        IList children = new ArrayList();
 
 
         public virtual int Id
@@ -17,7 +17,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
             set { id = value; }
         }
 
-        public virtual ISet Children
+        public virtual IList Children
         {
             get { return children; }
             set { children = value; }
