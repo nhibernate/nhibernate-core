@@ -6,7 +6,7 @@
 			<generator class="assigned"/>
 		</id>
 		<bag name="Children"
-			 table="Item"
+			 table="Item" 
 			 lazy="true">
 			<cache usage="read-write"/>
 			<key column="ParentId"/>
