@@ -268,6 +268,8 @@
     <Compile Include="NHSpecificTest\NH607\PersistentObject.cs" />
     <Compile Include="NHSpecificTest\NH607\PPP.cs" />
     <Compile Include="NHSpecificTest\NH607\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH643\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH643\Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -505,6 +507,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MappingExceptions\DuplicateCollectionMapping.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH643\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

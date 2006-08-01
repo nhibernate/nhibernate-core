@@ -5462,6 +5462,7 @@ namespace NHibernate.Impl
 				else
 				{
 					collection.InitializeFromCache( persister, cached, owner );
+					collection.AfterInitialize();
 					GetCollectionEntry( collection ).PostInitialize( collection );
 					//addInitializedCollection(collection, persister, id); h2.1 - commented out
 					return true;

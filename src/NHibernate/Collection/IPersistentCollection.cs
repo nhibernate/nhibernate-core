@@ -276,5 +276,10 @@ namespace NHibernate.Collection
 		object GetSnapshotElement( object entry, int i );
 
 		bool IsSnapshotEmpty( ICollection snapshot );
+
+		/// <summary>
+		/// Called after initializing from cache
+		/// </summary>
+		bool AfterInitialize();
 	}
 }

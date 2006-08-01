@@ -204,6 +204,11 @@ namespace NHibernate.Collection
 		public virtual bool EndRead()
 		{
 			// override on some subclasses
+			return AfterInitialize();
+		}
+
+		public virtual bool AfterInitialize()
+		{
 			SetInitialized();
 			//do this bit after setting initialized to true or it will recurse
 			if ( additions != null ) 
