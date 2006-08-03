@@ -120,6 +120,7 @@
 
 	<target name="common.set-assembly-attribute-values">
 		<property overwrite="false" name="assembly.is-cls-compliant" value="true" />
+		<property overwrite="false" name="assembly.allow-partially-trusted-callers" value="false" />
 		<property overwrite="false" name="assembly.description" value="" />
 		<property overwrite="false" name="assembly.product" value="${project::get-name()}" />
 		<property overwrite="false" name="assembly.company" value="${project.company}" />
