@@ -46,7 +46,7 @@ namespace NHibernate.Expression
 			return new LikeExpression( propertyName, value, matchMode );
 		}
 
-		public static ICriterion InsensitiveLike( string propertyName, string value, MatchMode matchMode )
+		public static AbstractCriterion InsensitiveLike( string propertyName, string value, MatchMode matchMode )
 		{
 			return new InsensitiveLikeExpression( propertyName, value, matchMode );
 		}
@@ -57,7 +57,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>An <see cref="InsensitiveLikeExpression" />.</returns>
-		public static ICriterion InsensitiveLike( string propertyName, object value )
+		public static AbstractCriterion InsensitiveLike( string propertyName, object value )
 		{
 			return new InsensitiveLikeExpression( propertyName, value );
 		}
@@ -113,7 +113,7 @@ namespace NHibernate.Expression
 		/// <param name="lo">The low value for the Property.</param>
 		/// <param name="hi">The high value for the Property.</param>
 		/// <returns>A <see cref="BetweenExpression" />.</returns>
-		public static ICriterion Between( string propertyName, object lo, object hi )
+		public static AbstractCriterion Between( string propertyName, object lo, object hi )
 		{
 			return new BetweenExpression( propertyName, lo, hi );
 		}
@@ -124,7 +124,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="values">An array of values.</param>
 		/// <returns>An <see cref="InExpression" />.</returns>
-		public static ICriterion In( string propertyName, object[ ] values )
+		public static AbstractCriterion In( string propertyName, object[ ] values )
 		{
 			return new InExpression( propertyName, values );
 		}
@@ -135,7 +135,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="values">An ICollection of values.</param>
 		/// <returns>An <see cref="InExpression" />.</returns>
-		public static ICriterion In( string propertyName, ICollection values )
+		public static AbstractCriterion In( string propertyName, ICollection values )
 		{
 			object[ ] ary = new object[values.Count];
 			values.CopyTo( ary, 0 );
@@ -147,7 +147,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <returns>A <see cref="NullExpression" />.</returns>
-		public static ICriterion IsNull( string propertyName )
+		public static AbstractCriterion IsNull( string propertyName )
 		{
 			return new NullExpression( propertyName );
 		}
@@ -158,7 +158,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The lhs Property Name</param>
 		/// <param name="otherPropertyName">The rhs Property Name</param>
 		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
-		public static ICriterion EqProperty( string propertyName, string otherPropertyName )
+		public static AbstractCriterion EqProperty( string propertyName, string otherPropertyName )
 		{
 			return new EqPropertyExpression( propertyName, otherPropertyName );
 		}
@@ -169,7 +169,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The lhs Property Name</param>
 		/// <param name="otherPropertyName">The rhs Property Name</param>
 		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
-		public static ICriterion LtProperty( string propertyName, string otherPropertyName )
+		public static AbstractCriterion LtProperty( string propertyName, string otherPropertyName )
 		{
 			return new LtPropertyExpression( propertyName, otherPropertyName );
 		}
@@ -180,7 +180,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The lhs Property Name</param>
 		/// <param name="otherPropertyName">The rhs Property Name</param>
 		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
-		public static ICriterion LeProperty( string propertyName, string otherPropertyName )
+		public static AbstractCriterion LeProperty( string propertyName, string otherPropertyName )
 		{
 			return new LePropertyExpression( propertyName, otherPropertyName );
 		}
@@ -190,7 +190,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <returns>A <see cref="NotNullExpression" />.</returns>
-		public static ICriterion IsNotNull( string propertyName )
+		public static AbstractCriterion IsNotNull( string propertyName )
 		{
 			return new NotNullExpression( propertyName );
 		}
@@ -202,7 +202,7 @@ namespace NHibernate.Expression
 		/// <param name="lhs">The Expression to use as the Left Hand Side.</param>
 		/// <param name="rhs">The Expression to use as the Right Hand Side.</param>
 		/// <returns>An <see cref="AndExpression" />.</returns>
-		public static ICriterion And( ICriterion lhs, ICriterion rhs )
+		public static AbstractCriterion And( ICriterion lhs, ICriterion rhs )
 		{
 			return new AndExpression( lhs, rhs );
 		}
@@ -213,7 +213,7 @@ namespace NHibernate.Expression
 		/// <param name="lhs">The Expression to use as the Left Hand Side.</param>
 		/// <param name="rhs">The Expression to use as the Right Hand Side.</param>
 		/// <returns>An <see cref="OrExpression" />.</returns>
-		public static ICriterion Or( ICriterion lhs, ICriterion rhs )
+		public static AbstractCriterion Or( ICriterion lhs, ICriterion rhs )
 		{
 			return new OrExpression( lhs, rhs );
 		}
@@ -223,7 +223,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="expression">The Expression to negate.</param>
 		/// <returns>A <see cref="NotExpression" />.</returns>
-		public static ICriterion Not( ICriterion expression )
+		public static AbstractCriterion Not( ICriterion expression )
 		{
 			return new NotExpression( expression );
 		}
@@ -235,7 +235,7 @@ namespace NHibernate.Expression
 		/// <param name="values"></param>
 		/// <param name="types"></param>
 		/// <returns></returns>
-		public static ICriterion Sql( SqlString sql, object[ ] values, IType[ ] types )
+		public static AbstractCriterion Sql( SqlString sql, object[ ] values, IType[ ] types )
 		{
 			return new SQLCriterion( sql, values, types );
 		}
@@ -247,7 +247,7 @@ namespace NHibernate.Expression
 		/// <param name="value"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public static ICriterion Sql( SqlString sql, object value, IType type )
+		public static AbstractCriterion Sql( SqlString sql, object value, IType type )
 		{
 			return new SQLCriterion( sql, new object[ ] {value}, new IType[ ] {type} );
 		}
@@ -257,7 +257,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		public static ICriterion Sql( SqlString sql )
+		public static AbstractCriterion Sql( SqlString sql )
 		{
 			return new SQLCriterion( sql, ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray );
 		}
@@ -267,7 +267,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		public static ICriterion Sql( string sql )
+		public static AbstractCriterion Sql( string sql )
 		{
 			return new SQLCriterion( new SqlString( sql ), ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray );
 		}
@@ -293,7 +293,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyNameValues">a dictionary from property names to values</param>
 		/// <returns></returns>
-		public static ICriterion AllEq( IDictionary propertyNameValues )
+		public static AbstractCriterion AllEq( IDictionary propertyNameValues )
 		{
 			Conjunction conj = Conjunction();
 
