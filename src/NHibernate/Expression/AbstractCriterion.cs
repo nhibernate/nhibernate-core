@@ -38,5 +38,43 @@ namespace NHibernate.Expression
 		public abstract TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery );
 
 		#endregion
+
+		#region Operator Overloading
+
+		public static AbstractCriterion operator &(AbstractCriterion lhs, AbstractCriterion rhs)
+		{
+			return new AndExpression(lhs, rhs);
+		}
+
+		public static AbstractCriterion operator |(AbstractCriterion lhs, AbstractCriterion rhs)
+		{
+			return new OrExpression(lhs, rhs);
+		}
+		
+		public static AbstractCriterion operator !(AbstractCriterion crit)
+		{
+			return new NotExpression(crit);
+		}
+		
+		/// <summary>
+		/// See here for details:
+		/// http://steve.emxsoftware.com/NET/Overloading+the++and++operators
+		/// </summary>
+		public static bool operator false(AbstractCriterion criteria)
+		{
+			return false;
+		}
+
+		/// <summary>
+		/// See here for details:
+		/// http://steve.emxsoftware.com/NET/Overloading+the++and++operators
+		/// </summary>
+		public static bool operator true(AbstractCriterion criteria)
+		{
+			return false;
+		}
+		
+		#endregion
+
 	}
 }

@@ -90,6 +90,7 @@
     <Compile Include="ExpressionTest\NotExpressionFixture.cs" />
     <Compile Include="ExpressionTest\NotNullExpressionFixture.cs" />
     <Compile Include="ExpressionTest\NullExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\OperatorOverloadingFixture.cs" />
     <Compile Include="ExpressionTest\PropertyExpressionFixture.cs" />
     <Compile Include="ExpressionTest\QueryByExampleTest.cs" />
     <Compile Include="ExpressionTest\SimpleExpressionFixture.cs" />
