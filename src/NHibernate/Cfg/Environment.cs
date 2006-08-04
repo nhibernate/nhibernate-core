@@ -65,7 +65,10 @@ namespace NHibernate.Cfg
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
 		public const string ConnectionString = "hibernate.connection.connection_string";
 		public const string Isolation = "hibernate.connection.isolation";
-
+		/// <summary>
+		/// Used to find the .Net 2.0 named connection string
+		/// </summary>
+		public const string ConnectionStringName = "hibernate.connection.connection_string_name";
 		// Unused, Java-specific
 		public const string SessionFactoryName = "hibernate.session_factory_name";
 		

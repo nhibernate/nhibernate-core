@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Configuration;
 using System.Data;
 using log4net;
 using NHibernate.Driver;
@@ -46,8 +47,13 @@ namespace NHibernate.Connection
 		public virtual void Configure( IDictionary settings )
 		{
 			log.Info( "Configuring ConnectionProvider" );
-
+			
 			connString = settings[ Environment.ConnectionString ] as string;
+
+#if NET_2_0
+			if(connString==null)//connection string in the config override named connection string
+				connString = GetNamedConnectionString(settings);
+#endif
 			if( connString == null )
 			{
 				throw new HibernateException( "Could not find connection string setting" );
@@ -56,7 +62,27 @@ namespace NHibernate.Connection
 			ConfigureDriver( settings );
 
 		}
-
+		
+#if NET_2_0
+		/// <summary>
+		/// Get the .Net 2.0 named connection string 
+		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when a <see cref="Environment.ConnectionStringName"/> was found 
+		/// in the <c>settings</c> parameter but could not be found in the app.config
+		/// </exception>
+		protected virtual string GetNamedConnectionString(IDictionary settings)
+		{
+			string connStringName = settings[ Environment.ConnectionStringName ] as string;
+			if(connStringName ==null)
+				return null;
+			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
+			if (connectionStringSettings == null)
+				throw new HibernateException(string.Format("Could not find named connection string {0}", connStringName));
+			return connectionStringSettings.ConnectionString;
+		}
+#endif
+		
 		/// <summary>
 		/// Configures the driver for the ConnectionProvider.
 		/// </summary>

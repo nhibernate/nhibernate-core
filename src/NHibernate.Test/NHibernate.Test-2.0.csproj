@@ -73,6 +73,7 @@
     <Compile Include="CompositeId\ClassWithCompositeId.cs" />
     <Compile Include="CompositeId\ClassWithCompositeIdFixture.cs" />
     <Compile Include="CompositeId\Id.cs" />
+    <Compile Include="ConnectionStringTest\NamedConnectionStringFixture.cs" />
     <Compile Include="DebugConnectionProvider.cs" />
     <Compile Include="DialectTest\DialectFixture.cs" />
     <Compile Include="DialectTest\MsSql2005DialectFixture.cs" />
