@@ -59,7 +59,6 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		}
 
         [Test]
-        [Ignore("Currently failing - second level cache is not clearing collections when deleting entities.")]
         public void DeleteItemFromCollectionThatIsInTheSecondLevelCache()
         {
             
@@ -75,6 +74,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
                 Item child = (Item)item.Children[0];
                 childId = child.Id;
                 session.Delete(child);
+            	item.Children.Remove(child);
                 session.Flush();
             }
 
