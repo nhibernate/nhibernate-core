@@ -478,7 +478,7 @@ namespace NHibernate.Tool.hbm2net
 						//writer.WriteLine("    /** \n" + javaTool.toJavaDoc(field.getMetaAsString("field-description"), 4) + "     */");
 						writer.WriteLine("    /// <summary>\n" + javaTool.toJavaDoc(field.getMetaAsString("field-description"), 4) + "\n    /// </summary>");
 					}
-					writer.Write("    " + getAccessScope + " " + field.FullyQualifiedTypeName + " " + field.propcase);
+					writer.Write("    " + getAccessScope + " virtual " + field.FullyQualifiedTypeName + " " + field.propcase);
 					if (classMapping.Interface)
 					{
 						writer.WriteLine(";");
