@@ -574,7 +574,7 @@ namespace NHibernate.Loader
 			int[] owners = Owners;
 			if( owners != null )
 			{
-				//EntityType[] ownerAssociationTypes = OwnerAssociationTypes;
+				EntityType[] ownerAssociationTypes = OwnerAssociationTypes;
 				for( int i = 0; i < keys.Length; i++ )
 				{
 					int owner = owners[ i ];
@@ -589,7 +589,14 @@ namespace NHibernate.Loader
 
 							//if( isOneToOneAssociation )
 							//{
-								session.AddNonExist( new EntityKey( ownerKey.Identifier, persisters[ i ] ) );
+							// Added to fix NH-687, not in Hibernate:
+							bool isUniqueKeyReference = ownerAssociationTypes != null &&
+								ownerAssociationTypes[i] != null &&
+								ownerAssociationTypes[i].IsUniqueKeyReference;
+							if (!isUniqueKeyReference)
+							{
+								session.AddNonExist(new EntityKey(ownerKey.Identifier, persisters[i]));
+							}
 							//}
 						}
 					}
