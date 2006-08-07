@@ -18,7 +18,9 @@ namespace NHibernate.Loader.Collection
 	{
 		public CollectionJoinWalker( ISessionFactoryImplementor factory, IDictionary enabledFilters )
 			: base( factory, enabledFilters )
-		{		}
+		{
+		}
+
 		protected SqlStringBuilder WhereString( string alias, string[ ] columnNames, IType type, string subselect, int batchSize )
 		{
 			if( subselect == null )
@@ -27,11 +29,22 @@ namespace NHibernate.Loader.Collection
 			}
 			else
 			{
-				SqlStringBuilder buf = new SqlStringBuilder();				if( columnNames.Length > 1 )
+				SqlStringBuilder buf = new SqlStringBuilder();
+				if( columnNames.Length > 1 )
 				{
 					buf.Add( "(" );
-				}				buf.Add( StringHelper.Join( ", ", StringHelper.Qualify( alias, columnNames ) ) );				if( columnNames.Length > 1 )
+				}
+				buf.Add( StringHelper.Join( ", ", StringHelper.Qualify( alias, columnNames ) ) );
+				if( columnNames.Length > 1 )
 				{
 					buf.Add( ")" );
-				}				buf.Add( " in " )					.Add( "(" )					.Add( subselect )					.Add( ")" );				return buf;			}		}	}
+				}
+				buf.Add( " in " )
+					.Add( "(" )
+					.Add( subselect )
+					.Add( ")" );
+				return buf;
+			}
+		}
+	}
 }
