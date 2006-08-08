@@ -13,7 +13,7 @@
 		<formalpara>
 			<title>Content of this library</title>
 			<para>
-				<itemizedlist>
+				<orderedlist>
 					<listitem>
 						<para>
 							<emphasis role="strong">NHibernate.Mapping.Attributes</emphasis>: That the only project you need (as end-user)</para>
@@ -32,7 +32,7 @@
 								<emphasis role="strong">Refly</emphasis>
 							</ulink>: Thanks to <ulink url="http://www.dotnetwiki.org/">Jonathan de Halleux</ulink> for this library which make it so easy to generate code</para>
 					</listitem>
-				</itemizedlist>
+				</orderedlist>
 			</para>
 		</formalpara>
 		<para>
@@ -53,11 +53,24 @@
 		<title>What's new?</title>
 		<formalpara>
 			<title>NHibernate 1.2.0</title>
-			<para>introduces many changes and improvements:</para>
+			<para>introduces many new features, improvements and changes:</para>
 		</formalpara>
-		<itemizedlist>
+		<orderedlist>
 			<listitem>
-				<para><classname>RawXmlAttribute</classname> is a new attribute allowing to insert xml as-is in the mapping. This feature can be very useful to do complex mapping (eg: components). It may also be used to quickly move the mapping from xml files to attributes. Usage: <literal>[RawXml(After=typeof(ComponentAttribute), Content="&lt;component name="..."&gt;...&lt;/component&gt;")]</literal>. <methodname>After</methodname> tells after which kind of mapping the xml should be inserted and it is optional (in which case the xml is inserted on the top of the mapping). Note: At the moment, all raw xmls are prefixed by a <literal>&lt;!----&gt;</literal>; this is a known side-effect.</para>
+				<para><classname>[RawXmlAttribute]</classname> is a new attribute allowing to insert xml as-is in the mapping. This feature can be very useful to do complex mapping (eg: components). It may also be used to quickly move the mapping from xml files to attributes. Usage: <literal>[RawXml(After=typeof(ComponentAttribute), Content="&lt;component name="..."&gt;...&lt;/component&gt;")]</literal>. <methodname>After</methodname> tells after which kind of mapping the xml should be inserted and it is optional (in which case the xml is inserted on the top of the mapping). Note: At the moment, all raw xmls are prefixed by a <literal>&lt;!----&gt;</literal>; this is a known side-effect.</para>
+			</listitem>
+			<listitem>
+				<para><classname>[AttributeIdentifierAttribute]</classname> is a new attribute allowing to provide the value of a defined "place holder". Eg: <programlisting>
+public class Base {
+    [Id(..., Column="{Id.Column}")]
+    [AttributeIdentifier(Name="Id.Column", Value="ID")] // Default value
+    public int Id { ... }
+}
+[AttributeIdentifier(Name="Id.Column", Value="SUB_ID")]
+[Class] public class MappedSubClass : Base { }</programlisting>
+				The idea is that, when you have a mapping which is shared by many subclasses but which has minor differences (like different column names), you can put the mapping in the base class with place holders on these fields and give their values in subclasses. Note that this is possible for any mapping field taking a string (column, name, type, access, etc.). And, instead of <methodname>Value</methodname>, you can use <methodname>ValueType</methodname> or <methodname>ValueObject</methodname> (if you use an enum, you can control its formatting with <methodname>ValueObject</methodname>).
+				</para>
+				<para>The "place holder" is defined like this: <literal>{XXX}</literal>. If you don't want to use these quotes, you can change them using the properties <methodname>StartQuote</methodname> and <methodname>EndQuote</methodname> of the class <classname>HbmWriter</classname>.</para>
 			</listitem>
 			<listitem>
 				<para>It is possible to register patterns (using Regular Expressions) to automatically transform fully qualified names of properties types into something else. Eg: <literal>HbmSerializer.Default.HbmWriter.Patterns.Add(@"Namespace.(\S+), Assembly", "$1");</literal> will map all properties with a not-qualified type name.</para>
@@ -74,7 +87,7 @@
 			<listitem>
 				<para>There are also many other little changes; refer to the release notes for more details.</para>
 			</listitem>
-		</itemizedlist>
+		</orderedlist>
 	</section>
 
 
@@ -106,7 +119,7 @@
 			<para>
 				As you can see here: NHibernate.Mapping.Attributes is <emphasis role="strong">not</emphasis> (really) intrusive.
 				Setting attributes on your objects doesn't force you to use them with NHibernate and doesn't break any constraint on your architecture.
-				Attributes are purely informative!
+				Attributes are purely informative (like documentation)!
 			</para>
 		</note>
 	</section>
@@ -114,7 +127,10 @@
 
 	<section id="mapping-attributes-tips">
 		<title>Tips</title>
-		<itemizedlist>
+		<orderedlist>
+			<listitem>
+				<para>In production, it is recommended to generate a XML mapping file from NHibernate.Mapping.Attributes and use this file each time the SessionFactory need to be built. Use: <literal>HbmSerializer.Default.Serialize(typeof(XXX).Assembly, "DomainModel.hbm.xml");</literal> It is slightly faster.</para>
+			</listitem>
 			<listitem>
 				<para>Use <methodname>HbmSerializer.Validate</methodname> to enable/disable the validation of generated xml streams (against NHibernate mapping schema); this is useful to quickly find errors (they are written in StringBuilder <methodname>HbmSerializer.Error</methodname>). If the error is due to this library then see if it is a know issue and report it; you can contribute a solution if you solve the problem :)</para>
 			</listitem>
@@ -140,10 +156,10 @@
 				<para>Instead of using a string for <methodname>DiscriminatorValue</methodname> (in <classname>[Class]</classname> and <classname>[Subclass]</classname>), you can use any object you want. Example: <programlisting>[Subclass(DiscriminatorValueEnumFormat="d", DiscriminatorValueObject=DiscEnum.Val1)]</programlisting> Here, the object is an Enum, and you can set the format you want (the default value is "g"). Note that you must put it <emphasis role="strong">before</emphasis>! For others types, It simply use the <methodname>ToString()</methodname> method of the object.</para>
 			</listitem>
 			<listitem>
-				<para>If you are using members of the type <classname>Nullables.NullableXXX</classname> (from the library <link linkend="nullables">Nullables</link>), then they will be mapped to <classname>Nullables.NHibernate.NullableXXXType</classname> automatically; don't set <literal>Type="..."</literal> in <classname>[Property]</classname> (leave it null). Thanks to <emphasis>Michael Third</emphasis> for the idea :)</para>
+				<para>If you are using members of the type <classname>Nullables.NullableXXX</classname> (from the library <link linkend="nullables">Nullables</link>), then they will be mapped to <classname>Nullables.NHibernate.NullableXXXType</classname> automatically; don't set <literal>Type="..."</literal> in <classname>[Property]</classname> (leave it null). This is also the case for <classname>SqlTypes</classname> (and you can add your own patterns). Thanks to <emphasis>Michael Third</emphasis> for the idea :)</para>
 			</listitem>
 			<listitem>
-				<para>Each stream generated by NHibernate.Mapping.Attributes can contain a comment with the date of the generation; You may enable/disable this by using the method <methodname>WriteDateComment</methodname>.</para>
+				<para>Each stream generated by NHibernate.Mapping.Attributes can contain a comment with the date of the generation; You may enable/disable this by using the property <methodname>HbmSerializer.WriteDateComment</methodname>.</para>
 			</listitem>
 			<listitem>
 				<para>If you forget to provide a required xml attribute, it will obviously throw an exception while generating the mapping.</para>
@@ -151,11 +167,13 @@
 			<listitem>
 				<para>The recommended and easiest way to map <classname>[Component]</classname> is to use <classname>[ComponentProperty]</classname>. The first step is to put <classname>[Component]</classname> on the component class and map its fields/properties. Note that you shouldn't set the <methodname>Name</methodname> in <classname>[Component]</classname>. Then, on each member in your classes, add <classname>[ComponentProperty]</classname>. But you can't override <methodname>Access</methodname>, <methodname>Update</methodname> or <methodname>Insert</methodname> for each member.</para>
 				<para>There is a working example in <emphasis>NHibernate.Mapping.Attributes.Test</emphasis> (look for the class <classname>CompAddress</classname> and its usage in others classes).</para>
-				<para>One last thing: <classname>ComponentPropertyAttribute</classname> inherits from <classname>DynamicComponentAttribute</classname> to easily write it just after <literal>&lt;component&gt;</literal> elements in the XML stream.</para>
 			</listitem>
 			<listitem>
 				<para>Another way to map <classname>[Component]</classname> is to use the way this library works: If a mapped class contains a mapped component, then this component will be include in the class. <emphasis>NHibernate.Mapping.Attributes.Test</emphasis> contains the classes <classname>JoinedBaz</classname> and <classname>Stuff</classname> which both use the component <classname>Address</classname>.</para>
-				<para>Basically, it is done by adding <programlisting>[Component(Name = "MyComp")] private class SubComp : Comp {}</programlisting> in each class. One of the advantages is that you can override <methodname>Access</methodname>, <methodname>Update</methodname> or <methodname>Insert</methodname> for each member. But you have to add the component subclass in <emphasis role="strong">each</emphasis> class (and it can not be inherited).</para>
+				<para>Basically, it is done by adding <programlisting>[Component(Name = "MyComp")] private class SubComp : Comp {}</programlisting> in each class. One of the advantages is that you can override <methodname>Access</methodname>, <methodname>Update</methodname> or <methodname>Insert</methodname> for each member. But you have to add the component subclass in <emphasis role="strong">each</emphasis> class (and it can not be inherited). Another advantage is that you can use <classname>[AttributeIdentifier]</classname>.</para>
+			</listitem>
+			<listitem>
+				<para>Finally, whenever you think that it is easier to write the mapping in XML (this is often the case for <classname>[Component]</classname>), you can use <classname>[RawXml]</classname>.</para>
 			</listitem>
 			<listitem>
 				<formalpara><title>About customization</title>
@@ -163,7 +181,7 @@
 				</formalpara>
 				<para>Use the property <methodname>HbmSerializer.HbmWriter</methodname> to change the writer used (you may set a subclass of <classname>HbmWriter</classname>).</para>
 			</listitem>
-		</itemizedlist>
+		</orderedlist>
 		<para>Example using some this tips: (0, 1 and 2 are position indexes)
 <programlisting>
     [NHibernate.Mapping.Attributes.Id(0, TypeType=typeof(int))] // Don't put it after [ManyToOne] !!!
@@ -209,6 +227,7 @@ Illustration:<programlisting><![CDATA[
 		<para>It is the case for <literal>&lt;dynamic-component&gt;</literal> and <literal>&lt;nested-composite-element&gt;</literal>.</para>
 		<para>Another bad news is that, currently, XML elements coming after this elements can not be included in them. Eg: There is no way put a collection in <literal>&lt;dynamic-component&gt;</literal>. The reason is that the file <filename>nhibernate-mapping-2.0.xsd</filename> tells how elements are built and in which order, and NHibernate.Mapping.Attributes use this order.</para>
 		<para>Anyway, the solution would be to add a <methodname>int ParentNode</methodname> property to BaseAttribute so that you can create a real graph...</para>
+		<para>For now, you can fallback on <classname>[RawXml]</classname>.</para>
 
 		<para>Actually, there is no other know issue nor planned modification. This library should be stable and complete; but if you find a bug or think of an useful improvement, contact us!</para>
 		<para>On side note, it would be nice to write a better TestFixture than <emphasis>NHibernate.Mapping.Attributes.Test</emphasis> :D</para>
@@ -218,7 +237,7 @@ Illustration:<programlisting><![CDATA[
 	<section id="mapping-attributes-devnotes">
 		<title>Developer Notes</title>
 		<para>Any change to the schema (<filename>nhibernate-mapping-2.0.xsd</filename>) implies:</para>
-		<itemizedlist>
+		<orderedlist>
 			<listitem>
 				<para>Checking if there is any change to do in the Generator (like updating KnowEnums / AllowMultipleValue / IsRoot / IsSystemType / IsSystemEnum / CanContainItself)</para>
 			</listitem>
@@ -228,10 +247,10 @@ Illustration:<programlisting><![CDATA[
 			<listitem>
 				<para>Running the Test project and make sure that no exception is thrown. A class/property should be modified/added in this project to be sure that any new breaking change will be caught (=> update the reference hbm.xml files and/or the project <filename>NHibernate.Mapping.Attributes-1.1.csproj</filename>)</para>
 			</listitem>
-		</itemizedlist>
+		</orderedlist>
 		<para>This implementation is based on NHibernate mapping schema; so there is probably lot of "standard schema features" that are not supported...</para>
 		<para>The version of NHibernate.Mapping.Attributes should be the version of the NHibernate schema used to generate it (=> the version of NHibernate library).</para>
-		<para>In the design of this project, performance is a (<emphasis>very</emphasis>) minor goal :) Easier implementation and maintenance are far more important.</para>
+		<para>In the design of this project, performance is a (<emphasis>very</emphasis>) minor goal :) Easier implementation and maintenance are far more important because you can (and should) avoid to use this library in production.</para>
 	</section>
 
 
