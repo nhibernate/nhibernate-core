@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Generated from NHibernate.Mapping.Attributes on 2006-07-10 11:31:39Z.-->
+<!--Generated from NHibernate.Mapping.Attributes on 2006-08-08 23:45:33Z.-->
 <hibernate-mapping auto-import="true" default-lazy="true" xmlns="urn:nhibernate-mapping-2.0">
   <class name="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" proxy="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" discriminator-value="base" mutable="false" polymorphism="explicit" persister="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" where="1" batch-size="9" check="0">
     <id name="Code" access="Int32" column="Id" type="String" length="8" unsaved-value="null">
@@ -225,9 +225,13 @@
         <param name="Property.Type">Param</param>
       </type>
     </property>
+    <component name="HomeAddress">
+      <property name="Name" />
+      <property name="City" column="HomeCity" />
+    </component>
     <component name="StuffAddress" access="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" class="Int32">
       <property name="Name" />
-      <property name="City" />
+      <property name="City" column="00000003" />
     </component>
     <component name="MyCompAddressTwo">
       <property name="FullName" />
@@ -273,7 +277,7 @@
     </one-to-one>
     <component name="MyAddress">
       <property name="Name" />
-      <property name="City" />
+      <property name="City" column="00000003" />
     </component>
     <component name="MyAutoCompAddress">
       <property name="FullName" />

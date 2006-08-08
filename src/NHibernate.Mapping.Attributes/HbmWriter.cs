@@ -26,6 +26,10 @@ namespace NHibernate.Mapping.Attributes
 		
 		private HbmWriterHelper _defaultHelper = new HbmWriterHelperEx();
 		
+		private string _startQuote;
+		
+		private string _endQuote;
+		
 		private System.Collections.Hashtable _patterns;
 		
 		/// <summary> Gets or sets the HbmWriterHelper used by HbmWriter </summary>
@@ -38,6 +42,36 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._defaultHelper = value;
+			}
+		}
+		
+		/// <summary> Gets or sets the beginning string used when declaring an identifier for an AttributeIdenfierAttribute </summary>
+		public virtual string StartQuote
+		{
+			get
+			{
+				if(_startQuote==null || _startQuote.Length==0)
+					_startQuote = "{";
+				return _startQuote;;
+			}
+			set
+			{
+				this._startQuote = value;
+			}
+		}
+		
+		/// <summary> Gets or sets the ending string used when declaring an identifier for an AttributeIdenfierAttribute </summary>
+		public virtual string EndQuote
+		{
+			get
+			{
+				if(_endQuote==null || _endQuote.Length==0)
+					_endQuote = "}";
+				return _endQuote;;
+			}
+			set
+			{
+				this._endQuote = value;
 			}
 		}
 		
@@ -65,7 +99,7 @@ namespace NHibernate.Mapping.Attributes
 		{
 			// Return all members from the classType (and its base types) decorated with this attributeType
 			System.Collections.ArrayList list = new System.Collections.ArrayList();
-			System.Reflection.BindingFlags bindings = System.Reflection.BindingFlags.Instance
+			const System.Reflection.BindingFlags bindings = System.Reflection.BindingFlags.Instance
 				| System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly;
 
 			System.Type type = classType;
@@ -1271,6 +1305,52 @@ namespace NHibernate.Mapping.Attributes
 			throw new MappingException( string.Format( "{0} doesn't contain the field {1}. Please, contact the NHibernate team to fix this issue.", enumType, enumValue ) );
 		}
 		
+		/// <summary> Returns the value received or uses it as an identifier to find its value in a AttributeIdentifierAttribute in the mapped class. </summary>
+		public virtual string GetAttributeValue(string val, System.Type mappedClass)
+		{
+			if(val==null)
+				throw new MappingException("Value is null");
+			if(val.StartsWith(StartQuote) && val.EndsWith(EndQuote))
+			{
+				int nameLength = val.Length - StartQuote.Length - EndQuote.Length;
+				if(nameLength <= 0)
+					throw new MappingException("The value '" + val + "' of the class " + mappedClass.Name + " doesn't contain a name (just the quotes)");
+				string name = val.Substring(StartQuote.Length, nameLength);
+
+				// Now look for a AttributeIdentifierAttribute with this name
+				System.Type type = mappedClass;
+				while( type != null ) // Search the attribute in the mapped class progressively going backward to the base classes
+				{
+					// First, look in the header
+					object[] attributes = type.GetCustomAttributes(typeof(AttributeIdentifierAttribute), false);
+					foreach(AttributeIdentifierAttribute attrib in attributes)
+						if(attrib.Name == name) // Found
+							if(attrib.Value==null)
+								throw new MappingException("The value of the AttributeIdentifierAttribute with the name '" + name + "' in the class " + type.Name + " is not specified.");
+							else
+								return attrib.Value;
+
+					// Now, look in the members
+					const System.Reflection.BindingFlags bindings = System.Reflection.BindingFlags.Instance
+						| System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly;
+					foreach( System.Reflection.MemberInfo member in type.GetMembers(bindings) )
+					{
+						attributes = member.GetCustomAttributes(typeof(AttributeIdentifierAttribute), false);
+						foreach(AttributeIdentifierAttribute attrib in attributes)
+							if(attrib.Name == name) // Found
+								if(attrib.Value==null)
+									throw new MappingException("The value of the AttributeIdentifierAttribute with the name '" + name + "' in the class " + type.Name + " is not specified.");
+								else
+									return attrib.Value;
+					}
+					type = type.BaseType;
+				}
+				// Not found
+				throw new MappingException("Can not find a AttributeIdentifierAttribute with the name '" + name + "' in the class " + mappedClass.Name + " (and its base classes)");
+			}
+			return val; // Not an identifier
+		}
+		
 		/// <summary> Write user-defined content; should be of the specified contentAttributeType. </summary>
 		public virtual void WriteUserDefinedContent(System.Xml.XmlWriter writer, System.Type classType, System.Type contentAttributeType, BaseAttribute parentAttribute)
 		{
@@ -1292,22 +1372,22 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteStartElement( "hibernate-mapping" );
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, type));
 			// Attribute: <default-cascade>
 			if(attribute.DefaultCascade != CascadeStyle.Unspecified)
 			writer.WriteAttributeString("default-cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.DefaultCascade));
 			// Attribute: <default-access>
 			if(attribute.DefaultAccess != null)
-			writer.WriteAttributeString("default-access", attribute.DefaultAccess);
+			writer.WriteAttributeString("default-access", GetAttributeValue(attribute.DefaultAccess, type));
 			// Attribute: <auto-import>
 			if( attribute.AutoImportSpecified )
 			writer.WriteAttributeString("auto-import", attribute.AutoImport ? "true" : "false");
 			// Attribute: <namespace>
 			if(attribute.Namespace != null)
-			writer.WriteAttributeString("namespace", attribute.Namespace);
+			writer.WriteAttributeString("namespace", GetAttributeValue(attribute.Namespace, type));
 			// Attribute: <assembly>
 			if(attribute.Assembly != null)
-			writer.WriteAttributeString("assembly", attribute.Assembly);
+			writer.WriteAttributeString("assembly", GetAttributeValue(attribute.Assembly, type));
 			// Attribute: <default-lazy>
 			if( attribute.DefaultLazySpecified )
 			writer.WriteAttributeString("default-lazy", attribute.DefaultLazy ? "true" : "false");
@@ -1322,7 +1402,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+					WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(MetaAttribute), attribute);
 			// Element: <import>
@@ -1334,7 +1414,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteImport(writer, member, memberAttrib as ImportAttribute, attribute);
+					WriteImport(writer, member, memberAttrib as ImportAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ImportAttribute), attribute);
 			// Element: <class>
@@ -1365,14 +1445,14 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Import XML Element from attributes in a member. </summary>
-		public virtual void WriteImport(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ImportAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteImport(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ImportAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "import" );
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_Import_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_Import_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			// Attribute: <rename>
 			if(attribute.Rename != null)
-			writer.WriteAttributeString("rename", attribute.Rename);
+			writer.WriteAttributeString("rename", GetAttributeValue(attribute.Rename, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -1389,10 +1469,10 @@ namespace NHibernate.Mapping.Attributes
 
 			writer.WriteStartElement( "class" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Class_Name_DefaultValue(type) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Class_Name_DefaultValue(type) : GetAttributeValue(attribute.Name, type));
 			// Attribute: <proxy>
 			if(attribute.Proxy != null)
-			writer.WriteAttributeString("proxy", attribute.Proxy);
+			writer.WriteAttributeString("proxy", GetAttributeValue(attribute.Proxy, type));
 			// Attribute: <lazy>
 			if( attribute.LazySpecified )
 			writer.WriteAttributeString("lazy", attribute.Lazy ? "true" : "false");
@@ -1407,13 +1487,13 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("select-before-update", attribute.SelectBeforeUpdate ? "true" : "false");
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, type));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, type));
 			// Attribute: <discriminator-value>
 			if(attribute.DiscriminatorValue != null)
-			writer.WriteAttributeString("discriminator-value", attribute.DiscriminatorValue);
+			writer.WriteAttributeString("discriminator-value", GetAttributeValue(attribute.DiscriminatorValue, type));
 			// Attribute: <mutable>
 			if( attribute.MutableSpecified )
 			writer.WriteAttributeString("mutable", attribute.Mutable ? "true" : "false");
@@ -1422,10 +1502,10 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("polymorphism", GetXmlEnumValue(typeof(PolymorphismType), attribute.Polymorphism));
 			// Attribute: <persister>
 			if(attribute.Persister != null)
-			writer.WriteAttributeString("persister", attribute.Persister);
+			writer.WriteAttributeString("persister", GetAttributeValue(attribute.Persister, type));
 			// Attribute: <where>
 			if(attribute.Where != null)
-			writer.WriteAttributeString("where", attribute.Where);
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, type));
 			// Attribute: <batch-size>
 			if(attribute.BatchSize != -1)
 			writer.WriteAttributeString("batch-size", attribute.BatchSize.ToString());
@@ -1434,7 +1514,7 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("optimistic-lock", GetXmlEnumValue(typeof(OptimisticLockMode), attribute.OptimisticLock));
 			// Attribute: <check>
 			if(attribute.Check != null)
-			writer.WriteAttributeString("check", attribute.Check);
+			writer.WriteAttributeString("check", GetAttributeValue(attribute.Check, type));
 			
 			WriteUserDefinedContent(writer, type, null, attribute);
 			// Element: <meta>
@@ -1446,7 +1526,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+					WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(MetaAttribute), attribute);
 			// Element: <jcs-cache>
@@ -1458,7 +1538,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute);
+					WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(JcsCacheAttribute), attribute);
 			// Element: <cache>
@@ -1470,7 +1550,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteCache(writer, member, memberAttrib as CacheAttribute, attribute);
+					WriteCache(writer, member, memberAttrib as CacheAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(CacheAttribute), attribute);
 			// Element: <id>
@@ -1482,7 +1562,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteId(writer, member, memberAttrib as IdAttribute, attribute);
+					WriteId(writer, member, memberAttrib as IdAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(IdAttribute), attribute);
 			// Element: <composite-id>
@@ -1494,7 +1574,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteCompositeId(writer, member, memberAttrib as CompositeIdAttribute, attribute);
+					WriteCompositeId(writer, member, memberAttrib as CompositeIdAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(CompositeIdAttribute), attribute);
 			// Element: <discriminator>
@@ -1506,7 +1586,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteDiscriminator(writer, member, memberAttrib as DiscriminatorAttribute, attribute);
+					WriteDiscriminator(writer, member, memberAttrib as DiscriminatorAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(DiscriminatorAttribute), attribute);
 			// Element: <version>
@@ -1518,7 +1598,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteVersion(writer, member, memberAttrib as VersionAttribute, attribute);
+					WriteVersion(writer, member, memberAttrib as VersionAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(VersionAttribute), attribute);
 			// Element: <timestamp>
@@ -1530,7 +1610,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteTimestamp(writer, member, memberAttrib as TimestampAttribute, attribute);
+					WriteTimestamp(writer, member, memberAttrib as TimestampAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(TimestampAttribute), attribute);
 			// Element: <property>
@@ -1542,7 +1622,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute);
+					WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(PropertyAttribute), attribute);
 			// Element: <many-to-one>
@@ -1554,7 +1634,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute);
+					WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ManyToOneAttribute), attribute);
 			// Element: <one-to-one>
@@ -1566,7 +1646,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute);
+					WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(OneToOneAttribute), attribute);
 			// Element: <component>
@@ -1580,7 +1660,7 @@ namespace NHibernate.Mapping.Attributes
 				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
-				WriteDynamicComponent(writer, member, memberAttribs[0] as DynamicComponentAttribute, attribute);
+				WriteDynamicComponent(writer, member, memberAttribs[0] as DynamicComponentAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(DynamicComponentAttribute), attribute);
 			// Element: <any>
@@ -1592,7 +1672,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteAny(writer, member, memberAttrib as AnyAttribute, attribute);
+					WriteAny(writer, member, memberAttrib as AnyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(AnyAttribute), attribute);
 			// Element: <map>
@@ -1604,7 +1684,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteMap(writer, member, memberAttrib as MapAttribute, attribute);
+					WriteMap(writer, member, memberAttrib as MapAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(MapAttribute), attribute);
 			// Element: <set>
@@ -1616,7 +1696,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteSet(writer, member, memberAttrib as SetAttribute, attribute);
+					WriteSet(writer, member, memberAttrib as SetAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(SetAttribute), attribute);
 			// Element: <list>
@@ -1628,7 +1708,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteList(writer, member, memberAttrib as ListAttribute, attribute);
+					WriteList(writer, member, memberAttrib as ListAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ListAttribute), attribute);
 			// Element: <bag>
@@ -1640,7 +1720,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteBag(writer, member, memberAttrib as BagAttribute, attribute);
+					WriteBag(writer, member, memberAttrib as BagAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(BagAttribute), attribute);
 			// Element: <idbag>
@@ -1652,7 +1732,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteIdBag(writer, member, memberAttrib as IdBagAttribute, attribute);
+					WriteIdBag(writer, member, memberAttrib as IdBagAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(IdBagAttribute), attribute);
 			// Element: <array>
@@ -1664,7 +1744,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute);
+					WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ArrayAttribute), attribute);
 			// Element: <primitive-array>
@@ -1676,7 +1756,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute);
+					WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(PrimitiveArrayAttribute), attribute);
 			// Element: <subclass>
@@ -1704,27 +1784,27 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Id XML Element from attributes in a member. </summary>
-		public virtual void WriteId(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IdAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteId(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IdAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "id" );
 			// Attribute: <name>
 			if(attribute.Name != null)
-			writer.WriteAttributeString("name", attribute.Name);
+			writer.WriteAttributeString("name", GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <type>
 			if(attribute.Type != null)
-			writer.WriteAttributeString("type", attribute.Type);
+			writer.WriteAttributeString("type", GetAttributeValue(attribute.Type, mappedClass));
 			// Attribute: <length>
 			if(attribute.Length != -1)
 			writer.WriteAttributeString("length", attribute.Length.ToString());
 			// Attribute: <unsaved-value>
 			if(attribute.UnsavedValue != null)
-			writer.WriteAttributeString("unsaved-value", attribute.UnsavedValue);
+			writer.WriteAttributeString("unsaved-value", GetAttributeValue(attribute.UnsavedValue, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -1748,7 +1828,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdAttribute )
 						break; // Following attributes are for this Id
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -1764,7 +1844,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdAttribute )
 						break; // Following attributes are for this Id
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -1780,7 +1860,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdAttribute )
 						break; // Following attributes are for this Id
 					if( memberAttrib is GeneratorAttribute )
-						WriteGenerator(writer, member, memberAttrib as GeneratorAttribute, attribute);
+						WriteGenerator(writer, member, memberAttrib as GeneratorAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(GeneratorAttribute), attribute);
@@ -1789,18 +1869,18 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a CompositeId XML Element from attributes in a member. </summary>
-		public virtual void WriteCompositeId(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CompositeIdAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteCompositeId(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CompositeIdAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "composite-id" );
 			// Attribute: <class>
 			if(attribute.Class != null)
-			writer.WriteAttributeString("class", attribute.Class);
+			writer.WriteAttributeString("class", GetAttributeValue(attribute.Class, mappedClass));
 			// Attribute: <name>
 			if(attribute.Name != null)
-			writer.WriteAttributeString("name", attribute.Name);
+			writer.WriteAttributeString("name", GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <unsaved-value>
 			if(attribute.UnsavedValue != UnsavedValueType.Unspecified)
 			writer.WriteAttributeString("unsaved-value", GetXmlEnumValue(typeof(UnsavedValueType), attribute.UnsavedValue));
@@ -1827,7 +1907,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CompositeIdAttribute )
 						break; // Following attributes are for this CompositeId
 					if( memberAttrib is KeyPropertyAttribute )
-						WriteKeyProperty(writer, member, memberAttrib as KeyPropertyAttribute, attribute);
+						WriteKeyProperty(writer, member, memberAttrib as KeyPropertyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyPropertyAttribute), attribute);
@@ -1843,7 +1923,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CompositeIdAttribute )
 						break; // Following attributes are for this CompositeId
 					if( memberAttrib is KeyManyToOneAttribute )
-						WriteKeyManyToOne(writer, member, memberAttrib as KeyManyToOneAttribute, attribute);
+						WriteKeyManyToOne(writer, member, memberAttrib as KeyManyToOneAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyManyToOneAttribute), attribute);
@@ -1852,15 +1932,15 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Discriminator XML Element from attributes in a member. </summary>
-		public virtual void WriteDiscriminator(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, DiscriminatorAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteDiscriminator(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, DiscriminatorAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "discriminator" );
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <type>
 			if(attribute.Type != null)
-			writer.WriteAttributeString("type", attribute.Type);
+			writer.WriteAttributeString("type", GetAttributeValue(attribute.Type, mappedClass));
 			// Attribute: <not-null>
 			if( attribute.NotNullSpecified )
 			writer.WriteAttributeString("not-null", attribute.NotNull ? "true" : "false");
@@ -1896,7 +1976,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DiscriminatorAttribute )
 						break; // Following attributes are for this Discriminator
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -1905,23 +1985,23 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Version XML Element from attributes in a member. </summary>
-		public virtual void WriteVersion(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, VersionAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteVersion(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, VersionAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "version" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Version_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Version_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <type>
 			if(attribute.Type != null)
-			writer.WriteAttributeString("type", attribute.Type);
+			writer.WriteAttributeString("type", GetAttributeValue(attribute.Type, mappedClass));
 			// Attribute: <unsaved-value>
 			if(attribute.UnsavedValue != null)
-			writer.WriteAttributeString("unsaved-value", attribute.UnsavedValue);
+			writer.WriteAttributeString("unsaved-value", GetAttributeValue(attribute.UnsavedValue, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -1929,20 +2009,20 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Timestamp XML Element from attributes in a member. </summary>
-		public virtual void WriteTimestamp(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, TimestampAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteTimestamp(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, TimestampAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "timestamp" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Timestamp_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Timestamp_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <unsaved-value>
 			if(attribute.UnsavedValue != null)
-			writer.WriteAttributeString("unsaved-value", attribute.UnsavedValue);
+			writer.WriteAttributeString("unsaved-value", GetAttributeValue(attribute.UnsavedValue, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -1959,10 +2039,10 @@ namespace NHibernate.Mapping.Attributes
 
 			writer.WriteStartElement( "subclass" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Subclass_Name_DefaultValue(type) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Subclass_Name_DefaultValue(type) : GetAttributeValue(attribute.Name, type));
 			// Attribute: <proxy>
 			if(attribute.Proxy != null)
-			writer.WriteAttributeString("proxy", attribute.Proxy);
+			writer.WriteAttributeString("proxy", GetAttributeValue(attribute.Proxy, type));
 			// Attribute: <lazy>
 			if( attribute.LazySpecified )
 			writer.WriteAttributeString("lazy", attribute.Lazy ? "true" : "false");
@@ -1977,10 +2057,10 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("select-before-update", attribute.SelectBeforeUpdate ? "true" : "false");
 			// Attribute: <extends>
 			if(attribute.Extends != null)
-			writer.WriteAttributeString("extends", attribute.Extends);
+			writer.WriteAttributeString("extends", GetAttributeValue(attribute.Extends, type));
 			// Attribute: <discriminator-value>
 			if(attribute.DiscriminatorValue != null)
-			writer.WriteAttributeString("discriminator-value", attribute.DiscriminatorValue);
+			writer.WriteAttributeString("discriminator-value", GetAttributeValue(attribute.DiscriminatorValue, type));
 			
 			WriteUserDefinedContent(writer, type, null, attribute);
 			// Element: <meta>
@@ -1992,7 +2072,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+					WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(MetaAttribute), attribute);
 			// Element: <property>
@@ -2004,7 +2084,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute);
+					WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(PropertyAttribute), attribute);
 			// Element: <many-to-one>
@@ -2016,7 +2096,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute);
+					WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ManyToOneAttribute), attribute);
 			// Element: <one-to-one>
@@ -2028,7 +2108,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute);
+					WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(OneToOneAttribute), attribute);
 			// Element: <component>
@@ -2042,7 +2122,7 @@ namespace NHibernate.Mapping.Attributes
 				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
-				WriteDynamicComponent(writer, member, memberAttribs[0] as DynamicComponentAttribute, attribute);
+				WriteDynamicComponent(writer, member, memberAttribs[0] as DynamicComponentAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(DynamicComponentAttribute), attribute);
 			// Element: <any>
@@ -2054,7 +2134,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteAny(writer, member, memberAttrib as AnyAttribute, attribute);
+					WriteAny(writer, member, memberAttrib as AnyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(AnyAttribute), attribute);
 			// Element: <map>
@@ -2066,7 +2146,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteMap(writer, member, memberAttrib as MapAttribute, attribute);
+					WriteMap(writer, member, memberAttrib as MapAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(MapAttribute), attribute);
 			// Element: <set>
@@ -2078,7 +2158,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteSet(writer, member, memberAttrib as SetAttribute, attribute);
+					WriteSet(writer, member, memberAttrib as SetAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(SetAttribute), attribute);
 			// Element: <list>
@@ -2090,7 +2170,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteList(writer, member, memberAttrib as ListAttribute, attribute);
+					WriteList(writer, member, memberAttrib as ListAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ListAttribute), attribute);
 			// Element: <bag>
@@ -2102,7 +2182,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteBag(writer, member, memberAttrib as BagAttribute, attribute);
+					WriteBag(writer, member, memberAttrib as BagAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(BagAttribute), attribute);
 			// Element: <idbag>
@@ -2114,7 +2194,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteIdBag(writer, member, memberAttrib as IdBagAttribute, attribute);
+					WriteIdBag(writer, member, memberAttrib as IdBagAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(IdBagAttribute), attribute);
 			// Element: <array>
@@ -2126,7 +2206,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute);
+					WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ArrayAttribute), attribute);
 			// Element: <primitive-array>
@@ -2138,7 +2218,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute);
+					WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(PrimitiveArrayAttribute), attribute);
 			// Element: <subclass>
@@ -2172,10 +2252,10 @@ namespace NHibernate.Mapping.Attributes
 
 			writer.WriteStartElement( "joined-subclass" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_JoinedSubclass_Name_DefaultValue(type) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_JoinedSubclass_Name_DefaultValue(type) : GetAttributeValue(attribute.Name, type));
 			// Attribute: <proxy>
 			if(attribute.Proxy != null)
-			writer.WriteAttributeString("proxy", attribute.Proxy);
+			writer.WriteAttributeString("proxy", GetAttributeValue(attribute.Proxy, type));
 			// Attribute: <lazy>
 			if( attribute.LazySpecified )
 			writer.WriteAttributeString("lazy", attribute.Lazy ? "true" : "false");
@@ -2190,16 +2270,16 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("select-before-update", attribute.SelectBeforeUpdate ? "true" : "false");
 			// Attribute: <extends>
 			if(attribute.Extends != null)
-			writer.WriteAttributeString("extends", attribute.Extends);
+			writer.WriteAttributeString("extends", GetAttributeValue(attribute.Extends, type));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, type));
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, type));
 			// Attribute: <check>
 			if(attribute.Check != null)
-			writer.WriteAttributeString("check", attribute.Check);
+			writer.WriteAttributeString("check", GetAttributeValue(attribute.Check, type));
 			
 			WriteUserDefinedContent(writer, type, null, attribute);
 			// Element: <meta>
@@ -2211,7 +2291,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+					WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(MetaAttribute), attribute);
 			// Element: <key>
@@ -2223,7 +2303,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteKey(writer, member, memberAttrib as KeyAttribute, attribute);
+					WriteKey(writer, member, memberAttrib as KeyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(KeyAttribute), attribute);
 			// Element: <property>
@@ -2235,7 +2315,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute);
+					WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(PropertyAttribute), attribute);
 			// Element: <many-to-one>
@@ -2247,7 +2327,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute);
+					WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ManyToOneAttribute), attribute);
 			// Element: <one-to-one>
@@ -2259,7 +2339,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute);
+					WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(OneToOneAttribute), attribute);
 			// Element: <component>
@@ -2273,7 +2353,7 @@ namespace NHibernate.Mapping.Attributes
 				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
-				WriteDynamicComponent(writer, member, memberAttribs[0] as DynamicComponentAttribute, attribute);
+				WriteDynamicComponent(writer, member, memberAttribs[0] as DynamicComponentAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(DynamicComponentAttribute), attribute);
 			// Element: <any>
@@ -2285,7 +2365,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteAny(writer, member, memberAttrib as AnyAttribute, attribute);
+					WriteAny(writer, member, memberAttrib as AnyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(AnyAttribute), attribute);
 			// Element: <map>
@@ -2297,7 +2377,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteMap(writer, member, memberAttrib as MapAttribute, attribute);
+					WriteMap(writer, member, memberAttrib as MapAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(MapAttribute), attribute);
 			// Element: <set>
@@ -2309,7 +2389,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteSet(writer, member, memberAttrib as SetAttribute, attribute);
+					WriteSet(writer, member, memberAttrib as SetAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(SetAttribute), attribute);
 			// Element: <list>
@@ -2321,7 +2401,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteList(writer, member, memberAttrib as ListAttribute, attribute);
+					WriteList(writer, member, memberAttrib as ListAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ListAttribute), attribute);
 			// Element: <bag>
@@ -2333,7 +2413,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteBag(writer, member, memberAttrib as BagAttribute, attribute);
+					WriteBag(writer, member, memberAttrib as BagAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(BagAttribute), attribute);
 			// Element: <idbag>
@@ -2345,7 +2425,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteIdBag(writer, member, memberAttrib as IdBagAttribute, attribute);
+					WriteIdBag(writer, member, memberAttrib as IdBagAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(IdBagAttribute), attribute);
 			// Element: <array>
@@ -2357,7 +2437,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute);
+					WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ArrayAttribute), attribute);
 			// Element: <primitive-array>
@@ -2369,7 +2449,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute);
+					WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(PrimitiveArrayAttribute), attribute);
 			// Element: <joined-subclass>
@@ -2394,17 +2474,17 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Property XML Element from attributes in a member. </summary>
-		public virtual void WriteProperty(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, PropertyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteProperty(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, PropertyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "property" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Property_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Property_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <type>
 			if(attribute.Type != null)
-			writer.WriteAttributeString("type", attribute.Type);
+			writer.WriteAttributeString("type", GetAttributeValue(attribute.Type, mappedClass));
 			else
 			{
 				System.Type type = null;
@@ -2430,7 +2510,7 @@ namespace NHibernate.Mapping.Attributes
 			}
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <length>
 			if(attribute.Length != -1)
 			writer.WriteAttributeString("length", attribute.Length.ToString());
@@ -2448,10 +2528,10 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("insert", attribute.Insert ? "true" : "false");
 			// Attribute: <formula>
 			if(attribute.Formula != null)
-			writer.WriteAttributeString("formula", attribute.Formula);
+			writer.WriteAttributeString("formula", GetAttributeValue(attribute.Formula, mappedClass));
 			// Attribute: <index>
 			if(attribute.Index != null)
-			writer.WriteAttributeString("index", attribute.Index);
+			writer.WriteAttributeString("index", GetAttributeValue(attribute.Index, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -2475,7 +2555,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PropertyAttribute )
 						break; // Following attributes are for this Property
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -2491,7 +2571,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PropertyAttribute )
 						break; // Following attributes are for this Property
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -2507,7 +2587,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PropertyAttribute )
 						break; // Following attributes are for this Property
 					if( memberAttrib is TypeAttribute )
-						WriteType(writer, member, memberAttrib as TypeAttribute, attribute);
+						WriteType(writer, member, memberAttrib as TypeAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(TypeAttribute), attribute);
@@ -2516,13 +2596,13 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a MetaValue XML Element from attributes in a member. </summary>
-		public virtual void WriteMetaValue(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, MetaValueAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteMetaValue(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, MetaValueAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "meta-value" );
 			// Attribute: <value>
-			writer.WriteAttributeString("value", attribute.Value==null ? DefaultHelper.Get_MetaValue_Value_DefaultValue(member) : attribute.Value);
+			writer.WriteAttributeString("value", attribute.Value==null ? DefaultHelper.Get_MetaValue_Value_DefaultValue(member) : GetAttributeValue(attribute.Value, mappedClass));
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_MetaValue_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_MetaValue_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -2530,19 +2610,19 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Any XML Element from attributes in a member. </summary>
-		public virtual void WriteAny(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, AnyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteAny(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, AnyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "any" );
 			// Attribute: <id-type>
-			writer.WriteAttributeString("id-type", attribute.IdType==null ? DefaultHelper.Get_Any_IdType_DefaultValue(member) : attribute.IdType);
+			writer.WriteAttributeString("id-type", attribute.IdType==null ? DefaultHelper.Get_Any_IdType_DefaultValue(member) : GetAttributeValue(attribute.IdType, mappedClass));
 			// Attribute: <meta-type>
 			if(attribute.MetaType != null)
-			writer.WriteAttributeString("meta-type", attribute.MetaType);
+			writer.WriteAttributeString("meta-type", GetAttributeValue(attribute.MetaType, mappedClass));
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Any_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Any_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <insert>
 			if( attribute.InsertSpecified )
 			writer.WriteAttributeString("insert", attribute.Insert ? "true" : "false");
@@ -2554,7 +2634,7 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
 			// Attribute: <index>
 			if(attribute.Index != null)
-			writer.WriteAttributeString("index", attribute.Index);
+			writer.WriteAttributeString("index", GetAttributeValue(attribute.Index, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -2578,7 +2658,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is AnyAttribute )
 						break; // Following attributes are for this Any
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -2594,7 +2674,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is AnyAttribute )
 						break; // Following attributes are for this Any
 					if( memberAttrib is MetaValueAttribute )
-						WriteMetaValue(writer, member, memberAttrib as MetaValueAttribute, attribute);
+						WriteMetaValue(writer, member, memberAttrib as MetaValueAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaValueAttribute), attribute);
@@ -2610,7 +2690,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is AnyAttribute )
 						break; // Following attributes are for this Any
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -2619,29 +2699,29 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Array XML Element from attributes in a member. </summary>
-		public virtual void WriteArray(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ArrayAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteArray(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ArrayAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "array" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Array_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Array_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, mappedClass));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, mappedClass));
 			// Attribute: <element-class>
 			if(attribute.ElementClass != null)
-			writer.WriteAttributeString("element-class", attribute.ElementClass);
+			writer.WriteAttributeString("element-class", GetAttributeValue(attribute.ElementClass, mappedClass));
 			// Attribute: <cascade>
 			if(attribute.Cascade != CascadeStyle.Unspecified)
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
 			// Attribute: <where>
 			if(attribute.Where != null)
-			writer.WriteAttributeString("where", attribute.Where);
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -2665,7 +2745,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -2681,7 +2761,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is JcsCacheAttribute )
-						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute);
+						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(JcsCacheAttribute), attribute);
@@ -2697,7 +2777,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is CacheAttribute )
-						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute);
+						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CacheAttribute), attribute);
@@ -2713,7 +2793,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is KeyAttribute )
-						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute);
+						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyAttribute), attribute);
@@ -2729,7 +2809,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is IndexAttribute )
-						WriteIndex(writer, member, memberAttrib as IndexAttribute, attribute);
+						WriteIndex(writer, member, memberAttrib as IndexAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(IndexAttribute), attribute);
@@ -2745,7 +2825,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is ElementAttribute )
-						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute);
+						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ElementAttribute), attribute);
@@ -2761,7 +2841,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is OneToManyAttribute )
-						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute);
+						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(OneToManyAttribute), attribute);
@@ -2777,7 +2857,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is ManyToManyAttribute )
-						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute);
+						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToManyAttribute), attribute);
@@ -2793,7 +2873,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is CompositeElementAttribute )
-						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute);
+						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CompositeElementAttribute), attribute);
@@ -2809,7 +2889,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ArrayAttribute )
 						break; // Following attributes are for this Array
 					if( memberAttrib is ManyToAnyAttribute )
-						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute);
+						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
@@ -2818,7 +2898,7 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Cache XML Element from attributes in a member. </summary>
-		public virtual void WriteCache(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CacheAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteCache(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CacheAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "cache" );
 			// Attribute: <usage>
@@ -2830,13 +2910,13 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a CollectionId XML Element from attributes in a member. </summary>
-		public virtual void WriteCollectionId(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CollectionIdAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteCollectionId(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CollectionIdAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "collection-id" );
 			// Attribute: <column>
-			writer.WriteAttributeString("column", attribute.Column==null ? DefaultHelper.Get_CollectionId_Column_DefaultValue(member) : attribute.Column);
+			writer.WriteAttributeString("column", attribute.Column==null ? DefaultHelper.Get_CollectionId_Column_DefaultValue(member) : GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <type>
-			writer.WriteAttributeString("type", attribute.Type==null ? DefaultHelper.Get_CollectionId_Type_DefaultValue(member) : attribute.Type);
+			writer.WriteAttributeString("type", attribute.Type==null ? DefaultHelper.Get_CollectionId_Type_DefaultValue(member) : GetAttributeValue(attribute.Type, mappedClass));
 			// Attribute: <length>
 			if(attribute.Length != -1)
 			writer.WriteAttributeString("length", attribute.Length.ToString());
@@ -2863,7 +2943,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CollectionIdAttribute )
 						break; // Following attributes are for this CollectionId
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -2879,7 +2959,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CollectionIdAttribute )
 						break; // Following attributes are for this CollectionId
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -2895,7 +2975,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CollectionIdAttribute )
 						break; // Following attributes are for this CollectionId
 					if( memberAttrib is GeneratorAttribute )
-						WriteGenerator(writer, member, memberAttrib as GeneratorAttribute, attribute);
+						WriteGenerator(writer, member, memberAttrib as GeneratorAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(GeneratorAttribute), attribute);
@@ -2904,11 +2984,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Column XML Element from attributes in a member. </summary>
-		public virtual void WriteColumn(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ColumnAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteColumn(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ColumnAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "column" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Column_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Column_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <length>
 			if(attribute.Length != -1)
 			writer.WriteAttributeString("length", attribute.Length.ToString());
@@ -2920,16 +3000,16 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("unique", attribute.Unique ? "true" : "false");
 			// Attribute: <unique-key>
 			if(attribute.UniqueKey != null)
-			writer.WriteAttributeString("unique-key", attribute.UniqueKey);
+			writer.WriteAttributeString("unique-key", GetAttributeValue(attribute.UniqueKey, mappedClass));
 			// Attribute: <sql-type>
 			if(attribute.SqlType != null)
-			writer.WriteAttributeString("sql-type", attribute.SqlType);
+			writer.WriteAttributeString("sql-type", GetAttributeValue(attribute.SqlType, mappedClass));
 			// Attribute: <index>
 			if(attribute.Index != null)
-			writer.WriteAttributeString("index", attribute.Index);
+			writer.WriteAttributeString("index", GetAttributeValue(attribute.Index, mappedClass));
 			// Attribute: <check>
 			if(attribute.Check != null)
-			writer.WriteAttributeString("check", attribute.Check);
+			writer.WriteAttributeString("check", GetAttributeValue(attribute.Check, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -2946,13 +3026,13 @@ namespace NHibernate.Mapping.Attributes
 
 			writer.WriteStartElement( "component" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Component_Name_DefaultValue(type) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Component_Name_DefaultValue(type) : GetAttributeValue(attribute.Name, type));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, type));
 			// Attribute: <class>
 			if(attribute.Class != null)
-			writer.WriteAttributeString("class", attribute.Class);
+			writer.WriteAttributeString("class", GetAttributeValue(attribute.Class, type));
 			// Attribute: <update>
 			if( attribute.UpdateSpecified )
 			writer.WriteAttributeString("update", attribute.Update ? "true" : "false");
@@ -2970,7 +3050,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteParent(writer, member, memberAttrib as ParentAttribute, attribute);
+					WriteParent(writer, member, memberAttrib as ParentAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ParentAttribute), attribute);
 			// Element: <property>
@@ -2982,7 +3062,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute);
+					WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(PropertyAttribute), attribute);
 			// Element: <many-to-one>
@@ -2994,7 +3074,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute);
+					WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ManyToOneAttribute), attribute);
 			// Element: <one-to-one>
@@ -3006,7 +3086,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute);
+					WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(OneToOneAttribute), attribute);
 			// Element: <component>
@@ -3020,7 +3100,7 @@ namespace NHibernate.Mapping.Attributes
 				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
-				WriteDynamicComponent(writer, member, memberAttribs[0] as DynamicComponentAttribute, attribute);
+				WriteDynamicComponent(writer, member, memberAttribs[0] as DynamicComponentAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(DynamicComponentAttribute), attribute);
 			// Element: <any>
@@ -3032,7 +3112,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteAny(writer, member, memberAttrib as AnyAttribute, attribute);
+					WriteAny(writer, member, memberAttrib as AnyAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(AnyAttribute), attribute);
 			// Element: <map>
@@ -3044,7 +3124,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteMap(writer, member, memberAttrib as MapAttribute, attribute);
+					WriteMap(writer, member, memberAttrib as MapAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(MapAttribute), attribute);
 			// Element: <set>
@@ -3056,7 +3136,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteSet(writer, member, memberAttrib as SetAttribute, attribute);
+					WriteSet(writer, member, memberAttrib as SetAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(SetAttribute), attribute);
 			// Element: <list>
@@ -3068,7 +3148,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteList(writer, member, memberAttrib as ListAttribute, attribute);
+					WriteList(writer, member, memberAttrib as ListAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ListAttribute), attribute);
 			// Element: <bag>
@@ -3080,7 +3160,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteBag(writer, member, memberAttrib as BagAttribute, attribute);
+					WriteBag(writer, member, memberAttrib as BagAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(BagAttribute), attribute);
 			// Element: <array>
@@ -3092,7 +3172,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute);
+					WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(ArrayAttribute), attribute);
 			// Element: <primitive-array>
@@ -3104,7 +3184,7 @@ namespace NHibernate.Mapping.Attributes
 				memberAttribs.AddRange(objects);
 				memberAttribs.Sort();
 				foreach(object memberAttrib in memberAttribs)
-					WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute);
+					WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute, type);
 			}
 			WriteUserDefinedContent(writer, type, typeof(PrimitiveArrayAttribute), attribute);
 			
@@ -3130,14 +3210,14 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a DynamicComponent XML Element from attributes in a member. </summary>
-		public virtual void WriteDynamicComponent(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, DynamicComponentAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteDynamicComponent(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, DynamicComponentAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "dynamic-component" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_DynamicComponent_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_DynamicComponent_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <update>
 			if( attribute.UpdateSpecified )
 			writer.WriteAttributeString("update", attribute.Update ? "true" : "false");
@@ -3167,7 +3247,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is PropertyAttribute )
-						WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute);
+						WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(PropertyAttribute), attribute);
@@ -3183,7 +3263,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is ManyToOneAttribute )
-						WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute);
+						WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToOneAttribute), attribute);
@@ -3199,7 +3279,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is OneToOneAttribute )
-						WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute);
+						WriteOneToOne(writer, member, memberAttrib as OneToOneAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(OneToOneAttribute), attribute);
@@ -3222,7 +3302,7 @@ namespace NHibernate.Mapping.Attributes
 				else
 				{
 					if( memberAttrib is DynamicComponentAttribute )
-						WriteDynamicComponent(writer, member, memberAttrib as DynamicComponentAttribute, attribute);
+						WriteDynamicComponent(writer, member, memberAttrib as DynamicComponentAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(DynamicComponentAttribute), attribute);
@@ -3238,7 +3318,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is AnyAttribute )
-						WriteAny(writer, member, memberAttrib as AnyAttribute, attribute);
+						WriteAny(writer, member, memberAttrib as AnyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(AnyAttribute), attribute);
@@ -3254,7 +3334,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is MapAttribute )
-						WriteMap(writer, member, memberAttrib as MapAttribute, attribute);
+						WriteMap(writer, member, memberAttrib as MapAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MapAttribute), attribute);
@@ -3270,7 +3350,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is SetAttribute )
-						WriteSet(writer, member, memberAttrib as SetAttribute, attribute);
+						WriteSet(writer, member, memberAttrib as SetAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(SetAttribute), attribute);
@@ -3286,7 +3366,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is ListAttribute )
-						WriteList(writer, member, memberAttrib as ListAttribute, attribute);
+						WriteList(writer, member, memberAttrib as ListAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ListAttribute), attribute);
@@ -3302,7 +3382,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is BagAttribute )
-						WriteBag(writer, member, memberAttrib as BagAttribute, attribute);
+						WriteBag(writer, member, memberAttrib as BagAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(BagAttribute), attribute);
@@ -3318,7 +3398,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is ArrayAttribute )
-						WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute);
+						WriteArray(writer, member, memberAttrib as ArrayAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ArrayAttribute), attribute);
@@ -3334,7 +3414,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is DynamicComponentAttribute )
 						break; // Following attributes are for this DynamicComponent
 					if( memberAttrib is PrimitiveArrayAttribute )
-						WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute);
+						WritePrimitiveArray(writer, member, memberAttrib as PrimitiveArrayAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(PrimitiveArrayAttribute), attribute);
@@ -3343,11 +3423,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a CompositeElement XML Element from attributes in a member. </summary>
-		public virtual void WriteCompositeElement(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CompositeElementAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteCompositeElement(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CompositeElementAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "composite-element" );
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_CompositeElement_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_CompositeElement_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -3371,7 +3451,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CompositeElementAttribute )
 						break; // Following attributes are for this CompositeElement
 					if( memberAttrib is ParentAttribute )
-						WriteParent(writer, member, memberAttrib as ParentAttribute, attribute);
+						WriteParent(writer, member, memberAttrib as ParentAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ParentAttribute), attribute);
@@ -3387,7 +3467,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CompositeElementAttribute )
 						break; // Following attributes are for this CompositeElement
 					if( memberAttrib is PropertyAttribute )
-						WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute);
+						WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(PropertyAttribute), attribute);
@@ -3403,7 +3483,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CompositeElementAttribute )
 						break; // Following attributes are for this CompositeElement
 					if( memberAttrib is ManyToOneAttribute )
-						WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute);
+						WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToOneAttribute), attribute);
@@ -3417,7 +3497,7 @@ namespace NHibernate.Mapping.Attributes
 				else
 				{
 					if( memberAttrib is NestedCompositeElementAttribute )
-						WriteNestedCompositeElement(writer, member, memberAttrib as NestedCompositeElementAttribute, attribute);
+						WriteNestedCompositeElement(writer, member, memberAttrib as NestedCompositeElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(NestedCompositeElementAttribute), attribute);
@@ -3426,11 +3506,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a CompositeIndex XML Element from attributes in a member. </summary>
-		public virtual void WriteCompositeIndex(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CompositeIndexAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteCompositeIndex(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CompositeIndexAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "composite-index" );
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_CompositeIndex_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_CompositeIndex_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -3454,7 +3534,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CompositeIndexAttribute )
 						break; // Following attributes are for this CompositeIndex
 					if( memberAttrib is KeyPropertyAttribute )
-						WriteKeyProperty(writer, member, memberAttrib as KeyPropertyAttribute, attribute);
+						WriteKeyProperty(writer, member, memberAttrib as KeyPropertyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyPropertyAttribute), attribute);
@@ -3470,7 +3550,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is CompositeIndexAttribute )
 						break; // Following attributes are for this CompositeIndex
 					if( memberAttrib is KeyManyToOneAttribute )
-						WriteKeyManyToOne(writer, member, memberAttrib as KeyManyToOneAttribute, attribute);
+						WriteKeyManyToOne(writer, member, memberAttrib as KeyManyToOneAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyManyToOneAttribute), attribute);
@@ -3479,14 +3559,14 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Element XML Element from attributes in a member. </summary>
-		public virtual void WriteElement(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ElementAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteElement(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ElementAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "element" );
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <type>
-			writer.WriteAttributeString("type", attribute.Type==null ? DefaultHelper.Get_Element_Type_DefaultValue(member) : attribute.Type);
+			writer.WriteAttributeString("type", attribute.Type==null ? DefaultHelper.Get_Element_Type_DefaultValue(member) : GetAttributeValue(attribute.Type, mappedClass));
 			// Attribute: <length>
 			if(attribute.Length != -1)
 			writer.WriteAttributeString("length", attribute.Length.ToString());
@@ -3519,7 +3599,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ElementAttribute )
 						break; // Following attributes are for this Element
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -3528,11 +3608,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Generator XML Element from attributes in a member. </summary>
-		public virtual void WriteGenerator(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, GeneratorAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteGenerator(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, GeneratorAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "generator" );
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_Generator_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_Generator_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -3556,7 +3636,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is GeneratorAttribute )
 						break; // Following attributes are for this Generator
 					if( memberAttrib is ParamAttribute )
-						WriteParam(writer, member, memberAttrib as ParamAttribute, attribute);
+						WriteParam(writer, member, memberAttrib as ParamAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ParamAttribute), attribute);
@@ -3565,20 +3645,20 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a IdBag XML Element from attributes in a member. </summary>
-		public virtual void WriteIdBag(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IdBagAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteIdBag(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IdBagAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "idbag" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_IdBag_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_IdBag_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, mappedClass));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, mappedClass));
 			// Attribute: <lazy>
 			if( attribute.LazySpecified )
 			writer.WriteAttributeString("lazy", attribute.Lazy ? "true" : "false");
@@ -3593,28 +3673,28 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
 			// Attribute: <where>
 			if(attribute.Where != null)
-			writer.WriteAttributeString("where", attribute.Where);
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
 			// Attribute: <inverse>
 			if( attribute.InverseSpecified )
 			writer.WriteAttributeString("inverse", attribute.Inverse ? "true" : "false");
 			// Attribute: <persister>
 			if(attribute.Persister != null)
-			writer.WriteAttributeString("persister", attribute.Persister);
+			writer.WriteAttributeString("persister", GetAttributeValue(attribute.Persister, mappedClass));
 			// Attribute: <batch-size>
 			if(attribute.BatchSize != -1)
 			writer.WriteAttributeString("batch-size", attribute.BatchSize.ToString());
 			// Attribute: <check>
 			if(attribute.Check != null)
-			writer.WriteAttributeString("check", attribute.Check);
+			writer.WriteAttributeString("check", GetAttributeValue(attribute.Check, mappedClass));
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
-			writer.WriteAttributeString("collection-type", attribute.CollectionType);
+			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
 			// Attribute: <order-by>
 			if(attribute.OrderBy != null)
-			writer.WriteAttributeString("order-by", attribute.OrderBy);
+			writer.WriteAttributeString("order-by", GetAttributeValue(attribute.OrderBy, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -3638,7 +3718,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -3654,7 +3734,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is JcsCacheAttribute )
-						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute);
+						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(JcsCacheAttribute), attribute);
@@ -3670,7 +3750,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is CacheAttribute )
-						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute);
+						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CacheAttribute), attribute);
@@ -3686,7 +3766,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is CollectionIdAttribute )
-						WriteCollectionId(writer, member, memberAttrib as CollectionIdAttribute, attribute);
+						WriteCollectionId(writer, member, memberAttrib as CollectionIdAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CollectionIdAttribute), attribute);
@@ -3702,7 +3782,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is KeyAttribute )
-						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute);
+						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyAttribute), attribute);
@@ -3718,7 +3798,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is ElementAttribute )
-						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute);
+						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ElementAttribute), attribute);
@@ -3734,7 +3814,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is ManyToManyAttribute )
-						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute);
+						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToManyAttribute), attribute);
@@ -3750,7 +3830,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is CompositeElementAttribute )
-						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute);
+						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CompositeElementAttribute), attribute);
@@ -3766,7 +3846,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IdBagAttribute )
 						break; // Following attributes are for this IdBag
 					if( memberAttrib is ManyToAnyAttribute )
-						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute);
+						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
@@ -3775,15 +3855,15 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Index XML Element from attributes in a member. </summary>
-		public virtual void WriteIndex(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IndexAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteIndex(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IndexAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "index" );
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <type>
 			if(attribute.Type != null)
-			writer.WriteAttributeString("type", attribute.Type);
+			writer.WriteAttributeString("type", GetAttributeValue(attribute.Type, mappedClass));
 			// Attribute: <length>
 			if(attribute.Length != -1)
 			writer.WriteAttributeString("length", attribute.Length.ToString());
@@ -3810,7 +3890,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IndexAttribute )
 						break; // Following attributes are for this Index
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -3819,14 +3899,14 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a IndexManyToAny XML Element from attributes in a member. </summary>
-		public virtual void WriteIndexManyToAny(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IndexManyToAnyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteIndexManyToAny(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IndexManyToAnyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "index-many-to-any" );
 			// Attribute: <id-type>
-			writer.WriteAttributeString("id-type", attribute.IdType==null ? DefaultHelper.Get_IndexManyToAny_IdType_DefaultValue(member) : attribute.IdType);
+			writer.WriteAttributeString("id-type", attribute.IdType==null ? DefaultHelper.Get_IndexManyToAny_IdType_DefaultValue(member) : GetAttributeValue(attribute.IdType, mappedClass));
 			// Attribute: <meta-type>
 			if(attribute.MetaType != null)
-			writer.WriteAttributeString("meta-type", attribute.MetaType);
+			writer.WriteAttributeString("meta-type", GetAttributeValue(attribute.MetaType, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -3850,7 +3930,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IndexManyToAnyAttribute )
 						break; // Following attributes are for this IndexManyToAny
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -3859,17 +3939,17 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a IndexManyToMany XML Element from attributes in a member. </summary>
-		public virtual void WriteIndexManyToMany(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IndexManyToManyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteIndexManyToMany(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, IndexManyToManyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "index-many-to-many" );
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_IndexManyToMany_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_IndexManyToMany_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <foreign-key>
 			if(attribute.ForeignKey != null)
-			writer.WriteAttributeString("foreign-key", attribute.ForeignKey);
+			writer.WriteAttributeString("foreign-key", GetAttributeValue(attribute.ForeignKey, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -3893,7 +3973,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is IndexManyToManyAttribute )
 						break; // Following attributes are for this IndexManyToMany
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -3902,7 +3982,7 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a JcsCache XML Element from attributes in a member. </summary>
-		public virtual void WriteJcsCache(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, JcsCacheAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteJcsCache(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, JcsCacheAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "jcs-cache" );
 			// Attribute: <usage>
@@ -3914,15 +3994,15 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Key XML Element from attributes in a member. </summary>
-		public virtual void WriteKey(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, KeyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteKey(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, KeyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "key" );
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <foreign-key>
 			if(attribute.ForeignKey != null)
-			writer.WriteAttributeString("foreign-key", attribute.ForeignKey);
+			writer.WriteAttributeString("foreign-key", GetAttributeValue(attribute.ForeignKey, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -3946,7 +4026,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is KeyAttribute )
 						break; // Following attributes are for this Key
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -3955,23 +4035,23 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a KeyManyToOne XML Element from attributes in a member. </summary>
-		public virtual void WriteKeyManyToOne(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, KeyManyToOneAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteKeyManyToOne(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, KeyManyToOneAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "key-many-to-one" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_KeyManyToOne_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_KeyManyToOne_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <class>
 			if(attribute.Class != null)
-			writer.WriteAttributeString("class", attribute.Class);
+			writer.WriteAttributeString("class", GetAttributeValue(attribute.Class, mappedClass));
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <foreign-key>
 			if(attribute.ForeignKey != null)
-			writer.WriteAttributeString("foreign-key", attribute.ForeignKey);
+			writer.WriteAttributeString("foreign-key", GetAttributeValue(attribute.ForeignKey, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -3995,7 +4075,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is KeyManyToOneAttribute )
 						break; // Following attributes are for this KeyManyToOne
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -4004,20 +4084,20 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a KeyProperty XML Element from attributes in a member. </summary>
-		public virtual void WriteKeyProperty(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, KeyPropertyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteKeyProperty(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, KeyPropertyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "key-property" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_KeyProperty_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_KeyProperty_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <type>
 			if(attribute.Type != null)
-			writer.WriteAttributeString("type", attribute.Type);
+			writer.WriteAttributeString("type", GetAttributeValue(attribute.Type, mappedClass));
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <length>
 			if(attribute.Length != -1)
 			writer.WriteAttributeString("length", attribute.Length.ToString());
@@ -4044,7 +4124,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is KeyPropertyAttribute )
 						break; // Following attributes are for this KeyProperty
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -4053,14 +4133,14 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a ManyToAny XML Element from attributes in a member. </summary>
-		public virtual void WriteManyToAny(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ManyToAnyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteManyToAny(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ManyToAnyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "many-to-any" );
 			// Attribute: <id-type>
-			writer.WriteAttributeString("id-type", attribute.IdType==null ? DefaultHelper.Get_ManyToAny_IdType_DefaultValue(member) : attribute.IdType);
+			writer.WriteAttributeString("id-type", attribute.IdType==null ? DefaultHelper.Get_ManyToAny_IdType_DefaultValue(member) : GetAttributeValue(attribute.IdType, mappedClass));
 			// Attribute: <meta-type>
 			if(attribute.MetaType != null)
-			writer.WriteAttributeString("meta-type", attribute.MetaType);
+			writer.WriteAttributeString("meta-type", GetAttributeValue(attribute.MetaType, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4084,7 +4164,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ManyToAnyAttribute )
 						break; // Following attributes are for this ManyToAny
 					if( memberAttrib is MetaValueAttribute )
-						WriteMetaValue(writer, member, memberAttrib as MetaValueAttribute, attribute);
+						WriteMetaValue(writer, member, memberAttrib as MetaValueAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaValueAttribute), attribute);
@@ -4100,7 +4180,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ManyToAnyAttribute )
 						break; // Following attributes are for this ManyToAny
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -4109,17 +4189,17 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a ManyToMany XML Element from attributes in a member. </summary>
-		public virtual void WriteManyToMany(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ManyToManyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteManyToMany(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ManyToManyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "many-to-many" );
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_ManyToMany_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_ManyToMany_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <foreign-key>
 			if(attribute.ForeignKey != null)
-			writer.WriteAttributeString("foreign-key", attribute.ForeignKey);
+			writer.WriteAttributeString("foreign-key", GetAttributeValue(attribute.ForeignKey, mappedClass));
 			// Attribute: <outer-join>
 			if(attribute.OuterJoin != OuterJoinStrategy.Unspecified)
 			writer.WriteAttributeString("outer-join", GetXmlEnumValue(typeof(OuterJoinStrategy), attribute.OuterJoin));
@@ -4149,7 +4229,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ManyToManyAttribute )
 						break; // Following attributes are for this ManyToMany
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -4165,7 +4245,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ManyToManyAttribute )
 						break; // Following attributes are for this ManyToMany
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -4174,20 +4254,20 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a ManyToOne XML Element from attributes in a member. </summary>
-		public virtual void WriteManyToOne(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ManyToOneAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteManyToOne(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ManyToOneAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "many-to-one" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_ManyToOne_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_ManyToOne_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <class>
 			if(attribute.Class != null)
-			writer.WriteAttributeString("class", attribute.Class);
+			writer.WriteAttributeString("class", GetAttributeValue(attribute.Class, mappedClass));
 			// Attribute: <column>
 			if(attribute.Column != null)
-			writer.WriteAttributeString("column", attribute.Column);
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
 			// Attribute: <not-null>
 			if( attribute.NotNullSpecified )
 			writer.WriteAttributeString("not-null", attribute.NotNull ? "true" : "false");
@@ -4211,10 +4291,10 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("insert", attribute.Insert ? "true" : "false");
 			// Attribute: <foreign-key>
 			if(attribute.ForeignKey != null)
-			writer.WriteAttributeString("foreign-key", attribute.ForeignKey);
+			writer.WriteAttributeString("foreign-key", GetAttributeValue(attribute.ForeignKey, mappedClass));
 			// Attribute: <property-ref>
 			if(attribute.PropertyRef != null)
-			writer.WriteAttributeString("property-ref", attribute.PropertyRef);
+			writer.WriteAttributeString("property-ref", GetAttributeValue(attribute.PropertyRef, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4238,7 +4318,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ManyToOneAttribute )
 						break; // Following attributes are for this ManyToOne
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -4254,7 +4334,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ManyToOneAttribute )
 						break; // Following attributes are for this ManyToOne
 					if( memberAttrib is ColumnAttribute )
-						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute);
+						WriteColumn(writer, member, memberAttrib as ColumnAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
@@ -4263,11 +4343,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Meta XML Element from attributes in a member. </summary>
-		public virtual void WriteMeta(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, MetaAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteMeta(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, MetaAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "meta" );
 			// Attribute: <attribute>
-			writer.WriteAttributeString("attribute", attribute.Attribute==null ? DefaultHelper.Get_Meta_Attribute_DefaultValue(member) : attribute.Attribute);
+			writer.WriteAttributeString("attribute", attribute.Attribute==null ? DefaultHelper.Get_Meta_Attribute_DefaultValue(member) : GetAttributeValue(attribute.Attribute, mappedClass));
 			// Attribute: <inherit>
 			if( attribute.InheritSpecified )
 			writer.WriteAttributeString("inherit", attribute.Inherit ? "true" : "false");
@@ -4281,16 +4361,16 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a NestedCompositeElement XML Element from attributes in a member. </summary>
-		public virtual void WriteNestedCompositeElement(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, NestedCompositeElementAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteNestedCompositeElement(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, NestedCompositeElementAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "nested-composite-element" );
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_NestedCompositeElement_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_NestedCompositeElement_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_NestedCompositeElement_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_NestedCompositeElement_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4314,7 +4394,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is NestedCompositeElementAttribute )
 						break; // Following attributes are for this NestedCompositeElement
 					if( memberAttrib is ParentAttribute )
-						WriteParent(writer, member, memberAttrib as ParentAttribute, attribute);
+						WriteParent(writer, member, memberAttrib as ParentAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ParentAttribute), attribute);
@@ -4330,7 +4410,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is NestedCompositeElementAttribute )
 						break; // Following attributes are for this NestedCompositeElement
 					if( memberAttrib is PropertyAttribute )
-						WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute);
+						WriteProperty(writer, member, memberAttrib as PropertyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(PropertyAttribute), attribute);
@@ -4346,7 +4426,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is NestedCompositeElementAttribute )
 						break; // Following attributes are for this NestedCompositeElement
 					if( memberAttrib is ManyToOneAttribute )
-						WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute);
+						WriteManyToOne(writer, member, memberAttrib as ManyToOneAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToOneAttribute), attribute);
@@ -4360,7 +4440,7 @@ namespace NHibernate.Mapping.Attributes
 				else
 				{
 					if( memberAttrib is NestedCompositeElementAttribute )
-						WriteNestedCompositeElement(writer, member, memberAttrib as NestedCompositeElementAttribute, attribute);
+						WriteNestedCompositeElement(writer, member, memberAttrib as NestedCompositeElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(NestedCompositeElementAttribute), attribute);
@@ -4369,11 +4449,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a OneToMany XML Element from attributes in a member. </summary>
-		public virtual void WriteOneToMany(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, OneToManyAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteOneToMany(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, OneToManyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "one-to-many" );
 			// Attribute: <class>
-			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_OneToMany_Class_DefaultValue(member) : attribute.Class);
+			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_OneToMany_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4381,17 +4461,17 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a OneToOne XML Element from attributes in a member. </summary>
-		public virtual void WriteOneToOne(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, OneToOneAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteOneToOne(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, OneToOneAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "one-to-one" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_OneToOne_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_OneToOne_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <class>
 			if(attribute.Class != null)
-			writer.WriteAttributeString("class", attribute.Class);
+			writer.WriteAttributeString("class", GetAttributeValue(attribute.Class, mappedClass));
 			// Attribute: <cascade>
 			if(attribute.Cascade != CascadeStyle.Unspecified)
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
@@ -4406,10 +4486,10 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("constrained", attribute.Constrained ? "true" : "false");
 			// Attribute: <foreign-key>
 			if(attribute.ForeignKey != null)
-			writer.WriteAttributeString("foreign-key", attribute.ForeignKey);
+			writer.WriteAttributeString("foreign-key", GetAttributeValue(attribute.ForeignKey, mappedClass));
 			// Attribute: <property-ref>
 			if(attribute.PropertyRef != null)
-			writer.WriteAttributeString("property-ref", attribute.PropertyRef);
+			writer.WriteAttributeString("property-ref", GetAttributeValue(attribute.PropertyRef, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4433,7 +4513,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is OneToOneAttribute )
 						break; // Following attributes are for this OneToOne
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -4442,11 +4522,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Param XML Element from attributes in a member. </summary>
-		public virtual void WriteParam(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ParamAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteParam(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ParamAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "param" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Param_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Param_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4457,11 +4537,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Parent XML Element from attributes in a member. </summary>
-		public virtual void WriteParent(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ParentAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteParent(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ParentAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "parent" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Parent_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Parent_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4469,23 +4549,23 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a PrimitiveArray XML Element from attributes in a member. </summary>
-		public virtual void WritePrimitiveArray(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, PrimitiveArrayAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WritePrimitiveArray(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, PrimitiveArrayAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "primitive-array" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_PrimitiveArray_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_PrimitiveArray_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, mappedClass));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, mappedClass));
 			// Attribute: <where>
 			if(attribute.Where != null)
-			writer.WriteAttributeString("where", attribute.Where);
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4509,7 +4589,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PrimitiveArrayAttribute )
 						break; // Following attributes are for this PrimitiveArray
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -4525,7 +4605,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PrimitiveArrayAttribute )
 						break; // Following attributes are for this PrimitiveArray
 					if( memberAttrib is JcsCacheAttribute )
-						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute);
+						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(JcsCacheAttribute), attribute);
@@ -4541,7 +4621,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PrimitiveArrayAttribute )
 						break; // Following attributes are for this PrimitiveArray
 					if( memberAttrib is CacheAttribute )
-						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute);
+						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CacheAttribute), attribute);
@@ -4557,7 +4637,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PrimitiveArrayAttribute )
 						break; // Following attributes are for this PrimitiveArray
 					if( memberAttrib is KeyAttribute )
-						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute);
+						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyAttribute), attribute);
@@ -4573,7 +4653,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PrimitiveArrayAttribute )
 						break; // Following attributes are for this PrimitiveArray
 					if( memberAttrib is IndexAttribute )
-						WriteIndex(writer, member, memberAttrib as IndexAttribute, attribute);
+						WriteIndex(writer, member, memberAttrib as IndexAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(IndexAttribute), attribute);
@@ -4589,7 +4669,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is PrimitiveArrayAttribute )
 						break; // Following attributes are for this PrimitiveArray
 					if( memberAttrib is ElementAttribute )
-						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute);
+						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ElementAttribute), attribute);
@@ -4598,20 +4678,20 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a List XML Element from attributes in a member. </summary>
-		public virtual void WriteList(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ListAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteList(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ListAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "list" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_List_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_List_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, mappedClass));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, mappedClass));
 			// Attribute: <lazy>
 			if( attribute.LazySpecified )
 			writer.WriteAttributeString("lazy", attribute.Lazy ? "true" : "false");
@@ -4626,22 +4706,22 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
 			// Attribute: <where>
 			if(attribute.Where != null)
-			writer.WriteAttributeString("where", attribute.Where);
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
 			// Attribute: <inverse>
 			if( attribute.InverseSpecified )
 			writer.WriteAttributeString("inverse", attribute.Inverse ? "true" : "false");
 			// Attribute: <persister>
 			if(attribute.Persister != null)
-			writer.WriteAttributeString("persister", attribute.Persister);
+			writer.WriteAttributeString("persister", GetAttributeValue(attribute.Persister, mappedClass));
 			// Attribute: <batch-size>
 			if(attribute.BatchSize != -1)
 			writer.WriteAttributeString("batch-size", attribute.BatchSize.ToString());
 			// Attribute: <check>
 			if(attribute.Check != null)
-			writer.WriteAttributeString("check", attribute.Check);
+			writer.WriteAttributeString("check", GetAttributeValue(attribute.Check, mappedClass));
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
-			writer.WriteAttributeString("collection-type", attribute.CollectionType);
+			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
@@ -4668,7 +4748,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -4684,7 +4764,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is JcsCacheAttribute )
-						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute);
+						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(JcsCacheAttribute), attribute);
@@ -4700,7 +4780,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is CacheAttribute )
-						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute);
+						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CacheAttribute), attribute);
@@ -4716,7 +4796,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is KeyAttribute )
-						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute);
+						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyAttribute), attribute);
@@ -4732,7 +4812,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is IndexAttribute )
-						WriteIndex(writer, member, memberAttrib as IndexAttribute, attribute);
+						WriteIndex(writer, member, memberAttrib as IndexAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(IndexAttribute), attribute);
@@ -4748,7 +4828,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is ElementAttribute )
-						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute);
+						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ElementAttribute), attribute);
@@ -4764,7 +4844,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is OneToManyAttribute )
-						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute);
+						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(OneToManyAttribute), attribute);
@@ -4780,7 +4860,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is ManyToManyAttribute )
-						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute);
+						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToManyAttribute), attribute);
@@ -4796,7 +4876,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is CompositeElementAttribute )
-						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute);
+						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CompositeElementAttribute), attribute);
@@ -4812,7 +4892,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is ListAttribute )
 						break; // Following attributes are for this List
 					if( memberAttrib is ManyToAnyAttribute )
-						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute);
+						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
@@ -4821,20 +4901,20 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Bag XML Element from attributes in a member. </summary>
-		public virtual void WriteBag(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, BagAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteBag(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, BagAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "bag" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Bag_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Bag_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, mappedClass));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, mappedClass));
 			// Attribute: <lazy>
 			if( attribute.LazySpecified )
 			writer.WriteAttributeString("lazy", attribute.Lazy ? "true" : "false");
@@ -4849,28 +4929,28 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
 			// Attribute: <where>
 			if(attribute.Where != null)
-			writer.WriteAttributeString("where", attribute.Where);
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
 			// Attribute: <inverse>
 			if( attribute.InverseSpecified )
 			writer.WriteAttributeString("inverse", attribute.Inverse ? "true" : "false");
 			// Attribute: <persister>
 			if(attribute.Persister != null)
-			writer.WriteAttributeString("persister", attribute.Persister);
+			writer.WriteAttributeString("persister", GetAttributeValue(attribute.Persister, mappedClass));
 			// Attribute: <batch-size>
 			if(attribute.BatchSize != -1)
 			writer.WriteAttributeString("batch-size", attribute.BatchSize.ToString());
 			// Attribute: <check>
 			if(attribute.Check != null)
-			writer.WriteAttributeString("check", attribute.Check);
+			writer.WriteAttributeString("check", GetAttributeValue(attribute.Check, mappedClass));
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
-			writer.WriteAttributeString("collection-type", attribute.CollectionType);
+			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
 			// Attribute: <order-by>
 			if(attribute.OrderBy != null)
-			writer.WriteAttributeString("order-by", attribute.OrderBy);
+			writer.WriteAttributeString("order-by", GetAttributeValue(attribute.OrderBy, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4894,7 +4974,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -4910,7 +4990,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is JcsCacheAttribute )
-						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute);
+						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(JcsCacheAttribute), attribute);
@@ -4926,7 +5006,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is CacheAttribute )
-						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute);
+						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CacheAttribute), attribute);
@@ -4942,7 +5022,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is KeyAttribute )
-						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute);
+						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyAttribute), attribute);
@@ -4958,7 +5038,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is ElementAttribute )
-						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute);
+						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ElementAttribute), attribute);
@@ -4974,7 +5054,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is OneToManyAttribute )
-						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute);
+						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(OneToManyAttribute), attribute);
@@ -4990,7 +5070,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is ManyToManyAttribute )
-						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute);
+						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToManyAttribute), attribute);
@@ -5006,7 +5086,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is CompositeElementAttribute )
-						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute);
+						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CompositeElementAttribute), attribute);
@@ -5022,7 +5102,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is BagAttribute )
 						break; // Following attributes are for this Bag
 					if( memberAttrib is ManyToAnyAttribute )
-						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute);
+						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
@@ -5031,20 +5111,20 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Set XML Element from attributes in a member. </summary>
-		public virtual void WriteSet(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, SetAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteSet(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, SetAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "set" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Set_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Set_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, mappedClass));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, mappedClass));
 			// Attribute: <lazy>
 			if( attribute.LazySpecified )
 			writer.WriteAttributeString("lazy", attribute.Lazy ? "true" : "false");
@@ -5059,31 +5139,31 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
 			// Attribute: <where>
 			if(attribute.Where != null)
-			writer.WriteAttributeString("where", attribute.Where);
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
 			// Attribute: <inverse>
 			if( attribute.InverseSpecified )
 			writer.WriteAttributeString("inverse", attribute.Inverse ? "true" : "false");
 			// Attribute: <persister>
 			if(attribute.Persister != null)
-			writer.WriteAttributeString("persister", attribute.Persister);
+			writer.WriteAttributeString("persister", GetAttributeValue(attribute.Persister, mappedClass));
 			// Attribute: <batch-size>
 			if(attribute.BatchSize != -1)
 			writer.WriteAttributeString("batch-size", attribute.BatchSize.ToString());
 			// Attribute: <check>
 			if(attribute.Check != null)
-			writer.WriteAttributeString("check", attribute.Check);
+			writer.WriteAttributeString("check", GetAttributeValue(attribute.Check, mappedClass));
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
-			writer.WriteAttributeString("collection-type", attribute.CollectionType);
+			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
 			// Attribute: <order-by>
 			if(attribute.OrderBy != null)
-			writer.WriteAttributeString("order-by", attribute.OrderBy);
+			writer.WriteAttributeString("order-by", GetAttributeValue(attribute.OrderBy, mappedClass));
 			// Attribute: <sort>
 			if(attribute.Sort != null)
-			writer.WriteAttributeString("sort", attribute.Sort);
+			writer.WriteAttributeString("sort", GetAttributeValue(attribute.Sort, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -5107,7 +5187,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -5123,7 +5203,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is JcsCacheAttribute )
-						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute);
+						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(JcsCacheAttribute), attribute);
@@ -5139,7 +5219,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is CacheAttribute )
-						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute);
+						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CacheAttribute), attribute);
@@ -5155,7 +5235,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is KeyAttribute )
-						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute);
+						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyAttribute), attribute);
@@ -5171,7 +5251,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is ElementAttribute )
-						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute);
+						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ElementAttribute), attribute);
@@ -5187,7 +5267,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is OneToManyAttribute )
-						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute);
+						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(OneToManyAttribute), attribute);
@@ -5203,7 +5283,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is ManyToManyAttribute )
-						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute);
+						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToManyAttribute), attribute);
@@ -5219,7 +5299,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is CompositeElementAttribute )
-						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute);
+						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CompositeElementAttribute), attribute);
@@ -5235,7 +5315,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is SetAttribute )
 						break; // Following attributes are for this Set
 					if( memberAttrib is ManyToAnyAttribute )
-						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute);
+						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
@@ -5244,20 +5324,20 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Map XML Element from attributes in a member. </summary>
-		public virtual void WriteMap(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, MapAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteMap(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, MapAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "map" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Map_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Map_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			// Attribute: <access>
 			if(attribute.Access != null)
-			writer.WriteAttributeString("access", attribute.Access);
+			writer.WriteAttributeString("access", GetAttributeValue(attribute.Access, mappedClass));
 			// Attribute: <table>
 			if(attribute.Table != null)
-			writer.WriteAttributeString("table", attribute.Table);
+			writer.WriteAttributeString("table", GetAttributeValue(attribute.Table, mappedClass));
 			// Attribute: <schema>
 			if(attribute.Schema != null)
-			writer.WriteAttributeString("schema", attribute.Schema);
+			writer.WriteAttributeString("schema", GetAttributeValue(attribute.Schema, mappedClass));
 			// Attribute: <lazy>
 			if( attribute.LazySpecified )
 			writer.WriteAttributeString("lazy", attribute.Lazy ? "true" : "false");
@@ -5272,31 +5352,31 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
 			// Attribute: <where>
 			if(attribute.Where != null)
-			writer.WriteAttributeString("where", attribute.Where);
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
 			// Attribute: <inverse>
 			if( attribute.InverseSpecified )
 			writer.WriteAttributeString("inverse", attribute.Inverse ? "true" : "false");
 			// Attribute: <persister>
 			if(attribute.Persister != null)
-			writer.WriteAttributeString("persister", attribute.Persister);
+			writer.WriteAttributeString("persister", GetAttributeValue(attribute.Persister, mappedClass));
 			// Attribute: <batch-size>
 			if(attribute.BatchSize != -1)
 			writer.WriteAttributeString("batch-size", attribute.BatchSize.ToString());
 			// Attribute: <check>
 			if(attribute.Check != null)
-			writer.WriteAttributeString("check", attribute.Check);
+			writer.WriteAttributeString("check", GetAttributeValue(attribute.Check, mappedClass));
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
-			writer.WriteAttributeString("collection-type", attribute.CollectionType);
+			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
 			// Attribute: <order-by>
 			if(attribute.OrderBy != null)
-			writer.WriteAttributeString("order-by", attribute.OrderBy);
+			writer.WriteAttributeString("order-by", GetAttributeValue(attribute.OrderBy, mappedClass));
 			// Attribute: <sort>
 			if(attribute.Sort != null)
-			writer.WriteAttributeString("sort", attribute.Sort);
+			writer.WriteAttributeString("sort", GetAttributeValue(attribute.Sort, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -5320,7 +5400,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is MetaAttribute )
-						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute);
+						WriteMeta(writer, member, memberAttrib as MetaAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(MetaAttribute), attribute);
@@ -5336,7 +5416,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is JcsCacheAttribute )
-						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute);
+						WriteJcsCache(writer, member, memberAttrib as JcsCacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(JcsCacheAttribute), attribute);
@@ -5352,7 +5432,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is CacheAttribute )
-						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute);
+						WriteCache(writer, member, memberAttrib as CacheAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CacheAttribute), attribute);
@@ -5368,7 +5448,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is KeyAttribute )
-						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute);
+						WriteKey(writer, member, memberAttrib as KeyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(KeyAttribute), attribute);
@@ -5384,7 +5464,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is IndexAttribute )
-						WriteIndex(writer, member, memberAttrib as IndexAttribute, attribute);
+						WriteIndex(writer, member, memberAttrib as IndexAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(IndexAttribute), attribute);
@@ -5400,7 +5480,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is CompositeIndexAttribute )
-						WriteCompositeIndex(writer, member, memberAttrib as CompositeIndexAttribute, attribute);
+						WriteCompositeIndex(writer, member, memberAttrib as CompositeIndexAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CompositeIndexAttribute), attribute);
@@ -5416,7 +5496,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is IndexManyToManyAttribute )
-						WriteIndexManyToMany(writer, member, memberAttrib as IndexManyToManyAttribute, attribute);
+						WriteIndexManyToMany(writer, member, memberAttrib as IndexManyToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(IndexManyToManyAttribute), attribute);
@@ -5432,7 +5512,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is IndexManyToAnyAttribute )
-						WriteIndexManyToAny(writer, member, memberAttrib as IndexManyToAnyAttribute, attribute);
+						WriteIndexManyToAny(writer, member, memberAttrib as IndexManyToAnyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(IndexManyToAnyAttribute), attribute);
@@ -5448,7 +5528,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is ElementAttribute )
-						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute);
+						WriteElement(writer, member, memberAttrib as ElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ElementAttribute), attribute);
@@ -5464,7 +5544,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is OneToManyAttribute )
-						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute);
+						WriteOneToMany(writer, member, memberAttrib as OneToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(OneToManyAttribute), attribute);
@@ -5480,7 +5560,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is ManyToManyAttribute )
-						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute);
+						WriteManyToMany(writer, member, memberAttrib as ManyToManyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToManyAttribute), attribute);
@@ -5496,7 +5576,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is CompositeElementAttribute )
-						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute);
+						WriteCompositeElement(writer, member, memberAttrib as CompositeElementAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(CompositeElementAttribute), attribute);
@@ -5512,7 +5592,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is MapAttribute )
 						break; // Following attributes are for this Map
 					if( memberAttrib is ManyToAnyAttribute )
-						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute);
+						WriteManyToAny(writer, member, memberAttrib as ManyToAnyAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
@@ -5521,11 +5601,11 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> Write a Type XML Element from attributes in a member. </summary>
-		public virtual void WriteType(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, TypeAttribute attribute, BaseAttribute parentAttribute)
+		public virtual void WriteType(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, TypeAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "type" );
 			// Attribute: <name>
-			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Type_Name_DefaultValue(member) : attribute.Name);
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Type_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -5549,7 +5629,7 @@ namespace NHibernate.Mapping.Attributes
 					if( memberAttrib is TypeAttribute )
 						break; // Following attributes are for this Type
 					if( memberAttrib is ParamAttribute )
-						WriteParam(writer, member, memberAttrib as ParamAttribute, attribute);
+						WriteParam(writer, member, memberAttrib as ParamAttribute, attribute, mappedClass);
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ParamAttribute), attribute);

@@ -48,7 +48,7 @@ namespace NHibernate.Mapping.Attributes
 					throw new MappingException("You must specify the content of the RawXmlAttribute on the member: " + member.Name + " of the class " + member.DeclaringType.FullName);
 
 				System.Xml.XmlTextWriter textWriter = writer as System.Xml.XmlTextWriter;
-				if(textWriter != null) // Hack to restore indentation after writing the raw XML
+				if(textWriter != null) // TODO: Hack to restore indentation after writing the raw XML
 				{
 					textWriter.WriteStartElement("!----"); // Write <!---->
 					textWriter.Flush();
@@ -57,7 +57,7 @@ namespace NHibernate.Mapping.Attributes
 
 				writer.WriteRaw(rawXml.Content);
 
-				if(textWriter != null) // Hack to restore indentation after writing the raw XML
+				if(textWriter != null) // TODO: Hack to restore indentation after writing the raw XML
 				{
 					textWriter.WriteEndElement();
 					textWriter.Flush();

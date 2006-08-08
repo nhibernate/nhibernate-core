@@ -28,6 +28,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				method.Signature.Parameters.Add(typeof(System.Reflection.MemberInfo), "member");
 				method.Signature.Parameters.Add(schemaEltName + "Attribute", "attribute");
 				method.Signature.Parameters.Add("BaseAttribute", "parentAttribute");
+				method.Signature.Parameters.Add(typeof(System.Type), "mappedClass");
 			}
 
 			// Beginning of the method's body
@@ -81,16 +82,17 @@ namespace NHibernate.Mapping.Attributes.Generator
 							schemaEltIsRoot ? "type" : "member" );
 						method.Body.Add(Refly.CodeDom.Stm.Snippet(
 							string.Format( @"writer.WriteAttributeString(""{0}"", {2}{1});",
-							attribName, AttributeToXmlValue(schemaElt, attrib, attribName), helper) ));
+							attribName, AttributeToXmlValue(schemaElt, attrib, attribName, schemaEltIsRoot), helper) ));
 					}
 					else
 					{
 						method.Body.Add(Refly.CodeDom.Stm.Snippet(
 							string.Format( @"writer.WriteAttributeString(""{0}"", {1});",
-							attribName, AttributeToXmlValue(schemaElt, attrib, attribName)) ));
+							attribName, AttributeToXmlValue(schemaElt, attrib, attribName, schemaEltIsRoot)) ));
 						if( schemaEltName=="Property" && attribName=="type" )
 						{
-							// Special case to set Nullables.NHibernate.NullableXXXType for Nullables.NullableXXX
+							// Special case to handle Patterns for <property ... type="..." />
+							// Eg: set Nullables.NHibernate.NullableXXXType for Nullables.NullableXXX
 							method.Body.Add(Refly.CodeDom.Stm.Snippet(@"else
 			{
 				System.Type type = null;
@@ -179,10 +181,10 @@ namespace NHibernate.Mapping.Attributes.Generator
 				memberAttribs.Sort();
 "								+ ( Utils.CanContainItself(memberName) ?
 									// => Just take the first (others will be inside it)
-@"				Write{0}(writer, member, memberAttribs[0] as {2}, attribute);"
+@"				Write{0}(writer, member, memberAttribs[0] as {2}, attribute, type);"
 									:
 @"				foreach(object memberAttrib in memberAttribs)
-					Write{0}(writer, member, memberAttrib as {2}, attribute);" ),
+					Write{0}(writer, member, memberAttrib as {2}, attribute, type);" ),
 									memberName, listName, attributeName ) + @"
 			}" ));
 							}
@@ -206,7 +208,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 					if( memberAttrib is " + schemaEltName + @"Attribute )
 						break; // Following attributes are for this " + schemaEltName ) + @"
 					if( memberAttrib is " + attributeName + @" )
-						Write" + memberName + @"(writer, member, memberAttrib as " + attributeName + @", attribute);
+						Write" + memberName + @"(writer, member, memberAttrib as " + attributeName + @", attribute, mappedClass);
 				}" ) + @"
 			}" ));
 							method.Body.Add(Refly.CodeDom.Stm.Snippet(
@@ -301,7 +303,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 			method.Body.Add(Refly.CodeDom.Stm.Snippet(
 			@"// Return all members from the classType (and its base types) decorated with this attributeType
 			System.Collections.ArrayList list = new System.Collections.ArrayList();
-			System.Reflection.BindingFlags bindings = System.Reflection.BindingFlags.Instance
+			const System.Reflection.BindingFlags bindings = System.Reflection.BindingFlags.Instance
 				| System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly;
 
 			System.Type type = classType;
@@ -456,7 +458,64 @@ namespace NHibernate.Mapping.Attributes.Generator
 
 
 
-		private static string AttributeToXmlValue(System.Xml.Schema.XmlSchemaElement schemaElt, System.Xml.Schema.XmlSchemaAttribute attrib, string attribName)
+		/// <summary> Add the content of the method GetAttributeValue(). </summary>
+		public static void FillGetAttributeValue(Refly.CodeDom.MethodDeclaration method)
+		{
+			method.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.Overloaded;
+			method.Doc.Summary.AddText(" Returns the value received or uses it as an identifier to find its value in a AttributeIdentifierAttribute in the mapped class. "); // Create the <summary />
+			method.Signature.Parameters.Add(typeof(string), "val");
+			method.Signature.Parameters.Add(typeof(System.Type), "mappedClass");
+			method.Signature.ReturnType = new Refly.CodeDom.TypeTypeDeclaration(typeof(string));
+
+			method.Body.Add(Refly.CodeDom.Stm.Snippet(
+			@"if(val==null)
+				throw new MappingException(""Value is null"");
+			if(val.StartsWith(StartQuote) && val.EndsWith(EndQuote))
+			{
+				int nameLength = val.Length - StartQuote.Length - EndQuote.Length;
+				if(nameLength <= 0)
+					throw new MappingException(""The value '"" + val + ""' of the class "" + mappedClass.Name + "" doesn't contain a name (just the quotes)"");
+				string name = val.Substring(StartQuote.Length, nameLength);
+
+				// Now look for a AttributeIdentifierAttribute with this name
+				System.Type type = mappedClass;
+				while( type != null ) // Search the attribute in the mapped class progressively going backward to the base classes
+				{
+					// First, look in the header
+					object[] attributes = type.GetCustomAttributes(typeof(AttributeIdentifierAttribute), false);
+					foreach(AttributeIdentifierAttribute attrib in attributes)
+						if(attrib.Name == name) // Found
+							if(attrib.Value==null)
+								throw new MappingException(""The value of the AttributeIdentifierAttribute with the name '"" + name + ""' in the class "" + type.Name + "" is not specified."");
+							else
+								return attrib.Value;
+
+					// Now, look in the members
+					const System.Reflection.BindingFlags bindings = System.Reflection.BindingFlags.Instance
+						| System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly;
+					foreach( System.Reflection.MemberInfo member in type.GetMembers(bindings) )
+					{
+						attributes = member.GetCustomAttributes(typeof(AttributeIdentifierAttribute), false);
+						foreach(AttributeIdentifierAttribute attrib in attributes)
+							if(attrib.Name == name) // Found
+								if(attrib.Value==null)
+									throw new MappingException(""The value of the AttributeIdentifierAttribute with the name '"" + name + ""' in the class "" + type.Name + "" is not specified."");
+								else
+									return attrib.Value;
+					}
+					type = type.BaseType;
+				}
+				// Not found
+				throw new MappingException(""Can not find a AttributeIdentifierAttribute with the name '"" + name + ""' in the class "" + mappedClass.Name + "" (and its base classes)"");
+			}
+			return val; // Not an identifier"));
+			// -----------------------------------------------------------------
+		}
+
+
+
+
+		private static string AttributeToXmlValue(System.Xml.Schema.XmlSchemaElement schemaElt, System.Xml.Schema.XmlSchemaAttribute attrib, string attribName, bool isRoot)
 		{
 			string fieldType = Utils.GetAttributeTypeName(schemaElt, attrib);
 			string val = "attribute." + Utils.Capitalize(attribName);
@@ -465,7 +524,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 			{
 				case "System.Boolean" : return val + " ? \"true\" : \"false\"";
 				case "System.Int32" : return val + ".ToString()";
-				case "System.String" : return val;
+				case "System.String" : return "GetAttributeValue(" + val + (isRoot? ", type)" : ", mappedClass)");
 				default: // => Enum
 					return "GetXmlEnumValue(typeof(" + fieldType + "), " + val + ")";
 			}

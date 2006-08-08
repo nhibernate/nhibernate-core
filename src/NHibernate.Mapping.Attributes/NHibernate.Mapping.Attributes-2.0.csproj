@@ -94,6 +94,9 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AttributeIdentifierAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="BagAttribute.cs">
       <SubType>Code</SubType>
     </Compile>

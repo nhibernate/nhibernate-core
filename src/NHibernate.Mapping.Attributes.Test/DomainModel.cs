@@ -793,7 +793,8 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set {}
 		}
 
-		[NHMA.Property]
+		[NHMA.Property(Column="{City.Column}")]
+			[NHMA.AttributeIdentifierAttribute("City.Column", ValueFormat="x", ValueObject=System.DayOfWeek.Wednesday)] // Default value
 		public string City
 		{
 			get { return null; }
@@ -925,6 +926,16 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 		}
 
 
+		[NHMA.Component(Name="HomeAddress")]
+		[NHMA.AttributeIdentifierAttribute("City.Column", Value="HomeCity")]
+		protected class HomeAddressMapping : Address {}
+
+		public Address HomeAddress
+		{
+			get { return null;  }
+			set {  }
+		}
+
 		[NHMA.Component(Name="StuffAddress", ClassType=typeof(int), AccessType=typeof(Foo))]
 		protected class SubAddress : Address {}
 
@@ -1030,7 +1041,7 @@ internal class X
 					public int _id = -1;
 				}
 			}
-			[NHMA.Key]
+			[NHMA.Key(-1)]
 			[NHMA.Property] // Test HbmWriter.Patterns
 			public PrivC userPattern = new PrivC();
 

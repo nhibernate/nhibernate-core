@@ -96,6 +96,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "AttributeIdentifierAttribute.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "BagAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

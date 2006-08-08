@@ -47,6 +47,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 "discriminator",
 "dynamic",
 "element",
+"end",
 "enum",
 "explicit",
 "extends",
@@ -104,6 +105,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 "property",
 "proxy",
 "query",
+"quote",
 "read",
 "ref",
 "rename",
@@ -116,6 +118,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 "sort",
 "specified",
 "sql",
+"start",
 "strategy",
 "strict",
 "style",
@@ -187,22 +190,39 @@ namespace NHibernate.Mapping.Attributes.Generator
 				Refly.CodeDom.PropertyDeclaration pdDefaultHelper = hbmWriter.AddProperty(fdDefaultHelper, true, true, false);
 				pdDefaultHelper.Doc.Summary.AddText(" Gets or sets the HbmWriterHelper used by HbmWriter "); // Create the <summary />
 
-				Refly.CodeDom.FieldDeclaration fd = hbmWriter.AddField(typeof(System.Collections.Hashtable), "Patterns");
+				Refly.CodeDom.FieldDeclaration fdStartQuote = hbmWriter.AddField(typeof(string), "StartQuote");
 				// Add its public property with a comment
-				Refly.CodeDom.PropertyDeclaration pd = hbmWriter.AddProperty(fd, false, true, false);
-				pd.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_patterns==null)
+				Refly.CodeDom.PropertyDeclaration pdStartQuote = hbmWriter.AddProperty(fdStartQuote, false, true, false);
+				pdStartQuote.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_startQuote==null || _startQuote.Length==0)
+					_startQuote = ""{"";
+				return _startQuote;") );
+				pdStartQuote.Doc.Summary.AddText(" Gets or sets the beginning string used when declaring an identifier for an AttributeIdenfierAttribute "); // Create the <summary />
+
+				Refly.CodeDom.FieldDeclaration fdEndQuote = hbmWriter.AddField(typeof(string), "EndQuote");
+				// Add its public property with a comment
+				Refly.CodeDom.PropertyDeclaration pdEndQuote = hbmWriter.AddProperty(fdEndQuote, false, true, false);
+				pdEndQuote.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_endQuote==null || _endQuote.Length==0)
+					_endQuote = ""}"";
+				return _endQuote;") );
+				pdEndQuote.Doc.Summary.AddText(" Gets or sets the ending string used when declaring an identifier for an AttributeIdenfierAttribute "); // Create the <summary />
+
+				Refly.CodeDom.FieldDeclaration fdPatterns = hbmWriter.AddField(typeof(System.Collections.Hashtable), "Patterns");
+				// Add its public property with a comment
+				Refly.CodeDom.PropertyDeclaration pdPatterns = hbmWriter.AddProperty(fdPatterns, false, true, false);
+				pdPatterns.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_patterns==null)
 				{
 					_patterns = new System.Collections.Hashtable();
 					_patterns.Add(@""Nullables.Nullable(\w+), Nullables"", ""Nullables.NHibernate.Nullable$1Type, Nullables.NHibernate"");
 					_patterns.Add(@""System.Data.SqlTypes.Sql(\w+), System.Data"", ""NHibernate.UserTypes.SqlTypes.Sql$1Type, NHibernate.UserTypes.SqlTypes"");
 				}
 				return _patterns;") );
-				pd.Doc.Summary.AddText(" Gets or sets the Patterns to convert properties types (the key is the pattern string and the value is the replacement string) "); // Create the <summary />
+				pdPatterns.Doc.Summary.AddText(" Gets or sets the Patterns to convert properties types (the key is the pattern string and the value is the replacement string) "); // Create the <summary />
 
 				HbmWriterGenerator.FillFindAttributedMembers(hbmWriter.AddMethod("FindAttributedMembers"));
 				HbmWriterGenerator.FillGetSortedAttributes(hbmWriter.AddMethod("GetSortedAttributes"));
 				HbmWriterGenerator.FillIsNextElement(hbmWriter.AddMethod("IsNextElement"), schema.Items);
 				HbmWriterGenerator.FillGetXmlEnumValue(hbmWriter.AddMethod("GetXmlEnumValue"));
+				HbmWriterGenerator.FillGetAttributeValue(hbmWriter.AddMethod("GetAttributeValue"));
 				HbmWriterGenerator.FillWriteUserDefinedContent( hbmWriter.AddMethod("WriteUserDefinedContent"),
 					hbmWriter.AddMethod("WriteUserDefinedContent") );
 

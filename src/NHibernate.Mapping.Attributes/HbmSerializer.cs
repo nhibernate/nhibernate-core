@@ -241,7 +241,7 @@ namespace NHibernate.Mapping.Attributes
 
 
 		#region Serialize() for Assemblies
-		/// <summary> Build a hbm.xml file for each class in the assembly and write it in the specified directory. </summary>
+		/// <summary> Writes a hbm.xml file in the specified directory for each mapped class in the specified assembly. </summary>
 		/// <param name="directory">Directory where each serialized hbm.xml file will be written.</param>
 		/// <param name="assembly">Assembly used to extract user-defined types containing a valid attribute (can be [Class], [Subclass] or [JoinedSubclass]).</param>
 		public virtual void Serialize(string directory, System.Reflection.Assembly assembly)
@@ -261,7 +261,17 @@ namespace NHibernate.Mapping.Attributes
 		}
 
 
-		/// <summary> Build a hbm.xml file for each class in the assembly and write them in this stream. </summary>
+		/// <summary> Writes the mapping of all mapped classes of the specified assembly in the specified hbm.xml file. </summary>
+		/// <param name="assembly">Assembly used to extract user-defined types containing a valid attribute (can be [Class], [Subclass] or [JoinedSubclass]).</param>
+		/// <param name="filePath">Where the xml is written.</param>
+		public virtual void Serialize(System.Reflection.Assembly assembly, string filePath)
+		{
+			using( System.IO.Stream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create) )
+				Serialize(stream, assembly);
+		}
+
+
+		/// <summary> Writes the mapping of all mapped classes of the specified assembly in the specified stream. </summary>
 		/// <param name="stream">Where the xml is written.</param>
 		/// <param name="assembly">Assembly used to extract user-defined types containing a valid attribute (can be [Class], [Subclass] or [JoinedSubclass]).</param>
 		public virtual void Serialize(System.IO.Stream stream, System.Reflection.Assembly assembly)
@@ -366,7 +376,7 @@ namespace NHibernate.Mapping.Attributes
 		}
 
 
-		/// <summary> Build a hbm.xml file for each class in the assembly, write them in a stream and return it. </summary>
+		/// <summary> Writes the mapping of all mapped classes of the specified assembly in a MemoryStream and returns it. </summary>
 		/// <param name="assembly">Assembly used to extract user-defined types containing a valid attribute (can be [Class], [Subclass] or [JoinedSubclass]).</param>
 		/// <returns>Stream containing the XML mapping.</returns>
 		public virtual System.IO.MemoryStream Serialize(System.Reflection.Assembly assembly)
@@ -388,8 +398,7 @@ namespace NHibernate.Mapping.Attributes
 
 
 		#region Serialize() for Classes
-		/// <summary> Build a hbm.xml file for this class and write it in this stream. </summary>
-		/// <summary> Build a hbm.xml file for each class in the assembly, write them in a stream and return it. </summary>
+		/// <summary> Writes the mapping of the specified class in a MemoryStream and returns it. </summary>
 		/// <param name="type">User-defined type containing a valid attribute (can be [Class], [Subclass] or [JoinedSubclass]).</param>
 		/// <returns>Stream containing the XML mapping.</returns>
 		public virtual System.IO.MemoryStream Serialize(System.Type type)
@@ -409,7 +418,7 @@ namespace NHibernate.Mapping.Attributes
 		}
 
 
-		/// <summary> Build a hbm.xml file for this class and write it in the specified file. </summary>
+		/// <summary> Writes the mapping of the specified class in the specified hbm.xml file. </summary>
 		/// <param name="filePath">Where the xml is written.</param>
 		/// <param name="type">User-defined type containing a valid attribute (can be [Class], [Subclass] or [JoinedSubclass]).</param>
 		public virtual void Serialize(string filePath, System.Type type)
@@ -419,7 +428,7 @@ namespace NHibernate.Mapping.Attributes
 		}
 
 
-		/// <summary> Build a hbm.xml file for this class and write it in this stream. </summary>
+		/// <summary> Writes the mapping of the specified class in the specified stream. </summary>
 		/// <param name="stream">Where the xml is written.</param>
 		/// <param name="type">User-defined type containing a valid attribute (can be [Class], [Subclass] or [JoinedSubclass]).</param>
 		public virtual void Serialize(System.IO.Stream stream, System.Type type)
@@ -428,7 +437,7 @@ namespace NHibernate.Mapping.Attributes
 		}
 
 
-		/// <summary> Build a hbm.xml file for this class and write it in this stream. </summary>
+		/// <summary> Writes the mapping of the specified class in the specified stream. </summary>
 		/// <param name="stream">Where the xml is written; can be null if you send the writer.</param>
 		/// <param name="type">User-defined type containing a valid attribute (can be [Class], [Subclass] or [JoinedSubclass]).</param>
 		/// <param name="writer">The XmlTextWriter used to write the xml; can be null if you send the stream. You can also create it yourself, but don't forget to write the StartElement ("hibernate-mapping") before.</param>
