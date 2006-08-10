@@ -6,6 +6,7 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
+using System.Text;
 namespace NHibernate.Impl
 {
 	/// <summary>
@@ -13,9 +14,9 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal abstract class BatcherImpl : IBatcher
 	{
-		protected static readonly ILog log = LogManager.GetLogger( typeof( BatcherImpl ) );
+		protected static readonly ILog log = LogManager.GetLogger(typeof(BatcherImpl));
 		protected static readonly ILog logSql = LogManager.GetLogger("NHibernate.SQL");
-		
+
 		private static int openCommandCount;
 		private static int openReaderCount;
 
@@ -37,7 +38,7 @@ namespace NHibernate.Impl
 		/// Initializes a new instance of the <see cref="BatcherImpl"/> class.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this Batcher is executing in.</param>
-		public BatcherImpl( ISessionImplementor session )
+		public BatcherImpl(ISessionImplementor session)
 		{
 			this.session = session;
 			this.factory = session.Factory;
@@ -58,16 +59,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="sqlString"></param>
 		/// <returns></returns>
-		public IDbCommand Generate( SqlString sqlString )
+		public IDbCommand Generate(SqlString sqlString)
 		{
 			// need to build the IDbCommand from the sqlString bec
-			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand( factory.Dialect, sqlString );
+			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sqlString);
 			LogOpenPreparedCommand();
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( "Building an IDbCommand object for the SqlString: " + sqlString.ToString() );
+				log.Debug("Building an IDbCommand object for the SqlString: " + sqlString.ToString());
 			}
-			commandsToClose.Add( cmd );
+			commandsToClose.Add(cmd);
 			return cmd;
 		}
 
@@ -80,17 +81,17 @@ namespace NHibernate.Impl
 		/// and <see cref="IDbTransaction"/> if one exists.  It will call <c>Prepare</c> if the Driver
 		/// supports preparing commands.
 		/// </remarks>
-		private void Prepare( IDbCommand command )
+		private void Prepare(IDbCommand command)
 		{
 			try
 			{
-				Log( command );
+				Log(command);
 
-				if( command.Connection != null )
+				if (command.Connection != null)
 				{
 					// make sure the commands connection is the same as the Sessions connection
 					// these can be different when the session is disconnected and then reconnected
-					if( command.Connection != session.Connection )
+					if (command.Connection != session.Connection)
 					{
 						command.Connection = session.Connection;
 					}
@@ -100,21 +101,21 @@ namespace NHibernate.Impl
 					command.Connection = session.Connection;
 				}
 
-				if( session.Transaction != null )
+				if (session.Transaction != null)
 				{
-					session.Transaction.Enlist( command );
+					session.Transaction.Enlist(command);
 				}
 
-				if( factory.PrepareSql && factory.ConnectionProvider.Driver.SupportsPreparingCommands )
+				if (factory.PrepareSql && factory.ConnectionProvider.Driver.SupportsPreparingCommands)
 				{
 					command.Prepare();
 				}
 			}
-			catch( InvalidOperationException ioe )
+			catch (InvalidOperationException ioe)
 			{
 				throw new ADOException(
 					"While preparing " + command.CommandText + " an error occurred"
-					, ioe );
+					, ioe);
 			}
 		}
 
@@ -123,18 +124,18 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		public IDbCommand PrepareBatchCommand( SqlString sql )
+		public IDbCommand PrepareBatchCommand(SqlString sql)
 		{
-			if( !sql.Equals( batchCommandSql ) )
+			if (!sql.Equals(batchCommandSql))
 			{
-				batchCommand = PrepareCommand( sql ); // calls ExecuteBatch()
+				batchCommand = PrepareCommand(sql); // calls ExecuteBatch()
 				batchCommandSql = sql;
-			} 
-			else 
+			}
+			else
 			{
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "reusing command " + batchCommand.CommandText );
+					log.Debug("reusing command " + batchCommand.CommandText);
 				}
 			}
 
@@ -146,7 +147,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="sql"></param>
 		/// <returns></returns>
-		public IDbCommand PrepareCommand( SqlString sql )
+		public IDbCommand PrepareCommand(SqlString sql)
 		{
 			// a new IDbCommand is being prepared and a new (potential) batch
 			// started - so execute the current batch of commands.
@@ -156,7 +157,7 @@ namespace NHibernate.Impl
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			return Generate( sql );
+			return Generate(sql);
 		}
 
 		/// <summary>
@@ -165,7 +166,7 @@ namespace NHibernate.Impl
 		/// <param name="sql"></param>
 		/// <param name="scrollable"></param>
 		/// <returns></returns>
-		public IDbCommand PrepareQueryCommand( SqlString sql, bool scrollable )
+		public IDbCommand PrepareQueryCommand(SqlString sql, bool scrollable)
 		{
 			//TODO: figure out what to do with scrollable - don't think it applies
 			// to ado.net since DataReader is forward only
@@ -174,7 +175,7 @@ namespace NHibernate.Impl
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			IDbCommand command = Generate( sql );
+			IDbCommand command = Generate(sql);
 			lastQuery = command;
 			return command;
 		}
@@ -183,13 +184,13 @@ namespace NHibernate.Impl
 		/// 
 		/// </summary>
 		/// <param name="e"></param>
-		public void AbortBatch( Exception e )
+		public void AbortBatch(Exception e)
 		{
 			// log the exception here
 			IDbCommand cmd = batchCommand;
 			batchCommand = null;
 			batchCommandSql = null;
-			CloseCommand( cmd, null );
+			CloseCommand(cmd, null);
 			// close the statement closeStatement(cmd)
 		}
 
@@ -198,13 +199,13 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="cmd"></param>
 		/// <returns></returns>
-		public int ExecuteNonQuery( IDbCommand cmd )
+		public int ExecuteNonQuery(IDbCommand cmd)
 		{
 			int rowsAffected = 0;
 
 			CheckReaders();
 
-			Prepare( cmd );
+			Prepare(cmd);
 			rowsAffected = cmd.ExecuteNonQuery();
 			return rowsAffected;
 		}
@@ -214,21 +215,21 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="cmd"></param>
 		/// <returns></returns>
-		public IDataReader ExecuteReader( IDbCommand cmd )
+		public IDataReader ExecuteReader(IDbCommand cmd)
 		{
 			CheckReaders();
-			Prepare( cmd );
+			Prepare(cmd);
 			IDataReader reader;
-			if( factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders == false )
+			if (factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders == false)
 			{
-				reader = new NHybridDataReader( cmd.ExecuteReader() );
+				reader = new NHybridDataReader(cmd.ExecuteReader());
 			}
 			else
 			{
 				reader = cmd.ExecuteReader();
 			}
 
-			readersToClose.Add( reader );
+			readersToClose.Add(reader);
 			LogOpenReader();
 			return reader;
 		}
@@ -240,12 +241,12 @@ namespace NHibernate.Impl
 		{
 			// early exit because we don't need to move an open IDataReader into memory
 			// since the Driver supports mult open readers.
-			if( factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders )
+			if (factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
 				return;
 			}
 
-			foreach( NHybridDataReader reader in readersToClose )
+			foreach (NHybridDataReader reader in readersToClose)
 			{
 				reader.ReadIntoMemory();
 			}
@@ -256,9 +257,9 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="cmd"></param>
 		/// <param name="reader"></param>
-		public void CloseCommand( IDbCommand cmd, IDataReader reader )
+		public void CloseCommand(IDbCommand cmd, IDataReader reader)
 		{
-			CloseQueryCommand( cmd, reader );
+			CloseQueryCommand(cmd, reader);
 		}
 
 		/// <summary>
@@ -266,54 +267,54 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void CloseCommands()
 		{
-			foreach( IDataReader reader in readersToClose )
+			foreach (IDataReader reader in readersToClose)
 			{
 				try
 				{
 					LogCloseReader();
 					reader.Dispose();
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					log.Warn( "Could not close IDataReader", e );
+					log.Warn("Could not close IDataReader", e);
 				}
 			}
 			readersToClose.Clear();
 
-			foreach( IDbCommand cmd in commandsToClose )
+			foreach (IDbCommand cmd in commandsToClose)
 			{
 				try
 				{
-					CloseQueryCommand( cmd );
+					CloseQueryCommand(cmd);
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
 					// no big deal
-					log.Warn( "Could not close ADO.NET Command", e );
+					log.Warn("Could not close ADO.NET Command", e);
 				}
 			}
 			commandsToClose.Clear();
 		}
 
-		private void CloseQueryCommand( IDbCommand cmd )
+		private void CloseQueryCommand(IDbCommand cmd)
 		{
 			try
 			{
 				// no equiv to the java code in here
-				if ( cmd != null )
+				if (cmd != null)
 				{
 					cmd.Dispose();
 					LogClosePreparedCommand();
 				}
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				log.Warn( "exception clearing maxRows/queryTimeout", e );
+				log.Warn("exception clearing maxRows/queryTimeout", e);
 				//cmd.close();  if there was a close method in command
 				return; // NOTE: early exit!
 			}
 
-			if( lastQuery == cmd )
+			if (lastQuery == cmd)
 			{
 				lastQuery = null;
 			}
@@ -324,16 +325,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="st"></param>
 		/// <param name="reader"></param>
-		public void CloseQueryCommand( IDbCommand st, IDataReader reader )
+		public void CloseQueryCommand(IDbCommand st, IDataReader reader)
 		{
-			commandsToClose.Remove( st );
-			if( reader != null )
+			commandsToClose.Remove(st);
+			if (reader != null)
 			{
-				readersToClose.Remove( reader );
+				readersToClose.Remove(reader);
 			}
 			try
 			{
-				if( reader != null )
+				if (reader != null)
 				{
 					reader.Close();
 					reader.Dispose();
@@ -342,7 +343,7 @@ namespace NHibernate.Impl
 			}
 			finally
 			{
-				CloseQueryCommand( st );
+				CloseQueryCommand(st);
 			}
 		}
 
@@ -351,18 +352,18 @@ namespace NHibernate.Impl
 		{
 			// if there is currently a command that a batch is
 			// being built for then execute it
-			if( batchCommand != null )
+			if (batchCommand != null)
 			{
 				IDbCommand ps = batchCommand;
 				batchCommand = null;
 				batchCommandSql = null;
 				try
 				{
-					DoExecuteBatch( ps );
+					DoExecuteBatch(ps);
 				}
 				finally
 				{
-					CloseCommand( ps, null );
+					CloseCommand(ps, null);
 				}
 			}
 		}
@@ -371,7 +372,7 @@ namespace NHibernate.Impl
 		/// 
 		/// </summary>
 		/// <param name="ps"></param>
-		protected abstract void DoExecuteBatch( IDbCommand ps );
+		protected abstract void DoExecuteBatch(IDbCommand ps);
 
 		/// <summary>
 		/// Adds the expected row count into the batch.
@@ -381,7 +382,7 @@ namespace NHibernate.Impl
 		/// If Batching is not supported, then this is when the Command should be executed.  If Batching
 		/// is supported then it should hold of on executing the batch until explicitly told to.
 		/// </remarks>
-		public abstract void AddToBatch( int expectedRowCount );
+		public abstract void AddToBatch(int expectedRowCount);
 
 		/// <summary>
 		/// Gets the <see cref="ISessionFactoryImplementor"/> the Batcher was
@@ -409,60 +410,79 @@ namespace NHibernate.Impl
 			get { return session; }
 		}
 
-		private void Log( IDbCommand command )
+		private void Log(IDbCommand command)
 		{
-			if( logSql.IsDebugEnabled )
+			if (logSql.IsDebugEnabled || factory.IsShowSqlEnabled)
 			{
-				logSql.Debug( command.CommandText );
-				foreach( IDataParameter p in command.Parameters )
-				{
-					logSql.Debug( string.Format( "{0} = '{1}'", p.ParameterName, p.Value ) );
-				}
-			}
+				string outputText;
 
-			if( factory.IsShowSqlEnabled )
-			{
-				Console.Out.WriteLine("NHibernate: " + command.CommandText );
-				foreach( IDataParameter p in command.Parameters )
+				if (command.Parameters.Count == 0)
 				{
-					Console.Out.WriteLine( "{0} = '{1}'", p.ParameterName, p.Value );
+					outputText = command.CommandText;
+				}
+				else
+				{
+					StringBuilder output = new StringBuilder();
+					output.Append(command.CommandText);
+					output.Append("; ");
+
+					IDataParameter p;
+					int count = command.Parameters.Count;
+					for (int i = 0; i < count; i++)
+					{
+						p = (IDataParameter) command.Parameters[i];
+						output.Append(string.Format("{0} = '{1}'", p.ParameterName, p.Value));
+
+						if (i + 1 < count)
+						{
+							output.Append(", ");
+						}
+					}
+					outputText = output.ToString();
+				}
+				logSql.Debug(outputText);
+
+				if (factory.IsShowSqlEnabled)
+				{
+					Console.Out.Write("NHibernate: ");
+					Console.Out.WriteLine(outputText);
 				}
 			}
 		}
-		
+
 		private static void LogOpenPreparedCommand()
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
 				openCommandCount++;
-				log.Debug( "Opened new IDbCommand, open IDbCommands :" + openCommandCount );
+				log.Debug("Opened new IDbCommand, open IDbCommands :" + openCommandCount);
 			}
 		}
 
 		private static void LogClosePreparedCommand()
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
 				openCommandCount--;
-				log.Debug( "Closed IDbCommand, open IDbCommands :" + openCommandCount );
+				log.Debug("Closed IDbCommand, open IDbCommands :" + openCommandCount);
 			}
 		}
 
 		private static void LogOpenReader()
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
 				openReaderCount++;
-				log.Debug( "Opened Reader, open Readers :" + openReaderCount );				
+				log.Debug("Opened Reader, open Readers :" + openReaderCount);
 			}
 		}
 
 		private static void LogCloseReader()
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
 				openReaderCount--;
-				log.Debug( "Closed Reader, open Readers :" + openReaderCount );
+				log.Debug("Closed Reader, open Readers :" + openReaderCount);
 			}
 		}
 
@@ -470,29 +490,29 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				if( lastQuery != null )
+				if (lastQuery != null)
 				{
 					lastQuery.Cancel();
 				}
 			}
-			catch( HibernateException )
+			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions
 				throw;
 			}
-			catch( Exception sqle )
+			catch (Exception sqle)
 			{
-				throw Convert( sqle, "Could not cancel query" );
+				throw Convert(sqle, "Could not cancel query");
 			}
 		}
 
-		protected ADOException Convert( Exception sqlException, string message )
+		protected ADOException Convert(Exception sqlException, string message)
 		{
-			return ADOExceptionHelper.Convert( sqlException, message );
+			return ADOExceptionHelper.Convert(sqlException, message);
 		}
 
 		#region IDisposable Members
-		
+
 		/// <summary>
 		/// A flag to indicate if <c>Disose()</c> has been called.
 		/// </summary>
@@ -506,7 +526,7 @@ namespace NHibernate.Impl
 			// Don't log in the finalizer, it causes problems
 			// if the output stream is finalized before the batcher.
 			//log.Debug( "running BatcherImpl.Dispose(false)" );
-			Dispose( false );
+			Dispose(false);
 		}
 
 		/// <summary>
@@ -515,8 +535,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Dispose()
 		{
-			log.Debug( "running BatcherImpl.Dispose(true)" );
-			Dispose( true );
+			log.Debug("running BatcherImpl.Dispose(true)");
+			Dispose(true);
 		}
 
 		/// <summary>
@@ -530,7 +550,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		protected virtual void Dispose(bool isDisposing)
 		{
-			if( _isAlreadyDisposed )
+			if (_isAlreadyDisposed)
 			{
 				// don't dispose of multiple times.
 				return;
@@ -538,17 +558,17 @@ namespace NHibernate.Impl
 
 			// free managed resources that are being managed by the AdoTransaction if we
 			// know this call came through Dispose()
-			if( isDisposing )
+			if (isDisposing)
 			{
 				CloseCommands();
 			}
 
 			// free unmanaged resources here
-			
+
 			_isAlreadyDisposed = true;
 			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize( this );
-			
+			GC.SuppressFinalize(this);
+
 		}
 		#endregion
 	}
