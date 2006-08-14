@@ -188,16 +188,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// MsSql allows the use of SELECT SCOPE_IDENTITY to be in the same
-		/// Command as the INSERT
-		/// </summary>
-		/// <value>true</value>
-		public override bool SupportsIdentitySelectInInsert
-		{
-			get { return true; }
-		}
-
-		/// <summary>
 		/// Add the Identity Select string to the Insert Sql.
 		/// </summary>
 		/// <param name="insertSql">The SqlString that contains the INSERT sql.</param>
