@@ -34,5 +34,23 @@ namespace NHibernate.Test.TypesTest
 			s.Flush();
 			s.Close();
 		}
+
+		[Test]
+		public void ReadWriteLargeBlob()
+		{
+			ISession s = OpenSession();
+			BinaryBlobClass b = new BinaryBlobClass();
+			b.BinaryBlob = System.Text.UnicodeEncoding.UTF8.GetBytes(new string('T', 10000));
+			s.Save(b);
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			b = (BinaryBlobClass)s.Load( typeof(BinaryBlobClass), b.Id );
+			ObjectAssert.AreEqual( System.Text.UnicodeEncoding.UTF8.GetBytes(new string('T', 10000)) , b.BinaryBlob );
+			s.Delete( b );
+			s.Flush();
+			s.Close();
+		}
 	}
 }
