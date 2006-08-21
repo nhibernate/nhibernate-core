@@ -8,7 +8,7 @@ namespace NHibernate.Loader.Custom
 	/// names a "root" entity.  A root entity means it is explicitly a
 	/// "column" in the result, as opposed to a fetched relationship or role.
 	/// </summary>
-	public class SQLQueryRootReturn : SQLQueryReturn
+	public class SQLQueryRootReturn : SQLQueryNonScalarReturn
 	{
 		private string returnEntityName;
 

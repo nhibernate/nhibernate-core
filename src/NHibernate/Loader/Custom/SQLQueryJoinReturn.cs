@@ -7,7 +7,7 @@ namespace NHibernate.Loader.Custom
 	/// Represents a return defined as part of a native sql query which
 	/// names a fetched role.
 	/// </summary>
-	public class SQLQueryJoinReturn : SQLQueryReturn
+	public class SQLQueryJoinReturn : SQLQueryNonScalarReturn
 	{
 		private string ownerAlias;
 		private string ownerProperty;

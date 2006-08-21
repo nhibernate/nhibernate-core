@@ -87,13 +87,12 @@ namespace NHibernate.Loader.Custom
 		}
 
 		public SQLCustomQuery(
-				SQLQueryReturn[] queryReturns,
-				SQLQueryScalarReturn[] scalarQueryReturns,
+				ISQLQueryReturn[] queryReturns,
 				string sqlQuery,
 				ICollection additionalQuerySpaces,
 				ISessionFactoryImplementor factory )
 		{
-			SQLQueryReturnProcessor processor = new SQLQueryReturnProcessor( queryReturns, scalarQueryReturns, factory );
+			SQLQueryReturnProcessor processor = new SQLQueryReturnProcessor( queryReturns, factory );
 			processor.Process();
 
 			IDictionary[] propertyResultMaps = new IDictionary[ processor.PropertyResults.Count ];

@@ -283,7 +283,6 @@
     <Compile Include="Mapping\ManyToOne.cs" />
     <Compile Include="Mapping\Map.cs" />
     <Compile Include="Mapping\MetaAttribute.cs" />
-    <Compile Include="Mapping\NamedSQLQuery.cs" />
     <Compile Include="Mapping\OneToMany.cs" />
     <Compile Include="Mapping\OneToOne.cs" />
     <Compile Include="Mapping\PersistentClass.cs" />
@@ -504,7 +503,13 @@
     <Compile Include="Bytecode\Lightweight\ReflectionOptimizer.cs" />
     <Compile Include="Bytecode\NullBytecodeProvider.cs" />
     <Compile Include="Bytecode\EmitUtil.cs" />
+    <Compile Include="Cfg\CollectionSecondPass.cs" />
     <Compile Include="Cfg\HbmBinder.cs" />
+    <Compile Include="Cfg\HbmConstants.cs" />
+    <Compile Include="Cfg\IQuerySecondPass.cs" />
+    <Compile Include="Cfg\ISecondPass.cs" />
+    <Compile Include="Cfg\NamedSQLQuerySecondPass.cs" />
+    <Compile Include="Cfg\ResultSetMappingBinder.cs" />
     <Compile Include="Collection\AbstractPersistentCollection.cs" />
     <Compile Include="Collection\Generic\PersistentGenericSet.cs" />
     <Compile Include="Collection\Generic\PersistentGenericBag.cs">
@@ -538,8 +543,13 @@
     <Compile Include="DuplicateMappingException.cs" />
     <Compile Include="Engine\EntityKey.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
+    <Compile Include="Engine\NamedQueryDefinition.cs" />
+    <Compile Include="Engine\NamedSQLQueryDefinition.cs" />
     <Compile Include="Engine\Query\NativeSQLQuerySpecification.cs" />
     <Compile Include="Engine\Query\ParameterParser.cs" />
+    <Compile Include="Engine\ResultSetMappingDefinition.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Expression\ICriteriaQuery.cs" />
     <Compile Include="Hql\Util\SessionFactoryHelper.cs">
       <SubType>Code</SubType>
@@ -562,11 +572,12 @@
     <Compile Include="Loader\Custom\ColumnEntityAliases.cs" />
     <Compile Include="Loader\Custom\CustomLoader.cs" />
     <Compile Include="Loader\Custom\ICustomQuery.cs" />
+    <Compile Include="Loader\Custom\ISQLQueryReturn.cs" />
     <Compile Include="Loader\Custom\SQLCustomQuery.cs" />
     <Compile Include="Loader\Custom\SQLQueryCollectionReturn.cs" />
     <Compile Include="Loader\Custom\SQLQueryJoinReturn.cs" />
+    <Compile Include="Loader\Custom\SQLQueryNonScalarReturn.cs" />
     <Compile Include="Loader\Custom\SQLQueryParser.cs" />
-    <Compile Include="Loader\Custom\SQLQueryReturn.cs" />
     <Compile Include="Loader\Custom\SQLQueryReturnProcessor.cs" />
     <Compile Include="Loader\Custom\SQLQueryRootReturn.cs" />
     <Compile Include="Loader\Custom\SQLQueryScalarReturn.cs" />
@@ -644,6 +655,7 @@
     <Compile Include="Util\WeakHashtable.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Util\XmlHelper.cs" />
     <None Include="nhibernate-generic.xsx">
       <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>

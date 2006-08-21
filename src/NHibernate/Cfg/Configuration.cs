@@ -95,6 +95,7 @@ namespace NHibernate.Cfg
 		private Hashtable tables;
 		private Hashtable namedQueries;
 		private Hashtable namedSqlQueries;
+		private Hashtable sqlResultSetMappings;
 		private ArrayList secondPasses;
 		private ArrayList propertyReferences;
 		private IInterceptor interceptor;
@@ -116,6 +117,7 @@ namespace NHibernate.Cfg
 			tables = new Hashtable();
 			namedQueries = new Hashtable();
 			namedSqlQueries = new Hashtable();
+			sqlResultSetMappings = new Hashtable();
 			secondPasses = new ArrayList();
 			propertyReferences = new ArrayList();
 			interceptor = emptyInterceptor;
@@ -422,6 +424,7 @@ namespace NHibernate.Cfg
 				tables,
 				namedQueries,
 				namedSqlQueries,
+				sqlResultSetMappings,
 				imports,
 				caches,
 				secondPasses,
@@ -894,7 +897,7 @@ namespace NHibernate.Cfg
 		{
 			log.Info( "processing one-to-many association mappings" );
 
-			foreach( HbmBinder.AbstractSecondPass sp in secondPasses )
+			foreach( ISecondPass sp in secondPasses )
 			{
 				sp.DoSecondPass( classes );
 			}
@@ -1516,6 +1519,11 @@ namespace NHibernate.Cfg
 		{
 			this.namingStrategy = namingStrategy;
 			return this;
+		}
+
+		public IDictionary SqlResultSetMappings
+		{
+			get { return sqlResultSetMappings; }
 		}
 
 		#region NHibernate-Specific Members

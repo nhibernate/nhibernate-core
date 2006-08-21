@@ -157,5 +157,7 @@ namespace NHibernate.Engine
 		/// Get the identifier generator for the hierarchy
 		/// </summary>
 		IIdentifierGenerator GetIdentifierGenerator( System.Type rootClass );
+
+		ResultSetMappingDefinition GetResultSetMapping(string resultSetRef);
 	}
 }

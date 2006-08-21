@@ -27,10 +27,10 @@ namespace NHibernate.Impl
 	public class SqlQueryImpl : AbstractQueryImpl
 	{
 		private readonly IList queryReturns;
-		private readonly IList scalarQueryReturns;
 		private readonly ICollection querySpaces;
+		private bool callable;
 
-		public SqlQueryImpl(
+		private SqlQueryImpl(
 			string sql,
 			string[] returnAliases,
 			System.Type[] returnClasses,
@@ -40,7 +40,6 @@ namespace NHibernate.Impl
 			: base( sql, session )
 		{
 			// TODO : this constructor form is *only* used from constructor directly below us; can it go away?
-			scalarQueryReturns = null;
 			queryReturns = new ArrayList( returnAliases.Length );
 			for( int i = 0; i < returnAliases.Length; i++ )
 			{
@@ -52,15 +51,7 @@ namespace NHibernate.Impl
 			}
 
 			this.querySpaces = querySpaces;
-		}
-
-		public SqlQueryImpl(
-			string sql,
-			string[] returnAliases,
-			System.Type[] returnClasses,
-			ISessionImplementor session )
-			: this( sql, returnAliases, returnClasses, null, session, null )
-		{
+			this.callable = false;
 		}
 
 		public SqlQueryImpl( string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session, ICollection querySpaces )
@@ -68,34 +59,47 @@ namespace NHibernate.Impl
 		{
 		}
 
-		private SQLQueryReturn[] GetQueryReturns()
+		public SqlQueryImpl(NamedSQLQueryDefinition queryDef, ISessionImplementor session)
+			: base(queryDef.QueryString, session)
 		{
-			SQLQueryReturn[] result = new SQLQueryReturn[ queryReturns.Count ];
+			if (queryDef.ResultSetRef != null)
+			{
+				ResultSetMappingDefinition definition = session.Factory
+						.GetResultSetMapping(queryDef.ResultSetRef);
+				if (definition == null)
+				{
+					throw new MappingException(
+							"Unable to find resultset-ref definition: " +
+							queryDef.ResultSetRef
+						);
+				}
+				this.queryReturns = definition.GetQueryReturns();
+			}
+			else
+			{
+				this.queryReturns = queryDef.QueryReturns;
+			}
+
+			this.querySpaces = queryDef.QuerySpaces;
+			this.callable = queryDef.IsCallable;
+		}
+
+		private ISQLQueryReturn[] GetQueryReturns()
+		{
+			ISQLQueryReturn[] result = new ISQLQueryReturn[ queryReturns.Count ];
 			queryReturns.CopyTo( result, 0 );
 			return result;
 		}
 
-		private SQLQueryScalarReturn[] GetQueryScalarReturns()
-		{
-			if( scalarQueryReturns == null )
-			{
-				return null;
-			}
+		//public string[] ReturnAliases
+		//{
+		//    get { throw new NotSupportedException( "SQL queries do not currently support returning aliases" ); }
+		//}
 
-			SQLQueryScalarReturn[] result = new SQLQueryScalarReturn[ scalarQueryReturns.Count ];
-			scalarQueryReturns.CopyTo( result, 0 );
-			return result;
-		}
-
-		public string[] ReturnAliases
-		{
-			get { throw new NotSupportedException( "SQL queries do not currently support returning aliases" ); }
-		}
-
-		public override IType[] ReturnTypes
-		{
-			get { throw new NotSupportedException( "not yet implemented for SQL queries" ); }
-		}
+		//public override IType[] ReturnTypes
+		//{
+		//    get { throw new NotSupportedException( "not yet implemented for SQL queries" ); }
+		//}
 
 		public override IList List()
 		{
@@ -134,7 +138,6 @@ namespace NHibernate.Impl
 			return new NativeSQLQuerySpecification(
 				BindParameterLists( NamedParams ),
 				GetQueryReturns(),
-				GetQueryScalarReturns(),
 				querySpaces );
 		}
 		

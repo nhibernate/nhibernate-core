@@ -32,18 +32,18 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="p"></param>
-		public void AddProperty( Property p )
+		public void AddProperty(Property p)
 		{
-			properties.Add( p );
+			properties.Add(p);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="column"></param>
-		public override void AddColumn( Column column )
+		public override void AddColumn(Column column)
 		{
-			throw new NotSupportedException( "Cant add a column to a component" );
+			throw new NotSupportedException("Cant add a column to a component");
 		}
 
 		/// <summary></summary>
@@ -52,7 +52,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				int n = 0;
-				foreach( Property p in PropertyCollection )
+				foreach (Property p in PropertyCollection)
 				{
 					n += p.ColumnSpan;
 				}
@@ -66,9 +66,9 @@ namespace NHibernate.Mapping
 			get
 			{
 				ArrayList retVal = new ArrayList();
-				foreach( Property prop in PropertyCollection )
+				foreach (Property prop in PropertyCollection)
 				{
-					retVal.AddRange( prop.ColumnCollection );
+					retVal.AddRange(prop.ColumnCollection);
 				}
 				return retVal;
 			}
@@ -78,7 +78,8 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="owner"></param>
-		public Component( PersistentClass owner ) : base( owner.Table )
+		public Component(PersistentClass owner)
+			: base(owner.Table)
 		{
 			this.owner = owner;
 		}
@@ -87,7 +88,8 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="table"></param>
-		public Component( Table table ) : base( table )
+		public Component(Table table)
+			: base(table)
 		{
 			this.owner = null;
 		}
@@ -98,7 +100,7 @@ namespace NHibernate.Mapping
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
 		/// <param name="propertyAccess"></param>
-		public override void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess )
+		public override void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
 		{
 		}
 
@@ -147,14 +149,14 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				bool[] result = new bool[ ColumnSpan ];
-				int i=0;
-				foreach( Property prop in PropertyCollection )
+				bool[] result = new bool[ColumnSpan];
+				int i = 0;
+				foreach (Property prop in PropertyCollection)
 				{
 					bool[] chunk = prop.Value.ColumnInsertability;
-					if ( prop.IsInsertable ) 
+					if (prop.IsInsertable)
 					{
-						System.Array.Copy( chunk, 0, result, i, chunk.Length );
+						System.Array.Copy(chunk, 0, result, i, chunk.Length);
 					}
 					i += chunk.Length;
 				}
@@ -166,19 +168,32 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				bool[] result = new bool[ ColumnSpan ];
-				int i=0;
-				foreach( Property prop in PropertyCollection )
+				bool[] result = new bool[ColumnSpan];
+				int i = 0;
+				foreach (Property prop in PropertyCollection)
 				{
 					bool[] chunk = prop.Value.ColumnUpdateability;
-					if ( prop.IsUpdateable ) 
+					if (prop.IsUpdateable)
 					{
-						System.Array.Copy( chunk, 0, result, i, chunk.Length );
+						System.Array.Copy(chunk, 0, result, i, chunk.Length);
 					}
 					i += chunk.Length;
 				}
 				return result;
 			}
+		}
+
+		public Property GetProperty(string propertyName)
+		{
+			ICollection iter = PropertyCollection;
+			foreach (Property prop in iter)
+			{
+				if (prop.Name.Equals(propertyName))
+				{
+					return prop;
+				}
+			}
+			throw new MappingException("component property not found: " + propertyName);
 		}
 	}
 }

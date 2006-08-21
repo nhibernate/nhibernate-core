@@ -11,6 +11,7 @@ namespace NHibernate.Mapping
 		private FetchMode fetchMode;
 		private bool lazy = true;
 		private string referencedPropertyName;
+		private string referencedEntityName;
 
 		/// <summary>
 		/// 
@@ -31,6 +32,12 @@ namespace NHibernate.Mapping
 		{
 			get { return referencedPropertyName; }
 			set { referencedPropertyName = value; }
+		}
+
+		public string ReferencedEntityName
+		{
+			get { return referencedEntityName; }
+			set { referencedEntityName = value == null ? null : string.Intern(value); }
 		}
 
 		public bool IsLazy

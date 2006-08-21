@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Loader.Custom
 {
-	public class SQLQueryScalarReturn
+	public class SQLQueryScalarReturn : ISQLQueryReturn
 	{
 		private IType type;
 		private string columnAlias;

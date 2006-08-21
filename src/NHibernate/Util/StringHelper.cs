@@ -419,9 +419,14 @@ namespace NHibernate.Util
 			return count;
 		}
 
+		public static bool IsEmpty(string str)
+		{
+			return str == null || str.Length == 0;
+		}
+
 		public static bool IsNotEmpty( string str )
 		{
-			return str != null && str.Length > 0;
+			return !IsEmpty(str);
 		}
 
 		public static bool IsNotEmpty( SqlString str )

@@ -7,13 +7,13 @@ namespace NHibernate.Loader.Custom
 	/// Represents the base information for a return defined as part of
 	/// a native sql query.
 	/// </summary>
-	public abstract class SQLQueryReturn
+	public abstract class SQLQueryNonScalarReturn : ISQLQueryReturn
 	{
 		private string alias;
 		private LockMode lockMode;
 		protected IDictionary propertyResults = new Hashtable();
 
-		protected SQLQueryReturn( string alias, IDictionary propertyResults, LockMode lockMode )
+		protected SQLQueryNonScalarReturn( string alias, IDictionary propertyResults, LockMode lockMode )
 		{
 			this.alias = alias;
 			if( alias == null )

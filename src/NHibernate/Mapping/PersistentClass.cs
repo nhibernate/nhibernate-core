@@ -576,14 +576,19 @@ namespace NHibernate.Mapping
 		/// <returns></returns>
 		public Property GetProperty( string propertyName )
 		{
-			foreach( Property prop in PropertyClosureCollection )
+			return GetProperty(propertyName, PropertyClosureCollection);
+		}
+
+		private Property GetProperty(string propertyName, ICollection iter)
+		{
+			foreach (Property prop in iter)
 			{
-				if( prop.Name == propertyName )
+				if (prop.Name == propertyName)
 				{
 					return prop;
 				}
 			}
-			throw new MappingException( string.Format( "property not found: {0}", propertyName ) );
+			throw new MappingException(string.Format("property not found: {0} on entity {1}", propertyName, Name));
 		}
 
 		public OptimisticLockMode OptimisticLockMode
@@ -644,6 +649,53 @@ namespace NHibernate.Mapping
 		{
 			// TODO H3:
 			get { return null; }
+		}
+
+		public Property GetRecursiveProperty(string propertyPath)
+		{
+			ICollection iter = PropertyCollection;
+			try
+			{
+				return GetRecursiveProperty( propertyPath, iter );
+			}
+			catch (MappingException e)
+			{
+				throw new MappingException(
+						"property not found: " + propertyPath +
+						"in entity: " + Name, e
+					);
+			}
+		}
+
+		private Property GetRecursiveProperty(string propertyPath, ICollection iter)
+		{
+			Property property = null;
+
+			StringTokenizer st = new StringTokenizer(propertyPath, ".", false);
+			try
+			{
+				foreach (string element in st)
+				{
+					if (property == null)
+					{
+						property = GetProperty(element, iter);
+					}
+					else
+					{
+						//flat recursive algorithm
+						property = ((Component) property.Value).GetProperty(element);
+					}
+				}
+			}
+			catch (MappingException e)
+			{
+				throw new MappingException(
+						"property not found: " + propertyPath +
+						"in entity: " + Name, e
+					);
+			}
+
+			return property;
 		}
 	}
 }

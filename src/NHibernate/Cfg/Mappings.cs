@@ -2,6 +2,8 @@ using System.Collections;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Mapping;
+using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
@@ -11,13 +13,14 @@ namespace NHibernate.Cfg
 	/// <remarks>Represents a single <c>&lt;hibernate-mapping&gt;</c> element.</remarks>
 	public class Mappings
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( Mappings ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(Mappings));
 
 		private IDictionary classes;
 		private IDictionary collections;
 		private IDictionary tables;
 		private IDictionary queries;
 		private IDictionary sqlqueries;
+		private IDictionary resultSetMappings;
 		private IList secondPasses;
 		private IDictionary imports;
 		private string schemaName;
@@ -50,12 +53,24 @@ namespace NHibernate.Cfg
 		/// <param name="secondPasses"></param>
 		/// <param name="propertyReferences"></param>
 		/// <param name="namingStrategy"></param>
-		internal Mappings( IDictionary classes, IDictionary collections, IDictionary tables, IDictionary queries, IDictionary sqlqueries, IDictionary imports, IDictionary caches, IList secondPasses, IList propertyReferences, INamingStrategy namingStrategy )
+		internal Mappings(
+			IDictionary classes,
+			IDictionary collections,
+			IDictionary tables,
+			IDictionary queries,
+			IDictionary sqlqueries,
+			IDictionary sqlResultSetMappings,
+			IDictionary imports,
+			IDictionary caches,
+			IList secondPasses,
+			IList propertyReferences,
+			INamingStrategy namingStrategy)
 		{
 			this.classes = classes;
 			this.collections = collections;
 			this.queries = queries;
 			this.sqlqueries = sqlqueries;
+			this.resultSetMappings = sqlResultSetMappings;
 			this.tables = tables;
 			this.imports = imports;
 			this.caches = caches;
@@ -70,42 +85,42 @@ namespace NHibernate.Cfg
 		/// <param name="name">The classname of the class to cache.</param>
 		/// <param name="cache">The <see cref="ICacheConcurrencyStrategy"/> to use for caching.</param>
 		/// <exception cref="MappingException">Thrown when <c>name</c> already has a <c>cache</c> associated with it.</exception>
-		public void AddCache( string name, ICacheConcurrencyStrategy cache )
+		public void AddCache(string name, ICacheConcurrencyStrategy cache)
 		{
-			object old = caches[ name ];
-			if( old != null )
+			object old = caches[name];
+			if (old != null)
 			{
-				throw new MappingException( "duplicate cache region" );
+				throw new MappingException("duplicate cache region");
 			}
-			caches[ name ] = cache;
+			caches[name] = cache;
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="persistentClass"></param>
-		public void AddClass( PersistentClass persistentClass )
+		public void AddClass(PersistentClass persistentClass)
 		{
-			object old = classes[ persistentClass.MappedClass ];
-			if( old != null )
+			object old = classes[persistentClass.MappedClass];
+			if (old != null)
 			{
-				throw new DuplicateMappingException( "class/entity" , persistentClass.MappedClass.Name );
+				throw new DuplicateMappingException("class/entity", persistentClass.MappedClass.Name);
 			}
-			classes[ persistentClass.MappedClass ] = persistentClass;
+			classes[persistentClass.MappedClass] = persistentClass;
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="collection"></param>
-		public void AddCollection( Mapping.Collection collection )
+		public void AddCollection(Mapping.Collection collection)
 		{
-			object old = collections[ collection.Role ];
-			if( old != null )
+			object old = collections[collection.Role];
+			if (old != null)
 			{
 				throw new DuplicateMappingException("collection role", collection.Role);
 			}
-			collections[ collection.Role ] = collection;
+			collections[collection.Role] = collection;
 		}
 
 		/// <summary>
@@ -113,13 +128,13 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="referencedClass"></param>
 		/// <param name="propertyName"></param>
-		public void AddUniquePropertyReference( System.Type referencedClass, string propertyName )
+		public void AddUniquePropertyReference(System.Type referencedClass, string propertyName)
 		{
 			UniquePropertyReference upr = new UniquePropertyReference();
 			upr.ReferencedClass = referencedClass;
 			upr.PropertyName = propertyName;
 
-			propertyReferences.Add( upr );
+			propertyReferences.Add(upr);
 		}
 
 		/// <summary>
@@ -127,9 +142,14 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public PersistentClass GetClass( System.Type type )
+		public PersistentClass GetClass(System.Type type)
 		{
-			return ( PersistentClass ) classes[ type ];
+			return (PersistentClass) classes[type];
+		}
+
+		public PersistentClass GetClass(string entityName)
+		{
+			return (PersistentClass) classes[ReflectHelper.ClassForName(entityName)];
 		}
 
 		/// <summary>
@@ -163,9 +183,9 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="role"></param>
 		/// <returns></returns>
-		public Mapping.Collection GetCollection( string role )
+		public Mapping.Collection GetCollection(string role)
 		{
-			return ( Mapping.Collection ) collections[ role ];
+			return (Mapping.Collection) collections[role];
 		}
 
 		/// <summary>
@@ -175,13 +195,13 @@ namespace NHibernate.Cfg
 		/// <param name="className">The name of the class that is being renamed.</param>
 		/// <param name="rename">The new name to use in Hql for the class.</param>
 		/// <exception cref="MappingException">Thrown when the rename already identifies another Class.</exception>
-		public void AddImport( string className, string rename )
+		public void AddImport(string className, string rename)
 		{
 			// if the imports dictionary already contains the rename, then make sure 
 			// the rename is not for a different className.  If it is a different className
 			// then we probably have 2 classes with the same name in a different namespace.  To 
 			// prevent this error one of the classes needs to have the attribute "
-			if( imports.Contains( rename ) && ( string ) imports[ rename ] != className )
+			if (imports.Contains(rename) && (string) imports[rename] != className)
 			{
 				object existing = imports[rename];
 				throw new DuplicateMappingException("duplicate import: " + rename +
@@ -191,7 +211,7 @@ namespace NHibernate.Cfg
 						"import",
 						rename);
 			}
-			imports[ rename ] = className;
+			imports[rename] = className;
 		}
 
 		/// <summary>
@@ -200,17 +220,17 @@ namespace NHibernate.Cfg
 		/// <param name="schema"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public Table AddTable( string schema, string name )
+		public Table AddTable(string schema, string name)
 		{
 			string key = schema != null ? schema + "." + name : name;
-			Table table = ( Table ) tables[ key ];
+			Table table = (Table) tables[key];
 
-			if( table == null )
+			if (table == null)
 			{
 				table = new Table();
 				table.Name = name;
 				table.Schema = schema;
-				tables[ key ] = table;
+				tables[key] = table;
 			}
 			return table;
 		}
@@ -221,10 +241,10 @@ namespace NHibernate.Cfg
 		/// <param name="schema"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public Table GetTable( string schema, string name )
+		public Table GetTable(string schema, string name)
 		{
 			string key = schema != null ? schema + "." + name : name;
-			return ( Table ) tables[ key ];
+			return (Table) tables[key];
 		}
 
 		/// <summary></summary>
@@ -248,53 +268,34 @@ namespace NHibernate.Cfg
 			set { defaultAccess = value; }
 		}
 
-		private void CheckQueryExists( string name )
+		private void CheckQueryExists(string name)
 		{
-			if ( queries.Contains( name ) || sqlqueries.Contains( name ) )
+			if (queries.Contains(name) || sqlqueries.Contains(name))
 			{
-				throw new DuplicateMappingException( "query / sql-query", name);
+				throw new DuplicateMappingException("query / sql-query", name);
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="query"></param>
-		public void AddQuery( string name, string query )
+		public void AddQuery(string name, NamedQueryDefinition query)
 		{
-			CheckQueryExists( name );
-			queries[ name ] = query;
+			CheckQueryExists(name);
+			queries[name] = query;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="query"></param>
-		public void AddSQLQuery( string name, NamedSQLQuery query )
+		public void AddSQLQuery(string name, NamedSQLQueryDefinition query)
 		{
-			CheckQueryExists( name );
-			sqlqueries[ name ] = query;
+			CheckQueryExists(name);
+			sqlqueries[name] = query;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public string GetQuery( string name )
+		public NamedQueryDefinition GetQuery(string name)
 		{
-			return ( string ) queries[ name ];
+			return (NamedQueryDefinition) queries[name];
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sp"></param>
-		internal void AddSecondPass( HbmBinder.AbstractSecondPass sp )
+		internal void AddSecondPass(ISecondPass sp)
 		{
-			secondPasses.Add( sp );
+			secondPasses.Add(sp);
 		}
 
 		/// <summary>

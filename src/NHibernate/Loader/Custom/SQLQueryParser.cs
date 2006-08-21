@@ -53,7 +53,7 @@ namespace NHibernate.Loader.Custom
 
 		private IDictionary getPropertyResultByResultAlias( string aliasName )
 		{
-			SQLQueryReturn sqr = ( SQLQueryReturn ) returnByAlias[ aliasName ];
+			SQLQueryNonScalarReturn sqr = ( SQLQueryNonScalarReturn ) returnByAlias[ aliasName ];
 			return sqr.PropertyResultsMap;
 		}
 
