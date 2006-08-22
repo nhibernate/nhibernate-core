@@ -92,10 +92,11 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		public virtual IDbCommand GenerateCommand( Dialect.Dialect dialect, SqlString sqlString )
+		public virtual IDbCommand GenerateCommand( Dialect.Dialect dialect, CommandType type, SqlString sqlString )
 		{
 			int paramIndex = 0;
 			IDbCommand cmd = this.CreateCommand();
+			cmd.CommandType = type;
 
 			object envTimeout = Environment.Properties[ Environment.CommandTimeout ];
 			if( envTimeout != null )

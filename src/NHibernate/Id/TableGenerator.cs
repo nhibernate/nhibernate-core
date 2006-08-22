@@ -201,7 +201,7 @@ namespace NHibernate.Id
 						qps.Dispose();
 					}
 
-					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand( session.Factory.Dialect, updateSql );
+					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand( session.Factory.Dialect, CommandType.Text, updateSql );
 					ups.Connection = conn;
 					ups.Transaction = trans;
 

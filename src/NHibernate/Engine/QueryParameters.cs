@@ -6,6 +6,7 @@ using log4net;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Data;
 
 namespace NHibernate.Engine
 {
@@ -31,6 +32,7 @@ namespace NHibernate.Engine
 		private string _comment;
 		private bool _isNaturalKeyLookup;
 		private bool _readOnly;
+		private bool _callable;
 
 		// not implemented: private ScrollMode _scrollMode;
 
@@ -325,6 +327,18 @@ namespace NHibernate.Engine
 		{
 			get { return _collectionKeys; }
 			set { _collectionKeys = value; }
+		}
+
+		public bool Callable
+		{
+			get { return _callable; }
+			set { _callable = value; }
+		}
+
+		// Added in NH
+		public CommandType CommandType
+		{
+			get { return Callable ? CommandType.StoredProcedure : CommandType.Text; }
 		}
 	}
 }

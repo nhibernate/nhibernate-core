@@ -1353,7 +1353,8 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareQueryCommand( VersionSelectString, false );
+				// TODO SP
+				IDbCommand st = session.Batcher.PrepareQueryCommand( VersionSelectString, CommandType.Text );
 				IDataReader rs = null;
 				try
 				{
@@ -1403,7 +1404,8 @@ namespace NHibernate.Persister.Entity
 
 				try
 				{
-					IDbCommand st = session.Batcher.PrepareCommand( GetLockString( lockMode ) );
+					// TODO SP?
+					IDbCommand st = session.Batcher.PrepareCommand( GetLockString( lockMode ), CommandType.Text );
 					IDataReader rs = null;
 
 					try
@@ -1479,7 +1481,8 @@ namespace NHibernate.Persister.Entity
 			bool[] includeProperty = PropertyUpdateability;
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand( ConcreteSelectString );
+				// TODO SP
+				IDbCommand st = session.Batcher.PrepareCommand( ConcreteSelectString, CommandType.Text );
 				IDataReader rs = null;
 				try
 				{
@@ -1758,7 +1761,8 @@ namespace NHibernate.Persister.Entity
 				if( insertSelectSQL != null )
 				{
 					// Use one statement to insert the row and get the generated id
-					IDbCommand insertSelect = session.Batcher.PrepareCommand( insertSelectSQL );
+					// TODO SP
+					IDbCommand insertSelect = session.Batcher.PrepareCommand( insertSelectSQL, CommandType.Text );
 					IDataReader rs = null;
 					try
 					{
@@ -1775,7 +1779,8 @@ namespace NHibernate.Persister.Entity
 				else
 				{
 					// Do the insert
-					IDbCommand statement = session.Batcher.PrepareCommand( sql );
+					// TODO SP
+					IDbCommand statement = session.Batcher.PrepareCommand( sql, CommandType.Text );
 					try
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
@@ -1788,7 +1793,8 @@ namespace NHibernate.Persister.Entity
 					}
 
 					// Fetch the generated id in a separate query
-					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect( IdentifierColumnNames[ 0 ], TableName ) ) );
+					// TODO SP
+					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect( IdentifierColumnNames[ 0 ], TableName ) ), CommandType.Text );
 					IDataReader rs = null;
 					try
 					{

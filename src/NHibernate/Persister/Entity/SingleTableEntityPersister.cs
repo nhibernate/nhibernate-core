@@ -520,7 +520,8 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
-				IDbCommand insertCmd = session.Batcher.PrepareBatchCommand( sql );
+				// TODO SP
+				IDbCommand insertCmd = session.Batcher.PrepareBatchCommand( sql, CommandType.Text );
 
 				try
 				{
@@ -586,13 +587,14 @@ namespace NHibernate.Persister.Entity
 			{
 				IDbCommand deleteCmd;
 
+				// TODO SP
 				if( IsVersioned )
 				{
-					deleteCmd = session.Batcher.PrepareCommand( SqlDeleteString );
+					deleteCmd = session.Batcher.PrepareCommand( SqlDeleteString, CommandType.Text );
 				}
 				else
 				{
-					deleteCmd = session.Batcher.PrepareBatchCommand( SqlDeleteString );
+					deleteCmd = session.Batcher.PrepareBatchCommand( SqlDeleteString, CommandType.Text );
 				}
 
 				try
@@ -697,9 +699,10 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
+				// TODO SP
 				IDbCommand statement = IsBatchable ?
-					session.Batcher.PrepareBatchCommand( sqlUpdateString ) :
-					session.Batcher.PrepareCommand( sqlUpdateString );
+					session.Batcher.PrepareBatchCommand( sqlUpdateString, CommandType.Text ) :
+					session.Batcher.PrepareCommand( sqlUpdateString, CommandType.Text );
 
 				try
 				{

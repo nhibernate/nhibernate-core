@@ -1145,7 +1145,7 @@ namespace NHibernate.Loader
 				                                    GetMaxOrLimit( dialect, selection ) );
 			}
 
-			IDbCommand command = session.Batcher.PrepareQueryCommand( sqlString, scrollable );
+			IDbCommand command = session.Batcher.PrepareQueryCommand( sqlString, parameters.CommandType );
 
 			try
 			{

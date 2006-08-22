@@ -140,6 +140,13 @@ namespace NHibernate.Impl
 				GetQueryReturns(),
 				querySpaces );
 		}
+
+		public override QueryParameters GetQueryParameters(IDictionary namedParams)
+		{
+			QueryParameters qp = base.GetQueryParameters(namedParams);
+			qp.Callable = callable;
+			return qp;
+		}
 		
 		public override IEnumerable Enumerable()
 		{

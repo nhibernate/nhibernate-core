@@ -54,15 +54,10 @@ namespace NHibernate.Impl
 			get { return batchCommand; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sqlString"></param>
-		/// <returns></returns>
-		public IDbCommand Generate(SqlString sqlString)
+		public IDbCommand Generate(SqlString sqlString, CommandType type)
 		{
 			// need to build the IDbCommand from the sqlString bec
-			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, sqlString);
+			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, type, sqlString);
 			LogOpenPreparedCommand();
 			if (log.IsDebugEnabled)
 			{
@@ -119,16 +114,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <returns></returns>
-		public IDbCommand PrepareBatchCommand(SqlString sql)
+		public IDbCommand PrepareBatchCommand(SqlString sql, CommandType type)
 		{
 			if (!sql.Equals(batchCommandSql))
 			{
-				batchCommand = PrepareCommand(sql); // calls ExecuteBatch()
+				batchCommand = PrepareCommand(sql, type); // calls ExecuteBatch()
 				batchCommandSql = sql;
 			}
 			else
@@ -142,12 +132,7 @@ namespace NHibernate.Impl
 			return batchCommand;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <returns></returns>
-		public IDbCommand PrepareCommand(SqlString sql)
+		public IDbCommand PrepareCommand(SqlString sql, CommandType type)
 		{
 			// a new IDbCommand is being prepared and a new (potential) batch
 			// started - so execute the current batch of commands.
@@ -157,25 +142,16 @@ namespace NHibernate.Impl
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			return Generate(sql);
+			return Generate(sql, type);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="scrollable"></param>
-		/// <returns></returns>
-		public IDbCommand PrepareQueryCommand(SqlString sql, bool scrollable)
+		public IDbCommand PrepareQueryCommand(SqlString sql, CommandType type)
 		{
-			//TODO: figure out what to do with scrollable - don't think it applies
-			// to ado.net since DataReader is forward only
-
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			IDbCommand command = Generate(sql);
+			IDbCommand command = Generate(sql, type);
 			lastQuery = command;
 			return command;
 		}

@@ -922,7 +922,7 @@ namespace NHibernate.Impl
 			return ( object[ ] ) values.ToArray( typeof( object ) );
 		}
 
-		public QueryParameters GetQueryParameters( IDictionary namedParams )
+		public virtual QueryParameters GetQueryParameters( IDictionary namedParams )
 		{
 			return new QueryParameters(
 				TypeArray(),

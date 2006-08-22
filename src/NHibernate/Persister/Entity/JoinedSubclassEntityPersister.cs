@@ -530,7 +530,8 @@ namespace NHibernate.Persister.Entity
 				{
 					for( int i = 0; i < tableNames.Length; i++ )
 					{
-						insertCmds[ i ] = session.Batcher.PrepareCommand( sql[ i ] );
+						// TODO SP
+						insertCmds[ i ] = session.Batcher.PrepareCommand( sql[ i ], CommandType.Text );
 					}
 
 					// write the value of fields onto the prepared statements - we MUST use the state at the time
@@ -590,7 +591,8 @@ namespace NHibernate.Persister.Entity
 
 				for( int i = 1; i < naturalOrderTableNames.Length; i++ )
 				{
-					IDbCommand statement = session.Batcher.PrepareCommand( sql[ i ] );
+					// TODO SP
+					IDbCommand statement = session.Batcher.PrepareCommand( sql[ i ], CommandType.Text );
 
 					try
 					{
@@ -637,7 +639,8 @@ namespace NHibernate.Persister.Entity
 				{
 					for( int i = 0; i < naturalOrderTableNames.Length; i++ )
 					{
-						statements[ i ] = session.Batcher.PrepareCommand( SqlDeleteStrings[ i ] );
+						// TODO SP
+						statements[ i ] = session.Batcher.PrepareCommand( SqlDeleteStrings[ i ], CommandType.Text );
 					}
 
 					if( IsVersioned )
@@ -761,7 +764,8 @@ namespace NHibernate.Persister.Entity
 					{
 						if( includeTable[ i ] )
 						{
-							statements[ i ] = session.Batcher.PrepareCommand( sql[ i ] );
+							// TODO SP
+							statements[ i ] = session.Batcher.PrepareCommand( sql[ i ], CommandType.Text );
 						}
 					}
 

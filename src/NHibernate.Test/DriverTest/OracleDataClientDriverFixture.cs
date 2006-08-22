@@ -28,7 +28,7 @@ namespace NHibernate.Test.DriverTest
 			builder.Add( "select * from table1 where col1=");
 			builder.Add( new Parameter( "col1", new BooleanSqlType() ) );
 
-			IDbCommand cmd = driver.GenerateCommand( dialect, builder.ToSqlString() );
+			IDbCommand cmd = driver.GenerateCommand( dialect, CommandType.Text, builder.ToSqlString() );
 
 			IDbDataParameter param = cmd.Parameters[0] as IDbDataParameter;
 

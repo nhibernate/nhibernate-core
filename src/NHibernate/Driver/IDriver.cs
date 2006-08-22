@@ -174,8 +174,9 @@ namespace NHibernate.Driver
 		/// Generates an IDbCommand from the SqlString according to the requirements of the DataProvider.
 		/// </summary>
 		/// <param name="dialect">The Dialect to help build the IDbCommand</param>
+		/// <param name="type">The <see cref="CommandType"/> of the command to generate.</param>
 		/// <param name="sqlString">The SqlString that contains the sql and parameters.</param>
 		/// <returns>An IDbCommand with the CommandText and Parameters fully set.</returns>
-		IDbCommand GenerateCommand( Dialect.Dialect dialect, SqlString sqlString );
+		IDbCommand GenerateCommand( Dialect.Dialect dialect, CommandType type, SqlString sqlString );
 	}
 }

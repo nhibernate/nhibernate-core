@@ -609,7 +609,8 @@ namespace NHibernate.Persister.Collection
 				// Remove all the old entries
 				try
 				{
-					IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteString );
+					// TODO SP
+					IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteString, CommandType.Text );
 
 					try
 					{
@@ -666,7 +667,8 @@ namespace NHibernate.Persister.Collection
 							if( collection.EntryExists( entry, i ) )
 							{
 								int offset = 0;
-								IDbCommand st = session.Batcher.PrepareBatchCommand( SqlInsertRowString );
+								// TODO SP
+								IDbCommand st = session.Batcher.PrepareBatchCommand( SqlInsertRowString, CommandType.Text );
 								int loc = WriteKey( st, id, offset, session );
 								if( hasIdentifier )
 								{
@@ -734,7 +736,8 @@ namespace NHibernate.Persister.Collection
 					{
 						int offset = 0;
 						int count = 0;
-						IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteRowString );
+						// TODO SP
+						IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteRowString, CommandType.Text );
 						try
 						{
 							foreach( object entry in deletes )
@@ -822,7 +825,8 @@ namespace NHibernate.Persister.Collection
 								IDbCommand st = null;
 								if( st == null )
 								{
-									st = session.Batcher.PrepareBatchCommand( SqlInsertRowString );
+									// TODO SP
+									st = session.Batcher.PrepareBatchCommand( SqlInsertRowString, CommandType.Text );
 								}
 								int loc = WriteKey( st, id, offset, session );
 								if( hasIdentifier )

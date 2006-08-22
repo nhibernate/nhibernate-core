@@ -26,21 +26,21 @@ namespace NHibernate.Engine
 		/// Get an <see cref="IDbCommand"/> for using in loading / querying.
 		/// </summary>
 		/// <param name="sql">The <see cref="SqlString"/> to convert to an <see cref="IDbCommand"/>.</param>
-		/// <param name="scrollable">TODO: not sure how to use this yet</param>
+		/// <param name="type">The <see cref="CommandType"/> of the command.</param>
 		/// <returns>
 		/// An <see cref="IDbCommand"/> that is ready to be executed.
 		/// </returns>
 		/// <remarks>
-		/// <p>
+		/// <para>
 		/// If not explicitly released by <c>CloseQueryStatement()</c>, it will be 
 		/// released when the session is closed or disconnected.
-		/// </p>
-		/// <p>
+		/// </para>
+		/// <para>
 		/// This does NOT add anything to the batch - it only creates the IDbCommand and 
 		/// does NOT cause the batch to execute...
-		/// </p>
+		/// </para>
 		/// </remarks>
-		IDbCommand PrepareQueryCommand( SqlString sql, bool scrollable );
+		IDbCommand PrepareQueryCommand( SqlString sql, CommandType commandType );
 
 		/// <summary>
 		/// Closes the <see cref="IDbCommand"/> &amp; the <see cref="IDataReader"/> that was
@@ -55,11 +55,12 @@ namespace NHibernate.Engine
 		/// Must be explicitly released by <c>CloseCommand()</c>
 		/// </summary>
 		/// <param name="sql">The <see cref="SqlString"/> to convert to an <see cref="IDbCommand"/>.</param>
+		/// <param name="type">The <see cref="CommandType"/> of the command.</param>
 		/// <returns>
 		/// An <see cref="IDbCommand"/> that is ready to have the parameter values set
 		/// and then executed.
 		/// </returns>
-		IDbCommand PrepareCommand( SqlString sql );
+		IDbCommand PrepareCommand( SqlString sql, CommandType type );
 
 		/// <summary>
 		/// Close a <see cref="IDbCommand"/> opened using <c>PrepareCommand()</c>
@@ -77,8 +78,9 @@ namespace NHibernate.Engine
 		/// explicitly.
 		/// </remarks>
 		/// <param name="sql">The <see cref="SqlString"/> to convert to an <see cref="IDbCommand"/>.</param>
+		/// <param name="type">The <see cref="CommandType"/> of the command.</param>
 		/// <returns></returns>
-		IDbCommand PrepareBatchCommand( SqlString sql );
+		IDbCommand PrepareBatchCommand( SqlString sql, CommandType type );
 
 		/// <summary>
 		/// Add an insert / delete / update to the current batch (might be called multiple times
@@ -146,7 +148,7 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// A wrapper for calling the <c>IDriver.GenerateCommand</c> that adds logging.
 		/// </remarks>
-		IDbCommand Generate( SqlString sqlString );
+		IDbCommand Generate( SqlString sqlString, CommandType type );
 
 	}
 }
