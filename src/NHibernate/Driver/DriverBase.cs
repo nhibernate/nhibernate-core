@@ -153,14 +153,6 @@ namespace NHibernate.Driver
 			return cmd;
 		}
 
-		public virtual IDbCommand GenerateCommand( Dialect.Dialect dialect, string sqlString )
-		{
-			IDbCommand cmd = this.CreateCommand();
-			cmd.CommandText = sqlString;
-
-			return cmd;
-		}
-
 		/// <summary>
 		/// Generates an IDbDataParameter for the IDbCommand.  It does not add the IDbDataParameter to the IDbCommand's
 		/// Parameter collection.
