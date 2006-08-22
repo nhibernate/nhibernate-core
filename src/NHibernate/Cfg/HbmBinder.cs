@@ -1654,7 +1654,7 @@ namespace NHibernate.Cfg
 			{
 				case null:
 					return FlushMode.Auto;
-					// H3 has null here but FlushMode can't be null so I'm assuming Auto as default
+				// H3 has null here but FlushMode can't be null so I'm assuming Auto as default
 				case "auto":
 					return FlushMode.Auto;
 				case "commit":
@@ -1717,7 +1717,7 @@ namespace NHibernate.Cfg
 
 		private static void BindNamedSQLQuery(XmlNode queryElem, string path, Mappings mappings)
 		{
-			mappings.AddSecondPass( new NamedSQLQuerySecondPass( queryElem, path, mappings ) );
+			mappings.AddSecondPass(new NamedSQLQuerySecondPass(queryElem, path, mappings));
 			/*
 			string qname = queryElem.Attributes["name"].Value;
 			NamedSQLQuery namedQuery = new NamedSQLQuery(queryElem.InnerText);
@@ -2111,5 +2111,110 @@ namespace NHibernate.Cfg
 			return null;
 		}
 
+		private static void HandleCustomSQL(XmlNode node, PersistentClass model)
+		{
+			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, nsmgr);
+
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLInsert(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
+
+			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, nsmgr);
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLDelete(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
+
+			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, nsmgr);
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLUpdate(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
+
+			element = node.SelectSingleNode(HbmConstants.nsLoader, nsmgr);
+			if (element != null)
+			{
+				model.LoaderName = XmlHelper.GetAttributeValue(element, "query-ref");
+			}
+		}
+
+		// TODO: uncomment when Join implemented
+		//private static void handleCustomSQL(Element node, Join model)
+		//{
+		//    Element element = node.element("sql-insert");
+		//    if (element != null)
+		//    {
+		//        boolean callable = isCallable(element);
+		//        model.setCustomSQLInsert(element.getTextTrim(), callable, getResultCheckStyle(element, callable));
+		//    }
+
+		//    element = node.element("sql-delete");
+		//    if (element != null)
+		//    {
+		//        boolean callable = isCallable(element);
+		//        model.setCustomSQLDelete(element.getTextTrim(), callable, getResultCheckStyle(element, callable));
+		//    }
+
+		//    element = node.element("sql-update");
+		//    if (element != null)
+		//    {
+		//        boolean callable = isCallable(element);
+		//        model.setCustomSQLUpdate(element.getTextTrim(), callable, getResultCheckStyle(element, callable));
+		//    }
+		//}
+
+		private static void HandleCustomSQL(XmlNode node, Mapping.Collection model)
+		{
+			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, nsmgr);
+
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLInsert(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
+
+			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, nsmgr);
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLDelete(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
+
+			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, nsmgr);
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLUpdate(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
+
+			element = node.SelectSingleNode(HbmConstants.nsSqlDeleteAll, nsmgr);
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLDeleteAll(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
+		}
+
+		private static bool IsCallable(XmlNode element)
+		{
+			XmlAttribute attrib = element.Attributes["callable"];
+			return attrib != null && "true".Equals(attrib.Value);
+		}
+
+		private static ExecuteUpdateResultCheckStyle GetResultCheckStyle(XmlNode element, bool callable)
+		{
+			XmlAttribute attr = element.Attributes["check"];
+			if (attr == null)
+			{
+				// use COUNT as the default.  This mimics the old behavior, although
+				// NONE might be a better option moving forward in the case of callable
+				return ExecuteUpdateResultCheckStyle.Count;
+			}
+			return ExecuteUpdateResultCheckStyle.Parse(attr.Value);
+		}
 	}
 }

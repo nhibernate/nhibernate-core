@@ -542,6 +542,7 @@
     <Compile Include="Driver\SqlServerCeDriver.cs" />
     <Compile Include="DuplicateMappingException.cs" />
     <Compile Include="Engine\EntityKey.cs" />
+    <Compile Include="Engine\ExecuteUpdateResultCheckStyle.cs" />
     <Compile Include="Engine\JoinHelper.cs" />
     <Compile Include="Engine\NamedQueryDefinition.cs" />
     <Compile Include="Engine\NamedSQLQueryDefinition.cs" />

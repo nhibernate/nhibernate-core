@@ -28,5 +28,11 @@ namespace NHibernate.Cfg
 		public const string nsReturnDiscriminator = nsPrefix + ":return-discriminator";
 		public const string nsReturnProperty = nsPrefix + ":return-property";
 		public const string nsReturnColumn = nsPrefix + ":return-column";
+
+		public const string nsLoader = nsPrefix + ":loader";
+		public const string nsSqlInsert = nsPrefix + ":sql-insert";
+		public const string nsSqlUpdate = nsPrefix + ":sql-update";
+		public const string nsSqlDelete = nsPrefix + ":sql-delete";
+		public const string nsSqlDeleteAll = nsPrefix + ":sql-delete-all";
 	}
 }

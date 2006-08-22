@@ -38,6 +38,20 @@ namespace NHibernate.Mapping
 		private OptimisticLockMode optimisticLockMode;
 		private IDictionary metaAttributes;
 
+		private string customSQLInsert;
+		private bool customInsertCallable;
+		private ExecuteUpdateResultCheckStyle insertCheckStyle;
+
+		private string customSQLDelete;
+		private bool customDeleteCallable;
+		private ExecuteUpdateResultCheckStyle deleteCheckStyle;
+
+		private string customSQLUpdate;
+		private bool customUpdateCallable;
+		private ExecuteUpdateResultCheckStyle updateCheckStyle;
+
+		private string loaderName;
+
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
 		/// </summary>
@@ -696,6 +710,45 @@ namespace NHibernate.Mapping
 			}
 
 			return property;
+		}
+
+		public string LoaderName
+		{
+			get { return loaderName; }
+			set { loaderName = value; }
+		}
+
+		public string CustomSQLInsert { get { return customSQLInsert; } }
+		public string CustomSQLDelete { get { return customSQLDelete; } }
+		public string CustomSQLUpdate { get { return customSQLUpdate; } }
+
+		public bool IsCustomInsertCallable { get { return customInsertCallable; } }
+		public bool IsCustomDeleteCallable { get { return customDeleteCallable; } }
+		public bool IsCustomUpdateCallable { get { return customUpdateCallable; } }
+
+		public ExecuteUpdateResultCheckStyle CustomSQLInsertCheckStyle { get { return insertCheckStyle; } }
+		public ExecuteUpdateResultCheckStyle CustomSQLDeleteCheckStyle { get { return deleteCheckStyle; } }
+		public ExecuteUpdateResultCheckStyle CustomSQLUpdateCheckStyle { get { return updateCheckStyle; } }
+
+		public void SetCustomSQLInsert(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
+		{
+			customSQLInsert = sql;
+			customInsertCallable = callable;
+			insertCheckStyle = checkStyle;
+		}
+
+		public void SetCustomSQLDelete(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
+		{
+			customSQLDelete = sql;
+			customDeleteCallable = callable;
+			deleteCheckStyle = checkStyle;
+		}
+
+		public void SetCustomSQLUpdate(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
+		{
+			customSQLUpdate = sql;
+			customUpdateCallable = callable;
+			updateCheckStyle = checkStyle;
 		}
 	}
 }

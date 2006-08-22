@@ -43,6 +43,22 @@ namespace NHibernate.Mapping
 		private string referencedPropertyName;
 		private string typeName;
 
+		private string customSQLInsert;
+		private bool customInsertCallable;
+		private ExecuteUpdateResultCheckStyle insertCheckStyle;
+
+		private string customSQLDelete;
+		private bool customDeleteCallable;
+		private ExecuteUpdateResultCheckStyle deleteCheckStyle;
+
+		private string customSQLUpdate;
+		private bool customUpdateCallable;
+		private ExecuteUpdateResultCheckStyle updateCheckStyle;
+
+		private string customSQLDeleteAll;
+		private bool customDeleteAllCallable;
+		private ExecuteUpdateResultCheckStyle deleteAllCheckStyle;
+
 #if NET_2_0
 		private bool isGeneric;
 		private System.Type[] genericArguments;
@@ -341,6 +357,49 @@ namespace NHibernate.Mapping
 		{
 			get { return typeName; }
 			set { typeName = value; }
+		}
+
+		public string CustomSQLInsert { get { return customSQLInsert; } }
+		public string CustomSQLDelete { get { return customSQLDelete; } }
+		public string CustomSQLUpdate { get { return customSQLUpdate; } }
+		public string CustomSQLDeleteAll { get { return customSQLDeleteAll; } }
+
+		public bool IsCustomInsertCallable { get { return customInsertCallable; } }
+		public bool IsCustomDeleteCallable { get { return customDeleteCallable; } }
+		public bool IsCustomUpdateCallable { get { return customUpdateCallable; } }
+		public bool IsCustomDeleteAllCallable { get { return customDeleteAllCallable; } }
+
+		public ExecuteUpdateResultCheckStyle CustomSQLInsertCheckStyle { get { return insertCheckStyle; } }
+		public ExecuteUpdateResultCheckStyle CustomSQLDeleteCheckStyle { get { return deleteCheckStyle; } }
+		public ExecuteUpdateResultCheckStyle CustomSQLUpdateCheckStyle { get { return updateCheckStyle; } }
+		public ExecuteUpdateResultCheckStyle CustomSQLDeleteAllCheckStyle { get { return deleteAllCheckStyle; } }
+
+		public void SetCustomSQLInsert(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
+		{
+			customSQLInsert = sql;
+			customInsertCallable = callable;
+			insertCheckStyle = checkStyle;
+		}
+
+		public void SetCustomSQLDelete(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
+		{
+			customSQLDelete = sql;
+			customDeleteCallable = callable;
+			deleteCheckStyle = checkStyle;
+		}
+
+		public void SetCustomSQLDeleteAll(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
+		{
+			customSQLDeleteAll = sql;
+			customDeleteAllCallable = callable;
+			deleteAllCheckStyle = checkStyle;
+		}
+
+		public void SetCustomSQLUpdate(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
+		{
+			customSQLUpdate = sql;
+			customUpdateCallable = callable;
+			updateCheckStyle = checkStyle;
 		}
 	}
 }
