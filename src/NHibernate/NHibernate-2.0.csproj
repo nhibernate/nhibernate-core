@@ -408,12 +408,10 @@
     <Compile Include="Type\BagType.cs" />
     <Compile Include="Type\BinaryBlobType.cs" />
     <Compile Include="Type\BinaryType.cs" />
-    <Compile Include="Type\BlobType.cs" />
     <Compile Include="Type\BooleanType.cs" />
     <Compile Include="Type\ByteType.cs" />
     <Compile Include="Type\CharBooleanType.cs" />
     <Compile Include="Type\CharType.cs" />
-    <Compile Include="Type\ClobType.cs" />
     <Compile Include="Type\ComponentType.cs" />
     <Compile Include="Type\CompositeCustomType.cs" />
     <Compile Include="Type\CultureInfoType.cs" />
