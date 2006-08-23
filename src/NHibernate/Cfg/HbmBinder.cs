@@ -175,6 +175,14 @@ namespace NHibernate.Cfg
 					persisterNode.Value, mappings,
 					"could not instantiate persister class: {0}");
 			}
+
+			// CUSTOM SQL
+			HandleCustomSQL(node, model);
+
+			foreach (XmlNode syncNode in node.SelectNodes(HbmConstants.nsSynchronize, nsmgr))
+			{
+				model.AddSynchronizedTable(XmlHelper.GetAttributeValue(syncNode, "table"));
+			}
 		}
 
 		public static void BindSubclass(XmlNode node, Subclass model, Mappings mappings)
