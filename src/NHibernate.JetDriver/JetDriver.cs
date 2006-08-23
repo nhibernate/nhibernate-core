@@ -24,14 +24,20 @@ namespace NHibernate.JetDriver
 
 		private IDictionary _queryCache = new Hashtable();
 
-		public override IDbCommand GenerateCommand( Dialect.Dialect dialect, SqlString sqlString )
+		public override IDbCommand GenerateCommand( Dialect.Dialect dialect, CommandType type, SqlString sqlString )
 		{
 			SqlString final;
-			if( IsSelectStatement( sqlString ) ) final = FinalizeJoins( sqlString );			
-				//else if(IsCreateOrAlterStatement(sqlString)) final = FinalizeDDL(sqlString);
-			else final = sqlString;
+			if (IsSelectStatement(sqlString))
+			{
+				final = FinalizeJoins(sqlString);
+			}
+			//else if(IsCreateOrAlterStatement(sqlString)) final = FinalizeDDL(sqlString);
+			else
+			{
+				final = sqlString;
+			}
 
-			return base.GenerateCommand( dialect, final );
+			return base.GenerateCommand( dialect, type, final );
 		}
 
 		/// <summary></summary>

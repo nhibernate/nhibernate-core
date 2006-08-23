@@ -327,11 +327,6 @@ namespace NHibernate.JetDriver
 			return quoted.Replace( new string( CloseQuote, 2 ), CloseQuote.ToString() );
 		}
 
-		public override bool SupportsIdentitySelectInInsert
-		{
-			get { return false; }
-		}
-
 		public override JoinFragment CreateOuterJoinFragment()
 		{
 			return new JetJoinFragment();
