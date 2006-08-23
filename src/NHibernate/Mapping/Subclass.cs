@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Engine;
+using Iesi.Collections;
 
 namespace NHibernate.Mapping
 {
@@ -19,7 +20,7 @@ namespace NHibernate.Mapping
 		/// Initializes a new instance of the <see cref="Subclass"/> class.
 		/// </summary>
 		/// <param name="superclass">The <see cref="PersistentClass"/> that is the superclass.</param>
-		public Subclass( PersistentClass superclass )
+		public Subclass(PersistentClass superclass)
 		{
 			this.superclass = superclass;
 		}
@@ -65,7 +66,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if ( classPersisterClass == null )
+				if (classPersisterClass == null)
 				{
 					return Superclass.ClassPersisterClass;
 				}
@@ -156,9 +157,9 @@ namespace NHibernate.Mapping
 			get { return true; }
 			set
 			{
-				if( value!=true )
+				if (value != true)
 				{
-					throw new AssertionFailure( "IsPolymorphic has to be true for subclasses.  There is a bug in NHibernate somewhere." );
+					throw new AssertionFailure("IsPolymorphic has to be true for subclasses.  There is a bug in NHibernate somewhere.");
 				}
 			}
 		}
@@ -171,10 +172,10 @@ namespace NHibernate.Mapping
 		/// This also adds the <see cref="Property"/> to the Superclass' collection
 		/// of Subclass Properties.
 		/// </remarks>
-		public override void AddProperty( Property p )
+		public override void AddProperty(Property p)
 		{
-			base.AddProperty( p );
-			Superclass.AddSubclassProperty( p );
+			base.AddProperty(p);
+			Superclass.AddSubclassProperty(p);
 		}
 
 		/// <summary>
@@ -191,7 +192,7 @@ namespace NHibernate.Mapping
 			set
 			{
 				base.Table = value;
-				Superclass.AddSubclassTable( value );
+				Superclass.AddSubclassTable(value);
 			}
 		}
 
@@ -211,8 +212,8 @@ namespace NHibernate.Mapping
 			get
 			{
 				ArrayList retVal = new ArrayList();
-				retVal.AddRange( PropertyCollection );
-				retVal.AddRange( Superclass.PropertyClosureCollection );
+				retVal.AddRange(PropertyCollection);
+				retVal.AddRange(Superclass.PropertyClosureCollection);
 				return retVal;
 			}
 		}
@@ -234,8 +235,8 @@ namespace NHibernate.Mapping
 			get
 			{
 				ArrayList retVal = new ArrayList();
-				retVal.AddRange( Superclass.TableClosureCollection );
-				retVal.Add( Table );
+				retVal.AddRange(Superclass.TableClosureCollection);
+				retVal.Add(Table);
 				return retVal;
 			}
 		}
@@ -248,10 +249,10 @@ namespace NHibernate.Mapping
 		/// This also adds the <see cref="Property"/> to the Superclass' collection
 		/// of Subclass Properties.
 		/// </remarks>
-		public override void AddSubclassProperty( Property p )
+		public override void AddSubclassProperty(Property p)
 		{
-			base.AddSubclassProperty( p );
-			Superclass.AddSubclassProperty( p );
+			base.AddSubclassProperty(p);
+			Superclass.AddSubclassProperty(p);
 		}
 
 		/// <summary>
@@ -262,10 +263,10 @@ namespace NHibernate.Mapping
 		/// This also adds the <see cref="Table"/> to the Superclass' collection
 		/// of Subclass Tables.
 		/// </remarks>
-		public override void AddSubclassTable( Table table )
+		public override void AddSubclassTable(Table table)
 		{
-			base.AddSubclassTable( table );
-			Superclass.AddSubclassTable( table );
+			base.AddSubclassTable(table);
+			Superclass.AddSubclassTable(table);
 		}
 
 		/// <summary>
@@ -323,7 +324,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if( key == null )
+				if (key == null)
 				{
 					return Identifier;
 				}
@@ -360,7 +361,7 @@ namespace NHibernate.Mapping
 		public override string Where
 		{
 			get { return Superclass.Where; }
-			set { throw new InvalidOperationException( "The Where string can not be set on the Subclass - use the RootClass instead." ); }
+			set { throw new InvalidOperationException("The Where string can not be set on the Subclass - use the RootClass instead."); }
 		}
 
 		/// <summary>
@@ -376,34 +377,34 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public override bool IsDiscriminatorInsertable
 		{
-			get { return Superclass.IsDiscriminatorInsertable ; }
-			set { throw new InvalidOperationException( "The DiscriminatorInsertable property can not be set on the Subclass - use the Superclass instead." ); }
+			get { return Superclass.IsDiscriminatorInsertable; }
+			set { throw new InvalidOperationException("The DiscriminatorInsertable property can not be set on the Subclass - use the Superclass instead."); }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="mapping"></param>
-		public override void Validate( IMapping mapping )
+		public override void Validate(IMapping mapping)
 		{
-			base.Validate( mapping );
-			if ( Key != null && !Key.IsValid( mapping ) )
+			base.Validate(mapping);
+			if (Key != null && !Key.IsValid(mapping))
 			{
-				throw new MappingException( string.Format( "subclass key has wrong number of columns: {0} type: {1}", MappedClass.Name, Key.Type.Name ) );
+				throw new MappingException(string.Format("subclass key has wrong number of columns: {0} type: {1}", MappedClass.Name, Key.Type.Name));
 			}
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public void CreateForeignKey( )
+		public void CreateForeignKey()
 		{
-			if ( !IsJoinedSubclass )
+			if (!IsJoinedSubclass)
 			{
-				throw new AssertionFailure( "Not a joined-subclass" );
+				throw new AssertionFailure("Not a joined-subclass");
 			}
 
-			Key.CreateForeignKeyOfClass( Superclass.MappedClass );
+			Key.CreateForeignKeyOfClass(Superclass.MappedClass);
 		}
 
 		public override int PropertyClosureSpan
@@ -411,5 +412,15 @@ namespace NHibernate.Mapping
 			get { return Superclass.PropertyClosureSpan + base.PropertyClosureSpan; }
 		}
 
+		public override ISet SynchronizedTables
+		{
+			get
+			{
+				HashedSet result = new HashedSet();
+				result.AddAll(synchronizedTablesField);
+				result.AddAll(Superclass.SynchronizedTables);
+				return result;
+			}
+		}
 	}
 }

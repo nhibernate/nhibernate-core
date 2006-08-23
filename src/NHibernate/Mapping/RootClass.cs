@@ -340,5 +340,10 @@ namespace NHibernate.Mapping
 				throw new MappingException( string.Format( "identifier mapping has wrong number of columns: {0} type: {1}", MappedClass.Name, Identifier.Type.Name ) );
 			}
 		}
+
+		public override Iesi.Collections.ISet SynchronizedTables
+		{
+			get { return synchronizedTablesField; }
+		}
 	}
 }

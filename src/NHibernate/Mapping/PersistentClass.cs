@@ -5,6 +5,7 @@ using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using Iesi.Collections;
 
 namespace NHibernate.Mapping
 {
@@ -51,6 +52,8 @@ namespace NHibernate.Mapping
 		private ExecuteUpdateResultCheckStyle updateCheckStyle;
 
 		private string loaderName;
+
+		protected readonly ISet synchronizedTablesField = new HashedSet();
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
@@ -749,6 +752,13 @@ namespace NHibernate.Mapping
 			customSQLUpdate = sql;
 			customUpdateCallable = callable;
 			updateCheckStyle = checkStyle;
+		}
+
+		public abstract ISet SynchronizedTables { get; }
+
+		public void AddSynchronizedTable(string table)
+		{
+			synchronizedTablesField.Add(table);
 		}
 	}
 }
