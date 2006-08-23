@@ -48,5 +48,15 @@ namespace NHibernate.Engine
 				return callable ? Param : Count;
 			}
 		}
+
+		public static bool operator==(ExecuteUpdateResultCheckStyle left, ExecuteUpdateResultCheckStyle right)
+		{
+			return left.name == right.name;
+		}
+
+		public static bool operator !=(ExecuteUpdateResultCheckStyle left, ExecuteUpdateResultCheckStyle right)
+		{
+			return !(left == right);
+		}
 	}
 }
