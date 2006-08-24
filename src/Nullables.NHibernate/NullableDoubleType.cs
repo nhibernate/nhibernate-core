@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableDoubleType : NullableTypesType
 	{
-		public NullableDoubleType() : base( new DoubleSqlType() )
+		public NullableDoubleType() : base( SqlTypeFactory.Double )
 		{
 		}
 

@@ -12,48 +12,30 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OleDbDriver : DriverBase
 	{
-		/// <summary></summary>
 		public OleDbDriver()
 		{
 		}
 
-		/// <summary></summary>
-		public override System.Type CommandType
-		{
-			get { return typeof( OleDbCommand ); }
-		}
-
-		/// <summary></summary>
-		public override System.Type ConnectionType
-		{
-			get { return typeof( OleDbConnection ); }
-		}
-
-		/// <summary></summary>
 		public override IDbConnection CreateConnection()
 		{
 			return new OleDbConnection();
 		}
 
-		/// <summary></summary>
 		public override IDbCommand CreateCommand()
 		{
 			return new OleDbCommand();
 		}
 
-		/// <summary></summary>
 		public override bool UseNamedPrefixInSql
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override bool UseNamedPrefixInParameter
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override string NamedPrefix
 		{
 			get { return String.Empty; }
@@ -66,6 +48,5 @@ namespace NHibernate.Driver
 		{
 			get { return false; }
 		}
-
 	}
 }

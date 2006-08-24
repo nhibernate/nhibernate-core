@@ -386,11 +386,12 @@ namespace NHibernate.Loader
 			int entitySpan = EntityPersisters.Length;
 
 			ArrayList hydratedObjects = entitySpan > 0 ? new ArrayList() : null;
+			SqlString sql = ApplyLocks( SqlString, queryParameters.LockModes, session.Factory.Dialect );
 			IDbCommand st = PrepareQueryCommand(
-				ApplyLocks( SqlString, queryParameters.LockModes, session.Factory.Dialect ),
+				sql,
 				queryParameters, false, session );
 
-			IDataReader rs = GetResultSet( st, selection, session );
+			IDataReader rs = GetResultSet( st, sql, selection, session );
 
 // would be great to move all this below here into another method that could also be used
 // from the new scrolling stuff.
@@ -1121,7 +1122,7 @@ namespace NHibernate.Loader
 		/// <param name="parameters">The <see cref="QueryParameters"/> to use for the IDbCommand.</param>
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
-		/// <returns>An IDbCommand that is ready to be executed.</returns>
+		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
 		protected virtual IDbCommand PrepareQueryCommand(
 			SqlString sqlString,
 			QueryParameters parameters,
@@ -1272,14 +1273,14 @@ namespace NHibernate.Loader
 		/// <param name="selection">The <see cref="RowSelection"/> to apply to the <see cref="IDbCommand"/> and <see cref="IDataReader"/>.</param>
 		/// <param name="session">The <see cref="ISession" /> to load in.</param>
 		/// <returns>An IDataReader advanced to the first record in RowSelection.</returns>
-		protected IDataReader GetResultSet( IDbCommand st, RowSelection selection, ISessionImplementor session )
+		protected IDataReader GetResultSet( IDbCommand st, SqlString sql, RowSelection selection, ISessionImplementor session )
 		{
 			IDataReader rs = null;
 			try
 			{
 				log.Info( st.CommandText );
 				// TODO: Add WrapResultSetIfEnabled below
-				rs = session.Batcher.ExecuteReader( st );
+				rs = session.Batcher.ExecuteReader( st, sql.GetParameterTypes() );
 
 				Dialect.Dialect dialect = session.Factory.Dialect;
 				if( !dialect.SupportsLimitOffset || !UseLimit( selection, dialect ) )

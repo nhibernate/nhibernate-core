@@ -11,7 +11,7 @@
     <property name="LastUpdated" type="timestamp"/>
     
     <property name="Active" />
-    <property name="CheckLPCMember" column="CHECK_LPC_MEMBER" type="Decimal" />
+    <property name="CheckLPCMember" column="CHECK_LPC_MEMBER" type="Decimal(19,5)" />
     <property name="FreeLPCMember" column="FREE_LPC_MEMBER" type="Boolean" />
   </class>
 
@@ -25,8 +25,8 @@
     </many-to-one>
     <property name="Expirydate" column="EXPIRY_DATE" type="DateTime" />
     <property name="Joindate" column="JOIN_DATE" type="DateTime" />
-    <property name="ProfileId" column="PROFILE_ID" type="Decimal"/>
-    <property name="Withdrawlamount" column="WITHDRAWL_AMOUNT" type="Decimal" />
+    <property name="ProfileId" column="PROFILE_ID" type="Decimal(19,5)"/>
+    <property name="Withdrawlamount" column="WITHDRAWL_AMOUNT" type="Decimal(19,5)" />
   </class>
 
 </hibernate-mapping>

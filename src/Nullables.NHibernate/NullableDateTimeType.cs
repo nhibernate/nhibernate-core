@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableDateTimeType : NullableTypesType
 	{
-		public NullableDateTimeType() : base( new DateTimeSqlType() )
+		public NullableDateTimeType() : base( SqlTypeFactory.DateTime )
 		{
 		}
 

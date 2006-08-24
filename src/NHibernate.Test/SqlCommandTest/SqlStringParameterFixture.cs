@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
 using NUnit.Framework;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Test.SqlCommandTest
 {
@@ -31,9 +32,9 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EqualsSameType()
 		{
-			Parameter x = new Parameter( "name", "alias", new SqlTypes.Int32SqlType() );
-			Parameter y = new Parameter( "name", "alias", new SqlTypes.Int32SqlType() );
-			Parameter z = new Parameter( "name", "alias", new SqlTypes.Int32SqlType() );
+			Parameter x = new Parameter( "name", "alias", SqlTypeFactory.Int32 );
+			Parameter y = new Parameter( "name", "alias", SqlTypeFactory.Int32 );
+			Parameter z = new Parameter( "name", "alias", SqlTypeFactory.Int32 );
 			
 			Assert.IsTrue( x.Equals(y) );
 			Assert.IsTrue( y.Equals(x) );
@@ -41,7 +42,7 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.IsTrue( x.Equals(z) );
 			Assert.IsFalse( x.Equals(null) );
 
-			y = new Parameter( "name2", "alias", new SqlTypes.Int32SqlType() );
+			y = new Parameter( "name2", "alias", SqlTypeFactory.Int32 );
 
 			Assert.IsFalse( x.Equals(y) );
 			Assert.IsFalse( y.Equals(x) );
@@ -81,8 +82,8 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EqualsPrecisionDiffType()
 		{
-			Parameter x = new Parameter( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
-			ParameterPrecisionScale y = new ParameterPrecisionScale( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+			Parameter x = new Parameter( "name", "alias", SqlTypeFactory.GetDecimal( 20, 4 ) );
+			ParameterPrecisionScale y = new ParameterPrecisionScale( "name", "alias", SqlTypeFactory.GetDecimal(20, 4) );
 			
 			// even though these contain the exact same values - they should not be 
 			// equal because they are different types
@@ -93,9 +94,9 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EqualsPrecisionType()
 		{
-			ParameterPrecisionScale x = new ParameterPrecisionScale( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
-			ParameterPrecisionScale y = new ParameterPrecisionScale( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
-			ParameterPrecisionScale z = new ParameterPrecisionScale( "name", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+			ParameterPrecisionScale x = new ParameterPrecisionScale( "name", "alias", SqlTypeFactory.GetDecimal( 20, 4 ) );
+			ParameterPrecisionScale y = new ParameterPrecisionScale( "name", "alias", SqlTypeFactory.GetDecimal( 20, 4 ) );
+			ParameterPrecisionScale z = new ParameterPrecisionScale( "name", "alias", SqlTypeFactory.GetDecimal( 20, 4 ) );
 			
 			Assert.IsTrue( x.Equals(y) );
 			Assert.IsTrue( y.Equals(x) );
@@ -103,7 +104,7 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.IsTrue( x.Equals(z) );
 			Assert.IsFalse( x.Equals(null) );
 
-			y = new ParameterPrecisionScale( "name2", "alias", new SqlTypes.DecimalSqlType( 20, 4 ) );
+			y = new ParameterPrecisionScale( "name2", "alias", SqlTypeFactory.GetDecimal( 20, 4 ) );
 
 			Assert.IsFalse( x.Equals(y) );
 			Assert.IsFalse( y.Equals(x) );
@@ -114,7 +115,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void TestParameterClone()
 		{
-			Parameter original = new Parameter( "originalName", new SqlTypes.Int32SqlType() );
+			Parameter original = new Parameter( "originalName", SqlTypeFactory.Int32 );
 			Parameter cloned = null;
 			
 			cloned = (Parameter)original.Clone();
@@ -141,7 +142,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void TestParameterPrecisionClone()
 		{
-			ParameterPrecisionScale original = new ParameterPrecisionScale( "originalName", new SqlTypes.DecimalSqlType(19, 5) );
+			ParameterPrecisionScale original = new ParameterPrecisionScale( "originalName", SqlTypeFactory.GetDecimal(19, 5) );
 			ParameterPrecisionScale cloned = null;
 
 			cloned = (ParameterPrecisionScale)original.Clone();
@@ -165,9 +166,9 @@ namespace NHibernate.Test.SqlCommandTest
 
 			Parameter[] origParams = new Parameter[2];
 			
-			origParams[0] = new Parameter( "OP1", new SqlTypes.Int32SqlType() );
+			origParams[0] = new Parameter( "OP1", SqlTypeFactory.Int32 );
 			
-			origParams[1] = new Parameter( "OP2", new SqlTypes.Int64SqlType() );
+			origParams[1] = new Parameter( "OP2", SqlTypeFactory.Int64 );
 			
 			sqlBuilder.Add("UPDATE tablename set param0 = ")
 				.Add(origParams[0])

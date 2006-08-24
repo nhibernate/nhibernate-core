@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Engine
 {
@@ -116,7 +117,7 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
 		/// </remarks>
-		IDataReader ExecuteReader( IDbCommand cmd );
+		IDataReader ExecuteReader(IDbCommand cmd, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Executes the <see cref="IDbCommand"/>. 
@@ -127,7 +128,7 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
 		/// </remarks>
-		int ExecuteNonQuery( IDbCommand cmd );
+		int ExecuteNonQuery(IDbCommand cmd, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Must be called when an exception occurs.

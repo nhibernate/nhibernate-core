@@ -24,10 +24,10 @@ namespace NHibernate.Test.ExpressionTest
 			string expectedSql = "sql_alias.count_ between :sql_alias.count__lo and :sql_alias.count__hi";
 			Parameter[ ] expectedParams = new Parameter[2];
 
-			Parameter firstBetweenParam = new Parameter( "count__lo", "sql_alias", new Int32SqlType() );
+			Parameter firstBetweenParam = new Parameter( "count__lo", "sql_alias", SqlTypeFactory.Int32 );
 			expectedParams[ 0 ] = firstBetweenParam;
 
-			Parameter secondBetweenParam = new Parameter( "count__hi", "sql_alias", new Int32SqlType() );
+			Parameter secondBetweenParam = new Parameter( "count__hi", "sql_alias", SqlTypeFactory.Int32 );
 			expectedParams[ 1 ] = secondBetweenParam;
 
 			CompareSqlStrings( sqlString, expectedSql, expectedParams );

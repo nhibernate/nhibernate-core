@@ -19,26 +19,6 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// Gets the <see cref="System.Type"/> from the System.Data assembly
-		/// that implements <see cref="IDbCommand"/>
-		/// </summary>
-		/// <value>The <see cref="System.Data.SqlClient.SqlCommand"/> type.</value>
-		public override System.Type CommandType
-		{
-			get { return typeof( System.Data.SqlClient.SqlCommand ); }
-		}
-
-		/// <summary>
-		/// Gets the <see cref="System.Type"/> from the System.Data assembly
-		/// that implements <see cref="IDbConnection"/>
-		/// </summary>
-		/// <value>The <see cref="System.Data.SqlClient.SqlConnection"/> type.</value>
-		public override System.Type ConnectionType
-		{
-			get { return typeof( SqlConnection ); }
-		}
-
-		/// <summary>
 		/// Creates an uninitialized <see cref="IDbConnection" /> object for 
 		/// the SqlClientDriver.
 		/// </summary>
@@ -97,94 +77,89 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <value><c>false</c> - it is not supported.</value>
 		/// <remarks>
-		/// Ms Sql 2000 (and 7) throws an Exception when multiple DataReaders are 
-		/// attempted to be Opened.  When Yukon comes out a new Driver will be 
-		/// created for Yukon because it is supposed to support it.
+		/// MS SQL Server 2000 (and 7) throws an exception when multiple IDataReaders are 
+		/// attempted to be opened.  When SQL Server 2005 comes out a new driver will be 
+		/// created for it because SQL Server 2005 is supposed to support it.
 		/// </remarks>
 		public override bool SupportsMultipleOpenReaders
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// Generates an IDbDataParameter that has values for the Size or Precision/Scale Properties set.
-		/// </summary>
-		/// <param name="command">The IDbCommand to use to create the IDbDataParameter.</param>
-		/// <param name="name">The name to set for IDbDataParameter.Name</param>
-		/// <param name="parameter">The Parameter to convert to an IDbDataParameter.</param>
-		/// <param name="dialect">The Dialect to use for Default lengths if needed.</param>
-		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
 		/// <remarks>
 		/// In order to prepare an IDbCommand against an MsSql database all variable length values need
 		/// to be set.
 		/// </remarks>
-		protected override IDbDataParameter GenerateParameter( IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect )
+		public override void PrepareCommand(IDbCommand command, SqlType[] parameterTypes)
 		{
-			IDbDataParameter dbParam = base.GenerateParameter( command, name, parameter, dialect );
+			SetParameterSizes(command.Parameters, parameterTypes);
+			base.PrepareCommand(command, parameterTypes);
+		}
 
-			// take a look at the SqlType and determine if this is one that MsSql needs to set Size or
-			// Precision/Scale for
+		// Used from SqlServerCeDriver as well
+		public static void SetParameterSizes(IDataParameterCollection parameters, SqlType[] parameterTypes)
+		{
+			for (int i = 0; i < parameters.Count; i++)
+			{
+				SetVariableLengthParameterSize((IDbDataParameter) parameters[i], parameterTypes[i]);
+			}
+		}
 
-			// if this parameter needs to have a value set for the Size or Precision/Scale besides the default
-			// value of the Dialect then one of these will not be null
-			ParameterLength pl = null;
-			ParameterPrecisionScale pps = null;
+		public const int MaxAnsiStringSize = 8000;
+		public const int MaxBinarySize = MaxAnsiStringSize;
+		public const int MaxStringSize = MaxAnsiStringSize / 2;
+		public const int MaxBinaryBlobSize = int.MaxValue;
+		public const int MaxStringClobSize = MaxBinaryBlobSize / 2;
 
-			switch( parameter.SqlType.DbType )
+		public static void SetDefaultParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		{
+			switch (dbParam.DbType)
 			{
 				case DbType.AnsiString:
 				case DbType.AnsiStringFixedLength:
-					pl = parameter as ParameterLength;
-					dbParam.Size = dialect.MaxAnsiStringSize;
+					dbParam.Size = MaxAnsiStringSize;
 					break;
 
 				case DbType.Binary:
-					pl = parameter as ParameterLength;
-					if( parameter.SqlType is BinaryBlobSqlType )
+					if (sqlType is BinaryBlobSqlType)
 					{
-						dbParam.Size = dialect.MaxBinaryBlobSize;
+						dbParam.Size = MaxBinaryBlobSize;
 					}
 					else
 					{
-						dbParam.Size = dialect.MaxBinarySize;
+						dbParam.Size = MaxBinarySize;
 					}
 					break;
 
 				case DbType.String:
 				case DbType.StringFixedLength:
-					pl = parameter as ParameterLength;
-					if( parameter.SqlType is StringClobSqlType )
+					if (sqlType is StringClobSqlType)
 					{
-						dbParam.Size = dialect.MaxStringClobSize;
+						dbParam.Size = MaxStringClobSize;
 					}
 					else
 					{
-						dbParam.Size = dialect.MaxStringSize;
+						dbParam.Size = MaxStringSize;
 					}
 					break;
-				case DbType.Decimal:
-					pps = parameter as ParameterPrecisionScale;
-					//TODO: remove this hardcoding...
-					dbParam.Precision = 19;
-					dbParam.Scale = 5;
-					break;
 			}
-
-			// if one of these is not null then override the default values
-			// set in the earlier switch statement.
-			if( pl != null )
-			{
-				dbParam.Size = pl.Length;
-			}
-			else if( pps != null )
-			{
-				dbParam.Precision = pps.Precision;
-				dbParam.Scale = pps.Scale;
-			}
-
-			return dbParam;
-
 		}
 
+		public static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		{
+			SetDefaultParameterSize(dbParam, sqlType);
+
+			// Override the defaults using data from SqlType.
+			if (sqlType.LengthDefined)
+			{
+				dbParam.Size = sqlType.Length;
+			}
+
+			if (sqlType.PrecisionDefined)
+			{
+				dbParam.Precision = sqlType.Precision;
+				dbParam.Scale = sqlType.Scale;
+			}
+		}
 	}
 }

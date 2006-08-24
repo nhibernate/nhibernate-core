@@ -17,7 +17,7 @@ namespace NHibernate.Type
 	public class TicksType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
-		internal TicksType() : base( new Int64SqlType() )
+		internal TicksType() : base( SqlTypeFactory.Int64 )
 		{
 		}
 

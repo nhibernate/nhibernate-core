@@ -8,7 +8,7 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlDateTimeType : SqlTypesType
 	{
-		public SqlDateTimeType() : base( new DateTimeSqlType() )
+		public SqlDateTimeType() : base( SqlTypeFactory.DateTime )
 		{
 		}
 		

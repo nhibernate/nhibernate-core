@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class DateType : ValueTypeType, IIdentifierType, ILiteralType
 	{
 		/// <summary></summary>
-		internal DateType() : base( new DateSqlType() )
+		internal DateType() : base( SqlTypeFactory.Date )
 		{
 		}
 

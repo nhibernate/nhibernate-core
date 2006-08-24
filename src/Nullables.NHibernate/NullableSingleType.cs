@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableSingleType : NullableTypesType
 	{
-		public NullableSingleType() : base( new SingleSqlType() )
+		public NullableSingleType() : base( SqlTypeFactory.Single )
 		{
 		}
 

@@ -30,24 +30,14 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public override System.Type ConnectionType
-		{
-			get { return connectionType; }
-		}
-
-		public override System.Type CommandType
-		{
-			get { return commandType; }
-		}
-
 		public override IDbConnection CreateConnection()
 		{
-			return ( IDbConnection ) Activator.CreateInstance( ConnectionType );
+			return ( IDbConnection ) Activator.CreateInstance( connectionType );
 		}
 
 		public override IDbCommand CreateCommand()
 		{
-			return ( IDbCommand ) Activator.CreateInstance( CommandType );
+			return ( IDbCommand ) Activator.CreateInstance( commandType );
 		}
 
 	}

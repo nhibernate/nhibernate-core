@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class SByteType : ValueTypeType, IDiscriminatorType
 	{
 		/// <summary></summary>
-		internal SByteType() : base( new SByteSqlType() )
+		internal SByteType() : base( SqlTypeFactory.SByte )
 		{
 		}
 

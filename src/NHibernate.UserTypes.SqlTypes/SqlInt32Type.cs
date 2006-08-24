@@ -8,7 +8,7 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlInt32Type : SqlTypesType
 	{
-		public SqlInt32Type() : base( new Int32SqlType() )
+		public SqlInt32Type() : base( SqlTypeFactory.Int32 )
 		{
 		}
 

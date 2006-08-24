@@ -7,10 +7,11 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using System.Text;
+using NHibernate.SqlTypes;
 namespace NHibernate.Impl
 {
 	/// <summary>
-	/// Manages prepared statements and batching. Class exists to enfores seperation of concerns
+	/// Manages prepared statements and batching. Class exists to enforce separation of concerns
 	/// </summary>
 	internal abstract class BatcherImpl : IBatcher
 	{
@@ -21,7 +22,6 @@ namespace NHibernate.Impl
 		private static int openReaderCount;
 
 		private readonly ISessionImplementor session;
-
 		private readonly ISessionFactoryImplementor factory;
 
 		// batchCommand used to be called batchUpdate - that name to me implied that updates
@@ -44,19 +44,27 @@ namespace NHibernate.Impl
 			this.factory = session.Factory;
 		}
 
+		private IDriver Driver
+		{
+			get { return factory.ConnectionProvider.Driver; }
+		}
+
 		/// <summary>
 		/// Gets the current <see cref="IDbCommand"/> that is contained for this Batch
 		/// </summary>
 		/// <value>The current <see cref="IDbCommand"/>.</value>
 		protected IDbCommand CurrentCommand
 		{
-			// in h2.0.3 this was a method GetCommand
 			get { return batchCommand; }
+		}
+
+		protected SqlType[] CurrentCommandParameterTypes
+		{
+			get { return batchCommandSql.GetParameterTypes(); }
 		}
 
 		public IDbCommand Generate(SqlString sqlString, CommandType type)
 		{
-			// need to build the IDbCommand from the sqlString bec
 			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, type, sqlString);
 			LogOpenPreparedCommand();
 			if (log.IsDebugEnabled)
@@ -76,40 +84,40 @@ namespace NHibernate.Impl
 		/// and <see cref="IDbTransaction"/> if one exists.  It will call <c>Prepare</c> if the Driver
 		/// supports preparing commands.
 		/// </remarks>
-		private void Prepare(IDbCommand command)
+		private void Prepare(IDbCommand cmd, SqlType[] parameterTypes)
 		{
 			try
 			{
-				Log(command);
+				Log(cmd);
 
-				if (command.Connection != null)
+				if (cmd.Connection != null)
 				{
 					// make sure the commands connection is the same as the Sessions connection
 					// these can be different when the session is disconnected and then reconnected
-					if (command.Connection != session.Connection)
+					if (cmd.Connection != session.Connection)
 					{
-						command.Connection = session.Connection;
+						cmd.Connection = session.Connection;
 					}
 				}
 				else
 				{
-					command.Connection = session.Connection;
+					cmd.Connection = session.Connection;
 				}
 
 				if (session.Transaction != null)
 				{
-					session.Transaction.Enlist(command);
+					session.Transaction.Enlist(cmd);
 				}
 
-				if (factory.PrepareSql && factory.ConnectionProvider.Driver.SupportsPreparingCommands)
+				if (factory.PrepareSql && Driver.SupportsPreparingCommands)
 				{
-					command.Prepare();
+					Driver.PrepareCommand(cmd, parameterTypes);
 				}
 			}
 			catch (InvalidOperationException ioe)
 			{
 				throw new ADOException(
-					"While preparing " + command.CommandText + " an error occurred"
+					"While preparing " + cmd.CommandText + " an error occurred"
 					, ioe);
 			}
 		}
@@ -156,45 +164,30 @@ namespace NHibernate.Impl
 			return command;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="e"></param>
 		public void AbortBatch(Exception e)
 		{
-			// log the exception here
 			IDbCommand cmd = batchCommand;
 			batchCommand = null;
 			batchCommandSql = null;
-			CloseCommand(cmd, null);
 			// close the statement closeStatement(cmd)
+			CloseCommand(cmd, null);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <returns></returns>
-		public int ExecuteNonQuery(IDbCommand cmd)
+		public int ExecuteNonQuery(IDbCommand cmd, SqlType[] parameterTypes)
 		{
 			int rowsAffected = 0;
 
 			CheckReaders();
 
-			Prepare(cmd);
+			Prepare(cmd, parameterTypes);
 			rowsAffected = cmd.ExecuteNonQuery();
 			return rowsAffected;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <returns></returns>
-		public IDataReader ExecuteReader(IDbCommand cmd)
+		public IDataReader ExecuteReader(IDbCommand cmd, SqlType[] parameterTypes)
 		{
 			CheckReaders();
-			Prepare(cmd);
+			Prepare(cmd, parameterTypes);
 			IDataReader reader;
 			if (factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders == false)
 			{
@@ -228,19 +221,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="reader"></param>
 		public void CloseCommand(IDbCommand cmd, IDataReader reader)
 		{
 			CloseQueryCommand(cmd, reader);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void CloseCommands()
 		{
 			foreach (IDataReader reader in readersToClose)
@@ -296,11 +281,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="reader"></param>
 		public void CloseQueryCommand(IDbCommand st, IDataReader reader)
 		{
 			commandsToClose.Remove(st);

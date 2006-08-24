@@ -1354,12 +1354,13 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// TODO SP
-				IDbCommand st = session.Batcher.PrepareQueryCommand( VersionSelectString, CommandType.Text );
+				SqlString sql = VersionSelectString;
+				IDbCommand st = session.Batcher.PrepareQueryCommand( sql, CommandType.Text );
 				IDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet( st, id, 0, session );
-					rs = session.Batcher.ExecuteReader( st );
+					rs = session.Batcher.ExecuteReader( st, sql.GetParameterTypes() );
 					if( !rs.Read() )
 					{
 						return null;
@@ -1405,7 +1406,8 @@ namespace NHibernate.Persister.Entity
 				try
 				{
 					// TODO SP?
-					IDbCommand st = session.Batcher.PrepareCommand( GetLockString( lockMode ), CommandType.Text );
+					SqlString sql = GetLockString(lockMode);
+					IDbCommand st = session.Batcher.PrepareCommand( sql, CommandType.Text );
 					IDataReader rs = null;
 
 					try
@@ -1416,7 +1418,7 @@ namespace NHibernate.Persister.Entity
 							VersionType.NullSafeSet( st, version, IdentifierColumnNames.Length, session );
 						}
 
-						rs = session.Batcher.ExecuteReader( st );
+						rs = session.Batcher.ExecuteReader( st, sql.GetParameterTypes() );
 						if( !rs.Read() )
 						{
 							throw new StaleObjectStateException( MappedClass, id );
@@ -1482,7 +1484,8 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// TODO SP
-				IDbCommand st = session.Batcher.PrepareCommand( ConcreteSelectString, CommandType.Text );
+				SqlString sql = ConcreteSelectString;
+				IDbCommand st = session.Batcher.PrepareCommand( sql, CommandType.Text );
 				IDataReader rs = null;
 				try
 				{
@@ -1491,7 +1494,7 @@ namespace NHibernate.Persister.Entity
 					{
 						VersionType.NullSafeSet( st, version, IdentifierColumnNames.Length, session );
 					}
-					rs = session.Batcher.ExecuteReader( st );
+					rs = session.Batcher.ExecuteReader( st, sql.GetParameterTypes() );
 					if( !rs.Read() )
 					{
 						throw new StaleObjectStateException( MappedClass, id );
@@ -1768,7 +1771,7 @@ namespace NHibernate.Persister.Entity
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
 						Dehydrate( null, fields, notNull, 0, insertSelect, session );
-						rs = session.Batcher.ExecuteReader( insertSelect );
+						rs = session.Batcher.ExecuteReader( insertSelect, insertSelectSQL.GetParameterTypes() );
 						return GetGeneratedIdentity( obj, session, rs );
 					}
 					finally
@@ -1785,7 +1788,7 @@ namespace NHibernate.Persister.Entity
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
 						Dehydrate( null, fields, notNull, 0, statement, session );
-						session.Batcher.ExecuteNonQuery( statement );
+						session.Batcher.ExecuteNonQuery( statement, sql.GetParameterTypes() );
 					}
 					finally
 					{
@@ -1794,11 +1797,12 @@ namespace NHibernate.Persister.Entity
 
 					// Fetch the generated id in a separate query
 					// TODO SP
-					IDbCommand idselect = session.Batcher.PrepareCommand( new SqlString( SqlIdentitySelect( IdentifierColumnNames[ 0 ], TableName ) ), CommandType.Text );
+					SqlString idselectSql = new SqlString( SqlIdentitySelect( IdentifierColumnNames[ 0 ], TableName ) );
+					IDbCommand idselect = session.Batcher.PrepareCommand( idselectSql, CommandType.Text );
 					IDataReader rs = null;
 					try
 					{
-						rs = session.Batcher.ExecuteReader( idselect );
+						rs = session.Batcher.ExecuteReader( idselect, idselectSql.GetParameterTypes() );
 						return GetGeneratedIdentity( obj, session, rs );
 					}
 					finally

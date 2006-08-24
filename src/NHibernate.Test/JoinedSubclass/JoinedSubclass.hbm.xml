@@ -25,7 +25,7 @@
 		<joined-subclass name="NHibernate.Test.JoinedSubclass.Employee, NHibernate.Test" table="empl" proxy="NHibernate.Test.JoinedSubclass.Employee, NHibernate.Test">
 			<key column="person_id"/>
 			<property name="Title" not-null="true" length="20"/>
-			<property name="Salary"/>
+			<property name="Salary" type="Decimal(19,5)"/>
 			<many-to-one name="Manager"/>
 		</joined-subclass>
 		<joined-subclass name="NHibernate.Test.JoinedSubclass.Customer, NHibernate.Test" table="cust" proxy="NHibernate.Test.JoinedSubclass.Customer, NHibernate.Test">

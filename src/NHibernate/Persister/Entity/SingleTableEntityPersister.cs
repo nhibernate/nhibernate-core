@@ -586,15 +586,16 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				IDbCommand deleteCmd;
+				SqlString sql = SqlDeleteString;
 
 				// TODO SP
 				if( IsVersioned )
 				{
-					deleteCmd = session.Batcher.PrepareCommand( SqlDeleteString, CommandType.Text );
+					deleteCmd = session.Batcher.PrepareCommand( sql, CommandType.Text );
 				}
 				else
 				{
-					deleteCmd = session.Batcher.PrepareBatchCommand( SqlDeleteString, CommandType.Text );
+					deleteCmd = session.Batcher.PrepareBatchCommand( sql, CommandType.Text );
 				}
 
 				try
@@ -607,7 +608,7 @@ namespace NHibernate.Persister.Entity
 					if( IsVersioned )
 					{
 						VersionType.NullSafeSet( deleteCmd, version, IdentifierColumnNames.Length, session );
-						Check( session.Batcher.ExecuteNonQuery( deleteCmd ), id );
+						Check( session.Batcher.ExecuteNonQuery( deleteCmd, sql.GetParameterTypes() ), id );
 					}
 					else
 					{
@@ -737,7 +738,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check( session.Batcher.ExecuteNonQuery( statement ), id );
+						Check( session.Batcher.ExecuteNonQuery( statement, sqlUpdateString.GetParameterTypes() ), id );
 					}
 				}
 				catch( Exception e )

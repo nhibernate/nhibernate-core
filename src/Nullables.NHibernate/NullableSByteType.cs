@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableSByteType : NullableTypesType
 	{
-		public NullableSByteType() : base( new Int16SqlType() )
+		public NullableSByteType() : base( SqlTypeFactory.SByte )
 		{
 		}
 

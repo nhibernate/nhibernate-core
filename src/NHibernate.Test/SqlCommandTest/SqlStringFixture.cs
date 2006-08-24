@@ -3,6 +3,7 @@ using System;
 using NHibernate.SqlCommand;
 
 using NUnit.Framework;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Test.SqlCommandTest
 {
@@ -47,7 +48,7 @@ namespace NHibernate.Test.SqlCommandTest
 		public void CompactWithParams() 
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
-			Parameter param = new Parameter( "id", new SqlTypes.Int32SqlType() );
+			Parameter param = new Parameter( "id", SqlTypeFactory.Int32 );
 
 			builder.Add("select from table ");
 			builder.Add("where ");
@@ -88,7 +89,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void ContainsUntypedParameterWithParam() 
 		{
-			Parameter p1 = new Parameter( "p1", new SqlTypes.Int32SqlType() );
+			Parameter p1 = new Parameter( "p1", SqlTypeFactory.Int32 );
 			
 			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", p1} );
 			Assert.IsFalse( sql.ContainsUntypedParameter );
@@ -105,7 +106,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void ContainsUntypedParameterWithMixedUntypedParam() 
 		{
-			Parameter p1 = new Parameter( "p1", new SqlTypes.Int32SqlType() );
+			Parameter p1 = new Parameter( "p1", SqlTypeFactory.Int32 );
 			
 			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", new Parameter( "p2" ), " and b = " , p1} );
 			Assert.IsTrue( sql.ContainsUntypedParameter );

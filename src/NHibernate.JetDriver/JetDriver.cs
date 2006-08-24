@@ -41,18 +41,6 @@ namespace NHibernate.JetDriver
 		}
 
 		/// <summary></summary>
-		public override System.Type CommandType
-		{
-			get { return typeof( JetDbCommand ); }
-		}
-
-		/// <summary></summary>
-		public override System.Type ConnectionType
-		{
-			get { return typeof( JetDbConnection ); }
-		}
-
-		/// <summary></summary>
 		public override IDbConnection CreateConnection()
 		{
 			return new JetDbConnection();

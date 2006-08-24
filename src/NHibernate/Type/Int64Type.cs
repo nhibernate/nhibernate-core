@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	public class Int64Type : ValueTypeType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
-		internal Int64Type() : base( new Int64SqlType() )
+		internal Int64Type() : base( SqlTypeFactory.Int64 )
 		{
 		}
 

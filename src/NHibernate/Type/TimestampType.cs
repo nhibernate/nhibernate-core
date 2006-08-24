@@ -30,7 +30,7 @@ namespace NHibernate.Type
 	public class TimestampType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
-		internal TimestampType() : base( new DateTimeSqlType() )
+		internal TimestampType() : base( SqlTypeFactory.DateTime )
 		{
 		}
 

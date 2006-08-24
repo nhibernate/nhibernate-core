@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class DoubleType : ValueTypeType
 	{
 		/// <summary></summary>
-		internal DoubleType() : base( new DoubleSqlType() )
+		internal DoubleType() : base( SqlTypeFactory.Double )
 		{
 		}
 

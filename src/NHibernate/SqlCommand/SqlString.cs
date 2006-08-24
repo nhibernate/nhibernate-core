@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 
 using NHibernate.Util;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.SqlCommand
 {
@@ -555,5 +556,17 @@ namespace NHibernate.SqlCommand
 		}
 
 		#endregion
+
+		public SqlType[] GetParameterTypes()
+		{
+			ArrayList result = new ArrayList();
+
+			foreach (int i in ParameterIndexes)
+			{
+				result.Add(((Parameter) sqlParts[i]).SqlType);
+			}
+
+			return (SqlType[]) result.ToArray(typeof(SqlType));
+		}
 	}
 }

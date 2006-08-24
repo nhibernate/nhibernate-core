@@ -822,12 +822,8 @@ namespace NHibernate.Persister.Collection
 						{
 							if( collection.NeedsInserting( entry, i, elementType ) )
 							{
-								IDbCommand st = null;
-								if( st == null )
-								{
-									// TODO SP
-									st = session.Batcher.PrepareBatchCommand( SqlInsertRowString, CommandType.Text );
-								}
+								IDbCommand st = session.Batcher.PrepareBatchCommand( SqlInsertRowString, CommandType.Text );
+
 								int loc = WriteKey( st, id, offset, session );
 								if( hasIdentifier )
 								{

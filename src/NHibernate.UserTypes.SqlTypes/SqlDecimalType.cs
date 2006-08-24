@@ -8,7 +8,7 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlDecimalType : SqlTypesType
 	{
-		public SqlDecimalType() : base( new DecimalSqlType() )
+		public SqlDecimalType() : base( SqlTypeFactory.Decimal )
 		{
 		}
 

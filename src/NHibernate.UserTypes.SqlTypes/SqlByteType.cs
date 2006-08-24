@@ -8,7 +8,7 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlByteType : SqlTypesType
 	{
-		public SqlByteType() : base( new ByteSqlType() )
+		public SqlByteType() : base( SqlTypeFactory.Byte )
 		{
 		}
 

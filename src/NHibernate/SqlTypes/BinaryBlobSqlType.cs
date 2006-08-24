@@ -29,13 +29,5 @@ namespace NHibernate.SqlTypes
 		public BinaryBlobSqlType() : base()
 		{
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="BinaryBlobSqlType"/> class.
-		/// </summary>
-		/// <param name="length">The length of the binary data the <see cref="IDbDataParameter"/> should hold</param>
-		public BinaryBlobSqlType( int length ) : base( length )
-		{
-		}
 	}
 }

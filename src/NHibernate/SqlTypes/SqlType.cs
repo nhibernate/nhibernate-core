@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Text;
 
 namespace NHibernate.SqlTypes
 {
@@ -19,7 +20,7 @@ namespace NHibernate.SqlTypes
 	/// </p>
 	/// </remarks>
 	[Serializable]
-	public abstract class SqlType
+	public class SqlType
 	{
 		private DbType _dbType;
 		private int _length;
@@ -31,34 +32,19 @@ namespace NHibernate.SqlTypes
 		// false by default
 		private bool _precisionDefined;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dbType"></param>
-		protected SqlType( DbType dbType )
+		public SqlType( DbType dbType )
 		{
 			_dbType = dbType;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dbType"></param>
-		/// <param name="length"></param>
-		protected SqlType( DbType dbType, int length )
+		public SqlType( DbType dbType, int length )
 		{
 			_dbType = dbType;
 			_length = length;
 			_lengthDefined = true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dbType"></param>
-		/// <param name="precision"></param>
-		/// <param name="scale"></param>
-		protected SqlType( DbType dbType, byte precision, byte scale )
+		public SqlType( DbType dbType, byte precision, byte scale )
 		{
 			_dbType = dbType;
 			_precision = precision;
@@ -66,37 +52,31 @@ namespace NHibernate.SqlTypes
 			_precisionDefined = true;
 		}
 
-		/// <summary></summary>
 		public DbType DbType
 		{
 			get { return _dbType; }
 		}
 
-		/// <summary></summary>
 		public int Length
 		{
 			get { return _length; }
 		}
 
-		/// <summary></summary>
 		public byte Precision
 		{
 			get { return _precision; }
 		}
 
-		/// <summary></summary>
 		public byte Scale
 		{
 			get { return _scale; }
 		}
 
-		/// <summary></summary>
 		public bool LengthDefined
 		{
 			get { return _lengthDefined; }
 		}
 
-		/// <summary></summary>
 		public bool PrecisionDefined
 		{
 			get { return _precisionDefined; }
@@ -104,35 +84,31 @@ namespace NHibernate.SqlTypes
 
 		#region System.Object Members
 
-		/// <summary></summary>
 		public override int GetHashCode()
 		{
-			int hashCode = 0;
+			unchecked
+			{
+				int hashCode = 0;
 
-			if( LengthDefined )
-			{
-				hashCode = ( DbType.GetHashCode()/2 ) + ( Length.GetHashCode()/2 );
-			}
-			else if( PrecisionDefined )
-			{
-				hashCode = ( DbType.GetHashCode()/3 ) + ( Precision.GetHashCode()/3 ) + ( Scale.GetHashCode()/3 );
-			}
-			else
-			{
-				hashCode = DbType.GetHashCode();
-			}
+				if (LengthDefined)
+				{
+					hashCode = (DbType.GetHashCode() / 2) + (Length.GetHashCode() / 2);
+				}
+				else if (PrecisionDefined)
+				{
+					hashCode = (DbType.GetHashCode() / 3) + (Precision.GetHashCode() / 3) + (Scale.GetHashCode() / 3);
+				}
+				else
+				{
+					hashCode = DbType.GetHashCode();
+				}
 
-			return hashCode;
+				return hashCode;
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		public override bool Equals( object obj )
 		{
-			bool equals = false;
 			SqlType rhsSqlType;
 
 			// Step1: Perform an equals test
@@ -149,7 +125,7 @@ namespace NHibernate.SqlTypes
 			}
 
 			//Step 3: Check each important field
-
+			bool equals = false;
 			if( LengthDefined )
 			{
 				equals = ( DbType.Equals( rhsSqlType.DbType ) )
@@ -168,6 +144,29 @@ namespace NHibernate.SqlTypes
 
 			return equals;
 
+		}
+
+		public override string ToString()
+		{
+			if (!LengthDefined && !PrecisionDefined)
+			{
+				// Shortcut
+				return DbType.ToString();
+			}
+
+			StringBuilder result = new StringBuilder(DbType.ToString());
+
+			if (LengthDefined)
+			{
+				result.Append("(Length=").Append(Length).Append(')');
+			}
+
+			if (PrecisionDefined)
+			{
+				result.Append("(Precision=").Append(Precision).Append(", ").Append("Scale=").Append(Scale).Append(')');
+			}
+
+			return result.ToString();
 		}
 
 		#endregion

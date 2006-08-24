@@ -4,6 +4,7 @@ using System.Text;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
@@ -12,44 +13,29 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver
 	{
-		#region IDriver Members
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DriverBase));
 
-		public abstract System.Type CommandType { get; }
-		public abstract System.Type ConnectionType { get; }
-
-		// TODO: this should be moved down to ReflectionBasedDriver, but not in 1.0.x
-		public virtual IDbConnection CreateConnection()
-		{
-			return ( IDbConnection ) Activator.CreateInstance( ConnectionType );
-		}
-
-		// TODO: this should be moved down to ReflectionBasedDriver, but not in 1.0.x
-		public virtual IDbCommand CreateCommand()
-		{
-			return ( IDbCommand ) Activator.CreateInstance( CommandType );
-		}
+		public abstract IDbConnection CreateConnection();
+		public abstract IDbCommand CreateCommand();
 
 		public abstract bool UseNamedPrefixInSql { get; }
-
 		public abstract bool UseNamedPrefixInParameter { get; }
-
 		public abstract string NamedPrefix { get; }
 
-		public string FormatNameForSql( string parameterName )
+		public string FormatNameForSql(string parameterName)
 		{
-			return UseNamedPrefixInSql ? ( NamedPrefix + parameterName ) : StringHelper.SqlParameter;
+			return UseNamedPrefixInSql ? (NamedPrefix + parameterName) : StringHelper.SqlParameter;
 		}
 
-		public string FormatNameForSql( string tableAlias, string parameterName )
+		public string FormatNameForSql(string tableAlias, string parameterName)
 		{
-			if( !UseNamedPrefixInSql )
+			if (!UseNamedPrefixInSql)
 			{
 				return StringHelper.SqlParameter;
 			}
 
 
-			if( tableAlias != null && tableAlias.Length > 0 )
+			if (tableAlias != null && tableAlias.Length > 0)
 			{
 				return NamedPrefix + tableAlias + parameterName;
 			}
@@ -59,20 +45,20 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public string FormatNameForParameter( string parameterName )
+		public string FormatNameForParameter(string parameterName)
 		{
-			return UseNamedPrefixInParameter ? ( NamedPrefix + parameterName ) : parameterName;
+			return UseNamedPrefixInParameter ? (NamedPrefix + parameterName) : parameterName;
 		}
 
-		public string FormatNameForParameter( string tableAlias, string parameterName )
+		public string FormatNameForParameter(string tableAlias, string parameterName)
 		{
-			if( !UseNamedPrefixInParameter )
+			if (!UseNamedPrefixInParameter)
 			{
 				return parameterName;
 			}
 
 
-			if( tableAlias != null && tableAlias.Length > 0 )
+			if (tableAlias != null && tableAlias.Length > 0)
 			{
 				return NamedPrefix + tableAlias + parameterName;
 			}
@@ -92,66 +78,72 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		public virtual IDbCommand GenerateCommand( Dialect.Dialect dialect, CommandType type, SqlString sqlString )
+		public virtual IDbCommand GenerateCommand(Dialect.Dialect dialect, CommandType type, SqlString sqlString)
 		{
 			int paramIndex = 0;
 			IDbCommand cmd = this.CreateCommand();
 			cmd.CommandType = type;
 
-			object envTimeout = Environment.Properties[ Environment.CommandTimeout ];
-			if( envTimeout != null )
+			object envTimeout = Environment.Properties[Environment.CommandTimeout];
+			if (envTimeout != null)
 			{
-				int timeout = Convert.ToInt32( envTimeout );
-				if( timeout >= 0 )
+				int timeout = Convert.ToInt32(envTimeout);
+				if (timeout >= 0)
 				{
-					if( log.IsDebugEnabled )
+					if (log.IsDebugEnabled)
 					{
-						log.Debug( string.Format( "setting ADO Command timeout to '{0}' seconds", timeout) );
+						log.Debug(string.Format("setting ADO Command timeout to '{0}' seconds", timeout));
 					}
 					try
 					{
 						cmd.CommandTimeout = timeout;
 					}
-					catch( Exception e )
+					catch (Exception e)
 					{
-						if( log.IsWarnEnabled )
+						if (log.IsWarnEnabled)
 						{
-							log.Warn( e.ToString() );
+							log.Warn(e.ToString());
 						}
 					}
 				}
 				else
 				{
-					log.Error( "Invalid timeout of '" + envTimeout + "' specified, ignoring" );
+					log.Error("Invalid timeout of '" + envTimeout + "' specified, ignoring");
 				}
 			}
 
-			StringBuilder builder = new StringBuilder( sqlString.SqlParts.Length*15 );
-			for( int i = 0; i < sqlString.SqlParts.Length; i++ )
+			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Length * 15);
+			for (int i = 0; i < sqlString.SqlParts.Length; i++)
 			{
-				object part = sqlString.SqlParts[ i ];
+				object part = sqlString.SqlParts[i];
 				Parameter parameter = part as Parameter;
 
-				if( parameter != null )
+				if (parameter != null)
 				{
 					string paramName = "p" + paramIndex;
-					builder.Append( this.FormatNameForSql( paramName ) );
+					builder.Append(FormatNameForSql(paramName));
 
-					IDbDataParameter dbParam = GenerateParameter( cmd, paramName, parameter, dialect );
+					IDbDataParameter dbParam = GenerateParameter(cmd, paramName, parameter, dialect);
 
-					cmd.Parameters.Add( dbParam );
+					cmd.Parameters.Add(dbParam);
 
 					paramIndex++;
 				}
 				else
 				{
-					builder.Append( ( string ) part );
+					builder.Append((string) part);
 				}
 			}
 
 			cmd.CommandText = builder.ToString();
 
 			return cmd;
+		}
+
+		protected virtual void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		{
+			dbParam.ParameterName = FormatNameForParameter(name);
+			dbParam.DbType = sqlType.DbType;
 		}
 
 		/// <summary>
@@ -163,25 +155,27 @@ namespace NHibernate.Driver
 		/// <param name="parameter">The Parameter to convert to an IDbDataParameter.</param>
 		/// <param name="dialect">The Dialect to use for Default lengths if needed.</param>
 		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
-		/// <remarks>
-		/// Drivers that require Size or Precision/Scale to be set before the IDbCommand is prepared should 
-		/// override this method and use the info contained in the Parameter to set those value.  By default
-		/// those values are not set, only the DbType and ParameterName are set.
-		/// </remarks>
-		protected virtual IDbDataParameter GenerateParameter( IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect )
+		protected IDbDataParameter GenerateParameter(IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect)
 		{
-			if( name != null && parameter != null && parameter.SqlType == null )
+			if (name != null && parameter != null && parameter.SqlType == null)
 			{
-				throw new QueryException( String.Format( "No type assigned to parameter '{0}': be sure to set types for named parameters.", name ) );
+				throw new QueryException(String.Format("No type assigned to parameter '{0}': be sure to set types for named parameters.", name));
 			}
-			IDbDataParameter dbParam = command.CreateParameter();
-			dbParam.DbType = parameter.SqlType.DbType;
 
-			dbParam.ParameterName = this.FormatNameForParameter( name );
+			IDbDataParameter dbParam = command.CreateParameter();
+			InitializeParameter(dbParam, name, parameter.SqlType);
 
 			return dbParam;
 		}
 
-		#endregion
+		/// <remarks>
+		/// Drivers that require Size or Precision/Scale to be set before the IDbCommand is prepared should 
+		/// override this method and use the info contained in <paramref name="parameterTypes" /> to set those
+		/// values.  By default those values are not set, only the DbType and ParameterName are set.
+		/// </remarks>
+		public virtual void PrepareCommand(IDbCommand command, SqlType[] parameterTypes)
+		{
+			command.Prepare();
+		}
 	}
 }

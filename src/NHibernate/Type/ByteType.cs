@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	public class ByteType : ValueTypeType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
-		internal ByteType() : base( new ByteSqlType() )
+		internal ByteType() : base( SqlTypeFactory.Byte )
 		{
 		}
 

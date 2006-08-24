@@ -12,48 +12,30 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OdbcDriver : DriverBase
 	{
-		/// <summary></summary>
 		public OdbcDriver()
 		{
 		}
 
-		/// <summary></summary>
-		public override System.Type CommandType
-		{
-			get { return typeof( OdbcCommand ); }
-		}
-
-		/// <summary></summary>
-		public override System.Type ConnectionType
-		{
-			get { return typeof( OdbcConnection ); }
-		}
-
-		/// <summary></summary>
 		public override IDbConnection CreateConnection()
 		{
 			return new OdbcConnection();
 		}
 
-		/// <summary></summary>
 		public override IDbCommand CreateCommand()
 		{
 			return new OdbcCommand();
 		}
 
-		/// <summary></summary>
 		public override bool UseNamedPrefixInSql
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override bool UseNamedPrefixInParameter
 		{
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override string NamedPrefix
 		{
 			get { return String.Empty; }

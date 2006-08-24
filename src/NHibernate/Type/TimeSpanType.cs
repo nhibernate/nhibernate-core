@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class TimeSpanType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
-		internal TimeSpanType() : base( new Int64SqlType() )
+		internal TimeSpanType() : base( SqlTypeFactory.Int64 )
 		{
 		}
 

@@ -80,11 +80,12 @@ namespace NHibernate.Id
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		public virtual object Generate( ISessionImplementor session, object obj )
 		{
-			IDbCommand cmd = session.Batcher.PrepareCommand( new SqlString( sql ), CommandType.Text );
+			SqlString sqlString = new SqlString(sql);
+			IDbCommand cmd = session.Batcher.PrepareCommand( sqlString, CommandType.Text );
 			IDataReader reader = null;
 			try
 			{
-				reader = session.Batcher.ExecuteReader( cmd );
+				reader = session.Batcher.ExecuteReader( cmd, sqlString.GetParameterTypes() );
 				reader.Read();
 				object result = IdentifierGeneratorFactory.Get( reader, type, session );
 

@@ -8,7 +8,7 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlMoneyType : SqlTypesType
 	{
-		public SqlMoneyType() : base( new CurrencySqlType() )
+		public SqlMoneyType() : base( SqlTypeFactory.Currency )
 		{
 		}
 

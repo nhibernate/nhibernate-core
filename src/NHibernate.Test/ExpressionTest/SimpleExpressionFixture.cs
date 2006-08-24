@@ -11,6 +11,7 @@ using NHibernate.Type;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -83,7 +84,7 @@ namespace NHibernate.Test.ExpressionTest
 				string expectedSql = "sql_alias.date_ >= :sql_alias.date_";
 				Parameter[] expectedParams = new Parameter[1];
 			
-				Parameter firstAndParam = new Parameter( "date_", "sql_alias", new SqlTypes.DateTimeSqlType() );
+				Parameter firstAndParam = new Parameter( "date_", "sql_alias", SqlTypeFactory.DateTime );
 				expectedParams[0] = firstAndParam;
 
 				CompareSqlStrings(sqlString, expectedSql, expectedParams);

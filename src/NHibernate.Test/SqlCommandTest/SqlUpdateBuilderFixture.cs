@@ -7,6 +7,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 using NUnit.Framework;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Test.SqlCommandTest 
 {
@@ -57,13 +58,13 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(4, numOfParameters, "Four parameters");
 
 			
-			Parameter firstParam = new Parameter( "intColumn", new SqlTypes.Int32SqlType() );
+			Parameter firstParam = new Parameter( "intColumn", SqlTypeFactory.Int32 );
 			
-			Parameter secondParam = new Parameter( "longColumn", new SqlTypes.Int64SqlType() );
+			Parameter secondParam = new Parameter( "longColumn", SqlTypeFactory.Int64 );
 			
-			Parameter thirdParam = new Parameter( "decimalColumn", new SqlTypes.DecimalSqlType() );
+			Parameter thirdParam = new Parameter( "decimalColumn", SqlTypeFactory.Decimal );
 			
-			Parameter fourthParam = new Parameter( "versionColumn", new SqlTypes.Int32SqlType() );
+			Parameter fourthParam = new Parameter( "versionColumn", SqlTypeFactory.Int32 );
 			
 			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "firstParam Type");
 			Assert.AreEqual(firstParam.Name, actualParams[0].Name, "firstParam Name");

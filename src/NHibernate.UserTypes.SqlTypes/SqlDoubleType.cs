@@ -8,7 +8,7 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlDoubleType : SqlTypesType
 	{
-		public SqlDoubleType() : base( new DoubleSqlType() )
+		public SqlDoubleType() : base( SqlTypeFactory.Double )
 		{
 		}
 

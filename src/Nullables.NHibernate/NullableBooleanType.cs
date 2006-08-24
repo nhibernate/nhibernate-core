@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableBooleanType : NullableTypesType
 	{
-		public NullableBooleanType() : base( new BooleanSqlType() )
+		public NullableBooleanType() : base( SqlTypeFactory.Boolean )
 		{
 		}
 

@@ -1,5 +1,6 @@
 using System.Data;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
@@ -35,16 +36,6 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public interface IDriver
 	{
-		/// <summary>
-		/// The Type used to create an IDbConnection
-		/// </summary>
-		System.Type ConnectionType { get; }
-
-		/// <summary>
-		/// The Type used to create an IDbCommand
-		/// </summary>
-		System.Type CommandType { get; }
-
 		/// <summary>
 		/// Creates an uninitialized IDbConnection object for the specific Driver
 		/// </summary>
@@ -169,6 +160,7 @@ namespace NHibernate.Driver
 		/// </remarks>
 		bool SupportsPreparingCommands { get; }
 
+		void PrepareCommand(IDbCommand command, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Generates an IDbCommand from the SqlString according to the requirements of the DataProvider.

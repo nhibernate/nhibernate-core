@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableGuidType : NullableTypesType
 	{
-		public NullableGuidType() : base( new GuidSqlType() )
+		public NullableGuidType() : base( SqlTypeFactory.Guid )
 		{
 		}
 

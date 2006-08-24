@@ -2,6 +2,8 @@ using System;
 using NHibernate.Collection;
 using NHibernate.Proxy;
 using NHibernate.Type;
+using NHibernate.SqlTypes;
+using System.Data;
 
 namespace NHibernate
 {

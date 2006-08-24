@@ -14,9 +14,6 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public sealed class ParameterPrecisionScale : Parameter
 	{
-		private byte _precision;
-		private byte _scale;
-		
 		/// <summary>
 		/// Initializes a new instance of <see cref="ParameterPrecisionScale"/> class.
 		/// </summary>
@@ -42,8 +39,6 @@ namespace NHibernate.SqlCommand
 		public ParameterPrecisionScale(string name, string tableAlias, SqlType sqlType ) 
 			: base( name, tableAlias, sqlType )
 		{
-			_precision = sqlType.Precision;
-			_scale = sqlType.Scale;
 		}
 
 		/// <summary>
@@ -52,7 +47,7 @@ namespace NHibernate.SqlCommand
 		/// <value>The precision of data the IDbDataParameter should hold.</value>
 		public byte Precision
 		{
-			get { return _precision; }
+			get { return SqlType.Precision; }
 		}
 
 		/// <summary>
@@ -61,7 +56,7 @@ namespace NHibernate.SqlCommand
 		/// <value>The scale of data the IDbDataParameter should hold.</value>
 		public byte Scale
 		{
-			get { return _scale; }
+			get { return SqlType.Scale; }
 		}
 
 		#region System.Object Members

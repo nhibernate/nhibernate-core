@@ -1006,13 +1006,13 @@ namespace NHibernate.Hql
 
 			SqlString sqlWithLock = ApplyLocks( SqlString, parameters.LockModes, session.Factory.Dialect );
 
-			IDbCommand st = PrepareQueryCommand(
+			IDbCommand cmd = PrepareQueryCommand(
 				sqlWithLock,
 				parameters, false, session );
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet( st, parameters.RowSelection, session );
-			return new EnumerableImpl( rs, st, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection,
+			IDataReader rs = GetResultSet( cmd, sqlWithLock, parameters.RowSelection, session );
+			return new EnumerableImpl( rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection,
 				holderClass );
 		}
 

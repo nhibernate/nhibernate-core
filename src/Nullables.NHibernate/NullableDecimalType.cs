@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableDecimalType : NullableTypesType
 	{
-		public NullableDecimalType() : base( new DecimalSqlType() )
+		public NullableDecimalType() : base( SqlTypeFactory.Decimal )
 		{
 		}
 

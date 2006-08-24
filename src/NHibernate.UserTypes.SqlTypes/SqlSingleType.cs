@@ -8,7 +8,7 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlSingleType : SqlTypesType
 	{
-		public SqlSingleType() : base( new SingleSqlType() )
+		public SqlSingleType() : base( SqlTypeFactory.Single )
 		{
 		}
 

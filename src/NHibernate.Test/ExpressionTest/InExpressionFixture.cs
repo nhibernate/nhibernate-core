@@ -32,7 +32,7 @@ namespace NHibernate.Test.ExpressionTest
 
 			for( int i = 0; i < expectedParams.Length; i++ )
 			{
-				Parameter param = new Parameter( "count_" + "_" + i, "sql_alias", new Int32SqlType() );
+				Parameter param = new Parameter( "count_" + "_" + i, "sql_alias", SqlTypeFactory.Int32 );
 				expectedParams[ i ] = param;
 			}
 

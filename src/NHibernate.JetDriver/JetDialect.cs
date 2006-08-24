@@ -227,36 +227,6 @@ namespace NHibernate.JetDriver
 		}
 
 		/// <summary></summary>
-		public override int MaxAnsiStringSize
-		{
-			get { return 1073741823; }
-		}
-
-		/// <summary></summary>
-		public override int MaxBinaryBlobSize
-		{
-			get { return 2147483647; }
-		}
-
-		/// <summary></summary>
-		public override int MaxBinarySize
-		{
-			get { return 2147483647; }
-		}
-
-		/// <summary></summary>
-		public override int MaxStringClobSize
-		{
-			get { return 1073741823; }
-		}
-
-		/// <summary></summary>
-		public override int MaxStringSize
-		{
-			get { return 1073741823; }
-		}
-
-		/// <summary></summary>
 		public override char CloseQuote
 		{
 			get { return '`'; }

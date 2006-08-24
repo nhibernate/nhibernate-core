@@ -8,7 +8,7 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlBooleanType : SqlTypesType
 	{
-		public SqlBooleanType() : base( new BooleanSqlType() )
+		public SqlBooleanType() : base( SqlTypeFactory.Boolean )
 		{
 		}
 

@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	public class UInt16Type : ValueTypeType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
-		internal UInt16Type() : base( new UInt16SqlType() )
+		internal UInt16Type() : base( SqlTypeFactory.UInt16 )
 		{
 		}
 

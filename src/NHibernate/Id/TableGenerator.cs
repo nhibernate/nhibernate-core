@@ -95,21 +95,21 @@ namespace NHibernate.Id
 
 			if( type is Int16Type )
 			{
-				setParam = new Parameter( columnName, new Int16SqlType() );
-				whereParam = new Parameter( columnName, new Int16SqlType() );
-				columnSqlType = new Int16SqlType();
+				setParam = new Parameter( columnName, SqlTypeFactory.Int16 );
+				whereParam = new Parameter( columnName, SqlTypeFactory.Int16 );
+				columnSqlType = SqlTypeFactory.Int16;
 			}
 			else if( type is Int64Type )
 			{
-				setParam = new Parameter( columnName, new Int64SqlType() );
-				whereParam = new Parameter( columnName, new Int64SqlType() );
-				columnSqlType = new Int64SqlType();
+				setParam = new Parameter( columnName, SqlTypeFactory.Int64 );
+				whereParam = new Parameter( columnName, SqlTypeFactory.Int64 );
+				columnSqlType = SqlTypeFactory.Int64;
 			}
 			else
 			{
-				setParam = new Parameter( columnName, new Int32SqlType() );
-				whereParam = new Parameter( columnName, new Int32SqlType() );
-				columnSqlType = new Int32SqlType();
+				setParam = new Parameter( columnName, SqlTypeFactory.Int32 );
+				whereParam = new Parameter( columnName, SqlTypeFactory.Int32 );
+				columnSqlType = SqlTypeFactory.Int32;
 			}
 
 			SqlStringBuilder builder = new SqlStringBuilder();

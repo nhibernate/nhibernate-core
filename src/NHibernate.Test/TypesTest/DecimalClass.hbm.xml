@@ -10,6 +10,6 @@
 			<generator class="assigned" />
 		</id>
 		
-		<property name="DecimalValue" type="Decimal" column="decim"/>
+		<property name="DecimalValue" type="Decimal(19,5)" column="decim"/>
 	</class>
 </hibernate-mapping>

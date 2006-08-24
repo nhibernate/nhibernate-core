@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	public class SingleType : ValueTypeType
 	{
 		/// <summary></summary>
-		internal SingleType() : base( new SingleSqlType() )
+		internal SingleType() : base( SqlTypeFactory.Single )
 		{
 		}
 
