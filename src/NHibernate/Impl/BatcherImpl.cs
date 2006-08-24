@@ -65,7 +65,7 @@ namespace NHibernate.Impl
 
 		public IDbCommand Generate(SqlString sqlString, CommandType type)
 		{
-			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(factory.Dialect, type, sqlString);
+			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(type, sqlString);
 			LogOpenPreparedCommand();
 			if (log.IsDebugEnabled)
 			{

@@ -89,17 +89,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="parameterName">The unformatted name of the parameter</param>
 		/// <returns>A parameter formatted for an IDbCommand.CommandText</returns>
-		string FormatNameForSql( string parameterName );
-
-		/// <summary>
-		/// Change the parameterName into the correct format IDbCommand.CommandText
-		/// for the ConnectionProvider
-		/// </summary>
-		/// <param name="tableAlias">The Alias for the Table.</param>
-		/// <param name="parameterName">The unformatted name of the parameter</param>
-		/// <returns>A parameter formatted for an IDbCommand.CommandText</returns>
-		string FormatNameForSql( string tableAlias, string parameterName );
-
+		string FormatNameForSql(string parameterName);
 
 		/// <summary>
 		/// Changes the parameterName into the correct format for an IDbParameter
@@ -110,19 +100,7 @@ namespace NHibernate.Driver
 		/// </remarks>
 		/// <param name="parameterName">The unformatted name of the parameter</param>
 		/// <returns>A parameter formatted for an IDbParameter.</returns>
-		string FormatNameForParameter( string parameterName );
-
-		/// <summary>
-		/// Changes the parameterName into the correct format for an IDbParameter
-		/// for the Driver.
-		/// </summary>
-		/// <remarks>
-		/// For SqlServerConnectionProvider it will change <c>id</c> to <c>@id</c>
-		/// </remarks>
-		/// <param name="tableAlias">The Alias for the Table.</param>
-		/// <param name="parameterName">The unformatted name of the parameter</param>
-		/// <returns>A parameter formatted for an IDbParameter.</returns>
-		string FormatNameForParameter( string tableAlias, string parameterName );
+		string FormatNameForParameter(string parameterName);
 
 		/// <summary>
 		/// Does this Driver support having more than 1 open IDataReader with
@@ -169,6 +147,6 @@ namespace NHibernate.Driver
 		/// <param name="type">The <see cref="CommandType"/> of the command to generate.</param>
 		/// <param name="sqlString">The SqlString that contains the sql and parameters.</param>
 		/// <returns>An IDbCommand with the CommandText and Parameters fully set.</returns>
-		IDbCommand GenerateCommand( Dialect.Dialect dialect, CommandType type, SqlString sqlString );
+		IDbCommand GenerateCommand(CommandType type, SqlString sqlString);
 	}
 }

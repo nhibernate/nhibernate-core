@@ -27,45 +27,9 @@ namespace NHibernate.Driver
 			return UseNamedPrefixInSql ? (NamedPrefix + parameterName) : StringHelper.SqlParameter;
 		}
 
-		public string FormatNameForSql(string tableAlias, string parameterName)
-		{
-			if (!UseNamedPrefixInSql)
-			{
-				return StringHelper.SqlParameter;
-			}
-
-
-			if (tableAlias != null && tableAlias.Length > 0)
-			{
-				return NamedPrefix + tableAlias + parameterName;
-			}
-			else
-			{
-				return NamedPrefix + parameterName;
-			}
-		}
-
 		public string FormatNameForParameter(string parameterName)
 		{
 			return UseNamedPrefixInParameter ? (NamedPrefix + parameterName) : parameterName;
-		}
-
-		public string FormatNameForParameter(string tableAlias, string parameterName)
-		{
-			if (!UseNamedPrefixInParameter)
-			{
-				return parameterName;
-			}
-
-
-			if (tableAlias != null && tableAlias.Length > 0)
-			{
-				return NamedPrefix + tableAlias + parameterName;
-			}
-			else
-			{
-				return NamedPrefix + parameterName;
-			}
 		}
 
 		public virtual bool SupportsMultipleOpenReaders
@@ -78,7 +42,7 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		public virtual IDbCommand GenerateCommand(Dialect.Dialect dialect, CommandType type, SqlString sqlString)
+		public virtual IDbCommand GenerateCommand(CommandType type, SqlString sqlString)
 		{
 			int paramIndex = 0;
 			IDbCommand cmd = this.CreateCommand();
@@ -123,7 +87,7 @@ namespace NHibernate.Driver
 					string paramName = "p" + paramIndex;
 					builder.Append(FormatNameForSql(paramName));
 
-					IDbDataParameter dbParam = GenerateParameter(cmd, paramName, parameter, dialect);
+					IDbDataParameter dbParam = GenerateParameter(cmd, paramName, parameter);
 
 					cmd.Parameters.Add(dbParam);
 
@@ -153,9 +117,8 @@ namespace NHibernate.Driver
 		/// <param name="command">The IDbCommand to use to create the IDbDataParameter.</param>
 		/// <param name="name">The name to set for IDbDataParameter.Name</param>
 		/// <param name="parameter">The Parameter to convert to an IDbDataParameter.</param>
-		/// <param name="dialect">The Dialect to use for Default lengths if needed.</param>
 		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
-		protected IDbDataParameter GenerateParameter(IDbCommand command, string name, Parameter parameter, Dialect.Dialect dialect)
+		protected IDbDataParameter GenerateParameter(IDbCommand command, string name, Parameter parameter)
 		{
 			if (name != null && parameter != null && parameter.SqlType == null)
 			{
@@ -168,6 +131,10 @@ namespace NHibernate.Driver
 			return dbParam;
 		}
 
+		/// <summary>
+		/// Prepare the <paramref name="command" />. Will only be called if <see cref="SupportsPreparingCommands" />
+		/// is <c>true</c>.
+		/// </summary>
 		/// <remarks>
 		/// Drivers that require Size or Precision/Scale to be set before the IDbCommand is prepared should 
 		/// override this method and use the info contained in <paramref name="parameterTypes" /> to set those

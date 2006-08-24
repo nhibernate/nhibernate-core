@@ -105,13 +105,13 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public const int MaxAnsiStringSize = 8000;
-		public const int MaxBinarySize = MaxAnsiStringSize;
-		public const int MaxStringSize = MaxAnsiStringSize / 2;
-		public const int MaxBinaryBlobSize = int.MaxValue;
-		public const int MaxStringClobSize = MaxBinaryBlobSize / 2;
+		private const int MaxAnsiStringSize = 8000;
+		private const int MaxBinarySize = MaxAnsiStringSize;
+		private const int MaxStringSize = MaxAnsiStringSize / 2;
+		private const int MaxBinaryBlobSize = int.MaxValue;
+		private const int MaxStringClobSize = MaxBinaryBlobSize / 2;
 
-		public static void SetDefaultParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		private static void SetDefaultParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			switch (dbParam.DbType)
 			{
@@ -145,7 +145,7 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		private static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
 

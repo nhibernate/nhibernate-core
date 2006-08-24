@@ -20,11 +20,11 @@ namespace NHibernate.JetDriver
 	/// </summary>
 	public class JetDriver : OleDbDriver
 	{
-		private static ILog logger = LogManager.GetLogger( typeof( JetDriver ) );
+		private static ILog logger = LogManager.GetLogger(typeof(JetDriver));
 
 		private IDictionary _queryCache = new Hashtable();
 
-		public override IDbCommand GenerateCommand( Dialect.Dialect dialect, CommandType type, SqlString sqlString )
+		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString)
 		{
 			SqlString final;
 			if (IsSelectStatement(sqlString))
@@ -37,7 +37,7 @@ namespace NHibernate.JetDriver
 				final = sqlString;
 			}
 
-			return base.GenerateCommand( dialect, type, final );
+			return base.GenerateCommand(type, final);
 		}
 
 		/// <summary></summary>
@@ -89,40 +89,45 @@ namespace NHibernate.JetDriver
 		/// </summary>
 		/// <param name="sqlString">the sqlstring to transform</param>
 		/// <returns>sqlstring with parenthesized joins.</returns>
-		private SqlString FinalizeJoins( SqlString sqlString )
+		private SqlString FinalizeJoins(SqlString sqlString)
 		{
-			if( _queryCache.Contains( sqlString ) ) return ( SqlString ) _queryCache[ sqlString ];
+			if (_queryCache.Contains(sqlString))
+				return (SqlString) _queryCache[sqlString];
 
-			SqlStringBuilder beginning = new SqlStringBuilder( sqlString.SqlParts.Length );
-			StringBuilder toTransform = new StringBuilder( sqlString.SqlParts.Length );
-			SqlStringBuilder end = new SqlStringBuilder( sqlString.SqlParts.Length );
+			SqlStringBuilder beginning = new SqlStringBuilder(sqlString.SqlParts.Length);
+			StringBuilder toTransform = new StringBuilder(sqlString.SqlParts.Length);
+			SqlStringBuilder end = new SqlStringBuilder(sqlString.SqlParts.Length);
 
-			int startIndex = GetFromPartIndex( sqlString );
+			int startIndex = GetFromPartIndex(sqlString);
 
-			int endIndex = GetWherePartIndex( sqlString );
+			int endIndex = GetWherePartIndex(sqlString);
 			endIndex = endIndex == -1 ? sqlString.SqlParts.Length : endIndex;
 
 			int currentIndex = 0;
 
-			foreach( object p in sqlString.SqlParts )
+			foreach (object p in sqlString.SqlParts)
 			{
 				string spart = p as string;
-				if( currentIndex > startIndex && currentIndex < endIndex )
+				if (currentIndex > startIndex && currentIndex < endIndex)
 				{
-					if( spart != null )
+					if (spart != null)
 					{
-						toTransform.Append( spart );
+						toTransform.Append(spart);
 					}
 				}
-				else if( currentIndex <= startIndex )
+				else if (currentIndex <= startIndex)
 				{
-					if( spart != null ) beginning.Add( spart );
-					else beginning.AddObject( p );
+					if (spart != null)
+						beginning.Add(spart);
+					else
+						beginning.AddObject(p);
 				}
 				else
 				{
-					if( spart != null ) end.Add( spart );
-					else end.AddObject( p );
+					if (spart != null)
+						end.Add(spart);
+					else
+						end.AddObject(p);
 				}
 
 				currentIndex++;
@@ -130,31 +135,31 @@ namespace NHibernate.JetDriver
 
 			//now transform the "from" part of the query
 			string transformed = "";
-			string[] blocks = toTransform.ToString().Split( ",".ToCharArray() );
-			if( blocks.Length > 1 )
+			string[] blocks = toTransform.ToString().Split(",".ToCharArray());
+			if (blocks.Length > 1)
 			{
-				for( int i = 0; i < blocks.Length; i++ )
+				for (int i = 0; i < blocks.Length; i++)
 				{
-					string tr = TransformJoinBlock( blocks[ i ] );
-					if( tr.IndexOf( " join " ) > -1 )
-						blocks[ i ] = "(select * from " + tr + ") as jetJoinAlias" + i.ToString();
+					string tr = TransformJoinBlock(blocks[i]);
+					if (tr.IndexOf(" join ") > -1)
+						blocks[i] = "(select * from " + tr + ") as jetJoinAlias" + i.ToString();
 					else
-						blocks[ i ] = tr;
+						blocks[i] = tr;
 				}
 
-				transformed = string.Join( ",", blocks );
+				transformed = string.Join(",", blocks);
 			}
 			else
 			{
-				transformed = TransformJoinBlock( blocks[ 0 ] );
+				transformed = TransformJoinBlock(blocks[0]);
 			}
 
 			//put it all together again
-			beginning.Add( transformed );
-			beginning.Add( end.ToSqlString() );
+			beginning.Add(transformed);
+			beginning.Add(end.ToSqlString());
 
 			SqlString ret = beginning.ToSqlString();
-			_queryCache[ sqlString ] = ret;
+			_queryCache[sqlString] = ret;
 
 			return ret;
 		}
@@ -166,96 +171,97 @@ namespace NHibernate.JetDriver
 		/// </summary>
 		/// <param name="sqlString"></param>
 		/// <returns></returns>
-//Moved to JetDbCommand because NHibernate schema creation does not use Drivers to get the db commands :(
-//		private SqlString FinalizeDDL(SqlString sqlString) {
-//			if (_queryCache.Contains(sqlString)) return (SqlString)_queryCache[sqlString];			
-//
-//			SqlStringBuilder builder = new SqlStringBuilder(sqlString.SqlParts.Length);
-//			
-//			string fullIdentitySpec = "INT " + IdentitySpecPlaceHolder;
-//
-//			foreach(object p in sqlString.SqlParts) {
-//				string sp = p as string;
-//				if (sp != null) {
-//					if (sp.IndexOf(IdentitySpecPlaceHolder) > -1) {
-//						if (sp.IndexOf(fullIdentitySpec) == -1) {
-//							throw new QueryException("Identity columns have to map to MS Access type INT.");
-//						} else {
-//							builder.Add(sp.Replace(fullIdentitySpec, "COUNTER"));
-//						}
-//					} else {
-//						builder.Add(sp);
-//					}
-//				} else {
-//					builder.AddObject(p);
-//				}
-//			}
-//			SqlString ret = builder.ToSqlString();
-//			_queryCache[sqlString] = ret;
-//
-//			return ret;
-//		}
+		//Moved to JetDbCommand because NHibernate schema creation does not use Drivers to get the db commands :(
+		//		private SqlString FinalizeDDL(SqlString sqlString) {
+		//			if (_queryCache.Contains(sqlString)) return (SqlString)_queryCache[sqlString];			
+		//
+		//			SqlStringBuilder builder = new SqlStringBuilder(sqlString.SqlParts.Length);
+		//			
+		//			string fullIdentitySpec = "INT " + IdentitySpecPlaceHolder;
+		//
+		//			foreach(object p in sqlString.SqlParts) {
+		//				string sp = p as string;
+		//				if (sp != null) {
+		//					if (sp.IndexOf(IdentitySpecPlaceHolder) > -1) {
+		//						if (sp.IndexOf(fullIdentitySpec) == -1) {
+		//							throw new QueryException("Identity columns have to map to MS Access type INT.");
+		//						} else {
+		//							builder.Add(sp.Replace(fullIdentitySpec, "COUNTER"));
+		//						}
+		//					} else {
+		//						builder.Add(sp);
+		//					}
+		//				} else {
+		//					builder.AddObject(p);
+		//				}
+		//			}
+		//			SqlString ret = builder.ToSqlString();
+		//			_queryCache[sqlString] = ret;
+		//
+		//			return ret;
+		//		}
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="blockParts">A string representing one join block.</param>
-		private string TransformJoinBlock( string block )
+		private string TransformJoinBlock(string block)
 		{
 			int parenthesisCount = 0;
 
-			Regex re = new Regex( " join" );
-			string[] blockParts = re.Split( block );
+			Regex re = new Regex(" join");
+			string[] blockParts = re.Split(block);
 
-			if( blockParts.Length > 1 )
+			if (blockParts.Length > 1)
 			{
-				string firstPart = blockParts[ 0 ];
-				for( int i = 1; i < blockParts.Length; i++ )
+				string firstPart = blockParts[0];
+				for (int i = 1; i < blockParts.Length; i++)
 				{
-					string part = blockParts[ i ];
+					string part = blockParts[i];
 					int parenthesisIndex = -1;
 
-					if( part.EndsWith( " inner" ) )
+					if (part.EndsWith(" inner"))
 					{
 						parenthesisIndex = part.Length - 6;
 					}
-					else if( part.EndsWith( " left outer" ) )
+					else if (part.EndsWith(" left outer"))
 					{
 						parenthesisIndex = part.Length - 11;
 					}
-					else if( part.EndsWith( " right outer" ) )
+					else if (part.EndsWith(" right outer"))
 					{
 						parenthesisIndex = part.Length - 12;
 					}
 
-					if( parenthesisIndex == -1 )
+					if (parenthesisIndex == -1)
 					{
-						if( i < blockParts.Length - 1 )
+						if (i < blockParts.Length - 1)
 						{
-							logger.Error( "Invalid join syntax. Could not parenthesize the join block properly." );
-							throw new QueryException( "Invalid join syntax. Could not parenthesize the join block properly." );
+							logger.Error("Invalid join syntax. Could not parenthesize the join block properly.");
+							throw new QueryException("Invalid join syntax. Could not parenthesize the join block properly.");
 						}
 
 						//everything went ok. I'm processing the last block part and I've got no parenthesis to add.
-						StringBuilder b = new StringBuilder( " " );
-						for( int j = 0; j < parenthesisCount; j++ ) b.Append( "(" );
-						b.Append( string.Join( " join", blockParts ) );
+						StringBuilder b = new StringBuilder(" ");
+						for (int j = 0; j < parenthesisCount; j++)
+							b.Append("(");
+						b.Append(string.Join(" join", blockParts));
 
 						return b.ToString();
 					}
 					else
 					{
 						parenthesisCount++;
-						blockParts[ i ] = part.Insert( parenthesisIndex, ")" );
+						blockParts[i] = part.Insert(parenthesisIndex, ")");
 					}
 				}
 
 				//the last block part contained the join. This should not happen.
-				logger.Error( "Invalid join syntax. Could not parenthesize the join block properly." );
-				throw new QueryException( "Invalid join syntax. Could not parenthesize the join block properly." );
+				logger.Error("Invalid join syntax. Could not parenthesize the join block properly.");
+				throw new QueryException("Invalid join syntax. Could not parenthesize the join block properly.");
 			}
 			else
 			{
-				return blockParts[ 0 ];
+				return blockParts[0];
 			}
 		}
 
@@ -265,15 +271,16 @@ namespace NHibernate.JetDriver
 		/// <param name="sqlString"></param>
 		/// <returns>index of the sqlPart in sqlString where the "from" part of 
 		/// the sql statement begins or -1 if it doesn't find any.</returns>
-		private int GetFromPartIndex( SqlString sqlString )
+		private int GetFromPartIndex(SqlString sqlString)
 		{
 			int index = 0;
-			foreach( object o in sqlString.SqlParts )
+			foreach (object o in sqlString.SqlParts)
 			{
 				string s = o as string;
-				if( s != null )
+				if (s != null)
 				{
-					if( s.Trim().ToLower().Equals( "from" ) ) return index;
+					if (s.Trim().ToLower().Equals("from"))
+						return index;
 				}
 				index++;
 			}
@@ -286,29 +293,30 @@ namespace NHibernate.JetDriver
 		/// <param name="sqlString"></param>
 		/// <returns>index of the sqlPart in sqlString where the "where" part of 
 		/// the sql statement begins or -1 if it doesn't find any.</returns>
-		private int GetWherePartIndex( SqlString sqlString )
+		private int GetWherePartIndex(SqlString sqlString)
 		{
 			int index = 0;
-			foreach( object o in sqlString.SqlParts )
+			foreach (object o in sqlString.SqlParts)
 			{
 				string s = o as string;
-				if( s != null )
+				if (s != null)
 				{
-					if( s.Trim().ToLower().Equals( "where" ) ) return index;
+					if (s.Trim().ToLower().Equals("where"))
+						return index;
 				}
 				index++;
 			}
 			return -1; //this should not happen
 		}
 
-		private string GetFirstStringPart( SqlString sqlString )
+		private string GetFirstStringPart(SqlString sqlString)
 		{
 			string firstStringPart = null;
 
-			foreach( object p in sqlString.SqlParts )
+			foreach (object p in sqlString.SqlParts)
 			{
 				string sp = p as string;
-				if( sp != null )
+				if (sp != null)
 				{
 					firstStringPart = sp;
 					break;
@@ -318,28 +326,36 @@ namespace NHibernate.JetDriver
 			return firstStringPart;
 		}
 
-		private bool IsSelectStatement( SqlString sqlString )
+		private bool IsSelectStatement(SqlString sqlString)
 		{
-			if( sqlString.SqlParts == null || sqlString.SqlParts.Length == 0 ) return false;
+			if (sqlString.SqlParts == null || sqlString.SqlParts.Length == 0)
+				return false;
 
-			string firstStringPart = GetFirstStringPart( sqlString );
+			string firstStringPart = GetFirstStringPart(sqlString);
 
-			if( firstStringPart == null ) return false;
+			if (firstStringPart == null)
+				return false;
 
-			return firstStringPart.Trim().ToLower().StartsWith( "select" );
+			return firstStringPart.Trim().ToLower().StartsWith("select");
 		}
 
-		private bool IsCreateOrAlterStatement( SqlString sqlString )
+		private bool IsCreateOrAlterStatement(SqlString sqlString)
 		{
-			if( sqlString.SqlParts == null || sqlString.SqlParts.Length == 0 ) return false;
+			if (sqlString.SqlParts == null || sqlString.SqlParts.Length == 0)
+			{
+				return false;
+			}
 
-			string firstStringPart = GetFirstStringPart( sqlString );
+			string firstStringPart = GetFirstStringPart(sqlString);
 
-			if( firstStringPart == null ) return false;
+			if (firstStringPart == null)
+			{
+				return false;
+			}
 
 			firstStringPart = firstStringPart.Trim().ToLower();
 
-			return firstStringPart.StartsWith( "create" ) || firstStringPart.StartsWith( "alter" );
+			return firstStringPart.StartsWith("create") || firstStringPart.StartsWith("alter");
 		}
 
 		#endregion
