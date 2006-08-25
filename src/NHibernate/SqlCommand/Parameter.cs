@@ -110,26 +110,13 @@ namespace NHibernate.SqlCommand
 
 			for( int i = 0; i < sqlTypes.Length; i++ )
 			{
-				if( sqlTypes[ i ].LengthDefined )
-				{
-					ParameterLength param = new ParameterLength( columnNames[i], tableAlias, sqlTypes[i] );
-					parameters[ i ] = param;
-				}
-				else if( sqlTypes[ i ].PrecisionDefined )
-				{
-					ParameterPrecisionScale param = new ParameterPrecisionScale( columnNames[i], tableAlias, sqlTypes[i] );
-					parameters[ i ] = param;
-				}
-				else
-				{
-					parameters[ i ] = new Parameter( columnNames[i], tableAlias, sqlTypes[i] );
-				}
+				parameters[ i ] = new Parameter( columnNames[i], tableAlias, sqlTypes[i] );
 			}
 
 			return parameters;
 		}
 
-		#region object Members
+		#region Object Members
 
 		/// <summary>
 		/// Determines wether this instance and the specified object 
@@ -145,8 +132,6 @@ namespace NHibernate.SqlCommand
 		/// </remarks>
 		public override bool Equals( object obj )
 		{
-			Parameter rhs;
-
 			// Step1: Perform an equals test
 			if( obj == this )
 			{
@@ -154,49 +139,16 @@ namespace NHibernate.SqlCommand
 			}
 
 			// Step	2: Instance of check
-			rhs = obj as Parameter;
+			Parameter rhs = obj as Parameter;
 			if( rhs == null )
 			{
 				return false;
 			}
 		
 			//Step 3: Check each important field
-
-			// verify the Parameter is actually a Parameter, and not a ParameterLength
-			// or ParameterPrecisionScale - this ensures that rhs.Equals(lhs) and 
-			// lhs.Equals(rhs) always returns the same result.
-			return this.Equals( rhs, true );
-		}
-
-		/// <summary>
-		/// Determines if this instance and the specified object have the 
-		/// same values.  If <c>isTypeSensitive==true</c> then <c>rhs</c>
-		/// has to be a <see cref="Parameter"/> and can not be a subclass.
-		/// </summary>
-		/// <param name="rhs">The <see cref="Parameter"/> to compare to this instance.</param>
-		/// <param name="isTypeSensitive">
-		/// <c>true</c> if <c>rhs</c> has to be a <see cref="Parameter"/> and not a subclass,
-		/// <c>false</c> if <c>rhs</c> can be a subclass of <see cref="Parameter"/>.</param>
-		/// <returns>
-		/// <c>true</c> if the properties in <see cref="Parameter"/> are all the same.
-		/// </returns>
-		protected bool Equals(Parameter rhs, bool isTypeSensitive)
-		{
-			if( isTypeSensitive ) 
-			{
-				if( typeof(Parameter)!=rhs.GetType() )
-				{
-					return false;
-				}
-			}
-
-			// these 2 fields will not be null so compare them...
-			if( this.SqlType.Equals( rhs.SqlType ) == false || this.Name.Equals( rhs.Name ) == false )
-			{
-				return false;
-			}
-
-			return true;
+			return
+				this.SqlType.Equals(rhs.SqlType) &&
+				this.Name.Equals(rhs.Name);
 		}
 
 		/// <summary>

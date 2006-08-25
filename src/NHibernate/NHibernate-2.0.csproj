@@ -348,8 +348,6 @@
     <Compile Include="SqlCommand\JoinFragment.cs" />
     <Compile Include="SqlCommand\OracleJoinFragment.cs" />
     <Compile Include="SqlCommand\Parameter.cs" />
-    <Compile Include="SqlCommand\ParameterLength.cs" />
-    <Compile Include="SqlCommand\ParameterPrecisionScale.cs" />
     <Compile Include="SqlCommand\QueryJoinFragment.cs" />
     <Compile Include="SqlCommand\QuerySelect.cs" />
     <Compile Include="SqlCommand\SelectFragment.cs" />
