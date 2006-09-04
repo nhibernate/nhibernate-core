@@ -19,6 +19,9 @@ namespace NHibernate.Impl
 	/// </summary>
 	public class CriteriaImpl : ICriteria
 	{
+        // This result transformer is selected implicitly by calling <tt>setProjection()</tt>
+        private static IResultTransformer ProjectionTransformer = new PassThroughResultTransformer();
+
 		private IList criteria = new ArrayList();
 		private IList orderEntries = new ArrayList();
 		private IDictionary fetchModes = new Hashtable();
@@ -35,6 +38,10 @@ namespace NHibernate.Impl
 
 		private IList subcriteriaList = new ArrayList();
 		private string rootAlias;
+
+        // Projection Fields
+        private IProjection projection;
+        private ICriteria projectionCriteria;
 
 		public sealed class Subcriteria : ICriteria
 		{
@@ -214,6 +221,15 @@ namespace NHibernate.Impl
 				root.SetCacheRegion( cacheRegion );
 				return this;
 			}
+
+            public IProjection Projection
+            {
+                get { return root.projection; }
+                set
+                {
+                    root.Projection = value;
+                }
+            }
 		}
 
 		public ICriteria SetMaxResults( int maxResults )
@@ -458,6 +474,22 @@ namespace NHibernate.Impl
 //			CriterionEntry ce = (CriterionEntry) criteria[ 0 ];
 //			return ce.Criterion is NaturalIdentifier;
 		}
+
+        public IProjection Projection
+        {
+            get { return projection; }
+            set
+            {
+                projection = value;
+                projectionCriteria = this;
+                SetResultTransformer(ProjectionTransformer);
+            }
+        }
+
+        public ICriteria ProjectionCriteria
+        {
+            get { return projectionCriteria; }
+        }
 
 		public sealed class CriterionEntry
 		{

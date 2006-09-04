@@ -189,5 +189,17 @@ namespace NHibernate
 		/// for the default query cache</param>
 		/// <returns></returns>
 		ICriteria SetCacheRegion( string cacheRegion );
+
+        /// <summary>
+        /// Used to specify that the query results will be a projection (scalar in
+        /// nature).  Implicitly specifies the {@link #PROJECTION} result transformer.
+        /// <p/>
+        /// The individual components contained within the given
+        /// <see cref="IProjection"/> determines the overall "shape" of the query result.
+        /// <paramref name="Projection">The projection representing the overall "shape" of the
+        /// query results.</paramref>
+        /// <returns>this (for method chaining)</returns>
+        /// </summary>
+        IProjection Projection { get;set;}
 	}
 }

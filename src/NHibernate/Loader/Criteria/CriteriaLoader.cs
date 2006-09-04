@@ -70,24 +70,23 @@ namespace NHibernate.Loader.Criteria
 			object[] result;
 			string[] aliases;
 
-			// TODO H3:
-//			if( translator.HasProjection )
-//			{
-//				IType[] types = translator.ProjectedTypes;
-//				result = new object[ types.Length ];
-//				string[] columnAliases = translator.ProjectedColumnAliases;
-//
-//				for( int i = 0; i < result.Length; i++ )
-//				{
-//					result[ i ] = types[ i ].NullSafeGet( rs, columnAliases[ i ], session, null );
-//				}
-//				aliases = translator.ProjectedAliases;
-//			}
-//			else
-//			{
-				result = row;
-				aliases = userAliases;
-//			}
+            if (translator.HasProjection)
+            {
+                IType[] types = translator.ProjectedTypes;
+                result = new object[types.Length];
+                string[] columnAliases = translator.ProjectedColumnAliases;
+
+                for (int i = 0; i < result.Length; i++)
+                {
+                    result[i] = types[i].NullSafeGet(rs, columnAliases[i], session, null);
+                }
+                aliases = translator.ProjectedAliases;
+            }
+            else
+            {
+                result = row;
+                aliases = userAliases;
+            }
 			return translator.RootCriteria.ResultTransformer.TransformTuple( result, aliases );
 		}
 

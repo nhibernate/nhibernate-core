@@ -305,47 +305,45 @@ namespace NHibernate.Loader.Criteria
 
 		public bool HasProjection 
 		{
-			get { return false; }
-			// TODO H3: get { return rootCriteria.Projection != null }
+			get { return rootCriteria.Projection != null; }
 		}
 
-		// TODO H3:
-//		public string GetGroupBy()
-//		{
-//			if ( rootCriteria.Projection.IsGrouped ) 
-//			{
-//				return rootCriteria.Projection
-//					.ToGroupSqlString( rootCriteria.ProjectionCriteria, this );
-//			}
-//			else 
-//			{
-//				return "";
-//			}
-//		}
-//
-//		public string GetSelect() 
-//		{
-//			return rootCriteria.Projection.ToSqlString(
-//				rootCriteria.ProjectionCriteria,
-//				0,
-//				this
-//				);
-//		}
-//
-//		public IType[] ProjectedTypes 
-//		{
-//			get { return rootCriteria.Projection.GetTypes( rootCriteria, this ); }
-//		}
-//
-//		public string[] ProjectedColumnAliases 
-//		{
-//			get { return rootCriteria.Projection.GetColumnAliases( 0 ); }
-//		}
-//
-//		public string[] ProjectedAliases 
-//		{
-//			get { return rootCriteria.Projection.Aliases; }
-//		}
+        public SqlString GetGroupBy()
+        {
+            if (rootCriteria.Projection.IsGrouped)
+            {
+                return rootCriteria.Projection
+                    .ToGroupSqlString(rootCriteria.ProjectionCriteria, this);
+            }
+            else
+            {
+                return SqlString.Empty;
+            }
+        }
+
+        public SqlString GetSelect()
+        {
+            return rootCriteria.Projection.ToSqlString(
+                rootCriteria.ProjectionCriteria,
+                0,
+                this
+                );
+        }
+
+        public IType[] ProjectedTypes
+        {
+            get { return rootCriteria.Projection.GetTypes(rootCriteria, this); }
+        }
+
+        public string[] ProjectedColumnAliases
+        {
+            get { return rootCriteria.Projection.GetColumnAliases(0); }
+        }
+
+        public string[] ProjectedAliases
+        {
+            get { return rootCriteria.Projection.Aliases; }
+        }
 
 		public SqlString GetWhereCondition() 
 		{
@@ -417,13 +415,11 @@ namespace NHibernate.Loader.Criteria
 		{
 			//first look for a reference to a projection alias
 
-// TODO H3:
-//			IProjection projection = rootCriteria.Projection;
-//			string[] projectionColumns = projection == null ?
-//				null :
-//				projection.GetColumnAliases( propertyName, 0 );
+            IProjection projection = rootCriteria.Projection;
+            string[] projectionColumns = projection == null ?
+                null :
+                projection.GetColumnAliases(propertyName, 0);
 
-			string[] projectionColumns = null;
 			if ( projectionColumns == null ) 
 			{
 				//it does not refer to an alias of a projection,
@@ -488,13 +484,10 @@ namespace NHibernate.Loader.Criteria
 		public IType GetTypeUsingProjection( ICriteria subcriteria, string propertyName )
 		{
 			//first look for a reference to a projection alias
-// TODO H3:
-//			IProjection projection = rootCriteria.Projection;
-//			IType[] projectionTypes = projection == null ?
-//				null :
-//				projection.GetTypes( propertyName, subcriteria, this );
-
-			IType[] projectionTypes = null;
+            IProjection projection = rootCriteria.Projection;
+            IType[] projectionTypes = projection == null ?
+                null :
+                projection.GetTypes(propertyName, subcriteria, this);
 
 			if( projectionTypes == null ) 
 			{

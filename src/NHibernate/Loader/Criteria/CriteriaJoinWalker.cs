@@ -51,25 +51,24 @@ namespace NHibernate.Loader.Criteria
 
 			querySpaces = translator.GetQuerySpaces();
 
-			// TODO H3:
-//			if ( translator.HasProjection ) 
-//			{
-//				resultTypes = translator.ProjectedTypes;
-//			
-//				InitProjection( 
-//					translator.Select, 
-//					translator.WhereCondition, 
-//					translator.OrderBy,
-//					translator.GroupBy,
-//					LockMode.None
-//					);
-//			}
-//			else 
-//			{
+			if ( translator.HasProjection ) 
+			{
+				resultTypes = translator.ProjectedTypes;
+			
+				InitProjection( 
+					translator.GetSelect().ToString(), 
+					translator.GetWhereCondition(), 
+					translator.GetOrderBy(),
+					translator.GetGroupBy().ToString(),
+					LockMode.None
+					);
+			}
+			else 
+			{
 				resultTypes = new IType[] { TypeFactory.ManyToOne( persister.MappedClass ) };
 
 				InitAll( translator.GetWhereCondition(), translator.GetOrderBy(), LockMode.None );
-//			}
+			}
 		
 			userAliasList.Add( criteria.Alias ); //root entity comes *last*
 			userAliases = ArrayHelper.ToStringArray(userAliasList);
@@ -93,13 +92,12 @@ namespace NHibernate.Loader.Criteria
 			}
 			else 
 			{
-				// TODO H3:
-//				if ( translator.HasProjection ) 
-//				{
-//					return JoinType.None;
-//				}
-//				else 
-//				{
+				if ( translator.HasProjection ) 
+				{
+					return JoinType.None;
+				}
+				else 
+				{
 					FetchMode fetchMode = translator.RootCriteria
 						.GetFetchMode( path );
 					if ( IsDefaultFetchMode(fetchMode) ) 
@@ -126,7 +124,7 @@ namespace NHibernate.Loader.Criteria
 							return JoinType.None;
 						}
 					}
-//				}
+				}
 			}
 		}
 	

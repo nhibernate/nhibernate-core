@@ -533,7 +533,21 @@
     <Compile Include="Engine\ResultSetMappingDefinition.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Expression\AbstractEmptinessExpression.cs" />
+    <Compile Include="Expression\AggregateProjection.cs" />
+    <Compile Include="Expression\AliasedProjection.cs" />
+    <Compile Include="Expression\AvgProjection.cs" />
+    <Compile Include="Expression\CountProjection.cs" />
+    <Compile Include="Expression\Distinct.cs" />
     <Compile Include="Expression\ICriteriaQuery.cs" />
+    <Compile Include="Expression\IdentifierProjection.cs" />
+    <Compile Include="Expression\IProjection.cs" />
+    <Compile Include="Expression\ProjectionList.cs" />
+    <Compile Include="Expression\Projections.cs" />
+    <Compile Include="Expression\PropertyProjection.cs" />
+    <Compile Include="Expression\RowCountProjection.cs" />
+    <Compile Include="Expression\SimpleProjection.cs" />
+    <Compile Include="Expression\SQLProjection.cs" />
     <Compile Include="Hql\Util\SessionFactoryHelper.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -604,6 +618,7 @@
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
     <Compile Include="Property\IOptimizableGetter.cs" />
     <Compile Include="Property\IOptimizableSetter.cs" />
+    <Compile Include="Transform\PassThroughResultTransformer.cs" />
     <Compile Include="Tuple\EntityMetamodel.cs" />
     <Compile Include="Tuple\IdentifierProperty.cs" />
     <Compile Include="Tuple\Property.cs" />
