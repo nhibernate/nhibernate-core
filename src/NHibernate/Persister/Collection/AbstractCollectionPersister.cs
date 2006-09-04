@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Text;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Cache;
@@ -98,6 +99,12 @@ namespace NHibernate.Persister.Collection
 
 		private IDictionary collectionPropertyColumnAliases = new Hashtable();
 		private IDictionary collectionPropertyColumnNames = new Hashtable();
+
+	    // dynamic filters for the collection
+	    private readonly FilterHelper filterHelper;
+
+	    // dynamic filters specifically for many-to-many inside the collection
+        private readonly FilterHelper manyToManyFilterHelper;
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( ICollectionPersister ) );
 
@@ -290,6 +297,9 @@ namespace NHibernate.Persister.Collection
 				}
 			}
 
+            // Handle any filters applied to this collection
+            filterHelper = new FilterHelper(collection.FilterMap, dialect);
+
 			InitCollectionPropertyMap();
 		}
 
@@ -297,7 +307,7 @@ namespace NHibernate.Persister.Collection
 		{
 			try
 			{
-				initializer.Initialize( key, session );
+                GetAppropriateInitializer(key, session).Initialize(key, session);
 			}
 			catch( HibernateException )
 			{
@@ -309,6 +319,18 @@ namespace NHibernate.Persister.Collection
 				throw Convert( sqle, "could not initialize collection: " + MessageHelper.InfoString( this, key ) );
 			}
 		}
+
+        protected ICollectionInitializer GetAppropriateInitializer(object key, ISessionImplementor session)
+        {
+            if (session.EnabledFilters.Count==0)
+            {
+                return initializer;
+            }
+            else
+            {
+                return CreateCollectionInitializer(session.EnabledFilters);
+            }
+        }
 
 		protected abstract ICollectionInitializer CreateCollectionInitializer( IDictionary enabledFilters );
 
@@ -1041,7 +1063,7 @@ namespace NHibernate.Persister.Collection
 		public abstract bool IsManyToMany { get; }
 		public abstract bool IsOneToMany { get; }
 
-		public void PostInstantiate()
+        public void PostInstantiate()
 		{
 			initializer = CreateCollectionInitializer( CollectionHelper.EmptyMap );
 		}
@@ -1053,13 +1075,21 @@ namespace NHibernate.Persister.Collection
 
 		public virtual string FilterFragment( string alias, IDictionary enabledFilters )
 		{
-			return FilterFragment( alias );
+            StringBuilder sessionFilterFragment = new StringBuilder();
+            filterHelper.Render(sessionFilterFragment, alias, enabledFilters);
+
+            return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
 		}
 
 		public string GetManyToManyFilterFragment( string alias, IDictionary enabledFilters )
 		{
 			return string.Empty;
 		}
+
+        public bool IsAffectedByEnabledFilters(ISessionImplementor session)
+        {
+            return filterHelper.IsAffectedBy(session.EnabledFilters);
+        }
 
 		protected ISessionFactoryImplementor Factory
 		{

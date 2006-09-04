@@ -83,7 +83,11 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
-	<xs:complexType name="cacheType">
+  <xs:complexType name="filter">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="condition" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="cacheType">
 		<xs:attribute name="usage" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -111,7 +115,21 @@
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="import" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="filter-def" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="filter-param" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required"/>
+                  <xs:attribute name="type" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="condition" type="xs:string" use="optional" default="" />
+          </xs:complexType>
+        </xs:element>
+         <xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="class"/>
 					<xs:element ref="subclass"/>
 					<xs:element ref="joined-subclass"/>
@@ -157,7 +175,7 @@
 			<xs:attribute name="rename" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="class">
+  <xs:element name="class">
 		<xs:annotation>
 			<xs:documentation>Root of an entity class hierarchy. Entities have their own tables</xs:documentation>
 		</xs:annotation>
@@ -196,7 +214,8 @@
 					<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
-			</xs:sequence>
+        <xs:element name="filter" type="filter" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
 			<xs:attributeGroup ref="baseClassAttributes"/>
 			<xs:attribute name="table" type="xs:string" use="optional">
 				<xs:annotation>
@@ -842,7 +861,8 @@
 					<xs:element ref="composite-element"/>
 					<xs:element ref="many-to-any"/>
 				</xs:choice>
-			</xs:sequence>
+        <xs:element name="filter" type="filter" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
 			<xs:attributeGroup ref="baseCollectionAttributes"/>
 		</xs:complexType>
 	</xs:element>
@@ -862,7 +882,8 @@
 					<xs:element ref="composite-element"/>
 					<xs:element ref="many-to-any"/>
 				</xs:choice>
-			</xs:sequence>
+        <xs:element name="filter" type="filter" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
 			<xs:attributeGroup ref="baseCollectionAttributes"/>
 			<xs:attribute name="order-by" type="xs:string"/>
 		</xs:complexType>
@@ -883,7 +904,8 @@
 					<xs:element ref="composite-element"/>
 					<xs:element ref="many-to-any"/>
 				</xs:choice>
-			</xs:sequence>
+        <xs:element name="filter"  type="filter" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
 			<xs:attributeGroup ref="baseCollectionAttributes"/>
 			<xs:attribute name="order-by" type="xs:string"/>
 			<xs:attribute name="sort" type="xs:string" default="unsorted"/>
@@ -911,7 +933,8 @@
 					<xs:element ref="composite-element"/>
 					<xs:element ref="many-to-any"/>
 				</xs:choice>
-			</xs:sequence>
+        <xs:element name="filter" type="filter" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
 			<xs:attributeGroup ref="baseCollectionAttributes"/>
 			<xs:attribute name="order-by" type="xs:string"/>
 			<xs:attribute name="sort" type="xs:string" default="unsorted"/>

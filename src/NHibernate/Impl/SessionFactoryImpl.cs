@@ -90,6 +90,9 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary sqlResultSetMappings;
 
+        [NonSerialized]
+        private readonly IDictionary filters;
+
 		[NonSerialized]
 		private readonly IDictionary imports;
 
@@ -220,6 +223,7 @@ namespace NHibernate.Impl
 			namedQueries = new Hashtable(cfg.NamedQueries);
 			namedSqlQueries = new Hashtable(cfg.NamedSQLQueries);
 			sqlResultSetMappings = new Hashtable(cfg.SqlResultSetMappings);
+            filters = new Hashtable(cfg.FilterDefinitions);
 
 			imports = new Hashtable(cfg.Imports);
 
@@ -425,7 +429,7 @@ namespace NHibernate.Impl
 			QueryTranslator[] queries = new QueryTranslator[length];
 			for (int i = 0; i < length; i++)
 			{
-				queries[i] = new QueryTranslator(this, concreteQueryStrings[i]);
+				queries[i] = new QueryTranslator(this, concreteQueryStrings[i], filters);
 			}
 			Put(cacheKey, queries);
 			return queries;
@@ -434,7 +438,7 @@ namespace NHibernate.Impl
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		private QueryTranslator CreateFilterTranslator(string filterString, FilterCacheKey cacheKey)
 		{
-			QueryTranslator filter = new QueryTranslator(this, filterString);
+			QueryTranslator filter = new QueryTranslator(this, filterString, filters);
 			Put(cacheKey, filter);
 			return filter;
 		}
@@ -1143,5 +1147,20 @@ namespace NHibernate.Impl
 		{
 			return (ResultSetMappingDefinition) sqlResultSetMappings[resultSetName];
 		}
-	}
+
+        public FilterDefinition GetFilterDefinition(string filterName)
+        {
+            FilterDefinition def = (FilterDefinition)filters[filterName];
+            if (def == null)
+            {
+                throw new HibernateException("No such filter configured [" + filterName + "]");
+            }
+            return def;
+        }
+
+        public ICollection DefinedFilterNames
+        {
+            get { return filters.Keys; }
+        }
+    }
 }

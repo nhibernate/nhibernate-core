@@ -1097,14 +1097,15 @@ namespace NHibernate.Loader
 			int start,
 			ISessionImplementor session )
 		{
-			object[ ] values = queryParameters.PositionalParameterValues;
-			IType[ ] types = queryParameters.PositionalParameterTypes;
-
-			int span = 0;
+			object[ ] values = queryParameters.FilteredPositionalParameterValues;
+            IType[] types = queryParameters.FilteredPositionalParameterTypes;
+            
+            int span = 0;
 			for( int i = 0; i < values.Length; i++ )
 			{
 				types[ i ].NullSafeSet( st, values[ i ], start + span, session );
-				span += types[ i ].GetColumnSpan( session.Factory );
+                Console.Write(i + "\n");
+                span += types[i].GetColumnSpan(session.Factory);
 			}
 
 			return span;
@@ -1129,7 +1130,9 @@ namespace NHibernate.Loader
 			bool scroll,
 			ISessionImplementor session )
 		{
-			Dialect.Dialect dialect = session.Factory.Dialect;
+            parameters.ProcessFilters(sqlString, session);
+            sqlString = parameters.FilteredSQL;
+            Dialect.Dialect dialect = session.Factory.Dialect;
 
 			RowSelection selection = parameters.RowSelection;
 			bool useLimit = UseLimit( selection, dialect );
@@ -1145,8 +1148,11 @@ namespace NHibernate.Loader
 				                                    useOffset ? GetFirstRow( selection ) : 0,
 				                                    GetMaxOrLimit( dialect, selection ) );
 			}
-
-			IDbCommand command = session.Batcher.PrepareQueryCommand( sqlString, parameters.CommandType );
+            Console.WriteLine(sqlString);
+            Console.WriteLine(session.Batcher);
+            Console.WriteLine(parameters.CommandType);
+            IDbCommand command = session.Batcher.PrepareQueryCommand(sqlString, parameters.CommandType);
+            Console.WriteLine(command.Parameters.Count);
 
 			try
 			{

@@ -228,7 +228,7 @@ namespace NHibernate.Hql
 
 				if( bracketsSinceSelect == -1 )
 				{
-					QueryTranslator subq = new QueryTranslator( q.Factory, subselect.ToString() );
+					QueryTranslator subq = new QueryTranslator( q.Factory, subselect.ToString(), q.EnabledFilters );
 					try
 					{
 						subq.Compile( q );

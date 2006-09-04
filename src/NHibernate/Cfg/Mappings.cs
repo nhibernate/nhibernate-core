@@ -32,7 +32,8 @@ namespace NHibernate.Cfg
 		private bool defaultLazy;
 		private IList propertyReferences;
 		private IDictionary caches;
-		private INamingStrategy namingStrategy;
+        private IDictionary filterDefinitions;
+        private INamingStrategy namingStrategy;
 
 		internal class UniquePropertyReference
 		{
@@ -64,7 +65,9 @@ namespace NHibernate.Cfg
 			IDictionary caches,
 			IList secondPasses,
 			IList propertyReferences,
-			INamingStrategy namingStrategy)
+			INamingStrategy namingStrategy,
+			IDictionary filterDefinitions
+            )
 		{
 			this.classes = classes;
 			this.collections = collections;
@@ -77,6 +80,7 @@ namespace NHibernate.Cfg
 			this.secondPasses = secondPasses;
 			this.propertyReferences = propertyReferences;
 			this.namingStrategy = namingStrategy;
+            this.filterDefinitions = filterDefinitions;
 		}
 
 		/// <summary>
@@ -321,5 +325,20 @@ namespace NHibernate.Cfg
 			get { return defaultLazy; }
 			set { defaultLazy = value; }
 		}
-	}
+
+        public IDictionary FilterDefinitions
+        {
+            get { return filterDefinitions; }
+        }
+
+        public void AddFilterDefinition(FilterDefinition definition)
+        {
+            filterDefinitions.Add(definition.FilterName, definition);
+        }
+
+        public FilterDefinition GetFilterDefinition(string name)
+        {
+            return (FilterDefinition)filterDefinitions[name];
+        }
+    }
 }

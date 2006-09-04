@@ -6,6 +6,9 @@ using log4net;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Dialect;
+using NHibernate.Hql;
+using NHibernate.SqlCommand;
 using System.Data;
 
 namespace NHibernate.Engine
@@ -34,8 +37,13 @@ namespace NHibernate.Engine
 		private bool _readOnly;
 		private bool _callable;
 
-		// not implemented: private ScrollMode _scrollMode;
-
+    	private SqlString processedSQL;
+	    private IType[] processedPositionalParameterTypes;
+	    private object[] processedPositionalParameterValues;
+		
+        
+        // not implemented: private ScrollMode _scrollMode;
+        
 		public QueryParameters()
 			: this( ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray )
 		{
@@ -340,5 +348,106 @@ namespace NHibernate.Engine
 		{
 			get { return Callable ? CommandType.StoredProcedure : CommandType.Text; }
 		}
-	}
+
+
+
+        /************** Filters ********************************/
+   
+	    public void ProcessFilters(SqlString sql, ISessionImplementor session) 
+        {
+		    if ( session.EnabledFilters.Count==0 || sql.ToString().IndexOf(ParserHelper.HqlVariablePrefix)<0 ) 
+            {
+			    processedPositionalParameterValues = PositionalParameterValues;
+			    processedPositionalParameterTypes = PositionalParameterTypes;
+			    processedSQL = sql;
+		    }
+		    else 
+            {   			
+			    Dialect.Dialect dialect = session.Factory.Dialect;
+  			    string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
+			    StringTokenizer tokenizer = new StringTokenizer( sql.ToString(), symbols, true );
+                IEnumerator tokens = tokenizer.GetEnumerator();
+    			SqlStringBuilder result = new SqlStringBuilder();
+    		
+			    IList parameters = new ArrayList();
+			    IList parameterTypes = new ArrayList();
+
+                int parameterIndex = 0;
+			    while ( tokens.MoveNext() ) 
+                {
+				    string token = (string)tokens.Current;
+				    if ( token.StartsWith( ParserHelper.HqlVariablePrefix ) )
+                    {
+                        if (token.IndexOf(".") > 0)
+                        {
+                            string filterParameterName = token.Substring(1);
+                            object value = session.GetFilterParameterValue(filterParameterName);
+                            IType type = session.GetFilterParameterType(filterParameterName);
+                            if (value != null && typeof(ICollection).IsAssignableFrom(value.GetType()))
+                            {
+                                ICollection coll = (ICollection)value;
+                                int i = 0;
+                                foreach (object elementValue in coll)
+                                {
+                                    i++;
+                                    Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, new string[] { filterParameterName }, type);
+
+                                    if (sqlParameters != null && sqlParameters.Length > 0)
+                                    {
+                                        result.Add(sqlParameters[0]);
+                                        parameters.Add(elementValue);
+                                        parameterTypes.Add(type);
+                                        if (i < coll.Count) result.Add(", ");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, new string[] { filterParameterName }, type);
+                                if (sqlParameters != null && sqlParameters.Length > 0)
+                                {
+                                    result.Add(sqlParameters[0]);
+                                    parameters.Add(value);
+                                    parameterTypes.Add(type);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string parameterName = token.Substring(1);
+                            Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, new string[] { parameterName }, PositionalParameterTypes[parameterIndex]);
+                            result.Add(sqlParameters[0]);
+                            parameterIndex++;
+                        }
+				    }
+				    else 
+                    {
+					    result.Add(token);
+				    }
+			    }
+
+                foreach (object v in PositionalParameterValues) parameters.Add(v);
+                foreach (object t in PositionalParameterTypes) parameterTypes.Add(t);
+                processedPositionalParameterValues = ((ArrayList)parameters).ToArray();
+                processedPositionalParameterTypes = ( IType[] ) ((ArrayList)parameterTypes).ToArray( typeof(IType) );
+			    processedSQL = result.ToSqlString();
+    			
+		    }
+	    }
+
+	    public SqlString FilteredSQL 
+        {
+		    get { return processedSQL; }
+	    }
+
+	    public object[] FilteredPositionalParameterValues
+        {
+		    get { return processedPositionalParameterValues; }
+	    }
+
+	    public IType[] FilteredPositionalParameterTypes 
+        {
+		    get { return processedPositionalParameterTypes; }
+	    }
+    }
 }

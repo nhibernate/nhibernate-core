@@ -101,6 +101,7 @@ namespace NHibernate.Cfg
 		private IInterceptor interceptor;
 		private IDictionary properties;
 		private IDictionary caches;
+        private IDictionary filterDefinitions;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 
@@ -119,8 +120,9 @@ namespace NHibernate.Cfg
 			namedSqlQueries = new Hashtable();
 			sqlResultSetMappings = new Hashtable();
 			secondPasses = new ArrayList();
-			propertyReferences = new ArrayList();
-			interceptor = emptyInterceptor;
+            propertyReferences = new ArrayList();
+            filterDefinitions = new Hashtable();
+            interceptor = emptyInterceptor;
 			caches = new Hashtable();
 			mapping = new Mapping( this );
 			properties = Environment.Properties;
@@ -429,7 +431,8 @@ namespace NHibernate.Cfg
 				caches,
 				secondPasses,
 				propertyReferences,
-				namingStrategy
+				namingStrategy,
+                filterDefinitions
 				);
 		}
 
@@ -1526,6 +1529,15 @@ namespace NHibernate.Cfg
 			get { return sqlResultSetMappings; }
 		}
 
+        public IDictionary FilterDefinitions
+        {
+            get { return filterDefinitions; }
+        }
+
+        public void AddFilterDefinition(FilterDefinition definition)
+        {
+            filterDefinitions.Add(definition.FilterName, definition);
+        }
 		#region NHibernate-Specific Members
 
 		/// <summary>

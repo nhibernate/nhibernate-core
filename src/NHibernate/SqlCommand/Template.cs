@@ -84,7 +84,12 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		/// <summary>
+        public static string RenderWhereStringTemplate(string whereSql, Dialect.Dialect dialect)
+        {
+            return RenderWhereStringTemplate(whereSql, Placeholder, dialect);
+        }
+
+        /// <summary>
 		/// Takes the where condition provided in the mapping attribute and iterpolates the alias.
 		/// </summary>
 		/// <param name="whereSql">The "where" sql statement from the mapping attribute.</param>
@@ -92,7 +97,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>
 		/// A well formed "where" sql statement for the <see cref="Dialect.Dialect"/>.
 		/// </returns>
-		public static string RenderWhereStringTemplate( string whereSql, Dialect.Dialect dialect )
+		public static string RenderWhereStringTemplate( string whereSql, string placeHolder, Dialect.Dialect dialect )
 		{
 			//TODO: make this a bit nicer.
 
@@ -145,7 +150,7 @@ namespace NHibernate.SqlCommand
 					}
 					else if( isIdentifier && ( nextToken == null || !nextToken.Equals( "(" ) ) ) // not a function call
 					{
-						result.Append( Placeholder )
+                        result.Append(placeHolder)
 							.Append( StringHelper.Dot )
 							.Append( Quote( token, dialect ) );
 
@@ -191,7 +196,7 @@ namespace NHibernate.SqlCommand
 				}
 				commaNeeded = true;
 
-				result.Append( Placeholder )
+                result.Append(Placeholder)
 					.Append( StringHelper.Dot )
 					.Append( column );
 			}

@@ -34,5 +34,10 @@ namespace NHibernate.Cfg
 		public const string nsSqlUpdate = nsPrefix + ":sql-update";
 		public const string nsSqlDelete = nsPrefix + ":sql-delete";
 		public const string nsSqlDeleteAll = nsPrefix + ":sql-delete-all";
+
+        public const string nsFilterDef = nsPrefix + ":filter-def";
+        public const string nsFilterParam = nsPrefix + ":filter-param";
+        public const string nsFilter = nsPrefix + ":filter";
+
 	}
 }

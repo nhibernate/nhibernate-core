@@ -9,6 +9,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
@@ -369,5 +370,32 @@ namespace NHibernate.Engine
 		EntityEntry GetEntry( object entity );
 
 		CollectionEntry GetCollectionEntry( IPersistentCollection collection );
-	}
+
+
+        /// <summary>
+        /// Retreive the currently set value for a filter parameter.
+        /// </summary>
+        /// <param name="filterParameterName">The filter parameter name in the format 
+        /// {FILTER_NAME.PARAMETER_NAME}.</param>
+        /// <returns>The filter parameter value.</returns>
+        object GetFilterParameterValue(string filterParameterName);
+
+        /// <summary>
+        /// Retreive the type for a given filter parrameter.
+        /// </summary>
+        /// <param name="filterParameterName">The filter parameter name in the format 
+        /// {FILTER_NAME.PARAMETER_NAME}.</param>
+        /// <returns>The filter parameter type.</returns>
+        IType GetFilterParameterType(string filterParameterName);
+
+        /// <summary>
+        /// Return the currently enabled filters.  The filter map is keyed by filter
+        /// name, with values corresponding to the {@link org.hibernate.impl.FilterImpl}
+        /// instance.
+        /// </summary>
+        /// <param name="filterParameterName">The filter parameter name in the format 
+        /// {FILTER_NAME.PARAMETER_NAME}.</param>
+        /// <returns>The currently enabled filters.</returns>
+        IDictionary EnabledFilters { get; }
+    }
 }

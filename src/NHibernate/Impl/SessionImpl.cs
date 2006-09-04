@@ -200,6 +200,9 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private IBatcher batcher;
 
+        [NonSerialized]
+	    private IDictionary enabledFilters = new Hashtable();
+
 		#region System.Runtime.Serialization.ISerializable Members
 
 		/// <summary>
@@ -244,6 +247,13 @@ namespace NHibernate.Impl
 			this.collectionCreations = (ArrayList) info.GetValue("collectionCreations", typeof(ArrayList));
 			this.collectionUpdates = (ArrayList) info.GetValue("collectionUpdates", typeof(ArrayList));
 			this.collectionRemovals = (ArrayList) info.GetValue("collectionRemovals", typeof(ArrayList));
+
+            this.enabledFilters = (IDictionary) info.GetValue("enabledFilters", typeof(IDictionary));
+            foreach (FilterImpl filter in enabledFilters.Values)
+            {
+                filter.AfterDeserialize(factory.GetFilterDefinition(filter.Name));
+            }
+
 		}
 
 		/// <summary>
@@ -306,7 +316,8 @@ namespace NHibernate.Impl
 			info.AddValue("collectionRemovals", collectionRemovals);
 			info.AddValue("collectionUpdates", collectionUpdates);
 
-		}
+            info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary));
+        }
 
 		#endregion
 
@@ -2090,7 +2101,9 @@ namespace NHibernate.Impl
 		{
 			CheckIsOpen();
 
-			return new FilterImpl(queryString, collection, this);
+            //Had to replace FilterImpl with version consistent with Hibernate3
+            //Changed old FilterImpl to QueryFilterImpl
+			return new QueryFilterImpl(queryString, collection, this); 
 		}
 
 		/// <summary>
@@ -4925,8 +4938,7 @@ namespace NHibernate.Impl
 					factory,
 					criteria,
 					implementors[i],
-					CollectionHelper.EmptyMap
-					// TODO H3: enabledFilters
+					enabledFilters
 					);
 
 				spaces.AddAll(loaders[i].QuerySpaces);
@@ -5665,5 +5677,84 @@ namespace NHibernate.Impl
 				throw new ObjectDisposedException("ISession", "Session was disposed of or closed");
 			}
 		}
-	}
+
+
+
+        public IFilter GetEnabledFilter(string filterName)
+        {
+            CheckIsOpen();
+            return (IFilter)enabledFilters[filterName];
+        }
+
+        public IFilter EnableFilter(string filterName)
+        {
+            CheckIsOpen();
+            FilterImpl filter = new FilterImpl(factory.GetFilterDefinition(filterName));
+            if (enabledFilters[filterName]==null) enabledFilters.Add(filterName, filter);
+            return filter;
+        }
+
+        public void DisableFilter(string filterName)
+        {
+            CheckIsOpen();
+            enabledFilters.Remove(filterName);
+        }
+
+        public Object GetFilterParameterValue(string filterParameterName)
+        {
+            CheckIsOpen();
+            string[] parsed = ParseFilterParameterName(filterParameterName);
+            FilterImpl filter = (FilterImpl)enabledFilters[parsed[0]];
+            if (filter == null)
+            {
+                throw new ArgumentNullException(parsed[0], "Filter [" + parsed[0] + "] currently not enabled");
+            }
+            return filter.GetParameter(parsed[1]);
+        }
+
+        public IType GetFilterParameterType(string filterParameterName)
+        {
+            CheckIsOpen();
+            string[] parsed = ParseFilterParameterName(filterParameterName);
+            FilterDefinition filterDef = factory.GetFilterDefinition(parsed[0]);
+            if (filterDef == null)
+            {
+                throw new ArgumentNullException(parsed[0],"Filter [" + parsed[0] + "] not defined");
+            }
+            IType type = filterDef.GetParameterType(parsed[1]);
+            if (type == null)
+            {
+                // this is an internal error of some sort...
+                throw new ArgumentNullException(parsed[1],"Unable to locate type for filter parameter");
+            }
+            return type;
+        }
+
+        public IDictionary EnabledFilters {
+            get
+            {
+                CheckIsOpen();
+
+                foreach (IFilter filter in enabledFilters.Values)
+                {
+                    filter.Validate();
+                }
+
+                return enabledFilters;
+            }
+    	}
+
+        private string[] ParseFilterParameterName(string filterParameterName)
+        {
+            int dot = filterParameterName.IndexOf(".");
+            if (dot <= 0)
+            {
+                throw new ArgumentException("filterParameterName","Invalid filter-parameter name format"); 
+            }
+            string filterName = filterParameterName.Substring(0, dot);
+            string parameterName = filterParameterName.Substring(dot + 1);
+            return new string[] { filterName, parameterName };
+        }
+    
+    }
 }

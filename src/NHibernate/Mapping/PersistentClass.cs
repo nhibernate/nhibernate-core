@@ -14,7 +14,7 @@ namespace NHibernate.Mapping
 	/// <see cref="Subclass"/> that is mapped by <c>&lt;subclass&gt;</c> or 
 	/// <c>&lt;joined-subclass&gt;</c>.
 	/// </summary>
-	public abstract class PersistentClass
+	public abstract class PersistentClass : IFilterable
 	{
 		private static readonly Alias PKAlias = new Alias( 15, "PK" );
 
@@ -38,6 +38,8 @@ namespace NHibernate.Mapping
 		private bool selectBeforeUpdate;
 		private OptimisticLockMode optimisticLockMode;
 		private IDictionary metaAttributes;
+        private IDictionary filters = new Hashtable();
+
 
 		private string customSQLInsert;
 		private bool customInsertCallable;
@@ -760,5 +762,15 @@ namespace NHibernate.Mapping
 		{
 			synchronizedTablesField.Add(table);
 		}
+
+        public void AddFilter(string name, string condition)
+        {
+            filters.Add(name, condition);
+        }
+
+        public IDictionary FilterMap
+        {
+            get { return filters; }
+        }
 	}
 }

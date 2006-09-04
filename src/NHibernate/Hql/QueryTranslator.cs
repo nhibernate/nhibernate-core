@@ -20,7 +20,7 @@ namespace NHibernate.Hql
 	/// <summary> 
 	/// An instance of <c>QueryTranslator</c> translates a Hibernate query string to SQL.
 	/// </summary>
-	public class QueryTranslator : BasicLoader
+	public class QueryTranslator : BasicLoader, IFilterTranslator
 	{
 		private readonly string queryString;
 
@@ -71,16 +71,19 @@ namespace NHibernate.Hql
 
 		private string[ ] suffixes;
 
+        private IDictionary enabledFilters;
+
 		private static readonly ILog log = LogManager.GetLogger( typeof( QueryTranslator ) );
 
 		/// <summary> 
 		/// Construct a query translator
 		/// </summary>
 		/// <param name="queryString"></param>
-		public QueryTranslator( ISessionFactoryImplementor factory, string queryString )
+		public QueryTranslator( ISessionFactoryImplementor factory, string queryString, IDictionary enabledFilters )
 			: base( factory )
 		{
 			this.queryString = queryString;
+            this.enabledFilters = enabledFilters;
 		}
 
 		/// <summary>
@@ -92,6 +95,7 @@ namespace NHibernate.Hql
 			this.tokenReplacements = superquery.tokenReplacements;
 			this.superQuery = superquery;
 			this.shallowQuery = true;
+            this.enabledFilters = superquery.EnabledFilters;
 
 			Compile( );
 		}
@@ -1449,5 +1453,10 @@ namespace NHibernate.Hql
 				isSqlStringPopulated = true;
 			}
 		}
+
+        public IDictionary EnabledFilters
+        {
+            get { return enabledFilters; }
+        }
 	}
 }

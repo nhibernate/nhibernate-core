@@ -52,5 +52,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="suffix"></param>
 		/// <returns></returns>
 		string PropertySelectFragment( string alias, string suffix );
-	}
+
+        string GenerateFilterConditionAlias(string rootAlias);
+    }
 }

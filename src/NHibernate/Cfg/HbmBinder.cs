@@ -761,6 +761,10 @@ namespace NHibernate.Cfg
 			{
 				mappings.AddSecondPass(new CollectionSecondPass(node, mappings, model));
 			}
+
+		    foreach ( XmlNode filter in node.SelectNodes(HbmConstants.nsFilter, nsmgr) ) {
+			    ParseFilter( filter, model, mappings );
+		    }
 		}
 
 		private static void InitLaziness(
@@ -1384,6 +1388,10 @@ namespace NHibernate.Cfg
 				{
 					HandleJoinedSubclass(model, mappings, subnode);
 				}
+                else if ("filter".Equals(name))
+                {
+                    ParseFilter(subnode, model, mappings);
+                }
 				if (value != null)
 				{
 					model.AddNewProperty(CreateProperty(value, propertyName, model.MappedClass, subnode, mappings));
@@ -1616,6 +1624,12 @@ namespace NHibernate.Cfg
 			// build the XPath and the nsmgr takes care of translating our prefix into
 			// the user defined prefix...
 			nsmgr.AddNamespace(HbmConstants.nsPrefix, Configuration.MappingSchemaXMLNS);
+
+
+            foreach (XmlNode n in hmNode.SelectNodes(HbmConstants.nsFilterDef, nsmgr))
+            {
+                HbmBinder.ParseFilterDef(n, mappings);
+            }
 
 			foreach (XmlNode n in hmNode.SelectNodes(HbmConstants.nsClass, nsmgr))
 			{
@@ -2224,5 +2238,59 @@ namespace NHibernate.Cfg
 			}
 			return ExecuteUpdateResultCheckStyle.Parse(attr.Value);
 		}
+
+        private static void ParseFilterDef(XmlNode element, Mappings mappings) {
+		    string name = GetPropertyName(element);
+		    log.Debug( "Parsing filter-def [" + name + "]" );
+		    string defaultCondition = element.InnerText;
+		    if ( defaultCondition==null || StringHelper.IsEmpty( defaultCondition.Trim() ) ) {
+                if (element.Attributes != null)
+                {
+                    XmlAttribute propertyNameNode = element.Attributes["condition"];
+                    defaultCondition = (propertyNameNode == null) ? null : propertyNameNode.Value;
+                }
+		    }
+		    Hashtable paramMappings = new Hashtable();
+            foreach (XmlNode param in element.SelectNodes(HbmConstants.nsFilterParam, nsmgr))
+            {
+                string paramName = GetPropertyName(param);
+			    string paramType = param.Attributes[ "type" ].Value;
+			    log.Debug( "adding filter parameter : " + paramName + " -> " + paramType );
+			    IType heuristicType = TypeFactory.HeuristicType( paramType );
+			    log.Debug( "parameter heuristic type : " + heuristicType );
+			    paramMappings.Add( paramName, heuristicType );
+		    }
+		    log.Debug( "Parsed filter-def [" + name + "]" );
+		    FilterDefinition def = new FilterDefinition( name, defaultCondition, paramMappings );
+		    mappings.AddFilterDefinition( def );
+	    }
+
+        private static void ParseFilter(XmlNode filterElement, IFilterable filterable, Mappings model) {
+            string name = GetPropertyName(filterElement);
+		    string condition = filterElement.InnerText;
+            if (condition == null || StringHelper.IsEmpty(condition.Trim()))
+            {
+                if (filterElement.Attributes != null)
+                {
+                    XmlAttribute propertyNameNode = filterElement.Attributes["condition"];
+                    condition = (propertyNameNode == null) ? null : propertyNameNode.Value;
+                }
+            }
+
+		    //TODO: bad implementation, cos it depends upon ordering of mapping doc
+		    //      fixing this requires that Collection/PersistentClass gain access
+		    //      to the Mappings reference from Configuration (or the filterDefinitions
+		    //      map directly) sometime during Configuration.buildSessionFactory
+		    //      (after all the types/filter-defs are known and before building
+		    //      persisters).
+		    if ( StringHelper.IsEmpty(condition) ) {
+			    condition = model.GetFilterDefinition(name).DefaultFilterCondition;
+		    }
+		    if ( condition==null) {
+			    throw new MappingException("no filter condition found for filter: " + name);
+		    }
+		    log.Debug( "Applying filter [" + name + "] as [" + condition + "]" );
+		    filterable.AddFilter( name, condition );
+	    }
 	}
 }

@@ -208,7 +208,7 @@ namespace NHibernate.Persister.Collection
 
 		ICollectionMetadata CollectionMetadata { get; }
 
-		void PostInstantiate();
+        void PostInstantiate();
 
 		/// <summary>
 		/// Generates the collection's key column aliases, based on the given

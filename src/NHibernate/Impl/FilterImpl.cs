@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 #if NET_2_0
 using System.Collections.Generic;
@@ -9,77 +10,126 @@ using NHibernate.Type;
 namespace NHibernate.Impl
 {
 	/// <summary>
-	/// Implementation of the <see cref="IQuery"/> interface for collection filters.
 	/// </summary>
-	public class FilterImpl : QueryImpl
+    [Serializable]
+	public class FilterImpl : IFilter
 	{
-		private object collection;
+	    public static readonly string MARKER = "$FILTER_PLACEHOLDER$";
+
+        [NonSerialized]
+	    private FilterDefinition definition;
+	    private string filterName;
+	    private IDictionary parameters = new Hashtable();
+
+        public void AfterDeserialize(FilterDefinition factoryDefinition)
+        {
+            definition = factoryDefinition;
+	    }
+
+	    public FilterImpl(FilterDefinition configuration) 
+        {
+		    this.definition = configuration;
+		    filterName = definition.FilterName;
+	    }
+
+	    public FilterDefinition FilterDefinition 
+        {
+		    get { return definition; }
+	    }
 
 		/// <summary>
-		/// 
+        /// Get the name of this filter.
 		/// </summary>
-		/// <param name="queryString"></param>
-		/// <param name="collection"></param>
-		/// <param name="session"></param>
-		public FilterImpl( string queryString, object collection, ISessionImplementor session ) : base( queryString, session )
-		{
-			this.collection = collection;
-		}
+        public string Name
+        {
+            get { return definition.FilterName; }
+	    }
+    	
+	    public IDictionary Parameters
+        {
+		    get { return parameters; }
+	    }
 
-		public override IEnumerable Enumerable()
-		{
-			VerifyParameters();
-			IDictionary namedParams = NamedParams;
-			return Session.EnumerableFilter( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
-		}
+		/// <summary>
+		/// Set the named parameter's value for this filter.
+		/// </summary>
+		/// <param name="name">The parameter's name.</param>
+		/// <param name="value">The value to be applied.</param>
+		/// <returns>This FilterImpl instance (for method chaining).</returns>
+	    public IFilter SetParameter(string name, object value)  
+        {
+		    // Make sure this is a defined parameter and check the incoming value type
+		    // TODO: what should be the actual exception type here?
+		    IType type = definition.GetParameterType( name );
+		    if ( type == null ) {
+			    throw new ArgumentException( name, "Undefined filter parameter [" + name + "]" );
+		    }
+		    if ( value != null && !type.ReturnedClass.IsAssignableFrom( value.GetType() ) ) {
+			    throw new ArgumentException( name, "Incorrect type for parameter [" + name + "]" );
+		    }
+		    parameters.Add( name, value );
+		    return this;
+	    }
 
-#if NET_2_0
-		public override IEnumerable<T> Enumerable<T>()
-		{
-			VerifyParameters();
-			IDictionary namedParams = NamedParams;
-			return Session.EnumerableFilter<T>( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
-		}
-#endif
+        /// <summary>
+        /// Set the named parameter's value list for this filter.  Used
+        /// in conjunction with IN-style filter criteria.
+        /// </summary>
+        /// <param name="name">The parameter's name.</param>
+        /// <param name="value">The values to be expanded into an SQL IN list.</param>
+        /// <returns>This FilterImpl instance (for method chaining).</returns>
+        public IFilter SetParameterList(string name, ICollection values) 
+        {
+		    // Make sure this is a defined parameter and check the incoming value type
+		    if ( values == null ) {
+			    throw new ArgumentException( "values", "Collection must be not null!" );
+		    }
+		    IType type = definition.GetParameterType( name );
+		    if ( type == null ) {
+			    throw new HibernateException( "Undefined filter parameter [" + name + "]" );
+		    }
+		    if ( values.Count > 0 ) {
+                IEnumerator e = values.GetEnumerator();
+                e.MoveNext();
+                if (!type.ReturnedClass.IsAssignableFrom(e.Current.GetType()))
+                {
+				    throw new HibernateException( "Incorrect type for parameter [" + name + "]" );
+			    }
+		    }
+  	        parameters.Add( name, values );
+		    return this;
+	    }
 
-		public override IList List()
-		{
-			VerifyParameters();
-			IDictionary namedParams = NamedParams;
-			return Session.Filter( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
-		}
+        /// <summary>
+        /// Set the named parameter's value list for this filter.  Used
+        /// in conjunction with IN-style filter criteria.        
+        /// </summary>
+        /// <param name="name">The parameter's name.</param>
+        /// <param name="values">The values to be expanded into an SQL IN list.</param>
+        /// <returns>This FilterImpl instance (for method chaining).</returns>
+	    public IFilter SetParameterList(string name, object[] values) {
+		    return SetParameterList( name, new ArrayList(values) );
+	    }
 
-#if NET_2_0
-		public override IList<T> List<T>()
-		{
-			VerifyParameters();
-			IDictionary namedParams = NamedParams;
-			return Session.Filter<T>( collection, BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
-		}
-#endif
+	    public object GetParameter(string name) 
+        {
+		    return parameters[name];
+	    }
 
-		public override IType[] TypeArray()
-		{
-			IList typeList = Types;
-			int size = typeList.Count;
-			IType[ ] result = new IType[size + 1];
-			for( int i = 0; i < size; i++ )
-			{
-				result[ i + 1 ] = ( IType ) typeList[ i ];
-			}
-			return result;
-		}
-
-		public override object[ ] ValueArray()
-		{
-			IList valueList = Values;
-			int size = valueList.Count;
-			object[ ] result = new object[size + 1];
-			for( int i = 0; i < size; i++ )
-			{
-				result[ i + 1 ] = valueList[ i ];
-			}
-			return result;
-		}
-	}
+        /// <summary>
+        /// Perform validation of the filter state.  This is used to verify the
+        /// state of the filter after its enablement and before its use.
+        /// </summary>
+        /// <returns></returns>
+	    public void Validate()
+        {
+		    foreach ( string parameterName in  definition.ParameterNames ) {
+			    if ( parameters[parameterName] == null ) {
+				    throw new HibernateException(
+						    "Filter [" + Name + "] parameter [" + parameterName + "] value not set"
+				    );
+			    }
+		    }
+	    }
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
 {
@@ -19,6 +20,8 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public abstract class JoinFragment
 	{
+        private bool hasFilterCondition = false;
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -103,5 +106,25 @@ namespace NHibernate.SqlCommand
 		{
 			AddJoins( ojf.ToFromFragmentString, ojf.ToWhereFragmentString );
 		}
+
+        protected bool AddCondition(string buffer, string on)
+        {
+            if (StringHelper.IsNotEmpty(on))
+            {
+                if (!on.StartsWith(" and")) buffer+=" and ";
+                buffer+=on;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool HasFilterCondition
+        {
+            get { return hasFilterCondition; }
+            set { hasFilterCondition = value; }
+        }
 	}
 }

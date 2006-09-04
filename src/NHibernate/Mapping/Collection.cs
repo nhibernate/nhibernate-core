@@ -17,7 +17,7 @@ namespace NHibernate.Mapping
 	/// Subclasses are responsible for the specialization required for the particular
 	/// collection style.
 	/// </remarks>
-	public abstract class Collection : IFetchable, IValue
+	public abstract class Collection : IFetchable, IValue, IFilterable
 	{
 		private static readonly ICollection EmptyColumns = new object[ 0 ];
 
@@ -63,6 +63,8 @@ namespace NHibernate.Mapping
 		private bool isGeneric;
 		private System.Type[] genericArguments;
 #endif
+       	private IDictionary filters = new Hashtable();
+        private IDictionary manyToManyFilters = new Hashtable();
 
 		protected Collection( PersistentClass owner )
 		{
@@ -401,5 +403,25 @@ namespace NHibernate.Mapping
 			customUpdateCallable = callable;
 			updateCheckStyle = checkStyle;
 		}
+
+        public void AddFilter(string name, string condition)
+        {
+            filters.Add(name, condition);
+        }
+
+        public IDictionary FilterMap
+        {
+            get { return filters; }
+        }
+
+        public void AddManyToManyFilter(string name, string condition)
+        {
+            manyToManyFilters.Add(name, condition);
+        }
+
+        public IDictionary ManyToManyFilterMap
+        {
+            get { return manyToManyFilters; }
+        }
 	}
 }

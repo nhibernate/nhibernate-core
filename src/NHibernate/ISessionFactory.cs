@@ -2,6 +2,7 @@ using System.Collections;
 using System.Data;
 using NHibernate.Connection;
 using NHibernate.Metadata;
+using NHibernate.Engine;
 
 namespace NHibernate
 {
@@ -157,5 +158,19 @@ namespace NHibernate
 		/// Get the SQL <c>Dialect</c>
 		/// </summary>
 		Dialect.Dialect Dialect { get; }
-	}
+
+        /// <summary>
+        /// Obtain a set of the names of all filters defined on this SessionFactory.
+        /// </summary>
+        /// <param name="filterName">The name of the filter for which to obtain the definition.</param>
+        /// <return>The set of filter names.</return>
+        ICollection DefinedFilterNames { get; }
+
+        /// <summary>
+        /// Obtain the definition of a filter by name.
+        /// </summary>
+        /// <param name="filterName">The name of the filter for which to obtain the definition.</param>
+        /// <return>The filter definition.</return>
+        FilterDefinition GetFilterDefinition(string filterName);
+    }
 }

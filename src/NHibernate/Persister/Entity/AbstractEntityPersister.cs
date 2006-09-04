@@ -146,6 +146,8 @@ namespace NHibernate.Persister.Entity
 		private readonly IType[] subclassPropertyTypeClosure;
 		private readonly FetchMode[] subclassPropertyFetchModeClosure;
 
+        private readonly FilterHelper filterHelper;
+
 		// temporarily 'protected' instead of 'private readonly'
 		protected bool[] propertyDefinedOnSubclass;
 
@@ -982,6 +984,9 @@ namespace NHibernate.Persister.Entity
 			{
 				proxyFactory = null;
 			}
+
+            // Handle any filters applied to the class level
+            filterHelper = new FilterHelper(persistentClass.FilterMap, factory.Dialect);
 		}
 
 		protected virtual IProxyFactory CreateProxyFactory()
@@ -2020,7 +2025,10 @@ namespace NHibernate.Persister.Entity
 
 		public string FilterFragment( string alias, IDictionary enabledFilters )
 		{
-			return FilterFragment( alias );
+		    StringBuilder sessionFilterFragment = new StringBuilder();
+		    filterHelper.Render( sessionFilterFragment, GenerateFilterConditionAlias( alias ), enabledFilters );
+
+		    return sessionFilterFragment.Append( FilterFragment( alias ) ).ToString();
 		}
 
 		protected string GenerateTableAlias( string rootAlias, int tableNumber )
