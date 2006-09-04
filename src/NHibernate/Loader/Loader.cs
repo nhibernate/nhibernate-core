@@ -1104,7 +1104,6 @@ namespace NHibernate.Loader
 			for( int i = 0; i < values.Length; i++ )
 			{
 				types[ i ].NullSafeSet( st, values[ i ], start + span, session );
-                Console.Write(i + "\n");
                 span += types[i].GetColumnSpan(session.Factory);
 			}
 
@@ -1148,11 +1147,7 @@ namespace NHibernate.Loader
 				                                    useOffset ? GetFirstRow( selection ) : 0,
 				                                    GetMaxOrLimit( dialect, selection ) );
 			}
-            Console.WriteLine(sqlString);
-            Console.WriteLine(session.Batcher);
-            Console.WriteLine(parameters.CommandType);
             IDbCommand command = session.Batcher.PrepareQueryCommand(sqlString, parameters.CommandType);
-            Console.WriteLine(command.Parameters.Count);
 
 			try
 			{
