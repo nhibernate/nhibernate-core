@@ -72,13 +72,14 @@ namespace NHibernate.Impl
 		/// </summary>
 		private IDictionary proxiesByKey;
 
-		// these are used to serialize the proxiesByKey Dictionary - I was not able to
-		// have a Hashtable serialize fully by the time that SessionImpl OnDeserialization
-		// was getting called - I think I'm not completely understanding the sequence of 
-		// deserialization events.  When SessionImpl was getting the OnDeserialization called
-		// the proxies were not fully deserialized. 
+		// these are used to serialize hashtables because .NET's Hashtable
+		// implements IDeserializationCallback as we do, and .NET runtime calls our
+		// OnDeserialize method before that of our hashtables which means that
+		// the hashtables are not usable in our OnDeserialize.
 		private ArrayList tmpProxiesKey;
 		private ArrayList tmpProxiesProxy;
+		private ArrayList tmpEnabledFiltersKey;
+		private ArrayList tmpEnabledFiltersValue;
 
 		//IdentityMaps are serializable in NH 
 		/// <summary>
@@ -248,12 +249,9 @@ namespace NHibernate.Impl
 			this.collectionUpdates = (ArrayList) info.GetValue("collectionUpdates", typeof(ArrayList));
 			this.collectionRemovals = (ArrayList) info.GetValue("collectionRemovals", typeof(ArrayList));
 
-            this.enabledFilters = (IDictionary) info.GetValue("enabledFilters", typeof(IDictionary));
-            foreach (FilterImpl filter in enabledFilters.Values)
-            {
-                filter.AfterDeserialize(factory.GetFilterDefinition(filter.Name));
-            }
-
+            //this.enabledFilters = (IDictionary) info.GetValue("enabledFilters", typeof(IDictionary));
+			tmpEnabledFiltersKey = (ArrayList) info.GetValue("tmpEnabledFiltersKey", typeof(ArrayList));
+			tmpEnabledFiltersValue = (ArrayList) info.GetValue("tmpEnabledFiltersValue", typeof(ArrayList));
 		}
 
 		/// <summary>
@@ -316,7 +314,17 @@ namespace NHibernate.Impl
 			info.AddValue("collectionRemovals", collectionRemovals);
 			info.AddValue("collectionUpdates", collectionUpdates);
 
-            info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary));
+			tmpEnabledFiltersKey = new ArrayList(enabledFilters.Count);
+			tmpEnabledFiltersValue = new ArrayList(enabledFilters.Count);
+			foreach (DictionaryEntry de in enabledFilters)
+			{
+				tmpEnabledFiltersKey.Add(de.Key);
+				tmpEnabledFiltersValue.Add(de.Value);
+			}
+
+            //info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary));
+			info.AddValue("tmpEnabledFiltersKey", tmpEnabledFiltersKey);
+			info.AddValue("tmpEnabledFiltersValue", tmpEnabledFiltersValue);
         }
 
 		#endregion
@@ -328,7 +336,7 @@ namespace NHibernate.Impl
 		/// collections, proxies, and entities back up to the ISession.
 		/// </summary>
 		/// <param name="sender"></param>
-		void IDeserializationCallback.OnDeserialization(Object sender)
+		void IDeserializationCallback.OnDeserialization(object sender)
 		{
 			log.Debug("OnDeserialization of the session.");
 
@@ -403,6 +411,18 @@ namespace NHibernate.Impl
 					throw new InvalidOperationException(me.Message);
 				}
 			}
+
+			// recreate the enabledFilters hashtable from the two arraylists.
+			enabledFilters = new Hashtable(tmpEnabledFiltersKey.Count);
+			for (int i = 0; i < tmpEnabledFiltersKey.Count; i++)
+			{
+				enabledFilters.Add(tmpEnabledFiltersKey[i], tmpEnabledFiltersValue[i]);
+			}
+
+			foreach (FilterImpl filter in enabledFilters.Values)
+            {
+                filter.AfterDeserialize(factory.GetFilterDefinition(filter.Name));
+            }
 		}
 
 		#endregion
