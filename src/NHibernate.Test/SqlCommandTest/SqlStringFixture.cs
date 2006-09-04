@@ -48,7 +48,7 @@ namespace NHibernate.Test.SqlCommandTest
 		public void CompactWithParams() 
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
-			Parameter param = new Parameter( "id", SqlTypeFactory.Int32 );
+			Parameter param = new Parameter( SqlTypeFactory.Int32 );
 
 			builder.Add("select from table ");
 			builder.Add("where ");
@@ -61,21 +61,21 @@ namespace NHibernate.Test.SqlCommandTest
 			sql = sql.Compact();
 
 			Assert.AreEqual( 3, sql.SqlParts.Length );
-			Assert.AreEqual( "select from table where id = :id and 'a'='a'", sql.ToString() );
+			Assert.AreEqual( "select from table where id = ? and 'a'='a'", sql.ToString() );
 
 		}
 
 		[Test]
 		public void CompactWithNoString() 
 		{
-			Parameter p1 = new Parameter( "p1" );
-			Parameter p2 = new Parameter( "p2" );
+			Parameter p1 = Parameter.Placeholder;
+			Parameter p2 = Parameter.Placeholder;
 			
 			SqlString sql = new SqlString( new object[] {p1, p2} );
 			SqlString compacted = sql.Compact();
 
 			Assert.AreEqual( 2, compacted.SqlParts.Length );
-			Assert.AreEqual( ":p1:p2", compacted.ToString() );
+			Assert.AreEqual( "??", compacted.ToString() );
 
 		}
 
@@ -89,7 +89,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void ContainsUntypedParameterWithParam() 
 		{
-			Parameter p1 = new Parameter( "p1", SqlTypeFactory.Int32 );
+			Parameter p1 = new Parameter( SqlTypeFactory.Int32 );
 			
 			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", p1} );
 			Assert.IsFalse( sql.ContainsUntypedParameter );
@@ -99,23 +99,23 @@ namespace NHibernate.Test.SqlCommandTest
 		public void ContainsUntypedParameterWithUntypedParam() 
 		{
 			
-			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", new Parameter( "p1" )} );
+			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", Parameter.Placeholder} );
 			Assert.IsTrue( sql.ContainsUntypedParameter );
 		}
 
 		[Test]
 		public void ContainsUntypedParameterWithMixedUntypedParam() 
 		{
-			Parameter p1 = new Parameter( "p1", SqlTypeFactory.Int32 );
+			Parameter p1 = new Parameter( SqlTypeFactory.Int32 );
 			
-			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", new Parameter( "p2" ), " and b = " , p1} );
+			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", Parameter.Placeholder, " and b = " , p1} );
 			Assert.IsTrue( sql.ContainsUntypedParameter );
 		}
 
 		[Test]
 		public void Count() 
 		{
-			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", new Parameter( "p1" ), " and b = " , new Parameter( "p2" ) } );
+			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", Parameter.Placeholder, " and b = " , Parameter.Placeholder } );
 			Assert.AreEqual( 5, sql.Count, "Count with no nesting failed." );
 
 			sql = sql.Append( new SqlString( new object[] {" more parts ", " another part "} ) );
@@ -147,7 +147,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EndsWithParameter() 
 		{
-			SqlString sql = new SqlString( new object[] { "", "select", " from table where id = ", new Parameter( "p1" ) } );
+			SqlString sql = new SqlString( new object[] { "", "select", " from table where id = ", Parameter.Placeholder } );
 			Assert.IsFalse( sql.EndsWith("'") );
 			Assert.IsFalse( sql.EndsWith("") );
 		}
@@ -169,7 +169,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void IsEmptyWithParam()
 		{
-			SqlString sql = new SqlString( new object[] { "", new Parameter( "p1" ) } );
+			SqlString sql = new SqlString( new object[] { "", Parameter.Placeholder } );
 			Assert.IsFalse( sql.IsEmpty, "had a parameter - should not be empty" );
 		}
 
@@ -184,7 +184,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void ParameterIndexOneParam() 
 		{
-			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", new Parameter( "p1" ) } );
+			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder } );
 			
 			Assert.AreEqual( 1, sql.ParameterIndexes.Length );
 			Assert.AreEqual( 3, sql.ParameterIndexes[0], "the first param should be at index 3" );
@@ -194,7 +194,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void ParameterIndexManyParam() 
 		{
-			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", new Parameter( "p1" ), " and c = ", new Parameter( "p2" ) } );
+			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder, " and c = ", Parameter.Placeholder } );
 			
 			Assert.AreEqual( 2, sql.ParameterIndexes.Length );
 			Assert.AreEqual( 3, sql.ParameterIndexes[0], "the first param should be at index 3"  );
@@ -204,7 +204,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void Replace() 
 		{
-			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", new Parameter( "p1" ), " and c = ", new Parameter( "p2" ) } );
+			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder, " and c = ", Parameter.Placeholder } );
 			
 			SqlString replacedSql = sql.Replace( "table", "replacedTable" );
 			Assert.AreEqual( "select from replacedTable where a = ", replacedSql.SqlParts[0], "replaced single instance" );
@@ -240,7 +240,7 @@ namespace NHibernate.Test.SqlCommandTest
 		public void Substring() 
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
-			Parameter p = new Parameter( "p1" );
+			Parameter p = Parameter.Placeholder;
 			
 			builder.Add(" select from table");
 			builder.Add(" where p = ");
@@ -250,7 +250,7 @@ namespace NHibernate.Test.SqlCommandTest
 
 			sql = sql.Substring(1);
 
-			Assert.AreEqual( "select from table where p = :p1", sql.ToString() );
+			Assert.AreEqual( "select from table where p = ?", sql.ToString() );
 
 
 		}
@@ -267,35 +267,35 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void TrimBeginParamEndString() 
 		{
-			Parameter p1 = new Parameter( "p1" );
+			Parameter p1 = Parameter.Placeholder;
 			
 			SqlString sql = new SqlString( new object[] {p1, "   extra space   "} );
 			sql = sql.Trim();
 
-			Assert.AreEqual( ":p1   extra space", sql.ToString() );
+			Assert.AreEqual( "?   extra space", sql.ToString() );
 		}
 
 		[Test]
 		public void TrimBeginStringEndParam() 
 		{
-			Parameter p1 = new Parameter( "p1" );
+			Parameter p1 = Parameter.Placeholder;
 			
 			SqlString sql = new SqlString( new object[] { "   extra space   ", p1 } );
 			sql = sql.Trim();
 
-			Assert.AreEqual( "extra space   :p1", sql.ToString() );
+			Assert.AreEqual( "extra space   ?", sql.ToString() );
 		}
 
 		[Test]
 		public void TrimAllParam() 
 		{
-			Parameter p1 = new Parameter( "p1" );
-			Parameter p2 = new Parameter( "p2" );
+			Parameter p1 = Parameter.Placeholder;
+			Parameter p2 = Parameter.Placeholder;
 			
 			SqlString sql = new SqlString( new object[] { p1, p2 } );
 			sql = sql.Trim();
 
-			Assert.AreEqual( ":p1:p2", sql.ToString() );
+			Assert.AreEqual( "??", sql.ToString() );
 		}
 
 

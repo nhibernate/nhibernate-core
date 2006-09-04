@@ -51,10 +51,10 @@ namespace NHibernate.Test.ExpressionTest
 			{
 				SqlStringBuilder builder = new SqlStringBuilder();
 			
-				string expectedSql = "sql_alias.address = :address";
+				string expectedSql = "sql_alias.address = ?";
 				Parameter[] expectedParams = new Parameter[1];
 			
-				Parameter firstAndParam = new Parameter( "address", new SqlTypes.StringSqlType() );
+				Parameter firstAndParam = new Parameter( new SqlTypes.StringSqlType() );
 				expectedParams[0] = firstAndParam;
 
 				builder.Add( "{alias}.address = " );

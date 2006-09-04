@@ -29,10 +29,10 @@ namespace NHibernate.Test.ExpressionTest
 			SqlString sqlString = notExpression.ToSqlString( criteria, criteriaQuery );
 
 			string expectedSql = dialect is Dialect.MySQLDialect ?
-				"not (sql_alias.address = :sql_alias.address)" :
-				"not sql_alias.address = :sql_alias.address";
+				"not (sql_alias.address = ?)" :
+				"not sql_alias.address = ?";
 			
-			Parameter firstParam = new Parameter( "address", "sql_alias", new SqlTypes.StringSqlType() );
+			Parameter firstParam = new Parameter( new SqlTypes.StringSqlType() );
 			CompareSqlStrings(sqlString, expectedSql, new Parameter[] {firstParam});
 			
 			session.Close();

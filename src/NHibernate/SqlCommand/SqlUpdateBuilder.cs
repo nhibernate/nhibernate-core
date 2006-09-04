@@ -91,7 +91,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder AddColumns( string[ ] columnNames, IType propertyType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, propertyType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, propertyType );
 
 			for( int i = 0; i < columnNames.Length; i++ )
 			{
@@ -110,7 +110,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, identityType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, identityType );
 
 			identityFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
 
@@ -125,7 +125,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, versionType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, versionType );
 
 			versionFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
 
@@ -144,7 +144,7 @@ namespace NHibernate.SqlCommand
 			if( columnNames.Length > 0 )
 			{
 				// Don't add empty conditions - we get extra ANDs
-				Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, columnNames, type );
+				Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, type );
 				whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
 			}
 

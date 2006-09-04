@@ -98,7 +98,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="factory"></param>
 		public override void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( factory, alias, columns, conditionType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( factory, conditionType );
 			for( int i = 0; i < columns.Length; i++ )
 			{
 				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );

@@ -1373,13 +1373,7 @@ namespace NHibernate.Hql
 					{
 						for( int i = 0; i < parameters.PositionalParameterTypes.Length; i++ )
 						{
-							string[ ] colNames = new string[parameters.PositionalParameterTypes[ i ].GetColumnSpan( Factory )];
-							for( int j = 0; j < colNames.Length; j++ )
-							{
-								colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
-							}
-
-							Parameter[ ] sqlParameters = Parameter.GenerateParameters( Factory, colNames, parameters.PositionalParameterTypes[ i ] );
+							Parameter[ ] sqlParameters = Parameter.GenerateParameters( Factory, parameters.PositionalParameterTypes[ i ] );
 
 							foreach( Parameter param in sqlParameters )
 							{
@@ -1426,14 +1420,7 @@ namespace NHibernate.Hql
 							for( int i = 0; i < paramTypeList.Count; i++ )
 							{
 								IType type = ( IType ) paramTypeList[ i ];
-								string[ ] colNames = new string[type.GetColumnSpan( Factory )];
-
-								for( int j = 0; j < colNames.Length; j++ )
-								{
-									colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
-								}
-
-								Parameter[ ] sqlParameters = Parameter.GenerateParameters( Factory, colNames, type );
+								Parameter[ ] sqlParameters = Parameter.GenerateParameters( Factory, type );
 
 								foreach( Parameter param in sqlParameters )
 								{

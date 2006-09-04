@@ -40,7 +40,7 @@ namespace NHibernate.Test.ExpressionTest
 				sqlString = _conjunction.ToSqlString( criteria, criteriaQuery );
 			}
 			
-			string expectedSql = "(sql_alias.address is null and sql_alias.count_ between :sql_alias.count__lo and :sql_alias.count__hi)";
+			string expectedSql = "(sql_alias.address is null and sql_alias.count_ between ? and ?)";
 			
 			CompareSqlStrings(sqlString, expectedSql, 2);
 	

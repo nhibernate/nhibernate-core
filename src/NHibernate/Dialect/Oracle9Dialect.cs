@@ -201,14 +201,14 @@ namespace NHibernate.Dialect
 			if ( hasOffset )
 			{
 				pagingBuilder.Add( " ) row_ where rownum <= " );
-				pagingBuilder.Add( new Parameter( "p1", SqlTypeFactory.Int32 ) );
+				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
 				pagingBuilder.Add( " ) where rownum_ > " );
-				pagingBuilder.Add( new Parameter( "p2", SqlTypeFactory.Int32 ) );
+				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
 			} 
 			else 
 			{
 				pagingBuilder.Add( " ) where rownum <= " );
-				pagingBuilder.Add( new Parameter( "p1", SqlTypeFactory.Int32 ) );
+				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
 			
 			} 
 

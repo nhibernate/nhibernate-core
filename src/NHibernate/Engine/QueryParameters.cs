@@ -390,7 +390,7 @@ namespace NHibernate.Engine
                                 foreach (object elementValue in coll)
                                 {
                                     i++;
-                                    Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, new string[] { filterParameterName }, type);
+                                    Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, type);
 
                                     if (sqlParameters != null && sqlParameters.Length > 0)
                                     {
@@ -403,7 +403,7 @@ namespace NHibernate.Engine
                             }
                             else
                             {
-                                Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, new string[] { filterParameterName }, type);
+                                Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, type);
                                 if (sqlParameters != null && sqlParameters.Length > 0)
                                 {
                                     result.Add(sqlParameters[0]);
@@ -415,7 +415,7 @@ namespace NHibernate.Engine
                         else
                         {
                             string parameterName = token.Substring(1);
-                            Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, new string[] { parameterName }, PositionalParameterTypes[parameterIndex]);
+                            Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, PositionalParameterTypes[parameterIndex]);
                             result.Add(sqlParameters[0]);
                             parameterIndex++;
                         }

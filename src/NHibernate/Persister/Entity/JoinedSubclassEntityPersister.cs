@@ -389,7 +389,7 @@ namespace NHibernate.Persister.Entity
 				.Add( " where " )
 				.Add( WhereJoinFragment( ConcreteAlias, true, false ) );
 
-			Parameter[] idParameters = Parameter.GenerateParameters( Factory, ConcreteAlias, IdentifierColumnNames, IdentifierType );
+			Parameter[] idParameters = Parameter.GenerateParameters( Factory, IdentifierType );
 
 			for( int i = 0; i < idParameters.Length; i++ )
 			{
@@ -406,8 +406,7 @@ namespace NHibernate.Persister.Entity
 
 			if( IsVersioned )
 			{
-				Parameter[] versionParameters = Parameter.GenerateParameters(
-					Factory, ConcreteAlias, new string[1] {VersionColumnName}, VersionType );
+				Parameter[] versionParameters = Parameter.GenerateParameters(Factory, VersionType);
 				select.Add( " and " )
 					.Add( VersionColumnName )
 					.Add( " = " )

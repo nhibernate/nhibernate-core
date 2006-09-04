@@ -336,22 +336,20 @@ namespace NHibernate.Loader.Custom
 			internal IDictionary namedParameterBindPoints = new Hashtable();
 			internal int parameterCount = 0;
 
-			private int parameterIndex = 0;
-
 			public void OutParameter( int position )
 			{
-				result.Add( new Parameter( NextParameterName() ) );
+				result.Add( Parameter.Placeholder );
 			}
 
 			public void OrdinalParameter( int position )
 			{
-				result.Add( new Parameter( NextParameterName() ) );
+				result.Add( Parameter.Placeholder );
 			}
 
 			public void NamedParameter( string name, int position )
 			{
 				AddNamedParameter( name );
-				result.Add( new Parameter( name ) );
+				result.Add( Parameter.Placeholder );
 			}
 
 			public void Ejb3PositionalParameter( string name, int position )
@@ -362,13 +360,6 @@ namespace NHibernate.Loader.Custom
 			public void Other( char character )
 			{
 				result.Add( new string( character, 1 ) );
-			}
-
-			private string NextParameterName()
-			{
-				string name = "p" + parameterIndex.ToString();
-				parameterIndex++;
-				return name;
 			}
 
 			private void AddNamedParameter( string name )

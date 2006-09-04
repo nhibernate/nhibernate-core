@@ -13,59 +13,65 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class Parameter : ICloneable
 	{
-		private readonly string _name;
+		/// <summary>
+		/// A parameter with <c>null</c> <see cref="SqlType" />. Used as a placeholder when
+		/// parsing HQL or SQL queries.
+		/// </summary>
+		public static readonly Parameter Placeholder = new Parameter(null);
+
+		//private readonly string _name;
 		private readonly SqlType _sqlType;
 
-		/// <summary>
-		/// Initializes a new instance of <see cref="Parameter"/> class.
-		/// </summary>
-		/// <param name="name">The name of the parameter.</param>
-		public Parameter(string name)
-			: this( name, null, null )
-		{
-		}
+		///// <summary>
+		///// Initializes a new instance of <see cref="Parameter"/> class.
+		///// </summary>
+		///// <param name="name">The name of the parameter.</param>
+		//public Parameter(string name)
+		//    : this(name, null, null)
+		//{
+		//}
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Parameter"/> class.
 		/// </summary>
 		/// <param name="name">The name of the parameter.</param>
 		/// <param name="sqlType">The <see cref="SqlType"/> to create the parameter for.</param>
-		public Parameter(string name, SqlType sqlType)
-			: this( name, null, sqlType )
+		public Parameter(SqlType sqlType)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of <see cref="Parameter"/> class.
-		/// </summary>
-		/// <param name="name">The name of the parameter.</param>
-		/// <param name="tableAlias">The Alias to use for the table.</param>
-		/// <param name="sqlType">The <see cref="SqlType"/> to create the parameter for.</param>
-		public Parameter(string name, string tableAlias, SqlType sqlType)
-		{
-			if( tableAlias!=null && tableAlias.Length>0 )
-			{
-				_name = tableAlias + StringHelper.Dot + name;
-			}
-			else
-			{
-				_name = name;
-			}
 			_sqlType = sqlType;
 		}
 
-		/// <summary>
-		/// Gets the name of the Parameter.
-		/// </summary>
-		/// <value>The name of the Parameter.</value>
-		/// <remarks>
-		/// The Parameter name is not used by anything except to compare equality
-		/// and to generate a debug string.
-		/// </remarks>
-		public string Name
-		{
-			get { return _name; }
-		}
+		///// <summary>
+		///// Initializes a new instance of <see cref="Parameter"/> class.
+		///// </summary>
+		///// <param name="name">The name of the parameter.</param>
+		///// <param name="tableAlias">The Alias to use for the table.</param>
+		///// <param name="sqlType">The <see cref="SqlType"/> to create the parameter for.</param>
+		//public Parameter(string name, string tableAlias, SqlType sqlType)
+		//{
+		//    if (tableAlias != null && tableAlias.Length > 0)
+		//    {
+		//        _name = tableAlias + StringHelper.Dot + name;
+		//    }
+		//    else
+		//    {
+		//        _name = name;
+		//    }
+		//    _sqlType = sqlType;
+		//}
+
+		///// <summary>
+		///// Gets the name of the Parameter.
+		///// </summary>
+		///// <value>The name of the Parameter.</value>
+		///// <remarks>
+		///// The Parameter name is not used by anything except to compare equality
+		///// and to generate a debug string.
+		///// </remarks>
+		//public string Name
+		//{
+		//    get { return _name; }
+		//}
 
 		/// <summary>
 		/// Gets the <see cref="SqlType"/> that defines the specifics of 
@@ -80,39 +86,31 @@ namespace NHibernate.SqlCommand
 			get { return _sqlType; }
 		}
 
-
 		/// <summary>
-		/// Generates an Array of Parameters for the columns that make up the IType
+		/// Generates an array of parameters for the columns that make up the type.
 		/// </summary>
-		/// <param name="columnNames">The names of the Columns that compose the IType</param>
-		/// <param name="type">The IType to turn into Parameters</param>
-		/// <param name="factory"></param>
-		/// <returns>An Array of <see cref="Parameter"/> objects</returns>
-		public static Parameter[ ] GenerateParameters( IMapping factory, string[ ] columnNames, IType type )
+		/// <param name="columnNames">The names of the columns that compose the type</param>
+		/// <param name="type">The type to turn into parameters</param>
+		/// <returns>An array of <see cref="Parameter"/> objects</returns>
+		public static Parameter[] GenerateParameters(IMapping mapping, IType type)
 		{
-			return Parameter.GenerateParameters( factory, null, columnNames, type );
+			return Parameter.GenerateParameters(type.SqlTypes(mapping));
 		}
 
 
 		/// <summary>
-		/// Generates an Array of Parameters for the columns that make up the IType
+		/// Generates an array of parameters for the given <see cref="SqlType">SqlTypes</see>.
 		/// </summary>
-		/// <param name="factory">The SessionFactory to use to get the DbTypes.</param>
-		/// <param name="tableAlias">The Alias for the Table.</param>
-		/// <param name="columnNames">The names of the Columns that compose the IType</param>
-		/// <param name="type">The IType to turn into Parameters</param>
-		/// <returns>An Array of <see cref="Parameter"/> objects</returns>
-		public static Parameter[ ] GenerateParameters( IMapping factory, string tableAlias, string[ ] columnNames, IType type )
+		/// <param name="sqlTypes">Array of <see cref="SqlType" /> giving the database type and
+		/// size of each generated parameter.</param>
+		/// <returns>An array of <see cref="Parameter"/> objects</returns>
+		public static Parameter[] GenerateParameters(SqlType[] sqlTypes)
 		{
-			SqlType[ ] sqlTypes = type.SqlTypes( factory );
-
-			Parameter[ ] parameters = new Parameter[sqlTypes.Length];
-
-			for( int i = 0; i < sqlTypes.Length; i++ )
+			Parameter[] parameters = new Parameter[sqlTypes.Length];
+			for (int i = 0; i < sqlTypes.Length; i++)
 			{
-				parameters[ i ] = new Parameter( columnNames[i], tableAlias, sqlTypes[i] );
+				parameters[i] = new Parameter(sqlTypes[i]);
 			}
-
 			return parameters;
 		}
 
@@ -130,25 +128,23 @@ namespace NHibernate.SqlCommand
 		/// <remarks>
 		/// Each subclass needs to implement their own <c>Equals</c>. 
 		/// </remarks>
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
 			// Step1: Perform an equals test
-			if( obj == this )
+			if (obj == this)
 			{
 				return true;
 			}
 
 			// Step	2: Instance of check
 			Parameter rhs = obj as Parameter;
-			if( rhs == null )
+			if (rhs == null)
 			{
 				return false;
 			}
-		
+
 			//Step 3: Check each important field
-			return
-				this.SqlType.Equals(rhs.SqlType) &&
-				this.Name.Equals(rhs.Name);
+			return object.Equals(this.SqlType, rhs.SqlType); // && this.Name.Equals(rhs.Name);
 		}
 
 		/// <summary>
@@ -163,44 +159,36 @@ namespace NHibernate.SqlCommand
 
 			unchecked
 			{
-				if( _sqlType != null )
+				if (_sqlType != null)
 				{
 					hashCode += _sqlType.GetHashCode();
 				}
-				if( _name != null )
-				{
-					hashCode += _name.GetHashCode();
-				}
+				//if (_name != null)
+				//{
+				//    hashCode += _name.GetHashCode();
+				//}
 
 				return hashCode;
 			}
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
-			return ":" + _name;
+			return "?";
+			//":" + _name;
 		}
 
 		#endregion
 
 		#region ICloneable Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public Parameter Clone()
 		{
-			Parameter paramClone = ( Parameter ) this.MemberwiseClone();
+			Parameter paramClone = (Parameter) this.MemberwiseClone();
 
 			return paramClone;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		object ICloneable.Clone()
 		{
 			return Clone();
@@ -208,5 +196,4 @@ namespace NHibernate.SqlCommand
 
 		#endregion
 	}
-
 }

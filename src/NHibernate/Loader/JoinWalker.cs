@@ -823,7 +823,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected SqlStringBuilder WhereString( string alias, string[] columnNames, IType type, int batchSize )
 		{
-			Parameter[] columnParameters = Parameter.GenerateParameters( factory, columnNames, type );
+			Parameter[] columnParameters = Parameter.GenerateParameters( factory, type );
 
 			if( columnNames.Length == 1 )
 			{

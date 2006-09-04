@@ -258,14 +258,14 @@ namespace NHibernate.Dialect
 			if( hasOffset )
 			{
 				pagingBuilder.Add( "between " );
-				pagingBuilder.Add( new Parameter( "p1", SqlTypeFactory.Int32 ) ).Add( "+1" );
+				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) ).Add( "+1" );
 				pagingBuilder.Add( " and " );
-				pagingBuilder.Add( new Parameter( "p2", SqlTypeFactory.Int32 ) );
+				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
 			}
 			else
 			{
 				pagingBuilder.Add( "<= " );
-				pagingBuilder.Add( new Parameter( "p1", SqlTypeFactory.Int32 ) );
+				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
 			}
     
 			return pagingBuilder.ToSqlString();

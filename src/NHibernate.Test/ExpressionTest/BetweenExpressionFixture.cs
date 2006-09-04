@@ -21,13 +21,13 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion betweenExpression = Expression.Expression.Between( "Count", 5, 10 );
 			SqlString sqlString = betweenExpression.ToSqlString( criteria, criteriaQuery );
 
-			string expectedSql = "sql_alias.count_ between :sql_alias.count__lo and :sql_alias.count__hi";
+			string expectedSql = "sql_alias.count_ between ? and ?";
 			Parameter[ ] expectedParams = new Parameter[2];
 
-			Parameter firstBetweenParam = new Parameter( "count__lo", "sql_alias", SqlTypeFactory.Int32 );
+			Parameter firstBetweenParam = new Parameter( SqlTypeFactory.Int32 );
 			expectedParams[ 0 ] = firstBetweenParam;
 
-			Parameter secondBetweenParam = new Parameter( "count__hi", "sql_alias", SqlTypeFactory.Int32 );
+			Parameter secondBetweenParam = new Parameter( SqlTypeFactory.Int32 );
 			expectedParams[ 1 ] = secondBetweenParam;
 
 			CompareSqlStrings( sqlString, expectedSql, expectedParams );

@@ -95,20 +95,20 @@ namespace NHibernate.Id
 
 			if( type is Int16Type )
 			{
-				setParam = new Parameter( columnName, SqlTypeFactory.Int16 );
-				whereParam = new Parameter( columnName, SqlTypeFactory.Int16 );
+				setParam = new Parameter( SqlTypeFactory.Int16 );
+				whereParam = new Parameter( SqlTypeFactory.Int16 );
 				columnSqlType = SqlTypeFactory.Int16;
 			}
 			else if( type is Int64Type )
 			{
-				setParam = new Parameter( columnName, SqlTypeFactory.Int64 );
-				whereParam = new Parameter( columnName, SqlTypeFactory.Int64 );
+				setParam = new Parameter( SqlTypeFactory.Int64 );
+				whereParam = new Parameter( SqlTypeFactory.Int64 );
 				columnSqlType = SqlTypeFactory.Int64;
 			}
 			else
 			{
-				setParam = new Parameter( columnName, SqlTypeFactory.Int32 );
-				whereParam = new Parameter( columnName, SqlTypeFactory.Int32 );
+				setParam = new Parameter( SqlTypeFactory.Int32 );
+				whereParam = new Parameter( SqlTypeFactory.Int32 );
 				columnSqlType = SqlTypeFactory.Int32;
 			}
 

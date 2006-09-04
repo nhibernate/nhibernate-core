@@ -38,7 +38,7 @@ namespace NHibernate.Test.SqlCommandTest
 			Parameter[] actualParams = new Parameter[2];
 			int numOfParameters = 0;
 			
-			string expectedSql = "INSERT INTO test_insert_builder (intColumn, longColumn, literalColumn, stringColumn) VALUES (:intColumn, :longColumn, 0, 5)";
+			string expectedSql = "INSERT INTO test_insert_builder (intColumn, longColumn, literalColumn, stringColumn) VALUES (?, ?, 0, 5)";
 			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
 			
 			foreach(object part in sqlString.SqlParts) 
@@ -52,17 +52,12 @@ namespace NHibernate.Test.SqlCommandTest
 
 			Assert.AreEqual(2, numOfParameters, "Two parameters");
 
-			Parameter firstParam = new Parameter( "intColumn", SqlTypeFactory.Int32 );
+			Parameter firstParam = new Parameter(SqlTypeFactory.Int32 );
 			
-			Parameter secondParam = new Parameter( "longColumn", SqlTypeFactory.Int64 );
+			Parameter secondParam = new Parameter(SqlTypeFactory.Int64 );
 			
 			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "First Parameter Type");
-			Assert.AreEqual(firstParam.Name, actualParams[0].Name, "First Parameter Name");
-
 			Assert.AreEqual(secondParam.SqlType.DbType, actualParams[1].SqlType.DbType, "Second Parameter Type");
-			Assert.AreEqual(secondParam.Name, actualParams[1].Name, "Second Parameter Name");
-		
-				
 		}
 	}
 }

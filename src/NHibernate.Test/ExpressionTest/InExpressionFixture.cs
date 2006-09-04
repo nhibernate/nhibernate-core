@@ -27,12 +27,12 @@ namespace NHibernate.Test.ExpressionTest
 			CreateObjects( typeof( Simple ), session );
 			SqlString sqlString = inExpression.ToSqlString( criteria, criteriaQuery );
 
-			string expectedSql = "sql_alias.count_ in (:sql_alias.count__0, :sql_alias.count__1, :sql_alias.count__2)";
+			string expectedSql = "sql_alias.count_ in (?, ?, ?)";
 			Parameter[ ] expectedParams = new Parameter[3];
 
 			for( int i = 0; i < expectedParams.Length; i++ )
 			{
-				Parameter param = new Parameter( "count_" + "_" + i, "sql_alias", SqlTypeFactory.Int32 );
+				Parameter param = new Parameter( SqlTypeFactory.Int32 );
 				expectedParams[ i ] = param;
 			}
 

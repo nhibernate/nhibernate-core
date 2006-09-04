@@ -28,14 +28,14 @@ namespace NHibernate.Test.ExpressionTest
 			CreateObjects( typeof( Simple ), session );
 			SqlString sqlString = expression.ToSqlString( criteria, criteriaQuery );
 			
-			string expectedSql = "lower(sql_alias.address) like :sql_alias.address";
+			string expectedSql = "lower(sql_alias.address) like ?";
 			if ((factory as ISessionFactoryImplementor).Dialect is Dialect.PostgreSQLDialect)
 			{
-				expectedSql = "sql_alias.address ilike :sql_alias.address";
+				expectedSql = "sql_alias.address ilike ?";
 			}
 			Parameter[] expectedParams = new Parameter[1];
 
-			Parameter firstParam = new Parameter( "address", "sql_alias", new SqlTypes.StringSqlType() );
+			Parameter firstParam = new Parameter( new SqlTypes.StringSqlType() );
 			expectedParams[0] = firstParam;
 
 			CompareSqlStrings(sqlString, expectedSql, expectedParams);

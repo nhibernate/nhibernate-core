@@ -445,13 +445,13 @@ namespace NHibernate.Hql
 				// this is only a temporary parameter to help with the parsing of hql - 
 				// when the type becomes known then this will be converted to its real
 				// parameter type.
-				AppendToken( q, new SqlString( new object[ ] {new Parameter( StringHelper.SqlParameter )} ) );
+				AppendToken(q, new SqlString(new object[] { Parameter.Placeholder }));
 			}
 			else if( token.Equals( StringHelper.SqlParameter ) )
 			{
 				//if the token is a "?" then we have a Parameter so convert it to a SqlCommand.Parameter
 				// instead of appending a "?" to the WhereTokens
-				q.AppendWhereToken( new SqlString( new object[ ] {new Parameter( StringHelper.SqlParameter)} ) );
+				q.AppendWhereToken( new SqlString( new object[ ] {Parameter.Placeholder } ) );
 			}
 			else
 			{

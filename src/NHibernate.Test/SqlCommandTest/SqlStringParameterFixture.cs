@@ -32,60 +32,45 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EqualsSameType()
 		{
-			Parameter x = new Parameter("name", "alias", SqlTypeFactory.Int32);
-			Parameter y = new Parameter("name", "alias", SqlTypeFactory.Int32);
-			Parameter z = new Parameter("name", "alias", SqlTypeFactory.Int32);
+			Parameter x = new Parameter(SqlTypeFactory.Int32);
+			Parameter y = new Parameter(SqlTypeFactory.Int32);
+			Parameter z = new Parameter(SqlTypeFactory.Int32);
 
 			Assert.IsTrue(x.Equals(y));
 			Assert.IsTrue(y.Equals(x));
 			Assert.IsTrue(y.Equals(z));
 			Assert.IsTrue(x.Equals(z));
 			Assert.IsFalse(x.Equals(null));
-
-			y = new Parameter("name2", "alias", SqlTypeFactory.Int32);
-
-			Assert.IsFalse(x.Equals(y));
-			Assert.IsFalse(y.Equals(x));
 		}
 
 		[Test]
 		public void EqualsLengthType()
 		{
-			Parameter x = new Parameter("name", "alias", new SqlTypes.AnsiStringSqlType(5));
-			Parameter y = new Parameter("name", "alias", new SqlTypes.AnsiStringSqlType(5));
-			Parameter z = new Parameter("name", "alias", new SqlTypes.AnsiStringSqlType(5));
+			Parameter x = new Parameter(new SqlTypes.AnsiStringSqlType(5));
+			Parameter y = new Parameter(new SqlTypes.AnsiStringSqlType(5));
+			Parameter z = new Parameter(new SqlTypes.AnsiStringSqlType(5));
 
 			Assert.IsTrue(x.Equals(y));
 			Assert.IsTrue(y.Equals(x));
 			Assert.IsTrue(y.Equals(z));
 			Assert.IsTrue(x.Equals(z));
 			Assert.IsFalse(x.Equals(null));
-
-			y = new Parameter("name2", "alias", new SqlTypes.AnsiStringSqlType(5));
-
-			Assert.IsFalse(x.Equals(y));
-			Assert.IsFalse(y.Equals(x));
 		}
 
 		[Test]
 		public void EqualsPrecisionType()
 		{
-			Parameter x = new Parameter("name", "alias", SqlTypeFactory.GetDecimal(20, 4));
-			Parameter y = new Parameter("name", "alias", SqlTypeFactory.GetDecimal(20, 4));
-			Parameter z = new Parameter("name", "alias", SqlTypeFactory.GetDecimal(20, 4));
+			Parameter x = new Parameter(SqlTypeFactory.GetDecimal(20, 4));
+			Parameter y = new Parameter(SqlTypeFactory.GetDecimal(20, 4));
+			Parameter z = new Parameter(SqlTypeFactory.GetDecimal(20, 4));
 
 			Assert.IsTrue(x.Equals(y));
 			Assert.IsTrue(y.Equals(x));
 			Assert.IsTrue(y.Equals(z));
 			Assert.IsTrue(x.Equals(z));
 			Assert.IsFalse(x.Equals(null));
-
-			y = new Parameter("name2", "alias", SqlTypeFactory.GetDecimal(20, 4));
-
-			Assert.IsFalse(x.Equals(y));
-			Assert.IsFalse(y.Equals(x));
-
-			Parameter t = new Parameter("name", "alias", SqlTypeFactory.GetDecimal(20, 5));
+			
+			Parameter t = new Parameter(SqlTypeFactory.GetDecimal(20, 5));
 			Assert.IsFalse(x.Equals(t));
 		}
 
@@ -94,14 +79,13 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void TestParameterClone()
 		{
-			Parameter original = new Parameter("originalName", SqlTypeFactory.Int32);
+			Parameter original = new Parameter(SqlTypeFactory.Int32);
 			Parameter cloned = null;
 
 			cloned = (Parameter) original.Clone();
 
 			Assert.IsFalse(original == cloned, "Not the same object by ==");
 			Assert.AreEqual(original.SqlType.DbType, cloned.SqlType.DbType, "Same DbType");
-			Assert.AreEqual(original.Name, cloned.Name, "Same Name");
 		}
 
 		[Test]
@@ -114,8 +98,8 @@ namespace NHibernate.Test.SqlCommandTest
 
 			Parameter[] origParams = new Parameter[2];
 
-			origParams[0] = new Parameter("OP1", SqlTypeFactory.Int32);
-			origParams[1] = new Parameter("OP2", SqlTypeFactory.Int64);
+			origParams[0] = new Parameter(SqlTypeFactory.Int32);
+			origParams[1] = new Parameter(SqlTypeFactory.Int64);
 
 			sqlBuilder.Add("UPDATE tablename set param0 = ")
 				.Add(origParams[0])
@@ -136,7 +120,7 @@ namespace NHibernate.Test.SqlCommandTest
 
 			// modify the first parameter of the clone to ensure they are not the same
 			cloned.SqlParts[0] = "UPDATE changedtablename set param0 = ";
-			cloned.SqlParts[3] = new Parameter("modifiedOP2");
+			cloned.SqlParts[3] = Parameter.Placeholder;
 
 			Assert.IsTrue(cloned.ToString() != original.ToString(), "Should not be the same ToString()");
 

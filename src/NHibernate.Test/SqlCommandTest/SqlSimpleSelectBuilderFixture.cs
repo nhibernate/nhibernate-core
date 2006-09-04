@@ -53,8 +53,8 @@ namespace NHibernate.Test.SqlCommandTest
 				.Append("column1_with_alias AS c1_alias, ")
 				.Append("column2_with_alias AS c2_alias ")
 				.Append("FROM test_simple_select_builder ")
-				.Append("WHERE identity_column = :identity_column AND version_column = :version_column")
-				.Append(" AND where_frag_column = :where_frag_column")
+				.Append("WHERE identity_column = ? AND version_column = ?")
+				.Append(" AND where_frag_column = ?")
 				.ToString();
 				
 
@@ -70,21 +70,15 @@ namespace NHibernate.Test.SqlCommandTest
 			}
 			Assert.AreEqual(3, numOfParameters, "3 parameters");
 
-			Parameter firstParam = new Parameter( "identity_column", SqlTypeFactory.Int64 );
+			Parameter firstParam = new Parameter( SqlTypeFactory.Int64 );
 			
-			Parameter secondParam = new Parameter( "version_column", SqlTypeFactory.Int32 );
+			Parameter secondParam = new Parameter( SqlTypeFactory.Int32 );
 			
-			Parameter thirdParam = new Parameter( "where_frag_column", SqlTypeFactory.Int32 );
+			Parameter thirdParam = new Parameter( SqlTypeFactory.Int32 );
 			
 			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "First Parameter Type");
-			Assert.AreEqual(firstParam.Name, actualParams[0].Name, "First Parameter Name");
-
 			Assert.AreEqual(secondParam.SqlType.DbType, actualParams[1].SqlType.DbType, "Second Parameter Type");
-			Assert.AreEqual(secondParam.Name, actualParams[1].Name, "Second Parameter Name");
-		
 			Assert.AreEqual(thirdParam.SqlType.DbType, actualParams[2].SqlType.DbType, "Third Parameter Type");
-			Assert.AreEqual(thirdParam.Name, actualParams[2].Name, "Third Parameter Name");
-			
 		}
 
 

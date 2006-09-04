@@ -48,7 +48,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlInsertBuilder.</returns>
 		public SqlInsertBuilder AddColumn( string[ ] columnNames, IType propertyType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( factory, columnNames, propertyType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( factory, propertyType );
 
 			for( int i = 0; i < columnNames.Length; i++ )
 			{

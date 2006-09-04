@@ -234,7 +234,7 @@ namespace NHibernate.Loader.Custom
 								colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
 							}
 
-							Parameter[] sqlParameters = Parameter.GenerateParameters( Factory, colNames, parameters.PositionalParameterTypes[ i ] );
+							Parameter[] sqlParameters = Parameter.GenerateParameters( Factory, parameters.PositionalParameterTypes[ i ] );
 
 							foreach( Parameter param in sqlParameters )
 							{
@@ -288,7 +288,7 @@ namespace NHibernate.Loader.Custom
 									colNames[ j ] = "p" + paramIndex.ToString() + j.ToString();
 								}
 
-								Parameter[] sqlParameters = Parameter.GenerateParameters( Factory, colNames, type );
+								Parameter[] sqlParameters = Parameter.GenerateParameters( Factory, type );
 
 								foreach( Parameter param in sqlParameters )
 								{

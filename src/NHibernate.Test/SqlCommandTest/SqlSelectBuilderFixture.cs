@@ -49,7 +49,7 @@ namespace NHibernate.Test.SqlCommandTest
 				.Append("WHERE ")
 				.Append("after.some_field = after.another_field")
 				.Append(" AND ")
-				.Append("select_test_alias.identity_column = :select_test_alias.identity_column ")
+				.Append("select_test_alias.identity_column = ? ")
 				.Append("ORDER BY column1 DESC")
 				.ToString();
 				
@@ -69,9 +69,8 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
 			Assert.AreEqual(1, numOfParams, "One parameter");
 
-			Parameter firstParam = new Parameter( "identity_column", "select_test_alias", SqlTypeFactory.Int64 );
+			Parameter firstParam = new Parameter( SqlTypeFactory.Int64 );
 			Assert.AreEqual(firstParam.SqlType.DbType, expectedParam.SqlType.DbType, "First Parameter Type");
-			Assert.AreEqual(firstParam.Name, expectedParam.Name, "First Parameter Name");	
 		}
 	}
 }

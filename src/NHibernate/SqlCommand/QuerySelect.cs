@@ -2,6 +2,7 @@ using System.Collections;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Util;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.SqlCommand
 {
@@ -352,7 +353,7 @@ namespace NHibernate.SqlCommand
 
 				if( token.Equals( StringHelper.SqlParameter ) )
 				{
-					Parameter param = new Parameter( "placeholder" );
+					Parameter param = Parameter.Placeholder;
 					builder.Add( param );
 				}
 				else
