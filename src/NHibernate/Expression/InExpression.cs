@@ -38,8 +38,7 @@ namespace NHibernate.Expression
 
 			for( int i = 0; i < count; i++ )
 			{
-				string parameterName = StringHelper.Suffix( prefix, StringHelper.Underscore + i.ToString() );
-				parameters[ i ] = new Parameter( parameterName, sqlType );
+				parameters[ i ] = new Parameter( sqlType );
 			}
 
 			return parameters;

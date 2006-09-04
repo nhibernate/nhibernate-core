@@ -42,7 +42,7 @@ namespace NHibernate.Expression
 
 			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
 			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
-			Parameter[ ] parameters = Parameter.GenerateParameters( criteriaQuery.Factory, columnNames, propertyType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( criteriaQuery.Factory, propertyType );
 
 			if( columnNames.Length != 1 )
 			{

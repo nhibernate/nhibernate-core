@@ -22,13 +22,13 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
-		public SimpleExpression( string propertyName, object value )
+		public SimpleExpression(string propertyName, object value)
 		{
 			_propertyName = propertyName;
 			_value = value;
 		}
 
-		public SimpleExpression( string propertyName, object value, bool ignoreCase )
+		public SimpleExpression(string propertyName, object value, bool ignoreCase)
 		{
 			_propertyName = propertyName;
 			_value = value;
@@ -63,64 +63,64 @@ namespace NHibernate.Expression
 		/// Converts the SimpleExpression to a <see cref="SqlString"/>.
 		/// </summary>
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
-		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
-			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
+			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
+			IType propertyType = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
 
-			if( propertyType.IsCollectionType )
+			if (propertyType.IsCollectionType)
 			{
-				throw new QueryException( string.Format (
+				throw new QueryException(string.Format(
 					"cannot use collection property ({0}.{1}) directly in a criterion,"
 					+ " use ICriteria.CreateCriteria instead",
-					criteriaQuery.GetEntityName( criteria ), _propertyName ) );
+					criteriaQuery.GetEntityName(criteria), _propertyName));
 			}
 
-			Parameter[ ] parameters = Parameter.GenerateParameters( criteriaQuery.Factory, columnNames, propertyType );
+			Parameter[] parameters = Parameter.GenerateParameters(criteriaQuery.Factory, propertyType);
 
-			if( _ignoreCase )
+			if (_ignoreCase)
 			{
-				if( columnNames.Length != 1 )
+				if (columnNames.Length != 1)
 				{
 					throw new HibernateException(
 						"case insensitive expression may only be applied to single-column properties: " +
-						_propertyName );
+						_propertyName);
 				}
 
-				return new SqlStringBuilder( 6 )
-					.Add( criteriaQuery.Factory.Dialect.LowercaseFunction )
-					.Add( StringHelper.OpenParen )
-					.Add( columnNames[ 0 ] )
-					.Add( StringHelper.ClosedParen )
-					.Add( Op )
-					.Add( parameters[ 0 ] )
+				return new SqlStringBuilder(6)
+					.Add(criteriaQuery.Factory.Dialect.LowercaseFunction)
+					.Add(StringHelper.OpenParen)
+					.Add(columnNames[0])
+					.Add(StringHelper.ClosedParen)
+					.Add(Op)
+					.Add(parameters[0])
 					.ToSqlString();
 			}
 			else
 			{
 				//TODO: add default capacity
-				SqlStringBuilder sqlBuilder = new SqlStringBuilder( 4 * columnNames.Length );
+				SqlStringBuilder sqlBuilder = new SqlStringBuilder(4 * columnNames.Length);
 
-				for( int i = 0; i < columnNames.Length; i++ )
+				for (int i = 0; i < columnNames.Length; i++)
 				{
-					if( i > 0 )
+					if (i > 0)
 					{
-						sqlBuilder.Add( " and " );
+						sqlBuilder.Add(" and ");
 					}
 
-					sqlBuilder.Add( columnNames[ i ] )
-						.Add( Op )
-						.Add( parameters[ i ] );
+					sqlBuilder.Add(columnNames[i])
+						.Add(Op)
+						.Add(parameters[i]);
 
 				}
 				return sqlBuilder.ToSqlString();
 			}
 		}
 
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			object icvalue = _ignoreCase ? _value.ToString().ToLower() : _value;
-			return new TypedValue[ ]
+			return new TypedValue[]
 				{
 					criteriaQuery.GetTypedValue( criteria, _propertyName, icvalue )
 				};
@@ -136,6 +136,6 @@ namespace NHibernate.Expression
 		/// Get the Sql operator to use for the specific 
 		/// subclass of <see cref="SimpleExpression"/>.
 		/// </summary>
-		protected abstract string Op { get; } 
+		protected abstract string Op { get; }
 	}
 }

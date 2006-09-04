@@ -39,12 +39,10 @@ namespace NHibernate.Expression
 
 			Parameter[ ] loParameters = Parameter.GenerateParameters(
 				criteriaQuery.Factory,
-				StringHelper.Suffix( columnNames, "_lo" ),
 				propertyType );
 
 			Parameter[ ] hiParameters = Parameter.GenerateParameters(
 				criteriaQuery.Factory,
-				StringHelper.Suffix( columnNames, "_hi" ),
 				propertyType );
 			
 			bool andNeeded = false;
