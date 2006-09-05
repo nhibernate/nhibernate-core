@@ -12,7 +12,9 @@ namespace NHibernate.Type
 	[Serializable]
 	public class ManyToOneType : EntityType, IAssociationType
 	{
-		private IType GetReferencedType( IMapping mapping )
+		private readonly bool _isIgnoreNotFound;
+
+		private IType GetReferencedType(IMapping mapping)
 		{
 			if( uniqueKeyPropertyName == null )
 			{
@@ -34,13 +36,19 @@ namespace NHibernate.Type
 			return GetReferencedType( mapping ).SqlTypes( mapping );
 		}
 
-		public ManyToOneType( System.Type persistentClass )
+		public ManyToOneType(System.Type persistentClass, string uniqueKeyPropertyName, bool ignoreNotFound)
+			: base(persistentClass, uniqueKeyPropertyName)
+		{
+			_isIgnoreNotFound = ignoreNotFound;
+		}
+
+		public ManyToOneType(System.Type persistentClass)
 			: this( persistentClass, null )
 		{
 		}
 
 		public ManyToOneType( System.Type persistentClass, string uniqueKeyPropertyName )
-			: base( persistentClass, uniqueKeyPropertyName )
+			: this( persistentClass, uniqueKeyPropertyName, false )
 		{
 		}
 
@@ -80,17 +88,6 @@ namespace NHibernate.Type
 				session.ScheduleBatchLoad( AssociatedClass, id );
 			}
 			return id;
-		}
-
-		/// <summary>
-		/// Resolves the Identifier to the actual object.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		protected override object ResolveIdentifier( object id, ISessionImplementor session )
-		{
-			return session.InternalLoad( AssociatedClass, id );
 		}
 
 		public override bool UseLHSPrimaryKey
@@ -186,5 +183,9 @@ namespace NHibernate.Type
 			}
 		}
 
+		public override bool IsNullable
+		{
+			get { return _isIgnoreNotFound; }
+		}
 	}
 }

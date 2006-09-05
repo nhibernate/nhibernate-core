@@ -29,21 +29,21 @@ namespace NHibernate.Type
 			get { return associatedClass; }
 		}
 
-		public override sealed bool Equals( object x, object y )
+		public override sealed bool Equals(object x, object y)
 		{
 			return x == y;
 		}
 
-		protected EntityType( System.Type persistentClass, string uniqueKeyPropertyName )
+		protected EntityType(System.Type persistentClass, string uniqueKeyPropertyName)
 		{
 			this.associatedClass = persistentClass;
-			this.niceEquals = !ReflectHelper.OverridesEquals( persistentClass );
+			this.niceEquals = !ReflectHelper.OverridesEquals(persistentClass);
 			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
 		}
 
-		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
+		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet( rs, new string[ ] {name}, session, owner );
+			return NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
 		// This returns the wrong class for an entity with a proxy. Theoretically
@@ -53,43 +53,43 @@ namespace NHibernate.Type
 			get { return associatedClass; }
 		}
 
-		protected object GetIdentifier( object value, ISessionImplementor session )
+		protected object GetIdentifier(object value, ISessionImplementor session)
 		{
-			if( uniqueKeyPropertyName == null )
+			if (uniqueKeyPropertyName == null)
 			{
-				return session.GetEntityIdentifierIfNotUnsaved( value ); //tolerates nulls
+				return session.GetEntityIdentifierIfNotUnsaved(value); //tolerates nulls
 			}
-			else if( value == null )
+			else if (value == null)
 			{
 				return null;
 			}
 			else
 			{
 				return session.Factory
-					.GetEntityPersister( AssociatedClass )
-					.GetPropertyValue( value, uniqueKeyPropertyName );
+					.GetEntityPersister(AssociatedClass)
+					.GetPropertyValue(value, uniqueKeyPropertyName);
 			}
 		}
 
-		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			IEntityPersister persister = factory.GetEntityPersister( associatedClass );
-			if( value == null )
+			IEntityPersister persister = factory.GetEntityPersister(associatedClass);
+			if (value == null)
 			{
 				return "null";
 			}
 			StringBuilder result = new StringBuilder();
-			result.Append( StringHelper.Unqualify( NHibernateProxyHelper.GetClass( value ).FullName ) );
-			if( persister.HasIdentifierProperty )
+			result.Append(StringHelper.Unqualify(NHibernateProxyHelper.GetClass(value).FullName));
+			if (persister.HasIdentifierProperty)
 			{
-				result.Append( '#' )
-					.Append( persister.IdentifierType.ToLoggableString( NHibernateProxyHelper.GetIdentifier( value, persister ), factory ) );
+				result.Append('#')
+					.Append(persister.IdentifierType.ToLoggableString(NHibernateProxyHelper.GetIdentifier(value, persister), factory));
 			}
 
 			return result.ToString();
 		}
 
-		public override object FromString( string xml )
+		public override object FromString(string xml)
 		{
 			throw new NotSupportedException(); //TODO: is this correct???
 		}
@@ -99,7 +99,7 @@ namespace NHibernate.Type
 			get { return associatedClass.Name; }
 		}
 
-		public override object DeepCopy( object value )
+		public override object DeepCopy(object value)
 		{
 			return value; //special case ... this is the leaf of the containment graph, even though not immutable
 		}
@@ -112,40 +112,40 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 
-		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
+		public override object Copy(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
 		{
-			if( original == null )
+			if (original == null)
 			{
 				return null;
 			}
-			
-			object cached = copyCache[ original ];
-			if( cached != null )
+
+			object cached = copyCache[original];
+			if (cached != null)
 			{
 				return cached;
 			}
 			else
 			{
-				if( original == target )
+				if (original == target)
 				{
 					return target;
 				}
 
-				IType idType = GetIdentifierOrUniqueKeyType( session.Factory );
-				object id = GetIdentifier( original, session );
-				if( id == null )
+				IType idType = GetIdentifierOrUniqueKeyType(session.Factory);
+				object id = GetIdentifier(original, session);
+				if (id == null)
 				{
-					throw new AssertionFailure( "cannot copy a reference to an object with a null id" );
+					throw new AssertionFailure("cannot copy a reference to an object with a null id");
 				}
-				
-				id = idType.Copy( id, null, session, owner, copyCache );
+
+				id = idType.Copy(id, null, session, owner, copyCache);
 
 				// Replace a property-ref'ed entity by its id
-				if( uniqueKeyPropertyName != null && idType.IsEntityType )
+				if (uniqueKeyPropertyName != null && idType.IsEntityType)
 				{
-					id = ( ( EntityType ) idType ).GetIdentifier( id, session );
+					id = ((EntityType) idType).GetIdentifier(id, session);
 				}
-				return ResolveIdentifier( id, session, owner );
+				return ResolveIdentifier(id, session, owner);
 			}
 		}
 
@@ -171,23 +171,23 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instance of the object or <c>null</c> if the identifer was null.
 		/// </returns>
-		public override sealed object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return ResolveIdentifier( Hydrate( rs, names, session, owner ), session, owner );
+			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
 		}
 
-		public abstract override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner );
+		public abstract override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
-		public override bool IsDirty( object old, object current, ISessionImplementor session )
+		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			if( Equals( old, current ) )
+			if (Equals(old, current))
 			{
 				return false;
 			}
 
-			object oldid = GetIdentifier( old, session );
-			object newid = GetIdentifier( current, session );
-			return !GetIdentifierType( session ).Equals( oldid, newid );
+			object oldid = GetIdentifier(old, session);
+			object newid = GetIdentifier(current, session);
+			return !GetIdentifierType(session).Equals(oldid, newid);
 		}
 
 		public bool IsUniqueKeyReference
@@ -195,33 +195,35 @@ namespace NHibernate.Type
 			get { return uniqueKeyPropertyName != null; }
 		}
 
-		public IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory )
+		public abstract bool IsNullable { get; }
+
+		public IJoinable GetAssociatedJoinable(ISessionFactoryImplementor factory)
 		{
-			return ( IJoinable ) factory.GetEntityPersister( associatedClass );
+			return (IJoinable) factory.GetEntityPersister(associatedClass);
 		}
 
-		protected IType GetIdentifierType( ISessionImplementor session )
+		protected IType GetIdentifierType(ISessionImplementor session)
 		{
-			return session.Factory.GetIdentifierType( associatedClass );
+			return session.Factory.GetIdentifierType(associatedClass);
 		}
 
-		public IType GetIdentifierOrUniqueKeyType( IMapping factory )
+		public IType GetIdentifierOrUniqueKeyType(IMapping factory)
 		{
-			if( uniqueKeyPropertyName == null )
+			if (uniqueKeyPropertyName == null)
 			{
-				return factory.GetIdentifierType( associatedClass );
+				return factory.GetIdentifierType(associatedClass);
 			}
 			else
 			{
-				return factory.GetPropertyType( associatedClass, uniqueKeyPropertyName );
+				return factory.GetPropertyType(associatedClass, uniqueKeyPropertyName);
 			}
 		}
 
-		public string GetIdentifierOrUniqueKeyPropertyName( IMapping factory )
+		public string GetIdentifierOrUniqueKeyPropertyName(IMapping factory)
 		{
-			if( uniqueKeyPropertyName == null )
+			if (uniqueKeyPropertyName == null)
 			{
-				return factory.GetIdentifierPropertyName( associatedClass );
+				return factory.GetIdentifierPropertyName(associatedClass);
 			}
 			else
 			{
@@ -230,12 +232,12 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Resolve an identifier
+		/// Resolves the identifier to the actual object.
 		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		protected abstract object ResolveIdentifier( object id, ISessionImplementor session );
+		protected object ResolveIdentifier(object id, ISessionImplementor session)
+		{
+			return session.InternalLoad(AssociatedClass, id, IsNullable);
+		}
 
 		/// <summary>
 		/// Resolve an identifier or unique key value
@@ -244,26 +246,26 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ResolveIdentifier( object id, ISessionImplementor session, object owner )
+		public override object ResolveIdentifier(object id, ISessionImplementor session, object owner)
 		{
-			if( id == null )
+			if (id == null)
 			{
 				return null;
 			}
 			else
 			{
-				if( uniqueKeyPropertyName == null )
+				if (uniqueKeyPropertyName == null)
 				{
-					return ResolveIdentifier( id, session );
+					return ResolveIdentifier(id, session);
 				}
 				else
 				{
-					return session.LoadByUniqueKey( AssociatedClass, uniqueKeyPropertyName, id );
+					return session.LoadByUniqueKey(AssociatedClass, uniqueKeyPropertyName, id);
 				}
 			}
 		}
 
-		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
+		public System.Type GetAssociatedClass(ISessionFactoryImplementor factory)
 		{
 			return associatedClass;
 		}
@@ -292,12 +294,12 @@ namespace NHibernate.Type
 
 		public override bool Equals(object obj)
 		{
-			if( !base.Equals( obj ) )
+			if (!base.Equals(obj))
 			{
 				return false;
 			}
 
-			return ( (EntityType) obj ).associatedClass == associatedClass;
+			return ((EntityType) obj).associatedClass == associatedClass;
 		}
 
 		public override int GetHashCode()

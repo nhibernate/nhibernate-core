@@ -70,25 +70,38 @@ namespace NHibernate.Proxy
 		/// </exception>
 		public void Initialize()
 		{
-			if( !initialized )
+			if (!initialized)
 			{
-				if( _session == null )
+				if (_session == null)
 				{
-					throw new LazyInitializationException( "Could not initialize proxy - no Session." );
+					throw new LazyInitializationException("Could not initialize proxy - no Session.");
 				}
-				else if( !_session.IsOpen )
+				else if (!_session.IsOpen)
 				{
-					throw new LazyInitializationException( "Could not initialize proxy - the owning Session was closed." );
+					throw new LazyInitializationException("Could not initialize proxy - the owning Session was closed.");
 				}
-				else if( !_session.IsConnected )
+				else if (!_session.IsConnected)
 				{
-					throw new LazyInitializationException( "Could not initialize proxy - the owning Session is disconnected." );
+					throw new LazyInitializationException("Could not initialize proxy - the owning Session is disconnected.");
 				}
 				else
 				{
-					_target = _session.ImmediateLoad( _persistentClass, _id );
+					_target = _session.ImmediateLoad(_persistentClass, _id);
+					CheckTargetState();
 					initialized = true;
 				}
+			}
+			else
+			{
+				CheckTargetState();
+			}
+		}
+
+		private void CheckTargetState()
+		{
+			if (_target == null)
+			{
+				throw new ObjectNotFoundException(_id, _persistentClass);
 			}
 		}
 

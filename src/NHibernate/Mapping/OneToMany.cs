@@ -10,24 +10,25 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class OneToMany : IValue
 	{
-		private EntityType type;
+		private System.Type referencedEntityName;
 		private Table referencingTable;
 		private PersistentClass associatedClass;
+		private bool ignoreNotFound;
 
-		/// <summary></summary>
-		public EntityType EntityType
-		{
-			get { return type; }
-			set { type = value; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="owner"></param>
 		public OneToMany( PersistentClass owner )
 		{
 			this.referencingTable = ( owner == null ) ? null : owner.Table;
+		}
+
+		public EntityType EntityType
+		{
+			get { return TypeFactory.ManyToOne(referencedEntityName, null, ignoreNotFound); }
+		}
+
+		public bool IsIgnoreNotFound
+		{
+			get { return ignoreNotFound; }
+			set { ignoreNotFound = value; }
 		}
 
 		/// <summary></summary>
@@ -42,17 +43,20 @@ namespace NHibernate.Mapping
 			get { return associatedClass.Key.ColumnSpan; }
 		}
 
-		/// <summary></summary>
+		public System.Type ReferencedEntityName
+		{
+			get { return referencedEntityName; }
+			set { referencedEntityName = value; }
+		}
+
 		public Table ReferencingTable
 		{
 			get { return referencingTable; }
 		}
 
-		/// <summary></summary>
 		public IType Type
 		{
-			get { return type; }
-			set { type = (EntityType) value; }
+			get { return EntityType; }
 		}
 
 		/// <summary></summary>

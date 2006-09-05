@@ -28,7 +28,7 @@ namespace NHibernate.Mapping
 				{
 					Type = TypeFactory.ManyToOne(
 						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName, propertyAccess ),
-						ReferencedPropertyName);
+						ReferencedPropertyName, isIgnoreNotFound);
 				}
 			}
 			catch( HibernateException he )
@@ -41,10 +41,18 @@ namespace NHibernate.Mapping
 		public override void CreateForeignKey()
 		{
 			// TODO: Handle the case of a foreign key to something other than the pk
-			if ( ReferencedPropertyName == null )
+			// NH-268 isIgnoreNotFound work with <not-found> tag to determine the cration of FK
+			if ( ReferencedPropertyName == null && !isIgnoreNotFound)
 			{
 				CreateForeignKeyOfClass( ( ( EntityType ) Type ).AssociatedClass );
 			}
+		}
+
+		private bool isIgnoreNotFound = false; // NH-268
+		public bool IsIgnoreNotFound
+		{
+			get { return isIgnoreNotFound; }
+			set { isIgnoreNotFound = value; }
 		}
 	}
 }

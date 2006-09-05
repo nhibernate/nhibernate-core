@@ -369,6 +369,13 @@
     <Compile Include="TypesTest\TimestampTypeFixture.cs" />
     <Compile Include="TypesTest\TypeFactoryFixture.cs" />
     <Compile Include="TypesTest\TypeFixtureBase.cs" />
+    <Compile Include="Unconstrained\Employee.cs" />
+    <Compile Include="Unconstrained\Person.cs" />
+    <Compile Include="Unconstrained\SimplyA.cs" />
+    <Compile Include="Unconstrained\SimplyB.cs" />
+    <Compile Include="Unconstrained\SimplyManyToOneIgnoreTest.cs" />
+    <Compile Include="Unconstrained\UnconstrainedNoLazyTest.cs" />
+    <Compile Include="Unconstrained\UnconstrainedTest.cs" />
     <Compile Include="UserCollection\Email.cs" />
     <Compile Include="UserCollection\MyList.cs" />
     <Compile Include="UserCollection\MyListType.cs" />
@@ -524,6 +531,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ExpressionTest\Projection\ProjectionClass.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Unconstrained\Person.hbm.xml" />
+    <EmbeddedResource Include="Unconstrained\PersonNoLazy.hbm.xml" />
+    <EmbeddedResource Include="Unconstrained\Simply.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

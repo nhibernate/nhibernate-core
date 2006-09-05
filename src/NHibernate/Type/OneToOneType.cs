@@ -55,16 +55,7 @@ namespace NHibernate.Type
 			return session.GetEntityIdentifier( owner );
 		}
 
-		protected override object ResolveIdentifier( object value, ISessionImplementor session )
-		{
-			System.Type clazz = AssociatedClass;
-
-			return IsNullable ?
-				session.InternalLoadOneToOne( clazz, value ) :
-				session.InternalLoad( clazz, value );
-		}
-
-		public virtual bool IsNullable
+		public override bool IsNullable
 		{
 			get { return foreignKeyDirection == ForeignKeyDirection.ForeignKeyToParent; }
 		}

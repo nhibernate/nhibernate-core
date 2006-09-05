@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Unconstrained"
+    default-access="field.camelcase-underscore"
+	default-lazy="true">
+    <class name="Person" dynamic-update="true">
+		<id name ="Name" type="string" length="50" unsaved-value="any">
+			<generator class="assigned" />
+		</id>
+		<property name="EmployeeId" unique="true"/>
+		<many-to-one name="Employee" insert="false" update="false" column="EmployeeId" not-found="ignore" cascade="all"/>
+	</class>
+	
+    <class name="Employee">
+		<id name="Id" type="string" length="50" unsaved-value="any">
+			<generator class="assigned" />
+		</id>
+	</class>		
+</hibernate-mapping>

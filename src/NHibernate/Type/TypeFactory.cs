@@ -666,6 +666,18 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
+		/// A many-to-one association type for the given class and cascade style.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="uniqueKeyPropertyName"></param>
+		/// <param name="ignoreNotFound"></param>
+		/// <returns></returns>
+		public static EntityType ManyToOne(System.Type persistentClass, string uniqueKeyPropertyName, bool ignoreNotFound)
+		{
+			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, ignoreNotFound);
+		}
+
+		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="System.Array"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>

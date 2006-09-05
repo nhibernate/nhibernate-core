@@ -95,26 +95,19 @@ namespace NHibernate.Engine
 		/// </returns>
 		object GetCollection( string role, object id, object owner );
 
+		// NH-268
 		/// <summary>
-		/// Load an instance without checking if it was deleted. If it does not exist, throw an exception.
+		/// Load an instance without checking if it was deleted. If it does not exist and isn't nullable, throw an exception.
 		/// This method may create a new proxy or return an existing proxy.
 		/// </summary>
 		/// <param name="persistentClass">The <see cref="System.Type"/> to load.</param>
 		/// <param name="id">The identifier of the object in the database.</param>
+		/// <param name="isNullable">Allow null instance</param>
 		/// <returns>
 		/// A proxy of the object or an instance of the object if the <c>persistentClass</c> does not have a proxy.
 		/// </returns>
 		/// <exception cref="ObjectNotFoundException">No object could be found with that <c>id</c>.</exception>
-		object InternalLoad( System.Type persistentClass, object id );
-
-		/// <summary>
-		/// Load an instance without checking if it was deleted. If it does not exist, 
-		/// return <c>null</c>. Do not create a proxy (but do return any existing proxy).
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		object InternalLoadOneToOne( System.Type persistentClass, object id );
+		object InternalLoad( System.Type persistentClass, object id, bool isNullable );
 
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy.

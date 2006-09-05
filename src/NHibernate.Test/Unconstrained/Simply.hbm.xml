@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Unconstrained"
+    default-access="field.camelcase-underscore"
+	default-lazy="false">
+    <class name="SimplyA" dynamic-update="true">
+		<id name ="Name" type="string" length="50" unsaved-value="any">
+			<generator class="assigned" />
+		</id>
+		<many-to-one name="SimplyB" column="SimplyBID" not-found="ignore"/>
+	</class>
+	
+    <class name="SimplyB">
+		<id name="Id" type="int" unsaved-value="0">
+			<generator class="assigned" />
+		</id>
+	</class>		
+</hibernate-mapping>

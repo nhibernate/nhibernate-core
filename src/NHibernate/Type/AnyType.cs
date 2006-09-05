@@ -146,7 +146,7 @@ namespace NHibernate.Type
 		{
 			return ( clazz == null || id == null ) ?
 				null :
-				session.InternalLoad( clazz, id );
+				session.InternalLoad( clazz, id, false );
 		}
 
 		public override void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session )
