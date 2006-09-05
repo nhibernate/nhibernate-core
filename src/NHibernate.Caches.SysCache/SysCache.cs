@@ -45,6 +45,7 @@ namespace NHibernate.Caches.SysCache
 		private CacheItemPriority _priority;
 		// The name of the cache key used to clear the cache. All cached items depend on this key.
 		private string _rootCacheKey;
+		private bool _rootCacheKeyStored;
 		private static readonly TimeSpan _defaultExpiration = TimeSpan.FromSeconds( 300 );
 		private static readonly string _cacheKeyPrefix = "NHibernate-Cache:";
 
@@ -223,6 +224,11 @@ namespace NHibernate.Caches.SysCache
 				}
 			}
 
+			if (!_rootCacheKeyStored)
+			{
+				StoreRootCacheKey();
+			}
+
 			_cache.Add(
 				cacheKey,
 				new DictionaryEntry( key, value ),
@@ -253,7 +259,6 @@ namespace NHibernate.Caches.SysCache
 		public void Clear()
 		{
 			RemoveRootCacheKey();
-
 			StoreRootCacheKey();
 		}
 
@@ -266,10 +271,20 @@ namespace NHibernate.Caches.SysCache
 			return GetCacheKey( Guid.NewGuid() );
 		}
 
+		private void RootCacheItemRemoved(string key, object value, CacheItemRemovedReason reason)
+		{
+			_rootCacheKeyStored = false;
+		}
+
 		/// <summary></summary>
 		private void StoreRootCacheKey()
 		{
-			_rootCacheKey = GenerateRootCacheKey();
+			if (_rootCacheKey == null)
+			{
+				_rootCacheKey = GenerateRootCacheKey();
+			}
+
+			_rootCacheKeyStored = true;
 			_cache.Add(
 				_rootCacheKey,
 				_rootCacheKey,
@@ -277,7 +292,7 @@ namespace NHibernate.Caches.SysCache
 				System.Web.Caching.Cache.NoAbsoluteExpiration,
 				System.Web.Caching.Cache.NoSlidingExpiration,
 				CacheItemPriority.Default,
-				null );
+				RootCacheItemRemoved );
 		}
 
 		/// <summary></summary>

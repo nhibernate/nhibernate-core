@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Threading;
+using System.Web;
 
 using NHibernate.Cache;
 using NUnit.Framework;
@@ -291,5 +292,45 @@ namespace NHibernate.Caches.SysCache.Tests
 			// Check it expired
 			Assert.IsNull( cache.Get( key ) );
 		}
+
+        [Test]
+        public void TestAfterClearCanPut()
+        {
+            string key = "key1";
+            string value = "value";
+
+            ICache cache = provider.BuildCache("nunit", props);
+            Assert.IsNotNull(cache, "no cache returned");
+
+            // add the item
+            cache.Put(key, value);
+
+            Assert.IsTrue(HttpRuntime.Cache.Count > 0, "cache is empty");
+
+            // clear the System.Web.HttpRuntime.Cache
+			IList keys = new ArrayList();
+
+            foreach (DictionaryEntry entry in HttpRuntime.Cache)
+            {
+                keys.Add(entry.Key.ToString());
+            }
+
+            foreach (string cachekey in keys)
+            {
+                HttpRuntime.Cache.Remove(cachekey);
+            }
+
+            Assert.AreEqual(0, HttpRuntime.Cache.Count, "cache isn't empty");
+
+            // make sure we don't get an item
+            object item = cache.Get(key);
+            Assert.IsNull(item, "item still exists in cache");
+
+            // add the item again
+            cache.Put(key, value);
+
+            item = cache.Get(key);
+            Assert.IsNotNull(item, "couldn't find item in cache");
+        }
 	}
 }

@@ -100,6 +100,11 @@
                     AssemblyName = "log4net"
                     HintPath = "..\..\lib\net\log4net.dll"
                 />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -131,4 +136,5 @@
         </Files>
     </CSHARP>
 </VisualStudioProject>
+
 
