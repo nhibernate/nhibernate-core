@@ -100,6 +100,8 @@
     <Compile Include="ExpressionTest\QueryByExampleTest.cs" />
     <Compile Include="ExpressionTest\SimpleExpressionFixture.cs" />
     <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
+    <Compile Include="FilterTest\FilterConfig.cs" />
+    <Compile Include="FilterTest\TestClass.cs" />
     <Compile Include="GenericTest\BagGeneric\A.cs" />
     <Compile Include="GenericTest\BagGeneric\B.cs" />
     <Compile Include="GenericTest\BagGeneric\BagGenericFixture.cs" />
@@ -536,6 +538,9 @@
     <EmbeddedResource Include="Unconstrained\Person.hbm.xml" />
     <EmbeddedResource Include="Unconstrained\PersonNoLazy.hbm.xml" />
     <EmbeddedResource Include="Unconstrained\Simply.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FilterTest\FilterMapping.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

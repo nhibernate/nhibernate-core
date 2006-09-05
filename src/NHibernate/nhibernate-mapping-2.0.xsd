@@ -86,8 +86,12 @@
 		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:complexType name="filter">
-		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="condition" type="xs:string" use="required"/>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" use="required" />
+				<xs:attribute name="condition" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 	<xs:complexType name="cacheType">
 		<xs:attribute name="usage" use="required">
@@ -123,20 +127,6 @@
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="import" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="filter-def" minOccurs="0" maxOccurs="unbounded">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="filter-param" minOccurs="1" maxOccurs="unbounded">
-								<xs:complexType>
-									<xs:attribute name="name" type="xs:string" use="required"/>
-									<xs:attribute name="type" type="xs:string" use="required"/>
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-						<xs:attribute name="name" type="xs:string" use="required"/>
-						<xs:attribute name="condition" type="xs:string" use="optional" default="" />
-					</xs:complexType>
-				</xs:element>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="class"/>
 					<xs:element ref="subclass"/>
@@ -144,6 +134,7 @@
 				</xs:choice>
 				<xs:element name="query" type="query" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="sql-query" type="sql-query" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="filter-def" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 			<xs:attribute name="schema" type="xs:string" use="optional">
 				<xs:annotation>
@@ -172,6 +163,20 @@
 					<xs:documentation>Default value of the lazy attribute for persistent classes and collections</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="filter-def">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="filter-param" minOccurs="1" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="type" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="condition" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="import">
@@ -729,6 +734,7 @@
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="filter" type="filter" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 			<xs:attribute name="class" type="xs:string" use="required"/>
 			<xs:attribute name="column" type="xs:string"/>
