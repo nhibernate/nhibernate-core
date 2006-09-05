@@ -335,6 +335,7 @@ namespace NHibernate.Caches.SysCache
 				_rootCacheKey = GenerateRootCacheKey();
 			}
 
+			_rootCacheKeyStored = true;
 			_cache.Add(
 				_rootCacheKey,
 				_rootCacheKey,
