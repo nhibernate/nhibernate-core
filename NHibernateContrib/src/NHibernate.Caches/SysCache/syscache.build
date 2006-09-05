@@ -96,6 +96,7 @@
 				<include name="System.dll" />
 				<include name="System.Data.dll" />
 				<include name="System.XML.dll" />
+				<include name="System.Web.dll" />
 				<include name="${build.dir}/bin/${nant.project.name}.dll" />
 				<include name="${build.dir}/bin/NHibernate.dll" />
 				<include name="${build.dir}/bin/nunit.framework.dll" />

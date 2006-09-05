@@ -42,6 +42,7 @@ namespace NHibernate.Caches.SysCache
 		private static readonly TimeSpan _defaultRelativeExpiration = TimeSpan.FromSeconds( 300 );
 		private static readonly string _cacheKeyPrefix = "NHibernate-Cache:";
 		private string _rootCacheKey;
+		private bool _rootCacheKeyStored;
 
 		/// <summary>
 		/// default constructor
@@ -276,6 +277,11 @@ namespace NHibernate.Caches.SysCache
 				}
 			}
 
+			if (!_rootCacheKeyStored)
+			{
+				StoreRootCacheKey();
+			}
+
 			// Now add the item with expiration policy
 			_cache.Add(
 				cacheKey, new DictionaryEntry( key, value ), new AspCache.CacheDependency(null, new string[] { _rootCacheKey }), AspCache.Cache.NoAbsoluteExpiration,
@@ -316,11 +322,27 @@ namespace NHibernate.Caches.SysCache
 			return GetCacheKey(Guid.NewGuid());
 		}
 
+		private void RootCacheKeyRemoved(string key, object value, AspCache.CacheItemRemovedReason reason)
+		{
+			_rootCacheKeyStored = false;
+		}
+
 		/// <summary></summary>
 		private void StoreRootCacheKey()
 		{
-			_rootCacheKey = GenerateRootCacheKey();
-			_cache.Add(_rootCacheKey, _rootCacheKey, null, AspCache.Cache.NoAbsoluteExpiration, AspCache.Cache.NoSlidingExpiration, AspCache.CacheItemPriority.Default, null);
+			if (_rootCacheKey == null)
+			{
+				_rootCacheKey = GenerateRootCacheKey();
+			}
+
+			_cache.Add(
+				_rootCacheKey,
+				_rootCacheKey,
+				null,
+				AspCache.Cache.NoAbsoluteExpiration,
+				AspCache.Cache.NoSlidingExpiration,
+				AspCache.CacheItemPriority.Default,
+				new AspCache.CacheItemRemovedCallback(RootCacheKeyRemoved));
 		}
 
 		/// <summary></summary>

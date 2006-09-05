@@ -99,6 +99,11 @@
                     Project = "{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
             </References>
         </Build>
         <Files>
