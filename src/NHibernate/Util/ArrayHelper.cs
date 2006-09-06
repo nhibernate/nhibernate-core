@@ -219,5 +219,23 @@ namespace NHibernate.Util
 			list.CopyTo( result, 0 );
 			return result;
 		}
+
+		private static void ExpandWithNulls(IList list, int requiredLength)
+		{
+			while (list.Count < requiredLength)
+			{
+				list.Add(null);
+			}
+		}
+
+		/// <summary>
+		/// Sets <paramref name="list" /> item at position <paramref name="index" /> to <paramref name="value" />.
+		/// Expands the list by adding <c>null</c> values, if needed.
+		/// </summary>
+		public static void SafeSetValue(IList list, int index, object value)
+		{
+			ExpandWithNulls(list, index + 1);
+			list[index] = value;
+		}
 	}
 }

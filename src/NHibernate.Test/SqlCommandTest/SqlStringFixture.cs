@@ -21,13 +21,13 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString postAppendSql = sql.Append(" where A=B" );
 
 			Assert.IsFalse( sql==postAppendSql, "should be a new object" );
-			Assert.AreEqual( 3, postAppendSql.SqlParts.Length );
+			Assert.AreEqual( 3, postAppendSql.SqlParts.Count );
 
 			sql = postAppendSql;
 
 			postAppendSql = sql.Append( new SqlString(" and C=D") );
 
-			Assert.AreEqual(4, postAppendSql.SqlParts.Length );
+			Assert.AreEqual(4, postAppendSql.SqlParts.Count );
 
 			Assert.AreEqual( "select from table where A=B and C=D", postAppendSql.ToString() );
 
@@ -40,7 +40,7 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString sql = new SqlString( new string[] { "", "select", " from table" } );
 			SqlString compacted = sql.Compact();
 
-			Assert.AreEqual( 1, compacted.SqlParts.Length );
+			Assert.AreEqual( 1, compacted.SqlParts.Count );
 			Assert.AreEqual( "select from table", compacted.ToString() );
 		}
 
@@ -60,7 +60,7 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString sql = builder.ToSqlString();
 			sql = sql.Compact();
 
-			Assert.AreEqual( 3, sql.SqlParts.Length );
+			Assert.AreEqual( 3, sql.SqlParts.Count );
 			Assert.AreEqual( "select from table where id = ? and 'a'='a'", sql.ToString() );
 
 		}
@@ -74,7 +74,7 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString sql = new SqlString( new object[] {p1, p2} );
 			SqlString compacted = sql.Compact();
 
-			Assert.AreEqual( 2, compacted.SqlParts.Length );
+			Assert.AreEqual( 2, compacted.SqlParts.Count );
 			Assert.AreEqual( "??", compacted.ToString() );
 
 		}
@@ -205,19 +205,15 @@ namespace NHibernate.Test.SqlCommandTest
 		public void Replace() 
 		{
 			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder, " and c = ", Parameter.Placeholder } );
-			
 			SqlString replacedSql = sql.Replace( "table", "replacedTable" );
-			Assert.AreEqual( "select from replacedTable where a = ", replacedSql.SqlParts[0], "replaced single instance" );
+			Assert.AreEqual( sql.ToString().Replace("table", "replacedTable"), replacedSql.ToString());
 
 			replacedSql = sql.Replace( "not found", "not in here" );
-			Assert.AreEqual( sql.ToString(), replacedSql.ToString(), "replace no found string" );
+			Assert.AreEqual( sql.ToString().Replace( "not found", "not in here" ), replacedSql.ToString(), "replace no found string" );
 
 			replacedSql = sql.Replace( "le", "LE" );
-			Assert.AreEqual( "seLEct from tabLE where a = ", replacedSql.SqlParts[0], "multi-match replace" );
-			Assert.IsTrue( replacedSql.SqlParts[1] is Parameter, "multi-match replace - Param 1" );
-			Assert.AreEqual(" and c = ", replacedSql.SqlParts[2], "multi-match replace" );
-			Assert.IsTrue( replacedSql.SqlParts[3] is Parameter, "multi-match replace - Param 2" );
-			
+			Assert.AreEqual( sql.ToString().Replace( "le", "LE" ), replacedSql.ToString(), "multi-match replace" );
+			Assert.AreEqual( 2, replacedSql.GetParameterTypes().Length, "multi-match replace - parameters" );
 		}
 		
 		[Test]

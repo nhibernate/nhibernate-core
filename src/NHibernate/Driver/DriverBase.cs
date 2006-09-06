@@ -76,10 +76,9 @@ namespace NHibernate.Driver
 				}
 			}
 
-			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Length * 15);
-			for (int i = 0; i < sqlString.SqlParts.Length; i++)
+			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Count * 15);
+			foreach (object part in sqlString.SqlParts)
 			{
-				object part = sqlString.SqlParts[i];
 				Parameter parameter = part as Parameter;
 
 				if (parameter != null)

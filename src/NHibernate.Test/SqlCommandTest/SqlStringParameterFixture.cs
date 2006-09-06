@@ -73,57 +73,7 @@ namespace NHibernate.Test.SqlCommandTest
 			Parameter t = new Parameter(SqlTypeFactory.GetDecimal(20, 5));
 			Assert.IsFalse(x.Equals(t));
 		}
-
-
-
-		[Test]
-		public void TestParameterClone()
-		{
-			Parameter original = new Parameter(SqlTypeFactory.Int32);
-			Parameter cloned = null;
-
-			cloned = (Parameter) original.Clone();
-
-			Assert.IsFalse(original == cloned, "Not the same object by ==");
-			Assert.AreEqual(original.SqlType.DbType, cloned.SqlType.DbType, "Same DbType");
-		}
-
-		[Test]
-		public void TestSqlStringClone()
-		{
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-
-			SqlString original = null;
-			SqlString cloned = null;
-
-			Parameter[] origParams = new Parameter[2];
-
-			origParams[0] = new Parameter(SqlTypeFactory.Int32);
-			origParams[1] = new Parameter(SqlTypeFactory.Int64);
-
-			sqlBuilder.Add("UPDATE tablename set param0 = ")
-				.Add(origParams[0])
-				.Add(", param1 =")
-				.Add(origParams[1]);
-
-
-			original = sqlBuilder.ToSqlString();
-
-			cloned = original.Clone();
-
-			Assert.IsTrue((original == cloned) == false, "Not the same SqlString by ==");
-			Assert.AreEqual(original.SqlParts.Length, cloned.SqlParts.Length, "Same # of parts");
-			Assert.IsTrue((original.SqlParts[1] == cloned.SqlParts[1]) == false, "First param not the same by ==");
-			Assert.IsTrue((original.SqlParts[3] == cloned.SqlParts[3]) == false, "Second param not the same by ==");
-
-			Assert.AreEqual(original.ToString(), cloned.ToString(), "The ToString() is the same");
-
-			// modify the first parameter of the clone to ensure they are not the same
-			cloned.SqlParts[0] = "UPDATE changedtablename set param0 = ";
-			cloned.SqlParts[3] = Parameter.Placeholder;
-
-			Assert.IsTrue(cloned.ToString() != original.ToString(), "Should not be the same ToString()");
-
-		}
+		
+		// TODO: test ReplaceParameterTypes
 	}
 }

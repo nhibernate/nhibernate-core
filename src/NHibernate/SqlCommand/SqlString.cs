@@ -8,14 +8,14 @@ using NHibernate.SqlTypes;
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
-	/// This is a non-modifiable Sql statement that is ready to be prepared 
+	/// This is a non-modifiable SQL statement that is ready to be prepared 
 	/// and sent to the Database for execution.
 	/// 
 	/// If you need to modify this object pass it to a <c>SqlStringBuilder</c> and
 	/// get a new object back from it.
 	/// </summary>
 	[Serializable]
-	public class SqlString : ICloneable
+	public class SqlString
 	{
 		private readonly object[ ] sqlParts;
 		private int[ ] parameterIndexes;
@@ -47,7 +47,7 @@ namespace NHibernate.SqlCommand
 		/// and throwing any place this is used as a key in a hashtable into
 		/// an unfindable instance.
 		/// </remarks>
-		public object[ ] SqlParts
+		public ICollection SqlParts
 		{
 			get { return sqlParts; }
 		}
@@ -206,15 +206,15 @@ namespace NHibernate.SqlCommand
 		{
 			SqlString tempSql = Compact();
 
-			int endIndex = tempSql.SqlParts.Length - 1;
+			int endIndex = tempSql.SqlParts.Count - 1;
 
-			if( tempSql.SqlParts.Length == 0 )
+			if( tempSql.SqlParts.Count == 0 )
 			{
 				return false;
 			}
 
 
-			string lastPart = tempSql.SqlParts[ endIndex ] as string;
+			string lastPart = tempSql.sqlParts[ endIndex ] as string;
 			if( lastPart != null )
 			{
 				return lastPart.EndsWith( value );
@@ -288,7 +288,6 @@ namespace NHibernate.SqlCommand
 
 				return parameterIndexes;
 			}
-
 		}
 
 		/// <summary>
@@ -309,12 +308,12 @@ namespace NHibernate.SqlCommand
 			// GetHashCode would return.
 			SqlString compacted = this.Compact();
 
-			for( int i = 0; i < compacted.SqlParts.Length; i++ )
+			for( int i = 0; i < compacted.sqlParts.Length; i++ )
 			{
-				string sqlPart = compacted.SqlParts[ i ] as string;
+				string sqlPart = compacted.sqlParts[ i ] as string;
 				if( sqlPart != null )
 				{
-					compacted.SqlParts[ i ] = sqlPart.Replace( oldValue, newValue );
+					compacted.sqlParts[ i ] = sqlPart.Replace( oldValue, newValue );
 				}
 			}
 
@@ -467,7 +466,7 @@ namespace NHibernate.SqlCommand
 
 			// if they don't contain the same number of parts then we
 			// can exit early because they are different
-			if( sqlParts.Length!=rhs.SqlParts.Length )
+			if( sqlParts.Length!=rhs.sqlParts.Length )
 			{
 				return false;
 			}
@@ -476,7 +475,7 @@ namespace NHibernate.SqlCommand
 			// part for equallity.
 			for( int i = 0; i < sqlParts.Length; i++ )
 			{
-				if( this.sqlParts[ i ].Equals( rhs.SqlParts[ i ] ) == false )
+				if( !sqlParts[ i ].Equals( rhs.sqlParts[ i ] ) )
 				{
 					return false;
 				}
@@ -525,37 +524,17 @@ namespace NHibernate.SqlCommand
 
 		#endregion
 
-		#region ICloneable Members
-
-		/// <summary></summary>
-		public SqlString Clone()
+		private SqlString Clone()
 		{
 			object[ ] clonedParts = new object[sqlParts.Length];
-			Parameter param;
 
 			for( int i = 0; i < sqlParts.Length; i++ )
 			{
-				param = sqlParts[ i ] as Parameter;
-				if( param != null )
-				{
-					clonedParts[ i ] = param.Clone();
-				}
-				else
-				{
-					clonedParts[ i ] = ( string ) sqlParts[ i ];
-				}
+				clonedParts[ i ] = sqlParts[ i ];
 			}
 
 			return new SqlString( clonedParts );
 		}
-
-		/// <summary></summary>
-		object ICloneable.Clone()
-		{
-			return Clone();
-		}
-
-		#endregion
 
 		public SqlType[] GetParameterTypes()
 		{
@@ -567,6 +546,26 @@ namespace NHibernate.SqlCommand
 			}
 
 			return (SqlType[]) result.ToArray(typeof(SqlType));
+		}
+		
+		private void SetParameterType(int index, SqlType type)
+		{
+			sqlParts[ ParameterIndexes[ index ] ] = new Parameter(type);
+		}
+		
+		public SqlString ReplaceParameterTypes(SqlType[][] sqlTypes)
+		{
+			SqlString result = Clone();
+			int index = 0;
+			foreach (SqlType[] array in sqlTypes)
+			{
+				foreach (SqlType type in array)
+				{
+					result.SetParameterType(index, type);
+					index++;
+				}
+			}
+			return result;
 		}
 	}
 }

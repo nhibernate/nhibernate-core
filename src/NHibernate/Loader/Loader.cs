@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
-
+using System.Diagnostics;
 using Iesi.Collections;
 
 using log4net;
@@ -15,6 +15,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -1681,6 +1682,80 @@ namespace NHibernate.Loader
 		public override string ToString()
 		{
 			return GetType().FullName + '(' + SqlString + ')';
+		}
+
+		private SqlString ReplaceParameterTypes(SqlString sql, IList nhibernateTypes)
+		{
+			SqlType[][] sqlTypes = new SqlType[nhibernateTypes.Count][];
+			
+			for (int i = 0; i < sqlTypes.Length; i++)
+			{
+				sqlTypes[i] = ((IType) nhibernateTypes[i]).SqlTypes(Factory);
+			}
+			
+			return sql.ReplaceParameterTypes(sqlTypes);
+		}
+	
+		/// <summary>
+		/// Indicates if the SqlString has been fully populated - it goes
+		/// through a 2 phase process.  The first part is the parsing of the
+		/// hql and it puts in placeholders for the parameters, the second phase 
+		/// puts in the actual types for the parameters using QueryParameters
+		/// passed to query methods.  The completion of the second phase is
+		/// when <c>isSqlStringPopulated==true</c>.
+		/// </summary>
+		private bool isSqlStringPopulated;
+
+		private object prepareCommandLock = new object();
+
+		protected void PopulateSqlString( QueryParameters parameters )
+		{
+			lock( prepareCommandLock )
+			{
+				if( isSqlStringPopulated )
+				{
+					return;
+				}
+
+				// when there is no untyped Parameters then we can avoid the need to create
+				// a new sql string and just return the existing one because it is ready 
+				// to be prepared and executed.
+				if( SqlString.ContainsUntypedParameter )
+				{
+					SqlString sqlString = SqlString;
+
+					ArrayList paramTypeList = new ArrayList();
+
+					foreach( IType type in parameters.PositionalParameterTypes )
+					{
+						paramTypeList.Add(type);
+					}
+
+					if( parameters.NamedParameters != null && parameters.NamedParameters.Count > 0 )
+					{
+						int offset = paramTypeList.Count;
+
+						// convert the named parameters to an array of types
+						foreach( DictionaryEntry e in parameters.NamedParameters )
+						{
+							string name = ( string ) e.Key;
+							TypedValue typedval = ( TypedValue ) e.Value;
+							int[ ] locs = GetNamedParameterLocs( name );
+
+							for( int i = 0; i < locs.Length; i++ )
+							{
+								ArrayHelper.SafeSetValue(paramTypeList, locs[ i ] + offset, typedval.Type);
+							}
+						}
+					}
+					
+					// replace the local field used by the SqlString property with the one we just built 
+					// that has the correct parameters
+					SqlString = ReplaceParameterTypes(sqlString, paramTypeList);
+				}
+
+				isSqlStringPopulated = true;
+			}
 		}
 
 	}

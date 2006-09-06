@@ -125,14 +125,14 @@ namespace NHibernate.SqlCommand
 		/// <param name="fragment"></param>
 		public void AddSelectFragmentString( SqlString fragment )
 		{
-			if( fragment.SqlParts.Length > 0 && fragment.StartsWith( "," ) )
+			if( fragment.SqlParts.Count > 0 && fragment.StartsWith( "," ) )
 			{
 				fragment = fragment.Substring( 1 );
 			}
 
 			fragment = fragment.Trim();
 
-			if( fragment.SqlParts.Length > 0 )
+			if( fragment.SqlParts.Count > 0 )
 			{
 				if( selectBuilder.Count > 0 )
 				{
@@ -243,8 +243,8 @@ namespace NHibernate.SqlCommand
 
 			SqlString part1 = joins.ToWhereFragmentString.Trim();
 			SqlString part2 = whereBuilder.ToSqlString().Trim();
-			bool hasPart1 = part1.SqlParts.Length > 0;
-			bool hasPart2 = part2.SqlParts.Length > 0;
+			bool hasPart1 = part1.SqlParts.Count > 0;
+			bool hasPart2 = part2.SqlParts.Count > 0;
 
 			if( hasPart1 || hasPart2 )
 			{
