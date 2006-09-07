@@ -631,10 +631,11 @@ ISession session = sessions.OpenSession(conn);
                             <entry>Microsoft SQL Server 2005</entry> 
                             <entry><literal>NHibernate.Dialect.MsSql2005Dialect</literal></entry>
                             <entry>
-								Set <literal>hibernate.driver_class</literal> to
-								<literal>NHibernate.Driver.SqlServerCeDriver</literal>
-								for SQL Server 2005 Everywhere Edition.
-							</entry>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server 2005 Everywhere Edition</entry>
+                            <entry><literal>NHibernate.Dialect.MsSqlCeDialect</literal></entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 7</entry> 
