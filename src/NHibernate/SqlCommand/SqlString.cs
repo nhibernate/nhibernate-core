@@ -10,10 +10,13 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// This is a non-modifiable SQL statement that is ready to be prepared 
 	/// and sent to the Database for execution.
-	/// 
+	/// </summary>
+	/// <remarks>
+	/// <para>
 	/// If you need to modify this object pass it to a <c>SqlStringBuilder</c> and
 	/// get a new object back from it.
-	/// </summary>
+	/// </para>
+	/// </remarks>
 	[Serializable]
 	public class SqlString
 	{
@@ -39,14 +42,6 @@ namespace NHibernate.SqlCommand
 			this.sqlParts = sqlParts;
 		}
 
-		/// <summary></summary>
-		/// <remarks>
-		/// TODO: modify this from object[] to an ICollection so that we can
-		/// safely say that SqlString truly is immutable.  Right now someone
-		/// can change the contents of the array - hence changing the SqlString
-		/// and throwing any place this is used as a key in a hashtable into
-		/// an unfindable instance.
-		/// </remarks>
 		public ICollection SqlParts
 		{
 			get { return sqlParts; }
@@ -104,7 +99,6 @@ namespace NHibernate.SqlCommand
 		{
 			StringBuilder builder = new StringBuilder();
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-			string builderString = String.Empty;
 
 			foreach( object part in SqlParts )
 			{
@@ -116,27 +110,22 @@ namespace NHibernate.SqlCommand
 				}
 				else
 				{
-					builderString = builder.ToString();
-
 					// don't add an empty string into the new compacted SqlString
-					if( builderString.Length != 0 )
+					if( builder.Length > 0 )
 					{
-						sqlBuilder.Add( builderString );
+						sqlBuilder.Add( builder.ToString() );
 					}
 
-					builder = new StringBuilder();
-
+					builder.Length = 0;
 					sqlBuilder.Add( ( Parameter ) part );
 				}
 
 			}
 
 			// make sure the contents of the builder have been added to the sqlBuilder
-			builderString = builder.ToString();
-
-			if( builderString.Length > 0 )
+			if (builder.Length > 0)
 			{
-				sqlBuilder.Add( builderString );
+				sqlBuilder.Add( builder.ToString() );
 			}
 
 			return sqlBuilder.ToSqlString();
@@ -267,7 +256,7 @@ namespace NHibernate.SqlCommand
 		/// <value>
 		/// An Int32 array that contains the indexes of the Parameters in the SqlPart array.
 		/// </value>
-		public int[ ] ParameterIndexes
+		private int[ ] ParameterIndexes
 		{
 			get
 			{
@@ -306,7 +295,7 @@ namespace NHibernate.SqlCommand
 			// any of the parts because it has not been put in a hashtable so we can
 			// consider it mutable - there is no danger yet in changing the value that
 			// GetHashCode would return.
-			SqlString compacted = this.Compact();
+			SqlString compacted = Compact();
 
 			for( int i = 0; i < compacted.sqlParts.Length; i++ )
 			{
@@ -327,7 +316,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>true if the SqlString starts with the value.</returns>
 		public bool StartsWith( string value )
 		{
-			SqlString tempSql = this.Compact();
+			SqlString tempSql = Compact();
 
 			foreach( object sqlPart in tempSql.SqlParts )
 			{

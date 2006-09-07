@@ -174,34 +174,6 @@ namespace NHibernate.Test.SqlCommandTest
 		}
 
 		[Test]
-		public void ParameterIndexesNoParams() 
-		{
-			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where 'a'='a'" } );
-			
-			Assert.AreEqual( 0, sql.ParameterIndexes.Length );
-		}
-
-		[Test]
-		public void ParameterIndexOneParam() 
-		{
-			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder } );
-			
-			Assert.AreEqual( 1, sql.ParameterIndexes.Length );
-			Assert.AreEqual( 3, sql.ParameterIndexes[0], "the first param should be at index 3" );
-		}
-
-
-		[Test]
-		public void ParameterIndexManyParam() 
-		{
-			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder, " and c = ", Parameter.Placeholder } );
-			
-			Assert.AreEqual( 2, sql.ParameterIndexes.Length );
-			Assert.AreEqual( 3, sql.ParameterIndexes[0], "the first param should be at index 3"  );
-			Assert.AreEqual( 5, sql.ParameterIndexes[1], "the second param should be at index 5"  );
-		}
-
-		[Test]
 		public void Replace() 
 		{
 			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder, " and c = ", Parameter.Placeholder } );
