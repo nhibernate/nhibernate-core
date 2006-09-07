@@ -608,7 +608,7 @@ namespace NHibernate.Persister.Entity
 					if( IsVersioned )
 					{
 						VersionType.NullSafeSet( deleteCmd, version, IdentifierColumnNames.Length, session );
-						Check( session.Batcher.ExecuteNonQuery( deleteCmd, sql.GetParameterTypes() ), id );
+						Check( session.Batcher.ExecuteNonQuery( deleteCmd, sql.ParameterTypes ), id );
 					}
 					else
 					{
@@ -738,7 +738,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check( session.Batcher.ExecuteNonQuery( statement, sqlUpdateString.GetParameterTypes() ), id );
+						Check( session.Batcher.ExecuteNonQuery( statement, sqlUpdateString.ParameterTypes ), id );
 					}
 				}
 				catch( Exception e )

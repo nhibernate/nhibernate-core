@@ -21,7 +21,7 @@ namespace NHibernate.SqlCommand
 	public class SqlString
 	{
 		private readonly object[ ] sqlParts;
-		private int[ ] parameterIndexes;
+		private SqlType[] parameterTypes;
 
 		public static readonly SqlString Empty = new SqlString(new object[0]);
 
@@ -45,6 +45,36 @@ namespace NHibernate.SqlCommand
 		public ICollection SqlParts
 		{
 			get { return sqlParts; }
+		}
+		
+		private void InitializeParameterTypes()
+		{
+			ArrayList types = new ArrayList(sqlParts.Length);
+			
+			foreach (object part in sqlParts)
+			{
+				Parameter param = part as Parameter;
+				if (param == null)
+				{
+					continue;
+				}
+
+				types.Add(param.SqlType);
+			}
+			
+			parameterTypes = (SqlType[]) types.ToArray(typeof (SqlType));
+		}
+		
+		public SqlType[] ParameterTypes
+		{
+			get
+			{
+				if (parameterTypes == null)
+				{
+					InitializeParameterTypes();
+				}
+				return parameterTypes;
+			}
 		}
 
 		/// <summary>
@@ -210,73 +240,6 @@ namespace NHibernate.SqlCommand
 			}
 
 			return false;
-		}
-
-		/// <summary>
-		/// Determines if this <see cref="SqlString"/> contains no parts
-		/// or only has parts containing an empty string.
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if there are no parts containing a valid string or if one
-		/// of the parts has a parameter in it, <c>false</c> otherwise.
-		/// </value>
-		public bool IsEmpty
-		{
-			get
-			{
-				foreach( object part in sqlParts )
-				{
-					string text = part as string;
-					if( text!=null )
-					{
-						if( text.Length > 0 )
-						{
-							// there is some actual text in the part so
-							// it should not be considered empty
-							return false;
-						}
-					}
-					else
-					{
-						// it is not a string so this SqlString contains
-						// a parameter
-						return false;
-					}
-				}
-
-				// we've inspected all the parts and found nothing
-				// in them, so consider this empty.
-				return true;
-			}
-		}
-
-		/// <summary>
-		/// Gets the indexes of the Parameters in the SqlParts array.
-		/// </summary>
-		/// <value>
-		/// An Int32 array that contains the indexes of the Parameters in the SqlPart array.
-		/// </value>
-		private int[ ] ParameterIndexes
-		{
-			get
-			{
-				// only calculate this one time because this object is immutable.
-				if( parameterIndexes == null )
-				{
-					ArrayList paramList = new ArrayList();
-					for( int i = 0; i < sqlParts.Length; i++ )
-					{
-						if( sqlParts[ i ] is Parameter )
-						{
-							paramList.Add( i );
-						}
-					}
-
-					parameterIndexes = ( int[ ] ) paramList.ToArray( typeof( int ) );
-				}
-
-				return parameterIndexes;
-			}
 		}
 
 		/// <summary>
@@ -525,23 +488,6 @@ namespace NHibernate.SqlCommand
 			return new SqlString( clonedParts );
 		}
 
-		public SqlType[] GetParameterTypes()
-		{
-			ArrayList result = new ArrayList();
-
-			foreach (int i in ParameterIndexes)
-			{
-				result.Add(((Parameter) sqlParts[i]).SqlType);
-			}
-
-			return (SqlType[]) result.ToArray(typeof(SqlType));
-		}
-		
-		private void SetParameterType(int index, SqlType type)
-		{
-			sqlParts[ ParameterIndexes[ index ] ] = new Parameter(type);
-		}
-		
 		public SqlString ReplaceParameterTypes(SqlType[][] sqlTypes)
 		{
 			SqlString result = Clone();
@@ -550,7 +496,7 @@ namespace NHibernate.SqlCommand
 			{
 				foreach (SqlType type in array)
 				{
-					result.SetParameterType(index, type);
+					result.ParameterTypes[index] = type;
 					index++;
 				}
 			}

@@ -60,7 +60,7 @@ namespace NHibernate.Impl
 
 		protected SqlType[] CurrentCommandParameterTypes
 		{
-			get { return batchCommandSql.GetParameterTypes(); }
+			get { return batchCommandSql.ParameterTypes; }
 		}
 
 		public IDbCommand Generate(SqlString sqlString, CommandType type)

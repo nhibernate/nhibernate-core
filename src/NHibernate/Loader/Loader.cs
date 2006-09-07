@@ -1282,7 +1282,7 @@ namespace NHibernate.Loader
 			{
 				log.Info( st.CommandText );
 				// TODO: Add WrapResultSetIfEnabled below
-				rs = session.Batcher.ExecuteReader( st, sql.GetParameterTypes() );
+				rs = session.Batcher.ExecuteReader( st, sql.ParameterTypes );
 
 				Dialect.Dialect dialect = session.Factory.Dialect;
 				if( !dialect.SupportsLimitOffset || !UseLimit( selection, dialect ) )

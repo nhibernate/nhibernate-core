@@ -85,7 +85,7 @@ namespace NHibernate.Id
 			IDataReader reader = null;
 			try
 			{
-				reader = session.Batcher.ExecuteReader( cmd, sqlString.GetParameterTypes() );
+				reader = session.Batcher.ExecuteReader( cmd, sqlString.ParameterTypes );
 				reader.Read();
 				object result = IdentifierGeneratorFactory.Get( reader, type, session );
 

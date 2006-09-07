@@ -1365,7 +1365,7 @@ namespace NHibernate.Persister.Entity
 				try
 				{
 					IdentifierType.NullSafeSet( st, id, 0, session );
-					rs = session.Batcher.ExecuteReader( st, sql.GetParameterTypes() );
+					rs = session.Batcher.ExecuteReader( st, sql.ParameterTypes );
 					if( !rs.Read() )
 					{
 						return null;
@@ -1423,7 +1423,7 @@ namespace NHibernate.Persister.Entity
 							VersionType.NullSafeSet( st, version, IdentifierColumnNames.Length, session );
 						}
 
-						rs = session.Batcher.ExecuteReader( st, sql.GetParameterTypes() );
+						rs = session.Batcher.ExecuteReader( st, sql.ParameterTypes );
 						if( !rs.Read() )
 						{
 							throw new StaleObjectStateException( MappedClass, id );
@@ -1499,7 +1499,7 @@ namespace NHibernate.Persister.Entity
 					{
 						VersionType.NullSafeSet( st, version, IdentifierColumnNames.Length, session );
 					}
-					rs = session.Batcher.ExecuteReader( st, sql.GetParameterTypes() );
+					rs = session.Batcher.ExecuteReader( st, sql.ParameterTypes );
 					if( !rs.Read() )
 					{
 						throw new StaleObjectStateException( MappedClass, id );
@@ -1776,7 +1776,7 @@ namespace NHibernate.Persister.Entity
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
 						Dehydrate( null, fields, notNull, 0, insertSelect, session );
-						rs = session.Batcher.ExecuteReader( insertSelect, insertSelectSQL.GetParameterTypes() );
+						rs = session.Batcher.ExecuteReader( insertSelect, insertSelectSQL.ParameterTypes );
 						return GetGeneratedIdentity( obj, session, rs );
 					}
 					finally
@@ -1793,7 +1793,7 @@ namespace NHibernate.Persister.Entity
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
 						Dehydrate( null, fields, notNull, 0, statement, session );
-						session.Batcher.ExecuteNonQuery( statement, sql.GetParameterTypes() );
+						session.Batcher.ExecuteNonQuery( statement, sql.ParameterTypes );
 					}
 					finally
 					{
@@ -1807,7 +1807,7 @@ namespace NHibernate.Persister.Entity
 					IDataReader rs = null;
 					try
 					{
-						rs = session.Batcher.ExecuteReader( idselect, idselectSql.GetParameterTypes() );
+						rs = session.Batcher.ExecuteReader( idselect, idselectSql.ParameterTypes );
 						return GetGeneratedIdentity( obj, session, rs );
 					}
 					finally

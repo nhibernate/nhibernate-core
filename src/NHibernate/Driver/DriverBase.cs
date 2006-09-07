@@ -45,7 +45,7 @@ namespace NHibernate.Driver
 		public virtual IDbCommand GenerateCommand(CommandType type, SqlString sqlString)
 		{
 			int paramIndex = 0;
-			IDbCommand cmd = this.CreateCommand();
+			IDbCommand cmd = CreateCommand();
 			cmd.CommandType = type;
 
 			object envTimeout = Environment.Properties[Environment.CommandTimeout];
@@ -77,6 +77,7 @@ namespace NHibernate.Driver
 			}
 
 			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Count * 15);
+			SqlType[] parameterTypes = sqlString.ParameterTypes;
 			foreach (object part in sqlString.SqlParts)
 			{
 				Parameter parameter = part as Parameter;
@@ -86,7 +87,7 @@ namespace NHibernate.Driver
 					string paramName = "p" + paramIndex;
 					builder.Append(FormatNameForSql(paramName));
 
-					IDbDataParameter dbParam = GenerateParameter(cmd, paramName, parameter);
+					IDbDataParameter dbParam = GenerateParameter(cmd, paramName, parameterTypes[paramIndex]);
 
 					cmd.Parameters.Add(dbParam);
 
@@ -115,17 +116,17 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="command">The IDbCommand to use to create the IDbDataParameter.</param>
 		/// <param name="name">The name to set for IDbDataParameter.Name</param>
-		/// <param name="parameter">The Parameter to convert to an IDbDataParameter.</param>
+		/// <param name="sqlType">The SqlType to set for IDbDataParameter.</param>
 		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
-		protected IDbDataParameter GenerateParameter(IDbCommand command, string name, Parameter parameter)
+		protected IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlType sqlType)
 		{
-			if (name != null && parameter != null && parameter.SqlType == null)
+			if (name != null && sqlType == null)
 			{
 				throw new QueryException(String.Format("No type assigned to parameter '{0}': be sure to set types for named parameters.", name));
 			}
 
 			IDbDataParameter dbParam = command.CreateParameter();
-			InitializeParameter(dbParam, name, parameter.SqlType);
+			InitializeParameter(dbParam, name, sqlType);
 
 			return dbParam;
 		}

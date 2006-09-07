@@ -153,27 +153,6 @@ namespace NHibernate.Test.SqlCommandTest
 		}
 
 		[Test]
-		public void IsEmptyWithEmptyStrings()
-		{
-			SqlString sql = new SqlString( new object[] { "", "" } );
-			Assert.IsTrue( sql.IsEmpty, "only empty string put in.");
-		}
-
-		[Test]
-		public void IsEmptyWithString()
-		{
-			SqlString sql = new SqlString( "not empty" );
-			Assert.IsFalse( sql.IsEmpty, "valid string in there" );
-		}
-
-		[Test]
-		public void IsEmptyWithParam()
-		{
-			SqlString sql = new SqlString( new object[] { "", Parameter.Placeholder } );
-			Assert.IsFalse( sql.IsEmpty, "had a parameter - should not be empty" );
-		}
-
-		[Test]
 		public void Replace() 
 		{
 			SqlString sql = new SqlString( new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder, " and c = ", Parameter.Placeholder } );
@@ -185,7 +164,7 @@ namespace NHibernate.Test.SqlCommandTest
 
 			replacedSql = sql.Replace( "le", "LE" );
 			Assert.AreEqual( sql.ToString().Replace( "le", "LE" ), replacedSql.ToString(), "multi-match replace" );
-			Assert.AreEqual( 2, replacedSql.GetParameterTypes().Length, "multi-match replace - parameters" );
+			Assert.AreEqual( 2, replacedSql.ParameterTypes.Length, "multi-match replace - parameters" );
 		}
 		
 		[Test]

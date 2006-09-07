@@ -539,7 +539,7 @@ namespace NHibernate.Persister.Entity
 
 					for( int i = 0; i < tableNames.Length; i++ )
 					{
-						session.Batcher.ExecuteNonQuery( insertCmds[ i ], sql[i].GetParameterTypes() );
+						session.Batcher.ExecuteNonQuery( insertCmds[ i ], sql[i].ParameterTypes );
 					}
 				}
 				finally
@@ -596,7 +596,7 @@ namespace NHibernate.Persister.Entity
 					try
 					{
 						Dehydrate( id, fields, notNull, i, statement, session );
-						session.Batcher.ExecuteNonQuery( statement, sql[i].GetParameterTypes() );
+						session.Batcher.ExecuteNonQuery( statement, sql[i].ParameterTypes );
 					}
 					finally
 					{
@@ -654,7 +654,7 @@ namespace NHibernate.Persister.Entity
 						// Do the key. The key is immutable so we can use the _current_ object state
 						IdentifierType.NullSafeSet( statements[ i ], id, 0, session );
 
-						Check( session.Batcher.ExecuteNonQuery( statements[ i ], sqls[i].GetParameterTypes() ), id );
+						Check( session.Batcher.ExecuteNonQuery( statements[ i ], sqls[i].ParameterTypes ), id );
 					}
 				}
 				finally
@@ -780,7 +780,7 @@ namespace NHibernate.Persister.Entity
 					{
 						if( includeTable[ i ] )
 						{
-							Check( session.Batcher.ExecuteNonQuery( statements[ i ], sql[i].GetParameterTypes() ), id );
+							Check( session.Batcher.ExecuteNonQuery( statements[ i ], sql[i].ParameterTypes ), id );
 						}
 					}
 				}
