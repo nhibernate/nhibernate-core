@@ -507,6 +507,7 @@
     <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
+    <Compile Include="Dialect\MsSqlCeDialect.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Hql\IFilterTranslator.cs" />
     <Compile Include="IFilter.cs" />
