@@ -2,6 +2,7 @@ using System;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
 {
@@ -116,7 +117,7 @@ namespace NHibernate.SqlCommand
 
 		public override string ToString()
 		{
-			return "?";
+			return StringHelper.SqlParameter;
 		}
 
 		#endregion
