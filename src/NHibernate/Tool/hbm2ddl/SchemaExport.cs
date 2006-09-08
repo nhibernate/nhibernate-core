@@ -6,6 +6,7 @@ using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Util;
+using log4net;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -24,6 +25,8 @@ namespace NHibernate.Tool.hbm2ddl
 		private string outputFile = null;
 		private Dialect.Dialect dialect;
 		private string delimiter = null;
+
+		private static readonly ILog log = LogManager.GetLogger(typeof(SchemaExport));
 
 		/// <summary>
 		/// Create a schema exported for a given Configuration
@@ -181,7 +184,7 @@ namespace NHibernate.Tool.hbm2ddl
 						{
 							Console.WriteLine( dropSQL[ i ] );
 						}
-						Console.WriteLine( "Unsuccessful: " + e.Message );
+                        log.Warn("Unsuccessful: " + e.Message, e);
 					}
 				}
 
@@ -225,7 +228,7 @@ namespace NHibernate.Tool.hbm2ddl
 							{
 								Console.WriteLine( createSQL[ j ] );
 							}
-							Console.WriteLine( "Unsuccessful: " + e.Message );
+                            log.Warn("Unsuccessful: " + e.Message, e);
 
 							// Fail on create script errors
 							throw;
@@ -241,7 +244,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch( Exception e )
 			{
-				Console.Write( e.StackTrace );
+                log.Error(e.Message, e);
 				throw new HibernateException( e.Message, e );
 			}
 			finally
@@ -260,7 +263,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				catch( Exception e )
 				{
-					Console.Error.WriteLine( "Could not close connection: " + e.Message );
+                    log.Error("Could not close connection: " + e.Message, e);
 				}
 				if( fileOutput != null )
 				{
@@ -270,7 +273,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 					catch( Exception ioe )
 					{
-						Console.Error.WriteLine( "Error closing output file " + outputFile + ": " + ioe.Message );
+                        log.Error("Error closing output file " + outputFile + ": " + ioe.Message, ioe);
 					}
 				}
 			}
