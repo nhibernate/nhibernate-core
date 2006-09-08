@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 
 using NHibernate.Util;
@@ -20,14 +22,14 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class SqlString
 	{
-		private readonly object[ ] sqlParts;
+		private readonly object[] sqlParts;
 		private SqlType[] parameterTypes;
 
 		public static readonly SqlString Empty = new SqlString(new object[0]);
 
-		public SqlString( string sqlPart )
+		public SqlString(string sqlPart)
 		{
-			if( StringHelper.IsNotEmpty( sqlPart ) )
+			if (StringHelper.IsNotEmpty(sqlPart))
 			{
 				sqlParts = new object[] { sqlPart };
 			}
@@ -37,8 +39,14 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		public SqlString( object[ ] sqlParts )
+		public SqlString(object[] sqlParts)
 		{
+#if DEBUG
+			foreach (object obj in sqlParts)
+			{
+				Debug.Assert(obj is string || obj is Parameter);
+			}
+#endif
 			this.sqlParts = sqlParts;
 		}
 
@@ -46,11 +54,11 @@ namespace NHibernate.SqlCommand
 		{
 			get { return sqlParts; }
 		}
-		
+
 		private void InitializeParameterTypes()
 		{
 			ArrayList types = new ArrayList(sqlParts.Length);
-			
+
 			foreach (object part in sqlParts)
 			{
 				Parameter param = part as Parameter;
@@ -61,10 +69,10 @@ namespace NHibernate.SqlCommand
 
 				types.Add(param.SqlType);
 			}
-			
-			parameterTypes = (SqlType[]) types.ToArray(typeof (SqlType));
+
+			parameterTypes = (SqlType[]) types.ToArray(typeof(SqlType));
 		}
-		
+
 		public SqlType[] ParameterTypes
 		{
 			get
@@ -87,9 +95,9 @@ namespace NHibernate.SqlCommand
 		/// A SqlString object is immutable so this returns a new SqlString.  If multiple Appends 
 		/// are called it is better to use the SqlStringBuilder.
 		/// </remarks>
-		public SqlString Append( SqlString rhs )
+		public SqlString Append(SqlString rhs)
 		{
-			return new SqlString( ArrayHelper.Join( sqlParts, rhs.sqlParts ) );
+			return new SqlString(ArrayHelper.Join(sqlParts, rhs.sqlParts));
 		}
 
 		/// <summary>
@@ -102,14 +110,14 @@ namespace NHibernate.SqlCommand
 		/// A SqlString object is immutable so this returns a new SqlString.  If multiple Appends 
 		/// are called it is better to use the SqlStringBuilder.
 		/// </remarks>
-		public SqlString Append( string rhs )
+		public SqlString Append(string rhs)
 		{
-			if( StringHelper.IsNotEmpty( rhs ) )
+			if (StringHelper.IsNotEmpty(rhs))
 			{
-				object[ ] temp = new object[sqlParts.Length + 1];
-				Array.Copy( sqlParts, temp, sqlParts.Length );
-				temp[ sqlParts.Length ] = rhs;
-				return new SqlString( temp );
+				object[] temp = new object[sqlParts.Length + 1];
+				Array.Copy(sqlParts, temp, sqlParts.Length);
+				temp[sqlParts.Length] = rhs;
+				return new SqlString(temp);
 			}
 			else
 			{
@@ -130,24 +138,24 @@ namespace NHibernate.SqlCommand
 			StringBuilder builder = new StringBuilder();
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			foreach( object part in SqlParts )
+			foreach (object part in SqlParts)
 			{
 				string stringPart = part as string;
 
-				if( stringPart != null )
+				if (stringPart != null)
 				{
-					builder.Append( stringPart );
+					builder.Append(stringPart);
 				}
 				else
 				{
 					// don't add an empty string into the new compacted SqlString
-					if( builder.Length > 0 )
+					if (builder.Length > 0)
 					{
-						sqlBuilder.Add( builder.ToString() );
+						sqlBuilder.Add(builder.ToString());
 					}
 
 					builder.Length = 0;
-					sqlBuilder.Add( ( Parameter ) part );
+					sqlBuilder.Add((Parameter) part);
 				}
 
 			}
@@ -155,7 +163,7 @@ namespace NHibernate.SqlCommand
 			// make sure the contents of the builder have been added to the sqlBuilder
 			if (builder.Length > 0)
 			{
-				sqlBuilder.Add( builder.ToString() );
+				sqlBuilder.Add(builder.ToString());
 			}
 
 			return sqlBuilder.ToSqlString();
@@ -169,19 +177,14 @@ namespace NHibernate.SqlCommand
 		{
 			get
 			{
-				for( int i = 0; i < sqlParts.Length; i++ )
+				SqlType[] paramTypes = ParameterTypes;
+				for (int i = 0; i < paramTypes.Length; i++)
 				{
-					Parameter paramPart = sqlParts[ i ] as Parameter;
-					if( paramPart != null )
+					if (paramTypes[i] == null)
 					{
-						if( paramPart.SqlType == null )
-						{
-							// only need to find one null SqlType
-							return true;
-						}
+						return true;
 					}
 				}
-
 				return false;
 			}
 		}
@@ -190,30 +193,9 @@ namespace NHibernate.SqlCommand
 		/// Gets the number of SqlParts contained in this SqlString.
 		/// </summary>
 		/// <value>The number of SqlParts contained in this SqlString.</value>
-		/// <remarks>
-		/// If a SqlPart contains a SqlString then this recursively looks at each SqlPart
-		/// for the Count.
-		/// </remarks>
 		public int Count
 		{
-			get
-			{
-				int count = 0;
-				for( int i = 0; i < sqlParts.Length; i++ )
-				{
-					SqlString sqlString = sqlParts[ i ] as SqlString;
-					if( sqlString != null )
-					{
-						count += sqlString.Count;
-					}
-					else
-					{
-						count++;
-					}
-				}
-
-				return count;
-			}
+			get { return sqlParts.Length; }
 		}
 
 		/// <summary>
@@ -221,22 +203,22 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="value">A string to seek at the end.</param>
 		/// <returns><c>true</c> if the end of this instance matches value; otherwise, <c>false</c></returns>
-		public bool EndsWith( string value )
+		public bool EndsWith(string value)
 		{
 			SqlString tempSql = Compact();
 
-			int endIndex = tempSql.SqlParts.Count - 1;
+			int endIndex = tempSql.Count - 1;
 
-			if( tempSql.SqlParts.Count == 0 )
+			if (tempSql.Count == 0)
 			{
 				return false;
 			}
 
 
-			string lastPart = tempSql.sqlParts[ endIndex ] as string;
-			if( lastPart != null )
+			string lastPart = tempSql.sqlParts[endIndex] as string;
+			if (lastPart != null)
 			{
-				return lastPart.EndsWith( value );
+				return lastPart.EndsWith(value);
 			}
 
 			return false;
@@ -252,7 +234,7 @@ namespace NHibernate.SqlCommand
 		/// A new SqlString with oldValue replaced by the newValue.  The new SqlString is 
 		/// in the Compacted form.
 		/// </returns>
-		public SqlString Replace( string oldValue, string newValue )
+		public SqlString Replace(string oldValue, string newValue)
 		{
 			// compacting returns a new SqlString object, so we are free to modify
 			// any of the parts because it has not been put in a hashtable so we can
@@ -260,12 +242,12 @@ namespace NHibernate.SqlCommand
 			// GetHashCode would return.
 			SqlString compacted = Compact();
 
-			for( int i = 0; i < compacted.sqlParts.Length; i++ )
+			for (int i = 0; i < compacted.sqlParts.Length; i++)
 			{
-				string sqlPart = compacted.sqlParts[ i ] as string;
-				if( sqlPart != null )
+				string sqlPart = compacted.sqlParts[i] as string;
+				if (sqlPart != null)
 				{
-					compacted.sqlParts[ i ] = sqlPart.Replace( oldValue, newValue );
+					compacted.sqlParts[i] = sqlPart.Replace(oldValue, newValue);
 				}
 			}
 
@@ -277,17 +259,17 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="value">The System.String to seek</param>
 		/// <returns>true if the SqlString starts with the value.</returns>
-		public bool StartsWith( string value )
+		public bool StartsWith(string value)
 		{
 			SqlString tempSql = Compact();
 
-			foreach( object sqlPart in tempSql.SqlParts )
+			foreach (object sqlPart in tempSql.SqlParts)
 			{
 				string partText = sqlPart as string;
 
 				// if this part is not a string then we know we did not start with the string 
 				// value
-				if( partText == null )
+				if (partText == null)
 				{
 					return false;
 				}
@@ -295,9 +277,9 @@ namespace NHibernate.SqlCommand
 				// if for some reason we had an empty string in here then just 
 				// move on to the next SqlPart, otherwise lets make sure that 
 				// it does in fact start with the value
-				if( partText.Length > 0 )
+				if (partText.Length > 0)
 				{
-					return partText.StartsWith( value );
+					return partText.StartsWith(value);
 				}
 			}
 
@@ -321,23 +303,23 @@ namespace NHibernate.SqlCommand
 		/// is a Parameter then all of the strings will be removed and the first SqlPart returned
 		/// will be the Parameter. 
 		/// </remarks>
-		public SqlString Substring( int startIndex )
+		public SqlString Substring(int startIndex)
 		{
-			SqlStringBuilder builder = new SqlStringBuilder( Compact() );
+			SqlStringBuilder builder = new SqlStringBuilder(Compact());
 
-			string part = builder[ 0 ] as string;
+			string part = builder[0] as string;
 
 			// if the first part is null then it is not a string so just
 			// return them the compacted version
-			if( part != null )
+			if (part != null)
 			{
-				if( part.Length < startIndex )
+				if (part.Length < startIndex)
 				{
-					builder.RemoveAt( 0 );
+					builder.RemoveAt(0);
 				}
 				else
 				{
-					builder[ 0 ] = part.Substring( startIndex );
+					builder[0] = part.Substring(startIndex);
 				}
 			}
 
@@ -353,41 +335,41 @@ namespace NHibernate.SqlCommand
 		/// </returns>
 		public SqlString Trim()
 		{
-			SqlStringBuilder builder = new SqlStringBuilder( Compact() );
+			SqlStringBuilder builder = new SqlStringBuilder(Compact());
 
 			// there is nothing in the builder to Trim 
-			if( builder.Count == 0 )
+			if (builder.Count == 0)
 			{
 				return builder.ToSqlString();
 			}
 
-			string begin = builder[ 0 ] as string;
+			string begin = builder[0] as string;
 			int endIndex = builder.Count - 1;
-			string end = builder[ endIndex ] as string;
+			string end = builder[endIndex] as string;
 
-			if( endIndex == 0 && begin != null )
+			if (endIndex == 0 && begin != null)
 			{
-				builder[ 0 ] = begin.Trim();
+				builder[0] = begin.Trim();
 			}
 			else
 			{
-				if( begin != null )
+				if (begin != null)
 				{
-					builder[ 0 ] = begin.TrimStart();
+					builder[0] = begin.TrimStart();
 				}
 
-				if( end != null )
+				if (end != null)
 				{
-					builder[ builder.Count - 1 ] = end.TrimEnd();
+					builder[builder.Count - 1] = end.TrimEnd();
 				}
 			}
 
 			return builder.ToSqlString();
 		}
 
-		public static SqlString operator+(SqlString lhs, SqlString rhs)
+		public static SqlString operator +(SqlString lhs, SqlString rhs)
 		{
-			return lhs.Append( rhs );
+			return lhs.Append(rhs);
 		}
 
 		#region System.Object Members
@@ -397,19 +379,19 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
 			SqlString rhs;
 
 			// Step1: Perform an equals test
-			if( obj == this )
+			if (obj == this)
 			{
 				return true;
 			}
 
 			// Step	2: Instance of check
 			rhs = obj as SqlString;
-			if( rhs == null )
+			if (rhs == null)
 			{
 				return false;
 			}
@@ -418,16 +400,16 @@ namespace NHibernate.SqlCommand
 
 			// if they don't contain the same number of parts then we
 			// can exit early because they are different
-			if( sqlParts.Length!=rhs.sqlParts.Length )
+			if (sqlParts.Length != rhs.sqlParts.Length)
 			{
 				return false;
 			}
 
 			// they have the same number of parts - so compare each
 			// part for equallity.
-			for( int i = 0; i < sqlParts.Length; i++ )
+			for (int i = 0; i < sqlParts.Length; i++)
 			{
-				if( !sqlParts[ i ].Equals( rhs.sqlParts[ i ] ) )
+				if (!sqlParts[i].Equals(rhs.sqlParts[i]))
 				{
 					return false;
 				}
@@ -444,9 +426,9 @@ namespace NHibernate.SqlCommand
 
 			unchecked
 			{
-				for( int i = 0; i < sqlParts.Length; i++ )
+				for (int i = 0; i < sqlParts.Length; i++)
 				{
-					hashCode += sqlParts[ i ].GetHashCode();
+					hashCode += sqlParts[i].GetHashCode();
 				}
 			}
 
@@ -464,11 +446,11 @@ namespace NHibernate.SqlCommand
 		/// <returns>A Provider nuetral version of the CommandText</returns>
 		public override string ToString()
 		{
-			StringBuilder builder = new StringBuilder( sqlParts.Length*15 );
+			StringBuilder builder = new StringBuilder(sqlParts.Length * 15);
 
-			for( int i = 0; i < sqlParts.Length; i++ )
+			for (int i = 0; i < sqlParts.Length; i++)
 			{
-				builder.Append( sqlParts[ i ].ToString() );
+				builder.Append(sqlParts[i].ToString());
 			}
 
 			return builder.ToString();
@@ -478,14 +460,14 @@ namespace NHibernate.SqlCommand
 
 		private SqlString Clone()
 		{
-			object[ ] clonedParts = new object[sqlParts.Length];
+			object[] clonedParts = new object[sqlParts.Length];
 
-			for( int i = 0; i < sqlParts.Length; i++ )
+			for (int i = 0; i < sqlParts.Length; i++)
 			{
-				clonedParts[ i ] = sqlParts[ i ];
+				clonedParts[i] = sqlParts[i];
 			}
 
-			return new SqlString( clonedParts );
+			return new SqlString(clonedParts);
 		}
 
 		public SqlString ReplaceParameterTypes(SqlType[][] sqlTypes)
@@ -501,6 +483,45 @@ namespace NHibernate.SqlCommand
 				}
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Returns substring of this SqlString starting with the specified
+		/// <paramref name="text" />. If the text is not found, returns an
+		/// empty, not-null SqlString.
+		/// </summary>
+		/// <remarks>
+		/// The method performs case-insensitive comparison, so the <paramref name="text" />
+		/// passed should be in lower case.
+		/// </remarks>
+		public SqlString SubstringStartingWith(string text)
+		{
+			SqlStringBuilder result = new SqlStringBuilder();
+			bool found = false;
+			foreach (object sqlPart in sqlParts)
+			{
+				if (found)
+				{
+					result.AddObject(sqlPart);
+					continue;
+				}
+
+				string sqlPartString = sqlPart as string;
+				
+				if (sqlPartString != null)
+				{
+					string sqlPartStringLower = sqlPartString.ToLower(CultureInfo.InvariantCulture);
+					int indexOfText = sqlPartStringLower.IndexOf(text);
+
+					if (indexOfText >= 0)
+					{
+						found = true;
+						result.Add(sqlPartString.Substring(indexOfText));
+					}
+				}
+			}
+
+			return result.ToSqlString();
 		}
 	}
 }

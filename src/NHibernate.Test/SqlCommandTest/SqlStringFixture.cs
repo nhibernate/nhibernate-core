@@ -122,10 +122,6 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual( 7, sql.Count, "Added a SqlString to a SqlString" );
 
 			SqlString nestedSql = new SqlString( new object[] { "nested 1", "nested 2" } );
-
-			sql = sql.Append( new SqlString( new object[] { nestedSql, " not nested 1", " not nested 2" } ) );
-
-			Assert.AreEqual( 11, sql.Count, "Added 2 more levels of nesting" );
 		}
 
 		[Test]
@@ -245,6 +241,36 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual( "??", sql.ToString() );
 		}
 
+		[Test]
+		public void SubstringStartingWith()
+		{
+			SqlString sql = new SqlString( new object[] { "select x from y where z = ", Parameter.Placeholder, " order by t" });
+			
+			Assert.AreEqual("order by t", sql.SubstringStartingWith("order by").ToString());
+		}
+		
+		[Test]
+		public void NoSubstringStartingWith()
+		{
+			SqlString sql = new SqlString( new object[] { "select x from y where z = ", Parameter.Placeholder, " order by t" });
+			
+			Assert.AreEqual("", sql.SubstringStartingWith("zzz").ToString());
+		}
+		
+		[Test]
+		public void SubstringStartingWithAndParameters()
+		{
+			SqlString sql = new SqlString( new object[] { "select x from y where z = ", Parameter.Placeholder, " order by ", Parameter.Placeholder });
+			
+			Assert.AreEqual(new SqlString(new object[] { "order by ", Parameter.Placeholder }), sql.SubstringStartingWith("order by"));
+		}
 
+		[Test]
+		public void SubstringStartingWithMultiplePossibilities()
+		{
+			SqlString sql = new SqlString(new string[] { " order by x", " order by z"});
+			
+			Assert.AreEqual("order by x order by z", sql.SubstringStartingWith("order by").ToString());
+		}
 	}
 }

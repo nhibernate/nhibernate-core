@@ -55,7 +55,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="sqlString">The SqlString to modify.</param>
 		public SqlStringBuilder( SqlString sqlString )
 		{
-			sqlParts = new ArrayList( sqlString.SqlParts.Count );
+			sqlParts = new ArrayList( sqlString.Count );
 			foreach( object part in sqlString.SqlParts )
 			{
 				if (part != null) 

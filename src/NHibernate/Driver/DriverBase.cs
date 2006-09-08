@@ -44,11 +44,18 @@ namespace NHibernate.Driver
 
 		public virtual IDbCommand GenerateCommand(CommandType type, SqlString sqlString)
 		{
-			int paramIndex = 0;
 			IDbCommand cmd = CreateCommand();
 			cmd.CommandType = type;
 
-			object envTimeout = Environment.Properties[Environment.CommandTimeout];
+			SetCommandTimeout(cmd, Environment.Properties[Environment.CommandTimeout]);
+			SetCommandText(cmd, sqlString);
+			SetCommandParameters(cmd, sqlString.ParameterTypes);
+
+			return cmd;
+		}
+		
+		private static void SetCommandTimeout(IDbCommand cmd, object envTimeout)
+		{
 			if (envTimeout != null)
 			{
 				int timeout = Convert.ToInt32(envTimeout);
@@ -75,22 +82,25 @@ namespace NHibernate.Driver
 					log.Error("Invalid timeout of '" + envTimeout + "' specified, ignoring");
 				}
 			}
-
+		}
+		
+		private static string ToParameterName(int index)
+		{
+			return "p" + index;
+		}
+		
+		private void SetCommandText(IDbCommand cmd, SqlString sqlString)
+		{
+			int paramIndex = 0;
 			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Count * 15);
-			SqlType[] parameterTypes = sqlString.ParameterTypes;
 			foreach (object part in sqlString.SqlParts)
 			{
 				Parameter parameter = part as Parameter;
 
 				if (parameter != null)
 				{
-					string paramName = "p" + paramIndex;
+					string paramName = ToParameterName(paramIndex);
 					builder.Append(FormatNameForSql(paramName));
-
-					IDbDataParameter dbParam = GenerateParameter(cmd, paramName, parameterTypes[paramIndex]);
-
-					cmd.Parameters.Add(dbParam);
-
 					paramIndex++;
 				}
 				else
@@ -100,12 +110,25 @@ namespace NHibernate.Driver
 			}
 
 			cmd.CommandText = builder.ToString();
-
-			return cmd;
+		}
+		
+		private void SetCommandParameters(IDbCommand cmd, SqlType[] sqlTypes)
+		{
+			for (int i = 0; i < sqlTypes.Length; i++)
+			{
+				string paramName = ToParameterName(i);
+				IDbDataParameter dbParam = GenerateParameter(cmd, paramName, sqlTypes[i]);
+				cmd.Parameters.Add(dbParam);
+			}
 		}
 
 		protected virtual void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
 		{
+			if (sqlType == null)
+			{
+				throw new QueryException(String.Format("No type assigned to parameter '{0}'", name));
+			}
+
 			dbParam.ParameterName = FormatNameForParameter(name);
 			dbParam.DbType = sqlType.DbType;
 		}
@@ -120,11 +143,6 @@ namespace NHibernate.Driver
 		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
 		protected IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlType sqlType)
 		{
-			if (name != null && sqlType == null)
-			{
-				throw new QueryException(String.Format("No type assigned to parameter '{0}': be sure to set types for named parameters.", name));
-			}
-
 			IDbDataParameter dbParam = command.CreateParameter();
 			InitializeParameter(dbParam, name, sqlType);
 
