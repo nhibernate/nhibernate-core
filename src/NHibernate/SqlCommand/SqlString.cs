@@ -50,7 +50,7 @@ namespace NHibernate.SqlCommand
 			this.sqlParts = sqlParts;
 		}
 
-		public ICollection SqlParts
+		public IEnumerable SqlParts
 		{
 			get { return sqlParts; }
 		}

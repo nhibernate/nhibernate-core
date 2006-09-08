@@ -92,7 +92,7 @@ namespace NHibernate.Driver
 		private void SetCommandText(IDbCommand cmd, SqlString sqlString)
 		{
 			int paramIndex = 0;
-			StringBuilder builder = new StringBuilder(sqlString.SqlParts.Count * 15);
+			StringBuilder builder = new StringBuilder(sqlString.Count * 15);
 			foreach (object part in sqlString.SqlParts)
 			{
 				Parameter parameter = part as Parameter;

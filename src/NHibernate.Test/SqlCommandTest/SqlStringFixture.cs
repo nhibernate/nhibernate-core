@@ -21,13 +21,13 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString postAppendSql = sql.Append(" where A=B" );
 
 			Assert.IsFalse( sql==postAppendSql, "should be a new object" );
-			Assert.AreEqual( 3, postAppendSql.SqlParts.Count );
+			Assert.AreEqual( 3, postAppendSql.Count );
 
 			sql = postAppendSql;
 
 			postAppendSql = sql.Append( new SqlString(" and C=D") );
 
-			Assert.AreEqual(4, postAppendSql.SqlParts.Count );
+			Assert.AreEqual(4, postAppendSql.Count );
 
 			Assert.AreEqual( "select from table where A=B and C=D", postAppendSql.ToString() );
 
@@ -40,7 +40,7 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString sql = new SqlString( new string[] { "", "select", " from table" } );
 			SqlString compacted = sql.Compact();
 
-			Assert.AreEqual( 1, compacted.SqlParts.Count );
+			Assert.AreEqual( 1, compacted.Count );
 			Assert.AreEqual( "select from table", compacted.ToString() );
 		}
 
@@ -60,7 +60,7 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString sql = builder.ToSqlString();
 			sql = sql.Compact();
 
-			Assert.AreEqual( 3, sql.SqlParts.Count );
+			Assert.AreEqual( 3, sql.Count );
 			Assert.AreEqual( "select from table where id = ? and 'a'='a'", sql.ToString() );
 
 		}
@@ -74,7 +74,7 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString sql = new SqlString( new object[] {p1, p2} );
 			SqlString compacted = sql.Compact();
 
-			Assert.AreEqual( 2, compacted.SqlParts.Count );
+			Assert.AreEqual( 2, compacted.Count );
 			Assert.AreEqual( "??", compacted.ToString() );
 
 		}
