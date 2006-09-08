@@ -35,11 +35,11 @@ namespace NHibernate.Expression
             return new SqlString(new object[] 
             {
 				aggregate,
-				'(',
+				"(",
 				criteriaQuery.GetColumn(criteria, propertyName),
 				") as y",
-				loc,
-				'_'
+				loc.ToString(),
+				"_"
             });
         }
 	}

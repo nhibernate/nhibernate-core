@@ -45,7 +45,7 @@ namespace NHibernate.Expression
             {
 			    criteriaQuery.GetColumn(criteria, propertyName),
 			    " as y",
-			    loc,
+			    loc.ToString(),
 			    "_"
             });
 		}
