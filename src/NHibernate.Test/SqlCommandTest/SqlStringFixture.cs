@@ -120,8 +120,6 @@ namespace NHibernate.Test.SqlCommandTest
 
 			sql = sql.Append( new SqlString( new object[] {" more parts ", " another part "} ) );
 			Assert.AreEqual( 7, sql.Count, "Added a SqlString to a SqlString" );
-
-			SqlString nestedSql = new SqlString( new object[] { "nested 1", "nested 2" } );
 		}
 
 		[Test]
