@@ -2,7 +2,6 @@ using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 

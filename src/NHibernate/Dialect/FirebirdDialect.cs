@@ -188,6 +188,7 @@ namespace NHibernate.Dialect
 			/*
 			 * "SELECT FIRST x [SKIP y] rest-of-sql-statement"
 			 */
+			
 			querySqlString = querySqlString.Compact();
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			bool firstAdded = false;
@@ -202,7 +203,7 @@ namespace NHibernate.Dialect
 						int insertIndex = GetAfterSelectInsertPoint(sqlFragment);
 						if (insertIndex > 0)
 						{
-							string newFragment = string.Empty;
+							string newFragment;
 
 							if (offset > 0)
 							{

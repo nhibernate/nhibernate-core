@@ -7,15 +7,13 @@ using NHibernate.Util;
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
-	/// An immutable Parameter that later will be converted into an IDbParameter
-	/// for an IDbCommand.
+	/// A placeholder for an ADO.NET parameter in an <see cref="SqlString" />.
 	/// </summary>
 	[Serializable]
 	public class Parameter
 	{
 		/// <summary>
-		/// A parameter with <c>null</c> <see cref="SqlType" />. Used as a placeholder when
-		/// parsing HQL or SQL queries.
+		/// Used as a placeholder when parsing HQL or SQL queries.
 		/// </summary>
 		public static readonly Parameter Placeholder = new Parameter();
 

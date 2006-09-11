@@ -6,7 +6,6 @@ using log4net;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Dialect;
 using NHibernate.Hql;
 using NHibernate.SqlCommand;
 using System.Data;

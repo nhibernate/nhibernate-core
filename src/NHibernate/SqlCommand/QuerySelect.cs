@@ -2,7 +2,6 @@ using System.Collections;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Util;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.SqlCommand
 {
@@ -116,23 +115,14 @@ namespace NHibernate.SqlCommand
 		/// <param name="fragment"></param>
 		public void AddSelectFragmentString( string fragment )
 		{
-			AddSelectFragmentString( new SqlString( fragment ) );
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fragment"></param>
-		public void AddSelectFragmentString( SqlString fragment )
-		{
-			if( fragment.Count > 0 && fragment.StartsWith( "," ) )
+			if( fragment.StartsWith( "," ) )
 			{
 				fragment = fragment.Substring( 1 );
 			}
 
 			fragment = fragment.Trim();
 
-			if( fragment.Count > 0 )
+			if( fragment.Length > 0 )
 			{
 				if( selectBuilder.Count > 0 )
 				{
