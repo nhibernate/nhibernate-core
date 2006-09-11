@@ -58,14 +58,9 @@ namespace NHibernate.Impl
 			get { return batchCommand; }
 		}
 
-		protected SqlType[] CurrentCommandParameterTypes
+		public IDbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			get { return batchCommandSql.ParameterTypes; }
-		}
-
-		public IDbCommand Generate(SqlString sqlString, CommandType type)
-		{
-			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(type, sqlString);
+			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(type, sqlString, parameterTypes);
 			LogOpenPreparedCommand();
 			if (log.IsDebugEnabled)
 			{
@@ -78,13 +73,12 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Prepares the <see cref="IDbCommand"/> for execution in the database.
 		/// </summary>
-		/// <param name="command"></param>
 		/// <remarks>
 		/// This takes care of hooking the <see cref="IDbCommand"/> up to an <see cref="IDbConnection"/>
 		/// and <see cref="IDbTransaction"/> if one exists.  It will call <c>Prepare</c> if the Driver
 		/// supports preparing commands.
 		/// </remarks>
-		private void Prepare(IDbCommand cmd, SqlType[] parameterTypes)
+		private void Prepare(IDbCommand cmd)
 		{
 			try
 			{
@@ -109,10 +103,7 @@ namespace NHibernate.Impl
 					session.Transaction.Enlist(cmd);
 				}
 
-				if (factory.PrepareSql && Driver.SupportsPreparingCommands)
-				{
-					Driver.PrepareCommand(cmd, parameterTypes);
-				}
+				Driver.PrepareCommand(cmd);
 			}
 			catch (InvalidOperationException ioe)
 			{
@@ -122,11 +113,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IDbCommand PrepareBatchCommand(SqlString sql, CommandType type)
+		public IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
 			if (!sql.Equals(batchCommandSql))
 			{
-				batchCommand = PrepareCommand(sql, type); // calls ExecuteBatch()
+				batchCommand = PrepareCommand(type, sql, parameterTypes); // calls ExecuteBatch()
 				batchCommandSql = sql;
 			}
 			else
@@ -140,7 +131,7 @@ namespace NHibernate.Impl
 			return batchCommand;
 		}
 
-		public IDbCommand PrepareCommand(SqlString sql, CommandType type)
+		public IDbCommand PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
 			// a new IDbCommand is being prepared and a new (potential) batch
 			// started - so execute the current batch of commands.
@@ -150,16 +141,16 @@ namespace NHibernate.Impl
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			return Generate(sql, type);
+			return Generate(type, sql, parameterTypes);
 		}
 
-		public IDbCommand PrepareQueryCommand(SqlString sql, CommandType type)
+		public IDbCommand PrepareQueryCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			IDbCommand command = Generate(sql, type);
+			IDbCommand command = Generate(type, sql, parameterTypes);
 			lastQuery = command;
 			return command;
 		}
@@ -173,21 +164,17 @@ namespace NHibernate.Impl
 			CloseCommand(cmd, null);
 		}
 
-		public int ExecuteNonQuery(IDbCommand cmd, SqlType[] parameterTypes)
+		public int ExecuteNonQuery(IDbCommand cmd)
 		{
-			int rowsAffected = 0;
-
 			CheckReaders();
-
-			Prepare(cmd, parameterTypes);
-			rowsAffected = cmd.ExecuteNonQuery();
-			return rowsAffected;
+			Prepare(cmd);
+			return cmd.ExecuteNonQuery();
 		}
 
-		public IDataReader ExecuteReader(IDbCommand cmd, SqlType[] parameterTypes)
+		public IDataReader ExecuteReader(IDbCommand cmd)
 		{
 			CheckReaders();
-			Prepare(cmd, parameterTypes);
+			Prepare(cmd);
 			IDataReader reader;
 			if (factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders == false)
 			{

@@ -153,10 +153,6 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			bool prepareSql = PropertiesHelper.GetBoolean( Environment.PrepareSql, properties, false );
-
-			int cmdTimeout = PropertiesHelper.GetInt32( Environment.CommandTimeout, properties, 0 );
-
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled
@@ -178,8 +174,6 @@ namespace NHibernate.Cfg
 
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
-			settings.PrepareSql = prepareSql;
-			settings.CommandTimeout = cmdTimeout;
 
 			return settings;
 		}

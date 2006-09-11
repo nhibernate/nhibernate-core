@@ -632,7 +632,7 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					// TODO SP
-					IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteString, CommandType.Text );
+					IDbCommand st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlDeleteString, SqlDeleteString.ParameterTypes );
 
 					try
 					{
@@ -690,7 +690,7 @@ namespace NHibernate.Persister.Collection
 							{
 								int offset = 0;
 								// TODO SP
-								IDbCommand st = session.Batcher.PrepareBatchCommand( SqlInsertRowString, CommandType.Text );
+								IDbCommand st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlInsertRowString, SqlInsertRowString.ParameterTypes );
 								int loc = WriteKey( st, id, offset, session );
 								if( hasIdentifier )
 								{
@@ -759,7 +759,7 @@ namespace NHibernate.Persister.Collection
 						int offset = 0;
 						int count = 0;
 						// TODO SP
-						IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteRowString, CommandType.Text );
+						IDbCommand st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlDeleteRowString, SqlDeleteRowString.ParameterTypes );
 						try
 						{
 							foreach( object entry in deletes )
@@ -844,7 +844,7 @@ namespace NHibernate.Persister.Collection
 						{
 							if( collection.NeedsInserting( entry, i, elementType ) )
 							{
-								IDbCommand st = session.Batcher.PrepareBatchCommand( SqlInsertRowString, CommandType.Text );
+								IDbCommand st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlInsertRowString, SqlInsertRowString.ParameterTypes );
 
 								int loc = WriteKey( st, id, offset, session );
 								if( hasIdentifier )

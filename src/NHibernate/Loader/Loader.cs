@@ -392,7 +392,7 @@ namespace NHibernate.Loader
 				sql,
 				queryParameters, false, session );
 
-			IDataReader rs = GetResultSet( st, sql, selection, session );
+			IDataReader rs = GetResultSet( st, selection, session );
 
 // would be great to move all this below here into another method that could also be used
 // from the new scrolling stuff.
@@ -1148,7 +1148,7 @@ namespace NHibernate.Loader
 				                                    useOffset ? GetFirstRow( selection ) : 0,
 				                                    GetMaxOrLimit( dialect, selection ) );
 			}
-            IDbCommand command = session.Batcher.PrepareQueryCommand(sqlString, parameters.CommandType);
+            IDbCommand command = session.Batcher.PrepareQueryCommand(parameters.CommandType, sqlString, sqlString.ParameterTypes);
 
 			try
 			{
@@ -1275,14 +1275,14 @@ namespace NHibernate.Loader
 		/// <param name="selection">The <see cref="RowSelection"/> to apply to the <see cref="IDbCommand"/> and <see cref="IDataReader"/>.</param>
 		/// <param name="session">The <see cref="ISession" /> to load in.</param>
 		/// <returns>An IDataReader advanced to the first record in RowSelection.</returns>
-		protected IDataReader GetResultSet( IDbCommand st, SqlString sql, RowSelection selection, ISessionImplementor session )
+		protected IDataReader GetResultSet( IDbCommand st, RowSelection selection, ISessionImplementor session )
 		{
 			IDataReader rs = null;
 			try
 			{
 				log.Info( st.CommandText );
 				// TODO: Add WrapResultSetIfEnabled below
-				rs = session.Batcher.ExecuteReader( st, sql.ParameterTypes );
+				rs = session.Batcher.ExecuteReader( st );
 
 				Dialect.Dialect dialect = session.Factory.Dialect;
 				if( !dialect.SupportsLimitOffset || !UseLimit( selection, dialect ) )

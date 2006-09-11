@@ -144,12 +144,6 @@ namespace NHibernate.Engine
 		/// </remarks>
 		IsolationLevel Isolation { get; }
 
-		/// <summary>
-		/// Gets a boolean indicating if the sql statement should be prepared.  The value
-		/// is read from <c>hibernate.prepare_sql</c>.
-		/// </summary>
-		bool PrepareSql { get; }
-
 		// TODO H2.1:
 		// bool IsWrapDataReadersEnabled { get; }
 

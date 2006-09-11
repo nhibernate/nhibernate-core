@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Data;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -28,6 +29,11 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public interface IDriver
 	{
+		/// <summary>
+		/// Configure the driver using <paramref name="settings"/>.
+		/// </summary>
+		void Configure(IDictionary settings);
+
 		/// <summary>
 		/// Creates an uninitialized IDbConnection object for the specific Driver
 		/// </summary>
@@ -65,29 +71,19 @@ namespace NHibernate.Driver
 		bool SupportsMultipleOpenReaders { get; }
 
 		/// <summary>
-		/// Does this Driver support IDbCommand.Prepare().
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// A value of <c>false</c> indicates that an exception would be thrown or the 
-		/// company that produces the Driver we are wrapping does not recommend using
-		/// IDbCommand.Prepare().
-		/// </para>
-		/// <para>
-		/// A value of <c>true</c> indicates that calling IDbCommand.Prepare() will function
-		/// fine on this Driver.
-		/// </para>
-		/// </remarks>
-		bool SupportsPreparingCommands { get; }
-
-		void PrepareCommand(IDbCommand command, SqlType[] parameterTypes);
-
-		/// <summary>
 		/// Generates an IDbCommand from the SqlString according to the requirements of the DataProvider.
 		/// </summary>
 		/// <param name="type">The <see cref="CommandType"/> of the command to generate.</param>
-		/// <param name="sqlString">The SqlString that contains the sql and parameters.</param>
+		/// <param name="sqlString">The SqlString that contains the SQL.</param>
+		/// <param name="parameterTypes">The types of the parameters to generate for the command.</param>
 		/// <returns>An IDbCommand with the CommandText and Parameters fully set.</returns>
-		IDbCommand GenerateCommand(CommandType type, SqlString sqlString);
+		IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes);
+
+		/// <summary>
+		/// Prepare the <paramref name="command" /> by calling <see cref="IDbCommand.Prepare()" />.
+		/// May be a no-op if the driver does not support preparing commands, or for any other reason.
+		/// </summary>
+		/// <param name="command"></param>
+		void PrepareCommand(IDbCommand command);
 	}
 }

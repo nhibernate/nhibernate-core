@@ -1,6 +1,5 @@
 using System.Data;
 using System.Data.SqlClient;
-
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -11,13 +10,6 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class SqlClientDriver : DriverBase
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SqlClientDriver"/> class.
-		/// </summary>
-		public SqlClientDriver()
-		{
-		}
-
 		/// <summary>
 		/// Creates an uninitialized <see cref="IDbConnection" /> object for 
 		/// the SqlClientDriver.
@@ -86,16 +78,6 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		/// <remarks>
-		/// In order to prepare an IDbCommand against an MsSql database all variable length values need
-		/// to be set.
-		/// </remarks>
-		public override void PrepareCommand(IDbCommand command, SqlType[] parameterTypes)
-		{
-			SetParameterSizes(command.Parameters, parameterTypes);
-			base.PrepareCommand(command, parameterTypes);
-		}
-
 		// Used from SqlServerCeDriver as well
 		public static void SetParameterSizes(IDataParameterCollection parameters, SqlType[] parameterTypes)
 		{
@@ -160,6 +142,16 @@ namespace NHibernate.Driver
 				dbParam.Precision = sqlType.Precision;
 				dbParam.Scale = sqlType.Scale;
 			}
+		}
+
+		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
+		{
+			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
+			if (IsPrepareSqlEnabled)
+			{
+				SetParameterSizes(command.Parameters, parameterTypes);
+			}
+			return command;
 		}
 	}
 }

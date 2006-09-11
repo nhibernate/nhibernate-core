@@ -1,7 +1,9 @@
+using System.Collections;
 using System.Data;
-
+using NHibernate.Cfg;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
@@ -19,6 +21,14 @@ namespace NHibernate.Driver
 			"System.Data.SqlServerCe.SqlCeConnection",
 			"System.Data.SqlServerCe.SqlCeCommand")
 		{
+		}
+
+		private bool prepareSql;
+
+		public override void Configure(IDictionary settings)
+		{
+			base.Configure(settings);
+			prepareSql = PropertiesHelper.GetBoolean(Environment.PrepareSql, settings, false);
 		}
 
 		/// <summary>
@@ -69,10 +79,15 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		public override void PrepareCommand(IDbCommand command, SqlType[] parameterTypes)
+		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			SqlClientDriver.SetParameterSizes(command.Parameters, parameterTypes);
-			base.PrepareCommand(command, parameterTypes);
+			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
+			if (prepareSql)
+			{
+				SqlClientDriver.SetParameterSizes(command.Parameters, parameterTypes);
+			}
+
+			return command;
 		}
 	}
 }

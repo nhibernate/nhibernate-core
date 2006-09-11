@@ -74,7 +74,7 @@ namespace NHibernate.Driver
 		/// With the Gamma MySql.Data provider it is throwing an exception with the 
 		/// message "Expected End of data packet" when a select command is prepared.
 		/// </remarks>
-		public override bool SupportsPreparingCommands
+		protected override bool SupportsPreparingCommands
 		{
 			get { return false; }
 		}

@@ -1104,12 +1104,6 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public bool PrepareSql
-		{
-			get { return settings.PrepareSql; }
-		}
-
-		/// <summary></summary>
 		public IDbConnection OpenConnection()
 		{
 			try

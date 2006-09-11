@@ -56,7 +56,7 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		public override bool SupportsPreparingCommands
+		protected override bool SupportsPreparingCommands
 		{
 			// NOTE: Npgsql actually supports this feature but there a bug that results in 
 			// NotSupportedException("Backend sent unrecognized response type") being thrown on insert statements

@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Data;
+using System.Globalization;
 using System.Text;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -14,6 +16,31 @@ namespace NHibernate.Driver
 	public abstract class DriverBase : IDriver
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DriverBase));
+
+		private int commandTimeout;
+		private bool prepareSql;
+
+		public virtual void Configure(IDictionary settings)
+		{
+			// Command timeout
+			commandTimeout = PropertiesHelper.GetInt32(Environment.CommandTimeout, settings, -1);
+			if (commandTimeout > -1 && log.IsInfoEnabled)
+			{
+				log.Info(string.Format("setting ADO.NET command timeout to {0} seconds", commandTimeout));
+			}
+			
+			// Prepare SQL
+			prepareSql = PropertiesHelper.GetBoolean(Environment.PrepareSql, settings, false);
+			if (prepareSql && SupportsPreparingCommands)
+			{
+				log.Info("preparing SQL enabled");
+			}
+		}
+		
+		protected bool IsPrepareSqlEnabled
+		{
+			get { return prepareSql; }
+		}
 
 		public abstract IDbConnection CreateConnection();
 		public abstract IDbCommand CreateCommand();
@@ -79,49 +106,51 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		public virtual bool SupportsPreparingCommands
+		/// <summary>
+		/// Does this Driver support IDbCommand.Prepare().
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// A value of <c>false</c> indicates that an exception would be thrown or the 
+		/// company that produces the Driver we are wrapping does not recommend using
+		/// IDbCommand.Prepare().
+		/// </para>
+		/// <para>
+		/// A value of <c>true</c> indicates that calling IDbCommand.Prepare() will function
+		/// fine on this Driver.
+		/// </para>
+		/// </remarks>
+		protected virtual bool SupportsPreparingCommands
 		{
 			get { return true; }
 		}
 
-		public virtual IDbCommand GenerateCommand(CommandType type, SqlString sqlString)
+		public virtual IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			IDbCommand cmd = CreateCommand();
 			cmd.CommandType = type;
 
 			SetCommandTimeout(cmd, Environment.Properties[Environment.CommandTimeout]);
 			SetCommandText(cmd, sqlString);
-			SetCommandParameters(cmd, sqlString.ParameterTypes);
+			SetCommandParameters(cmd, parameterTypes);
 
 			return cmd;
 		}
 		
-		private static void SetCommandTimeout(IDbCommand cmd, object envTimeout)
+		private void SetCommandTimeout(IDbCommand cmd, object envTimeout)
 		{
-			if (envTimeout != null)
+			if (commandTimeout >= 0)
 			{
-				int timeout = Convert.ToInt32(envTimeout);
-				if (timeout >= 0)
+				try
 				{
-					if (log.IsDebugEnabled)
-					{
-						log.Debug(string.Format("setting ADO Command timeout to '{0}' seconds", timeout));
-					}
-					try
-					{
-						cmd.CommandTimeout = timeout;
-					}
-					catch (Exception e)
-					{
-						if (log.IsWarnEnabled)
-						{
-							log.Warn(e.ToString());
-						}
-					}
+					cmd.CommandTimeout = commandTimeout;
 				}
-				else
+				catch (Exception e)
 				{
-					log.Error("Invalid timeout of '" + envTimeout + "' specified, ignoring");
+					if (log.IsWarnEnabled)
+					{
+						log.Warn(e.ToString());
+					}
 				}
 			}
 		}
@@ -190,19 +219,13 @@ namespace NHibernate.Driver
 
 			return dbParam;
 		}
-
-		/// <summary>
-		/// Prepare the <paramref name="command" />. Will only be called if <see cref="SupportsPreparingCommands" />
-		/// is <c>true</c>.
-		/// </summary>
-		/// <remarks>
-		/// Drivers that require Size or Precision/Scale to be set before the IDbCommand is prepared should 
-		/// override this method and use the info contained in <paramref name="parameterTypes" /> to set those
-		/// values.  By default those values are not set, only the DbType and ParameterName are set.
-		/// </remarks>
-		public virtual void PrepareCommand(IDbCommand command, SqlType[] parameterTypes)
+		
+		public void PrepareCommand(IDbCommand command)
 		{
-			command.Prepare();
+			if (SupportsPreparingCommands && prepareSql)
+			{
+				command.Prepare();
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Data;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -44,7 +45,7 @@ namespace NHibernate.Id
 
 		private string sequenceName;
 		private IType type;
-		private string sql;
+		private SqlString sql;
 
 		#region IConfigurable Members
 
@@ -64,7 +65,7 @@ namespace NHibernate.Id
 				sequenceName = schemaName + '.' + sequenceName;
 			}
 			this.type = type;
-			sql = dialect.GetSequenceNextValString( sequenceName );
+			sql = new SqlString(dialect.GetSequenceNextValString( sequenceName ));
 		}
 
 		#endregion
@@ -80,12 +81,11 @@ namespace NHibernate.Id
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		public virtual object Generate( ISessionImplementor session, object obj )
 		{
-			SqlString sqlString = new SqlString(sql);
-			IDbCommand cmd = session.Batcher.PrepareCommand( sqlString, CommandType.Text );
+			IDbCommand cmd = session.Batcher.PrepareCommand( CommandType.Text, sql, SqlTypeFactory.NoTypes );
 			IDataReader reader = null;
 			try
 			{
-				reader = session.Batcher.ExecuteReader( cmd, sqlString.ParameterTypes );
+				reader = session.Batcher.ExecuteReader( cmd );
 				reader.Read();
 				object result = IdentifierGeneratorFactory.Get( reader, type, session );
 

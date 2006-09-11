@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -21,14 +20,13 @@ namespace NHibernate.Test.DriverTest
 		[Explicit]
 		public void NoBooleanParameters()
 		{
-			Oracle9Dialect dialect = new Oracle9Dialect();
 			OracleDataClientDriver driver = new OracleDataClientDriver();
 
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add( "select * from table1 where col1=");
 			builder.Add( new Parameter( SqlTypeFactory.Boolean ) );
 
-			IDbCommand cmd = driver.GenerateCommand( CommandType.Text, builder.ToSqlString() );
+			IDbCommand cmd = driver.GenerateCommand( CommandType.Text, builder.ToSqlString(), new SqlType[] { SqlTypeFactory.Boolean });
 
 			IDbDataParameter param = cmd.Parameters[0] as IDbDataParameter;
 

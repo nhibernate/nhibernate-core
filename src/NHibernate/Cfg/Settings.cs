@@ -166,18 +166,5 @@ namespace NHibernate.Cfg
 			get { return _queryCacheFactory; }
 			set { _queryCacheFactory = value; }
 		}
-
-		public bool PrepareSql
-		{
-			get { return _prepareSql; }
-			set { _prepareSql = value; }
-		}
-
-        // TODO: This property isn't actually used anywhere, need to check/rewrite
-		public int CommandTimeout
-		{
-			get { return _commandTimeout; }
-			set { _commandTimeout = value; }
-		}
 	}
 }

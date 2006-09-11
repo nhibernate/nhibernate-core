@@ -60,6 +60,7 @@ namespace NHibernate.Id
 		protected ValueTypeType columnType;
 
 		private SqlString updateSql;
+		private SqlType[] parameterTypes;
 
 		#region IConfigurable Members
 
@@ -72,8 +73,8 @@ namespace NHibernate.Id
 		/// <param name="dialect">The <see cref="Dialect"/> to help with Configuration.</param>
 		public virtual void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
 		{
-			this.tableName = PropertiesHelper.GetString( Table, parms, "hibernate_unique_key" );
-			this.columnName = PropertiesHelper.GetString( Column, parms, "next_hi" );
+			tableName = PropertiesHelper.GetString( Table, parms, "hibernate_unique_key" );
+			columnName = PropertiesHelper.GetString( Column, parms, "next_hi" );
 			string schemaName = ( string ) parms[ Schema ];
 			if( schemaName != null && tableName.IndexOf( StringHelper.Dot ) < 0 )
 			{
@@ -90,37 +91,30 @@ namespace NHibernate.Id
 			}
 
 			// build the sql string for the Update since it uses parameters
-			Parameter setParam;
-			Parameter whereParam;
-
 			if( type is Int16Type )
 			{
-				setParam = new Parameter( SqlTypeFactory.Int16 );
-				whereParam = new Parameter( SqlTypeFactory.Int16 );
 				columnSqlType = SqlTypeFactory.Int16;
 			}
 			else if( type is Int64Type )
 			{
-				setParam = new Parameter( SqlTypeFactory.Int64 );
-				whereParam = new Parameter( SqlTypeFactory.Int64 );
 				columnSqlType = SqlTypeFactory.Int64;
 			}
 			else
 			{
-				setParam = new Parameter( SqlTypeFactory.Int32 );
-				whereParam = new Parameter( SqlTypeFactory.Int32 );
 				columnSqlType = SqlTypeFactory.Int32;
 			}
+
+			parameterTypes = new SqlType[2] { columnSqlType, columnSqlType };
 
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add( "update " + tableName + " set " )
 				.Add( columnName )
 				.Add( " = " )
-				.Add( setParam )
+				.Add( new Parameter(columnSqlType) )
 				.Add( " where " )
 				.Add( columnName )
 				.Add( " = " )
-				.Add( whereParam );
+				.Add( new Parameter(columnSqlType) );
 
 			updateSql = builder.ToSqlString();
 		}
@@ -201,7 +195,7 @@ namespace NHibernate.Id
 						qps.Dispose();
 					}
 
-					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand( CommandType.Text, updateSql );
+					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand( CommandType.Text, updateSql, parameterTypes );
 					ups.Connection = conn;
 					ups.Transaction = trans;
 

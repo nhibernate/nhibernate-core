@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -13,7 +12,6 @@ using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -1014,7 +1012,7 @@ namespace NHibernate.Hql
 				parameters, false, session );
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet( cmd, sqlWithLock, parameters.RowSelection, session );
+			IDataReader rs = GetResultSet( cmd, parameters.RowSelection, session );
 			return new EnumerableImpl( rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection,
 				holderClass );
 		}

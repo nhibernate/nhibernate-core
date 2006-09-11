@@ -36,6 +36,8 @@ namespace NHibernate.SqlTypes
 		public static readonly SqlType UInt16 = new SqlType(DbType.UInt16);
 		public static readonly SqlType UInt32 = new SqlType(DbType.UInt32);
 		public static readonly SqlType UInt64 = new SqlType(DbType.UInt64);
+		
+		public static readonly SqlType[] NoTypes = new SqlType[0];
 
 		public static AnsiStringSqlType GetAnsiString( int length )
 		{

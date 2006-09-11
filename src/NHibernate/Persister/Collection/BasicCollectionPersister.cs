@@ -157,7 +157,7 @@ namespace NHibernate.Persister.Collection
 							if( st == null )
 							{
 								// TODO SP
-								st = session.Batcher.PrepareBatchCommand( SqlUpdateRowString, CommandType.Text );
+								st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlUpdateRowString, SqlUpdateRowString.ParameterTypes );
 							}
 							
 							int loc = WriteElement( st, collection.GetElement( entry ), offset, session );

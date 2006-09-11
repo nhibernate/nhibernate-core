@@ -7,7 +7,6 @@ using log4net;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Impl;
-using NHibernate.Loader.Entity;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -530,7 +529,7 @@ namespace NHibernate.Persister.Entity
 					for( int i = 0; i < tableNames.Length; i++ )
 					{
 						// TODO SP
-						insertCmds[i] = session.Batcher.PrepareCommand( sql[ i ], CommandType.Text );
+						insertCmds[i] = session.Batcher.PrepareCommand( CommandType.Text, sql[ i ], sql[ i ].ParameterTypes );
 					}
 
 					// write the value of fields onto the prepared statements - we MUST use the state at the time
@@ -539,7 +538,7 @@ namespace NHibernate.Persister.Entity
 
 					for( int i = 0; i < tableNames.Length; i++ )
 					{
-						session.Batcher.ExecuteNonQuery( insertCmds[ i ], sql[i].ParameterTypes );
+						session.Batcher.ExecuteNonQuery( insertCmds[ i ] );
 					}
 				}
 				finally
@@ -591,12 +590,12 @@ namespace NHibernate.Persister.Entity
 				for( int i = 1; i < naturalOrderTableNames.Length; i++ )
 				{
 					// TODO SP
-					IDbCommand statement = session.Batcher.PrepareCommand( sql[ i ], CommandType.Text );
+					IDbCommand statement = session.Batcher.PrepareCommand( CommandType.Text, sql[ i ], sql[ i ].ParameterTypes );
 
 					try
 					{
 						Dehydrate( id, fields, notNull, i, statement, session );
-						session.Batcher.ExecuteNonQuery( statement, sql[i].ParameterTypes );
+						session.Batcher.ExecuteNonQuery( statement );
 					}
 					finally
 					{
@@ -640,7 +639,7 @@ namespace NHibernate.Persister.Entity
 					for( int i = 0; i < naturalOrderTableNames.Length; i++ )
 					{
 						// TODO SP
-						statements[ i ] = session.Batcher.PrepareCommand( sqls[ i ], CommandType.Text );
+						statements[ i ] = session.Batcher.PrepareCommand( CommandType.Text, sqls[ i ], sqls[ i ].ParameterTypes );
 					}
 
 					if( IsVersioned )
@@ -654,7 +653,7 @@ namespace NHibernate.Persister.Entity
 						// Do the key. The key is immutable so we can use the _current_ object state
 						IdentifierType.NullSafeSet( statements[ i ], id, 0, session );
 
-						Check( session.Batcher.ExecuteNonQuery( statements[ i ], sqls[i].ParameterTypes ), id );
+						Check( session.Batcher.ExecuteNonQuery( statements[ i ] ), id );
 					}
 				}
 				finally
@@ -765,7 +764,7 @@ namespace NHibernate.Persister.Entity
 						if( includeTable[ i ] )
 						{
 							// TODO SP
-							statements[ i ] = session.Batcher.PrepareCommand( sql[ i ], CommandType.Text );
+							statements[ i ] = session.Batcher.PrepareCommand( CommandType.Text, sql[ i ], sql[ i ].ParameterTypes );
 						}
 					}
 
@@ -780,7 +779,7 @@ namespace NHibernate.Persister.Entity
 					{
 						if( includeTable[ i ] )
 						{
-							Check( session.Batcher.ExecuteNonQuery( statements[ i ], sql[i].ParameterTypes ), id );
+							Check( session.Batcher.ExecuteNonQuery( statements[ i ] ), id );
 						}
 					}
 				}

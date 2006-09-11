@@ -51,8 +51,11 @@ namespace NHibernate.Connection
 			connString = settings[ Environment.ConnectionString ] as string;
 
 #if NET_2_0
-			if(connString==null)//connection string in the config override named connection string
+			// Connection string in the configuration overrides named connection string
+			if (connString == null)
+			{
 				connString = GetNamedConnectionString(settings);
+			}
 #endif
 			if( connString == null )
 			{
@@ -65,7 +68,7 @@ namespace NHibernate.Connection
 		
 #if NET_2_0
 		/// <summary>
-		/// Get the .Net 2.0 named connection string 
+		/// Get the .NET 2.0 named connection string 
 		/// </summary>
 		/// <exception cref="HibernateException">
 		/// Thrown when a <see cref="Environment.ConnectionStringName"/> was found 
@@ -104,6 +107,7 @@ namespace NHibernate.Connection
 				try
 				{
 					driver = ( IDriver ) Activator.CreateInstance( ReflectHelper.ClassForName( driverClass ) );
+					driver.Configure(settings);
 				}
 				catch( Exception e )
 				{

@@ -140,7 +140,7 @@ namespace NHibernate.Persister.Collection
 							if( st == null )
 							{
 								// TODO SP
-								st = session.Batcher.PrepareBatchCommand( SqlDeleteRowString, CommandType.Text );
+								st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlDeleteRowString, SqlDeleteRowString.ParameterTypes );
 							}
 							int loc = WriteKey( st, id, offset, session );
 							WriteElementToWhere( st, collection.GetSnapshotElement( entry, i ), loc, session );
@@ -171,7 +171,7 @@ namespace NHibernate.Persister.Collection
 							if( st == null )
 							{
 								// TODO SP
-								st = session.Batcher.PrepareBatchCommand( SqlInsertRowString, CommandType.Text );
+								st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlInsertRowString, SqlInsertRowString.ParameterTypes );
 							}
 							int loc = WriteKey( st, id, offset, session );
 							if( HasIndex /* TODO H3: && !indexContainsFormula*/ )

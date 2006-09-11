@@ -521,7 +521,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// Render the SQL query
 				// TODO SP
-				IDbCommand insertCmd = session.Batcher.PrepareBatchCommand( sql, CommandType.Text );
+				IDbCommand insertCmd = session.Batcher.PrepareBatchCommand( CommandType.Text, sql, sql.ParameterTypes );
 
 				try
 				{
@@ -591,11 +591,11 @@ namespace NHibernate.Persister.Entity
 				// TODO SP
 				if( IsVersioned )
 				{
-					deleteCmd = session.Batcher.PrepareCommand( sql, CommandType.Text );
+					deleteCmd = session.Batcher.PrepareCommand( CommandType.Text, sql, sql.ParameterTypes );
 				}
 				else
 				{
-					deleteCmd = session.Batcher.PrepareBatchCommand( sql, CommandType.Text );
+					deleteCmd = session.Batcher.PrepareBatchCommand( CommandType.Text, sql, sql.ParameterTypes );
 				}
 
 				try
@@ -608,7 +608,7 @@ namespace NHibernate.Persister.Entity
 					if( IsVersioned )
 					{
 						VersionType.NullSafeSet( deleteCmd, version, IdentifierColumnNames.Length, session );
-						Check( session.Batcher.ExecuteNonQuery( deleteCmd, sql.ParameterTypes ), id );
+						Check( session.Batcher.ExecuteNonQuery( deleteCmd ), id );
 					}
 					else
 					{
@@ -702,8 +702,8 @@ namespace NHibernate.Persister.Entity
 			{
 				// TODO SP
 				IDbCommand statement = IsBatchable ?
-					session.Batcher.PrepareBatchCommand( sqlUpdateString, CommandType.Text ) :
-					session.Batcher.PrepareCommand( sqlUpdateString, CommandType.Text );
+					session.Batcher.PrepareBatchCommand( CommandType.Text, sqlUpdateString, sqlUpdateString.ParameterTypes ) :
+					session.Batcher.PrepareCommand( CommandType.Text, sqlUpdateString, sqlUpdateString.ParameterTypes );
 
 				try
 				{
@@ -738,7 +738,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check( session.Batcher.ExecuteNonQuery( statement, sqlUpdateString.ParameterTypes ), id );
+						Check( session.Batcher.ExecuteNonQuery( statement ), id );
 					}
 				}
 				catch( Exception e )
