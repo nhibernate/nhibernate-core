@@ -29,7 +29,7 @@ namespace NHibernate.Persister.Collection
 		/// Generate the SQL DELETE that deletes all rows
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateDeleteString()
+		protected override SqlCommandInfo GenerateDeleteString()
 		{
 			SqlDeleteBuilder delete = new SqlDeleteBuilder( Factory )
 				.SetTableName( qualifiedTableName )
@@ -38,14 +38,14 @@ namespace NHibernate.Persister.Collection
 			{
 				delete.AddWhereFragment( sqlWhereString );
 			}
-			return delete.ToSqlString();
+			return delete.ToSqlCommandInfo();
 		}
 
 		/// <summary>
 		/// Generate the SQL INSERT that creates a new row
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateInsertRowString()
+		protected override SqlCommandInfo GenerateInsertRowString()
 		{
 			SqlInsertBuilder insert = new SqlInsertBuilder( Factory )
 				.SetTableName( qualifiedTableName )
@@ -60,14 +60,14 @@ namespace NHibernate.Persister.Collection
 			}
 			insert.AddColumn( ElementColumnNames, ElementType );
 
-			return insert.ToSqlString();
+			return insert.ToSqlCommandInfo();
 		}
 
 		/// <summary>
 		/// Generate the SQL UPDATE that updates a row
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateUpdateRowString()
+		protected override SqlCommandInfo GenerateUpdateRowString()
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( Factory )
 				.SetTableName( qualifiedTableName )
@@ -87,14 +87,14 @@ namespace NHibernate.Persister.Collection
 					.AddWhereFragment( ElementColumnNames, ElementType, " = " );
 			}
 
-			return update.ToSqlString();
+			return update.ToSqlCommandInfo();
 		}
 
 		/// <summary>
 		/// Generate the SQL DELETE that deletes a particular row
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateDeleteRowString()
+		protected override SqlCommandInfo GenerateDeleteRowString()
 		{
 			SqlDeleteBuilder delete = new SqlDeleteBuilder( Factory );
 			delete.SetTableName( qualifiedTableName );
@@ -115,7 +115,7 @@ namespace NHibernate.Persister.Collection
 					.AddWhereFragment( ElementColumnNames, ElementType, " = " );
 			}
 
-			return delete.ToSqlString();
+			return delete.ToSqlCommandInfo();
 		}
 
 		public override bool ConsumesEntityAlias()
@@ -157,7 +157,10 @@ namespace NHibernate.Persister.Collection
 							if( st == null )
 							{
 								// TODO SP
-								st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlUpdateRowString, SqlUpdateRowString.ParameterTypes );
+								st = session.Batcher.PrepareBatchCommand(
+									SqlUpdateRowString.CommandType,
+									SqlUpdateRowString.Text,
+									SqlUpdateRowString.ParameterTypes );
 							}
 							
 							int loc = WriteElement( st, collection.GetElement( entry ), offset, session );

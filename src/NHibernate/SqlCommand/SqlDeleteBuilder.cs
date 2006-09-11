@@ -1,7 +1,10 @@
 using System.Collections;
+using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
 {
@@ -13,20 +16,12 @@ namespace NHibernate.SqlCommand
 		private static readonly ILog log = LogManager.GetLogger( typeof( SqlDeleteBuilder ) );
 		private string tableName;
 
-		private int versionFragmentIndex = -1;  // not used !?!
-		private int identityFragmentIndex = -1; // not used !?!
-
-		private IList whereStrings = new ArrayList();
+		private ArrayList whereStrings = new ArrayList();
 
 		public SqlDeleteBuilder( IMapping mapping ) : base( mapping )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableName"></param>
-		/// <returns></returns>
 		public SqlDeleteBuilder SetTableName( string tableName )
 		{
 			this.tableName = tableName;
@@ -43,9 +38,7 @@ namespace NHibernate.SqlCommand
 		public SqlDeleteBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, identityType );
-
-			identityFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
-
+			whereStrings.Add( ToWhereString( columnNames, parameters ) );
 			return this;
 		}
 
@@ -58,9 +51,7 @@ namespace NHibernate.SqlCommand
 		public SqlDeleteBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, versionType );
-
-			versionFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
-
+			whereStrings.Add( ToWhereString( columnNames, parameters ) );
 			return this;
 		}
 
@@ -75,7 +66,6 @@ namespace NHibernate.SqlCommand
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, type );
 			whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
-
 			return this;
 		}
 
@@ -86,7 +76,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlDeleteBuilder</returns>
 		public SqlDeleteBuilder AddWhereFragment( string whereSql )
 		{
-			if ( whereSql != null && whereSql.Length > 0 )
+			if ( StringHelper.IsNotEmpty(whereSql) )
 			{
 				whereStrings.Add( new SqlString( whereSql ) );
 			}
@@ -145,5 +135,11 @@ namespace NHibernate.SqlCommand
 		}
 
 		#endregion
+		
+		public SqlCommandInfo ToSqlCommandInfo()
+		{
+			SqlString text = ToSqlString();
+			return new SqlCommandInfo(CommandType.Text, text, text.ParameterTypes);
+		}
 	}
 }

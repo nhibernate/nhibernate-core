@@ -27,7 +27,7 @@ namespace NHibernate.Persister.Collection
 		/// Generate the SQL UPDATE that updates all the foreign keys to null
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateDeleteString( )
+		protected override SqlCommandInfo GenerateDeleteString( )
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( Factory )
 				.SetTableName( qualifiedTableName )
@@ -42,14 +42,14 @@ namespace NHibernate.Persister.Collection
 				update.AddWhereFragment( sqlWhereString );
 			}
 
-			return update.ToSqlString();
+			return update.ToSqlCommandInfo();
 		}
 
 		/// <summary>
 		/// Generate the SQL UPDATE that updates a foreign key to a value
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateInsertRowString( )
+		protected override SqlCommandInfo GenerateInsertRowString( )
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( Factory );
 			update.SetTableName( qualifiedTableName )
@@ -61,14 +61,14 @@ namespace NHibernate.Persister.Collection
 			}
 			//identifier collections not supported for 1-to-many 
 
-			return update.ToSqlString();
+			return update.ToSqlCommandInfo();
 		}
 
 		/// <summary>
 		/// Not needed for one-to-many association
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateUpdateRowString( )
+		protected override SqlCommandInfo GenerateUpdateRowString( )
 		{
 			return null;
 		}
@@ -78,7 +78,7 @@ namespace NHibernate.Persister.Collection
 		/// key to null
 		/// </summary>
 		/// <returns></returns>
-		protected override SqlString GenerateDeleteRowString( )
+		protected override SqlCommandInfo GenerateDeleteRowString( )
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( Factory );
 			update.SetTableName( qualifiedTableName )
@@ -92,7 +92,7 @@ namespace NHibernate.Persister.Collection
 			update.AddWhereFragment( KeyColumnNames, KeyType, " = " )
 				.AddWhereFragment( ElementColumnNames, ElementType, " = " );
 
-			return update.ToSqlString();
+			return update.ToSqlCommandInfo();
 		}
 
 		public override bool ConsumesEntityAlias( )
@@ -140,7 +140,7 @@ namespace NHibernate.Persister.Collection
 							if( st == null )
 							{
 								// TODO SP
-								st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlDeleteRowString, SqlDeleteRowString.ParameterTypes );
+								st = session.Batcher.PrepareBatchCommand( SqlDeleteRowString.CommandType, SqlDeleteRowString.Text, SqlDeleteRowString.ParameterTypes );
 							}
 							int loc = WriteKey( st, id, offset, session );
 							WriteElementToWhere( st, collection.GetSnapshotElement( entry, i ), loc, session );
@@ -171,7 +171,7 @@ namespace NHibernate.Persister.Collection
 							if( st == null )
 							{
 								// TODO SP
-								st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlInsertRowString, SqlInsertRowString.ParameterTypes );
+								st = session.Batcher.PrepareBatchCommand( SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes );
 							}
 							int loc = WriteKey( st, id, offset, session );
 							if( HasIndex /* TODO H3: && !indexContainsFormula*/ )

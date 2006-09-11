@@ -619,6 +619,7 @@
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
     <Compile Include="Property\IOptimizableGetter.cs" />
     <Compile Include="Property\IOptimizableSetter.cs" />
+    <Compile Include="SqlCommand\SqlCommandInfo.cs" />
     <Compile Include="Transform\PassThroughResultTransformer.cs" />
     <Compile Include="Tuple\EntityMetamodel.cs" />
     <Compile Include="Tuple\IdentifierProperty.cs" />

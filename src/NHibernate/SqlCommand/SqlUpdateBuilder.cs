@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Data;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -17,9 +18,6 @@ namespace NHibernate.SqlCommand
 
 		private IList columnNames = new ArrayList(); // name of the column
 		private IList columnValues = new ArrayList(); //string or a Parameter
-
-		private int identityFragmentIndex = -1; // not used !?!
-		private int versionFragmentIndex = -1;  // not used !?!
 
 		private IList whereStrings = new ArrayList();
 
@@ -111,9 +109,7 @@ namespace NHibernate.SqlCommand
 		public SqlUpdateBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, identityType );
-
-			identityFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
-
+			whereStrings.Add( ToWhereString( columnNames, parameters ) );
 			return this;
 		}
 
@@ -126,9 +122,7 @@ namespace NHibernate.SqlCommand
 		public SqlUpdateBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, versionType );
-
-			versionFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
-
+			whereStrings.Add( ToWhereString( columnNames, parameters ) );
 			return this;
 		}
 
@@ -263,5 +257,11 @@ namespace NHibernate.SqlCommand
 		}
 
 		#endregion
+		
+		public SqlCommandInfo ToSqlCommandInfo()
+		{
+			SqlString text = ToSqlString();
+			return new SqlCommandInfo(CommandType.Text, text, text.ParameterTypes);
+		}
 	}
 }

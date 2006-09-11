@@ -470,17 +470,14 @@ namespace NHibernate.SqlCommand
 			return new SqlString(clonedParts);
 		}
 
-		public SqlString ReplaceParameterTypes(SqlType[][] sqlTypes)
+		public SqlString ReplaceParameterTypes(SqlType[] sqlTypes)
 		{
 			SqlString result = Clone();
 			int index = 0;
-			foreach (SqlType[] array in sqlTypes)
+			foreach (SqlType type in sqlTypes)
 			{
-				foreach (SqlType type in array)
-				{
-					result.ParameterTypes[index] = type;
-					index++;
-				}
+				result.ParameterTypes[index] = type;
+				index++;
 			}
 			return result;
 		}

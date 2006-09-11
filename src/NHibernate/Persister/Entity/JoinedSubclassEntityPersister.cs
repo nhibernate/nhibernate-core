@@ -66,8 +66,8 @@ namespace NHibernate.Persister.Entity
 
 		// SQL strings
 		private SqlString[] sqlDeleteStrings;
-		private SqlString[] sqlInsertStrings;
-		private SqlString[] sqlIdentityInsertStrings;
+		private SqlCommandInfo[] sqlInsertStrings;
+		private SqlCommandInfo[] sqlIdentityInsertStrings;
 		private SqlString[] sqlUpdateStrings;
 
 		// the index of the table that the property is coming from
@@ -183,7 +183,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The queries that insert rows with a given id
 		/// </summary>
-		protected SqlString[] SqlInsertStrings
+		protected SqlCommandInfo[] SqlInsertStrings
 		{
 			get { return sqlInsertStrings; }
 		}
@@ -191,7 +191,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The queries that insert rows, letting the database generate an id
 		/// </summary>
-		protected SqlString[] SqlIdentityInsertStrings
+		protected SqlCommandInfo[] SqlIdentityInsertStrings
 		{
 			get { return sqlIdentityInsertStrings; }
 		}
@@ -247,9 +247,9 @@ namespace NHibernate.Persister.Entity
 		/// <param name="identityInsert"></param>
 		/// <param name="includeProperty"></param>
 		/// <returns>An array of SqlStrings</returns>
-		protected virtual SqlString[] GenerateInsertStrings( bool identityInsert, bool[] includeProperty )
+		protected virtual SqlCommandInfo[] GenerateInsertStrings( bool identityInsert, bool[] includeProperty )
 		{
-			SqlString[] insertStrings = new SqlString[naturalOrderTableNames.Length];
+			SqlCommandInfo[] insertCmds = new SqlCommandInfo[naturalOrderTableNames.Length];
 
 			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
 			{
@@ -279,10 +279,10 @@ namespace NHibernate.Persister.Entity
 					builder.AddColumn( naturalOrderTableKeyColumns[ j ], IdentifierType );
 				}
 
-				insertStrings[ j ] = builder.ToSqlString();
+				insertCmds[j] = builder.ToSqlCommandInfo();
 			}
 
-			return insertStrings;
+			return insertCmds;
 		}
 
 		/// <summary>
@@ -508,7 +508,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="sql"></param>
 		/// <param name="obj">The object to Insert into the database.  I don't see where this is used???</param>
 		/// <param name="session">The Session to use when Inserting the object.</param>
-		public void Insert( object id, object[] fields, bool[] notNull, SqlString[] sql, object obj, ISessionImplementor session )
+		public void Insert( object id, object[] fields, bool[] notNull, SqlCommandInfo[] sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -528,8 +528,7 @@ namespace NHibernate.Persister.Entity
 				{
 					for( int i = 0; i < tableNames.Length; i++ )
 					{
-						// TODO SP
-						insertCmds[i] = session.Batcher.PrepareCommand( CommandType.Text, sql[ i ], sql[ i ].ParameterTypes );
+						insertCmds[i] = session.Batcher.PrepareCommand( sql[ i ].CommandType, sql[ i ].Text, sql[ i ].ParameterTypes );
 					}
 
 					// write the value of fields onto the prepared statements - we MUST use the state at the time
@@ -572,7 +571,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object Insert( object[] fields, bool[] notNull, SqlString[] sql, object obj, ISessionImplementor session )
+		public object Insert( object[] fields, bool[] notNull, SqlCommandInfo[] sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -589,8 +588,7 @@ namespace NHibernate.Persister.Entity
 
 				for( int i = 1; i < naturalOrderTableNames.Length; i++ )
 				{
-					// TODO SP
-					IDbCommand statement = session.Batcher.PrepareCommand( CommandType.Text, sql[ i ], sql[ i ].ParameterTypes );
+					IDbCommand statement = session.Batcher.PrepareCommand( sql[ i ].CommandType, sql[ i ].Text, sql[ i ].ParameterTypes );
 
 					try
 					{

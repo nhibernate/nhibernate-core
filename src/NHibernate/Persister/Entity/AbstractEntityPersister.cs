@@ -1746,13 +1746,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Persist an object, using a natively generated identifier
 		/// </summary>
-		/// <param name="fields"></param>
-		/// <param name="notNull"></param>
-		/// <param name="sql"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		protected object InsertImpl( object[] fields, bool[] notNull, SqlString sql, object obj, ISessionImplementor session )
+		protected object InsertImpl( object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -1765,12 +1759,16 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
-				SqlString insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql, IdentifierColumnNames[ 0 ], TableName );
+				SqlString insertSelectSQL = null;
+				
+				if( sql.CommandType == CommandType.Text)
+				{
+					insertSelectSQL = Dialect.AddIdentitySelectToInsert( sql.Text, IdentifierColumnNames[ 0 ], TableName );
+				}
 
 				if( insertSelectSQL != null )
 				{
 					// Use one statement to insert the row and get the generated id
-					// TODO SP
 					IDbCommand insertSelect = session.Batcher.PrepareCommand( CommandType.Text, insertSelectSQL, sql.ParameterTypes );
 					IDataReader rs = null;
 					try
@@ -1789,7 +1787,7 @@ namespace NHibernate.Persister.Entity
 				{
 					// Do the insert
 					// TODO SP
-					IDbCommand statement = session.Batcher.PrepareCommand( CommandType.Text, sql, sql.ParameterTypes );
+					IDbCommand statement = session.Batcher.PrepareCommand( sql.CommandType, sql.Text, sql.ParameterTypes );
 					try
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
@@ -1802,7 +1800,6 @@ namespace NHibernate.Persister.Entity
 					}
 
 					// Fetch the generated id in a separate query
-					// TODO SP
 					SqlString idselectSql = new SqlString( SqlIdentitySelect( IdentifierColumnNames[ 0 ], TableName ) );
 					IDbCommand idselect = session.Batcher.PrepareCommand( CommandType.Text, idselectSql, SqlTypeFactory.NoTypes );
 					IDataReader rs = null;

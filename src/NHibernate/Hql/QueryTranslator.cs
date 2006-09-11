@@ -264,7 +264,7 @@ namespace NHibernate.Hql
 		{
 			// this needs internal access because the WhereParser needs to be able to "get" it.
 			get { return sqlString; }
-			set { sqlString = value; }
+			set { throw new InvalidOperationException("QueryTranslator.SqlString is read-only"); }
 		}
 
 		private int NextCount()
@@ -993,18 +993,11 @@ namespace NHibernate.Hql
 
 		public IList List( ISessionImplementor session, QueryParameters queryParameters )
 		{
-			// NH: added this call to initialize parameter types in SqlString
-			// so that it gets cached and looked up properly in the call to List
-			PopulateSqlString( queryParameters );
-
 			return List( session, queryParameters, QuerySpaces, actualReturnTypes );
 		}
 
 		public IEnumerable GetEnumerable( QueryParameters parameters, ISessionImplementor session )
 		{
-			// NH: added this call to initialize parameter types in SqlString
-			PopulateSqlString( parameters );
-
 			SqlString sqlWithLock = ApplyLocks( SqlString, parameters.LockModes, session.Factory.Dialect );
 
 			IDbCommand cmd = PrepareQueryCommand(

@@ -237,5 +237,12 @@ namespace NHibernate.Util
 			ExpandWithNulls(list, index + 1);
 			list[index] = value;
 		}
+
+		public static SqlType[] ToSqlTypeArray(IList list)
+		{
+			SqlType[] result = new SqlType[list.Count];
+			list.CopyTo(result, 0);
+			return result;
+		}
 	}
 }

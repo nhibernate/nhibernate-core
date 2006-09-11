@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
+using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -178,5 +181,11 @@ namespace NHibernate.SqlCommand
 		}
 
 		#endregion
+
+		public SqlCommandInfo ToSqlCommandInfo()
+		{
+			SqlString text = ToSqlString();
+			return new SqlCommandInfo(CommandType.Text, text, text.ParameterTypes);
+		}
 	}
 }

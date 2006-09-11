@@ -28,9 +28,9 @@ namespace NHibernate.Persister.Entity
 
 		// SQL strings
 		private SqlString sqlDeleteString;
-		private SqlString sqlInsertString;
+		private SqlCommandInfo sqlInsertString;
 		private SqlString sqlUpdateString;
-		private SqlString sqlIdentityInsertString;
+		private SqlCommandInfo sqlIdentityInsertString;
 		private SqlString sqlConcreteSelectString;
 		private SqlString sqlVersionSelectString;
 
@@ -132,7 +132,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The query that inserts a row with a given id
 		/// </summary>
-		protected SqlString SqlInsertString
+		protected SqlCommandInfo SqlInsertString
 		{
 			get { return sqlInsertString; }
 		}
@@ -140,7 +140,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The query that inserts a row, letting the database generate an id
 		/// </summary>
-		protected SqlString SqlIdentityInsertString
+		protected SqlCommandInfo SqlIdentityInsertString
 		{
 			get { return sqlIdentityInsertString; }
 		}
@@ -185,7 +185,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="identityInsert"></param>
 		/// <param name="includeProperty"></param>
 		/// <returns>A SqlString for an Insert</returns>
-		protected virtual SqlString GenerateInsertString( bool identityInsert, bool[] includeProperty )
+		protected virtual SqlCommandInfo GenerateInsertString( bool identityInsert, bool[] includeProperty )
 		{
 			SqlInsertBuilder builder = new SqlInsertBuilder( Factory )
 				.SetTableName( TableName );
@@ -218,7 +218,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			return builder.ToSqlString();
+			return builder.ToSqlCommandInfo();
 		}
 
 		/// <summary>
@@ -506,7 +506,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="sql"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		public void Insert( object id, object[] fields, bool[] notNull, SqlString sql, object obj, ISessionImplementor session )
+		public void Insert( object id, object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -520,8 +520,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
-				// TODO SP
-				IDbCommand insertCmd = session.Batcher.PrepareBatchCommand( CommandType.Text, sql, sql.ParameterTypes );
+				IDbCommand insertCmd = session.Batcher.PrepareBatchCommand( sql.CommandType, sql.Text, sql.ParameterTypes );
 
 				try
 				{
@@ -560,7 +559,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object Insert( object[] fields, bool[] notNull, SqlString sql, object obj, ISessionImplementor session )
+		public object Insert( object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session )
 		{
 			return InsertImpl( fields, notNull, sql, obj, session);
 		}

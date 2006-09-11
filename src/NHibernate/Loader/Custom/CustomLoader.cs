@@ -116,7 +116,6 @@ namespace NHibernate.Loader.Custom
 			ISessionImplementor session,
 			QueryParameters queryParameters )
 		{
-			PopulateSqlString( queryParameters );
 			return List( session, queryParameters, customQuery.QuerySpaces, resultTypes );
 		}
 

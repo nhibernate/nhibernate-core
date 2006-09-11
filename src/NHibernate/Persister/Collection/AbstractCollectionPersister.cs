@@ -29,10 +29,10 @@ namespace NHibernate.Persister.Collection
 		private readonly string role;
 
 		//SQL statements
-		private readonly SqlString sqlDeleteString;
-		private readonly SqlString sqlInsertRowString;
-		private readonly SqlString sqlUpdateRowString;
-		private readonly SqlString sqlDeleteRowString;
+		private readonly SqlCommandInfo sqlDeleteString;
+		private readonly SqlCommandInfo sqlInsertRowString;
+		private readonly SqlCommandInfo sqlUpdateRowString;
+		private readonly SqlCommandInfo sqlDeleteRowString;
 
 		// TODO H3:
 		//		private readonly SqlString sqlSelectSizeString;
@@ -374,22 +374,22 @@ namespace NHibernate.Persister.Collection
 			get { return hasWhere; }
 		}
 
-		protected SqlString SqlDeleteString
+		protected SqlCommandInfo SqlDeleteString
 		{
 			get { return sqlDeleteString; }
 		}
 
-		protected SqlString SqlInsertRowString
+		protected SqlCommandInfo SqlInsertRowString
 		{
 			get { return sqlInsertRowString; }
 		}
 
-		protected SqlString SqlUpdateRowString
+		protected SqlCommandInfo SqlUpdateRowString
 		{
 			get { return sqlUpdateRowString; }
 		}
 
-		protected SqlString SqlDeleteRowString
+		protected SqlCommandInfo SqlDeleteRowString
 		{
 			get { return sqlDeleteRowString; }
 		}
@@ -632,7 +632,7 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					// TODO SP
-					IDbCommand st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlDeleteString, SqlDeleteString.ParameterTypes );
+					IDbCommand st = session.Batcher.PrepareBatchCommand( SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes );
 
 					try
 					{
@@ -690,7 +690,10 @@ namespace NHibernate.Persister.Collection
 							{
 								int offset = 0;
 								// TODO SP
-								IDbCommand st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlInsertRowString, SqlInsertRowString.ParameterTypes );
+								IDbCommand st = session.Batcher.PrepareBatchCommand(
+									SqlInsertRowString.CommandType,
+									SqlInsertRowString.Text,
+									SqlInsertRowString.ParameterTypes );
 								int loc = WriteKey( st, id, offset, session );
 								if( hasIdentifier )
 								{
@@ -758,8 +761,10 @@ namespace NHibernate.Persister.Collection
 					{
 						int offset = 0;
 						int count = 0;
-						// TODO SP
-						IDbCommand st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlDeleteRowString, SqlDeleteRowString.ParameterTypes );
+						IDbCommand st = session.Batcher.PrepareBatchCommand(
+							SqlDeleteRowString.CommandType,
+							SqlDeleteRowString.Text,
+							SqlDeleteRowString.ParameterTypes );
 						try
 						{
 							foreach( object entry in deletes )
@@ -844,7 +849,10 @@ namespace NHibernate.Persister.Collection
 						{
 							if( collection.NeedsInserting( entry, i, elementType ) )
 							{
-								IDbCommand st = session.Batcher.PrepareBatchCommand( CommandType.Text, SqlInsertRowString, SqlInsertRowString.ParameterTypes );
+								IDbCommand st = session.Batcher.PrepareBatchCommand(
+									SqlInsertRowString.CommandType,
+									SqlInsertRowString.Text,
+									SqlInsertRowString.ParameterTypes );
 
 								int loc = WriteKey( st, id, offset, session );
 								if( hasIdentifier )
@@ -991,10 +999,10 @@ namespace NHibernate.Persister.Collection
 			get { return TableName; }
 		}
 
-		protected abstract SqlString GenerateDeleteString();
-		protected abstract SqlString GenerateDeleteRowString();
-		protected abstract SqlString GenerateUpdateRowString();
-		protected abstract SqlString GenerateInsertRowString();
+		protected abstract SqlCommandInfo GenerateDeleteString();
+		protected abstract SqlCommandInfo GenerateDeleteRowString();
+		protected abstract SqlCommandInfo GenerateUpdateRowString();
+		protected abstract SqlCommandInfo GenerateInsertRowString();
 
 		public void UpdateRows( IPersistentCollection collection, object id, ISessionImplementor session )
 		{

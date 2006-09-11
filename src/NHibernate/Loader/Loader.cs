@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Diagnostics;
 using Iesi.Collections;
 
 using log4net;
@@ -1138,9 +1137,6 @@ namespace NHibernate.Loader
 			bool useLimit = UseLimit( selection, dialect );
 			bool hasFirstRow = GetFirstRow( selection ) > 0;
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
-			//TODO: In .Net all resultsets are scrollable (we receive an IDataReader), so this is not needed
-			bool scrollable = session.Factory.IsScrollableResultSetsEnabled &&
-				( scroll || ( hasFirstRow && !useOffset ) );
 
 			if( useLimit )
 			{
@@ -1148,7 +1144,7 @@ namespace NHibernate.Loader
 				                                    useOffset ? GetFirstRow( selection ) : 0,
 				                                    GetMaxOrLimit( dialect, selection ) );
 			}
-            IDbCommand command = session.Batcher.PrepareQueryCommand(parameters.CommandType, sqlString, sqlString.ParameterTypes);
+            IDbCommand command = session.Batcher.PrepareQueryCommand(parameters.CommandType, sqlString, GetParameterTypes(parameters));
 
 			try
 			{
@@ -1684,79 +1680,53 @@ namespace NHibernate.Loader
 			return GetType().FullName + '(' + SqlString + ')';
 		}
 
-		private SqlString ReplaceParameterTypes(SqlString sql, IList nhibernateTypes)
+		protected SqlType[] ConvertITypesToSqlTypes(ArrayList nhTypes, int totalSpan)
 		{
-			SqlType[][] sqlTypes = new SqlType[nhibernateTypes.Count][];
-			
-			for (int i = 0; i < sqlTypes.Length; i++)
+			SqlType[] result = new SqlType[totalSpan];
+
+			int index = 0;
+			foreach (IType type in nhTypes)
 			{
-				sqlTypes[i] = ((IType) nhibernateTypes[i]).SqlTypes(Factory);
+				int span = type.SqlTypes(Factory).Length;
+				Array.Copy(type.SqlTypes(Factory), 0, result, index, span);
+				index += span;
+			}
+
+			return result;
+		}
+		
+		/// <returns><see cref="IList" /> of <see cref="IType" /></returns>
+		protected SqlType[] GetParameterTypes( QueryParameters parameters )
+		{
+			ArrayList paramTypeList = new ArrayList();
+			int span = 0;
+
+			foreach( IType type in parameters.PositionalParameterTypes )
+			{
+				paramTypeList.Add(type);
+				span += type.GetColumnSpan(Factory);
+			}
+
+			if( parameters.NamedParameters != null && parameters.NamedParameters.Count > 0 )
+			{
+				int offset = paramTypeList.Count;
+
+				// convert the named parameters to an array of types
+				foreach( DictionaryEntry e in parameters.NamedParameters )
+				{
+					string name = ( string ) e.Key;
+					TypedValue typedval = ( TypedValue ) e.Value;
+					int[ ] locs = GetNamedParameterLocs( name );
+					span += typedval.Type.GetColumnSpan(Factory) * locs.Length;
+
+					for( int i = 0; i < locs.Length; i++ )
+					{
+						ArrayHelper.SafeSetValue(paramTypeList, locs[ i ] + offset, typedval.Type);
+					}
+				}
 			}
 			
-			return sql.ReplaceParameterTypes(sqlTypes);
+			return ConvertITypesToSqlTypes(paramTypeList, span);
 		}
-	
-		/// <summary>
-		/// Indicates if the SqlString has been fully populated - it goes
-		/// through a 2 phase process.  The first part is the parsing of the
-		/// hql and it puts in placeholders for the parameters, the second phase 
-		/// puts in the actual types for the parameters using QueryParameters
-		/// passed to query methods.  The completion of the second phase is
-		/// when <c>isSqlStringPopulated==true</c>.
-		/// </summary>
-		private bool isSqlStringPopulated;
-
-		private object prepareCommandLock = new object();
-
-		protected void PopulateSqlString( QueryParameters parameters )
-		{
-			lock( prepareCommandLock )
-			{
-				if( isSqlStringPopulated )
-				{
-					return;
-				}
-
-				// when there is no untyped Parameters then we can avoid the need to create
-				// a new sql string and just return the existing one because it is ready 
-				// to be prepared and executed.
-				if( SqlString.ContainsUntypedParameter )
-				{
-					SqlString sqlString = SqlString;
-
-					ArrayList paramTypeList = new ArrayList();
-
-					foreach( IType type in parameters.PositionalParameterTypes )
-					{
-						paramTypeList.Add(type);
-					}
-
-					if( parameters.NamedParameters != null && parameters.NamedParameters.Count > 0 )
-					{
-						int offset = paramTypeList.Count;
-
-						// convert the named parameters to an array of types
-						foreach( DictionaryEntry e in parameters.NamedParameters )
-						{
-							string name = ( string ) e.Key;
-							TypedValue typedval = ( TypedValue ) e.Value;
-							int[ ] locs = GetNamedParameterLocs( name );
-
-							for( int i = 0; i < locs.Length; i++ )
-							{
-								ArrayHelper.SafeSetValue(paramTypeList, locs[ i ] + offset, typedval.Type);
-							}
-						}
-					}
-					
-					// replace the local field used by the SqlString property with the one we just built 
-					// that has the correct parameters
-					SqlString = ReplaceParameterTypes(sqlString, paramTypeList);
-				}
-
-				isSqlStringPopulated = true;
-			}
-		}
-
 	}
 }
