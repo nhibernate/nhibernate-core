@@ -42,7 +42,7 @@ namespace NHibernate.Test.Performance
 	public class PerformanceTest : TestCase 
 	{
 		string driverClass = null;
-		IDriver driver = null;
+		DriverBase driver = null;
 		bool prepareSql;
 
 		protected override System.Collections.IList Mappings
@@ -61,7 +61,7 @@ namespace NHibernate.Test.Performance
 				driverClass += ", NHibernate";
 			}
 
-			driver = (IDriver)Activator.CreateInstance(System.Type.GetType(driverClass));
+			driver = (DriverBase)Activator.CreateInstance(System.Type.GetType(driverClass));
 
 			string prepare = (string)cfg.Properties[ Cfg.Environment.PrepareSql ] as string;
 			if( prepare=="true" )

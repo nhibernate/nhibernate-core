@@ -11,28 +11,20 @@ namespace NHibernate.Driver
 	/// <remarks>
 	/// <para>
 	/// The <c>IDriver</c> interface is not intended to be exposed to the application.
-	/// Instead it is used internally by Hibernate to obtain connection objects, command objects, and
-	/// to format an IDbCommand's CommandText. Implementors should provide a public default constructor.
+	/// Instead it is used internally by NHibernate to obtain connection objects, command objects, and
+	/// to generate and prepare <see cref="IDbCommand">IDbCommands</see>. Implementors should provide a
+	/// public default constructor.
 	/// </para>
 	/// <para>
 	/// This is the interface to implement, or you can inherit from <see cref="DriverBase"/> 
-	/// if you have a .NET DataProvider that NHibernate does not have built in support for.
-	/// </para>
-	/// <para>
-	/// For example, there is an Assembly for the ByteFX.Data MySql DataProvider.  
-	/// It is part of the <c>NHibernate.Driver</c> namespace and that is where your
-	/// DataProvider should be placed.  The assembly should start with the name <c>NHibernate.Driver</c>,
-	/// however it does not have to.  The MySql DataProvider is in an assembly called <c>NHibernate.Driver.ByteFX.dll</c>.
-	/// For someone to use it all that needs to be done is in the configuration file for NHibernate this should be
-	/// there.
+	/// if you have an ADO.NET data provider that NHibernate does not have built in support for.
+	/// To use the driver, NHibernate property <c>hibernate.connection.driver_class</c> should be
+	/// set to the assembly-qualified name of the driver class.
 	/// </para>
 	/// <code>
-	/// key="hibernate.connection.driver_class"          
-	/// value="FullyQualifiedClassName, AssemblyName" 
+	/// key="hibernate.connection.driver_class"
+	/// value="FullyQualifiedClassName, AssemblyName"
 	/// </code>
-	/// <para>
-	/// This is the standard .NET way to load a class from an external assembly.
-	/// </para>
 	/// </remarks>
 	public interface IDriver
 	{
@@ -51,56 +43,6 @@ namespace NHibernate.Driver
 		/// from.
 		/// </remarks>
 		IDbCommand CreateCommand();
-
-		/// <summary>
-		/// Does this Driver require the use of a Named Prefix in the SQL statement.  
-		/// </summary>
-		/// <remarks>
-		/// For example, SqlClient requires <c>select * from simple where simple_id = @simple_id</c>
-		/// If this is false, like with the OleDb provider, then it is assumed that  
-		/// the <c>?</c> can be a placeholder for the parameter in the SQL statement.
-		/// </remarks>
-		bool UseNamedPrefixInSql { get; }
-
-		/// <summary>
-		/// Does this Driver require the use of the Named Prefix when trying
-		/// to reference the Parameter in the Command's Parameter collection.  
-		/// </summary>
-		/// <remarks>
-		/// This is really only useful when the UseNamedPrefixInSql == true.  When this is true the
-		/// code will look like:
-		/// <code>IDbParameter param = cmd.Parameters["@paramName"]</code>
-		/// if this is false the code will be 
-		/// <code>IDbParameter param = cmd.Parameters["paramName"]</code>.
-		/// </remarks>
-		bool UseNamedPrefixInParameter { get; }
-
-		/// <summary>
-		/// The Named Prefix for parameters.  
-		/// </summary>
-		/// <remarks>
-		/// Sql Server uses <c>"@"</c> and Oracle uses <c>":"</c>.
-		/// </remarks>
-		string NamedPrefix { get; }
-
-		/// <summary>
-		/// Change the parameterName into the correct format IDbCommand.CommandText
-		/// for the ConnectionProvider
-		/// </summary>
-		/// <param name="parameterName">The unformatted name of the parameter</param>
-		/// <returns>A parameter formatted for an IDbCommand.CommandText</returns>
-		string FormatNameForSql(string parameterName);
-
-		/// <summary>
-		/// Changes the parameterName into the correct format for an IDbParameter
-		/// for the Driver.
-		/// </summary>
-		/// <remarks>
-		/// For SqlServerConnectionProvider it will change <c>id</c> to <c>@id</c>
-		/// </remarks>
-		/// <param name="parameterName">The unformatted name of the parameter</param>
-		/// <returns>A parameter formatted for an IDbParameter.</returns>
-		string FormatNameForParameter(string parameterName);
 
 		/// <summary>
 		/// Does this Driver support having more than 1 open IDataReader with
@@ -143,7 +85,6 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Generates an IDbCommand from the SqlString according to the requirements of the DataProvider.
 		/// </summary>
-		/// <param name="dialect">The Dialect to help build the IDbCommand</param>
 		/// <param name="type">The <see cref="CommandType"/> of the command to generate.</param>
 		/// <param name="sqlString">The SqlString that contains the sql and parameters.</param>
 		/// <returns>An IDbCommand with the CommandText and Parameters fully set.</returns>
