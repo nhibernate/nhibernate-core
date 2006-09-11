@@ -18,10 +18,11 @@ namespace NHibernate.SqlCommand
 
 		private ISessionFactoryImplementor factory;
 		private string tableName;
-		private IList columnNames = new ArrayList();
-		private IList columnValues = new ArrayList();
+		private ArrayList columnNames = new ArrayList();
+		private ArrayList columnValues = new ArrayList();
+		private ArrayList parameterTypes = new ArrayList();
 
-		//SortedList columnValues = new SortedList(); //key=columName, value=string/IParameter
+		//SortedList columnValues = new SortedList(); //key=columName, value=string/Parameter
 
 		/// <summary>
 		/// 
@@ -52,13 +53,9 @@ namespace NHibernate.SqlCommand
 		public SqlInsertBuilder AddColumn( string[ ] columnNames, IType propertyType )
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( factory, propertyType );
-
-			for( int i = 0; i < columnNames.Length; i++ )
-			{
-				this.columnNames.Add( columnNames[ i ] );
-				columnValues.Add( parameters[ i ] );
-			}
-
+			this.columnNames.AddRange(columnNames);
+			columnValues.AddRange(parameters);
+			parameterTypes.AddRange(propertyType.SqlTypes(factory));
 			return this;
 		}
 
@@ -185,7 +182,7 @@ namespace NHibernate.SqlCommand
 		public SqlCommandInfo ToSqlCommandInfo()
 		{
 			SqlString text = ToSqlString();
-			return new SqlCommandInfo(CommandType.Text, text, text.ParameterTypes);
+			return new SqlCommandInfo(CommandType.Text, text, ArrayHelper.ToSqlTypeArray(parameterTypes));
 		}
 	}
 }

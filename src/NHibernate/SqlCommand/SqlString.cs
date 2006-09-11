@@ -23,7 +23,6 @@ namespace NHibernate.SqlCommand
 	public class SqlString
 	{
 		private readonly object[] sqlParts;
-		private SqlType[] parameterTypes;
 
 		public static readonly SqlString Empty = new SqlString(new object[0]);
 
@@ -53,36 +52,6 @@ namespace NHibernate.SqlCommand
 		public IEnumerable SqlParts
 		{
 			get { return sqlParts; }
-		}
-
-		private void InitializeParameterTypes()
-		{
-			ArrayList types = new ArrayList(sqlParts.Length);
-
-			foreach (object part in sqlParts)
-			{
-				Parameter param = part as Parameter;
-				if (param == null)
-				{
-					continue;
-				}
-
-				types.Add(param.SqlType);
-			}
-
-			parameterTypes = (SqlType[]) types.ToArray(typeof(SqlType));
-		}
-
-		public SqlType[] ParameterTypes
-		{
-			get
-			{
-				if (parameterTypes == null)
-				{
-					InitializeParameterTypes();
-				}
-				return parameterTypes;
-			}
 		}
 
 		/// <summary>
@@ -167,26 +136,6 @@ namespace NHibernate.SqlCommand
 			}
 
 			return sqlBuilder.ToSqlString();
-		}
-
-		/// <summary>
-		/// Gets a bool that indicates if there is a Parameter that has a null SqlType.
-		/// </summary>
-		/// <value>true if there is a Parameter with a null SqlType.</value>
-		public bool ContainsUntypedParameter
-		{
-			get
-			{
-				SqlType[] paramTypes = ParameterTypes;
-				for (int i = 0; i < paramTypes.Length; i++)
-				{
-					if (paramTypes[i] == null)
-					{
-						return true;
-					}
-				}
-				return false;
-			}
 		}
 
 		/// <summary>
@@ -468,18 +417,6 @@ namespace NHibernate.SqlCommand
 			}
 
 			return new SqlString(clonedParts);
-		}
-
-		public SqlString ReplaceParameterTypes(SqlType[] sqlTypes)
-		{
-			SqlString result = Clone();
-			int index = 0;
-			foreach (SqlType type in sqlTypes)
-			{
-				result.ParameterTypes[index] = type;
-				index++;
-			}
-			return result;
 		}
 
 		/// <summary>

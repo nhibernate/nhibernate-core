@@ -17,6 +17,7 @@ namespace NHibernate.SqlCommand
 		private string tableName;
 
 		private ArrayList whereStrings = new ArrayList();
+		private ArrayList parameterTypes = new ArrayList();
 
 		public SqlDeleteBuilder( IMapping mapping ) : base( mapping )
 		{
@@ -39,6 +40,7 @@ namespace NHibernate.SqlCommand
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, identityType );
 			whereStrings.Add( ToWhereString( columnNames, parameters ) );
+			parameterTypes.AddRange(identityType.SqlTypes(Mapping));
 			return this;
 		}
 
@@ -52,6 +54,7 @@ namespace NHibernate.SqlCommand
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, versionType );
 			whereStrings.Add( ToWhereString( columnNames, parameters ) );
+			parameterTypes.AddRange(versionType.SqlTypes(Mapping));
 			return this;
 		}
 
@@ -66,6 +69,7 @@ namespace NHibernate.SqlCommand
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, type );
 			whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
+			parameterTypes.AddRange(type.SqlTypes(Mapping));
 			return this;
 		}
 
@@ -108,7 +112,7 @@ namespace NHibernate.SqlCommand
 			if( whereStrings.Count > 1 )
 			{
 				sqlBuilder.Add(
-					( SqlString[ ] ) ( ( ArrayList ) whereStrings ).ToArray( typeof( SqlString ) ),
+					( SqlString[ ] ) ( whereStrings ).ToArray( typeof( SqlString ) ),
 					null, "AND", null, false );
 			}
 			else
@@ -138,8 +142,10 @@ namespace NHibernate.SqlCommand
 		
 		public SqlCommandInfo ToSqlCommandInfo()
 		{
-			SqlString text = ToSqlString();
-			return new SqlCommandInfo(CommandType.Text, text, text.ParameterTypes);
+			return new SqlCommandInfo(
+				CommandType.Text,
+				ToSqlString(),
+				ArrayHelper.ToSqlTypeArray(parameterTypes));
 		}
 	}
 }

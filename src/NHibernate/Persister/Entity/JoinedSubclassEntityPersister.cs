@@ -65,10 +65,10 @@ namespace NHibernate.Persister.Entity
 		private readonly bool[] isClassOrSuperclassTable;
 
 		// SQL strings
-		private SqlString[] sqlDeleteStrings;
+		private SqlCommandInfo[] sqlDeleteStrings;
 		private SqlCommandInfo[] sqlInsertStrings;
 		private SqlCommandInfo[] sqlIdentityInsertStrings;
-		private SqlString[] sqlUpdateStrings;
+		private SqlCommandInfo[] sqlUpdateStrings;
 
 		// the index of the table that the property is coming from
 		// the array is indexed as propertyTables[propertyIndex] = tableIndex 
@@ -175,7 +175,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The queries that delete rows by id (and version)
 		/// </summary>
-		protected SqlString[] SqlDeleteStrings
+		protected SqlCommandInfo[] SqlDeleteStrings
 		{
 			get { return sqlDeleteStrings; }
 		}
@@ -199,7 +199,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The queries that update rows by id (and version)
 		/// </summary>
-		protected SqlString[] SqlUpdateStrings
+		protected SqlCommandInfo[] SqlUpdateStrings
 		{
 			get { return sqlUpdateStrings; }
 		}
@@ -215,9 +215,9 @@ namespace NHibernate.Persister.Entity
 		/// Generate the SQL that deletes rows by id (and version)
 		/// </summary>
 		/// <returns>An array of SqlStrings</returns>
-		protected virtual SqlString[] GenerateDeleteStrings()
+		protected virtual SqlCommandInfo[] GenerateDeleteStrings()
 		{
-			SqlString[] deleteStrings = new SqlString[naturalOrderTableNames.Length];
+			SqlCommandInfo[] deleteStrings = new SqlCommandInfo[naturalOrderTableNames.Length];
 
 			for( int i = 0; i < naturalOrderTableNames.Length; i++ )
 			{
@@ -235,7 +235,7 @@ namespace NHibernate.Persister.Entity
 					deleteBuilder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 				}
 
-				deleteStrings[ i ] = deleteBuilder.ToSqlString();
+				deleteStrings[ i ] = deleteBuilder.ToSqlCommandInfo();
 			}
 
 			return deleteStrings;
@@ -290,9 +290,9 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="includeProperty"></param>
 		/// <returns>An array of SqlStrings</returns>
-		protected virtual SqlString[] GenerateUpdateStrings( bool[] includeProperty )
+		protected virtual SqlCommandInfo[] GenerateUpdateStrings( bool[] includeProperty )
 		{
-			SqlString[] results = new SqlString[naturalOrderTableNames.Length];
+			SqlCommandInfo[] results = new SqlCommandInfo[naturalOrderTableNames.Length];
 
 			for( int j = 0; j < naturalOrderTableNames.Length; j++ )
 			{
@@ -315,7 +315,7 @@ namespace NHibernate.Persister.Entity
 						hasColumns = hasColumns || GetPropertyColumnSpan( i ) > 0;
 					}
 				}
-				results[ j ] = hasColumns ? updateBuilder.ToSqlString() : null;
+				results[ j ] = hasColumns ? updateBuilder.ToSqlCommandInfo() : null;
 			}
 
 			return results;
@@ -631,13 +631,13 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				IDbCommand[] statements = new IDbCommand[naturalOrderTableNames.Length];
-				SqlString[] sqls = SqlDeleteStrings;
+				SqlCommandInfo[] sqls = SqlDeleteStrings;
 				try
 				{
 					for( int i = 0; i < naturalOrderTableNames.Length; i++ )
 					{
 						// TODO SP
-						statements[ i ] = session.Batcher.PrepareCommand( CommandType.Text, sqls[ i ], sqls[ i ].ParameterTypes );
+						statements[ i ] = session.Batcher.PrepareCommand( sqls[ i ].CommandType, sqls[ i ].Text, sqls[ i ].ParameterTypes );
 					}
 
 					if( IsVersioned )
@@ -721,7 +721,7 @@ namespace NHibernate.Persister.Entity
 		{
 			bool[] tableUpdateNeeded = GetTableUpdateNeeded( dirtyFields );
 
-			SqlString[] updateStrings;
+			SqlCommandInfo[] updateStrings;
 			bool[] propsToUpdate;
 			if( UseDynamicUpdate && dirtyFields != null )
 			{
@@ -738,7 +738,7 @@ namespace NHibernate.Persister.Entity
 			Update( id, fields, propsToUpdate, tableUpdateNeeded, oldVersion, obj, updateStrings, session );
 		}
 
-		protected virtual void Update( object id, object[] fields, bool[] includeProperty, bool[] includeTable, object oldVersion, object obj, SqlString[] sql, ISessionImplementor session )
+		protected virtual void Update( object id, object[] fields, bool[] includeProperty, bool[] includeTable, object oldVersion, object obj, SqlCommandInfo[] sql, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -761,8 +761,7 @@ namespace NHibernate.Persister.Entity
 					{
 						if( includeTable[ i ] )
 						{
-							// TODO SP
-							statements[ i ] = session.Batcher.PrepareCommand( CommandType.Text, sql[ i ], sql[ i ].ParameterTypes );
+							statements[ i ] = session.Batcher.PrepareCommand( sql[ i ].CommandType, sql[ i ].Text, sql[ i ].ParameterTypes );
 						}
 					}
 

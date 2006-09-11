@@ -16,10 +16,13 @@ namespace NHibernate.SqlCommand
 
 		private string tableName;
 
-		private IList columnNames = new ArrayList(); // name of the column
-		private IList columnValues = new ArrayList(); //string or a Parameter
+		private ArrayList columnNames = new ArrayList(); // name of the column
+		private ArrayList columnValues = new ArrayList(); //string or a Parameter
 
 		private IList whereStrings = new ArrayList();
+
+		private ArrayList columnValuesParameterTypes = new ArrayList();
+		private ArrayList whereParameterTypes = new ArrayList();
 
 		public SqlUpdateBuilder( IMapping mapping ) : base( mapping )
 		{
@@ -90,12 +93,9 @@ namespace NHibernate.SqlCommand
 		public SqlUpdateBuilder AddColumns( string[ ] columnNames, IType propertyType )
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, propertyType );
-
-			for( int i = 0; i < columnNames.Length; i++ )
-			{
-				this.columnNames.Add( columnNames[ i ] );
-				columnValues.Add( parameters[ i ] );
-			}
+			this.columnNames.AddRange( columnNames );
+			columnValues.AddRange(parameters);
+			columnValuesParameterTypes.AddRange(propertyType.SqlTypes(Mapping));
 
 			return this;
 		}
@@ -110,6 +110,7 @@ namespace NHibernate.SqlCommand
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, identityType );
 			whereStrings.Add( ToWhereString( columnNames, parameters ) );
+			whereParameterTypes.AddRange(identityType.SqlTypes(Mapping));
 			return this;
 		}
 
@@ -123,6 +124,7 @@ namespace NHibernate.SqlCommand
 		{
 			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, versionType );
 			whereStrings.Add( ToWhereString( columnNames, parameters ) );
+			whereParameterTypes.AddRange(versionType.SqlTypes(Mapping));
 			return this;
 		}
 
@@ -140,6 +142,7 @@ namespace NHibernate.SqlCommand
 				// Don't add empty conditions - we get extra ANDs
 				Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, type );
 				whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
+				whereParameterTypes.AddRange(type.SqlTypes(Mapping));
 			}
 
 			return this;
@@ -261,7 +264,9 @@ namespace NHibernate.SqlCommand
 		public SqlCommandInfo ToSqlCommandInfo()
 		{
 			SqlString text = ToSqlString();
-			return new SqlCommandInfo(CommandType.Text, text, text.ParameterTypes);
+			ArrayList parameterTypes = new ArrayList(columnValuesParameterTypes);
+			parameterTypes.AddRange(whereParameterTypes);
+			return new SqlCommandInfo(CommandType.Text, text, ArrayHelper.ToSqlTypeArray(parameterTypes));
 		}
 	}
 }

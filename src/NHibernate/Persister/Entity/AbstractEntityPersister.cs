@@ -154,6 +154,8 @@ namespace NHibernate.Persister.Entity
 
 		private readonly Cascades.CascadeStyle[] subclassPropertyCascadeStyleClosure;
 		private IDictionary loaders = new Hashtable();
+		private SqlType[] idAndVersionSqlTypes;
+		private SqlType[] idSqlTypes;
 
 		protected SqlString GetLockString( LockMode lockMode )
 		{
@@ -1361,7 +1363,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// TODO SP
 				SqlString sql = VersionSelectString;
-				IDbCommand st = session.Batcher.PrepareQueryCommand( CommandType.Text, sql, sql.ParameterTypes );
+				IDbCommand st = session.Batcher.PrepareQueryCommand( CommandType.Text, sql, idSqlTypes );
 				IDataReader rs = null;
 				try
 				{
@@ -1413,7 +1415,7 @@ namespace NHibernate.Persister.Entity
 				{
 					// TODO SP?
 					SqlString sql = GetLockString(lockMode);
-					IDbCommand st = session.Batcher.PrepareCommand( CommandType.Text, sql, sql.ParameterTypes );
+					IDbCommand st = session.Batcher.PrepareCommand( CommandType.Text, sql, idAndVersionSqlTypes );
 					IDataReader rs = null;
 
 					try
@@ -1489,9 +1491,8 @@ namespace NHibernate.Persister.Entity
 			bool[] includeProperty = PropertyUpdateability;
 			try
 			{
-				// TODO SP
 				SqlString sql = ConcreteSelectString;
-				IDbCommand st = session.Batcher.PrepareCommand( CommandType.Text, sql, sql.ParameterTypes );
+				IDbCommand st = session.Batcher.PrepareCommand( CommandType.Text, sql, idAndVersionSqlTypes );
 				IDataReader rs = null;
 				try
 				{
@@ -1996,6 +1997,11 @@ namespace NHibernate.Persister.Entity
 		protected void PostConstruct( IMapping mapping )
 		{
 			InitPropertyPaths( mapping );
+			idAndVersionSqlTypes = IsVersioned
+			                       	? ArrayHelper.Join(IdentifierType.SqlTypes(mapping), VersionType.SqlTypes(mapping))
+			                       	: IdentifierType.SqlTypes(mapping);
+
+			idSqlTypes = IdentifierType.SqlTypes(mapping);
 		}
 
 		public virtual void PostInstantiate()

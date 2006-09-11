@@ -27,9 +27,9 @@ namespace NHibernate.Persister.Entity
 		private readonly System.Type[] subclassClosure;
 
 		// SQL strings
-		private SqlString sqlDeleteString;
+		private SqlCommandInfo sqlDeleteString;
 		private SqlCommandInfo sqlInsertString;
-		private SqlString sqlUpdateString;
+		private SqlCommandInfo sqlUpdateString;
 		private SqlCommandInfo sqlIdentityInsertString;
 		private SqlString sqlConcreteSelectString;
 		private SqlString sqlVersionSelectString;
@@ -124,7 +124,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The query that deletes a row by id (and version)
 		/// </summary>
-		protected SqlString SqlDeleteString
+		protected SqlCommandInfo SqlDeleteString
 		{
 			get { return sqlDeleteString; }
 		}
@@ -148,7 +148,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// The query that updates a row by id (and version)
 		/// </summary>
-		protected SqlString SqlUpdateString
+		protected SqlCommandInfo SqlUpdateString
 		{
 			get { return sqlUpdateString; }
 		}
@@ -164,7 +164,7 @@ namespace NHibernate.Persister.Entity
 		/// Generate the SQL that deletes a row by id (and version)
 		/// </summary>
 		/// <returns>A SqlString for a Delete</returns>
-		protected virtual SqlString GenerateDeleteString()
+		protected virtual SqlCommandInfo GenerateDeleteString()
 		{
 			SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder( Factory );
 			deleteBuilder.SetTableName( TableName )
@@ -175,8 +175,7 @@ namespace NHibernate.Persister.Entity
 				deleteBuilder.SetVersionColumn( new string[] {VersionColumnName}, VersionType );
 			}
 
-			return deleteBuilder.ToSqlString();
-
+			return deleteBuilder.ToSqlCommandInfo();
 		}
 
 		/// <summary>
@@ -310,13 +309,13 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="includeProperty"></param>
 		/// <returns></returns>
-		protected SqlString GenerateUpdateString( bool[] includeProperty )
+		protected SqlCommandInfo GenerateUpdateString( bool[] includeProperty )
 		{
 			SqlUpdateBuilder builder = GenerateUpdate( includeProperty );
-			return builder != null ? builder.ToSqlString() : null;
+			return builder != null ? builder.ToSqlCommandInfo() : null;
 		}
 
-		protected SqlString GenerateUpdateString( bool[] includeProperty, object[] oldFields )
+		protected SqlCommandInfo GenerateUpdateString( bool[] includeProperty, object[] oldFields )
 		{
 			SqlUpdateBuilder builder = GenerateUpdate( includeProperty );
 
@@ -350,7 +349,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			return builder.ToSqlString();
+			return builder.ToSqlCommandInfo();
 		}
 
 		protected virtual SqlUpdateBuilder GenerateUpdate( bool[] includeProperty )
@@ -585,16 +584,15 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				IDbCommand deleteCmd;
-				SqlString sql = SqlDeleteString;
+				SqlCommandInfo sql = SqlDeleteString;
 
-				// TODO SP
 				if( IsVersioned )
 				{
-					deleteCmd = session.Batcher.PrepareCommand( CommandType.Text, sql, sql.ParameterTypes );
+					deleteCmd = session.Batcher.PrepareCommand( sql.CommandType, sql.Text, sql.ParameterTypes );
 				}
 				else
 				{
-					deleteCmd = session.Batcher.PrepareBatchCommand( CommandType.Text, sql, sql.ParameterTypes );
+					deleteCmd = session.Batcher.PrepareBatchCommand( sql.CommandType, sql.Text, sql.ParameterTypes );
 				}
 
 				try
@@ -656,7 +654,7 @@ namespace NHibernate.Persister.Entity
 			//note: dirtyFields==null means we had no snapshot, and we couldn't get one using select-before-update
 			//      oldFields==null just means we had no snapshot to begin with (we might have used select-before-update to get the dirtyFields)
 			bool[] propsToUpdate;
-			SqlString updateString;
+			SqlCommandInfo updateString;
 
 			if( UseDynamicUpdate && dirtyFields != null )
 			{
@@ -679,7 +677,7 @@ namespace NHibernate.Persister.Entity
 			Update( id, fields, oldFields, propsToUpdate, oldVersion, obj, updateString, session );
 		}
 
-		protected virtual void Update( object id, object[] fields, object[] oldFields, bool[] includeProperty, object oldVersion, object obj, SqlString sqlUpdateString, ISessionImplementor session )
+		protected virtual void Update( object id, object[] fields, object[] oldFields, bool[] includeProperty, object oldVersion, object obj, SqlCommandInfo sqlUpdateString, ISessionImplementor session )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -701,8 +699,8 @@ namespace NHibernate.Persister.Entity
 			{
 				// TODO SP
 				IDbCommand statement = IsBatchable ?
-					session.Batcher.PrepareBatchCommand( CommandType.Text, sqlUpdateString, sqlUpdateString.ParameterTypes ) :
-					session.Batcher.PrepareCommand( CommandType.Text, sqlUpdateString, sqlUpdateString.ParameterTypes );
+					session.Batcher.PrepareBatchCommand( sqlUpdateString.CommandType, sqlUpdateString.Text, sqlUpdateString.ParameterTypes ) :
+					session.Batcher.PrepareCommand( sqlUpdateString.CommandType, sqlUpdateString.Text, sqlUpdateString.ParameterTypes );
 
 				try
 				{

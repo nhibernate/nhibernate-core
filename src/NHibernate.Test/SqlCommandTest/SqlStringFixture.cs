@@ -80,39 +80,6 @@ namespace NHibernate.Test.SqlCommandTest
 		}
 
 		[Test]
-		public void ContainsUntypedParameterWithoutParam() 
-		{
-			SqlString sql = new SqlString( new string[] {"select", " from table"} );
-			Assert.IsFalse( sql.ContainsUntypedParameter );
-		}
-
-		[Test]
-		public void ContainsUntypedParameterWithParam() 
-		{
-			Parameter p1 = new Parameter( SqlTypeFactory.Int32 );
-			
-			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", p1} );
-			Assert.IsFalse( sql.ContainsUntypedParameter );
-		}
-
-		[Test]
-		public void ContainsUntypedParameterWithUntypedParam() 
-		{
-			
-			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", Parameter.Placeholder} );
-			Assert.IsTrue( sql.ContainsUntypedParameter );
-		}
-
-		[Test]
-		public void ContainsUntypedParameterWithMixedUntypedParam() 
-		{
-			Parameter p1 = new Parameter( SqlTypeFactory.Int32 );
-			
-			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", Parameter.Placeholder, " and b = " , p1} );
-			Assert.IsTrue( sql.ContainsUntypedParameter );
-		}
-
-		[Test]
 		public void Count() 
 		{
 			SqlString sql = new SqlString( new object[] {"select", " from table where a = ", Parameter.Placeholder, " and b = " , Parameter.Placeholder } );
@@ -158,7 +125,6 @@ namespace NHibernate.Test.SqlCommandTest
 
 			replacedSql = sql.Replace( "le", "LE" );
 			Assert.AreEqual( sql.ToString().Replace( "le", "LE" ), replacedSql.ToString(), "multi-match replace" );
-			Assert.AreEqual( 2, replacedSql.ParameterTypes.Length, "multi-match replace - parameters" );
 		}
 		
 		[Test]
