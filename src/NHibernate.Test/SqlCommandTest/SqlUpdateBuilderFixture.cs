@@ -39,33 +39,27 @@ namespace NHibernate.Test.SqlCommandTest
 			update.SetVersionColumn(new string[] { "versionColumn" }, (IVersionType) NHibernateUtil.Int32);
 
 			update.AddWhereFragment("a=b");
-			SqlString sqlString = update.ToSqlString();
-			Parameter[] actualParams = new Parameter[4];
-			int numOfParameters = 0;
+			SqlCommandInfo sqlCommand = update.ToSqlCommandInfo();
 
+			Assert.AreEqual(CommandType.Text, sqlCommand.CommandType);
 			string expectedSql = "UPDATE test_update_builder SET intColumn = ?, longColumn = ?, literalColumn = 0, stringColumn = 5 WHERE decimalColumn = ? AND versionColumn = ? AND a=b";
+			Assert.AreEqual(expectedSql, sqlCommand.Text.ToString(), "SQL String");
 
-			Assert.AreEqual(expectedSql, sqlString.ToString(), "SQL String");
+			SqlType[] actualParameterTypes = sqlCommand.ParameterTypes;
+			Assert.AreEqual(4, actualParameterTypes.Length, "Four parameters");
 
-			foreach (object part in sqlString.SqlParts)
-			{
-				if (part is Parameter)
+			SqlType[] expectedParameterTypes = new SqlType[]
 				{
-					actualParams[numOfParameters] = (Parameter) part;
-					numOfParameters++;
-				}
-			}
-			Assert.AreEqual(4, numOfParameters, "Four parameters");
+					SqlTypeFactory.Int32,
+					SqlTypeFactory.Int64,
+					SqlTypeFactory.Decimal,
+					SqlTypeFactory.Int32
+				};
 
-			Parameter firstParam = new Parameter(SqlTypeFactory.Int32);
-			Parameter secondParam = new Parameter(SqlTypeFactory.Int64);
-			Parameter thirdParam = new Parameter(SqlTypeFactory.Decimal);
-			Parameter fourthParam = new Parameter(SqlTypeFactory.Int32);
-
-			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "firstParam Type");
-			Assert.AreEqual(secondParam.SqlType.DbType, actualParams[1].SqlType.DbType, "secondParam Type");
-			Assert.AreEqual(thirdParam.SqlType.DbType, actualParams[2].SqlType.DbType, "thirdParam Type");
-			Assert.AreEqual(fourthParam.SqlType.DbType, actualParams[3].SqlType.DbType, "fourthParam Type");
+			Assert.AreEqual(expectedParameterTypes[0], actualParameterTypes[0], "firstParam Type");
+			Assert.AreEqual(expectedParameterTypes[1], actualParameterTypes[1], "secondParam Type");
+			Assert.AreEqual(expectedParameterTypes[2], actualParameterTypes[2], "thirdParam Type");
+			Assert.AreEqual(expectedParameterTypes[3], actualParameterTypes[3], "fourthParam Type");
 		}
 	}
 }

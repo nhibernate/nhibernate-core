@@ -48,7 +48,7 @@ namespace NHibernate.Test.SqlCommandTest
 		public void CompactWithParams() 
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
-			Parameter param = new Parameter( SqlTypeFactory.Int32 );
+			Parameter param = Parameter.Placeholder;
 
 			builder.Add("select from table ");
 			builder.Add("where ");

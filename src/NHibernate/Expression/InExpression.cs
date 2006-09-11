@@ -32,16 +32,9 @@ namespace NHibernate.Expression
 			_values = values;
 		}
 
-		private static Parameter[ ] GenerateValueParameters( string prefix, SqlType sqlType, int count )
+		private static Parameter[ ] GenerateValueParameters( int count )
 		{
-			Parameter[ ] parameters = new Parameter[count];
-
-			for( int i = 0; i < count; i++ )
-			{
-				parameters[ i ] = new Parameter( sqlType );
-			}
-
-			return parameters;
+			return Parameter.GenerateParameters(count);
 		}
 
 		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
@@ -77,7 +70,7 @@ namespace NHibernate.Expression
 					.Add( columnName )
 					.Add( " in (" );
 
-				Parameter[ ] valueParameters = GenerateValueParameters( columnName, columnSqlType, _values.Length );
+				Parameter[ ] valueParameters = GenerateValueParameters( _values.Length );
 				for( int i = 0; i < valueParameters.Length; i++ )
 				{
 					if( i > 0 )

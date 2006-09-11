@@ -17,22 +17,10 @@ namespace NHibernate.SqlCommand
 		/// A parameter with <c>null</c> <see cref="SqlType" />. Used as a placeholder when
 		/// parsing HQL or SQL queries.
 		/// </summary>
-		public static readonly Parameter Placeholder = new Parameter(null);
+		public static readonly Parameter Placeholder = new Parameter();
 
-		private readonly SqlType _sqlType;
-
-		/// <summary>
-		/// Initializes a new instance of <see cref="Parameter"/> class.
-		/// </summary>
-		/// <param name="sqlType">The <see cref="SqlType"/> to create the parameter for.</param>
-		public Parameter(SqlType sqlType)
+		private Parameter()
 		{
-			_sqlType = sqlType;
-		}
-
-		public SqlType SqlType
-		{
-			get { return _sqlType; }
 		}
 
 		/// <summary>
@@ -42,84 +30,53 @@ namespace NHibernate.SqlCommand
 		/// <returns>An array of <see cref="Parameter"/> objects</returns>
 		public static Parameter[] GenerateParameters(IMapping mapping, IType type)
 		{
-			return GenerateParameters(type.SqlTypes(mapping));
+			return GenerateParameters(type.GetColumnSpan(mapping));
 		}
 
 		/// <summary>
 		/// Generates an array of parameters for the given <see cref="SqlType">SqlTypes</see>.
 		/// </summary>
-		/// <param name="sqlTypes">Array of <see cref="SqlType" /> giving the database type and
-		/// size of each generated parameter.</param>
+		/// <param name="count">The number of parameters to generate.</param>
 		/// <returns>An array of <see cref="Parameter"/> objects</returns>
-		public static Parameter[] GenerateParameters(SqlType[] sqlTypes)
+		public static Parameter[] GenerateParameters(int count)
 		{
-			Parameter[] parameters = new Parameter[sqlTypes.Length];
-			for (int i = 0; i < sqlTypes.Length; i++)
+			Parameter[] result = new Parameter[count];
+			for (int i = 0; i < count; i++)
 			{
-				parameters[i] = new Parameter(sqlTypes[i]);
+				result[i] = Placeholder;
 			}
-			return parameters;
+			return result;
 		}
-
-		#region Object Members
 
 		/// <summary>
 		/// Determines wether this instance and the specified object 
-		/// are the same Type and have the same values.
+		/// are of the same type and have the same values.
 		/// </summary>
 		/// <param name="obj">An object to compare to this instance.</param>
 		/// <returns>
-		/// <c>true</c> if the object is a Parameter (not a subclass) and has the
-		/// same values.
+		/// <c>true</c> if the object equals the current instance.
 		/// </returns>
-		/// <remarks>
-		/// Each subclass needs to implement their own <c>Equals</c>. 
-		/// </remarks>
 		public override bool Equals(object obj)
 		{
-			// Step1: Perform an equals test
-			if (obj == this)
-			{
-				return true;
-			}
-
-			// Step	2: Instance of check
-			Parameter rhs = obj as Parameter;
-			if (rhs == null)
-			{
-				return false;
-			}
-
-			//Step 3: Check each important field
-			return object.Equals(this.SqlType, rhs.SqlType); // && this.Name.Equals(rhs.Name);
+			// All parameters are equal
+			return obj == this || obj is Parameter;
 		}
 
 		/// <summary>
-		/// Gets a hash code based on the SqlType, Name, and TableAlias properties.
+		/// Gets a hash code for the parameter.
 		/// </summary>
 		/// <returns>
 		/// An <see cref="Int32"/> value for the hash code.
 		/// </returns>
 		public override int GetHashCode()
 		{
-			int hashCode = 0;
-
-			unchecked
-			{
-				if (_sqlType != null)
-				{
-					hashCode += _sqlType.GetHashCode();
-				}
-
-				return hashCode;
-			}
+			// Just an arbitrary value.
+			return 1337;
 		}
 
 		public override string ToString()
 		{
 			return StringHelper.SqlParameter;
 		}
-
-		#endregion
 	}
 }

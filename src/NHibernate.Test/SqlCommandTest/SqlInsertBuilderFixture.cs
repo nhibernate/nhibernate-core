@@ -33,31 +33,16 @@ namespace NHibernate.Test.SqlCommandTest
 			insert.AddColumn(new string[] {"longColumn"}, NHibernateUtil.Int64);
 			insert.AddColumn("literalColumn", false, (Type.ILiteralType) NHibernateUtil.Boolean);
 			insert.AddColumn("stringColumn", 5.ToString());
-			
-			SqlString sqlString = insert.ToSqlString();
-			Parameter[] actualParams = new Parameter[2];
-			int numOfParameters = 0;
+
+			SqlCommandInfo sqlCommand = insert.ToSqlCommandInfo();
+			SqlType[] actualParameterTypes = sqlCommand.ParameterTypes;
 			
 			string expectedSql = "INSERT INTO test_insert_builder (intColumn, longColumn, literalColumn, stringColumn) VALUES (?, ?, 0, 5)";
-			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
-			
-			foreach(object part in sqlString.SqlParts) 
-			{
-				if(part is Parameter) 
-				{
-					actualParams[numOfParameters] = (Parameter)part;
-					numOfParameters++;
-				}
-			}
+			Assert.AreEqual(expectedSql , sqlCommand.Text.ToString(), "SQL String");
 
-			Assert.AreEqual(2, numOfParameters, "Two parameters");
-
-			Parameter firstParam = new Parameter(SqlTypeFactory.Int32 );
-			
-			Parameter secondParam = new Parameter(SqlTypeFactory.Int64 );
-			
-			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "First Parameter Type");
-			Assert.AreEqual(secondParam.SqlType.DbType, actualParams[1].SqlType.DbType, "Second Parameter Type");
+			Assert.AreEqual(2, actualParameterTypes.Length);
+			Assert.AreEqual(SqlTypeFactory.Int32, actualParameterTypes[0], "First Parameter Type");
+			Assert.AreEqual(SqlTypeFactory.Int64, actualParameterTypes[1], "Second Parameter Type");
 		}
 	}
 }

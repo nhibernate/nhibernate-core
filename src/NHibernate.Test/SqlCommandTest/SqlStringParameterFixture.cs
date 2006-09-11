@@ -1,18 +1,10 @@
 using System;
-using System.Data;
-
-using NHibernate.Cfg;
-using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
 using NUnit.Framework;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.Test.SqlCommandTest
 {
-	/// <summary>
-	/// Summary description for SqlFragmentTest.
-	/// </summary>
 	[TestFixture]
 	public class SqlStringParameterFixture
 	{
@@ -32,48 +24,13 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EqualsSameType()
 		{
-			Parameter x = new Parameter(SqlTypeFactory.Int32);
-			Parameter y = new Parameter(SqlTypeFactory.Int32);
-			Parameter z = new Parameter(SqlTypeFactory.Int32);
+			Parameter x = Parameter.Placeholder;
+			Parameter y = Parameter.Placeholder;
 
 			Assert.IsTrue(x.Equals(y));
 			Assert.IsTrue(y.Equals(x));
-			Assert.IsTrue(y.Equals(z));
-			Assert.IsTrue(x.Equals(z));
 			Assert.IsFalse(x.Equals(null));
+			Assert.IsFalse(x.Equals(10));
 		}
-
-		[Test]
-		public void EqualsLengthType()
-		{
-			Parameter x = new Parameter(new SqlTypes.AnsiStringSqlType(5));
-			Parameter y = new Parameter(new SqlTypes.AnsiStringSqlType(5));
-			Parameter z = new Parameter(new SqlTypes.AnsiStringSqlType(5));
-
-			Assert.IsTrue(x.Equals(y));
-			Assert.IsTrue(y.Equals(x));
-			Assert.IsTrue(y.Equals(z));
-			Assert.IsTrue(x.Equals(z));
-			Assert.IsFalse(x.Equals(null));
-		}
-
-		[Test]
-		public void EqualsPrecisionType()
-		{
-			Parameter x = new Parameter(SqlTypeFactory.GetDecimal(20, 4));
-			Parameter y = new Parameter(SqlTypeFactory.GetDecimal(20, 4));
-			Parameter z = new Parameter(SqlTypeFactory.GetDecimal(20, 4));
-
-			Assert.IsTrue(x.Equals(y));
-			Assert.IsTrue(y.Equals(x));
-			Assert.IsTrue(y.Equals(z));
-			Assert.IsTrue(x.Equals(z));
-			Assert.IsFalse(x.Equals(null));
-			
-			Parameter t = new Parameter(SqlTypeFactory.GetDecimal(20, 5));
-			Assert.IsFalse(x.Equals(t));
-		}
-		
-		// TODO: test ReplaceParameterTypes
 	}
 }

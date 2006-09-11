@@ -19,9 +19,6 @@ namespace NHibernate.Test.SqlCommandTest
 	[TestFixture]
 	public class SqlSelectBuilderFixture
 	{
-		
-		
-
 		[Test]
 		public void SelectStringSqlTest() 
 		{
@@ -55,22 +52,17 @@ namespace NHibernate.Test.SqlCommandTest
 				
 
 			int numOfParams = 0;
-			Parameter expectedParam = null;
 
 			foreach(object part in sqlString.SqlParts) 
 			{
-				if(part is Parameter) 
+				if (part is Parameter) 
 				{
 					numOfParams++;
-					expectedParam = (Parameter)part;
 				}
 			}
 
 			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
 			Assert.AreEqual(1, numOfParams, "One parameter");
-
-			Parameter firstParam = new Parameter( SqlTypeFactory.Int64 );
-			Assert.AreEqual(firstParam.SqlType.DbType, expectedParam.SqlType.DbType, "First Parameter Type");
-		}
+ 		}
 	}
 }

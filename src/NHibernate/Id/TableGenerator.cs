@@ -110,11 +110,11 @@ namespace NHibernate.Id
 			builder.Add( "update " + tableName + " set " )
 				.Add( columnName )
 				.Add( " = " )
-				.Add( new Parameter(columnSqlType) )
+				.Add( Parameter.Placeholder )
 				.Add( " where " )
 				.Add( columnName )
 				.Add( " = " )
-				.Add( new Parameter(columnSqlType) );
+				.Add( Parameter.Placeholder );
 
 			updateSql = builder.ToSqlString();
 		}

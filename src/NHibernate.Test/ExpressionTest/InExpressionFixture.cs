@@ -32,7 +32,7 @@ namespace NHibernate.Test.ExpressionTest
 
 			for( int i = 0; i < expectedParams.Length; i++ )
 			{
-				Parameter param = new Parameter( SqlTypeFactory.Int32 );
+				Parameter param = Parameter.Placeholder;
 				expectedParams[ i ] = param;
 			}
 

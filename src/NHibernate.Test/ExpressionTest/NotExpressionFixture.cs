@@ -32,7 +32,7 @@ namespace NHibernate.Test.ExpressionTest
 				"not (sql_alias.address = ?)" :
 				"not sql_alias.address = ?";
 			
-			Parameter firstParam = new Parameter( new SqlTypes.StringSqlType() );
+			Parameter firstParam = Parameter.Placeholder;
 			CompareSqlStrings(sqlString, expectedSql, new Parameter[] {firstParam});
 			
 			session.Close();

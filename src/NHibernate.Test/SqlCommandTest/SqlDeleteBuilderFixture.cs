@@ -18,7 +18,6 @@ namespace NHibernate.Test.SqlCommandTest
 	[TestFixture]
 	public class SqlDeleteBuilderFixture
 	{
-
 		[Test]
 		public void DeleteSqlStringTest()
 		{
@@ -35,28 +34,17 @@ namespace NHibernate.Test.SqlCommandTest
 			delete.SetVersionColumn(new string[] { "versionColumn" }, (IVersionType) NHibernateUtil.Int32);
 
 			delete.AddWhereFragment("a=b");
-			SqlString sqlString = delete.ToSqlString();
-			Parameter[] actualParams = new Parameter[2];
-			int numOfParameters = 0;
+
+			SqlCommandInfo sqlCommand = delete.ToSqlCommandInfo();
 
 			string expectedSql = "DELETE FROM test_delete_builder WHERE decimalColumn = ? AND versionColumn = ? AND a=b";
-			Assert.AreEqual(expectedSql, sqlString.ToString(), "SQL String");
+			Assert.AreEqual(expectedSql, sqlCommand.Text.ToString(), "SQL String");
 
-			foreach (object part in sqlString.SqlParts)
-			{
-				if (part is Parameter)
-				{
-					actualParams[numOfParameters] = (Parameter) part;
-					numOfParameters++;
-				}
-			}
-			Assert.AreEqual(2, numOfParameters, "Two parameters");
+			SqlType[] actualParameterTypes = sqlCommand.ParameterTypes;
+			Assert.AreEqual(2, actualParameterTypes.Length, "Two parameters");
 
-			Parameter firstParam = new Parameter(SqlTypeFactory.Decimal);
-			Parameter secondParam = new Parameter(SqlTypeFactory.Int32);
-
-			Assert.AreEqual(firstParam.SqlType.DbType, actualParams[0].SqlType.DbType, "firstParam Type");
-			Assert.AreEqual(secondParam.SqlType.DbType, actualParams[1].SqlType.DbType, "secondParam Type");
+			Assert.AreEqual(SqlTypeFactory.Decimal, actualParameterTypes[0], "firstParam Type");
+			Assert.AreEqual(SqlTypeFactory.Int32, actualParameterTypes[1], "secondParam Type");
 		}
 	}
 }

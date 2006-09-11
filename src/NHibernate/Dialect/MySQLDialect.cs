@@ -135,12 +135,12 @@ namespace NHibernate.Dialect
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder.Add( querySqlString );
 			pagingBuilder.Add( " limit " );
-			pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
+			pagingBuilder.Add( Parameter.Placeholder );
 
 			if( hasOffset )
 			{
 				pagingBuilder.Add( ", " );
-				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
+				pagingBuilder.Add( Parameter.Placeholder );
 			}
 
 			return pagingBuilder.ToSqlString();

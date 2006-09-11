@@ -35,7 +35,7 @@ namespace NHibernate.Test.ExpressionTest
 			}
 			Parameter[] expectedParams = new Parameter[1];
 
-			Parameter firstParam = new Parameter( new SqlTypes.StringSqlType() );
+			Parameter firstParam = Parameter.Placeholder;
 			expectedParams[0] = firstParam;
 
 			CompareSqlStrings(sqlString, expectedSql, expectedParams);

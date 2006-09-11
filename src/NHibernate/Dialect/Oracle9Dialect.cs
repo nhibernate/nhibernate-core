@@ -180,12 +180,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="querySqlString"></param>
-		/// <param name="hasOffset">Offset of the first row to process in the result set is non-zero</param>
-		/// <returns></returns>
 		public override SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
 		{
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
@@ -201,15 +195,14 @@ namespace NHibernate.Dialect
 			if ( hasOffset )
 			{
 				pagingBuilder.Add( " ) row_ where rownum <= " );
-				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
+				pagingBuilder.Add( Parameter.Placeholder );
 				pagingBuilder.Add( " ) where rownum_ > " );
-				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
+				pagingBuilder.Add( Parameter.Placeholder );
 			} 
 			else 
 			{
 				pagingBuilder.Add( " ) where rownum <= " );
-				pagingBuilder.Add( new Parameter( SqlTypeFactory.Int32 ) );
-			
+				pagingBuilder.Add( Parameter.Placeholder );
 			} 
 
 			return pagingBuilder.ToSqlString();
