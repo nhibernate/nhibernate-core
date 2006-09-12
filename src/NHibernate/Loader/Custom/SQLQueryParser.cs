@@ -327,7 +327,7 @@ namespace NHibernate.Loader.Custom
 				namedParameters.Add( de.Key, de.Value );
 			}
 
-			return recognizer.result.ToSqlString().Compact();
+			return recognizer.result.ToSqlString();
 		}
 
 		public class ParameterSubstitutionRecognizer : ParameterParser.IRecognizer

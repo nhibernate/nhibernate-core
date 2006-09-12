@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
 	<class name="NHibernate.Examples.ForumQuestions.T1104613.A, NHibernate.Examples" table="a">
 		<id name="Key" column="a_id" type="String">
 			<generator class="uuid.hex" />

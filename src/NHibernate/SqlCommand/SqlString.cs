@@ -96,7 +96,7 @@ namespace NHibernate.SqlCommand
 		/// Combines all SqlParts that are strings and next to each other into
 		/// one SqlPart.
 		/// </remarks>
-		public SqlString Compact()
+		private SqlString Compact()
 		{
 			if (isCompacted)
 			{
@@ -146,6 +146,19 @@ namespace NHibernate.SqlCommand
 		public int Count
 		{
 			get { return sqlParts.Length; }
+		}
+
+		public int Length
+		{
+			get
+			{
+				int result = 0;
+				foreach (object part in sqlParts)
+				{
+					result += LengthOfPart(part);
+				}
+				return result;
+			}
 		}
 
 		/// <summary>
@@ -219,6 +232,33 @@ namespace NHibernate.SqlCommand
 
 			return firstPart.ToLower(CultureInfo.InvariantCulture).StartsWith(value);
 		}
+		
+		private SqlStringBuilder BuildSubstring(int startIndex)
+		{
+			SqlStringBuilder builder = new SqlStringBuilder(this);
+			
+			int offset = 0;
+			
+			while (builder.Count > 0)
+			{
+				int nextOffset = offset + LengthOfPart(builder[0]);
+				
+				if (nextOffset > startIndex)
+				{
+					break;
+				}
+
+				builder.RemoveAt(0);
+				offset = nextOffset;
+			}
+			
+			if (builder.Count > 0 && offset < startIndex)
+			{
+				builder[0] = ((string) builder[0]).Substring(startIndex - offset);
+			}
+
+			return builder;
+		}
 
 		/// <summary>
 		/// Retrieves a substring from this instance. The substring starts at a specified character position. 
@@ -237,31 +277,68 @@ namespace NHibernate.SqlCommand
 				throw new ArgumentException("startIndex should be greater than or equal to 0", "startIndex");
 			}
 
-			SqlStringBuilder builder = new SqlStringBuilder(this);
-			
-			int offset = 0;
-			
-			while (builder.Count > 0)
-			{
-				int nextOffset = offset + LengthOfPart(builder[0]);
-				
-				if (nextOffset > startIndex)
-				{
-					break;
-				}
-
-				builder.RemoveAt(0);
-				offset = nextOffset;
-			}
+			SqlStringBuilder builder = BuildSubstring(startIndex);
 			
 			if (builder.Count == 0)
 			{
 				return Empty;
 			}
 			
-			if (offset < startIndex)
+			SqlString result = builder.ToSqlString();
+			if (isCompacted)
 			{
-				builder[0] = ((string) builder[0]).Substring(startIndex - offset);
+				result.SetCompacted();
+			}
+			return result;
+		}
+		
+		public SqlString Substring(int startIndex, int length)
+		{
+			if (startIndex < 0)
+			{
+				throw new ArgumentException("startIndex should be greater than or equal to 0", "startIndex");
+			}
+			
+			if (length < 0)
+			{
+				throw new ArgumentException("length should be greater than or equal to 0", "length");
+			}
+			
+			SqlStringBuilder builder = BuildSubstring(startIndex);
+			
+			if (builder.Count == 0)
+			{
+				return builder.ToSqlString();
+			}
+
+			int offset = 0;
+			int nextOffset = -1;
+			int count = int.MaxValue;
+
+			for (int i = 0; i < builder.Count; i++)
+			{
+				nextOffset = offset + LengthOfPart(builder[i]);
+				if (nextOffset < length)
+				{
+					offset = nextOffset;
+					continue;
+				}
+				else if (nextOffset >= length)
+				{
+					count = i + 1;
+					break;
+				}
+			}
+			
+			while (builder.Count > count)
+			{
+				builder.RemoveAt(builder.Count - 1);
+			}
+			
+			if (length < nextOffset)
+			{
+				string lastPart = (string) builder[builder.Count - 1];
+				builder[builder.Count - 1] = lastPart.Substring(0, length - offset);
 			}
 
 			SqlString result = builder.ToSqlString();
@@ -271,7 +348,7 @@ namespace NHibernate.SqlCommand
 			}
 			return result;
 		}
-		
+
 		private SqlString SetCompacted()
 		{
 			isCompacted = true;

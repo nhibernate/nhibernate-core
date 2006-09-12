@@ -2,7 +2,8 @@
 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
 
-    <class name="NHibernate.Examples.QuickStart.User, NHibernate.Examples" table="users">
+    <class name="NHibernate.Examples.QuickStart.User, NHibernate.Examples" table="users"
+		   lazy="false">
 		<id name="Id" column="LogonId" type="String" length="20">
 			<generator class="assigned" />
 		</id>

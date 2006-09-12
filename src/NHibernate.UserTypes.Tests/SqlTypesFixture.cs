@@ -54,7 +54,7 @@ namespace NHibernate.UserTypes.Tests
 			Assert.AreEqual( SqlInt64.Null, nullNC.Int64Prop );
 			Assert.AreEqual( SqlSingle.Null, nullNC.SingleProp );
 
-			Assert.AreEqual( 0, nullNC.Version );
+			Assert.AreEqual( 1, nullNC.Version );
 
 			// don't change anything but flush it - should not increment
 			// the version because there were no changes
@@ -63,7 +63,7 @@ namespace NHibernate.UserTypes.Tests
 
 			s = sessions.OpenSession();
 			nullNC = (SqlTypesClass)s.Find( "from SqlTypesClass" )[0];
-			Assert.AreEqual( 0, nullNC.Version, "no changes to write at last flush - version should not have changed" );
+			Assert.AreEqual( 1, nullNC.Version, "no changes to write at last flush - version should not have changed" );
 
 			q = s.CreateQuery( "from SqlTypesClass as nc where nc.Int32Prop = :int32Prop" );
 			q.SetParameter( "int32Prop", new SqlInt32( Int32.MaxValue ), new NHibernate.UserTypes.SqlTypes.SqlInt32Type() );

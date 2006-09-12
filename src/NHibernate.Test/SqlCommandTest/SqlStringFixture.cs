@@ -3,7 +3,6 @@ using System;
 using NHibernate.SqlCommand;
 
 using NUnit.Framework;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.Test.SqlCommandTest
 {
@@ -30,52 +29,6 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(4, postAppendSql.Count );
 
 			Assert.AreEqual( "select from table where A=B and C=D", postAppendSql.ToString() );
-
-		}
-
-		
-		[Test]
-		public void CompactWithNoParams() 
-		{
-			SqlString sql = new SqlString( new string[] { "", "select", " from table" } );
-			SqlString compacted = sql.Compact();
-
-			Assert.AreEqual( 1, compacted.Count );
-			Assert.AreEqual( "select from table", compacted.ToString() );
-		}
-
-		[Test]
-		public void CompactWithParams() 
-		{
-			SqlStringBuilder builder = new SqlStringBuilder();
-			Parameter param = Parameter.Placeholder;
-
-			builder.Add("select from table ");
-			builder.Add("where ");
-			builder.Add("id = ");
-			builder.Add(param);
-			builder.Add(" and ");
-			builder.Add("'a'='a'");
-
-			SqlString sql = builder.ToSqlString();
-			sql = sql.Compact();
-
-			Assert.AreEqual( 3, sql.Count );
-			Assert.AreEqual( "select from table where id = ? and 'a'='a'", sql.ToString() );
-
-		}
-
-		[Test]
-		public void CompactWithNoString() 
-		{
-			Parameter p1 = Parameter.Placeholder;
-			Parameter p2 = Parameter.Placeholder;
-			
-			SqlString sql = new SqlString( new object[] {p1, p2} );
-			SqlString compacted = sql.Compact();
-
-			Assert.AreEqual( 2, compacted.Count );
-			Assert.AreEqual( "??", compacted.ToString() );
 
 		}
 
@@ -172,6 +125,21 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(new SqlString(new object[] { "rom table where x = ", Parameter.Placeholder }), substr10);
 			
 			Assert.AreEqual(SqlString.Empty, str.Substring(200));
+		}
+		
+		[Test]
+		public void Substring2Complex()
+		{
+			SqlString str = new SqlString(new object[] { "select ", Parameter.Placeholder, " from table where x = ", Parameter.Placeholder });
+
+			SqlString substr7_10 = str.Substring(7, 10);
+			Assert.AreEqual(new SqlString(new object[] { Parameter.Placeholder, " from tab" }), substr7_10);
+
+			SqlString substr10_200 = str.Substring(10, 200);
+			Assert.AreEqual(new SqlString(new object[] { "rom table where x = ", Parameter.Placeholder }), substr10_200);
+
+			SqlString substr200_10 = str.Substring(200, 10);
+			Assert.AreEqual(SqlString.Empty, substr200_10);
 		}
 		
 		[Test]

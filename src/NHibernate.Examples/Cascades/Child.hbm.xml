@@ -3,6 +3,7 @@
 	<class 
 		name="NHibernate.Examples.Cascades.Child, NHibernate.Examples"
 		table="cas_child"
+		lazy="false"
 	>
 		<id name="Id" type="Int32" unsaved-value="0">
 			<generator class="native" />
