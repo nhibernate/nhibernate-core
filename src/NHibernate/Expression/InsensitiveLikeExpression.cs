@@ -39,10 +39,7 @@ namespace NHibernate.Expression
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-
-			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
 			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
-			Parameter[ ] parameters = Parameter.GenerateParameters( criteriaQuery.Factory, propertyType );
 
 			if( columnNames.Length != 1 )
 			{
@@ -63,7 +60,7 @@ namespace NHibernate.Expression
 					.Add( " like " );
 			}
 
-			sqlBuilder.Add( parameters[ 0 ] );
+			sqlBuilder.AddParameter();
 
 			return sqlBuilder.ToSqlString();
 		}

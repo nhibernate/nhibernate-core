@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
 using NHibernate.Util;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.SqlCommand
 {
@@ -22,6 +20,7 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class SqlString
 	{
+		private bool isCompacted = false;
 		private readonly object[] sqlParts;
 
 		public static readonly SqlString Empty = new SqlString(new object[0]);
@@ -47,11 +46,6 @@ namespace NHibernate.SqlCommand
 			}
 #endif
 			this.sqlParts = sqlParts;
-		}
-
-		public IEnumerable SqlParts
-		{
-			get { return sqlParts; }
 		}
 
 		/// <summary>
@@ -104,10 +98,15 @@ namespace NHibernate.SqlCommand
 		/// </remarks>
 		public SqlString Compact()
 		{
+			if (isCompacted)
+			{
+				return this;
+			}
+
 			StringBuilder builder = new StringBuilder();
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			foreach (object part in SqlParts)
+			foreach (object part in sqlParts)
 			{
 				string stringPart = part as string;
 
@@ -135,7 +134,9 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(builder.ToString());
 			}
 
-			return sqlBuilder.ToSqlString();
+			SqlString result = sqlBuilder.ToSqlString();
+			result.isCompacted = true;
+			return result;
 		}
 
 		/// <summary>
@@ -155,22 +156,14 @@ namespace NHibernate.SqlCommand
 		public bool EndsWith(string value)
 		{
 			SqlString tempSql = Compact();
-
-			int endIndex = tempSql.Count - 1;
-
 			if (tempSql.Count == 0)
 			{
 				return false;
 			}
 
-
-			string lastPart = tempSql.sqlParts[endIndex] as string;
-			if (lastPart != null)
-			{
-				return lastPart.EndsWith(value);
-			}
-
-			return false;
+			string lastPart = tempSql.sqlParts[tempSql.Count - 1] as string;
+			
+			return lastPart != null && lastPart.EndsWith(value);
 		}
 
 		/// <summary>
@@ -181,15 +174,16 @@ namespace NHibernate.SqlCommand
 		/// <param name="newValue">A String to replace all occurrences of oldValue. </param>
 		/// <returns>
 		/// A new SqlString with oldValue replaced by the newValue.  The new SqlString is 
-		/// in the Compacted form.
+		/// in the compacted form.
 		/// </returns>
 		public SqlString Replace(string oldValue, string newValue)
 		{
-			// compacting returns a new SqlString object, so we are free to modify
-			// any of the parts because it has not been put in a hashtable so we can
-			// consider it mutable - there is no danger yet in changing the value that
-			// GetHashCode would return.
 			SqlString compacted = Compact();
+			if (compacted == this)
+			{
+				// Ensure we have a new SqlString to work with
+				compacted = Clone();
+			}
 
 			for (int i = 0; i < compacted.sqlParts.Length; i++)
 			{
@@ -204,37 +198,26 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Determines whether the beginning of this SqlString matches the specified System.String
+		/// Determines whether the beginning of this SqlString matches the specified System.String,
+		/// using case-insensitive comparison.
 		/// </summary>
 		/// <param name="value">The System.String to seek</param>
 		/// <returns>true if the SqlString starts with the value.</returns>
-		public bool StartsWith(string value)
+		public bool StartsWithCaseInsensitive(string value)
 		{
 			SqlString tempSql = Compact();
-
-			foreach (object sqlPart in tempSql.SqlParts)
+			if (tempSql.Count == 0)
 			{
-				string partText = sqlPart as string;
-
-				// if this part is not a string then we know we did not start with the string 
-				// value
-				if (partText == null)
-				{
-					return false;
-				}
-
-				// if for some reason we had an empty string in here then just 
-				// move on to the next SqlPart, otherwise lets make sure that 
-				// it does in fact start with the value
-				if (partText.Length > 0)
-				{
-					return partText.StartsWith(value);
-				}
+				return value.Length == 0;
 			}
 
-			// if we get down to here that means there were no sql parts in the SqlString
-			// so obviously it doesn't start with the value
-			return false;
+			string firstPart = tempSql.sqlParts[0] as string;
+			if (firstPart == null)
+			{
+				return false;
+			}
+
+			return firstPart.ToLower(CultureInfo.InvariantCulture).StartsWith(value);
 		}
 
 		/// <summary>
@@ -245,34 +228,122 @@ namespace NHibernate.SqlCommand
 		/// A new SqlString to the substring that begins at startIndex in this instance. 
 		/// </returns>
 		/// <remarks>
-		/// If the first SqlPart is a Parameter then no action is taken and a copy of the SqlString is
-		/// returned.
-		/// 
-		/// If the startIndex is greater than the length of the strings before the first SqlPart that
-		/// is a Parameter then all of the strings will be removed and the first SqlPart returned
-		/// will be the Parameter. 
+		/// If the startIndex is greater than the length of the SqlString then <see cref="SqlString.Empty" /> is returned.
 		/// </remarks>
 		public SqlString Substring(int startIndex)
 		{
-			SqlStringBuilder builder = new SqlStringBuilder(Compact());
-
-			string part = builder[0] as string;
-
-			// if the first part is null then it is not a string so just
-			// return them the compacted version
-			if (part != null)
+			if (startIndex < 0)
 			{
-				if (part.Length < startIndex)
-				{
-					builder.RemoveAt(0);
-				}
-				else
-				{
-					builder[0] = part.Substring(startIndex);
-				}
+				throw new ArgumentException("startIndex should be greater than or equal to 0", "startIndex");
 			}
 
-			return builder.ToSqlString();
+			SqlStringBuilder builder = new SqlStringBuilder(this);
+			
+			int offset = 0;
+			
+			while (builder.Count > 0)
+			{
+				int nextOffset = offset + LengthOfPart(builder[0]);
+				
+				if (nextOffset > startIndex)
+				{
+					break;
+				}
+
+				builder.RemoveAt(0);
+				offset = nextOffset;
+			}
+			
+			if (builder.Count == 0)
+			{
+				return Empty;
+			}
+			
+			if (offset < startIndex)
+			{
+				builder[0] = ((string) builder[0]).Substring(startIndex - offset);
+			}
+
+			SqlString result = builder.ToSqlString();
+			if (isCompacted)
+			{
+				result.SetCompacted();
+			}
+			return result;
+		}
+		
+		private SqlString SetCompacted()
+		{
+			isCompacted = true;
+			return this;
+		}
+		
+		private static int LengthOfPart(object part)
+		{
+			string partString = part as string;
+			return partString == null ? 1 : partString.Length;
+		}
+		
+		/// <summary>
+		/// Returns the index of the first occurence of <paramref name="text" />, case-insensitive.
+		/// </summary>
+		/// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower
+		/// case.</param>
+		/// <remarks>
+		/// The text must be located entirely in a string part of the <see cref="SqlString" />.
+		/// Searching for <c>"a ? b"</c> in an <see cref="SqlString" /> consisting of
+		/// <c>"a ", Parameter, " b"</c> will result in no matches.
+		/// </remarks>
+		/// <returns>The index of the first occurence of <paramref name="text" />, or -1
+		/// if not found.</returns>
+		public int IndexOfCaseInsensitive(string text)
+		{
+			SqlString compacted = Compact();
+			int offset = 0;
+			foreach (object part in compacted.sqlParts)
+			{
+				string partString = part as string;
+				if (partString != null)
+				{
+					int indexOf = partString.ToLower(CultureInfo.InvariantCulture).IndexOf(text);
+
+					if (indexOf >= 0)
+					{
+						// Found
+						return offset + indexOf;
+					}
+				}
+				
+				offset += LengthOfPart(part);
+			}
+
+			// Not found
+			return -1;
+		}
+		
+		public int LastIndexOfCaseInsensitive(string text)
+		{
+			SqlString compacted = Compact();
+			int offset = 0;
+			int foundOffset = -1;
+			foreach (object part in compacted.sqlParts)
+			{
+				string partString = part as string;
+				if (partString != null)
+				{
+					int indexOf = partString.ToLower(CultureInfo.InvariantCulture).LastIndexOf(text);
+
+					if (indexOf >= 0)
+					{
+						// Found
+						foundOffset = offset + indexOf;
+					}
+				}
+				
+				offset += LengthOfPart(part);
+			}
+
+			return foundOffset;
 		}
 
 		/// <summary>
@@ -386,13 +457,14 @@ namespace NHibernate.SqlCommand
 
 		/// <summary>
 		/// Returns the SqlString in a string where it looks like
-		/// SELECT col1, col2 FROM table WHERE col1 = :param1
-		/// 
-		/// The ":" is used as the indicator of a parameter because at this point
-		/// we are not using the specific Provider so we don't know how that provider
-		/// wants our parameters formatted.
+		/// SELECT col1, col2 FROM table WHERE col1 = ?
 		/// </summary>
-		/// <returns>A Provider nuetral version of the CommandText</returns>
+		/// <remarks>
+		/// The question mark is used as the indicator of a parameter because at
+		/// this point we are not using the specific provider so we don't know
+		/// how that provider wants our parameters formatted.
+		/// </remarks>
+		/// <returns>A provider-neutral version of the CommandText</returns>
 		public override string ToString()
 		{
 			StringBuilder builder = new StringBuilder(sqlParts.Length * 15);
@@ -410,12 +482,7 @@ namespace NHibernate.SqlCommand
 		private SqlString Clone()
 		{
 			object[] clonedParts = new object[sqlParts.Length];
-
-			for (int i = 0; i < sqlParts.Length; i++)
-			{
-				clonedParts[i] = sqlParts[i];
-			}
-
+			Array.Copy(sqlParts, clonedParts, sqlParts.Length);
 			return new SqlString(clonedParts);
 		}
 
@@ -428,34 +495,92 @@ namespace NHibernate.SqlCommand
 		/// The method performs case-insensitive comparison, so the <paramref name="text" />
 		/// passed should be in lower case.
 		/// </remarks>
-		public SqlString SubstringStartingWith(string text)
+		public SqlString SubstringStartingWithLast(string text)
 		{
-			SqlStringBuilder result = new SqlStringBuilder();
-			bool found = false;
-			foreach (object sqlPart in sqlParts)
+			int lastIndex = LastIndexOfCaseInsensitive(text);
+			return lastIndex >= 0 ? Substring(lastIndex) : Empty;
+		}
+
+		public SqlString Insert(int index, string text)
+		{
+			if (index < 0)
 			{
-				if (found)
+				throw new ArgumentException("index should be greater than or equal to 0", "index");
+			}
+
+			SqlStringBuilder result = new SqlStringBuilder();
+
+			int offset = 0;
+			bool inserted = false;
+			foreach (object part in sqlParts)
+			{
+				if (inserted)
 				{
-					result.AddObject(sqlPart);
+					result.AddObject(part);
 					continue;
 				}
 
-				string sqlPartString = sqlPart as string;
-				
-				if (sqlPartString != null)
+				int nextOffset = offset + LengthOfPart(part);
+				if (nextOffset < index)
 				{
-					string sqlPartStringLower = sqlPartString.ToLower(CultureInfo.InvariantCulture);
-					int indexOfText = sqlPartStringLower.IndexOf(text);
-
-					if (indexOfText >= 0)
-					{
-						found = true;
-						result.Add(sqlPartString.Substring(indexOfText));
-					}
+					result.AddObject(part);
+					offset = nextOffset;
+				}
+				else if (nextOffset == index)
+				{
+					result.AddObject(part);
+					result.Add(text);
+					inserted = true;
+				}
+				else if (offset == index)
+				{
+					result.Add(text);
+					result.AddObject(part);
+					inserted = true;
+				}
+				else if (index > offset && index < nextOffset)
+				{
+					string partString = (string) part;
+					result.Add(partString.Insert(index - offset, text));
+					inserted = true;
+				}
+				else
+				{
+					throw new ArgumentException("index too large", "index");
 				}
 			}
 
 			return result.ToSqlString();
+		}
+
+		public int GetParameterCount()
+		{
+			int count = 0;
+			foreach (object part in sqlParts)
+			{
+				if (part is Parameter)
+				{
+					count++;
+				}
+			}
+
+			return count;
+		}
+		
+		public void Visit(ISqlStringVisitor visitor)
+		{
+			foreach (object part in sqlParts)
+			{
+				string partString = part as string;
+				if (partString != null)
+				{
+					visitor.String(partString);
+				}
+				else
+				{
+					visitor.Parameter();
+				}
+			}
 		}
 	}
 }

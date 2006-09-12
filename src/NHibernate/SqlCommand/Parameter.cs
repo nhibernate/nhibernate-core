@@ -22,16 +22,6 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Generates an array of parameters for the columns that make up the type.
-		/// </summary>
-		/// <param name="type">The type to turn into parameters</param>
-		/// <returns>An array of <see cref="Parameter"/> objects</returns>
-		public static Parameter[] GenerateParameters(IMapping mapping, IType type)
-		{
-			return GenerateParameters(type.GetColumnSpan(mapping));
-		}
-
-		/// <summary>
 		/// Generates an array of parameters for the given <see cref="SqlType">SqlTypes</see>.
 		/// </summary>
 		/// <param name="count">The number of parameters to generate.</param>

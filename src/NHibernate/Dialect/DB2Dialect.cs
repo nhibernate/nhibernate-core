@@ -221,51 +221,25 @@ namespace NHibernate.Dialect
 			string rownumClause = GetRowNumber( querySqlString );
 
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			pagingBuilder.Add( "select * from (" );
-
-			bool isFirstSelect = true;
-
-			// build a new query and add the rownumber()
-			foreach( object sqlPart in querySqlString.SqlParts )
-			{
-				string sqlPartString = sqlPart as string;
-				if( sqlPartString != null )
-				{
-					if( sqlPartString.ToLower( CultureInfo.InvariantCulture ).TrimStart().StartsWith( "select" ) && isFirstSelect )
-					{
-						// Add the rownum to the first select part
-						sqlPartString = sqlPartString.Insert(
-							sqlPartString.ToLower( CultureInfo.InvariantCulture ).IndexOf( "select ", 0 ) + 7, rownumClause );
-						pagingBuilder.Add( sqlPartString );
-						isFirstSelect = false;
-					}
-					else
-					{
-						// add the other string components
-						pagingBuilder.AddObject( sqlPart );
-					}
-				}
-				else
-				{
-					// add non string components
-					pagingBuilder.AddObject( sqlPart );
-				}
-			}
-    
-			// Add the rest
-			pagingBuilder.Add( ") as tempresult where rownum " );
+			pagingBuilder
+				.Add( "select * from (select " )
+				.Add(rownumClause)
+				.Add(querySqlString.Substring(7))
+				.Add( ") as tempresult where rownum " );
 
 			if( hasOffset )
 			{
-				pagingBuilder.Add( "between " );
-				pagingBuilder.Add( Parameter.Placeholder ).Add( "+1" );
-				pagingBuilder.Add( " and " );
-				pagingBuilder.Add( Parameter.Placeholder );
+				pagingBuilder
+					.Add( "between " )
+					.Add( Parameter.Placeholder )
+					.Add( "+1 and " )
+					.Add( Parameter.Placeholder );
 			}
 			else
 			{
-				pagingBuilder.Add( "<= " );
-				pagingBuilder.Add( Parameter.Placeholder );
+				pagingBuilder
+					.Add( "<= " )
+					.Add( Parameter.Placeholder );
 			}
     
 			return pagingBuilder.ToSqlString();
@@ -273,31 +247,11 @@ namespace NHibernate.Dialect
 
 		private static string GetRowNumber( SqlString sql )
 		{
-			bool isInOrderBy = false;
-			StringBuilder orderByStringBuilder = new StringBuilder()
-				.Append( "rownumber() over(" );
-
-			// extract the order by part
-			foreach( object sqlPart in sql.SqlParts )
-			{
-				string sqlPartString = sqlPart as string;
-				if( sqlPartString != null )
-				{
-					if( sqlPartString.ToLower().TrimStart().StartsWith( "order by" ) )
-					{
-						isInOrderBy = true;
-					}
-				}
-    
-				if( isInOrderBy && sqlPartString != null )
-				{
-					orderByStringBuilder.Append( sqlPartString );
-				}
-			}
-			
-			orderByStringBuilder.Append( ") as rownum, " );
-
-			return orderByStringBuilder.ToString();
+			return new StringBuilder()
+				.Append("rownumber() over(")
+				.Append(sql.SubstringStartingWithLast("order by"))
+				.Append(") as rownum, ")
+				.ToString();
 		}
 
 		public override string ForUpdateString

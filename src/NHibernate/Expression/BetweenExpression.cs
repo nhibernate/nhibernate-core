@@ -34,17 +34,9 @@ namespace NHibernate.Expression
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 			
-			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
+			//IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
 			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
 
-			Parameter[ ] loParameters = Parameter.GenerateParameters(
-				criteriaQuery.Factory,
-				propertyType );
-
-			Parameter[ ] hiParameters = Parameter.GenerateParameters(
-				criteriaQuery.Factory,
-				propertyType );
-			
 			bool andNeeded = false;
 
 			for( int i = 0; i < columnNames.Length; i++ )
@@ -57,9 +49,9 @@ namespace NHibernate.Expression
 
 				sqlBuilder.Add( columnNames[ i ] )
 					.Add( " between " )
-					.Add( loParameters[ i ] )
+					.AddParameter()
 					.Add( " and " )
-					.Add( hiParameters[ i ] );
+					.AddParameter();
 			}
 
 			return sqlBuilder.ToSqlString();

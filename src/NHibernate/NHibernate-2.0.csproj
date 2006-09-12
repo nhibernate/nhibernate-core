@@ -508,6 +508,8 @@
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
     <Compile Include="Dialect\MsSqlCeDialect.cs" />
+    <Compile Include="Driver\ISqlParameterFormatter.cs" />
+    <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Hql\IFilterTranslator.cs" />
     <Compile Include="IFilter.cs" />
@@ -619,6 +621,7 @@
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
     <Compile Include="Property\IOptimizableGetter.cs" />
     <Compile Include="Property\IOptimizableSetter.cs" />
+    <Compile Include="SqlCommand\ISqlStringVisitor.cs" />
     <Compile Include="SqlCommand\SqlCommandInfo.cs" />
     <Compile Include="Transform\PassThroughResultTransformer.cs" />
     <Compile Include="Tuple\EntityMetamodel.cs" />

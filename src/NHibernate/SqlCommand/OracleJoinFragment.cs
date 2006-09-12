@@ -65,7 +65,6 @@ namespace NHibernate.SqlCommand
 			afterWhere.Add( whereFragment );
 		}
 
-		/// <summary></summary>
 		public override JoinFragment Copy()
 		{
 			OracleJoinFragment copy = new OracleJoinFragment();
@@ -74,12 +73,6 @@ namespace NHibernate.SqlCommand
 			return copy;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="columns"></param>
-		/// <param name="condition"></param>
 		public override void AddCondition( string alias, string[ ] columns, string condition )
 		{
 			for( int i = 0; i < columns.Length; i++ )
@@ -88,29 +81,15 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="columns"></param>
-		/// <param name="condition"></param>
-		/// <param name="conditionType"></param>
-		/// <param name="factory"></param>
 		public override void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( factory, conditionType );
 			for( int i = 0; i < columns.Length; i++ )
 			{
 				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
-				afterWhere.Add( parameters[ i ] );
+				afterWhere.AddParameter();
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableName"></param>
-		/// <param name="alias"></param>
 		public override void AddCrossJoin( string tableName, string alias )
 		{
 			afterFrom.Add( StringHelper.CommaSpace + tableName + " " + alias );

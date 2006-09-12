@@ -3,6 +3,7 @@ using System.Data;
 using System.Text;
 
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Dialect
 {
@@ -38,65 +39,47 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override SqlString GetLimitString( SqlString querySqlString, int offset, int last )
 		{
-			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			StringBuilder orderByStringBuilder = new StringBuilder();
-			string distinctStr = string.Empty;
+			string distinctStr;
 
-			foreach( object sqlPart in querySqlString.SqlParts )
+			int index;
+			if (querySqlString.StartsWithCaseInsensitive("select distinct"))
 			{
-				string sqlPartString = sqlPart as string;
-				if( sqlPartString != null )
-				{
-					string loweredString = sqlPartString.ToLower();
-					int orderByIndex = loweredString.IndexOf( "order by" );
-					if( orderByIndex != -1 )
-					{
-						// if we find a new "order by" then we need to ignore
-						// the previous one since it was probably used for a subquery
-						orderByStringBuilder = new StringBuilder();
-						orderByStringBuilder.Append( sqlPartString.Substring( orderByIndex ) );
-					}
-					if( loweredString.TrimStart().StartsWith( "select" ) )
-					{
-						int index = 6;
-						if( loweredString.StartsWith( "select distinct" ) )
-						{
-							distinctStr = "DISTINCT ";
-							index = 15;
-						}
-						sqlPartString = sqlPartString.Substring( index );
-					}
-
-					pagingBuilder.Add( sqlPartString );
-				}
-				else
-				{
-					pagingBuilder.AddObject( sqlPart );
-				}
+				distinctStr = "DISTINCT ";
+				index = 15;
+			}
+			else if (querySqlString.StartsWithCaseInsensitive("select "))
+			{
+				distinctStr = string.Empty;
+				index = 6;
+			}
+			else
+			{
+				throw new ArgumentException("querySqlString should start with select", "querySqlString");
 			}
 
-			string orderby = orderByStringBuilder.ToString();
-			// if no ORDER BY is specified use fake ORDER BY field to avoid errors 
-			if( orderby == null || orderby.Length == 0 )
+			SqlString afterSelect = querySqlString.Substring(index);
+
+			string orderBy = querySqlString.SubstringStartingWithLast("order by").ToString();
+			if (orderBy.Length == 0)
 			{
-				orderby = "ORDER BY CURRENT_TIMESTAMP";
+				// If no ORDER BY is specified use fake ORDER BY field to avoid errors 
+				orderBy = "ORDER BY CURRENT_TIMESTAMP";
 			}
 
-			string beginning =
-				string.Format(
-					"WITH query AS (SELECT {0}TOP {1} ROW_NUMBER() OVER ({2}) as __hibernate_row_nr__, ",
-					distinctStr,
-					last,
-					orderby );
-			string ending =
-				string.Format(
-					") SELECT * FROM query WHERE __hibernate_row_nr__ > {0} ORDER BY __hibernate_row_nr__",
-					offset );
-
-			pagingBuilder.Insert( 0, beginning );
-			pagingBuilder.Add( ending );
-
-			return pagingBuilder.ToSqlString();
+			SqlStringBuilder result = new SqlStringBuilder();
+			return result
+				.Add("WITH query AS (SELECT ")
+				.Add(distinctStr)
+				.Add("TOP ")
+				.Add(last.ToString())
+				.Add(" ROW_NUMBER() OVER (")
+				.Add(orderBy)
+				.Add(") as __hibernate_row_nr__, ")
+				.Add(afterSelect)
+				.Add(") SELECT * FROM query WHERE __hibernate_row_nr__ > ")
+				.Add(offset.ToString())
+				.Add(" ORDER BY __hibernate_row_nr__")
+				.ToSqlString();
 		}
 
 		/// <summary>

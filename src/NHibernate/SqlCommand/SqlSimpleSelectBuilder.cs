@@ -117,10 +117,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
 		public SqlSimpleSelectBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, identityType );
-
-			identityFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
-
+			identityFragmentIndex = whereStrings.Add( ToWhereString( columnNames ) );
 			return this;
 		}
 
@@ -132,10 +129,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
 		public SqlSimpleSelectBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, versionType );
-
-			versionFragmentIndex = whereStrings.Add( ToWhereString( columnNames, parameters ) );
-
+			versionFragmentIndex = whereStrings.Add( ToWhereString( columnNames ) );
 			return this;
 		}
 
@@ -170,10 +164,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder</returns>
 		public SqlSimpleSelectBuilder AddWhereFragment( string[ ] columnNames, IType type, string op )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, type );
-
-			whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
-
+			whereStrings.Add( ToWhereString( columnNames, op ) );
 			return this;
 		}
 
@@ -224,7 +215,7 @@ namespace NHibernate.SqlCommand
 			}
 			else
 			{
-				sqlBuilder.Add( ( SqlString ) whereStrings[ 0 ], null, null, null, false );
+				sqlBuilder.Add( ( SqlString ) whereStrings[ 0 ] );
 			}
 
 			if( forUpdateFragment != null )

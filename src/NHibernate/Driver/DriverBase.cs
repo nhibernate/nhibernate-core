@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Globalization;
-using System.Text;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -13,7 +11,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Base class for the implementation of IDriver
 	/// </summary>
-	public abstract class DriverBase : IDriver
+	public abstract class DriverBase : IDriver, ISqlParameterFormatter
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DriverBase));
 
@@ -159,28 +157,17 @@ namespace NHibernate.Driver
 		{
 			return "p" + index;
 		}
-		
+
+		string ISqlParameterFormatter.GetParameterName(int index)
+		{
+			return FormatNameForSql(ToParameterName(index));
+		}
+
 		private void SetCommandText(IDbCommand cmd, SqlString sqlString)
 		{
-			int paramIndex = 0;
-			StringBuilder builder = new StringBuilder(sqlString.Count * 15);
-			foreach (object part in sqlString.SqlParts)
-			{
-				Parameter parameter = part as Parameter;
-
-				if (parameter != null)
-				{
-					string paramName = ToParameterName(paramIndex);
-					builder.Append(FormatNameForSql(paramName));
-					paramIndex++;
-				}
-				else
-				{
-					builder.Append((string) part);
-				}
-			}
-
-			cmd.CommandText = builder.ToString();
+			SqlStringFormatter formatter = new SqlStringFormatter(this);
+			formatter.Format(sqlString);
+			cmd.CommandText = formatter.GetFormattedText();
 		}
 		
 		private void SetCommandParameters(IDbCommand cmd, SqlType[] sqlTypes)

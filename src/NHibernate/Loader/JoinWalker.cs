@@ -823,21 +823,20 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected SqlStringBuilder WhereString( string alias, string[] columnNames, IType type, int batchSize )
 		{
-			Parameter[] columnParameters = Parameter.GenerateParameters( factory, type );
-
 			if( columnNames.Length == 1 )
 			{
 				InFragment inf = new InFragment().SetColumn( alias, columnNames[ 0 ] );
 
 				for( int i = 0; i < batchSize; i++ )
 				{
-					inf.AddValue( columnParameters[ 0 ] );
+					inf.AddValue( Parameter.Placeholder );
 				}
 
 				return new SqlStringBuilder( inf.ToFragmentString() );
 			}
 			else
 			{
+				Parameter[] columnParameters = Parameter.GenerateParameters( columnNames.Length );
 				ConditionalFragment byId = new ConditionalFragment()
 					.SetTableAlias( alias )
 					.SetCondition( columnNames, columnParameters );

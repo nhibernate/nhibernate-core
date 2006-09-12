@@ -389,11 +389,10 @@ namespace NHibernate.Engine
                                 foreach (object elementValue in coll)
                                 {
                                     i++;
-                                    Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, type);
-
-                                    if (sqlParameters != null && sqlParameters.Length > 0)
+									int span = type.GetColumnSpan(session.Factory);
+                                    if (span > 0)
                                     {
-                                        result.Add(sqlParameters[0]);
+                                        result.AddParameter();
                                         parameters.Add(elementValue);
                                         parameterTypes.Add(type);
                                         if (i < coll.Count) result.Add(", ");
@@ -402,10 +401,10 @@ namespace NHibernate.Engine
                             }
                             else
                             {
-                                Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, type);
-                                if (sqlParameters != null && sqlParameters.Length > 0)
+								int span = type.GetColumnSpan(session.Factory);
+                                if (span > 0)
                                 {
-                                    result.Add(sqlParameters[0]);
+                                    result.AddParameter();
                                     parameters.Add(value);
                                     parameterTypes.Add(type);
                                 }
@@ -413,9 +412,7 @@ namespace NHibernate.Engine
                         }
                         else
                         {
-                            string parameterName = token.Substring(1);
-                            Parameter[] sqlParameters = Parameter.GenerateParameters(session.Factory, PositionalParameterTypes[parameterIndex]);
-                            result.Add(sqlParameters[0]);
+                            result.AddParameter();
                             parameterIndex++;
                         }
 				    }

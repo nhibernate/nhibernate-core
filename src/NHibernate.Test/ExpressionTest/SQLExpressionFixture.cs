@@ -45,27 +45,23 @@ namespace NHibernate.Test.ExpressionTest
 		}
 
 		[Test]
-		public void WithParameterTest() 
+		public void WithParameterTest()
 		{
 			using( ISession session = factory.OpenSession() )
 			{
 				SqlStringBuilder builder = new SqlStringBuilder();
 			
 				string expectedSql = "sql_alias.address = ?";
-				Parameter[] expectedParams = new Parameter[1];
 			
-				Parameter firstAndParam = Parameter.Placeholder;
-				expectedParams[0] = firstAndParam;
-
 				builder.Add( "{alias}.address = " );
-				builder.Add( firstAndParam );
+				builder.AddParameter();
 
 				NExpression.ICriterion sqlExpression = NExpression.Expression.Sql(builder.ToSqlString(), "some address", NHibernateUtil.String );
 
 				CreateObjects( typeof( Simple ), session );
 				SqlString sqlString = sqlExpression.ToSqlString( criteria, criteriaQuery );
 
-				CompareSqlStrings(sqlString, expectedSql, expectedParams);
+				CompareSqlStrings(sqlString, expectedSql, 1);
 			}
 		}
 	}

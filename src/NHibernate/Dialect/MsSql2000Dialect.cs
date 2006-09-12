@@ -274,31 +274,8 @@ namespace NHibernate.Dialect
 			/*
 			 * "SELECT TOP limit rest-of-sql-statement"
 			 */
-			querySqlString = querySqlString.Compact();
-			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			bool topAdded = false;
-			foreach( object sqlPart in querySqlString.SqlParts )
-			{
-				if (!topAdded)
-				{
-					string sqlPartString = sqlPart as string;
-					if( sqlPartString != null )
-					{
-						string sqlFragment = sqlPartString.TrimStart();
-						int insertIndex = GetAfterSelectInsertPoint(sqlFragment);
-						if( insertIndex > 0 )
-						{
-							string newFragment = sqlFragment.Insert(insertIndex, " top " + limit.ToString());
-							pagingBuilder.Add(newFragment);
-							topAdded = true;
-							continue;
-						}
-					}
-				}
-				pagingBuilder.AddObject(sqlPart);
-			}
 
-			return pagingBuilder.ToSqlString();
+			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), " top " + limit.ToString());
 		}
 
 		/// <summary>
@@ -340,14 +317,13 @@ namespace NHibernate.Dialect
 			return quoted.Replace( new string( CloseQuote, 2 ), CloseQuote.ToString() );
 		}
 
-		private static int GetAfterSelectInsertPoint(string fragment)
+		private static int GetAfterSelectInsertPoint(SqlString sql)
 		{
-			string fragmentLowerCased = fragment.ToLower( System.Globalization.CultureInfo.InvariantCulture );
-			if (fragmentLowerCased.StartsWith("select distinct"))
+			if (sql.StartsWithCaseInsensitive("select distinct"))
 			{
 				return 15;
 			}
-			else if (fragmentLowerCased.StartsWith("select"))
+			else if (sql.StartsWithCaseInsensitive("select"))
 			{
 				return 6;
 			}

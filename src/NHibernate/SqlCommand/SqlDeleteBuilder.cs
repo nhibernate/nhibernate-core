@@ -37,8 +37,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlDeleteBuilder.</returns>
 		public SqlDeleteBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, identityType );
-			whereStrings.Add( ToWhereString( columnNames, parameters ) );
+			whereStrings.Add( ToWhereString( columnNames ) );
 			parameterTypes.AddRange(identityType.SqlTypes(Mapping));
 			return this;
 		}
@@ -51,8 +50,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlDeleteBuilder.</returns>
 		public SqlDeleteBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, versionType );
-			whereStrings.Add( ToWhereString( columnNames, parameters ) );
+			whereStrings.Add( ToWhereString( columnNames ) );
 			parameterTypes.AddRange(versionType.SqlTypes(Mapping));
 			return this;
 		}
@@ -66,8 +64,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlDeleteBuilder</returns>
 		public SqlDeleteBuilder AddWhereFragment( string[ ] columnNames, IType type, string op )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, type );
-			whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
+			whereStrings.Add( ToWhereString( columnNames, op ) );
 			parameterTypes.AddRange(type.SqlTypes(Mapping));
 			return this;
 		}
@@ -116,7 +113,7 @@ namespace NHibernate.SqlCommand
 			}
 			else
 			{
-				sqlBuilder.Add( ( SqlString ) whereStrings[ 0 ], null, null, null, false );
+				sqlBuilder.Add( ( SqlString ) whereStrings[ 0 ] );
 			}
 
 			if( log.IsDebugEnabled )

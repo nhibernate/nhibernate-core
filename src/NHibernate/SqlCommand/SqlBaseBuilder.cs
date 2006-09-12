@@ -24,12 +24,11 @@ namespace NHibernate.SqlCommand
 		/// Converts the ColumnNames and ColumnValues to a WhereFragment
 		/// </summary>
 		/// <param name="columnNames">The names of the Columns to Add to the WhereFragment</param>
-		/// <param name="columnValues">The Values for the Columns in the WhereFragment</param>
 		/// <returns>A SqlString that contains the WhereFragment</returns>
 		/// <remarks>This just calls the overloaded ToWhereFragment() with the operator as " = " and the tableAlias null.</remarks>
-		protected SqlString ToWhereString( string[ ] columnNames, object[ ] columnValues )
+		protected SqlString ToWhereString( string[ ] columnNames )
 		{
-			return ToWhereString( columnNames, columnValues, " = " );
+			return ToWhereString( columnNames, " = " );
 		}
 
 		/// <summary>
@@ -37,24 +36,22 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="tableAlias">The Alias for the Table.</param>
 		/// <param name="columnNames">The names of the Columns to Add to the WhereFragment</param>
-		/// <param name="columnValues">The Values for the Columns in the WhereFragment</param>
 		/// <returns>A SqlString that contains the WhereFragment</returns>
 		/// <remarks>This defaults the op to " = "</remarks>
-		protected SqlString ToWhereString( string tableAlias, string[ ] columnNames, object[ ] columnValues )
+		protected SqlString ToWhereString( string tableAlias, string[ ] columnNames )
 		{
-			return ToWhereString( tableAlias, columnNames, columnValues, " = " );
+			return ToWhereString( tableAlias, columnNames, " = " );
 		}
 
 		/// <summary>
 		/// Converts the ColumnNames and ColumnValues to a WhereFragment
 		/// </summary>
 		/// <param name="columnNames">The names of the Columns to Add to the WhereFragment</param>
-		/// <param name="columnValues">The Values for the Columns in the WhereFragment</param>
 		/// <param name="op">The operator to use between the names &amp; values.  For example " = " or "!="</param>
 		/// <returns>A SqlString that contains the WhereFragment</returns>
-		protected SqlString ToWhereString( string[ ] columnNames, object[ ] columnValues, string op )
+		protected SqlString ToWhereString( string[ ] columnNames, string op )
 		{
-			return ToWhereString( null, columnNames, columnValues, op );
+			return ToWhereString( null, columnNames, op );
 		}
 
 		/// <summary>
@@ -62,10 +59,9 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="tableAlias">The Alias for the Table.</param>
 		/// <param name="columnNames">The names of the Columns to Add to the WhereFragment</param>
-		/// <param name="columnValues">The Values for the Columns in the WhereFragment</param>
 		/// <param name="op">The operator to use between the names &amp; values.  For example " = " or "!="</param>
 		/// <returns>A SqlString that contains the WhereFragment</returns>
-		protected SqlString ToWhereString( string tableAlias, string[ ] columnNames, object[ ] columnValues, string op )
+		protected SqlString ToWhereString( string tableAlias, string[ ] columnNames, string op )
 		{
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder( ( columnNames.Length*2 ) + 5 );
 
@@ -89,16 +85,10 @@ namespace NHibernate.SqlCommand
 					columnName = columnNames[ i ];
 				}
 
-				sqlBuilder.Add( columnName )
-					.Add( op );
-				if( columnValues[ i ] is Parameter )
-				{
-					sqlBuilder.Add( ( Parameter ) columnValues[ i ] );
-				}
-				else
-				{
-					sqlBuilder.Add( ( string ) columnValues[ i ] );
-				}
+				sqlBuilder
+					.Add( columnName )
+					.Add( op )
+					.AddParameter();
 			}
 
 			return sqlBuilder.ToSqlString();

@@ -38,16 +38,7 @@ namespace NHibernate.Test.ExpressionTest
 			SqlString sqlString = andExpression.ToSqlString( criteria, criteriaQuery );
 
 			string expectedSql = "sql_alias.address = ?";
-			Parameter[] expectedParams = new Parameter[1];
-			
-			// even though a String parameter is a Size based Parameter it will not
-			// be a ParameterLength unless in the mapping file it is defined as
-			// type="String(200)" -> in the mapping file it is now defined as 
-			// type="String" length="200"
-			Parameter firstAndParam = Parameter.Placeholder;
-			expectedParams[0] = firstAndParam;
-
-			CompareSqlStrings(sqlString, expectedSql, expectedParams);
+			CompareSqlStrings(sqlString, expectedSql, 1);
 
 			session.Close();
 		}
@@ -82,12 +73,7 @@ namespace NHibernate.Test.ExpressionTest
 				SqlString sqlString = andExpression.ToSqlString( criteria, criteriaQuery );
 
 				string expectedSql = "sql_alias.date_ >= ?";
-				Parameter[] expectedParams = new Parameter[1];
-			
-				Parameter firstAndParam = Parameter.Placeholder;
-				expectedParams[0] = firstAndParam;
-
-				CompareSqlStrings(sqlString, expectedSql, expectedParams);
+				CompareSqlStrings(sqlString, expectedSql, 1);
 			}
 		}
 

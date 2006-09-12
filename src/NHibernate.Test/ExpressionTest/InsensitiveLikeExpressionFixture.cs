@@ -33,12 +33,8 @@ namespace NHibernate.Test.ExpressionTest
 			{
 				expectedSql = "sql_alias.address ilike ?";
 			}
-			Parameter[] expectedParams = new Parameter[1];
 
-			Parameter firstParam = Parameter.Placeholder;
-			expectedParams[0] = firstParam;
-
-			CompareSqlStrings(sqlString, expectedSql, expectedParams);
+			CompareSqlStrings(sqlString, expectedSql, 1);
 
 			session.Close();
 		}

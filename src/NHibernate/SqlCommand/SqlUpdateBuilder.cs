@@ -92,7 +92,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder AddColumns( string[ ] columnNames, IType propertyType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, propertyType );
+			Parameter[ ] parameters = Parameter.GenerateParameters( columnNames.Length );
 			this.columnNames.AddRange( columnNames );
 			columnValues.AddRange(parameters);
 			columnValuesParameterTypes.AddRange(propertyType.SqlTypes(Mapping));
@@ -108,8 +108,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, identityType );
-			whereStrings.Add( ToWhereString( columnNames, parameters ) );
+			whereStrings.Add( ToWhereString( columnNames ) );
 			whereParameterTypes.AddRange(identityType.SqlTypes(Mapping));
 			return this;
 		}
@@ -122,8 +121,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, versionType );
-			whereStrings.Add( ToWhereString( columnNames, parameters ) );
+			whereStrings.Add( ToWhereString( columnNames ) );
 			whereParameterTypes.AddRange(versionType.SqlTypes(Mapping));
 			return this;
 		}
@@ -140,8 +138,7 @@ namespace NHibernate.SqlCommand
 			if( columnNames.Length > 0 )
 			{
 				// Don't add empty conditions - we get extra ANDs
-				Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, type );
-				whereStrings.Add( ToWhereString( columnNames, parameters, op ) );
+				whereStrings.Add( ToWhereString( columnNames, op ) );
 				whereParameterTypes.AddRange(type.SqlTypes(Mapping));
 			}
 
@@ -236,7 +233,7 @@ namespace NHibernate.SqlCommand
 				}
 				andNeeded = true;
 
-				sqlBuilder.Add( whereString, null, null, null, false );
+				sqlBuilder.Add( whereString );
 
 			}
 

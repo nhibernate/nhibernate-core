@@ -57,16 +57,7 @@ namespace NHibernate.Test.SqlCommandTest
 				
 
 			Assert.AreEqual(expectedSql , sqlString.ToString(), "SQL String");
-			
-			foreach(object part in sqlString.SqlParts) 
-			{
-				if(part is Parameter) 
-				{
-					actualParams[numOfParameters] = (Parameter)part;
-					numOfParameters++;
-				}
-			}
-			Assert.AreEqual(3, numOfParameters, "3 parameters");
+			Assert.AreEqual(3, sqlString.GetParameterCount(), "3 parameters");
 		}
 	}
 }

@@ -75,12 +75,10 @@ namespace NHibernate.SqlCommand
 
 		public override void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( factory, conditionType );
-
 			for( int i = 0; i < columns.Length; i++ )
 			{
 				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
-				afterWhere.Add( parameters[ i ] );
+				afterWhere.AddParameter();
 			}
 		}
 
@@ -120,7 +118,7 @@ namespace NHibernate.SqlCommand
 				afterFrom.ToSqlString().ToString().IndexOf( condition.Trim().ToString() ) < 0 &&
 					afterWhere.ToSqlString().ToString().IndexOf( condition.Trim().ToString() ) < 0 )
 			{
-				if( !condition.StartsWith( " and " ) )
+				if( !condition.StartsWithCaseInsensitive( " and " ) )
 				{
 					afterWhere.Add( " and " );
 				}

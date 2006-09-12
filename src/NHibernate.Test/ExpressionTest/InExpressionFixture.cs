@@ -28,15 +28,8 @@ namespace NHibernate.Test.ExpressionTest
 			SqlString sqlString = inExpression.ToSqlString( criteria, criteriaQuery );
 
 			string expectedSql = "sql_alias.count_ in (?, ?, ?)";
-			Parameter[ ] expectedParams = new Parameter[3];
 
-			for( int i = 0; i < expectedParams.Length; i++ )
-			{
-				Parameter param = Parameter.Placeholder;
-				expectedParams[ i ] = param;
-			}
-
-			CompareSqlStrings( sqlString, expectedSql, expectedParams );
+			CompareSqlStrings( sqlString, expectedSql, 3 );
 
 			session.Close();
 		}

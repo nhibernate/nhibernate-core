@@ -101,7 +101,7 @@ namespace NHibernate.SqlCommand
 			this.outerJoinsAfterFrom = outerJoinsAfterFrom;
 			
 			SqlString tmpOuterJoinsAfterWhere = outerJoinsAfterWhere.Trim();
-			if( tmpOuterJoinsAfterWhere.StartsWith( "and" ) )
+			if( tmpOuterJoinsAfterWhere.StartsWithCaseInsensitive( "and" ) )
 			{
 				tmpOuterJoinsAfterWhere = tmpOuterJoinsAfterWhere.Substring( 4 );
 			}
@@ -130,8 +130,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSelectBuilder</returns>
 		public SqlSelectBuilder SetWhereClause( string tableAlias, string[ ] columnNames, IType whereType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( Mapping, whereType );
-			return this.SetWhereClause( ToWhereString( tableAlias, columnNames, parameters ) );
+			return SetWhereClause( ToWhereString( tableAlias, columnNames ) );
 		}
 
 		/// <summary>

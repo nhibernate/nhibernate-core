@@ -76,8 +76,6 @@ namespace NHibernate.Expression
 					criteriaQuery.GetEntityName(criteria), _propertyName));
 			}
 
-			Parameter[] parameters = Parameter.GenerateParameters(criteriaQuery.Factory, propertyType);
-
 			if (_ignoreCase)
 			{
 				if (columnNames.Length != 1)
@@ -93,7 +91,7 @@ namespace NHibernate.Expression
 					.Add(columnNames[0])
 					.Add(StringHelper.ClosedParen)
 					.Add(Op)
-					.Add(parameters[0])
+					.AddParameter()
 					.ToSqlString();
 			}
 			else
@@ -110,7 +108,7 @@ namespace NHibernate.Expression
 
 					sqlBuilder.Add(columnNames[i])
 						.Add(Op)
-						.Add(parameters[i]);
+						.AddParameter();
 
 				}
 				return sqlBuilder.ToSqlString();

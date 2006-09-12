@@ -32,11 +32,6 @@ namespace NHibernate.Expression
 			_values = values;
 		}
 
-		private static Parameter[ ] GenerateValueParameters( int count )
-		{
-			return Parameter.GenerateParameters(count);
-		}
-
 		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			if( _values.Length == 0 )
@@ -70,14 +65,13 @@ namespace NHibernate.Expression
 					.Add( columnName )
 					.Add( " in (" );
 
-				Parameter[ ] valueParameters = GenerateValueParameters( _values.Length );
-				for( int i = 0; i < valueParameters.Length; i++ )
+				for( int i = 0; i < _values.Length; i++ )
 				{
 					if( i > 0 )
 					{
 						result.Add( StringHelper.CommaSpace );
 					}
-					result.Add( valueParameters[ i ] );
+					result.AddParameter();
 				}
 
 				result.Add( ")" );

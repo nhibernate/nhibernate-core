@@ -12,9 +12,7 @@ namespace NHibernate.SqlCommand
 	{
 		private JoinFragment joins;
 
-		// the selectBuilder could probably be a string if the Persister's methods that build
-		// the SqlString instead returned a String.
-		private SqlStringBuilder selectBuilder = new SqlStringBuilder();
+		private StringBuilder selectBuilder = new StringBuilder();
 		private SqlStringBuilder whereBuilder = new SqlStringBuilder();
 
 		// groupBy, orderBy, and having will for sure have no parameters.
@@ -124,12 +122,12 @@ namespace NHibernate.SqlCommand
 
 			if( fragment.Length > 0 )
 			{
-				if( selectBuilder.Count > 0 )
+				if( selectBuilder.Length > 0 )
 				{
-					selectBuilder.Add( StringHelper.CommaSpace );
+					selectBuilder.Append( StringHelper.CommaSpace );
 				}
 
-				selectBuilder.Add( fragment );
+				selectBuilder.Append( fragment );
 			}
 		}
 
@@ -147,7 +145,7 @@ namespace NHibernate.SqlCommand
 		public bool Distinct
 		{
 			get { return distinct; }
-			set { this.distinct = value; }
+			set { distinct = value; }
 		}
 
 		/// <summary>
@@ -205,7 +203,6 @@ namespace NHibernate.SqlCommand
 			orderBy.Append( orderBySql );
 		}
 
-		/// <summary></summary>
 		public SqlString ToQuerySqlString()
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
@@ -218,16 +215,16 @@ namespace NHibernate.SqlCommand
 			}
 
 			SqlString from = joins.ToFromFragmentString;
-			if( from.StartsWith( "," ) )
+			if( from.StartsWithCaseInsensitive( "," ) )
 			{
 				from = from.Substring( 1 );
 			}
-			else if( from.StartsWith( " inner join" ) )
+			else if( from.StartsWithCaseInsensitive( " inner join" ) )
 			{
 				from = from.Substring( 11 );
 			}
 
-			builder.Add( selectBuilder.ToSqlString() )
+			builder.Add( selectBuilder.ToString() )
 				.Add( " from" )
 				.Add( from );
 
@@ -281,7 +278,6 @@ namespace NHibernate.SqlCommand
 			bool lastSpaceable = true;
 			bool lastQuoted = false;
 
-			int debugIndex = 0;
 			foreach( string token in iter )
 			{
 				bool spaceable = !dontSpace.Contains( token );
@@ -298,7 +294,6 @@ namespace NHibernate.SqlCommand
 				lastSpaceable = spaceable;
 				buf.Append( token );
 				lastQuoted = token.EndsWith( "'" );
-				debugIndex++;
 			}
 		}
 
@@ -312,14 +307,13 @@ namespace NHibernate.SqlCommand
 			bool lastSpaceable = true;
 			bool lastQuoted = false;
 
-			int debugIndex = 0;
 			foreach( object token in iter )
 			{
 				string tokenString = token as string;
 				SqlString tokenSqlString = token as SqlString;
 
 				bool spaceable = !dontSpace.Contains( token );
-				bool quoted = false;
+				bool quoted;
 
 				//TODO: seems HACKish to cast between String and SqlString
 				if( tokenString != null )
@@ -328,7 +322,7 @@ namespace NHibernate.SqlCommand
 				}
 				else
 				{
-					quoted = tokenSqlString.StartsWith( "'" );
+					quoted = tokenSqlString.StartsWithCaseInsensitive( "'" );
 				}
 
 				if( spaceable && lastSpaceable )
@@ -353,7 +347,6 @@ namespace NHibernate.SqlCommand
 					// actual object is
 					builder.AddObject( token );
 				}
-				debugIndex++;
 
 				if( tokenString != null )
 				{

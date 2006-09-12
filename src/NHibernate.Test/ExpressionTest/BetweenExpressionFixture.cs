@@ -3,7 +3,6 @@ using System;
 using NHibernate.DomainModel;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 
 using NUnit.Framework;
 
@@ -22,15 +21,7 @@ namespace NHibernate.Test.ExpressionTest
 			SqlString sqlString = betweenExpression.ToSqlString( criteria, criteriaQuery );
 
 			string expectedSql = "sql_alias.count_ between ? and ?";
-			Parameter[ ] expectedParams = new Parameter[2];
-
-			Parameter firstBetweenParam = Parameter.Placeholder;
-			expectedParams[ 0 ] = firstBetweenParam;
-
-			Parameter secondBetweenParam = Parameter.Placeholder;
-			expectedParams[ 1 ] = secondBetweenParam;
-
-			CompareSqlStrings( sqlString, expectedSql, expectedParams );
+			CompareSqlStrings( sqlString, expectedSql, 2 );
 
 			session.Close();
 		}

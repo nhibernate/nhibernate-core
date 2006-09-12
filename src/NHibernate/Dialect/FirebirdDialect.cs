@@ -188,41 +188,16 @@ namespace NHibernate.Dialect
 			/*
 			 * "SELECT FIRST x [SKIP y] rest-of-sql-statement"
 			 */
-			
-			querySqlString = querySqlString.Compact();
-			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			bool firstAdded = false;
-			foreach (object sqlPart in querySqlString.SqlParts)
+
+			int insertIndex = GetAfterSelectInsertPoint(querySqlString);
+			if (offset > 0)
 			{
-				if (!firstAdded)
-				{
-					string sqlPartString = sqlPart as string;
-					if (sqlPartString != null)
-					{
-						string sqlFragment = sqlPartString.TrimStart();
-						int insertIndex = GetAfterSelectInsertPoint(sqlFragment);
-						if (insertIndex > 0)
-						{
-							string newFragment;
-
-							if (offset > 0)
-							{
-								newFragment = sqlFragment.Insert(insertIndex, " first " + limit.ToString() + " skip " + offset.ToString());
-							}
-							else
-							{
-								newFragment = sqlFragment.Insert(insertIndex, " first " + limit.ToString());
-							}
-							pagingBuilder.Add(newFragment);
-							firstAdded = true;
-							continue;
-						}
-					}
-				}
-				pagingBuilder.AddObject(sqlPart);
+				return querySqlString.Insert(insertIndex, " first " + limit.ToString() + " skip " + offset.ToString());
 			}
-
-			return pagingBuilder.ToSqlString();
+			else
+			{
+				return querySqlString.Insert(insertIndex, " first " + limit.ToString());
+			}
 		}
 
 		public override bool SupportsVariableLimit
@@ -230,18 +205,18 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		private static int GetAfterSelectInsertPoint(string fragment)
+		private static int GetAfterSelectInsertPoint(SqlString text)
 		{
-			string fragmentLowerCased = fragment.ToLower(System.Globalization.CultureInfo.InvariantCulture);
-			if (fragmentLowerCased.StartsWith("select distinct"))
+			if (text.StartsWithCaseInsensitive("select distinct"))
 			{
 				return 15;
 			}
-			else if (fragmentLowerCased.StartsWith("select"))
+			else if (text.StartsWithCaseInsensitive("select"))
 			{
 				return 6;
 			}
-			return 0;
+
+			return -1;
 		}
 	}
 }

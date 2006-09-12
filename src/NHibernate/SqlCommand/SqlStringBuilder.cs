@@ -33,6 +33,20 @@ namespace NHibernate.SqlCommand
 		// this holds the strings and parameters that make up the full sql statement.
 		private ArrayList sqlParts;
 
+		private AddingSqlStringVisitor addingVisitor;
+		
+		private AddingSqlStringVisitor AddingVisitor
+		{
+			get
+			{
+				if (addingVisitor == null)
+				{
+					addingVisitor = new AddingSqlStringVisitor(this);
+				}
+				return addingVisitor;
+			}
+		}
+
 		/// <summary>
 		/// Create an empty StringBuilder with the default capacity.  
 		/// </summary>
@@ -56,13 +70,7 @@ namespace NHibernate.SqlCommand
 		public SqlStringBuilder( SqlString sqlString )
 		{
 			sqlParts = new ArrayList( sqlString.Count );
-			foreach( object part in sqlString.SqlParts )
-			{
-				if (part != null) 
-				{
-					sqlParts.Add( part );
-				}
-			}
+			Add(sqlString);
 		}
 
 		/// <summary>
@@ -95,6 +103,11 @@ namespace NHibernate.SqlCommand
 			}
 			return this;
 		}
+		
+		public SqlStringBuilder AddParameter()
+		{
+			return Add(Parameter.Placeholder);
+		}
 
 		/// <summary>
 		/// Attempts to discover what type of object this is and calls the appropriate
@@ -105,25 +118,26 @@ namespace NHibernate.SqlCommand
 		/// <exception cref="ArgumentException">Thrown when the part is not a Parameter, String, or SqlString.</exception>
 		public SqlStringBuilder AddObject( object part )
 		{
-			if ( part == null ){
+			if ( part == null )
+			{
 				return this;
 			}
 			Parameter paramPart = part as Parameter;
 			if( paramPart!=null )
 			{
-				return this.Add( paramPart ); // EARLY EXIT
+				return Add( paramPart ); // EARLY EXIT
 			}
 
-			string stringPart = part as String;
+			string stringPart = part as string;
 			if( StringHelper.IsNotEmpty( stringPart ) )
 			{
-				return this.Add( stringPart );
+				return Add( stringPart );
 			}
 			
 			SqlString sqlPart = part as SqlString;
 			if( StringHelper.IsNotEmpty( sqlPart ) )
 			{
-				return this.Add( sqlPart, null, null, null );
+				return Add( sqlPart );
 			}
 
 			// remarks - we should not get to here - this is a problem with the 
@@ -141,14 +155,8 @@ namespace NHibernate.SqlCommand
 		/// <remarks>This calls the overloaded Add(sqlString, null, null, null, false)</remarks>
 		public SqlStringBuilder Add( SqlString sqlString )
 		{
-			if( StringHelper.IsNotEmpty( sqlString ) )
-			{
-				return Add( sqlString, null, null, null, false );
-			}
-			else 
-			{
-				return this;
-			} 
+			sqlString.Visit(AddingVisitor);
+			return this;
 		}
 
 
@@ -167,20 +175,6 @@ namespace NHibernate.SqlCommand
 		public SqlStringBuilder Add( SqlString sqlString, string prefix, string op, string postfix )
 		{
 			return Add( new SqlString[ ] {sqlString}, prefix, op, postfix, false );
-		}
-
-		/// <summary>
-		/// Adds an existing SqlString to this SqlStringBuilder
-		/// </summary>
-		/// <param name="sqlString">The SqlString to add to this SqlStringBuilder</param>
-		/// <param name="prefix">String to put at the beginning of the combined SqlString.</param>
-		/// <param name="op">How these Statements should be junctioned "AND" or "OR"</param>
-		/// <param name="postfix">String to put at the end of the combined SqlString.</param>
-		/// <param name="wrapStatement">Wrap each SqlStrings with "(" and ")"</param>
-		/// <returns>This SqlStringBuilder</returns>
-		public SqlStringBuilder Add( SqlString sqlString, string prefix, string op, string postfix, bool wrapStatement )
-		{
-			return Add( new SqlString[ ] {sqlString}, prefix, op, postfix, wrapStatement );
 		}
 
 		/// <summary>
@@ -228,13 +222,8 @@ namespace NHibernate.SqlCommand
 				{
 					sqlParts.Add( "(" );
 				}
-				foreach( object sqlPart in sqlString.SqlParts )
-				{
-					if (sqlPart != null )
-					{
-						sqlParts.Add( sqlPart );
-					}
-				}
+
+				Add(sqlString);
 
 				if( wrapStatement )
 				{
@@ -316,6 +305,26 @@ namespace NHibernate.SqlCommand
 		public SqlString ToSqlString()
 		{
 			return new SqlString( ( object[ ] ) sqlParts.ToArray( typeof( object ) ) );
+		}
+		
+		private class AddingSqlStringVisitor : ISqlStringVisitor
+		{
+			private SqlStringBuilder parent;
+
+			public AddingSqlStringVisitor(SqlStringBuilder parent)
+			{
+				this.parent = parent;
+			}
+
+			public void String(string text)
+			{
+				parent.Add(text);
+			}
+
+			public void Parameter()
+			{
+				parent.AddParameter();
+			}
 		}
 	}
 }

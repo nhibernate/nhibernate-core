@@ -23,6 +23,9 @@ namespace NHibernate.Test.DialectTest
 
 			str = d.GetLimitString(new SqlString("SELECT * FROM fish ORDER BY name DESC"), 7, 28);
 			Assert.AreEqual("WITH query AS (SELECT TOP 28 ROW_NUMBER() OVER (ORDER BY name DESC) as __hibernate_row_nr__,  * FROM fish ORDER BY name DESC) SELECT * FROM query WHERE __hibernate_row_nr__ > 7 ORDER BY __hibernate_row_nr__", str.ToString());
+
+			str = d.GetLimitString(new SqlString("SELECT * FROM fish LEFT JOIN (SELECT * FROM meat ORDER BY weight) AS t ORDER BY name DESC"), 10, 20);
+			Assert.AreEqual("WITH query AS (SELECT TOP 20 ROW_NUMBER() OVER (ORDER BY name DESC) as __hibernate_row_nr__,  * FROM fish LEFT JOIN (SELECT * FROM meat ORDER BY weight) AS t ORDER BY name DESC) SELECT * FROM query WHERE __hibernate_row_nr__ > 10 ORDER BY __hibernate_row_nr__", str.ToString());
 		}
 	}
 }
