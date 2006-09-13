@@ -660,6 +660,14 @@ namespace NHibernate.SqlCommand
 			}
 		}
 		
+		/// <summary>
+		/// Parse SQL in <paramref name="sql" /> and create a SqlString representing it.
+		/// </summary>
+		/// <remarks>
+		/// Parameter marks in single quotes will be correctly skipped, but otherwise the
+		/// lexer is very simple and will not parse double quotes or escape sequences
+		/// correctly, for example.
+		/// </remarks>
 		public static SqlString Parse(string sql)
 		{
 			SqlStringBuilder result = new SqlStringBuilder();
