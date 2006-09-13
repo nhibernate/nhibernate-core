@@ -6,27 +6,27 @@ using NHibernate.Util;
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
-	/// The SqlStringBuilder is used to construct a SqlString.  The SqlString is a nonmutable
-	/// class so it can't have sql parts added to it.  Instead this class should be used to
-	/// generate a new SqlString.  The SqlStringBuilder is to SqlString what 
-	/// the StringBuilder is to a String.  
-	///  
-	/// This might actually be a good use for a struct - very lightweight and gives me th
-	/// modifications if I pass it to a method such as AddLock(ISqlCommand)...
+	/// The SqlStringBuilder is used to construct a SqlString.
 	/// </summary>
 	/// <remarks>
-	/// This is a modifiable version - the unmodifiable version is SqlString.  This
-	/// should mimic the use of a StringBuilder and just plain String.
-	/// 
+	/// <para>
+	/// The SqlString is a nonmutable class so it can't have sql parts added
+	/// to it.  Instead this class should be used to generate a new SqlString.
+	/// The SqlStringBuilder is to SqlString what the StringBuilder is to
+	/// a String.
+	/// </para>
+	/// <para>
 	/// This is different from the original version of SqlString because this does not
 	/// hold the sql string in the form of "column1=@column1" instead it uses an array to
 	/// build the sql statement such that 
 	/// object[0] = "column1="
 	/// object[1] = ref to column1 parameter
-	/// 
+	/// </para>
+	/// <para>
 	/// What this allows us to do is to delay the generating of the parameter for the sql
 	/// until the very end - making testing dialect indifferent.  Right now all of our test
 	/// to make sure the correct sql is getting built are specific to MsSql2000Dialect.
+	/// </para>
 	/// </remarks>
 	public class SqlStringBuilder : ISqlStringBuilder
 	{
