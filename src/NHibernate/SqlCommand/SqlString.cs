@@ -659,5 +659,52 @@ namespace NHibernate.SqlCommand
 				}
 			}
 		}
+		
+		public static SqlString Parse(string sql)
+		{
+			SqlStringBuilder result = new SqlStringBuilder();
+
+			bool inQuote = false;
+
+			StringBuilder stringPart = new StringBuilder();
+
+			foreach (char ch in sql)
+			{
+				switch (ch)
+				{
+					case '?':
+						if (inQuote)
+						{
+							stringPart.Append(ch);
+						}
+						else
+						{
+							if (stringPart.Length > 0)
+							{
+								result.Add(stringPart.ToString());
+								stringPart.Length = 0;
+							}
+							result.AddParameter();
+						}
+						break;
+						
+					case '\'':
+						inQuote = !inQuote;
+						stringPart.Append(ch);
+						break;
+						
+					default:
+						stringPart.Append(ch);
+						break;
+				}
+			}
+			
+			if (stringPart.Length > 0)
+			{
+				result.Add(stringPart.ToString());
+			}
+
+			return result.ToSqlString();
+		}
 	}
 }

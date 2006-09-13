@@ -247,5 +247,28 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual("begin ? ending", sql.Insert(11, "ing").ToString());
 			Assert.AreEqual("begin ? enXd", sql.Insert(10, "X").ToString());
 		}
+		
+		[Test]
+		public void Parse()
+		{
+			SqlString sql = SqlString.Parse("select col from table where col = ? or col1 = 'a?b' and col2 = ? and col3 = 'x' and col4 = ?");
+			SqlString expectedSql = new SqlString(
+				new object[]
+					{
+						"select col from table where col = ",
+						Parameter.Placeholder,
+						" or col1 = 'a?b' and col2 = ",
+						Parameter.Placeholder,
+						" and col3 = 'x' and col4 = ",
+						Parameter.Placeholder
+					}
+				);
+			
+			Assert.AreEqual(expectedSql, sql);
+			
+			Assert.AreEqual(new SqlString("simple"), SqlString.Parse("simple"));
+			
+			Assert.AreEqual(SqlString.Empty, SqlString.Parse(""));
+		}
 	}
 }
