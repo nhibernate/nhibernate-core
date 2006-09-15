@@ -213,7 +213,7 @@
     <Compile Include="Impl\AbstractQueryImpl.cs" />
     <Compile Include="Impl\AbstractVisitor.cs" />
     <Compile Include="Impl\BatcherImpl.cs" />
-    <Compile Include="Impl\BatchingBatcher.cs" />
+    <Compile Include="Impl\SqlClientBatchingBatcher.cs" />
     <Compile Include="Impl\CacheEntry.cs" />
     <Compile Include="Impl\CollectionEntry.cs" />
     <Compile Include="Impl\CollectionKey.cs" />
@@ -555,6 +555,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IdentityHashCodeProvider.cs" />
+    <Compile Include="Impl\BatchingBatcher.cs" />
+    <Compile Include="Impl\SqlClientSqlCommandSet.cs" />
     <Compile Include="Impl\QueryFilterImpl.cs" />
     <Compile Include="Loader\AbstractEntityJoinWalker.cs" />
     <Compile Include="Loader\BasicLoader.cs" />

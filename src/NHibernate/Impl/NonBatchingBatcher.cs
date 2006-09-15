@@ -36,12 +36,8 @@ namespace NHibernate.Impl
 			//negative expected row count means we don't know how many rows to expect
 			if( expectedRowCount > 0 && expectedRowCount != rowCount )
 			{
-				throw new HibernateException( string.Format(
-					"SQL insert, update or delete failed"
-					+ " (expected affected row count: {0}, actual affected row count: {1})."
-					+ " Possible causes: the row was modified or deleted by another user,"
-					+ " or a trigger is reporting misleading row count.",
-					expectedRowCount, rowCount ) );
+				ThrowNumberOfRowsAffectedNotMatchExpectedRowCount(expectedRowCount, rowCount);
+		
 			}
 		}
 

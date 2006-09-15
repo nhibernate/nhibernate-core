@@ -156,7 +156,7 @@ namespace NHibernate.Cfg
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled
-			// Not ported - settings.BatchSize = batchSize;
+			settings.BatchSize = PropertiesHelper.GetInt32(Environment.BatchSize,properties, 0);
 			settings.DefaultSchemaName = defaultSchema;
 			settings.IsShowSqlEnabled = showSql;
 			settings.Dialect = dialect;

@@ -147,6 +147,13 @@ namespace NHibernate.Engine
 		// TODO H2.1:
 		// bool IsWrapDataReadersEnabled { get; }
 
+
+		/// <summary>
+		/// Gets a boolean indicating if the sql statement should be prepared.  The value
+		/// is calculated from <c>hibernate.batch_size</c> if the value exists and greater than 0.
+		/// </summary>
+		bool IsBatchUpdateEnabled { get; }
+		
 		/// <summary>
 		/// Get the identifier generator for the hierarchy
 		/// </summary>

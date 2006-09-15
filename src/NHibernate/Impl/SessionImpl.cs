@@ -570,9 +570,7 @@ namespace NHibernate.Impl
 			loadingCollections = new Hashtable();
 			nonlazyCollections = new ArrayList(20);
 
-			batcher = factory.IsBatchUpdateEnabled ?
-				(IBatcher) new BatchingBatcher(this) :
-				(IBatcher) new NonBatchingBatcher(this);
+			batcher = SessionFactory.ConnectionProvider.Driver.CreateBatcher(this);
 		}
 
 		/// <summary>

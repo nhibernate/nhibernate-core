@@ -1,5 +1,7 @@
 using System.Data;
 using System.Data.SqlClient;
+using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -28,6 +30,23 @@ namespace NHibernate.Driver
 		public override IDbCommand CreateCommand()
 		{
 			return new System.Data.SqlClient.SqlCommand();
+		}
+
+
+		/// <summary>
+		/// Create an instance of <see cref="IBatcher"/> according to the configuration 
+		/// and the capabilities of the driver
+		/// </summary>
+		/// <remarks>
+		/// By default, .Net doesn't have any batching capabilities, drivers that does have
+		/// batching support need to override this method and return their own batcher.
+		/// </remarks>
+		public override IBatcher CreateBatcher(ISessionImplementor session)
+		{
+			if (session.Factory.IsBatchUpdateEnabled)
+				return new SqlClientBatchingBatcher(session);
+			else
+				return new NonBatchingBatcher(session);
 		}
 
 		/// <summary>

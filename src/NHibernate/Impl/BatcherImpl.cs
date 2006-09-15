@@ -78,7 +78,7 @@ namespace NHibernate.Impl
 		/// and <see cref="IDbTransaction"/> if one exists.  It will call <c>Prepare</c> if the Driver
 		/// supports preparing commands.
 		/// </remarks>
-		private void Prepare(IDbCommand cmd)
+		protected void Prepare(IDbCommand cmd)
 		{
 			try
 			{
@@ -193,7 +193,7 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Ensures that the Driver's rules for Multiple Open DataReaders are being followed.
 		/// </summary>
-		private void CheckReaders()
+		protected void CheckReaders()
 		{
 			// early exit because we don't need to move an open IDataReader into memory
 			// since the Driver supports mult open readers.
@@ -452,6 +452,17 @@ namespace NHibernate.Impl
 		protected ADOException Convert(Exception sqlException, string message)
 		{
 			return ADOExceptionHelper.Convert(sqlException, message);
+		}
+
+
+		protected void ThrowNumberOfRowsAffectedNotMatchExpectedRowCount(int rowsAffected, int rowsExpected)
+		{
+			throw new HibernateException(string.Format(
+											"SQL insert, update or delete failed"
+											+ " (expected affected row count: {0}, actual affected row count: {1})."
+											+ " Possible causes: the row was modified or deleted by another user,"
+											+ " or a trigger is reporting misleading row count.",
+											rowsExpected, rowsAffected));
 		}
 
 		#region IDisposable Members

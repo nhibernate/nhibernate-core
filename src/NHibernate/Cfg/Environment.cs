@@ -83,9 +83,6 @@ namespace NHibernate.Cfg
 		// Unused, not implemented
 		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
 		
-		// Unused, not implemented
-		public const string StatementBatchSize = "hibernate.jdbc.batch_size";
-		
 		public const string BatchVersionedData = "hibernate.jdbc.batch_versioned_data";
 		
 		// Unused, not implemented
@@ -117,6 +114,8 @@ namespace NHibernate.Cfg
 		// NHibernate-specific properties
 		public const string PrepareSql = "hibernate.prepare_sql";
 		public const string CommandTimeout = "hibernate.command_timeout";
+		public const string BatchSize = "hibernate.batch_size";
+		
 		
 		public const string PropertyBytecodeProvider = "hibernate.bytecode.provider";
 		public const string PropertyUseReflectionOptimizer = "hibernate.use_reflection_optimizer";
