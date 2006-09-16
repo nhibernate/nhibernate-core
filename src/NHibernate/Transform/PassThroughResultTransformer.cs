@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections;
 
 namespace NHibernate.Transform
 {
@@ -13,7 +11,7 @@ namespace NHibernate.Transform
             return tuple.Length == 1 ? tuple[0] : tuple;
         }
 
-        public System.Collections.IList TransformList(System.Collections.IList collection)
+        public IList TransformList(IList collection)
         {
             return collection;
         }

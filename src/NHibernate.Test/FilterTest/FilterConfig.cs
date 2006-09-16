@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NHibernate;
 using NHibernate.Cfg;
-
-using NUnit.Framework;
 using NHibernate.Engine;
-using NHibernate.Type; 
+using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.FilterTest
 {

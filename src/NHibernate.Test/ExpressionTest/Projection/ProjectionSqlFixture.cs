@@ -1,3 +1,5 @@
+#if NET_2_0
+
 using System;
 using System.Data;
 using System.Configuration;
@@ -95,3 +97,4 @@ namespace NHibernate.Test.ExpressionTest.Projection
         }
     }
 }
+#endif

@@ -1,3 +1,5 @@
+#if NET_2_0
+
 using System;
 using NUnit.Framework;
 
@@ -67,3 +69,4 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 		}
 	}
 }
+#endif

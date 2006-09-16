@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using NHibernate.Expression;
 using NHibernate.DomainModel;
+using NHibernate.Expression;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
-using System.Collections;
+using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest.Projection
 {
@@ -143,7 +138,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
             ISession session = factory.OpenSession();
             IProjection expression = Projections.SqlGroupProjection("count(Pay)", "Pay",
                 new string[] { "PayCount" },
-                new NHibernate.Type.IType[] { NHibernateUtil.Double }
+                new IType[] { NHibernateUtil.Double }
                 );
             CreateObjects(typeof(Simple), session);
             SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery);
@@ -158,7 +153,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
             ISession session = factory.OpenSession();
             IProjection expression = Projections.SqlProjection("count(Pay)", 
                 new string[] { "CountOfPay" }, new 
-                NHibernate.Type.IType[] { NHibernateUtil.Double});
+                IType[] { NHibernateUtil.Double});
             CreateObjects(typeof(Simple), session);
             SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery);
             string expectedSql = "count(Pay)";

@@ -1,3 +1,5 @@
+#if NET_2_0
+
 using System;
 using System.Collections.Generic;
 
@@ -82,3 +84,4 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 		}
 	}
 }
+#endif

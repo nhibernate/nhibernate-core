@@ -1,3 +1,5 @@
+#if NET_2_0
+
 using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -150,3 +152,5 @@ namespace NHibernate.Impl
 		#endregion
 	}
 }
+
+#endif

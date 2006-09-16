@@ -43,9 +43,12 @@ namespace NHibernate.Driver
 		/// </remarks>
 		public override IBatcher CreateBatcher(ISessionImplementor session)
 		{
+#if NET_2_0
+
 			if (session.Factory.IsBatchUpdateEnabled)
 				return new SqlClientBatchingBatcher(session);
 			else
+#endif
 				return new NonBatchingBatcher(session);
 		}
 

@@ -58,5 +58,18 @@ namespace NHibernate.Engine
 		{
 			return !(left == right);
 		}
+
+		public override bool Equals(object obj)
+		{
+			if(obj is ExecuteUpdateResultCheckStyle)
+			{
+				return this == (ExecuteUpdateResultCheckStyle) obj;
+			}
+			return false;
+		}
+		public override int GetHashCode()
+		{
+			return name.GetHashCode();
+		}
 	}
 }

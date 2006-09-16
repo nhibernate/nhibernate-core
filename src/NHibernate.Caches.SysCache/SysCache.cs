@@ -292,7 +292,7 @@ namespace NHibernate.Caches.SysCache
 				System.Web.Caching.Cache.NoAbsoluteExpiration,
 				System.Web.Caching.Cache.NoSlidingExpiration,
 				CacheItemPriority.Default,
-				RootCacheItemRemoved );
+				new CacheItemRemovedCallback(RootCacheItemRemoved));
 		}
 
 		/// <summary></summary>
