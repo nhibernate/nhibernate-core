@@ -36,11 +36,18 @@ namespace NHibernate.Impl
 		private bool forceCacheRefresh;
 		private static readonly object UNSET_PARAMETER = new object();
 		private static readonly object UNSET_TYPE = new object();
+		private object optionalId;
+		private object optionalObject;
+		private System.Type optionalEntityName;
+		private FlushMode flushMode = FlushMode.Unspecified;
+		private FlushMode sessionFlushMode = FlushMode.Unspecified;
+		private object collectionKey;
 
-		public AbstractQueryImpl( string queryString, ISessionImplementor session )
+		public AbstractQueryImpl( string queryString, FlushMode flushMode, ISessionImplementor session )
 		{
 			this.session = session;
 			this.queryString = queryString;
+			this.flushMode = flushMode;
 			selection = new RowSelection();
 			InitParameterBookKeeping();
 		}
@@ -54,6 +61,11 @@ namespace NHibernate.Impl
 		{
 			// NB The java one always returns a copy, so I'm going to reproduce that behaviour
 			get { return new Hashtable( namedParameters ); }
+		}
+		
+		public bool HasNamedParameters
+		{
+			get { return actualNamedParameters.Count > 0; }
 		}
 
 		protected void VerifyParameters()
@@ -632,7 +644,10 @@ namespace NHibernate.Impl
 				cacheable,
 				cacheRegion,
 				forceCacheRefresh,
-				null);
+				collectionKey == null ? null : new object[] { collectionKey },
+				optionalObject,
+				optionalEntityName,
+				optionalId);
 		}
 
 		public IQuery SetCacheable( bool cacheable )
@@ -664,5 +679,50 @@ namespace NHibernate.Impl
 #if NET_2_0
 		public abstract IList<T> List<T>();
 #endif
+		
+		public void SetOptionalId(object optionalId)
+		{
+			this.optionalId = optionalId;
+		}
+		
+		public void SetOptionalObject(object optionalObject)
+		{
+			this.optionalObject = optionalObject;
+		}
+		
+		public void SetOptionalEntityName(System.Type optionalEntityName)
+		{
+			this.optionalEntityName = optionalEntityName;
+		}
+		
+		public IQuery SetFlushMode(FlushMode flushMode)
+		{
+			this.flushMode = flushMode;
+			return this;
+		}
+
+		protected void Before()
+		{
+			if (flushMode != FlushMode.Unspecified)
+			{
+				sessionFlushMode = Session.FlushMode;
+				Session.FlushMode = flushMode;
+			}
+		}
+		
+		protected void After()
+		{
+			if (sessionFlushMode != FlushMode.Unspecified)
+			{
+				Session.FlushMode = sessionFlushMode;
+				sessionFlushMode = FlushMode.Unspecified;
+			}
+		}
+
+		public IQuery SetCollectionKey(object collectionKey)
+		{
+			this.collectionKey = collectionKey;
+			return this;
+		}
 	}
 }

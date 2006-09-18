@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using log4net;
 using NHibernate.Cache;
@@ -15,14 +16,14 @@ namespace NHibernate.Cfg
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(Mappings));
 
-		private IDictionary classes;
-		private IDictionary collections;
-		private IDictionary tables;
-		private IDictionary queries;
-		private IDictionary sqlqueries;
-		private IDictionary resultSetMappings;
-		private IList secondPasses;
-		private IDictionary imports;
+		private readonly IDictionary classes;
+		private readonly IDictionary collections;
+		private readonly IDictionary tables;
+		private readonly IDictionary queries;
+		private readonly IDictionary sqlqueries;
+		private readonly IDictionary resultSetMappings;
+		private readonly IList secondPasses;
+		private readonly IDictionary imports;
 		private string schemaName;
 		private string defaultCascade;
 		private string defaultNamespace;
@@ -30,10 +31,12 @@ namespace NHibernate.Cfg
 		private string defaultAccess;
 		private bool autoImport;
 		private bool defaultLazy;
-		private IList propertyReferences;
-		private IDictionary caches;
-        private IDictionary filterDefinitions;
-        private INamingStrategy namingStrategy;
+		private readonly IList propertyReferences;
+		private readonly IDictionary caches;
+        private readonly IDictionary filterDefinitions;
+		private readonly IList auxiliaryDatabaseObjects;
+
+		private INamingStrategy namingStrategy;
 
 		internal class UniquePropertyReference
 		{
@@ -41,39 +44,27 @@ namespace NHibernate.Cfg
 			public string PropertyName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="classes"></param>
-		/// <param name="collections"></param>
-		/// <param name="tables"></param>
-		/// <param name="queries"></param>
-		/// <param name="sqlqueries"></param>
-		/// <param name="imports"></param>
-		/// <param name="caches"></param>
-		/// <param name="secondPasses"></param>
-		/// <param name="propertyReferences"></param>
-		/// <param name="namingStrategy"></param>
 		internal Mappings(
 			IDictionary classes,
 			IDictionary collections,
 			IDictionary tables,
 			IDictionary queries,
 			IDictionary sqlqueries,
-			IDictionary sqlResultSetMappings,
+			IDictionary resultSetMappings,
 			IDictionary imports,
 			IDictionary caches,
 			IList secondPasses,
 			IList propertyReferences,
 			INamingStrategy namingStrategy,
-			IDictionary filterDefinitions
+			IDictionary filterDefinitions,
+			IList auxiliaryDatabaseObjects
             )
 		{
 			this.classes = classes;
 			this.collections = collections;
 			this.queries = queries;
 			this.sqlqueries = sqlqueries;
-			this.resultSetMappings = sqlResultSetMappings;
+			this.resultSetMappings = resultSetMappings;
 			this.tables = tables;
 			this.imports = imports;
 			this.caches = caches;
@@ -81,6 +72,7 @@ namespace NHibernate.Cfg
 			this.propertyReferences = propertyReferences;
 			this.namingStrategy = namingStrategy;
             this.filterDefinitions = filterDefinitions;
+			this.auxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
 		}
 
 		/// <summary>
@@ -340,5 +332,10 @@ namespace NHibernate.Cfg
         {
             return (FilterDefinition)filterDefinitions[name];
         }
-    }
+
+		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject auxiliaryDatabaseObject)
+		{
+			auxiliaryDatabaseObjects.Add(auxiliaryDatabaseObject);
+		}
+	}
 }

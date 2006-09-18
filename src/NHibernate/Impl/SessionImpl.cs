@@ -2133,7 +2133,7 @@ namespace NHibernate.Impl
 		{
 			CheckIsOpen();
 
-			return new QueryImpl(queryString, this);
+			return new QueryImpl(queryString, FlushMode.Unspecified, this);
 		}
 
 		/// <summary>
@@ -2158,7 +2158,7 @@ namespace NHibernate.Impl
 				string queryString = nqd.QueryString;
 				query = new QueryImpl(
 						queryString,
-					//nqd.FlushMode,
+						nqd.FlushMode,
 						this//,
 					//GetHQLQueryPlan(queryString, false).ParameterMetadata
 				);
@@ -2180,6 +2180,24 @@ namespace NHibernate.Impl
 				nqd = nsqlqd;
 			}
 			InitQuery(query, nqd);
+			return query;
+		}
+
+		public IQuery GetNamedSQLQuery(string queryName)
+		{
+			CheckIsOpen();
+			NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(queryName);
+			if (nsqlqd == null)
+			{
+				throw new MappingException("Named SQL query not known: " + queryName);
+			}
+			IQuery query = new SqlQueryImpl(
+				nsqlqd,
+				this//,
+				//factory.QueryPlanCache.GetSQLParameterMetadata( nsqlqd.QueryString )
+				);
+			//query.setComment( "named native SQL query " + queryName );
+			InitQuery(query, nsqlqd);
 			return query;
 		}
 

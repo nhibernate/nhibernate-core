@@ -14,5 +14,16 @@ namespace NHibernate.Util
 			}
 			return attribute.Value;
 		}
+
+		public static string ElementTextTrim(XmlNode node, string elementName, XmlNamespaceManager nsmgr)
+		{
+			XmlNode subNode = node.SelectSingleNode(elementName, nsmgr);
+			if (subNode == null)
+			{
+				return null;
+			}
+
+			return subNode.InnerText.Trim();
+		}
 	}
 }

@@ -329,6 +329,14 @@
     <Compile Include="SqlCommandTest\SqlStringParameterFixture.cs" />
     <Compile Include="SqlCommandTest\SqlUpdateBuilderFixture.cs" />
     <Compile Include="SqlCommandTest\TemplateFixture.cs" />
+    <Compile Include="SqlTest\Employment.cs" />
+    <Compile Include="SqlTest\HandSQLTest.cs" />
+    <Compile Include="SqlTest\MonetaryAmount.cs" />
+    <Compile Include="SqlTest\MonetaryAmountUserType.cs" />
+    <Compile Include="SqlTest\MSSQLTest.cs" />
+    <Compile Include="SqlTest\NullDateUserType.cs" />
+    <Compile Include="SqlTest\Organization.cs" />
+    <Compile Include="SqlTest\Person.cs" />
     <Compile Include="Subclass\SubclassAssert.cs" />
     <Compile Include="Subclass\SubclassBase.cs" />
     <Compile Include="Subclass\SubclassExtendsFixture.cs" />
@@ -542,6 +550,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FilterTest\FilterMapping.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SqlTest\MSSQLEmployment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -39,5 +39,10 @@ namespace NHibernate.Cfg
         public const string nsFilterParam = nsPrefix + ":filter-param";
         public const string nsFilter = nsPrefix + ":filter";
 
+		public const string nsDatabaseObject = nsPrefix + ":database-object";
+		public const string nsDefinition = nsPrefix + ":definition";
+		public const string nsCreate = nsPrefix + ":create";
+		public const string nsDrop = nsPrefix + ":drop";
+		public const string nsDialectScope = nsPrefix + ":dialect-scope";
 	}
 }

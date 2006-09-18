@@ -3,6 +3,7 @@ using System.Collections;
 
 using NHibernate.Cache;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -43,19 +44,21 @@ namespace NHibernate.Mapping
 		private string referencedPropertyName;
 		private string typeName;
 
-		private string customSQLInsert;
+		private string loaderName;
+
+		private SqlString customSQLInsert;
 		private bool customInsertCallable;
 		private ExecuteUpdateResultCheckStyle insertCheckStyle;
 
-		private string customSQLDelete;
+		private SqlString customSQLDelete;
 		private bool customDeleteCallable;
 		private ExecuteUpdateResultCheckStyle deleteCheckStyle;
 
-		private string customSQLUpdate;
+		private SqlString customSQLUpdate;
 		private bool customUpdateCallable;
 		private ExecuteUpdateResultCheckStyle updateCheckStyle;
 
-		private string customSQLDeleteAll;
+		private SqlString customSQLDeleteAll;
 		private bool customDeleteAllCallable;
 		private ExecuteUpdateResultCheckStyle deleteAllCheckStyle;
 
@@ -361,10 +364,10 @@ namespace NHibernate.Mapping
 			set { typeName = value; }
 		}
 
-		public string CustomSQLInsert { get { return customSQLInsert; } }
-		public string CustomSQLDelete { get { return customSQLDelete; } }
-		public string CustomSQLUpdate { get { return customSQLUpdate; } }
-		public string CustomSQLDeleteAll { get { return customSQLDeleteAll; } }
+		public SqlString CustomSQLInsert { get { return customSQLInsert; } }
+		public SqlString CustomSQLDelete { get { return customSQLDelete; } }
+		public SqlString CustomSQLUpdate { get { return customSQLUpdate; } }
+		public SqlString CustomSQLDeleteAll { get { return customSQLDeleteAll; } }
 
 		public bool IsCustomInsertCallable { get { return customInsertCallable; } }
 		public bool IsCustomDeleteCallable { get { return customDeleteCallable; } }
@@ -378,28 +381,28 @@ namespace NHibernate.Mapping
 
 		public void SetCustomSQLInsert(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
-			customSQLInsert = sql;
+			customSQLInsert = SqlString.Parse(sql);
 			customInsertCallable = callable;
 			insertCheckStyle = checkStyle;
 		}
 
 		public void SetCustomSQLDelete(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
-			customSQLDelete = sql;
+			customSQLDelete = SqlString.Parse(sql);
 			customDeleteCallable = callable;
 			deleteCheckStyle = checkStyle;
 		}
 
 		public void SetCustomSQLDeleteAll(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
-			customSQLDeleteAll = sql;
+			customSQLDeleteAll = SqlString.Parse(sql);
 			customDeleteAllCallable = callable;
 			deleteAllCheckStyle = checkStyle;
 		}
 
 		public void SetCustomSQLUpdate(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
-			customSQLUpdate = sql;
+			customSQLUpdate = SqlString.Parse(sql);
 			customUpdateCallable = callable;
 			updateCheckStyle = checkStyle;
 		}
@@ -423,5 +426,11 @@ namespace NHibernate.Mapping
         {
             get { return manyToManyFilters; }
         }
+
+		public string LoaderName
+		{
+			get { return loaderName; }
+			set { loaderName = value == null ? null : string.Intern(value); }
+		}
 	}
 }

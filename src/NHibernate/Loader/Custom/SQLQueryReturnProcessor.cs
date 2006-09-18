@@ -85,7 +85,7 @@ namespace NHibernate.Loader.Custom
 			{
 				ProcessScalarReturn((SQLQueryScalarReturn) rtn);
 			}
-			if( rtn is SQLQueryRootReturn )
+			else if( rtn is SQLQueryRootReturn )
 			{
 				ProcessRootReturn( ( SQLQueryRootReturn ) rtn );
 			}
@@ -207,7 +207,7 @@ namespace NHibernate.Loader.Custom
 
 			if( returnType.IsCollectionType )
 			{
-				string role = ownerPersister.MappedClass.AssemblyQualifiedName + '.' + roleReturn.OwnerProperty;
+				string role = ownerPersister.MappedClass.FullName + '.' + roleReturn.OwnerProperty;
 				AddCollection( role, alias, roleReturn.PropertyResultsMap, roleReturn.LockMode );
 				collectionOwnerAliases.Add( ownerAlias );
 			}

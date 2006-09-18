@@ -102,6 +102,7 @@ namespace NHibernate.Cfg
 		private IDictionary properties;
 		private IDictionary caches;
         private IDictionary filterDefinitions;
+		private IList auxiliaryDatabaseObjects;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 
@@ -126,6 +127,7 @@ namespace NHibernate.Cfg
 			caches = new Hashtable();
 			mapping = new Mapping( this );
 			properties = Environment.Properties;
+			auxiliaryDatabaseObjects = new ArrayList();
 		}
 
 		private class Mapping : IMapping
@@ -432,7 +434,8 @@ namespace NHibernate.Cfg
 				secondPasses,
 				propertyReferences,
 				namingStrategy,
-                filterDefinitions
+                filterDefinitions,
+				auxiliaryDatabaseObjects
 				);
 		}
 
@@ -696,7 +699,19 @@ namespace NHibernate.Cfg
 		{
 			SecondPassCompile();
 
+			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+
 			ArrayList script = new ArrayList( 50 );
+
+			// drop them in reverse order in case db needs it done that way...
+			for (int i = auxiliaryDatabaseObjects.Count - 1; i >= 0; i-- )
+			{
+				IAuxiliaryDatabaseObject auxDbObj = (IAuxiliaryDatabaseObject) auxiliaryDatabaseObjects[i];
+				if (auxDbObj.AppliesToDialect(dialect))
+				{
+					script.Add(auxDbObj.SqlDropString(dialect, defaultSchema));
+				}
+			}
 
 			if( dialect.DropConstraints )
 			{
@@ -704,14 +719,14 @@ namespace NHibernate.Cfg
 				{
 					foreach( ForeignKey fk in table.ForeignKeyCollection )
 					{
-						script.Add( fk.SqlDropString( dialect, ( string ) properties[ Environment.DefaultSchema ] ) );
+						script.Add( fk.SqlDropString( dialect, defaultSchema ) );
 					}
 				}
 			}
 
 			foreach( Table table in TableMappings )
 			{
-				script.Add( table.SqlDropString( dialect, ( string ) properties[ Environment.DefaultSchema ] ) );
+				script.Add( table.SqlDropString( dialect, defaultSchema ) );
 			}
 
 			foreach( IPersistentIdentifierGenerator idGen in CollectionGenerators( dialect ) )
@@ -734,11 +749,13 @@ namespace NHibernate.Cfg
 		{
 			SecondPassCompile();
 
+			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+
 			ArrayList script = new ArrayList( 50 );
 
 			foreach( Table table in TableMappings )
 			{
-				script.Add( table.SqlCreateString( dialect, mapping, ( string ) properties[ Environment.DefaultSchema ] ) );
+				script.Add( table.SqlCreateString( dialect, mapping, defaultSchema ) );
 			}
 
 			foreach( Table table in TableMappings )
@@ -751,21 +768,21 @@ namespace NHibernate.Cfg
 				{
 					foreach( UniqueKey uk in table.UniqueKeyCollection )
 					{
-						script.Add( uk.SqlCreateString( dialect, mapping, ( string ) properties[ Environment.DefaultSchema ] ) );
+						script.Add( uk.SqlCreateString( dialect, mapping, defaultSchema ) );
 					}
 				}
 				*/
 
 				foreach( Index index in table.IndexCollection )
 				{
-					script.Add( index.SqlCreateString( dialect, mapping, ( string ) properties[ Environment.DefaultSchema ] ) );
+					script.Add( index.SqlCreateString( dialect, mapping, defaultSchema ) );
 				}
 
 				if( dialect.HasAlterTable )
 				{
 					foreach( ForeignKey fk in table.ForeignKeyCollection )
 					{
-						script.Add( fk.SqlCreateString( dialect, mapping, ( string ) properties[ Environment.DefaultSchema ] ) );
+						script.Add( fk.SqlCreateString( dialect, mapping, defaultSchema ) );
 					}
 				}
 			}
@@ -774,6 +791,14 @@ namespace NHibernate.Cfg
 			{
 				string[] lines = idGen.SqlCreateStrings( dialect );
 				script.AddRange( lines );
+			}
+			
+			foreach (IAuxiliaryDatabaseObject auxDbObj in auxiliaryDatabaseObjects)
+			{
+				if (auxDbObj.AppliesToDialect(dialect))
+				{
+					script.Add(auxDbObj.SqlCreateString(dialect, mapping, defaultSchema));
+				}
 			}
 
 			return ArrayHelper.ToStringArray( script );
@@ -1538,6 +1563,11 @@ namespace NHibernate.Cfg
         {
             filterDefinitions.Add(definition.FilterName, definition);
         }
+		
+		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject obj)
+		{
+			auxiliaryDatabaseObjects.Add(obj);
+		}
 		#region NHibernate-Specific Members
 
 		/// <summary>

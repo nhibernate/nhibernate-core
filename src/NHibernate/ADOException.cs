@@ -33,7 +33,7 @@ namespace NHibernate
 		}
 
 		public ADOException( string message, Exception innerException, SqlString sql )
-			: base( message, innerException )
+			: base( message + "[SQL: " + sql + "]", innerException )
 		{
 			this.sql = sql;
 		}

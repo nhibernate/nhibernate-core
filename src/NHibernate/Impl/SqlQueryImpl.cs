@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
-using NHibernate.Type;
 using NHibernate.Loader.Custom;
 
 namespace NHibernate.Impl
@@ -36,31 +35,32 @@ namespace NHibernate.Impl
 			System.Type[] returnClasses,
 			LockMode[] lockModes,
 			ISessionImplementor session,
-			ICollection querySpaces )
-			: base( sql, session )
+			ICollection querySpaces,
+			FlushMode flushMode)
+			: base(sql, flushMode, session)
 		{
 			// TODO : this constructor form is *only* used from constructor directly below us; can it go away?
-			queryReturns = new ArrayList( returnAliases.Length );
-			for( int i = 0; i < returnAliases.Length; i++ )
+			queryReturns = new ArrayList(returnAliases.Length);
+			for (int i = 0; i < returnAliases.Length; i++)
 			{
 				SQLQueryRootReturn ret = new SQLQueryRootReturn(
-					returnAliases[ i ],
-					returnClasses[ i ].AssemblyQualifiedName,
-					lockModes == null ? LockMode.None : lockModes[ i ] );
-				queryReturns.Add( ret );
+					returnAliases[i],
+					returnClasses[i].AssemblyQualifiedName,
+					lockModes == null ? LockMode.None : lockModes[i]);
+				queryReturns.Add(ret);
 			}
 
 			this.querySpaces = querySpaces;
 			this.callable = false;
 		}
 
-		public SqlQueryImpl( string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session, ICollection querySpaces )
-			: this( sql, returnAliases, returnClasses, null, session, querySpaces )
+		public SqlQueryImpl(string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session, ICollection querySpaces)
+			: this(sql, returnAliases, returnClasses, null, session, querySpaces, FlushMode.Unspecified)
 		{
 		}
 
 		public SqlQueryImpl(NamedSQLQueryDefinition queryDef, ISessionImplementor session)
-			: base(queryDef.QueryString, session)
+			: base(queryDef.QueryString, queryDef.FlushMode, session)
 		{
 			if (queryDef.ResultSetRef != null)
 			{
@@ -86,8 +86,8 @@ namespace NHibernate.Impl
 
 		private ISQLQueryReturn[] GetQueryReturns()
 		{
-			ISQLQueryReturn[] result = new ISQLQueryReturn[ queryReturns.Count ];
-			queryReturns.CopyTo( result, 0 );
+			ISQLQueryReturn[] result = new ISQLQueryReturn[queryReturns.Count];
+			queryReturns.CopyTo(result, 0);
 			return result;
 		}
 
@@ -105,20 +105,36 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			NativeSQLQuerySpecification spec = GenerateQuerySpecification( namedParams );
-			QueryParameters qp = GetQueryParameters( namedParams );
+			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
+			QueryParameters qp = GetQueryParameters(namedParams);
 
-			return Session.List( spec, qp );
+			Before();
+			try
+			{
+				return Session.List(spec, qp);
+			}
+			finally
+			{
+				After();
+			}
 		}
 
-		public override void List( IList results )
+		public override void List(IList results)
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			NativeSQLQuerySpecification spec = GenerateQuerySpecification( namedParams );
-			QueryParameters qp = GetQueryParameters( namedParams );
+			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
+			QueryParameters qp = GetQueryParameters(namedParams);
 
-			Session.List( spec, qp, results );
+			Before();
+			try
+			{
+				Session.List(spec, qp, results);
+			}
+			finally
+			{
+				After();
+			}
 		}
 
 #if NET_2_0
@@ -126,19 +142,27 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			NativeSQLQuerySpecification spec = GenerateQuerySpecification( namedParams );
-			QueryParameters qp = GetQueryParameters( namedParams );
+			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
+			QueryParameters qp = GetQueryParameters(namedParams);
 
-			return Session.List<T>( spec, qp );
+			Before();
+			try
+			{
+				return Session.List<T>(spec, qp);
+			}
+			finally
+			{
+				After();
+			}
 		}
 #endif
 
-		public NativeSQLQuerySpecification GenerateQuerySpecification( IDictionary parameters )
+		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary parameters)
 		{
 			return new NativeSQLQuerySpecification(
-				BindParameterLists( NamedParams ),
+				BindParameterLists(NamedParams),
 				GetQueryReturns(),
-				querySpaces );
+				querySpaces);
 		}
 
 		public override QueryParameters GetQueryParameters(IDictionary namedParams)
@@ -147,16 +171,16 @@ namespace NHibernate.Impl
 			qp.Callable = callable;
 			return qp;
 		}
-		
+
 		public override IEnumerable Enumerable()
 		{
-			throw new NotSupportedException( "SQL queries do not currently support enumeration" );
+			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
 #if NET_2_0
 		public override IEnumerable<T> Enumerable<T>()
 		{
-			throw new NotSupportedException( "SQL queries do not currently support enumeration" );
+			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 #endif
 	}

@@ -1,4 +1,6 @@
 using System;
+using System.Data;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Engine
 {
@@ -37,7 +39,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public static ExecuteUpdateResultCheckStyle DetermineDefault(string customSql, bool callable)
+		public static ExecuteUpdateResultCheckStyle DetermineDefault(SqlString customSql, CommandType commandType)
 		{
 			if (customSql == null)
 			{
@@ -45,7 +47,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				return callable ? Param : Count;
+				return commandType == CommandType.StoredProcedure ? Param : Count;
 			}
 		}
 

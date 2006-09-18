@@ -26,7 +26,7 @@ namespace NHibernate.Mapping
 		private System.Type mappedClass;
 		private string discriminatorValue;
 		private bool lazy;
-		private Hashtable properties = new Hashtable();
+		private ArrayList properties = new ArrayList();
 		private Table table;
 		private System.Type proxyInterface;
 		private readonly ArrayList subclasses = new ArrayList();
@@ -41,15 +41,15 @@ namespace NHibernate.Mapping
         private IDictionary filters = new Hashtable();
 
 
-		private string customSQLInsert;
+		private SqlString customSQLInsert;
 		private bool customInsertCallable;
 		private ExecuteUpdateResultCheckStyle insertCheckStyle;
 
-		private string customSQLDelete;
+		private SqlString customSQLDelete;
 		private bool customDeleteCallable;
 		private ExecuteUpdateResultCheckStyle deleteCheckStyle;
 
-		private string customSQLUpdate;
+		private SqlString customSQLUpdate;
 		private bool customUpdateCallable;
 		private ExecuteUpdateResultCheckStyle updateCheckStyle;
 
@@ -187,29 +187,12 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Add a new property definition
-		/// </summary>
-		/// <param name="p"></param>
-		/// <exception cref="MappingException">if the property was already defined</exception>
-		public void AddNewProperty( Property p )
-		{
-			if( properties.Contains( p.Name ) )
-			{
-				throw new MappingException( string.Format( "Duplicate mapping for property: {0}", StringHelper.Qualify( Name, p.Name ) ) );
-			}
-			else
-			{
-				AddProperty( p );
-			}
-		}
-
-		/// <summary>
 		/// Change the property definition or add a new property definition
 		/// </summary>
 		/// <param name="p">The <see cref="Property"/> to add.</param>
 		public virtual void AddProperty( Property p )
 		{
-			properties.Add( p.Name, p );
+			properties.Add( p );
 			p.PersistentClass = this;
 		}
 
@@ -240,7 +223,7 @@ namespace NHibernate.Mapping
 		/// </value>
 		public virtual ICollection PropertyCollection
 		{
-			get { return properties.Values; }
+			get { return properties; }
 		}
 
 		/// <summary>
@@ -723,9 +706,9 @@ namespace NHibernate.Mapping
 			set { loaderName = value; }
 		}
 
-		public string CustomSQLInsert { get { return customSQLInsert; } }
-		public string CustomSQLDelete { get { return customSQLDelete; } }
-		public string CustomSQLUpdate { get { return customSQLUpdate; } }
+		public SqlString CustomSQLInsert { get { return customSQLInsert; } }
+		public SqlString CustomSQLDelete { get { return customSQLDelete; } }
+		public SqlString CustomSQLUpdate { get { return customSQLUpdate; } }
 
 		public bool IsCustomInsertCallable { get { return customInsertCallable; } }
 		public bool IsCustomDeleteCallable { get { return customDeleteCallable; } }
@@ -737,21 +720,21 @@ namespace NHibernate.Mapping
 
 		public void SetCustomSQLInsert(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
-			customSQLInsert = sql;
+			customSQLInsert = SqlString.Parse(sql);
 			customInsertCallable = callable;
 			insertCheckStyle = checkStyle;
 		}
 
 		public void SetCustomSQLDelete(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
-			customSQLDelete = sql;
+			customSQLDelete = SqlString.Parse(sql);
 			customDeleteCallable = callable;
 			deleteCheckStyle = checkStyle;
 		}
 
 		public void SetCustomSQLUpdate(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
-			customSQLUpdate = sql;
+			customSQLUpdate = SqlString.Parse(sql);
 			customUpdateCallable = callable;
 			updateCheckStyle = checkStyle;
 		}

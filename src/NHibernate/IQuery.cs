@@ -503,5 +503,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		IQuery SetTimestamp( string name, DateTime val );
+
+		IQuery SetFlushMode(FlushMode flushMode);
 	}
 }

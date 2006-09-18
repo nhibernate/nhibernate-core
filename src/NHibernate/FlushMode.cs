@@ -11,7 +11,12 @@ namespace NHibernate
 	/// </remarks>
 	[Serializable]
 	public enum FlushMode
-	{
+	{		
+		/// <summary>
+		/// Special value for unspecified flush mode (like <c>null</c> in Java).
+		/// </summary>
+		Unspecified = -1,
+
 		/// <summary>
 		/// The <c>ISession</c> is never flushed unless <c>Flush()</c> is explicitly
 		/// called by the application. This mode is very efficient for read only
@@ -26,6 +31,6 @@ namespace NHibernate
 		/// The <c>ISession</c> is sometimes flushed before query execution in order to
 		/// ensure that queries never return stale state. This is the default flush mode.
 		/// </summary>
-		Auto = 10
+		Auto = 10,
 	}
 }

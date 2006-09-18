@@ -21,7 +21,8 @@ namespace NHibernate.Impl
 		/// <param name="queryString"></param>
 		/// <param name="collection"></param>
 		/// <param name="session"></param>
-		public QueryFilterImpl( string queryString, object collection, ISessionImplementor session ) : base( queryString, session )
+		public QueryFilterImpl( string queryString, object collection, ISessionImplementor session )
+			: base( queryString, FlushMode.Unspecified, session )
 		{
 			this.collection = collection;
 		}

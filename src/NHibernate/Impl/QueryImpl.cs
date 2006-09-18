@@ -10,15 +10,24 @@ namespace NHibernate.Impl
 {
 	public class QueryImpl : AbstractQueryImpl
 	{
-		public QueryImpl( string queryString, ISessionImplementor session ) : base( queryString, session )
+		public QueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session)
+			: base(queryString, flushMode, session)
 		{
 		}
-		
+
 		public override IEnumerable Enumerable()
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Enumerable( BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
+			Before();
+			try
+			{
+				return Session.Enumerable(BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
 		}
 
 #if NET_2_0
@@ -26,7 +35,15 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Enumerable<T>( BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
+			Before();
+			try
+			{
+				return Session.Enumerable<T>(BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
 		}
 #endif
 
@@ -34,14 +51,30 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Find( BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
+			Before();
+			try
+			{
+				return Session.Find(BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
 		}
 
-		public override void List( IList results )
+		public override void List(IList results)
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			Session.Find( BindParameterLists( namedParams ), GetQueryParameters( namedParams ), results );
+			Before();
+			try
+			{
+				Session.Find(BindParameterLists(namedParams), GetQueryParameters(namedParams), results);
+			}
+			finally
+			{
+				After();
+			}
 		}
 
 #if NET_2_0
@@ -49,7 +82,15 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Find<T>( BindParameterLists( namedParams ), GetQueryParameters( namedParams ) );
+			Before();
+			try
+			{
+				return Session.Find<T>(BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
 		}
 #endif
 	}

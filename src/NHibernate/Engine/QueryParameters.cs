@@ -108,7 +108,10 @@ namespace NHibernate.Engine
 				false,
 				null,
 				false,
-				collectionKeys )
+				collectionKeys,
+				null,
+				null,
+				null)
 		{
 		}
 
@@ -129,7 +132,10 @@ namespace NHibernate.Engine
 			bool cacheable,
 			string cacheRegion,
 			bool forceCacheRefresh,
-			object[ ] collectionKeys )
+			object[ ] collectionKeys,
+			object optionalObject,
+			System.Type optionalEntityName,
+			object optionalId) 
 		{
 			_positionalParameterTypes = positionalParameterTypes;
 			_positionalParameterValues = positionalParameterValues;
@@ -140,6 +146,9 @@ namespace NHibernate.Engine
 			_cacheRegion = cacheRegion;
 			_forceCacheRefresh = forceCacheRefresh;
 			_collectionKeys = collectionKeys;
+			_optionalObject = optionalObject;
+			_optionalEntityClass = optionalEntityName;
+			_optionalId = optionalId;
 		}
 
 		public QueryParameters(
@@ -178,7 +187,7 @@ namespace NHibernate.Engine
 			string cacheRegion,
 			//final boolean forceCacheRefresh,
 			string comment,
-			object[] collectionKeys ) 
+			object[] collectionKeys)
 		{
 			_positionalParameterTypes = positionalParameterTypes;
 			_positionalParameterValues = positionalParameterValues;

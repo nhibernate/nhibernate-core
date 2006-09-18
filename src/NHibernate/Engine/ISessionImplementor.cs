@@ -386,9 +386,9 @@ namespace NHibernate.Engine
         /// name, with values corresponding to the {@link org.hibernate.impl.FilterImpl}
         /// instance.
         /// </summary>
-        /// <param name="filterParameterName">The filter parameter name in the format 
-        /// {FILTER_NAME.PARAMETER_NAME}.</param>
         /// <returns>The currently enabled filters.</returns>
         IDictionary EnabledFilters { get; }
-    }
+
+		IQuery GetNamedSQLQuery(string name);
+	}
 }

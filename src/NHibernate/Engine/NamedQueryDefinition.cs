@@ -11,7 +11,7 @@ namespace NHibernate.Engine
 		private readonly string cacheRegion;
 		private readonly int timeout = -1;
 		private readonly int fetchSize = -1;
-		//private readonly FlushMode flushMode;
+		private readonly FlushMode flushMode = FlushMode.Unspecified;
 		private readonly IDictionary parameterTypes;
 
 		//private CacheMode cacheMode;
@@ -24,7 +24,7 @@ namespace NHibernate.Engine
 				string cacheRegion,
 				int timeout,
 				int fetchSize,
-				//FlushMode flushMode,
+				FlushMode flushMode,
 				//CacheMode cacheMode,
 				bool readOnly,
 				string comment,
@@ -36,7 +36,7 @@ namespace NHibernate.Engine
 			this.cacheRegion = cacheRegion;
 			this.timeout = timeout;
 			this.fetchSize = fetchSize;
-			//this.flushMode = flushMode;
+			this.flushMode = flushMode;
 			this.parameterTypes = parameterTypes;
 			//this.cacheMode = cacheMode;
 			this.readOnly = readOnly;
@@ -68,10 +68,10 @@ namespace NHibernate.Engine
 			get { return timeout; }
 		}
 
-		//public FlushMode FlushMode
-		//{
-		//    get { return flushMode; }
-		//}
+		public FlushMode FlushMode
+		{
+		    get { return flushMode; }
+		}
 
 		public override string ToString()
 		{

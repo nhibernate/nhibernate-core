@@ -115,7 +115,7 @@ namespace NHibernate.Cfg
 						"] not formatted correctly {OwnerClassName.propertyName}"
 					);
 			}
-			string ownerClassName = HbmBinder.GetClassName(collectionAttribute.Substring(0, dot), mappings);
+			string ownerClassName = HbmBinder.GetClassNameWithoutAssembly(collectionAttribute.Substring(0, dot), mappings);
 			string ownerPropertyName = collectionAttribute.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
@@ -294,15 +294,21 @@ namespace NHibernate.Cfg
 				}
 			}
 
+			IDictionary newPropertyResults = new Hashtable();
+
 			foreach (DictionaryEntry entry in propertyresults)
 			{
 				if (entry.Value is ArrayList)
 				{
 					ArrayList list = (ArrayList) entry.Value;
-					propertyresults[entry.Key] = ArrayHelper.ToStringArray(list);
+					newPropertyResults[entry.Key] = ArrayHelper.ToStringArray(list);
+				}
+				else
+				{
+					newPropertyResults[entry.Key] = entry.Value;
 				}
 			}
-			return propertyresults.Count == 0 ? CollectionHelper.EmptyMap : propertyresults;
+			return newPropertyResults.Count == 0 ? CollectionHelper.EmptyMap : newPropertyResults;
 		}
 
 		private static int getIndexOfFirstMatchingProperty(IList propertyNames, string follower)
