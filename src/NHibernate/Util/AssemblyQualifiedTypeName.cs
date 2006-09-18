@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 
 namespace NHibernate.Util
 {
@@ -17,7 +16,7 @@ namespace NHibernate.Util
 			this.type = type;
 			this.assembly = assembly;
 		}
-
+		
 		public string Type
 		{
 			get { return type; }

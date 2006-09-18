@@ -1,9 +1,6 @@
 #if NET_2_0
 
 using System;
-using System.Data;
-using System.Configuration;
-using System.Web;
 using System.Collections;
 using NUnit.Framework;
 using NHibernate.Expression;
@@ -91,7 +88,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
 
                 IList result = c.List();// c.UniqueResult();
                 Assert.IsTrue(result.Count == 1);
-                object results = (object)result[0];
+                object results = result[0];
                 Assert.AreEqual(results, 2.5);
             }
         }
