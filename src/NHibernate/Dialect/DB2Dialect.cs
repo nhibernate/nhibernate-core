@@ -147,7 +147,7 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public override string GetIdentitySelectString( string identityColumn, string tableName )
 		{
-			return "values IDENTITY_VAL_LOCAL()";
+			return "select identity_val_local() from sysibm.sysdummy1";
 		}
 
 		/// <summary></summary>
@@ -258,6 +258,5 @@ namespace NHibernate.Dialect
 		{
 			get { return " for read only with rs"; }
 		}
-
 	}
 }
