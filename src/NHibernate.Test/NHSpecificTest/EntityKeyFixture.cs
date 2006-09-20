@@ -120,6 +120,16 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+        public bool[] PropertyVersionability
+        {
+            get 
+            {
+                // TODO:  Add TestingClassPersister.PropertyVersionability getter implementation
+                return null; 
+            }
+        }
+
+
 		public System.Type MappedClass
 		{
 			get
@@ -339,7 +349,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public void Update(object id, object[] fields, int[] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session)
+		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields, object oldVersion, object obj, ISessionImplementor session)
 		{
 			// TODO:  Add TestingClassPersister.Update implementation
 		}
@@ -454,7 +464,8 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return null; }
 		}
 		#endregion
-	}
+
+    }
 
 	[TestFixture]
 	public class EntityKeyFixture

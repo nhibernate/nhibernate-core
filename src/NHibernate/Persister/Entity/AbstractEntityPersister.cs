@@ -1139,6 +1139,11 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.PropertyInsertability; }
 		}
 
+        public virtual bool[] PropertyVersionability
+        {
+            get { return entityMetamodel.PropertyVersionability; }
+        }
+        
 		public virtual object GetPropertyValue(object obj, string propertyName)
 		{
 			IGetter getter = (IGetter) gettersByPropertyName[propertyName];
@@ -1590,7 +1595,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="dirtyProperties"></param>
 		/// <returns></returns>
-		protected bool[] GetPropertiesToUpdate(int[] dirtyProperties)
+		protected bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
 		{
 			bool[] propsToUpdate = new bool[HydrateSpan];
 			for (int j = 0; j < dirtyProperties.Length; j++)
@@ -1599,7 +1604,8 @@ namespace NHibernate.Persister.Entity
 			}
 			if (IsVersioned)
 			{
-				propsToUpdate[VersionProperty] = true;
+				propsToUpdate[VersionProperty] = 
+                    Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection, PropertyVersionability);
 			}
 
 			return propsToUpdate;
@@ -1658,7 +1664,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Decide which tables need to be updated
 		/// </summary>
-		private bool[] GetTableUpdateNeeded(int[] dirtyProperties)
+		private bool[] GetTableUpdateNeeded(int[] dirtyProperties, bool hasDirtyCollection)
 		{
 			if (dirtyProperties == null)
 			{
@@ -1678,8 +1684,8 @@ namespace NHibernate.Persister.Entity
 				}
 				if (IsVersioned)
 				{
-					tableUpdateNeeded[0] = true;
-					// = tableUpdateNeeded[ 0 ] || Versioning.IsVersionIncrementRequired(...);
+					tableUpdateNeeded[0] = tableUpdateNeeded[ 0 ] ||
+                        Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection, PropertyVersionability);
 				}
 				return tableUpdateNeeded;
 			}
@@ -1689,12 +1695,13 @@ namespace NHibernate.Persister.Entity
 			object id,
 			object[] fields,
 			int[] dirtyFields,
+            bool hasDirtyCollection,
 			object[] oldFields,
 			object oldVersion,
 			object obj,
 			ISessionImplementor session)
 		{
-			bool[] tableUpdateNeeded = GetTableUpdateNeeded(dirtyFields);
+			bool[] tableUpdateNeeded = GetTableUpdateNeeded(dirtyFields, hasDirtyCollection);
 			int span = TableSpan;
 			bool[] propsToUpdate;
 			SqlCommandInfo[] updateStrings;
@@ -1702,7 +1709,7 @@ namespace NHibernate.Persister.Entity
 			if (entityMetamodel.IsDynamicUpdate && dirtyFields != null)
 			{
 				// For the case of dynamic-update="true", we need to generate the UPDATE SQL
-				propsToUpdate = GetPropertiesToUpdate(dirtyFields);
+				propsToUpdate = GetPropertiesToUpdate(dirtyFields, hasDirtyCollection);
 				updateStrings = new SqlCommandInfo[span];
 				for (int j = 0; j < span; j++)
 				{
@@ -1771,6 +1778,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else if (OptimisticLockMode.Version < OptimisticLockMode && null != oldFields)
 					{
+                        bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == OptimisticLockMode.All
 						                         	? PropertyUpdateability
 						                         	: includeProperty;
@@ -1778,7 +1786,8 @@ namespace NHibernate.Persister.Entity
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
 							bool include = includeOldField[i] &&
-							               IsPropertyOfTable(i, j);
+							               IsPropertyOfTable(i, j) &&
+                                           versionability[i];
 							if (include)
 							{
 								if (oldFields[i] != null)
@@ -2466,6 +2475,7 @@ namespace NHibernate.Persister.Entity
 			}
 			else if (entityMetamodel.OptimisticLockMode > Engine.OptimisticLockMode.Version && oldFields != null)
 			{
+                bool[] versionability = PropertyVersionability;
 				bool[] includeInWhere =
 					OptimisticLockMode == OptimisticLockMode.All
 						? PropertyUpdateability
@@ -2474,7 +2484,8 @@ namespace NHibernate.Persister.Entity
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{
 					bool include = includeInWhere[i] &&
-					               IsPropertyOfTable(i, j);
+					               IsPropertyOfTable(i, j) &&
+                                   versionability[i];
 					if (include)
 					{
 						string[] propertyColumnNames = GetPropertyColumnNames(i);
@@ -2787,11 +2798,6 @@ namespace NHibernate.Persister.Entity
 			{
 				queryLoader = new NamedQueryLoader( loaderName, this );
 			}
-		}
-		
-		public virtual bool[] PropertyVersionability
-		{
-			get { return entityMetamodel.PropertyVersionability; }
 		}
 	}
 }

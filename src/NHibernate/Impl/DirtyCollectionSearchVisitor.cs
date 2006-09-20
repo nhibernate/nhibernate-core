@@ -32,10 +32,12 @@ namespace NHibernate.Impl
 	internal class DirtyCollectionSearchVisitor : AbstractVisitor
 	{
 		private bool _dirty;
+        private bool[] _propertyVersionability;
 
-		public DirtyCollectionSearchVisitor(SessionImpl session)
+		public DirtyCollectionSearchVisitor(SessionImpl session, bool[] propertyVersionability)
 			: base( session )
 		{
+            _propertyVersionability = propertyVersionability;
 		}
 
 		/// <summary>
@@ -78,5 +80,10 @@ namespace NHibernate.Impl
 			}
 			return null;
 		}
+
+        protected override bool IncludeEntityProperty(object[] values, int i)
+        {
+            return _propertyVersionability[i] && base.IncludeEntityProperty(values, i);
+        }
 	}
 }

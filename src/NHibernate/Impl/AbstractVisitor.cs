@@ -18,6 +18,27 @@ namespace NHibernate.Impl
 			_session = session;
 		}
 
+		public void ProcessEntityPropertyValues(object[] values, IType[] types)
+		{
+			for (int i = 0; i < types.Length; i++)
+			{
+				if (IncludeEntityProperty(values, i))
+				{
+					ProcessValue(values[i], types[i]);
+				}
+			}
+		}
+
+		protected virtual bool IncludeEntityProperty(object[] values, int i)
+		{
+			return IncludeProperty(values, i);
+		}
+
+		protected virtual bool IncludeProperty(object[] values, int i)
+		{
+			return true;
+		}
+
 		/// <summary>
 		/// Dispatch each property value to <see cref="ProcessValue" />.
 		/// </summary>
@@ -25,18 +46,18 @@ namespace NHibernate.Impl
 		/// <param name="types"></param>
 		public virtual void ProcessValues(object[] values, IType[] types)
 		{
-			for( int i = 0; i < values.Length; i++ )
+			for (int i = 0; i < values.Length; i++)
 			{
-				ProcessValue( values[ i ], types[ i ] );
+				ProcessValue(values[i], types[i]);
 			}
 		}
 
 		protected virtual object ProcessComponent(object component, IAbstractComponentType componentType)
 		{
-			if( component != null )
+			if (component != null)
 			{
-				ProcessValues( componentType.GetPropertyValues( component, _session ),
-				               componentType.Subtypes );
+				ProcessValues(componentType.GetPropertyValues(component, _session),
+							   componentType.Subtypes);
 			}
 
 			return null;
@@ -51,20 +72,20 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		protected object ProcessValue(object value, IType type)
 		{
-			if( type.IsCollectionType )
+			if (type.IsCollectionType)
 			{
 				// Even process null collections
-				return ProcessCollection( value, (CollectionType)type );
+				return ProcessCollection(value, (CollectionType) type);
 			}
-			else if( type.IsEntityType )
+			else if (type.IsEntityType)
 			{
-				return ProcessEntity( value, (EntityType)type );
+				return ProcessEntity(value, (EntityType) type);
 			}
-			else if( type.IsComponentType )
+			else if (type.IsComponentType)
 			{
 				//TODO: what about a null component with a collection!
 				//      we also need to clean up that "null collection"
-				return ProcessComponent( value, (IAbstractComponentType)type );
+				return ProcessComponent(value, (IAbstractComponentType) type);
 			}
 			else
 			{
@@ -80,8 +101,8 @@ namespace NHibernate.Impl
 		public virtual void Process(object obj, IEntityPersister persister)
 		{
 			ProcessValues(
-				persister.GetPropertyValues( obj ),
-				persister.PropertyTypes );
+				persister.GetPropertyValues(obj),
+				persister.PropertyTypes);
 		}
 
 		/// <summary>

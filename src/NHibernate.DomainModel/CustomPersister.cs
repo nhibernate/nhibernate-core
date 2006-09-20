@@ -110,6 +110,11 @@ namespace NHibernate.DomainModel
 			get  { return Mutability; }
 		}
 
+        public bool[] PropertyVersionability
+        {
+            get { return Mutability; }
+        }
+
 		public System.Type MappedClass
 		{
 			get { return typeof(Custom); }
@@ -252,7 +257,7 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
-		public void Update(object id, object[] fields, int[] dirtyFields, object[] oldFields, object oldVersion, object obj, ISessionImplementor session)
+		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields, object oldVersion, object obj, ISessionImplementor session)
 		{
 			Instances[id] = ( (Custom)obj).Clone();
 		}

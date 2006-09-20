@@ -17,6 +17,7 @@ namespace NHibernate.Impl
 		private readonly object nextVersion;
 		private readonly int[ ] dirtyFields;
 		private readonly object[ ] updatedState;
+        private readonly bool hasDirtyCollection;
 		private CacheEntry cacheEntry;
 		private ISoftLock _lock;
 
@@ -33,7 +34,7 @@ namespace NHibernate.Impl
 		/// <param name="updatedState">A deep copy of the <c>fields</c> object array.</param>
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for the persisting the object.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledUpdate( object id, object[ ] fields, int[ ] dirtyProperties, object[ ] oldFields, object lastVersion, object nextVersion, object instance, object[ ] updatedState, IEntityPersister persister, ISessionImplementor session )
+		public ScheduledUpdate( object id, object[ ] fields, int[ ] dirtyProperties, bool hasDirtyCollection, object[ ] oldFields, object lastVersion, object nextVersion, object instance, object[ ] updatedState, IEntityPersister persister, ISessionImplementor session )
 			: base( session, id, instance, persister )
 		{
 			this.fields = fields;
@@ -41,6 +42,7 @@ namespace NHibernate.Impl
 			this.lastVersion = lastVersion;
 			this.nextVersion = nextVersion;
 			this.dirtyFields = dirtyProperties;
+            this.hasDirtyCollection = hasDirtyCollection;
 			this.updatedState = updatedState;
 		}
 
@@ -51,7 +53,7 @@ namespace NHibernate.Impl
 			{
 				_lock = Persister.Cache.Lock( Id, lastVersion );
 			}
-			Persister.Update( Id, fields, dirtyFields, oldFields, lastVersion, Instance, Session );
+			Persister.Update( Id, fields, dirtyFields, hasDirtyCollection, oldFields, lastVersion, Instance, Session );
 			Session.PostUpdate( Instance, updatedState, nextVersion );
 
 			if ( Persister.HasCache )

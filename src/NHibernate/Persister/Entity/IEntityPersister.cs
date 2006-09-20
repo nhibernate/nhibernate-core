@@ -276,17 +276,18 @@ namespace NHibernate.Persister.Entity
 		/// <param name="session"></param>
 		void Delete( object id, object version, object obj, ISessionImplementor session );
 
-		/// <summary>
-		/// Update a persistent instance
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="fields"></param>
-		/// <param name="dirtyFields"></param>
-		/// <param name="oldFields"></param>
-		/// <param name="oldVersion"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		void Update( object id, object[ ] fields, int[ ] dirtyFields, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session );
+        /// <summary>
+        /// Update a persistent instance
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <param name="fields">The fields.</param>
+        /// <param name="dirtyFields">The dirty fields.</param>
+        /// <param name="hasDirtyCollection">if set to <c>true</c> [has dirty collection].</param>
+        /// <param name="oldFields">The old fields.</param>
+        /// <param name="oldVersion">The old version.</param>
+        /// <param name="obj">The obj.</param>
+        /// <param name="session">The session.</param>
+		void Update( object id, object[ ] fields, int[ ] dirtyFields, bool hasDirtyCollection, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session );
 
 		/// <summary>
 		/// Get the Hibernate types of the class properties
@@ -327,6 +328,12 @@ namespace NHibernate.Persister.Entity
 		/// This is for formula columns and if the user sets the insert attribute on the &lt;property&gt; element.
 		/// </remarks>
 		bool[ ] PropertyInsertability { get; }
+
+        /// <summary>
+        /// Get the "versionability" of the properties of this class (is the property optimistic-locked)
+        /// </summary>
+        /// <value><c>true</c> if the property is optimistic-locked; otherwise, <c>false</c>.</value>
+        bool[ ] PropertyVersionability { get; }
 
 		/// <summary>
 		/// Get the cascade styles of the properties (optional operation)

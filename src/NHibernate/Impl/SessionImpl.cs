@@ -3419,9 +3419,10 @@ namespace NHibernate.Impl
 
 				CheckNullability(values, persister, true);
 
+                bool hasDirtyCollections = HasDirtyCollections(persister, status, values, types);
 				//note that we intentionally did _not_ pass in currentPersistentState!
 				updates.Add(
-					new ScheduledUpdate(entry.Id, values, dirtyProperties, entry.LoadedState, entry.Version, nextVersion, obj, updatedState, persister, this)
+                    new ScheduledUpdate(entry.Id, values, dirtyProperties, hasDirtyCollections, entry.LoadedState, entry.Version, nextVersion, obj, updatedState, persister, this)
 					);
 			}
 
@@ -3445,6 +3446,25 @@ namespace NHibernate.Impl
 				}
 			}
 		}
+
+        private bool HasDirtyCollections(
+            IEntityPersister persister,
+            Status status,
+            object[] values,
+            IType[] types)
+        {
+            if (status == Status.Loaded && persister.IsVersioned && persister.HasCollections)
+            {
+                DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(this, persister.PropertyVersionability);
+                visitor.ProcessEntityPropertyValues(values, types);
+                return visitor.WasDirtyCollectionFound;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
 		private bool IsUpdateNecessary(
 			IEntityPersister persister,
@@ -3470,7 +3490,7 @@ namespace NHibernate.Impl
 
 			if (status == Status.Loaded && persister.IsVersioned && persister.HasCollections)
 			{
-				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(this);
+				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(this, persister.PropertyVersionability);
 				visitor.ProcessValues(values, types);
 				return visitor.WasDirtyCollectionFound;
 			}
