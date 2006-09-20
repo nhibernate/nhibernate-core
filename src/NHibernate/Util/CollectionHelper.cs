@@ -149,6 +149,31 @@ namespace NHibernate.Util
 
 			return true;
 		}
+		
+		/// <summary>
+		/// Computes a hash code for <paramref name="coll"/>.
+		/// </summary>
+		/// <remarks>The hash code is computed as the sum of hash codes of
+		/// individual elements, so that the value is independent of the
+		/// collection iteration order.
+		/// </remarks>
+		public static int GetHashCode(ICollection coll)
+		{
+			unchecked
+			{
+				int result = 0;
+				
+				foreach (object obj in coll)
+				{
+					if (obj != null)
+					{
+						result += obj.GetHashCode();
+					}
+				}
+
+				return result;
+			}
+		}
 
 		private CollectionHelper() {}
 	}

@@ -14,6 +14,11 @@ namespace NHibernate.Engine
 			this.name = name;
 		}
 
+		public string Name
+		{
+			get { return name; }
+		}
+		
 		public void AddQueryReturn(ISQLQueryReturn queryReturn)
 		{
 			queryReturns.Add(queryReturn);

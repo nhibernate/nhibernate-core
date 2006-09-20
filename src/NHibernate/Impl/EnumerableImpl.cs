@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Hql;
 using NHibernate.Type;
 
 namespace NHibernate.Impl
@@ -29,8 +30,7 @@ namespace NHibernate.Impl
 		// when we start enumerating through the DataReader we are positioned
 		// before the first record we need
 		private int _currentRow = -1;
-
-		private System.Reflection.ConstructorInfo _holderConstructor;
+		private HolderInstantiator _holderInstantiator;
 		private RowSelection _selection;
 
 		/// <summary>
@@ -42,12 +42,12 @@ namespace NHibernate.Impl
 		/// <param name="types">The <see cref="IType"/>s contained in the <see cref="IDataReader"/>.</param>
 		/// <param name="columnNames">The names of the columns in the <see cref="IDataReader"/>.</param>
 		/// <param name="selection">The <see cref="RowSelection"/> that should be applied to the <see cref="IDataReader"/>.</param>
-		/// <param name="holderType">Optional type of the result holder (used for "select new SomeClass(...)" queries).</param>
+		/// <param name="holderInstantiator">Instantiator of the result holder (used for "select new SomeClass(...)" queries).</param>
 		/// <remarks>
 		/// The <see cref="IDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
 		/// </remarks>
 		public EnumerableImpl( IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[ ] types, string[ ][ ] columnNames, RowSelection selection,
-			System.Type holderType )
+			HolderInstantiator holderInstantiator )
 		{
 			_reader = reader;
 			_cmd = cmd;
@@ -55,12 +55,7 @@ namespace NHibernate.Impl
 			_types = types;
 			_names = columnNames;
 			_selection = selection;
-
-			if( holderType != null )
-			{
-				_holderConstructor = NHibernate.Util.ReflectHelper.GetConstructor(
-					holderType, types );
-			}
+			_holderInstantiator = holderInstantiator;
 
 			_single = _types.Length == 1;
 		}
@@ -83,8 +78,9 @@ namespace NHibernate.Impl
 			else
 			{
 				log.Debug( "retreiving next results" );
+				bool isHolder = _holderInstantiator.IsRequired;
 
-				if( _single )
+				if( _single && !isHolder )
 				{
 					_currentResult = _types[ 0 ].NullSafeGet( _reader, _names[ 0 ], _sess, null );
 				}
@@ -103,27 +99,13 @@ namespace NHibernate.Impl
 						currentResults[ i ] = _types[ i ].NullSafeGet( _reader, _names[ i ], _sess, null );
 					}
 
-					_currentResult = currentResults;
-				}
-
-				if( _holderConstructor != null )
-				{
-					try 
+					if( isHolder )
 					{
-						if( _currentResult == null || !_currentResult.GetType().IsArray )
-						{
-							_currentResult = _holderConstructor.Invoke( new object[] { _currentResult } );
-						}
-						else 
-						{
-							_currentResult = _holderConstructor.Invoke( ( object[ ] )_currentResult );
-						}
+						_currentResult = _holderInstantiator.Instantiate(currentResults);
 					}
-					catch( Exception e )
+					else
 					{
-						throw new QueryException( "Could not instantiate: "
-							+ _holderConstructor.DeclaringType.FullName,
-							e );
+						_currentResult = currentResults;
 					}
 				}
 			}

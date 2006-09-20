@@ -337,5 +337,15 @@ namespace NHibernate.Cfg
 		{
 			auxiliaryDatabaseObjects.Add(auxiliaryDatabaseObject);
 		}
+
+		public void AddResultSetMapping(ResultSetMappingDefinition sqlResultSetMapping)
+		{
+			string name = sqlResultSetMapping.Name;
+			if (resultSetMappings.Contains(name))
+			{
+				throw new DuplicateMappingException("resultSet", name);
+			}
+			resultSetMappings[name] = sqlResultSetMapping;
+		}
 	}
 }

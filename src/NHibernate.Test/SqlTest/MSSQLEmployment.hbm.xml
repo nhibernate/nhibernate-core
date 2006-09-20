@@ -169,13 +169,13 @@
 	</sql-query>
 
 	<sql-query name="selectAllEmployments" callable="false">
-		<return alias="" class="Employment">
+		<return class="Employment">
 			<return-property name="Employee" column="EMPLOYEE"/>
 			<return-property name="Employer" column="EMPLOYER"/>
 			<return-property name="StartDate" column="STARTDATE"/>
 			<return-property name="EndDate" column="ENDDATE"/>
 			<return-property name="RegionCode" column="REGIONCODE"/>
-			<return-property name="Id" column="EMPID"/>
+			<return-property name="id" column="EMPID"/>
 			<return-property name="Salary">
 				<!-- as multi column properties are not supported via the
 				{}-syntax, we need to provide an explicit column list for salary via <return-property> -->

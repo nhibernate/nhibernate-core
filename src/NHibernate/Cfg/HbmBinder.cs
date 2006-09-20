@@ -596,6 +596,9 @@ namespace NHibernate.Cfg
 			XmlAttribute insertNode = node.Attributes["insert"];
 			model.IsInsertable = (insertNode == null) ? true : "true".Equals(insertNode.Value);
 
+			XmlAttribute optimisticLockNode = node.Attributes["optimistic-lock"];
+			model.IsOptimisticLocked = (optimisticLockNode == null) ? true : "true".Equals(optimisticLockNode.Value);
+
 			if (log.IsDebugEnabled)
 			{
 				string msg = "Mapped property: " + model.Name;
@@ -878,6 +881,7 @@ namespace NHibernate.Cfg
 		public static string GetClassName(string unqualifiedName, Mappings model)
 		{
 			return ClassForNameChecked(unqualifiedName, model, "unknown class {0}").AssemblyQualifiedName;
+			//return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).ToString();
 		}
 
 		public static void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable,
@@ -1755,6 +1759,11 @@ namespace NHibernate.Cfg
 			{
 				BindAuxiliaryDatabaseObject(n, mappings);
 			}
+			
+			foreach (XmlNode n in hmNode.SelectNodes(HbmConstants.nsResultset, nsmgr))
+			{
+				BindResultSetMappingDefinition( n, null, mappings );
+			}
 		}
 
 		internal static FlushMode GetFlushMode(string flushMode)
@@ -2390,6 +2399,11 @@ namespace NHibernate.Cfg
 			}
 			log.Debug("Applying filter [" + name + "] as [" + condition + "]");
 			filterable.AddFilter(name, condition);
+		}
+
+		private static void BindResultSetMappingDefinition(XmlNode resultSetElem, string path, Mappings mappings)
+		{
+			mappings.AddSecondPass(new ResultSetMappingSecondPass(resultSetElem, path, mappings));
 		}
 	}
 }

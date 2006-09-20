@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.Transform;
 using NHibernate.Type;
 
 namespace NHibernate.Loader.Criteria
@@ -65,7 +66,7 @@ namespace NHibernate.Loader.Criteria
 			return List( session, translator.GetQueryParameters(), querySpaces, resultTypes );
 		}
 
-		protected override object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
+		protected override object GetResultColumnOrRow( object[ ] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session )
 		{
 			object[] result;
 			string[] aliases;
@@ -142,7 +143,7 @@ namespace NHibernate.Loader.Criteria
 			get { return HasSubselectLoadableCollections; }
 		}
 
-		protected override IList GetResultList( IList results )
+		protected override IList GetResultList( IList results, IResultTransformer resultTransformer )
 		{
 			return translator.RootCriteria.ResultTransformer.TransformList( results );
 		}

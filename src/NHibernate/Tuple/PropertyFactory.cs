@@ -94,7 +94,7 @@ namespace NHibernate.Tuple
 				false, // TODO H3: property.Generation == PropertyGeneration.Always,
 				property.IsOptional,
 				property.IsUpdateable && !lazy,
-				true, // TODO H3: property.IsOptimisticLocked,
+				property.IsOptimisticLocked,
 				property.CascadeStyle,
 				unsavedValue
 				);
@@ -132,7 +132,7 @@ namespace NHibernate.Tuple
 				false, // TODO H3: property.getGeneration() == PropertyGeneration.ALWAYS,
 				property.IsOptional,
 				alwaysDirtyCheck || property.IsUpdateable,
-				true, // TODO H3: property.IsOptimisticLocked,
+				property.IsOptimisticLocked,
 				property.CascadeStyle
 				);
 		}

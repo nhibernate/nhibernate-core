@@ -9,6 +9,7 @@ using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -78,7 +79,7 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, System.Data.IDataReader rs, ISessionImplementor session)
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, System.Data.IDataReader rs, ISessionImplementor session)
 		{
 			return row[ row.Length - 1 ];
 		}

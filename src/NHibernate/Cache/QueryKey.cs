@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Text;
-
+using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -18,8 +19,11 @@ namespace NHibernate.Cache
 		private readonly int firstRow = RowSelection.NoValue;
 		private readonly int maxRows = RowSelection.NoValue;
 		private readonly IDictionary namedParameters;
+		private readonly ISet filters;
+		private readonly IResultTransformer customTransformer;
+		private readonly int hashCode;
 
-		public QueryKey( SqlString queryString, QueryParameters queryParameters )
+		public QueryKey( SqlString queryString, QueryParameters queryParameters, ISet filters )
 		{
 			sqlQueryString = queryString;
 			types = queryParameters.PositionalParameterTypes;
@@ -37,21 +41,19 @@ namespace NHibernate.Cache
 				maxRows = RowSelection.NoValue;
 			}
 			namedParameters = queryParameters.NamedParameters;
+			this.filters = filters;
+			this.customTransformer = queryParameters.ResultTransformer;
+			this.hashCode = ComputeHashCode();
 		}
 
 		private static bool DictionariesAreEqual( IDictionary a, IDictionary b )
 		{
-			if( a == null && b == null )
+			if (Equals(a, b))
 			{
 				return true;
 			}
 
-			if( a == null && b != null )
-			{
-				return false;
-			}
-
-			if( a != null && b == null )
+			if( a == null || b == null )
 			{
 				return false;
 			}
@@ -71,6 +73,34 @@ namespace NHibernate.Cache
 
 			return true;
 		}
+		
+		private static bool SetsAreEqual( ISet a, ISet b )
+		{
+			if (Equals(a, b))
+			{
+				return true;
+			}
+
+			if( a == null || b == null )
+			{
+				return false;
+			}
+
+			if( a.Count != b.Count )
+			{
+				return false;
+			}
+
+			foreach (object obj in a)
+			{
+				if (!b.Contains(obj))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 
 		public override bool Equals( object other )
 		{
@@ -81,6 +111,11 @@ namespace NHibernate.Cache
 			}
 			if( firstRow != that.firstRow
 				|| maxRows != that.maxRows )
+			{
+				return false;
+			}
+			
+			if (!Equals(customTransformer, that.customTransformer))
 			{
 				return false;
 			}
@@ -120,11 +155,21 @@ namespace NHibernate.Cache
 			{
 				return false;
 			}
+			
+			if (!SetsAreEqual(filters, that.filters))
+			{
+				return false;
+			}
 
 			return true;
 		}
 
 		public override int GetHashCode()
+		{
+			return hashCode;
+		}
+
+		public int ComputeHashCode()
 		{
 			unchecked
 			{
@@ -144,6 +189,16 @@ namespace NHibernate.Cache
 				{
 					result = 37 * result + ( values[ i ] == null ? 0 : values[ i ].GetHashCode() );
 				}
+
+				if (filters != null)
+				{
+					foreach (object filter in filters)
+					{
+						result = 37 * result + filter.GetHashCode();
+					}
+				}
+
+				result = 37 * result + (customTransformer == null ? 0 : customTransformer.GetHashCode());
 				result = 37 * result + sqlQueryString.GetHashCode();
 				return result;
 			}

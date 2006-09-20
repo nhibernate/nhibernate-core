@@ -23,6 +23,13 @@
 			<!-- equivalent to outer-join="true" -->
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="flushMode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="auto" />
+			<xs:enumeration value="never" />
+			<!-- <xs:enumeration value="always" /> - not implemented yet -->
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="cascadeStyle">
 		<xs:annotation>
 			<xs:documentation>Rule as to how to operate on child objects (for more information, read topics about "persistence by reachability" or "transparent/transitive/cascading persistence")</xs:documentation>
@@ -95,12 +102,8 @@
 		</xs:attribute>
 	</xs:attributeGroup>
 	<xs:complexType name="filter">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="name" type="xs:string" use="required" />
-				<xs:attribute name="condition" type="xs:string" use="optional" />
-			</xs:extension>
-		</xs:simpleContent>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="condition" type="xs:string" use="optional" />
 	</xs:complexType>
 	<xs:complexType name="cacheType">
 		<xs:attribute name="usage" use="required">
@@ -128,12 +131,8 @@
 			<xs:enumeration value="exception" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="customSQL">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="callable" type="xs:boolean" use="optional" default="false" />
-			</xs:extension>
-		</xs:simpleContent>
+	<xs:complexType name="customSQL" mixed="true">
+		<xs:attribute name="callable" type="xs:boolean" use="optional" default="false" />
 	</xs:complexType>
 	<xs:element name="loader">
 		<xs:complexType>
@@ -521,6 +520,11 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="insert" type="xs:boolean" default="true">
+				<xs:annotation>
+					<xs:documentation>only supported for properties of a class (not component)</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="optimistic-lock" type="xs:boolean" default="true">
 				<xs:annotation>
 					<xs:documentation>only supported for properties of a class (not component)</xs:documentation>
 				</xs:annotation>
@@ -914,12 +918,9 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="query">
-		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string">
-					<xs:attribute name="name" type="xs:string" use="required" />
-				</xs:extension>
-			</xs:simpleContent>
+		<xs:complexType mixed="true">
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="return">
@@ -932,8 +933,8 @@
 				</xs:element>
 				<xs:element ref="return-property" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
-			<xs:attribute name="alias" type="xs:string" use="required" />
-			<xs:attribute name="class" type="xs:string" use="required" />
+			<xs:attribute name="alias" type="xs:string" use="optional" />
+			<xs:attribute name="class" type="xs:string" use="optional" />
 			<xs:attribute name="lock-mode" type="lockMode" use="optional" default="read" />
 		</xs:complexType>
 	</xs:element>
@@ -991,6 +992,8 @@
 			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="callable" type="xs:boolean" use="optional" default="false" />
+			<xs:attribute name="resultset-ref" type="xs:string" use="optional" />
+			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="list">

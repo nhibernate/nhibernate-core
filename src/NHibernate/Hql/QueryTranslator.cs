@@ -12,6 +12,7 @@ using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -1006,8 +1007,9 @@ namespace NHibernate.Hql
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
 			IDataReader rs = GetResultSet( cmd, parameters.RowSelection, session );
+			HolderInstantiator hi = HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
 			return new EnumerableImpl( rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection,
-				holderClass );
+				hi );
 		}
 
 		public static string[ ] ConcreteQueries( string query, ISessionFactoryImplementor factory )
@@ -1144,7 +1146,7 @@ namespace NHibernate.Hql
 			return names;
 		}
 
-		protected override object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
+		protected override object GetResultColumnOrRow( object[ ] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session )
 		{
 			IType[ ] returnTypes = ReturnTypes;
 			row = ToResultRow( row );
@@ -1176,7 +1178,7 @@ namespace NHibernate.Hql
 			}
 		}
 
-		protected override IList GetResultList(IList results)
+		protected override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			if( holderClass != null )
 			{

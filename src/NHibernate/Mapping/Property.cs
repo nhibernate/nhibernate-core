@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Property;
@@ -20,6 +21,7 @@ namespace NHibernate.Mapping
 		private string propertyAccessorName;
 		private IDictionary metaAttributes;
 		private PersistentClass persistentClass;
+		private bool isOptimisticLocked;
 
 		/// <summary>
 		/// 
@@ -261,6 +263,12 @@ namespace NHibernate.Mapping
 		{
 			get { return persistentClass; }
 			set { persistentClass = value; }
+		}
+
+		public bool IsOptimisticLocked
+		{
+			get { return isOptimisticLocked; }
+			set { isOptimisticLocked = value; }
 		}
 	}
 }

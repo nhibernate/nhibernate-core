@@ -4,6 +4,7 @@ using System.Collections;
 using log4net;
 
 using NHibernate.Impl;
+using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Hql;
@@ -39,9 +40,11 @@ namespace NHibernate.Engine
     	private SqlString processedSQL;
 	    private IType[] processedPositionalParameterTypes;
 	    private object[] processedPositionalParameterValues;
-		
-        
-        // not implemented: private ScrollMode _scrollMode;
+
+		private IResultTransformer _resultTransformer;
+
+
+		// not implemented: private ScrollMode _scrollMode;
         
 		public QueryParameters()
 			: this( ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray )
@@ -111,6 +114,7 @@ namespace NHibernate.Engine
 				collectionKeys,
 				null,
 				null,
+				null,
 				null)
 		{
 		}
@@ -135,7 +139,8 @@ namespace NHibernate.Engine
 			object[ ] collectionKeys,
 			object optionalObject,
 			System.Type optionalEntityName,
-			object optionalId) 
+			object optionalId,
+			IResultTransformer resultTransformer) 
 		{
 			_positionalParameterTypes = positionalParameterTypes;
 			_positionalParameterValues = positionalParameterValues;
@@ -149,6 +154,7 @@ namespace NHibernate.Engine
 			_optionalObject = optionalObject;
 			_optionalEntityClass = optionalEntityName;
 			_optionalId = optionalId;
+			_resultTransformer = resultTransformer;
 		}
 
 		public QueryParameters(
@@ -454,5 +460,10 @@ namespace NHibernate.Engine
         {
 		    get { return processedPositionalParameterTypes; }
 	    }
-    }
+ 
+		public IResultTransformer ResultTransformer
+		{
+			get { return _resultTransformer; }
+		}
+	}
 }

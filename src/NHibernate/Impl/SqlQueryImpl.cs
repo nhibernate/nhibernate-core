@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Loader.Custom;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
@@ -23,7 +25,7 @@ namespace NHibernate.Impl
 	/// &lt;/sql-query-name&gt;
 	/// </code>
 	/// </example>
-	public class SqlQueryImpl : AbstractQueryImpl
+	public class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
 		private readonly IList queryReturns;
 		private readonly ICollection querySpaces;
@@ -82,6 +84,14 @@ namespace NHibernate.Impl
 
 			this.querySpaces = queryDef.QuerySpaces;
 			this.callable = queryDef.IsCallable;
+		}
+
+		public SqlQueryImpl(string sql, ISessionImplementor session)
+			: base(sql, FlushMode.Unspecified, session)
+		{
+			queryReturns = new ArrayList();
+			querySpaces = null;
+			callable = false;
 		}
 
 		private ISQLQueryReturn[] GetQueryReturns()
@@ -183,5 +193,107 @@ namespace NHibernate.Impl
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 #endif
+
+		public ISQLQuery AddScalar(string columnAlias, IType type)
+		{
+			queryReturns.Add(new SQLQueryScalarReturn(columnAlias, type));
+			return this;
+		}
+
+		public ISQLQuery AddJoin(string alias, string path)
+		{
+			return AddJoin(alias, path, LockMode.Read);
+		}
+
+		public ISQLQuery AddEntity(System.Type entityClass)
+		{
+			return AddEntity(entityClass.Name, entityClass);
+		}
+
+		public ISQLQuery AddEntity(string entityName)
+		{
+			return AddEntity(StringHelper.Unqualify(entityName), entityName);
+		}
+
+		public ISQLQuery AddEntity(string alias, string entityName)
+		{
+			return AddEntity(alias, entityName, LockMode.Read);
+		}
+
+		public ISQLQuery AddEntity(string alias, System.Type entityClass)
+		{
+			return AddEntity(alias, entityClass.FullName);
+		}
+
+		public ISQLQuery AddJoin(string alias, string path, LockMode lockMode)
+		{
+			int loc = path.IndexOf('.');
+			if (loc < 0)
+			{
+				throw new QueryException("not a property path: " + path);
+			}
+			string ownerAlias = path.Substring(0, loc);
+			string role = path.Substring(loc + 1);
+			queryReturns.Add(new SQLQueryJoinReturn(alias, ownerAlias, role, CollectionHelper.EmptyMap, lockMode));
+			return this;
+		}
+
+		public ISQLQuery AddEntity(string alias, string entityName, LockMode lockMode)
+		{
+			queryReturns.Add(new SQLQueryRootReturn(alias, entityName, lockMode));
+			return this;
+		}
+
+		public ISQLQuery AddEntity(string alias, System.Type entityClass, LockMode lockMode)
+		{
+			return AddEntity(alias, entityClass.FullName, lockMode);
+		}
+
+		public ISQLQuery SetResultSetMapping(string name)
+		{
+			ResultSetMappingDefinition mapping = Session.Factory.GetResultSetMapping(name);
+			if (mapping == null)
+			{
+				throw new MappingException("Unknown SqlResultSetMapping [" + name + "]");
+			}
+			ISQLQueryReturn[] returns = mapping.GetQueryReturns();
+			int length = returns.Length;
+			for (int index = 0; index < length; index++)
+			{
+				queryReturns.Add(returns[index]);
+			}
+			return this;
+		}
+
+		protected override void VerifyParameters()
+		{
+			base.VerifyParameters();
+			bool noReturns = queryReturns==null || queryReturns.Count == 0;
+			bool autodiscovertypes = false;
+			if (noReturns)
+			{
+				autodiscovertypes = noReturns;
+			}
+			else
+			{
+				foreach (ISQLQueryReturn rtn in queryReturns)
+				{
+					if (rtn is SQLQueryScalarReturn)
+					{
+						SQLQueryScalarReturn scalar = (SQLQueryScalarReturn) rtn;
+						if (scalar.Type == null)
+						{
+							autodiscovertypes = true;
+							break;
+						}
+					}
+				}
+			}
+			
+			if (autodiscovertypes)
+			{
+				throw new QueryException("Return types of SQL query were not specified", QueryString);
+			}
+		}
 	}
 }

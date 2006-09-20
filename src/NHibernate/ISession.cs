@@ -635,6 +635,13 @@ namespace NHibernate
 		IQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses );
 
 		/// <summary>
+		/// Create a new instance of <see cref="ISQLQuery" /> for the given SQL query string.
+		/// </summary>
+		/// <param name="queryString"></param>
+		/// <returns></returns>
+		ISQLQuery CreateSQLQuery(string queryString);
+
+		/// <summary>
 		/// Completely clear the session. Evict all loaded instances and cancel all pending
 		/// saves, updates and deletions. Do not close open enumerables or instances of
 		/// <c>ScrollableResults</c>.

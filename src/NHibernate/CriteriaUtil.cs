@@ -12,7 +12,7 @@ namespace NHibernate
 		/// <summary>
 		/// Each row of results is an <c>IDictionary</c> from alias to entity instance
 		/// </summary>
-		public static readonly IResultTransformer AliasToEntityMap = new AliasToEntityMapResultTransformer();
+		public static readonly IResultTransformer AliasToEntityMap = Transformers.AliasToEntityMap;
 
 		/// <summary>
 		/// Each row of results is an instance of the root entity

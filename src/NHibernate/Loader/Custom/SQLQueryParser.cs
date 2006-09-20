@@ -11,67 +11,30 @@ namespace NHibernate.Loader.Custom
 {
 	public class SQLQueryParser
 	{
+		public interface IParserContext
+		{
+			bool IsEntityAlias(string aliasName);
+			ISqlLoadable GetEntityPersisterByAlias(string alias);
+			string GetEntitySuffixByAlias(string alias);
+			bool IsCollectionAlias(string aliasName);
+			ISqlLoadableCollection GetCollectionPersisterByAlias(string alias);
+			string GetCollectionSuffixByAlias(string alias);
+			IDictionary GetPropertyResultsMapByAlias(string alias);
+		}
+
 		private readonly string sqlQuery;
+		private IParserContext context;
 
-		private readonly IDictionary entityPersisterByAlias;
-		private readonly string[] aliases;
-		private readonly string[] suffixes;
-
-		private readonly ISqlLoadableCollection[] collectionPersisters;
-		private readonly string[] collectionAliases;
-		private readonly string[] collectionSuffixes;
-
-		private readonly IDictionary returnByAlias;
 		private readonly IDictionary namedParameters = new Hashtable();
 
 		private long aliasesFound = 0;
 
 		public SQLQueryParser(
 				string sqlQuery,
-				IDictionary alias2Persister,
-				IDictionary alias2Return,
-				string[] aliases,
-				string[] collectionAliases,
-				ISqlLoadableCollection[] collectionPersisters,
-				string[] suffixes,
-				string[] collectionSuffixes )
+				IParserContext context)
 		{
 			this.sqlQuery = sqlQuery;
-			this.entityPersisterByAlias = alias2Persister;
-			this.returnByAlias = alias2Return; // TODO: maybe just fieldMaps ?
-			this.collectionAliases = collectionAliases;
-			this.collectionPersisters = collectionPersisters;
-			this.suffixes = suffixes;
-			this.aliases = aliases;
-			this.collectionSuffixes = collectionSuffixes;
-		}
-
-		private ISqlLoadable getPersisterByResultAlias( string aliasName )
-		{
-			return ( ISqlLoadable ) entityPersisterByAlias[ aliasName ];
-		}
-
-		private IDictionary getPropertyResultByResultAlias( string aliasName )
-		{
-			SQLQueryNonScalarReturn sqr = ( SQLQueryNonScalarReturn ) returnByAlias[ aliasName ];
-			return sqr.PropertyResultsMap;
-		}
-
-		private bool isEntityAlias( string aliasName )
-		{
-			return entityPersisterByAlias.Contains( aliasName );
-		}
-
-		private int getPersisterIndex( string aliasName )
-		{
-			for( int i = 0; i < aliases.Length; i++ )
-			{
-				if( aliasName.Equals( aliases[ i ] ) )
-				{
-					return i;
-				}
-			}
-			return -1;
+			this.context = context;
 		}
 
 		public IDictionary NamedParameters
@@ -119,7 +82,7 @@ namespace NHibernate.Loader.Custom
 				int firstDot = aliasPath.IndexOf( '.' );
 				if( firstDot == -1 )
 				{
-					if( isEntityAlias( aliasPath ) )
+					if( context.IsEntityAlias( aliasPath ) )
 					{
 						// it is a simple table alias {foo}
 						result.Append( aliasPath );
@@ -134,9 +97,8 @@ namespace NHibernate.Loader.Custom
 				else
 				{
 					string aliasName = aliasPath.Substring( 0, firstDot );
-					int collectionIndex = Array.BinarySearch( collectionAliases, aliasName );
-					bool isCollection = collectionIndex > -1;
-					bool isEntity = isEntityAlias( aliasName );
+					bool isCollection = context.IsCollectionAlias( aliasName );
+					bool isEntity = context.IsEntityAlias( aliasName );
 
 					if( isCollection )
 					{
@@ -146,11 +108,11 @@ namespace NHibernate.Loader.Custom
 								ResolveCollectionProperties(
 										aliasName,
 										propertyName,
-										getPropertyResultByResultAlias( aliasName ),
-										getPersisterByResultAlias( aliasName ),
-										collectionPersisters[ collectionIndex ],
-										collectionSuffixes[ collectionIndex ],
-										suffixes[ getPersisterIndex( aliasName ) ]
+										context.GetPropertyResultsMapByAlias( aliasName ),
+										context.GetEntityPersisterByAlias( aliasName ),
+										context.GetCollectionPersisterByAlias( aliasName ),
+										context.GetCollectionSuffixByAlias( aliasName ),
+										context.GetEntitySuffixByAlias( aliasName )
 								)
 						);
 						aliasesFound++;
@@ -160,12 +122,12 @@ namespace NHibernate.Loader.Custom
 						// it is a property reference {foo.bar}
 						string propertyName = aliasPath.Substring( firstDot + 1 );
 						result.Append(
-								resolveProperties(
+								ResolveProperties(
 										aliasName,
 										propertyName,
-										getPropertyResultByResultAlias( aliasName ),
-										getPersisterByResultAlias( aliasName ),
-										suffixes[ getPersisterIndex( aliasName ) ] // TODO: guard getPersisterIndex
+										context.GetPropertyResultsMapByAlias( aliasName ),
+										context.GetEntityPersisterByAlias( aliasName ),
+										context.GetEntitySuffixByAlias( aliasName )
 								)
 						);
 						aliasesFound++;
@@ -206,11 +168,11 @@ namespace NHibernate.Loader.Custom
 				aliasesFound++;
 				return selectFragment
 							+ ", "
-							+ resolveProperties( aliasName, propertyName, fieldResults, elementPersister, persisterSuffix );
+							+ ResolveProperties( aliasName, propertyName, fieldResults, elementPersister, persisterSuffix );
 			}
 			else if( "element.*".Equals( propertyName ) )
 			{
-				return resolveProperties( aliasName, "*", fieldResults, elementPersister, persisterSuffix );
+				return ResolveProperties( aliasName, "*", fieldResults, elementPersister, persisterSuffix );
 
 			}
 			else
@@ -247,7 +209,7 @@ namespace NHibernate.Loader.Custom
 
 			}
 		}
-		private string resolveProperties(
+		private string ResolveProperties(
 				string aliasName,
 				string propertyName,
 				IDictionary fieldResults,

@@ -15,6 +15,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -321,7 +322,7 @@ namespace NHibernate.Loader
 				}
 			}
 
-			return GetResultColumnOrRow( row, resultSet, session );
+			return GetResultColumnOrRow( row, queryParameters.ResultTransformer, resultSet, session );
 		}
 
 		/// <summary>
@@ -544,7 +545,7 @@ namespace NHibernate.Loader
 			session.EndLoadingCollections( collectionPersister, resultSetId );
 		}
 
-		protected virtual IList GetResultList( IList results )
+		protected virtual IList GetResultList( IList results, IResultTransformer resultTransformer )
 		{
 			return results;
 		}
@@ -556,7 +557,7 @@ namespace NHibernate.Loader
 		/// This empty implementation merely returns its first argument. This is
 		/// overridden by some subclasses.
 		/// </remarks>
-		protected virtual object GetResultColumnOrRow( object[ ] row, IDataReader rs, ISessionImplementor session )
+		protected virtual object GetResultColumnOrRow( object[ ] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session )
 		{
 			return row;
 		}
@@ -1596,7 +1597,7 @@ namespace NHibernate.Loader
 
 		private IList ListIgnoreQueryCache( ISessionImplementor session, QueryParameters queryParameters )
 		{
-			return GetResultList( DoList( session, queryParameters ) );
+			return GetResultList( DoList( session, queryParameters ), queryParameters.ResultTransformer );
 		}
 
 		private IList ListUsingQueryCache(
@@ -1607,7 +1608,10 @@ namespace NHibernate.Loader
 		{
 			IQueryCache queryCache = factory.GetQueryCache( queryParameters.CacheRegion );
 
-			QueryKey key = new QueryKey( SqlString, queryParameters );
+			ISet filterKeys = FilterKey.CreateFilterKeys( 
+					session.EnabledFilters
+				);
+			QueryKey key = new QueryKey( SqlString, queryParameters, filterKeys );
 
 			IList result = GetResultFromQueryCache( session, queryParameters, querySpaces, resultTypes, queryCache, key );
 			
@@ -1617,7 +1621,7 @@ namespace NHibernate.Loader
 				queryCache.Put( key, resultTypes, result, session );
 			}
 
-			return GetResultList( result );
+			return GetResultList( result, queryParameters.ResultTransformer );
 		}
 
 		private static IList GetResultFromQueryCache( ISessionImplementor session, QueryParameters queryParameters, ISet querySpaces, IType[ ] resultTypes, IQueryCache queryCache, QueryKey key )

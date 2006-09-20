@@ -2788,5 +2788,10 @@ namespace NHibernate.Persister.Entity
 				queryLoader = new NamedQueryLoader( loaderName, this );
 			}
 		}
+		
+		public virtual bool[] PropertyVersionability
+		{
+			get { return entityMetamodel.PropertyVersionability; }
+		}
 	}
 }

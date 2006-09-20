@@ -3,7 +3,7 @@ using System.Collections;
 #if NET_2_0
 using System.Collections.Generic;
 #endif
-
+using NHibernate.Transform;
 using NHibernate.Type;
 
 namespace NHibernate
@@ -504,6 +504,15 @@ namespace NHibernate
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		IQuery SetTimestamp( string name, DateTime val );
 
+		/// <summary>
+		/// Override the current session flush mode, just for this query.
+		/// </summary>
 		IQuery SetFlushMode(FlushMode flushMode);
+
+		/// <summary>
+		/// Set a strategy for handling the query results. This can be used to change
+		/// "shape" of the query result.
+		/// </summary>
+		IQuery SetResultTransformer(IResultTransformer resultTransformer);
 	}
 }

@@ -9,6 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Property;
 using NHibernate.Proxy;
+using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -42,6 +43,7 @@ namespace NHibernate.Impl
 		private FlushMode flushMode = FlushMode.Unspecified;
 		private FlushMode sessionFlushMode = FlushMode.Unspecified;
 		private object collectionKey;
+		private IResultTransformer resultTransformer;
 
 		public AbstractQueryImpl( string queryString, FlushMode flushMode, ISessionImplementor session )
 		{
@@ -68,7 +70,7 @@ namespace NHibernate.Impl
 			get { return actualNamedParameters.Count > 0; }
 		}
 
-		protected void VerifyParameters()
+		protected virtual void VerifyParameters()
 		{
 			if ( actualNamedParameters.Count != namedParameters.Count + namedParameterLists.Count )
 			{
@@ -647,7 +649,8 @@ namespace NHibernate.Impl
 				collectionKey == null ? null : new object[] { collectionKey },
 				optionalObject,
 				optionalEntityName,
-				optionalId);
+				optionalId,
+				resultTransformer);
 		}
 
 		public IQuery SetCacheable( bool cacheable )
@@ -722,6 +725,12 @@ namespace NHibernate.Impl
 		public IQuery SetCollectionKey(object collectionKey)
 		{
 			this.collectionKey = collectionKey;
+			return this;
+		}
+		
+		public IQuery SetResultTransformer(IResultTransformer transformer)
+		{
+			this.resultTransformer = transformer;
 			return this;
 		}
 	}

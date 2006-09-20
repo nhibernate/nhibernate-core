@@ -5785,5 +5785,10 @@ namespace NHibernate.Impl
 			return new string[] { filterName, parameterName };
 		}
 
+		public ISQLQuery CreateSQLQuery(string sql)
+		{
+			SqlQueryImpl query = new SqlQueryImpl(sql, this);
+			return query;
+		}
 	}
 }

@@ -38,13 +38,7 @@ namespace NHibernate.Util
 
 		public static string[] ToStringArray( object[] objects )
 		{
-			int length = objects.Length;
-			string[] result = new string[ length ];
-			for( int i = 0; i < length; i++ )
-			{
-				result[ i ] = objects[ i ].ToString();
-			}
-			return result;
+			return (string[]) ToArray(objects, typeof (string));
 		}
 
 		public static string[] FillArray( string str, int length )
@@ -77,18 +71,9 @@ namespace NHibernate.Util
 			return result;
 		}
 
-		public static string[] ToStringArray( ICollection coll )
-		{
-			string[] result = new string[ coll.Count ];
-			coll.CopyTo( result, 0 );
-			return result;
-		}
-
 		public static int[] ToIntArray( ICollection coll )
 		{
-			int[] result = new int[ coll.Count ];
-			coll.CopyTo( result, 0 );
-			return result;
+			return (int[]) ToArray(coll, typeof (int));
 		}
 
 		public static string[] Slice( string[] strings, int begin, int length )
@@ -173,6 +158,15 @@ namespace NHibernate.Util
 				to.Add( obj );
 			}
 		}
+		
+		// NH-specific
+		public static void AddAll(IDictionary to, IDictionary from)
+		{
+			foreach (DictionaryEntry de in from)
+			{
+				to.Add(de.Key, de.Value);
+			}
+		}
 
 		public static int[] GetBatchSizes( int maxBatchSize )
 		{
@@ -238,10 +232,20 @@ namespace NHibernate.Util
 			list[index] = value;
 		}
 
-		public static SqlType[] ToSqlTypeArray(IList list)
+		public static string[] ToStringArray( ICollection coll )
 		{
-			SqlType[] result = new SqlType[list.Count];
-			list.CopyTo(result, 0);
+			return (string[]) ToArray(coll, typeof (string));
+		}
+
+		public static SqlType[] ToSqlTypeArray(ICollection coll)
+		{
+			return (SqlType[]) ToArray(coll, typeof (SqlType));
+		}
+		
+		public static Array ToArray(ICollection coll, System.Type elementType)
+		{
+			Array result = Array.CreateInstance(elementType, coll.Count);
+			coll.CopyTo(result, 0);
 			return result;
 		}
 	}

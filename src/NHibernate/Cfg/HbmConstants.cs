@@ -19,7 +19,6 @@ namespace NHibernate.Cfg
 		public const string nsJoinedSubclass = nsPrefix + ":joined-subclass";
 		public const string nsQuery = nsPrefix + ":query";
 		public const string nsSqlQuery = nsPrefix + ":sql-query";
-		public const string nsReturn = nsPrefix + ":return";
 		public const string nsSynchronize = nsPrefix + ":synchronize";
 		public const string nsImport = nsPrefix + ":import";
 		public const string nsMeta = nsPrefix + ":meta";
@@ -44,5 +43,7 @@ namespace NHibernate.Cfg
 		public const string nsCreate = nsPrefix + ":create";
 		public const string nsDrop = nsPrefix + ":drop";
 		public const string nsDialectScope = nsPrefix + ":dialect-scope";
+
+		public const string nsResultset = nsPrefix + ":resultset";
 	}
 }
