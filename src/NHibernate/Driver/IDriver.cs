@@ -41,17 +41,6 @@ namespace NHibernate.Driver
 		IDbConnection CreateConnection();
 
 		/// <summary>
-		/// Creates an empty IDbCommand object for the specific Driver
-		/// </summary>
-		/// <remarks>
-		/// The reason for having this method is that Interfaces in ADO.NET require 
-		/// the use of a IDbCommand.CreateCommand - when we are making the IDbCommand
-		/// objects we might not have a particular connection to create the commands
-		/// from.
-		/// </remarks>
-		IDbCommand CreateCommand();
-
-		/// <summary>
 		/// Does this Driver support having more than 1 open IDataReader with
 		/// the same IDbConnection.
 		/// </summary>

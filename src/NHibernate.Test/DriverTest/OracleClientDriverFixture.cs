@@ -31,7 +31,7 @@ namespace NHibernate.Test.DriverTest
 		[Test]
 		public void CommandClassName() 
 		{
-			Driver.IDriver driver = new Driver.OracleClientDriver();
+			OracleClientDriver driver = new OracleClientDriver();
 			IDbCommand cmd = driver.CreateCommand();
 
 			Assert.AreEqual( "System.Data.OracleClient.OracleCommand", cmd.GetType().FullName );
