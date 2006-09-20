@@ -5248,28 +5248,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="returnAlias"></param>
-		/// <param name="returnClass"></param>
-		/// <returns></returns>
-		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
+		public ISQLQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
 		{
 			CheckIsOpen();
 
 			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, null);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="returnAliases"></param>
-		/// <param name="returnClasses"></param>
-		/// <returns></returns>
-		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
+		public ISQLQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
 		{
 			CheckIsOpen();
 
