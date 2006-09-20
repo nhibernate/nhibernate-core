@@ -606,7 +606,6 @@
     <Compile Include="Loader\GeneratedCollectionAliases.cs" />
     <Compile Include="Loader\ICollectionAliases.cs" />
     <Compile Include="Loader\IEntityAliases.cs" />
-    <Compile Include="Loader\IIEntityAliases.cs" />
     <Compile Include="Loader\JoinWalker.cs" />
     <Compile Include="Loader\OuterJoinableAssociation.cs" />
     <Compile Include="Mapping\AbstractAuxiliaryDatabaseObject.cs" />
