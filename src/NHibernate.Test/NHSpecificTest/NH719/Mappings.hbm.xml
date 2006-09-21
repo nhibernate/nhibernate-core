@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH719">
+  <class name="A" table="A" lazy="true">
+    <id name="Id" column="Id" type="Int32" unsaved-value="0" access="nosetter.camelcase">
+      <generator class="assigned" />
+    </id>
+    <property name="Foo" />
+  </class>
+
+  <class name="B" table="B" lazy="true">
+    <id name="Id" column="Id" type="Int32" unsaved-value="0" access="nosetter.camelcase">
+      <generator class="assigned" />
+    </id>
+    <property name="Foo" />
+  </class>
+
+  <class name="NotCached" table="NotCached" lazy="false">
+    <id name="Id" column="Id" type="Int32" unsaved-value="0" access="nosetter.camelcase">
+      <generator class="assigned" />
+    </id>
+
+    <any name="Owner" id-type="Int32" meta-type="Char" access="nosetter.camelcase">
+      <meta-value value="a" class="A"/>
+      <meta-value value="b" class="B"/>
+      <column name="OwnerType"/>
+      <column name="OwnerID"/>
+    </any>
+  </class>
+
+  <class name="Cached" table="Cached" lazy="false">
+    <cache usage="read-write" />
+    <id name="Id" column="Id" type="Int32" unsaved-value="0" access="nosetter.camelcase">
+      <generator class="assigned" />
+    </id>
+
+    <any name="Owner" id-type="Int32" meta-type="Char" access="nosetter.camelcase">
+      <meta-value value="a" class="A"/>
+      <meta-value value="b" class="B"/>
+      <column name="OwnerType"/>
+      <column name="OwnerID"/>
+    </any>
+  </class>
+</hibernate-mapping>
