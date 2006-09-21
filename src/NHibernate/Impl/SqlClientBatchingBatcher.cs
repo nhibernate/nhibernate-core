@@ -45,7 +45,7 @@ namespace NHibernate.Impl
 			log.Info("Adding to batch");
 			IDbCommand batchUpdate = CurrentCommand;
 			currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
-			if (currentBatch.CountOfCommands > batchSize)
+			if (currentBatch.CountOfCommands >= batchSize)
 			{
 				DoExecuteBatch(batchUpdate);
 			}
