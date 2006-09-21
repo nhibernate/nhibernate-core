@@ -2729,7 +2729,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						session.Batcher.ExecuteNonQuery(insertCmd);
+						Check(session.Batcher.ExecuteNonQuery(insertCmd), id);
 					}
 				}
 				catch (Exception e)
