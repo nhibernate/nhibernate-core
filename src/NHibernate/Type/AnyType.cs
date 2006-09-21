@@ -209,7 +209,7 @@ namespace NHibernate.Type
 		public override object Assemble( object cached, ISessionImplementor session, object owner )
 		{
 			ObjectTypeCacheEntry e = ( ObjectTypeCacheEntry ) cached;
-			return ( cached == null ) ? null : session.Load( e.clazz, e.id );
+			return ( cached == null ) ? null : session.InternalLoad( e.clazz, e.id, false );
 		}
 
 		public override object Disassemble( object value, ISessionImplementor session )
@@ -217,7 +217,7 @@ namespace NHibernate.Type
 			return ( value == null ) ?
 				null :
 				new ObjectTypeCacheEntry(
-					value.GetType(),
+					NHibernateUtil.GetClass(value),
 					session.GetEntityIdentifier( value ) );
 		}
 
