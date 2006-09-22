@@ -101,7 +101,7 @@ namespace NHibernate.Persister.Entity
 
 		private readonly IReflectionOptimizer optimizer = null;
 
-		protected readonly EntityMetamodel entityMetamodel;
+		private readonly EntityMetamodel entityMetamodel;
 
 		//information about properties of this class,
 		//including inherited properties
@@ -153,10 +153,10 @@ namespace NHibernate.Persister.Entity
 		private SqlType[] idSqlTypes;
 
 		// SQL strings
-		protected SqlCommandInfo[] sqlDeleteStrings;
-		protected SqlCommandInfo[] sqlInsertStrings;
-		protected SqlCommandInfo sqlIdentityInsertString;
-		protected SqlCommandInfo[] sqlUpdateStrings;
+		private SqlCommandInfo[] sqlDeleteStrings;
+		private SqlCommandInfo[] sqlInsertStrings;
+		private SqlCommandInfo sqlIdentityInsertString;
+		private SqlCommandInfo[] sqlUpdateStrings;
 		private SqlString sqlConcreteSelectString;
 		private SqlString sqlVersionSelectString;
 		private bool[] tableHasColumns;

@@ -480,7 +480,7 @@ namespace NHibernate.Persister.Entity
 			// This is in PostInstatiate as it needs identifier info
 			//InitLockers();
 
-			propertyTableNumbers = new int[entityMetamodel.PropertySpan];
+			propertyTableNumbers = new int[EntityMetamodel.PropertySpan];
 			for (int i = 0; i < propertyTableNumbers.Length; i++)
 			{
 				propertyTableNumbers[i] = 0;
