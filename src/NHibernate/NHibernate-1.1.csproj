@@ -124,6 +124,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DuplicateMappingException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "FetchMode.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -159,6 +164,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "IFilter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "IInterceptor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -190,6 +200,11 @@
                 />
                 <File
                     RelPath = "ISessionFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ISQLQuery.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -314,6 +329,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "StaleStateException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TransactionException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -335,6 +355,21 @@
                 />
                 <File
                     RelPath = "WrongClassException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "AdoNet\Expectations.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "AdoNet\IExpectation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "AdoNet\TooManyRowsAffectedException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -390,6 +425,11 @@
                 />
                 <File
                     RelPath = "Cache\CacheLock.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cache\FilterKey.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -484,6 +524,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\CollectionSecondPass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cfg\Configuration.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -514,6 +559,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\HbmConstants.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cfg\ImprovedNamingStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -524,7 +574,32 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\IQuerySecondPass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cfg\ISecondPass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cfg\Mappings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cfg\NamedSQLQuerySecondPass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cfg\ResultSetMappingBinder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cfg\ResultSetMappingSecondPass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -654,6 +729,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\MsSqlCeDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\MySQLDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -749,6 +829,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Driver\ISqlParameterFormatter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Driver\MySqlDataDriver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -799,7 +884,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Driver\SQLite20Driver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Driver\SQLiteDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\SqlServerCeDriver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Driver\SqlStringFormatter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -815,6 +915,16 @@
                 />
                 <File
                     RelPath = "Engine\EntityKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\ExecuteUpdateResultCheckStyle.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\FilterDefinition.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -849,12 +959,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Engine\NamedQueryDefinition.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\NamedSQLQueryDefinition.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\OptimisticLockMode.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Engine\QueryParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\ResultSetMappingDefinition.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -899,7 +1024,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\AbstractEmptinessExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\AggregateProjection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\AliasedProjection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\AndExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\AvgProjection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -914,7 +1059,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\CountProjection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\Disjunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\Distinct.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -959,12 +1114,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\IdentifierProjection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\InExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Expression\InsensitiveLikeExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\IProjection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1034,7 +1199,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\ProjectionList.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\Projections.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\PropertyExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\PropertyProjection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\RowCountProjection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1044,7 +1229,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\SimpleProjection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\SQLCriterion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\SQLProjection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1070,6 +1265,16 @@
                 />
                 <File
                     RelPath = "Hql\HavingParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\HolderInstantiator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\IFilterTranslator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1229,11 +1434,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Impl\BatchingBatcher.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Impl\CacheEntry.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1324,6 +1524,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\QueryFilterImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\QueryImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1391,6 +1596,14 @@
                 <File
                     RelPath = "Impl\SessionImpl.cs"
                     SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SqlClientBatchingBatcher.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SqlClientSqlCommandSet.cs"
                     BuildAction = "Compile"
                 />
                 <File
@@ -1514,6 +1727,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Loader\Custom\CollectionFetchReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\CollectionReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Loader\Custom\ColumnCollectionAliases.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1529,7 +1752,42 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Loader\Custom\EntityFetchReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\FetchReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Loader\Custom\ICustomQuery.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\IReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\ISQLQueryReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\NonScalarReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\RootReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Custom\ScalarReturn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1549,12 +1807,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Loader\Custom\SQLQueryParser.cs"
+                    RelPath = "Loader\Custom\SQLQueryNonScalarReturn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Loader\Custom\SQLQueryReturn.cs"
+                    RelPath = "Loader\Custom\SQLQueryParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1605,6 +1863,11 @@
                 />
                 <Folder RelPath = "Loader\Hql\" />
                 <File
+                    RelPath = "Mapping\AbstractAuxiliaryDatabaseObject.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Mapping\Any.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1650,6 +1913,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Mapping\IAuxiliaryDatabaseObject.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Mapping\IdentifierBag.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1661,6 +1929,11 @@
                 />
                 <File
                     RelPath = "Mapping\IFetchable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Mapping\IFilterable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1720,11 +1993,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Mapping\NamedSQLQuery.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Mapping\OneToMany.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1761,6 +2029,11 @@
                 />
                 <File
                     RelPath = "Mapping\Set.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Mapping\SimpleAuxiliaryDatabaseObject.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1845,6 +2118,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Persister\Collection\NamedQueryCollectionInitializer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Persister\Collection\OneToManyPersister.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1906,6 +2184,11 @@
                 />
                 <File
                     RelPath = "Persister\Entity\LoadableConstants.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Persister\Entity\NamedQueryLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2100,6 +2383,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlCommand\ISqlStringVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlCommand\JoinFragment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2111,16 +2399,6 @@
                 />
                 <File
                     RelPath = "SqlCommand\Parameter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlCommand\ParameterLength.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlCommand\ParameterPrecisionScale.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2141,6 +2419,11 @@
                 />
                 <File
                     RelPath = "SqlCommand\SqlBaseBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SqlCommandInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2210,71 +2493,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SqlTypes\BooleanSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\ByteSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\CurrencySqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\DateSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\DateTimeSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\DecimalSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\DoubleSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\GuidSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\Int16SqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\Int32SqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\Int64SqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\SByteSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\SingleSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "SqlTypes\SqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2296,26 +2514,6 @@
                 />
                 <File
                     RelPath = "SqlTypes\StringSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\TimeSqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\UInt16SqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\UInt32SqlType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SqlTypes\UInt64SqlType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2350,6 +2548,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Transform\AliasToBeanConstructorResultTransformer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Transform\AliasToBeanResultTransformer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Transform\AliasToEntityMapResultTransformer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2365,7 +2573,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Transform\PassThroughResultTransformer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Transform\RootEntityResultTransformer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Transform\Transformers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2445,11 +2663,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Type\BlobType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Type\BooleanType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2466,11 +2679,6 @@
                 />
                 <File
                     RelPath = "Type\CharType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Type\ClobType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2542,6 +2750,38 @@
                 <File
                     RelPath = "Type\ForeignKeyDirection.cs"
                     SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\GenericBagType.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\GenericIdentifierBagType.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\GenericListType.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\GenericMapType.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\GenericSetType.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\GenericSortedDictionaryType.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\GenericSortedListType.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\GenericSortedSetType.cs"
                     BuildAction = "Compile"
                 />
                 <File
@@ -2804,6 +3044,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Util\FilterHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Util\IdentityMap.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2858,6 +3103,11 @@
                 />
                 <File
                     RelPath = "Util\WeakHashtable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Util\XmlHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
