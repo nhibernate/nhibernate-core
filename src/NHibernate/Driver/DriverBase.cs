@@ -229,5 +229,12 @@ namespace NHibernate.Driver
 				command.Prepare();
 			}
 		}
+		
+		public IDbDataParameter GenerateOutputParameter(IDbCommand command)
+		{
+			IDbDataParameter param = GenerateParameter(command, "ReturnValue", SqlTypeFactory.Int32);
+			param.Direction = ParameterDirection.Output;
+			return param;
+		}
 	}
 }

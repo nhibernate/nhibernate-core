@@ -75,6 +75,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="command"></param>
 		void PrepareCommand(IDbCommand command);
+
 		/// <summary>
 		/// Create an instance of <see cref="IBatcher"/> according to the configuration 
 		/// and the capabilities of the driver

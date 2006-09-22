@@ -4,6 +4,7 @@ using System.Data;
 using System.Text;
 using Iesi.Collections;
 using log4net;
+using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -33,6 +34,14 @@ namespace NHibernate.Persister.Collection
 		private readonly SqlCommandInfo sqlInsertRowString;
 		private readonly SqlCommandInfo sqlUpdateRowString;
 		private readonly SqlCommandInfo sqlDeleteRowString;
+		private bool insertCallable;
+		private bool updateCallable;
+		private bool deleteCallable;
+		private bool deleteAllCallable;
+		private ExecuteUpdateResultCheckStyle insertCheckStyle;
+		private ExecuteUpdateResultCheckStyle updateCheckStyle;
+		private ExecuteUpdateResultCheckStyle deleteCheckStyle;
+		private ExecuteUpdateResultCheckStyle deleteAllCheckStyle;
 
 		// TODO H3:
 		//		private readonly SqlString sqlSelectSizeString;
@@ -257,10 +266,62 @@ namespace NHibernate.Persister.Collection
 				identifierGenerator = null;
 			}
 
-			sqlDeleteString = GenerateDeleteString();
 			sqlInsertRowString = GenerateInsertRowString();
+			if (collection.CustomSQLInsert == null)
+			{
+				insertCallable = false;
+				insertCheckStyle = ExecuteUpdateResultCheckStyle.Count;
+			}
+			else
+			{
+				sqlInsertRowString = new SqlCommandInfo(collection.CustomSQLInsert, sqlInsertRowString.ParameterTypes);
+				insertCallable = collection.IsCustomInsertCallable;
+				insertCheckStyle = collection.CustomSQLInsertCheckStyle == null
+				                   	? ExecuteUpdateResultCheckStyle.DetermineDefault(collection.CustomSQLInsert, insertCallable)
+				                   	: collection.CustomSQLInsertCheckStyle;
+			}
+
 			sqlUpdateRowString = GenerateUpdateRowString();
+			if (collection.CustomSQLUpdate == null)
+			{
+				updateCallable = false;
+				updateCheckStyle = ExecuteUpdateResultCheckStyle.Count;
+			}
+			else
+			{
+				sqlUpdateRowString = new SqlCommandInfo(collection.CustomSQLUpdate, sqlUpdateRowString.ParameterTypes);
+				updateCallable = collection.IsCustomUpdateCallable;
+				updateCheckStyle = collection.CustomSQLUpdateCheckStyle == null
+				                   	? ExecuteUpdateResultCheckStyle.DetermineDefault(collection.CustomSQLUpdate, updateCallable)
+				                   	: collection.CustomSQLUpdateCheckStyle;
+			}
+
 			sqlDeleteRowString = GenerateDeleteRowString();
+			if (collection.CustomSQLDelete == null)
+			{
+				deleteCallable = false;
+				deleteCheckStyle = ExecuteUpdateResultCheckStyle.None;
+			}
+			else
+			{
+				sqlDeleteRowString = new SqlCommandInfo(collection.CustomSQLDelete, sqlDeleteRowString.ParameterTypes);
+				deleteCallable = collection.IsCustomDeleteCallable;
+				deleteCheckStyle = ExecuteUpdateResultCheckStyle.None;
+			}
+
+			sqlDeleteString = GenerateDeleteString();
+			if (collection.CustomSQLDeleteAll == null)
+			{
+				deleteAllCallable = false;
+				deleteAllCheckStyle = ExecuteUpdateResultCheckStyle.None;
+			}
+			else
+			{
+				sqlDeleteString = new SqlCommandInfo(collection.CustomSQLDeleteAll, sqlDeleteString.ParameterTypes);
+				deleteAllCallable = collection.IsCustomDeleteAllCallable;
+				deleteAllCheckStyle = ExecuteUpdateResultCheckStyle.None;
+			}
+
 			isLazy = collection.IsLazy;
 
 			isInverse = collection.IsInverse;
@@ -637,23 +698,46 @@ namespace NHibernate.Persister.Collection
 					log.Debug("Deleting collection: " + MessageHelper.InfoString(this, id));
 				}
 
+				int offset = 0;
+				IExpectation expectation = Expectations.AppropriateExpectation( deleteAllCheckStyle );
+				bool useBatch = expectation.CanBeBatched;
+
 				// Remove all the old entries
 				try
 				{
-					// TODO SP
-					IDbCommand st =
-						session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
-						                                    SqlDeleteString.ParameterTypes);
+					IDbCommand st = useBatch
+					                	? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
+					                	                                      SqlDeleteString.ParameterTypes)
+					                	: session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
+					                                               SqlDeleteString.ParameterTypes);
 
 					try
 					{
-						WriteKey(st, id, 0, session);
-						session.Batcher.AddToBatch(-1);
+						//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
+						WriteKey(st, id, offset, session);
+						if (useBatch)
+						{
+							session.Batcher.AddToBatch(expectation);
+						}
+						else
+						{
+							expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+						}
 					}
 					catch (Exception e)
 					{
-						session.Batcher.AbortBatch(e);
+						if (useBatch)
+						{
+							session.Batcher.AbortBatch(e);
+						}
 						throw;
+					}
+					finally
+					{
+						if (!useBatch)
+						{
+							session.Batcher.CloseCommand(st, null);
+						}
 					}
 
 					if (log.IsDebugEnabled)
@@ -686,25 +770,39 @@ namespace NHibernate.Persister.Collection
 				{
 					// create all the new entries
 					IEnumerable entries = collection.Entries();
+					IExpectation expectation = Expectations.AppropriateExpectation(insertCheckStyle);
+					bool useBatch = expectation.CanBeBatched;
 
-					//if( entries.Count > 0 )
-					//{
 					int i = 0;
 					int count = 0;
-					try
-					{
-						collection.PreInsert(this);
+					collection.PreInsert(this);
 
-						foreach (object entry in entries)
+					IDbCommand st = null;
+					foreach (object entry in entries)
+					{
+						if (collection.EntryExists(entry, i))
 						{
-							if (collection.EntryExists(entry, i))
+							try
 							{
 								int offset = 0;
-								// TODO SP
-								IDbCommand st = session.Batcher.PrepareBatchCommand(
-									SqlInsertRowString.CommandType,
-									SqlInsertRowString.Text,
-									SqlInsertRowString.ParameterTypes);
+								if (useBatch)
+								{
+									if (st == null)
+									{
+										st = session.Batcher.PrepareBatchCommand(
+											SqlInsertRowString.CommandType,
+											SqlInsertRowString.Text,
+											SqlInsertRowString.ParameterTypes);
+									}
+								}
+								else
+								{
+									st = session.Batcher.PrepareCommand(
+										SqlInsertRowString.CommandType,
+										SqlInsertRowString.Text,
+										SqlInsertRowString.ParameterTypes);
+								}
+								//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
 								int loc = WriteKey(st, id, offset, session);
 								if (hasIdentifier)
 								{
@@ -715,31 +813,45 @@ namespace NHibernate.Persister.Collection
 									loc = WriteIndex(st, collection.GetIndex(entry, i), loc, session);
 								}
 								loc = WriteElement(st, collection.GetElement(entry), loc, session);
-								session.Batcher.AddToBatch(1);
+								if (useBatch)
+								{
+									session.Batcher.AddToBatch(expectation);
+								}
+								else
+								{
+									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+								}
 								collection.AfterRowInsert(this, entry, i);
 								count++;
 							}
-							i++;
+							catch (Exception e)
+							{
+								if (useBatch)
+								{
+									session.Batcher.AbortBatch(e);
+								}
+								throw;
+							}
+							finally
+							{
+								if (!useBatch)
+								{
+									session.Batcher.CloseCommand(st, null);
+								}
+							}
 						}
+						i++;
 					}
-						//TODO: change to SqlException
-					catch (Exception e)
-					{
-						session.Batcher.AbortBatch(e);
-						throw;
-					}
+
 					if (log.IsDebugEnabled)
 					{
 						log.Debug(string.Format("done inserting collection: {0} rows inserted", count));
 					}
-					//}
-					//else
-					//{
+
 					if (count == 0 && log.IsDebugEnabled)
 					{
 						log.Debug("collection was empty");
 					}
-					//}
 				}
 				catch (HibernateException)
 				{
@@ -772,14 +884,32 @@ namespace NHibernate.Persister.Collection
 					{
 						int offset = 0;
 						int count = 0;
-						IDbCommand st = session.Batcher.PrepareBatchCommand(
-							SqlDeleteRowString.CommandType,
-							SqlDeleteRowString.Text,
-							SqlDeleteRowString.ParameterTypes);
+						IExpectation expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
+						bool useBatch = expectation.CanBeBatched;
+						IDbCommand st = null;
+
 						try
 						{
 							foreach (object entry in deletes)
 							{
+								if (useBatch)
+								{
+									if (st != null)
+									{
+										st = session.Batcher.PrepareBatchCommand(
+											SqlDeleteRowString.CommandType,
+											SqlDeleteRowString.Text,
+											SqlDeleteRowString.ParameterTypes);
+									}
+								}
+								else
+								{
+									st = session.Batcher.PrepareCommand(
+										SqlDeleteRowString.CommandType,
+										SqlDeleteRowString.Text,
+										SqlDeleteRowString.ParameterTypes);
+								}
+								//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
 								int loc = offset;
 								if (hasIdentifier)
 								{
@@ -798,15 +928,31 @@ namespace NHibernate.Persister.Collection
 										WriteElementToWhere(st, entry, loc, session);
 									}
 								}
-								session.Batcher.AddToBatch(-1);
+								if (useBatch)
+								{
+									session.Batcher.AddToBatch(expectation);
+								}
+								else
+								{
+									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+								}
 								count++;
 							}
 						}
-							// TODO: change to SqlException
 						catch (Exception e)
 						{
-							session.Batcher.AbortBatch(e);
+							if (useBatch)
+							{
+								session.Batcher.AbortBatch(e);
+							}
 							throw;
+						}
+						finally
+						{
+							if (!useBatch)
+							{
+								session.Batcher.CloseCommand(st, null);
+							}
 						}
 
 						if (log.IsDebugEnabled)
@@ -843,28 +989,33 @@ namespace NHibernate.Persister.Collection
 					log.Debug("Inserting rows of collection: " + role + "#" + id);
 				}
 
-				collection.PreInsert(this);
-				int i = 0;
-				int count = 0;
-				int offset = 0;
-
 				try
 				{
 					// insert all the new entries
-					IEnumerable entries = collection.Entries();
-					try
-					{
-						// Moved the IDbCommand outside the loop, because ADO.NET doesn't do batch commands,
-						// so it's more efficient. But it
-						foreach (object entry in entries)
-						{
-							if (collection.NeedsInserting(entry, i, elementType))
-							{
-								IDbCommand st = session.Batcher.PrepareBatchCommand(
-									SqlInsertRowString.CommandType,
-									SqlInsertRowString.Text,
-									SqlInsertRowString.ParameterTypes);
+					collection.PreInsert(this);
+					IExpectation expectation = Expectations.AppropriateExpectation(insertCheckStyle);
+					bool useBatch = expectation.CanBeBatched;
+					int i = 0;
+					int count = 0;
+					int offset = 0;
 
+					IEnumerable entries = collection.Entries();
+					foreach (object entry in entries)
+					{
+						if (collection.NeedsInserting(entry, i, elementType))
+						{
+							IDbCommand st = useBatch
+							                	? session.Batcher.PrepareBatchCommand(
+							                	  	SqlInsertRowString.CommandType,
+							                	  	SqlInsertRowString.Text,
+							                	  	SqlInsertRowString.ParameterTypes)
+							                	: session.Batcher.PrepareCommand(
+							                	  	SqlInsertRowString.CommandType,
+							                	  	SqlInsertRowString.Text,
+							                	  	SqlInsertRowString.ParameterTypes);
+							try
+							{
+								//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
 								int loc = WriteKey(st, id, offset, session);
 								if (hasIdentifier)
 								{
@@ -875,22 +1026,39 @@ namespace NHibernate.Persister.Collection
 									loc = WriteIndex(st, collection.GetIndex(entry, i), loc, session);
 								}
 								loc = WriteElement(st, collection.GetElement(entry), loc, session);
-								session.Batcher.AddToBatch(1);
+								if (useBatch)
+								{
+									session.Batcher.AddToBatch(expectation);
+								}
+								else
+								{
+									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+								}
 								collection.AfterRowInsert(this, entry, i);
 								count++;
 							}
-							i++;
+							catch (Exception e)
+							{
+								if (useBatch)
+								{
+									session.Batcher.AbortBatch(e);
+								}
+								throw;
+							}
+							finally
+							{
+								if (!useBatch)
+								{
+									session.Batcher.CloseCommand(st, null);
+								}
+							}
 						}
-
-						if (log.IsDebugEnabled)
-						{
-							log.Debug(string.Format("done inserting rows: {0} inserted", count));
-						}
+						i++;
 					}
-					catch (Exception e)
+
+					if (log.IsDebugEnabled)
 					{
-						session.Batcher.AbortBatch(e);
-						throw;
+						log.Debug(string.Format("done inserting rows: {0} inserted", count));
 					}
 				}
 				catch (HibernateException)
@@ -1210,6 +1378,26 @@ namespace NHibernate.Persister.Collection
 					collectionPropertyColumnNames[aliasName + "." + name] = columnNames[i];
 				}
 			}
+		}
+
+		protected ExecuteUpdateResultCheckStyle InsertCheckStyle
+		{
+			get { return insertCheckStyle; }
+		}
+
+		protected ExecuteUpdateResultCheckStyle UpdateCheckStyle
+		{
+			get { return updateCheckStyle; }
+		}
+
+		protected ExecuteUpdateResultCheckStyle DeleteCheckStyle
+		{
+			get { return deleteCheckStyle; }
+		}
+
+		protected ExecuteUpdateResultCheckStyle DeleteAllCheckStyle
+		{
+			get { return deleteAllCheckStyle; }
 		}
 	}
 }

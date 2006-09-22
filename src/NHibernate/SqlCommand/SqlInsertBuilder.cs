@@ -182,7 +182,7 @@ namespace NHibernate.SqlCommand
 		public SqlCommandInfo ToSqlCommandInfo()
 		{
 			SqlString text = ToSqlString();
-			return new SqlCommandInfo(CommandType.Text, text, ArrayHelper.ToSqlTypeArray(parameterTypes));
+			return new SqlCommandInfo(text, ArrayHelper.ToSqlTypeArray(parameterTypes));
 		}
 	}
 }

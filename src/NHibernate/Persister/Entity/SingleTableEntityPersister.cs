@@ -265,9 +265,9 @@ namespace NHibernate.Persister.Entity
 		}
 
 		protected override int Dehydrate(object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement,
-		                                 ISessionImplementor session)
+		                                 ISessionImplementor session, int index)
 		{
-			return Dehydrate(id, fields, includeProperty, statement, session);
+			return Dehydrate(id, fields, includeProperty, statement, session, index);
 		}
 
 		/// <summary>
@@ -280,14 +280,12 @@ namespace NHibernate.Persister.Entity
 		/// <param name="session"></param>
 		/// <returns></returns>
 		protected virtual int Dehydrate(object id, object[] fields, bool[] includeProperty, IDbCommand st,
-		                                ISessionImplementor session)
+		                                ISessionImplementor session, int index)
 		{
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Dehydrating entity: " + MessageHelper.InfoString(this, id));
 			}
-
-			int index = 0;
 
 			// there's a pretty strong coupling between the order of the SQL parameter 
 			// construction and the actual order of the parameter collection. 
@@ -326,36 +324,30 @@ namespace NHibernate.Persister.Entity
 			customSQLInsert = new SqlString[1];
 			customSQLUpdate = new SqlString[1];
 			customSQLDelete = new SqlString[1];
-			insertCommandType = new CommandType[1];
-			updateCommandType = new CommandType[1];
-			deleteCommandType = new CommandType[1];
+			insertCallable = new bool[1];
+			updateCallable = new bool[1];
+			deleteCallable = new bool[1];
 			insertResultCheckStyles = new ExecuteUpdateResultCheckStyle[1];
 			updateResultCheckStyles = new ExecuteUpdateResultCheckStyle[1];
 			deleteResultCheckStyles = new ExecuteUpdateResultCheckStyle[1];
 
 			customSQLInsert[0] = model.CustomSQLInsert;
-			insertCommandType[0] = customSQLInsert[0] != null && model.IsCustomInsertCallable
-				                        	? CommandType.StoredProcedure
-				                        	: CommandType.Text;
-			insertResultCheckStyles[0] = model.CustomSQLInsertCheckStyle == ExecuteUpdateResultCheckStyle.Default
+			insertCallable[0] = customSQLInsert[0] != null && model.IsCustomInsertCallable;
+			insertResultCheckStyles[0] = model.CustomSQLInsertCheckStyle == null
 			                             	?
-			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[0], insertCommandType[0])
+			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[0], insertCallable[0])
 			                             	: model.CustomSQLInsertCheckStyle;
 			customSQLUpdate[0] = model.CustomSQLUpdate;
-			updateCommandType[0] = customSQLUpdate[0] != null && model.IsCustomUpdateCallable
-				                        	? CommandType.StoredProcedure
-				                        	: CommandType.Text;
-			updateResultCheckStyles[0] = model.CustomSQLUpdateCheckStyle == ExecuteUpdateResultCheckStyle.Default
+			updateCallable[0] = customSQLUpdate[0] != null && model.IsCustomUpdateCallable;
+			updateResultCheckStyles[0] = model.CustomSQLUpdateCheckStyle == null
 			                             	?
-			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[0], updateCommandType[0])
+			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[0], updateCallable[0])
 			                             	: model.CustomSQLUpdateCheckStyle;
 			customSQLDelete[0] = model.CustomSQLDelete;
-			deleteCommandType[0] = customSQLDelete[0] != null && model.IsCustomDeleteCallable
-				                        	? CommandType.StoredProcedure
-				                        	: CommandType.Text;
-			deleteResultCheckStyles[0] = model.CustomSQLDeleteCheckStyle == ExecuteUpdateResultCheckStyle.Default
+			deleteCallable[0] = customSQLDelete[0] != null && model.IsCustomDeleteCallable;
+			deleteResultCheckStyles[0] = model.CustomSQLDeleteCheckStyle == null
 			                             	?
-			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[0], deleteCommandType[0])
+			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[0], deleteCallable[0])
 			                             	: model.CustomSQLDeleteCheckStyle;
 
 			// detect mapping errors

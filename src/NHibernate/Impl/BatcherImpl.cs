@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using Iesi.Collections;
 using log4net;
+using NHibernate.AdoNet;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -320,12 +321,12 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Adds the expected row count into the batch.
 		/// </summary>
-		/// <param name="expectedRowCount">The number of rows expected to be affected by the query.</param>
+		/// <param name="expectation">The number of rows expected to be affected by the query.</param>
 		/// <remarks>
 		/// If Batching is not supported, then this is when the Command should be executed.  If Batching
 		/// is supported then it should hold of on executing the batch until explicitly told to.
 		/// </remarks>
-		public abstract void AddToBatch(int expectedRowCount);
+		public abstract void AddToBatch(IExpectation expectation);
 
 		/// <summary>
 		/// Gets the <see cref="ISessionFactoryImplementor"/> the Batcher was
@@ -353,7 +354,7 @@ namespace NHibernate.Impl
 			get { return session; }
 		}
 
-		private void Log(IDbCommand command)
+		protected void Log(IDbCommand command)
 		{
 			if (logSql.IsDebugEnabled || factory.IsShowSqlEnabled)
 			{
@@ -452,17 +453,6 @@ namespace NHibernate.Impl
 		protected ADOException Convert(Exception sqlException, string message)
 		{
 			return ADOExceptionHelper.Convert(sqlException, message);
-		}
-
-
-		protected void ThrowNumberOfRowsAffectedNotMatchExpectedRowCount(int rowsAffected, int rowsExpected)
-		{
-			throw new HibernateException(string.Format(
-											"SQL insert, update or delete failed"
-											+ " (expected affected row count: {0}, actual affected row count: {1})."
-											+ " Possible causes: the row was modified or deleted by another user,"
-											+ " or a trigger is reporting misleading row count.",
-											rowsExpected, rowsAffected));
 		}
 
 		#region IDisposable Members

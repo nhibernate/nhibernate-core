@@ -263,7 +263,7 @@ namespace NHibernate.SqlCommand
 			SqlString text = ToSqlString();
 			ArrayList parameterTypes = new ArrayList(columnValuesParameterTypes);
 			parameterTypes.AddRange(whereParameterTypes);
-			return new SqlCommandInfo(CommandType.Text, text, ArrayHelper.ToSqlTypeArray(parameterTypes));
+			return new SqlCommandInfo(text, ArrayHelper.ToSqlTypeArray(parameterTypes));
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace NHibernate
 	/// versioning).
 	/// </summary>
 	[Serializable]
-	public class StaleObjectStateException : HibernateException, ISerializable
+	public class StaleObjectStateException : StaleStateException
 	{
 		private System.Type persistentType;
 		private object identifier;
@@ -23,11 +23,10 @@ namespace NHibernate
 		/// <param name="persistentType">The <see cref="System.Type"/> that NHibernate was trying to update in the database.</param>
 		/// <param name="identifier">The identifier of the object that is stale.</param>
 		public StaleObjectStateException( System.Type persistentType, object identifier ) 
-			: base( "Row was updated or deleted by another transaction" )
+			: base( "Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)" )
 		{
 			this.persistentType = persistentType;
 			this.identifier = identifier;
-			LogManager.GetLogger( typeof( StaleObjectStateException ) ).Error( "An operation failed due to stale data", this );
 		}
 
 		/// <summary>

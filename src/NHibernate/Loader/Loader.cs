@@ -1145,7 +1145,7 @@ namespace NHibernate.Loader
 				                                    useOffset ? GetFirstRow( selection ) : 0,
 				                                    GetMaxOrLimit( dialect, selection ) );
 			}
-            IDbCommand command = session.Batcher.PrepareQueryCommand(parameters.CommandType, sqlString, GetParameterTypes(parameters));
+            IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, GetParameterTypes(parameters));
 
 			try
 			{

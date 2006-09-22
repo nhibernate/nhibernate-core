@@ -357,14 +357,6 @@ namespace NHibernate.Engine
 			set { _callable = value; }
 		}
 
-		// Added in NH
-		public CommandType CommandType
-		{
-			get { return Callable ? CommandType.StoredProcedure : CommandType.Text; }
-		}
-
-
-
         /************** Filters ********************************/
    
 	    public void ProcessFilters(SqlString sql, ISessionImplementor session) 

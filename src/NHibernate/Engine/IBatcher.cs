@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate.AdoNet;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -87,12 +88,8 @@ namespace NHibernate.Engine
 		/// Add an insert / delete / update to the current batch (might be called multiple times
 		/// for a single <c>PrepareBatchStatement()</c>)
 		/// </summary>
-		/// <param name="expectedRowCount">The number of rows that should be affected when the query is run.</param>
-		/// <remarks>
-		/// A negative number in expectedRowCount means that you don't know how many rows to 
-		/// expect.
-		/// </remarks>
-		void AddToBatch( int expectedRowCount );
+		/// <param name="expectation">Determines whether the number of rows affected by query is correct.</param>
+		void AddToBatch( IExpectation expectation );
 
 		/// <summary>
 		/// Execute the batch

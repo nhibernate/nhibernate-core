@@ -1,18 +1,13 @@
 using System;
-using System.Data;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Engine
 {
 	[Serializable]
-	public struct ExecuteUpdateResultCheckStyle
+	public class ExecuteUpdateResultCheckStyle
 	{
-		// Added Default because I would like this type to be a value type and they don't allow nulls.
-		public static readonly ExecuteUpdateResultCheckStyle Default = new ExecuteUpdateResultCheckStyle("default");
-		
 		public static readonly ExecuteUpdateResultCheckStyle None = new ExecuteUpdateResultCheckStyle("none");
 		public static readonly ExecuteUpdateResultCheckStyle Count = new ExecuteUpdateResultCheckStyle("rowcount");
-		public static readonly ExecuteUpdateResultCheckStyle Param = new ExecuteUpdateResultCheckStyle("param");
 
 		private readonly string name;
 
@@ -31,47 +26,33 @@ namespace NHibernate.Engine
 				case "rowcount":
 					return Count;
 
-				case "param":
-					return Param;
-
 				default:
-					return Default;
+					return null;
 			}
 		}
 
-		public static ExecuteUpdateResultCheckStyle DetermineDefault(SqlString customSql, CommandType commandType)
+		public static ExecuteUpdateResultCheckStyle DetermineDefault(SqlString customSql, bool callable)
 		{
-			if (customSql == null)
-			{
-				return Count;
-			}
-			else
-			{
-				return commandType == CommandType.StoredProcedure ? Param : Count;
-			}
-		}
-
-		public static bool operator==(ExecuteUpdateResultCheckStyle left, ExecuteUpdateResultCheckStyle right)
-		{
-			return left.name == right.name;
-		}
-
-		public static bool operator !=(ExecuteUpdateResultCheckStyle left, ExecuteUpdateResultCheckStyle right)
-		{
-			return !(left == right);
+			return Count;
 		}
 
 		public override bool Equals(object obj)
 		{
-			if(obj is ExecuteUpdateResultCheckStyle)
+			if (obj is ExecuteUpdateResultCheckStyle)
 			{
-				return this == (ExecuteUpdateResultCheckStyle) obj;
+				return this.name == ((ExecuteUpdateResultCheckStyle) obj).name;
 			}
 			return false;
 		}
+
 		public override int GetHashCode()
 		{
 			return name.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return name;
 		}
 	}
 }

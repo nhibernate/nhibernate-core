@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using Iesi.Collections;
 using log4net;
+using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Engine;
@@ -163,9 +164,9 @@ namespace NHibernate.Persister.Entity
 		protected SqlString[] customSQLInsert;
 		protected SqlString[] customSQLUpdate;
 		protected SqlString[] customSQLDelete;
-		protected CommandType[] insertCommandType;
-		protected CommandType[] updateCommandType;
-		protected CommandType[] deleteCommandType;
+		protected bool[] insertCallable;
+		protected bool[] updateCallable;
+		protected bool[] deleteCallable;
 		protected ExecuteUpdateResultCheckStyle[] insertResultCheckStyles;
 		protected ExecuteUpdateResultCheckStyle[] updateResultCheckStyles;
 		protected ExecuteUpdateResultCheckStyle[] deleteResultCheckStyles;
@@ -606,21 +607,22 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.IdentifierProperty.IdentifierGenerator; }
 		}
 
-		/// <summary>
-		/// Checks to make sure that one and only one row was affected
-		/// by the IDbCommand that was run.
-		/// </summary>
-		/// <param name="rows">The results of IDbCommand..ExecuteNonQuery()</param>
-		/// <param name="id">The idenitifer of the Entity.  Use for logging purposes.</param>
-		protected virtual void Check(int rows, object id)
+		protected void Check(int rows, object id, int tableNumber, IExpectation expectation, IDbCommand statement)
 		{
-			if (rows < 1)
+			try
 			{
+				expectation.VerifyOutcomeNonBatched(rows, statement);
+			}
+			catch (StaleStateException)
+			{
+				// TODO H3: if (!IsNullableTable(tableNumber))
 				throw new StaleObjectStateException(MappedClass, id);
 			}
-			else if (rows > 1)
+			catch (TooManyRowsAffectedException)
 			{
-				throw new HibernateException("Duplicate identifier in table for " + ClassName + ": " + id);
+				throw new HibernateException(
+					"Duplicate identifier in table for: " +
+					MessageHelper.InfoString(this, id, Factory));
 			}
 		}
 
@@ -1747,7 +1749,8 @@ namespace NHibernate.Persister.Entity
 			ISessionImplementor session)
 		{
 			bool useVersion = j == 0 && IsVersioned;
-			bool useBatch = j == 0 && IsBatchable; //note: updates to joined tables can't be batched...
+			IExpectation expectation = Expectations.AppropriateExpectation( updateResultCheckStyles[j] );
+			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable; //note: updates to joined tables can't be batched...
 
 			if (log.IsDebugEnabled)
 			{
@@ -1760,16 +1763,16 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
-				IDbCommand statement = null;
+				IDbCommand statement = useBatch
+            			? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+            			: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
 				{
-					statement = useBatch
-					            	?
-					            session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-					            	:
-					            session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
-					int index = Dehydrate(id, fields, includeProperty, j, statement, session);
+					int index = 0;
+
+					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
+					index = Dehydrate(id, fields, includeProperty, j, statement, session, index);
 
 					// Write any appropriate versioning conditional parameters
 					if (useVersion && OptimisticLockMode == OptimisticLockMode.Version)
@@ -1801,11 +1804,11 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(1);
+						session.Batcher.AddToBatch(expectation);
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement), id);
+						Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
@@ -1933,7 +1936,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		protected abstract int Dehydrate(object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement,
-		                                 ISessionImplementor session);
+		                                 ISessionImplementor session, int index);
 
 		/// <summary>
 		/// Persist an object, using a natively generated identifier
@@ -1966,7 +1969,7 @@ namespace NHibernate.Persister.Entity
 					try
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
-						Dehydrate(null, fields, notNull, 0, insertSelect, session);
+						Dehydrate(null, fields, notNull, 0, insertSelect, session, 0);
 						rs = session.Batcher.ExecuteReader(insertSelect);
 						return GetGeneratedIdentity(obj, session, rs);
 					}
@@ -1978,12 +1981,11 @@ namespace NHibernate.Persister.Entity
 				else
 				{
 					// Do the insert
-					// TODO SP
 					IDbCommand statement = session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 					try
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
-						Dehydrate(null, fields, notNull, 0, statement, session);
+						Dehydrate(null, fields, notNull, 0, statement, session, 0);
 						session.Batcher.ExecuteNonQuery(statement);
 					}
 					finally
@@ -2210,15 +2212,15 @@ namespace NHibernate.Persister.Entity
 				SqlCommandInfo defaultInsert = GenerateInsertString(false, PropertyInsertability, j);
 				sqlInsertStrings[j] = customSQLInsert[j] == null
 				                      	? defaultInsert
-				                      	: new SqlCommandInfo(insertCommandType[j], customSQLInsert[j], defaultInsert.ParameterTypes);
+				                      	: new SqlCommandInfo(customSQLInsert[j], defaultInsert.ParameterTypes);
 				SqlCommandInfo defaultUpdate = GenerateUpdateString(PropertyUpdateability, j, null);
 				sqlUpdateStrings[j] = customSQLUpdate[j] == null
 				                      	? defaultUpdate
-				                      	: new SqlCommandInfo(updateCommandType[j], customSQLUpdate[j], defaultUpdate.ParameterTypes);
+				                      	: new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes);
 				SqlCommandInfo defaultDelete = GenerateDeleteString(j);
 				sqlDeleteStrings[j] = customSQLDelete[j] == null
 				                      	? defaultDelete
-				                      	: new SqlCommandInfo(deleteCommandType[j], customSQLDelete[j], defaultDelete.ParameterTypes);
+				                      	: new SqlCommandInfo(customSQLDelete[j], defaultDelete.ParameterTypes);
 			}
 
 			sqlIdentityInsertString = IsIdentifierAssignedByInsert
@@ -2553,7 +2555,8 @@ namespace NHibernate.Persister.Entity
 		                   object[] loadedState)
 		{
 			bool useVersion = j == 0 && IsVersioned;
-			bool useBatch = j == 0 && IsBatchable;
+			IExpectation expectation = Expectations.AppropriateExpectation(deleteResultCheckStyles[j]);
+			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
 
 			if (log.IsDebugEnabled)
 			{
@@ -2579,8 +2582,11 @@ namespace NHibernate.Persister.Entity
 				try
 				{
 					int index = 0;
+
+					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
+					
 					// Do the key. The key is immutable so we can use the _current_ object state
-					IdentifierType.NullSafeSet(statement, id, 0, session);
+					IdentifierType.NullSafeSet(statement, id, index, session);
 					index += IdentifierColumnSpan;
 
 					if (useVersion)
@@ -2602,11 +2608,11 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(1);
+						session.Batcher.AddToBatch(expectation);
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement), id);
+						Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
@@ -2700,36 +2706,34 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			bool useBatch = j == 0;
+
+			IExpectation expectation = Expectations.AppropriateExpectation( insertResultCheckStyles[j] );
+			bool useBatch = j == 0 && expectation.CanBeBatched;
 
 			try
 			{
 				// Render the SQL query
-				IDbCommand insertCmd;
-				if (useBatch)
-				{
-					insertCmd = session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
-				}
-				else
-				{
-					insertCmd = session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
-				}
+				IDbCommand insertCmd = useBatch
+					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
 					// Write the values of the field onto the prepared statement - we MUST use the
 					// state at the time the insert was issued (cos of foreign key constraints)
 					// not necessarily the obect's current state
+					int index = 0;
+					//index += expectation.Prepare(insertCmd, factory.ConnectionProvider.Driver);
 
-					Dehydrate(id, fields, notNull, j, insertCmd, session);
+					Dehydrate(id, fields, notNull, j, insertCmd, session, index);
 
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(1);
+						session.Batcher.AddToBatch(expectation);
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(insertCmd), id);
+						Check(session.Batcher.ExecuteNonQuery(insertCmd), id, j, expectation, insertCmd);
 					}
 				}
 				catch (Exception e)

@@ -132,8 +132,16 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="customSQL" mixed="true">
-		<xs:attribute name="callable" type="xs:boolean" use="optional" default="false" />
+		<!--<xs:attribute name="callable" type="xs:boolean" use="optional" default="false" />-->
+		<xs:attribute name="check" type="customSQLCheck" use="optional" />
 	</xs:complexType>
+	<xs:simpleType name="customSQLCheck">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="none" />
+			<xs:enumeration value="rowcount" />
+			<!-- <xs:enumeration value="param" /> -->
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:element name="loader">
 		<xs:complexType>
 			<xs:attribute name="query-ref" type="xs:string" use="required" />
@@ -991,7 +999,7 @@
 				</xs:element>
 			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required" />
-			<xs:attribute name="callable" type="xs:boolean" use="optional" default="false" />
+			<!-- <xs:attribute name="callable" type="xs:boolean" use="optional" default="false" /> -->
 			<xs:attribute name="resultset-ref" type="xs:string" use="optional" />
 			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
 		</xs:complexType>

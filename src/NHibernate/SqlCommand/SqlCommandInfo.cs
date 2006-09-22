@@ -6,20 +6,19 @@ namespace NHibernate.SqlCommand
 {
 	public class SqlCommandInfo
 	{
-		private CommandType commandType;
 		private SqlString text;
 		private SqlType[] parameterTypes;
 		
-		public SqlCommandInfo(CommandType commandType, SqlString text, SqlType[] parameterTypes)
+		public SqlCommandInfo(SqlString text, SqlType[] parameterTypes)
 		{
-			this.commandType = commandType;
 			this.text = text;
 			this.parameterTypes = parameterTypes;
 		}
 		
 		public CommandType CommandType
 		{
-			get { return commandType; }
+			// Always Text for now
+			get { return CommandType.Text; }
 		}
 		
 		public SqlString Text

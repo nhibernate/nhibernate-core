@@ -471,6 +471,9 @@
     <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="AdoNet\Expectations.cs" />
+    <Compile Include="AdoNet\IExpectation.cs" />
+    <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />
     <Compile Include="Bytecode\IBytecodeProvider.cs" />
@@ -558,7 +561,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IdentityHashCodeProvider.cs" />
-    <Compile Include="Impl\BatchingBatcher.cs" />
     <Compile Include="Impl\SqlClientSqlCommandSet.cs" />
     <Compile Include="Impl\QueryFilterImpl.cs" />
     <Compile Include="ISQLQuery.cs" />
@@ -642,6 +644,7 @@
     <Compile Include="Property\IOptimizableSetter.cs" />
     <Compile Include="SqlCommand\ISqlStringVisitor.cs" />
     <Compile Include="SqlCommand\SqlCommandInfo.cs" />
+    <Compile Include="StaleStateException.cs" />
     <Compile Include="Transform\AliasToBeanConstructorResultTransformer.cs" />
     <Compile Include="Transform\AliasToBeanResultTransformer.cs" />
     <Compile Include="Transform\PassThroughResultTransformer.cs" />

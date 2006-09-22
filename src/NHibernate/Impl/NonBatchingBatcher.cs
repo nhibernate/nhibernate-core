@@ -1,4 +1,5 @@
 using System.Data;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 
 namespace NHibernate.Impl
@@ -21,7 +22,7 @@ namespace NHibernate.Impl
 		/// Executes the current <see cref="IDbCommand"/> and compares the row Count
 		/// to the <c>expectedRowCount</c>.
 		/// </summary>
-		/// <param name="expectedRowCount">
+		/// <param name="expectation">
 		/// The expected number of rows affected by the query.  A value of less than <c>0</c>
 		/// indicates that the number of rows to expect is unknown or should not be a factor.
 		/// </param>
@@ -29,16 +30,11 @@ namespace NHibernate.Impl
 		/// Thrown when there is an expected number of rows to be affected and the
 		/// actual number of rows is different.
 		/// </exception>
-		public override void AddToBatch( int expectedRowCount )
+		public override void AddToBatch( IExpectation expectation )
 		{
-			int rowCount = ExecuteNonQuery( CurrentCommand );
-
-			//negative expected row count means we don't know how many rows to expect
-			if( expectedRowCount > 0 && expectedRowCount != rowCount )
-			{
-				ThrowNumberOfRowsAffectedNotMatchExpectedRowCount(expectedRowCount, rowCount);
-		
-			}
+			IDbCommand cmd = CurrentCommand;
+			int rowCount = ExecuteNonQuery( cmd );
+			expectation.VerifyOutcomeNonBatched(rowCount, cmd );
 		}
 
 		/// <summary>
@@ -50,6 +46,5 @@ namespace NHibernate.Impl
 		protected override void DoExecuteBatch( IDbCommand ps )
 		{
 		}
-
 	}
 }

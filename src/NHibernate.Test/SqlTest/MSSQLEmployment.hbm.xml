@@ -150,25 +150,25 @@
 		ORDER BY STARTDATE ASC
 	</sql-query>
 
-	<sql-query name="simpleScalar" callable="false">
+	<sql-query name="simpleScalar">
 		<return-scalar column="name" type="string"/>
 		<return-scalar column="value" type="long"/>
 		exec simpleScalar :number
 	</sql-query>
 
-	<sql-query name="paramhandling" callable="false">
+	<sql-query name="paramhandling">
 		<return-scalar column="value" type="long"/>
 		<return-scalar column="value2" type="long"/>
 		exec paramHandling ?, ?
 	</sql-query>
 
-	<sql-query name="paramhandling_mixed" callable="false">
+	<sql-query name="paramhandling_mixed">
 		<return-scalar column="value" type="long" />
 		<return-scalar column="value2" type="long" />
 		exec paramHandling ?, :second
 	</sql-query>
 
-	<sql-query name="selectAllEmployments" callable="false">
+	<sql-query name="selectAllEmployments">
 		<return class="Employment">
 			<return-property name="Employee" column="EMPLOYEE"/>
 			<return-property name="Employer" column="EMPLOYER"/>

@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Reflection;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 
 namespace NHibernate.Impl
@@ -16,7 +17,6 @@ namespace NHibernate.Impl
 	{
 		private int batchSize;
 		private int totalExpectedRowsAffected;
-		bool checkExpectedRows = true;
 		SqlClientSqlCommandSet currentBatch;
 
 		/// <summary>
@@ -30,20 +30,13 @@ namespace NHibernate.Impl
 			currentBatch = new SqlClientSqlCommandSet();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="expectedRowCount"></param>
-		public override void AddToBatch(int expectedRowCount)
+		public override void AddToBatch(IExpectation expectation)
 		{
-			// negative here means that we don't know what to expect
-			// because we don't get a result per query in the batch (like in Java)
-			// we need to turn off the expected row count for the whole batch.
-			if (expectedRowCount < 0)
-				checkExpectedRows = false;
-			totalExpectedRowsAffected += expectedRowCount;
+			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			log.Info("Adding to batch");
 			IDbCommand batchUpdate = CurrentCommand;
+			Log(batchUpdate);
+
 			currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 			if (currentBatch.CountOfCommands >= batchSize)
 			{
@@ -51,24 +44,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="ps"></param>
 		protected override void DoExecuteBatch(IDbCommand ps)
 		{
 			log.Info("Executing batch");
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
 			int rowsAffected = currentBatch.ExecuteNonQuery();
-			if (checkExpectedRows && rowsAffected != totalExpectedRowsAffected)
-			{
-				ThrowNumberOfRowsAffectedNotMatchExpectedRowCount(rowsAffected, totalExpectedRowsAffected);
-			}
-			currentBatch.Dispose();
-			checkExpectedRows = true;
-			totalExpectedRowsAffected = 0;
+			
+			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected, ps);
 
+			currentBatch.Dispose();
+			totalExpectedRowsAffected = 0;
 			currentBatch = new SqlClientSqlCommandSet();
 		}
 

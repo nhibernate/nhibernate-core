@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
-
+using NHibernate.AdoNet;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -144,6 +144,8 @@ namespace NHibernate.Persister.Collection
 			try
 			{
 				IDbCommand st = null;
+				IExpectation expectation = Expectations.AppropriateExpectation(UpdateCheckStyle);
+				bool useBatch = expectation.CanBeBatched;
 				IEnumerable entries = collection.Entries();
 				try
 				{
@@ -154,14 +156,25 @@ namespace NHibernate.Persister.Collection
 						int offset = 0;
 						if( collection.NeedsUpdating( entry, i, ElementType ) )
 						{
-							if( st == null )
+							if (useBatch)
 							{
-								// TODO SP
-								st = session.Batcher.PrepareBatchCommand(
+								if (st == null)
+								{
+									st = session.Batcher.PrepareBatchCommand(
+										SqlUpdateRowString.CommandType,
+										SqlUpdateRowString.Text,
+										SqlUpdateRowString.ParameterTypes);
+								}
+							}
+							else
+							{
+								st = session.Batcher.PrepareCommand(
 									SqlUpdateRowString.CommandType,
 									SqlUpdateRowString.Text,
-									SqlUpdateRowString.ParameterTypes );
+									SqlUpdateRowString.ParameterTypes);
 							}
+
+							//offset += expectation.Prepare(st, Factory.ConnectionProvider.Driver);
 							
 							int loc = WriteElement( st, collection.GetElement( entry ), offset, session );
 							if( hasIdentifier )
@@ -180,7 +193,15 @@ namespace NHibernate.Persister.Collection
 									loc = WriteElementToWhere( st, collection.GetSnapshotElement( entry, i ), loc, session );
 								}
 							}
-							session.Batcher.AddToBatch( 1 );
+
+							if (useBatch)
+							{
+								session.Batcher.AddToBatch(expectation);
+							}
+							else
+							{
+								expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+							}
 							count++;
 						}
 						i++;
@@ -189,10 +210,18 @@ namespace NHibernate.Persister.Collection
 				}
 				catch( Exception e )
 				{
-					//TODO: change to SqlException
-					// NB This calls cmd.Dispose
-					session.Batcher.AbortBatch( e );
+					if (useBatch)
+					{
+						session.Batcher.AbortBatch(e);
+					}
 					throw;
+				}
+				finally
+				{
+					if (!useBatch)
+					{
+						session.Batcher.CloseCommand(st, null);
+					}
 				}
 			}
 			catch( HibernateException )

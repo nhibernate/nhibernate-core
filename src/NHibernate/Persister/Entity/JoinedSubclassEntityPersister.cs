@@ -261,14 +261,14 @@ namespace NHibernate.Persister.Entity
 			bool[] includeProperty,
 			int table,
 			IDbCommand statement,
-			ISessionImplementor session)
+			ISessionImplementor session,
+			int index)
 		{
 			if (statement == null)
 			{
 				return -1;
 			}
 
-			int index = 0;
 			for (int j = 0; j < HydrateSpan; j++)
 			{
 				if (includeProperty[j] && naturalOrderPropertyTables[j] == table)
@@ -410,9 +410,9 @@ namespace NHibernate.Persister.Entity
 			customSQLInsert = new SqlString[tableSpan];
 			customSQLUpdate = new SqlString[tableSpan];
 			customSQLDelete = new SqlString[tableSpan];
-			insertCommandType = new CommandType[tableSpan];
-			updateCommandType = new CommandType[tableSpan];
-			deleteCommandType = new CommandType[tableSpan];
+			insertCallable = new bool[tableSpan];
+			updateCallable = new bool[tableSpan];
+			deleteCallable = new bool[tableSpan];
 			insertResultCheckStyles = new ExecuteUpdateResultCheckStyle[tableSpan];
 			updateResultCheckStyles = new ExecuteUpdateResultCheckStyle[tableSpan];
 			deleteResultCheckStyles = new ExecuteUpdateResultCheckStyle[tableSpan];
@@ -422,28 +422,22 @@ namespace NHibernate.Persister.Entity
 			while (pc != null)
 			{
 				customSQLInsert[jk] = pc.CustomSQLInsert;
-				insertCommandType[jk] = customSQLInsert[jk] != null && pc.IsCustomInsertCallable
-				                        	? CommandType.StoredProcedure
-				                        	: CommandType.Text;
-				insertResultCheckStyles[jk] = pc.CustomSQLInsertCheckStyle == ExecuteUpdateResultCheckStyle.Default
+				insertCallable[jk] = customSQLInsert[jk] != null && pc.IsCustomInsertCallable;
+				insertResultCheckStyles[jk] = pc.CustomSQLInsertCheckStyle == null
 				                              	?
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[jk], insertCommandType[jk])
+				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[jk], insertCallable[jk])
 				                              	: pc.CustomSQLInsertCheckStyle;
 				customSQLUpdate[jk] = pc.CustomSQLUpdate;
-				updateCommandType[jk] = customSQLUpdate[jk] != null && pc.IsCustomUpdateCallable
-				                        	? CommandType.StoredProcedure
-				                        	: CommandType.Text;
-				updateResultCheckStyles[jk] = pc.CustomSQLUpdateCheckStyle == ExecuteUpdateResultCheckStyle.Default
+				updateCallable[jk] = customSQLUpdate[jk] != null && pc.IsCustomUpdateCallable;
+				updateResultCheckStyles[jk] = pc.CustomSQLUpdateCheckStyle == null
 				                              	?
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[jk], updateCommandType[jk])
+				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[jk], updateCallable[jk])
 				                              	: pc.CustomSQLUpdateCheckStyle;
 				customSQLDelete[jk] = pc.CustomSQLDelete;
-				deleteCommandType[jk] = customSQLDelete[jk] != null && pc.IsCustomDeleteCallable
-				                        	? CommandType.StoredProcedure
-				                        	: CommandType.Text;
-				deleteResultCheckStyles[jk] = pc.CustomSQLDeleteCheckStyle == ExecuteUpdateResultCheckStyle.Default
+				deleteCallable[jk] = customSQLDelete[jk] != null && pc.IsCustomDeleteCallable;
+				deleteResultCheckStyles[jk] = pc.CustomSQLDeleteCheckStyle == null
 				                              	?
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[jk], deleteCommandType[jk])
+				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[jk], deleteCallable[jk])
 				                              	: pc.CustomSQLDeleteCheckStyle;
 				jk--;
 				pc = pc.Superclass;
