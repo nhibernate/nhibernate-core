@@ -15,7 +15,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 
 
 		/// <summary> Generate a Writer method for a XmlSchemaElement. </summary>
-		public static void GenerateElementWriter(System.Xml.Schema.XmlSchemaElement schemaElt, string schemaEltName, Refly.CodeDom.MethodDeclaration method, System.Xml.Schema.XmlSchemaComplexType refSchemaType)
+		public static void GenerateElementWriter(System.Xml.Schema.XmlSchemaElement schemaElt, string schemaEltName, Refly.CodeDom.MethodDeclaration method, System.Xml.Schema.XmlSchemaComplexType refSchemaType, System.Xml.Schema.XmlSchemaObjectCollection schemaItems)
 		{
 			bool schemaEltIsRoot = Utils.IsRoot(schemaEltName);
 			method.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.Overloaded;
@@ -130,7 +130,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				if(type.Particle is System.Xml.Schema.XmlSchemaSequence)
 				{
 					System.Xml.Schema.XmlSchemaSequence seq = (schemaElt.SchemaType as System.Xml.Schema.XmlSchemaComplexType).Particle as System.Xml.Schema.XmlSchemaSequence;
-					System.Collections.ArrayList members = Utils.GetElements(seq.Items);
+					System.Collections.ArrayList members = Utils.GetElements(seq.Items, schemaItems);
 					if( ! schemaEltIsRoot )
 						method.Body.Add(Refly.CodeDom.Stm.Snippet( string.Format( @"
 			System.Collections.ArrayList memberAttribs = GetSortedAttributes(member);
@@ -144,9 +144,10 @@ namespace NHibernate.Mapping.Attributes.Generator
 
 					foreach(System.Xml.Schema.XmlSchemaElement member in members)
 					{
-						if( member.RefName.Name == string.Empty )
-							continue; // Ignore elements like <query> and <sql-query>
-						string realMemberName = member.Name + member.RefName.Name; // One of them is empty
+						if( member.RefName.Name!=null && member.RefName.Name!=string.Empty
+						   && member.Name!=null && member.Name!=string.Empty )
+							log.Error(string.Format("Both member.RefName.Name({0}) & member.Name({1}) are not empty", member.RefName.Name, member.Name));
+						string realMemberName = member.Name + member.RefName.Name; // One of them should be empty
 						string memberName = Utils.Capitalize(realMemberName);
 						string listName = memberName + "List";
 						string attributeName = memberName + "Attribute";
@@ -355,7 +356,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 
 
 		/// <summary> Add the content of the method IsNextElement(). </summary>
-		public static void FillIsNextElement(Refly.CodeDom.MethodDeclaration method, System.Xml.Schema.XmlSchemaObjectCollection items)
+		public static void FillIsNextElement(Refly.CodeDom.MethodDeclaration method, System.Xml.Schema.XmlSchemaObjectCollection schemaItems)
 		{
 			method.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.Overloaded;
 			method.Doc.Summary.AddText(" Tells if 'element1' come after 'element2' in rootType's 'sub-elements' order. "); // Create the <summary />
@@ -368,7 +369,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 			@"if( element1 == null )
 				return false;" ));
 
-			foreach(System.Xml.Schema.XmlSchemaObject obj in items)
+			foreach(System.Xml.Schema.XmlSchemaObject obj in schemaItems)
 			{
 				if(obj is System.Xml.Schema.XmlSchemaElement)
 				{
@@ -385,7 +386,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 						if(type.Particle is System.Xml.Schema.XmlSchemaSequence)
 						{
 							System.Xml.Schema.XmlSchemaSequence seq = (elt.SchemaType as System.Xml.Schema.XmlSchemaComplexType).Particle as System.Xml.Schema.XmlSchemaSequence;
-							System.Collections.ArrayList members = Utils.GetElements(seq.Items);
+							System.Collections.ArrayList members = Utils.GetElements(seq.Items, schemaItems);
 							for(int i=0; i<members.Count; i++)
 							{
 								System.Xml.Schema.XmlSchemaElement member = members[i] as System.Xml.Schema.XmlSchemaElement;

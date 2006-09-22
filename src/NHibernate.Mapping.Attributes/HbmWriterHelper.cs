@@ -15,7 +15,7 @@ namespace NHibernate.Mapping.Attributes
 		protected virtual string ThrowRequiredValueNotProvidedException(System.Reflection.MemberInfo member)
 		{
 			throw new MappingException(
-				string.Format("This required value hasn't been provided.\nClass: {0}\nMember: {1}\nUse the name of the method causing this exception to which value is missing.",
+				string.Format("This required value hasn't been provided.\nClass: {0}\nMember: {1}\nUse the name of the method causing this exception to know which value is missing.",
 					member.DeclaringType, member.Name) );
 		}
 
@@ -279,6 +279,120 @@ namespace NHibernate.Mapping.Attributes
 
 
 		public string Get_Type_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_FilterDef_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_Filter_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_FilterParam_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_FilterParam_Type_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_Loader_QueryRef_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_ResultSet_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_Query_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_SqlQuery_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_ReturnProperty_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_ReturnJoin_Alias_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_ReturnJoin_Property_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_ReturnScalar_Column_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_ReturnScalar_Type_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_LoadCollection_Alias_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_LoadCollection_Role_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_DialectScope_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_ReturnDiscriminator_Column_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_ReturnColumn_Name_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
+
+
+		public string Get_Synchronize_Table_DefaultValue(System.Reflection.MemberInfo member)
 		{
 			return ThrowRequiredValueNotProvidedException(member);
 		}

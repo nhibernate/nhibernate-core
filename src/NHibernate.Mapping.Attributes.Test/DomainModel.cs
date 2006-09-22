@@ -86,6 +86,12 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			get { return null;  }
 			set {  }
 		}
+		
+		[NHMA.Loader(QueryRef="queryRef")]
+		[NHMA.SqlInsert(1, Content="C")]
+		[NHMA.SqlUpdate(5, Content="U")]
+		[NHMA.SqlDelete(3, Content="D")]
+		public int sql = 1;
 	}
 	#endregion
 
@@ -144,7 +150,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	 /// <summary>
 	 /// Gets or sets the _collectionComponent
 	 /// </summary> 
-	[NHMA.ManyToOne(NotNull=true, ClassType=typeof(int), AccessType=typeof(Foo), Fetch=FetchMode.Select, OuterJoin=NHMA.OuterJoinStrategy.True)]
+	[NHMA.ManyToOne(NotNull=true, NotFound=NHMA.NotFoundMode.Ignore, ClassType=typeof(int), AccessType=typeof(Foo), Fetch=FetchMode.Select, OuterJoin=NHMA.OuterJoinStrategy.True)]
 	 public NestingComponent CollectionComponent
 	 {
 		 get 
@@ -252,7 +258,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	[NHMA.List(0, Lazy=true, Cascade=NHMA.CascadeStyle.All, Name="List", AccessType=typeof(Foo), OuterJoin=NHMA.OuterJoinStrategy.True)]
 		[NHMA.Key(1, Column="bazid")]
 		[NHMA.Index(2, Column="bazind")]
-		[NHMA.OneToMany(3, ClassType=typeof(Fee))]
+		[NHMA.OneToMany(3, NotFound=NHMA.NotFoundMode.Exception, ClassType=typeof(Fee))]
 	public System.Collections.IList Fees
 	{
 		get { return _fees; }
@@ -746,7 +752,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 		[NHMA.CollectionId(1, Column="pkid", TypeType=typeof(System.Int64), Length=8)]
 			[NHMA.Generator(2, Class="hilo")]
 		[NHMA.Key(3, Column="baz")]
-		[NHMA.ManyToMany(4, ClassType=typeof(Foo), Column="the_time", Fetch=FetchMode.Select, OuterJoin=NHMA.OuterJoinStrategy.True)]
+		[NHMA.ManyToMany(4, NotFound=NHMA.NotFoundMode.Exception, ClassType=typeof(Foo), Column="the_time", Fetch=FetchMode.Select, OuterJoin=NHMA.OuterJoinStrategy.True)]
 	public System.Collections.IList IdFooBag
 	{
 		get
@@ -876,6 +882,12 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			get { return null;  }
 			set {  }
 		}
+		
+		[NHMA.Loader(QueryRef="ref")]
+		[NHMA.SqlInsert(1, Content="INSERT")]
+		[NHMA.SqlUpdate(2, Content="UPDATE")]
+		[NHMA.SqlDelete(3, Content="DELETE")]
+		public int sql = 2;
 	}
 	#endregion
 
@@ -900,7 +912,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set { _id = value; }
 		}
 
-		[NHMA.Property(-1)]
+		[NHMA.Property(-1, OptimisticLock=true)]
 			[NHMA.Type(NameType=typeof(Foo))]
 				[NHMA.Param(1, Name="Property.Type", Content="Param")]
 		public Foo Foo
@@ -951,6 +963,26 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			get { return null;  }
 			set {  }
 		}
+	}
+	#endregion
+
+
+	#region class Sql
+	[NHMA.Class]
+	public class Sql
+	{
+		[NHMA.Id(-1)]
+			[NHMA.Generator(Class="?")]
+		protected long id;
+		
+		[NHMA.Loader(QueryRef="ref")]
+		[NHMA.SqlInsert(Check=CustomSqlCheck.None, Content="INSERT INTO Table (Col1, Col2) VALUES ( UPPER(?), ? )")]
+		[NHMA.SqlUpdate(Check=CustomSqlCheck.None, Content="UPDATE Table SET Col1=UPPER(?) WHERE Id=?")]
+		[NHMA.SqlDelete(Check=CustomSqlCheck.RowCount, Content="DELETE FROM Table WHERE Id=?")]
+		protected int sql;
+		
+		[NHMA.Filter(Name="Null", Condition="1==2")]
+		protected int filter;
 	}
 	#endregion
 }

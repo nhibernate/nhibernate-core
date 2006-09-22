@@ -39,29 +39,42 @@ namespace NHibernate.Mapping.Attributes.Generator
 "column",
 "component",
 "composite",
+"condition",
 "constrained",
 "content",
+"count",
+"create",
+"custom",
+"database",
+"def",
 "default",
 "delete",
+"dialect",
 "dirty",
 "discriminator",
+"drop",
 "dynamic",
 "element",
 "end",
 "enum",
+"exception",
 "explicit",
 "extends",
 "false",
 "fetch",
+"filter",
+"flush",
 "force",
 "foreign",
 "format",
 "formula",
+"found",
 "generator",
 "generic",
 "helper",
 "hibernate",
 "id",
+"ignore",
 "implicit",
 "import",
 "index",
@@ -75,6 +88,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 "lazy",
 "length",
 "list",
+"load",
+"loader",
 "lock",
 "many",
 "map",
@@ -85,6 +100,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 "name",
 "namespace",
 "nested",
+"never",
+"no",
 "non",
 "none",
 "not",
@@ -109,9 +126,14 @@ namespace NHibernate.Mapping.Attributes.Generator
 "read",
 "ref",
 "rename",
+"result",
 "return",
+"role",
+"row",
 "save",
+"scalar",
 "schema",
+"scope",
 "select",
 "set",
 "size",
@@ -133,9 +155,11 @@ namespace NHibernate.Mapping.Attributes.Generator
 "unsaved",
 "unspecified",
 "update",
+"upgrade",
 "usage",
 "value",
 "version",
+"wait",
 "where",
 "write",
 		};
@@ -195,7 +219,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				Refly.CodeDom.PropertyDeclaration pdStartQuote = hbmWriter.AddProperty(fdStartQuote, false, true, false);
 				pdStartQuote.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_startQuote==null || _startQuote.Length==0)
 					_startQuote = ""{"";
-				return _startQuote;") );
+				return _startQuote") );
 				pdStartQuote.Doc.Summary.AddText(" Gets or sets the beginning string used when declaring an identifier for an AttributeIdenfierAttribute "); // Create the <summary />
 
 				Refly.CodeDom.FieldDeclaration fdEndQuote = hbmWriter.AddField(typeof(string), "EndQuote");
@@ -203,7 +227,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				Refly.CodeDom.PropertyDeclaration pdEndQuote = hbmWriter.AddProperty(fdEndQuote, false, true, false);
 				pdEndQuote.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_endQuote==null || _endQuote.Length==0)
 					_endQuote = ""}"";
-				return _endQuote;") );
+				return _endQuote") );
 				pdEndQuote.Doc.Summary.AddText(" Gets or sets the ending string used when declaring an identifier for an AttributeIdenfierAttribute "); // Create the <summary />
 
 				Refly.CodeDom.FieldDeclaration fdPatterns = hbmWriter.AddField(typeof(System.Collections.Hashtable), "Patterns");
@@ -215,7 +239,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 					_patterns.Add(@""Nullables.Nullable(\w+), Nullables"", ""Nullables.NHibernate.Nullable$1Type, Nullables.NHibernate"");
 					_patterns.Add(@""System.Data.SqlTypes.Sql(\w+), System.Data"", ""NHibernate.UserTypes.SqlTypes.Sql$1Type, NHibernate.UserTypes.SqlTypes"");
 				}
-				return _patterns;") );
+				return _patterns") );
 				pdPatterns.Doc.Summary.AddText(" Gets or sets the Patterns to convert properties types (the key is the pattern string and the value is the replacement string) "); // Create the <summary />
 
 				HbmWriterGenerator.FillFindAttributedMembers(hbmWriter.AddMethod("FindAttributedMembers"));
@@ -232,13 +256,18 @@ namespace NHibernate.Mapping.Attributes.Generator
 				{
 					if(obj is System.Xml.Schema.XmlSchemaAttributeGroup)
 					{
-						// ignore
-						log.Debug("Ignore AttributeGroup: " + (obj as System.Xml.Schema.XmlSchemaAttributeGroup).Name);
+						// Ignore (used by Elements: <xs:attributeGroup ref="..." />)
+						log.Debug("Ignore AttributeGroup: " + (obj as System.Xml.Schema.XmlSchemaAttributeGroup).Name + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));
+					}
+					else if(obj is System.Xml.Schema.XmlSchemaGroup)
+					{
+						// Ignore (used by Elements: <xs:group ref="..." />)
+						log.Debug("Ignore Group: " + (obj as System.Xml.Schema.XmlSchemaGroup).Name + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));
 					}
 					else if(obj is System.Xml.Schema.XmlSchemaSimpleType)
 					{
 						System.Xml.Schema.XmlSchemaSimpleType elt = obj as System.Xml.Schema.XmlSchemaSimpleType;
-						log.Debug("Generate Enumeration for SimpleType: " + elt.Name);
+						log.Debug("Generate Enumeration for SimpleType: " + elt.Name + string.Format(", nh-mapping.xsd({0})", elt.LineNumber));
 						AttributeAndEnumGenerator.GenerateEnumeration(elt, nd.AddEnum(Utils.Capitalize(elt.Name), false));
 					}
 					else if(obj is System.Xml.Schema.XmlSchemaElement)
@@ -256,19 +285,20 @@ namespace NHibernate.Mapping.Attributes.Generator
 								}
 							}
 						string eltName = Utils.Capitalize(elt.Name);
-						log.Debug("Generate Attribute and ElementWriter for Element: " + elt.Name);
+						log.Debug("Generate Attrib and EltWriter for Elt: " + elt.Name + string.Format(", nh-mapping.xsd({0})", elt.LineNumber));
 						AttributeAndEnumGenerator.GenerateAttribute(elt, nd.AddClass(eltName + "Attribute"), type);
-						HbmWriterGenerator.GenerateElementWriter(elt, eltName, hbmWriter.AddMethod("Write" + eltName), type);
+						HbmWriterGenerator.GenerateElementWriter(elt, eltName, hbmWriter.AddMethod("Write" + eltName), type, schema.Items);
 						if(Utils.IsRoot(eltName))
 							HbmWriterGenerator.FillWriteNestedTypes(eltName, hbmWriter.AddMethod("WriteNested" + eltName + "Types"));
 					}
 					else if(obj is System.Xml.Schema.XmlSchemaComplexType)
 					{
+						// Ignore (Note: Make sure that it is used by Elements only like this: <xs:element name="XXX" type="YYY" />)
 						System.Xml.Schema.XmlSchemaComplexType elt = obj as System.Xml.Schema.XmlSchemaComplexType;
-						log.Debug("Don't generate ComplexType: " + elt.Name); // like <query> and <sql-query>
+						log.Debug("Don't generate ComplexType: " + elt.Name + string.Format(", nh-mapping.xsd({0})", elt.LineNumber)); // like <query> and <sql-query>
 					}
 					else
-						log.Warn("Unknow Object: " + obj.ToString());
+						log.Warn("Unknown Object: " + obj.ToString() + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));
 				}
 
 

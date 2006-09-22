@@ -34,6 +34,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _class = null;
 		
+		private NotFoundMode _notfound = NotFoundMode.Unspecified;
+		
 		private FetchMode _fetch = FetchMode.Unspecified;
 		
 		/// <summary> Default constructor (position=0) </summary>
@@ -126,6 +128,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._fetch = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual NotFoundMode NotFound
+		{
+			get
+			{
+				return this._notfound;
+			}
+			set
+			{
+				this._notfound = value;
 			}
 		}
 	}

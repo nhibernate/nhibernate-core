@@ -28,6 +28,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _class = null;
 		
+		private NotFoundMode _notfound = NotFoundMode.Unspecified;
+		
 		/// <summary> Default constructor (position=0) </summary>
 		public OneToManyAttribute() : 
 				base(0)
@@ -66,6 +68,19 @@ namespace NHibernate.Mapping.Attributes
 					this.Class = value.FullName.Substring(7);
 				else
 					this.Class = value.FullName + ", " + value.Assembly.GetName().Name;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual NotFoundMode NotFound
+		{
+			get
+			{
+				return this._notfound;
+			}
+			set
+			{
+				this._notfound = value;
 			}
 		}
 	}

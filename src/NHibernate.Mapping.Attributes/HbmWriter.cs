@@ -52,7 +52,7 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if(_startQuote==null || _startQuote.Length==0)
 					_startQuote = "{";
-				return _startQuote;;
+				return _startQuote;
 			}
 			set
 			{
@@ -67,7 +67,7 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if(_endQuote==null || _endQuote.Length==0)
 					_endQuote = "}";
-				return _endQuote;;
+				return _endQuote;
 			}
 			set
 			{
@@ -86,7 +86,7 @@ namespace NHibernate.Mapping.Attributes
 					_patterns.Add(@"Nullables.Nullable(\w+), Nullables", "Nullables.NHibernate.Nullable$1Type, Nullables.NHibernate");
 					_patterns.Add(@"System.Data.SqlTypes.Sql(\w+), System.Data", "NHibernate.UserTypes.SqlTypes.Sql$1Type, NHibernate.UserTypes.SqlTypes");
 				}
-				return _patterns;;
+				return _patterns;
 			}
 			set
 			{
@@ -144,33 +144,110 @@ namespace NHibernate.Mapping.Attributes
 			if( element1 == null )
 				return false;
 			
+			if( baseAttrib is FilterAttribute )
+			{
+			}
+			
+			if( baseAttrib is SqlInsertAttribute )
+			{
+			}
+			
+			if( baseAttrib is SqlUpdateAttribute )
+			{
+			}
+			
+			if( baseAttrib is SqlDeleteAttribute )
+			{
+			}
+			
+			if( baseAttrib is SqlDeleteAllAttribute )
+			{
+			}
+			
+			if( baseAttrib is LoaderAttribute )
+			{
+			}
+			
+			if( baseAttrib is ResultSetAttribute )
+			{
+			}
+			
 			if( baseAttrib is HibernateMappingAttribute )
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
 				{
-					if( element1 is ImportAttribute || element1 is ClassAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ImportAttribute || element1 is ClassAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is ResultSetAttribute || element1 is QueryAttribute || element1 is SqlQueryAttribute || element1 is FilterDefAttribute || element1 is DatabaseObjectAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ImportAttribute) )
 				{
-					if( element1 is ClassAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ClassAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is ResultSetAttribute || element1 is QueryAttribute || element1 is SqlQueryAttribute || element1 is FilterDefAttribute || element1 is DatabaseObjectAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ClassAttribute) )
 				{
-					if( element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is ResultSetAttribute || element1 is QueryAttribute || element1 is SqlQueryAttribute || element1 is FilterDefAttribute || element1 is DatabaseObjectAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(SubclassAttribute) )
 				{
-					if( element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is JoinedSubclassAttribute || element1 is ResultSetAttribute || element1 is QueryAttribute || element1 is SqlQueryAttribute || element1 is FilterDefAttribute || element1 is DatabaseObjectAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(JoinedSubclassAttribute) )
 				{
+					if( element1 is ResultSetAttribute || element1 is QueryAttribute || element1 is SqlQueryAttribute || element1 is FilterDefAttribute || element1 is DatabaseObjectAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(ResultSetAttribute) )
+				{
+					if( element1 is QueryAttribute || element1 is SqlQueryAttribute || element1 is FilterDefAttribute || element1 is DatabaseObjectAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(QueryAttribute) )
+				{
+					if( element1 is SqlQueryAttribute || element1 is FilterDefAttribute || element1 is DatabaseObjectAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(SqlQueryAttribute) )
+				{
+					if( element1 is FilterDefAttribute || element1 is DatabaseObjectAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(FilterDefAttribute) )
+				{
+					if( element1 is DatabaseObjectAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(DatabaseObjectAttribute) )
+				{
 					if( typeOfElement2 == null )
 						return true;
 				}
+			}
+			
+			if( baseAttrib is FilterParamAttribute )
+			{
+			}
+			
+			if( baseAttrib is FilterDefAttribute )
+			{
+			}
+			
+			if( baseAttrib is CreateAttribute )
+			{
+			}
+			
+			if( baseAttrib is DropAttribute )
+			{
+			}
+			
+			if( baseAttrib is DialectScopeAttribute )
+			{
+			}
+			
+			if( baseAttrib is DatabaseObjectAttribute )
+			{
 			}
 			
 			if( baseAttrib is ImportAttribute )
@@ -181,115 +258,120 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
 				{
-					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is IdAttribute || element1 is CompositeIdAttribute || element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is IdAttribute || element1 is CompositeIdAttribute || element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(JcsCacheAttribute) )
 				{
-					if( element1 is CacheAttribute || element1 is IdAttribute || element1 is CompositeIdAttribute || element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is CacheAttribute || element1 is IdAttribute || element1 is CompositeIdAttribute || element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CacheAttribute) )
 				{
-					if( element1 is IdAttribute || element1 is CompositeIdAttribute || element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is IdAttribute || element1 is CompositeIdAttribute || element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(IdAttribute) )
 				{
-					if( element1 is CompositeIdAttribute || element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is CompositeIdAttribute || element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CompositeIdAttribute) )
 				{
-					if( element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is DiscriminatorAttribute || element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(DiscriminatorAttribute) )
 				{
-					if( element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is VersionAttribute || element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(VersionAttribute) )
 				{
-					if( element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is TimestampAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(TimestampAttribute) )
 				{
-					if( element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(PropertyAttribute) )
 				{
-					if( element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToOneAttribute) )
 				{
-					if( element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(OneToOneAttribute) )
 				{
-					if( element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ComponentAttribute) )
 				{
-					if( element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(DynamicComponentAttribute) )
 				{
-					if( element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(AnyAttribute) )
 				{
-					if( element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(MapAttribute) )
 				{
-					if( element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(SetAttribute) )
 				{
-					if( element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ListAttribute) )
 				{
-					if( element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(BagAttribute) )
 				{
-					if( element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(IdBagAttribute) )
 				{
-					if( element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ArrayAttribute) )
 				{
-					if( element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(PrimitiveArrayAttribute) )
 				{
-					if( element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is SubclassAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(SubclassAttribute) )
 				{
-					if( element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(JoinedSubclassAttribute) )
+				{
+					if( element1 is LoaderAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(LoaderAttribute) )
 				{
 					if( typeOfElement2 == null )
 						return true;
@@ -350,75 +432,80 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
 				{
-					if( element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(PropertyAttribute) )
 				{
-					if( element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToOneAttribute) )
 				{
-					if( element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(OneToOneAttribute) )
 				{
-					if( element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ComponentAttribute) )
 				{
-					if( element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(DynamicComponentAttribute) )
 				{
-					if( element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(AnyAttribute) )
 				{
-					if( element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(MapAttribute) )
 				{
-					if( element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(SetAttribute) )
 				{
-					if( element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ListAttribute) )
 				{
-					if( element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(BagAttribute) )
 				{
-					if( element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(IdBagAttribute) )
 				{
-					if( element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ArrayAttribute) )
 				{
-					if( element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is PrimitiveArrayAttribute || element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(PrimitiveArrayAttribute) )
 				{
-					if( element1 is SubclassAttribute || typeOfElement2 == null )
+					if( element1 is SubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(SubclassAttribute) )
+				{
+					if( element1 is LoaderAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(LoaderAttribute) )
 				{
 					if( typeOfElement2 == null )
 						return true;
@@ -429,80 +516,85 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
 				{
-					if( element1 is KeyAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is KeyAttribute || element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(KeyAttribute) )
 				{
-					if( element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is PropertyAttribute || element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(PropertyAttribute) )
 				{
-					if( element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ManyToOneAttribute || element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToOneAttribute) )
 				{
-					if( element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is OneToOneAttribute || element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(OneToOneAttribute) )
 				{
-					if( element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ComponentAttribute || element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ComponentAttribute) )
 				{
-					if( element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is DynamicComponentAttribute || element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(DynamicComponentAttribute) )
 				{
-					if( element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is AnyAttribute || element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(AnyAttribute) )
 				{
-					if( element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is MapAttribute || element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(MapAttribute) )
 				{
-					if( element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is SetAttribute || element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(SetAttribute) )
 				{
-					if( element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ListAttribute || element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ListAttribute) )
 				{
-					if( element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is BagAttribute || element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(BagAttribute) )
 				{
-					if( element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is IdBagAttribute || element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(IdBagAttribute) )
 				{
-					if( element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is ArrayAttribute || element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ArrayAttribute) )
 				{
-					if( element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is PrimitiveArrayAttribute || element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(PrimitiveArrayAttribute) )
 				{
-					if( element1 is JoinedSubclassAttribute || typeOfElement2 == null )
+					if( element1 is JoinedSubclassAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(JoinedSubclassAttribute) )
+				{
+					if( element1 is LoaderAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(LoaderAttribute) )
 				{
 					if( typeOfElement2 == null )
 						return true;
@@ -825,45 +917,50 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
 				{
-					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is CollectionIdAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is CollectionIdAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(JcsCacheAttribute) )
 				{
-					if( element1 is CacheAttribute || element1 is CollectionIdAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CacheAttribute || element1 is CollectionIdAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CacheAttribute) )
 				{
-					if( element1 is CollectionIdAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CollectionIdAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CollectionIdAttribute) )
 				{
-					if( element1 is KeyAttribute || element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is KeyAttribute || element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(KeyAttribute) )
 				{
-					if( element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ElementAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ElementAttribute) )
 				{
-					if( element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToManyAttribute) )
 				{
-					if( element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CompositeElementAttribute) )
 				{
-					if( element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToAnyAttribute) )
+				{
+					if( element1 is LoaderAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(LoaderAttribute) )
 				{
 					if( typeOfElement2 == null )
 						return true;
@@ -1053,6 +1150,51 @@ namespace NHibernate.Mapping.Attributes
 				}
 			}
 			
+			if( baseAttrib is QueryAttribute )
+			{
+			}
+			
+			if( baseAttrib is ReturnAttribute )
+			{
+				if( typeOfElement2 == typeof(ReturnPropertyAttribute) )
+				{
+					if( typeOfElement2 == null )
+						return true;
+				}
+			}
+			
+			if( baseAttrib is ReturnDiscriminatorAttribute )
+			{
+			}
+			
+			if( baseAttrib is ReturnScalarAttribute )
+			{
+			}
+			
+			if( baseAttrib is ReturnColumnAttribute )
+			{
+			}
+			
+			if( baseAttrib is ReturnPropertyAttribute )
+			{
+			}
+			
+			if( baseAttrib is ReturnJoinAttribute )
+			{
+			}
+			
+			if( baseAttrib is LoadCollectionAttribute )
+			{
+			}
+			
+			if( baseAttrib is SynchronizeAttribute )
+			{
+			}
+			
+			if( baseAttrib is SqlQueryAttribute )
+			{
+			}
+			
 			if( baseAttrib is ListAttribute )
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
@@ -1111,45 +1253,50 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
 				{
-					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(JcsCacheAttribute) )
 				{
-					if( element1 is CacheAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CacheAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CacheAttribute) )
 				{
-					if( element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(KeyAttribute) )
 				{
-					if( element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ElementAttribute) )
 				{
-					if( element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(OneToManyAttribute) )
 				{
-					if( element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToManyAttribute) )
 				{
-					if( element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CompositeElementAttribute) )
 				{
-					if( element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToAnyAttribute) )
+				{
+					if( element1 is LoaderAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(LoaderAttribute) )
 				{
 					if( typeOfElement2 == null )
 						return true;
@@ -1160,45 +1307,50 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
 				{
-					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(JcsCacheAttribute) )
 				{
-					if( element1 is CacheAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CacheAttribute || element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CacheAttribute) )
 				{
-					if( element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is KeyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(KeyAttribute) )
 				{
-					if( element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ElementAttribute) )
 				{
-					if( element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(OneToManyAttribute) )
 				{
-					if( element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToManyAttribute) )
 				{
-					if( element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CompositeElementAttribute) )
 				{
-					if( element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToAnyAttribute) )
+				{
+					if( element1 is LoaderAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(LoaderAttribute) )
 				{
 					if( typeOfElement2 == null )
 						return true;
@@ -1209,65 +1361,70 @@ namespace NHibernate.Mapping.Attributes
 			{
 				if( typeOfElement2 == typeof(MetaAttribute) )
 				{
-					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is KeyAttribute || element1 is IndexAttribute || element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is JcsCacheAttribute || element1 is CacheAttribute || element1 is KeyAttribute || element1 is IndexAttribute || element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(JcsCacheAttribute) )
 				{
-					if( element1 is CacheAttribute || element1 is KeyAttribute || element1 is IndexAttribute || element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CacheAttribute || element1 is KeyAttribute || element1 is IndexAttribute || element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CacheAttribute) )
 				{
-					if( element1 is KeyAttribute || element1 is IndexAttribute || element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is KeyAttribute || element1 is IndexAttribute || element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(KeyAttribute) )
 				{
-					if( element1 is IndexAttribute || element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is IndexAttribute || element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(IndexAttribute) )
 				{
-					if( element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CompositeIndexAttribute || element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CompositeIndexAttribute) )
 				{
-					if( element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is IndexManyToManyAttribute || element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(IndexManyToManyAttribute) )
 				{
-					if( element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is IndexManyToAnyAttribute || element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(IndexManyToAnyAttribute) )
 				{
-					if( element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ElementAttribute || element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ElementAttribute) )
 				{
-					if( element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is OneToManyAttribute || element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(OneToManyAttribute) )
 				{
-					if( element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ManyToManyAttribute || element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToManyAttribute) )
 				{
-					if( element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is CompositeElementAttribute || element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(CompositeElementAttribute) )
 				{
-					if( element1 is ManyToAnyAttribute || typeOfElement2 == null )
+					if( element1 is ManyToAnyAttribute || element1 is LoaderAttribute || typeOfElement2 == null )
 						return true;
 				}
 				if( typeOfElement2 == typeof(ManyToAnyAttribute) )
+				{
+					if( element1 is LoaderAttribute || typeOfElement2 == null )
+						return true;
+				}
+				if( typeOfElement2 == typeof(LoaderAttribute) )
 				{
 					if( typeOfElement2 == null )
 						return true;
@@ -1361,6 +1518,109 @@ namespace NHibernate.Mapping.Attributes
 		{
 		}
 		
+		/// <summary> Write a Filter XML Element from attributes in a member. </summary>
+		public virtual void WriteFilter(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, FilterAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "filter" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Filter_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			// Attribute: <condition>
+			if(attribute.Condition != null)
+			writer.WriteAttributeString("condition", GetAttributeValue(attribute.Condition, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a SqlInsert XML Element from attributes in a member. </summary>
+		public virtual void WriteSqlInsert(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, SqlInsertAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "sql-insert" );
+			// Attribute: <check>
+			if(attribute.Check != CustomSqlCheck.Unspecified)
+			writer.WriteAttributeString("check", GetXmlEnumValue(typeof(CustomSqlCheck), attribute.Check));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			// Write the content of this element (mixed="true")
+			writer.WriteString(attribute.Content);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a SqlUpdate XML Element from attributes in a member. </summary>
+		public virtual void WriteSqlUpdate(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, SqlUpdateAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "sql-update" );
+			// Attribute: <check>
+			if(attribute.Check != CustomSqlCheck.Unspecified)
+			writer.WriteAttributeString("check", GetXmlEnumValue(typeof(CustomSqlCheck), attribute.Check));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			// Write the content of this element (mixed="true")
+			writer.WriteString(attribute.Content);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a SqlDelete XML Element from attributes in a member. </summary>
+		public virtual void WriteSqlDelete(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, SqlDeleteAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "sql-delete" );
+			// Attribute: <check>
+			if(attribute.Check != CustomSqlCheck.Unspecified)
+			writer.WriteAttributeString("check", GetXmlEnumValue(typeof(CustomSqlCheck), attribute.Check));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			// Write the content of this element (mixed="true")
+			writer.WriteString(attribute.Content);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a SqlDeleteAll XML Element from attributes in a member. </summary>
+		public virtual void WriteSqlDeleteAll(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, SqlDeleteAllAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "sql-delete-all" );
+			// Attribute: <check>
+			if(attribute.Check != CustomSqlCheck.Unspecified)
+			writer.WriteAttributeString("check", GetXmlEnumValue(typeof(CustomSqlCheck), attribute.Check));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			// Write the content of this element (mixed="true")
+			writer.WriteString(attribute.Content);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a Loader XML Element from attributes in a member. </summary>
+		public virtual void WriteLoader(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, LoaderAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "loader" );
+			// Attribute: <query-ref>
+			writer.WriteAttributeString("query-ref", attribute.QueryRef==null ? DefaultHelper.Get_Loader_QueryRef_DefaultValue(member) : GetAttributeValue(attribute.QueryRef, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a ResultSet XML Element from attributes in a member. </summary>
+		public virtual void WriteResultSet(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ResultSetAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "resultset" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_ResultSet_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
 		/// <summary> Write a HibernateMapping XML Element from attributes in a type. </summary>
 		public virtual void WriteHibernateMapping(System.Xml.XmlWriter writer, System.Type type)
 		{
@@ -1426,6 +1686,66 @@ namespace NHibernate.Mapping.Attributes
 			// Element: <joined-subclass>
 			WriteNestedJoinedSubclassTypes(writer, type);
 			WriteUserDefinedContent(writer, type, typeof(JoinedSubclassAttribute), attribute);
+			// Element: <resultset>
+			System.Collections.ArrayList ResultSetList = FindAttributedMembers( attribute, typeof(ResultSetAttribute), type );
+			foreach( System.Reflection.MemberInfo member in ResultSetList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(ResultSetAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteResultSet(writer, member, memberAttrib as ResultSetAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(ResultSetAttribute), attribute);
+			// Element: <query>
+			System.Collections.ArrayList QueryList = FindAttributedMembers( attribute, typeof(QueryAttribute), type );
+			foreach( System.Reflection.MemberInfo member in QueryList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(QueryAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteQuery(writer, member, memberAttrib as QueryAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(QueryAttribute), attribute);
+			// Element: <sql-query>
+			System.Collections.ArrayList SqlQueryList = FindAttributedMembers( attribute, typeof(SqlQueryAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlQueryList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlQueryAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlQuery(writer, member, memberAttrib as SqlQueryAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlQueryAttribute), attribute);
+			// Element: <filter-def>
+			System.Collections.ArrayList FilterDefList = FindAttributedMembers( attribute, typeof(FilterDefAttribute), type );
+			foreach( System.Reflection.MemberInfo member in FilterDefList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(FilterDefAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteFilterDef(writer, member, memberAttrib as FilterDefAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(FilterDefAttribute), attribute);
+			// Element: <database-object>
+			System.Collections.ArrayList DatabaseObjectList = FindAttributedMembers( attribute, typeof(DatabaseObjectAttribute), type );
+			foreach( System.Reflection.MemberInfo member in DatabaseObjectList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(DatabaseObjectAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteDatabaseObject(writer, member, memberAttrib as DatabaseObjectAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(DatabaseObjectAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -1442,6 +1762,165 @@ namespace NHibernate.Mapping.Attributes
 				else // Mapped
 					WriteHibernateMapping(writer, nestedType);
 			}
+		}
+		
+		/// <summary> Write a FilterParam XML Element from attributes in a member. </summary>
+		public virtual void WriteFilterParam(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, FilterParamAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "filter-param" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_FilterParam_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			// Attribute: <type>
+			writer.WriteAttributeString("type", attribute.Type==null ? DefaultHelper.Get_FilterParam_Type_DefaultValue(member) : GetAttributeValue(attribute.Type, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a FilterDef XML Element from attributes in a member. </summary>
+		public virtual void WriteFilterDef(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, FilterDefAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "filter-def" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_FilterDef_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			// Attribute: <condition>
+			if(attribute.Condition != null)
+			writer.WriteAttributeString("condition", GetAttributeValue(attribute.Condition, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			System.Collections.ArrayList memberAttribs = GetSortedAttributes(member);
+			int attribPos; // Find the position of the FilterDefAttribute (its <sub-element>s must be after it)
+			for(attribPos=0; attribPos<memberAttribs.Count; attribPos++)
+				if( memberAttribs[attribPos] is FilterDefAttribute
+					&& ((BaseAttribute)memberAttribs[attribPos]).Position == attribute.Position )
+					break; // found
+			int i = attribPos + 1;
+
+			// Element: <filter-param>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(FilterParamAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is FilterDefAttribute )
+						break; // Following attributes are for this FilterDef
+					if( memberAttrib is FilterParamAttribute )
+						WriteFilterParam(writer, member, memberAttrib as FilterParamAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(FilterParamAttribute), attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a Create XML Element from attributes in a member. </summary>
+		public virtual void WriteCreate(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CreateAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "create" );
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			// Write the content of this element (mixed="true")
+			writer.WriteString(attribute.Content);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a Drop XML Element from attributes in a member. </summary>
+		public virtual void WriteDrop(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, DropAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "drop" );
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			// Write the content of this element (mixed="true")
+			writer.WriteString(attribute.Content);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a DialectScope XML Element from attributes in a member. </summary>
+		public virtual void WriteDialectScope(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, DialectScopeAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "dialect-scope" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_DialectScope_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a DatabaseObject XML Element from attributes in a member. </summary>
+		public virtual void WriteDatabaseObject(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, DatabaseObjectAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "database-object" );
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			System.Collections.ArrayList memberAttribs = GetSortedAttributes(member);
+			int attribPos; // Find the position of the DatabaseObjectAttribute (its <sub-element>s must be after it)
+			for(attribPos=0; attribPos<memberAttribs.Count; attribPos++)
+				if( memberAttribs[attribPos] is DatabaseObjectAttribute
+					&& ((BaseAttribute)memberAttribs[attribPos]).Position == attribute.Position )
+					break; // found
+			int i = attribPos + 1;
+
+			// Element: <create>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(CreateAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is DatabaseObjectAttribute )
+						break; // Following attributes are for this DatabaseObject
+					if( memberAttrib is CreateAttribute )
+						WriteCreate(writer, member, memberAttrib as CreateAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(CreateAttribute), attribute);
+			// Element: <drop>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(DropAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is DatabaseObjectAttribute )
+						break; // Following attributes are for this DatabaseObject
+					if( memberAttrib is DropAttribute )
+						WriteDrop(writer, member, memberAttrib as DropAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(DropAttribute), attribute);
+			// Element: <dialect-scope>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(DialectScopeAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is DatabaseObjectAttribute )
+						break; // Following attributes are for this DatabaseObject
+					if( memberAttrib is DialectScopeAttribute )
+						WriteDialectScope(writer, member, memberAttrib as DialectScopeAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(DialectScopeAttribute), attribute);
+			
+			writer.WriteEndElement();
 		}
 		
 		/// <summary> Write a Import XML Element from attributes in a member. </summary>
@@ -1765,6 +2244,66 @@ namespace NHibernate.Mapping.Attributes
 			// Element: <joined-subclass>
 			WriteNestedJoinedSubclassTypes(writer, type);
 			WriteUserDefinedContent(writer, type, typeof(JoinedSubclassAttribute), attribute);
+			// Element: <loader>
+			System.Collections.ArrayList LoaderList = FindAttributedMembers( attribute, typeof(LoaderAttribute), type );
+			foreach( System.Reflection.MemberInfo member in LoaderList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(LoaderAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteLoader(writer, member, memberAttrib as LoaderAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(LoaderAttribute), attribute);
+			// Element: <sql-insert>
+			System.Collections.ArrayList SqlInsertList = FindAttributedMembers( attribute, typeof(SqlInsertAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlInsertList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlInsertAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlInsert(writer, member, memberAttrib as SqlInsertAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlInsertAttribute), attribute);
+			// Element: <sql-update>
+			System.Collections.ArrayList SqlUpdateList = FindAttributedMembers( attribute, typeof(SqlUpdateAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlUpdateList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlUpdateAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlUpdate(writer, member, memberAttrib as SqlUpdateAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlUpdateAttribute), attribute);
+			// Element: <sql-delete>
+			System.Collections.ArrayList SqlDeleteList = FindAttributedMembers( attribute, typeof(SqlDeleteAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlDeleteList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlDeleteAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlDelete(writer, member, memberAttrib as SqlDeleteAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlDeleteAttribute), attribute);
+			// Element: <filter>
+			System.Collections.ArrayList FilterList = FindAttributedMembers( attribute, typeof(FilterAttribute), type );
+			foreach( System.Reflection.MemberInfo member in FilterList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(FilterAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteFilter(writer, member, memberAttrib as FilterAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(FilterAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -2224,6 +2763,54 @@ namespace NHibernate.Mapping.Attributes
 			// Element: <subclass>
 			WriteNestedSubclassTypes(writer, type);
 			WriteUserDefinedContent(writer, type, typeof(SubclassAttribute), attribute);
+			// Element: <loader>
+			System.Collections.ArrayList LoaderList = FindAttributedMembers( attribute, typeof(LoaderAttribute), type );
+			foreach( System.Reflection.MemberInfo member in LoaderList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(LoaderAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteLoader(writer, member, memberAttrib as LoaderAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(LoaderAttribute), attribute);
+			// Element: <sql-insert>
+			System.Collections.ArrayList SqlInsertList = FindAttributedMembers( attribute, typeof(SqlInsertAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlInsertList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlInsertAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlInsert(writer, member, memberAttrib as SqlInsertAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlInsertAttribute), attribute);
+			// Element: <sql-update>
+			System.Collections.ArrayList SqlUpdateList = FindAttributedMembers( attribute, typeof(SqlUpdateAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlUpdateList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlUpdateAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlUpdate(writer, member, memberAttrib as SqlUpdateAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlUpdateAttribute), attribute);
+			// Element: <sql-delete>
+			System.Collections.ArrayList SqlDeleteList = FindAttributedMembers( attribute, typeof(SqlDeleteAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlDeleteList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlDeleteAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlDelete(writer, member, memberAttrib as SqlDeleteAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlDeleteAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -2455,6 +3042,54 @@ namespace NHibernate.Mapping.Attributes
 			// Element: <joined-subclass>
 			WriteNestedJoinedSubclassTypes(writer, type);
 			WriteUserDefinedContent(writer, type, typeof(JoinedSubclassAttribute), attribute);
+			// Element: <loader>
+			System.Collections.ArrayList LoaderList = FindAttributedMembers( attribute, typeof(LoaderAttribute), type );
+			foreach( System.Reflection.MemberInfo member in LoaderList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(LoaderAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteLoader(writer, member, memberAttrib as LoaderAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(LoaderAttribute), attribute);
+			// Element: <sql-insert>
+			System.Collections.ArrayList SqlInsertList = FindAttributedMembers( attribute, typeof(SqlInsertAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlInsertList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlInsertAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlInsert(writer, member, memberAttrib as SqlInsertAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlInsertAttribute), attribute);
+			// Element: <sql-update>
+			System.Collections.ArrayList SqlUpdateList = FindAttributedMembers( attribute, typeof(SqlUpdateAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlUpdateList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlUpdateAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlUpdate(writer, member, memberAttrib as SqlUpdateAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlUpdateAttribute), attribute);
+			// Element: <sql-delete>
+			System.Collections.ArrayList SqlDeleteList = FindAttributedMembers( attribute, typeof(SqlDeleteAttribute), type );
+			foreach( System.Reflection.MemberInfo member in SqlDeleteList )
+			{
+				object[] objects = member.GetCustomAttributes(typeof(SqlDeleteAttribute), false);
+				System.Collections.ArrayList memberAttribs = new System.Collections.ArrayList();
+				memberAttribs.AddRange(objects);
+				memberAttribs.Sort();
+				foreach(object memberAttrib in memberAttribs)
+					WriteSqlDelete(writer, member, memberAttrib as SqlDeleteAttribute, attribute, type);
+			}
+			WriteUserDefinedContent(writer, type, typeof(SqlDeleteAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -2526,6 +3161,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <insert>
 			if( attribute.InsertSpecified )
 			writer.WriteAttributeString("insert", attribute.Insert ? "true" : "false");
+			// Attribute: <optimistic-lock>
+			if( attribute.OptimisticLockSpecified )
+			writer.WriteAttributeString("optimistic-lock", attribute.OptimisticLock ? "true" : "false");
 			// Attribute: <formula>
 			if(attribute.Formula != null)
 			writer.WriteAttributeString("formula", GetAttributeValue(attribute.Formula, mappedClass));
@@ -3850,6 +4488,102 @@ namespace NHibernate.Mapping.Attributes
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
+			// Element: <loader>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(LoaderAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is IdBagAttribute )
+						break; // Following attributes are for this IdBag
+					if( memberAttrib is LoaderAttribute )
+						WriteLoader(writer, member, memberAttrib as LoaderAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(LoaderAttribute), attribute);
+			// Element: <sql-insert>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlInsertAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is IdBagAttribute )
+						break; // Following attributes are for this IdBag
+					if( memberAttrib is SqlInsertAttribute )
+						WriteSqlInsert(writer, member, memberAttrib as SqlInsertAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlInsertAttribute), attribute);
+			// Element: <sql-update>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlUpdateAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is IdBagAttribute )
+						break; // Following attributes are for this IdBag
+					if( memberAttrib is SqlUpdateAttribute )
+						WriteSqlUpdate(writer, member, memberAttrib as SqlUpdateAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlUpdateAttribute), attribute);
+			// Element: <sql-delete>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlDeleteAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is IdBagAttribute )
+						break; // Following attributes are for this IdBag
+					if( memberAttrib is SqlDeleteAttribute )
+						WriteSqlDelete(writer, member, memberAttrib as SqlDeleteAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlDeleteAttribute), attribute);
+			// Element: <sql-delete-all>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlDeleteAllAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is IdBagAttribute )
+						break; // Following attributes are for this IdBag
+					if( memberAttrib is SqlDeleteAllAttribute )
+						WriteSqlDeleteAll(writer, member, memberAttrib as SqlDeleteAllAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlDeleteAllAttribute), attribute);
+			// Element: <filter>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(FilterAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is IdBagAttribute )
+						break; // Following attributes are for this IdBag
+					if( memberAttrib is FilterAttribute )
+						WriteFilter(writer, member, memberAttrib as FilterAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(FilterAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -4206,6 +4940,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <fetch>
 			if(attribute.Fetch != FetchMode.Unspecified)
 			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(FetchMode), attribute.Fetch));
+			// Attribute: <not-found>
+			if(attribute.NotFound != NotFoundMode.Unspecified)
+			writer.WriteAttributeString("not-found", GetXmlEnumValue(typeof(NotFoundMode), attribute.NotFound));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4249,6 +4986,22 @@ namespace NHibernate.Mapping.Attributes
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ColumnAttribute), attribute);
+			// Element: <filter>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(FilterAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is ManyToManyAttribute )
+						break; // Following attributes are for this ManyToMany
+					if( memberAttrib is FilterAttribute )
+						WriteFilter(writer, member, memberAttrib as FilterAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(FilterAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -4295,6 +5048,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <property-ref>
 			if(attribute.PropertyRef != null)
 			writer.WriteAttributeString("property-ref", GetAttributeValue(attribute.PropertyRef, mappedClass));
+			// Attribute: <not-found>
+			if(attribute.NotFound != NotFoundMode.Unspecified)
+			writer.WriteAttributeString("not-found", GetXmlEnumValue(typeof(NotFoundMode), attribute.NotFound));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4454,6 +5210,9 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteStartElement( "one-to-many" );
 			// Attribute: <class>
 			writer.WriteAttributeString("class", attribute.Class==null ? DefaultHelper.Get_OneToMany_Class_DefaultValue(member) : GetAttributeValue(attribute.Class, mappedClass));
+			// Attribute: <not-found>
+			if(attribute.NotFound != NotFoundMode.Unspecified)
+			writer.WriteAttributeString("not-found", GetXmlEnumValue(typeof(NotFoundMode), attribute.NotFound));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4677,6 +5436,229 @@ namespace NHibernate.Mapping.Attributes
 			writer.WriteEndElement();
 		}
 		
+		/// <summary> Write a Query XML Element from attributes in a member. </summary>
+		public virtual void WriteQuery(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, QueryAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "query" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_Query_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			// Attribute: <flush-mode>
+			if(attribute.FlushMode != FlushMode.Unspecified)
+			writer.WriteAttributeString("flush-mode", GetXmlEnumValue(typeof(FlushMode), attribute.FlushMode));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			// Write the content of this element (mixed="true")
+			writer.WriteString(attribute.Content);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a Return XML Element from attributes in a member. </summary>
+		public virtual void WriteReturn(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ReturnAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "return" );
+			// Attribute: <alias>
+			if(attribute.Alias != null)
+			writer.WriteAttributeString("alias", GetAttributeValue(attribute.Alias, mappedClass));
+			// Attribute: <class>
+			if(attribute.Class != null)
+			writer.WriteAttributeString("class", GetAttributeValue(attribute.Class, mappedClass));
+			// Attribute: <lock-mode>
+			if(attribute.LockMode != LockMode.Unspecified)
+			writer.WriteAttributeString("lock-mode", GetXmlEnumValue(typeof(LockMode), attribute.LockMode));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			System.Collections.ArrayList memberAttribs = GetSortedAttributes(member);
+			int attribPos; // Find the position of the ReturnAttribute (its <sub-element>s must be after it)
+			for(attribPos=0; attribPos<memberAttribs.Count; attribPos++)
+				if( memberAttribs[attribPos] is ReturnAttribute
+					&& ((BaseAttribute)memberAttribs[attribPos]).Position == attribute.Position )
+					break; // found
+			int i = attribPos + 1;
+
+			// Element: <return-discriminator>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(ReturnDiscriminatorAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is ReturnAttribute )
+						break; // Following attributes are for this Return
+					if( memberAttrib is ReturnDiscriminatorAttribute )
+						WriteReturnDiscriminator(writer, member, memberAttrib as ReturnDiscriminatorAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(ReturnDiscriminatorAttribute), attribute);
+			// Element: <return-property>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(ReturnPropertyAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is ReturnAttribute )
+						break; // Following attributes are for this Return
+					if( memberAttrib is ReturnPropertyAttribute )
+						WriteReturnProperty(writer, member, memberAttrib as ReturnPropertyAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(ReturnPropertyAttribute), attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a ReturnDiscriminator XML Element from attributes in a member. </summary>
+		public virtual void WriteReturnDiscriminator(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ReturnDiscriminatorAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "return-discriminator" );
+			// Attribute: <column>
+			writer.WriteAttributeString("column", attribute.Column==null ? DefaultHelper.Get_ReturnDiscriminator_Column_DefaultValue(member) : GetAttributeValue(attribute.Column, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a ReturnScalar XML Element from attributes in a member. </summary>
+		public virtual void WriteReturnScalar(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ReturnScalarAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "return-scalar" );
+			// Attribute: <column>
+			writer.WriteAttributeString("column", attribute.Column==null ? DefaultHelper.Get_ReturnScalar_Column_DefaultValue(member) : GetAttributeValue(attribute.Column, mappedClass));
+			// Attribute: <type>
+			writer.WriteAttributeString("type", attribute.Type==null ? DefaultHelper.Get_ReturnScalar_Type_DefaultValue(member) : GetAttributeValue(attribute.Type, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a ReturnColumn XML Element from attributes in a member. </summary>
+		public virtual void WriteReturnColumn(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ReturnColumnAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "return-column" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_ReturnColumn_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a ReturnProperty XML Element from attributes in a member. </summary>
+		public virtual void WriteReturnProperty(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ReturnPropertyAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "return-property" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_ReturnProperty_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			// Attribute: <column>
+			if(attribute.Column != null)
+			writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			System.Collections.ArrayList memberAttribs = GetSortedAttributes(member);
+			int attribPos; // Find the position of the ReturnPropertyAttribute (its <sub-element>s must be after it)
+			for(attribPos=0; attribPos<memberAttribs.Count; attribPos++)
+				if( memberAttribs[attribPos] is ReturnPropertyAttribute
+					&& ((BaseAttribute)memberAttribs[attribPos]).Position == attribute.Position )
+					break; // found
+			int i = attribPos + 1;
+
+			// Element: <return-column>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(ReturnColumnAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is ReturnPropertyAttribute )
+						break; // Following attributes are for this ReturnProperty
+					if( memberAttrib is ReturnColumnAttribute )
+						WriteReturnColumn(writer, member, memberAttrib as ReturnColumnAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(ReturnColumnAttribute), attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a ReturnJoin XML Element from attributes in a member. </summary>
+		public virtual void WriteReturnJoin(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ReturnJoinAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "return-join" );
+			// Attribute: <alias>
+			writer.WriteAttributeString("alias", attribute.Alias==null ? DefaultHelper.Get_ReturnJoin_Alias_DefaultValue(member) : GetAttributeValue(attribute.Alias, mappedClass));
+			// Attribute: <property>
+			writer.WriteAttributeString("property", attribute.Property==null ? DefaultHelper.Get_ReturnJoin_Property_DefaultValue(member) : GetAttributeValue(attribute.Property, mappedClass));
+			// Attribute: <lock-mode>
+			if(attribute.LockMode != LockMode.Unspecified)
+			writer.WriteAttributeString("lock-mode", GetXmlEnumValue(typeof(LockMode), attribute.LockMode));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a LoadCollection XML Element from attributes in a member. </summary>
+		public virtual void WriteLoadCollection(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, LoadCollectionAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "load-collection" );
+			// Attribute: <alias>
+			writer.WriteAttributeString("alias", attribute.Alias==null ? DefaultHelper.Get_LoadCollection_Alias_DefaultValue(member) : GetAttributeValue(attribute.Alias, mappedClass));
+			// Attribute: <role>
+			writer.WriteAttributeString("role", attribute.Role==null ? DefaultHelper.Get_LoadCollection_Role_DefaultValue(member) : GetAttributeValue(attribute.Role, mappedClass));
+			// Attribute: <lock-mode>
+			if(attribute.LockMode != LockMode.Unspecified)
+			writer.WriteAttributeString("lock-mode", GetXmlEnumValue(typeof(LockMode), attribute.LockMode));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a Synchronize XML Element from attributes in a member. </summary>
+		public virtual void WriteSynchronize(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, SynchronizeAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "synchronize" );
+			// Attribute: <table>
+			writer.WriteAttributeString("table", attribute.Table==null ? DefaultHelper.Get_Synchronize_Table_DefaultValue(member) : GetAttributeValue(attribute.Table, mappedClass));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			writer.WriteEndElement();
+		}
+		
+		/// <summary> Write a SqlQuery XML Element from attributes in a member. </summary>
+		public virtual void WriteSqlQuery(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, SqlQueryAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
+		{
+			writer.WriteStartElement( "sql-query" );
+			// Attribute: <name>
+			writer.WriteAttributeString("name", attribute.Name==null ? DefaultHelper.Get_SqlQuery_Name_DefaultValue(member) : GetAttributeValue(attribute.Name, mappedClass));
+			// Attribute: <resultset-ref>
+			if(attribute.ResultSetRef != null)
+			writer.WriteAttributeString("resultset-ref", GetAttributeValue(attribute.ResultSetRef, mappedClass));
+			// Attribute: <flush-mode>
+			if(attribute.FlushMode != FlushMode.Unspecified)
+			writer.WriteAttributeString("flush-mode", GetXmlEnumValue(typeof(FlushMode), attribute.FlushMode));
+			
+			WriteUserDefinedContent(writer, member, null, attribute);
+			
+			// Write the content of this element (mixed="true")
+			writer.WriteString(attribute.Content);
+			
+			writer.WriteEndElement();
+		}
+		
 		/// <summary> Write a List XML Element from attributes in a member. </summary>
 		public virtual void WriteList(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, ListAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
@@ -4896,6 +5878,22 @@ namespace NHibernate.Mapping.Attributes
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
+			// Element: <filter>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(FilterAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is ListAttribute )
+						break; // Following attributes are for this List
+					if( memberAttrib is FilterAttribute )
+						WriteFilter(writer, member, memberAttrib as FilterAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(FilterAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -5106,6 +6104,102 @@ namespace NHibernate.Mapping.Attributes
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
+			// Element: <loader>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(LoaderAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is BagAttribute )
+						break; // Following attributes are for this Bag
+					if( memberAttrib is LoaderAttribute )
+						WriteLoader(writer, member, memberAttrib as LoaderAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(LoaderAttribute), attribute);
+			// Element: <sql-insert>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlInsertAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is BagAttribute )
+						break; // Following attributes are for this Bag
+					if( memberAttrib is SqlInsertAttribute )
+						WriteSqlInsert(writer, member, memberAttrib as SqlInsertAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlInsertAttribute), attribute);
+			// Element: <sql-update>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlUpdateAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is BagAttribute )
+						break; // Following attributes are for this Bag
+					if( memberAttrib is SqlUpdateAttribute )
+						WriteSqlUpdate(writer, member, memberAttrib as SqlUpdateAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlUpdateAttribute), attribute);
+			// Element: <sql-delete>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlDeleteAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is BagAttribute )
+						break; // Following attributes are for this Bag
+					if( memberAttrib is SqlDeleteAttribute )
+						WriteSqlDelete(writer, member, memberAttrib as SqlDeleteAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlDeleteAttribute), attribute);
+			// Element: <sql-delete-all>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlDeleteAllAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is BagAttribute )
+						break; // Following attributes are for this Bag
+					if( memberAttrib is SqlDeleteAllAttribute )
+						WriteSqlDeleteAll(writer, member, memberAttrib as SqlDeleteAllAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlDeleteAllAttribute), attribute);
+			// Element: <filter>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(FilterAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is BagAttribute )
+						break; // Following attributes are for this Bag
+					if( memberAttrib is FilterAttribute )
+						WriteFilter(writer, member, memberAttrib as FilterAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(FilterAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -5319,6 +6413,102 @@ namespace NHibernate.Mapping.Attributes
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
+			// Element: <loader>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(LoaderAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is SetAttribute )
+						break; // Following attributes are for this Set
+					if( memberAttrib is LoaderAttribute )
+						WriteLoader(writer, member, memberAttrib as LoaderAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(LoaderAttribute), attribute);
+			// Element: <sql-insert>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlInsertAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is SetAttribute )
+						break; // Following attributes are for this Set
+					if( memberAttrib is SqlInsertAttribute )
+						WriteSqlInsert(writer, member, memberAttrib as SqlInsertAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlInsertAttribute), attribute);
+			// Element: <sql-update>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlUpdateAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is SetAttribute )
+						break; // Following attributes are for this Set
+					if( memberAttrib is SqlUpdateAttribute )
+						WriteSqlUpdate(writer, member, memberAttrib as SqlUpdateAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlUpdateAttribute), attribute);
+			// Element: <sql-delete>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlDeleteAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is SetAttribute )
+						break; // Following attributes are for this Set
+					if( memberAttrib is SqlDeleteAttribute )
+						WriteSqlDelete(writer, member, memberAttrib as SqlDeleteAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlDeleteAttribute), attribute);
+			// Element: <sql-delete-all>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlDeleteAllAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is SetAttribute )
+						break; // Following attributes are for this Set
+					if( memberAttrib is SqlDeleteAllAttribute )
+						WriteSqlDeleteAll(writer, member, memberAttrib as SqlDeleteAllAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlDeleteAllAttribute), attribute);
+			// Element: <filter>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(FilterAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is SetAttribute )
+						break; // Following attributes are for this Set
+					if( memberAttrib is FilterAttribute )
+						WriteFilter(writer, member, memberAttrib as FilterAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(FilterAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}
@@ -5596,6 +6786,102 @@ namespace NHibernate.Mapping.Attributes
 				}
 			}
 			WriteUserDefinedContent(writer, member, typeof(ManyToAnyAttribute), attribute);
+			// Element: <loader>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(LoaderAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is MapAttribute )
+						break; // Following attributes are for this Map
+					if( memberAttrib is LoaderAttribute )
+						WriteLoader(writer, member, memberAttrib as LoaderAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(LoaderAttribute), attribute);
+			// Element: <sql-insert>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlInsertAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is MapAttribute )
+						break; // Following attributes are for this Map
+					if( memberAttrib is SqlInsertAttribute )
+						WriteSqlInsert(writer, member, memberAttrib as SqlInsertAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlInsertAttribute), attribute);
+			// Element: <sql-update>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlUpdateAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is MapAttribute )
+						break; // Following attributes are for this Map
+					if( memberAttrib is SqlUpdateAttribute )
+						WriteSqlUpdate(writer, member, memberAttrib as SqlUpdateAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlUpdateAttribute), attribute);
+			// Element: <sql-delete>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlDeleteAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is MapAttribute )
+						break; // Following attributes are for this Map
+					if( memberAttrib is SqlDeleteAttribute )
+						WriteSqlDelete(writer, member, memberAttrib as SqlDeleteAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlDeleteAttribute), attribute);
+			// Element: <sql-delete-all>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(SqlDeleteAllAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is MapAttribute )
+						break; // Following attributes are for this Map
+					if( memberAttrib is SqlDeleteAllAttribute )
+						WriteSqlDeleteAll(writer, member, memberAttrib as SqlDeleteAllAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(SqlDeleteAllAttribute), attribute);
+			// Element: <filter>
+			for(; i<memberAttribs.Count; i++)
+			{
+				BaseAttribute memberAttrib = memberAttribs[i] as BaseAttribute;
+				if( IsNextElement(memberAttrib, parentAttribute, attribute.GetType())
+					|| IsNextElement(memberAttrib, attribute, typeof(FilterAttribute)) )
+					break; // next attributes are 'elements' of the same level OR for 'sub-elements'
+				else
+				{
+					if( memberAttrib is MapAttribute )
+						break; // Following attributes are for this Map
+					if( memberAttrib is FilterAttribute )
+						WriteFilter(writer, member, memberAttrib as FilterAttribute, attribute, mappedClass);
+				}
+			}
+			WriteUserDefinedContent(writer, member, typeof(FilterAttribute), attribute);
 			
 			writer.WriteEndElement();
 		}

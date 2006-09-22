@@ -26,35 +26,39 @@ namespace NHibernate.Mapping.Attributes
 	public class PropertyAttribute : BaseAttribute
 	{
 		
-		private bool _unique = false;
+		private string _type = null;
 		
-		private bool _update = true;
-		
-		private string _name = null;
+		private bool _insert = true;
 		
 		private bool _notnullspecified;
 		
 		private bool _uniquespecified;
 		
+		private bool _optimisticlockspecified;
+		
+		private bool _optimisticlock = true;
+		
 		private string _access = null;
+		
+		private string _name = null;
+		
+		private string _formula = null;
+		
+		private string _column = null;
+		
+		private bool _notnull = false;
+		
+		private bool _unique = false;
+		
+		private bool _updatespecified;
+		
+		private bool _insertspecified;
 		
 		private int _length = -1;
 		
 		private string _index = null;
 		
-		private bool _insert = true;
-		
-		private bool _insertspecified;
-		
-		private string _type = null;
-		
-		private bool _notnull = false;
-		
-		private string _column = null;
-		
-		private string _formula = null;
-		
-		private bool _updatespecified;
+		private bool _update = true;
 		
 		/// <summary> Default constructor (position=0) </summary>
 		public PropertyAttribute() : 
@@ -254,6 +258,29 @@ namespace NHibernate.Mapping.Attributes
 			get
 			{
 				return this._insertspecified;
+			}
+		}
+		
+		/// <summary>only supported for properties of a class (not component)</summary>
+		public virtual bool OptimisticLock
+		{
+			get
+			{
+				return this._optimisticlock;
+			}
+			set
+			{
+				this._optimisticlock = value;
+				_optimisticlockspecified = true;
+			}
+		}
+		
+		/// <summary> Tells if OptimisticLock has been specified. </summary>
+		public virtual bool OptimisticLockSpecified
+		{
+			get
+			{
+				return this._optimisticlockspecified;
 			}
 		}
 		

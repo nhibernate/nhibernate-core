@@ -40,6 +40,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _name = null;
 		
+		private NotFoundMode _notfound = NotFoundMode.Unspecified;
+		
 		private bool _insertspecified;
 		
 		private OuterJoinStrategy _outerjoin = OuterJoinStrategy.Unspecified;
@@ -310,6 +312,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._propertyref = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual NotFoundMode NotFound
+		{
+			get
+			{
+				return this._notfound;
+			}
+			set
+			{
+				this._notfound = value;
 			}
 		}
 	}

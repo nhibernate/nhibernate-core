@@ -25,7 +25,11 @@ namespace NHibernate.Mapping.Attributes.Generator
 				{
 					_knowEnums = new System.Collections.Specialized.StringCollection();
 					_knowEnums.Add("cascadeStyle");
+					_knowEnums.Add("customSQLCheck");
 					_knowEnums.Add("fetchMode");
+					_knowEnums.Add("flushMode");
+					_knowEnums.Add("lockMode");
+					_knowEnums.Add("notFoundMode");
 					_knowEnums.Add("polymorphismType");
 					_knowEnums.Add("optimisticLockMode");
 					_knowEnums.Add("outerJoinStrategy");
@@ -168,7 +172,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 
 
 		/// <summary> Convert the elements in the Collection to an ArrayList </summary>
-		public static System.Collections.ArrayList GetElements(System.Xml.Schema.XmlSchemaObjectCollection seqItems)
+		public static System.Collections.ArrayList GetElements(System.Xml.Schema.XmlSchemaObjectCollection seqItems, System.Xml.Schema.XmlSchemaObjectCollection schemaItems)
 		{
 			System.Collections.ArrayList elements = new System.Collections.ArrayList();
 			foreach(System.Xml.Schema.XmlSchemaObject obj in seqItems)
@@ -182,11 +186,41 @@ namespace NHibernate.Mapping.Attributes.Generator
 					foreach(System.Xml.Schema.XmlSchemaObject item in choice.Items)
 						if(item is System.Xml.Schema.XmlSchemaElement)
 							elements.Add(item);
+						else if(item is System.Xml.Schema.XmlSchemaGroupRef)
+						{
+							// Find the Group
+							string groupName = (obj as System.Xml.Schema.XmlSchemaGroupRef).RefName.Name;
+							System.Xml.Schema.XmlSchemaGroup group = null;
+							foreach(System.Xml.Schema.XmlSchemaObject schemaItem in schemaItems)
+								if(schemaItem is System.Xml.Schema.XmlSchemaGroup && groupName==(schemaItem as System.Xml.Schema.XmlSchemaGroup).Name)
+								{
+									group = schemaItem as System.Xml.Schema.XmlSchemaGroup; // Found
+									break;
+								}
+							if(group==null) // Not found
+								throw new System.Exception("Unknown xs:group " + groupName + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));
+							elements.AddRange( GetElements(group.Particle.Items, schemaItems) );
+						}
 						else
-							log.Warn("Unknow Object: " + item.ToString());
+							log.Warn("Unknown Object: " + item.ToString() + string.Format(", nh-mapping.xsd({0})", item.LineNumber));
+				}
+				else if(obj is System.Xml.Schema.XmlSchemaGroupRef)
+				{
+					// Find the Group
+					string groupName = (obj as System.Xml.Schema.XmlSchemaGroupRef).RefName.Name;
+					System.Xml.Schema.XmlSchemaGroup group = null;
+					foreach(System.Xml.Schema.XmlSchemaObject schemaItem in schemaItems)
+						if(schemaItem is System.Xml.Schema.XmlSchemaGroup && groupName==(schemaItem as System.Xml.Schema.XmlSchemaGroup).Name)
+						{
+							group = schemaItem as System.Xml.Schema.XmlSchemaGroup; // Found
+							break;
+						}
+					if(group==null) // Not found
+						throw new System.Exception("Unknown xs:group " + groupName + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));
+					elements.AddRange( GetElements(group.Particle.Items, schemaItems) );
 				}
 				else
-					log.Warn("Unknow Object: " + obj.ToString());
+					log.Warn("Unknown Object: " + obj.ToString() + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));
 			}
 			return elements;
 		}
