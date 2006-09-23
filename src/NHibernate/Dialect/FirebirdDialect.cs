@@ -41,6 +41,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Decimal, "DECIMAL(18,5)"); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
 			RegisterColumnType(DbType.Decimal, 18, "DECIMAL(18, $1)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
+			RegisterColumnType(DbType.Guid, "CHAR(16) CHARACTER SET OCTETS");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");
 			RegisterColumnType(DbType.Int64, "BIGINT");
@@ -149,21 +150,6 @@ namespace NHibernate.Dialect
 		public override bool SupportsSequences
 		{
 			get { return true; }
-		}
-
-		public override string ForUpdateString
-		{
-			get { return " with lock"; }
-		}
-
-		public override bool ForUpdateOfColumns
-		{
-			get { return true; }
-		}
-
-		public override string GetForUpdateString(string aliases)
-		{
-			return " for update of " + aliases + " with lock";
 		}
 
 		public override bool SupportsLimit
