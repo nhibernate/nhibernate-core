@@ -588,6 +588,7 @@ ISession session = sessions.OpenSession(conn);
                             <entry>Ingres</entry>
                             <entry><literal>NHibernate.Dialect.IngresDialect</literal></entry>
                             <entry></entry>
+                        </row>
                         <row>
                             <entry>PostgreSQL</entry> 
                             <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
