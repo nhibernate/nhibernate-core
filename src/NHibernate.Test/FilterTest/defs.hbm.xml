@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+	<filter-def name="region">
+		<filter-param name="region" type="string"/>
+	</filter-def>
+
+	<filter-def name="regionlist">
+		<filter-param name="regions" type="string"/>
+	</filter-def>
+
+	<filter-def name="fulfilledOrders">
+		<filter-param name="asOfDate" type="DateTime"/>
+	</filter-def>
+
+	<filter-def name="effectiveDate">
+		<filter-param name="asOfDate" type="DateTime"/>
+	</filter-def>
+
+	<filter-def name="seniorSalespersons">
+		<filter-param name="asOfDate" type="DateTime"/>
+	</filter-def>
+
+	<filter-def name="cat">
+		<filter-param name="catId" type="long"/>
+	</filter-def>
+</hibernate-mapping>

@@ -10,7 +10,6 @@ using NHibernate.Connection;
 using NHibernate.Tool.hbm2ddl;
 
 using NUnit.Framework;
-using System.Security.Permissions;
 
 namespace NHibernate.Test
 {
@@ -164,6 +163,10 @@ namespace NHibernate.Test
 			ExportSchema( Mappings, MappingsAssembly );
 		}
 
+		protected virtual void Configure(Configuration cfg)
+		{
+		}
+
 		private void ExportSchema( IList files, string assemblyName )
 		{
 			cfg = new Configuration();
@@ -172,6 +175,8 @@ namespace NHibernate.Test
 			{
 				cfg.AddResource( assemblyName + "." + files[ i ].ToString(), Assembly.Load( assemblyName ) );
 			}
+
+			Configure(cfg);
 
 			new SchemaExport( cfg ).Create( OutputDdl, true );
 

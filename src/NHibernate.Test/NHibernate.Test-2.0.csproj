@@ -101,7 +101,14 @@
     <Compile Include="ExpressionTest\QueryByExampleTest.cs" />
     <Compile Include="ExpressionTest\SimpleExpressionFixture.cs" />
     <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
+    <Compile Include="FilterTest\Category.cs" />
+    <Compile Include="FilterTest\Department.cs" />
+    <Compile Include="FilterTest\DynamicFilterTest.cs" />
     <Compile Include="FilterTest\FilterConfig.cs" />
+    <Compile Include="FilterTest\LineItem.cs" />
+    <Compile Include="FilterTest\Order.cs" />
+    <Compile Include="FilterTest\Product.cs" />
+    <Compile Include="FilterTest\Salesperson.cs" />
     <Compile Include="FilterTest\TestClass.cs" />
     <Compile Include="GenericTest\BagGeneric\A.cs" />
     <Compile Include="GenericTest\BagGeneric\B.cs" />
@@ -567,6 +574,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH719\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FilterTest\defs.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FilterTest\classes.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
