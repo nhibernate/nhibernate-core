@@ -535,14 +535,15 @@ namespace NHibernate.Util
 			{
 				description = Truncate( description, indexOfBacktick );
 			}
-			
-			string result = Truncate( UnqualifyEntityName( description ), AliasTruncateLength )
-				.ToLower( CultureInfo.InvariantCulture )
-				.Replace( '/', '_' ) // entityNames may now include slashes for the representations
-				.Replace( '+', '_' ) // classname may be an inner class
-				.Replace( '[', '_' ) // classname may contain brackets
-				.Replace( ']', '_' )
-				.Replace( '`', '_' ) // classname may contain backticks (generic types)
+
+			string result = Truncate(UnqualifyEntityName(description), AliasTruncateLength)
+				.ToLower(CultureInfo.InvariantCulture)
+				.Replace('/', '_') // entityNames may now include slashes for the representations
+				.Replace('+', '_') // classname may be an inner class
+				.Replace('[', '_') // classname may contain brackets
+				.Replace(']', '_')
+				.Replace('`', '_') // classname may contain backticks (generic types)
+				.TrimStart('_') // Remove underscores from the beginning of the alias (for Firebird).
 				;
 
 			if( char.IsDigit( result, result.Length - 1 ) )
