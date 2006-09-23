@@ -1,3 +1,59 @@
+Build 1.2.0.Beta1
+========================
+
+Patches Applied:
+
+    * [NH-604] - Excessive memory consumption bug with heavy HQL usage
+    * [NH-636] - Add parametrized type
+    * [NH-638] - Add tests for UserCollectionType
+    * [NH-650] - DB2400Driver and DB2400Dialect
+    * [NH-668] - Support Sqlite ADO.Net 2.0 DataProvider
+    * [NH-673] - SQL Server 2005 Everywhere Edition Driver (SqlServerCeDriver)
+    * [NH-680] - Updates to NHibernate.Tool.hbm2net-2.0 to map nullable types correctly (and more)
+    * [NH-689] - NHibernate.SQL - Log the SQL parameters on the same log line as the statement
+    * [NH-698] - Firebird Dialect Limit Support
+    * [NH-701] - Log SchemaExport errors using log4net
+    * [NH-713] - Port property level optimistic-lock functionality from Hibernate 3.0
+    * [NH-715] - SQL00029 error on INSERT INTO DB2/400 (with identity column)
+
+Bugs Fixed:
+
+    * [NH-559] - Memory leak associated with HQL queries
+    * [NH-621] - IdentifierGeneratorFactory.Get() should use Id's IType conversion methods
+    * [NH-643] - Parent child problem when using SysCacheProvider
+    * [NH-649] - Firebird dialect (repeated RegisterFunction)
+    * [NH-669] - Generic map is not working
+    * [NH-687] - ISession.Get() strange behavior (probably a bug)
+    * [NH-690] - SupportsIdentitySelectInInsert property in Dialect class never used
+    * [NH-705] - With SysCache impossible to strore object after the gc clears the cache
+    * [NH-709] - CommandTimeout property should not be global
+    * [NH-719] - Caching of "any" reference to lazy classes
+
+New Features:
+
+    * [NH-258] - Stored Procedures
+    * [NH-268] - "not-found" attribute on relation mappings
+    * [NH-494] - NHibernate.Mapping.Attributes - RawXmlAttribute
+    * [NH-589] - NHibernate.Mapping.Attributes - Registration of properties' types patterns
+    * [NH-617] - Add support for projections in criteria queries
+    * [NH-629] - Ingres Driver and Dialect
+    * [NH-640] - IList parameter for Criteria.List
+    * [NH-684] - NHibernate.Mapping.Attributes - PlaceHolderAttribute
+
+Improvements:
+
+    * [NH-530] - Config loader error messages
+    * [NH-535] - Allow all ID generators to return all integer types, not just Int16/32/64
+    * [NH-541] - Error Message Improvement
+    * [NH-581] - Make MsSql2005Dialect use nvarchar(max), varbinary(max), and varchar(max) instead of ntext, image, and text
+    * [NH-587] - NHibernate.Mapping.Attributes - HbmWriter.WriteOthers()
+    * [NH-588] - NHibernate.Mapping.Attributes - MappingException
+    * [NH-613] - Guid for Firebird
+    * [NH-625] - Add Configuration.AddUrl
+    * [NH-644] - NHibernate.Mapping.Attributes: Pass UnsavedValue as object
+    * [NH-651] - NHibernate.Mapping.Attributes - Add methods to HbmSerializer returning a stream
+    * [NH-652] - NHibernate.Mapping.Attributes - Order (joined-)subclasses when they extends each others
+
 Build 1.2.0.Alpha1
 ========================
 
