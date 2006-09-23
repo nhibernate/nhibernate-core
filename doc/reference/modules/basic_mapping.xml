@@ -2153,6 +2153,31 @@
                 Notice the use of <literal>&lt;column&gt;</literal> tags to map a property to multiple
                 columns.
             </para>
+
+            <para>
+                The <literal>ICompositeUserType</literal> and <literal>IUserCollectionType</literal>
+                interfaces provide support for more specialized uses.
+            </para>
+            
+            <para>
+                You may even supply parameters to an <literal>IUserType</literal> in the mapping file. To 
+                do this, your <literal>IUserType</literal> must implement the 
+                <literal>NHibernate.UserTypes.IParameterizedType</literal> interface. To supply parameters 
+                to your custom type, you can use the <literal>&lt;type&gt;</literal> element in your mapping 
+                files.
+            </para>
+            
+            <programlisting><![CDATA[<property name="priority">
+    <type name="MyCompany.UserTypes.DefaultValueIntegerType">
+        <param name="default">0</param>
+    </type>
+</property>]]></programlisting>
+
+            <para>
+                The <literal>IUserType</literal> can now retrieve the value for the parameter named 
+                <literal>default</literal> from the <literal>IDictionary</literal> object passed to it.
+            </para>
+
             <para>
                 Even though NHibernate's rich range of built-in types and support for components means you
                 will very rarely <emphasis>need</emphasis> to use a custom type, it is nevertheless
