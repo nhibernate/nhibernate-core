@@ -410,11 +410,13 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 <area id="manytomany1" coords="2 60"/>
                 <area id="manytomany2" coords="3 60"/>
                 <area id="manytomany3" coords="4 60"/>
+                <area id="manytomany4" coords="5 60"/>
             </areaspec>
             <programlisting><![CDATA[<many-to-many
         column="column_name"
         class="ClassName"
         fetch="join|select"
+        not-found="ignore|exception"
     />]]></programlisting>
             <calloutlist>
                 <callout arearefs="manytomany1">
@@ -435,6 +437,13 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                         many-to-many relationships to other entities, you would enable join fetching not
                         only of the collection itself, but also with this attribute on the <literal>
                         &lt;many-to-many&gt;</literal> nested element.
+                    </para>
+                </callout>
+                <callout arearefs="manytomany4">
+                    <para>
+                        <literal>not-found</literal> (optional - defaults to <literal>exception</literal>):
+                        Specifies how foreign keys that reference missing rows will be handled:
+                        <literal>ignore</literal> will treat a missing row as a null association.
                     </para>
                 </callout>
             </calloutlist>
@@ -540,13 +549,24 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
 
         <programlistingco>
             <areaspec>
-                <area id="onetomany1" coords="1 60"/>
+                <area id="onetomany1" coords="2 60"/>
+                <area id="onetomany2" coords="3 60"/>
             </areaspec>
-            <programlisting><![CDATA[<one-to-many class="ClassName"/>]]></programlisting>
+            <programlisting><![CDATA[<one-to-many
+        class="ClassName"
+        not-found="ignore|exception"
+    />]]></programlisting>
             <calloutlist>
                 <callout arearefs="onetomany1">
                     <para>
                         <literal>class</literal> (required): The name of the associated class.
+                    </para>
+                </callout>
+                <callout arearefs="onetomany2">
+                    <para>
+                        <literal>not-found</literal> (optional - defaults to <literal>exception</literal>):
+                        Specifies how foreign keys that reference missing rows will be handled:
+                        <literal>ignore</literal> will treat a missing row as a null association.
                     </para>
                 </callout>
             </calloutlist>

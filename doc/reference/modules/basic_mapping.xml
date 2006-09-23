@@ -1290,6 +1290,7 @@
                     <area id="manytoone8" coords="9 60"/>
                     <area id="manytoone9" coords="10 60"/>
                     <area id="manytoone10" coords="11 60"/>
+                    <area id="manytoone11" coords="12 60"/>
                 </areaspec>
                 <programlisting><![CDATA[<many-to-one
         name="PropertyName"
@@ -1302,6 +1303,7 @@
         property-ref="PropertyNameFromAssociatedClass"
         access="field|property|nosetter|ClassName"
         unique="true|false"
+        not-found="ignore|exception"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="manytoone1">
@@ -1358,6 +1360,13 @@
                          <para>
                              <literal>unique</literal> (optional): Enable the DDL generation of a unique
                              constraint for the foreign-key column.
+                         </para>
+                     </callout>
+                     <callout arearefs="manytoone11">
+                         <para>
+                             <literal>not-found</literal> (optional - defaults to <literal>exception</literal>):
+                             Specifies how foreign keys that reference missing rows will be handled:
+                             <literal>ignore</literal> will treat a missing row as a null association.
                          </para>
                      </callout>
                 </calloutlist>
