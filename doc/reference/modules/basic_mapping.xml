@@ -493,9 +493,8 @@
                         <term><literal>increment</literal></term>
                         <listitem>
                             <para>
-                                generates identifiers of type <literal>Int64</literal>, <literal>Int16</literal> or
-                                <literal>Int32</literal> that are unique only when no other process is inserting data
-                                into the same table.
+                                generates identifiers of any integral type that are unique only when
+                                no other process is inserting data into the same table.
                                 <emphasis>Do not use in a cluster.</emphasis>
                             </para>
                         </listitem>
@@ -525,8 +524,7 @@
                         <term><literal>hilo</literal></term>
                         <listitem>
                             <para id="mapping-declaration-id-hilodescription" revision="1">
-                                uses a hi/lo algorithm to efficiently generate identifiers of
-                                type <literal>Int16</literal>, <literal>Int32</literal> or <literal>Int64</literal>,
+                                uses a hi/lo algorithm to efficiently generate identifiers of any integral type,
                                 given a table and column (by default <literal>hibernate_unique_key</literal> and
                                 <literal>next_hi</literal> respectively) as a source of hi values. The hi/lo algorithm
                                 generates identifiers that are unique only for a particular database. <emphasis>Do not
@@ -538,8 +536,7 @@
                         <term><literal>seqhilo</literal></term>
                         <listitem>
                             <para>
-                                uses a hi/lo algorithm to efficiently generate identifiers of type
-                                <literal>Int16</literal>, <literal>Int32</literal> or <literal>Int64</literal>,
+                                uses a hi/lo algorithm to efficiently generate identifiers of any integral type,
                                 given a named database sequence.
                             </para>
                         </listitem>
