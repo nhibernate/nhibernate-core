@@ -224,4 +224,78 @@ IList results = session.CreateCriteria(typeof(Cat))
     
     </sect1>
 
+    <sect1 id="querycriteria-projection">
+        <title>Projections, aggregation and grouping</title>
+        <para>
+            The class <literal>NHibernate.Expression.Projections</literal> is a
+            factory for <literal>IProjection</literal> instances. We apply a
+            projection to a query by calling <literal>SetProjection()</literal>.
+        </para>
+        
+        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+    .SetProjection( Projections.RowCount() )
+    .Add( Expression.Eq("Color", Color.BLACK) )
+    .List();]]></programlisting>
+    
+        <programlisting><![CDATA[List results = session.CreateCriteria(typeof(Cat))
+    .SetProjection( Projections.ProjectionList()
+        .Add( Projections.RowCount() )
+        .Add( Projections.Avg("weight") )
+        .Add( Projections.Max("weight") )
+        .Add( Projections.GroupProperty("color") )
+    )
+    .List();]]></programlisting>
+    
+        <para>
+            There is no explicit "group by" necessary in a criteria query. Certain
+            projection types are defined to be <emphasis>grouping projections</emphasis>,
+            which also appear in the SQL <literal>group by</literal> clause.
+        </para>
+    
+        <para>
+            An alias may optionally be assigned to a projection, so that the projected value
+            may be referred to in restrictions or orderings. Here are two different ways to
+            do this:
+        </para>
+
+        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+    .SetProjection( Projections.Alias( Projections.GroupProperty("Color"), "colr" ) )
+    .AddOrder( Order.Asc("colr") )
+    .List();]]></programlisting>
+    
+        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+    .SetProjection( Projections.GroupProperty("Color").As("colr") )
+    .AddOrder( Order.Asc("colr") )
+    .List();]]></programlisting>
+    
+        <para>
+            The <literal>Alias()</literal> and <literal>As()</literal> methods simply wrap a
+            projection instance in another, aliased, instance of <literal>IProjection</literal>.
+            As a shortcut, you can assign an alias when you add the projection to a 
+            projection list:
+        </para>
+
+       <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(Cat))
+    .SetProjection( Projections.ProjectionList()
+        .Add( Projections.RowCount(), "catCountByColor" )
+        .Add( Projections.Avg("Weight"), "avgWeight" )
+        .Add( Projections.Max("Weight"), "maxWeight" )
+        .Add( Projections.GroupProperty("Color"), "color" )
+    )
+    .AddOrder( Order.Desc("catCountByColor") )
+    .AddOrder( Order.Desc("avgWeight") )
+    .List();]]></programlisting>
+    
+        <programlisting><![CDATA[IList results = session.CreateCriteria(typeof(DomesticCat), "cat")
+    .CreateAlias("kittens", "kit")
+    .SetProjection( Projections.ProjectionList()
+        .Add( Projections.Property("cat.Name"), "catName" )
+        .Add( Projections.Property("kit.Name"), "kitName" )
+    )
+    .AddOrder( Order.Asc("catName") )
+    .AddOrder( Order.Asc("kitName") )
+    .List();]]></programlisting>
+    
+    </sect1>
+
 </chapter>
