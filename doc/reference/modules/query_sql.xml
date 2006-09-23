@@ -1,104 +1,700 @@
 <chapter id="querysql">
-    <title>Native SQL Queries</title>
+  <title>Native SQL</title>
 
-    <para>
-        You may also express queries in the native SQL dialect of your database. This is useful if you
-        want to utilize database specific features such as the CONNECT keyword in Oracle.
-        This also allows for a cleaner migration path from a direct SQL/ADO.NET based application to 
-        NHibernate.
-    </para>
+  <para>You may also express queries in the native SQL dialect of your
+  database. This is useful if you want to utilize database specific features
+  such as query hints or the <literal>CONNECT</literal> keyword in Oracle. It
+  also provides a clean migration path from a direct SQL/ADO.NET based
+  application to NHibernate.</para>
 
-    <sect1 id="querysql-creating">
-        <title>Creating a SQL based <literal>IQuery</literal></title>
+  <para>NHibernate 1.2 allows you to specify handwritten SQL (including stored
+  procedures) for all create, update, delete, and load operations.</para>
 
-        <para>
-            SQL queries are exposed through the same <literal>IQuery</literal> interface, just like ordinary
-            HQL queries. The only difference is the use of <literal>ISession.CreateSQLQuery()</literal>.
-        </para>
+  <sect1 id="querysql-creating" revision="4">
+    <title>Using an <literal>ISQLQuery</literal></title>
 
-        <programlisting><![CDATA[IQuery sqlQuery = sess.CreateSQLQuery("select {cat.*} from cats {cat}", "cat", typeof(Cat));
-sqlQuery.SetMaxResults(50);
-IList cats = sqlQuery.List();]]></programlisting>
+    <para>Execution of native SQL queries is controlled via the
+    <literal>ISQLQuery</literal> interface, which is obtained by calling
+    <literal>ISession.CreateSQLQuery()</literal>. The following describes how
+    to use this API for querying.</para>
 
-        <para>
-            The three parameters provided to <literal>CreateSQLQuery()</literal> are:
-        </para>
+    <sect2>
+      <title>Scalar queries</title>
 
-        <itemizedlist>
-        <listitem>
-        <para>
-            the SQL query string
-        </para>
-        </listitem>
-        <listitem>
-        <para>
-            a table alias name
-        </para>
-        </listitem>
-        <listitem>
-        <para>
-            the persistent class returned by the query
-        </para>
-        </listitem>
-        </itemizedlist>
-    
-        <para>
-            The alias name is used inside the SQL string to refer to the properties of the mapped class
-            (in this case  <literal>Cat</literal>). You may retrieve multiple objects per row by supplying
-            a <literal>String</literal> array of alias names and a <literal>System.Type</literal> array of
-            corresponding classes.
-        </para>
+      <para>The most basic SQL query is to get a list of scalars
+      (values).</para>
 
-    </sect1>
-
-    <sect1 id="querysql-aliasreferences">
-        <title>Alias and property references</title>
-
-        <para>
-            The <literal>{cat.*}</literal> notation used above is a shorthand for "all properties". You
-            may even list the properties explicity, but you must let NHibernate provide SQL column aliases
-            for each property. The placeholders for these column aliases are the property name qualified by
-            the table alias. In the following example, we retrieve <literal>Cat</literal>s from a different
-            table (<literal>cat_log</literal>) to the one declared in the mapping metadata. Notice that we
-            may even use the property aliases in the where clause.
-        </para>
-
-        <programlisting><![CDATA[string sql = "select cat.originalId as {cat.Id}, "
-    + "  cat.mateid as {cat.Mate}, cat.sex as {cat.Sex}, "
-    + "  cat.weight*10 as {cat.Weight}, cat.name as {cat.Name}"
-    + "     from cat_log cat where {cat.Mate} = :catId"
-IList loggedCats = sess.CreateSQLQuery(sql, "cat", typeof(Cat))
-    .SetInt64("catId", catId)
-    .List();
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT * FROM CATS")
+ .AddScalar("ID", NHibernateUtil.Int64)
+ .AddScalar("NAME", NHibernateUtil.String)
+ .AddScalar("BIRTHDATE", NHibernateUtil.Date)
 ]]></programlisting>
 
-        <para>
-            <emphasis>Note:</emphasis> if you list each property explicitly, you must include all
-            properties of the class <emphasis>and its subclasses</emphasis>!
-        </para>
+      <para>This query specified:</para>
 
-    </sect1>
+      <itemizedlist>
+        <listitem>
+          <para>the SQL query string</para>
+        </listitem>
+
+        <listitem>
+          <para>the columns and types to return</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>This will return an IList of Object arrays (object[]) with
+      scalar values for each column in the CATS table. Only these three
+      columns will be returned, even though the query is using
+      <literal>*</literal> and could return more than the three listed
+      columns.</para>
+    </sect2>
+
+    <sect2>
+      <title>Entity queries</title>
+
+      <para>The above query was about returning scalar values,
+      basically returning the "raw" values from the result set. The following
+      shows how to get entity objects from a native SQL query via
+      <literal>AddEntity()</literal>.</para>
+
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT * FROM CATS").AddEntity(typeof(Cat));
+sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat));
+]]></programlisting>
+
+      <para>This query specified:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>the SQL query string</para>
+        </listitem>
+
+        <listitem>
+          <para>the entity returned by the query</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Assuming that Cat is mapped as a class with the columns ID, NAME
+      and BIRTHDATE the above queries will both return an IList where each
+      element is a Cat entity.</para>
+
+      <para>If the entity is mapped with a <literal>many-to-one</literal> to
+      another entity it is required to also return its identifier when
+      performing the native query, otherwise a database specific "column not
+      found" error will occur. The additional columns will automatically be
+      returned when using the * notation, but we prefer to be explicit as in
+      the following example for a <literal>many-to-one</literal> to a
+      <literal>Dog</literal>:</para>
+
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, DOG_ID FROM CATS").AddEntity(typeof(Cat));
+]]></programlisting>
+
+      <para>This will allow cat.Dog property access to function properly.</para>
+    </sect2>
+
+    <sect2>
+      <title>Handling associations and collections</title>
+
+      <para>It is possible to eagerly join in the <literal>Dog</literal> to
+      avoid the possible extra roundtrip for initializing the proxy. This is
+      done via the <literal>AddJoin()</literal> method, which allows you to
+      join in an association or collection.</para>
+
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT c.ID, NAME, BIRTHDATE, DOG_ID, D_ID, D_NAME FROM CATS c, DOGS d WHERE c.DOG_ID = d.D_ID")
+ .AddEntity("cat", typeof(Cat))
+ .AddJoin("cat.Dog");
+]]></programlisting>
+
+      <para>In this example the returned <literal>Cat</literal>'s will have
+      their <literal>Dog</literal> property fully initialized without any
+      extra roundtrip to the database. Notice that we added a alias name
+      ("cat") to be able to specify the target property path of the join. It
+      is possible to do the same eager joining for collections, e.g. if the
+      <literal>Cat</literal> had a one-to-many to <literal>Dog</literal>
+      instead.</para>
+
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, D_ID, D_NAME, CAT_ID FROM CATS c, DOGS d WHERE c.ID = d.CAT_ID")
+ .AddEntity("cat", typeof(Cat))
+ .AddJoin("cat.Dogs");
+]]></programlisting>
+
+      <para>At this stage we are reaching the limits of what is possible with
+      native queries without starting to enhance the SQL queries to make them
+      usable in NHibernate; the problems start to arise when returning
+      multiple entities of the same type or when the default alias/column
+      names are not enough.</para>
+    </sect2>
+
+    <sect2>
+      <title>Returning multiple entities</title>
+
+      <para>Until now the result set column names are assumed to be the same
+      as the column names specified in the mapping document. This can be
+      problematic for SQL queries which join multiple tables, since the same
+      column names may appear in more than one table.</para>
+
+      <para>Column alias injection is needed in the following query (which
+      most likely will fail):</para>
+
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT c.*, m.*  FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
+ .AddEntity("cat", typeof(Cat))
+ .AddEntity("mother", typeof(Cat))
+]]></programlisting>
+
+      <para>The intention for this query is to return two Cat instances per
+      row, a cat and its mother. This will fail since there is a conflict of
+      names since they are mapped to the same column names and on some
+      databases the returned column aliases will most likely be on the form
+      "c.ID", "c.NAME", etc. which are not equal to the columns specificed in
+      the mappings ("ID" and "NAME").</para>
+
+      <para>The following form is not vulnerable to column name
+      duplication:</para>
+
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT {cat.*}, {mother.*}  FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
+ .AddEntity("cat", typeof(Cat))
+ .AddEntity("mother", typeof(Cat))
+]]></programlisting>
+
+      <para>This query specified:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>the SQL query string, with placeholders for NHibernate to
+          inject column aliases</para>
+        </listitem>
+
+        <listitem>
+          <para>the entities returned by the query</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The {cat.*} and {mother.*} notation used above is a shorthand for
+      "all properties". Alternatively, you may list the columns explicity, but
+      even in this case we let NHibernate inject the SQL column aliases for
+      each property. The placeholder for a column alias is just the property
+      name qualified by the table alias. In the following example, we retrieve
+      Cats and their mothers from a different table (cat_log) to the one
+      declared in the mapping metadata. Notice that we may even use the
+      property aliases in the where clause if we like.</para>
+
+      <programlisting><![CDATA[String sql = "SELECT ID as {c.Id}, NAME as {c.Name}, " + 
+         "BIRTHDATE as {c.BirthDate}, MOTHER_ID as {c.Mother}, {mother.*} " +
+         "FROM CAT_LOG c, CAT_LOG m WHERE {c.Mother} = c.ID";
+
+IList loggedCats = sess.CreateSQLQuery(sql)
+        .AddEntity("cat", typeof(Cat))
+        .AddEntity("mother", typeof(Cat)).List();
+]]></programlisting>
+
+      <sect3 id="querysql-aliasreferences" revision="2">
+        <title>Alias and property references</title>
+
+        <para>For most cases the above alias injection is needed, but for
+        queries relating to more complex mappings like composite properties,
+        inheritance discriminators, collections etc. there are some specific
+        aliases to use to allow NHibernate to inject the proper aliases.</para>
+
+        <para>The following table shows the different possibilities of using
+        the alias injection. Note: the alias names in the result are examples,
+        each alias will have a unique and probably different name when
+        used.</para>
+
+        <table frame="topbot" id="aliasinjection-summary">
+          <title>Alias injection names</title>
+
+          <tgroup cols="3">
+            <colspec colwidth="1*" />
+
+            <colspec colwidth="1*" />
+
+            <colspec colwidth="2.5*" />
+
+            <thead>
+              <row>
+                <entry>Description</entry>
+
+                <entry>Syntax</entry>
+
+                <entry>Example</entry>
+              </row>
+            </thead>
+
+            <tbody>
+              <row>
+                <entry>A simple property</entry>
+
+                <entry><literal>{[aliasname].[propertyname]}</literal></entry>
+
+                <entry><literal>A_NAME as {item.Name}</literal></entry>
+              </row>
+
+              <row>
+                <entry>A composite property</entry>
+
+                <entry><literal>{[aliasname].[componentname].[propertyname]}</literal></entry>
+
+                <entry><literal>CURRENCY as {item.Amount.Currency}, VALUE as
+                {item.Amount.Value}</literal></entry>
+              </row>
+
+              <row>
+                <entry>Discriminator of an entity</entry>
+
+                <entry><literal>{[aliasname].class}</literal></entry>
+
+                <entry><literal>DISC as {item.class}</literal></entry>
+              </row>
+
+              <row>
+                <entry>All properties of an entity</entry>
+
+                <entry><literal>{[aliasname].*}</literal></entry>
+
+                <entry><literal>{item.*}</literal></entry>
+              </row>
+
+              <row>
+                <entry>A collection key</entry>
+
+                <entry><literal>{[aliasname].key}</literal></entry>
+
+                <entry><literal>ORGID as {coll.key}</literal></entry>
+              </row>
+
+              <row>
+                <entry>The id of an collection</entry>
+
+                <entry><literal>{[aliasname].id}</literal></entry>
+
+                <entry><literal>EMPID as {coll.id}</literal></entry>
+              </row>
+
+              <row>
+                <entry>The element of an collection</entry>
+
+                <entry><literal>{[aliasname].element}</literal></entry>
+
+                <entry><literal>XID as {coll.element}</literal></entry>
+              </row>
+
+              <row>
+                <entry>property of the element in the collection</entry>
+
+                <entry><literal>{[aliasname].element.[propertyname]}</literal></entry>
+
+                <entry><literal>NAME as {coll.element.Name}</literal></entry>
+              </row>
+
+              <row>
+                <entry>All properties of the element in the collection</entry>
+
+                <entry><literal>{[aliasname].element.*}</literal></entry>
+
+                <entry><literal>{coll.element.*}</literal></entry>
+              </row>
+
+              <row>
+                <entry>All properties of the the collection</entry>
+
+                <entry><literal>{[aliasname].*}</literal></entry>
+
+                <entry><literal>{coll.*}</literal></entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </sect3>
+    </sect2>
+
+    <sect2>
+      <title>Returning non-managed entities</title>
+
+      <para>It is possible to apply an <literal>IResultTransformer</literal> to native sql queries. Allowing it to e.g. return non-managed entities.</para>
+
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT NAME, BIRTHDATE FROM CATS")
+        .SetResultTransformer(Transformers.AliasToBean(typeof(CatDTO)))]]></programlisting>
+        
+              <para>This query specified:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>the SQL query string</para>
+        </listitem>
+
+        <listitem>
+          <para>a result transformer</para>
+        </listitem>
+      </itemizedlist>
+        
+        <para>
+        The above query will return a list of <literal>CatDTO</literal> which has been instantiated and injected the values of NAME and BIRTHNAME into its corresponding
+        properties or fields.
+        </para>
+    </sect2>
+
+    <sect2>
+      <title>Handling inheritance</title>
+
+      <para>Native SQL queries which query for entities that are mapped as part
+      of an inheritance hierarchy must include all properties for the base class and all
+      its subclasses.</para>
+    </sect2>
+
+    <sect2>
+      <title>Parameters</title>
+
+      <para>Native SQL queries support positional as well as named
+      parameters:</para>
+
+      <programlisting><![CDATA[Query query = sess.CreateSQLQuery("SELECT * FROM CATS WHERE NAME like ?").AddEntity(typeof(Cat));
+IList pusList = query.SetString(0, "Pus%").List();
+     
+query = sess.createSQLQuery("SELECT * FROM CATS WHERE NAME like :name").AddEntity(typeof(Cat));
+IList pusList = query.SetString("name", "Pus%").List();          ]]></programlisting>
+    </sect2>
     
-    <sect1 id="querysql-namedqueries">
-        <title>Named SQL queries</title>
+    
+        
+  </sect1>
 
-        <para>
-            Named SQL queries may be defined in the mapping document and called in exactly the same way
-            as a named HQL query.
-        </para>
+  <sect1 id="querysql-namedqueries" revision="3">
+    <title>Named SQL queries</title>
 
-        <programlisting><![CDATA[IList people = sess.GetNamedQuery("mySqlQuery")
+    <para>Named SQL queries may be defined in the mapping document and called
+    in exactly the same way as a named HQL query. In this case, we do
+    <emphasis>not</emphasis> need to call
+    <literal>AddEntity()</literal>.</para>
+
+    <programlisting><![CDATA[<sql-query name="persons">
+    <return alias="person" class="eg.Person"/>
+    SELECT person.NAME AS {person.Name},
+           person.AGE AS {person.Age},
+           person.SEX AS {person.Sex}
+    FROM PERSON person
+    WHERE person.NAME LIKE :namePattern
+</sql-query>]]></programlisting>
+
+    <programlisting><![CDATA[IList people = sess.GetNamedQuery("persons")
+    .SetString("namePattern", namePattern)
     .SetMaxResults(50)
     .List();]]></programlisting>
 
-        <programlisting><![CDATA[<sql-query name="mySqlQuery">
-    <return alias="person" class="Eg.Person, Eg"/>
-    SELECT {person}.NAME AS {person.Name},
-           {person}.AGE AS {person.Age},
-           {person}.SEX AS {person.Sex}
-    FROM PERSON {person} WHERE {person}.NAME LIKE 'Hiber%'
+    <para>The <literal>&lt;return-join&gt;</literal> and
+    <literal>&lt;load-collection&gt;</literal> elements are used to join
+    associations and define queries which initialize collections,
+    respectively.</para>
+
+    <programlisting><![CDATA[<sql-query name="personsWith">
+    <return alias="person" class="eg.Person"/>
+    <return-join alias="address" property="person.MailingAddress"/>
+    SELECT person.NAME AS {person.Name},
+           person.AGE AS {person.Age},
+           person.SEX AS {person.Sex},
+           adddress.STREET AS {address.Street},
+           adddress.CITY AS {address.City},
+           adddress.STATE AS {address.State},
+           adddress.ZIP AS {address.Zip}
+    FROM PERSON person
+    JOIN ADDRESS adddress
+        ON person.ID = address.PERSON_ID AND address.TYPE='MAILING'
+    WHERE person.NAME LIKE :namePattern
 </sql-query>]]></programlisting>
 
-    </sect1>
+    <para>A named SQL query may return a scalar value. You must declare the
+    column alias and NHibernate type using the
+    <literal>&lt;return-scalar&gt;</literal> element:</para>
 
+    <programlisting><![CDATA[<sql-query name="mySqlQuery">
+    <return-scalar column="name" type="String"/>
+    <return-scalar column="age" type="Int64"/>
+    SELECT p.NAME AS name,
+           p.AGE AS age,
+    FROM PERSON p WHERE p.NAME LIKE 'Hiber%'
+</sql-query>]]></programlisting>
+
+    <para>You can externalize the resultset mapping informations in a
+    <literal>&lt;resultset&gt;</literal> element to either reuse them accross
+    several named queries or through the
+    <literal>SetResultSetMapping()</literal> API.</para>
+
+    <programlisting><![CDATA[<resultset name="personAddress">
+    <return alias="person" class="eg.Person"/>
+    <return-join alias="address" property="person.MailingAddress"/>
+</resultset>
+
+<sql-query name="personsWith" resultset-ref="personAddress">
+    SELECT person.NAME AS {person.Name},
+           person.AGE AS {person.Age},
+           person.SEX AS {person.Sex},
+           adddress.STREET AS {address.Street},
+           adddress.CITY AS {address.City},
+           adddress.STATE AS {address.State},
+           adddress.ZIP AS {address.Zip}
+    FROM PERSON person
+    JOIN ADDRESS adddress
+        ON person.ID = address.PERSON_ID AND address.TYPE='MAILING'
+    WHERE person.NAME LIKE :namePattern
+</sql-query>]]></programlisting>
+
+    <para>You can alternatively use the resultset mapping information in your
+    .hbm.xml files directly in code.</para>
+
+    <programlisting><![CDATA[IList cats = sess.CreateSQLQuery(
+        "select {cat.*}, {kitten.*} from cats cat, cats kitten where kitten.mother = cat.id"
+    )
+    .SetResultSetMapping("catAndKitten")
+    .List();]]></programlisting>
+
+    <sect2 id="propertyresults">
+      <title>Using return-property to explicitly specify column/alias
+      names</title>
+
+      <para>With <literal>&lt;return-property&gt;</literal> you can explicitly
+      tell NHibernate what column aliases to use, instead of using the
+      <literal>{}</literal>-syntax to let NHibernate inject its own
+      aliases.</para>
+
+      <programlisting><![CDATA[<sql-query name="mySqlQuery">
+    <return alias="person" class="eg.Person">
+        <return-property name="Name" column="myName"/>
+        <return-property name="Age" column="myAge"/>
+        <return-property name="Sex" column="mySex"/>
+    </return>
+    SELECT person.NAME AS myName,
+           person.AGE AS myAge,
+           person.SEX AS mySex,
+    FROM PERSON person WHERE person.NAME LIKE :name
+</sql-query>
+]]></programlisting>
+
+      <para><literal>&lt;return-property&gt;</literal> also works with
+      multiple columns. This solves a limitation with the
+      <literal>{}</literal>-syntax which can not allow fine grained control of
+      multi-column properties.</para>
+
+      <programlisting><![CDATA[<sql-query name="organizationCurrentEmployments">
+    <return alias="emp" class="Employment">
+        <return-property name="Salary">
+            <return-column name="VALUE"/>
+            <return-column name="CURRENCY"/>
+        </return-property>
+        <return-property name="EndDate" column="myEndDate"/>
+    </return>
+        SELECT EMPLOYEE AS {emp.Employee}, EMPLOYER AS {emp.Employer},
+        STARTDATE AS {emp.StartDate}, ENDDATE AS {emp.EndDate},
+        REGIONCODE as {emp.RegionCode}, EID AS {emp.Id}, VALUE, CURRENCY
+        FROM EMPLOYMENT
+        WHERE EMPLOYER = :id AND ENDDATE IS NULL
+        ORDER BY STARTDATE ASC
+</sql-query>]]></programlisting>
+
+      <para>Notice that in this example we used
+      <literal>&lt;return-property&gt;</literal> in combination with the
+      <literal>{}</literal>-syntax for injection, allowing users to choose how
+      they want to refer column and properties.</para>
+
+      <para>If your mapping has a discriminator you must use
+      <literal>&lt;return-discriminator&gt;</literal> to specify the
+      discriminator column.</para>
+    </sect2>
+
+    <sect2 id="sp_query" revision="1">
+      <title>Using stored procedures for querying</title>
+
+      <para>NHibernate 1.2 introduces support for queries via stored procedures
+      and functions. Most of the following documentation is equivalent for
+      both. The stored procedure/function must return a resultset to be able to work
+      with NHibernate. An example of such a stored function in MS SQL Server 2000 and
+      higher is as follows:</para>
+
+      <programlisting><![CDATA[CREATE PROCEDURE selectAllEmployments AS
+    SELECT EMPLOYEE, EMPLOYER, STARTDATE, ENDDATE,
+    REGIONCODE, EMPID, VALUE, CURRENCY
+    FROM EMPLOYMENT
+]]></programlisting>
+
+      <para>To use this query in NHibernate you need to map it via a named
+      query.</para>
+
+      <programlisting><![CDATA[<sql-query name="selectAllEmployments_SP">
+    <return alias="emp" class="Employment">
+        <return-property name="employee" column="EMPLOYEE"/>
+        <return-property name="employer" column="EMPLOYER"/>
+        <return-property name="startDate" column="STARTDATE"/>
+        <return-property name="endDate" column="ENDDATE"/>
+        <return-property name="regionCode" column="REGIONCODE"/>
+        <return-property name="id" column="EID"/>
+        <return-property name="salary">
+            <return-column name="VALUE"/>
+            <return-column name="CURRENCY"/>
+        </return-property>
+    </return>
+    exec selectAllEmployments
+</sql-query>]]></programlisting>
+
+      <para>Notice that stored procedures currently only return scalars and
+      entities. <literal>&lt;return-join&gt;</literal> and
+      <literal>&lt;load-collection&gt;</literal> are not supported.</para>
+
+      <sect3 id="querysql-limits-storedprocedures" revision="1">
+        <title>Rules/limitations for using stored procedures</title>
+
+        <para>To use stored procedures with NHibernate the procedures/functions
+        have to follow some rules. If they do not follow those rules they are
+        not usable with NHibernate. If you still want to use these procedures
+        you have to execute them via <literal>session.Connection</literal>.
+        The rules are different for each database, since database vendors have
+        different stored procedure semantics/syntax.</para>
+
+        <para>Stored procedure queries can't be paged with
+        <literal>SetFirstResult()/SetMaxResults()</literal>.</para>
+
+        <para>Recommended call form is dependent on your database. For MS
+        SQL Server use <literal>exec functionName &lt;parameters&gt;</literal>.
+        </para>
+
+        <para>For Oracle the following rules apply:</para>
+
+        <itemizedlist spacing="compact">
+          <listitem>
+            <para>A function must return a result set. The first parameter of
+            a procedure must be an <literal>OUT</literal> that returns a
+            result set. This is done by using a
+            <literal>SYS_REFCURSOR</literal> type in Oracle 9 or 10. In Oracle
+            you need to define a <literal>REF CURSOR</literal> type, see
+            Oracle literature.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>For MS SQL server the following rules apply:</para>
+
+        <itemizedlist spacing="compact">
+          <listitem>
+            <para>The procedure must return a result set. NHibernate will
+            use <literal>IDbCommand.ExecuteReader()</literal> to obtain
+            the results.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>If you can enable <literal>SET NOCOUNT ON</literal> in your
+            procedure it will probably be more efficient, but this is not a
+            requirement.</para>
+          </listitem>
+        </itemizedlist>
+      </sect3>
+    </sect2>
+  </sect1>
+
+  <sect1 id="querysql-cud">
+    <title>Custom SQL for create, update and delete</title>
+
+    <para>NHibernate 1.2 can use custom SQL statements for create, update, and
+    delete operations. The class and collection persisters in NHibernate
+    already contain a set of configuration time generated strings (insertsql,
+    deletesql, updatesql etc.). The mapping tags
+    <literal>&lt;sql-insert&gt;</literal>,
+    <literal>&lt;sql-delete&gt;</literal>, and
+    <literal>&lt;sql-update&gt;</literal> override these strings:</para>
+
+    <programlisting><![CDATA[<class name="Person">
+    <id name="id">
+        <generator class="increment"/>
+    </id>
+    <property name="name" not-null="true"/>
+    <sql-insert>INSERT INTO PERSON (NAME, ID) VALUES ( UPPER(?), ? )</sql-insert>
+    <sql-update>UPDATE PERSON SET NAME=UPPER(?) WHERE ID=?</sql-update>
+    <sql-delete>DELETE FROM PERSON WHERE ID=?</sql-delete>
+</class>]]></programlisting>
+
+    <para>The SQL is directly executed in your database, so you are free to
+    use any dialect you like. This will of course reduce the portability of
+    your mapping if you use database specific SQL.</para>
+
+    <para>Stored procedures are supported if the database-native syntax is used:</para>
+
+    <programlisting><![CDATA[<class name="Person">
+    <id name="id">
+        <generator class="increment"/>
+    </id>
+    <property name="name" not-null="true"/>
+    <sql-insert>exec createPerson ?, ?</sql-insert>
+    <sql-delete>exec deletePerson ?</sql-delete>
+    <sql-update>exec updatePerson ?, ?</sql-update>
+</class>]]></programlisting>
+
+    <para>The order of the positional parameters is currently vital, as they
+    must be in the same sequence as NHibernate expects them.</para>
+
+    <para>You can see the expected order by enabling debug logging for the
+    <literal>NHibernate.Persister.Entity</literal> level. With this level
+    enabled NHibernate will print out the static SQL that is used to create,
+    update, delete etc. entities. (To see the expected sequence, remember to
+    not include your custom SQL in the mapping files as that will override the
+    NHibernate generated static sql.)</para>
+
+    <para>The stored procedures are by default required to affect the same number
+    of rows as NHibernate-generated SQL would. NHibernate uses
+    <literal>IDbCommand.ExecuteNonQuery</literal> to retrieve the number of rows
+    affected. This check can be disabled by using <literal>check="none"</literal>
+    attribute in <literal>sql-insert</literal> element.
+    </para>
+  </sect1>
+
+  <sect1 id="querysql-load">
+    <title>Custom SQL for loading</title>
+
+    <para>You may also declare your own SQL (or HQL) queries for entity
+    loading:</para>
+
+    <programlisting><![CDATA[<sql-query name="person">
+    <return alias="pers" class="Person" lock-mode="upgrade"/>
+    SELECT NAME AS {pers.Name}, ID AS {pers.Id}
+    FROM PERSON
+    WHERE ID=?
+    FOR UPDATE
+</sql-query>]]></programlisting>
+
+    <para>This is just a named query declaration, as discussed earlier. You
+    may reference this named query in a class mapping:</para>
+
+    <programlisting><![CDATA[<class name="Person">
+    <id name="Id">
+        <generator class="increment"/>
+    </id>
+    <property name="Name" not-null="true"/>
+    <loader query-ref="person"/>
+</class>]]></programlisting>
+
+    <para>This even works with stored procedures.</para>
+
+    <para>You may even define a query for collection loading:</para>
+
+    <programlisting><![CDATA[<set name="Employments" inverse="true">
+    <key/>
+    <one-to-many class="Employment"/>
+    <loader query-ref="employments"/>
+</set>]]></programlisting>
+
+    <programlisting><![CDATA[<sql-query name="employments">
+    <load-collection alias="emp" role="Person.Employments"/>
+    SELECT {emp.*}
+    FROM EMPLOYMENT emp
+    WHERE EMPLOYER = :id
+    ORDER BY STARTDATE ASC, EMPLOYEE ASC
+</sql-query>]]></programlisting>
+
+    <para>You could even define an entity loader that loads a collection by
+    join fetching:</para>
+
+    <programlisting><![CDATA[<sql-query name="person">
+    <return alias="pers" class="Person"/>
+    <return-join alias="emp" property="pers.Employments"/>
+    SELECT NAME AS {pers.*}, {emp.*}
+    FROM PERSON pers
+    LEFT OUTER JOIN EMPLOYMENT emp
+        ON pers.ID = emp.PERSON_ID
+    WHERE ID=?
+</sql-query>]]></programlisting>
+  </sect1>
 </chapter>
