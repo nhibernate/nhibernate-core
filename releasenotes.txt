@@ -33,12 +33,9 @@ New Features:
 
     * [NH-258] - Stored Procedures
     * [NH-268] - "not-found" attribute on relation mappings
-    * [NH-494] - NHibernate.Mapping.Attributes - RawXmlAttribute
-    * [NH-589] - NHibernate.Mapping.Attributes - Registration of properties' types patterns
     * [NH-617] - Add support for projections in criteria queries
     * [NH-629] - Ingres Driver and Dialect
     * [NH-640] - IList parameter for Criteria.List
-    * [NH-684] - NHibernate.Mapping.Attributes - PlaceHolderAttribute
 
 Improvements:
 
@@ -46,13 +43,19 @@ Improvements:
     * [NH-535] - Allow all ID generators to return all integer types, not just Int16/32/64
     * [NH-541] - Error Message Improvement
     * [NH-581] - Make MsSql2005Dialect use nvarchar(max), varbinary(max), and varchar(max) instead of ntext, image, and text
-    * [NH-587] - NHibernate.Mapping.Attributes - HbmWriter.WriteOthers()
-    * [NH-588] - NHibernate.Mapping.Attributes - MappingException
     * [NH-613] - Guid for Firebird
     * [NH-625] - Add Configuration.AddUrl
-    * [NH-644] - NHibernate.Mapping.Attributes: Pass UnsavedValue as object
-    * [NH-651] - NHibernate.Mapping.Attributes - Add methods to HbmSerializer returning a stream
-    * [NH-652] - NHibernate.Mapping.Attributes - Order (joined-)subclasses when they extends each others
+
+NHibernate.Mapping.Attributes:
+
+    * [NH-494] - RawXmlAttribute: Insert XML as-is in the mapping
+    * [NH-684] - AttributeIdentifierAttribute: Change a string value in an Attribute (column name, ...)
+    * [NH-589] - Registration of properties' types patterns: Transform FQNs of properties types
+    * [NH-644] - Pass UnsavedValue as object: Use UnsavedValueObject (in Id, Version, ...)
+    * [NH-651] - Add methods to HbmSerializer returning a stream
+    * [NH-652] - Order (joined-)subclasses when they extend each others
+    * [NH-587] - HbmWriter.WriteUserDefinedContent(): Improve extensibility
+    * [NH-588] - MappingException: Exception thrown by this library
 
 Build 1.2.0.Alpha1
 ========================
