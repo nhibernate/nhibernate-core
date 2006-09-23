@@ -30,6 +30,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _name = null;
 		
+		private string _content = null;
+		
 		/// <summary> Default constructor (position=0) </summary>
 		public FilterDefAttribute() : 
 				base(0)
@@ -65,6 +67,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._condition = value;
+			}
+		}
+		
+		/// <summary> Gets or sets the content of this element </summary>
+		public virtual string Content
+		{
+			get
+			{
+				return this._content;
+			}
+			set
+			{
+				this._content = value;
 			}
 		}
 	}

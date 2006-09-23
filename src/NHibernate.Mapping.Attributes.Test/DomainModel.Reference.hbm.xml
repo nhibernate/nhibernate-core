@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Generated from NHibernate.Mapping.Attributes on 2006-09-22 17:11:45Z.-->
+<!--Generated from NHibernate.Mapping.Attributes on 2006-09-23 16:40:32Z.-->
 <hibernate-mapping auto-import="true" default-lazy="true" xmlns="urn:nhibernate-mapping-2.0">
   <class name="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" proxy="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" discriminator-value="base" mutable="false" polymorphism="explicit" persister="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" where="1" batch-size="9" check="0">
     <id name="Code" access="Int32" column="Id" type="String" length="8" unsaved-value="null">
@@ -211,10 +211,6 @@
           </nested-composite-element>
         </composite-element>
       </array>
-      <loader query-ref="queryRef" />
-      <sql-insert>C</sql-insert>
-      <sql-update>U</sql-update>
-      <sql-delete>D</sql-delete>
     </subclass>
   </class>
   <class name="Int32" proxy="Boolean" lazy="true" dynamic-update="false" dynamic-insert="false" select-before-update="true" table="Stuff" schema="none" discriminator-value="7" persister="String" optimistic-lock="none">
@@ -250,10 +246,6 @@
     <id>
       <generator class="?" />
     </id>
-    <loader query-ref="ref" />
-    <sql-insert check="none">INSERT INTO Table (Col1, Col2) VALUES ( UPPER(?), ? )</sql-insert>
-    <sql-update check="none">UPDATE Table SET Col1=UPPER(?) WHERE Id=?</sql-update>
-    <sql-delete check="rowcount">DELETE FROM Table WHERE Id=?</sql-delete>
     <filter name="Null" condition="1==2" />
   </class>
   <class name="X+PrivS+PrivC, NHibernate.Mapping.Attributes.Test">
@@ -304,9 +296,5 @@
       <meta-value value="val1" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" />
       <column name="clazz" length="200" />
     </any>
-    <loader query-ref="ref" />
-    <sql-insert>INSERT</sql-insert>
-    <sql-update>UPDATE</sql-update>
-    <sql-delete>DELETE</sql-delete>
   </joined-subclass>
 </hibernate-mapping>

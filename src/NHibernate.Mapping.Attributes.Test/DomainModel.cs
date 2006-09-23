@@ -87,10 +87,10 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set {  }
 		}
 		
-		[NHMA.Loader(QueryRef="queryRef")]
-		[NHMA.SqlInsert(1, Content="C")]
-		[NHMA.SqlUpdate(5, Content="U")]
-		[NHMA.SqlDelete(3, Content="D")]
+// TODO:		[NHMA.Loader(QueryRef="queryRef")]
+//		[NHMA.SqlInsert(1, Content="C")]
+//		[NHMA.SqlUpdate(5, Content="U")]
+//		[NHMA.SqlDelete(3, Content="D")]
 		public int sql = 1;
 	}
 	#endregion
@@ -883,10 +883,10 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set {  }
 		}
 		
-		[NHMA.Loader(QueryRef="ref")]
-		[NHMA.SqlInsert(1, Content="INSERT")]
-		[NHMA.SqlUpdate(2, Content="UPDATE")]
-		[NHMA.SqlDelete(3, Content="DELETE")]
+// TODO:		[NHMA.Loader(QueryRef="ref")]
+//		[NHMA.SqlInsert(1, Content="INSERT")]
+//		[NHMA.SqlUpdate(2, Content="UPDATE")]
+//		[NHMA.SqlDelete(3, Content="DELETE")]
 		public int sql = 2;
 	}
 	#endregion
@@ -975,10 +975,10 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			[NHMA.Generator(Class="?")]
 		protected long id;
 		
-		[NHMA.Loader(QueryRef="ref")]
-		[NHMA.SqlInsert(Check=CustomSqlCheck.None, Content="INSERT INTO Table (Col1, Col2) VALUES ( UPPER(?), ? )")]
-		[NHMA.SqlUpdate(Check=CustomSqlCheck.None, Content="UPDATE Table SET Col1=UPPER(?) WHERE Id=?")]
-		[NHMA.SqlDelete(Check=CustomSqlCheck.RowCount, Content="DELETE FROM Table WHERE Id=?")]
+// TODO:		[NHMA.Loader(QueryRef="ref")]
+//		[NHMA.SqlInsert(Check=CustomSqlCheck.None, Content="INSERT INTO Table (Col1, Col2) VALUES ( UPPER(?), ? )")]
+//		[NHMA.SqlUpdate(Check=CustomSqlCheck.None, Content="UPDATE Table SET Col1=UPPER(?) WHERE Id=?")]
+//		[NHMA.SqlDelete(Check=CustomSqlCheck.RowCount, Content="DELETE FROM Table WHERE Id=?")]
 		protected int sql;
 		
 		[NHMA.Filter(Name="Null", Condition="1==2")]
