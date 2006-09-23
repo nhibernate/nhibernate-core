@@ -54,7 +54,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public static CountProjection count(string propertyName)
+		public static CountProjection Count(string propertyName)
 		{
 			return new CountProjection(propertyName);
 		}

@@ -61,7 +61,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
         public void CountTest()
         {
             ISession session = factory.OpenSession();
-            IProjection expression = Projections.count("Pay");
+            IProjection expression = Projections.Count("Pay");
             CreateObjects(typeof(Simple), session);
             SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery);
             string expectedSql = "count(sql_alias.Pay) as y0_";
