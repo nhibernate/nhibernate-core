@@ -400,7 +400,7 @@ IList cats = crit.List();]]></programlisting>
     "FROM CAT {cat} WHERE ROWNUM<10",
     "cat",
     typeof(Cat)
-).list()]]></programlisting>
+).List()]]></programlisting>
 
             <para>
                 SQL queries may contain named and positional parameters, just like NHibernate queries.
