@@ -28,6 +28,7 @@ Bugs Fixed:
     * [NH-705] - With SysCache impossible to strore object after the gc clears the cache
     * [NH-709] - CommandTimeout property should not be global
     * [NH-719] - Caching of "any" reference to lazy classes
+    * [NH-720] - Cache regions are not being used
 
 New Features:
 
