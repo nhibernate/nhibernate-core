@@ -71,16 +71,12 @@ namespace NHibernate.Test.FilterTest
 				return false;
 			}
 
-			if (effectiveEndDate != null ?
-					!effectiveEndDate.Equals(category.effectiveEndDate) :
-					category.effectiveEndDate != null)
+			if (!effectiveEndDate.Equals(category.effectiveEndDate))
 			{
 				return false;
 			}
 
-			if (effectiveStartDate != null ?
-					!effectiveStartDate.Equals(category.effectiveStartDate) :
-					category.effectiveStartDate != null)
+			if (!effectiveStartDate.Equals(category.effectiveStartDate))
 			{
 				return false;
 			}
@@ -92,8 +88,8 @@ namespace NHibernate.Test.FilterTest
 		{
 			int result;
 			result = name.GetHashCode();
-			result = 29 * result + (effectiveStartDate != null ? effectiveStartDate.GetHashCode() : 0);
-			result = 29 * result + (effectiveEndDate != null ? effectiveEndDate.GetHashCode() : 0);
+			result = 29 * result + effectiveStartDate.GetHashCode();
+			result = 29 * result + effectiveEndDate.GetHashCode();
 			return result;
 		}
 	}
