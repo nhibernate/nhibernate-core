@@ -1012,6 +1012,7 @@
                     </areaset>
                     <area id="property6" coords="7 45"/>
                     <area id="property7" coords="8 45"/>
+                    <area id="property8" coords="9 45"/>
                 </areaspec>            
                 <programlisting><![CDATA[<property
         name="propertyName"
@@ -1021,6 +1022,7 @@
         insert="true|false"
         formula="arbitrary SQL expression"
         access="field|property|ClassName"
+        optimistic-lock="true|false"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="property1">
@@ -1059,6 +1061,14 @@
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
+                        </para>
+                    </callout>
+                    <callout arearefs="property8">
+                        <para>
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>): 
+                            Specifies that updates to this property do or do not require acquisition of the
+                            optimistic lock. In other words, determines if a version increment should occur when 
+                            this property is dirty.
                         </para>
                     </callout>
                 </calloutlist>
@@ -1291,6 +1301,7 @@
                     <area id="manytoone9" coords="10 60"/>
                     <area id="manytoone10" coords="11 60"/>
                     <area id="manytoone11" coords="12 60"/>
+                    <area id="manytoone12" coords="13 60"/>
                 </areaspec>
                 <programlisting><![CDATA[<many-to-one
         name="PropertyName"
@@ -1303,6 +1314,7 @@
         property-ref="PropertyNameFromAssociatedClass"
         access="field|property|nosetter|ClassName"
         unique="true|false"
+        optimistic-lock="true|false"
         not-found="ignore|exception"
 />]]></programlisting>
                 <calloutlist>
@@ -1357,18 +1369,26 @@
                         </para>
                     </callout>
                     <callout arearefs="manytoone10">
-                         <para>
-                             <literal>unique</literal> (optional): Enable the DDL generation of a unique
-                             constraint for the foreign-key column.
-                         </para>
-                     </callout>
-                     <callout arearefs="manytoone11">
-                         <para>
-                             <literal>not-found</literal> (optional - defaults to <literal>exception</literal>):
-                             Specifies how foreign keys that reference missing rows will be handled:
-                             <literal>ignore</literal> will treat a missing row as a null association.
-                         </para>
-                     </callout>
+                        <para>
+                            <literal>unique</literal> (optional): Enable the DDL generation of a unique
+                            constraint for the foreign-key column.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone11">
+                        <para>
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>): 
+                            Specifies that updates to this property do or do not require acquisition of the
+                            optimistic lock. In other words, dertermines if a version increment should occur when 
+                            this property is dirty.
+                        </para>
+                    </callout>
+                    <callout arearefs="manytoone12">
+                        <para>
+                            <literal>not-found</literal> (optional - defaults to <literal>exception</literal>):
+                            Specifies how foreign keys that reference missing rows will be handled:
+                            <literal>ignore</literal> will treat a missing row as a null association.
+                        </para>
+                    </callout>
                 </calloutlist>
             </programlistingco>
 
@@ -1581,18 +1601,21 @@
 
             <programlistingco>
                 <areaspec>
-                    <area id="component1" coords="2 45"/>
-                    <area id="component2" coords="3 45"/>
-                    <area id="component3" coords="4 45"/>
-                    <area id="component4" coords="5 45"/>
-                    <area id="component5" coords="6 45"/>
+                    <area id="component1" coords="2 60"/>
+                    <area id="component2" coords="3 60"/>
+                    <area id="component3" coords="4 60"/>
+                    <area id="component4" coords="5 60"/>
+                    <area id="component5" coords="6 60"/>
+                    <area id="component6" coords="7 60"/>
                 </areaspec>            
                 <programlisting><![CDATA[<component 
         name="PropertyName" 
         class="ClassName"
         insert="true|false"
         upate="true|false"
-        access="field|property|nosetter|ClassName">
+        access="field|property|nosetter|ClassName"
+        optimistic-lock="true|false"
+>
         
         <property ...../>
         <many-to-one .... />
@@ -1626,6 +1649,14 @@
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
+                        </para>
+                    </callout>
+                    <callout arearefs="component6">
+                        <para>
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>):
+                            Specifies that updates to this component do or do not require acquisition of the
+                            optimistic lock. In other words, determines if a version increment should occur when 
+                            this property is dirty.
                         </para>
                     </callout>
                 </calloutlist>
@@ -2228,11 +2259,12 @@
 
             <programlistingco>
                 <areaspec>
-                    <area id="any1" coords="2 50"/>
-                    <area id="any2" coords="3 50"/>
-                    <area id="any3" coords="4 50"/>
-                    <area id="any4" coords="5 50"/>
-                    <area id="any5" coords="6 50"/>
+                    <area id="any1" coords="2 60"/>
+                    <area id="any2" coords="3 60"/>
+                    <area id="any3" coords="4 60"/>
+                    <area id="any4" coords="5 60"/>
+                    <area id="any5" coords="6 60"/>
+                    <area id="any6" coords="7 60"/>
                 </areaspec>
                 <programlisting><![CDATA[<any
         name="PropertyName"
@@ -2240,6 +2272,7 @@
         meta-type="metatypename"
         cascade="none|all|save-update"
         access="field|property|nosetter|ClassName"
+        optimistic-lock="true|false"
 >
         <meta-value ... />
         <meta-value ... />
@@ -2276,6 +2309,14 @@
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
+                        </para>
+                    </callout>
+                    <callout arearefs="any6">
+                        <para>
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>): 
+                            Specifies that updates to this property do or do not require acquisition of the
+                            optimistic lock. In other words, define if a version increment should occur if this
+                            property is dirty.
                         </para>
                     </callout>
                 </calloutlist>

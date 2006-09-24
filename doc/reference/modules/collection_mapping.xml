@@ -144,6 +144,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 <area id="mappingcollection11" coords="12 65"/>
                 <area id="mappingcollection12" coords="13 65"/>
                 <area id="mappingcollection13" coords="14 65"/>
+                <area id="mappingcollection14" coords="15 65"/>
             </areaspec>
             <programlisting><![CDATA[<map
     name="propertyName"
@@ -158,6 +159,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
     fetch="select|join"
     batch-size="N"
     access="field|property|ClassName"
+    optimistic-lock="true|false"
     generic="true|false"
 >
 
@@ -241,6 +243,14 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                     </para>
                 </callout>
                 <callout arearefs="mappingcollection13">
+                    <para>
+                        <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>): 
+                        Species that changes to the state of the collection results in increment of the
+                        owning entity's version. (For one to many associations, it is often reasonable to
+                        disable this setting.)
+                    </para>
+                </callout>
+                <callout arearefs="mappingcollection14">
                     <para>
                         <literal>generic</literal> (optional): Choose between generic and non-generic collection
                         interface. If this option is not specified, NHibernate will use reflection to choose

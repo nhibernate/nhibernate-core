@@ -225,6 +225,49 @@ session.Close();]]></programlisting>
 
         </sect2>
 
+        <sect2 id="transactions-optimistic-customizing">
+            <title>Customizing automatic versioning</title>
+
+            <para>
+                You may disable NHibernate's automatic version increment for particular properties and 
+                collections by setting the <literal>optimistic-lock</literal> mapping attribute to 
+                <literal>false</literal>. NHibernate will then no longer increment versions if the 
+                property is dirty.
+            </para>
+
+            <para>
+                Legacy database schemas are often static and can't be modified. Or, other applications
+                might also access the same database and don't know how to handle version numbers or
+                even timestamps. In both cases, versioning can't rely on a particular column in a table.
+                To force a version check without a version or timestamp property mapping, with a
+                comparison of the state of all fields in a row, turn on <literal>optimistic-lock="all"</literal>
+                in the <literal>&lt;class&gt;</literal> mapping. Note that this concepetually only works
+                if NHibernate can compare the old and new state, i.e. if you use a single long
+                <literal>ISession</literal> and not session-per-request-with-detached-objects.
+            </para>
+
+            <para>
+                Sometimes concurrent modification can be permitted as long as the changes that have been
+                made don't overlap. If you set <literal>optimistic-lock="dirty"</literal> when mapping the
+                <literal>&lt;class&gt;</literal>, NHibernate will only compare dirty fields during flush.
+            </para>
+
+            <para>
+                In both cases, with dedicated version/timestamp columns or with full/dirty field
+                comparison, NHibernate uses a single <literal>UPDATE</literal> statement (with an
+                appropriate <literal>WHERE</literal> clause) per entity to execute the version check
+                and update the information. If you use transitive persistence to cascade reattachment
+                to associated entities, NHibernate might execute uneccessary updates. This is usually
+                not a problem, but <emphasis>on update</emphasis> triggers in the database might be
+                executed even when no changes have been made to detached instances. You can customize
+                this behavior by setting  <literal>select-before-update="true"</literal> in the
+                <literal>&lt;class&gt;</literal> mapping, forcing Hibernate to <literal>SELECT</literal>
+                the instance to ensure that changes did actually occur, before updating the row.
+            </para>
+
+        </sect2>
+
+
         <sect2 id="transactions-optimistic-manual">
             <title>Application version checking</title>
 
