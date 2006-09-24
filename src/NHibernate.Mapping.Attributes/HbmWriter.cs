@@ -3735,6 +3735,9 @@ namespace NHibernate.Mapping.Attributes
 		public virtual void WriteCache(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, CacheAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "cache" );
+			// Attribute: <region>
+			if(attribute.Region != null)
+			writer.WriteAttributeString("region", GetAttributeValue(attribute.Region, mappedClass));
 			// Attribute: <usage>
 			writer.WriteAttributeString("usage", attribute.Usage==CacheUsage.Unspecified ? DefaultHelper.Get_Cache_Usage_DefaultValue(member) : GetXmlEnumValue(typeof(CacheUsage), attribute.Usage));
 			
@@ -4915,6 +4918,9 @@ namespace NHibernate.Mapping.Attributes
 		public virtual void WriteJcsCache(System.Xml.XmlWriter writer, System.Reflection.MemberInfo member, JcsCacheAttribute attribute, BaseAttribute parentAttribute, System.Type mappedClass)
 		{
 			writer.WriteStartElement( "jcs-cache" );
+			// Attribute: <region>
+			if(attribute.Region != null)
+			writer.WriteAttributeString("region", GetAttributeValue(attribute.Region, mappedClass));
 			// Attribute: <usage>
 			writer.WriteAttributeString("usage", attribute.Usage==JcsCacheUsage.Unspecified ? DefaultHelper.Get_JcsCache_Usage_DefaultValue(member) : GetXmlEnumValue(typeof(JcsCacheUsage), attribute.Usage));
 			

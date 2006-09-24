@@ -28,6 +28,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private JcsCacheUsage _usage = JcsCacheUsage.Unspecified;
 		
+		private string _region = null;
+		
 		/// <summary> Default constructor (position=0) </summary>
 		public JcsCacheAttribute() : 
 				base(0)
@@ -38,6 +40,19 @@ namespace NHibernate.Mapping.Attributes
 		public JcsCacheAttribute(int position) : 
 				base(position)
 		{
+		}
+		
+		/// <summary> </summary>
+		public virtual string Region
+		{
+			get
+			{
+				return this._region;
+			}
+			set
+			{
+				this._region = value;
+			}
 		}
 		
 		/// <summary> </summary>

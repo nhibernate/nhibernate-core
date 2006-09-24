@@ -108,7 +108,7 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="cacheType">
-		<xs:attribute name="region" type="xs:string" use="optional" />
+		<xs:attribute name='region' />
 		<xs:attribute name="usage" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">

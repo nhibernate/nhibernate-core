@@ -136,9 +136,14 @@
     <Compile Include="CompositeIndexAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CreateAttribute.cs" />
+    <Compile Include="CustomSqlCheck.cs" />
+    <Compile Include="DatabaseObjectAttribute.cs" />
+    <Compile Include="DialectScopeAttribute.cs" />
     <Compile Include="DiscriminatorAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DropAttribute.cs" />
     <Compile Include="DynamicComponentAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -148,6 +153,10 @@
     <Compile Include="FetchMode.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FilterAttribute.cs" />
+    <Compile Include="FilterDefAttribute.cs" />
+    <Compile Include="FilterParamAttribute.cs" />
+    <Compile Include="FlushMode.cs" />
     <Compile Include="GeneratorAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -208,6 +217,9 @@
     <Compile Include="ListAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="LoadCollectionAttribute.cs" />
+    <Compile Include="LoaderAttribute.cs" />
+    <Compile Include="LockMode.cs" />
     <Compile Include="ManyToAnyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -232,6 +244,7 @@
     <Compile Include="NestedCompositeElementAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NotFoundMode.cs" />
     <Compile Include="OneToManyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -259,15 +272,29 @@
     <Compile Include="PropertyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="QueryAttribute.cs" />
     <Compile Include="RawXmlAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ResultSetAttribute.cs" />
+    <Compile Include="ReturnAttribute.cs" />
+    <Compile Include="ReturnColumnAttribute.cs" />
+    <Compile Include="ReturnDiscriminatorAttribute.cs" />
+    <Compile Include="ReturnJoinAttribute.cs" />
+    <Compile Include="ReturnPropertyAttribute.cs" />
+    <Compile Include="ReturnScalarAttribute.cs" />
     <Compile Include="SetAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SqlDeleteAllAttribute.cs" />
+    <Compile Include="SqlDeleteAttribute.cs" />
+    <Compile Include="SqlInsertAttribute.cs" />
+    <Compile Include="SqlQueryAttribute.cs" />
+    <Compile Include="SqlUpdateAttribute.cs" />
     <Compile Include="SubclassAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SynchronizeAttribute.cs" />
     <Compile Include="TimestampAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -280,7 +307,14 @@
     <Compile Include="VersionAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="nhibernate-mapping-2.0.xsd" />
+    <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="nhibernate-mapping-2.0.xsx">
+      <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -28,6 +28,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private CacheUsage _usage = CacheUsage.Unspecified;
 		
+		private string _region = null;
+		
 		/// <summary> Default constructor (position=0) </summary>
 		public CacheAttribute() : 
 				base(0)
@@ -38,6 +40,19 @@ namespace NHibernate.Mapping.Attributes
 		public CacheAttribute(int position) : 
 				base(position)
 		{
+		}
+		
+		/// <summary> </summary>
+		public virtual string Region
+		{
+			get
+			{
+				return this._region;
+			}
+			set
+			{
+				this._region = value;
+			}
 		}
 		
 		/// <summary> </summary>
