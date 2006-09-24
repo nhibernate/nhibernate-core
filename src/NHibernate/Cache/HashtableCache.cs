@@ -8,8 +8,14 @@ namespace NHibernate.Cache
 	public class HashtableCache : ICache
 	{
 		private IDictionary hashtable = new Hashtable();
+		private readonly string regionName;
 
 		#region ICache Members
+
+		public HashtableCache(string regionName)
+		{
+			this.regionName = regionName;
+		}
 
 		/// <summary></summary>
 		public object Get( object key )
@@ -65,6 +71,11 @@ namespace NHibernate.Cache
 			{
 				return Timestamper.OneMs * 60000; // ie. 60 seconds
 			}
+		}
+
+		public string RegionName
+		{
+			get { return regionName; }
 		}
 
 		#endregion

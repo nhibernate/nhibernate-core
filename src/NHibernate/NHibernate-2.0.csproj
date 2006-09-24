@@ -485,6 +485,7 @@
     <Compile Include="Bytecode\Lightweight\ReflectionOptimizer.cs" />
     <Compile Include="Bytecode\NullBytecodeProvider.cs" />
     <Compile Include="Bytecode\EmitUtil.cs" />
+    <Compile Include="Cache\CacheKey.cs" />
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cfg\CollectionSecondPass.cs" />
     <Compile Include="Cfg\HbmBinder.cs" />

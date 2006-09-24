@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Xml;
 using log4net;
+using NHibernate.Cfg;
 
 namespace NHibernate.Cache
 {
@@ -31,26 +33,19 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
 		/// </summary>
-		/// <param name="node">The <see cref="XmlNode"/> that contains the attribute <c>usage</c>.</param>
-		/// <param name="name">The name of the class the strategy is being created for.</param>
-		/// <param name="mutable"><c>true</c> if the object being stored in the cache is mutable.</param>
-		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
-		public static ICacheConcurrencyStrategy CreateCache( XmlNode node, string name, bool mutable )
-		{
-			return CacheFactory.CreateCache( node.Attributes[ "usage" ].Value, name, mutable );
-		}
-
-		/// <summary>
-		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
-		/// </summary>
 		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>
 		/// <param name="name">The name of the class the strategy is being created for.</param>
 		/// <param name="mutable"><c>true</c> if the object being stored in the cache is mutable.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
 		// was private in h2.1
-		public static ICacheConcurrencyStrategy CreateCache( string usage, string name, bool mutable )
+		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, bool mutable, Settings settings, IDictionary properties )
 		{
-			if( log.IsDebugEnabled )
+			if (usage == null || !settings.IsSecondLevelCacheEnabled) return null; //no cache
+
+			string prefix = settings.CacheRegionPrefix;
+			if (prefix != null) name = prefix + '.' + name;
+
+			if (log.IsDebugEnabled)
 			{
 				log.Debug( string.Format( "cache for: {0} usage strategy: {1}", name, usage ) );
 			}
@@ -77,6 +72,15 @@ namespace NHibernate.Cache
 				default:
 					throw new MappingException( "cache usage attribute should be read-write, read-only, nonstrict-read-write, or transactional" );
 			}
+			
+			ICache impl;
+			try {
+				impl = settings.CacheProvider.BuildCache(name, properties);
+			}
+			catch (CacheException e) {
+				throw new HibernateException( "Could not instantiate cache implementation", e );
+			}
+			ccs.Cache = impl;
 
 			return ccs;
 		}

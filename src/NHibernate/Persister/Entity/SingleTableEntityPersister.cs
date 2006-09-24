@@ -4,6 +4,7 @@ using System.Data;
 using System.Text;
 using Iesi.Collections;
 using log4net;
+using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Mapping;
@@ -310,8 +311,8 @@ namespace NHibernate.Persister.Entity
 
 		//INITIALIZATION:
 
-		public SingleTableEntityPersister(PersistentClass model, ISessionFactoryImplementor factory, IMapping mapping)
-			: base(model, factory)
+		public SingleTableEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, IMapping mapping)
+			: base(model, cache, factory)
 		{
 			// CLASS + TABLE
 

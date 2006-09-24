@@ -70,5 +70,10 @@ namespace NHibernate.Cache
 		/// Get a reasonable "lock timeout"
 		/// </summary>
 		int Timeout { get; }
+
+		/// <summary>
+		/// Gets the name of the cache region
+		/// </summary>
+		string RegionName{ get; }
 	}
 }

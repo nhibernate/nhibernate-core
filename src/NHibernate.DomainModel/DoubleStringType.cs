@@ -10,7 +10,7 @@ namespace NHibernate.DomainModel
 		{
 			get
 			{
-				return typeof(String[]);
+				return typeof(string[]);
 			}
 		}
 	
@@ -23,12 +23,21 @@ namespace NHibernate.DomainModel
 
 			return lhs[0].Equals(rhs[0]) && lhs[1].Equals(rhs[1]);
 		}
+
+		public int GetHashCode(object x)
+		{
+			unchecked
+			{
+				string[] a = (string[]) x;
+				return a[0].GetHashCode() + 31 * a[1].GetHashCode();
+			}
+		}
 	
 		public Object DeepCopy(Object x) 
 		{
 			if (x==null) return null;
-			String[] result = new String[2];
-			String[] input = (String[]) x;
+			string[] result = new string[2];
+			string[] input = (string[]) x;
 			result[0] = input[0];
 			result[1] = input[1];
 			return result;
@@ -39,29 +48,29 @@ namespace NHibernate.DomainModel
 			get { return true; }
 		}
 	
-		public Object NullSafeGet(IDataReader rs, String[] names, Engine.ISessionImplementor session, Object owner)
+		public Object NullSafeGet(IDataReader rs, string[] names, Engine.ISessionImplementor session, Object owner)
 		{
 		
-			String first = (String) NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
-			String second = (String) NHibernateUtil.String.NullSafeGet(rs, names[1], session, owner);
+			string first = (string) NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
+			string second = (string) NHibernateUtil.String.NullSafeGet(rs, names[1], session, owner);
 		
-			return ( first==null && second==null ) ? null : new String[] { first, second };
+			return ( first==null && second==null ) ? null : new string[] { first, second };
 		}
 
 	
 		public void NullSafeSet(IDbCommand st, Object value, int index, Engine.ISessionImplementor session)
 		{		
-			String[] strings = (value==null) ? new String[2] : (String[]) value;
+			string[] strings = (value==null) ? new string[2] : (string[]) value;
 		
 			NHibernateUtil.String.NullSafeSet(st, strings[0], index, session);
 			NHibernateUtil.String.NullSafeSet(st, strings[1], index+1, session);
 		}
 	
-		public String[] PropertyNames
+		public string[] PropertyNames
 		{
 			get
 			{
-				return new String[] { "s1", "s2" };
+				return new string[] { "s1", "s2" };
 			}
 		}
 
@@ -75,7 +84,7 @@ namespace NHibernate.DomainModel
 
 		public Object GetPropertyValue(Object component, int property) 
 		{
-			return ( (String[]) component )[property];
+			return ( (string[]) component )[property];
 		}
 
 		public void SetPropertyValue(
@@ -84,7 +93,7 @@ namespace NHibernate.DomainModel
 			Object value) 
 		{
 		
-			( (String[]) component )[property] = (String) value;
+			( (string[]) component )[property] = (string) value;
 		}
 
 		public object Assemble(

@@ -4,6 +4,7 @@ using System.Data;
 using System.Reflection;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.SqlTypes;
 
@@ -188,6 +189,11 @@ namespace NHibernate.Type
 			return userType.Equals( x, y );
 		}
 
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			return userType.GetHashCode(x);
+		}
+		
 		/// <summary>
 		/// 
 		/// </summary>

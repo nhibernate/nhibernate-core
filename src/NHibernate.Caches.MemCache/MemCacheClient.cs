@@ -42,7 +42,7 @@ namespace NHibernate.Caches.MemCache
 			_log = LogManager.GetLogger( typeof( MemCacheClient ) );
 		}
 
-		public MemCacheClient() : this( null, null )
+		public MemCacheClient() : this( "nhibernate", null )
 		{
 		}
 
@@ -161,6 +161,11 @@ namespace NHibernate.Caches.MemCache
 		public int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; }
+		}
+
+		public string RegionName
+		{
+			get { return _region; }
 		}
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -59,6 +60,13 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
 		/// /> 
 		bool Equals( object x, object y );
+
+		/// <summary>
+		/// Get a hashcode, consistent with persistence "equality"
+		/// </summary>
+		/// <param name="x"></param>
+		/// <returns></returns>
+		int GetHashCode(object x, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.IsDirty"]/*'

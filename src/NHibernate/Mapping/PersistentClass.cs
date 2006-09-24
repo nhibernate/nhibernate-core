@@ -323,11 +323,11 @@ namespace NHibernate.Mapping
 		public abstract bool IsVersioned { get; }
 
 		/// <summary>
-		/// When implemented by a class, gets or sets the <see cref="ICacheConcurrencyStrategy"/> 
+		/// When implemented by a class, gets or sets the CacheConcurrencyStrategy
 		/// to use to read/write instances of the persistent class to the Cache.
 		/// </summary>
-		/// <value>The <see cref="ICacheConcurrencyStrategy"/> used with the Cache.</value>
-		public abstract ICacheConcurrencyStrategy Cache { get; set; }
+		/// <value>The CacheConcurrencyStrategy used with the Cache.</value>
+		public abstract string CacheConcurrencyStrategy { get; set; }
 
 		/// <summary>
 		/// When implemented by a class, gets or sets the <see cref="PersistentClass"/>

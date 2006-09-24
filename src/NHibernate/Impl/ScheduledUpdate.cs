@@ -49,9 +49,16 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override void Execute()
 		{
+			CacheKey ck = null;
 			if( Persister.HasCache )
 			{
-				_lock = Persister.Cache.Lock( Id, lastVersion );
+				ck = new CacheKey(
+					Id,
+					Persister.IdentifierType,
+					(string)Persister.IdentifierSpace,
+					Session.Factory
+				);
+				_lock = Persister.Cache.Lock(ck, lastVersion);
 			}
 			Persister.Update( Id, fields, dirtyFields, hasDirtyCollection, oldFields, lastVersion, Instance, Session );
 			Session.PostUpdate( Instance, updatedState, nextVersion );
@@ -60,13 +67,13 @@ namespace NHibernate.Impl
 			{
 				if ( Persister.IsCacheInvalidationRequired )
 				{
-					Persister.Cache.Evict( Id );
+					Persister.Cache.Evict( ck );
 				}
 				else
 				{
 					// TODO: Inefficient if that cache is just going to ignore the updated state!
 					cacheEntry = new CacheEntry( Instance, Persister, Session );
-					Persister.Cache.Update( Id, cacheEntry );
+					Persister.Cache.Update( ck, cacheEntry );
 				}
 			}
 		}
@@ -76,13 +83,19 @@ namespace NHibernate.Impl
 		{
 			if( Persister.HasCache )
 			{
+				CacheKey ck = new CacheKey(
+					Id,
+					Persister.IdentifierType,
+					(string)Persister.IdentifierSpace,
+					Session.Factory
+				);
 				if ( success && !Persister.IsCacheInvalidationRequired )
 				{
-					Persister.Cache.AfterUpdate( Id, cacheEntry, nextVersion, _lock );
+					Persister.Cache.AfterUpdate( ck, cacheEntry, nextVersion, _lock );
 				}
 				else
 				{
-					Persister.Cache.Release( Id, _lock );
+					Persister.Cache.Release( ck, _lock );
 				}
 			}
 		}

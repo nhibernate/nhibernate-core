@@ -34,6 +34,11 @@ namespace NHibernate.Test.TypeParameters
 
         }
 
+		public int GetHashCode(object x)
+		{
+			return (x == null) ? 0 : x.GetHashCode();
+		}
+
         public SqlType[] SqlTypes
         {
             get

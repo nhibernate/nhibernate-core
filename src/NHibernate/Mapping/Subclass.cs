@@ -26,14 +26,14 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="ICacheConcurrencyStrategy"/> 
+		/// Gets or sets the CacheConcurrencyStrategy
 		/// to use to read/write instances of the persistent class to the Cache.
 		/// </summary>
-		/// <value>The <see cref="ICacheConcurrencyStrategy"/> that the Superclass uses with the Cache.</value>
-		public override ICacheConcurrencyStrategy Cache
+		/// <value>The CacheConcurrencyStrategy used with the Cache.</value>
+		public override string CacheConcurrencyStrategy
 		{
-			get { return Superclass.Cache; }
-			set { Superclass.Cache = value; }
+			get { return Superclass.CacheConcurrencyStrategy; }
+			set { Superclass.CacheConcurrencyStrategy = value; }
 		}
 
 		/// <summary>

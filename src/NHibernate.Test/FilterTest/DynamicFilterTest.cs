@@ -450,13 +450,13 @@ namespace NHibernate.Test.FilterTest
 			{
 				if (!clazz.IsInherited)
 				{
-					cfg.SetCacheConcurrencyStrategy(clazz.MappedClass, new NonstrictReadWriteCache());
+					cfg.SetCacheConcurrencyStrategy(clazz.MappedClass, "nonstrict-read-write");
 				}
 			}
 			
 			foreach (Mapping.Collection coll in cfg.CollectionMappings)
 			{
-				cfg.SetCacheConcurrencyStrategy(coll.Role, new NonstrictReadWriteCache());
+				cfg.SetCacheConcurrencyStrategy(coll.Role, "nonstrict-read-write");
 			}
 		}
 

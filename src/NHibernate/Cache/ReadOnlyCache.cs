@@ -14,11 +14,18 @@ namespace NHibernate.Cache
 
 		private ICache cache;
 		private static readonly ILog log = LogManager.GetLogger( typeof( ReadOnlyCache ) );
-		private bool minimalPuts;
 
 		/// <summary></summary>
 		public ReadOnlyCache()
 		{
+		}
+
+		/// <summary>
+		/// Gets the cache region name.
+		/// </summary>
+		public string RegionName
+		{
+			get { return cache.RegionName; }
 		}
 
 		public ICache Cache
@@ -64,7 +71,7 @@ namespace NHibernate.Cache
 		/// <param name="value"></param>
 		/// <param name="timestamp"></param>
 		/// <returns></returns>
-		public bool Put( object key, object value, long timestamp, object version, IComparer versionComparator )
+		public bool Put( object key, object value, long timestamp, object version, IComparer versionComparator, bool minimalPut )
 		{
 			if( timestamp == long.MinValue )
 			{
@@ -74,7 +81,7 @@ namespace NHibernate.Cache
 
 			lock( lockObject )
 			{
-				if( minimalPuts && cache.Get( key ) != null )
+				if( minimalPut && cache.Get( key ) != null )
 				{
 					if( log.IsDebugEnabled )
 					{
@@ -176,11 +183,6 @@ namespace NHibernate.Cache
 		{
 			log.Error( "Application attempted to edit read only item: " + key );
 			throw new InvalidOperationException( "Can't write to a readonly object" );
-		}
-
-		public bool MinimalPuts
-		{
-			set { minimalPuts = value; }	
 		}
 	}
 }

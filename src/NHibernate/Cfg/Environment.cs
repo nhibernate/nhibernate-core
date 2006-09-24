@@ -97,6 +97,7 @@ namespace NHibernate.Cfg
 		public const string CacheProvider = "hibernate.cache.provider_class";
 		public const string UseQueryCache = "hibernate.cache.use_query_cache";
 		public const string QueryCacheFactory = "hibernate.cache.query_cache_factory";
+		public const string UseSecondLevelCache = "hibernate.cache.use_second_level_cache";
 		public const string CacheRegionPrefix = "hibernate.cache.region_prefix";
 		public const string UseMinimalPuts = "hibernate.cache.use_minimal_puts";
 		public const string QuerySubstitutions = "hibernate.query.substitutions";

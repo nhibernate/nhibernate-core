@@ -52,7 +52,7 @@ namespace NHibernate.Caches.SysCache
 		/// <summary>
 		/// default constructor
 		/// </summary>
-		public SysCache() : this( null, null )
+		public SysCache() : this( "nhibernate", null )
 		{
 		}
 
@@ -181,15 +181,7 @@ namespace NHibernate.Caches.SysCache
 			}
 
 			DictionaryEntry de = ( DictionaryEntry ) obj;
-
-			if( key.Equals( de.Key ) )
-			{
-				return de.Value;
-			}
-			else
-			{
-				return null;
-			}
+			return de.Value;
 		}
 
 		/// <summary></summary>
@@ -333,10 +325,9 @@ namespace NHibernate.Caches.SysCache
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
-		/// <summary></summary>
-		public string Region
+		public string RegionName
 		{
-			set { _region = value; }
+			get { return _region; }
 		}
 	}
 }

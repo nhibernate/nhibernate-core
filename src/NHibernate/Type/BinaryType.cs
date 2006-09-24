@@ -2,6 +2,8 @@ using System;
 using System.Data;
 using System.IO;
 using System.Text;
+using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -111,6 +113,20 @@ namespace NHibernate.Type
 			}
 
 			return CollectionHelper.CollectionEquals( ( byte[ ] ) x, ( byte[ ] ) y );
+		}
+
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			unchecked
+			{
+				byte[] bytes = (byte[]) x;
+				int hashCode = 1;
+				for (int j = 0; j < bytes.Length; j++)
+				{
+					hashCode = 31 * hashCode + bytes[j];
+				}
+				return hashCode;
+			}
 		}
 
 		public override string Name

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Cfg;
 
 namespace NHibernate.Cache
 {
@@ -9,11 +10,12 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class StandardQueryCacheFactory : IQueryCacheFactory
 	{
-		public IQueryCache GetQueryCache( string regionName, ICacheProvider provider,
+		public IQueryCache GetQueryCache( string regionName,
 		                                  UpdateTimestampsCache updateTimestampsCache,
+		                                  Settings settings,
 		                                  IDictionary props )
 		{
-			return new StandardQueryCache( provider, props, updateTimestampsCache, regionName );
+			return new StandardQueryCache( settings, props, updateTimestampsCache, regionName );
 		}
 	}
 }

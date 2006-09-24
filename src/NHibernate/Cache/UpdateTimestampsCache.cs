@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Iesi.Collections;
 
 using log4net;
+using NHibernate.Cfg;
 
 namespace NHibernate.Cache
 {
@@ -20,17 +21,19 @@ namespace NHibernate.Cache
 		private static readonly ILog log = LogManager.GetLogger( typeof( UpdateTimestampsCache ) );
 		private ICache updateTimestamps;
 
-		private static readonly string RegionName = typeof( UpdateTimestampsCache ).Name;
+		private readonly string regionName = typeof( UpdateTimestampsCache ).Name;
 
 		public void Clear()
 		{
 			updateTimestamps.Clear();
 		}
 
-		public UpdateTimestampsCache( ICacheProvider provider, IDictionary props )
+		public UpdateTimestampsCache( Settings settings, IDictionary props )
 		{
-			log.Info( "starting update timestamps cache at region: " + RegionName );
-			this.updateTimestamps = provider.BuildCache( RegionName, props );
+			string prefix = settings.CacheRegionPrefix;
+			regionName = prefix == null ? regionName : prefix + '.' + regionName;
+			log.Info( "starting update timestamps cache at region: " + regionName );
+			this.updateTimestamps = settings.CacheProvider.BuildCache( regionName, props );
 		}
 
 		[MethodImpl( MethodImplOptions.Synchronized )]

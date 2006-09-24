@@ -86,6 +86,11 @@ namespace NHibernate.Type
 			return binaryType.Equals( ToBytes( x ), ToBytes( y ) );
 		}
 
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			return NHibernateUtil.Binary.GetHashCode(ToBytes(x), factory);
+		}
+
 		public override string ToString( object value )
 		{
 			return binaryType.ToString( ToBytes( value ) );

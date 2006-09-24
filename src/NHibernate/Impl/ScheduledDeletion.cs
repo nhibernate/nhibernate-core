@@ -33,7 +33,13 @@ namespace NHibernate.Impl
 		{
 			if( Persister.HasCache )
 			{
-				lck = Persister.Cache.Lock( Id, version );
+				CacheKey ck = new CacheKey(
+					Id,
+					Persister.IdentifierType,
+					(string)Persister.IdentifierSpace,
+					Session.Factory
+				);
+				lck = Persister.Cache.Lock( ck, version );
 			}
 			Persister.Delete( Id, version, Instance, Session );
 			Session.PostDelete( Instance );
@@ -44,7 +50,13 @@ namespace NHibernate.Impl
 		{
 			if( Persister.HasCache )
 			{
-				Persister.Cache.Release( Id, lck );
+				CacheKey ck = new CacheKey(
+					Id,
+					Persister.IdentifierType,
+					(string)Persister.IdentifierSpace,
+					Session.Factory
+				);
+				Persister.Cache.Release(ck, lck);
 			}
 		}
 	}

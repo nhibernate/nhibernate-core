@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -91,6 +92,21 @@ namespace NHibernate.Type
 				date1.Hour == date2.Hour &&
 				date1.Minute == date2.Minute &&
 				date1.Second == date2.Second );
+		}
+
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			// Custom hash code implementation because DateTimeType is only accurate
+			// up to seconds.
+			DateTime date = (DateTime)x;
+			int hashCode = 1;
+			hashCode = 31 * hashCode + date.Second;
+			hashCode = 31 * hashCode + date.Minute;
+			hashCode = 31 * hashCode + date.Hour;
+			hashCode = 31 * hashCode + date.Day;
+			hashCode = 31 * hashCode + date.Month;
+			hashCode = 31 * hashCode + date.Year;
+			return hashCode;
 		}
 
 		/// <summary></summary>

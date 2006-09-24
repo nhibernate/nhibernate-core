@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using log4net;
+using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Impl;
@@ -294,8 +295,8 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="model">The PeristentClass to create the EntityPersister for.</param>
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
-		public JoinedSubclassEntityPersister(PersistentClass model, ISessionFactoryImplementor factory, IMapping mapping)
-			: base(model, factory)
+		public JoinedSubclassEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, IMapping mapping)
+			: base(model, cache, factory)
 		{
 			// I am am making heavy use of the "this." just to help me with debugging what is a local variable to the 
 			// constructor versus what is an class scoped variable.  I am only doing this when we are using fields 

@@ -33,6 +33,14 @@ namespace NHibernate.Cache
 		{
 		}
 
+		/// <summary>
+		/// Gets the cache region name.
+		/// </summary>
+		public string RegionName
+		{
+			get { return cache.RegionName; }
+		}
+
 		public ICache Cache
 		{
 			get { return cache; }
@@ -80,9 +88,10 @@ namespace NHibernate.Cache
 					log.Debug( "Cache lookup: " + key );
 				}
 
-				try
+				// commented out in H3.1
+				/*try
 				{
-					cache.Lock( key );
+					cache.Lock( key );*/
 
 					ILockable lockable = ( ILockable ) cache.Get( key );
 
@@ -112,11 +121,11 @@ namespace NHibernate.Cache
 						}
 						return null;
 					}
-				}
+				/*}
 				finally
 				{
 					cache.Unlock( key );
-				}
+				}*/
 			}
 		}
 
@@ -162,7 +171,7 @@ namespace NHibernate.Cache
 		/// database is operating in repeatable read isolation mode.)
 		/// </summary>
 		/// <returns>Whether the item was actually put into the cache</returns>
-		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator )
+		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator, bool minimalPut )
 		{
 			if( txTimestamp == long.MinValue )
 			{
@@ -396,17 +405,6 @@ namespace NHibernate.Cache
 				myLock.IsLock &&
 				clientLock != null &&
 				( ( CacheLock ) clientLock ).Id == ( ( CacheLock ) myLock ).Id;
-		}
-
-		public bool MinimalPuts
-		{
-			set
-			{
-				if( value )
-				{
-					throw new HibernateException( "minimal puts not supported for read-write cache" );
-				}
-			}
 		}
 	}
 }

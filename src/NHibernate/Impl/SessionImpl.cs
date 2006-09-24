@@ -2088,9 +2088,16 @@ namespace NHibernate.Impl
 				}
 
 				ISoftLock myLock = null;
+				CacheKey ck = null;
 				if (persister.HasCache)
 				{
-					myLock = persister.Cache.Lock(entry.Id, entry.Version);
+					ck = new CacheKey(
+						entry.Id,
+						persister.IdentifierType,
+						(string)persister.IdentifierSpace,
+						Factory
+					);
+					myLock = persister.Cache.Lock(ck, entry.Version);
 				}
 				try
 				{
@@ -2103,7 +2110,7 @@ namespace NHibernate.Impl
 					// so release the soft lock
 					if (persister.HasCache)
 					{
-						persister.Cache.Release(entry.Id, myLock);
+						persister.Cache.Release(ck, myLock);
 					}
 				}
 			}
@@ -2612,11 +2619,17 @@ namespace NHibernate.Impl
 
 			IEntityPersister persister = GetClassPersister(clazz);
 			ISoftLock myLock = null;
-
+			CacheKey ck = null;
 			if (persister.HasCache)
 			{
+				ck = new CacheKey(
+					id,
+					persister.IdentifierType,
+					(string)persister.IdentifierSpace,
+					Factory
+				);
 				//increments the lock
-				myLock = persister.Cache.Lock(id, null);
+				myLock = persister.Cache.Lock(ck, null);
 			}
 			object result;
 			try
@@ -2629,7 +2642,7 @@ namespace NHibernate.Impl
 				// so release the soft lock
 				if (persister.HasCache)
 				{
-					persister.Cache.Release(id, myLock);
+					persister.Cache.Release(ck, myLock);
 				}
 			}
 
@@ -2764,8 +2777,9 @@ namespace NHibernate.Impl
 				}
 
 				// LOOK IN CACHE
+				CacheKey ck = new CacheKey(id, persister.IdentifierType, (string) persister.IdentifierSpace, factory);
 				CacheEntry entry = persister.HasCache && lockMode.LessThan(LockMode.Read) ?
-					(CacheEntry) persister.Cache.Get(id, Timestamp) :
+					(CacheEntry) persister.Cache.Get(ck, Timestamp) :
 					null;
 
 				if (entry != null)
@@ -2885,7 +2899,13 @@ namespace NHibernate.Impl
 
 			if (persister.HasCache)
 			{
-				persister.Cache.Remove(id);
+				CacheKey ck = new CacheKey(
+					id,
+					persister.IdentifierType,
+					(string)persister.IdentifierSpace,
+					Factory
+				);
+				persister.Cache.Remove(ck);
 			}
 
 			EvictCachedCollections(persister, id);
@@ -2931,13 +2951,20 @@ namespace NHibernate.Impl
 				{
 					log.Debug("adding entity to second-level cache " + MessageHelper.InfoString(persister, id));
 				}
-				persister.Cache.Put(
+				CacheKey ck = new CacheKey(
 					id,
+					persister.IdentifierType,
+					(string)persister.IdentifierSpace,
+					factory
+				);
+				persister.Cache.Put(
+					ck,
 					new CacheEntry(obj, persister, this),
 					Timestamp,
 					Versioning.GetVersion(hydratedState, persister),
 					persister.IsVersioned ?
-						persister.VersionType.Comparator : null);
+						persister.VersionType.Comparator : null,
+					UseMinimalPuts(e));
 			}
 
 			if (persister.ImplementsLifecycle)
@@ -2954,6 +2981,17 @@ namespace NHibernate.Impl
 			{
 				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id));
 			}
+		}
+
+		private bool UseMinimalPuts(EntityEntry entityEntry)
+		{
+			//TODO port this functionality from Hibernate 3.1
+			/*return (factory.Settings.IsMinimalPutsEnabled &&
+							CacheMode != CacheMode.REFRESH) ||
+							(entityEntry.getPersister().hasLazyProperties() &&
+							entityEntry.isLoadedWithLazyPropertiesUnfetched() &&
+							entityEntry.getPersister().isLazyPropertiesCacheable());*/
+			return factory.Settings.IsMinimalPutsEnabled;
 		}
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
@@ -4164,7 +4202,8 @@ namespace NHibernate.Impl
 						version = null;
 						versionComparator = null;
 					}
-					persister.Cache.Put(lce.Id, lce.Collection.Disassemble(persister), Timestamp, version, versionComparator);
+					CacheKey ck = new CacheKey(lce.Id, persister.KeyType, persister.Role, factory);
+					persister.Cache.Put(ck, lce.Collection.Disassemble(persister), Timestamp, version, versionComparator, factory.Settings.IsMinimalPutsEnabled /*&& cacheMode != CacheMode.REFRESH*/);
 				}
 				if (log.IsDebugEnabled)
 				{
@@ -5537,7 +5576,8 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				object cached = persister.Cache.Get(id, Timestamp);
+				CacheKey ck = new CacheKey(id, persister.KeyType, persister.Role, factory);
+				object cached = persister.Cache.Get(ck, Timestamp);
 				if (cached == null)
 				{
 					return false;

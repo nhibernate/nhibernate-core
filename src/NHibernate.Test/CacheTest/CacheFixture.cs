@@ -32,7 +32,7 @@ namespace NHibernate.Test.CacheTest {
 
 			// cache something
 
-			Assert.IsTrue( ccs.Put("foo", "foo", before, null, null) );
+			Assert.IsTrue( ccs.Put("foo", "foo", before, null, null, false) );
 
 			System.Threading.Thread.Sleep(15);
 
@@ -40,7 +40,7 @@ namespace NHibernate.Test.CacheTest {
 
 			Assert.IsNull( ccs.Get("foo", longBefore) );
 			Assert.AreEqual( "foo", ccs.Get("foo", after) );
-			Assert.IsFalse( ccs.Put("foo", "foo", before, null, null) );
+			Assert.IsFalse( ccs.Put("foo", "foo", before, null, null, false) );
 
 			// update it;
 
@@ -48,13 +48,13 @@ namespace NHibernate.Test.CacheTest {
 
 			Assert.IsNull( ccs.Get("foo", after) );
 			Assert.IsNull( ccs.Get("foo", longBefore) );
-			Assert.IsFalse( ccs.Put("foo", "foo", before, null, null) );
+			Assert.IsFalse(ccs.Put("foo", "foo", before, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
 			long whileLocked = Timestamper.Next();
 
-			Assert.IsFalse( ccs.Put("foo", "foo", whileLocked, null, null) );
+			Assert.IsFalse(ccs.Put("foo", "foo", whileLocked, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
@@ -62,14 +62,14 @@ namespace NHibernate.Test.CacheTest {
 
 			Assert.IsNull( ccs.Get("foo", after) );
 			Assert.IsNull( ccs.Get("foo", longBefore) );
-			Assert.IsFalse( ccs.Put("foo", "bar", whileLocked, null, null) );
-			Assert.IsFalse( ccs.Put("foo", "bar", after, null, null) );
+			Assert.IsFalse(ccs.Put("foo", "bar", whileLocked, null, null, false));
+			Assert.IsFalse(ccs.Put("foo", "bar", after, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
 			long longAfter = Timestamper.Next();
 
-			Assert.IsTrue( ccs.Put("foo", "baz", longAfter, null, null) );
+			Assert.IsTrue(ccs.Put("foo", "baz", longAfter, null, null, false));
 			Assert.IsNull( ccs.Get("foo", after) );
 			Assert.IsNull( ccs.Get("foo", whileLocked) );
 
@@ -90,7 +90,7 @@ namespace NHibernate.Test.CacheTest {
 
 			whileLocked = Timestamper.Next();
 
-			Assert.IsFalse( ccs.Put("foo", "foo", whileLocked, null, null) );
+			Assert.IsFalse(ccs.Put("foo", "foo", whileLocked, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
@@ -100,20 +100,20 @@ namespace NHibernate.Test.CacheTest {
 
 			long betweenReleases = Timestamper.Next();
 
-			Assert.IsFalse( ccs.Put("foo", "bar", betweenReleases, null, null) );
+			Assert.IsFalse(ccs.Put("foo", "bar", betweenReleases, null, null, false));
 			Assert.IsNull( ccs.Get("foo", betweenReleases) );
 
 			System.Threading.Thread.Sleep(15);
 
 			ccs.Release("foo", fooLock1);
 
-			Assert.IsFalse( ccs.Put("foo", "bar", whileLocked, null, null) );
+			Assert.IsFalse(ccs.Put("foo", "bar", whileLocked, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
 			longAfter = Timestamper.Next();
 
-			Assert.IsTrue( ccs.Put("foo", "baz", longAfter, null, null) );
+			Assert.IsTrue(ccs.Put("foo", "baz", longAfter, null, null, false));
 			Assert.IsNull( ccs.Get("foo", whileLocked) );
 
 			System.Threading.Thread.Sleep(15);
@@ -127,7 +127,7 @@ namespace NHibernate.Test.CacheTest {
 		private void DoTestMinValueTimestampOnStrategy( ICache cache, ICacheConcurrencyStrategy strategy )
 		{
 			strategy.Cache = cache;
-			strategy.Put( "key", "value", long.MinValue, 0, null );
+			strategy.Put("key", "value", long.MinValue, 0, null, false);
 
 			Assert.IsNull( strategy.Get( "key", long.MinValue ), "{0} strategy fails the test", strategy.GetType() );
 			Assert.IsNull( strategy.Get( "key", long.MaxValue ), "{0} strategy fails the test", strategy.GetType() );

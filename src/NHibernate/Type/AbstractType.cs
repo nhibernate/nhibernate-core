@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -217,6 +218,11 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
 		/// /> 
 		new public abstract bool Equals( object x, object y ); //We need "new" because object.Equal is not marked as virtual. Is it correct? Or because this is *abstract* so we're not really overriding it?
+
+		public virtual int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			return x.GetHashCode();
+		}
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'

@@ -53,6 +53,15 @@ namespace NHibernate.DomainModel
 			return mx.count==my.count && mx.glarch==my.glarch;
 		}
 
+		public int GetHashCode(object x)
+		{
+			unchecked
+			{
+				Multiplicity o = (Multiplicity) x;
+				return o.count + o.glarch.GetHashCode();
+			}
+		}
+
 		public object NullSafeGet(IDataReader rs, String[] names, Engine.ISessionImplementor session, Object owner)
 		{
 			int c = (int) NHibernateUtil.Int32.NullSafeGet( rs, names[0], session, owner);

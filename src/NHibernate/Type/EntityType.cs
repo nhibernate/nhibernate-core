@@ -4,6 +4,7 @@ using System.Data;
 using System.Text;
 
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
@@ -32,6 +33,23 @@ namespace NHibernate.Type
 		public override sealed bool Equals(object x, object y)
 		{
 			return x == y;
+		}
+
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			IEntityPersister persister = factory.GetEntityPersister(associatedClass);
+			if ( !persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier ) {
+				return base.GetHashCode(x, factory);
+			}
+		
+			object id;
+			if (x is INHibernateProxy) {
+				id = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) x).Identifier;
+			}
+			else {
+				id = persister.GetIdentifier(x);
+			}
+			return persister.IdentifierType.GetHashCode(id, factory);
 		}
 
 		protected EntityType(System.Type persistentClass, string uniqueKeyPropertyName)

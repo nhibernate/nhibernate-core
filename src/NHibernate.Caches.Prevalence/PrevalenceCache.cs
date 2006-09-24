@@ -216,6 +216,11 @@ namespace NHibernate.Caches.Prevalence
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
+		public string RegionName
+		{
+			get { return _region; }
+		}
+
 		#region IDisposable Members
 
 		/// <summary>

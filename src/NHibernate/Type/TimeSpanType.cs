@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -62,36 +63,19 @@ namespace NHibernate.Type
 			get { return "TimeSpan"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="val"></param>
-		/// <returns></returns>
 		public override string ToString( object val )
 		{
 			return ( ( TimeSpan ) val ).Ticks.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
 		public override bool Equals( object x, object y )
 		{
-			if( x == y )
-			{
-				return true;
-			}
-			if( x == null || y == null )
-			{
-				return false;
-			}
+			return object.Equals(x, y);
+		}
 
-			long xTime = ( ( TimeSpan ) x ).Ticks;
-			long yTime = ( ( TimeSpan ) y ).Ticks;
-			return xTime == yTime;
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			return x.GetHashCode();
 		}
 
 		/// <summary></summary>

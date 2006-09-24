@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Persister;
 using NHibernate.Property;
 using NHibernate.SqlTypes;
@@ -153,6 +154,25 @@ namespace NHibernate.Type
 				}
 			}
 			return true;
+		}
+
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			unchecked
+			{
+				int result = 17;
+				object[] values = GetPropertyValues(x);
+				for (int i = 0; i < propertySpan; i++)
+				{
+					object y = values[i];
+					result *= 37;
+					if (y != null)
+					{
+						result += propertyTypes[i].GetHashCode(y, factory);
+					}
+				}
+				return result;
+			}
 		}
 
 		public override bool IsDirty( object x, object y, ISessionImplementor session )

@@ -65,6 +65,11 @@ namespace NHibernate
 		bool Equals( Object x, Object y );
 
 		/// <summary>
+		/// Get a hashcode for the instance, consistent with persistence "equality"
+		/// </summary>
+		int GetHashCode(object x);
+
+		/// <summary>
 		/// Retrieve an instance of the mapped class from a IDataReader. Implementors
 		/// should handle possibility of null values.
 		/// </summary>

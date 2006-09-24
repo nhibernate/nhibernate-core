@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
@@ -41,7 +42,13 @@ namespace NHibernate.Impl
 			if ( Persister.HasCache && !Persister.IsCacheInvalidationRequired )
 			{
 				cacheEntry = new CacheEntry( Instance, Persister, Session );
-				Persister.Cache.Insert( Id, cacheEntry );
+				CacheKey ck = new CacheKey(
+					Id,
+					Persister.IdentifierType,
+					(string)Persister.IdentifierSpace,
+					Session.Factory
+				);
+				Persister.Cache.Insert( ck, cacheEntry );
 			}
 		}
 
@@ -51,7 +58,13 @@ namespace NHibernate.Impl
 			// Make 100% certain that this is called before any subsequent ScheduledUpdate.AfterTransactionCompletion()!!
 			if ( success && Persister.HasCache && !Persister.IsCacheInvalidationRequired )
 			{
-				Persister.Cache.AfterInsert( Id, cacheEntry, version );
+				CacheKey ck = new CacheKey(
+					Id,
+					Persister.IdentifierType,
+					(string)Persister.IdentifierSpace,
+					Session.Factory
+				);
+				Persister.Cache.AfterInsert(ck, cacheEntry, version);
 			}
 		}
 	}

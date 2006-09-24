@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -111,26 +112,14 @@ namespace NHibernate.Type
 			return DateTime.Parse( xml );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
 		public override bool Equals( object x, object y )
 		{
-			if( x == y )
-			{
-				return true;
-			}
-			if( x == null || y == null )
-			{
-				return false;
-			}
+			return object.Equals(x, y);
+		}
 
-			long xTime = ( ( DateTime ) x ).Ticks;
-			long yTime = ( ( DateTime ) y ).Ticks;
-			return xTime == yTime; //TODO: Fixup
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			return x.GetHashCode();
 		}
 
 		/// <summary></summary>

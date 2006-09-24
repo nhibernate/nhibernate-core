@@ -453,10 +453,10 @@ namespace NHibernate.Cfg
 
 					case "jcs-cache":
 					case "cache":
-						string className = model.MappedClass.FullName;
-						ICacheConcurrencyStrategy cache = CacheFactory.CreateCache(subnode, className, model.IsMutable);
-						mappings.AddCache(className, cache);
-						model.Cache = cache;
+						XmlAttribute usageNode = subnode.Attributes["usage"];
+						model.CacheConcurrencyStrategy = (usageNode != null) ? usageNode.Value : null;
+						XmlAttribute regionNode = subnode.Attributes["region"];
+						model.CacheRegionName = (regionNode != null) ? regionNode.Value : null;
 
 						break;
 				}
@@ -1681,9 +1681,10 @@ namespace NHibernate.Cfg
 				}
 				else if ("jcs-cache".Equals(name) || "cache".Equals(name))
 				{
-					ICacheConcurrencyStrategy cache = CacheFactory.CreateCache(subnode, model.Role, model.Owner.IsMutable);
-					mappings.AddCache(model.Role, cache);
-					model.Cache = cache;
+					XmlAttribute usageNode = subnode.Attributes["usage"];
+					model.CacheConcurrencyStrategy = (usageNode != null) ? usageNode.Value : null;
+					XmlAttribute regionNode = subnode.Attributes["region"];
+					model.CacheRegionName = (regionNode != null) ? regionNode.Value : null;
 				}
 			}
 

@@ -51,6 +51,11 @@ namespace NHibernate.Type
 				( y is IPersistentCollection && ( (IPersistentCollection) y ).IsWrapper( x ) );
 		}
 
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			throw new InvalidOperationException("cannot perform lookups on collections");
+		}
+		
 		public abstract IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister );
 
 		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
@@ -291,7 +296,7 @@ namespace NHibernate.Type
 			{
 				//get the elements back into the target
 				//TODO: this is a little inefficient, don't need to do a whole
-				//      deep replaceElements() call
+				//	  deep replaceElements() call
 				ReplaceElements( result, target, owner, copyCache, session );
 				result = target;
 			}

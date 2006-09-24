@@ -100,7 +100,6 @@ namespace NHibernate.Cfg
 		private ArrayList propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary properties;
-		private IDictionary caches;
         private IDictionary filterDefinitions;
 		private IList auxiliaryDatabaseObjects;
 
@@ -124,7 +123,6 @@ namespace NHibernate.Cfg
             propertyReferences = new ArrayList();
             filterDefinitions = new Hashtable();
             interceptor = emptyInterceptor;
-			caches = new Hashtable();
 			mapping = new Mapping( this );
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new ArrayList();
@@ -430,7 +428,6 @@ namespace NHibernate.Cfg
 				namedSqlQueries,
 				sqlResultSetMappings,
 				imports,
-				caches,
 				secondPasses,
 				propertyReferences,
 				namingStrategy,
@@ -1038,7 +1035,6 @@ namespace NHibernate.Cfg
 			Validate();
 			Environment.VerifyProperties( properties );
 			Settings settings = BuildSettings();
-			ConfigureCaches( settings );
 
 			// Ok, don't need schemas anymore, so free them
 			MappingSchemaCollection = null;
@@ -1368,14 +1364,12 @@ namespace NHibernate.Cfg
 
 					XmlAttribute regionNode = mapElement.Attributes[ "region" ];
 					string region = ( regionNode == null ) ? className : regionNode.Value;
-					ICacheConcurrencyStrategy cache = CacheFactory.CreateCache( mapElement, region, GetRootClassMapping( clazz ).IsMutable );
-					SetCacheConcurrencyStrategy( clazz, cache, region );
+					SetCacheConcurrencyStrategy( clazz, mapElement.Attributes["usage"].Value, region );
 				}
 				else if( "jcs-collection-cache".Equals( elemname ) || "collection-cache".Equals( elemname ) )
 				{
 					String role = mapElement.Attributes[ "collection" ].Value;
 					NHibernate.Mapping.Collection collection = GetCollectionMapping( role );
-
 					if( collection == null )
 					{
 						throw new MappingException( "Cannot configure cache for unknown collection role " + role );
@@ -1383,8 +1377,7 @@ namespace NHibernate.Cfg
 
 					XmlAttribute regionNode = mapElement.Attributes[ "region" ];
 					string region = ( regionNode == null ) ? role : regionNode.Value;
-					ICacheConcurrencyStrategy cache = CacheFactory.CreateCache( mapElement, region, collection.Owner.IsMutable );
-					SetCacheConcurrencyStrategy( role, cache, region );
+					SetCacheConcurrencyStrategy( role, mapElement.Attributes["usage"].Value, region );
 				}
 			}
 
@@ -1421,86 +1414,36 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Set up a cache for an entity class
 		/// </summary>
-		public Configuration SetCacheConcurrencyStrategy( System.Type clazz, ICacheConcurrencyStrategy concurrencyStrategy )
+		public Configuration SetCacheConcurrencyStrategy( System.Type clazz, string concurrencyStrategy )
 		{
 			SetCacheConcurrencyStrategy( clazz, concurrencyStrategy, clazz.FullName );
 			return this;
 		}
 
-		internal void SetCacheConcurrencyStrategy( System.Type clazz, ICacheConcurrencyStrategy concurrencyStrategy, string region )
+		internal void SetCacheConcurrencyStrategy( System.Type clazz, string concurrencyStrategy, string region )
 		{
 			RootClass rootClass = GetRootClassMapping( clazz );
-			rootClass.Cache = concurrencyStrategy;
-			caches[ rootClass.MappedClass.FullName ] = concurrencyStrategy;
+			rootClass.CacheConcurrencyStrategy = concurrencyStrategy;
+			rootClass.CacheRegionName = region;
 		}
 
 		/// <summary>
 		/// Set up a cache for a collection role
 		/// </summary>
-		public Configuration SetCacheConcurrencyStrategy( string collectionRole, ICacheConcurrencyStrategy concurrencyStrategy )
+		public Configuration SetCacheConcurrencyStrategy( string collectionRole, string concurrencyStrategy )
 		{
 			SetCacheConcurrencyStrategy( collectionRole, concurrencyStrategy, collectionRole );
 			return this;
 		}
 
-		internal void SetCacheConcurrencyStrategy( string collectionRole, ICacheConcurrencyStrategy concurrencyStrategy, string region )
+		internal void SetCacheConcurrencyStrategy( string collectionRole, string concurrencyStrategy, string region )
 		{
 			// TODO: this is ported from H2.1.8, but the implementation looks
 			// very strange to me - region parameter is ignored,
 			// collection.Role is used instead of collectionRole, etc.
 			NHibernate.Mapping.Collection collection = GetCollectionMapping( collectionRole );
-			collection.Cache = concurrencyStrategy;
-			if( caches.Contains( collection.Role ) )
-			{
-				throw new MappingException( "duplicate cache region " + collection.Role );
-			}
-			caches.Add( collection.Role, concurrencyStrategy );
-		}
-
-		protected void ConfigureCaches( Settings settings )
-		{
-			//TODO: this is actually broken, I guess, since changing the
-			//      cache provider property and rebuilding the SessionFactory
-			//      will affect existing SessionFactory!
-
-			log.Info( "instantiating and configuring caches" );
-
-			// needed here because caches are built directly below.  This is fixed in H3.
-			settings.CacheProvider.Start( properties );
-
-			string prefix = properties[ Environment.CacheRegionPrefix ] as string;
-
-			foreach( DictionaryEntry de in caches )
-			{
-				string name = ( string ) de.Key;
-
-				if( prefix != null )
-				{
-					name = prefix + "." + name;
-				}
-
-				ICacheConcurrencyStrategy strategy = ( ICacheConcurrencyStrategy ) de.Value;
-
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( "instantiating cache " + name );
-				}
-
-				ICache cache;
-				try
-				{
-					cache = settings.CacheProvider.BuildCache( name, properties );
-				}
-				catch( CacheException ce )
-				{
-					throw new HibernateException( "Could not instantiate Cache", ce );
-				}
-
-				strategy.Cache = cache;
-				strategy.MinimalPuts = settings.IsMinimalPutsEnabled;
-			}
-
-			caches.Clear();
+			collection.CacheConcurrencyStrategy = concurrencyStrategy;
+			collection.CacheRegionName = region;
 		}
 
 		/// <summary>

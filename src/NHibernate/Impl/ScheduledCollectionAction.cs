@@ -83,7 +83,13 @@ namespace NHibernate.Impl
 		{
 			if ( persister.HasCache )
 			{
-				persister.Cache.Release( id, lck );
+				CacheKey ck = new CacheKey(
+					Id,
+					Persister.KeyType,
+					Persister.Role,
+					Session.Factory
+				);
+				persister.Cache.Release(ck, lck);
 			}
 		}
 
@@ -107,7 +113,13 @@ namespace NHibernate.Impl
 			// second-level cache invalidation only)
 			if ( persister.HasCache ) 
 			{
-				lck = persister.Cache.Lock( id, null ); //collections don't have version numbers :-(
+				CacheKey ck = new CacheKey(
+					id,
+					persister.KeyType,
+					persister.Role,
+					session.Factory
+				);
+				lck = persister.Cache.Lock( ck, null ); //collections don't have version numbers :-(
 			}
 		}
 
@@ -118,7 +130,13 @@ namespace NHibernate.Impl
 		{
 			if ( persister.HasCache )
 			{
-				persister.Cache.Evict( id );
+				CacheKey ck = new CacheKey(
+					id,
+					persister.KeyType,
+					persister.Role,
+					session.Factory
+				);
+				persister.Cache.Evict(ck);
 			}
 		}
 

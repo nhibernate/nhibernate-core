@@ -31,7 +31,8 @@ namespace NHibernate.Mapping
 		private string role;
 		private bool lazy;
 		private bool inverse;
-		private ICacheConcurrencyStrategy cache;
+		private string cacheConcurrencyStrategy;
+		private String cacheRegionName;
 		private string orderBy;
 		private string where;
 		private PersistentClass owner;
@@ -217,10 +218,16 @@ namespace NHibernate.Mapping
 			get { return element is OneToMany; }
 		}
 
-		public ICacheConcurrencyStrategy Cache
+		public string CacheConcurrencyStrategy
 		{
-			get { return cache; }
-			set { cache = value; }
+			get { return cacheConcurrencyStrategy; }
+			set { cacheConcurrencyStrategy = value; }
+		}
+
+		public string CacheRegionName
+		{
+			get { return cacheRegionName == null ? Role : cacheRegionName; }
+			set { cacheRegionName = value; }
 		}
 
 		public bool IsInverse

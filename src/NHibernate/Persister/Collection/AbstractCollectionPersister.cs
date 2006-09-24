@@ -118,10 +118,11 @@ namespace NHibernate.Persister.Collection
 		private static readonly ILog log = LogManager.GetLogger(typeof (ICollectionPersister));
 		private string queryLoaderName;
 
-		public AbstractCollectionPersister(Mapping.Collection collection, ISessionFactoryImplementor factory)
+		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 			dialect = factory.Dialect;
+			this.cache = cache;
 			//sqlExceptionConverter = factory.SQLExceptionConverter;
 			collectionType = collection.CollectionType;
 			role = collection.Role;
@@ -140,8 +141,6 @@ namespace NHibernate.Persister.Collection
 			hasOrphanDelete = collection.OrphanDelete;
 
 			batchSize = collection.BatchSize;
-
-			cache = collection.Cache;
 
 			keyType = collection.Key.Type;
 			int keySpan = collection.Key.ColumnSpan;

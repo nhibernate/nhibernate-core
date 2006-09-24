@@ -4,7 +4,7 @@ using System.Collections;
 using Iesi.Collections;
 
 using log4net;
-
+using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -29,14 +29,17 @@ namespace NHibernate.Cache
 			queryCache.Clear();
 		}
 
-		public StandardQueryCache( ICacheProvider provider, IDictionary props, UpdateTimestampsCache updateTimestampsCache, string regionName )
+		public StandardQueryCache( Settings settings, IDictionary props, UpdateTimestampsCache updateTimestampsCache, string regionName )
 		{
 			if( regionName == null )
 			{
 				regionName = typeof( StandardQueryCache ).FullName;
 			}
+			String prefix = settings.CacheRegionPrefix;
+			if (prefix != null) regionName = prefix + '.' + regionName;
+
 			log.Info( "starting query cache at region: " + regionName );
-			this.queryCache = provider.BuildCache( regionName, props );
+			this.queryCache = settings.CacheProvider.BuildCache( regionName, props );
 			this.updateTimestampsCache = updateTimestampsCache;
 			this.regionName = regionName;
 		}

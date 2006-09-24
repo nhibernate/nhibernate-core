@@ -19,11 +19,17 @@ namespace NHibernate.Cache
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( NonstrictReadWriteCache ) );
 
-		private bool minimalPuts;
-
 		/// <summary></summary>
 		public NonstrictReadWriteCache()
 		{
+		}
+
+		/// <summary>
+		/// Gets the cache region name.
+		/// </summary>
+		public string RegionName
+		{
+			get { return cache.RegionName; }
 		}
 
 		/// <summary></summary>
@@ -65,7 +71,7 @@ namespace NHibernate.Cache
 		/// <param name="value"></param>
 		/// <param name="txTimestamp"></param>
 		/// <returns></returns>
-		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator )
+		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator, bool minimalPut )
 		{
 			if( txTimestamp == long.MinValue )
 			{
@@ -73,7 +79,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			if( minimalPuts && cache.Get( key ) != null )
+			if( minimalPut && cache.Get( key ) != null )
 			{
 				if( log.IsDebugEnabled )
 				{
@@ -197,11 +203,6 @@ namespace NHibernate.Cache
 		/// <param name="version"></param>
 		public void AfterInsert( object key, object value, object version )
 		{
-		}
-
-		public bool MinimalPuts
-		{
-			set { this.minimalPuts = value; }
 		}
 	}
 }

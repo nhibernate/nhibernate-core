@@ -658,10 +658,11 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected AbstractEntityPersister(PersistentClass persistentClass, ISessionFactoryImplementor factory)
+		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 			dialect = factory.Dialect;
+			this.cache = cache;
 			//sqlExceptionConverter = factory.SQLExceptionConverter;
 
 			entityMetamodel = new EntityMetamodel(persistentClass, factory);
@@ -949,8 +950,6 @@ namespace NHibernate.Persister.Entity
 			// CALLBACK INTERFACES
 			implementsLifecycle = typeof (ILifecycle).IsAssignableFrom(mappedClass);
 			implementsValidatable = typeof (IValidatable).IsAssignableFrom(mappedClass);
-
-			cache = persistentClass.Cache;
 
 			// PROXIES
 			concreteProxyClass = persistentClass.ProxyInterface;

@@ -102,16 +102,25 @@ namespace NHibernate.Cfg
 				settings.IsAutoDropSchema = true;
 			}
 
-			string cacheClassName = PropertiesHelper.GetString( Environment.CacheProvider, properties, "NHibernate.Cache.HashtableCacheProvider" );
-			log.Info( "cache provider: " + cacheClassName );
-			try
+			bool useSecondLevelCache = PropertiesHelper.GetBoolean(Environment.UseSecondLevelCache, properties, true);
+			if (useSecondLevelCache)
 			{
-				settings.CacheProvider = ( ICacheProvider ) Activator.CreateInstance( ReflectHelper.ClassForName( cacheClassName ) );
+				string cacheClassName = PropertiesHelper.GetString(Environment.CacheProvider, properties, "NHibernate.Cache.HashtableCacheProvider");
+				log.Info("cache provider: " + cacheClassName);
+				try
+				{
+					settings.CacheProvider = (ICacheProvider)Activator.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
+				}
+				catch (Exception e)
+				{
+					throw new HibernateException("could not instantiate CacheProvider: " + cacheClassName, e);
+				}
 			}
-			catch( Exception e )
-			{
-				throw new HibernateException( "could not instantiate CacheProvider: " + cacheClassName, e );
-			}
+
+			string cacheRegionPrefix = PropertiesHelper.GetString(Environment.CacheRegionPrefix, properties, null);
+			if (StringHelper.IsEmpty(cacheRegionPrefix)) cacheRegionPrefix = null;
+			if (cacheRegionPrefix != null) log.Info("Cache region prefix: " + cacheRegionPrefix);
+
 
 			bool useQueryCache = PropertiesHelper.GetBoolean( Environment.UseQueryCache, properties );
 
@@ -167,6 +176,8 @@ namespace NHibernate.Cfg
 			settings.SessionFactoryName = sessionFactoryName;
 			settings.MaximumFetchDepth = maxFetchDepth;
 			settings.IsQueryCacheEnabled = useQueryCache;
+			settings.IsSecondLevelCacheEnabled = useSecondLevelCache;
+			settings.CacheRegionPrefix = cacheRegionPrefix;
 			settings.IsMinimalPutsEnabled = useMinimalPuts;
 			// Not ported - JdbcBatchVersionedData
 			// TODO: SQLExceptionConverter

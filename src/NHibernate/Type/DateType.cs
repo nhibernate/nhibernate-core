@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -88,6 +89,17 @@ namespace NHibernate.Type
 			return date1.Day == date2.Day
 				&& date1.Month == date2.Month
 				&& date1.Year == date2.Year;
+		}
+
+		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		{
+			// Custom hash code implementation since DateType is accurate up to days only
+			DateTime date = (DateTime)x;
+			int hashCode = 1;
+			hashCode = 31 * hashCode + date.Day;
+			hashCode = 31 * hashCode + date.Month;
+			hashCode = 31 * hashCode + date.Year;
+			return hashCode;
 		}
 
 		/// <summary></summary>

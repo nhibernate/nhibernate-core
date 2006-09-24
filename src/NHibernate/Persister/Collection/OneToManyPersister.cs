@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Text;
 using NHibernate.AdoNet;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -19,7 +20,8 @@ namespace NHibernate.Persister.Collection
 	/// </summary>
 	public class OneToManyPersister : AbstractCollectionPersister
 	{
-		public OneToManyPersister( Mapping.Collection collection, ISessionFactoryImplementor factory ) : base( collection, factory )
+		public OneToManyPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
+			: base(collection, cache, factory)
 		{
 		}
 

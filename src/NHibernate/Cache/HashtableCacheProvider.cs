@@ -18,7 +18,7 @@ namespace NHibernate.Cache
 		/// <returns></returns>
 		public ICache BuildCache( string regionName, IDictionary properties )
 		{
-			return new HashtableCache( );
+			return new HashtableCache(regionName);
 		}
 
 		/// <summary>

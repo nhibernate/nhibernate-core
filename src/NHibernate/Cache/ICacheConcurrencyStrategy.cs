@@ -34,9 +34,10 @@ namespace NHibernate.Cache
 		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
 		/// <param name="version">the version number of the object we are putting</param>
 		/// <param name="versionComparer">a Comparer to be used to compare version numbers</param>
+		/// <param name="minimalPut">indicates that the cache should avoid a put if the item is already cached</param>
 		/// <returns><c>true</c> if the object was successfully cached</returns>
 		/// <exception cref="CacheException"></exception>
-		bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparer );
+		bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparer, bool minimalPut );
 
 		/// <summary>
 		/// We are going to attempt to update/delete the keyed object
@@ -122,15 +123,14 @@ namespace NHibernate.Cache
 		void Destroy();
 
 		/// <summary>
+		/// Gets the cache region name.
+		/// </summary>
+		string RegionName { get; }
+		
+		/// <summary>
 		/// Gets or sets the <see cref="ICache"/> for this strategy to use.
 		/// </summary>
 		/// <value>The <see cref="ICache"/> for this strategy to use.</value>
 		ICache Cache { get; set; }
-
-		/// <summary>
-		/// Enable "minimal puts" mode for this cache
-		/// </summary>
-		/// <exception cref="CacheException"></exception>
-		bool MinimalPuts { set; }
 	}
 }

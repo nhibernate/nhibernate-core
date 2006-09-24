@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.AdoNet;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -20,8 +21,9 @@ namespace NHibernate.Persister.Collection
 	{
 		public BasicCollectionPersister(
 			Mapping.Collection collection,
+			ICacheConcurrencyStrategy cache,
 			ISessionFactoryImplementor factory )
-			: base( collection, factory )
+			: base( collection, cache, factory )
 		{
 		}
 

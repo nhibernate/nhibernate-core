@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using NHibernate.Collection;
+using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Persister;
 using NHibernate.Mapping;
@@ -24,6 +24,7 @@ namespace NHibernate.Persister
 		private static readonly System.Type[ ] PersisterConstructorArgs = new System.Type[ ]
 			{
 				typeof( PersistentClass ),
+				typeof( ICacheConcurrencyStrategy ),
 				typeof( ISessionFactoryImplementor ),
 				typeof( IMapping )
 			};
@@ -33,6 +34,7 @@ namespace NHibernate.Persister
 		private static readonly System.Type[ ] CollectionPersisterConstructorArgs = new System.Type[]
 			{
 				typeof( Mapping.Collection ),
+				typeof( ICacheConcurrencyStrategy ),
 				typeof( ISessionFactoryImplementor )
 			};
 
@@ -42,37 +44,37 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IEntityPersister CreateClassPersister( PersistentClass model, ISessionFactoryImplementor factory, IMapping cfg )
+		public static IEntityPersister CreateClassPersister(PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, IMapping cfg)
 		{
 			System.Type persisterClass = model.ClassPersisterClass;
 
 			if( persisterClass == null || persisterClass == typeof( SingleTableEntityPersister ) )
 			{
-				return new SingleTableEntityPersister( model, factory, cfg );
+				return new SingleTableEntityPersister( model, cache, factory, cfg );
 			}
 			else if( persisterClass == typeof( JoinedSubclassEntityPersister ) )
 			{
-				return new JoinedSubclassEntityPersister( model, factory, cfg );
+				return new JoinedSubclassEntityPersister( model, cache, factory, cfg );
 			}
 			else
 			{
-				return Create( persisterClass, model, factory, cfg );
+				return Create( persisterClass, model, cache, factory, cfg );
 			}
 		}
 
-		public static ICollectionPersister CreateCollectionPersister( Mapping.Collection model, ISessionFactoryImplementor factory )
+		public static ICollectionPersister CreateCollectionPersister(Mapping.Collection model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
 			System.Type persisterClass = model.CollectionPersisterClass;
 			if ( persisterClass == null )
 			{
 				// default behaviour
 				return model.IsOneToMany ? 
-					(ICollectionPersister) new OneToManyPersister( model, factory ) :
-					(ICollectionPersister) new BasicCollectionPersister( model, factory ) ;
+					(ICollectionPersister) new OneToManyPersister( model, cache, factory ) :
+					(ICollectionPersister) new BasicCollectionPersister( model, cache, factory ) ;
 			}
 			else
 			{
-				return Create( persisterClass, model, factory );
+				return Create( persisterClass, model, cache, factory );
 			}
 		}
 
@@ -83,7 +85,7 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static IEntityPersister Create( System.Type persisterClass, PersistentClass model, ISessionFactoryImplementor factory, IMapping cfg )
+		public static IEntityPersister Create( System.Type persisterClass, PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, IMapping cfg )
 		{
 			ConstructorInfo pc;
 			try
@@ -97,7 +99,7 @@ namespace NHibernate.Persister
 
 			try
 			{
-				return ( IEntityPersister ) pc.Invoke( new object[ ] {model, factory, cfg} );
+				return ( IEntityPersister ) pc.Invoke( new object[ ] {model, cache, factory, cfg} );
 			}
 			catch( TargetInvocationException tie )
 			{
@@ -124,7 +126,7 @@ namespace NHibernate.Persister
 		/// <param name="model"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public static ICollectionPersister Create( System.Type persisterClass, Mapping.Collection model, ISessionFactoryImplementor factory )
+		public static ICollectionPersister Create( System.Type persisterClass, Mapping.Collection model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory )
 		{
 			ConstructorInfo pc;
 			try
@@ -138,7 +140,7 @@ namespace NHibernate.Persister
 
 			try
 			{
-				return ( ICollectionPersister ) pc.Invoke( new object[ ] {model, factory} );
+				return ( ICollectionPersister ) pc.Invoke( new object[ ] {model, cache, factory} );
 			}
 			catch( TargetInvocationException tie )
 			{

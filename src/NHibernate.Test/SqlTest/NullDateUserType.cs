@@ -23,6 +23,11 @@ namespace NHibernate.Test.SqlTest
 			return object.Equals(x, y);
 		}
 
+		public int GetHashCode(object x)
+		{
+			return x.GetHashCode();
+		}
+
 		public object NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
 			int ordinal = rs.GetOrdinal(names[0]);

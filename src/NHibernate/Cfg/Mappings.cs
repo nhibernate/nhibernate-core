@@ -32,7 +32,6 @@ namespace NHibernate.Cfg
 		private bool autoImport;
 		private bool defaultLazy;
 		private readonly IList propertyReferences;
-		private readonly IDictionary caches;
         private readonly IDictionary filterDefinitions;
 		private readonly IList auxiliaryDatabaseObjects;
 
@@ -52,7 +51,6 @@ namespace NHibernate.Cfg
 			IDictionary sqlqueries,
 			IDictionary resultSetMappings,
 			IDictionary imports,
-			IDictionary caches,
 			IList secondPasses,
 			IList propertyReferences,
 			INamingStrategy namingStrategy,
@@ -67,28 +65,11 @@ namespace NHibernate.Cfg
 			this.resultSetMappings = resultSetMappings;
 			this.tables = tables;
 			this.imports = imports;
-			this.caches = caches;
 			this.secondPasses = secondPasses;
 			this.propertyReferences = propertyReferences;
 			this.namingStrategy = namingStrategy;
             this.filterDefinitions = filterDefinitions;
 			this.auxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
-		}
-
-		/// <summary>
-		/// Associates the class name with the cache strategy.
-		/// </summary>
-		/// <param name="name">The classname of the class to cache.</param>
-		/// <param name="cache">The <see cref="ICacheConcurrencyStrategy"/> to use for caching.</param>
-		/// <exception cref="MappingException">Thrown when <c>name</c> already has a <c>cache</c> associated with it.</exception>
-		public void AddCache(string name, ICacheConcurrencyStrategy cache)
-		{
-			object old = caches[name];
-			if (old != null)
-			{
-				throw new MappingException("duplicate cache region");
-			}
-			caches[name] = cache;
 		}
 
 		/// <summary>

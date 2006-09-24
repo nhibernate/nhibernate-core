@@ -31,6 +31,8 @@ namespace NHibernate.Cfg
 		private ICacheProvider _cacheProvider;
 		private bool _queryCacheEnabled;
 		private IQueryCacheFactory _queryCacheFactory;
+		private bool _secondLevelCacheEnabled;
+		private string _cacheRegionPrefix;
 		private bool _minimalPutsEnabled;
 		// not ported - private bool _jdbcBatchVersionedData
 		// TODO: private bool _sqlExceptionConverter;
@@ -165,6 +167,18 @@ namespace NHibernate.Cfg
 		{
 			get { return _queryCacheFactory; }
 			set { _queryCacheFactory = value; }
+		}
+
+		public bool IsSecondLevelCacheEnabled
+		{
+			get { return _secondLevelCacheEnabled; }
+			set { _secondLevelCacheEnabled = value; }
+		}
+
+		public string CacheRegionPrefix
+		{
+			get { return _cacheRegionPrefix; }
+			set { _cacheRegionPrefix = value; }
 		}
 	}
 }

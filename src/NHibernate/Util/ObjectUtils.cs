@@ -86,15 +86,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		new public static bool Equals( object obj1, object obj2 )
 		{
-			if( obj1 == obj2 )
-			{
-				return true;
-			}
-			if( ( obj1 == null ) || ( obj2 == null ) )
-			{
-				return false;
-			}
-			return obj1.Equals( obj2 );
+			return object.Equals(obj1, obj2);
 		}
 
 		/// <summary>

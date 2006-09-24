@@ -121,6 +121,9 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary queryCaches;
 
+		[NonSerialized]
+		private readonly IDictionary allCacheRegions = new Hashtable();
+
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryImpl));
@@ -166,13 +169,25 @@ namespace NHibernate.Impl
 
 			// Persisters:
 
+			IDictionary caches = new Hashtable();
 			classPersisters = new Hashtable();
 			classPersistersByName = new Hashtable();
 			IDictionary classMeta = new Hashtable();
 
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
-				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, this, mapping);
+				string cacheRegion = model.RootClazz.CacheRegionName;
+				ICacheConcurrencyStrategy cache = (ICacheConcurrencyStrategy) caches[cacheRegion];
+				if (cache == null)
+				{
+					cache = CacheFactory.CreateCache(model.CacheConcurrencyStrategy, cacheRegion, model.IsMutable, settings, properties);
+					if (cache != null)
+					{
+						caches.Add(cacheRegion, cache);
+						allCacheRegions.Add(cache.RegionName, cache.Cache);
+					}
+				}
+				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
 				classPersisters[model.MappedClass] = cp;
 
 				// Adds the "Namespace.ClassName" (FullClassname) as a lookup to get to the Persiter.
@@ -193,8 +208,11 @@ namespace NHibernate.Impl
 			collectionPersisters = new Hashtable();
 			foreach (Mapping.Collection map in cfg.CollectionMappings)
 			{
+				ICacheConcurrencyStrategy cache = CacheFactory.CreateCache(map.CacheConcurrencyStrategy, map.CacheRegionName, map.Owner.IsMutable, settings, properties);
+				if (cache != null) allCacheRegions[cache.RegionName] = cache.Cache;
+
 				collectionPersisters[map.Role] = PersisterFactory
-					.CreateCollectionPersister(map, this)
+					.CreateCollectionPersister(map, cache, this)
 					.CollectionMetadata;
 			}
 			collectionMetadata = new Hashtable(collectionPersisters);
@@ -261,9 +279,9 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				updateTimestampsCache = new UpdateTimestampsCache(settings.CacheProvider, properties);
+				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
 				queryCache = settings.QueryCacheFactory
-					.GetQueryCache(null, settings.CacheProvider, updateTimestampsCache, properties);
+					.GetQueryCache(null, updateTimestampsCache, settings, properties);
 				queryCaches = Hashtable.Synchronized(new Hashtable());
 			}
 			else
@@ -919,7 +937,8 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				p.Cache.Remove(id);
+				CacheKey ck = new CacheKey( id, p.IdentifierType, (string)p.IdentifierSpace, this );
+				p.Cache.Remove(ck);
 			}
 		}
 
@@ -945,7 +964,8 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				p.Cache.Remove(id);
+				CacheKey ck = new CacheKey( id, p.KeyType, p.Role, this );
+				p.Cache.Remove(ck);
 			}
 		}
 
@@ -1013,8 +1033,8 @@ namespace NHibernate.Impl
 			{
 				currentQueryCache = settings.QueryCacheFactory.GetQueryCache(
 					cacheRegion,
-					settings.CacheProvider,
 					updateTimestampsCache,
+					settings,
 					properties
 					);
 				queryCaches[cacheRegion] = currentQueryCache;
@@ -1156,5 +1176,10 @@ namespace NHibernate.Impl
         {
             get { return filters.Keys; }
         }
-    }
+
+		public Settings Settings
+		{
+			get { return settings; }
+		}
+	}
 }

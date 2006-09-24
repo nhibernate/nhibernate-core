@@ -50,6 +50,11 @@ namespace NHibernate.UserTypes.Oracle
 			return x == y;
 		}
 
+		public int GetHashCode(object x)
+		{
+			return NHibernateUtil.BinaryBlob.GetHashCode(((BFileType)x).Binary, null);
+		}
+
 		public object NullSafeGet( IDataReader rs, string[] names, object owner )
 		{
 			byte[] bin = ( byte[] ) NHibernateUtil.BinaryBlob.NullSafeGet( rs, names[ 0 ] );

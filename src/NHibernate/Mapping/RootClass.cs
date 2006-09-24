@@ -31,7 +31,8 @@ namespace NHibernate.Mapping
 		private SimpleValue identifier;
 		private Property version;
 		private bool polymorphic;
-		private ICacheConcurrencyStrategy cache;
+		private string cacheConcurrencyStrategy;
+		private string cacheRegionName;
 		private SimpleValue discriminator;
 		private bool mutable;
 		private bool embeddedIdentifier = false;
@@ -204,14 +205,24 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="ICacheConcurrencyStrategy"/> 
+		/// Gets or sets the CacheConcurrencyStrategy
 		/// to use to read/write instances of the persistent class to the Cache.
 		/// </summary>
-		/// <value>The <see cref="ICacheConcurrencyStrategy"/> used with the Cache.</value>
-		public override ICacheConcurrencyStrategy Cache
+		/// <value>The CacheConcurrencyStrategy used with the Cache.</value>
+		public override string CacheConcurrencyStrategy
 		{
-			get { return cache; }
-			set { cache = value; }
+			get { return cacheConcurrencyStrategy; }
+			set { cacheConcurrencyStrategy = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the cache region name.
+		/// </summary>
+		/// <value>The region name used with the Cache.</value>
+		public string CacheRegionName
+		{
+			get { return cacheRegionName == null ? Name : cacheRegionName; }
+			set { cacheRegionName = value; }
 		}
 
 		/// <summary>

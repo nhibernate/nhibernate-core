@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH720">
+  <class name="A" table="A" lazy="true">
+    <id name="Id" column="Id" type="Int32" unsaved-value="0" access="nosetter.camelcase">
+      <generator class="assigned" />
+    </id>
+    <property name="Foo" />
+    <bag name="Bees" access="nosetter.camelcase">
+      <key column="AId"/>
+      <one-to-many class="B" />
+    </bag>
+  </class>
+
+  <class name="B" table="B" lazy="false">
+    <id name="Id" column="Id" type="Int32" unsaved-value="0" access="nosetter.camelcase">
+      <generator class="assigned" />
+    </id>
+    <property name="Foo" />
+    <many-to-one column="AId" name="A" class="A" access="nosetter.camelcase" />
+  </class>
+</hibernate-mapping>
