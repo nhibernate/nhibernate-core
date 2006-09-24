@@ -290,7 +290,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// Get/set for topComponents
 	/// </summary>
 	[NHMA.List(0, Table="topcomponents", Schema="Schema", Where="0", Inverse=false, Fetch=FetchMode.Select, PersisterType=typeof(int))]
-		[NHMA.Cache(1, Usage=NHMA.CacheUsage.ReadWrite)]
+		[NHMA.Cache(1, Region="kmer", Usage=NHMA.CacheUsage.ReadWrite)]
 		[NHMA.Key(2, Column="id_")]
 		[NHMA.Index(3, Column="i")]
 		[NHMA.CompositeElement(4, ClassType=typeof(FooComponent))]
@@ -332,7 +332,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// Get/set for fooComponentToFoo
 	/// </summary>
 	[NHMA.Map]
-		[NHMA.JcsCache(1, Usage=NHMA.JcsCacheUsage.ReadWrite)]
+		[NHMA.JcsCache(1, Region="togs", Usage=NHMA.JcsCacheUsage.ReadWrite)]
 		[NHMA.Key(2)]
 			[NHMA.Column(3, Name="baz_id", Length=16)]
 		[NHMA.CompositeIndex(4, ClassType=typeof(FooComponent))]
