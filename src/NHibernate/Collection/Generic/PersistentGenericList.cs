@@ -13,17 +13,17 @@ using NHibernate.Type;
 namespace NHibernate.Collection.Generic
 {
 	/// <summary>
-	/// A persistent wrapper for an <see cref="IList{T}&lt;T&gt;"/>
+	/// A persistent wrapper for an <see cref="IList{T}"/>
 	/// </summary>
 	/// <typeparam name="T">The type of the element the list should hold.</typeparam>
-	/// <remarks>The underlying collection used is a <see cref="List&lt;T&gt;"/></remarks>
+	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
 	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		private IList<T> list;
 
 		/// <summary>
-		/// Initializes an instance of the <see cref="PersistentGenericList&lt;T&gt;"/>
+		/// Initializes an instance of the <see cref="PersistentGenericList{T}"/>
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
@@ -32,11 +32,11 @@ namespace NHibernate.Collection.Generic
 		}
 
 		/// <summary>
-		/// Initializes an instance of the <see cref="PersistentGenericList&lt;T&gt;"/>
-		/// that wraps an existing <see cref="IList{T}&lt;T&gt;"/> in the <paramref name="session"/>.
+		/// Initializes an instance of the <see cref="PersistentGenericList{T}"/>
+		/// that wraps an existing <see cref="IList{T}"/> in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
-		/// <param name="coll">The <see cref="IList{T}&lt;T&gt;"/> to wrap.</param>
+		/// <param name="coll">The <see cref="IList{T}"/> to wrap.</param>
 		public PersistentGenericList( ISessionImplementor session, IList<T> coll )
 			: base( session )
 		{
@@ -261,7 +261,7 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
-		/// A new <see cref="IList{T}&lt;T&gt;"/> that contains Deep Copies of the 
+		/// A new <see cref="IList{T}"/> that contains Deep Copies of the 
 		/// Elements stored in this wrapped collection.
 		/// </returns>
 		protected override ICollection Snapshot( ICollectionPersister persister )
