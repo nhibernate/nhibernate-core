@@ -52,10 +52,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlInsertBuilder.</returns>
 		public SqlInsertBuilder AddColumn( string[ ] columnNames, IType propertyType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( columnNames.Length );
-			this.columnNames.AddRange(columnNames);
-			columnValues.AddRange(parameters);
-			parameterTypes.AddRange(propertyType.SqlTypes(factory));
+			AddColumns( columnNames, null, propertyType );
 			return this;
 		}
 
@@ -82,6 +79,22 @@ namespace NHibernate.SqlCommand
 		{
 			columnNames.Add( columnName );
 			columnValues.Add( val );
+
+			return this;
+		}
+
+		public SqlInsertBuilder AddColumns(string[] columnNames, bool[] insertable, IType propertyType)
+		{
+			SqlType[] sqlTypes = propertyType.SqlTypes( factory );
+			for (int i = 0; i < columnNames.Length; i++)
+			{
+				if (insertable == null || insertable[i])
+				{
+					this.columnNames.Add( columnNames[i] );
+					this.columnValues.Add( Parameter.Placeholder );
+					this.parameterTypes.Add( sqlTypes[i] );
+				}
+			}
 
 			return this;
 		}

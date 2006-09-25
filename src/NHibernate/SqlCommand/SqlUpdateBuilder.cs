@@ -2,6 +2,7 @@ using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -90,12 +91,23 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="propertyType">The IType of the property.</param>
 		/// <returns>The SqlUpdateBuilder.</returns>
-		public SqlUpdateBuilder AddColumns( string[ ] columnNames, IType propertyType )
+		public SqlUpdateBuilder AddColumns( string[] columnNames, IType propertyType )
 		{
-			Parameter[ ] parameters = Parameter.GenerateParameters( columnNames.Length );
-			this.columnNames.AddRange( columnNames );
-			columnValues.AddRange(parameters);
-			columnValuesParameterTypes.AddRange(propertyType.SqlTypes(Mapping));
+			return AddColumns( columnNames, null, propertyType );
+		}
+
+		public SqlUpdateBuilder AddColumns( string[] columnNames, bool[] updateable, IType propertyType )
+		{
+			SqlType[] sqlTypes = propertyType.SqlTypes( Mapping );
+			for (int i = 0; i < columnNames.Length; i++)
+			{
+				if (updateable == null || updateable[i])
+				{
+					this.columnNames.Add( columnNames[i] );
+					this.columnValues.Add( Parameter.Placeholder );
+					this.columnValuesParameterTypes.Add( sqlTypes[i] );
+				}
+			}
 
 			return this;
 		}

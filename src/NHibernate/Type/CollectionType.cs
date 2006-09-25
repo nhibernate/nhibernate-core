@@ -68,6 +68,11 @@ namespace NHibernate.Type
 			return ResolveIdentifier( Hydrate( rs, name, session, owner ), session, owner );
 		}
 
+		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		{
+			// NOOP
+		}
+
 		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
 		{
 		}

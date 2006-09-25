@@ -252,6 +252,11 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
+		public abstract void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session );
+
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
+		/// /> 
 		public abstract void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session );
 
 		/// <include file='IType.cs.xmldoc' 

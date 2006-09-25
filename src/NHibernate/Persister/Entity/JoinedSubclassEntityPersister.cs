@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
-using System.Data;
-using log4net;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Hql;
-using NHibernate.Impl;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -87,8 +84,6 @@ namespace NHibernate.Persister.Entity
 		private readonly string discriminatorSQLString;
 		private readonly string discriminatorColumnName;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof (JoinedSubclassEntityPersister));
-
 		public override string DiscriminatorColumnName
 		{
 			get { return discriminatorColumnName; }
@@ -145,7 +140,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{
-					builder.AddColumn(GetPropertyColumnNames(i), PropertyTypes[i]);
+					builder.AddColumns(GetPropertyColumnNames(i), PropertyColumnInsertable[i], PropertyTypes[i]);
 				}
 			}
 
@@ -254,38 +249,6 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return select.ToSqlString();
-		}
-
-		protected override int Dehydrate(
-			object id,
-			object[] fields,
-			bool[] includeProperty,
-			int table,
-			IDbCommand statement,
-			ISessionImplementor session,
-			int index)
-		{
-			if (statement == null)
-			{
-				return -1;
-			}
-
-			for (int j = 0; j < HydrateSpan; j++)
-			{
-				if (includeProperty[j] && naturalOrderPropertyTables[j] == table)
-				{
-					PropertyTypes[j].NullSafeSet(statement, fields[j], index, session);
-					index += GetPropertyColumnSpan(j);
-				}
-			}
-
-			if (id != null)
-			{
-				IdentifierType.NullSafeSet(statement, id, index, session);
-				index += IdentifierColumnNames.Length;
-			}
-
-			return index;
 		}
 
 		//INITIALIZATION:

@@ -149,12 +149,12 @@ namespace NHibernate.Type
 				session.InternalLoad( clazz, id, false );
 		}
 
-		public override void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session )
+		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
 		{
 			object id;
 			System.Type clazz;
 
-			if( value == null )
+			if (value == null)
 			{
 				id = null;
 				clazz = null;
@@ -164,8 +164,28 @@ namespace NHibernate.Type
 				id = session.GetEntityIdentifierIfNotUnsaved( value );
 				clazz = NHibernateProxyHelper.GetClass( value );
 			}
-			metaType.NullSafeSet( st, clazz, index, session );
-			identifierType.NullSafeSet( st, id, index + 1, session ); // metaType must be single-column type
+
+			// metaType is assumed to be single-column type
+			if (settable == null || settable[0])
+			{
+				metaType.NullSafeSet( st, clazz, index, session );
+			}
+
+			if (settable == null)
+			{
+				identifierType.NullSafeSet( st, id, index + 1, session );
+			}
+			else
+			{
+				bool[] idsettable = new bool[settable.Length - 1];
+				Array.Copy( settable, 1, idsettable, 0, idsettable.Length );
+				identifierType.NullSafeSet( st, id, index + 1, idsettable, session );
+			}
+		}
+
+		public override void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session )
+		{
+			NullSafeSet( st, value, index, null, session );
 		}
 
 		public override System.Type ReturnedClass

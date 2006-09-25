@@ -65,6 +65,11 @@ namespace NHibernate.Type
 			return key == null ? null : values[ key ];
 		}
 
+		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		{
+			if (settable[0]) NullSafeSet( st, value, index, session );
+		}
+
 		public override void NullSafeSet(
 			IDbCommand st,
 			object value,

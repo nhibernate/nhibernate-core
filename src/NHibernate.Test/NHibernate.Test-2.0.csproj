@@ -241,6 +241,8 @@
     <Compile Include="NHSpecificTest\NH369\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH369\JoinedSubClass.cs" />
     <Compile Include="NHSpecificTest\NH369\KeyManyToOneClass.cs" />
+    <Compile Include="NHSpecificTest\NH372\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH372\Model.cs" />
     <Compile Include="NHSpecificTest\NH386\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH386\_Child.cs" />
     <Compile Include="NHSpecificTest\NH386\_Parent.cs" />
@@ -585,6 +587,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH720\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH372\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

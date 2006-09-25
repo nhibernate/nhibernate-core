@@ -73,6 +73,8 @@ namespace NHibernate.Persister.Collection
 		private readonly string[] elementColumnNames;
 		protected readonly string[] elementFormulaTemplates;
 		protected readonly string[] elementFormulas;
+		protected readonly bool[] elementColumnIsSettable;
+		protected readonly bool[] elementColumnIsInPrimaryKey;
 		private readonly string[] indexColumnAliases;
 		protected readonly string[] elementColumnAliases;
 		private readonly string[] keyColumnAliases;
@@ -188,6 +190,8 @@ namespace NHibernate.Persister.Collection
 			elementColumnNames = new string[elementSpan];
 			elementFormulaTemplates = new string[elementSpan];
 			elementFormulas = new string[elementSpan];
+			elementColumnIsSettable = new bool[elementSpan];
+			elementColumnIsInPrimaryKey = new bool[elementSpan];
 			int j = 0;
 			foreach (ISelectable selectable in element.ColumnCollection)
 			{
@@ -202,6 +206,8 @@ namespace NHibernate.Persister.Collection
 				{
 					Column col = (Column) selectable;
 					elementColumnNames[j] = col.GetQuotedName(dialect);
+					elementColumnIsSettable[j] = true;
+					elementColumnIsInPrimaryKey[j] = !col.IsNullable;
 				}
 				j++;
 			}
@@ -525,8 +531,8 @@ namespace NHibernate.Persister.Collection
 
 		protected int WriteElement(IDbCommand st, object elt, int i, ISessionImplementor session)
 		{
-			ElementType.NullSafeSet(st, elt, i, session);
-			return i + elementColumnNames.Length;
+			ElementType.NullSafeSet( st, elt, i, elementColumnIsSettable, session );
+			return i + ArrayHelper.CountTrue( elementColumnIsSettable );
 		}
 
 		protected int WriteIndex(IDbCommand st, object idx, int i, ISessionImplementor session)
@@ -543,8 +549,8 @@ namespace NHibernate.Persister.Collection
 			//				throw new AssertionFailure( "cannot use a formula-based element in the where condition" );
 			//			}
 
-			ElementType.NullSafeSet(st, elt, i, session);
-			return i + elementColumnAliases.Length;
+			ElementType.NullSafeSet( st, elt, i, elementColumnIsSettable, session );
+			return i + ArrayHelper.CountTrue( elementColumnIsSettable );
 		}
 
 		protected int WriteIndexToWhere(IDbCommand st, object index, int i, ISessionImplementor session)
@@ -621,8 +627,17 @@ namespace NHibernate.Persister.Collection
 
 		protected virtual void AppendElementColumns(SelectFragment frag, string elemAlias)
 		{
-			// TODO H3: upgrade
-			frag.AddColumns(elemAlias, elementColumnNames, elementColumnAliases);
+			for (int i = 0; i < elementColumnIsSettable.Length; i++)
+			{
+				if (elementColumnIsSettable[i])
+				{
+					frag.AddColumn( elemAlias, elementColumnNames[i], elementColumnAliases[i] );
+				}
+				else
+				{
+					frag.AddFormula( elemAlias, elementFormulaTemplates[i], elementColumnAliases[i] );
+				}
+			}
 		}
 
 		protected virtual void AppendIndexColumns(SelectFragment frag, string alias)

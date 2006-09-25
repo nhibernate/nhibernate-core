@@ -1,12 +1,9 @@
 using System;
 using System.Collections;
-using System.Data;
 using System.Text;
 using Iesi.Collections;
-using log4net;
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -37,8 +34,6 @@ namespace NHibernate.Persister.Entity
 
 		private static readonly object NullDiscriminator = new object();
 		private static readonly object NotNullDiscriminator = new object();
-
-		private static readonly ILog log = LogManager.GetLogger(typeof (SingleTableEntityPersister));
 
 		public override string DiscriminatorColumnName
 		{
@@ -101,7 +96,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (includeProperty[i])
 				{
-					builder.AddColumn(GetPropertyColumnNames(i), PropertyTypes[i]);
+					builder.AddColumns( GetPropertyColumnNames( i ), PropertyColumnInsertable[i], PropertyTypes[i] );
 				}
 			}
 
@@ -263,50 +258,6 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return sqlBuilder.ToSqlString();
-		}
-
-		protected override int Dehydrate(object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement,
-		                                 ISessionImplementor session, int index)
-		{
-			return Dehydrate(id, fields, includeProperty, statement, session, index);
-		}
-
-		/// <summary>
-		/// Marshall the fields of a persistent instance to a prepared statement
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="fields">The fields to write to the command.</param>
-		/// <param name="includeProperty">A bool indicating if the Property should be written to the Command</param>
-		/// <param name="st"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		protected virtual int Dehydrate(object id, object[] fields, bool[] includeProperty, IDbCommand st,
-		                                ISessionImplementor session, int index)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("Dehydrating entity: " + MessageHelper.InfoString(this, id));
-			}
-
-			// there's a pretty strong coupling between the order of the SQL parameter 
-			// construction and the actual order of the parameter collection. 
-
-			for (int j = 0; j < HydrateSpan; j++)
-			{
-				if (includeProperty[j])
-				{
-					PropertyTypes[j].NullSafeSet(st, fields[j], index, session);
-					index += GetPropertyColumnSpan(j);
-				}
-			}
-
-			if (id != null)
-			{
-				IdentifierType.NullSafeSet(st, id, index, session);
-				index += IdentifierColumnNames.Length;
-			}
-
-			return index;
 		}
 
 		//INITIALIZATION:

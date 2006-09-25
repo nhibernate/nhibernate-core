@@ -52,6 +52,12 @@ namespace NHibernate.Type
 		{
 		}
 
+		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		{
+			GetIdentifierOrUniqueKeyType( session.Factory )
+				.NullSafeSet( st, GetIdentifier( value, session ), index, settable, session );
+		}
+
 		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
 		{
 			GetIdentifierOrUniqueKeyType( session.Factory )

@@ -30,6 +30,11 @@ namespace NHibernate.Type
 			this.foreignKeyDirection = foreignKeyDirection;
 		}
 
+		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		{
+			//nothing to do
+		}
+
 		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
 		{
 			//nothing to do

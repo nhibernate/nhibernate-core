@@ -260,6 +260,11 @@ namespace NHibernate.Type
 			return userType.NullSafeGet( rs, names, session, owner );
 		}
 
+		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		{
+			userType.NullSafeSet( st, value, index, session );
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

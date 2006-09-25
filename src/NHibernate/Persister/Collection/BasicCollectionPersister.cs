@@ -11,6 +11,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
@@ -60,7 +61,7 @@ namespace NHibernate.Persister.Collection
 			{
 				insert.AddColumn( new string[ ] {IdentifierColumnName}, IdentifierType );
 			}
-			insert.AddColumn( ElementColumnNames, ElementType );
+			insert.AddColumns( ElementColumnNames, elementColumnIsSettable, ElementType );
 
 			return insert.ToSqlCommandInfo();
 		}
@@ -73,7 +74,7 @@ namespace NHibernate.Persister.Collection
 		{
 			SqlUpdateBuilder update = new SqlUpdateBuilder( Factory )
 				.SetTableName( qualifiedTableName )
-				.AddColumns( ElementColumnNames, ElementType );
+				.AddColumns( ElementColumnNames, elementColumnIsSettable, ElementType );
 			if( hasIdentifier )
 			{
 				update.AddWhereFragment( new string[] { IdentifierColumnName }, IdentifierType, " = " );
@@ -143,6 +144,8 @@ namespace NHibernate.Persister.Collection
 
 		protected override int DoUpdateRows( object id, IPersistentCollection collection, ISessionImplementor session )
 		{
+			if (ArrayHelper.IsAllFalse( elementColumnIsSettable )) return 0;
+
 			try
 			{
 				IDbCommand st = null;

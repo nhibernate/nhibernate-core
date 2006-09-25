@@ -151,6 +151,19 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="settable"></param>
+		/// <param name="session"></param>
+		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		{
+			if (settable[0]) userType.NullSafeSet( st, value, index );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>

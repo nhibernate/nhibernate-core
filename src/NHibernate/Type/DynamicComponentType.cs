@@ -312,6 +312,42 @@ namespace NHibernate.Type
 			}
 		}
 
+		public override void NullSafeSet( IDbCommand st, object value, int begin, bool[] settable, ISessionImplementor session )
+		{
+			object[] subvalues = NullSafeGetValues( value );
+
+			int subvaluesIndex = 0;
+			int sqlParamIndex = begin;
+			int settableIndex = 0;
+			for (int i = 0; i < propertySpan; i++)
+			{
+				int len = propertyTypes[i].GetColumnSpan( session.Factory );
+				if (len == 0)
+				{
+					// noop
+				}
+				else if (len == 1)
+				{
+					if (settable[settableIndex])
+					{
+						propertyTypes[i].NullSafeSet( st, subvalues[i], sqlParamIndex, session );
+						sqlParamIndex++;
+						settableIndex++;
+					}
+				}
+				else
+				{
+					bool[] subsettable = new bool[len];
+					Array.Copy( settable, subvaluesIndex, subsettable, 0, len );
+					propertyTypes[i].NullSafeSet( st, subvalues[i], sqlParamIndex, subsettable, session );
+					int subsettableCount = ArrayHelper.CountTrue( subsettable );
+					sqlParamIndex += subsettableCount;
+					settableIndex += subsettableCount;
+				}
+				subvaluesIndex += len;
+			}
+		}
+
 		public override System.Type ReturnedClass
 		{
 			get { return typeof( IDictionary ); }

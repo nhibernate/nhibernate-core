@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+				   namespace="NHibernate.Test.NHSpecificTest.NH372"
+				   assembly="NHibernate.Test">
+
+	<class name="Parent" table="NH372_Parent">
+		<id name="Id" type="int" access="nosetter.pascalcase-underscore">
+			<generator class="identity"/>
+		</id>
+		<property name="Name" type="string" length="100" not-null="false"/>
+
+		<component name="Component" class="Component">
+			<property name="NormalField" type="int" insert="true" update="true"/>
+			<property name="FieldNotInserted" type="int" insert="false" update="true"/>
+			<property name="FieldNotUpdated" type="int" insert="true" update="false"/>
+			<component name="SubComponent" class="SubComponent">
+				<property name="NormalField" column="SubNormalField" type="int" insert="true" update="true"/>
+				<property name="FieldNotInserted" column="SubFieldNotInserted" type="int" insert="false" update="true"/>
+				<property name="FieldNotUpdated" column="SubFieldNotUpdated" type="int" insert="true" update="false"/>
+			</component>
+		</component>
+	</class>
+
+	<class name="DynamicParent" table="NH372_Parent" dynamic-insert="true" dynamic-update="true">
+		<id name="Id" type="int" access="nosetter.pascalcase-underscore">
+			<generator class="identity"/>
+		</id>
+		<property name="Name" type="string" length="100" not-null="false"/>
+
+		<component name="Component" class="Component">
+			<property name="NormalField" type="int" insert="true" update="true"/>
+			<property name="FieldNotInserted" type="int" insert="false" update="true"/>
+			<property name="FieldNotUpdated" type="int" insert="true" update="false"/>
+			<component name="SubComponent" class="SubComponent">
+				<property name="NormalField" column="SubNormalField" type="int" insert="true" update="true"/>
+				<property name="FieldNotInserted" column="SubFieldNotInserted" type="int" insert="false" update="true"/>
+				<property name="FieldNotUpdated" column="SubFieldNotUpdated" type="int" insert="true" update="false"/>
+			</component>
+		</component>
+	</class>
+
+</hibernate-mapping>

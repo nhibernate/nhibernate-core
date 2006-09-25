@@ -248,5 +248,15 @@ namespace NHibernate.Util
 			coll.CopyTo(result, 0);
 			return result;
 		}
+
+		public static int CountTrue( bool[] array )
+		{
+			int result = 0;
+			for (int i = 0; i < array.Length; i++)
+			{
+				if (array[i]) result++;
+			}
+			return result;
+		}
 	}
 }

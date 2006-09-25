@@ -132,6 +132,11 @@ namespace NHibernate.Type
 			return ( xml == null || xml.Length == 0 ) ? null : FromStringValue( xml );
 		}
 
+		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		{
+			if (settable[0]) NullSafeSet( st, value, index );
+		}
+
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 

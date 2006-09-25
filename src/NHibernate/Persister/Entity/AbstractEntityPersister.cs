@@ -1139,13 +1139,23 @@ namespace NHibernate.Persister.Entity
 		{
 			get { return entityMetamodel.PropertyInsertability; }
 		}
+		
+		public virtual bool[] PropertyVersionability
+		{
+			get { return entityMetamodel.PropertyVersionability; }
+		}
 
-        public virtual bool[] PropertyVersionability
-        {
-            get { return entityMetamodel.PropertyVersionability; }
-        }
-        
-		public virtual object GetPropertyValue(object obj, string propertyName)
+		public virtual bool[][] PropertyColumnInsertable
+		{
+			get { return this.propertyColumnInsertable; }
+		}
+
+		public virtual bool[][] PropertyColumnUpdateable
+		{
+			get { return this.propertyColumnUpdateable; }
+		}
+
+		public virtual object GetPropertyValue( object obj, string propertyName )
 		{
 			IGetter getter = (IGetter) gettersByPropertyName[propertyName];
 			if (getter == null)
@@ -1771,7 +1781,7 @@ namespace NHibernate.Persister.Entity
 					int index = 0;
 
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
-					index = Dehydrate(id, fields, includeProperty, j, statement, session, index);
+					index = Dehydrate(id, fields, includeProperty, propertyColumnUpdateable, j, statement, session, index);
 
 					// Write any appropriate versioning conditional parameters
 					if (useVersion && OptimisticLockMode == OptimisticLockMode.Version)
@@ -1934,8 +1944,41 @@ namespace NHibernate.Persister.Entity
 			get { return subclassPropertyFormulaTemplateClosure; }
 		}
 
-		protected abstract int Dehydrate(object id, object[] fields, bool[] includeProperty, int table, IDbCommand statement,
-		                                 ISessionImplementor session, int index);
+		protected int Dehydrate(
+			object id,
+			object[] fields,
+			bool[] includeProperty,
+			bool[][] includeColumns,
+			int table,
+			IDbCommand statement,
+			ISessionImplementor session,
+			int index)
+		{
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("Dehydrating entity: " + MessageHelper.InfoString(this, id));
+			}
+
+			// there's a pretty strong coupling between the order of the SQL parameter 
+			// construction and the actual order of the parameter collection. 
+
+			for (int j = 0; j < entityMetamodel.PropertySpan; j++)
+			{
+				if (includeProperty[j] && IsPropertyOfTable(j, table))
+				{
+					PropertyTypes[ j ].NullSafeSet( statement, fields[ j ], index, includeColumns[j], session );
+					index += ArrayHelper.CountTrue( includeColumns[j] );
+				}
+			}
+
+			if (id != null)
+			{
+				IdentifierType.NullSafeSet(statement, id, index, session);
+				index += IdentifierColumnSpan;
+			}
+
+			return index;
+		}
 
 		/// <summary>
 		/// Persist an object, using a natively generated identifier
@@ -1968,7 +2011,7 @@ namespace NHibernate.Persister.Entity
 					try
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
-						Dehydrate(null, fields, notNull, 0, insertSelect, session, 0);
+						Dehydrate(null, fields, notNull, propertyColumnInsertable, 0, insertSelect, session, 0);
 						rs = session.Batcher.ExecuteReader(insertSelect);
 						return GetGeneratedIdentity(obj, session, rs);
 					}
@@ -1984,7 +2027,7 @@ namespace NHibernate.Persister.Entity
 					try
 					{
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
-						Dehydrate(null, fields, notNull, 0, statement, session, 0);
+						Dehydrate(null, fields, notNull, propertyColumnInsertable, 0, statement, session, 0);
 						session.Batcher.ExecuteNonQuery(statement);
 					}
 					finally
@@ -2464,7 +2507,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{
-					updateBuilder.AddColumns(GetPropertyColumnNames(i), PropertyTypes[i]);
+					updateBuilder.AddColumns(GetPropertyColumnNames(i), propertyColumnUpdateable[i], PropertyTypes[i]);
 					hasColumns = hasColumns || GetPropertyColumnSpan(i) > 0;
 				}
 			}
@@ -2595,9 +2638,10 @@ namespace NHibernate.Persister.Entity
 					else if (entityMetamodel.OptimisticLockMode > OptimisticLockMode.Version && loadedState != null)
 					{
 						IType[] types = PropertyTypes;
+						bool[] versionability = PropertyVersionability;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-							if (IsPropertyOfTable(i, j))
+							if (IsPropertyOfTable(i, j) && versionability[i])
 							{
 								types[i].NullSafeSet(statement, loadedState[i], index, session);
 								index += GetPropertyColumnSpan(i);
@@ -2679,7 +2723,7 @@ namespace NHibernate.Persister.Entity
 			return deleteStrings;
 		}
 
-		private int IdentifierColumnSpan
+		protected int IdentifierColumnSpan
 		{
 			get { return identifierColumnSpan; }
 		}
@@ -2724,7 +2768,7 @@ namespace NHibernate.Persister.Entity
 					int index = 0;
 					//index += expectation.Prepare(insertCmd, factory.ConnectionProvider.Driver);
 
-					Dehydrate(id, fields, notNull, j, insertCmd, session, index);
+					Dehydrate(id, fields, notNull, propertyColumnInsertable, j, insertCmd, session, index);
 
 					if (useBatch)
 					{
