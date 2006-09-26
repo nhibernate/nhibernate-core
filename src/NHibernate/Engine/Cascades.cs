@@ -468,7 +468,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug( "unsaved-value: " + value );
 				}
-				return version == null || value.Equals( version );
+				return version == null || version.Equals( value );
 			}
 
 			/// <summary>
