@@ -607,6 +607,11 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
     <sql-delete>DELETE FROM PERSON WHERE ID=?</sql-delete>
 </class>]]></programlisting>
 
+    <para>Note that the custom <literal>sql-insert</literal> will not be used
+    if you use <literal>identity</literal> to generate identifier values for
+    the class.
+    </para>
+
     <para>The SQL is directly executed in your database, so you are free to
     use any dialect you like. This will of course reduce the portability of
     your mapping if you use database specific SQL.</para>
@@ -639,6 +644,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
     affected. This check can be disabled by using <literal>check="none"</literal>
     attribute in <literal>sql-insert</literal> element.
     </para>
+
   </sect1>
 
   <sect1 id="querysql-load">
