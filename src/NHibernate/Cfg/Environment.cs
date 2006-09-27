@@ -76,6 +76,7 @@ namespace NHibernate.Cfg
 		public const string DefaultSchema = "hibernate.default_schema";
 		public const string ShowSql = "hibernate.show_sql";
 		public const string MaxFetchDepth = "hibernate.max_fetch_depth";
+		public const string CurrentSessionContextClass = "hibernate.current_session_context_class";
 		
 		// Unused, Java-specific
 		public const string UseGetGeneratedKeys = "hibernate.jdbc.use_get_generated_keys";

@@ -9,6 +9,7 @@ using log4net;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
+using NHibernate.Context;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Id;
@@ -90,8 +91,8 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary sqlResultSetMappings;
 
-        [NonSerialized]
-        private readonly IDictionary filters;
+		[NonSerialized]
+		private readonly IDictionary filters;
 
 		[NonSerialized]
 		private readonly IDictionary imports;
@@ -209,7 +210,8 @@ namespace NHibernate.Impl
 			foreach (Mapping.Collection map in cfg.CollectionMappings)
 			{
 				ICacheConcurrencyStrategy cache = CacheFactory.CreateCache(map.CacheConcurrencyStrategy, map.CacheRegionName, map.Owner.IsMutable, settings, properties);
-				if (cache != null) allCacheRegions[cache.RegionName] = cache.Cache;
+				if (cache != null)
+					allCacheRegions[cache.RegionName] = cache.Cache;
 
 				collectionPersisters[map.Role] = PersisterFactory
 					.CreateCollectionPersister(map, cache, this)
@@ -241,7 +243,7 @@ namespace NHibernate.Impl
 			namedQueries = new Hashtable(cfg.NamedQueries);
 			namedSqlQueries = new Hashtable(cfg.NamedSQLQueries);
 			sqlResultSetMappings = new Hashtable(cfg.SqlResultSetMappings);
-            filters = new Hashtable(cfg.FilterDefinitions);
+			filters = new Hashtable(cfg.FilterDefinitions);
 
 			imports = new Hashtable(cfg.Imports);
 
@@ -277,6 +279,8 @@ namespace NHibernate.Impl
 
 			// Obtaining TransactionManager - not ported from H2.1
 
+			currentSessionContext = BuildCurrentSessionContext();
+
 			if (settings.IsQueryCacheEnabled)
 			{
 				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
@@ -302,9 +306,11 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private int strongRefIndex = 0;
 
+		// both keys and values may be soft since value keeps a hard ref to the key (and there is a hard ref to MRU values)
 		[NonSerialized]
 		private readonly IDictionary softQueryCache = new WeakHashtable();
-		// both keys and values may be soft since value keeps a hard ref to the key (and there is a hard ref to MRU values)
+
+		private ICurrentSessionContext currentSessionContext;
 
 		/// <summary>
 		/// A class that can be used as a Key in a Hashtable for 
@@ -937,7 +943,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				CacheKey ck = new CacheKey( id, p.IdentifierType, (string)p.IdentifierSpace, this );
+				CacheKey ck = new CacheKey(id, p.IdentifierType, (string) p.IdentifierSpace, this);
 				p.Cache.Remove(ck);
 			}
 		}
@@ -964,7 +970,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				CacheKey ck = new CacheKey( id, p.KeyType, p.Role, this );
+				CacheKey ck = new CacheKey(id, p.KeyType, p.Role, this);
 				p.Cache.Remove(ck);
 			}
 		}
@@ -1136,10 +1142,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="conn"></param>
 		public void CloseConnection(IDbConnection conn)
 		{
 			try
@@ -1162,24 +1164,53 @@ namespace NHibernate.Impl
 			return (ResultSetMappingDefinition) sqlResultSetMappings[resultSetName];
 		}
 
-        public FilterDefinition GetFilterDefinition(string filterName)
-        {
-            FilterDefinition def = (FilterDefinition)filters[filterName];
-            if (def == null)
-            {
-                throw new HibernateException("No such filter configured [" + filterName + "]");
-            }
-            return def;
-        }
+		public FilterDefinition GetFilterDefinition(string filterName)
+		{
+			FilterDefinition def = (FilterDefinition) filters[filterName];
+			if (def == null)
+			{
+				throw new HibernateException("No such filter configured [" + filterName + "]");
+			}
+			return def;
+		}
 
-        public ICollection DefinedFilterNames
-        {
-            get { return filters.Keys; }
-        }
+		public ICollection DefinedFilterNames
+		{
+			get { return filters.Keys; }
+		}
 
 		public Settings Settings
 		{
 			get { return settings; }
+		}
+
+		public ISession GetCurrentSession()
+		{
+			if (currentSessionContext == null)
+			{
+				throw new HibernateException("No CurrentSessionContext configured!");
+			}
+			return currentSessionContext.CurrentSession();
+		}
+
+		private ICurrentSessionContext BuildCurrentSessionContext()
+		{
+			string impl = properties[Cfg.Environment.CurrentSessionContextClass] as string;
+
+			if (impl == null)
+			{
+				return null;
+			}
+			try
+			{
+				System.Type implClass = ReflectHelper.ClassForName(impl);
+				return (ICurrentSessionContext) Activator.CreateInstance(implClass, this);
+			}
+			catch (Exception e)
+			{
+				log.Error("Unable to construct current session context [" + impl + "]", e);
+				return null;
+			}
 		}
 	}
 }

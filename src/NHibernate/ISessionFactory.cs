@@ -175,5 +175,18 @@ namespace NHibernate
         FilterDefinition GetFilterDefinition(string filterName);
 
 		Settings Settings { get; }
+
+		/// <summary>
+		/// Obtains the current session.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// The definition of what exactly "current" means is controlled by the <see cref="NHibernate.Context.ICurrentSessionContext" />
+		/// implementation configured for use.
+	 	/// </para>
+		/// </remarks>
+		/// <returns>The current session.</returns>
+		/// <exception cref="HibernateException">Indicates an issue locating a suitable current session.</exception>
+		ISession GetCurrentSession();
     }
 }

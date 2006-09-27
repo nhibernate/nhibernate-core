@@ -513,6 +513,7 @@
     <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
+    <Compile Include="Context\ICurrentSessionContext.cs" />
     <Compile Include="Dialect\MsSqlCeDialect.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
@@ -646,6 +647,7 @@
     <Compile Include="SqlCommand\ISqlStringVisitor.cs" />
     <Compile Include="SqlCommand\SqlCommandInfo.cs" />
     <Compile Include="StaleStateException.cs" />
+    <Compile Include="Transaction\ISynchronization.cs" />
     <Compile Include="Transform\AliasToBeanConstructorResultTransformer.cs" />
     <Compile Include="Transform\AliasToBeanResultTransformer.cs" />
     <Compile Include="Transform\PassThroughResultTransformer.cs" />
@@ -683,6 +685,7 @@
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Util\CollectionHelper.cs" />
     <Compile Include="Util\FilterHelper.cs" />
+    <Compile Include="Util\SerializationHelper.cs" />
     <Compile Include="Util\TypeNameParser.cs" />
     <Compile Include="Util\WeakHashtable.cs">
       <SubType>Code</SubType>
