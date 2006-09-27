@@ -310,7 +310,8 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary softQueryCache = new WeakHashtable();
 
-		private ICurrentSessionContext currentSessionContext;
+		[NonSerialized]
+		private readonly ICurrentSessionContext currentSessionContext;
 
 		/// <summary>
 		/// A class that can be used as a Key in a Hashtable for 
