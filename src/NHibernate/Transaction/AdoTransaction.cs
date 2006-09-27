@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
@@ -18,6 +19,7 @@ namespace NHibernate.Transaction
 		private bool committed;
 		private bool rolledBack;
 		private bool commitFailed;
+		private ArrayList synchronizations;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AdoTransaction"/> class.
@@ -73,6 +75,11 @@ namespace NHibernate.Transaction
 				command.Transaction = trans;
 			}
 		}
+		
+		public void Begin()
+		{
+			Begin(IsolationLevel.Unspecified);
+		}
 
 		/// <summary>
 		/// Begins the <see cref="IDbTransaction"/> on the <see cref="IDbConnection"/>
@@ -120,6 +127,7 @@ namespace NHibernate.Transaction
 		{
 			session.AfterTransactionCompletion( successful );
 			session = null;
+			NotifyLocalSynchsAfterTransactionCompletion(successful);
 		}
 		/// <summary>
 		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
@@ -224,6 +232,26 @@ namespace NHibernate.Transaction
 		{
 			get { return committed; }
 		}
+		
+		public bool IsActive
+		{
+			get { return begun && !rolledBack && !committed; }
+		}
+		
+		public void RegisterSynchronization(ISynchronization sync)
+		{
+			if (sync == null)
+			{
+				throw new ArgumentNullException("sync");
+			}
+			
+			if (synchronizations == null)
+			{
+				synchronizations = new ArrayList();
+			}
+
+			synchronizations.Add(sync);
+		}
 
 		public IsolationLevel IsolationLevel
 		{
@@ -310,6 +338,25 @@ namespace NHibernate.Transaction
 			if( !begun )
 			{
 				throw new TransactionException( "Transaction not successfully started" );
+			}
+		}
+
+		private void NotifyLocalSynchsAfterTransactionCompletion(bool successful)
+		{
+			begun = false;
+			if (synchronizations != null)
+			{
+				foreach (ISynchronization sync in synchronizations)
+				{
+					try
+					{
+						sync.AfterCompletion(successful);
+					}
+					catch (Exception e)
+					{
+						log.Error("exception calling user ISynchronization", e);
+					}
+				}
 			}
 		}
 	}

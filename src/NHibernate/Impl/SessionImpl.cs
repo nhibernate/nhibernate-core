@@ -47,7 +47,6 @@ namespace NHibernate.Impl
 
 		private bool autoClose;
 		private readonly long timestamp;
-		private bool isCurrentTransaction; // a bit dodgy!
 
 		/// <summary>
 		/// Indicates if the Session has been closed.
@@ -236,7 +235,6 @@ namespace NHibernate.Impl
 
 			this.closed = info.GetBoolean("closed");
 			this.flushMode = (FlushMode) info.GetValue("flushMode", typeof(FlushMode));
-			this.isCurrentTransaction = info.GetBoolean("isCurrentTransaction");
 
 			this.nullifiables = (ISet) info.GetValue("nullifiables", typeof(ISet));
 			this.interceptor = (IInterceptor) info.GetValue("interceptor", typeof(IInterceptor));
@@ -280,7 +278,6 @@ namespace NHibernate.Impl
 			info.AddValue("timestamp", timestamp);
 			info.AddValue("closed", closed);
 			info.AddValue("flushMode", flushMode);
-			info.AddValue("isCurrentTransaction", isCurrentTransaction);
 			info.AddValue("entitiesByKey", entitiesByKey, typeof(IDictionary));
 
 			// the IDictionary should not be serialized because the objects inside of it are not
@@ -522,9 +519,8 @@ namespace NHibernate.Impl
 		/// <param name="success"></param>
 		public void AfterTransactionCompletion(bool success)
 		{
+			transaction = null;
 			log.Debug("transaction completion");
-
-			isCurrentTransaction = false;
 
 			// Downgrade locks
 			foreach (EntityEntry entry in entityEntries.Values)
@@ -2997,24 +2993,29 @@ namespace NHibernate.Impl
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
 			CheckIsOpen();
-
-			transaction = factory.TransactionFactory.BeginTransaction(this, isolationLevel);
-			isCurrentTransaction = true;
+			transaction = Transaction;
+			transaction.Begin(isolationLevel);
 			return transaction;
 		}
 
 		public ITransaction BeginTransaction()
 		{
 			CheckIsOpen();
-
-			transaction = factory.TransactionFactory.BeginTransaction(this);
-			isCurrentTransaction = true;
+			transaction = Transaction;
+			transaction.Begin();
 			return transaction;
 		}
 
 		public ITransaction Transaction
 		{
-			get { return transaction; }
+			get
+			{
+				if (transaction == null)
+				{
+					transaction = factory.TransactionFactory.CreateTransaction(this);
+				}
+				return transaction;
+			}
 		}
 
 		/// <summary>
@@ -4566,7 +4567,7 @@ namespace NHibernate.Impl
 			{
 				// ensure that AfterTransactionCompletion gets called since
 				// it takes care of the Locks and Cache.
-				if (!isCurrentTransaction)
+				if (!IsInActiveTransaction)
 				{
 					// We don't know the state of the transaction
 					AfterTransactionCompletion(false);
@@ -5835,6 +5836,11 @@ namespace NHibernate.Impl
 		{
 			SqlQueryImpl query = new SqlQueryImpl(sql, this);
 			return query;
+		}
+		
+		private bool IsInActiveTransaction
+		{
+			get { return transaction != null && transaction.IsActive; }
 		}
 	}
 }

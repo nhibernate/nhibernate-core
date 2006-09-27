@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate.Transaction;
 
 namespace NHibernate
 {
@@ -18,6 +19,17 @@ namespace NHibernate
 	public interface ITransaction : IDisposable
 	{
 		/// <summary>
+		/// Begin the transaction with the default isolation level.
+		/// </summary>
+		void Begin();
+
+		/// <summary>
+		/// Begin the transaction with the specified isolation level.
+		/// </summary>
+		/// <param name="isolationLevel">Isolation level of the transaction</param>
+		void Begin(IsolationLevel isolationLevel);
+
+		/// <summary>
 		/// Flush the associated <c>ISession</c> and end the unit of work.
 		/// </summary>
 		/// <remarks>
@@ -30,6 +42,11 @@ namespace NHibernate
 		/// Force the underlying transaction to roll back.
 		/// </summary>
 		void Rollback();
+
+		/// <summary>
+		/// Is the transaction in progress
+		/// </summary>
+		bool IsActive { get; }
 
 		/// <summary>
 		/// Was the transaction rolled back or set to rollback only?
@@ -52,5 +69,7 @@ namespace NHibernate
 		/// It is okay for this to be a no op implementation.
 		/// </remarks>
 		void Enlist( IDbCommand command );
+
+		void RegisterSynchronization(ISynchronization synchronization);
 	}
 }

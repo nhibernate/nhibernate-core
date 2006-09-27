@@ -577,10 +577,6 @@ namespace NHibernate
 		/// <summary>
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
 		/// </summary>
-		/// <exception cref="HibernateException">There was no Active IDbTransaction for this Session</exception>
-		/// TODO: DESIGNQUESTION: We might have it return null to indicate there is no Transaction for this Session
-		/// instead of throwing an Exception because that would allow other methods to just do null checks instead 
-		/// of error checking...
 		ITransaction Transaction { get; }
 
 		/// <summary>
