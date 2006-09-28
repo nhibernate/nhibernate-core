@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Xml;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 				try
 				{
 					session.BeginTransaction();
-					IList<MyClass> result = criteria.List<MyClass>();
+					IList result = criteria.List();
 					session.Transaction.Commit();
 
 				}
