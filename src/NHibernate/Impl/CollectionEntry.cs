@@ -79,9 +79,9 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private bool ignore;
 
-		/// <summary>
-		/// Indicates that the Collection has been fully initialized.
-		/// </summary>
+		// <summary>
+		// Indicates that the Collection has been fully initialized.
+		// </summary>
 		//private bool initialized;
 
 		// For the fields below, "current" means the reference that was found

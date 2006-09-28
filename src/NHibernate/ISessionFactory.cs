@@ -163,7 +163,6 @@ namespace NHibernate
         /// <summary>
         /// Obtain a set of the names of all filters defined on this SessionFactory.
         /// </summary>
-        /// <param name="filterName">The name of the filter for which to obtain the definition.</param>
         /// <return>The set of filter names.</return>
         ICollection DefinedFilterNames { get; }
 

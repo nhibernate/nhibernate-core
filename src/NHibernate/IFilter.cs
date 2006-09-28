@@ -30,7 +30,7 @@ namespace NHibernate
         /// Set the named parameter's value list for this filter. 
         /// </summary>
         /// <param name="name">The parameter's name.</param>
-        /// <param name="values">The values to be applied.</param>
+        /// <param name="value">The values to be applied.</param>
         /// <returns>This FilterImpl instance (for method chaining).</returns>
         IFilter SetParameter(string name, object value);
 

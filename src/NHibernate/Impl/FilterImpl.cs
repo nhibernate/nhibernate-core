@@ -76,7 +76,7 @@ namespace NHibernate.Impl
         /// in conjunction with IN-style filter criteria.
         /// </summary>
         /// <param name="name">The parameter's name.</param>
-        /// <param name="value">The values to be expanded into an SQL IN list.</param>
+        /// <param name="values">The values to be expanded into an SQL IN list.</param>
         /// <returns>This FilterImpl instance (for method chaining).</returns>
         public IFilter SetParameterList(string name, ICollection values) 
         {

@@ -157,12 +157,11 @@ namespace NHibernate.Cfg
 				}
 				else
 				{
-					/**
-					 * Reorder properties
-					 * 1. get the parent property
-					 * 2. list all the properties following the expected one in the parent property
-					 * 3. calculate the lowest index and insert the property
-					 */
+					 // Reorder properties
+					 // 1. get the parent property
+					 // 2. list all the properties following the expected one in the parent property
+					 // 3. calculate the lowest index and insert the property
+					
 					if (pc == null)
 						throw new MappingException("dotted notation in <return-join> or <load-collection> not yet supported");
 					int dotIndex = name.LastIndexOf('.');
