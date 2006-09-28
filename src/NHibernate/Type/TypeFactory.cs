@@ -256,7 +256,7 @@ namespace NHibernate.Type
 				string[] parsedName = name.Split( precisionScaleSplit );
 				if( parsedName.Length < 4 )
 				{
-					throw new ApplicationException( "The name " + name + " is not a valid Precision/Scale name" );
+					throw new ArgumentOutOfRangeException("TypeClassification.PrecisionScale", name, "It is not a valid Precision/Scale name");
 				}
 
 				typeName = parsedName[ 0 ].Trim();
@@ -281,7 +281,7 @@ namespace NHibernate.Type
 				string[] parsedName = name.Split( lengthSplit );
 				if( parsedName.Length < 3 )
 				{
-					throw new ApplicationException( "The name " + name + " is not a valid Length name" );
+					throw new ArgumentOutOfRangeException("TypeClassification.Length", name, "It is not a valid Length name");
 				}
 
 				typeName = parsedName[ 0 ].Trim();
