@@ -603,8 +603,13 @@ ISession session = sessions.OpenSession(conn);
                             </entry>
                         </row>
                         <row>
-                            <entry>MySQL</entry> 
+                            <entry>MySQL 3 or 4</entry> 
                             <entry><literal>NHibernate.Dialect.MySQLDialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>MySQL 5</entry>
+                            <entry><literal>NHibernate.Dialect.MySQL5Dialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
