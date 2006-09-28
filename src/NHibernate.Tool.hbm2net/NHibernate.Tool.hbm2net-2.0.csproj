@@ -127,7 +127,7 @@
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="JavaTool.cs">
+    <Compile Include="LanguageTool.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MappingElement.cs">

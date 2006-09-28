@@ -11,7 +11,7 @@ namespace NHibernate.Tool.hbm2net
 	/// To change the template for this generated type comment go to
 	/// Window - Preferences - Java - Code Generation - Code and Comments
 	/// </author>
-	public class JavaTool
+	public class LanguageTool
 	{
 		
 		/// <summary> Returns "package packagename;" where packagename is either the declared packagename,
@@ -223,7 +223,7 @@ namespace NHibernate.Tool.hbm2net
 						first = false;
 					else
 						sbuf.Append(",");
-					sbuf.Append(JavaTool.shortenType(iter.Current.ToString(), cmap.Imports));
+					sbuf.Append(LanguageTool.shortenType(iter.Current.ToString(), cmap.Imports));
 				}
 				return sbuf.ToString();
 			}
@@ -244,7 +244,7 @@ namespace NHibernate.Tool.hbm2net
 				else
 					buf.Append(", ");
 				FieldProperty field = (FieldProperty) fields.Current;
-				buf.Append(JavaTool.shortenType(field.FullyQualifiedTypeName, classMapping.Imports) + " " + field.fieldcase);
+				buf.Append(LanguageTool.shortenType(field.FullyQualifiedTypeName, classMapping.Imports) + " " + field.fieldcase);
 			}
 			return buf.ToString();
 		}

@@ -552,7 +552,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			else
 			{
-				// Transform it if it's a basic java type
+				// Transform it if it's a basic .net type
 				hibernateType = GetTypeForJavaType( hibernateType );
 
 				IType basicType = TypeFactory.Basic(hibernateType);
@@ -574,7 +574,7 @@ namespace NHibernate.Tool.hbm2net
 		}
 		
 		/// <summary>
-		/// Substitute basic Hibernate types for the java.lang ones
+		/// Substitute basic Hibernate types for the .net ones
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>

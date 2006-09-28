@@ -14,7 +14,7 @@ namespace NHibernate.Tool.hbm2net
 		}
 		private void  InitBlock()
 		{
-			javaTool = new JavaTool();
+			languageTool = new LanguageTool();
 			primitiveToObject["char"] = "Character";
 			primitiveToObject["byte"] = "Byte";
 			primitiveToObject["short"] = "Short";
@@ -29,7 +29,7 @@ namespace NHibernate.Tool.hbm2net
 		protected internal const int BOUND = 1;
 		protected internal const int CONSTRAINT = 3; //any constraint properties are bound as well
 		
-		internal JavaTool javaTool;
+		internal LanguageTool languageTool;
 		
 		public override void  render(string savedToPackage, string savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter mainwriter)
 		{
@@ -64,7 +64,7 @@ namespace NHibernate.Tool.hbm2net
 			}
 			else
 			{
-				writer.WriteLine("/// <summary>\n" + javaTool.toJavaDoc(classMapping.getMetaAsString("class-description"), 0) + "\n/// </summary>");
+				writer.WriteLine("/// <summary>\n" + languageTool.toJavaDoc(classMapping.getMetaAsString("class-description"), 0) + "\n/// </summary>");
 			}
 			
 			string classScope = classMapping.Scope;
@@ -81,24 +81,24 @@ namespace NHibernate.Tool.hbm2net
 			{
 				writer.Write(classScope + " " + declarationType + " " + savedToClass);
 			}
-			if (javaTool.hasExtends(classMapping) || javaTool.hasImplements(classMapping))
+			if (languageTool.hasExtends(classMapping) || languageTool.hasImplements(classMapping))
 			{
 				writer.Write(" : ");
 			}
 			
-			if (javaTool.hasExtends(classMapping))
+			if (languageTool.hasExtends(classMapping))
 			{
-				writer.Write(javaTool.getExtends(classMapping));
+				writer.Write(languageTool.getExtends(classMapping));
 			}
 
-			if (javaTool.hasExtends(classMapping) && javaTool.hasImplements(classMapping))
+			if (languageTool.hasExtends(classMapping) && languageTool.hasImplements(classMapping))
 			{
 				writer.Write(", ");
 			}
 			
-			if (javaTool.hasImplements(classMapping))
+			if (languageTool.hasImplements(classMapping))
 			{
-				writer.Write(javaTool.getImplements(classMapping));
+				writer.Write(languageTool.getImplements(classMapping));
 			}
 			
 			writer.WriteLine(" {");
@@ -216,7 +216,7 @@ namespace NHibernate.Tool.hbm2net
 			writer.WriteLine("    /// <summary>\n    /// full constructor\n    /// </summary>");
 			string fullCons = "    public " + savedToClass + StringHelper.OpenParen;
 			
-			fullCons += javaTool.fieldsAsParameters(allFieldsForFullConstructor, classMapping, class2classmap);
+			fullCons += languageTool.fieldsAsParameters(allFieldsForFullConstructor, classMapping, class2classmap);
 			
 			writer.Write(fullCons + ")");
 			//invoke super to initialize superclass...
@@ -278,7 +278,7 @@ namespace NHibernate.Tool.hbm2net
 						minCons = minCons + ", ";
 
 					FieldProperty field = (FieldProperty) fields.Current;
-					minCons = minCons + JavaTool.shortenType(JavaTool.getTrueTypeName(field, class2classmap), classMapping.Imports) + " " + field.FieldName;
+					minCons = minCons + LanguageTool.shortenType(LanguageTool.getTrueTypeName(field, class2classmap), classMapping.Imports) + " " + field.FieldName;
 				}
 				
 				writer.Write(minCons + ")");
@@ -475,8 +475,8 @@ namespace NHibernate.Tool.hbm2net
 					
 					if (field.getMeta("field-description") != null)
 					{
-						//writer.WriteLine("    /** \n" + javaTool.toJavaDoc(field.getMetaAsString("field-description"), 4) + "     */");
-						writer.WriteLine("    /// <summary>\n" + javaTool.toJavaDoc(field.getMetaAsString("field-description"), 4) + "\n    /// </summary>");
+						//writer.WriteLine("    /** \n" + languageTool.toJavaDoc(field.getMetaAsString("field-description"), 4) + "     */");
+						writer.WriteLine("    /// <summary>\n" + languageTool.toJavaDoc(field.getMetaAsString("field-description"), 4) + "\n    /// </summary>");
 					}
 					writer.Write("    " + getAccessScope + " virtual " + field.FullyQualifiedTypeName + " " + field.propcase);
 					if (classMapping.Interface)
@@ -585,7 +585,7 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual void  doImports(ClassMapping classMapping, System.IO.StreamWriter writer)
 		{
-			writer.WriteLine(javaTool.genImports(classMapping));
+			writer.WriteLine(languageTool.genImports(classMapping));
 			writer.WriteLine();
 		}
 		

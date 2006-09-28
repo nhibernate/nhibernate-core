@@ -42,7 +42,7 @@ namespace NHibernate.Tool.hbm2net
 			
 			context.Put("class2classmap", class2classmap);
 			
-			context.Put("javaTool", new JavaTool());
+			context.Put("languageTool", new LanguageTool());
 
 			context.Put("runtimeversion", Guid.Empty.GetType().Assembly.ImageRuntimeVersion);
 			
@@ -53,7 +53,7 @@ namespace NHibernate.Tool.hbm2net
 			// First run - writes to in-memory string
 			template.Merge(context, sw);
 			
-			context.Put("classimports", new JavaTool().genImports(classMapping));
+			context.Put("classimports", new LanguageTool().genImports(classMapping));
 			
 			// Second run - writes to file (allows for placing imports correctly and optimized ;)
 			ve.Evaluate(context, writer, "hbm2net", sw.ToString());
@@ -65,7 +65,7 @@ namespace NHibernate.Tool.hbm2net
 			{
 				File.Delete("nvelocity.log");
 			}
-			catch (IOException e)
+			catch (IOException)
 			{
 				// TODO: This is evil! need to investigate further. Cannot get
 				// exclusive lock on the log file with this assembly now a 

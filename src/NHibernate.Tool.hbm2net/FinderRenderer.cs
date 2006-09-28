@@ -189,12 +189,8 @@ namespace NHibernate.Tool.hbm2net
 			string sessionMethod = classMapping.getMetaAsString("session-method").Trim();
 			
 			// fields
-			//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
-			for (IEnumerator fields = classMapping.Fields.GetEnumerator(); fields.MoveNext(); )
+			foreach (FieldProperty field in classMapping.Fields)
 			{
-				//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
-				FieldProperty field = (FieldProperty) fields.Current;
-				
 				if (field.getMeta(MT_FINDERMETHOD) != null)
 				{
 					
@@ -203,12 +199,12 @@ namespace NHibernate.Tool.hbm2net
 					if ("".Equals(sessionMethod))
 					{
 						// Make the method signature require a session to be passed in
-						writer.WriteLine("    public static List " + finderName + "(Session session, " + JavaTool.getTrueTypeName(field, class2classmap) + " " + field.FieldName + ") " + "throws SQLException, HibernateException {");
+						writer.WriteLine("    public static List " + finderName + "(Session session, " + LanguageTool.getTrueTypeName(field, class2classmap) + " " + field.FieldName + ") " + "throws SQLException, HibernateException {");
 					}
 					else
 					{
 						// Use the session method to get the session to execute the query
-						writer.WriteLine("    public static List " + finderName + "(" + JavaTool.getTrueTypeName(field, class2classmap) + " " + field.FieldName + ") " + "throws SQLException, HibernateException {");
+						writer.WriteLine("    public static List " + finderName + "(" + LanguageTool.getTrueTypeName(field, class2classmap) + " " + field.FieldName + ") " + "throws SQLException, HibernateException {");
 						writer.WriteLine("        Session session = " + sessionMethod);
 					}
 					
@@ -227,7 +223,7 @@ namespace NHibernate.Tool.hbm2net
 					QueryBuilder qb = new QueryBuilder();
 					qb.LocalClass = classMapping;
 					qb.setForeignClass(field.ForeignClass, class2classmap, joinFieldName);
-					//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
+
 					ClassMapping foreignClass = (ClassMapping) class2classmap[field.ForeignClass.FullyQualifiedName];
 					if (foreignClass == null)
 					{
@@ -236,11 +232,9 @@ namespace NHibernate.Tool.hbm2net
 						return ;
 					}
 					FieldProperty foreignField = null;
-					//UPGRADE_TODO: Method 'java.util.Iterator.hasNext' was converted to 'System.Collections.IEnumerator.MoveNext' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratorhasNext"'
-					for (IEnumerator foreignFields = foreignClass.Fields.GetEnumerator(); foreignFields.MoveNext(); )
+
+					foreach (FieldProperty f in foreignClass.Fields)
 					{
-						//UPGRADE_TODO: Method 'java.util.Iterator.next' was converted to 'System.Collections.IEnumerator.Current' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilIteratornext"'
-						FieldProperty f = (FieldProperty) foreignFields.Current;
 						if (f.FieldName.Equals(fieldName))
 						{
 							foreignField = f;
@@ -280,7 +274,7 @@ namespace NHibernate.Tool.hbm2net
 					msb.addParam(classMapping.Name + " " + classMapping.Name.ToLower());
 					
 					// And the foreign class field
-					msb.addParam(JavaTool.getTrueTypeName(foreignField, class2classmap) + " " + foreignField.FieldName);
+					msb.addParam(LanguageTool.getTrueTypeName(foreignField, class2classmap) + " " + foreignField.FieldName);
 					
 					msb.addThrows("SQLException");
 					msb.addThrows("HibernateException");
@@ -315,8 +309,6 @@ namespace NHibernate.Tool.hbm2net
 		}
 		
 		
-		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
-		//UPGRADE_NOTE: The initialization of  'primitiveToObject' was moved to static method 'NHibernate.Tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		internal static IDictionary primitiveToObject;
 		
 		
@@ -356,7 +348,6 @@ namespace NHibernate.Tool.hbm2net
 			ClassName type = field.ClassType;
 			if (type != null && type.Primitive && !type.Array)
 			{
-				//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
 				string typeName = (String) primitiveToObject[type.Name];
 				typeName = "new " + typeName + "( ";
 				typeName += (prependThis?"this.":"");
@@ -369,8 +360,6 @@ namespace NHibernate.Tool.hbm2net
 		/// <summary>  Coversion map for field types to Hibernate types, might be good to move
 		/// this to some other more general class
 		/// </summary>
-		//UPGRADE_TODO: Class 'java.util.HashMap' was converted to 'System.Collections.Hashtable' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilHashMap"'
-		//UPGRADE_NOTE: The initialization of  'hibType' was moved to static method 'NHibernate.Tool.hbm2net.FinderRenderer'. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1005"'
 		internal static IDictionary hibType;
 		
 		
@@ -382,7 +371,7 @@ namespace NHibernate.Tool.hbm2net
 		public static string getFieldAsHibernateType(bool prependThis, FieldProperty field)
 		{
 			ClassName type = field.ClassType;
-			//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
+
 			string hibTypeString = (String) hibType[type.Name];
 			if ((object) hibTypeString != null)
 			{

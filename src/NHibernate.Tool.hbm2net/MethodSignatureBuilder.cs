@@ -96,13 +96,11 @@ namespace NHibernate.Tool.hbm2net
 		{
 			StringBuilder sb = new StringBuilder(accessModifier + " " + returnType + " " + name + "(");
 			
-			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			for (int i = 0; i < paramList.Count; i++)
 			{
 				string param = (String) paramList[i];
 				sb.Append(param);
 				
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				if (i < paramList.Count - 1)
 				{
 					sb.Append(", ");
@@ -110,7 +108,6 @@ namespace NHibernate.Tool.hbm2net
 			}
 			sb.Append(") ");
 			
-			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			for (int i = 0; i < throwsList.Count; i++)
 			{
 				if (i == 0)
@@ -120,7 +117,6 @@ namespace NHibernate.Tool.hbm2net
 				string thr = (String) throwsList[i];
 				sb.Append(thr);
 				
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				if (i < throwsList.Count - 1)
 				{
 					sb.Append(", ");
@@ -133,13 +129,11 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual void  addParam(string param)
 		{
-			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			this.paramList.Add(param);
 		}
 		
 		public virtual void  addThrows(string throwsString)
 		{
-			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			this.throwsList.Add(throwsString);
 		}
 	}

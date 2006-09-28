@@ -62,15 +62,12 @@ namespace NHibernate.Tool.hbm2net
 				}
 				}*/
 				
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				if (criteria.Count > 0)
 				{
-					//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					for (int i = 0; i < criteria.Count; i++)
 					{
 						string thisCriteria = (String) criteria[i];
 						sb.Append(" " + thisCriteria + " ");
-						//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 						if (i < criteria.Count - 1)
 						{
 							sb.Append(" and ");
@@ -98,12 +95,10 @@ namespace NHibernate.Tool.hbm2net
 				string types = "new Type[] {";
 				// Always need the local class as an association type
 				types += ("Hibernate.association(" + localClass.Name + ".class), ");
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				for (int i = 0; i < criteriaParamTypes.Count; i++)
 				{
 					string s = (String) criteriaParamTypes[i];
 					types += s;
-					//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					if (i != criteriaParamTypes.Count - 1)
 					{
 						types += ",";
@@ -129,12 +124,10 @@ namespace NHibernate.Tool.hbm2net
 				string types = "new Object[] {";
 				// Always joining via the local class
 				types += (localClass.Name.ToLower() + ", ");
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 				for (int i = 0; i < params_Renamed.Count; i++)
 				{
 					string s = (String) params_Renamed[i];
 					types += s;
-					//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.size' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 					if (i != params_Renamed.Count - 1)
 					{
 						types += ",";
@@ -178,7 +171,6 @@ namespace NHibernate.Tool.hbm2net
 		
 		public virtual void  setForeignClass(ClassName foreignClass, IDictionary classMappings, string joinFieldName)
 		{
-			//UPGRADE_TODO: Method 'java.util.Map.get' was converted to 'System.Collections.IDictionary.Item' which has a different behavior. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1073_javautilMapget_javalangObject"'
 			ClassMapping classMapToAdd = (ClassMapping) classMappings[foreignClass.FullyQualifiedName];
 			this.foreignClass = classMapToAdd;
 			this.joinFieldName = joinFieldName;
@@ -187,11 +179,8 @@ namespace NHibernate.Tool.hbm2net
 		public virtual void  addCritera(ClassMapping criteriaClass, FieldProperty field, string condition)
 		{
 			string newCritera = criteriaClass.Name.ToLower() + "." + field.FieldName + condition + "?";
-			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			params_Renamed.Add(FinderRenderer.getFieldAsObject(false, field));
-			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			criteria.Add(newCritera);
-			//UPGRADE_TODO: The equivalent in .NET for method 'java.util.ArrayList.add' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043"'
 			criteriaParamTypes.Add(FinderRenderer.getFieldAsHibernateType(false, field));
 		}
 	}
