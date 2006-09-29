@@ -222,13 +222,10 @@ namespace NHibernate.Impl
 				return this;
 			}
 
-            public IProjection Projection
-            {
-                get { return root.projection; }
-                set
-                {
-                    root.Projection = value;
-                }
+			public ICriteria SetProjection(IProjection projection)
+			{
+				root.SetProjection(projection);
+				return this;
             }
 		}
 
@@ -474,16 +471,18 @@ namespace NHibernate.Impl
 //			CriterionEntry ce = (CriterionEntry) criteria[ 0 ];
 //			return ce.Criterion is NaturalIdentifier;
 		}
+		
+		public IProjection Projection
+		{
+			get { return projection; }
+		}
 
-        public IProjection Projection
-        {
-            get { return projection; }
-            set
-            {
-                projection = value;
-                projectionCriteria = this;
-                SetResultTransformer(ProjectionTransformer);
-            }
+		public ICriteria SetProjection(IProjection projection)
+		{
+            this.projection = projection;
+            projectionCriteria = this;
+            SetResultTransformer(ProjectionTransformer);
+			return this;
         }
 
         public ICriteria ProjectionCriteria

@@ -196,10 +196,10 @@ namespace NHibernate
         /// <p/>
         /// The individual components contained within the given
         /// <see cref="IProjection"/> determines the overall "shape" of the query result.
-        /// <paramref name="Projection">The projection representing the overall "shape" of the
+        /// <paramref name="projection">The projection representing the overall "shape" of the
         /// query results.</paramref>
         /// <returns>this (for method chaining)</returns>
         /// </summary>
-        IProjection Projection { get;set;}
+		ICriteria SetProjection(IProjection projection);
 	}
 }

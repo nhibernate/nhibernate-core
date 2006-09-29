@@ -57,10 +57,10 @@ namespace NHibernate.Test.ExpressionTest.Projection
             {
                 ICriteria c = session.CreateCriteria(typeof(ProjectionTestClass));
 
-                c.Projection = Projections.ProjectionList()
+                c.SetProjection(Projections.ProjectionList()
                     .Add(Projections.Avg("Pay"))
                     .Add(Projections.Max("Pay"))
-                    .Add(Projections.Min("Pay"))
+                    .Add(Projections.Min("Pay")))
                     ;
                 IList result = c.List();// c.UniqueResult();
                 Assert.IsTrue(result.Count == 1, "More than one record was found, while just one was expected");
@@ -81,10 +81,10 @@ namespace NHibernate.Test.ExpressionTest.Projection
             {
                 ICriteria c = session.CreateCriteria(typeof(ProjectionTestClass));
 
-                c.Projection = Projections.ProjectionList()
+                c.SetProjection(Projections.ProjectionList()
                     .Add(Projections.SqlProjection("Avg({alias}.Pay) MyPay",
                     new string[] { "MyPay" },
-                    new IType[] { NHibernateUtil.Double }));
+                    new IType[] { NHibernateUtil.Double })));
 
                 IList result = c.List();// c.UniqueResult();
                 Assert.IsTrue(result.Count == 1);
