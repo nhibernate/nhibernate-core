@@ -1,6 +1,4 @@
 using System;
-using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -54,14 +52,14 @@ namespace NHibernate.Expression
 		}
 
 
-		protected IQueryableCollection GetQueryableCollection(string entityName, string propertyName, ISessionFactoryImplementor factory)
+		protected IQueryableCollection GetQueryableCollection(string entityName, string actualPropertyName, ISessionFactoryImplementor factory)
 		{
 			IPropertyMapping ownerMapping = (IPropertyMapping)factory.GetEntityPersister(entityName);
-			IType type = ownerMapping.ToType(propertyName);
+			IType type = ownerMapping.ToType(actualPropertyName);
 			if (!type.IsCollectionType)
 			{
 				throw new MappingException(
-								"Property path [" + entityName + "." + propertyName + "] does not reference a collection"
+								"Property path [" + entityName + "." + actualPropertyName + "] does not reference a collection"
 				);
 			}
 
@@ -79,5 +77,54 @@ namespace NHibernate.Expression
 				throw new QueryException("collection role not found: " + role, e);
 			}
 		}
+
+		#region Operator Overloading
+
+		public static AbstractCriterion operator &(AbstractEmptinessExpression lhs, AbstractEmptinessExpression rhs)
+		{
+			return new AndExpression(lhs, rhs);
+		}
+
+		public static AbstractCriterion operator |(AbstractEmptinessExpression lhs, AbstractEmptinessExpression rhs)
+		{
+			return new OrExpression(lhs, rhs);
+		}
+
+
+		public static AbstractCriterion operator &(AbstractEmptinessExpression lhs, AbstractCriterion rhs)
+		{
+			return new AndExpression(lhs, rhs);
+		}
+
+		public static AbstractCriterion operator |(AbstractEmptinessExpression lhs, AbstractCriterion rhs)
+		{
+			return new OrExpression(lhs, rhs);
+		}
+
+
+		public static AbstractCriterion operator !(AbstractEmptinessExpression crit)
+		{
+			return new NotExpression(crit);
+		}
+
+		/// <summary>
+		/// See here for details:
+		/// http://steve.emxsoftware.com/NET/Overloading+the++and++operators
+		/// </summary>
+		public static bool operator false(AbstractEmptinessExpression criteria)
+		{
+			return false;
+		}
+
+		/// <summary>
+		/// See here for details:
+		/// http://steve.emxsoftware.com/NET/Overloading+the++and++operators
+		/// </summary>
+		public static bool operator true(AbstractEmptinessExpression criteria)
+		{
+			return false;
+		}
+
+		#endregion
 	}
 }

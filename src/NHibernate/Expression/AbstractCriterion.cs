@@ -50,6 +50,18 @@ namespace NHibernate.Expression
 		{
 			return new OrExpression(lhs, rhs);
 		}
+
+
+		public static AbstractCriterion operator &(AbstractCriterion lhs, AbstractEmptinessExpression rhs)
+		{
+			return new AndExpression(lhs, rhs);
+		}
+
+		public static AbstractCriterion operator |(AbstractCriterion lhs, AbstractEmptinessExpression rhs)
+		{
+			return new OrExpression(lhs, rhs);
+		}
+		
 		
 		public static AbstractCriterion operator !(AbstractCriterion crit)
 		{

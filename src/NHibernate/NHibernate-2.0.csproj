@@ -519,6 +519,8 @@
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
+    <Compile Include="Expression\IsEmptyExpression.cs" />
+    <Compile Include="Expression\IsNotEmptyExpression.cs" />
     <Compile Include="Hql\HolderInstantiator.cs" />
     <Compile Include="Hql\IFilterTranslator.cs" />
     <Compile Include="IFilter.cs" />

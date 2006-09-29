@@ -195,7 +195,26 @@ namespace NHibernate.Expression
 			return new NotNullExpression( propertyName );
 		}
 
+		/// <summary>
+		/// Apply an "is not empty" constraint to the named property 
+		/// </summary>
+		/// <param name="propertyName">The name of the Property in the class.</param>
+		/// <returns>A <see cref="IsNotEmptyExpression" />.</returns>
+		public static AbstractEmptinessExpression IsNotEmpty(string propertyName)
+		{
+			return new IsNotEmptyExpression(propertyName);
+		}
 
+		/// <summary>
+		/// Apply an "is not empty" constraint to the named property 
+		/// </summary>
+		/// <param name="propertyName">The name of the Property in the class.</param>
+		/// <returns>A <see cref="IsEmptyExpression" />.</returns>
+		public static AbstractEmptinessExpression IsEmpty(string propertyName)
+		{
+			return new IsEmptyExpression(propertyName);
+		}
+		
 		/// <summary>
 		/// Return the conjuction of two expressions
 		/// </summary>
