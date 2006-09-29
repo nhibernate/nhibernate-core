@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
@@ -54,5 +55,11 @@ namespace NHibernate.Type
 		/// no columns to be updated.
 		/// </summary>
 		bool IsAlwaysDirtyChecked { get; }
+
+		/// <summary>
+		/// Get the "filtering" SQL fragment that is applied in the
+		/// SQL on clause, in addition to the usual join condition.
+		/// </summary>
+		string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary enabledFilters);
 	}
 }

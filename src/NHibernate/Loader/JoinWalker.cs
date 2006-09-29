@@ -734,17 +734,17 @@ namespace NHibernate.Loader
 			JoinFragment outerjoin = Dialect.CreateOuterJoinFragment();
 
 			OuterJoinableAssociation last = null;
-			foreach( OuterJoinableAssociation oj in associations )
+			foreach (OuterJoinableAssociation oj in associations)
 			{
-				// TODO H3:
-				//				if( last != null && last.IsManyToManyWith( oj ) )
-				//				{
-				//					oj.AddManyToManyJoin( outerjoin, ( IQueryableCollection ) last.Joinable );
-				//				}
-				//				else
-				//				{
-				oj.AddJoins( outerjoin );
-				//				}
+				//TODO H3:
+				if (last != null && last.IsManyToManyWith(oj))
+				{
+					oj.AddManyToManyJoin(outerjoin, (IQueryableCollection) last.Joinable);
+				}
+				else
+				{
+					oj.AddJoins(outerjoin);
+				}
 
 				last = oj;
 			}

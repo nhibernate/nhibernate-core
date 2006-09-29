@@ -4,7 +4,6 @@ using System.Data;
 using System.Text;
 
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
@@ -73,7 +72,7 @@ namespace NHibernate.Type
 
 		protected object GetIdentifier(object value, ISessionImplementor session)
 		{
-			if (uniqueKeyPropertyName == null)
+			if (IsReferenceToPrimaryKey)
 			{
 				return session.GetEntityIdentifierIfNotUnsaved(value); //tolerates nulls
 			}
@@ -227,7 +226,7 @@ namespace NHibernate.Type
 
 		public IType GetIdentifierOrUniqueKeyType(IMapping factory)
 		{
-			if (uniqueKeyPropertyName == null)
+			if (IsReferenceToPrimaryKey)
 			{
 				return factory.GetIdentifierType(associatedClass);
 			}
@@ -239,7 +238,7 @@ namespace NHibernate.Type
 
 		public string GetIdentifierOrUniqueKeyPropertyName(IMapping factory)
 		{
-			if (uniqueKeyPropertyName == null)
+			if (IsReferenceToPrimaryKey)
 			{
 				return factory.GetIdentifierPropertyName(associatedClass);
 			}
@@ -272,7 +271,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				if (uniqueKeyPropertyName == null)
+				if (IsReferenceToPrimaryKey)
 				{
 					return ResolveIdentifier(id, session);
 				}
@@ -326,5 +325,23 @@ namespace NHibernate.Type
 		}
 
 		public abstract bool IsAlwaysDirtyChecked { get; }
+		
+		public bool IsReferenceToPrimaryKey
+		{
+			get { return uniqueKeyPropertyName == null; }
+		}
+
+		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		{
+			if (IsReferenceToPrimaryKey)
+			{
+				//TODO: this is a bit arbitrary, expose a switch to the user?
+				return "";
+			}
+			else
+			{
+				return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
+			}
+		}
 	}
 }

@@ -315,10 +315,10 @@ namespace NHibernate.Test.Legacy
 					.Add( Expression.Expression.Eq( "Id", p1.Id ) )
 					.List().Count );
 			Assert.AreEqual( 1, s.CreateQuery( "from Part" ).List().Count );
-			Assert.AreEqual( 1, s.CreateQuery( "from Baz baz join baz.Parts" ).List().Count );
+			Assert.AreEqual( 2, s.CreateQuery( "from Baz baz join baz.Parts" ).List().Count );
 			
 			baz = (Baz) s.CreateCriteria( typeof( Baz ) ).UniqueResult();
-			Assert.AreEqual( 1, s.CreateFilter( baz.Parts, "" ).List().Count );
+			Assert.AreEqual( 2, s.CreateFilter( baz.Parts, "" ).List().Count );
 			//assertTrue( baz.getParts().size()==1 );
 			s.Delete( "from Part" );
 			s.Delete( baz );

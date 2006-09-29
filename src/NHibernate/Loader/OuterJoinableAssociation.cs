@@ -37,7 +37,7 @@ namespace NHibernate.Loader
 			this.joinType = joinType;
 			this.joinable = joinableType.GetAssociatedJoinable( factory );
 			this.rhsColumns = JoinHelper.GetRHSColumnNames( joinableType, factory );
-			this.on = ""; // TODO H3: joinableType.GetOnCondition( rhsAlias, factory, enabledFilters );
+			this.on = joinableType.GetOnCondition( rhsAlias, factory, enabledFilters );
 			this.enabledFilters = enabledFilters; // needed later for many-to-many/filter application
 		}
 
@@ -128,8 +128,8 @@ namespace NHibernate.Loader
 				rhsAlias,
 				lhsColumns,
 				rhsColumns,
-				joinType
-				// TODO H3: on
+				joinType,
+				on
 				);
 			outerjoin.AddJoins(
 				joinable.FromJoinFragment( rhsAlias, false, true ),
@@ -163,28 +163,27 @@ namespace NHibernate.Loader
 			return false;
 		}
 
-		// TODO H3:
-//		public void AddManyToManyJoin(JoinFragment outerjoin, IQueryableCollection collection)
-//		{
-//			String manyToManyFilter = collection.GetManyToManyFilterFragment( rhsAlias, enabledFilters );
-//			String condition = "".Equals( manyToManyFilter )
-//			                   	? on
-//			                   	: "".Equals( on )
-//			                   	  	? manyToManyFilter
-//			                   	  	: on + " and " + manyToManyFilter;
-//			outerjoin.AddJoin(
-//				joinable.TableName,
-//				rhsAlias,
-//				lhsColumns,
-//				rhsColumns,
-//				joinType,
-//				condition
-//				);
-//			outerjoin.AddJoins(
-//				joinable.FromJoinFragment(rhsAlias, false, true),
-//				joinable.WhereJoinFragment(rhsAlias, false, true)
-//				);
-//		}
+		public void AddManyToManyJoin(JoinFragment outerjoin, IQueryableCollection collection)
+		{
+			String manyToManyFilter = collection.GetManyToManyFilterFragment( rhsAlias, enabledFilters );
+			String condition = "".Equals( manyToManyFilter )
+			                   	? on
+			                   	: "".Equals( on )
+			                   	  	? manyToManyFilter
+			                   	  	: on + " and " + manyToManyFilter;
+			outerjoin.AddJoin(
+				joinable.TableName,
+				rhsAlias,
+				lhsColumns,
+				rhsColumns,
+				joinType,
+				condition
+				);
+			outerjoin.AddJoins(
+				joinable.FromJoinFragment(rhsAlias, false, true),
+				joinable.WhereJoinFragment(rhsAlias, false, true)
+				);
+		}
 
 	}
 }

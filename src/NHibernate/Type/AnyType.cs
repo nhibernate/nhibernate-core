@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 
 using NHibernate.Engine;
@@ -394,6 +395,11 @@ namespace NHibernate.Type
 		public bool[] PropertyNullability
 		{
 			get { return null; }
+		}
+		
+		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

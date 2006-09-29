@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using Iesi.Collections;
+using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -405,7 +406,7 @@ namespace NHibernate.Hql
 			if( pathExpressionParser.IsCollectionValued )
 			{
 				OpenExpression( q, string.Empty );
-				AppendToken( q, pathExpressionParser.GetCollectionSubquery() );
+				AppendToken( q, pathExpressionParser.GetCollectionSubquery(q.EnabledFilters) );
 				CloseExpression( q, string.Empty );
 				// this is ugly here, but needed because its a subquery
 				q.AddQuerySpace( q.GetCollectionPersister( pathExpressionParser.CollectionRole ).CollectionSpace );
@@ -424,13 +425,17 @@ namespace NHibernate.Hql
 			}
 		}
 
-		private void AddJoin( JoinFragment ojf, QueryTranslator q )
+		private void AddJoin(JoinSequence joinSequence, QueryTranslator q)
 		{
-			JoinFragment fromClause = q.CreateJoinFragment( true );
-			fromClause.AddJoins( ojf.ToFromFragmentString, new SqlString( String.Empty ) );
-			q.AddJoin( pathExpressionParser.Name, fromClause );
-			//TODO: HACK with ToString()
-			AddToCurrentJoin( ojf.ToWhereFragmentString.ToString() );
+			q.AddFromJoinOnly(pathExpressionParser.Name, joinSequence);
+			try
+			{
+				AddToCurrentJoin(joinSequence.ToJoinFragment(q.EnabledFilters, true).ToWhereFragmentString.ToString());
+			}
+			catch (MappingException me)
+			{
+				throw new QueryException(me);
+			}
 		}
 
 		private void DoToken( string token, QueryTranslator q )
@@ -469,7 +474,7 @@ namespace NHibernate.Hql
 				{
 					object constant;
 					string fieldName = null;
-					string typeName = null;
+					string typeName;
 					string importedName = null;
 
 					int indexOfDot = token.IndexOf( StringHelper.Dot );
@@ -538,7 +543,14 @@ namespace NHibernate.Hql
 
 		private void AddToCurrentJoin( PathExpressionParser.CollectionElement ce )
 		{
-			AddToCurrentJoin( ce.Join.ToWhereFragmentString + ce.IndexValue.ToString() );
+			try
+			{
+				AddToCurrentJoin(ce.JoinSequence.ToJoinFragment().ToWhereFragmentString + ce.IndexValue.ToString());
+			}
+			catch (MappingException me)
+			{
+				throw new QueryException(me);
+			}
 		}
 
 		private void SpecialCasesBefore( string lcToken )

@@ -286,6 +286,8 @@
     <Compile Include="NHSpecificTest\NH607\PersistentObject.cs" />
     <Compile Include="NHSpecificTest\NH607\PPP.cs" />
     <Compile Include="NHSpecificTest\NH607\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH623\Classes.cs" />
+    <Compile Include="NHSpecificTest\NH623\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH643\Domain.cs" />
     <Compile Include="NHSpecificTest\NH643\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH687\Domain.cs" />
@@ -595,6 +597,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH734\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH623\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -432,5 +432,10 @@ namespace NHibernate.Type
 		/// Instantiate an empty instance of the "underlying" collection (not a wrapper)
 		/// </summary>
 		public abstract object Instantiate();
+
+		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		{
+			return GetAssociatedJoinable( factory ).FilterFragment( alias, enabledFilters );
+		}
 	}
 }

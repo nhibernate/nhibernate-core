@@ -1,4 +1,6 @@
 using System;
+using System.Text;
+using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -27,6 +29,7 @@ namespace NHibernate.SqlCommand
 
 			for( int j = 0; j < fkColumns.Length; j++ )
 			{
+				//HasThetaJoins = true;
 				afterWhere.Add( " and " + fkColumns[ j ] );
 				if( joinType == JoinType.RightOuterJoin || joinType == JoinType.FullJoin )
 				{
@@ -41,6 +44,62 @@ namespace NHibernate.SqlCommand
 				}
 			}
 		}
+
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, string on)
+		{
+			//arbitrary on clause ignored!!
+			AddJoin(tableName, alias, fkColumns, pkColumns, joinType);
+			if (joinType == JoinType.InnerJoin)
+			{
+				AddCondition(on);
+			}
+			else if (joinType == JoinType.LeftOuterJoin)
+			{
+				AddLeftOuterJoinCondition(on);
+			}
+			else
+			{
+				throw new NotSupportedException("join type not supported by OracleJoinFragment (use Oracle9Dialect)");
+			}
+		}
+
+
+		
+		/// <summary>
+		/// This method is a bit of a hack, and assumes
+		/// that the column on the "right" side of the
+		/// join appears on the "left" side of the
+		/// operator, which is extremely wierd if this
+		/// was a normal join condition, but is natural
+		/// for a filter.
+		/// </summary>
+		private void AddLeftOuterJoinCondition(string on)
+		{
+			StringBuilder buf = new StringBuilder(on);
+			for (int i = 0; i < buf.Length; i++)
+			{
+				char character = buf[i];
+				bool isInsertPoint = Operators.Contains(character) ||
+				                     (character == ' ' && buf.Length > i + 3 && "is ".Equals(buf.ToString(i + 1, 3)));
+				if (isInsertPoint)
+				{
+					buf.Insert(i, "(+)");
+					i += 3;
+				}
+			}
+			AddCondition(buf.ToString());
+		}
+
+		private static readonly ISet Operators = new HashedSet();
+
+		static OracleJoinFragment()
+		{
+			Operators.Add('=');
+			Operators.Add('<');
+			Operators.Add('>');
+		}
+
+
 
 		/// <summary></summary>
 		public override SqlString ToFromFragmentString
@@ -110,7 +169,7 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="condition"></param>
-		public override void AddCondition( string condition )
+		public override bool AddCondition( string condition )
 		{
 			throw new NotSupportedException();
 		}
@@ -119,7 +178,7 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="condition"></param>
-		public override void AddCondition( SqlString condition )
+		public override bool AddCondition( SqlString condition )
 		{
 			throw new NotSupportedException();
 		}

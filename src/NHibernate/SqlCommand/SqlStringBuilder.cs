@@ -306,6 +306,11 @@ namespace NHibernate.SqlCommand
 		{
 			return new SqlString( ( object[ ] ) sqlParts.ToArray( typeof( object ) ) );
 		}
+
+		public override string ToString()
+		{
+			return ToSqlString().ToString();
+		}
 		
 		private class AddingSqlStringVisitor : ISqlStringVisitor
 		{
@@ -325,6 +330,11 @@ namespace NHibernate.SqlCommand
 			{
 				parent.AddParameter();
 			}
+		}
+
+		public void Clear()
+		{
+			sqlParts.Clear();
 		}
 	}
 }

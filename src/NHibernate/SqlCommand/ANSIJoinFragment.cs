@@ -13,17 +13,14 @@ namespace NHibernate.SqlCommand
 		private SqlStringBuilder buffer = new SqlStringBuilder();
 		private SqlStringBuilder conditions = new SqlStringBuilder();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableName"></param>
-		/// <param name="alias"></param>
-		/// <param name="fkColumns"></param>
-		/// <param name="pkColumns"></param>
-		/// <param name="joinType"></param>
-		public override void AddJoin( string tableName, string alias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType )
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType)
 		{
-			string joinString = null;
+			AddJoin(tableName, alias, fkColumns, pkColumns, joinType, null);
+		}
+
+		public override void AddJoin( string tableName, string alias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType, string on )
+		{
+			string joinString;
 			switch( joinType )
 			{
 				case JoinType.InnerJoin:
@@ -56,6 +53,8 @@ namespace NHibernate.SqlCommand
 					buffer.Add( " and " );
 				}
 			}
+
+			AddCondition(buffer, on);
 		}
 
 		/// <summary></summary>
@@ -70,18 +69,12 @@ namespace NHibernate.SqlCommand
 			get { return conditions.ToSqlString(); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fromFragment"></param>
-		/// <param name="whereFragment"></param>
 		public override void AddJoins( SqlString fromFragment, SqlString whereFragment )
 		{
 			buffer.Add( fromFragment );
 			//where fragment must be empty!
 		}
 
-		/// <summary></summary>
 		public override JoinFragment Copy()
 		{
 			ANSIJoinFragment copy = new ANSIJoinFragment();
@@ -89,12 +82,6 @@ namespace NHibernate.SqlCommand
 			return copy;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="columns"></param>
-		/// <param name="condition"></param>
 		public override void AddCondition( string alias, string[ ] columns, string condition )
 		{
 			for( int i = 0; i < columns.Length; i++ )
@@ -103,14 +90,6 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="columns"></param>
-		/// <param name="condition"></param>
-		/// <param name="conditionType"></param>
-		/// <param name="factory"></param>
 		public override void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory )
 		{
 			for( int i = 0; i < columns.Length; i++ )
@@ -120,49 +99,26 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableName"></param>
-		/// <param name="alias"></param>
 		public override void AddCrossJoin( string tableName, string alias )
 		{
 			buffer.Add( StringHelper.CommaSpace + tableName + " " + alias );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="fkColumns"></param>
-		/// <param name="pkColumns"></param>
 		public override void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns )
 		{
 			throw new NotSupportedException();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="condition"></param>
-		public override void AddCondition( string condition )
+		public override bool AddCondition( string condition )
 		{
 			throw new NotSupportedException();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="condition"></param>
-		public override void AddCondition( SqlString condition )
+		public override bool AddCondition( SqlString condition )
 		{
 			throw new NotSupportedException();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fromFragmentString"></param>
 		public override void AddFromFragmentString( SqlString fromFragmentString )
 		{
 			buffer.Add( fromFragmentString );

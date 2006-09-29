@@ -33,7 +33,7 @@ namespace NHibernate.Hql
 		private readonly IDictionary namedParameters = new Hashtable();
 		private readonly IDictionary aliasNames = new Hashtable();
 		private readonly IDictionary oneToOneOwnerNames = new Hashtable();
-		private readonly ISet crossJoins = new HashedSet();
+		private readonly IDictionary uniqueKeyOwnerReferences = new Hashtable();
 		private readonly IDictionary decoratedPropertyMappings = new Hashtable();
 
 		private readonly IList scalarSelectTokens = new ArrayList(); // contains a List of strings
@@ -45,8 +45,12 @@ namespace NHibernate.Hql
 		private readonly ISet querySpaces = new HashedSet();
 		private readonly ISet entitiesToFetch = new HashedSet();
 
+		private readonly IDictionary pathAliases = new Hashtable();
+		private readonly IDictionary pathJoins = new Hashtable();
+
 		private IQueryable[ ] persisters;
 		private int[] owners;
+		private EntityType[] ownerAssociationTypes;
 		private string[ ] names;
 		private bool[ ] includeInSelect;
 		private int selectLength;
@@ -64,8 +68,8 @@ namespace NHibernate.Hql
 		private bool hasScalars;
 		private bool shallowQuery;
 		private QueryTranslator superQuery;
+		
 		private IQueryableCollection collectionPersister;
-
 		private int collectionOwnerColumn = -1;
 		private string collectionOwnerName;
 		private string fetchName;
@@ -246,12 +250,16 @@ namespace NHibernate.Hql
 			}
 		}
 
-		public void AddEntityToFetch( string name, string oneToOneOwnerName )
+		public void AddEntityToFetch( string name, string oneToOneOwnerName, IAssociationType ownerAssociationType )
 		{
 			AddEntityToFetch( name );
 			if ( oneToOneOwnerName != null )
 			{
-				oneToOneOwnerNames.Add( name, oneToOneOwnerName );
+				oneToOneOwnerNames[name] = oneToOneOwnerName;
+			}
+			if (ownerAssociationType != null)
+			{
+				uniqueKeyOwnerReferences[name] = ownerAssociationType;
 			}
 		}
 
@@ -409,31 +417,30 @@ namespace NHibernate.Hql
 			collections.Add( name, role );
 		}
 
-		internal void AddFrom( string name, System.Type type, JoinFragment join )
+		internal void AddFrom( string name, System.Type type, JoinSequence joinSequence )
 		{
 			AddType( name, type );
-			AddFrom( name, join );
+			AddFrom( name, joinSequence );
 		}
 
-		internal void AddFromCollection( string name, string collectionRole, JoinFragment join )
+		internal void AddFromCollection( string name, string collectionRole, JoinSequence joinSequence )
 		{
 			//register collection role
 			AddCollection( name, collectionRole );
-			AddJoin( name, join );
+			AddJoin( name, joinSequence );
 		}
 
-		internal void AddFrom( string name, JoinFragment join )
+		internal void AddFrom( string name, JoinSequence joinSequence )
 		{
 			fromTypes.Add( name );
-			AddJoin( name, join );
+			AddJoin( name, joinSequence );
 		}
 
 		internal void AddFromClass( string name, IQueryable classPersister )
 		{
-			JoinFragment ojf = CreateJoinFragment( false );
-			ojf.AddCrossJoin( classPersister.TableName, name );
-			crossJoins.Add( name );
-			AddFrom( name, classPersister.MappedClass, ojf );
+			JoinSequence joinSequence = new JoinSequence(Factory)
+				.SetRoot(classPersister, name);
+			AddFrom( name, classPersister.MappedClass, joinSequence );
 		}
 
 		internal void AddSelectClass( string name )
@@ -481,22 +488,11 @@ namespace NHibernate.Hql
 			scalarSelectTokens.Add( tokens );
 		}
 
-		internal void AddJoin( string name, JoinFragment newjoin )
+		internal void AddJoin( string name, JoinSequence joinSequence )
 		{
-			JoinFragment oldjoin = ( JoinFragment ) joins[ name ];
-			if( oldjoin == null )
+			if (!joins.Contains(name))
 			{
-				joins.Add( name, newjoin );
-			}
-			else
-			{
-				oldjoin.AddCondition( newjoin.ToWhereFragmentString );
-				//TODO: HACKS with ToString()
-				if( oldjoin.ToFromFragmentString.ToString().IndexOf( newjoin.ToFromFragmentString.Trim().ToString() ) < 0 )
-				{
-					throw new AssertionFailure( "bug in query parser: " + queryString );
-					//TODO: what about the toFromFragmentString() ????
-				}
+				joins.Add(name, joinSequence);
 			}
 		}
 
@@ -580,6 +576,7 @@ namespace NHibernate.Hql
 			persisters = new IQueryable[size];
 			names = new string[size];
 			owners = new int[size];
+			ownerAssociationTypes = new EntityType[size];
 			suffixes = new string[size];
 			includeInSelect = new bool[size];
 			for( int i = 0; i < size; i++ )
@@ -600,6 +597,7 @@ namespace NHibernate.Hql
 				}
 				string oneToOneOwner = (string) oneToOneOwnerNames[ name ];
 				owners[ i ] = oneToOneOwner == null ? -1 : returnedTypes.IndexOf( oneToOneOwner );
+				ownerAssociationTypes[i] = (EntityType) uniqueKeyOwnerReferences[name];
 			}
 
 			if ( ArrayHelper.IsAllNegative( owners ) )
@@ -655,7 +653,7 @@ namespace NHibernate.Hql
 			// initialize the set of queried identifer spaces (ie. tables)
 			foreach( string name in collections.Values )
 			{
-				IQueryableCollection p = GetCollectionPersister( name );
+				ICollectionPersister p = GetCollectionPersister( name );
 				AddQuerySpace( p.CollectionSpace );
 			}
 			foreach( string name in typeMap.Keys )
@@ -824,31 +822,38 @@ namespace NHibernate.Hql
 
 			return buf.ToString();
 		}
+		
+		private class Selector : JoinSequence.ISelector
+		{
+			private QueryTranslator outer;
+
+			public Selector(QueryTranslator outer)
+			{
+				this.outer = outer;
+			}
+			
+			public bool IncludeSubclasses(string alias)
+			{
+				bool include = outer.returnedTypes.Contains( alias ) && !outer.IsShallowQuery;
+				return include;
+			}
+		}
 
 		private void MergeJoins( JoinFragment ojf )
 		{
 			foreach( DictionaryEntry de in joins )
 			{
 				string name = (string)de.Key;
-				JoinFragment join = (JoinFragment) de.Value;
+				JoinSequence join = (JoinSequence) de.Value;
+				join.SetSelector(new Selector(this));
 
 				if ( typeMap.Contains( name ) ) 
 				{
-					IQueryable p = GetPersisterForName( name );
-					bool includeSubclasses = returnedTypes.Contains( name )
-						&& !IsShallowQuery;
-
-					bool isCrossJoin = crossJoins.Contains( name );
-					ojf.AddFragment( join );
-					ojf.AddJoins(
-						p.FromJoinFragment( name, isCrossJoin, includeSubclasses ),
-						p.QueryWhereFragment( name, isCrossJoin, includeSubclasses )
-						);
-
+					ojf.AddFragment( join.ToJoinFragment(enabledFilters, true) );
 				}
 				else if ( collections.Contains( name ) ) 
 				{
-					ojf.AddFragment(join);
+					ojf.AddFragment( join.ToJoinFragment(enabledFilters, true) );
 				}
 				else 
 				{
@@ -946,9 +951,9 @@ namespace NHibernate.Hql
 			//if (keyColumnNames.Length!=1) throw new QueryException("composite-key collecion in filter: " + collectionRole);
 
 			string collectionName;
-			JoinFragment join = CreateJoinFragment( false );
+			JoinSequence join = new JoinSequence(Factory);
 			collectionName = persister.IsOneToMany ? elementName : CreateNameForCollection( collectionRole );
-			join.AddCrossJoin( persister.TableName, collectionName );
+			join.SetRoot( persister, collectionName );
 			if( !persister.IsOneToMany )
 			{
 				//many-to-many
@@ -957,39 +962,38 @@ namespace NHibernate.Hql
 				IQueryable p = (IQueryable) persister.ElementPersister;
 				string[ ] idColumnNames = p.IdentifierColumnNames;
 				string[ ] eltColumnNames = persister.ElementColumnNames;
-				join.AddJoin(
-					p.TableName,
-					elementName,
-					StringHelper.Qualify( collectionName, eltColumnNames ),
-					idColumnNames,
-					JoinType.InnerJoin );
+				try
+				{
+					join.AddJoin(
+						(IAssociationType) persister.ElementType,
+						elementName,
+						JoinType.InnerJoin,
+						persister.GetElementColumnNames(collectionName));
+				}
+				catch (MappingException me)
+				{
+					throw new QueryException(me);
+				}
 			}
-			join.AddCondition( collectionName, keyColumnNames, " = ", persister.KeyType, Factory );
-			if( persister.HasWhere )
-			{
-				join.AddCondition( persister.GetSQLWhereString( collectionName ) );
-			}
+			join.AddCondition( collectionName, keyColumnNames, " = ", true);
 			EntityType elmType = (EntityType) collectionElementType;
 			AddFrom( elementName, elmType.AssociatedClass, join );
 		}
-
-		private IDictionary pathAliases = new Hashtable();
-		private IDictionary pathJoins = new Hashtable();
 
 		internal string GetPathAlias( string path )
 		{
 			return ( string ) pathAliases[ path ];
 		}
 
-		internal JoinFragment GetPathJoin( string path )
+		internal JoinSequence GetPathJoin( string path )
 		{
-			return ( JoinFragment ) pathJoins[ path ];
+			return ( JoinSequence ) pathJoins[ path ];
 		}
 
-		internal void AddPathAliasAndJoin( string path, string alias, JoinFragment join )
+		internal void AddPathAliasAndJoin( string path, string alias, JoinSequence joinSequence )
 		{
 			pathAliases.Add( path, alias );
-			pathJoins.Add( path, join.Copy() );
+			pathJoins.Add( path, joinSequence );
 		}
 
 		public IList List( ISessionImplementor session, QueryParameters queryParameters )
@@ -1322,5 +1326,10 @@ namespace NHibernate.Hql
         {
             get { return enabledFilters; }
         }
+
+		public void AddFromJoinOnly(string name, JoinSequence joinSequence)
+		{
+			AddJoin(name, joinSequence.GetFromPart());
+		}
 	}
 }

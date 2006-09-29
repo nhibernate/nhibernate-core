@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" auto-import="true" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH623">
+	<!-- ================ Class element and sub-classes Paragraph and Image ================ -->
+	<class name="Element" lazy="true" discriminator-value="0">
+		<id name="ElementId">
+			<generator class="assigned"/>
+		</id>
+
+		<discriminator column="type"/>
+		<many-to-one name="Document" column="docId"/>
+
+		<subclass name="Paragraph" lazy="true" discriminator-value="1">
+			<property name="Font"/>
+		</subclass>
+
+		<subclass name="Image" lazy="true" discriminator-value="2">
+			<property name="Img"/>
+		</subclass>
+	</class>
+
+	<!-- ================ Class document ================ -->
+	<class name="Document" lazy="true">
+		<id name="DocId">
+			<generator class="assigned"/>
+		</id>
+
+		<property name="Name"/>
+
+		<bag name="Paragraphs" inverse="true" lazy="true">
+			<key column="docId"/>
+			<one-to-many class="Paragraph"/>
+		</bag>
+
+		<bag name="Images" inverse="true" lazy="true">
+			<key column="docId"/>
+			<one-to-many class="Image"/>
+		</bag>
+
+		<bag name="Pages" inverse="true" lazy="true" where="isactive = 1">
+			<key column="docId"/>
+			<one-to-many class="Page"/>
+		</bag>
+
+		<one-to-one name="Review" foreign-key="reviewedDocId" constrained="false"/>
+	</class>
+
+	<!-- ================ Class Page ================ -->
+	<class name="Page" lazy="true">
+		<id name="PageId">
+			<generator class="assigned"/>
+		</id>
+
+		<property name="IsActive"/>
+		<many-to-one name="Document" column="docId"/>
+	</class>
+
+	<!-- ================ Class Review ================ -->
+	<class name="Review" lazy="true">
+		<id name="ReviewId">
+			<generator class="assigned"/>
+		</id>
+
+		<property name="Content"/>
+		<many-to-one name="Document" column="reviewedDocId"/>
+	</class>
+</hibernate-mapping>
