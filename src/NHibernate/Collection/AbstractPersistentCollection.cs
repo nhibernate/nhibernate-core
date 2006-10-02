@@ -54,7 +54,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		private bool IsConnectedToSession
 		{
-			get { return session != null && session.IsOpen; }
+			get { return session != null && session.IsOpen && session.GetCollectionEntry(this) != null; }
 		}
 
 		/// <summary>
@@ -314,7 +314,10 @@ namespace NHibernate.Collection
 		/// <returns>false if the collection was already associated with the session</returns>
 		public bool SetCurrentSession( ISessionImplementor session )
 		{
-			if( session == this.session )
+			if( session == this.session
+				// NH: added to fix NH-704
+			    && session.GetCollectionEntry(this) != null
+				)
 			{
 				return false;
 			}
