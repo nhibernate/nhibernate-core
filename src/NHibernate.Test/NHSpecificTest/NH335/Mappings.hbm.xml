@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+				   namespace="NHibernate.Test.NHSpecificTest.NH335"
+				   assembly="NHibernate.Test">
+
+	<class name="Thing" table="NH335_Thing">
+		<id name="ID" type="string" length="32">
+			<generator class="assigned"/>
+		</id>
+
+		<discriminator formula="case when ClassType in ('a', 'b', 'c') then 'AbcThing' else 'OtherThing' end" insert="false" force="true"/>
+		
+		<property name="ClassType" type="string" length="1" not-null="true" access="nosetter.pascalcase-underscore" update="false"/>
+		<property name="Name" type="string" length="100" not-null="false"/>
+		<property name="CommonValue" type="string" length="100"/>
+	</class>
+
+	<subclass name="AbcThing" extends="Thing" discriminator-value="AbcThing"></subclass>
+
+	<subclass name="OtherThing" extends="Thing" discriminator-value="OtherThing"></subclass>
+	
+</hibernate-mapping>

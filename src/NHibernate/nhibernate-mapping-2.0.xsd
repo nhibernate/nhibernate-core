@@ -404,6 +404,7 @@
 			<xs:attribute name="length" type="xs:positiveInteger" />
 			<xs:attribute name="force" type="xs:boolean" default="false" />
 			<xs:attribute name="insert" type="xs:boolean" default="true" />
+			<xs:attribute name="formula" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="version">

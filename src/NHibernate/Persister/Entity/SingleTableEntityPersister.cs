@@ -25,6 +25,8 @@ namespace NHibernate.Persister.Entity
 		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
 		private readonly bool forceDiscriminator;
 		private readonly string discriminatorColumnName;
+		private readonly string discriminatorFormula;
+		private readonly string discriminatorFormulaTemplate;
 		private readonly string discriminatorAlias;
 		private readonly IType discriminatorType;
 		private readonly string discriminatorSQLValue;
@@ -43,6 +45,11 @@ namespace NHibernate.Persister.Entity
 		protected override string DiscriminatorAlias
 		{
 			get { return discriminatorAlias; }
+		}
+
+		protected string DiscriminatorFormulaTemplate
+		{
+			get { return discriminatorFormulaTemplate; }
 		}
 
 		public override string TableName
@@ -85,6 +92,16 @@ namespace NHibernate.Persister.Entity
 		public override object[] PropertySpaces
 		{
 			get { return tableNames; }
+		}
+
+		protected bool IsDiscriminatorFormula
+		{
+			get { return discriminatorColumnName == null; }
+		}
+
+		protected string DiscriminatorFormula
+		{
+			get { return discriminatorFormula; }
 		}
 
 		protected override SqlCommandInfo GenerateInsertString(bool identityInsert, bool[] includeProperty, int j)
@@ -317,10 +334,24 @@ namespace NHibernate.Persister.Entity
 				forceDiscriminator = model.IsForceDiscriminator;
 
 				// the discriminator will have only one column 
-				foreach (Column discColumn in d.ColumnCollection)
+				foreach (ISelectable selectable in d.ColumnCollection)
 				{
-					discriminatorColumnName = discColumn.GetQuotedName(Dialect);
-					discriminatorAlias = discColumn.GetAlias(Dialect);
+					if (d.HasFormula)
+					{
+						Formula formula = (Formula)selectable;
+						discriminatorFormula = formula.FormulaString;
+						discriminatorFormulaTemplate = formula.GetTemplate(factory.Dialect);
+						discriminatorColumnName = null;
+						discriminatorAlias = "clazz_";
+					}
+					else
+					{
+						Column column = (Column)selectable;
+						discriminatorColumnName = column.GetQuotedName( Dialect );
+						discriminatorAlias = column.GetAlias( Dialect );
+						discriminatorFormula = null;
+						discriminatorFormulaTemplate = null;
+					}
 				}
 				discriminatorType = model.Discriminator.Type;
 
@@ -338,7 +369,7 @@ namespace NHibernate.Persister.Entity
 				}
 				else
 				{
-					discriminatorInsertable = model.IsDiscriminatorInsertable;
+					discriminatorInsertable = model.IsDiscriminatorInsertable && !d.HasFormula;
 					try
 					{
 						IDiscriminatorType dtype = (IDiscriminatorType) discriminatorType;
@@ -478,12 +509,21 @@ namespace NHibernate.Persister.Entity
 		{
 			InFragment frag = new InFragment()
 				.SetColumn(alias, DiscriminatorColumnName);
+
+			if (IsDiscriminatorFormula)
+			{
+				frag.SetFormula( alias, DiscriminatorFormulaTemplate );
+			}
+			else
+			{
+				frag.SetColumn( alias, DiscriminatorColumnName );
+			}
+
 			System.Type[] subclasses = SubclassClosure;
 			for (int i = 0; i < subclasses.Length; i++)
 			{
-				frag.AddValue(
-					((IQueryable) Factory.GetEntityPersister(subclasses[i])).DiscriminatorSQLValue
-					);
+				IQueryable queryable = (IQueryable) Factory.GetEntityPersister(subclasses[i]);
+				frag.AddValue(queryable.DiscriminatorSQLValue);
 			}
 
 			return frag.ToFragmentString();
@@ -523,15 +563,14 @@ namespace NHibernate.Persister.Entity
 
 		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
 		{
-			// TODO H3:
-			//if( IsDiscriminatorFormula ) 
-			//{
-			//	select.AddFormula( name, DiscriminatorFormulaTemplate, DiscriminatorAlias );
-			//}
-			//else 
-			//{
-			select.AddColumn(name, DiscriminatorColumnName, DiscriminatorAlias);
-			//}
+			if (IsDiscriminatorFormula)
+			{
+				select.AddFormula( name, DiscriminatorFormulaTemplate, DiscriminatorAlias );
+			}
+			else
+			{
+				select.AddColumn( name, DiscriminatorColumnName, DiscriminatorAlias );
+			}
 		}
 
 		protected override int[] SubclassColumnTableNumberClosure
@@ -565,15 +604,14 @@ namespace NHibernate.Persister.Entity
 			{
 				InFragment frag = new InFragment();
 
-				// TODO H3:
-//				if ( IsDiscriminatorFormula ) 
-//				{
-//					frag.SetFormula( alias, DiscriminatorFormulaTemplate );
-//				}
-//				else 
-//				{
-				frag.SetColumn(alias, DiscriminatorColumnName);
-//				}
+				if (IsDiscriminatorFormula)
+				{
+					frag.SetFormula(alias, DiscriminatorFormulaTemplate);
+				}
+				else
+				{
+					frag.SetColumn(alias, DiscriminatorColumnName);
+				}
 
 				System.Type[] subclasses = SubclassClosure;
 				for (int i = 0; i < subclasses.Length; i++)

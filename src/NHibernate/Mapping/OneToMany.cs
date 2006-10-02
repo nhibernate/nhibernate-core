@@ -90,6 +90,11 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
+		public bool HasFormula
+		{
+			get { return false; }
+		}
+
 		/// <summary></summary>
 		public bool IsUnique
 		{

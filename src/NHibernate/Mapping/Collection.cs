@@ -208,6 +208,11 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
+		public virtual bool HasFormula
+		{
+			get { return false; }
+		}
+
 		public virtual bool IsIdentified
 		{
 			get { return false; }

@@ -34,6 +34,8 @@ namespace NHibernate.Mapping
 		/// </summary>
 		Table Table { get; }
 
+		bool HasFormula { get; }
+
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if this Value is unique.
 		/// </summary>
