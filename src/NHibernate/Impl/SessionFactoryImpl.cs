@@ -147,6 +147,8 @@ namespace NHibernate.Impl
 				log.Debug("instantiating session factory with properties: "
 					+ CollectionPrinter.ToString(properties));
 			}
+			
+			settings.CacheProvider.Start(properties);
 
 			// Generators:
 			identifierGenerators = new Hashtable();
