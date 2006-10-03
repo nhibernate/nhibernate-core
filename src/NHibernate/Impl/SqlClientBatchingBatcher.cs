@@ -51,7 +51,7 @@ namespace NHibernate.Impl
 			Prepare(currentBatch.BatchCommand);
 			int rowsAffected = currentBatch.ExecuteNonQuery();
 			
-			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected, ps);
+			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 
 			currentBatch.Dispose();
 			totalExpectedRowsAffected = 0;

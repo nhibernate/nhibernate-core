@@ -98,7 +98,7 @@ namespace NHibernate.AdoNet
 		{
 		}
 
-		public static void VerifyOutcomeBatched(int expectedRowCount, int rowCount, IDbCommand statement)
+		public static void VerifyOutcomeBatched(int expectedRowCount, int rowCount)
 		{
 			if (expectedRowCount > rowCount)
 			{
