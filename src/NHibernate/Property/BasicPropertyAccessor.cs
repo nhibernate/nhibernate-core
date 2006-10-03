@@ -81,9 +81,9 @@ namespace NHibernate.Property
 
 			PropertyInfo property = type.GetProperty( propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
 
-			if( property != null )
+			if( property != null && property.CanRead)
 			{
-				return new BasicGetter( type, property, propertyName );
+				return new BasicGetter(type, property, propertyName);
 			}
 			else
 			{
@@ -125,9 +125,9 @@ namespace NHibernate.Property
 
 			PropertyInfo property = type.GetProperty( propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
 
-			if( property != null )
+			if( property != null && property.CanWrite)
 			{
-				return new BasicSetter( type, property, propertyName );
+				return new BasicSetter(type, property, propertyName);
 			}
 			else
 			{
