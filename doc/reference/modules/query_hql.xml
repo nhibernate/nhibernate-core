@@ -228,7 +228,7 @@ from Eg.Cat cat]]></programlisting>
         </para>
 
         <programlisting><![CDATA[select cat, count( elements(cat.Kittens) ) 
-from Eg.Cat cat group by cat]]></programlisting>
+from Eg.Cat cat group by cat.Id, cat.Weight, ...]]></programlisting>
 
         <para>
             The supported aggregate functions are
@@ -711,13 +711,17 @@ having cat.Color in (Eg.Color.Tabby, Eg.Color.Black)]]></programlisting>
         <programlisting><![CDATA[select cat
 from Eg.Cat cat
     join cat.Kittens kitten
-group by cat
+group by cat.Id, cat.Name, cat.Other, cat.Properties
 having avg(kitten.Weight) > 100
 order by count(kitten) asc, sum(kitten.Weight) desc]]></programlisting>
 
         <para>
             Note that neither the <literal>group by</literal> clause nor the
             <literal>order by</literal> clause may contain arithmetic expressions.
+            Also note that NHibernate currently does not expand a grouped entity,
+            so you can't write <literal>group by cat</literal> if all properties
+            of <literal>cat</literal> are non-aggregated. You have to list all
+            non-aggregated properties explicitly.
         </para>
 
     </sect1>
