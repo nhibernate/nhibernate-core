@@ -304,7 +304,7 @@ namespace NHibernate.Collection.Generic
 
 		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
-			List<int> deletes = new List<int>();
+			IList deletes = new ArrayList();
 			IList<T> sn = ( IList<T> ) GetSnapshot();
 			int end;
 
@@ -312,7 +312,7 @@ namespace NHibernate.Collection.Generic
 			{
 				for( int i = list.Count; i < sn.Count; i++ )
 				{
-					deletes.Add( i );
+					deletes.Add( indexIsFormula ? (object) sn[i] : i );
 				}
 				end = list.Count;
 			}
@@ -325,10 +325,10 @@ namespace NHibernate.Collection.Generic
 			{
 				if( list[ i ] == null && sn[ i ] != null )
 				{
-					deletes.Add( i );
+					deletes.Add( indexIsFormula ? (object) sn[i] : i );
 				}
 			}
-			return ( ICollection ) deletes;
+			return deletes;
 		}
 
 		public override bool IsWrapper( object collection )

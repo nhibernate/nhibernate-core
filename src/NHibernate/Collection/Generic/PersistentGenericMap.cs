@@ -1,6 +1,7 @@
 #if NET_2_0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 
@@ -12,7 +13,7 @@ using NHibernate.Loader;
 namespace NHibernate.Collection.Generic
 {
 	/// <summary>
-	/// A persistent wrapper for a <see cref="IDictionary&lt;TKey,TValue&gt;"/>.  Underlying
+	/// A persistent wrapper for a <see cref="IDictionary{TKey,TValue}&lt;TKey,TValue&gt;"/>.  Underlying
 	/// collection is a <see cref="Dictionary&lt;TKey,TValue&gt;"/>
 	/// </summary>
 	/// <typeparam name="TKey">The type of the keys in the IDictionary.</typeparam>
@@ -168,16 +169,16 @@ namespace NHibernate.Collection.Generic
 
 		public override System.Collections.ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
-			IList<TKey> deletes = new List<TKey>();
+			IList deletes = new ArrayList();
 			foreach( KeyValuePair<TKey, TValue> e in ( IDictionary<TKey, TValue> ) GetSnapshot() )
 			{
 				TKey key = e.Key;
 				if( e.Value != null && !map.ContainsKey( key ) )
 				{
-					deletes.Add( key );
+					deletes.Add( indexIsFormula ? (object) e.Value : key );
 				}
 			}
-			return ( System.Collections.ICollection ) deletes;
+			return deletes;
 		}
 
 		public override bool IsWrapper( object collection )
