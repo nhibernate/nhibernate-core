@@ -188,6 +188,8 @@
     <Compile Include="NHSpecificTest\GetTest.cs" />
     <Compile Include="NHSpecificTest\LazyLoadBugTest.cs" />
     <Compile Include="NHSpecificTest\MapFixture.cs" />
+    <Compile Include="NHSpecificTest\NH247\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH247\LiteralDescription.cs" />
     <Compile Include="NHSpecificTest\NH251\CustomAccessDO.cs" />
     <Compile Include="NHSpecificTest\NH251\CustomAccessFixture.cs" />
     <Compile Include="NHSpecificTest\NH257\Fixture.cs" />
@@ -625,6 +627,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH534\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH247\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
