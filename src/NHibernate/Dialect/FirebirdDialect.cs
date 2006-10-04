@@ -61,6 +61,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("tomorrow", new NoArgSQLFunction(NHibernateUtil.Date, false));
 			RegisterFunction("now", new NoArgSQLFunction(NHibernateUtil.DateTime, false));
 			RegisterFunction("nullif", new StandardSQLFunction());
+			// New embedded functions in FB 2.0 (http://www.firebirdsql.org/rlsnotes20/rnfbtwo-str.html#str-string-func)
+			RegisterFunction("lower", new StandardSQLFunction());
+			RegisterFunction("trim", new StandardSQLFunction());
+			RegisterFunction("char_length", new StandardSQLFunction());
+			RegisterFunction("bit_length", new StandardSQLFunction());
+			RegisterFunction("octet_length", new StandardSQLFunction());
 
 			// External Firebird and Interbase standard UDFs
 			//Conditional Logic Functions
