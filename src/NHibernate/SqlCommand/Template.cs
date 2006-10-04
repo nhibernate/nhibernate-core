@@ -174,7 +174,7 @@ namespace NHibernate.SqlCommand
 				{
 					result.Append(placeholder)
 						.Append('.')
-						.Append(dialect.QuoteForColumnName(token));
+						.Append(token);
 				}
 				else
 				{
@@ -289,7 +289,7 @@ namespace NHibernate.SqlCommand
 				{
 					result.Append(Placeholder)
 						.Append('.')
-						.Append(dialect.QuoteForColumnName(token));
+						.Append(token);
 				}
 				else
 				{
