@@ -15,7 +15,14 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return "NHibernate.Test"; }
 		}
 
-		public abstract string BugNumber { get; }
+		public virtual string BugNumber
+		{
+			get
+			{
+				string ns = GetType().Namespace;
+				return ns.Substring(ns.LastIndexOf('.') + 1);
+			}
+		}
 
 		protected override IList Mappings
 		{
