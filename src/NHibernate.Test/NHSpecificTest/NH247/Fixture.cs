@@ -50,6 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 		[Test]
 		public void CommonLiteralFunctions()
 		{
+			AssertDialect();
 			FillDB();
 			using (ISession s = OpenSession())
 			{
