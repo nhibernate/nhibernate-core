@@ -8,20 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH315
 	/// Summary description for Fixture.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not working, see http://jira.nhibernate.org/browse/NH-315")]
-	public class Fixture : TestCase
+	public class Fixture : BugTestCase
 	{
-		protected override string MappingsAssembly
+		public override string BugNumber
 		{
-			get { return "NHibernate.Test"; }
-		}
-
-		protected override System.Collections.IList Mappings
-		{
-			get
-			{
-				return new string[] { "NHSpecificTest.NH315.Mappings.hbm.xml" };
-			}
+			get { return "NH315"; }
 		}
 
 		[Test]
