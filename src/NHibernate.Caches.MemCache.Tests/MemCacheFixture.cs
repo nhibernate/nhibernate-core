@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections;
+using System.Threading;
 using NHibernate.Cache;
 using NUnit.Framework;
 
@@ -64,6 +65,7 @@ namespace NHibernate.Caches.MemCache.Tests
 			Assert.IsNull( cache.Get( key ), "cache returned an item we didn't add !?!" );
 
 			cache.Put( key, value );
+			Thread.Sleep( 1000 );
 			object item = cache.Get( key );
 			Assert.IsNotNull( item );
 			Assert.AreEqual( value, item, "didn't return the item we added" );
@@ -80,6 +82,7 @@ namespace NHibernate.Caches.MemCache.Tests
 
 			// add the item
 			cache.Put( key, value );
+			Thread.Sleep( 1000 );
 
 			// make sure it's there
 			object item = cache.Get( key );
@@ -104,6 +107,7 @@ namespace NHibernate.Caches.MemCache.Tests
 
 			// add the item
 			cache.Put( key, value );
+			Thread.Sleep( 1000 );
 
 			// make sure it's there
 			object item = cache.Get( key );
@@ -159,6 +163,7 @@ namespace NHibernate.Caches.MemCache.Tests
 		{
 			ICache cache = new MemCacheClient();
 			cache.Put( "nunit", "value" );
+			Thread.Sleep( 1000 );
 			object item = cache.Get( null );
 			Assert.IsNull( item );
 		}
@@ -181,6 +186,7 @@ namespace NHibernate.Caches.MemCache.Tests
 			string s2 = "test2";
 			cache1.Put( key, s1 );
 			cache2.Put( key, s2 );
+			Thread.Sleep( 1000 );
 			object get1 = cache1.Get( key );
 			object get2 = cache2.Get( key );
 			Assert.IsFalse( get1 == get2 );

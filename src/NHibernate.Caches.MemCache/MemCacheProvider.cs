@@ -100,7 +100,7 @@ namespace NHibernate.Caches.MemCache
 
 		public void Start( IDictionary properties )
 		{
-			SockIOPool pool = SockIOPool.GetInstance();
+			SockIOPool pool = SockIOPool.GetInstance( "nhibernate" );
 			if( _servers != null && _servers.Length > 0 )
 			{
 				pool.SetServers( _servers );

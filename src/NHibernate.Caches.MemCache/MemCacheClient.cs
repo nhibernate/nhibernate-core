@@ -54,6 +54,7 @@ namespace NHibernate.Caches.MemCache
 		{
 			_region = regionName;
 			_client = new MemcachedClient();
+			_client.PoolName = "nhibernate";
 			_expiry = 300;
 			
 			if( properties != null )
