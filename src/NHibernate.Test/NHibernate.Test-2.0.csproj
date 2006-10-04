@@ -277,6 +277,8 @@
     <Compile Include="NHSpecificTest\NH523\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH525\Classes.cs" />
     <Compile Include="NHSpecificTest\NH525\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH534\Classes.cs" />
+    <Compile Include="NHSpecificTest\NH534\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH548\ComponentObject.cs" />
     <Compile Include="NHSpecificTest\NH548\MainObject.cs" />
     <Compile Include="NHSpecificTest\NH548\Fixture.cs" />
@@ -620,6 +622,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH642\MissingGetter.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH534\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

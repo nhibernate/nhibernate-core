@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH534">
+	<class name="Base" lazy="true">
+		<id name="ObjectId" type="Int32" unsaved-value="-1">
+			<generator class="native" />
+		</id>
+		<version column="VersionCounter" name="VersionCounter" type="Int32" />
+	</class>
+	<joined-subclass name="Parent" extends="Base">
+		<key column="ObjectId" />
+		<set name="Children" lazy="true" inverse="true">
+			<key column="Owner" />
+			<one-to-many class="Child" />
+		</set>
+	</joined-subclass>
+	<class name="Child">
+		<id name="ObjectId" type="Int32" unsaved-value="-1">
+			<generator class="native" />
+		</id>
+		<version column="VersionCounter" name="VersionCounter" type="Int32" />
+		<many-to-one name="Owner" column="Owner" class="Parent" />
+	</class>
+</hibernate-mapping>
