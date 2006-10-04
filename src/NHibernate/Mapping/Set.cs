@@ -25,6 +25,7 @@ namespace NHibernate.Mapping
 #if NET_2_0
 				if( this.IsGeneric )
 				{
+					CheckGenericArgumentsLength(1);
 					if( IsSorted )
 					{
 						return TypeFactory.GenericSortedSet( Role, ReferencedPropertyName, Comparer, this.GenericArguments[ 0 ] );

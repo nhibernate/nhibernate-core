@@ -19,6 +19,7 @@ namespace NHibernate.Mapping
 #if NET_2_0
 				if( this.IsGeneric )
 				{
+					CheckGenericArgumentsLength(1);
 					return TypeFactory.GenericIdBag( Role, ReferencedPropertyName, GenericArguments[ 0 ] );
 				}
 #endif

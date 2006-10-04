@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+				   namespace="NHibernate.Test.NHSpecificTest.NH606"
+				   assembly="NHibernate.Test">
+	<class name="HasNonGenericList">
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+
+		<!-- We map non-generic list as generic -->
+		<list name="NonGenericList" generic="true">
+			<key column="list_key" />
+			<index column="list_index" />
+			<element type="string" column="list_element" />
+		</list>
+	</class>
+</hibernate-mapping>

@@ -304,6 +304,16 @@ namespace NHibernate.Mapping
 			get { return genericArguments; }
 			set { genericArguments = value; }
 		}
+
+		protected void CheckGenericArgumentsLength(int expectedLength)
+		{
+			if (genericArguments.Length != expectedLength)
+			{
+				throw new MappingException(
+					string.Format("Error mapping generic collection {0}: expected {1} generic parameters, but the property type has {2}",
+					              Role, expectedLength, genericArguments.Length));
+			}
+		}
 #endif
 
 		public void CreateForeignKey()

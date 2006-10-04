@@ -26,6 +26,7 @@ namespace NHibernate.Mapping
 #if NET_2_0
 				if( IsGeneric && IsSorted )
 				{
+					CheckGenericArgumentsLength(2);
 					if( TypeName == "sorted-list" )
 					{
 						return TypeFactory.GenericSortedList( Role, ReferencedPropertyName, Comparer,
@@ -68,6 +69,7 @@ namespace NHibernate.Mapping
 					}
 					else
 					{
+						CheckGenericArgumentsLength(2);
 						return TypeFactory.GenericMap( Role, ReferencedPropertyName, GenericArguments[ 0 ], GenericArguments[ 1 ] );
 					}
 				}
