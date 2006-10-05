@@ -424,6 +424,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cache\CacheKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cache\CacheLock.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -679,6 +684,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Context\ICurrentSessionContext.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\DB2400Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -730,6 +740,11 @@
                 />
                 <File
                     RelPath = "Dialect\MsSqlCeDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\MySQL5Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -959,6 +974,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Engine\JoinSequence.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\NamedQueryDefinition.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1134,6 +1154,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\IsEmptyExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\IsNotEmptyExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\Junction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1245,6 +1275,11 @@
                 />
                 <File
                     RelPath = "Hql\ClauseParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\CollectionSubqueryFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1600,10 +1635,12 @@
                 />
                 <File
                     RelPath = "Impl\SqlClientBatchingBatcher.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Impl\SqlClientSqlCommandSet.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -2538,6 +2575,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Transaction\ISynchronization.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Transaction\ITransactionFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2754,34 +2796,42 @@
                 />
                 <File
                     RelPath = "Type\GenericBagType.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\GenericIdentifierBagType.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\GenericListType.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\GenericMapType.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\GenericSetType.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\GenericSortedDictionaryType.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\GenericSortedListType.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Type\GenericSortedSetType.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -3009,12 +3059,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "UserTypes\IEnhancedUserType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UserTypes\IParameterizedType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "UserTypes\IUserCollectionType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserTypes\IUserVersionType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -3085,6 +3145,11 @@
                 <File
                     RelPath = "Util\SequencedHashMap.java"
                     BuildAction = "None"
+                />
+                <File
+                    RelPath = "Util\SerializationHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Util\StringHelper.cs"

@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = 'copy /y "$(ProjectDir)App.config" "$(TargetPath).config"&#xd;&#xa;copy /y "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml"&#xd;&#xa;copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"'
+                PreBuildEvent = 'copy /y "$(ProjectDir)App11.config" "$(TargetPath).config"&#xd;&#xa;copy /y "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml"&#xd;&#xa;copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"'
                 PostBuildEvent = ""
                 RootNamespace = "NHibernate.Test"
                 RunPostBuildEvent = "OnBuildSuccess"
@@ -80,11 +80,6 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "NHibernate-1.1"
-                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "NHibernate.DomainModel-1.1"
                     Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -100,22 +95,31 @@
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "..\..\lib\net\nunit.framework.dll"
-                    Private = "True"
-                />
-                <Reference
                     Name = "nmock"
                     AssemblyName = "nmock"
                     HintPath = "..\..\lib\net\nmock.dll"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
+                />
+                <Reference
+                    Name = "NHibernate-1.1"
+                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "nunit.core"
+                    AssemblyName = "nunit.core"
+                    HintPath = "..\..\lib\net\1.1\nunit.core.dll"
                 />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
-                    RelPath = "App.config"
+                    RelPath = "App11.config"
                     BuildAction = "Content"
                 />
                 <File
@@ -197,10 +201,12 @@
                 />
                 <File
                     RelPath = "CollectionTest\A.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "CollectionTest\IdBagFixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -270,6 +276,7 @@
                 />
                 <File
                     RelPath = "ConnectionStringTest\NamedConnectionStringFixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -398,10 +405,12 @@
                 />
                 <File
                     RelPath = "ExpressionTest\Projection\ProjectionSqlFixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ExpressionTest\Projection\ProjectionTestClass.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -420,14 +429,17 @@
                 />
                 <File
                     RelPath = "GenericTest\BagGeneric\A.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\BagGeneric\B.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\BagGeneric\BagGenericFixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -436,10 +448,12 @@
                 />
                 <File
                     RelPath = "GenericTest\IdBagGeneric\A.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\IdBagGeneric\IdBagGenericFixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -448,14 +462,17 @@
                 />
                 <File
                     RelPath = "GenericTest\ListGeneric\A.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\ListGeneric\B.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\ListGeneric\ListGenericFixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -464,14 +481,17 @@
                 />
                 <File
                     RelPath = "GenericTest\MapGeneric\A.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\MapGeneric\B.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\MapGeneric\MapGenericFixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -480,14 +500,17 @@
                 />
                 <File
                     RelPath = "GenericTest\Methods\Fixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\Overall\A.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\Overall\Fixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -496,14 +519,17 @@
                 />
                 <File
                     RelPath = "GenericTest\SetGeneric\A.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\SetGeneric\B.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "GenericTest\SetGeneric\SetGenericFixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -1525,10 +1551,12 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\NH687\Domain.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "NHSpecificTest\NH687\Fixture.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
