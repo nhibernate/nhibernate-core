@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Reflection;
+using System.Text;
 using NHibernate.Type;
 
 using NUnit.Framework;
@@ -43,12 +45,27 @@ namespace NHibernate.Test.TypesTest
 			Assembly nhibernate = typeof (IType).Assembly;
 			System.Type[] allTypes = nhibernate.GetTypes();
 			
+			ArrayList shouldBeSerializable = new ArrayList();
+			
 			foreach( System.Type type in allTypes )
 			{
-				if( type.IsClass && !type.IsAbstract && typeof( IType ).IsAssignableFrom( type ) )
+				if( type.IsClass && typeof( IType ).IsAssignableFrom( type ) )
 				{
-					Assert.IsTrue( type.IsSerializable, "Type {0} should be serializable", type );
+					if (!type.IsSerializable)
+					{
+						shouldBeSerializable.Add(type);
+					}
 				}
+			}
+
+			if (shouldBeSerializable.Count > 0)
+			{
+				StringBuilder message = new StringBuilder();
+				foreach (System.Type type in shouldBeSerializable)
+				{
+					message.Append('\t').Append(type).Append('\n');
+				}
+				Assert.Fail("These types should be serializable:\n{0}", message.ToString());
 			}
 		}
 

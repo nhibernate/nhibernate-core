@@ -1,23 +1,31 @@
 using System;
+using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
 	[Serializable]
 	public sealed class CollectionKey
 	{
-		private string role;
-		private object key;
+		private readonly string role;
+		private readonly object key;
+		private readonly IType keyType;
+		private readonly ISessionFactoryImplementor factory;
+		private readonly int hashCode;
 
-		public CollectionKey( string role, object key )
+		public CollectionKey( ICollectionPersister persister, object key )
+			: this( persister.Role, key, persister.KeyType, persister.Factory )
+		{
+		}
+
+		private CollectionKey( string role, object key, IType keyType, ISessionFactoryImplementor factory )
 		{
 			this.role = role;
 			this.key  = key;
-		}
-
-		public CollectionKey( ICollectionPersister persister, object key )
-			: this( persister.Role, key )
-		{
+			this.keyType = keyType;
+			this.factory = factory;
+			this.hashCode = GenerateHashCode();
 		}
 
 		public override bool Equals(object obj)
@@ -29,11 +37,16 @@ namespace NHibernate.Impl
 
 		public override int GetHashCode()
 		{
+			return hashCode;
+		}
+		
+		private int GenerateHashCode()
+		{
 			int result = 17;
 			unchecked 
 			{
-				result = 37 * result + key.GetHashCode();
 				result = 37 * result + role.GetHashCode();
+				result = 37 * result + keyType.GetHashCode(key, factory);
 			}
 			return result;
 		}

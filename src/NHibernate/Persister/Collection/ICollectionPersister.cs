@@ -241,5 +241,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="suffix">The suffix to use in the identifier column alias generation.</param>
 		/// <returns>The identifier column aliases.</returns>
 		string GetIdentifierColumnAlias( string suffix );
+
+		ISessionFactoryImplementor Factory { get; }
 	}
 }

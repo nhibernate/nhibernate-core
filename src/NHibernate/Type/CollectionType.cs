@@ -16,6 +16,7 @@ namespace NHibernate.Type
 	/// The base class for an <see cref="IType"/> that maps collections
 	/// to the database.
 	/// </summary>
+	[Serializable]
 	public abstract class CollectionType : AbstractType, IAssociationType
 	{
 		private readonly string role;

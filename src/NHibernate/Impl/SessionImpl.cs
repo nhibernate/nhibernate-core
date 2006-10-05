@@ -3833,7 +3833,7 @@ namespace NHibernate.Impl
 				}
 				else if (ce.IsReached)
 				{
-					collectionsByKey[new CollectionKey(ce.CurrentPersister.Role, ce.CurrentKey)] = pc;
+					collectionsByKey[new CollectionKey(ce.CurrentPersister, ce.CurrentKey)] = pc;
 				}
 			}
 
@@ -4218,15 +4218,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="role"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		private IPersistentCollection GetLoadingCollection(string role, object id)
+		private IPersistentCollection GetLoadingCollection(ICollectionPersister persister, object id)
 		{
-			LoadingCollectionEntry lce = GetLoadingCollectionEntry(new CollectionKey(role, id));
+			LoadingCollectionEntry lce = GetLoadingCollectionEntry(new CollectionKey(persister, id));
 			return (lce != null) ? lce.Collection : null;
 		}
 
@@ -5185,7 +5179,7 @@ namespace NHibernate.Impl
 			if (ce.LoadedPersister != null && ce.LoadedKey != null)
 			{
 				//TODO: is this 100% correct?
-				collectionsByKey.Remove(new CollectionKey(ce.LoadedPersister.Role, ce.LoadedKey));
+				collectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey));
 			}
 		}
 
@@ -5528,7 +5522,7 @@ namespace NHibernate.Impl
 			// that references it
 
 			ICollectionPersister persister = factory.GetCollectionPersister(role);
-			IPersistentCollection collection = GetLoadingCollection(role, id);
+			IPersistentCollection collection = GetLoadingCollection(persister, id);
 
 			if (collection != null)
 			{

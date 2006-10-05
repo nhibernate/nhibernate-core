@@ -14,9 +14,18 @@ namespace NHibernate.Engine
 		private readonly object identifier;
 		private readonly object identifierSpace;
 		private readonly System.Type clazz;
+		private readonly IType identifierType;
 		private readonly bool isBatchLoadable;
+		private readonly ISessionFactoryImplementor factory;
+		private readonly int hashCode;
 
-		private EntityKey( object id, IType identifierType, object identifierSpace, System.Type clazz, bool isBatchLoadable )
+		private EntityKey(
+			object id,
+			object identifierSpace,
+			System.Type clazz,
+			IType identifierType,
+			bool isBatchLoadable,
+			ISessionFactoryImplementor factory)
 		{
 			if( id == null )
 			{
@@ -31,7 +40,10 @@ namespace NHibernate.Engine
 			this.identifier = id;
 			this.identifierSpace = identifierSpace;
 			this.clazz = clazz;
+			this.identifierType = identifierType;
 			this.isBatchLoadable = isBatchLoadable;
+			this.factory = factory;
+			this.hashCode = GenerateHashCode();
 		}
 
 		/// <summary>
@@ -39,7 +51,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="p"></param>
-		public EntityKey( object id, IEntityPersister p ) : this( id, p.IdentifierType, p.IdentifierSpace, p.MappedClass, p.IsBatchLoadable )
+		public EntityKey( object id, IEntityPersister p ) : this( id, p.IdentifierSpace, p.MappedClass, p.IdentifierType, p.IsBatchLoadable, p.Factory )
 		{
 		}
 
@@ -67,11 +79,6 @@ namespace NHibernate.Engine
 			get { return isBatchLoadable; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
 		public override bool Equals( object other )
 		{
 			EntityKey otherKey = other as EntityKey;
@@ -82,13 +89,20 @@ namespace NHibernate.Engine
 			return otherKey.identifierSpace.Equals( this.identifierSpace ) && otherKey.Identifier.Equals( this.identifier );
 		}
 
-		/// <summary></summary>
 		public override int GetHashCode()
 		{
-			int result = 17;
-			result = 37 * result + identifierSpace.GetHashCode();
-			result = 37 * result + identifier.GetHashCode();
-			return result;
+			return hashCode;
+		}
+
+		private int GenerateHashCode()
+		{
+			unchecked
+			{
+				int result = 17;
+				result = 37 * result + identifierSpace.GetHashCode();
+				result = 37 * result + identifierType.GetHashCode(identifier, factory);
+				return result;
+			}
 		}
 
 		/// <summary></summary>

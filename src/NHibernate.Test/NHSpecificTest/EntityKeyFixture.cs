@@ -463,6 +463,11 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			get { return null; }
 		}
+
+		public ISessionFactoryImplementor Factory
+		{
+			get { return null; }
+		}
 		#endregion
 
     }

@@ -25,8 +25,11 @@ namespace NHibernate.DomainModel
 		private static readonly bool[] Mutability = new bool[] { true };
 		private static readonly bool[] Nullability = new bool[] { true };
 
+		private ISessionFactoryImplementor factory;
+
 		public CustomPersister( PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactory factory, IMapping mapping )
 		{
+			this.factory = (ISessionFactoryImplementor) factory;
 		}
 
 		#region IEntityPersister Members
@@ -376,6 +379,12 @@ namespace NHibernate.DomainModel
 		{
 			get { return null; }
 		}
+
+		public ISessionFactoryImplementor Factory
+		{
+			get { return factory; }
+		}
+
 		#endregion
 	}
 }

@@ -1295,7 +1295,7 @@ namespace NHibernate.Persister.Collection
 			return filterHelper.IsAffectedBy(session.EnabledFilters);
 		}
 
-		protected ISessionFactoryImplementor Factory
+		public ISessionFactoryImplementor Factory
 		{
 			get { return factory; }
 		}

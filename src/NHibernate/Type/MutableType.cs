@@ -1,3 +1,4 @@
+using System;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -5,6 +6,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Superclass for mutable nullable types.
 	/// </summary>
+	[Serializable]
 	public abstract class MutableType : NullableType
 	{
 		/// <summary>
