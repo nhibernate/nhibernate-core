@@ -2641,7 +2641,7 @@ namespace NHibernate.Persister.Entity
 						bool[] versionability = PropertyVersionability;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-							if (IsPropertyOfTable(i, j) && versionability[i])
+                            if (IsPropertyOfTable(i, j) && versionability[i] && loadedState[i] != null)
 							{
 								types[i].NullSafeSet(statement, loadedState[i], index, session);
 								index += GetPropertyColumnSpan(i);
@@ -2697,9 +2697,16 @@ namespace NHibernate.Persister.Entity
 					.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
 
 				IType[] types = PropertyTypes;
+
+                bool[] versionability = PropertyVersionability;
+                ///bool[] includeInWhere = PropertyUpdateability;
+
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{
-					if (IsPropertyOfTable(i, j))
+                    bool include = versionability[i] && 
+                        IsPropertyOfTable(i, j);
+
+					if (include)
 					{
 						// this property belongs to the table and it is not specifically
 						// excluded from optimistic locking by optimistic-lock="false"
