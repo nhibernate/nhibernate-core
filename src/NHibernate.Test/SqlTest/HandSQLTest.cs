@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest
@@ -10,6 +11,25 @@ namespace NHibernate.Test.SqlTest
 		{
 			IEnumerator en = it.GetEnumerator();
 			return en.MoveNext() ? en.Current : null;
+		}
+
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
+
+		protected abstract System.Type GetDialect();
+
+		private void CheckDialect()
+		{
+			if (!GetDialect().IsInstanceOfType(Dialect.Dialect.GetDialect()))
+				Assert.Ignore("This test is specific for " + GetDialect().ToString());
+		}
+		
+		protected override void Configure(Configuration cfg)
+		{
+			CheckDialect();
+			base.Configure(cfg);
 		}
 
 		[Test]

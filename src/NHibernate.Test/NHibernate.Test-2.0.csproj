@@ -360,6 +360,7 @@
     <Compile Include="SqlCommandTest\TemplateFixture.cs" />
     <Compile Include="SqlTest\Dimension.cs" />
     <Compile Include="SqlTest\Employment.cs" />
+    <Compile Include="SqlTest\FireBirdTest.cs" />
     <Compile Include="SqlTest\GeneralTest.cs" />
     <Compile Include="SqlTest\HandSQLTest.cs" />
     <Compile Include="SqlTest\MonetaryAmount.cs" />
@@ -634,6 +635,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH606\Mapping.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SqlTest\FireBirdEmployment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

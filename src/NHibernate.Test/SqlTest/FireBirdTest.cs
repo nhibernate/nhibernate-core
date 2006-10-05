@@ -5,16 +5,16 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest
 {
 	[TestFixture]
-	public class MSSQLTest : HandSQLTest
+	public class FireBirdTest : HandSQLTest
 	{
 		protected override IList Mappings
 		{
-			get { return new string[] {"SqlTest.MSSQLEmployment.hbm.xml"}; }
+			get { return new string[] { "SqlTest.FireBirdEmployment.hbm.xml" }; }
 		}
 
 		protected override System.Type GetDialect()
 		{
-			return typeof(NHibernate.Dialect.MsSql2000Dialect);
+			return typeof(NHibernate.Dialect.FirebirdDialect);
 		}
 	}
 }
