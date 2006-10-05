@@ -86,7 +86,7 @@ namespace NHibernate.Engine
 			{
 				return false;
 			}
-			return otherKey.identifierSpace.Equals( this.identifierSpace ) && otherKey.Identifier.Equals( this.identifier );
+			return otherKey.identifierSpace.Equals( this.identifierSpace ) && identifierType.Equals(otherKey.Identifier, this.identifier);
 		}
 
 		public override int GetHashCode()

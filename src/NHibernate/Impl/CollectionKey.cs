@@ -31,7 +31,7 @@ namespace NHibernate.Impl
 		public override bool Equals(object obj)
 		{
 			CollectionKey that = (CollectionKey) obj;
-			return Equals (key, that.key)
+			return keyType.Equals (key, that.key)
 				&& Equals (role, that.role);
 		}
 

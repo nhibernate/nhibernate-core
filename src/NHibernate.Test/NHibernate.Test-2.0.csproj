@@ -308,6 +308,7 @@
     <Compile Include="NHSpecificTest\NH719\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH720\Domain.cs" />
     <Compile Include="NHSpecificTest\NH720\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH732\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH734\Domain.cs" />
     <Compile Include="NHSpecificTest\NH734\Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
@@ -638,6 +639,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SqlTest\FireBirdEmployment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH732\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
