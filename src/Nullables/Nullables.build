@@ -11,6 +11,7 @@
 
 	<target name="init" depends="common.init">
 		<property name="assembly.description" value="A library of Nullable Primitive Types to serve as a bridge to .net-2.0." />
+		<property name="assembly.allow-partially-trusted-callers" value="true" />
 		<property name="clover.instrument" value="true" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
