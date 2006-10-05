@@ -1207,7 +1207,7 @@ namespace NHibernate.Impl
 			try
 			{
 				System.Type implClass = ReflectHelper.ClassForName(impl);
-				return (ICurrentSessionContext) Activator.CreateInstance(implClass, this);
+				return (ICurrentSessionContext) Activator.CreateInstance(implClass, new object[]{this});
 			}
 			catch (Exception e)
 			{
