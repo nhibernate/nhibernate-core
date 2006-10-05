@@ -1,6 +1,4 @@
 using System;
-using NHibernate.Engine;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -26,7 +24,7 @@ namespace NHibernate.SqlCommand
 			AddJoin( tableName, alias, alias, fkColumns, pkColumns, joinType, null );
 		}
 
-		public void AddJoin( string tableName, string alias, string concreteAlias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType, string on )
+		private void AddJoin( string tableName, string alias, string concreteAlias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType, string on )
 		{
 			if( !useThetaStyleInnerJoins || joinType != JoinType.InnerJoin )
 			{
@@ -63,41 +61,22 @@ namespace NHibernate.SqlCommand
 			afterWhere.Add( whereFragment );
 		}
 
-		public override JoinFragment Copy()
-		{
-			QueryJoinFragment copy = new QueryJoinFragment( dialect, useThetaStyleInnerJoins );
-			copy.afterFrom = new SqlStringBuilder( afterFrom.ToSqlString() );
-			copy.afterWhere = new SqlStringBuilder( afterWhere.ToSqlString() );
-			return copy;
-		}
-
-		public override void AddCondition( string alias, string[ ] columns, string condition )
-		{
-			for( int i = 0; i < columns.Length; i++ )
-			{
-				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
-			}
-		}
-
-		public override void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory )
-		{
-			for( int i = 0; i < columns.Length; i++ )
-			{
-				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
-				afterWhere.AddParameter();
-			}
-		}
-
 		public override void AddCrossJoin( string tableName, string alias )
 		{
 			afterFrom.Add( StringHelper.CommaSpace + tableName + ' ' + alias );
 		}
 
-		public override void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns )
+		private void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns )
 		{
 			for( int j = 0; j < fkColumns.Length; j++ )
 			{
-				afterWhere.Add( " and " + fkColumns[ j ] + '=' + alias + StringHelper.Dot + pkColumns[ j ] );
+				afterWhere
+					.Add(" and ")
+					.Add(fkColumns[j])
+					.Add("=")
+					.Add(alias)
+					.Add(".")
+					.Add(pkColumns[j]);
 			}
 		}
 

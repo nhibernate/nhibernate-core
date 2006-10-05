@@ -1,6 +1,4 @@
 using System;
-using NHibernate.Engine;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -57,13 +55,11 @@ namespace NHibernate.SqlCommand
 			AddCondition(buffer, on);
 		}
 
-		/// <summary></summary>
 		public override SqlString ToFromFragmentString
 		{
 			get { return buffer.ToSqlString(); }
 		}
 
-		/// <summary></summary>
 		public override SqlString ToWhereFragmentString
 		{
 			get { return conditions.ToSqlString(); }
@@ -75,38 +71,16 @@ namespace NHibernate.SqlCommand
 			//where fragment must be empty!
 		}
 
-		public override JoinFragment Copy()
+		public JoinFragment Copy()
 		{
 			ANSIJoinFragment copy = new ANSIJoinFragment();
 			copy.buffer = new SqlStringBuilder( buffer.ToSqlString() );
 			return copy;
 		}
 
-		public override void AddCondition( string alias, string[ ] columns, string condition )
-		{
-			for( int i = 0; i < columns.Length; i++ )
-			{
-				conditions.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
-			}
-		}
-
-		public override void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory )
-		{
-			for( int i = 0; i < columns.Length; i++ )
-			{
-				conditions.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
-				conditions.AddParameter();
-			}
-		}
-
 		public override void AddCrossJoin( string tableName, string alias )
 		{
 			buffer.Add( StringHelper.CommaSpace + tableName + " " + alias );
-		}
-
-		public override void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns )
-		{
-			throw new NotSupportedException();
 		}
 
 		public override bool AddCondition( string condition )

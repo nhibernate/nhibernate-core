@@ -34,19 +34,11 @@ namespace NHibernate.SqlCommand
 		
 		public abstract SqlString ToWhereFragmentString { get; }
 
-		public abstract void AddCondition( string alias, string[ ] columns, string condition );
-
-		public abstract void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory );
-
-		public abstract void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns );
-
 		public abstract bool AddCondition( string condition );
 
 		public abstract bool AddCondition( SqlString condition );
 
 		public abstract void AddFromFragmentString( SqlString fromFragmentString );
-
-		public abstract JoinFragment Copy();
 
 		public virtual void AddFragment( JoinFragment ojf )
 		{
@@ -70,7 +62,24 @@ namespace NHibernate.SqlCommand
             }
         }
 
-        public bool HasFilterCondition
+        protected bool AddCondition(SqlStringBuilder buffer, SqlString on)
+        {
+            if (StringHelper.IsNotEmpty(on))
+            {
+                if (!on.StartsWithCaseInsensitive(" and"))
+                {
+                	buffer.Add(" and ");
+                }
+                buffer.Add(on);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+		public bool HasFilterCondition
         {
             get { return hasFilterCondition; }
             set { hasFilterCondition = value; }

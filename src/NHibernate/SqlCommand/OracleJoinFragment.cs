@@ -1,8 +1,6 @@
 using System;
 using System.Text;
 using Iesi.Collections;
-using NHibernate.Engine;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -15,14 +13,6 @@ namespace NHibernate.SqlCommand
 		private SqlStringBuilder afterFrom = new SqlStringBuilder();
 		private SqlStringBuilder afterWhere = new SqlStringBuilder();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tableName"></param>
-		/// <param name="alias"></param>
-		/// <param name="fkColumns"></param>
-		/// <param name="pkColumns"></param>
-		/// <param name="joinType"></param>
 		public override void AddJoin( string tableName, string alias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType )
 		{
 			AddCrossJoin( tableName, alias );
@@ -62,8 +52,6 @@ namespace NHibernate.SqlCommand
 				throw new NotSupportedException("join type not supported by OracleJoinFragment (use Oracle9Dialect)");
 			}
 		}
-
-
 		
 		/// <summary>
 		/// This method is a bit of a hack, and assumes
@@ -99,94 +87,41 @@ namespace NHibernate.SqlCommand
 			Operators.Add('>');
 		}
 
-
-
-		/// <summary></summary>
 		public override SqlString ToFromFragmentString
 		{
 			get { return afterFrom.ToSqlString(); }
 		}
 
-		/// <summary></summary>
 		public override SqlString ToWhereFragmentString
 		{
 			get { return afterWhere.ToSqlString(); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fromFragment"></param>
-		/// <param name="whereFragment"></param>
 		public override void AddJoins( SqlString fromFragment, SqlString whereFragment )
 		{
 			afterFrom.Add( fromFragment );
 			afterWhere.Add( whereFragment );
 		}
 
-		public override JoinFragment Copy()
-		{
-			OracleJoinFragment copy = new OracleJoinFragment();
-			copy.afterFrom = new SqlStringBuilder( afterFrom.ToSqlString() );
-			copy.afterWhere = new SqlStringBuilder( afterWhere.ToSqlString() );
-			return copy;
-		}
-
-		public override void AddCondition( string alias, string[ ] columns, string condition )
-		{
-			for( int i = 0; i < columns.Length; i++ )
-			{
-				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
-			}
-		}
-
-		public override void AddCondition( string alias, string[ ] columns, string condition, IType conditionType, ISessionFactoryImplementor factory )
-		{
-			for( int i = 0; i < columns.Length; i++ )
-			{
-				afterWhere.Add( " and " + alias + StringHelper.Dot + columns[ i ] + condition );
-				afterWhere.AddParameter();
-			}
-		}
-
 		public override void AddCrossJoin( string tableName, string alias )
 		{
-			afterFrom.Add( StringHelper.CommaSpace + tableName + " " + alias );
+			afterFrom
+				.Add(StringHelper.CommaSpace)
+				.Add(tableName)
+				.Add(" ")
+				.Add(alias);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="fkColumns"></param>
-		/// <param name="pkColumns"></param>
-		public override void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns )
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="condition"></param>
 		public override bool AddCondition( string condition )
 		{
-			throw new NotSupportedException();
+			return AddCondition(afterWhere, condition);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="condition"></param>
 		public override bool AddCondition( SqlString condition )
 		{
-			throw new NotSupportedException();
+			return AddCondition(afterWhere, condition);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fromFragmentString"></param>
 		public override void AddFromFragmentString( SqlString fromFragmentString )
 		{
 			afterFrom.Add( fromFragmentString );

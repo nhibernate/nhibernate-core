@@ -162,7 +162,7 @@ namespace NHibernate.Engine
 			{
 				Join join = (Join) joins[i];
 				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
-				string condition = null;
+				string condition;
 				if (last != null &&
 						IsManyToManyRoot(last) &&
 						((IQueryableCollection) last).ElementType == join.AssociationType)
