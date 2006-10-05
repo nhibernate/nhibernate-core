@@ -1145,7 +1145,7 @@ namespace NHibernate.Loader
 				                                    useOffset ? GetFirstRow( selection ) : 0,
 				                                    GetMaxOrLimit( dialect, selection ) );
 			}
-            IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, GetParameterTypes(parameters));
+            IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, GetParameterTypes(parameters, useLimit, useOffset));
 
 			try
 			{
@@ -1700,7 +1700,7 @@ namespace NHibernate.Loader
 		}
 		
 		/// <returns><see cref="IList" /> of <see cref="IType" /></returns>
-		protected SqlType[] GetParameterTypes( QueryParameters parameters )
+		protected SqlType[] GetParameterTypes( QueryParameters parameters, bool addLimit, bool addOffset )
 		{
 			ArrayList paramTypeList = new ArrayList();
 			int span = 0;
@@ -1728,6 +1728,28 @@ namespace NHibernate.Loader
 						ArrayHelper.SafeSetValue(paramTypeList, locs[ i ] + offset, typedval.Type);
 					}
 				}
+			}
+			
+			if (addLimit && Factory.Dialect.SupportsVariableLimit)
+			{
+				if (Factory.Dialect.BindLimitParametersFirst)
+				{
+					paramTypeList.Insert(0, NHibernateUtil.Int32);
+					if (addOffset)
+					{
+						paramTypeList.Insert(0, NHibernateUtil.Int32);
+					}
+				}
+				else
+				{
+					paramTypeList.Add(NHibernateUtil.Int32);
+					if (addOffset)
+					{
+						paramTypeList.Add(NHibernateUtil.Int32);
+					}
+				}
+
+				span += addOffset ? 2 : 1;
 			}
 			
 			return ConvertITypesToSqlTypes(paramTypeList, span);
