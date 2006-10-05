@@ -964,7 +964,7 @@ namespace NHibernate.Impl
 				{
 					// IsUnsavedVersion bit below is NHibernate-specific
 					substitute = Versioning.SeedVersion(
-						values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(values)
+						values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(values), this
 						) || substitute;
 				}
 			}
@@ -3551,7 +3551,7 @@ namespace NHibernate.Impl
 				{
 					Object nextVersion = entry.Status == Status.Deleted ?
 						entry.Version :
-						Versioning.Increment(entry.Version, persister.VersionType);
+						Versioning.Increment(entry.Version, persister.VersionType, this);
 					Versioning.SetVersion(values, nextVersion, persister);
 					return nextVersion;
 				}

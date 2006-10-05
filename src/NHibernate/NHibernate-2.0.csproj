@@ -685,8 +685,10 @@
     <Compile Include="Type\GenericMapType.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UserTypes\IEnhancedUserType.cs" />
     <Compile Include="UserTypes\IParameterizedType.cs" />
     <Compile Include="UserTypes\IUserCollectionType.cs" />
+    <Compile Include="UserTypes\IUserVersionType.cs" />
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Util\CollectionHelper.cs" />
     <Compile Include="Util\FilterHelper.cs" />

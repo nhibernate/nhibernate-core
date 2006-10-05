@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -95,20 +96,14 @@ namespace NHibernate.Type
 
 		#region IVersionType Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="current"></param>
-		/// <returns></returns>
-		public object Next( object current )
+		public virtual object Next(object current, ISessionImplementor session)
 		{
-			return ( uint ) ( ( uint ) current + 1 );
+			return (uint) ((uint) current + 1);
 		}
 
-		/// <summary></summary>
-		public object Seed
+		public virtual object Seed(ISessionImplementor session)
 		{
-			get { return ( uint ) 1; }
+			return ( uint ) 1;
 		}
 
 		public IComparer Comparator

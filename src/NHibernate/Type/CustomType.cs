@@ -4,8 +4,8 @@ using System.Data;
 using System.Reflection;
 using log4net;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.SqlTypes;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Type
 {
@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// <seealso cref="IUserType"/>
 	/// </summary>
 	[Serializable]
-	public class CustomType : AbstractType
+	public class CustomType : AbstractType, IIdentifierType, IDiscriminatorType, IVersionType
 	{
 		private readonly IUserType userType;
 		private readonly string name;
@@ -245,6 +245,31 @@ namespace NHibernate.Type
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			return checkable[ 0 ] && IsDirty(old, current, session);
+		}
+
+		public object StringToObject(string xml)
+		{
+			return ((IEnhancedUserType) userType).FromXMLString(xml);
+		}
+
+		public string ObjectToSQLString(object value)
+		{
+			return ((IEnhancedUserType) userType).ObjectToSQLString(value);
+		}
+
+		public object Next(object current, ISessionImplementor session)
+		{
+			return ((IUserVersionType) userType).Next(current, session);
+		}
+
+		public object Seed(ISessionImplementor session)
+		{
+			return ((IUserVersionType) userType).Seed(session);
+		}
+
+		public IComparer Comparator
+		{
+			get { return (IComparer) userType; }
 		}
 	}
 }

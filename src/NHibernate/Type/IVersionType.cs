@@ -1,4 +1,5 @@
 using System.Collections;
+using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
@@ -12,13 +13,13 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="current">The current version</param>
 		/// <returns>an instance of the <see cref="IType"/> that has been incremented.</returns>
-		object Next( object current );
+		object Next(object current, ISessionImplementor session);
 
 		/// <summary>
 		/// When implemented by a class, gets an initial version.
 		/// </summary>
 		/// <value>Returns an instance of the <see cref="IType"/></value>
-		object Seed { get; }
+		object Seed(ISessionImplementor session);
 
 		/// <summary>
 		/// When implemented by a class, converts the xml string from the 
@@ -31,7 +32,7 @@ namespace NHibernate.Type
 		/// call System.Type.Parse without verifying that it is a parsable value
 		/// for the System.Type.
 		/// </remarks>
-		object StringToObject( string xml );
+		object StringToObject(string xml);
 
 		/// <summary>
 		/// Get a comparator for the version numbers

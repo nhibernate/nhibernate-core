@@ -18,7 +18,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			DateTimeType type = (DateTimeType)NHibernateUtil.DateTime;
 			object current = DateTime.Parse( "2004-01-01" );
-			object next = type.Next( current );
+			object next = type.Next( current, null );
 			
 			Assert.IsTrue( next is DateTime, "Next should be DateTime" );
 			Assert.IsTrue( (DateTime)next > (DateTime)current, "next should be greater than current (could be equal depending on how quickly this occurs)" );
@@ -29,7 +29,7 @@ namespace NHibernate.Test.TypesTest
 		public void Seed() 
 		{
 			DateTimeType type = (DateTimeType)NHibernateUtil.DateTime;
-			Assert.IsTrue( type.Seed is DateTime, "seed should be DateTime" );
+			Assert.IsTrue( type.Seed(null) is DateTime, "seed should be DateTime" );
 		}
 
 		[Test]

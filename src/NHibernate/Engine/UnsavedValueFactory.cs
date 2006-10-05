@@ -110,7 +110,7 @@ namespace NHibernate.Engine
 					Object defaultValue = versionGetter.Get( Instantiate(constructor) );
 					// if the version of a newly instantiated object is not the same
 					// as the version seed value, use that as the unsaved-value
-					return versionType.Equals( versionType.Seed, defaultValue ) ?
+					return versionType.Equals( versionType.Seed(null), defaultValue ) ?
 						Cascades.VersionValue.VersionUndefined :
 						new Cascades.VersionValue( defaultValue );
 				}

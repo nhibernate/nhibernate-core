@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -95,15 +96,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="current"></param>
 		/// <returns></returns>
-		public virtual object Next( object current )
+		public virtual object Next(object current, ISessionImplementor session)
 		{
-			return ( ( int ) current ) + 1;
+			return ((int) current) + 1;
 		}
 
-		/// <summary></summary>
-		public virtual object Seed
+		public virtual object Seed(ISessionImplementor session)
 		{
-			get { return 1; }
+			return 1;
 		}
 
 		public IComparer Comparator

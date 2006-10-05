@@ -31,7 +31,7 @@ namespace NHibernate.Type
 	public class TimestampType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
-		internal TimestampType() : base( SqlTypeFactory.DateTime )
+		public TimestampType() : base( SqlTypeFactory.DateTime )
 		{
 		}
 
@@ -135,15 +135,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="current"></param>
 		/// <returns></returns>
-		public object Next( object current )
+		public object Next(object current, ISessionImplementor session)
 		{
-			return Seed;
+			return Seed(session);
 		}
 
-		/// <summary></summary>
-		public object Seed
+		public virtual object Seed(ISessionImplementor session)
 		{
-			get { return DateTime.Now; }
+			return DateTime.Now;
 		}
 
 		public IComparer Comparator

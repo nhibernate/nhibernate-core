@@ -17,10 +17,11 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="version">The value of the current version.</param>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
+		/// <param name="session">The current <see cref="ISession" />.</param>
 		/// <returns>Returns the next value for the version.</returns>
-		public static object Increment( object version, IVersionType versionType )
+		public static object Increment( object version, IVersionType versionType, ISessionImplementor session )
 		{
-			object next = versionType.Next( version );
+			object next = versionType.Next( version, session );
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Incrementing: " + version + " to " + next );
@@ -32,10 +33,11 @@ namespace NHibernate.Engine
 		/// Create an initial version number
 		/// </summary>
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
+		/// <param name="session">The current <see cref="ISession" />.</param>
 		/// <returns>A seed value to initialize the versioned property with.</returns>
-		public static object Seed( IVersionType versionType )
+		public static object Seed( IVersionType versionType, ISessionImplementor session )
 		{
-			object seed = versionType.Seed;
+			object seed = versionType.Seed(session);
 			if( log.IsDebugEnabled )
 			{
 				log.Debug( "Seeding: " + seed );
@@ -51,12 +53,12 @@ namespace NHibernate.Engine
 		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
 		/// <param name="force">Force the version to initialize</param>
 		/// <returns><c>true</c> if the version property needs to be seeded with an initial value.</returns>
-		public static bool SeedVersion( object[] fields, int versionProperty, IVersionType versionType, bool force )
+		public static bool SeedVersion( object[] fields, int versionProperty, IVersionType versionType, bool force, ISessionImplementor session)
 		{
 			object initialVersion = fields[ versionProperty ];
 			if( initialVersion == null || force )
 			{
-				fields[ versionProperty ] = Seed( versionType );
+				fields[ versionProperty ] = Seed( versionType, session );
 				return true;
 			}
 			else

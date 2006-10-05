@@ -17,7 +17,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			TicksType type = (TicksType)NHibernateUtil.Ticks;
 			object current = new DateTime( 2004, 1, 1, 1, 1, 1, 1 );
-			object next = type.Next( current );
+			object next = type.Next( current, null );
 			
 			Assert.IsTrue( next is DateTime, "Next should be DateTime" );
 			Assert.IsTrue( (DateTime)next > (DateTime)current, "next should be greater than current (could be equal depending on how quickly this occurs)" );
@@ -28,7 +28,7 @@ namespace NHibernate.Test.TypesTest
 		public void Seed() 
 		{
 			TicksType type = (TicksType)NHibernateUtil.Ticks;
-			Assert.IsTrue( type.Seed is DateTime, "seed should be DateTime" );
+			Assert.IsTrue( type.Seed(null) is DateTime, "seed should be DateTime" );
 		}
 	}
 }
