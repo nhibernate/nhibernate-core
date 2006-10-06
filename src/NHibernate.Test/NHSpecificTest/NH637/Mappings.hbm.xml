@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH637">
+	<class name="PointHolder">
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<component name="Point">
+			<property name="X" />
+			<property name="Y" />
+		</component>
+	</class>
+</hibernate-mapping>

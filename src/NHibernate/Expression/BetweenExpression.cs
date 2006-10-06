@@ -37,21 +37,39 @@ namespace NHibernate.Expression
 			//IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
 			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
 
-			bool andNeeded = false;
-
-			for( int i = 0; i < columnNames.Length; i++ )
+			if (columnNames.Length == 1)
 			{
-				if( andNeeded )
-				{
-					sqlBuilder.Add( " AND " );
-				}
-				andNeeded = true;
-
-				sqlBuilder.Add( columnNames[ i ] )
-					.Add( " between " )
+				sqlBuilder
+					.Add(columnNames[0])
+					.Add(" between ")
 					.AddParameter()
-					.Add( " and " )
+					.Add(" and ")
 					.AddParameter();
+			}
+			else
+			{
+				bool andNeeded = false;
+
+				for (int i = 0; i < columnNames.Length; i++)
+				{
+					if (andNeeded)
+					{
+						sqlBuilder.Add(" AND ");
+					}
+					andNeeded = true;
+
+					sqlBuilder.Add(columnNames[i])
+						.Add(" >= ")
+						.AddParameter();
+				}
+
+				for (int i = 0; i < columnNames.Length; i++)
+				{
+					sqlBuilder.Add(" AND ")
+						.Add(columnNames[i])
+						.Add(" <= ")
+						.AddParameter();
+				}
 			}
 
 			return sqlBuilder.ToSqlString();
