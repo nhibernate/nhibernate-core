@@ -39,6 +39,13 @@ namespace NHibernate.Caches.Prevalence.Tests
 			log4net.Config.XmlConfigurator.Configure();
 			props = new Hashtable();
 			provider = new PrevalenceCacheProvider();
+			provider.Start( props );
+		}
+
+		[TestFixtureTearDown]
+		public void FixtureTeardown()
+		{
+			provider.Stop();
 		}
 
 		[Test]
@@ -123,7 +130,7 @@ namespace NHibernate.Caches.Prevalence.Tests
 		[Test]
 		public void TestEmptyProperties()
 		{
-			ICache cache = new PrevalenceCache( "nunit", new Hashtable() );
+			ICache cache = new PrevalenceCache( "nunit", null );
 			Assert.IsNotNull( cache );
 		}
 
@@ -146,7 +153,7 @@ namespace NHibernate.Caches.Prevalence.Tests
 		[Test]
 		public void TestNullKeyGet()
 		{
-			ICache cache = new PrevalenceCache();
+			ICache cache = provider.BuildCache( "nunit", props );
 			cache.Put( "nunit", "value" );
 			object item = cache.Get( null );
 			Assert.IsNull( item );
@@ -199,7 +206,7 @@ namespace NHibernate.Caches.Prevalence.Tests
 					return false;
 				}
 
-				return other.Id == this.Id;
+				return other.Id == Id;
 			}
 
 		}

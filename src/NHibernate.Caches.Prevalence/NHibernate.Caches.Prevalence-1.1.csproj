@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{51179C23-5555-45A4-9BBB-8F6E24D05C2B}"
     >
@@ -93,6 +93,11 @@
                     Name = "Bamboo.Prevalence"
                     AssemblyName = "Bamboo.Prevalence"
                     HintPath = "..\..\lib\net\Bamboo.Prevalence.dll"
+                />
+                <Reference
+                    Name = "Bamboo.Prevalence.Util"
+                    AssemblyName = "Bamboo.Prevalence.Util"
+                    HintPath = "..\..\lib\net\Bamboo.Prevalence.Util.dll"
                 />
             </References>
         </Build>

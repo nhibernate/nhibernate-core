@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{C04709C0-2FF9-424A-82FF-235312877853}"
     >
@@ -90,15 +90,14 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "..\..\lib\net\nunit.framework.dll"
-                    Private = "True"
-                />
-                <Reference
                     Name = "log4net"
                     AssemblyName = "log4net"
                     HintPath = "..\..\lib\net\log4net.dll"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
                 />
             </References>
         </Build>

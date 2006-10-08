@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Specialized;
+using System.Collections;
 using Bamboo.Prevalence;
 
 namespace NHibernate.Caches.Prevalence
@@ -8,16 +8,16 @@ namespace NHibernate.Caches.Prevalence
 	/// Summary description for CacheSystem.
 	/// </summary>
 	[Serializable]
-	internal class CacheSystem : MarshalByRefObject
+	public sealed class CacheSystem : MarshalByRefObject
 	{
-		private HybridDictionary _items;
+		private Hashtable _items;
 
 		/// <summary>
 		/// default constructor
 		/// </summary>
 		public CacheSystem()
 		{
-			_items = new HybridDictionary();
+			_items = new Hashtable();
 		}
 
 		/// <summary>
@@ -27,11 +27,11 @@ namespace NHibernate.Caches.Prevalence
 		/// <returns></returns>
 		public object Get( object key )
 		{
+			if( key == null ) return null;
+
 			CacheEntry entry = _items[key] as CacheEntry;
-			if( entry == null )
-			{
-				return null;
-			}
+			if( entry == null )	return null;
+			
 			return entry.Value;
 		}
 
@@ -42,6 +42,8 @@ namespace NHibernate.Caches.Prevalence
 		/// <param name="value"></param>
 		public void Add( object key, object value )
 		{
+			if( key == null ) return;
+
 			CacheEntry entry = _items[key] as CacheEntry;
 			if( entry == null )
 			{

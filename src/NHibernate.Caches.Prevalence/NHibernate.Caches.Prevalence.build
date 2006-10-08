@@ -21,6 +21,7 @@
 			<include name="NHibernate.dll" />
 			<include name="log4net.dll" />
 			<include name="Bamboo.Prevalence.dll" />
+			<include name="Bamboo.Prevalence.Util.dll" />
 		</assemblyfileset>
 	</target>
 

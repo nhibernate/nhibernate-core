@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.IO;
-using Bamboo.Prevalence;
 using log4net;
 using NHibernate.Cache;
 
@@ -10,12 +8,11 @@ namespace NHibernate.Caches.Prevalence
 	/// <summary>
 	/// Summary description for PrevalenceCache.
 	/// </summary>
-	public class PrevalenceCache : ICache, IDisposable
+	public class PrevalenceCache : ICache
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( PrevalenceCache ) );
 		private static readonly string _cacheKeyPrefix = "NHibernate-Cache:";
 		private string _region;
-		private PrevalenceEngine _engine;
 		private CacheSystem _system;
 
 		/// <summary>
@@ -37,50 +34,11 @@ namespace NHibernate.Caches.Prevalence
 		/// full constructor
 		/// </summary>
 		/// <param name="region"></param>
-		/// <param name="properties">cache configuration properties</param>
-		/// <remarks>There is only one configurable parameter: prevalenceBase. This is
-		/// the directory on the file system where the Prevalence engine will save data.
-		/// It can be relative to the current directory or a full path. If the directory
-		/// doesn't exist, it will be created.</remarks>
-		public PrevalenceCache( string region, IDictionary properties )
+		/// <param name="system">the Prevalance container class</param>
+		public PrevalenceCache( string region, CacheSystem system )
 		{
 			_region = region;
-			Configure( properties );
-		}
-
-		private void Configure( IDictionary properties )
-		{
-			string dataDir = Path.Combine( Environment.CurrentDirectory, _region );
-
-			if( properties != null )
-			{
-				if( properties["prevalenceBase"] != null )
-				{
-					string prevalenceBase = properties["prevalenceBase"].ToString();
-					if( Path.IsPathRooted( prevalenceBase ) )
-					{
-						dataDir = prevalenceBase;
-					}
-					else
-					{
-						dataDir = Path.Combine( Environment.CurrentDirectory, prevalenceBase );
-					}
-				}
-			}
-			if( Directory.Exists( dataDir ) == false )
-			{
-				if( log.IsDebugEnabled )
-				{
-					log.Debug( String.Format( "Data directory {0} doesn't exist: creating it.", dataDir ) );
-				}
-				Directory.CreateDirectory( dataDir );
-			}
-			if( log.IsDebugEnabled )
-			{
-				log.Debug( String.Format( "configuring cache in {0}.", dataDir ) );
-			}
-			_engine = PrevalenceActivator.CreateTransparentEngine( typeof( CacheSystem ), dataDir );
-			_system = _engine.PrevalentSystem as CacheSystem;
+			_system = ( system == null ) ? new CacheSystem() : system;
 		}
 
 		private string GetCacheKey( object key )
@@ -220,17 +178,5 @@ namespace NHibernate.Caches.Prevalence
 		{
 			get { return _region; }
 		}
-
-		#region IDisposable Members
-
-		/// <summary>
-		/// take snapshot before shutting down
-		/// </summary>
-		public void Dispose()
-		{
-			_engine.TakeSnapshot();
-		}
-
-		#endregion
 	}
 }
