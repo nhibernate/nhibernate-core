@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using NHibernate.DomainModel;
+using NHibernate.SqlCommand;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Legacy
@@ -152,6 +153,21 @@ namespace NHibernate.Test.Legacy
 				s.CreateCriteria( typeof( Master ) )
 					.Add( Expression.Expression.Eq( "Details.I", 10 ) )
 					.List();
+			}
+		}
+		
+		[Test]
+		public void CriteriaLeftOuterJoin()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.Save(new Master());
+				Assert.AreEqual(1, s.CreateCriteria(typeof (Master))
+					.CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
+					.SetFetchMode("Details", FetchMode.Join)
+					.List().Count);
+				s.Delete("from Master");
+				s.Flush();
 			}
 		}
 	}

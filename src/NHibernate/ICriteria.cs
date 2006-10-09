@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using NHibernate.Engine;
 using NHibernate.Expression;
+using NHibernate.SqlCommand;
 using NHibernate.Transform;
 
 namespace NHibernate
@@ -132,6 +133,16 @@ namespace NHibernate
 		ICriteria CreateAlias( string associationPath, string alias );
 
 		/// <summary>
+		/// Join an association using the specified join-type, assigning an alias to the joined
+		/// association
+		/// </summary>
+		/// <param name="associationPath"></param>
+		/// <param name="alias"></param>
+		/// <param name="joinType">The type of join to use.</param>
+		/// <returns>this (for method chaining)</returns>
+		ICriteria CreateAlias( string associationPath, string alias, JoinType joinType );
+
+		/// <summary>
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity
 		/// </summary>
 		/// <param name="associationPath"></param>
@@ -146,6 +157,16 @@ namespace NHibernate
 		/// <param name="alias"></param>
 		/// <returns></returns>
 		ICriteria CreateCriteria( string associationPath, string alias );
+
+		/// <summary>
+		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
+		/// assigning the given alias and using the specified join type.
+		/// </summary>
+		/// <param name="associationPath">A dot-separated property path</param>
+		/// <param name="alias">The alias to assign to the joined association (for later reference).</param>
+		/// <param name="joinType">The type of join to use.</param>
+		/// <returns>The created "sub criteria"</returns>
+		ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType);
 
 		// NH: Deprecated methods not ported
 
