@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 
 using NHibernate.Type;
 using NHibernate.SqlCommand;

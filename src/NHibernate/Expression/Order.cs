@@ -1,9 +1,6 @@
-using System.Collections;
 using System.Text;
 
 using NHibernate.Engine;
-using NHibernate.SqlTypes;
-using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
@@ -34,7 +31,6 @@ namespace NHibernate.Expression
 		public string ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			string[ ] columns = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
-			IType type = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
 
 			StringBuilder fragment = new StringBuilder();
 
@@ -85,7 +81,5 @@ namespace NHibernate.Expression
 		{
 			return new Order( propertyName, false );
 		}
-
-		private static readonly IDictionary emptyMap = new Hashtable( 0 );
 	}
 }

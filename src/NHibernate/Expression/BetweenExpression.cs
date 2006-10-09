@@ -1,8 +1,6 @@
 using System;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Expression
 {

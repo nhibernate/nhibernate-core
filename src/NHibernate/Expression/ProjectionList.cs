@@ -4,7 +4,6 @@ using System.Collections.Generic;
 #else
 using System.Collections;
 #endif
-using System.Text;
 
 using NHibernate.Type;
 using NHibernate.SqlCommand;

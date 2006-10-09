@@ -3,7 +3,6 @@ using System.Collections;
 
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -34,6 +33,12 @@ namespace NHibernate.Expression
 
 		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
+			IType type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
+			if (type.IsCollectionType)
+			{
+				throw new QueryException("Cannot use collections with InExpression");
+			}
+
 			if( _values.Length == 0 )
 			{
 				// "something in ()" is always false
@@ -42,10 +47,6 @@ namespace NHibernate.Expression
 
 			//TODO: add default capacity
 			SqlStringBuilder result = new SqlStringBuilder();
-
-			IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
-
-			SqlType[ ] columnSqlTypes = propertyType.SqlTypes( criteriaQuery.Factory );
 			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
 
 			// Generate SqlString of the form:
@@ -54,7 +55,6 @@ namespace NHibernate.Expression
 			for( int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++ )
 			{
 				string columnName = columnNames[ columnIndex ];
-				SqlType columnSqlType = columnSqlTypes[ columnIndex ];
 
 				if( columnIndex > 0 )
 				{

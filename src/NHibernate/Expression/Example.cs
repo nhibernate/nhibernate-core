@@ -39,7 +39,7 @@ namespace NHibernate.Expression
 			bool Include(object propertyValue, String propertyName, IType type);
 		}
 
-		private static readonly IPropertySelector NotNull = new NotNullPropertySelector();
+		//private static readonly IPropertySelector NotNull = new NotNullPropertySelector();
 		private static readonly IPropertySelector NotNullOrEmptyString = new NotNullOrEmptyStringPropertySelector();
 		private static readonly IPropertySelector All = new AllPropertySelector();
 		private static readonly IPropertySelector NotNullOrZero = new NotNullOrZeroPropertySelector();
@@ -56,13 +56,13 @@ namespace NHibernate.Expression
 			}
 		}
 
-		private class NotNullPropertySelector : IPropertySelector
-		{
-			public bool Include( object propertyValue, string propertyName, IType type )
-			{
-				return propertyValue != null;
-			}
-		}
+		//private class NotNullPropertySelector : IPropertySelector
+		//{
+		//    public bool Include( object propertyValue, string propertyName, IType type )
+		//    {
+		//        return propertyValue != null;
+		//    }
+		//}
 
 		private class NotNullOrZeroPropertySelector : IPropertySelector
 		{
@@ -415,8 +415,8 @@ namespace NHibernate.Expression
 			{
 				bool isString = propertyValue is String;
 				crit = ( _isLikeEnabled && isString ) ?
-					(ICriterion)new LikeExpression( propertyName, propertyValue, _isIgnoreCaseEnabled ) :
-					(ICriterion)new EqExpression( propertyName, propertyValue, _isIgnoreCaseEnabled && isString );
+					(ICriterion) new LikeExpression( propertyName, propertyValue, _isIgnoreCaseEnabled ) :
+					new EqExpression( propertyName, propertyValue, _isIgnoreCaseEnabled && isString );
 
 			}
 			else
