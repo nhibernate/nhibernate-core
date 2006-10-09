@@ -331,7 +331,7 @@ namespace NHibernate.Persister.Entity
 		public virtual int[] FindModified(object[] old, object[] current, object obj, ISessionImplementor session)
 		{
 			int[] props = TypeFactory.FindModified(
-				entityMetamodel.Properties, old, current, propertyColumnUpdateable, false, session);
+				entityMetamodel.Properties, current, old, propertyColumnUpdateable, false, session);
 			if (props == null)
 			{
 				return null;
