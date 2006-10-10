@@ -211,7 +211,7 @@
                 />
                 <File
                     RelPath = "CollectionTest\IdBagFixture.hbm.xml"
-                    BuildAction = "Content"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "CompositeCollection\BaseClassA.cs"
@@ -414,6 +414,29 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "FilterTest\Category.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FilterTest\classes.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "FilterTest\defs.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "FilterTest\Department.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FilterTest\DynamicFilterTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "FilterTest\FilterConfig.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -423,118 +446,29 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "FilterTest\LineItem.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FilterTest\Order.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FilterTest\Product.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FilterTest\Salesperson.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "FilterTest\TestClass.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\BagGeneric\A.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\BagGeneric\B.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\BagGeneric\BagGenericFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\BagGeneric\BagGenericFixture.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "GenericTest\IdBagGeneric\A.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\IdBagGeneric\IdBagGenericFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\IdBagGeneric\IdBagGenericFixture.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "GenericTest\ListGeneric\A.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\ListGeneric\B.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\ListGeneric\ListGenericFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\ListGeneric\ListGenericFixture.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "GenericTest\MapGeneric\A.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\MapGeneric\B.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\MapGeneric\MapGenericFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\MapGeneric\MapGenericFixture.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "GenericTest\Methods\Fixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\Overall\A.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\Overall\Fixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\Overall\Mappings.hbm.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "GenericTest\SetGeneric\A.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\SetGeneric\B.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\SetGeneric\SetGenericFixture.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GenericTest\SetGeneric\SetGenericFixture.hbm.xml"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "IdTest\HiLoInt16Class.cs"
@@ -1920,6 +1854,15 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTest\FireBirdEmployment.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SqlTest\FireBirdTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SqlTest\General.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
@@ -2046,7 +1989,7 @@
                 />
                 <File
                     RelPath = "TypeParameters\Widget.hbm.xml"
-                    BuildAction = "Content"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TypesTest\BinaryBlobClass.cs"
