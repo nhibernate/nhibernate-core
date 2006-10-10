@@ -90,6 +90,7 @@
     <Compile Include="ExceptionsTest\PropertyAccessExceptionFixture.cs" />
     <Compile Include="ExpressionTest\BaseExpressionFixture.cs" />
     <Compile Include="ExpressionTest\BetweenExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\DetachedCriteriaFixture.cs" />
     <Compile Include="ExpressionTest\InExpressionFixture.cs" />
     <Compile Include="ExpressionTest\InsensitiveLikeExpressionFixture.cs" />
     <Compile Include="ExpressionTest\JunctionFixture.cs" />

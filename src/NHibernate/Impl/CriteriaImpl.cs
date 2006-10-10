@@ -117,6 +117,11 @@ namespace NHibernate.Impl
 			{
 				return root.List<T>();
 			}
+			
+			public T UniqueResult<T>()
+			{
+				return (T) UniqueResult();
+			}
 #endif
 
 			public object UniqueResult()
@@ -307,6 +312,12 @@ namespace NHibernate.Impl
 		{
 			return session.Find<T>( this );
 		}
+		
+		public T UniqueResult<T>()
+		{
+			return (T) UniqueResult();
+		}
+		
 #endif
 
 		public IEnumerable IterateExpressionEntries()
@@ -432,6 +443,12 @@ namespace NHibernate.Impl
 		public bool Cacheable
 		{
 			get { return cacheable; }
+		}
+
+		internal SessionImpl Session
+		{
+			get { return session; }
+			set { session = value; }
 		}
 
 		public string CacheRegion

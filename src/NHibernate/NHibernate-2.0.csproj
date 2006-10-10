@@ -519,6 +519,7 @@
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
+    <Compile Include="Expression\DetachedCriteria.cs" />
     <Compile Include="Engine\JoinSequence.cs" />
     <Compile Include="Hql\CollectionSubqueryFactory.cs" />
     <Compile Include="Expression\IsEmptyExpression.cs" />

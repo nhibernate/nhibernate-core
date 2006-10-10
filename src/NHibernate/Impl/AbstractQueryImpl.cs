@@ -597,6 +597,11 @@ namespace NHibernate.Impl
 			get { return session; }
 		}
 
+		public T UniqueResult<T>()
+		{
+			return (T) UniqueResult();
+		}
+		
 		public object UniqueResult()
 		{
 			return UniqueElement( List() );

@@ -130,6 +130,13 @@ namespace NHibernate
 		/// </exception>
 		object UniqueResult();
 
+
+#if NET_2_0
+		/// <summary>
+		/// Strongly-typed version of <see cref="UniqueResult()"/>.
+		/// </summary>
+		T UniqueResult<T>();
+#endif
 		/// <summary>
 		/// Set the maximum number of rows to retrieve.
 		/// </summary>

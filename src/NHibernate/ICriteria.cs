@@ -103,6 +103,11 @@ namespace NHibernate
 		/// Strongly-typed version of <see cref="List()" />.
 		/// </summary>
 		IList<T> List<T>();
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="UniqueResult()" />.
+		/// </summary>
+		T UniqueResult<T>();
 #endif
 
 		/// <summary>
