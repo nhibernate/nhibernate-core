@@ -83,12 +83,12 @@ namespace NHibernate.Expression
 			return this;
 		}
 
-		public DetachedCriteria createCriteria(String associationPath, String alias)
+		public DetachedCriteria CreateCriteria(String associationPath, String alias)
 		{
 			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath));
 		}
 
-		public DetachedCriteria createCriteria(String associationPath)
+		public DetachedCriteria CreateCriteria(String associationPath)
 		{
 			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath));
 		}
