@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="HashCodeProvider" 
+	default="build" 
+	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+>
+
+	<target name="build">
+			<!--
+			program="${framework::get-framework-directory(framework::get-target-framework)}\ilasm"
+			-->
+		<exec 
+			program="${nant.settings.currentframework.frameworkdirectory}\ilasm" 
+			commandline="HashCodeProvider.il /dll /output:..\..\lib\net\1.1\HashCodeProvider.dll /key:..\NHibernate.snk" 
+		/>	
+		<copy file="HashCodeProvider.license.txt" todir="../../lib/net/1.1" />
+	</target>
+	
+	
+</project>
