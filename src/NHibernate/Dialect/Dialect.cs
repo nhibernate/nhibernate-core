@@ -589,6 +589,15 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Whether this dialect have an Identity clause added to the data type or a
+		/// completely seperate identity data type
+		/// </summary>
+		public virtual bool hasDataTypeInIdentityColumn() 
+		{
+			return true;
+		}
+		 
+		/// <summary>
 		/// Aggregate SQL functions as defined in general.
 		/// </summary>
 		/// <remarks>

@@ -313,16 +313,20 @@ namespace NHibernate.Mapping
 			{
 				i++;
 				buf.Append( col.GetQuotedName( dialect ) )
-					.Append( ' ' )
-					.Append( col.GetSqlType( dialect, p ) );
+					.Append( ' ' );
 
 				if( identityColumn && col.GetQuotedName( dialect ).Equals( pkname ) )
 				{
+ 					// to support dialects that have their own identity data type
+ 					if ( dialect.hasDataTypeInIdentityColumn() ) {
+ 						buf.Append( col.GetSqlType( dialect, p ) );
+ 					}
 					buf.Append( ' ' )
 						.Append( dialect.IdentityColumnString );
 				}
 				else
 				{
+					buf.Append( col.GetSqlType( dialect, p ) );
 					if( col.IsNullable )
 					{
 						buf.Append( dialect.NullColumnString );
