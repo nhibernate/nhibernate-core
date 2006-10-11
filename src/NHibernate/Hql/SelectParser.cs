@@ -40,6 +40,7 @@ namespace NHibernate.Hql
 		private bool afterNew;
 		private bool insideNew;
 		private bool aggregateAddSelectScalar;
+		private bool afterAggregatePath;
 		private System.Type holderClass;
 
 		private SelectPathExpressionParser pathExpressionParser = new SelectPathExpressionParser();
@@ -141,10 +142,11 @@ namespace NHibernate.Hql
 					throw new QueryException( token + " only allowed inside aggregate function in SELECT" );
 				}
 				q.AppendScalarSelectToken( token );
-				if( "*".Equals( token ) )
+				if( "*".Equals( token ) && !afterAggregatePath)
 				{
 					q.AddSelectScalar( NHibernateUtil.Int32 );
 				} //special case
+				afterAggregatePath = false;
 			}
 			else if ( GetFunction( lctoken, q ) != null && token == q.Unalias( token ) )
 			{
@@ -154,6 +156,7 @@ namespace NHibernate.Hql
 					throw new QueryException( ", expected before aggregate function in SELECT: " + token );
 				}
 				aggregate = true;
+				afterAggregatePath = false;
 				aggregateAddSelectScalar = true;
 				aggregateFuncTokenList.Insert( 0, lctoken );
 				ready = false;
@@ -191,6 +194,7 @@ namespace NHibernate.Hql
 				{
 					constantToken = true;
 				}
+				afterAggregatePath = true;
 
 				if( constantToken )
 				{

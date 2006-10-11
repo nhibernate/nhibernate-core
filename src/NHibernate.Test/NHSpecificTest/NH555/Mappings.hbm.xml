@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH555"
+				   default-lazy="false"
+				   default-access="field.camelcase-underscore">
+
+	<class name="OrderLine" table="OrderLine" lazy="false">
+		<id name="Id" type="Int32" column="OrderLineId" unsaved-value="-1">
+			<generator class="native" />
+		</id>
+		<property name="ArticleName" column="ArticleName" />
+		<property name="ArticlePrice" column="ArticlePrice" />
+		<property name="ArticleId" column="ArticleId" />
+		<property name="NumberOfItems" column="NumberOfItems" />
+
+		<many-to-one name="OwningOrder" column="OrderId" 
+					 class="Order" 					
+					 not-null="true" />
+
+	</class>
+
+	<class name="Article" table="Article" lazy="false">
+		<id name="Id" column="ArticleId" type="Int32" unsaved-value="-1">
+			<generator class="native" />
+		</id>
+		<property name="Name" column="ArticleName" />
+		<property name="Price" column="ArticlePrice" />
+	</class>
+
+	<class name="Customer" table="Customer" lazy="false">
+		<id name="Id" type="Int32" column="CustomerId" unsaved-value="-1">
+			<generator class="native" />
+		</id>
+		<property name="Name" column="Name" />
+	</class>
+
+	<class name="Order" table="[Order]" lazy="false">
+		<id name="Id" column="OrderId" type="Int32" unsaved-value="-1">
+			<generator class="native" />
+		</id>
+		<property name="OrderDate" column="OrderDate" />
+		<property name="Status" column="OrderStatus" />
+		<property name="Discount" column="Discount" />
+
+		<many-to-one name="OwningCustomer" column="CustomerId" 
+					 class="Customer"
+					 not-null="true" 
+					
+                 />
+
+		<bag name="OrderLines"  cascade="save-update" inverse="true">
+			<key column="OrderId" />
+			<one-to-many class="OrderLine"/>
+		</bag>
+
+	</class>
+
+</hibernate-mapping>
