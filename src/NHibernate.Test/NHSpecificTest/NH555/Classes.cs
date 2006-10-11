@@ -270,7 +270,7 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 			{
 				return _owningOrder;
 			}
-			internal set
+			set
 			{
 				_owningOrder = value;
 			}
