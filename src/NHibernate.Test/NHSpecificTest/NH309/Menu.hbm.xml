@@ -9,7 +9,7 @@
 		
 		<list name="Nodes" table="nh309_menunode" cascade="none" lazy="true">
 			<key column="menuid" />
-			<index column="position" type="Int32" />
+			<index column="`position`" type="Int32" />
 			<many-to-many class="NHibernate.Test.NHSpecificTest.NH309.Node, NHibernate.Test" column="nodeid" outer-join="true" />
 		</list>
 	</class>

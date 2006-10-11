@@ -6,7 +6,7 @@
 
 	<class name="Category" table="Category364">
 		<id name="Id" column="CategoryId" type="Int32" unsaved-value="0">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 		<property name="Name" column="CategoryName" type="String" length="100"/>
 		<many-to-one name="Parent" column="ParentCategoryId" class="Category"/>
@@ -14,12 +14,12 @@
 
 	<class name="Link" table="Link364">
 		<id name="Id" column="LinkId" type="Int32" unsaved-value="0">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 		<property name="Name" column="LinkName" type="String" not-null="true"/>
 		<idbag name="Categories" table="CategoryLink364" lazy="true">
 			<collection-id column="CategoryLinkId" type="Int32">
-				<generator class="identity"/>
+				<generator class="native"/>
 			</collection-id>
 			<key column="LinkId" />
 			<many-to-many class="Category" column="CategoryId" />

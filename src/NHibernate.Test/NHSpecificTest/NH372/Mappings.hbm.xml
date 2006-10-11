@@ -5,7 +5,7 @@
 
 	<class name="Parent" table="NH372_Parent">
 		<id name="Id" type="int" access="nosetter.pascalcase-underscore">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 		<property name="Name" type="string" length="100" not-null="false"/>
 
@@ -23,7 +23,7 @@
 
 	<class name="DynamicParent" table="NH372_Parent" dynamic-insert="true" dynamic-update="true">
 		<id name="Id" type="int" access="nosetter.pascalcase-underscore">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 		<property name="Name" type="string" length="100" not-null="false"/>
 

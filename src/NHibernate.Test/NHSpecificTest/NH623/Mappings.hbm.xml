@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" auto-import="true" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH623">
 	<!-- ================ Class element and sub-classes Paragraph and Image ================ -->
-	<class name="Element" lazy="true" discriminator-value="0">
+	<class name="Element" table="`Element`" lazy="true" discriminator-value="0">
 		<id name="ElementId">
 			<generator class="assigned"/>
 		</id>
@@ -45,7 +45,7 @@
 	</class>
 
 	<!-- ================ Class Page ================ -->
-	<class name="Page" lazy="true">
+	<class name="Page" table="`Page`" lazy="true">
 		<id name="PageId">
 			<generator class="assigned"/>
 		</id>

@@ -10,7 +10,7 @@
     
     <property name="LastUpdated" type="timestamp"/>
     
-    <property name="Active" />
+    <property name="Active" column="`Active`"/>
     <property name="CheckLPCMember" column="CHECK_LPC_MEMBER" type="Decimal(19,5)" />
     <property name="FreeLPCMember" column="FREE_LPC_MEMBER" type="Boolean" />
   </class>

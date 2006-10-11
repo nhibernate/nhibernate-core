@@ -7,7 +7,7 @@
 	<class name="Child" table="Child">
 
 		<id name="ID" type="Int32" column="ID">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 
 		<many-to-one name="Parent" column="ParentID" class="Parent" not-null="true"/>
@@ -17,7 +17,7 @@
 	<class name="Parent" table="Parent">
 
 		<id name="ID" type="Int32" column="ID">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 
 		<bag name="Children" table="Child" inverse="true" lazy="true" cascade="all-delete-orphan">

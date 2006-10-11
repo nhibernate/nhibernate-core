@@ -60,7 +60,7 @@
 	<class
 		 name='User'
 		 lazy='true'
-		 table='Users'>
+		 table='`Users`'>
 		<id
 			 name='UserId'
 			 column='user_id'>

@@ -5,7 +5,7 @@
 				   default-lazy="false">
 	<class name="Cat" >
 		<id name="Id" type="Int32" unsaved-value="0" >
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<bag name="Children" cascade="all-delete-orphan" lazy="true">
