@@ -597,11 +597,13 @@ namespace NHibernate.Impl
 			get { return session; }
 		}
 
+#if NET_2_0
 		public T UniqueResult<T>()
 		{
 			return (T) UniqueResult();
 		}
-		
+#endif
+
 		public object UniqueResult()
 		{
 			return UniqueElement( List() );
