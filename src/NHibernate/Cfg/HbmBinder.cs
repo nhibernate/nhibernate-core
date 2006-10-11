@@ -900,6 +900,9 @@ namespace NHibernate.Cfg
 			// TODO NH: this is sort of redundant with the code below
 			model.ReferencedEntityName = GetEntityName(node, mappings);
 
+			string notFound = XmlHelper.GetAttributeValue(node, "not-found");
+			model.IsIgnoreNotFound = "ignore".Equals(notFound);
+
 			XmlAttribute typeNode = node.Attributes["class"];
 
 			if (typeNode != null)
@@ -907,7 +910,8 @@ namespace NHibernate.Cfg
 				model.Type = TypeFactory.ManyToOne(
 					ClassForNameChecked(typeNode.Value, mappings,
 					                    "could not find class: {0}"),
-					model.ReferencedPropertyName);
+					model.ReferencedPropertyName,
+					model.IsIgnoreNotFound);
 			}
 
 			XmlAttribute fkNode = node.Attributes["foreign-key"];
@@ -915,9 +919,6 @@ namespace NHibernate.Cfg
 			{
 				model.ForeignKeyName = fkNode.Value;
 			}
-
-			string notFound = XmlHelper.GetAttributeValue(node, "not-found");
-			model.IsIgnoreNotFound = "ignore".Equals(notFound);
 		}
 
 		public static void BindAny(XmlNode node, Any model, bool isNullable, Mappings mappings)

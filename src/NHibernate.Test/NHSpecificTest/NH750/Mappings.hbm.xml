@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" 
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH750"
+				   default-access="field.camelcase-underscore"
+				   default-lazy="false">
+	<class name="Device">
+		<id name="id" type="Int32">
+			<generator class="native"/>
+		</id>
+		<property name="Manifacturer"/>
+		<bag name="Drives" table="DriveOfDevice" cascade="all">
+			<key column="DeviceId"/>
+			<many-to-many class="Drive" column="DriveId" not-found="ignore"/>
+		</bag>
+	</class>
+
+	<class name="Drive">
+		<id name="id" type="Int32">
+			<generator class="native"/>
+		</id>
+		<property name="ClassFullName"/>
+	</class>
+</hibernate-mapping>

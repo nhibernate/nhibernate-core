@@ -319,6 +319,9 @@
     <Compile Include="NHSpecificTest\NH732\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH734\Domain.cs" />
     <Compile Include="NHSpecificTest\NH734\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH750\Device.cs" />
+    <Compile Include="NHSpecificTest\NH750\Drive.cs" />
+    <Compile Include="NHSpecificTest\NH750\Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -656,6 +659,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH593\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH750\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
