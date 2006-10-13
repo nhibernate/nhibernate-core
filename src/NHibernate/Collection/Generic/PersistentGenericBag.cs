@@ -404,10 +404,16 @@ namespace NHibernate.Collection.Generic
 			return result;
 		}
 
-		public override void DelayedAddAll( ICollection coll )
+		public override void DelayedAddAll( ICollection coll, ICollectionPersister persister )
 		{
+			bool isOneToMany = persister.IsOneToMany;
 			foreach( T obj in coll )
 			{
+				if (isOneToMany && bag.Contains(obj))
+				{
+					// Skip this
+					continue;
+				}
 				bag.Add( obj );
 			}
 		}

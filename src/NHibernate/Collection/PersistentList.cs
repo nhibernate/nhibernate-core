@@ -158,7 +158,7 @@ namespace NHibernate.Collection
 			return list.GetEnumerator();
 		}
 
-		public override void DelayedAddAll( ICollection coll )
+		public override void DelayedAddAll( ICollection coll, ICollectionPersister persister )
 		{
 			foreach( object obj in coll )
 			{

@@ -156,7 +156,7 @@ namespace NHibernate.Collection.Generic
 
 		#region AbstractPersistentCollection Members
 
-		public override void DelayedAddAll( ICollection coll )
+		public override void DelayedAddAll( ICollection coll, ICollectionPersister persister )
 		{
 			foreach( object obj in coll )
 			{

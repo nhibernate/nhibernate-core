@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -364,11 +365,17 @@ namespace NHibernate.Collection
 
 		#endregion
 
-		public override void DelayedAddAll( ICollection coll )
+		public override void DelayedAddAll( ICollection coll, ICollectionPersister persister )
 		{
-			foreach( object obj in coll )
+			bool isOneToMany = persister.IsOneToMany;
+			foreach (object obj in coll)
 			{
-				bag.Add( obj );
+				if (isOneToMany && bag.Contains(obj))
+				{
+					// Skip this
+					continue;
+				}
+				bag.Add(obj);
 			}
 		}
 

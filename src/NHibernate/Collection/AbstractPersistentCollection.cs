@@ -134,7 +134,7 @@ namespace NHibernate.Collection
 		/// because most collections do not support delayed addition.  If the collection
 		/// does then override this method.
 		/// </remarks>
-		public virtual void DelayedAddAll( ICollection coll )
+		public virtual void DelayedAddAll( ICollection coll, ICollectionPersister persister )
 		{
 			throw new AssertionFailure( "Collection does not support delayed initialization." );
 		}
@@ -201,19 +201,19 @@ namespace NHibernate.Collection
 		/// This should be overridden by sub collections that use temporary collections
 		/// to store values read from the db.
 		/// </remarks>
-		public virtual bool EndRead()
+		public virtual bool EndRead(ICollectionPersister persister)
 		{
 			// override on some subclasses
-			return AfterInitialize();
+			return AfterInitialize(persister);
 		}
 
-		public virtual bool AfterInitialize()
+		public virtual bool AfterInitialize(ICollectionPersister persister)
 		{
 			SetInitialized();
 			//do this bit after setting initialized to true or it will recurse
 			if ( additions != null ) 
 			{
-				DelayedAddAll( additions );
+				DelayedAddAll( additions, persister );
 				additions = null;
 				return false;
 			}

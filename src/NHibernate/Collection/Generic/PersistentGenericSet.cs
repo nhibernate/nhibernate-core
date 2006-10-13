@@ -346,7 +346,7 @@ namespace NHibernate.Collection.Generic
 		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
 		/// set.
 		/// </summary>
-		public override bool EndRead()
+		public override bool EndRead(ICollectionPersister persister)
 		{
 			internalSet.AddAll( tempList );
 			tempList = null;

@@ -4173,7 +4173,7 @@ namespace NHibernate.Impl
 			for (int i = 0; i < count; i++)
 			{
 				LoadingCollectionEntry lce = (LoadingCollectionEntry) resultSetCollections[i];
-				bool noQueueAdds = lce.Collection.EndRead(); // warning: can cause recursive query! (proxy initialization)
+				bool noQueueAdds = lce.Collection.EndRead(persister); // warning: can cause recursive query! (proxy initialization)
 				CollectionEntry ce = GetCollectionEntry(lce.Collection);
 				if (ce == null)
 				{
@@ -5580,7 +5580,7 @@ namespace NHibernate.Impl
 				else
 				{
 					collection.InitializeFromCache(persister, cached, owner);
-					collection.AfterInitialize();
+					collection.AfterInitialize(persister);
 					GetCollectionEntry(collection).PostInitialize(collection);
 					//addInitializedCollection(collection, persister, id); h2.1 - commented out
 					return true;

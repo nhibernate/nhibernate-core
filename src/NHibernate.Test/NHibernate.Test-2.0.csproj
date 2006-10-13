@@ -321,6 +321,8 @@
     <Compile Include="NHSpecificTest\NH734\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH555\Classes.cs" />
     <Compile Include="NHSpecificTest\NH555\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH739\Cat.cs" />
+    <Compile Include="NHSpecificTest\NH739\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH750\Device.cs" />
     <Compile Include="NHSpecificTest\NH750\Drive.cs" />
     <Compile Include="NHSpecificTest\NH750\Fixture.cs" />
@@ -667,6 +669,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH555\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH739\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

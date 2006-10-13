@@ -79,7 +79,7 @@ namespace NHibernate.Collection
 		/// This should be overridden by sub collections that use temporary collections
 		/// to store values read from the db.
 		/// </remarks>
-		bool EndRead();
+		bool EndRead(ICollectionPersister persister);
 
 		/// <summary>
 		/// Gets a <see cref="Boolean"/> indicating if the underlying collection is directly
@@ -280,6 +280,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Called after initializing from cache
 		/// </summary>
-		bool AfterInitialize();
+		// NH: added persister parameter to fix NH-739
+		bool AfterInitialize(ICollectionPersister persister);
 	}
 }

@@ -332,7 +332,7 @@ namespace NHibernate.Collection
 		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
 		/// PersistentSet.
 		/// </summary>
-		public override bool EndRead()
+		public override bool EndRead(ICollectionPersister persister)
 		{
 			internalSet.AddAll( tempList );
 			tempList = null;
