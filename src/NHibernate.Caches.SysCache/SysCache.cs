@@ -83,10 +83,10 @@ namespace NHibernate.Caches.SysCache
 		{
 			_region = region;
 			_cache = HttpRuntime.Cache;
-
-			StoreRootCacheKey();
-
 			Configure( properties );
+
+			_rootCacheKey = GenerateRootCacheKey();
+			StoreRootCacheKey();
 		}
 
 		private void Configure( IDictionary props )
@@ -271,11 +271,6 @@ namespace NHibernate.Caches.SysCache
 		/// <summary></summary>
 		private void StoreRootCacheKey()
 		{
-			if (_rootCacheKey == null)
-			{
-				_rootCacheKey = GenerateRootCacheKey();
-			}
-
 			_rootCacheKeyStored = true;
 			_cache.Add(
 				_rootCacheKey,
