@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH706">
+  <class name="Parent" table="Parent">
+
+    <cache usage="read-write"/>
+
+    <id name="ID" type="Int32" column="ID">
+      <generator class="identity"/>
+    </id>
+
+    <property name="Name" column="Name" type="String" length="200" not-null="true"/>
+
+    <set name="Children" table="Child" inverse="true" lazy="false" cascade="all-delete-orphan" sort="ChildComparer">
+      <cache usage="read-write"/>
+      <key column="ParentID"/>
+      <one-to-many class="Child"/>
+    </set>
+
+    <set name="DifferentChildren" table="DifferentChild" inverse="true" lazy="false" cascade="all-delete-orphan">
+      <cache usage="read-write"/>
+      <key column="ParentID"/>
+      <one-to-many class="DifferentChild"/>
+    </set>
+
+  </class>
+  <class name="Child" table="Child">
+
+    <cache usage="read-write"/>
+
+    <id name="ID" type="Int32" column="ID">
+      <generator class="identity"/>
+    </id>
+
+    <property name="Name" column="Name" type="String" length="200" not-null="true"/>
+
+    <many-to-one name="Parent" column="ParentID" class="Parent" not-null="true"/>
+    <many-to-one name="RelatedObject" column="RelatedObjectID" class="RelatedObject" not-null="true"/>
+
+  </class>
+  <class name="DifferentChild" table="DifferentChild">
+
+    <cache usage="read-write"/>
+
+    <id name="ID" type="Int32" column="ID">
+      <generator class="identity"/>
+    </id>
+
+    <property name="Name" column="Name" type="String" length="200" not-null="true"/>
+
+    <many-to-one name="Parent" column="ParentID" class="Parent" not-null="true"/>
+    <many-to-one name="Child" column="ChildID" class="Child" />
+
+  </class>
+  <class name="RelatedObject" table="RelatedObject">
+
+    <cache usage="read-write"/>
+
+    <id name="ID" type="Int32" column="ID">
+      <generator class="identity"/>
+    </id>
+
+    <property name="Name" column="Name" type="String" length="200" not-null="true"/>
+
+  </class>
+</hibernate-mapping>
