@@ -80,19 +80,21 @@ namespace NHibernate.Impl
 				throw new QueryException( "Not all named parameters have been set: " + CollectionPrinter.ToString( missingParams ), QueryString );
 			}
 
-			if ( positionalParameterCount != values.Count ) 
+			int positionalValueSpan = 0;
+			for (int i = 0; i < values.Count; i++)
+			{
+				object obj = types[i];
+				if (values[i] == UNSET_PARAMETER || obj == UNSET_TYPE)
+				{
+					throw new QueryException("Unset positional parameter at position: " + i, QueryString);
+				}
+				positionalValueSpan += ((IType) obj).GetColumnSpan(session.Factory);
+			}
+
+			if ( positionalParameterCount != positionalValueSpan ) 
 			{
 				throw new QueryException( string.Format( "Not all positional parameters have been set. Expected {0}, set {1}", positionalParameterCount, values.Count ),
 					QueryString );
-			}
-
-			for ( int i = 0; i < values.Count; i++ )
-			{
-				if ( values[i] == UNSET_PARAMETER || types[i] == UNSET_TYPE ) 
-				{
-					throw new QueryException( string.Format( "Not all positional parameters have been set. Found unset parameter at position {0}", i),
-						QueryString );
-				}
 			}
 		}
 
