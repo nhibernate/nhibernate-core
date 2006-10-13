@@ -111,13 +111,15 @@ namespace NHibernate.JetDriver
 
 			string fromClause = sqlString.Substring(beginOfFrom, endOfFrom - beginOfFrom).ToString();
 			
-			string transformed = TransformFromClause(fromClause);
+			string transformedFrom = TransformFromClause(fromClause);
 
 			//put it all together again
-			beginning.Add(transformed);
-			beginning.Add(end.ToSqlString());
+			SqlStringBuilder final = new SqlStringBuilder(sqlString.Count + 1);
+			final.Add(sqlString.Substring(0, beginOfFrom));
+			final.Add(transformedFrom);
+			final.Add(sqlString.Substring(endOfFrom));
 
-			SqlString ret = beginning.ToSqlString();
+			SqlString ret = final.ToSqlString();
 			_queryCache[sqlString] = ret;
 
 			return ret;
