@@ -9,12 +9,19 @@ namespace NHibernate.Test.NHSpecificTest.NH739
 		[Test]
 		public void Bug()
 		{
+			int catId;
+			
 			using (ISession sess = OpenSession())
 			{
 				Cat c = new Cat();
 				sess.Save(c);
-				sess.Clear();
-				c = (Cat) sess.Get(typeof(Cat), c.Id);
+				catId = c.Id;
+				sess.Flush();
+			}
+			
+			using (ISession sess = OpenSession())
+			{
+				Cat c = (Cat) sess.Get(typeof(Cat), catId);
 				Cat kitten = new Cat();
 				c.Children.Add(kitten);
 				kitten.Mother = c;
