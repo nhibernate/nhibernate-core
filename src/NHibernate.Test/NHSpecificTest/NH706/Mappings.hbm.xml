@@ -7,7 +7,7 @@
     <cache usage="read-write"/>
 
     <id name="ID" type="Int32" column="ID">
-      <generator class="identity"/>
+      <generator class="native"/>
     </id>
 
     <property name="Name" column="Name" type="String" length="200" not-null="true"/>
@@ -30,7 +30,7 @@
     <cache usage="read-write"/>
 
     <id name="ID" type="Int32" column="ID">
-      <generator class="identity"/>
+      <generator class="native"/>
     </id>
 
     <property name="Name" column="Name" type="String" length="200" not-null="true"/>
@@ -44,7 +44,7 @@
     <cache usage="read-write"/>
 
     <id name="ID" type="Int32" column="ID">
-      <generator class="identity"/>
+      <generator class="native"/>
     </id>
 
     <property name="Name" column="Name" type="String" length="200" not-null="true"/>
@@ -58,7 +58,7 @@
     <cache usage="read-write"/>
 
     <id name="ID" type="Int32" column="ID">
-      <generator class="identity"/>
+      <generator class="native"/>
     </id>
 
     <property name="Name" column="Name" type="String" length="200" not-null="true"/>

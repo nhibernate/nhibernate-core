@@ -46,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			parent.DifferentChildren = new HashedSet();
 			parent.DifferentChildren.Add(dc1);
 			parent.DifferentChildren.Add(dc2);
-
 			using (ISession session = OpenSession())
 			{
 				session.Save(obj1);
@@ -65,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			int dcId = 0;
 			using (ISession session = OpenSession())
 			{
-				Parent loadedParent = (Parent) session.Get(typeof(Parent), 1);
+				Parent loadedParent = (Parent)session.Get(typeof(Parent), parent.ID);
 				NHibernateUtil.Initialize(loadedParent.DifferentChildren);
 				foreach (DifferentChild dc in loadedParent.DifferentChildren)
 				{
