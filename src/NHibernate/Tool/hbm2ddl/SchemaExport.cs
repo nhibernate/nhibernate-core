@@ -19,8 +19,8 @@ namespace NHibernate.Tool.hbm2ddl
 	/// </remarks>
 	public class SchemaExport
 	{
-		private string[ ] dropSQL;
-		private string[ ] createSQL;
+		private string[] dropSQL;
+		private string[] createSQL;
 		private IDictionary connectionProperties;
 		private string outputFile = null;
 		private Dialect.Dialect dialect;
@@ -32,7 +32,8 @@ namespace NHibernate.Tool.hbm2ddl
 		/// Create a schema exported for a given Configuration
 		/// </summary>
 		/// <param name="cfg">The NHibernate Configuration to generate the schema from.</param>
-		public SchemaExport( Configuration cfg ) : this( cfg, cfg.Properties )
+		public SchemaExport(Configuration cfg)
+			: this(cfg, cfg.Properties)
 		{
 		}
 
@@ -42,12 +43,12 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </summary>
 		/// <param name="cfg">The NHibernate Configuration to generate the schema from.</param>
 		/// <param name="connectionProperties">The Properties to use when connecting to the Database.</param>
-		public SchemaExport( Configuration cfg, IDictionary connectionProperties )
+		public SchemaExport(Configuration cfg, IDictionary connectionProperties)
 		{
 			this.connectionProperties = connectionProperties;
-			dialect = Dialect.Dialect.GetDialect( connectionProperties );
-			dropSQL = cfg.GenerateDropSchemaScript( dialect );
-			createSQL = cfg.GenerateSchemaCreationScript( dialect );
+			dialect = Dialect.Dialect.GetDialect(connectionProperties);
+			dropSQL = cfg.GenerateDropSchemaScript(dialect);
+			createSQL = cfg.GenerateSchemaCreationScript(dialect);
 		}
 
 		/// <summary>
@@ -55,7 +56,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </summary>
 		/// <param name="filename">The name of the file to output the ddl to.</param>
 		/// <returns>The SchemaExport object.</returns>
-		public SchemaExport SetOutputFile( string filename )
+		public SchemaExport SetOutputFile(string filename)
 		{
 			outputFile = filename;
 			return this;
@@ -66,7 +67,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </summary>
 		/// <param name="delimiter">The end of statement delimiter.</param>
 		/// <returns>The SchemaExport object.</returns>
-		public SchemaExport SetDelimiter( string delimiter )
+		public SchemaExport SetDelimiter(string delimiter)
 		{
 			this.delimiter = delimiter;
 			return this;
@@ -81,9 +82,9 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool, bool)"/> and sets
 		/// the justDrop parameter to false and the format parameter to true.
 		/// </remarks>
-		public void Create( bool script, bool export )
+		public void Create(bool script, bool export)
 		{
-			Execute( script, export, false, true );
+			Execute(script, export, false, true);
 		}
 
 		/// <summary>
@@ -95,9 +96,161 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool, bool)"/> and sets
 		/// the justDrop and format parameter to true.
 		/// </remarks>
-		public void Drop( bool script, bool export )
+		public void Drop(bool script, bool export)
 		{
-			Execute( script, export, true, true );
+			Execute(script, export, true, true);
+		}
+
+
+		/// <summary>
+		/// Executes the Export of the Schema in the given connection
+		/// </summary>
+		/// <param name="script"><c>true</c> if the ddl should be outputted in the Console.</param>
+		/// <param name="export"><c>true</c> if the ddl should be executed against the Database.</param>
+		/// <param name="justDrop"><c>true</c> if only the ddl to drop the Database objects should be executed.</param>
+		/// <param name="format"><c>true</c> if the ddl should be nicely formatted instead of one statement per line.</param>
+		/// <param name="connection">
+		/// The connection to use when executing the commands when export is <c>true</c>.
+		/// Must be an opened connection. The method doesn't close the connection.
+		/// </param>
+		/// <param name="exportOutput">The writer used to output the generated schema</param>
+		/// <remarks>
+		/// This method allows for both the drop and create ddl script to be executed.
+		/// This overload is provided mainly to enable use of in memory databases. 
+		/// It does NOT close the given connection!
+		/// </remarks>
+		public void Execute(bool script, bool export, bool justDrop, bool format,
+			IDbConnection connection, TextWriter exportOutput)
+		{
+			IDbCommand statement = null;
+
+			if (export && connection == null)
+			{
+				throw new ArgumentNullException("connection", "When export is set to true, you need to pass a non null connection");
+			}
+			if (export)
+			{
+				statement = connection.CreateCommand();
+			}
+
+			try
+			{
+				for (int i = 0; i < dropSQL.Length; i++)
+				{
+					try
+					{
+						string formatted;
+						if (format)
+						{
+							formatted = Format(dropSQL[i]);
+						}
+						else
+						{
+							formatted = dropSQL[i];
+						}
+
+						if (delimiter != null)
+						{
+							formatted += delimiter;
+						}
+						if (script)
+						{
+							Console.WriteLine(formatted);
+						}
+						if (exportOutput != null)
+						{
+							exportOutput.WriteLine(formatted);
+						}
+						if (export)
+						{
+							statement.CommandText = dropSQL[i];
+							statement.CommandType = CommandType.Text;
+							statement.ExecuteNonQuery();
+						}
+					}
+					catch (Exception e)
+					{
+						if (!script)
+						{
+							Console.WriteLine(dropSQL[i]);
+						}
+						log.Warn("Unsuccessful: " + e.Message, e);
+					}
+				}
+
+				if (!justDrop)
+				{
+					for (int j = 0; j < createSQL.Length; j++)
+					{
+						try
+						{
+							string formatted;
+							if (format)
+							{
+								formatted = Format(createSQL[j]);
+							}
+							else
+							{
+								formatted = createSQL[j];
+							}
+							if (delimiter != null)
+							{
+								formatted += delimiter;
+							}
+							if (script)
+							{
+								Console.WriteLine(formatted);
+							}
+							if (outputFile != null)
+							{
+								exportOutput.WriteLine(formatted);
+							}
+							if (export)
+							{
+								statement.CommandText = createSQL[j];
+								statement.CommandType = CommandType.Text;
+								statement.ExecuteNonQuery();
+							}
+						}
+						catch (Exception e)
+						{
+							if (!script)
+							{
+								Console.WriteLine(createSQL[j]);
+							}
+							log.Warn("Unsuccessful: " + e.Message, e);
+
+							// Fail on create script errors
+							throw;
+						}
+					}
+				}
+			}
+			finally
+			{
+				try
+				{
+					if (statement != null)
+					{
+						statement.Dispose();
+					}
+				}
+				catch (Exception e)
+				{
+					log.Error("Could not close connection: " + e.Message, e);
+				}
+				if (exportOutput != null)
+				{
+					try
+					{
+						exportOutput.Close();
+					}
+					catch (Exception ioe)
+					{
+						log.Error("Error closing output file " + outputFile + ": " + ioe.Message, ioe);
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -110,173 +263,60 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <remarks>
 		/// This method allows for both the drop and create ddl script to be executed.
 		/// </remarks>
-		public void Execute( bool script, bool export, bool justDrop, bool format )
+		public void Execute(bool script, bool export, bool justDrop, bool format)
 		{
 			IDbConnection connection = null;
 			StreamWriter fileOutput = null;
 			IConnectionProvider connectionProvider = null;
-			IDbCommand statement = null;
 
 			IDictionary props = new Hashtable();
-			foreach( DictionaryEntry de in dialect.DefaultProperties )
+			foreach (DictionaryEntry de in dialect.DefaultProperties)
 			{
-				props[ de.Key ] = de.Value;
+				props[de.Key] = de.Value;
 			}
 
-			if( connectionProperties != null )
+			if (connectionProperties != null)
 			{
-				foreach( DictionaryEntry de in connectionProperties )
+				foreach (DictionaryEntry de in connectionProperties)
 				{
-					props[ de.Key ] = de.Value;
+					props[de.Key] = de.Value;
 				}
 			}
 
 			try
 			{
-				if( outputFile != null )
+				if (outputFile != null)
 				{
-					fileOutput = new StreamWriter( outputFile );
+					fileOutput = new StreamWriter(outputFile);
 				}
 
-				if( export )
+				if (export)
 				{
-					connectionProvider = ConnectionProviderFactory.NewConnectionProvider( props );
+					connectionProvider = ConnectionProviderFactory.NewConnectionProvider(props);
 					connection = connectionProvider.GetConnection();
-					statement = connection.CreateCommand();
 				}
 
-				for( int i = 0; i < dropSQL.Length; i++ )
-				{
-					try
-					{
-						string formatted;
-						if( format )
-						{
-							formatted = Format( dropSQL[ i ] );
-						}
-						else
-						{
-							formatted = dropSQL[ i ];
-						}
-
-						if( delimiter != null )
-						{
-							formatted += delimiter;
-						}
-						if( script )
-						{
-							Console.WriteLine( formatted );
-						}
-						if( outputFile != null )
-						{
-							fileOutput.WriteLine( formatted );
-						}
-						if( export )
-						{
-							statement.CommandText = dropSQL[ i ];
-							statement.CommandType = CommandType.Text;
-							statement.ExecuteNonQuery();
-						}
-					}
-					catch( Exception e )
-					{
-						if( !script )
-						{
-							Console.WriteLine( dropSQL[ i ] );
-						}
-                        log.Warn("Unsuccessful: " + e.Message, e);
-					}
-				}
-
-				if( !justDrop )
-				{
-					for( int j = 0; j < createSQL.Length; j++ )
-					{
-						try
-						{
-							string formatted;
-							if( format )
-							{
-								formatted = Format( createSQL[ j ] );
-							}
-							else
-							{
-								formatted = createSQL[ j ];
-							}
-							if( delimiter != null )
-							{
-								formatted += delimiter;
-							}
-							if( script )
-							{
-								Console.WriteLine( formatted );
-							}
-							if( outputFile != null )
-							{
-								fileOutput.WriteLine( formatted );
-							}
-							if( export )
-							{
-								statement.CommandText = createSQL[ j ];
-								statement.CommandType = CommandType.Text;
-								statement.ExecuteNonQuery();
-							}
-						}
-						catch( Exception e )
-						{
-							if( !script )
-							{
-								Console.WriteLine( createSQL[ j ] );
-							}
-                            log.Warn("Unsuccessful: " + e.Message, e);
-
-							// Fail on create script errors
-							throw;
-						}
-					}
-				}
-
+				Execute(script, export, justDrop, format, connection, fileOutput);
 			}
-			catch( HibernateException )
+			catch (HibernateException)
 			{
 				// So that we don't wrap HibernateExceptions in HibernateExceptions
 				throw;
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-                log.Error(e.Message, e);
-				throw new HibernateException( e.Message, e );
+				log.Error(e.Message, e);
+				throw new HibernateException(e.Message, e);
 			}
 			finally
 			{
-				try
+				if (connection != null)
 				{
-					if( statement != null )
-					{
-						statement.Dispose();
-					}
-					if( connection != null )
-					{
-						connectionProvider.CloseConnection( connection );
-						connectionProvider.Dispose();
-					}
-				}
-				catch( Exception e )
-				{
-                    log.Error("Could not close connection: " + e.Message, e);
-				}
-				if( fileOutput != null )
-				{
-					try
-					{
-						fileOutput.Close();
-					}
-					catch( Exception ioe )
-					{
-                        log.Error("Error closing output file " + outputFile + ": " + ioe.Message, ioe);
-					}
+					connectionProvider.CloseConnection(connection);
+					connectionProvider.Dispose();
 				}
 			}
+
 		}
 
 		/// <summary>
@@ -301,43 +341,43 @@ namespace NHibernate.Tool.hbm2ddl
 		///		</item>
 		/// </list>
 		/// </remarks>
-		private static string Format( string sql )
+		private static string Format(string sql)
 		{
-			if( sql.IndexOf( "\"" ) > 0 || sql.IndexOf( "'" ) > 0 )
+			if (sql.IndexOf("\"") > 0 || sql.IndexOf("'") > 0)
 			{
 				return sql;
 			}
 
 			string formatted;
 
-			if( sql.ToLower( System.Globalization.CultureInfo.InvariantCulture ).StartsWith( "create table" ) )
+			if (sql.ToLower(System.Globalization.CultureInfo.InvariantCulture).StartsWith("create table"))
 			{
-				StringBuilder result = new StringBuilder( 60 );
-				StringTokenizer tokens = new StringTokenizer( sql, "(,)", true );
+				StringBuilder result = new StringBuilder(60);
+				StringTokenizer tokens = new StringTokenizer(sql, "(,)", true);
 
 				int depth = 0;
 
-				foreach( string tok in tokens )
+				foreach (string tok in tokens)
 				{
-					if( StringHelper.ClosedParen.Equals( tok ) )
+					if (StringHelper.ClosedParen.Equals(tok))
 					{
 						depth--;
-						if( depth == 0 )
+						if (depth == 0)
 						{
-							result.Append( "\n" );
+							result.Append("\n");
 						}
 					}
-					result.Append( tok );
-					if( StringHelper.Comma.Equals( tok ) && depth == 1 )
+					result.Append(tok);
+					if (StringHelper.Comma.Equals(tok) && depth == 1)
 					{
-						result.Append( "\n  " );
+						result.Append("\n  ");
 					}
-					if( StringHelper.OpenParen.Equals( tok ) )
+					if (StringHelper.OpenParen.Equals(tok))
 					{
 						depth++;
-						if( depth == 1 )
+						if (depth == 1)
 						{
-							result.Append( "\n  " );
+							result.Append("\n  ");
 						}
 					}
 				}
