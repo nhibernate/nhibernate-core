@@ -56,6 +56,25 @@ namespace NHibernate.Util
 
 			return buf.ToString();
 		}
+		
+		public static SqlString Join( SqlString separator, IEnumerable objects )
+		{
+			SqlStringBuilder buf = new SqlStringBuilder();
+			bool first = true;
+
+			foreach( object obj in objects )
+			{
+				if( !first )
+				{
+					buf.Add( separator );
+				}
+
+				first = false;
+				buf.AddObject( obj );
+			}
+
+			return buf.ToSqlString();
+		}
 
 		public static string[ ] Add( string[ ] x, string sep, string[ ] y )
 		{
@@ -512,6 +531,11 @@ namespace NHibernate.Util
 				result = result.Substring( 0, slashPos - 1);
 			}
 			return result;
+		}
+		
+		public static string GenerateAlias(string description)
+		{
+			return GenerateAliasRoot(description) + Underscore;
 		}
 
 		/// <summary>

@@ -391,7 +391,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="version"></param>
 		/// <param name="session"></param>
 		/// <returns><c>null</c> if select-before-update is not enabled or not supported</returns>
-		object[] GetCurrentPersistentState( object id, object version, ISessionImplementor session );
+		object[] GetDatabaseSnapshot( object id, object version, ISessionImplementor session );
 
 		/// <summary>
 		/// Get the current version of the object, or return null if there is no row for

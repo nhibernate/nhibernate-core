@@ -209,7 +209,7 @@ namespace NHibernate.Persister.Entity
 
 		private const string ConcreteAlias = "x";
 
-		protected override SqlString GenerateConcreteSelectString()
+		protected override SqlString GenerateSnapshotSelectString()
 		{
 			SqlStringBuilder select = new SqlStringBuilder();
 
@@ -673,23 +673,9 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected string ConcretePropertySelectFragment(string alias, bool[] includeProperty)
+		protected override int[] PropertyTableNumbersInSelect
 		{
-			int propertyCount = PropertyNames.Length;
-			SelectFragment frag = new SelectFragment(Dialect);
-
-			for (int i = 0; i < propertyCount; i++)
-			{
-				if (includeProperty[i])
-				{
-					frag.AddColumns(
-						Alias(alias, propertyTables[i]),
-						GetPropertyColumnNames(i),
-						GetPropertyColumnAliases(i));
-				}
-			}
-
-			return frag.ToSqlStringFragment();
+			get { return propertyTables; }
 		}
 
 		private CaseFragment DiscriminatorFragment(string alias)

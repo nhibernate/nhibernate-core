@@ -37,7 +37,7 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		public SqlString(object[] sqlParts)
+		public SqlString(params object[] sqlParts)
 		{
 #if DEBUG
 			foreach (object obj in sqlParts)

@@ -3378,7 +3378,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					currentPersistentState = persister.GetCurrentPersistentState(entry.Id, entry.Version, this);
+					currentPersistentState = persister.GetDatabaseSnapshot(entry.Id, entry.Version, this);
 					if (currentPersistentState != null)
 					{
 						dirtyProperties = persister.FindModified(currentPersistentState, values, obj, this);

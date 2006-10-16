@@ -354,7 +354,7 @@ namespace NHibernate.DomainModel
 		/// <param name="version"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object[] GetCurrentPersistentState( object id, object version, ISessionImplementor session )
+		public object[] GetDatabaseSnapshot( object id, object version, ISessionImplementor session )
 		{
 			return null;
 		}

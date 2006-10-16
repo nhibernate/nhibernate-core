@@ -203,7 +203,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object[] GetCurrentPersistentState(object id, object version, ISessionImplementor session)
+		public object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session)
 		{
 			// TODO:  Add TestingClassPersister.GetCurrentPersistentState implementation
 			return null;

@@ -194,32 +194,9 @@ namespace NHibernate.Persister.Entity
 			return selectSqlString;
 		}
 
-		/// <summary>
-		/// Generate the SQL that selects a row by id, excluding subclasses
-		/// </summary>
-		protected override SqlString GenerateConcreteSelectString()
+		protected override int[] PropertyTableNumbersInSelect
 		{
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory);
-
-			// set the table and the identity columns
-			builder.SetTableName(TableName)
-				.AddColumns(IdentifierColumnNames);
-
-			for (int i = 0; i < PropertyNames.Length; i++)
-			{
-				if (PropertyUpdateability[i])
-				{
-					builder.AddColumns(GetPropertyColumnNames(i), GetPropertyColumnAliases(i));
-				}
-			}
-
-			builder.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
-			if (IsVersioned)
-			{
-				builder.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
-			}
-
-			return builder.ToSqlString();
+			get { return propertyTableNumbers; }
 		}
 
 		/// <summary>

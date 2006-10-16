@@ -157,7 +157,7 @@ namespace NHibernate.Persister.Entity
 		private SqlCommandInfo[] sqlInsertStrings;
 		private SqlCommandInfo sqlIdentityInsertString;
 		private SqlCommandInfo[] sqlUpdateStrings;
-		private SqlString sqlConcreteSelectString;
+		private SqlString sqlSnapshotSelectString;
 		private SqlString sqlVersionSelectString;
 		private bool[] tableHasColumns;
 
@@ -1503,7 +1503,7 @@ namespace NHibernate.Persister.Entity
 			return id;
 		}
 
-		public object[] GetCurrentPersistentState(object id, object version, ISessionImplementor session)
+		public object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session)
 		{
 			if (!HasSelectBeforeUpdate)
 			{
@@ -1518,7 +1518,7 @@ namespace NHibernate.Persister.Entity
 			IType[] types = PropertyTypes;
 			object[] values = new object[types.Length];
 			bool[] includeProperty = PropertyUpdateability;
-			SqlString sql = ConcreteSelectString;
+			SqlString sql = SQLSnapshotSelectString;
 			try
 			{
 				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, idAndVersionSqlTypes);
@@ -1638,6 +1638,11 @@ namespace NHibernate.Persister.Entity
 		protected int GetPropertyColumnSpan(int i)
 		{
 			return propertyColumnSpans[i];
+		}
+		
+		protected string[] GetPropertyColumnFormulaTemplates(int i)
+		{
+			return propertyColumnFormulaTemplates[i];
 		}
 
 		public string SelectFragment(string alias, string suffix, bool includeCollectionColumns)
@@ -2229,6 +2234,11 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel; }
 		}
 
+		private string RootAlias
+		{
+			get { return StringHelper.GenerateAlias(ClassName); }
+		}
+
 		protected void PostConstruct(IMapping mapping)
 		{
 			InitPropertyPaths(mapping);
@@ -2239,7 +2249,73 @@ namespace NHibernate.Persister.Entity
 			idSqlTypes = IdentifierType.SqlTypes(mapping);
 		}
 
-		protected abstract SqlString GenerateConcreteSelectString();
+		protected abstract int[] PropertyTableNumbersInSelect { get; }
+
+		protected string ConcretePropertySelectFragment(string alias, bool[] includeProperty)
+		{
+			int propertyCount = entityMetamodel.PropertySpan;
+			int[] propertyTableNumbers = PropertyTableNumbersInSelect;
+			SelectFragment frag = new SelectFragment(Factory.Dialect);
+			for (int i = 0; i < propertyCount; i++)
+			{
+				if (includeProperty[i])
+				{
+					//ie. updateable, not a formula
+					frag.AddColumns(
+						GenerateTableAlias(alias, propertyTableNumbers[i]),
+						propertyColumnNames[i],
+						propertyColumnAliases[i]
+						);
+					frag.AddFormulas(
+						GenerateTableAlias(alias, propertyTableNumbers[i]),
+						propertyColumnFormulaTemplates[i],
+						propertyColumnAliases[i]
+						);
+				}
+			}
+			return frag.ToSqlStringFragment();
+		}
+
+		protected virtual SqlString GenerateSnapshotSelectString()
+		{
+			//TODO: should we use SELECT .. FOR UPDATE?
+
+			SqlSelectBuilder select = new SqlSelectBuilder(Factory);
+
+			//if (Factory.Settings.IsCommentsEnabled)
+			//{
+			//    select.SetComment("get current state " + ClassName);
+			//}
+
+			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
+			string selectClause = StringHelper.Join(", ", aliasedIdColumns) +
+			                      ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
+
+			SqlString fromClause = FromTableFragment(RootAlias) +
+			                       FromJoinFragment(RootAlias, true, false);
+
+			SqlString joiner = new SqlString("=", Parameter.Placeholder, " and ");
+			SqlString whereClause = new SqlStringBuilder()
+				.Add(StringHelper.Join(joiner, aliasedIdColumns))
+				.Add("=")
+				.AddParameter()
+				.Add(WhereJoinFragment(RootAlias, true, false))
+				.ToSqlString();
+
+			// TODO H3: this is commented out in H3.2
+			if (IsVersioned)
+			{
+				whereClause.Append(" and ")
+					.Append(VersionColumnName)
+					.Append("=?");
+			}
+
+			return select.SetSelectClause(selectClause)
+				.SetFromClause(fromClause)
+				.SetOuterJoins(SqlString.Empty, SqlString.Empty)
+				.SetWhereClause(whereClause)
+				.ToSqlString();
+		}
 
 		public virtual void PostInstantiate()
 		{
@@ -2269,7 +2345,7 @@ namespace NHibernate.Persister.Entity
 			                          	? GenerateIdentityInsertString(PropertyInsertability)
 			                          	: null;
 
-			sqlConcreteSelectString = GenerateConcreteSelectString();
+			sqlSnapshotSelectString = GenerateSnapshotSelectString();
 			sqlVersionSelectString = GenerateSelectVersionString();
 
 			// This is used to determine updates for objects that came in via update()
@@ -2818,9 +2894,9 @@ namespace NHibernate.Persister.Entity
 			get { return sqlVersionSelectString; }
 		}
 
-		protected SqlString ConcreteSelectString
+		protected SqlString SQLSnapshotSelectString
 		{
-			get { return sqlConcreteSelectString; }
+			get { return sqlSnapshotSelectString; }
 		}
 
 		protected SqlCommandInfo GenerateDeleteString(int j)

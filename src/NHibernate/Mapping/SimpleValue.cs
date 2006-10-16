@@ -71,10 +71,14 @@ namespace NHibernate.Mapping
 				this.type = value;
 				int count = 0;
 
-				foreach( Column col in ColumnCollection )
+				foreach( ISelectable sel in ColumnCollection )
 				{
-					col.Type = type;
-					col.TypeIndex = count++;
+					if (sel is Column)
+					{
+						Column col = (Column) sel;
+						col.Type = type;
+						col.TypeIndex = count++;
+					}
 				}
 			}
 		}
