@@ -39,7 +39,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Time, "DATETIME");
 			RegisterColumnType(DbType.Boolean, "INTEGER");
-			RegisterColumnType(DbType.Guid, "TEXT");
+			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 		}
 
 		/// <summary>

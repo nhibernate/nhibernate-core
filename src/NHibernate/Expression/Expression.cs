@@ -270,6 +270,18 @@ namespace NHibernate.Expression
 		{
 			return new SQLCriterion( sql, new object[ ] {value}, new IType[ ] {type} );
 		}
+		
+		/// <summary>
+		/// Apply a constraint expressed in SQL, with the given SQL parameter
+		/// </summary>
+		/// <param name="sql"></param>
+		/// <param name="value"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static AbstractCriterion Sql( string sql, object value, IType type )
+		{
+			return new SQLCriterion( new SqlString( sql ), new object[ ] {value}, new IType[ ] {type} );
+		}
 
 		/// <summary>
 		/// Apply a constraint expressed in SQL
