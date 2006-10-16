@@ -35,7 +35,7 @@
 		<property name="Name" column="Name" />
 	</class>
 
-	<class name="Order" table="[Order]" lazy="false">
+	<class name="Order" table="`Order`" lazy="false">
 		<id name="Id" column="OrderId" type="Int32" unsaved-value="-1">
 			<generator class="native" />
 		</id>
