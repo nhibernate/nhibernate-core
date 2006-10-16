@@ -9,11 +9,19 @@ namespace NHibernate.DomainModel
 	{
 		private string _name;
 		private long _amount;
-		private int _count;
+		private long _count;// changed from int to long (H3.2)
 
 		private FooStatus _status;
 
 		public Result(string name, long amount, int count) 
+		{
+			_name = name;
+			_amount = amount;
+			_count = count;
+		}
+
+		// added for H3.2
+		public Result(string name, long amount, long count)
 		{
 			_name = name;
 			_amount = amount;
@@ -39,7 +47,7 @@ namespace NHibernate.DomainModel
 			set { _amount = value; }
 		}
 
-		public int Count
+		public long Count
 		{
 			get { return _count; }
 			set { _count = value; }

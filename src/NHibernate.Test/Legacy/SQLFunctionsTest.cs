@@ -5,6 +5,7 @@ using NHibernate.Dialect;
 using NHibernate.DomainModel;
 
 using NUnit.Framework;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Test.Legacy
 {
@@ -475,7 +476,7 @@ namespace NHibernate.Test.Legacy
 
 				IEnumerator enumer = s.Enumerable("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").GetEnumerator();
 				Assert.IsTrue( enumer.MoveNext() );
-				Assert.AreEqual(12, (Int32)enumer.Current );
+				Assert.AreEqual(12, (Int64)enumer.Current ); // changed cast from Int32 to Int64 (H3.2)
 				Assert.IsFalse( enumer.MoveNext() );
 
 				if( dialect.SupportsSubSelects ) 

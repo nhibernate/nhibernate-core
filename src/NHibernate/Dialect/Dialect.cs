@@ -10,6 +10,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Dialect.Function;
 
 using Environment = NHibernate.Cfg.Environment;
 
@@ -41,12 +42,11 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		static Dialect()
 		{
-			standardAggregateFunctions[ "count" ] = new CountQueryFunctionInfo();
-			standardAggregateFunctions[ "avg" ] = new AvgQueryFunctionInfo();
-			standardAggregateFunctions[ "max" ] = new StandardSQLFunction();
-			standardAggregateFunctions[ "min" ] = new StandardSQLFunction();
-			standardAggregateFunctions[ "sum" ] = new StandardSQLFunction();
-
+			standardAggregateFunctions["count"] = new CountQueryFunctionInfo();
+			standardAggregateFunctions["avg"] = new AvgQueryFunctionInfo();
+			standardAggregateFunctions["max"] = new StandardSQLFunction("max");
+			standardAggregateFunctions["min"] = new StandardSQLFunction("min");
+			standardAggregateFunctions["sum"] = new SumQueryFunctionInfo();
 		}
 
 		/// <summary>
@@ -857,98 +857,6 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public class CountQueryFunctionInfo : ISQLFunction
-		{
-			#region ISQLFunction Members
-
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="columnType"></param>
-			/// <param name="mapping"></param>
-			/// <returns></returns>
-			public IType ReturnType(IType columnType, IMapping mapping)
-			{
-				return NHibernateUtil.Int32;
-			}
-
-			/// <summary>
-			/// 
-			/// </summary>
-			public bool HasArguments
-			{
-				get { return true; }
-			}
-
-			/// <summary>
-			/// 
-			/// </summary>
-			public bool HasParenthesesIfNoArguments
-			{
-				get { return true; }
-			}
-
-			#endregion
-		}
-
-		public class AvgQueryFunctionInfo : ISQLFunction
-		{
-			#region ISQLFunction Members
-
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="columnType"></param>
-			/// <param name="mapping"></param>
-			/// <returns></returns>
-			public IType ReturnType(IType columnType, IMapping mapping)
-			{
-				SqlType[ ] sqlTypes;
-				try
-				{
-					sqlTypes = columnType.SqlTypes( mapping );
-				}
-				catch( MappingException me )
-				{
-					throw new QueryException( me );
-				}
-
-				if( sqlTypes.Length != 1 )
-				{
-					throw new QueryException( "multi-column type can not be in avg()" );
-				}
-
-				SqlType sqlType = sqlTypes[ 0 ];
-
-				if( sqlType.DbType == DbType.Int16 || sqlType.DbType == DbType.Int32 || sqlType.DbType == DbType.Int64 )
-				{
-					return NHibernateUtil.Single;
-				}
-				else
-				{
-					return columnType;
-				}
-			}
-
-			/// <summary>
-			/// 
-			/// </summary>
-			public bool HasArguments
-			{
-				get { return true; }
-			}
-
-			/// <summary>
-			/// 
-			/// </summary>
-			public bool HasParenthesesIfNoArguments
-			{
-				get { return true; }
-			}
-
-			#endregion
-		}
-
 		public virtual string GetForUpdateNowaitString( string aliases )
 		{
 			return GetForUpdateString( aliases );
@@ -958,5 +866,87 @@ namespace NHibernate.Dialect
 		{
 			return ForUpdateString;
 		}
+
+		#region Agregate function redefinition
+
+		protected class CountQueryFunctionInfo : StandardSQLFunction
+		{
+			public CountQueryFunctionInfo() : base("count") { }
+			public override IType ReturnType(IType columnType, IMapping mapping)
+			{
+				return NHibernateUtil.Int64;
+			}
+		}
+
+		protected class AvgQueryFunctionInfo : StandardSQLFunction
+		{
+			public AvgQueryFunctionInfo() : base("avg") { }
+
+			public override IType ReturnType(IType columnType, IMapping mapping)
+			{
+				SqlType[] sqlTypes;
+				try
+				{
+					sqlTypes = columnType.SqlTypes(mapping);
+				}
+				catch (MappingException me)
+				{
+					throw new QueryException(me);
+				}
+
+				if (sqlTypes.Length != 1)
+				{
+					throw new QueryException("multi-column type can not be in avg()");
+				}
+				return NHibernateUtil.Double;
+			}
+		}
+
+		protected class SumQueryFunctionInfo : StandardSQLFunction
+		{
+			public SumQueryFunctionInfo() : base("sum") { }
+
+			//H3.2 behavior
+			public override IType ReturnType(IType columnType, IMapping mapping)
+			{
+				SqlType[] sqlTypes;
+				try
+				{
+					sqlTypes = columnType.SqlTypes(mapping);
+				}
+				catch (MappingException me)
+				{
+					throw new QueryException(me);
+				}
+
+				if (sqlTypes.Length != 1)
+				{
+					throw new QueryException("multi-column type can not be in sum()");
+				}
+
+				SqlType sqlType = sqlTypes[0];
+
+				// TODO: (H3.2 for nullable types) First allow the actual type to control the return value. (the actual underlying sqltype could actually be different)
+
+				// finally use the sqltype if == on Hibernate types did not find a match.
+				if (sqlType.DbType == DbType.Single || sqlType.DbType == DbType.Double)
+				{
+					return NHibernateUtil.Double;
+				}
+				else if (sqlType.DbType == DbType.Int16 || sqlType.DbType == DbType.Int32 || sqlType.DbType == DbType.Int64)
+				{
+					return NHibernateUtil.Int64;
+				}
+				else if (sqlType.DbType == DbType.UInt16 || sqlType.DbType == DbType.UInt32 || sqlType.DbType == DbType.UInt64)
+				{
+					return NHibernateUtil.UInt64;
+				}
+				else
+				{
+					return columnType;
+				}
+			}
+		}
+		#endregion
 	}
 }

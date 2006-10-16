@@ -4,6 +4,7 @@ using System.Data;
 using NHibernate.SqlCommand;
 
 using Environment = NHibernate.Cfg.Environment;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
@@ -71,35 +72,35 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.String, 1073741823, "NTEXT" );
 			RegisterColumnType( DbType.Time, "DATETIME" );
 
-			RegisterFunction("abs", new StandardSQLFunction() );
-			RegisterFunction("absval", new StandardSQLFunction() );
-			RegisterFunction("sign", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("abs", new StandardSQLFunction("abs"));
+			RegisterFunction("absval", new StandardSQLFunction("absval"));
+			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 
-			RegisterFunction("ceiling", new StandardSQLFunction() );
-			RegisterFunction("ceil", new StandardSQLFunction() );
-			RegisterFunction("floor", new StandardSQLFunction() );
-			RegisterFunction("round", new StandardSQLFunction() );
+			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
+			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
+			RegisterFunction("floor", new StandardSQLFunction("floor"));
+			RegisterFunction("round", new StandardSQLFunction("round"));
 
-			RegisterFunction("acos", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("asin", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("atan", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("cos", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("cot", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("degrees", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("exp", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("float", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("hex", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction("ln", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("log", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("log10", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("radians", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("rand", new NoArgSQLFunction( NHibernateUtil.Double ));
-			RegisterFunction("sin", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("soundex", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction("sqrt", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("stddev", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("tan", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("variance", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
+			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
+			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
+			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
+			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double ) );
+			RegisterFunction("degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double));
+			RegisterFunction("exp", new StandardSQLFunction("exp", NHibernateUtil.Double));
+			RegisterFunction("float", new StandardSQLFunction("float", NHibernateUtil.Double));
+			RegisterFunction("hex", new StandardSQLFunction("hex", NHibernateUtil.String));
+			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
+			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
+			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
+			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
+			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
+			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.String));
+			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
+			RegisterFunction("stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double));
+			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
+			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
 			/*
 			RegisterFunction("julian_day", new StandardSQLFunction( NHibernateUtil.Int32 ) );
@@ -134,14 +135,14 @@ namespace NHibernate.Dialect
 			RegisterFunction("smallint", new StandardSQLFunction( NHibernateUtil.Int16 ) );
 			*/
 
-			RegisterFunction("digits", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction("chr", new StandardSQLFunction( NHibernateUtil.Character ) );
-			RegisterFunction("upper", new StandardSQLFunction() );
-			RegisterFunction("ucase", new StandardSQLFunction() );
-			RegisterFunction("lcase", new StandardSQLFunction() );
-			RegisterFunction("lower", new StandardSQLFunction() );
-			RegisterFunction("length", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("ltrim", new StandardSQLFunction() );
+			RegisterFunction("digits", new StandardSQLFunction("digits", NHibernateUtil.String));
+			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
+			RegisterFunction("upper", new StandardSQLFunction("upper"));
+			RegisterFunction("ucase", new StandardSQLFunction("ucase"));
+			RegisterFunction("lcase", new StandardSQLFunction("lcase"));
+			RegisterFunction("lower", new StandardSQLFunction("lower"));
+			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
+			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 
 			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.SqlClientDriver";
 			DefaultProperties[ Environment.PrepareSql ] = "false";

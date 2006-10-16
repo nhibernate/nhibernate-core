@@ -4,6 +4,7 @@ using Iesi.Collections;
 using NHibernate.Dialect;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Hql
 {

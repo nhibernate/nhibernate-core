@@ -623,11 +623,11 @@ namespace NHibernate.Test.Legacy
 			if( DialectSupportsCountDistinct )
 			{
 				enumerable = s.Enumerable( "select count(distinct foo.TheFoo) from foo in class Foo" );
-				Assert.IsTrue( ContainsSingleObject( enumerable, 2 ), "count" );
+				Assert.IsTrue(ContainsSingleObject(enumerable, (long)2), "count");// changed to Int64 (HQLFunction H3.2)
 			}
 
 			enumerable = s.Enumerable( "select count(foo.TheFoo.Boolean) from foo in class Foo" );
-			Assert.IsTrue( ContainsSingleObject( enumerable, 2 ), "count" );
+			Assert.IsTrue(ContainsSingleObject(enumerable, (long)2), "count");// changed to Int64 (HQLFunction H3.2)
 
 			enumerable = s.Enumerable( "select count(*), foo.Int from foo in class Foo group by foo.Int" );
 			enumerator = enumerable.GetEnumerator();
@@ -636,11 +636,11 @@ namespace NHibernate.Test.Legacy
 			Assert.IsFalse( enumerator.MoveNext() );
 
 			enumerable = s.Enumerable( "select sum(foo.TheFoo.Int) from foo in class Foo" );
-			Assert.IsTrue( ContainsSingleObject( enumerable, 4 ), "sum" );
+			Assert.IsTrue(ContainsSingleObject(enumerable, (long)4), "sum");// changed to Int64 (HQLFunction H3.2)
 
 			enumerable = s.Enumerable( "select count(foo) from foo in class Foo where foo.id=?",
 			                           foo.Key, NHibernateUtil.String );
-			Assert.IsTrue( ContainsSingleObject( enumerable, 1 ), "id query count" );
+			Assert.IsTrue( ContainsSingleObject( enumerable, (long)1 ), "id query count" );
 
 			list = s.Find( "from foo in class Foo where foo.Boolean = ?",
 			               true, NHibernateUtil.Boolean );
@@ -684,9 +684,9 @@ namespace NHibernate.Test.Legacy
 				Assert.IsTrue( list.Count > 0 );
 				foreach( object[ ] row in list )
 				{
-					Assert.IsTrue( row[ 0 ] is float );
+					Assert.IsTrue( row[ 0 ] is double );// changed from float to double (HQLFunction H3.2) 
 					Assert.IsTrue( row[ 1 ] is string );
-					Assert.IsTrue( row[ 2 ] is int );
+					Assert.IsTrue(row[2] is long);// changed from int to long (HQLFunction H3.2)
 				}
 			}
 

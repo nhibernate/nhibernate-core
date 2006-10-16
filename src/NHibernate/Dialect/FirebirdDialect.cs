@@ -2,6 +2,7 @@ using System.Data;
 
 using NHibernate.Cfg;
 using NHibernate.SqlCommand;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
@@ -54,80 +55,80 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, "TIME");
 
 			// Firebird server embedded functions
-			RegisterFunction("upper", new StandardSQLFunction());
-			RegisterFunction("substring", new StandardSQLFunction());
-			RegisterFunction("today", new NoArgSQLFunction(NHibernateUtil.Date, false));
-			RegisterFunction("yesterday", new NoArgSQLFunction(NHibernateUtil.Date, false));
-			RegisterFunction("tomorrow", new NoArgSQLFunction(NHibernateUtil.Date, false));
-			RegisterFunction("now", new NoArgSQLFunction(NHibernateUtil.DateTime, false));
-			RegisterFunction("nullif", new StandardSQLFunction());
+			RegisterFunction("upper", new StandardSQLFunction("upper"));
+			RegisterFunction("substring", new StandardSQLFunction("substring"));
+			RegisterFunction("today", new NoArgSQLFunction("today", NHibernateUtil.Date, false));
+			RegisterFunction("yesterday", new NoArgSQLFunction("yesterday", NHibernateUtil.Date, false));
+			RegisterFunction("tomorrow", new NoArgSQLFunction("tomorrow", NHibernateUtil.Date, false));
+			RegisterFunction("now", new NoArgSQLFunction("now", NHibernateUtil.DateTime, false));
+			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
 			// New embedded functions in FB 2.0 (http://www.firebirdsql.org/rlsnotes20/rnfbtwo-str.html#str-string-func)
-			RegisterFunction("lower", new StandardSQLFunction());
-			RegisterFunction("trim", new StandardSQLFunction());
-			RegisterFunction("char_length", new StandardSQLFunction());
-			RegisterFunction("bit_length", new StandardSQLFunction());
-			RegisterFunction("octet_length", new StandardSQLFunction());
+			RegisterFunction("lower", new StandardSQLFunction("lower"));
+			RegisterFunction("trim", new StandardSQLFunction("trim"));
+			RegisterFunction("char_length", new StandardSQLFunction("char_length"));
+			RegisterFunction("bit_length", new StandardSQLFunction("bit_length"));
+			RegisterFunction("octet_length", new StandardSQLFunction("octet_length"));
 
 			// External Firebird and Interbase standard UDFs
 			//Conditional Logic Functions
-			RegisterFunction("invl", new StandardSQLFunction());
-			RegisterFunction("snvl", new StandardSQLFunction());
+			RegisterFunction("invl", new StandardSQLFunction("invl"));
+			RegisterFunction("snvl", new StandardSQLFunction("snvl"));
 			//Mathematical Functions
-			RegisterFunction("abs", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("bin_and", new StandardSQLFunction(NHibernateUtil.Int32));
-			RegisterFunction("bin_or", new StandardSQLFunction(NHibernateUtil.Int32));
-			RegisterFunction("bin_xor", new StandardSQLFunction(NHibernateUtil.Int32));
-			RegisterFunction("ceiling", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("div", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("dpower", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("floor", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("ln", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("log", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("log10", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("modulo", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("pi", new NoArgSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("rand", new NoArgSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("round", new StandardSQLFunction());
-			RegisterFunction("sing", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("sqtr", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("truncate", new StandardSQLFunction());
+			RegisterFunction("abs", new StandardSQLFunction("abs", NHibernateUtil.Double));
+			RegisterFunction("bin_and", new StandardSQLFunction("bin_and", NHibernateUtil.Int32));
+			RegisterFunction("bin_or", new StandardSQLFunction("bin_or", NHibernateUtil.Int32));
+			RegisterFunction("bin_xor", new StandardSQLFunction("bin_xor", NHibernateUtil.Int32));
+			RegisterFunction("ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double));
+			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
+			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));
+			RegisterFunction("floor", new StandardSQLFunction("floor", NHibernateUtil.Double));
+			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
+			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
+			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
+			RegisterFunction("modulo", new StandardSQLFunction("modulo", NHibernateUtil.Double));
+			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
+			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("sing", new StandardSQLFunction("sing", NHibernateUtil.Double));
+			RegisterFunction("sqtr", new StandardSQLFunction("sqtr", NHibernateUtil.Double));
+			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
 			//Date and Time Functions
-			RegisterFunction("dow", new StandardSQLFunction(NHibernateUtil.String));
-			RegisterFunction("sdow", new StandardSQLFunction(NHibernateUtil.String));
-			RegisterFunction("addday", new StandardSQLFunction(NHibernateUtil.DateTime));
-			RegisterFunction("addhour", new StandardSQLFunction(NHibernateUtil.DateTime));
-			RegisterFunction("addmillisecond", new StandardSQLFunction(NHibernateUtil.DateTime));
-			RegisterFunction("addminute", new StandardSQLFunction(NHibernateUtil.DateTime));
-			RegisterFunction("addmonth", new StandardSQLFunction(NHibernateUtil.DateTime));
-			RegisterFunction("addsecond", new StandardSQLFunction(NHibernateUtil.DateTime));
-			RegisterFunction("addweek", new StandardSQLFunction(NHibernateUtil.DateTime));
-			RegisterFunction("addyear", new StandardSQLFunction(NHibernateUtil.DateTime));
-			RegisterFunction("getexacttimestamp", new NoArgSQLFunction(NHibernateUtil.DateTime));
+			RegisterFunction("dow", new StandardSQLFunction("dow", NHibernateUtil.String));
+			RegisterFunction("sdow", new StandardSQLFunction("sdow", NHibernateUtil.String));
+			RegisterFunction("addday", new StandardSQLFunction("addday", NHibernateUtil.DateTime));
+			RegisterFunction("addhour", new StandardSQLFunction("addhour", NHibernateUtil.DateTime));
+			RegisterFunction("addmillisecond", new StandardSQLFunction("addmillisecond", NHibernateUtil.DateTime));
+			RegisterFunction("addminute", new StandardSQLFunction("addminute", NHibernateUtil.DateTime));
+			RegisterFunction("addmonth", new StandardSQLFunction("addmonth", NHibernateUtil.DateTime));
+			RegisterFunction("addsecond", new StandardSQLFunction("addsecond", NHibernateUtil.DateTime));
+			RegisterFunction("addweek", new StandardSQLFunction("addweek", NHibernateUtil.DateTime));
+			RegisterFunction("addyear", new StandardSQLFunction("addyear", NHibernateUtil.DateTime));
+			RegisterFunction("getexacttimestamp", new NoArgSQLFunction("getexacttimestamp", NHibernateUtil.DateTime));
 			//String and Character Functions
-			RegisterFunction("ascii_char", new StandardSQLFunction());
-			RegisterFunction("ascii_val", new StandardSQLFunction(NHibernateUtil.Int16));
-			RegisterFunction("lpad", new StandardSQLFunction());
-			RegisterFunction("ltrim", new StandardSQLFunction());
-			RegisterFunction("sright", new StandardSQLFunction());
-			RegisterFunction("rpad", new StandardSQLFunction());
-			RegisterFunction("rtrim", new StandardSQLFunction());
-			RegisterFunction("strlen", new StandardSQLFunction(NHibernateUtil.Int16));
-			RegisterFunction("substr", new StandardSQLFunction());
-			RegisterFunction("substrlen", new StandardSQLFunction(NHibernateUtil.Int16));
+			RegisterFunction("ascii_char", new StandardSQLFunction("ascii_char"));
+			RegisterFunction("ascii_val", new StandardSQLFunction("ascii_val", NHibernateUtil.Int16));
+			RegisterFunction("lpad", new StandardSQLFunction("lpad"));
+			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
+			RegisterFunction("sright", new StandardSQLFunction("sright"));
+			RegisterFunction("rpad", new StandardSQLFunction("rpad"));
+			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
+			RegisterFunction("strlen", new StandardSQLFunction("strlen", NHibernateUtil.Int16));
+			RegisterFunction("substr", new StandardSQLFunction("substr"));
+			RegisterFunction("substrlen", new StandardSQLFunction("substrlen", NHibernateUtil.Int16));
 			//BLOB Functions
-			RegisterFunction("string2blob", new StandardSQLFunction());
+			RegisterFunction("string2blob", new StandardSQLFunction("string2blob"));
 			//Trigonometric Functions
-			RegisterFunction("acos", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("asin", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("atan", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("atan2", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("cos", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("cosh", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("cot", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("sin", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("sinh", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("tan", new StandardSQLFunction(NHibernateUtil.Double));
-			RegisterFunction("tanh", new StandardSQLFunction(NHibernateUtil.Double));
+			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
+			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
+			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
+			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
+			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
+			RegisterFunction("cosh", new StandardSQLFunction("cosh", NHibernateUtil.Double));
+			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
+			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
+			RegisterFunction("sinh", new StandardSQLFunction("sinh", NHibernateUtil.Double));
+			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
+			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.FirebirdDriver";
 		}

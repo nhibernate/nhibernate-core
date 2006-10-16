@@ -5,6 +5,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
 using Environment = NHibernate.Cfg.Environment;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
@@ -68,69 +69,69 @@ namespace NHibernate.Dialect
 			RegisterColumnType( DbType.String, 1073741823, "NCLOB" );
 			RegisterColumnType( DbType.Time, "DATE" );
 
-			RegisterFunction( "abs", new StandardSQLFunction() );
-			RegisterFunction( "sign", new StandardSQLFunction( NHibernateUtil.Int32 ) );
+			RegisterFunction("abs", new StandardSQLFunction("abs"));
+			RegisterFunction( "sign", new StandardSQLFunction("sign", NHibernateUtil.Int32 ) );
 
-			RegisterFunction( "acos", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "asin", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "atan", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "cos", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "cosh", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "exp", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "ln", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "sin", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "sinh", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "stddev", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "sqrt", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "tan", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "tanh", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction( "variance", new StandardSQLFunction( NHibernateUtil.Double ) );
+			RegisterFunction( "acos", new StandardSQLFunction("acos", NHibernateUtil.Double ) );
+			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
+			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
+			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
+			RegisterFunction("cosh", new StandardSQLFunction("cosh", NHibernateUtil.Double));
+			RegisterFunction("exp", new StandardSQLFunction("exp", NHibernateUtil.Double));
+			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
+			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
+			RegisterFunction("sinh", new StandardSQLFunction("sinh", NHibernateUtil.Double));
+			RegisterFunction("stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double));
+			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
+			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
+			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
+			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
-			RegisterFunction( "round", new StandardSQLFunction() );
-			RegisterFunction( "trunc", new StandardSQLFunction() );
-			RegisterFunction( "ceil", new StandardSQLFunction() );
-			RegisterFunction( "floor", new StandardSQLFunction() );
+			RegisterFunction( "round", new StandardSQLFunction("round") );
+			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
+			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
+			RegisterFunction("floor", new StandardSQLFunction("floor"));
 
-			RegisterFunction( "chr", new StandardSQLFunction( NHibernateUtil.Character ) );
-			RegisterFunction( "initcap", new StandardSQLFunction() );
-			RegisterFunction( "lower", new StandardSQLFunction() );
-			RegisterFunction( "ltrim", new StandardSQLFunction() );
-			RegisterFunction( "rtrim", new StandardSQLFunction() );
-			RegisterFunction( "soundex", new StandardSQLFunction() );
-			RegisterFunction( "upper", new StandardSQLFunction() );
-			RegisterFunction( "ascii", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction( "length", new StandardSQLFunction( NHibernateUtil.Int64 ) );
+			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
+			RegisterFunction("initcap", new StandardSQLFunction("initcap"));
+			RegisterFunction("lower", new StandardSQLFunction("lower"));
+			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
+			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
+			RegisterFunction("soundex", new StandardSQLFunction("soundex"));
+			RegisterFunction("upper", new StandardSQLFunction("upper"));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
+			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int64));
 
-			RegisterFunction( "to_char", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "to_date", new StandardSQLFunction( NHibernateUtil.Timestamp ) );
+			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
+			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.Timestamp));
 
-			RegisterFunction( "lastday", new StandardSQLFunction( NHibernateUtil.Date ) );
-			RegisterFunction( "sysdate", new NoArgSQLFunction( NHibernateUtil.Date, false ) );
-			RegisterFunction( "uid", new NoArgSQLFunction( NHibernateUtil.Int32, false ) );
-			RegisterFunction( "user", new NoArgSQLFunction( NHibernateUtil.String, false ) );
+			RegisterFunction("lastday", new StandardSQLFunction("lastday", NHibernateUtil.Date));
+			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.Date, false));
+			RegisterFunction("uid", new NoArgSQLFunction("uid", NHibernateUtil.Int32, false));
+			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String, false));
 
 			// Multi-param string dialect functions...
-			RegisterFunction( "concat", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "instr", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "instrb", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "lpad", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "replace", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "rpad", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "substr", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "substrb", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction( "translate", new StandardSQLFunction( NHibernateUtil.String ) );
+			RegisterFunction("concat", new StandardSQLFunction("concat", NHibernateUtil.String));
+			RegisterFunction("instr", new StandardSQLFunction("instr", NHibernateUtil.String));
+			RegisterFunction("instrb", new StandardSQLFunction("instrb", NHibernateUtil.String));
+			RegisterFunction("lpad", new StandardSQLFunction("lpad", NHibernateUtil.String));
+			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
+			RegisterFunction("rpad", new StandardSQLFunction("rpad", NHibernateUtil.String));
+			RegisterFunction("substr", new StandardSQLFunction("substr", NHibernateUtil.String));
+			RegisterFunction("substrb", new StandardSQLFunction("substrb", NHibernateUtil.String));
+			RegisterFunction("translate", new StandardSQLFunction("translate", NHibernateUtil.String));
 
 			// Multi-param numeric dialect functions...
-			RegisterFunction( "atan2", new StandardSQLFunction( NHibernateUtil.Single ) );
-			RegisterFunction( "log", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction( "mod", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction( "nvl", new StandardSQLFunction() );
-			RegisterFunction( "power", new StandardSQLFunction( NHibernateUtil.Single ) );
+			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Single));
+			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Int32));
+			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Single));
 
 			// Multi-param date dialect functions...
-			RegisterFunction( "add_months", new StandardSQLFunction( NHibernateUtil.Date ) );
-			RegisterFunction( "months_between", new StandardSQLFunction( NHibernateUtil.Single ) );
-			RegisterFunction( "next_day", new StandardSQLFunction( NHibernateUtil.Date ) );
+			RegisterFunction("add_months", new StandardSQLFunction("add_months", NHibernateUtil.Date));
+			RegisterFunction("months_between", new StandardSQLFunction("months_between", NHibernateUtil.Single));
+			RegisterFunction("next_day", new StandardSQLFunction("next_day", NHibernateUtil.Date));
 		}
 
 		/// <summary></summary>
