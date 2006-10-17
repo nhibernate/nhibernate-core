@@ -127,7 +127,7 @@ namespace NHibernate.Dialect
 		/// <param name="function"></param>
 		protected void RegisterFunction( string name, ISQLFunction function )
 		{
-			sqlFunctions.Add( name, function );
+			sqlFunctions[name] = function;
 		}
 
 		/// <summary>
