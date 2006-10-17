@@ -116,6 +116,10 @@ namespace NHibernate.Dialect
 			return result;
 		}
 
+		public virtual string GetCastTypeName( SqlType sqlType )
+		{
+			return GetTypeName(sqlType);
+		}
 		/// <summary>
 		/// 
 		/// </summary>

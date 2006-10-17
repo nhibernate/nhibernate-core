@@ -1,7 +1,9 @@
+using System.Collections;
+using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using NHibernate.Engine;
 using NHibernate.Type;
-using System.Collections;
 
 namespace NHibernate.Dialect.Function
 {
@@ -13,18 +15,20 @@ namespace NHibernate.Dialect.Function
 	/// Each dialect will define a template as a string (exactly like above) marking function 
 	/// parameters with '?' followed by parameter's index (first index is 1).
 	/// </summary>
-	public class SQLFunctionTemplate: ISQLFunction
+	public class SQLFunctionTemplate : ISQLFunction
 	{
-		private const char paramId = '?';
-		private const int invaligArgIdx = -1;
+		private const int InvalidArgumentIndex = -1;		
+		private static readonly Regex SplitRegex = new Regex("(\\?[0-9]+)");
+
 		private struct TemplateChunk
 		{
-			public string Chunk; // including paramId if is a param
-			public int ArgIndex; // Argument index if is param
+			public string Text; // including prefix if parameter
+			public int ArgumentIndex;
+
 			public TemplateChunk(string chunk, int argIndex)
 			{
-				Chunk = chunk;
-				ArgIndex = argIndex;
+				Text = chunk;
+				ArgumentIndex = argIndex;
 			}
 		}
 
@@ -33,84 +37,42 @@ namespace NHibernate.Dialect.Function
 		private readonly bool hasParenthesesIfNoArgs;
 
 		private readonly string template;
-		private IList paramsChunk = new ArrayList(); 
+		private TemplateChunk[] chunks;
 
-		public SQLFunctionTemplate(IType type, string template) : this(type, template, true) { }
+		public SQLFunctionTemplate(IType type, string template) : this(type, template, true)
+		{
+		}
 
 		public SQLFunctionTemplate(IType type, string template, bool hasParenthesesIfNoArgs)
 		{
 			returnType = type;
 			this.template = template;
 			this.hasParenthesesIfNoArgs = hasParenthesesIfNoArgs;
-			InitTemplateChunks(template);
-			hasArguments = (paramsChunk.Count > 1) || (paramsChunk.Count == 0 && ((TemplateChunk)paramsChunk[0]).ArgIndex != invaligArgIdx);
+			
+			InitFromTemplate();
+			hasArguments = chunks.Length > 1;
 		}
 
-		private void InitTemplateChunks(string stringPart)
+		private void InitFromTemplate()
 		{
-			int chunkStart = 0;
-			string paramChunk;
-			for (int i = 0; i < stringPart.Length; i++)// find params
+			string[] stringChunks = SplitRegex.Split(template);
+			chunks = new TemplateChunk[stringChunks.Length];
+			
+			for (int i = 0; i < stringChunks.Length; i++)
 			{
-				if (paramId.Equals(stringPart[i]))
-				{// posible param found
-					int argIdx = GetArgIndex(stringPart, i, out paramChunk);
-					if (argIdx != invaligArgIdx)
-					{// is a valid argument index
-						if ((i - chunkStart) > 0)
-							AddChunk(stringPart.Substring(chunkStart, (i - chunkStart)), invaligArgIdx); // add the chunk before param
-						AddChunk(paramChunk, argIdx); // add the chunk of the param
-						i += paramChunk.Length;
-						chunkStart = i;
-					}
-				}
-			}
-			if (chunkStart < stringPart.Length - 1)
-			{// add the last chunk
-				AddChunk(stringPart.Substring(chunkStart), invaligArgIdx);
-			}
-		}
-
-		private void AddChunk(string chunk, int argIndex)
-		{
-			paramsChunk.Add(new TemplateChunk(chunk, argIndex));
-		}
-
-		/// <summary>
-		/// Check if is a valid param
-		/// </summary>
-		/// <param name="stringPart">complete string for template</param>
-		/// <param name="startingFrom">Analize string starting from</param>
-		/// <param name="paramChunk">The chunk of the param including paramId (char '?')</param>
-		/// <returns>the index of the argument (ex: for ?5 return 4) if is a valid param; otherwise invaligArgIdx</returns>
-		private int GetArgIndex(string stringPart, int startingFrom, out string paramChunk)
-		{
-			int result = invaligArgIdx;
-			if ((startingFrom >= 0) && (startingFrom < stringPart.Length - 1) &&
-				(paramId.Equals(stringPart[startingFrom])))
-			{
-				int pos = startingFrom + 1;
-				StringBuilder argIndex = new StringBuilder();
-				while (pos < stringPart.Length && char.IsDigit(stringPart[pos]))
+				string chunk = stringChunks[i];
+				if (i % 2 == 0)
 				{
-					argIndex.Append(stringPart[pos]);
-					pos++;
-				}
-				if (argIndex.Length > 0)
-				{
-					paramChunk = paramId + argIndex.ToString();
-					result = int.Parse(argIndex.ToString()) - 1;
+					// Text part.
+					chunks[i] = new TemplateChunk(chunk, InvalidArgumentIndex);
 				}
 				else
 				{
-					paramChunk = string.Empty;
+					// Separator, i.e. argument
+					int argIndex = int.Parse(chunk.Substring(1), CultureInfo.InvariantCulture);
+					chunks[i] = new TemplateChunk(stringChunks[i], argIndex);
 				}
 			}
-			else
-			{
-				paramChunk = string.Empty;
-			}
-			return (result >= 0) ? result : invaligArgIdx;
 		}
 
 		#region ISQLFunction Members
@@ -139,11 +101,13 @@ namespace NHibernate.Dialect.Function
 		public string Render(IList args, ISessionFactoryImplementor factory)
 		{
 			StringBuilder buf = new StringBuilder();
-			foreach (TemplateChunk tc in paramsChunk)
+			foreach (TemplateChunk tc in chunks)
 			{
-				if (tc.ArgIndex >= 0)
+				if (tc.ArgumentIndex != InvalidArgumentIndex)
 				{
-					object arg = tc.ArgIndex < args.Count ? args[tc.ArgIndex] : null;
+					int adjustedIndex = tc.ArgumentIndex - 1; // Arg indices are one-based
+					object arg = adjustedIndex < args.Count ? args[adjustedIndex] : null;
+					// TODO: if (arg == null) QueryException is better ?
 					if (arg != null)
 					{
 						buf.Append(arg);
@@ -151,7 +115,7 @@ namespace NHibernate.Dialect.Function
 				}
 				else
 				{
-					buf.Append(tc.Chunk);
+					buf.Append(tc.Text);
 				}
 			}
 			return buf.ToString();

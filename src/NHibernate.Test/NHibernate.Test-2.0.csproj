@@ -132,6 +132,8 @@
     <Compile Include="GenericTest\SetGeneric\A.cs" />
     <Compile Include="GenericTest\SetGeneric\B.cs" />
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
+    <Compile Include="HQLFunctionTest\BaseFunctionFixture.cs" />
+    <Compile Include="HQLFunctionTest\SQLFunctionTemplateTest.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
     <Compile Include="IdTest\HiLoInt32Class.cs" />
     <Compile Include="IdTest\HiLoInt64Class.cs" />
