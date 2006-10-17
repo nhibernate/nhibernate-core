@@ -861,6 +861,26 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		/// <summary>
+		/// Gives the best resolution that the database can use for storing
+		/// date/time values, in ticks.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// For example, if the database can store values with 100-nanosecond
+		/// precision, this property is equal to 1L. If the database can only
+		/// store values with 1-millisecond precision, this property is equal
+		/// to 10000L (number of ticks in a millisecond).
+		/// </para>
+		/// <para>
+		/// Used in TimestampType.
+		/// </para>
+		/// </remarks>
+		public virtual long TimestampResolutionInTicks
+		{
+			get { return 1L; } // Maximum precision (one tick)
+		}
+
 		public virtual string GetForUpdateNowaitString( string aliases )
 		{
 			return GetForUpdateString( aliases );

@@ -8,18 +8,18 @@ namespace NHibernate.Type
 {
 	/// <summary>
 	/// This is almost the exact same type as the DateTime except it can be used
-	/// in the version column, stores it to the accuracy the Database supports, 
+	/// in the version column, stores it to the accuracy the database supports, 
 	/// and will default to the value of DateTime.Now if the value is null.
 	/// </summary>
 	/// <remarks>
 	/// <p>
-	/// The value stored in the database depends on what your Data Provider is capable
+	/// The value stored in the database depends on what your data provider is capable
 	/// of storing.  So there is a possibility that the DateTime you save will not be
 	/// the same DateTime you get back when you check DateTime.Equals(DateTime) because
 	/// they will have their milliseconds off.
 	/// </p>  
 	/// <p>
-	/// For example - MsSql Server 2000 is only accurate to 3.33 milliseconds.  So if 
+	/// For example - SQL Server 2000 is only accurate to 3.33 milliseconds.  So if 
 	/// NHibernate writes a value of <c>01/01/98 23:59:59.995</c> to the Prepared Command, MsSql
 	/// will store it as <c>1998-01-01 23:59:59.997</c>.
 	/// </p>
@@ -30,34 +30,20 @@ namespace NHibernate.Type
 	[Serializable]
 	public class TimestampType : ValueTypeType, IVersionType, ILiteralType
 	{
-		/// <summary></summary>
 		public TimestampType() : base( SqlTypeFactory.DateTime )
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
 		public override object Get( IDataReader rs, int index )
 		{
 			return Convert.ToDateTime( rs[ index ] );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		public override object Get( IDataReader rs, string name )
 		{
 			return Get( rs, rs.GetOrdinal( name ) );
 		}
 
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
 			get { return typeof( DateTime ); }
@@ -86,27 +72,16 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary></summary>
 		public override string Name
 		{
 			get { return "Timestamp"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="val"></param>
-		/// <returns></returns>
 		public override string ToString( object val )
 		{
 			return ( ( DateTime ) val ).ToShortTimeString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public override object FromStringValue( string xml )
 		{
 			return DateTime.Parse( xml );
@@ -122,7 +97,6 @@ namespace NHibernate.Type
 			return x.GetHashCode();
 		}
 
-		/// <summary></summary>
 		public override bool HasNiceEquals
 		{
 			get { return true; }
@@ -130,19 +104,19 @@ namespace NHibernate.Type
 
 		#region IVersionType Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="current"></param>
-		/// <returns></returns>
 		public object Next(object current, ISessionImplementor session)
 		{
 			return Seed(session);
 		}
+		
+		public static DateTime Round(DateTime value, long resolution)
+		{
+			return value.AddTicks(-(value.Ticks % resolution));
+		}
 
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return DateTime.Now;
+			return Round(DateTime.Now, session.Factory.Dialect.TimestampResolutionInTicks);
 		}
 
 		public IComparer Comparator
@@ -152,21 +126,11 @@ namespace NHibernate.Type
 
 		#endregion
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public object StringToObject( string xml )
 		{
 			return DateTime.Parse( xml );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public override string ObjectToSQLString( object value )
 		{
 			return "'" + value.ToString() + "'";

@@ -1,6 +1,7 @@
+using System;
 using NHibernate.Dialect;
 using NHibernate.SqlCommand;
-
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.DialectTest 
@@ -62,6 +63,15 @@ namespace NHibernate.Test.DialectTest
 			Assert.AreEqual("select distinct top 100 id, col1, col2 from someTable", limitedSql.ToString(),
 				"Bad limit SQL");
 
+		}
+		
+		[Test]
+		public void TimestampRounding()
+		{
+			DateTime input = new DateTime(2000, 1, 1, 10, 11, 12, 13);
+			DateTime expected = new DateTime(2000, 1, 1, 10, 11, 12, 10);
+			
+			Assert.AreEqual(expected, TimestampType.Round(input, d.TimestampResolutionInTicks));
 		}
 	}
 }

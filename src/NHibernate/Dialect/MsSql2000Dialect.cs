@@ -330,5 +330,14 @@ namespace NHibernate.Dialect
 			}
 			return 0;
 		}
+
+		public override long TimestampResolutionInTicks
+		{
+			get
+			{
+				// MS SQL resolution is actually 3.33 ms, rounded here to 10 ms
+				return TimeSpan.TicksPerMillisecond * 10L;
+			}
+		}
 	}
 }

@@ -165,7 +165,7 @@ namespace NHibernate.Type
 
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return DateTime.Now;
+			return TimestampType.Round(DateTime.Now, TimeSpan.TicksPerSecond);
 		}
 
 		public IComparer Comparator
