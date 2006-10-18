@@ -116,6 +116,10 @@ namespace NHibernate.Type
 
 		public virtual object Seed(ISessionImplementor session)
 		{
+			if (session == null)
+			{
+				return DateTime.Now;
+			}
 			return Round(DateTime.Now, session.Factory.Dialect.TimestampResolutionInTicks);
 		}
 
