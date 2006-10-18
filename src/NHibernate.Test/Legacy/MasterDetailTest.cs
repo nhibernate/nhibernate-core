@@ -1285,5 +1285,17 @@ namespace NHibernate.Test.Legacy
 				}
 			}
 		}
+		
+		[Test]
+		public void NH741()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.CreateQuery(
+					"select m from Master m order by m.id + :param")
+					.SetParameter("param", 10, NHibernateUtil.Int32)
+					.List();
+			}
+		}
 	}
 }

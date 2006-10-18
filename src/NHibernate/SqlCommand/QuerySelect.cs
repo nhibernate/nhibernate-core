@@ -17,7 +17,7 @@ namespace NHibernate.SqlCommand
 
 		// groupBy, orderBy, and having will for sure have no parameters.
 		private StringBuilder groupBy = new StringBuilder();
-		private StringBuilder orderBy = new StringBuilder();
+		private SqlStringBuilder orderBy = new SqlStringBuilder();
 		private StringBuilder having = new StringBuilder();
 		
 		// false by default
@@ -196,11 +196,11 @@ namespace NHibernate.SqlCommand
 		/// <param name="orderBySql">The "order by" sql statement.</param>
 		public void AddOrderBy( string orderBySql )
 		{
-			if( orderBy.Length > 0 )
+			if( orderBy.Count > 0 )
 			{
-				orderBy.Append( StringHelper.CommaSpace );
+				orderBy.Add( StringHelper.CommaSpace );
 			}
-			orderBy.Append( orderBySql );
+			orderBy.Add( orderBySql );
 		}
 
 		public SqlString ToQuerySqlString()
@@ -261,9 +261,9 @@ namespace NHibernate.SqlCommand
 			{
 				builder.Add( " having " ).Add( having.ToString() );
 			}
-			if( orderBy.Length > 0 )
+			if( orderBy.Count > 0 )
 			{
-				builder.Add( " order by " ).Add( orderBy.ToString() );
+				builder.Add( " order by " ).Add( orderBy.ToSqlString() );
 			}
 			return builder.ToSqlString();
 		}
