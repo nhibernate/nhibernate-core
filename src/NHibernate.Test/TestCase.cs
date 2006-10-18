@@ -37,6 +37,12 @@ namespace NHibernate.Test
 		{
 			get { return "NHibernate.DomainModel"; }
 		}
+		
+		static TestCase()
+		{
+			// Configure log4net here since configuration through an attribute doesn't always work.
+			log4net.Config.XmlConfigurator.Configure();
+		}
 
 		/// <summary>
 		/// Creates the tables used in this TestCase
