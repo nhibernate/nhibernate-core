@@ -32,16 +32,15 @@ namespace NHibernate.Expression
 
 		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			System.Type entityNameType = criteriaQuery.GetEntityName(criteria, propertyName);
-            string entityName = entityNameType.Name;
+			System.Type entityType = criteriaQuery.GetEntityName(criteria, propertyName);
 			string actualPropertyName = criteriaQuery.GetPropertyName(propertyName);
 			string sqlAlias = criteriaQuery.GetSQLAlias(criteria, propertyName);
 
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
-			IQueryableCollection collectionPersister = GetQueryableCollection(entityName, actualPropertyName, factory);
+            IQueryableCollection collectionPersister = GetQueryableCollection(entityType, actualPropertyName, factory);
 
 			string[] collectionKeys = collectionPersister.KeyColumnNames;
-			string[] ownerKeys = ((ILoadable)factory.GetEntityPersister(entityName)).IdentifierColumnNames;
+			string[] ownerKeys = ((ILoadable)factory.GetEntityPersister(entityType)).IdentifierColumnNames;
 
 			string innerSelect = "(select 1 from " + collectionPersister.TableName
 							+ " where "
@@ -52,14 +51,14 @@ namespace NHibernate.Expression
 		}
 
 
-		protected IQueryableCollection GetQueryableCollection(string entityName, string actualPropertyName, ISessionFactoryImplementor factory)
+		protected IQueryableCollection GetQueryableCollection(System.Type entityType, string actualPropertyName, ISessionFactoryImplementor factory)
 		{
-			IPropertyMapping ownerMapping = (IPropertyMapping)factory.GetEntityPersister(entityName);
+			IPropertyMapping ownerMapping = (IPropertyMapping)factory.GetEntityPersister(entityType);
 			IType type = ownerMapping.ToType(actualPropertyName);
 			if (!type.IsCollectionType)
 			{
 				throw new MappingException(
-								"Property path [" + entityName + "." + actualPropertyName + "] does not reference a collection"
+								"Property path [" + entityType + "." + actualPropertyName + "] does not reference a collection"
 				);
 			}
 

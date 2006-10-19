@@ -14,7 +14,7 @@ namespace NHibernate.Expression
 
 		protected override bool ExcludeEmpty
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 	}
