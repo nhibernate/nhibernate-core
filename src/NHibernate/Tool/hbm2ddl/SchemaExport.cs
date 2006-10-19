@@ -101,6 +101,50 @@ namespace NHibernate.Tool.hbm2ddl
 			Execute(script, export, true, true);
 		}
 
+		private void Execute(bool script, bool export, bool format, bool throwOnError, TextWriter exportOutput, IDbCommand statement, string sql)
+		{
+			try
+			{
+				string formatted;
+				if (format)
+				{
+					formatted = Format(sql);
+				}
+				else
+				{
+					formatted = sql;
+				}
+
+				if (delimiter != null)
+				{
+					formatted += delimiter;
+				}
+				if (script)
+				{
+					Console.WriteLine(formatted);
+				}
+				log.Debug(formatted);
+				if (exportOutput != null)
+				{
+					exportOutput.WriteLine(formatted);
+				}
+				if (export)
+				{
+					statement.CommandText = sql;
+					statement.CommandType = CommandType.Text;
+					statement.ExecuteNonQuery();
+				}
+			}
+			catch (Exception e)
+			{
+				log.Warn("Unsuccessful: " + sql);
+				log.Warn(e.Message);
+				if (throwOnError)
+				{
+					throw;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Executes the Export of the Schema in the given connection
@@ -137,92 +181,14 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				for (int i = 0; i < dropSQL.Length; i++)
 				{
-					try
-					{
-						string formatted;
-						if (format)
-						{
-							formatted = Format(dropSQL[i]);
-						}
-						else
-						{
-							formatted = dropSQL[i];
-						}
-
-						if (delimiter != null)
-						{
-							formatted += delimiter;
-						}
-						if (script)
-						{
-							Console.WriteLine(formatted);
-						}
-						if (exportOutput != null)
-						{
-							exportOutput.WriteLine(formatted);
-						}
-						if (export)
-						{
-							statement.CommandText = dropSQL[i];
-							statement.CommandType = CommandType.Text;
-							statement.ExecuteNonQuery();
-						}
-					}
-					catch (Exception e)
-					{
-						if (!script)
-						{
-							Console.WriteLine(dropSQL[i]);
-						}
-						log.Warn("Unsuccessful: " + e.Message, e);
-					}
+					Execute(script, export, format, false, exportOutput, statement, dropSQL[i]);
 				}
 
 				if (!justDrop)
 				{
 					for (int j = 0; j < createSQL.Length; j++)
 					{
-						try
-						{
-							string formatted;
-							if (format)
-							{
-								formatted = Format(createSQL[j]);
-							}
-							else
-							{
-								formatted = createSQL[j];
-							}
-							if (delimiter != null)
-							{
-								formatted += delimiter;
-							}
-							if (script)
-							{
-								Console.WriteLine(formatted);
-							}
-							if (outputFile != null)
-							{
-								exportOutput.WriteLine(formatted);
-							}
-							if (export)
-							{
-								statement.CommandText = createSQL[j];
-								statement.CommandType = CommandType.Text;
-								statement.ExecuteNonQuery();
-							}
-						}
-						catch (Exception e)
-						{
-							if (!script)
-							{
-								Console.WriteLine(createSQL[j]);
-							}
-							log.Warn("Unsuccessful: " + e.Message, e);
-
-							// Fail on create script errors
-							throw;
-						}
+						Execute(script, export, format, true, exportOutput, statement, createSQL[j]);
 					}
 				}
 			}

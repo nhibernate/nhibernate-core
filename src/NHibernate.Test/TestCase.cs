@@ -40,8 +40,8 @@ namespace NHibernate.Test
 		
 		static TestCase()
 		{
-			// Configure log4net here since configuration through an attribute doesn't always work.
-			log4net.Config.XmlConfigurator.Configure();
+		    // Configure log4net here since configuration through an attribute doesn't always work.
+		    log4net.Config.XmlConfigurator.Configure();
 		}
 
 		/// <summary>
