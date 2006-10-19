@@ -471,6 +471,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "HQLFunctionTest\BaseFunctionFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "HQLFunctionTest\SQLFunctionTemplateTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "IdTest\HiLoInt16Class.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1632,6 +1642,20 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "NHSpecificTest\NH706\DomainObjects.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH706\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH706\Mappings.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "NHSpecificTest\NH719\Domain.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1671,6 +1695,34 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\NH734\Mappings.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH739\Cat.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH739\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH739\Mappings.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH742\Classes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH742\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH742\Mappings.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
