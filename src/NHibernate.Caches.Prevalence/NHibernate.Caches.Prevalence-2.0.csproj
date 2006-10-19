@@ -78,6 +78,10 @@
       <Name>Bamboo.Prevalence</Name>
       <HintPath>..\..\lib\net\Bamboo.Prevalence.dll</HintPath>
     </Reference>
+    <Reference Include="Bamboo.Prevalence.Util, Version=1.4.4.4, Culture=neutral, PublicKeyToken=0edf2245780ab2d7">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\Bamboo.Prevalence.Util.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\log4net.dll</HintPath>
