@@ -84,7 +84,7 @@
     </Reference>
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\log4net.dll</HintPath>
+      <HintPath>..\..\lib\net\2.0\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>

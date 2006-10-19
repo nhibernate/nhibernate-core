@@ -76,7 +76,7 @@
   <ItemGroup>
     <Reference Include="log4net">
       <Name>log4net</Name>
-      <HintPath>..\..\lib\net\log4net.dll</HintPath>
+      <HintPath>..\..\lib\net\2.0\log4net.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <Name>nunit.framework</Name>
