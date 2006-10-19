@@ -72,13 +72,20 @@ namespace NHibernate.Dialect.Function
 			{
 				throw new QueryException("function takes between 1 and 4 arguments");
 			}
+
+			string firstArg = (string)args[0];
+
 			if (args.Count == 1)
 			{
 				// we have the form: trim(trimSource)
 				//      so we trim leading and trailing spaces
 				return BothSpaceTrim.Render(args, factory);
 			}
-			else if ("from".Equals((string)args[0],StringComparison.InvariantCultureIgnoreCase))
+#if NET_2_0
+			else if ("from".Equals(firstArg, StringComparison.InvariantCultureIgnoreCase))
+#else
+			else if ("from".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+#endif
 			{
 				// we have the form: trim(from trimSource).
 				//      This is functionally equivalent to trim(trimSource)
@@ -98,16 +105,27 @@ namespace NHibernate.Dialect.Function
 				// trim-specification has been specified.  we handle the
 				// exception to that explicitly
 				int potentialTrimCharacterArgIndex = 1;
-				string firstArg = (string)args[0];
-				if ("leading".Equals(firstArg,StringComparison.InvariantCultureIgnoreCase))
+#if NET_2_0
+				if ("leading".Equals(firstArg, StringComparison.InvariantCultureIgnoreCase))
+#else
+				if ("leading".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+#endif
 				{
 					trailing = false;
 				}
+#if NET_2_0
 				else if ("trailing".Equals(firstArg,StringComparison.InvariantCultureIgnoreCase))
+#else
+				else if ("trailing".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+#endif
 				{
 					leading = false;
 				}
+#if NET_2_0
 				else if ("both".Equals(firstArg, StringComparison.InvariantCultureIgnoreCase))
+#else
+				else if ("both".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+#endif
 				{
 				}
 				else
@@ -116,8 +134,12 @@ namespace NHibernate.Dialect.Function
 				}
 
 				string potentialTrimCharacter = (string)args[potentialTrimCharacterArgIndex];
+#if NET_2_0
 				if ("from".Equals(potentialTrimCharacter, StringComparison.InvariantCultureIgnoreCase))
-				{
+#else
+				if ("from".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+#endif
+					{
 					trimCharacter = "' '";
 					trimSource = (string)args[potentialTrimCharacterArgIndex + 1];
 				}
@@ -129,7 +151,11 @@ namespace NHibernate.Dialect.Function
 				else
 				{
 					trimCharacter = potentialTrimCharacter;
+#if NET_2_0
 					if ("from".Equals((string)args[potentialTrimCharacterArgIndex + 1], StringComparison.InvariantCultureIgnoreCase))
+#else
+					if ("from".Equals(((string)args[potentialTrimCharacterArgIndex + 1]).ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+#endif
 					{
 						trimSource = (string)args[potentialTrimCharacterArgIndex + 2];
 					}
