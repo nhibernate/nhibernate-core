@@ -15,6 +15,7 @@
 
 	<fileset id="buildfiles.all" basedir="src">
 		<!-- Files have to be in dependency order -->
+		<include name="HashCodeProvider/HashCodeProvider.build" />
 		<include name="Iesi.Collections/Iesi.Collections.build" />
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<include name="NHibernate/NHibernate.build" />

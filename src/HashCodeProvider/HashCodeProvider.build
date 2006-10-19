@@ -7,11 +7,8 @@
 >
 
 	<target name="build">
-			<!--
-			program="${framework::get-framework-directory(framework::get-target-framework)}\ilasm"
-			-->
 		<exec 
-			program="${nant.settings.currentframework.frameworkdirectory}\ilasm" 
+			program="${framework::get-framework-directory(framework::get-target-framework())}\ilasm"
 			commandline="HashCodeProvider.il /dll /output:..\..\lib\net\1.1\HashCodeProvider.dll /key:..\NHibernate.snk" 
 		/>	
 		<copy file="HashCodeProvider.license.txt" todir="../../lib/net/1.1" />

@@ -24,6 +24,8 @@
                                                                                                     6C 79 2E 00 00 )                                  // ly...
   .custom instance void [mscorlib]System.Reflection.AssemblyTitleAttribute::.ctor(string) = ( 01 00 10 48 61 73 68 43 6F 64 65 50 72 6F 76 69   // ...HashCodeProvi
                                                                                               64 65 72 00 00 )                                  // der..
+  .custom instance void [mscorlib]System.Security.AllowPartiallyTrustedCallersAttribute::.ctor() = ( 01 00 00 00 )
+  .custom instance void [mscorlib]System.CLSCompliantAttribute::.ctor() = ( 01 00 00 00 )
   .hash algorithm 0x00008004
   .ver 1:0:0:0
 }

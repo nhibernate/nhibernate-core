@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{EE3B9473-7C64-44FF-B342-91B558D413A8}"
     >
@@ -94,6 +94,11 @@
                     AssemblyName = "Castle.DynamicProxy"
                     HintPath = "..\..\lib\net\Castle.DynamicProxy.dll"
                 />
+                <Reference
+                    Name = "HashCodeProvider"
+                    AssemblyName = "HashCodeProvider"
+                    HintPath = "..\..\lib\net\1.1\HashCodeProvider.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -155,11 +160,6 @@
                 />
                 <File
                     RelPath = "IDatabinder.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "IdentityHashCodeProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -719,11 +719,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Dialect\ISQLFunction.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Dialect\MsSql2000Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -754,11 +749,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Dialect\NoArgSQLFunction.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Dialect\Oracle9Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -784,11 +774,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Dialect\StandardSQLFunction.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Dialect\SybaseAnywhereDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -800,6 +785,76 @@
                 />
                 <File
                     RelPath = "Dialect\TypeNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\AnsiTrimEmulationFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\CastFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\CharIndexFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\ClassicAvgFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\ClassicCountFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\ClassicSumFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\ISQLFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\NoArgSQLFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\NvlFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\PositionSubstringFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\SQLFunctionRegistry.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\SQLFunctionTemplate.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\StandardSQLFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\VarArgsSQLFunction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
