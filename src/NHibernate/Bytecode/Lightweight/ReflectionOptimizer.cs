@@ -80,7 +80,12 @@ namespace NHibernate.Bytecode.Lightweight
 			}
 			else
 			{
-				il.Emit( OpCodes.Newobj, ReflectHelper.GetDefaultConstructor( type ) );
+				ConstructorInfo constructor = ReflectHelper.GetDefaultConstructor(type);
+				if (constructor == null)
+				{
+					throw new MappingException("Object class " + type + " must declare a default (no-argument) constructor");
+				}
+				il.Emit( OpCodes.Newobj, constructor);
 			}
 		
 			il.Emit( OpCodes.Ret );
