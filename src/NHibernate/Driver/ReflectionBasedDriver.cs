@@ -24,9 +24,12 @@ namespace NHibernate.Driver
 			if( connectionType == null || commandType == null )
 			{
 				throw new HibernateException(
-					string.Format( "The IDbCommand and IDbConnection implementation in the assembly {0} could not be found.  "
-					+ "Please ensure that the assembly {0} is in the Global Assembly Cache or in a location that NHibernate "
-					+ "can use System.Type.GetType(string) to load the types from.", driverAssemblyName ) );
+					string.Format(
+						  "The IDbCommand and IDbConnection implementation in the assembly {0} could not be found. "
+						+ "Ensure that the assembly {0} is located in the application directory or in the Global "
+						+ "Assembly Cache. If the assembly is in the GAC, use <qualifyAssembly/> element in the "
+						+ "application configuration file to specify the full name of the assembly.",
+						driverAssemblyName));
 			}
 		}
 
