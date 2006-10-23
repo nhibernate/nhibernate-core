@@ -81,5 +81,44 @@ namespace NHibernate.Test.NHSpecificTest
 				Assert.AreEqual( "modified", a.Name, "the name was modified" );
 			}
 		}
+		
+		[Test]
+		public void GetAfterLoad()
+		{
+			long id;
+
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				A a = new A("name");
+				id = (long) s.Save(a);
+				tx.Commit();
+			}
+		
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				A loadedA = (A) s.Load(typeof(A), id);
+				Assert.IsFalse(NHibernateUtil.IsInitialized(loadedA));
+				A gotA = (A) s.Get(typeof(A), id);
+				Assert.IsTrue(NHibernateUtil.IsInitialized(gotA));
+				Assert.AreSame(loadedA, gotA);
+				tx.Commit();
+			}
+		
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				A loadedNonExistentA = (A) s.Load(typeof(A), -id);
+				Assert.IsFalse(NHibernateUtil.IsInitialized(loadedNonExistentA));
+				try {
+					s.Get(typeof(A), -id);
+					Assert.Fail();
+				} catch (ObjectNotFoundException) {
+					// ok
+				}
+				tx.Commit();
+			}
+		}
 	}
 }

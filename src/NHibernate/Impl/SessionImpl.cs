@@ -2333,6 +2333,11 @@ namespace NHibernate.Impl
 			}
 			else
 			{
+				if (obj != null)
+				{
+					LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy);
+					li.SetImplementation(obj);
+				}
 				return proxy;
 			}
 		}
@@ -2569,8 +2574,13 @@ namespace NHibernate.Impl
 				}
 				else if ((proxy = proxiesByKey[key]) != null)
 				{
-					// return existing uninitizlied proxy
-					return NarrowProxy(proxy, persister, key, null);
+					object impl = null;
+					if (!allowProxyCreation)
+					{
+						impl = DoLoad(clazz, id, null, LockMode.None, checkDeleted);
+						ObjectNotFoundException.ThrowIfNull(impl, id, clazz);
+					}
+					return NarrowProxy(proxy, persister, key, impl);
 				}
 				else if (allowProxyCreation)
 				{
