@@ -98,7 +98,7 @@ namespace NHibernate.Expression
 		/// </remarks>
 		public override string ToString()
 		{
-			return _lhs.ToString() + ' ' + Op + ' ' + _rhs.ToString();
+			return '(' + _lhs.ToString() + ' ' + Op + ' ' + _rhs.ToString() + ')';
 		}
 	}
 }
