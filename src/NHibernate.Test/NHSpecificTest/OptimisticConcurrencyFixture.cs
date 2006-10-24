@@ -16,6 +16,26 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return new string[ ] {"Multi.hbm.xml", "NHSpecific.Optimistic.hbm.xml"}; }
 		}
 
+		// NH-768
+		[Test]
+		public void DeleteOptimistic()
+		{
+			using (ISession s = OpenSession())
+			{
+				Optimistic op = new Optimistic();
+				op.Bag = new ArrayList();
+				op.Bag.Add("xyz");
+
+				s.Save(op);
+			}
+			
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from Optimistic");
+				s.Flush();
+			}
+		}
+		
 		[Test]
 		[ExpectedException( typeof( StaleObjectStateException ) )]
 		public void StaleObjectStateCheckWithNormalizedEntityPersister()

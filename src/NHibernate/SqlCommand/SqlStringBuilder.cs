@@ -211,6 +211,11 @@ namespace NHibernate.SqlCommand
 
 			foreach( SqlString sqlString in sqlStrings )
 			{
+				if (sqlString.Count == 0)
+				{
+					continue;
+				}
+
 				if( opNeeded )
 				{
 					sqlParts.Add( " " + op + " " );

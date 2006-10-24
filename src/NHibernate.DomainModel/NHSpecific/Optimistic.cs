@@ -10,6 +10,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private int _id;
 		private string _string;
+		private IList _bag;
 
 		public int Id
 		{
@@ -21,6 +22,12 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			get { return _string; }
 			set { _string = value; }
+		}
+		
+		public IList Bag
+		{
+			get { return _bag; }
+			set { _bag = value; }
 		}
 	}
 }

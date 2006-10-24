@@ -10,6 +10,11 @@
 		</id>
 		
 		<property name="String" />
+
+		<bag name="Bag">
+			<key column="optimistic_id" />
+			<element type="string" />
+		</bag>
 	</class>
 
 </hibernate-mapping>
