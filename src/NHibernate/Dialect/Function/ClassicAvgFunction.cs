@@ -9,9 +9,9 @@ namespace NHibernate.Dialect.Function
 	/// <summary>
 	/// Classic AVG sqlfunction that return types as it was done in Hibernate 3.1
 	/// </summary>
-	public class ClassicAvgFunction : StandardSQLFunction
+	public class ClassicAvgFunction : ClassicAggregateFunction
 	{
-		public ClassicAvgFunction() : base("avg") { }
+		public ClassicAvgFunction() : base("avg",false) { }
 
 		public override IType ReturnType(IType columnType, IMapping mapping)
 		{

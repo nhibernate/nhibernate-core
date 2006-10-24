@@ -510,10 +510,12 @@
     <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
-    <Compile Include="Context\ICurrentSessionContext.cs" />
+    <Compile Include="Driver\Context\ICurrentSessionContext.cs" />
+    <Compile Include="Dialect\Function\AnsiSubstringFunction.cs" />
     <Compile Include="Dialect\Function\AnsiTrimEmulationFunction.cs" />
     <Compile Include="Dialect\Function\CastFunction.cs" />
     <Compile Include="Dialect\Function\CharIndexFunction.cs" />
+    <Compile Include="Dialect\Function\ClassicAggregateFunction.cs" />
     <Compile Include="Dialect\Function\ClassicAvgFunction.cs" />
     <Compile Include="Dialect\Function\ClassicCountFunction.cs" />
     <Compile Include="Dialect\Function\ClassicSumFunction.cs" />

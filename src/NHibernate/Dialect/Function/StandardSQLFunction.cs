@@ -37,7 +37,6 @@ namespace NHibernate.Dialect.Function
 			returnType = typeValue;
 		}
 
-
 		#region ISQLFunction Members
 
 		public virtual IType ReturnType(IType columnType, IMapping mapping)

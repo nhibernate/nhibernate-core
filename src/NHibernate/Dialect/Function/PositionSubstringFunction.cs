@@ -31,7 +31,11 @@ namespace NHibernate.Dialect.Function
 
 		public string Render(System.Collections.IList args, ISessionFactoryImplementor factory)
 		{
-			// TODO: QueryException if args.Count<2 (not present in H3.2) 
+			// DONE: QueryException if args.Count<2 (not present in H3.2) 
+			if (args.Count < 2)
+			{
+				throw new QueryException("position(): Not enough parameters (attended from 2 to 3).");
+			}
 			bool threeArgs = args.Count > 2;
 			object pattern = args[0];
 			object orgString = args[1];

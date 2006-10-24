@@ -28,7 +28,11 @@ namespace NHibernate.Dialect.Function
 
 		public string Render(System.Collections.IList args, NHibernate.Engine.ISessionFactoryImplementor factory)
 		{
-			// TODO: QueryException if args.Count==0 (not present in H3.2)
+			// DONE: QueryException if args.Count==0 (not present in H3.2)
+			if (args.Count == 0)
+			{
+				throw new QueryException("nvl(): Not enough parameters.");
+			}
 			int lastIndex = args.Count - 1;
 			object last = args[lastIndex];
 			args.RemoveAt(lastIndex);
