@@ -374,7 +374,6 @@
     <Compile Include="TransactionException.cs" />
     <Compile Include="Transaction\AdoTransaction.cs" />
     <Compile Include="Transaction\ITransactionFactory.cs" />
-    <Compile Include="Transaction\TransactionFactory.cs" />
     <Compile Include="Transform\AliasToEntityMapResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
     <Compile Include="Transform\IResultTransformer.cs" />
@@ -666,6 +665,7 @@
     <Compile Include="SqlCommand\ISqlStringVisitor.cs" />
     <Compile Include="SqlCommand\SqlCommandInfo.cs" />
     <Compile Include="StaleStateException.cs" />
+    <Compile Include="Transaction\AdoNetTransactionFactory.cs" />
     <Compile Include="Transaction\ISynchronization.cs" />
     <Compile Include="Transform\AliasToBeanConstructorResultTransformer.cs" />
     <Compile Include="Transform\AliasToBeanResultTransformer.cs" />

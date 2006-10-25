@@ -59,7 +59,7 @@ namespace NHibernate.Cfg
 			}
 
 			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider( properties );
-			ITransactionFactory transactionFactory = new TransactionFactory(); // = TransactionFactoryFactory.BuildTransactionFactory(properties);
+			ITransactionFactory transactionFactory = new AdoNetTransactionFactory(); // = TransactionFactoryFactory.BuildTransactionFactory(properties);
 			// TransactionManagerLookup transactionManagerLookup = TransactionManagerLookupFactory.GetTransactionManagerLookup( properties );
 
 			// Not ported: useGetGeneratedKeys, useScrollableResultSets

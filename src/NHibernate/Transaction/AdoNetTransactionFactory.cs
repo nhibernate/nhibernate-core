@@ -3,7 +3,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Transaction
 {
-	public class TransactionFactory : ITransactionFactory
+	public class AdoNetTransactionFactory : ITransactionFactory
 	{
 		public ITransaction CreateTransaction(ISessionImplementor session)
 		{
