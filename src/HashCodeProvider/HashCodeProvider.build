@@ -3,16 +3,33 @@
 <project 
 	name="HashCodeProvider" 
 	default="build" 
-	xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 
-	<target name="build">
+	<property name="root.dir" value="..\.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+		<property name="assembly.title" value="HashCodeProvider" />
+		<property name="assembly.company" value="http://www.msjogren.net/dotnet/eng/samples/misc.asp" />
+		<property name="assembly.product" value="HashCodeProvider" />
+		<property name="assembly.description" value="Utility to call Object.GetHashCode nonvirtually." />
+		<property name="assembly.allow-partially-trusted-callers" value="true" />
+		<property name="assembly.copyright" value="Copyright (c) 2002 Mattias Sjogren" />
+		<property name="assembly.version" value="1.0.0.0" />
+		<property name="assembly.version.informational" value="1.0.0.0" />
+		<property name="assembly.is-cls-compliant" value="true" />
+		<property name="clover.instrument" value="false" />
+	</target>
+
+	<target name="build" depends="generate-assemblyinfo">
 		<exec 
 			program="${framework::get-framework-directory(framework::get-target-framework())}\ilasm"
 			commandline="HashCodeProvider.il /dll /output:..\..\lib\net\1.1\HashCodeProvider.dll /key:..\NHibernate.snk" 
-		/>	
+		/>
 		<copy file="HashCodeProvider.license.txt" todir="../../lib/net/1.1" />
 	</target>
-	
-	
+
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
+
 </project>
