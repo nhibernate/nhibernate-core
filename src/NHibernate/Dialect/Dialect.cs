@@ -66,6 +66,32 @@ namespace NHibernate.Dialect
 		{
 			log.Info( "Using dialect: " + this );
 			sqlFunctions = new Hashtable( standardAggregateFunctions ) ;
+			// standard sql92 functions (can be overridden by subclasses)
+			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
+			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
+			RegisterFunction("trim", new SQLFunctionTemplate(NHibernateUtil.String, "trim(?1 ?2 ?3 ?4)"));
+			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
+			RegisterFunction("bit_length", new StandardSQLFunction("bit_length", NHibernateUtil.Int32));
+			RegisterFunction("coalesce", new StandardSQLFunction("coalesce"));
+			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
+			RegisterFunction("abs", new StandardSQLFunction("abs"));
+			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
+			RegisterFunction("upper", new StandardSQLFunction("upper"));
+			RegisterFunction("lower", new StandardSQLFunction("lower"));
+			RegisterFunction("cast", new CastFunction());
+			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(?1 ?2 ?3)"));
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
+
+			//map second/minute/hour/day/month/year to ANSI extract(), override on subclasses
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(second from ?1)"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(minute from ?1)"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(hour from ?1)"));
+			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(day from ?1)"));
+			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(month from ?1)"));
+			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(year from ?1)"));
+
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 		}
 
 
