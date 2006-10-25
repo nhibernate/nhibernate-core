@@ -3,7 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.Text;
 using Iesi.Collections;
-using NHibernate.Hql;
+using NHibernate.Hql.Classic;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand

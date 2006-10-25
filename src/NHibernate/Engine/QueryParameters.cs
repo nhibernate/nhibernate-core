@@ -7,7 +7,7 @@ using NHibernate.Impl;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Hql;
+using NHibernate.Hql.Classic;
 using NHibernate.SqlCommand;
 using System.Data;
 

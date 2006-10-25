@@ -11,7 +11,7 @@ using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Context;
 using NHibernate.Engine;
-using NHibernate.Hql;
+using NHibernate.Hql.Classic;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;

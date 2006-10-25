@@ -10,7 +10,7 @@ using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Hql;
+using NHibernate.Hql.Classic;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Loader.Entity;

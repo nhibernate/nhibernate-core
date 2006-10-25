@@ -1,6 +1,6 @@
 using System;
 using NHibernate.Util;
-using NHibernate.Hql;
+using NHibernate.Hql.Classic;
 
 namespace NHibernate.Engine.Query
 {

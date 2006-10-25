@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 
 using NHibernate.Engine;
-using NHibernate.Hql;
+using NHibernate.Hql.Classic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;

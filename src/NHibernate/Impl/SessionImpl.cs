@@ -12,7 +12,7 @@ using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Hql;
+using NHibernate.Hql.Classic;
 using NHibernate.Id;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;

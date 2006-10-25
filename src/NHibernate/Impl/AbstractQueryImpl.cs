@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
-using NHibernate.Hql;
+using NHibernate.Hql.Classic;
 using NHibernate.Property;
 using NHibernate.Proxy;
 using NHibernate.Transform;

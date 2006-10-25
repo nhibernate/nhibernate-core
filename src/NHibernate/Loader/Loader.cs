@@ -58,8 +58,8 @@ namespace NHibernate.Loader
 		/// value using the Property instead of directly to the field.
 		/// </para>
 		/// <para>
-		/// The scope is <c>protected internal</c> because the <see cref="Hql.WhereParser"/> needs to
-		/// be able to <c>get</c> the SqlString of the <see cref="Hql.QueryTranslator"/> when
+		/// The scope is <c>protected internal</c> because the <see cref="Hql.Classic.WhereParser"/> needs to
+		/// be able to <c>get</c> the SqlString of the <see cref="Hql.Classic.QueryTranslator"/> when
 		/// it is parsing a subquery.
 		/// </para>
 		/// </remarks>
