@@ -662,6 +662,7 @@
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
     <Compile Include="Property\IOptimizableGetter.cs" />
     <Compile Include="Property\IOptimizableSetter.cs" />
+    <Compile Include="Property\PascalCaseMStrategy.cs" />
     <Compile Include="SqlCommand\ISqlStringVisitor.cs" />
     <Compile Include="SqlCommand\SqlCommandInfo.cs" />
     <Compile Include="StaleStateException.cs" />
