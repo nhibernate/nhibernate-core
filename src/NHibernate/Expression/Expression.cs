@@ -164,6 +164,39 @@ namespace NHibernate.Expression
 		}
 
 		/// <summary>
+		/// Apply an "not equal" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
+		public static AbstractCriterion NotEqProperty(string propertyName, string otherPropertyName)
+		{
+			return new NotExpression(new EqPropertyExpression(propertyName, otherPropertyName));
+		}
+
+		/// <summary>
+		/// Apply a "greater than" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
+		public static AbstractCriterion GtProperty(string propertyName, string otherPropertyName)
+		{
+			return new GtPropertyExpression(propertyName, otherPropertyName);
+		}
+
+		/// <summary>
+		/// Apply a "greater than or equal" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
+		public static AbstractCriterion GeProperty(string propertyName, string otherPropertyName)
+		{
+			return new GePropertyExpression(propertyName, otherPropertyName);
+		}
+		
+		/// <summary>
 		/// Apply a "less than" constraint to two properties
 		/// </summary>
 		/// <param name="propertyName">The lhs Property Name</param>

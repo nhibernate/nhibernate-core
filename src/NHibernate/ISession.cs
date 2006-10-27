@@ -587,6 +587,15 @@ namespace NHibernate
 		ICriteria CreateCriteria( System.Type persistentClass );
 
 		/// <summary>
+		/// Creates a new <c>Criteria</c> for the entity class with a specific alias
+		/// </summary>
+		/// <param name="persistentClass">The class to Query</param>
+		/// <param name="alias">The alias of the entity</param>
+		/// <returns>An ICriteria object</returns>
+		ICriteria CreateCriteria(System.Type persistentClass, string alias);
+
+		
+		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query string
 		/// </summary>
 		/// <param name="queryString">A hibernate query string</param>

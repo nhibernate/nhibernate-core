@@ -119,5 +119,10 @@ namespace NHibernate.Expression
 		{
 			return "DetachableCriteria(" + criteria.ToString() + ')';
 		}
+
+		public CriteriaImpl GetCriteriaImpl()
+		{
+			return impl;
+		}
 	}
 }

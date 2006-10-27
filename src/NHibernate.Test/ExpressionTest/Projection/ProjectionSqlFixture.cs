@@ -48,7 +48,28 @@ namespace NHibernate.Test.ExpressionTest.Projection
             }
         }
 
+		[Test]
+		public void QueryTestWithStrongTypeReturnValue()
+		{
+			using (ISession session = OpenSession())
+			{
+				ICriteria c = session.CreateCriteria(typeof(ProjectionTestClass));
 
+				NHibernate.Transform.IResultTransformer trans = new NHibernate.Transform.AliasToBeanConstructorResultTransformer(
+					typeof(ProjectionReport).GetConstructors()[0]
+					);
+				
+				c.SetProjection(Projections.ProjectionList()
+		                			.Add(Projections.Avg("Pay"))
+		                			.Add(Projections.Max("Pay"))
+		                			.Add(Projections.Min("Pay")));
+				c.SetResultTransformer(trans);
+				ProjectionReport report = c.UniqueResult<ProjectionReport>();
+				Assert.AreEqual(report.AvgPay, 2.5);
+				Assert.AreEqual(report.MaxPay, 4);
+				Assert.AreEqual(report.MinPay, 1);
+			}
+		}
 
         [Test]
         public void QueryTest1()
@@ -93,5 +114,37 @@ namespace NHibernate.Test.ExpressionTest.Projection
             }
         }
     }
+	
+	public class ProjectionReport
+	{
+		double minPay;
+		double maxPay;
+		double avgPay;
+
+		public ProjectionReport(double avgPay, double maxPay, double minPay)
+		{
+			this.minPay = minPay;
+			this.maxPay = maxPay;
+			this.avgPay = avgPay;
+		}
+
+		public double MinPay
+		{
+			get { return minPay; }
+			set { minPay = value; }
+		}
+
+		public double MaxPay
+		{
+			get { return maxPay; }
+			set { maxPay = value; }
+		}
+
+		public double AvgPay
+		{
+			get { return avgPay; }
+			set { avgPay = value; }
+		}
+	}
 }
 #endif

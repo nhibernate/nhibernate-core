@@ -533,6 +533,14 @@
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Expression\DetachedCriteria.cs" />
     <Compile Include="Engine\JoinSequence.cs" />
+    <Compile Include="Expression\ExistsSubqueryExpression.cs" />
+    <Compile Include="Expression\GePropertyExpression.cs" />
+    <Compile Include="Expression\GtPropertyExpression.cs" />
+    <Compile Include="Expression\Property.cs" />
+    <Compile Include="Expression\PropertySubqueryExpression.cs" />
+    <Compile Include="Expression\SimpleSubqueryExpression.cs" />
+    <Compile Include="Expression\Subqueries.cs" />
+    <Compile Include="Expression\SubqueryExpression.cs" />
     <Compile Include="Hql\CollectionSubqueryFactory.cs" />
     <Compile Include="Expression\IsEmptyExpression.cs" />
     <Compile Include="Expression\IsNotEmptyExpression.cs" />

@@ -4988,6 +4988,13 @@ namespace NHibernate.Impl
 			return new CriteriaImpl(persistentClass, this);
 		}
 
+		public ICriteria CreateCriteria(System.Type persistentClass, string alias)
+		{
+			CheckIsOpen();
+
+			return new CriteriaImpl(persistentClass, alias, this);
+		}
+
 		public IList Find(CriteriaImpl criteria)
 		{
 			ArrayList results = new ArrayList();

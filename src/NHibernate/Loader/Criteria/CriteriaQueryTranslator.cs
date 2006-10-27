@@ -385,6 +385,11 @@ namespace NHibernate.Loader.Criteria
 			get { return sessionFactory; }
 		}
 
+		public string RootSQLALias
+		{
+			get { return rootSQLAlias; }
+		}
+
 		public string GetSQLAlias( ICriteria criteria )
 		{
 			return ( string ) criteriaSQLAliasMap[ criteria ];
