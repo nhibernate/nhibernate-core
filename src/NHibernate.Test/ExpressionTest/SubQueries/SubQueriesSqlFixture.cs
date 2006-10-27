@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
+using NHibernate;
+using NHibernate.Engine;
 using NHibernate.Expression;
+using NHibernate.Test.ExpressionTest.SubQueries;
 using NUnit.Framework;
-using NHibernate.Test.NHSpecificTest.NH593;
 
 namespace NHibernate.Test.ExpressionTest.SubQueries
 {
 	[TestFixture]
-	public class SubQueriesSqlFixture : TestCase
+	public class SubQueriesSqlFixture : NHibernate.Test.TestCase
     {
 		private Post post2;
 		private Post post1;
@@ -21,7 +23,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
         {
             get
             {
-                return new string[] { "NHSpecificTest.NH593.Mappings.hbm.xml" };
+				return new string[] { "ExpressionTest.SubQueries.Mappings.hbm.xml" };
             }
         }
 
@@ -30,15 +32,33 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
             // Create some objects
             using (ISession session = OpenSession())
             {
+            	Category category = new Category("NHibernate");
+            	User author = new User("Josh");
+            	User commenter = new User("Ayende");
+            	
             	Blog blog = new Blog("bar");
+				blog.Users.Add(author);
+				author.Blogs.Add(blog);
             	post1 = new Post("p1");
             	this.post1.Blog = blog;
+				this.post1.Categories.Add(category);
             	post2 = new Post("p2");
             	this.post2.Blog = blog;
+
+            	Comment comment = new Comment("foo");
+				comment.Commenter = commenter;
+            	comment.Post = post1;
+				comment.IndexInPost = 0;
+				post1.Comments.Add(comment);
+            	
+            	
+				session.Save(category);
+				session.Save(author);
+				session.Save(commenter);
 				session.Save(blog);
 				session.Save(this.post1);
 				session.Save(this.post2);
-            	
+				session.Save(comment);
                 session.Flush();
             }
         }
@@ -47,8 +67,11 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
         {
             using (ISession s = sessions.OpenSession())
             {
-                s.Delete("from Blog");
+				s.Delete("from Comment");
 				s.Delete("from Post");
+				s.Delete("from Blog");
+            	s.Delete("from User");
+            	s.Delete("from Category");
                 s.Flush();
             }
         }
@@ -67,9 +90,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 					.Add(Subqueries.Exists(dc))
 					.List();
 				Assert.AreEqual(1, list.Count);
-				
 			}
-			
 		}
 	}
 }

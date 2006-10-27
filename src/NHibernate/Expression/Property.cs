@@ -117,7 +117,7 @@ namespace NHibernate.Expression
 			return Expression.LtProperty(PropertyName, other);
 		}
 
-		public AbstractCriterion gtProperty(String other)
+		public AbstractCriterion GtProperty(String other)
 		{
 			return Expression.GtProperty(PropertyName, other);
 		}
@@ -191,89 +191,89 @@ namespace NHibernate.Expression
 		}
 
 
-		public AbstractCriterion Eq(DetachedCriteria subseLect)
+		public AbstractCriterion Eq(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyEq(PropertyName, subseLect);
+			return Subqueries.PropertyEq(PropertyName, subselect);
 		}
 
-		public AbstractCriterion Ne(DetachedCriteria subseLect)
+		public AbstractCriterion Ne(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyNe(PropertyName, subseLect);
+			return Subqueries.PropertyNe(PropertyName, subselect);
 		}
 
-		public AbstractCriterion Lt(DetachedCriteria subseLect)
+		public AbstractCriterion Lt(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyLt(PropertyName, subseLect);
+			return Subqueries.PropertyLt(PropertyName, subselect);
 		}
 
-		public AbstractCriterion Le(DetachedCriteria subseLect)
+		public AbstractCriterion Le(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyLe(PropertyName, subseLect);
+			return Subqueries.PropertyLe(PropertyName, subselect);
 		}
 
-		public AbstractCriterion gt(DetachedCriteria subseLect)
+		public AbstractCriterion Bt(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyGt(PropertyName, subseLect);
+			return Subqueries.PropertyGt(PropertyName, subselect);
 		}
 
-		public AbstractCriterion Ge(DetachedCriteria subseLect)
+		public AbstractCriterion Ge(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyGe(PropertyName, subseLect);
+			return Subqueries.PropertyGe(PropertyName, subselect);
 		}
 
-		public AbstractCriterion notIn(DetachedCriteria subseLect)
+		public AbstractCriterion NotIn(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyNotIn(PropertyName, subseLect);
+			return Subqueries.PropertyNotIn(PropertyName, subselect);
 		}
 
-		public AbstractCriterion In(DetachedCriteria subseLect)
+		public AbstractCriterion In(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyIn(PropertyName, subseLect);
+			return Subqueries.PropertyIn(PropertyName, subselect);
 		}
 
-		public AbstractCriterion EqAll(DetachedCriteria subseLect)
+		public AbstractCriterion EqAll(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyEqAll(PropertyName, subseLect);
+			return Subqueries.PropertyEqAll(PropertyName, subselect);
 		}
 
-		public AbstractCriterion gtAll(DetachedCriteria subseLect)
+		public AbstractCriterion GtAll(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyGtAll(PropertyName, subseLect);
+			return Subqueries.PropertyGtAll(PropertyName, subselect);
 		}
 
-		public AbstractCriterion LtAll(DetachedCriteria subseLect)
+		public AbstractCriterion LtAll(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyLtAll(PropertyName, subseLect);
+			return Subqueries.PropertyLtAll(PropertyName, subselect);
 		}
 
-		public AbstractCriterion LeAll(DetachedCriteria subseLect)
+		public AbstractCriterion LeAll(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyLeAll(PropertyName, subseLect);
+			return Subqueries.PropertyLeAll(PropertyName, subselect);
 		}
 
-		public AbstractCriterion GeAll(DetachedCriteria subseLect)
+		public AbstractCriterion GeAll(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyGeAll(PropertyName, subseLect);
+			return Subqueries.PropertyGeAll(PropertyName, subselect);
 		}
 
-		public AbstractCriterion gtSome(DetachedCriteria subseLect)
+		public AbstractCriterion GtSome(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyGtSome(PropertyName, subseLect);
+			return Subqueries.PropertyGtSome(PropertyName, subselect);
 		}
 
-		public AbstractCriterion LtSome(DetachedCriteria subseLect)
+		public AbstractCriterion LtSome(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyLtSome(PropertyName, subseLect);
+			return Subqueries.PropertyLtSome(PropertyName, subselect);
 		}
 
-		public AbstractCriterion LeSome(DetachedCriteria subseLect)
+		public AbstractCriterion LeSome(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyLeSome(PropertyName, subseLect);
+			return Subqueries.PropertyLeSome(PropertyName, subselect);
 		}
 
-		public AbstractCriterion GeSome(DetachedCriteria subseLect)
+		public AbstractCriterion GeSome(DetachedCriteria subselect)
 		{
-			return Subqueries.PropertyGeSome(PropertyName, subseLect);
+			return Subqueries.PropertyGeSome(PropertyName, subselect);
 		}
 	}
 }

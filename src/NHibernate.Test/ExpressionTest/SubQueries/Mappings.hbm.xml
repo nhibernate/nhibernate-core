@@ -1,0 +1,155 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<hibernate-mapping
+	 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+	 xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns='urn:nhibernate-mapping-2.0'
+	 assembly='NHibernate.Test'
+	 namespace='NHibernate.Test.ExpressionTest.SubQueries'
+	 default-lazy='false'>
+	<class
+		 name='Blog'
+		 lazy='true'
+		 table='Blogs'>
+		<id
+			 name='BlogID'
+			 column='blog_id'
+			 unsaved-value='0'>
+			<generator
+				 class='native' />
+		</id>
+		<property
+			 name='BlogName'
+			 column='blog_name' />
+		<set
+			 name='Posts'
+			 lazy='true'
+			 cascade='all-delete-orphan'
+			 inverse='true'>
+			<key
+				 column='post_blogid' />
+			<one-to-many
+				 class='Post' />
+
+		</set>
+		<set
+			 name='Users'
+
+			 table='UsersBlogs'
+			 lazy='true'
+			 cascade='save-update'
+			 inverse='true'>
+			<key
+				 column='blog_id' />
+			<many-to-many
+				 class='User'
+				 column='user_id' />
+		</set>
+	</class>
+	<class
+		 name='User'
+		 lazy='true'
+		 table='`Users`'>
+		<id
+			 name='UserId'
+			 column='user_id'>
+			<generator
+				 class='native' />
+		</id>
+		<property
+			 name='UserName'
+			 type='string'
+			 column='user_name' />
+		<set
+			 name='Blogs'
+
+			 table='UsersBlogs'
+			 lazy='true'
+			 cascade='save-update'>
+			<key
+				 column='user_id' />
+
+			<many-to-many
+				 class='Blog'
+				 column='blog_id' />
+		</set>
+	</class>
+	<class
+		 name='Post'
+		 table='Posts'>
+		<id
+			 name='PostId'
+			 column='post_id'
+			 unsaved-value='0'>
+			<generator
+				 class='native' />
+		</id>
+		<many-to-one
+			 name='Blog'
+
+			 class='Blog'
+			 column='post_blogid' />
+		<bag
+			 name='Comments'
+
+			 table='Comments'
+			 lazy='true'
+			 cascade='all-delete-orphan'
+			 inverse='true'>
+
+			<key
+				 column='comment_postid' />
+			<one-to-many
+				 class='Comment' />
+		</bag>
+		<set name='Categories'
+			 table='PostsCategories'>
+			<key column='post_id'/>
+			<many-to-many class='Category'
+						  column='category_id'/>
+		</set>
+	</class>
+	<class name='Category'
+		   table='Categories'>
+		<id
+			name='CategoryId'
+			column='category_id'
+			unsaved-value='0'>
+			<generator
+				class='native' />
+		</id>
+		<property name='Name'/>
+		<set name='Posts' inverse='true'
+			 table='PostsCategories'>
+			<key column='category_id'/>
+			<many-to-many class='Post'
+						  column='post_id'/>
+		</set>
+	</class>
+	<class
+		 name='Comment'
+		 table='Comments'>
+		<id
+			 name='CommentId'
+			 column='comment_id'
+			 unsaved-value='0'>
+			<generator
+				 class='native' />
+		</id>
+		<property
+			 name='Text'
+			 type='string'
+			 column='comment_text' />
+
+		<property
+			 name='IndexInPost'
+			 column='comment_post_index' />
+		<many-to-one
+			 name='Post'
+
+			 class='Post'
+			 column='comment_postid' />
+		<many-to-one
+			name='Commenter'
+			class='User'
+			column='user_id' />
+	</class>
+</hibernate-mapping>

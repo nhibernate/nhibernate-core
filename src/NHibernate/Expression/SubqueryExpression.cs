@@ -47,7 +47,7 @@ namespace NHibernate.Expression
 			parameters = innerQuery.GetQueryParameters(); //TODO: bad lifecycle....
 
 			if (innerQuery.HasProjection == false)
-				throw new QueryException("Cannot use sub queries on a criteria wihtout a projection.");
+				throw new QueryException("Cannot use sub queries on a criteria without a projection.");
 			types = innerQuery.ProjectedTypes;
 
 			SqlString sql = new SqlSelectBuilder(factory)

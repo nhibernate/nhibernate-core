@@ -106,6 +106,7 @@
     <Compile Include="ExpressionTest\QueryByExampleTest.cs" />
     <Compile Include="ExpressionTest\SimpleExpressionFixture.cs" />
     <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
+    <Compile Include="ExpressionTest\SubQueries\Classes.cs" />
     <Compile Include="ExpressionTest\SubQueries\SubQueriesSqlFixture.cs" />
     <Compile Include="FilterTest\Category.cs" />
     <Compile Include="FilterTest\Department.cs" />
@@ -696,6 +697,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="HQLFunctionTest\Animal.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ExpressionTest\SubQueries\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
