@@ -8,7 +8,7 @@
 			<generator class="assigned"/>
 		</id>
 
-		<discriminator formula="case when ClassType in ('a', 'b', 'c') then 'AbcThing' else 'OtherThing' end" insert="false" force="true"/>
+		<discriminator formula="case when ClassType in ('a', 'b', 'c') then cast('AbcThing' as VARCHAR(10)) else cast('OtherThing' as VARCHAR(10)) end" insert="false" force="true"/>
 		
 		<property name="ClassType" type="string" length="1" not-null="true" access="nosetter.pascalcase-underscore" update="false"/>
 		<property name="Name" type="string" length="100" not-null="false"/>
