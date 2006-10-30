@@ -132,6 +132,12 @@
 	</target>
 
 	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework">
+		<!-- -->
+		<nant target="test">
+			<buildfiles refid="buildfiles.tests" />
+		</nant>
+		<!-- -->
+		<!--
 		<foreach item="File" property="buildfile">
 			<in>
 				<items refid="buildfiles.tests" />
@@ -144,6 +150,7 @@
 				</exec>
 			</do>
 		</foreach>
+		-->
 	</target>
 	
 	<target name="coverage-report" description="Builds the Test Coverage reports"

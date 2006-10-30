@@ -23,10 +23,14 @@
 	</target>
 
 	<target name="build" depends="generate-assemblyinfo">
-		<exec 
-			program="${framework::get-framework-directory(framework::get-target-framework())}\ilasm"
-			commandline="HashCodeProvider.il /dll /output:..\..\lib\net\1.1\HashCodeProvider.dll /key:..\NHibernate.snk" 
-		/>
+		<ilasm
+			target="dll"
+			output="${root.dir}/lib/net/1.1/HashCodeProvider.dll"
+			keyfile="${key.file}">
+			<sources>
+				<include name="HashCodeProvider.il" />
+			</sources>
+		</ilasm>
 		<copy file="HashCodeProvider.license.txt" todir="../../lib/net/1.1" />
 	</target>
 

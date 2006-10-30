@@ -18,7 +18,7 @@
 
 		After including the file, a target should be defined to initialize
 		configuration variables according to the project being built.
-		The standard of this target is init (but any other name can be chosen).
+		The standard name of this target is init (but any other name can be chosen).
 		The init target should depend on (or call) target common.init defined
 		in this file.
 
@@ -29,11 +29,11 @@
 				if it exists.
 
 			- common.compile-dll
-				compile a DLL, generating the documentation and using Clover if enabled.
+				compile a DLL, generating the documentation file (.xml) and using Clover
+				if enabled.
 
-			- common.generate-assemblyinfo, common.generate-assemblyinfoversion
-				generate an AssemblyInfo.cs or AssemblyInfoVersion.cs file from
-				assembly.* NAnt properties.
+			- common.generate-assemblyinfo
+				generate an AssemblyInfo.cs file from assembly.* NAnt properties.
 
 			- common.run-tests
 				run compiled NUnit tests.
@@ -41,7 +41,8 @@
 		All compile/run targets put the output in bin.dir. Common.compile*
 		targets use source fileset with id="project.sources", assembly fileset
 		with id="project.references" and resource fileset with id="project.resources"
-		to compile the project. The source and resource filesets are optional.
+		to compile the project. The source and resource filesets are optional and
+		default to **/*.cs files and no files respectively.
 
 	</description>
 

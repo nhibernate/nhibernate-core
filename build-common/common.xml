@@ -136,9 +136,7 @@
 	<property name="current.build.defines" value="${build.defines}" />
 
 	<!-- properties used to connect to database for testing -->
-	<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2000Dialect" />
-	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" />
-	<property name="nhibernate.connection.connection_string" value="Server=(local);initial catalog=nhibernate;Integrated Security=SSPI" />
+	<include buildfile="nhibernate-properties.xml" />
 
 	<!-- named project configurations -->
 	<target name="set-debug-project-configuration" description="Perform a 'debug' build">
