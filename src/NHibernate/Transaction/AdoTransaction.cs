@@ -19,7 +19,6 @@ namespace NHibernate.Transaction
 		private bool committed;
 		private bool rolledBack;
 		private bool commitFailed;
-		private ArrayList synchronizations;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AdoTransaction"/> class.
@@ -91,6 +90,16 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Begin( IsolationLevel isolationLevel )
 		{
+			if (begun)
+			{
+				return;
+			}
+			
+			if (commitFailed)
+			{
+				throw new TransactionException("Cannot restart transaction after failed commit");
+			}
+
 			log.Debug( "begin" );
 
 			try
@@ -121,14 +130,17 @@ namespace NHibernate.Transaction
 			}
 
 			begun = true;
+			committed = false;
+			rolledBack = false;
 		}
 
 		private void AfterTransactionCompletion( bool successful )
 		{
 			session.AfterTransactionCompletion( successful );
 			session = null;
-			NotifyLocalSynchsAfterTransactionCompletion(successful);
+			begun = false;
 		}
+
 		/// <summary>
 		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
 		/// and committing the <see cref="IDbTransaction"/>.
@@ -148,6 +160,7 @@ namespace NHibernate.Transaction
 			{
 				session.Flush();
 			}
+
 			try
 			{
 				trans.Commit();
@@ -238,21 +251,6 @@ namespace NHibernate.Transaction
 			get { return begun && !rolledBack && !committed; }
 		}
 		
-		public void RegisterSynchronization(ISynchronization sync)
-		{
-			if (sync == null)
-			{
-				throw new ArgumentNullException("sync");
-			}
-			
-			if (synchronizations == null)
-			{
-				synchronizations = new ArrayList();
-			}
-
-			synchronizations.Add(sync);
-		}
-
 		public IsolationLevel IsolationLevel
 		{
 			get { return trans.IsolationLevel; }
@@ -338,25 +336,6 @@ namespace NHibernate.Transaction
 			if( !begun )
 			{
 				throw new TransactionException( "Transaction not successfully started" );
-			}
-		}
-
-		private void NotifyLocalSynchsAfterTransactionCompletion(bool successful)
-		{
-			begun = false;
-			if (synchronizations != null)
-			{
-				foreach (ISynchronization sync in synchronizations)
-				{
-					try
-					{
-						sync.AfterCompletion(successful);
-					}
-					catch (Exception e)
-					{
-						log.Error("exception calling user ISynchronization", e);
-					}
-				}
 			}
 		}
 	}

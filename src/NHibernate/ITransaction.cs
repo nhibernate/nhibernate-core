@@ -69,7 +69,5 @@ namespace NHibernate
 		/// It is okay for this to be a no op implementation.
 		/// </remarks>
 		void Enlist( IDbCommand command );
-
-		void RegisterSynchronization(ISynchronization synchronization);
 	}
 }
