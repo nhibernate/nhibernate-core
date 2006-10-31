@@ -58,8 +58,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\build-common\common-project.xml = ..\build-common\common-project.xml
 		..\build-common\common.xml = ..\build-common\common.xml
 		..\default.build = ..\default.build
-		..\nightly.build = ..\nightly.build
-		..\release.build = ..\release.build
 	EndProjectSection
 EndProject
 Global
