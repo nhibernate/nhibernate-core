@@ -7,6 +7,7 @@ using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Transaction;
 using NHibernate.Util;
+using NHibernate.Hql;
 
 namespace NHibernate.Cfg
 {
@@ -80,6 +81,8 @@ namespace NHibernate.Cfg
 			}
 
 			// queries:
+
+			settings.QueryTranslatorFactory = CreateQueryTranslatorFactory(properties);
 
 			IDictionary querySubstitutions = PropertiesHelper.ToDictionary( Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties );
 			if( log.IsInfoEnabled )
@@ -192,6 +195,22 @@ namespace NHibernate.Cfg
 		private SettingsFactory()
 		{
 			//should not be publically creatable
+		}
+
+		// visibility changed and static modifier added until complete H3.2 porting of SettingsFactory
+		private static IQueryTranslatorFactory CreateQueryTranslatorFactory(IDictionary properties)
+		{
+			string className = PropertiesHelper.GetString(
+					Environment.QueryTranslator, properties, "NHibernate.Hql.Classic.ClassicQueryTranslatorFactory");
+			log.Info("Query translator: " + className);
+			try
+			{
+				return (IQueryTranslatorFactory)Activator.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not instantiate QueryTranslatorFactory: " + className, cnfe);
+			}
 		}
 	}
 }

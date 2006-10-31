@@ -24,6 +24,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 
 using HibernateDialect = NHibernate.Dialect.Dialect;
+using NHibernate.Hql;
 
 namespace NHibernate.Impl
 {
@@ -450,27 +451,27 @@ namespace NHibernate.Impl
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private QueryTranslator[] CreateQueryTranslators(string[] concreteQueryStrings, QueryCacheKey cacheKey)
+		private IQueryTranslator[] CreateQueryTranslators(string[] concreteQueryStrings, QueryCacheKey cacheKey)
 		{
 			int length = concreteQueryStrings.Length;
-			QueryTranslator[] queries = new QueryTranslator[length];
+			IQueryTranslator[] queries = new IQueryTranslator[length];
 			for (int i = 0; i < length; i++)
 			{
-				queries[i] = new QueryTranslator(this, concreteQueryStrings[i], filters);
+				queries[i] = settings.QueryTranslatorFactory.CreateQueryTranslator(concreteQueryStrings[i], filters, this);
 			}
 			Put(cacheKey, queries);
 			return queries;
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private QueryTranslator CreateFilterTranslator(string filterString, FilterCacheKey cacheKey)
+		private IFilterTranslator CreateFilterTranslator(string filterString, FilterCacheKey cacheKey)
 		{
-			QueryTranslator filter = new QueryTranslator(this, filterString, filters);
+			IFilterTranslator filter = settings.QueryTranslatorFactory.CreateFilterTranslator(filterString, filters, this);
 			Put(cacheKey, filter);
 			return filter;
 		}
 
-		public QueryTranslator[] GetQuery(string queryString, bool shallow)
+		public IQueryTranslator[] GetQuery(string queryString, bool shallow)
 		{
 			QueryCacheKey cacheKey = new QueryCacheKey(queryString, shallow);
 
@@ -479,17 +480,17 @@ namespace NHibernate.Impl
 			// we also have to be very careful to ensure that other threads can perform
 			// compiled queries while another query is being compiled
 
-			QueryTranslator[] queries = (QueryTranslator[]) Get(cacheKey);
+			IQueryTranslator[] queries = (IQueryTranslator[]) Get(cacheKey);
 
 			if (queries == null)
 			{
 				// a query that names an interface or unmapped class in the from clause
 				// is actually executed as multiple queries
-				string[] concreteQueryStrings = QueryTranslator.ConcreteQueries(queryString, this);
+				string[] concreteQueryStrings = QuerySplitter.ConcreteQueries(queryString, this);
 				queries = CreateQueryTranslators(concreteQueryStrings, cacheKey);
 			}
 
-			foreach (QueryTranslator q in queries)
+			foreach (IQueryTranslator q in queries)
 			{
 				q.Compile(settings.QuerySubstitutions, shallow);
 			}
@@ -498,11 +499,11 @@ namespace NHibernate.Impl
 			return queries;
 		}
 
-		public QueryTranslator GetFilter(string filterString, string collectionRole, bool scalar)
+		public IFilterTranslator GetFilter(string filterString, string collectionRole, bool scalar)
 		{
 			FilterCacheKey cacheKey = new FilterCacheKey(collectionRole, filterString, scalar);
 
-			QueryTranslator filter = (QueryTranslator) Get(cacheKey);
+			IFilterTranslator filter = (IFilterTranslator)Get(cacheKey);
 			if (filter == null)
 			{
 				filter = CreateFilterTranslator(filterString, cacheKey);
@@ -757,7 +758,7 @@ namespace NHibernate.Impl
 
 		public IType[] GetReturnTypes(String queryString)
 		{
-			string[] queries = QueryTranslator.ConcreteQueries(queryString, this);
+			string[] queries = QuerySplitter.ConcreteQueries(queryString, this);
 			if (queries.Length == 0)
 			{
 				throw new HibernateException("Query does not refer to any persistent classes: " + queryString);

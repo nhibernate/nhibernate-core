@@ -25,6 +25,7 @@ using NHibernate.Util;
 using System.Collections.Generic;
 #endif
 using NHibernate.Engine.Query;
+using NHibernate.Hql;
 
 namespace NHibernate.Impl
 {
@@ -1786,7 +1787,7 @@ namespace NHibernate.Impl
 
 			parameters.ValidateParameters();
 
-			QueryTranslator[] q = GetQueries(query, false);
+			IQueryTranslator[] q = GetQueries(query, false);
 
 			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 
@@ -1813,10 +1814,10 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private QueryTranslator[] GetQueries(string query, bool scalar)
+		private IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
 			// take the union of the query spaces (ie the queried tables)
-			QueryTranslator[] q = factory.GetQuery(query, scalar);
+			IQueryTranslator[] q = factory.GetQuery(query, scalar);
 			HashedSet qs = new HashedSet();
 			for (int i = 0; i < q.Length; i++)
 			{
@@ -1854,7 +1855,7 @@ namespace NHibernate.Impl
 				parameters.LogParameters(factory);
 			}
 
-			QueryTranslator[] q = GetQueries(query, true);
+			IQueryTranslator[] q = GetQueries(query, true);
 
 			if (q.Length == 0)
 			{
@@ -1900,7 +1901,7 @@ namespace NHibernate.Impl
 				parameters.LogParameters(factory);
 			}
 
-			QueryTranslator[] q = GetQueries(query, true);
+			IQueryTranslator[] q = GetQueries(query, true);
 
 			if (q.Length == 0)
 			{
@@ -4739,7 +4740,7 @@ namespace NHibernate.Impl
 		/// <param name="parameters"></param>
 		/// <param name="scalar"></param>
 		/// <returns></returns>
-		private QueryTranslator GetFilterTranslator(object collection, string filter, QueryParameters parameters, bool scalar)
+		private IFilterTranslator GetFilterTranslator(object collection, string filter, QueryParameters parameters, bool scalar)
 		{
 			if (collection == null)
 			{
@@ -4755,7 +4756,7 @@ namespace NHibernate.Impl
 			CollectionEntry entry = GetCollectionEntryOrNull(collection);
 			ICollectionPersister roleBeforeFlush = (entry == null) ? null : entry.LoadedPersister;
 
-			QueryTranslator filterTranslator;
+			IFilterTranslator filterTranslator;
 			if (roleBeforeFlush == null)
 			{
 				// if it was previously unreferenced, we need
@@ -4837,8 +4838,8 @@ namespace NHibernate.Impl
 
 		public void Filter(object collection, string filter, QueryParameters parameters, IList results)
 		{
-			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
-			QueryTranslator[] filters = new QueryTranslator[concreteFilters.Length];
+			string[] concreteFilters = QuerySplitter.ConcreteQueries(filter, factory);
+			IFilterTranslator[] filters = new IFilterTranslator[concreteFilters.Length];
 
 			for (int i = 0; i < concreteFilters.Length; i++)
 			{
@@ -4892,8 +4893,8 @@ namespace NHibernate.Impl
 
 		public IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters)
 		{
-			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
-			QueryTranslator[] filters = new QueryTranslator[concreteFilters.Length];
+			string[] concreteFilters = QuerySplitter.ConcreteQueries(filter, factory);
+			IFilterTranslator[] filters = new IFilterTranslator[concreteFilters.Length];
 
 			for (int i = 0; i < concreteFilters.Length; i++)
 			{
@@ -4940,8 +4941,8 @@ namespace NHibernate.Impl
 #if NET_2_0
 		public IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters)
 		{
-			string[] concreteFilters = QueryTranslator.ConcreteQueries(filter, factory);
-			QueryTranslator[] filters = new QueryTranslator[concreteFilters.Length];
+			string[] concreteFilters = QuerySplitter.ConcreteQueries(filter, factory);
+			IFilterTranslator[] filters = new IFilterTranslator[concreteFilters.Length];
 
 			for (int i = 0; i < concreteFilters.Length; i++)
 			{

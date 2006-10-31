@@ -15,6 +15,7 @@ namespace NHibernate.Util
 			// not creatable
 		}
 
+		public const string WhiteSpace = " \n\r\f\t";
 		/// <summary></summary>
 		public const char Dot = '.';
 		/// <summary></summary>

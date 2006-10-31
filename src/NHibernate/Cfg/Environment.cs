@@ -102,6 +102,9 @@ namespace NHibernate.Cfg
 		public const string CacheRegionPrefix = "hibernate.cache.region_prefix";
 		public const string UseMinimalPuts = "hibernate.cache.use_minimal_puts";
 		public const string QuerySubstitutions = "hibernate.query.substitutions";
+		// The classname of the HQL query parser factory
+		public const string QueryTranslator = "hibernate.query.factory_class";
+
 		
 		// Unused, not implemented
 		public const string QueryImports = "hibernate.query.imports";

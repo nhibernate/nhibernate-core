@@ -3,6 +3,7 @@ using System.Data;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Transaction;
+using NHibernate.Hql;
 
 namespace NHibernate.Cfg
 {
@@ -34,6 +35,7 @@ namespace NHibernate.Cfg
 		private bool _secondLevelCacheEnabled;
 		private string _cacheRegionPrefix;
 		private bool _minimalPutsEnabled;
+		private IQueryTranslatorFactory _queryTranslatorFactory;
 		// not ported - private bool _jdbcBatchVersionedData
 		// TODO: private bool _sqlExceptionConverter;
 		// TODO: private bool _wrapDataReadersEnabled;
@@ -180,5 +182,12 @@ namespace NHibernate.Cfg
 			get { return _cacheRegionPrefix; }
 			set { _cacheRegionPrefix = value; }
 		}
+
+		public IQueryTranslatorFactory QueryTranslatorFactory
+		{
+			get { return _queryTranslatorFactory; }
+			set { _queryTranslatorFactory = value; }
+		}
+
 	}
 }
