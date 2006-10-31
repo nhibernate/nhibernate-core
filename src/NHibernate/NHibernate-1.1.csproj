@@ -789,6 +789,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Dialect\Function\AnsiSubstringFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\Function\AnsiTrimEmulationFunction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -800,6 +805,11 @@
                 />
                 <File
                     RelPath = "Dialect\Function\CharIndexFunction.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Function\ClassicAggregateFunction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1139,6 +1149,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\DetachedCriteria.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\Disjunction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1164,6 +1179,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\ExistsSubqueryExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\Expression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1174,7 +1194,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\GePropertyExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\GtExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\GtPropertyExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1294,12 +1324,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\Property.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\PropertyExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Expression\PropertyProjection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\PropertySubqueryExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1319,6 +1359,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\SimpleSubqueryExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\SQLCriterion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1329,32 +1374,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\ClauseParser.cs"
+                    RelPath = "Expression\Subqueries.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Expression\SubqueryExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Hql\CollectionSubqueryFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Hql\FromParser.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Hql\FromPathExpressionParser.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Hql\GroupByParser.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Hql\HavingParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1369,47 +1399,107 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\IParser.cs"
+                    RelPath = "Hql\IParameterTranslations.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\OrderByParser.cs"
+                    RelPath = "Hql\IQueryTranslator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\ParserHelper.cs"
+                    RelPath = "Hql\IQueryTranslatorFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\PathExpressionParser.cs"
+                    RelPath = "Hql\NameGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\PreprocessingParser.cs"
+                    RelPath = "Hql\QueryExecutionRequestException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\QueryTranslator.cs"
+                    RelPath = "Hql\QuerySplitter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\SelectParser.cs"
+                    RelPath = "Hql\Classic\ClassicQueryTranslatorFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\SelectPathExpressionParser.cs"
+                    RelPath = "Hql\Classic\ClauseParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Hql\WhereParser.cs"
+                    RelPath = "Hql\Classic\FromParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\FromPathExpressionParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\GroupByParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\HavingParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\IParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\OrderByParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\ParserHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\PathExpressionParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\PreprocessingParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\QueryTranslator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\SelectParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\SelectPathExpressionParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Hql\Classic\WhereParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2185,6 +2275,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Persister\Collection\CollectionPropertyNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Persister\Collection\CompositeElementPropertyMapping.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2371,6 +2466,11 @@
                 />
                 <File
                     RelPath = "Property\NoSetterAccessor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Property\PascalCaseMStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2625,22 +2725,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Transaction\AdoNetTransactionFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Transaction\AdoTransaction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Transaction\ISynchronization.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Transaction\ITransactionFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Transaction\TransactionFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

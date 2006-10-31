@@ -55,8 +55,8 @@ namespace NHibernate.Expression
 				.SetWhereClause(innerQuery.GetWhereCondition())
 				.SetGroupByClause(innerQuery.GetGroupBy().ToString())
 				.SetSelectClause(innerQuery.GetSelect().ToString())
-				.SetFromClause(persister.FromTableFragment(innerQuery.RootSQLALias) +
-					persister.FromJoinFragment(innerQuery.RootSQLALias, true, false))
+				.SetFromClause(persister.FromTableFragment(innerQuery.RootSQLAlias) +
+					persister.FromJoinFragment(innerQuery.RootSQLAlias, true, false))
 				.ToSqlString();
 
 			SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));

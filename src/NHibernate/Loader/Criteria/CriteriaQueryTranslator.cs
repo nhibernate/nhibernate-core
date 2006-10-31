@@ -385,7 +385,8 @@ namespace NHibernate.Loader.Criteria
 			get { return sessionFactory; }
 		}
 
-		public string RootSQLALias
+		[CLSCompliant(false)] // TODO: Why does this cause a problem in 1.1
+		public string RootSQLAlias
 		{
 			get { return rootSQLAlias; }
 		}

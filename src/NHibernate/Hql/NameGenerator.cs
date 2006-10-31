@@ -10,7 +10,7 @@ namespace NHibernate.Hql
 	/// Provides utility methods for generating HQL / SQL names.
 	/// Shared by both the 'classic' and 'new' query translators.
 	/// </summary>
-	public static class NameGenerator
+	public class NameGenerator
 	{
 		public static string[][] GenerateColumnNames(IType[] types, ISessionFactoryImplementor f)
 		{

@@ -648,6 +648,7 @@
     <Compile Include="Persister\Collection\AbstractCollectionPersister.cs" />
     <Compile Include="Persister\Collection\BasicCollectionPersister.cs" />
     <Compile Include="Persister\Collection\CollectionPropertyMapping.cs" />
+    <Compile Include="Persister\Collection\CollectionPropertyNames.cs" />
     <Compile Include="Persister\Collection\CompositeElementPropertyMapping.cs" />
     <Compile Include="Persister\Collection\ElementPropertyMapping.cs" />
     <Compile Include="Persister\Collection\ICollectionPersister.cs" />

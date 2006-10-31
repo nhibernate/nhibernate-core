@@ -105,14 +105,14 @@
                     HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
                 />
                 <Reference
-                    Name = "NHibernate-1.1"
-                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "nunit.core"
                     AssemblyName = "nunit.core"
                     HintPath = "..\..\lib\net\1.1\nunit.core.dll"
+                />
+                <Reference
+                    Name = "NHibernate-1.1"
+                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>
@@ -335,6 +335,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ExpressionTest\DetachedCriteriaFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ExpressionTest\InExpressionFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -471,7 +476,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "HQLFunctionTest\Animal.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "HQLFunctionTest\Animal.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "HQLFunctionTest\BaseFunctionFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "HQLFunctionTest\HQLFunctions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "HQLFunctionTest\SimpleFunctionsTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1653,6 +1677,20 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\NH706\Mappings.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH712\Classes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH712\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH712\Mappings.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File

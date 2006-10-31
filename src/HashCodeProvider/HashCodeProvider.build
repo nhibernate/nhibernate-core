@@ -23,15 +23,17 @@
 	</target>
 
 	<target name="build" depends="generate-assemblyinfo">
-		<ilasm
-			target="dll"
-			output="${root.dir}/lib/net/1.1/HashCodeProvider.dll"
-			keyfile="${key.file}">
-			<sources>
-				<include name="HashCodeProvider.il" />
-			</sources>
-		</ilasm>
+		<if test="${framework::get-target-framework() == 'net-1.1'}">
+			<ilasm
+				target="dll"
+				output="${root.dir}/lib/net/1.1/HashCodeProvider.dll"
+				keyfile="${key.file}">
+				<sources>
+					<include name="HashCodeProvider.il" />
+				</sources>
+			</ilasm>
 		<copy file="HashCodeProvider.license.txt" todir="../../lib/net/1.1" />
+		</if>
 	</target>
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />

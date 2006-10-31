@@ -9,7 +9,7 @@ using NHibernate.Hql.Classic;
 
 namespace NHibernate.Hql
 {
-	public static class QuerySplitter
+	public class QuerySplitter
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(QuerySplitter));
 
