@@ -43,14 +43,14 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public static readonly string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
 
-		private const string MappingSchemaResource = "NHibernate.nhibernate-mapping-2.2.xsd";
+		private const string MappingSchemaResource = "NHibernate.nhibernate-mapping.xsd";
 
 		/// <summary>
 		/// The XML Namespace for the nhibernate-configuration
 		/// </summary>
 		public static readonly string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.2";
 
-		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration-2.2.xsd";
+		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration.xsd";
 		private const string CfgNamespacePrefix = "cfg";
 
 		private string currentDocumentName;

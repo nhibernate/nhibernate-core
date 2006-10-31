@@ -309,7 +309,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="nhibernate-mapping-2.2.xsd">
+    <EmbeddedResource Include="nhibernate-mapping.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

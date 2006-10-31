@@ -22,7 +22,7 @@
 		</fileset>
 
 		<resourcefileset id="project.resources" prefix="NHibernate.Mapping.Attributes">
-			<include name="nhibernate-mapping-2.0.xsd" />
+			<include name="nhibernate-mapping*.xsd" />
 		</resourcefileset>
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">

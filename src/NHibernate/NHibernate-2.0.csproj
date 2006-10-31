@@ -721,18 +721,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Util\XmlHelper.cs" />
-    <EmbeddedResource Include="nhibernate-configuration-2.2.xsd">
+    <EmbeddedResource Include="nhibernate-configuration.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="nhibernate-configuration-2.2.xsx">
-      <DependentUpon>nhibernate-configuration-2.2.xsd</DependentUpon>
+    <None Include="nhibernate-configuration.xsx">
+      <DependentUpon>nhibernate-configuration.xsd</DependentUpon>
     </None>
     <None Include="nhibernate-generic.xsx">
       <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>
-    <EmbeddedResource Include="nhibernate-mapping-2.2.xsd" />
-    <None Include="nhibernate-mapping-2.2.xsx">
-      <DependentUpon>nhibernate-mapping-2.2.xsd</DependentUpon>
+    <EmbeddedResource Include="nhibernate-mapping.xsd" />
+    <None Include="nhibernate-mapping.xsx">
+      <DependentUpon>nhibernate-mapping.xsd</DependentUpon>
     </None>
     <None Include="NHibernate.build" />
     <None Include="Type\IType.cs.xmldoc" />

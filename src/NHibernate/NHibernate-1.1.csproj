@@ -247,12 +247,12 @@
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "nhibernate-configuration-2.0.xsd"
+                    RelPath = "nhibernate-configuration.xsd"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "nhibernate-configuration-2.0.xsx"
-                    DependentUpon = "nhibernate-configuration-2.0.xsd"
+                    RelPath = "nhibernate-configuration.xsx"
+                    DependentUpon = "nhibernate-configuration.xsd"
                     BuildAction = "None"
                 />
                 <File
@@ -260,12 +260,12 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "nhibernate-mapping-2.0.xsd"
+                    RelPath = "nhibernate-mapping.xsd"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "nhibernate-mapping-2.0.xsx"
-                    DependentUpon = "nhibernate-mapping-2.0.xsd"
+                    RelPath = "nhibernate-mapping.xsx"
+                    DependentUpon = "nhibernate-mapping.xsd"
                     BuildAction = "None"
                 />
                 <File
