@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
             properties["expiration"] = "120";
             FooCacheProvider.BuildCacheStatic("yy", properties);
             string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
-							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 								<session-factory>
                                     <property name='cache.provider_class'>NHibernate.Test.NHSpecificTest.NH720.FooCacheProvider, NHibernate.Test</property>
 									<mapping resource='NHibernate.Test.NHSpecificTest.NH720.Mappings.hbm.xml' assembly='NHibernate.Test' />

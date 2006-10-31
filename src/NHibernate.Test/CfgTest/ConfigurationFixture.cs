@@ -116,7 +116,7 @@ namespace NHibernate.Test.CfgTest
 		public void EmptyPropertyTag()
 		{
 			string xml = @"<?xml version='1.0' encoding='utf-8' ?>
-<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 	<session-factory name='NHibernate.Test'>
 		<property name='connection.provider'></property>
 	</session-factory>
@@ -135,7 +135,7 @@ namespace NHibernate.Test.CfgTest
 		public void CacheConfigurationForUnmappedClass()
 		{
 			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
-							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 								<session-factory>
 									<class-cache class='NHibernate.DomainModel.A, NHibernate.DomainModel' usage='read-write' region='xx' />
 								</session-factory>
@@ -150,7 +150,7 @@ namespace NHibernate.Test.CfgTest
 		public void CacheConfigurationForUnmappedCollection()
 		{
 			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
-							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 								<session-factory>
 									<mapping resource='NHibernate.DomainModel.ABC.hbm.xml' assembly='NHibernate.DomainModel' />
 									<collection-cache collection='NHibernate.DomainModel.B.XX' usage='nonstrict-read-write' region='yy' />
@@ -175,7 +175,7 @@ namespace NHibernate.Test.CfgTest
 		public void CacheConfiguration()
 		{
 			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
-							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.0'>
+							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 								<session-factory>
 									<mapping resource='NHibernate.DomainModel.ABC.hbm.xml' assembly='NHibernate.DomainModel' />
 									<class-cache class='NHibernate.DomainModel.A, NHibernate.DomainModel' usage='read-write' region='xx' />

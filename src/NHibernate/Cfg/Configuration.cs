@@ -48,9 +48,9 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// The XML Namespace for the nhibernate-configuration
 		/// </summary>
-		public static readonly string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.0";
+		public static readonly string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.2";
 
-		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration-2.0.xsd";
+		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration-2.2.xsd";
 		private const string CfgNamespacePrefix = "cfg";
 
 		private string currentDocumentName;

@@ -458,9 +458,6 @@
     <Compile Include="WrongClassException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="nhibernate-configuration-2.0.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="nhibernate-generic.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -724,6 +721,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Util\XmlHelper.cs" />
+    <EmbeddedResource Include="nhibernate-configuration-2.2.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="nhibernate-configuration-2.2.xsx">
+      <DependentUpon>nhibernate-configuration-2.2.xsd</DependentUpon>
+    </None>
     <None Include="nhibernate-generic.xsx">
       <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>

@@ -51,7 +51,7 @@
     </configSections>
 
     <!-- Add this element -->
-    <hibernate-configuration xmlns="urn:nhibernate-configuration-2.0">
+    <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
         <session-factory>
             <property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
             <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>

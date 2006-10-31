@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<hibernate-configuration  xmlns="urn:nhibernate-configuration-2.0" >
+<hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
 	<session-factory name="NHibernate.Test">
 		<!-- properties -->
 		<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>

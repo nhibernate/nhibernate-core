@@ -160,7 +160,7 @@ ISession session = sessions.OpenSession(conn);
                     <literal>hibernate-configuration</literal> and its handler set to
                     <literal>NHibernate.Cfg.ConfigurationSectionHandler</literal>.
                     The XML namespace of the section should be set to
-                    <literal>urn:nhibernate-configuration-2.0</literal>.
+                    <literal>urn:nhibernate-configuration-2.2</literal>.
                 </para>
             </listitem>
             <listitem>
@@ -843,7 +843,7 @@ ISession session = sessions.OpenSession(conn);
         </para>
 
         <programlisting><![CDATA[<?xml version='1.0' encoding='utf-8'?>
-<hibernate-configuration xmlns="urn:nhibernate-configuration-2.0">
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
 
     <!-- an ISessionFactory instance -->
     <session-factory>
