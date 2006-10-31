@@ -442,7 +442,7 @@
  			  failonerror="false"/>
  	</target>
 
-	<target name="visual-studio" depends="init">
+	<target name="visual-studio" depends="init" description="Modifies AssemblyInfo.cs files to work with Visual Studio">
 		<property name="visual-studio" value="true" />
 		<nant target="generate-assemblyinfo">
 			<buildfiles refid="buildfiles.all" />
