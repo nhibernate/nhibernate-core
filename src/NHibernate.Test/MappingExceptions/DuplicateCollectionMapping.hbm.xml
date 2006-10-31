@@ -2,7 +2,7 @@
 <!--
 	This mapping specify collection Children twice
 -->
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
 				   default-lazy="false">
 	<class name="NHibernate.Test.MappingExceptions.A, NHibernate.Test">
 		<id name="Id">

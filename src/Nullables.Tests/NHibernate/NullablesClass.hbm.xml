@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
 	<class name="Nullables.Tests.NHibernate.NullablesClass, Nullables.Tests" table="nc" lazy="false">
 		<id name="Id" column="id">
 			<generator class="assigned" />

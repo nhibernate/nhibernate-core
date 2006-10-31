@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" namespace="NHibernate.Test.CompositeCollection" assembly="NHibernate.Test">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.CompositeCollection" assembly="NHibernate.Test">
 	<class name="BaseClassB" table="bases">
 		<id name="BaseID" column="baseid" unsaved-value="0">
 			<generator class="sequence">

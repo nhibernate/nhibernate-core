@@ -1,7 +1,7 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
 <hibernate-mapping
 	 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-	 xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns='urn:nhibernate-mapping-2.0'
+	 xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns='urn:nhibernate-mapping-2.2'
 	 assembly='NHibernate.Test'
 	 namespace='NHibernate.Test.NHSpecificTest.NH593'
 	 default-lazy='false'>

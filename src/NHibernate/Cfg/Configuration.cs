@@ -41,9 +41,9 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// The XML Namespace for the nhibernate-mapping
 		/// </summary>
-		public static readonly string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.0";
+		public static readonly string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
 
-		private const string MappingSchemaResource = "NHibernate.nhibernate-mapping-2.0.xsd";
+		private const string MappingSchemaResource = "NHibernate.nhibernate-mapping-2.2.xsd";
 
 		/// <summary>
 		/// The XML Namespace for the nhibernate-configuration
@@ -1515,7 +1515,7 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Load and validate the mappings in the <see cref="XmlTextReader" /> against
-		/// the nhibernate-mapping-2.0 schema, without adding them to the configuration.
+		/// the nhibernate-mapping-2.2 schema, without adding them to the configuration.
 		/// </summary>
 		/// <remarks>
 		/// This method is made public to be usable from the unit tests. It is not intended
@@ -1550,7 +1550,7 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Adds the Mappings in the <see cref="XmlTextReader"/> after validating it
-		/// against the nhibernate-mapping-2.0 schema.
+		/// against the nhibernate-mapping-2.2 schema.
 		/// </summary>
 		/// <param name="hbmReader">The XmlTextReader that contains the mapping.</param>
 		/// <returns>This Configuration object.</returns>
@@ -1561,7 +1561,7 @@ namespace NHibernate.Cfg
 		
 		/// <summary>
 		/// Adds the Mappings in the <see cref="XmlTextReader"/> after validating it
-		/// against the nhibernate-mapping-2.0 schema.
+		/// against the nhibernate-mapping-2.2 schema.
 		/// </summary>
 		/// <param name="hbmReader">The XmlTextReader that contains the mapping.</param>
 		/// <param name="name">The name of the document to use for error reporting. May be <c>null</c>.</param>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.DomainModel" default-access="property" default-lazy="false">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.DomainModel" default-access="property" default-lazy="false">
 	<class name="NHibernate.DomainModel.Up" discriminator-value="null">
 		<composite-id>
 			<key-property name="Id1"/>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
 	<class name="NHibernate.Examples.ForumQuestions.T1078029.Member, NHibernate.Examples" table="SHB_MEMBER" lazy="false">
 		<id name="Id" column="CD_MEMBER" type="String(20)">
 			<generator class="assigned" />

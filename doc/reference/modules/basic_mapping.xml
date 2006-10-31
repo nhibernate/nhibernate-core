@@ -23,7 +23,7 @@
         </para>
 
         <programlisting><![CDATA[<?xml version="1.0"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="Eg"
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
     namespace="Eg">
 
         <class name="Cat" table="CATS" discriminator-value="C">
@@ -66,7 +66,7 @@
 
             <para>
                 All XML mappings should declare the XML namespace shown. The actual schema definition
-                may be found in the <literal>src\nhibernate-mapping-2.0.xsd</literal> file in the
+                may be found in the <literal>src\nhibernate-mapping-2.2.xsd</literal> file in the
                 NHibernate distribution.
             </para>
             
@@ -1802,7 +1802,7 @@
             </para>
             
         <programlisting><![CDATA[<?xml version="1.0"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="Eg"
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
     namespace="Eg">
 
         <class name="Cat" table="CATS">

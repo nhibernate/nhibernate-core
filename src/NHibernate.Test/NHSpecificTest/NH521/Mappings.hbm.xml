@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--Generated from NHibernate.Mapping.Attributes on 2006-01-02 23:43:25Z.-->
-<hibernate-mapping default-access="field.camelcase-underscore" xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping default-access="field.camelcase-underscore" xmlns="urn:nhibernate-mapping-2.2">
   <class name="NHibernate.Test.NHSpecificTest.NH521.LazyEntity, NHibernate.Test" lazy="true">
     <id name="Id">
       <generator class="native" />

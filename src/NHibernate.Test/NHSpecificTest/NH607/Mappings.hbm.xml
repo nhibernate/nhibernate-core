@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<hibernate-mapping namespace="NHibernate.Test.NHSpecificTest.NH607" default-cascade="save-update"  assembly="NHibernate.Test" xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping namespace="NHibernate.Test.NHSpecificTest.NH607" default-cascade="save-update"  assembly="NHibernate.Test" xmlns="urn:nhibernate-mapping-2.2">
 
 	<!--class: Package-->
 	<class name="Package" lazy="false" table="Package">

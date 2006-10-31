@@ -32,7 +32,7 @@
             Here's a possible mapping document:
         </para>
         
-        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="..." namespace="...">
 
     <class name="Employer" table="employers">
@@ -150,7 +150,7 @@ create sequence employer_id_seq]]></programlisting>
             The following mapping document correctly represents these relationships:
         </para>
         
-        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="..." namespace="...">
 
     <class name="Work" table="works" discriminator-value="W">
@@ -282,7 +282,7 @@ alter table author_work
             The mapping document:
         </para>
         
-        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="..." namespace="...">
 
     <class name="Customer" table="customers">

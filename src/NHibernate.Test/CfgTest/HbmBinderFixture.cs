@@ -26,7 +26,7 @@ namespace NHibernate.Test.CfgTest
 		private string GetXmlForTesting( string versionTag )
 		{
 			string XML_TEMPLATE = @"<?xml version='1.0' ?>
-<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='class'>
 		<id column='id'>
 			<generator class='generator' />

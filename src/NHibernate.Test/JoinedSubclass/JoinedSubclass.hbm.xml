@@ -10,7 +10,7 @@
      (3) recursive associations withing an inheritance tree
      
 -->
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
 	<class name="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test" table="person" proxy="NHibernate.Test.JoinedSubclass.Person, NHibernate.Test">
 		<id name="Id" type="Int32" unsaved-value="0" column="person_id" access="nosetter.camelcase-underscore">
 			<generator class="native"/>

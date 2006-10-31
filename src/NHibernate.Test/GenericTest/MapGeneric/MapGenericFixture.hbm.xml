@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" assembly="NHibernate.Test" namespace="NHibernate.Test.GenericTest.MapGeneric" default-lazy="false">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.GenericTest.MapGeneric" default-lazy="false">
 	<class name="A" table="a">
 		<id name="Id" column="id" unsaved-value="null">
 			<generator class="native" />

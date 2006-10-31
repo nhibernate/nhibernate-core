@@ -1,4 +1,4 @@
-<xs:schema targetNamespace="urn:nhibernate-mapping-2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:nhibernate-mapping-2.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema targetNamespace="urn:nhibernate-mapping-2.2" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:nhibernate-mapping-2.2" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:simpleType name="polymorphismType">
 		<xs:annotation>
 			<xs:documentation>Types of polymorphism</xs:documentation>

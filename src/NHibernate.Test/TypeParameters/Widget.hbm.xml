@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <hibernate-mapping xmlns:xsd='http://www.w3.org/2001/XMLSchema'
                    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-                   xmlns='urn:nhibernate-mapping-2.0'
+                   xmlns='urn:nhibernate-mapping-2.2'
                    default-lazy='false'>
   <class name="NHibernate.Test.TypeParameters.Widget, NHibernate.Test"
          table="STRANGE_TYPED_OBJECT">

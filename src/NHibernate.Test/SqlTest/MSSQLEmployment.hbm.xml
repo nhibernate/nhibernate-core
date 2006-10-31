@@ -7,7 +7,7 @@
   This version is for Sybase/mssql
 -->
 <hibernate-mapping
-	xmlns="urn:nhibernate-mapping-2.0"
+	xmlns="urn:nhibernate-mapping-2.2"
 	assembly="NHibernate.Test"
 	namespace="NHibernate.Test.SqlTest"
 	default-access="field.camelcase">

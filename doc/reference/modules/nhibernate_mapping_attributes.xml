@@ -38,7 +38,7 @@
 		<para>
 			<important>
 				<para>
-					This library is generated using the file <filename>/src/NHibernate.Mapping.Attributes/nhibernate-mapping-2.0.xsd</filename>
+					This library is generated using the file <filename>/src/NHibernate.Mapping.Attributes/nhibernate-mapping-2.2.xsd</filename>
 					(which is embedded in the assembly to be able to validate generated XML streams).
 					As this file can change at each new release of NHibernate, you should regenerate it before using it
 					with a different version (open the Generator solution, compile and run the Generator project).
@@ -225,7 +225,7 @@ Illustration:<programlisting><![CDATA[
 		X(3) will always belong to C(1) ! (as X(2)).
 		</para>
 		<para>It is the case for <literal>&lt;dynamic-component&gt;</literal> and <literal>&lt;nested-composite-element&gt;</literal>.</para>
-		<para>Another bad news is that, currently, XML elements coming after this elements can not be included in them. Eg: There is no way put a collection in <literal>&lt;dynamic-component&gt;</literal>. The reason is that the file <filename>nhibernate-mapping-2.0.xsd</filename> tells how elements are built and in which order, and NHibernate.Mapping.Attributes use this order.</para>
+		<para>Another bad news is that, currently, XML elements coming after this elements can not be included in them. Eg: There is no way put a collection in <literal>&lt;dynamic-component&gt;</literal>. The reason is that the file <filename>nhibernate-mapping-2.2.xsd</filename> tells how elements are built and in which order, and NHibernate.Mapping.Attributes use this order.</para>
 		<para>Anyway, the solution would be to add a <methodname>int ParentNode</methodname> property to BaseAttribute so that you can create a real graph...</para>
 		<para>For now, you can fallback on <classname>[RawXml]</classname>.</para>
 
@@ -236,13 +236,13 @@ Illustration:<programlisting><![CDATA[
 
 	<section id="mapping-attributes-devnotes">
 		<title>Developer Notes</title>
-		<para>Any change to the schema (<filename>nhibernate-mapping-2.0.xsd</filename>) implies:</para>
+		<para>Any change to the schema (<filename>nhibernate-mapping-2.2.xsd</filename>) implies:</para>
 		<orderedlist>
 			<listitem>
 				<para>Checking if there is any change to do in the Generator (like updating KnowEnums / AllowMultipleValue / IsRoot / IsSystemType / IsSystemEnum / CanContainItself)</para>
 			</listitem>
 			<listitem>
-				<para>Updating <filename>/src/NHibernate.Mapping.Attributes/nhibernate-mapping-2.0.xsd</filename> (copy/paste) and running the Generator again (even if it wasn't modified)</para>
+				<para>Updating <filename>/src/NHibernate.Mapping.Attributes/nhibernate-mapping-2.2.xsd</filename> (copy/paste) and running the Generator again (even if it wasn't modified)</para>
 			</listitem>
 			<listitem>
 				<para>Running the Test project and make sure that no exception is thrown. A class/property should be modified/added in this project to be sure that any new breaking change will be caught (=> update the reference hbm.xml files and/or the project <filename>NHibernate.Mapping.Attributes-1.1.csproj</filename>)</para>

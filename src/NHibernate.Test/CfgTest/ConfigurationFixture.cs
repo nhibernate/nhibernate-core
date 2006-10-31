@@ -193,7 +193,7 @@ namespace NHibernate.Test.CfgTest
 			string filename = "invalid.hbm.xml";
 			// it's missing the class name - won't validate
 			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
-							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 								<class table='a'></class>
 							</hibernate-mapping>";
 			XmlDocument hbmDoc = new XmlDocument();
@@ -224,7 +224,7 @@ namespace NHibernate.Test.CfgTest
 		public void ProxyWithDefaultNamespaceAndAssembly()
 		{
 			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
-							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'
+							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 								namespace='NHibernate.DomainModel'
 								assembly='NHibernate.DomainModel'>
 								<class name='A' proxy='A'>
@@ -243,7 +243,7 @@ namespace NHibernate.Test.CfgTest
 		public void PersisterWithDefaultNamespaceAndAssembly()
 		{
 			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
-							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'
+							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 								namespace='NHibernate.DomainModel'
 								assembly='NHibernate.DomainModel'>
 								<class name='A' persister='A'>
@@ -261,7 +261,7 @@ namespace NHibernate.Test.CfgTest
 		public void AddDocument()
 		{
 			string hbm = @"<?xml version='1.0' ?>
-<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='NHibernate.DomainModel.A, NHibernate.DomainModel'>
 		<id name='Id' column='somecolumn'>
 			<generator class='native' />
@@ -279,7 +279,7 @@ namespace NHibernate.Test.CfgTest
 		public void ProxyValidator()
 		{
 			string hbm = @"<?xml version='1.0' ?>
-<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='NHibernate.DomainModel.NHSpecific.InvalidProxyClass, NHibernate.DomainModel'
 		lazy='true'>
 		<id name='Id' column='somecolumn'>
@@ -305,7 +305,7 @@ namespace NHibernate.Test.CfgTest
 		public void DisabledProxyValidator()
 		{
 			string hbm = @"<?xml version='1.0' ?>
-<hibernate-mapping xmlns='urn:nhibernate-mapping-2.0'>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='NHibernate.DomainModel.NHSpecific.InvalidProxyClass, NHibernate.DomainModel'
 		lazy='true'>
 		<id name='Id' column='somecolumn'>

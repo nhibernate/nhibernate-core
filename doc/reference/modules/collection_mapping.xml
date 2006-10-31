@@ -1025,7 +1025,7 @@ namespace Eg
             association:
         </para>
 
-        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
 
     <class name="Parent">
@@ -1060,7 +1060,7 @@ alter table child add constraint childfk0 (parent_id) references parent]]></prog
             association:
         </para>
 
-        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
 
     <class name="Parent">
@@ -1099,7 +1099,7 @@ alter table child add constraint childfk0 (parent_id) references parent]]></prog
             association is appropriate:
         </para>
 
-        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0"
+        <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
 
     <class name="Parent">

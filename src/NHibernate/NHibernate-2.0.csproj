@@ -464,9 +464,6 @@
     <EmbeddedResource Include="nhibernate-generic.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <Compile Include="AdoNet\Expectations.cs" />
     <Compile Include="AdoNet\IExpectation.cs" />
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
@@ -730,8 +727,9 @@
     <None Include="nhibernate-generic.xsx">
       <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>
-    <None Include="nhibernate-mapping-2.0.xsx">
-      <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>
+    <EmbeddedResource Include="nhibernate-mapping-2.2.xsd" />
+    <None Include="nhibernate-mapping-2.2.xsx">
+      <DependentUpon>nhibernate-mapping-2.2.xsd</DependentUpon>
     </None>
     <None Include="NHibernate.build" />
     <None Include="Type\IType.cs.xmldoc" />

@@ -49,7 +49,7 @@ public <emphasis role="strong">class Person</emphasis>
 		<para>Here is the mapping</para>
 		<programlisting><![CDATA[
 <?xml version="1.0" encoding="utf-8" ?> 
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
     <class name="Example.Person, Example" table="Person">
         <id name="Id" access="field.camelcase-underscore" unsaved-value="0">
             <generator class="native" />

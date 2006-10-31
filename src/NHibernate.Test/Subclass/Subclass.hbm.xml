@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.0" default-lazy="false">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
 	<class 
 		name="NHibernate.Test.Subclass.SubclassBase, NHibernate.Test" 
 		table="one_tab" 

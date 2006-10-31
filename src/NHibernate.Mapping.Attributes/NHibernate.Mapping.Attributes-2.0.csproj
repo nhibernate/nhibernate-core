@@ -307,14 +307,11 @@
     <Compile Include="VersionAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="nhibernate-mapping-2.0.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="nhibernate-mapping-2.0.xsx">
-      <DependentUpon>nhibernate-mapping-2.0.xsd</DependentUpon>
-    </None>
+    <EmbeddedResource Include="nhibernate-mapping-2.2.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -360,8 +360,8 @@ namespace NHibernate.Mapping.Attributes
 				System.Xml.XmlValidatingReader vr = new System.Xml.XmlValidatingReader(tr);
 
 				// Open the Schema
-				System.IO.Stream schema = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Mapping.Attributes.nhibernate-mapping-2.0.xsd");
-				vr.Schemas.Add("urn:nhibernate-mapping-2.0", new System.Xml.XmlTextReader(schema));
+				System.IO.Stream schema = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Mapping.Attributes.nhibernate-mapping-2.2.xsd");
+				vr.Schemas.Add("urn:nhibernate-mapping-2.2", new System.Xml.XmlTextReader(schema));
 				vr.ValidationType = System.Xml.ValidationType.Schema;
 				vr.ValidationEventHandler += new System.Xml.Schema.ValidationEventHandler(XmlValidationHandler);
 
@@ -486,8 +486,8 @@ namespace NHibernate.Mapping.Attributes
 					System.Xml.XmlValidatingReader vr = new System.Xml.XmlValidatingReader(tr);
 
 					// Open the Schema
-					System.IO.Stream schema = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Mapping.Attributes.nhibernate-mapping-2.0.xsd");
-					vr.Schemas.Add("urn:nhibernate-mapping-2.0", new System.Xml.XmlTextReader(schema));
+					System.IO.Stream schema = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Mapping.Attributes.nhibernate-mapping-2.2.xsd");
+					vr.Schemas.Add("urn:nhibernate-mapping-2.2", new System.Xml.XmlTextReader(schema));
 					vr.ValidationType = System.Xml.ValidationType.Schema;
 					vr.ValidationEventHandler += new System.Xml.Schema.ValidationEventHandler(XmlValidationHandler);
 
@@ -520,7 +520,7 @@ namespace NHibernate.Mapping.Attributes
 
 		private void WriteHibernateMapping(System.Xml.XmlTextWriter writer, System.Type type)
 		{
-			writer.WriteStartElement( "hibernate-mapping", "urn:nhibernate-mapping-2.0" );
+			writer.WriteStartElement( "hibernate-mapping", "urn:nhibernate-mapping-2.2" );
 
 			if(type != null)
 			{

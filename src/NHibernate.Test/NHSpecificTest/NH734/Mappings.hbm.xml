@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<hibernate-mapping default-lazy="false" xmlns="urn:nhibernate-mapping-2.0" 
+<hibernate-mapping default-lazy="false" xmlns="urn:nhibernate-mapping-2.2" 
                    assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH734">
   <class name="MyClass">
     <composite-id>

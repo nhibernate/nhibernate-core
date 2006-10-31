@@ -28,7 +28,7 @@ namespace NHibernate.Tool.hbm2net
 		public static void  Main(String[] args)
 		{
 			nsmgr = new XmlNamespaceManager(new NameTable());
-			nsmgr.AddNamespace("urn", "urn:nhibernate-mapping-2.0");
+			nsmgr.AddNamespace("urn", "urn:nhibernate-mapping-2.2");
 			
 			children = new ArrayList();
 			allMaps = new MultiMap();
@@ -113,7 +113,7 @@ namespace NHibernate.Tool.hbm2net
 
 						// parse the mapping file
 						NameTable nt = new NameTable();
-						nt.Add("urn:nhibernate-mapping-2.0");
+						nt.Add("urn:nhibernate-mapping-2.2");
 						Document document = new XmlDocument(nt);
 						document.Load(mappingFile);
 					

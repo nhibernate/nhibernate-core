@@ -198,7 +198,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				log.Info("Generation of NHibernate.Mapping.Attributes");
 
 				// Open the Schema (in /NHMA/ directory)
-				System.Xml.XmlTextReader reader = new System.Xml.XmlTextReader("../../../nhibernate-mapping-2.0.xsd");
+				System.Xml.XmlTextReader reader = new System.Xml.XmlTextReader("../../../nhibernate-mapping-2.2.xsd");
 				schema = System.Xml.Schema.XmlSchema.Read(reader, null);
 
 				Refly.CodeDom.NamespaceDeclaration nd = new Refly.CodeDom.NamespaceDeclaration("NHibernate.Mapping.Attributes", conformer);
