@@ -1,13 +1,9 @@
 using System;
 using System.Collections;
 
-using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
-using NHibernate.Persister.Entity;
-using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Loader.Collection
 {
@@ -28,10 +24,10 @@ namespace NHibernate.Loader.Collection
 
 		protected override bool IsSubselectLoadingEnabled
 		{
-			get { return HasSubselectLoadableCollections; }
+			get { return HasSubselectLoadableCollections(); }
 		}
 
-		public void Initialize( object id, ISessionImplementor session )
+		public virtual void Initialize( object id, ISessionImplementor session )
 		{
 			LoadCollection( session, id, KeyType );
 		}

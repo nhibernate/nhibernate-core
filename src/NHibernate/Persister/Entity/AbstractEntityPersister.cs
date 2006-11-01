@@ -173,6 +173,7 @@ namespace NHibernate.Persister.Entity
 
 		private readonly string loaderName;
 		private IUniqueEntityLoader queryLoader;
+		private bool hasSubselectLoadableCollections;
 
 		protected SqlString GetLockString(LockMode lockMode)
 		{
@@ -678,6 +679,7 @@ namespace NHibernate.Persister.Entity
 			                         Template.RenderWhereStringTemplate(sqlWhereString, Dialect);
 
 			batchSize = persistentClass.BatchSize;
+			hasSubselectLoadableCollections = persistentClass.HasSubselectLoadableCollections;
 			constructor = ReflectHelper.GetDefaultConstructor(mappedClass);
 
 			// verify that the class has a default constructor if it is not abstract - it is considered
@@ -2928,6 +2930,11 @@ namespace NHibernate.Persister.Entity
 			{
 				queryLoader = new NamedQueryLoader( loaderName, this );
 			}
+		}
+		
+		public bool HasSubselectLoadableCollections
+		{
+			get { return hasSubselectLoadableCollections; }
 		}
 	}
 }

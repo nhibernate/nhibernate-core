@@ -52,5 +52,10 @@ namespace NHibernate.Persister.Entity
 		/// Get the name of the column used as a discriminator
 		/// </summary>
 		string DiscriminatorColumnName { get; }
+
+		/// <summary>
+		/// Does this entity own any collections which are fetchable by subselect?
+		/// </summary>
+		bool HasSubselectLoadableCollections { get; }
 	}
 }

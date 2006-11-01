@@ -5,6 +5,7 @@ using log4net;
 
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Loader.Collection
 {
@@ -32,7 +33,7 @@ namespace NHibernate.Loader.Collection
 		protected BasicCollectionLoader(
 			IQueryableCollection collectionPersister, 
 			int batchSize, 
-			String subquery, 
+			SqlString subquery, 
 			ISessionFactoryImplementor factory, 
 			IDictionary enabledFilters)
 			: base(collectionPersister, factory, enabledFilters)

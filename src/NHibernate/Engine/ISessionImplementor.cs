@@ -304,20 +304,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		LockMode GetLockMode( object entity );
 
-		/// <summary>
-		/// Get a batch of uninitialized collection keys for this role
-		/// </summary>
-		object[] GetCollectionBatch( ICollectionPersister collectionPersister, object id, int batchSize );
-
-		/// <summary>
-		/// Get a batch of unloaded identifiers for this class
-		/// </summary>
-		object[] GetClassBatch( System.Type clazz, object id, int batchSize );
-
-		/// <summary>
-		/// Register the entity as batch loadable, if enabled
-		/// </summary>
-		void ScheduleBatchLoad( System.Type clazz, object id );
+		BatchFetchQueue BatchFetchQueue { get; }
 
 		/// <summary>
 		/// Execute an SQL Query
@@ -389,6 +376,10 @@ namespace NHibernate.Engine
         /// <returns>The currently enabled filters.</returns>
         IDictionary EnabledFilters { get; }
 
+		IEnumerable CollectionEntries { get; }
+
 		IQuery GetNamedSQLQuery(string name);
+
+		bool ContainsEntity(EntityKey key);
 	}
 }

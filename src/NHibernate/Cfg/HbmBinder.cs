@@ -693,7 +693,11 @@ namespace NHibernate.Cfg
 			// FETCH STRATEGY
 			InitOuterJoinFetchSetting(node, model);
 
-			// TODO: H3.1 - fetch="subselect"
+			if ("subselect".Equals(XmlHelper.GetAttributeValue(node, "fetch")))
+			{
+				model.IsSubselectLoadable = true;
+				model.Owner.HasSubselectLoadableCollections = true;
+			}
 
 			// LAZINESS
 			InitLaziness(node, model, mappings, "true", mappings.DefaultLazy);

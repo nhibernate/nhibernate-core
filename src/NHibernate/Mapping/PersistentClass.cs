@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 
-using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -56,6 +55,7 @@ namespace NHibernate.Mapping
 		private string loaderName;
 
 		protected readonly ISet synchronizedTablesField = new HashedSet();
+		private bool hasSubselectLoadableCollections;
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
@@ -755,5 +755,11 @@ namespace NHibernate.Mapping
         {
             get { return filters; }
         }
+
+		public virtual bool HasSubselectLoadableCollections
+		{
+			get { return hasSubselectLoadableCollections; }
+			set { hasSubselectLoadableCollections = value; }
+		}
 	}
 }

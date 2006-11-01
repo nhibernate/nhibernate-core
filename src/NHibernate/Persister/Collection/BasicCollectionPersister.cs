@@ -294,5 +294,20 @@ namespace NHibernate.Persister.Collection
 
 			return frag.ToSqlStringFragment( false );
 		}
+
+		protected override ICollectionInitializer CreateSubselectInitializer(
+			SubselectFetch subselect,
+			ISessionImplementor session)
+		{
+			return new SubselectCollectionLoader(
+				this,
+				subselect.ToSubselectString(CollectionType.LHSPropertyName),
+				subselect.Result,
+				subselect.QueryParameters,
+				subselect.NamedParameterLocMap,
+				session.Factory,
+				session.EnabledFilters
+				);
+		}
 	}
 }

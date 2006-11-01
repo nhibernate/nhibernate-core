@@ -402,8 +402,8 @@ namespace NHibernate.Loader
 			LockMode[] lockModeArray = GetLockModes( queryParameters.LockModes );
 			EntityKey optionalObjectKey = GetOptionalObjectKey( queryParameters, session );
 
-			// TODO H3: bool createSubselects = IsSubselectLoadingEnabled;
-			// TODO H3: IList subselectResultKeys = createSubselects ? new ArrayList() : null;
+			bool createSubselects = IsSubselectLoadingEnabled;
+			IList subselectResultKeys = createSubselects ? new ArrayList() : null;
 			IList results = new ArrayList();
 
 			try
@@ -435,11 +435,11 @@ namespace NHibernate.Loader
 						returnProxies );
 					results.Add( result );
 
-					// TODO H3: if( createSubselects )
-					// TODO H3: {
-					// TODO H3: 	subselectResultKeys.Add( keys );
-					// TODO H3: 	keys = new EntityKey[ entitySpan ]; //can't reuse in this case
-					// TODO H3: }
+					if (createSubselects)
+					{
+						subselectResultKeys.Add(keys);
+						keys = new EntityKey[entitySpan]; //can't reuse in this case
+					}
 				}
 
 				if( log.IsDebugEnabled )
@@ -454,10 +454,10 @@ namespace NHibernate.Loader
 
 			InitializeEntitiesAndCollections( hydratedObjects, rs, session );
 
-			// TODO H3: if( createSubselects )
-			// TODO H3: {
-			// TODO H3: 	CreateSubselects( subselectResultKeys, queryParameters, session );
-			// TODO H3: }
+			if( createSubselects )
+			{
+				CreateSubselects( subselectResultKeys, queryParameters, session );
+			}
 
 			return results; // GetResultList( results );
 		}
@@ -466,23 +466,90 @@ namespace NHibernate.Loader
 		{
 			get { return false; }
 		}
-
-		protected bool HasSubselectLoadableCollections
+		
+		protected bool HasSubselectLoadableCollections()
 		{
-			get
+			foreach (ILoadable loadable in EntityPersisters)
 			{
-				// TODO H3: foreach( ILoadable loadable in EntityPersisters )
-				// TODO H3: {
-				// TODO H3: 	if( loadable.HasSubselectLoadableCollections )
-				// TODO H3: 	{
-				// TODO H3: 		return true;
-				// TODO H3: 	}
-				// TODO H3: }
-				return false;
+				if (loadable.HasSubselectLoadableCollections)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private static ISet[] Transpose(IList keys)
+		{
+			ISet[] result = new ISet[((EntityKey[]) keys[0]).Length];
+			for (int j = 0; j < result.Length; j++)
+			{
+				result[j] = new HashedSet();
+				for (int i = 0; i < keys.Count; i++)
+				{
+					object key = ((EntityKey[]) keys[i])[j];
+					if (key != null)
+					{
+						result[j].Add(key);
+					}
+				}
+			}
+			return result;
+		}
+
+		private void CreateSubselects(IList keys, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			if (keys.Count > 1)
+			{
+				//if we only returned one entity, query by key is more efficient
+
+				ISet[] keySets = Transpose(keys);
+
+				IDictionary namedParameterLocMap = BuildNamedParameterLocMap(queryParameters);
+
+				ILoadable[] loadables = EntityPersisters;
+				string[] aliases = Aliases;
+
+				foreach (EntityKey[] rowKeys in keys)
+				{
+					for (int i = 0; i < rowKeys.Length; i++)
+					{
+
+						if (rowKeys[i] != null && loadables[i].HasSubselectLoadableCollections)
+						{
+							SubselectFetch subselectFetch = new SubselectFetch(
+								//getSQLString(), 
+								aliases[i],
+								loadables[i],
+								queryParameters,
+								keySets[i],
+								namedParameterLocMap
+								);
+
+							session.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetch);
+						}
+					}
+				}
 			}
 		}
 
-		// TODO H3: CreateSubselects, BuildNamedParameterLocMap
+		private IDictionary BuildNamedParameterLocMap(QueryParameters queryParameters)
+		{
+			if (queryParameters.NamedParameters != null)
+			{
+				IDictionary namedParameterLocMap = new Hashtable();
+				foreach (string name in queryParameters.NamedParameters.Keys)
+				{
+					namedParameterLocMap[name] = GetNamedParameterLocs(name);
+				}
+				return namedParameterLocMap;
+			}
+			else
+			{
+				return null;
+			}
+		}
 
 		private void InitializeEntitiesAndCollections(
 			IList hydratedObjects,
@@ -1567,6 +1634,41 @@ namespace NHibernate.Loader
 			log.Debug("done batch load");
 		}
 
+		/// <summary>
+		/// Called by subclasses that batch initialize collections
+		/// </summary>
+		protected void LoadCollectionSubselect(
+				ISessionImplementor session,
+				object[] ids,
+				object[] parameterValues,
+				IType[] parameterTypes,
+				IDictionary namedParameters,
+				IType type)
+		{
+			try
+			{
+				DoQueryAndInitializeNonLazyCollections(
+					session,
+					new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
+					true
+					);
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(
+					sqle,
+					"could not load collection by subselect: " +
+					MessageHelper.InfoString(CollectionPersisters[0], ids),
+					SqlString
+					);
+			}
+		}
+	
 		/// <summary>
 		/// Return the query results, using the query cache, called
 		/// by subclasses that implement cacheable queries

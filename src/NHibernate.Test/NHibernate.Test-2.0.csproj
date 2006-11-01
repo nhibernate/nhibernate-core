@@ -407,6 +407,9 @@
     <Compile Include="Subclass\SubclassExtendsFixture.cs" />
     <Compile Include="Subclass\SubclassFixture.cs" />
     <Compile Include="Subclass\SubclassOne.cs" />
+    <Compile Include="SubselectFetchTest\Child.cs" />
+    <Compile Include="SubselectFetchTest\Parent.cs" />
+    <Compile Include="SubselectFetchTest\SubselectFetchFixture.cs" />
     <Compile Include="TestCase.cs" />
     <Compile Include="TestTestCase.cs" />
     <Compile Include="TransactionTest\TransactionFixture.cs" />
@@ -700,6 +703,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ExpressionTest\SubQueries\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SubselectFetchTest\ParentChild.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

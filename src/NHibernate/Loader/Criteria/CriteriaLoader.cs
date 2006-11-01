@@ -140,7 +140,7 @@ namespace NHibernate.Loader.Criteria
 
 		protected override bool IsSubselectLoadingEnabled
 		{
-			get { return HasSubselectLoadableCollections; }
+			get { return HasSubselectLoadableCollections(); }
 		}
 
 		protected override IList GetResultList( IList results, IResultTransformer resultTransformer )

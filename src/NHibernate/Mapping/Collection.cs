@@ -69,6 +69,7 @@ namespace NHibernate.Mapping
 #endif
        	private IDictionary filters = new Hashtable();
         private IDictionary manyToManyFilters = new Hashtable();
+		private bool subselectLoadable;
 
 		protected Collection( PersistentClass owner )
 		{
@@ -453,6 +454,12 @@ namespace NHibernate.Mapping
 		{
 			get { return loaderName; }
 			set { loaderName = value == null ? null : string.Intern(value); }
+		}
+
+		public bool IsSubselectLoadable
+		{
+			get { return subselectLoadable; }
+			set { subselectLoadable = value; }
 		}
 	}
 }

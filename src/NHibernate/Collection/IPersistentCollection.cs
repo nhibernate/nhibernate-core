@@ -42,6 +42,16 @@ namespace NHibernate.Collection
 	public interface IPersistentCollection
 	{
 		/// <summary>
+		/// The owning entity.
+		/// </summary>
+		/// <remarks>
+		/// Note that the owner is only set during the flush
+		/// cycle, and when a new collection wrapper is created
+		/// while loading an entity.
+		/// </remarks>
+		object Owner { get; set; }
+
+		/// <summary>
 		/// Is the initialized collection empty?
 		/// </summary>
 		bool Empty { get; }

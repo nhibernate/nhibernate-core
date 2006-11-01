@@ -6,6 +6,7 @@ using log4net;
 using NHibernate.Engine;
 using NHibernate.Loader.Collection;
 using NHibernate.Persister.Collection;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Loader.Collection
 {
@@ -40,7 +41,7 @@ namespace NHibernate.Loader.Collection
 		public OneToManyLoader(
 			IQueryableCollection oneToManyPersister, 
 			int batchSize, 
-			string subquery, 
+			SqlString subquery, 
 			ISessionFactoryImplementor factory, 
 			IDictionary enabledFilters)
 			: base(oneToManyPersister, factory, enabledFilters)

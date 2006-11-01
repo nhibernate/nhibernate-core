@@ -23,6 +23,15 @@
 			<!-- equivalent to outer-join="true" -->
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="collectionFetchMode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="select" />
+			<!-- equivalent to outer-join="false" -->
+			<xs:enumeration value="join" />
+			<!-- equivalent to outer-join="true" -->
+			<xs:enumeration value="subselect" />
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="flushMode">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="auto" />
@@ -87,7 +96,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
-		<xs:attribute name="fetch" type="fetchMode" use="optional" />
+		<xs:attribute name="fetch" type="collectionFetchMode" use="optional" />
 		<xs:attribute name="cascade" type="cascadeStyle" use="optional" />
 		<xs:attribute name="where" type="xs:string" use="optional" />
 		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false" />

@@ -32,7 +32,7 @@ namespace NHibernate.Loader.Collection
 		public OneToManyJoinWalker(
 			IQueryableCollection oneToManyPersister,
 			int batchSize,
-			string subquery,
+			SqlString subquery,
 			ISessionFactoryImplementor factory,
 			IDictionary enabledFilters )
 			: base( factory, enabledFilters )
@@ -63,7 +63,7 @@ namespace NHibernate.Loader.Collection
 			IOuterJoinLoadable elementPersister,
 			string alias,
 			int batchSize,
-			string subquery )
+			SqlString subquery )
 		{
 			int joins = CountEntityPersisters( associations );
 			Suffixes = BasicLoader.GenerateSuffixes( joins + 1 );

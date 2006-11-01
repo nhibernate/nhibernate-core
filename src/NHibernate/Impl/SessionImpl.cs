@@ -12,7 +12,6 @@ using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Hql.Classic;
 using NHibernate.Id;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
@@ -180,12 +179,6 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private IList nonlazyCollections;
 
-		// A set of entity keys that we predict might be needed for
-		// loading soon
-		[NonSerialized]
-		private IDictionary batchLoadableEntityKeys; // actually, a Set
-		private static readonly object Marker = new object();
-
 		[NonSerialized]
 		private int dontFlushFromFind = 0;
 
@@ -203,6 +196,12 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private IDictionary enabledFilters = new Hashtable();
+		
+		[NonSerialized]
+		private BatchFetchQueue batchFetchQueue;
+
+		[NonSerialized]
+		private IDictionary unownedCollections;
 
 		#region System.Runtime.Serialization.ISerializable Members
 
@@ -563,7 +562,6 @@ namespace NHibernate.Impl
 		private void InitTransientState()
 		{
 			executions = new ArrayList(50);
-			batchLoadableEntityKeys = new SequencedHashMap(30);
 			loadingCollections = new Hashtable();
 			nonlazyCollections = new ArrayList(20);
 
@@ -584,9 +582,16 @@ namespace NHibernate.Impl
 			arrayHolders.Clear();
 			collectionEntries.Clear();
 			nullifiables.Clear();
-			batchLoadableEntityKeys.Clear();
+			if (batchFetchQueue != null)
+			{
+				batchFetchQueue.Clear();
+			}
 			collectionsByKey.Clear();
 			nonExists.Clear();
+			if (unownedCollections != null)
+			{
+				unownedCollections.Clear();
+			}
 		}
 
 		/// <summary>
@@ -637,10 +642,7 @@ namespace NHibernate.Impl
 		private void AddEntity(EntityKey key, object obj)
 		{
 			entitiesByKey[key] = obj;
-			if (key.IsBatchLoadable)
-			{
-				batchLoadableEntityKeys.Remove(key);
-			}
+			BatchFetchQueue.RemoveBatchLoadableEntityKey(key);
 		}
 
 		/// <summary>
@@ -657,6 +659,9 @@ namespace NHibernate.Impl
 		{
 			object retVal = entitiesByKey[key];
 			entitiesByKey.Remove(key);
+			nullifiables.Remove(key);
+			BatchFetchQueue.RemoveBatchLoadableEntityKey(key);
+			BatchFetchQueue.RemoveSubselect(key);
 			return retVal;
 		}
 
@@ -2564,7 +2569,7 @@ namespace NHibernate.Impl
 				EntityKey key = new EntityKey(id, persister);
 				object proxy;
 
-				if (GetEntity(key) != null)
+				if (ContainsEntity(key))
 				{
 					// return existing object or initialized proxy (unless deleted)
 					return ProxyFor(
@@ -2587,10 +2592,7 @@ namespace NHibernate.Impl
 				{
 					// return new uninitailzed proxy
 					proxy = persister.CreateProxy(id, this);
-					if (persister.IsBatchLoadable)
-					{
-						batchLoadableEntityKeys[key] = Marker;
-					}
+					BatchFetchQueue.AddBatchLoadableEntityKey(key);
 					proxiesByKey[key] = proxy;
 					return proxy;
 				}
@@ -3884,6 +3886,7 @@ namespace NHibernate.Impl
 		/// <param name="owner"></param>
 		public void UpdateReachableCollection(IPersistentCollection coll, IType type, object owner)
 		{
+			coll.Owner = owner;
 			CollectionEntry ce = GetCollectionEntry(coll);
 
 			if (ce == null)
@@ -4156,6 +4159,12 @@ namespace NHibernate.Impl
 						resultSetCollections = new ArrayList();
 					}
 					resultSetCollections.Add(lce);
+					if (lce.Collection.Owner == null)
+					{
+						AddUnownedCollection(
+							new CollectionKey( persister, lce.Id ), 
+							lce.Collection);
+					}
 				}
 			}
 
@@ -5241,63 +5250,18 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object[] GetCollectionBatch(ICollectionPersister collectionPersister, object id, int batchSize)
 		{
-			object[] keys = new object[batchSize];
-			keys[0] = id;
-			int i = 0;
-			foreach (DictionaryEntry de in collectionEntries)
-			{
-				IPersistentCollection collection = (IPersistentCollection) de.Key;
-				CollectionEntry ce = (CollectionEntry) de.Value;
-				if (!collection.WasInitialized && ce.LoadedPersister == collectionPersister && !id.Equals(ce.LoadedKey))
-				{
-					keys[++i] = ce.LoadedKey;
-					if (i == batchSize - 1)
-					{
-						return keys;
-					}
-				}
-			}
-			return keys;
+			return BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSize);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="batchSize"></param>
-		/// <returns></returns>
 		public object[] GetClassBatch(System.Type clazz, object id, int batchSize)
 		{
-			object[] ids = new object[batchSize];
-			ids[0] = id;
-			int i = 0;
-			foreach (EntityKey key in batchLoadableEntityKeys.Keys)
-			{
-				if (key.MappedClass == clazz && !id.Equals(key.Identifier))
-				{
-					ids[++i] = key.Identifier;
-					if (i == batchSize - 1)
-					{
-						return ids;
-					}
-				}
-			}
-			return ids;
+			return BatchFetchQueue.GetEntityBatch(factory.GetEntityPersister(clazz), id, batchSize);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
 		public void ScheduleBatchLoad(System.Type clazz, object id)
 		{
 			IEntityPersister persister = GetClassPersister(clazz);
-			if (persister.IsBatchLoadable)
-			{
-				batchLoadableEntityKeys.Add(new EntityKey(id, persister), Marker);
-			}
+			BatchFetchQueue.AddBatchLoadableEntityKey(new EntityKey(id, persister));
 		}
 
 		public ISQLQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
@@ -5407,7 +5371,10 @@ namespace NHibernate.Impl
 			collectionsByKey.Clear();
 			collectionEntries.Clear();
 			proxiesByKey.Clear();
-			batchLoadableEntityKeys.Clear();
+			if (batchFetchQueue != null)
+			{
+				batchFetchQueue.Clear();
+			}
 			nonExists.Clear();
 
 			updates.Clear();
@@ -5416,9 +5383,12 @@ namespace NHibernate.Impl
 			collectionCreations.Clear();
 			collectionRemovals.Clear();
 			collectionUpdates.Clear();
-
-			// TODO: Find out why this is missing from H2.1
 			nullifiables.Clear();
+
+			if (unownedCollections != null)
+			{
+				unownedCollections.Clear();
+			}
 		}
 
 		/// <summary>
@@ -5542,35 +5512,34 @@ namespace NHibernate.Impl
 			ICollectionPersister persister = factory.GetCollectionPersister(role);
 			IPersistentCollection collection = GetLoadingCollection(persister, id);
 
-			if (collection != null)
+			if (collection == null)
 			{
-				if (log.IsDebugEnabled)
+				collection = UseUnownedCollection(new CollectionKey(persister, id));
+
+				if (collection == null)
 				{
-					log.Debug("returning loading collection:"
-						+ MessageHelper.InfoString(persister, id));
+					if (log.IsDebugEnabled)
+					{
+						log.Debug("creating collection wrapper:" + MessageHelper.InfoString(persister, id));
+					}
+					//TODO: suck into CollectionPersister.instantiate()
+					collection = persister.CollectionType.Instantiate(this, persister);
+					collection.Owner = owner;
+					AddUninitializedCollection(collection, persister, id);
+					if (persister.IsArray)
+					{
+						InitializeCollection(collection, false);
+						AddArrayHolder((PersistentArrayHolder) collection);
+					}
+					else if (!persister.IsLazy)
+					{
+						nonlazyCollections.Add(collection);
+					}
 				}
-				return collection.GetValue();
 			}
-			else
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("creating collection wrapper:" + MessageHelper.InfoString(persister, id));
-				}
-				//TODO: suck into CollectionPersister.instantiate()
-				collection = persister.CollectionType.Instantiate(this, persister);
-				AddUninitializedCollection(collection, persister, id);
-				if (persister.IsArray)
-				{
-					InitializeCollection(collection, false);
-					AddArrayHolder((PersistentArrayHolder) collection);
-				}
-				else if (!persister.IsLazy)
-				{
-					nonlazyCollections.Add(collection);
-				}
-				return collection.GetValue();
-			}
+
+			collection.Owner = owner;
+			return collection.GetValue();
 		}
 
 		/// <summary>
@@ -5853,6 +5822,54 @@ namespace NHibernate.Impl
 		private bool IsInActiveTransaction
 		{
 			get { return transaction != null && transaction.IsActive; }
+		}
+		
+		public IEnumerable CollectionEntries
+		{
+			get { return collectionEntries; }
+		}
+		
+		public BatchFetchQueue BatchFetchQueue
+		{
+			get
+			{
+				if (batchFetchQueue == null)
+				{
+					batchFetchQueue = new BatchFetchQueue(this);
+				}
+				return batchFetchQueue;
+			}
+		}
+		
+		public bool ContainsEntity(EntityKey key)
+		{
+			return GetEntity(key) != null;
+		}
+		
+		private void AddUnownedCollection(CollectionKey key, IPersistentCollection collection)
+		{
+			if (unownedCollections == null)
+			{
+				unownedCollections = new Hashtable(8);
+			}
+			
+			unownedCollections[key] = collection;
+		}
+		
+		private IPersistentCollection UseUnownedCollection(CollectionKey key)
+		{
+			if (unownedCollections == null)
+			{
+				return null;
+			}
+
+			IPersistentCollection result = (IPersistentCollection) unownedCollections[key];
+			if (result != null)
+			{
+				unownedCollections.Remove(key);
+			}
+
+			return result;
 		}
 	}
 }

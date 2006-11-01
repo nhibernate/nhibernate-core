@@ -313,5 +313,19 @@ namespace NHibernate.Persister.Collection
 			return result;
 		}
 
+		protected override ICollectionInitializer CreateSubselectInitializer(
+			SubselectFetch subselect,
+			ISessionImplementor session)
+		{
+			return new SubselectOneToManyLoader(
+				this,
+				subselect.ToSubselectString(CollectionType.LHSPropertyName),
+				subselect.Result,
+				subselect.QueryParameters,
+				subselect.NamedParameterLocMap,
+				session.Factory,
+				session.EnabledFilters
+				);
+		}
 	}
 }

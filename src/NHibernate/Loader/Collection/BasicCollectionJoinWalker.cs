@@ -21,13 +21,18 @@ namespace NHibernate.Loader.Collection
 		public BasicCollectionJoinWalker(
 			IQueryableCollection collectionPersister,
 			int batchSize,
-			string subquery,
+			SqlString subquery,
 			ISessionFactoryImplementor factory,
 			IDictionary enabledFilters )
-			: base( factory, enabledFilters )		{			this.collectionPersister = collectionPersister;
-			string alias = GenerateRootAlias( collectionPersister.Role );
-			WalkCollectionTree( collectionPersister, alias );
-			IList allAssociations = new ArrayList();
+			: base( factory, enabledFilters )
+		{
+			this.collectionPersister = collectionPersister;
+			string alias = GenerateRootAlias( collectionPersister.Role );
+
+			WalkCollectionTree( collectionPersister, alias );
+
+			IList allAssociations = new ArrayList();
+
 			ArrayHelper.AddAll( allAssociations, associations );
 			allAssociations.Add( new OuterJoinableAssociation(
 			                     	collectionPersister.CollectionType,
@@ -40,24 +45,37 @@ namespace NHibernate.Loader.Collection
 			                     	) );
 			InitPersisters( allAssociations, LockMode.None );
 			InitStatementString( alias, batchSize, subquery );
-		}
+		}
+
 		private void InitStatementString(
 			string alias,
 			int batchSize,
-			string subquery )
+			SqlString subquery )
 		{
 			int joins = CountEntityPersisters( associations );
-			int collectionJoins = CountCollectionPersisters( associations ) + 1;			Suffixes = BasicLoader.GenerateSuffixes( joins );			CollectionSuffixes = BasicLoader.GenerateSuffixes( joins, collectionJoins );
+			int collectionJoins = CountCollectionPersisters( associations ) + 1;
+			Suffixes = BasicLoader.GenerateSuffixes( joins );
+			CollectionSuffixes = BasicLoader.GenerateSuffixes( joins, collectionJoins );
+
 			SqlStringBuilder whereString = WhereString(
 				alias,
 				collectionPersister.KeyColumnNames,
 				collectionPersister.KeyType,
 				subquery,
 				batchSize
-				);
-			string filter = collectionPersister.FilterFragment( alias, EnabledFilters );
+				);
+
+			string filter = collectionPersister.FilterFragment( alias, EnabledFilters );
+
 			if( collectionPersister.IsManyToMany )
-			{				// from the collection of associations, locate OJA for the				// ManyToOne corresponding to this persister to fully				// define the many-to-many; we need that OJA so that we can				// use its alias here				// TODO : is there a better way here?				IAssociationType associationType = ( IAssociationType ) collectionPersister.ElementType;				foreach( OuterJoinableAssociation oja in associations )
+			{
+				// from the collection of associations, locate OJA for the
+				// ManyToOne corresponding to this persister to fully
+				// define the many-to-many; we need that OJA so that we can
+				// use its alias here
+				// TODO : is there a better way here?
+				IAssociationType associationType = ( IAssociationType ) collectionPersister.ElementType;
+				foreach( OuterJoinableAssociation oja in associations )
 				{
 					if( oja.JoinableType == associationType )
 					{
@@ -68,9 +86,11 @@ namespace NHibernate.Loader.Collection
 							);
 					}
 				}
-			}
+			}
+
 			whereString.Insert( 0, StringHelper.MoveAndToBeginning( filter ) );
-			JoinFragment ojf = MergeOuterJoins( associations );
+			JoinFragment ojf = MergeOuterJoins( associations );
+
 			SqlSelectBuilder select = new SqlSelectBuilder( Factory )
 				.SetSelectClause(
 					collectionPersister.SelectFragment( alias, CollectionSuffixes[ 0 ] ) +
@@ -81,19 +101,23 @@ namespace NHibernate.Loader.Collection
 				.SetOuterJoins(
 				ojf.ToFromFragmentString,
 				ojf.ToWhereFragmentString
-				);
-			select.SetOrderByClause( OrderBy( associations, collectionPersister.GetSQLOrderByString( alias ) ) );
+				);
+
+			select.SetOrderByClause( OrderBy( associations, collectionPersister.GetSQLOrderByString( alias ) ) );
+
 //			if ( Factory.IsCommentsEnabled ) 
 //			{
 //				select.SetComment( "load collection " + collectionPersister.Role );
 //			}
 
 			SqlString = select.ToSqlString();
-		}
+		}
+
 		/// <summary>
 		/// We can use an inner join for first many-to-many association
 		/// </summary>
-		protected JoinType GetJoinType(			IAssociationType type,
+		protected JoinType GetJoinType(
+			IAssociationType type,
 			FetchMode config,
 			String path,
 			ISet visitedAssociations,
@@ -101,7 +125,8 @@ namespace NHibernate.Loader.Collection
 			string[ ] lhsColumns,
 			bool nullable,
 			int currentDepth,
-			Cascades.CascadeStyle cascadeStyle )		{
+			Cascades.CascadeStyle cascadeStyle )
+		{
 			JoinType joinType = base.GetJoinType(
 				type,
 				config,
@@ -111,16 +136,19 @@ namespace NHibernate.Loader.Collection
 				nullable,
 				currentDepth,
 				cascadeStyle
-				);
+				);
+
 			//we can use an inner join for the many-to-many
 			if( joinType == JoinType.LeftOuterJoin && "".Equals( path ) )
 			{
 				joinType = JoinType.InnerJoin;
 			}
 			return joinType;
-		}
+		}
+
 		public override string ToString()
 		{
 			return GetType().FullName + '(' + collectionPersister.Role + ')';
-		}	}
+		}
+	}
 }

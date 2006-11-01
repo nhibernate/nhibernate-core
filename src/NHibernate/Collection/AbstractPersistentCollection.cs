@@ -34,6 +34,8 @@ namespace NHibernate.Collection
 		[NonSerialized]
 		private bool initializing;
 
+		private object owner;
+
 		//careful: these methods do not initialize the collection
 		
 		/// <summary>
@@ -640,6 +642,12 @@ namespace NHibernate.Collection
 		public virtual bool IsSnapshotEmpty( ICollection snapshot )
 		{
 			return snapshot.Count == 0;
+		}
+
+		public object Owner
+		{
+			get { return owner; }
+			set { owner = value; }
 		}
 
 		#region - Hibernate Collection Proxy Classes

@@ -1340,6 +1340,16 @@ namespace NHibernate.Hql.Classic
 		{
 			AddJoin(name, joinSequence.GetFromPart());
 		}
+		
+		protected override bool IsSubselectLoadingEnabled
+		{
+			get { return HasSubselectLoadableCollections(); }
+		}
+
+		protected override string[] Aliases
+		{
+			get { return names; }
+		}
 
 		#region IQueryTranslator Members
 

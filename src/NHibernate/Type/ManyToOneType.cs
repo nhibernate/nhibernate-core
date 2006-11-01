@@ -2,6 +2,7 @@ using System;
 using System.Data;
 
 using NHibernate.Engine;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -88,12 +89,22 @@ namespace NHibernate.Type
 		{
 			object id = GetIdentifierOrUniqueKeyType( session.Factory )
 				.NullSafeGet( rs, names, session, owner );
-
-			if( id != null )
-			{
-				session.ScheduleBatchLoad( AssociatedClass, id );
-			}
+			ScheduleBatchLoadIfNeeded( id, session );
 			return id;
+		}
+
+		private void ScheduleBatchLoadIfNeeded(object id, ISessionImplementor session)
+		{
+			//cannot batch fetch by unique key (property-ref associations)
+			if (uniqueKeyPropertyName == null && id != null)
+			{
+				IEntityPersister persister = session.Factory.GetEntityPersister(AssociatedClass);
+				EntityKey entityKey = new EntityKey(id, persister);
+				if (!session.ContainsEntity(entityKey))
+				{
+					session.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
+				}
+			}
 		}
 
 		public override bool UseLHSPrimaryKey

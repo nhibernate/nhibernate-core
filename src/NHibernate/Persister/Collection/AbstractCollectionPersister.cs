@@ -119,6 +119,8 @@ namespace NHibernate.Persister.Collection
 
 		private static readonly ILog log = LogManager.GetLogger(typeof (ICollectionPersister));
 		private string queryLoaderName;
+		private bool subselectLoadable;
+		private IEntityPersister ownerPersister;
 
 		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
@@ -129,6 +131,7 @@ namespace NHibernate.Persister.Collection
 			collectionType = collection.CollectionType;
 			role = collection.Role;
 			ownerClass = collection.OwnerClass;
+			ownerPersister = factory.GetEntityPersister(ownerClass);
 			queryLoaderName = collection.LoaderName;
 			Alias alias = new Alias("__");
 
@@ -164,6 +167,7 @@ namespace NHibernate.Persister.Collection
 			//isSorted = collection.IsSorted;
 			primitiveArray = collection.IsPrimitiveArray;
 			array = collection.IsArray;
+			subselectLoadable = collection.IsSubselectLoadable;
 
 			IValue element = collection.Element;
 			int elementSpan = element.ColumnSpan;
@@ -397,7 +401,12 @@ namespace NHibernate.Persister.Collection
 				return initializer;
 			}
 
-			if (session.EnabledFilters.Count == 0)
+			ICollectionInitializer subselectInitializer = GetSubselectInitializer(key, session);
+			if (subselectInitializer != null)
+			{
+				return subselectInitializer;
+			}
+			else if (session.EnabledFilters.Count == 0)
 			{
 				return initializer;
 			}
@@ -407,6 +416,39 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		private ICollectionInitializer GetSubselectInitializer(object key, ISessionImplementor session)
+		{
+			if (!IsSubselectLoadable)
+			{
+				return null;
+			}
+
+			SubselectFetch subselect = session.BatchFetchQueue.GetSubselect(new EntityKey(key, OwnerEntityPersister));
+
+			if (subselect == null)
+			{
+				return null;
+			}
+			else
+			{
+				// Take care of any entities that might have
+				// been evicted!
+				ArrayList keysToRemove = new ArrayList();
+				foreach (EntityKey entityKey in subselect.Result)
+				{
+					if (!session.ContainsEntity(entityKey))
+					{
+						keysToRemove.Add(entityKey);
+					}
+				}
+				subselect.Result.RemoveAll(keysToRemove);
+
+				// Run a subquery loader
+				return CreateSubselectInitializer(subselect, session);
+			}
+		}
+
+		protected abstract ICollectionInitializer CreateSubselectInitializer(SubselectFetch subselect, ISessionImplementor session);
 		protected abstract ICollectionInitializer CreateCollectionInitializer(IDictionary enabledFilters);
 
 		public ICacheConcurrencyStrategy Cache
@@ -1412,6 +1454,16 @@ namespace NHibernate.Persister.Collection
 		protected ExecuteUpdateResultCheckStyle DeleteAllCheckStyle
 		{
 			get { return deleteAllCheckStyle; }
+		}
+		
+		public bool IsSubselectLoadable
+		{
+			get { return subselectLoadable; }
+		}
+		
+		public IEntityPersister OwnerEntityPersister
+		{
+			get { return ownerPersister; }
 		}
 	}
 }

@@ -524,7 +524,9 @@
     <Compile Include="Dialect\MySQL5Dialect.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
+    <Compile Include="Engine\BatchFetchQueue.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
+    <Compile Include="Engine\SubselectFetch.cs" />
     <Compile Include="Expression\DetachedCriteria.cs" />
     <Compile Include="Engine\JoinSequence.cs" />
     <Compile Include="Expression\ExistsSubqueryExpression.cs" />
@@ -603,6 +605,8 @@
     <Compile Include="Loader\Collection\ICollectionInitializer.cs" />
     <Compile Include="Loader\Collection\OneToManyJoinWalker.cs" />
     <Compile Include="Loader\Collection\OneToManyLoader.cs" />
+    <Compile Include="Loader\Collection\SubselectCollectionLoader.cs" />
+    <Compile Include="Loader\Collection\SubselectOneToManyLoader.cs" />
     <Compile Include="Loader\Criteria\CriteriaJoinWalker.cs" />
     <Compile Include="Loader\Criteria\CriteriaLoader.cs" />
     <Compile Include="Loader\Criteria\CriteriaQueryTranslator.cs" />
@@ -731,7 +735,9 @@
     <None Include="nhibernate-generic.xsx">
       <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>
-    <EmbeddedResource Include="nhibernate-mapping.xsd" />
+    <EmbeddedResource Include="nhibernate-mapping.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="nhibernate-mapping.xsx">
       <DependentUpon>nhibernate-mapping.xsd</DependentUpon>
     </None>

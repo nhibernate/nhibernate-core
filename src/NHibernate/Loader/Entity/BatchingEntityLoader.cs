@@ -47,7 +47,7 @@ namespace NHibernate.Loader.Entity
 
 		public object Load( object id, object optionalObject, ISessionImplementor session )
 		{
-			object[ ] batch = session.GetClassBatch( persister.MappedClass, id, batchSizes[ 0 ] );
+			object[ ] batch = session.BatchFetchQueue.GetEntityBatch( persister, id, batchSizes[ 0 ] );
 
 			for( int i = 0; i < batchSizes.Length - 1; i++ )
 			{

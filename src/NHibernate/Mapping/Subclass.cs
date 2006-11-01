@@ -422,5 +422,11 @@ namespace NHibernate.Mapping
 				return result;
 			}
 		}
+
+		public override bool HasSubselectLoadableCollections
+		{
+			get { return base.HasSubselectLoadableCollections || Superclass.HasSubselectLoadableCollections; }
+			set { base.HasSubselectLoadableCollections = value; }
+		}
 	}
 }

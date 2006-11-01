@@ -21,7 +21,7 @@ namespace NHibernate.Loader.Collection
 		{
 		}
 
-		protected SqlStringBuilder WhereString( string alias, string[ ] columnNames, IType type, string subselect, int batchSize )
+		protected SqlStringBuilder WhereString( string alias, string[ ] columnNames, IType type, SqlString subselect, int batchSize )
 		{
 			if( subselect == null )
 			{
