@@ -162,7 +162,10 @@ namespace NHibernate.Impl
 			batchCommand = null;
 			batchCommandSql = null;
 			// close the statement closeStatement(cmd)
-			CloseCommand(cmd, null);
+			if (cmd != null)
+			{
+				CloseCommand(cmd, null);
+			}
 		}
 
 		public int ExecuteNonQuery(IDbCommand cmd)
@@ -399,7 +402,7 @@ namespace NHibernate.Impl
 			if (log.IsDebugEnabled)
 			{
 				openCommandCount++;
-				log.Debug("Opened new IDbCommand, open IDbCommands :" + openCommandCount);
+				log.Debug("Opened new IDbCommand, open IDbCommands: " + openCommandCount);
 			}
 		}
 
@@ -408,7 +411,7 @@ namespace NHibernate.Impl
 			if (log.IsDebugEnabled)
 			{
 				openCommandCount--;
-				log.Debug("Closed IDbCommand, open IDbCommands :" + openCommandCount);
+				log.Debug("Closed IDbCommand, open IDbCommands: " + openCommandCount);
 			}
 		}
 
@@ -417,7 +420,7 @@ namespace NHibernate.Impl
 			if (log.IsDebugEnabled)
 			{
 				openReaderCount++;
-				log.Debug("Opened Reader, open Readers :" + openReaderCount);
+				log.Debug("Opened IDataReader, open IDataReaders: " + openReaderCount);
 			}
 		}
 
@@ -426,7 +429,7 @@ namespace NHibernate.Impl
 			if (log.IsDebugEnabled)
 			{
 				openReaderCount--;
-				log.Debug("Closed Reader, open Readers :" + openReaderCount);
+				log.Debug("Closed IDataReader, open IDataReaders :" + openReaderCount);
 			}
 		}
 
