@@ -22,7 +22,7 @@ namespace NHibernate.Hql
 				return new HolderInstantiator(customTransformer, queryReturnAliases);
 			}
 		}
-
+		
 		public static IResultTransformer CreateSelectNewTransformer(ConstructorInfo constructor, bool returnMaps)
 		{
 			if (constructor != null)

@@ -1192,22 +1192,23 @@ namespace NHibernate.Hql.Classic
 
 		protected override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
-			if (holderClass != null)
+			HolderInstantiator holderInstantiator =
+				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, resultTransformer);
+			
+			if (holderInstantiator.IsRequired)
 			{
 				for (int i = 0; i < results.Count; i++)
 				{
 					object[] row = (object[])results[i];
-					try
-					{
-						results[i] = holderConstructor.Invoke(row);
-					}
-					catch (Exception e)
-					{
-						throw new QueryException("could not instantiate: " + holderClass, e);
-					}
+					results[i] = holderInstantiator.Instantiate(row);
+				}
+				
+				if (holderConstructor == null && resultTransformer != null)
+				{
+					return resultTransformer.TransformList(results);
 				}
 			}
-
+			
 			return results;
 		}
 
