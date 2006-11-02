@@ -16,11 +16,11 @@ using System.Security.Permissions;
 
 [assembly: CLSCompliantAttribute(true)]
 [assembly: AssemblyTitleAttribute("NHibernate.Caches.Prevalence for Microsoft .NET Framework 1.1")]
-[assembly: AssemblyDescriptionAttribute("Cache provider for NHibernate 1.0.2.0 using Bamboo.Prevalence engine.")]
+[assembly: AssemblyDescriptionAttribute("Cache provider for NHibernate 1.0.3.0 using Bamboo.Prevalence engine.")]
 [assembly: AssemblyCompanyAttribute("NHibernate.org")]
 [assembly: AssemblyProductAttribute("NHibernate.Caches.Prevalence")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
-[assembly: AssemblyVersionAttribute("1.0.2.0")]
+[assembly: AssemblyVersionAttribute("1.0.3.0")]
 [assembly: AssemblyInformationalVersionAttribute("1.0")]
-[assembly: AssemblyFileVersionAttribute("1.0.2.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.3.0")]
 

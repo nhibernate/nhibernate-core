@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: CLSCompliantAttribute(false)]
 [assembly: AssemblyTitleAttribute("NHibernate.Tool.hbm2net for Microsoft .NET Framework 1.1")]
-[assembly: AssemblyDescriptionAttribute("Library to Generate Classes from NHibernate 1.0.2.0 hbm.xml files.")]
+[assembly: AssemblyDescriptionAttribute("Library to Generate Classes from NHibernate 1.0.3.0 hbm.xml files.")]
 [assembly: AssemblyCompanyAttribute("NHibernate.org")]
 [assembly: AssemblyProductAttribute("NHibernate.Tool.hbm2net")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]

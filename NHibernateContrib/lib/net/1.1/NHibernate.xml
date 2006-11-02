@@ -20876,6 +20876,14 @@
             <param name="obj">The object to get the type of.</param>
             <returns>The Underlying Type for the object regardless of if it is a Proxy.</returns>
         </member>
+        <member name="M:NHibernate.Proxy.NHibernateProxyHelper.GuessClass(System.Object)">
+            <summary>
+            Get the true, underlying class of a proxied persistent class. This operation
+            will NOT initialize the proxy and thus may return an incorrect result.
+            </summary>
+            <param name="proxy">a persistable object or proxy</param>
+            <returns>guessed class of the instance</returns>
+        </member>
         <member name="T:NHibernate.SqlCommand.Alias">
             <summary>
             Aliases tables and fields for Sql Statements.
@@ -29224,6 +29232,11 @@
         <member name="M:NHibernate.Util.StringTokenizer.GetEnumerator">
             <summary></summary>
         </member>
+        <member name="P:NHibernate.Util.WeakHashtable.Count">
+            <summary>
+            Count of elements in the collection. Unreliable!
+            </summary>
+        </member>
         <member name="T:NHibernate.ADOException">
             <summary>
             Wraps exceptions that occur during ADO.NET calls.
@@ -30156,6 +30169,11 @@
         <member name="F:NHibernate.NHibernateUtil.Object">
             <summary>
             NHibernate System.Object type
+            </summary>
+        </member>
+        <member name="F:NHibernate.NHibernateUtil.AnsiChar">
+            <summary>
+            NHibernate character type for ANSI strings
             </summary>
         </member>
         <member name="M:NHibernate.NHibernateUtil.#ctor">

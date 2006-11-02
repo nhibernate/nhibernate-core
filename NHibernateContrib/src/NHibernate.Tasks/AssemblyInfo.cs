@@ -14,12 +14,12 @@ using System.Runtime.CompilerServices;
 
 [assembly: CLSCompliantAttribute(true)]
 [assembly: AssemblyTitleAttribute("NHibernate.Tasks for Microsoft .NET Framework 1.1")]
-[assembly: AssemblyDescriptionAttribute("NAnt Tasks for NHibernate 1.0.2.0 Tools.")]
+[assembly: AssemblyDescriptionAttribute("NAnt Tasks for NHibernate 1.0.3.0 Tools.")]
 [assembly: AssemblyCompanyAttribute("NHibernate.org")]
 [assembly: AssemblyProductAttribute("NHibernate.Tasks")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
-[assembly: AssemblyVersionAttribute("1.0.2.0")]
+[assembly: AssemblyVersionAttribute("1.0.3.0")]
 [assembly: AssemblyInformationalVersionAttribute("1.0")]
-[assembly: AssemblyFileVersionAttribute("1.0.2.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.3.0")]
 [assembly: AssemblyDelaySignAttribute(false)]
 
