@@ -761,5 +761,9 @@ namespace NHibernate.Mapping
 			get { return hasSubselectLoadableCollections; }
 			set { hasSubselectLoadableCollections = value; }
 		}
+
+		internal abstract int NextSubclassId();
+
+		public abstract int SubclassId { get; }
 	}
 }

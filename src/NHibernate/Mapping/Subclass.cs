@@ -15,6 +15,7 @@ namespace NHibernate.Mapping
 		private PersistentClass superclass;
 		private SimpleValue key;
 		private System.Type classPersisterClass;
+		private int subclassId;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Subclass"/> class.
@@ -23,6 +24,17 @@ namespace NHibernate.Mapping
 		public Subclass(PersistentClass superclass)
 		{
 			this.superclass = superclass;
+			this.subclassId = NextSubclassId();
+		}
+
+		internal override int NextSubclassId()
+		{
+			return Superclass.NextSubclassId();
+		}
+
+		public override int SubclassId
+		{
+			get { return subclassId; }
 		}
 
 		/// <summary>

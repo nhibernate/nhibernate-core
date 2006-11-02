@@ -175,7 +175,8 @@ namespace NHibernate.Test.JoinedSubclass
 				s.Save(dilbert);
 				s.Flush();
 
-				Assert.AreEqual(1, s.CreateQuery("select p from Person p where p.class = Person").List().Count);
+				Assert.AreSame(wally, s.CreateQuery("select p from Person p where p.class = Person").UniqueResult());
+				Assert.AreSame(dilbert, s.CreateQuery("select p from Person p where p.class = Employee").UniqueResult());
 
 				s.Delete(wally);
 				s.Delete(dilbert);
