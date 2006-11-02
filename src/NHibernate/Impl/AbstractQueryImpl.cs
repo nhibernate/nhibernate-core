@@ -391,7 +391,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetEntity( int position, object val )
 		{
-			SetParameter( position, val, NHibernateUtil.Entity( NHibernateProxyHelper.GetClass( val ) ) );
+			SetParameter( position, val, NHibernateUtil.Entity( NHibernateProxyHelper.GuessClass( val ) ) );
 			return this;
 		}
 
@@ -595,7 +595,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery SetEntity( string name, object val )
 		{
-			SetParameter( name, val, NHibernateUtil.Entity( NHibernateProxyHelper.GetClass( val ) ) );
+			SetParameter( name, val, NHibernateUtil.Entity( NHibernateProxyHelper.GuessClass( val ) ) );
 			return this;
 		}
 
@@ -659,7 +659,7 @@ namespace NHibernate.Impl
 				throw new ArgumentNullException( "param", "The IType can not be guessed for a null value." );
 			}
 			
-			System.Type clazz = NHibernateProxyHelper.GetClass( param );
+			System.Type clazz = NHibernateProxyHelper.GuessClass( param );
 			return GuessType( clazz );
 		}
 

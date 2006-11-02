@@ -156,7 +156,7 @@ namespace NHibernate.Type
 			else
 			{
 				id = session.GetEntityIdentifierIfNotUnsaved( value );
-				clazz = NHibernateProxyHelper.GetClass( value );
+				clazz = NHibernateProxyHelper.GuessClass( value );
 			}
 			metaType.NullSafeSet( st, clazz, index, session );
 			identifierType.NullSafeSet( st, id, index + 1, session ); // metaType must be single-column type
@@ -178,7 +178,7 @@ namespace NHibernate.Type
 		{
 			return value == null ?
 				"null" :
-				NHibernateUtil.Entity( NHibernateProxyHelper.GetClass( value ) )
+				NHibernateUtil.Entity( NHibernateProxyHelper.GuessClass( value ) )
 					.ToString( value, factory );
 		}
 
@@ -211,7 +211,7 @@ namespace NHibernate.Type
 			return ( value == null ) ?
 				null :
 				new ObjectTypeCacheEntry(
-					value.GetType(),
+					NHibernateProxyHelper.GuessClass( value ),
 					session.GetEntityIdentifier( value ) );
 		}
 
@@ -240,13 +240,13 @@ namespace NHibernate.Type
 		public object GetPropertyValue( Object component, int i, ISessionImplementor session )
 		{
 			return ( i == 0 ) ?
-				NHibernateProxyHelper.GetClass( component ) :
+				NHibernateProxyHelper.GuessClass( component ) :
 				Id( component, session );
 		}
 
 		public object[ ] GetPropertyValues( Object component, ISessionImplementor session )
 		{
-			return new object[ ] { NHibernateProxyHelper.GetClass( component ), Id( component, session )};
+			return new object[ ] { NHibernateProxyHelper.GuessClass( component ), Id( component, session )};
 		}
 
 		private object Id( object component, ISessionImplementor session )
@@ -325,7 +325,7 @@ namespace NHibernate.Type
 			}
 			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
 
-			return holder.clazz != NHibernateProxyHelper.GetClass( current ) ||
+			return holder.clazz != NHibernateProxyHelper.GuessClass( current ) ||
 				identifierType.IsModified( holder.id, Id( current, session ), session );
 		}
 
