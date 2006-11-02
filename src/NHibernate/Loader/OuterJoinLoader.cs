@@ -585,7 +585,7 @@ namespace NHibernate.Loader
 
 			if ( enabled )
 			{
-				visitedPersisters.Add( persister );
+				visitedPersisters.Add( joinable );
 				OuterJoinableAssociation assoc = new OuterJoinableAssociation();
 				associations.Add( assoc );
 
