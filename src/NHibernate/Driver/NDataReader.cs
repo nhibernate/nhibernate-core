@@ -250,6 +250,11 @@ namespace NHibernate.Driver
 			}
 
 			long remainingLength = cachedByteArray.Length - fieldOffset;
+			
+			if (buffer == null)
+			{
+				return remainingLength;
+			}
 
 			if( remainingLength < length )
 			{
