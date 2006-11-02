@@ -163,7 +163,7 @@ namespace NHibernate.Type
 			else
 			{
 				id = session.GetEntityIdentifierIfNotUnsaved( value );
-				clazz = NHibernateProxyHelper.GetClass( value );
+				clazz = NHibernateProxyHelper.GuessClass( value );
 			}
 
 			// metaType is assumed to be single-column type
@@ -205,7 +205,7 @@ namespace NHibernate.Type
 		{
 			return value == null ?
 				"null" :
-				NHibernateUtil.Entity( NHibernateProxyHelper.GetClass( value ) )
+				NHibernateUtil.Entity( NHibernateProxyHelper.GuessClass( value ) )
 					.ToLoggableString( value, factory );
 		}
 
@@ -238,7 +238,7 @@ namespace NHibernate.Type
 			return ( value == null ) ?
 				null :
 				new ObjectTypeCacheEntry(
-					NHibernateUtil.GetClass(value),
+					NHibernateProxyHelper.GuessClass(value),
 					session.GetEntityIdentifier( value ) );
 		}
 
@@ -267,13 +267,13 @@ namespace NHibernate.Type
 		public object GetPropertyValue( Object component, int i, ISessionImplementor session )
 		{
 			return ( i == 0 ) ?
-				NHibernateProxyHelper.GetClass( component ) :
+				NHibernateProxyHelper.GuessClass( component ) :
 				Id( component, session );
 		}
 
 		public object[] GetPropertyValues( Object component, ISessionImplementor session )
 		{
-			return new object[] {NHibernateProxyHelper.GetClass( component ), Id( component, session )};
+			return new object[] {NHibernateProxyHelper.GuessClass( component ), Id( component, session )};
 		}
 
 		private object Id( object component, ISessionImplementor session )
@@ -388,7 +388,7 @@ namespace NHibernate.Type
 			ObjectTypeCacheEntry holder = ( ObjectTypeCacheEntry ) old;
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy( checkable, 1, idcheckable, 0, idcheckable.Length );
-			return ( checkable[ 0 ] && holder.clazz != NHibernateProxyHelper.GetClass( current ) ) ||
+			return ( checkable[ 0 ] && holder.clazz != NHibernateProxyHelper.GuessClass( current ) ) ||
 				identifierType.IsModified( holder.id, Id( current, session ), idcheckable, session );
 		}
 

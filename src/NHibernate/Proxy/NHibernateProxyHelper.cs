@@ -51,6 +51,35 @@ namespace NHibernate.Proxy
 			}
 		}
 
+		/// <summary>
+		/// Get the true, underlying class of a proxied persistent class. This operation
+		/// will NOT initialize the proxy and thus may return an incorrect result.
+		/// </summary>
+		/// <param name="proxy">a persistable object or proxy</param>
+		/// <returns>guessed class of the instance</returns>
+		/// <remarks>
+		/// This method is approximate match for Session.bestGuessEntityName in H3.2
+		/// </remarks>
+		public static System.Type GuessClass( object proxy )
+		{
+			if( proxy is INHibernateProxy )
+			{
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy);
+				if (li.IsUninitialized)
+				{
+					return li.PersistentClass;
+				}
+				else
+				{
+					return li.GetImplementation().GetType();
+				}
+			}
+			else
+			{
+				return proxy.GetType();
+			}
+		}
+
 		public static object GetIdentifier( object obj, IEntityPersister persister )
 		{
 			if( obj is INHibernateProxy )
