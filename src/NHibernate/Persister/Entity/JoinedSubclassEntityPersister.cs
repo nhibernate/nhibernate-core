@@ -509,7 +509,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (model.IsPolymorphic)
 					{
-						int disc = p + 1;
+						int disc = sc.SubclassId;
 						subclassesByDiscriminatorValue.Add(disc, sc.MappedClass);
 						discriminatorValues[p] = disc.ToString();
 						int id = GetTableId(
