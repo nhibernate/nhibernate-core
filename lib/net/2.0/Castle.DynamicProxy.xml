@@ -206,12 +206,14 @@
         </member>
         <member name="T:Castle.DynamicProxy.Builder.CodeBuilder.Utils.LdindOpCodesDictionary">
             <summary>
-            Provides appropriate Ldind.X opcode for the type of primitive value to be loaded indirectly.
+            Provides appropriate Ldind.X opcode for 
+            the type of primitive value to be loaded indirectly.
             </summary>
         </member>
         <member name="T:Castle.DynamicProxy.Builder.CodeBuilder.Utils.StindOpCodesDictionary">
             <summary>
-            Provides appropriate Stind.X opcode for the type of primitive value to be stored indirectly.
+            Provides appropriate Stind.X opcode 
+            for the type of primitive value to be stored indirectly.
             </summary>
         </member>
         <member name="T:Castle.DynamicProxy.Builder.CodeBuilder.Utils.OpCodeUtil">
@@ -410,6 +412,11 @@
             Works by using only the last piece of the namespace
             </summary>
         </member>
+        <member name="M:Castle.DynamicProxy.Builder.CodeGenerators.BaseCodeGenerator.GetTypeName(System.Type)">
+            <summary>
+            Gets the name of a type, taking into consideration nested types.
+            </summary>
+        </member>
         <member name="M:Castle.DynamicProxy.Builder.CodeGenerators.BaseCodeGenerator.CreateProperty(System.Reflection.PropertyInfo)">
             <summary>
             Generate property implementation
@@ -429,6 +436,7 @@
             method generates the IL code for property get/set method and
             ordinary methods.
             </summary>
+            <param name="method">The method to implement.</param>
             <param name="builder"><see cref="T:Castle.DynamicProxy.Builder.CodeBuilder.EasyMethod"/> being constructed.</param>
         </member>
         <member name="T:Castle.DynamicProxy.Builder.CodeGenerators.CallableField">
@@ -506,6 +514,12 @@
             Summary description for GeneratorContext.
             </summary>
         </member>
+        <member name="M:Castle.DynamicProxy.GeneratorContext.ShouldCreateNewSlot(System.Reflection.MethodInfo)">
+            <summary>
+            Checks if the method has the same signature as a method that was marked as
+            one that should generate a new vtable slot.
+            </summary>
+        </member>
         <member name="P:Castle.DynamicProxy.GeneratorContext.ProxyObjectReference">
             <summary>
             The implementor of IObjectReference responsible for 
@@ -514,34 +528,39 @@
         </member>
         <member name="T:Castle.DynamicProxy.IInvocation">
             <summary>
-            
+            Proceed with, manipulate or find more information about the call that 
+            is being intercepted
             </summary>
         </member>
         <member name="M:Castle.DynamicProxy.IInvocation.Proceed(System.Object[])">
             <summary>
-            
+            Proceed with the call that was intercepted.
             </summary>
-            <param name="args"></param>
-            <returns></returns>
+            <param name="args">The arguments that will be passed onto the method.</param>
+            <returns>The argument returned from the method.</returns>
         </member>
         <member name="P:Castle.DynamicProxy.IInvocation.Proxy">
             <summary>
-            
+            Get the dynamic proxy that intercepted this call.
             </summary>
         </member>
         <member name="P:Castle.DynamicProxy.IInvocation.InvocationTarget">
             <summary>
-            
+            Get or set target that will be invoked when Process() is called.  		
             </summary>
+            <remarks>
+            Changing InvocationTarget only effects this call.  Any call made after
+            this will invoke the original target of the proxy.
+            </remarks>
         </member>
         <member name="P:Castle.DynamicProxy.IInvocation.Method">
             <summary>
-            
+            Get the method that is being invoked.
             </summary>
         </member>
         <member name="P:Castle.DynamicProxy.IInvocation.MethodInvocationTarget">
             <summary>
-            
+            Get the method on the target object that is being invoked.
             </summary>
         </member>
         <member name="T:Castle.DynamicProxy.Invocation.SameClassInvocation">
@@ -618,6 +637,7 @@
             </summary>
             <param name="theInterface">Interface to be implemented</param>
             <param name="interceptor">instance of <see cref="T:Castle.DynamicProxy.IInterceptor"/></param>
+            <param name="target">The proxy target.</param>
             <returns>Proxy instance</returns>
         </member>
         <member name="M:Castle.DynamicProxy.ProxyGenerator.CreateProxy(System.Type[],Castle.DynamicProxy.IInterceptor,System.Object)">
@@ -627,6 +647,7 @@
             </summary>
             <param name="interfaces">Array of interfaces to be implemented</param>
             <param name="interceptor">instance of <see cref="T:Castle.DynamicProxy.IInterceptor"/></param>
+            <param name="target">The proxy target.</param>
             <returns>Proxy instance</returns>
         </member>
         <member name="M:Castle.DynamicProxy.ProxyGenerator.CreateCustomProxy(System.Type,Castle.DynamicProxy.IInterceptor,System.Object,Castle.DynamicProxy.GeneratorContext)">
@@ -636,6 +657,7 @@
             <param name="theInterface"></param>
             <param name="interceptor"></param>
             <param name="context"></param>
+            <param name="target">The proxy target.</param>
             <returns></returns>
         </member>
         <member name="M:Castle.DynamicProxy.ProxyGenerator.CreateCustomProxy(System.Type[],Castle.DynamicProxy.IInterceptor,System.Object,Castle.DynamicProxy.GeneratorContext)">
@@ -645,6 +667,7 @@
             <param name="interfaces"></param>
             <param name="interceptor"></param>
             <param name="context"></param>
+            <param name="target">The proxy target.</param>
             <returns></returns>
         </member>
         <member name="T:Castle.DynamicProxy.StandardInterceptor">
