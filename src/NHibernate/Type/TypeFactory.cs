@@ -110,6 +110,8 @@ namespace NHibernate.Type
 			// add the mappings of the NHibernate specific names that are used in type=""
 			typeByTypeOfName[ NHibernateUtil.AnsiString.Name ] = NHibernateUtil.AnsiString;
 			getTypeDelegatesWithLength.Add( NHibernateUtil.AnsiString.Name, new GetNullableTypeWithLength( GetAnsiStringType ) );
+			
+			typeByTypeOfName[ NHibernateUtil.AnsiChar.Name ] = NHibernateUtil.AnsiChar;
 
 			typeByTypeOfName[ NHibernateUtil.BinaryBlob.Name ] = NHibernateUtil.BinaryBlob;
 			typeByTypeOfName[ NHibernateUtil.StringClob.Name ] = NHibernateUtil.StringClob;
