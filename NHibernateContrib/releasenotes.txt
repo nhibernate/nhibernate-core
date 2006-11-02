@@ -1,3 +1,12 @@
+Build 1.0.3.0
+========================
+
+Bugs Fixed:
+
+    * [NH-609] - SysCache re-caches items without expiration policy
+    * [NH-661] - SysCache throws an NullReferenceException when clearing cache region
+    * [NH-705] - With SysCache impossible to strore object after the gc clears the cache
+
 Build 1.0.2.0
 ========================
 

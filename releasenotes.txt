@@ -1,3 +1,30 @@
+Build 1.0.3.0
+========================
+
+IMPORTANT: This version includes an updated Castle.DynamicProxy library. However,
+its maintainers have not changed the version number with the update. Remember
+to update Castle.DynamicProxy when updating NHibernate from an earlier version.
+
+Patches Applied
+
+    * [NH-604] - Excessive memory consumption bug with heavy HQL usage
+
+Bugs Fixed
+
+    * [NH-540] - Register of AnsiChar type
+    * [NH-548] - Component Parent set to null on 2nd-level cache hit
+    * [NH-550] - Incorrect SQL Generated when using SetMaxResults() with DB2
+    * [NH-552] - Collection of "nullifiables" not updated when object saved back
+    * [NH-559] - Memory leak associated with HQL queries
+    * [NH-563] - Exception in NDataReader.cs when loading BinaryBlob
+    * [NH-571] - class keyword in WHERE broken for table-per-subclass mappings
+    * [NH-574] - sort="natural" doen't work when namespace and assemply were set
+    * [NH-582] - All IType implementations should be serializable
+    * [NH-643] - Parent child problem when using SysCacheProvider
+    * [NH-719] - Caching of "any" reference to lazy classes
+    * [NH-740] - Logging for tests is sometimes not configured properly
+    * [NH-782] - Update to latest DynamicProxy to fix race condition
+
 Build 1.0.2.0
 ========================
 
