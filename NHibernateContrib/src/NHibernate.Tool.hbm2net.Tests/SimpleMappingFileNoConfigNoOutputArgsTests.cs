@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 
 namespace NHibernate.Tool.hbm2net.Tests
@@ -23,13 +24,20 @@ namespace NHibernate.Tool.hbm2net.Tests
 			if (mappingFile.Exists) mappingFile.Delete();
 		}
 
+		private static string FilterRuntimeVersion(string contents)
+		{
+			string result = Regex.Replace(contents, "^//     Runtime Version:.*$", "", RegexOptions.Multiline);
+			return result;
+		}
 
 		private static void AssertFile()
 		{
 			Assert.IsTrue(File.Exists(ExpectedFileName));
 			using(StreamReader sr = File.OpenText(ExpectedFileName))
 			{
-				Assert.AreEqual(ResourceHelper.GetResource(ExpectedFileResourceName), sr.ReadToEnd());
+				string filteredExpected = FilterRuntimeVersion(ResourceHelper.GetResource(ExpectedFileResourceName));
+				string filteredActual = FilterRuntimeVersion(sr.ReadToEnd());
+				Assert.AreEqual(filteredExpected, filteredActual);
 			}
 		}
 
