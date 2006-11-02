@@ -5,6 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public class SqlSingleType : SqlTypesType
 	{
 		public SqlSingleType() : base( new SingleSqlType() )

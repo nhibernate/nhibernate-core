@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.Boolean"/> Property 
 	/// to a <see cref="DbType.Boolean"/> column.
 	/// </summary>
+	[Serializable]
 	public class BooleanType : ValueTypeType, IDiscriminatorType
 	{
 		private const string TRUE = "1";

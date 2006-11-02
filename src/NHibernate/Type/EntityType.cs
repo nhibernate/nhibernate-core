@@ -13,6 +13,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// A reference to an entity class
 	/// </summary>
+	[Serializable]
 	public abstract class EntityType : AbstractType, IAssociationType
 	{
 		private readonly System.Type associatedClass;

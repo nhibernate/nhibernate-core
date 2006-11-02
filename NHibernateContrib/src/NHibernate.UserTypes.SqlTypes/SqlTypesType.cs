@@ -6,6 +6,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public abstract class SqlTypesType : NullableTypesType
 	{
 		private object nullValue;

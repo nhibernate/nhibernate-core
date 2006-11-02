@@ -5,6 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public class SqlGuidType : SqlTypesType
 	{
 		public SqlGuidType() : base( new GuidSqlType() )

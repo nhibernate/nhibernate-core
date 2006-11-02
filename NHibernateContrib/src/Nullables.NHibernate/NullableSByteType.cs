@@ -9,6 +9,7 @@ namespace Nullables.NHibernate
 	/// <summary>
 	/// A NHibernate <see cref="IType"/> for a <see cref="NullableSByte"/>.
 	/// </summary>
+	[Serializable]
 	public class NullableSByteType : NullableTypesType
 	{
 		public NullableSByteType() : base( new Int16SqlType() )

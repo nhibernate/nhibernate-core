@@ -9,6 +9,7 @@ namespace Nullables.NHibernate
 	/// <summary>
 	/// A NHibernate <see cref="IType"/> for a <see cref="NullableDecimal"/>.
 	/// </summary>
+	[Serializable]
 	public class NullableDecimalType : NullableTypesType
 	{
 		public NullableDecimalType() : base( new DecimalSqlType() )

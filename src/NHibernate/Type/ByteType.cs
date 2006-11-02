@@ -9,6 +9,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.Byte"/> Property 
 	/// to a <see cref="DbType.Byte"/> column.
 	/// </summary>
+	[Serializable]
 	public class ByteType : ValueTypeType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>

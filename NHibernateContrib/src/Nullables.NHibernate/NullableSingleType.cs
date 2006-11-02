@@ -9,6 +9,7 @@ namespace Nullables.NHibernate
 	/// <summary>
 	/// A NHibernate <see cref="IType"/> for a <see cref="NullableSingle"/>.
 	/// </summary>
+	[Serializable]
 	public class NullableSingleType : NullableTypesType
 	{
 		public NullableSingleType() : base( new SingleSqlType() )

@@ -14,6 +14,7 @@ namespace NHibernate.Type
 	/// date and time storage your provider can give you use the <see cref="TimestampType" />. 
 	/// or the <see cref="TicksType"/>
 	/// </remarks>
+	[Serializable]
 	public class DateTimeType : ValueTypeType, IIdentifierType, ILiteralType, IVersionType
 	{
 		/// <summary></summary>

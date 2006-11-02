@@ -7,6 +7,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Superclass of <see cref="ValueType"/> types.
 	/// </summary>
+	[Serializable]
 	public abstract class ValueTypeType : ImmutableType, ILiteralType
 	{
 		/// <summary>

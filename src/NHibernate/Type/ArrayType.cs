@@ -7,6 +7,7 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	/// <summary></summary>
+	[Serializable]
 	public class ArrayType : PersistentCollectionType
 	{
 		private readonly System.Type elementClass;

@@ -11,6 +11,7 @@ namespace NHibernate.Type
 	/// Adapts IUserType to the generic IType interface.
 	/// <seealso cref="IUserType"/>
 	/// </summary>
+	[Serializable]
 	public class CustomType : AbstractType
 	{
 		private readonly IUserType userType;

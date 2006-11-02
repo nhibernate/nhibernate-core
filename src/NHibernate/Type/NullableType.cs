@@ -14,6 +14,7 @@ namespace NHibernate.Type
 	/// used it will be created with its unitialized value and then on Update the uninitialized value of
 	/// the Struct will be written to the column - not <c>null</c>. 
 	/// </remarks>
+	[Serializable]
 	public abstract class NullableType : AbstractType
 	{
 		private static readonly bool IsDebugEnabled;

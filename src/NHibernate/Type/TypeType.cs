@@ -10,6 +10,7 @@ namespace NHibernate.Type
 	/// Maps the Assembly Qualified Name of a <see cref="System.Type"/> to a 
 	/// <see cref="DbType.String" /> column.
 	/// </summary>
+	[Serializable]
 	public class TypeType : ImmutableType
 	{
 		/// <summary></summary>

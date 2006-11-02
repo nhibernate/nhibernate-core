@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -7,6 +8,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Summary description for SetType.
 	/// </summary>
+	[Serializable]
 	public class SetType : PersistentCollectionType
 	{
 		/// <summary>

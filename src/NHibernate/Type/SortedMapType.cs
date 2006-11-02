@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -7,6 +8,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Extends the MapType to provide Sorting.
 	/// </summary>
+	[Serializable]
 	public class SortedMapType : MapType
 	{
 		private IComparer comparer;

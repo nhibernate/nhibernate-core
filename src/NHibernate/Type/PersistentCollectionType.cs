@@ -12,6 +12,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// PersistentCollectionType.
 	/// </summary>
+	[Serializable]
 	public abstract class PersistentCollectionType : AbstractType, IAssociationType
 	{
 		private readonly string role;

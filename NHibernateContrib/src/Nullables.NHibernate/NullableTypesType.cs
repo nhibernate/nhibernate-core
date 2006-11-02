@@ -10,6 +10,7 @@ namespace Nullables.NHibernate
 	/// Abstract type used for implementing NHibernate <see cref="IType"/>s for 
 	/// the Nullables library.
 	/// </summary>
+	[Serializable]
 	public abstract class NullableTypesType : ImmutableType
 	{
 		public NullableTypesType( SqlType type ) : base( type )

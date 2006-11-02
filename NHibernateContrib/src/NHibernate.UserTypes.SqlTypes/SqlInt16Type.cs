@@ -5,6 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public class SqlInt16Type : SqlTypesType
 	{
 		public SqlInt16Type() : base( new Int16SqlType() )

@@ -5,6 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public class SqlBooleanType : SqlTypesType
 	{
 		public SqlBooleanType() : base( new BooleanSqlType() )

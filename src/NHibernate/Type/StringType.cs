@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Maps a <see cref="System.String" /> to a <see cref="DbType.String" /> column.
 	/// </summary>
+	[Serializable]
 	public class StringType : ImmutableType, IDiscriminatorType
 	{
 		/// <summary></summary>

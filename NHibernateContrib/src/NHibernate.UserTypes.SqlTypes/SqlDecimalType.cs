@@ -5,6 +5,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
 {
+	[Serializable]
 	public class SqlDecimalType : SqlTypesType
 	{
 		public SqlDecimalType() : base( new DecimalSqlType() )

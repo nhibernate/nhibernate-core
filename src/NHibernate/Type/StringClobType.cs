@@ -1,3 +1,4 @@
+using System;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -11,6 +12,7 @@ namespace NHibernate.Type
 	/// IDbDataParameter.  Most DataProvider(Oralce) don't need to set the Size so a StringType
 	/// would work just fine.
 	/// </remarks>
+	[Serializable]
 	public class StringClobType : StringType
 	{
 		/// <summary></summary>

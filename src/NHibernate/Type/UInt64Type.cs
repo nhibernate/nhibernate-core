@@ -9,6 +9,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.UInt64"/> Property 
 	/// to a <see cref="DbType.UInt64"/> column.
 	/// </summary>
+	[Serializable]
 	public class UInt64Type : ValueTypeType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>

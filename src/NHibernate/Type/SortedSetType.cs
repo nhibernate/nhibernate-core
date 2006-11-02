@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 using NHibernate.Collection;
@@ -8,6 +9,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Extends the SetType to provide Sorting.
 	/// </summary>
+	[Serializable]
 	public class SortedSetType : SetType
 	{
 		private IComparer comparer;

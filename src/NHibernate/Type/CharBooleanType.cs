@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.Boolean"/> Property 
 	/// to a <see cref="DbType.AnsiStringFixedLength"/> column.
 	/// </summary>
+	[Serializable]
 	public abstract class CharBooleanType : BooleanType
 	{
 		/// <summary></summary>

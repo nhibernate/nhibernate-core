@@ -22,6 +22,7 @@ namespace NHibernate.Type
 	/// do a custom implementation.
 	/// </para>
 	/// </remarks>
+	[Serializable]
 	public class SerializableType : MutableType
 	{
 		private System.Type serializableClass;

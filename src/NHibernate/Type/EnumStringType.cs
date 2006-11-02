@@ -62,6 +62,7 @@ namespace NHibernate.Type {
 	/// , and <c>NHibernate.Test.TypesTest.EnumStringClass.hbm.xml</c>
 	/// </para>
 	/// </remarks>
+	[Serializable]
 	public abstract class EnumStringType : ImmutableType, IDiscriminatorType 
 	{
 		private readonly System.Type enumClass;

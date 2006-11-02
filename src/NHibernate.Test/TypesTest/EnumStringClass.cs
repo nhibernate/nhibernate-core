@@ -31,6 +31,7 @@ namespace NHibernate.Test.TypesTest
 		Dimmed
 	}
 
+	[Serializable]
 	public class SampleEnumType : NHibernate.Type.EnumStringType
 	{
 		public SampleEnumType() 

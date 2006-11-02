@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.SByte"/> Property 
 	/// to a <see cref="DbType.SByte"/> column.
 	/// </summary>
+	[Serializable]
 	public class SByteType : ValueTypeType, IDiscriminatorType
 	{
 		/// <summary></summary>

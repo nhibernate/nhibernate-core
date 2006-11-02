@@ -7,6 +7,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Common base class for <see cref="CharType" /> and <see cref="AnsiCharType" />.
 	/// </summary>
+	[Serializable]
 	public abstract class BaseCharType : ValueTypeType, IDiscriminatorType
 	{
 		public BaseCharType( SqlType sqlType ) : base( sqlType )

@@ -9,6 +9,7 @@ namespace Nullables.NHibernate
 	/// <summary>
 	/// A NHibernate <see cref="IType"/> for a <see cref="NullableBoolean"/>.
 	/// </summary>
+	[Serializable]
 	public class NullableBooleanType : NullableTypesType
 	{
 		public NullableBooleanType() : base( new BooleanSqlType() )

@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Maps a <see cref="System.TimeSpan" /> Property to an <see cref="DbType.Int64" /> column 
 	/// </summary>
+	[Serializable]
 	public class TimeSpanType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>

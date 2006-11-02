@@ -8,6 +8,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// A one-to-one association to an entity
 	/// </summary>
+	[Serializable]
 	public class OneToOneType : EntityType, IAssociationType
 	{
 		private static readonly SqlType[ ] NoSqlTypes = new SqlType[0];

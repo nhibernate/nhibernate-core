@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -5,6 +6,7 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	/// <summary></summary>
+	[Serializable]
 	public class MapType : PersistentCollectionType
 	{
 		/// <summary>

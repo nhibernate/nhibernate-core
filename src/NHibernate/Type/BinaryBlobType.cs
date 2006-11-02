@@ -1,3 +1,4 @@
+using System;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -10,6 +11,7 @@ namespace NHibernate.Type
 	/// IDbDataParameter.  Most DataProvider(Oralce) don't need to set the Size so a BinaryType
 	/// would work just fine.
 	/// </remarks>
+	[Serializable]
 	public class BinaryBlobType : BinaryType
 	{
 		/// <summary></summary>
