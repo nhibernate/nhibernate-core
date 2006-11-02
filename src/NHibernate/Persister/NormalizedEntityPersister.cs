@@ -991,8 +991,8 @@ namespace NHibernate.Persister
 				try
 				{
 					this.discriminatorType = ( IDiscriminatorType ) NHibernateUtil.Int32;
-					discriminatorValue = 0;
-					this.discriminatorSQLString = "0";
+					discriminatorValue = model.SubclassId;
+					this.discriminatorSQLString = discriminatorValue.ToString();
 				}
 				catch( Exception e )
 				{
@@ -1264,7 +1264,7 @@ namespace NHibernate.Persister
 				{
 					if( model.IsPolymorphic )
 					{
-						int disc = p + 1;
+						int disc = sc.SubclassId;
 						subclassesByDiscriminatorValue.Add( disc, sc.MappedClass );
 						discriminatorValues[ p ] = disc.ToString();
 						int id = GetTableId(

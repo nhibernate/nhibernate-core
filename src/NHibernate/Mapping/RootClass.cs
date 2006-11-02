@@ -41,6 +41,17 @@ namespace NHibernate.Mapping
 		private bool forceDiscriminator;
 		private string where;
 		private bool discriminatorInsertable = true;
+		private int nextSubclassId = 0;
+
+		internal override int NextSubclassId()
+		{
+			return ++nextSubclassId;
+		}
+
+		public override int SubclassId
+		{
+			get { return 0; }
+		}
 
 		/// <summary>
 		/// Gets or sets the <see cref="Property"/> that is used as the <c>id</c>.

@@ -157,6 +157,32 @@ namespace NHibernate.Test.JoinedSubclass
 			s.Flush();
 			s.Close();			
 		}
+		
+		[Test]
+		public void SelectByClass()
+		{
+			using (ISession s = OpenSession())
+			using( ITransaction t = s.BeginTransaction() )
+			{
+				Person wally = new Person();
+				wally.Name = "wally";
+
+				Employee dilbert = new Employee();
+				dilbert.Name = "dilbert";
+				dilbert.Title = "office clown";
+
+				s.Save(wally);
+				s.Save(dilbert);
+				s.Flush();
+
+				Assert.AreSame(wally, s.CreateQuery("select p from Person p where p.class = Person").UniqueResult());
+				Assert.AreSame(dilbert, s.CreateQuery("select p from Person p where p.class = Employee").UniqueResult());
+
+				s.Delete(wally);
+				s.Delete(dilbert);
+				t.Commit();
+			}
+		}
 
 		/// <summary>
 		/// Test the ability to insert a new row with a User Assigned Key

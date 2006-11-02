@@ -619,5 +619,9 @@ namespace NHibernate.Mapping
 				}
 			}
 		}
+
+		internal abstract int NextSubclassId();
+
+		public abstract int SubclassId { get; }
 	}
 }
