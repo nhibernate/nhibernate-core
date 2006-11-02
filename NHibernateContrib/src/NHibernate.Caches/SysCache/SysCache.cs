@@ -41,7 +41,7 @@ namespace NHibernate.Caches.SysCache
 		private AspCache.CacheItemPriority _priority;
 		private static readonly TimeSpan _defaultRelativeExpiration = TimeSpan.FromSeconds( 300 );
 		private static readonly string _cacheKeyPrefix = "NHibernate-Cache:";
-		private string _rootCacheKey;
+		private readonly string _rootCacheKey;
 		private bool _rootCacheKeyStored;
 
 		/// <summary>
@@ -82,10 +82,9 @@ namespace NHibernate.Caches.SysCache
 		{
 			_region = region;
 			_cache = HttpRuntime.Cache;
-
-			StoreRootCacheKey();
-
+			_rootCacheKey = GenerateRootCacheKey();
 			Configure( properties );
+			StoreRootCacheKey();
 		}
 
 		private void Configure( IDictionary props )
@@ -330,11 +329,6 @@ namespace NHibernate.Caches.SysCache
 		/// <summary></summary>
 		private void StoreRootCacheKey()
 		{
-			if (_rootCacheKey == null)
-			{
-				_rootCacheKey = GenerateRootCacheKey();
-			}
-
 			_rootCacheKeyStored = true;
 			_cache.Add(
 				_rootCacheKey,
