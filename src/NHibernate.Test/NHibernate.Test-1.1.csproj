@@ -419,6 +419,20 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ExpressionTest\SubQueries\Classes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ExpressionTest\SubQueries\Mappings.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ExpressionTest\SubQueries\SubQueriesSqlFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "FilterTest\Category.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2110,6 +2124,25 @@
                 />
                 <File
                     RelPath = "Subclass\SubclassOne.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SubselectFetchTest\Child.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SubselectFetchTest\Parent.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SubselectFetchTest\ParentChild.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SubselectFetchTest\SubselectFetchFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

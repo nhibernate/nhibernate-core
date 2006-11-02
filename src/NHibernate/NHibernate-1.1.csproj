@@ -989,6 +989,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Engine\BatchFetchQueue.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Engine\Cascades.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1070,6 +1075,11 @@
                 />
                 <File
                     RelPath = "Engine\RowSelection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\SubselectFetch.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1890,6 +1900,16 @@
                 />
                 <File
                     RelPath = "Loader\Collection\OneToManyLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Collection\SubselectCollectionLoader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Loader\Collection\SubselectOneToManyLoader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
