@@ -92,7 +92,7 @@ namespace NHibernate.Hql
 					// NHb: This block is not an exactly port from H3.2 but a port from previous implementation of QueryTraslator
 					if (((last != null && beforeClassTokens.Contains(last)) &&
 						(next == null || !notAfterClassTokens.Contains(next))) ||
-						"class".Equals(last))
+						PathExpressionParser.EntityClass.Equals(last))
 					{
 						System.Type clazz = GetImportedClass(token, factory);
 						if (clazz != null)
@@ -121,7 +121,7 @@ namespace NHibernate.Hql
 
 		private static bool IsPossiblyClassName(string last, string next)
 		{
-			return "class".Equals(last) || 
+			return PathExpressionParser.EntityClass.Equals(last) || 
 				(beforeClassTokens.Contains(last) && !notAfterClassTokens.Contains(next));
 		}
 

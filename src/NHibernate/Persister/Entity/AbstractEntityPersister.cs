@@ -10,7 +10,6 @@ using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Hql.Classic;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Loader.Entity;
@@ -42,6 +41,7 @@ namespace NHibernate.Persister.Entity
 
 		private static readonly ILog log = LogManager.GetLogger(typeof (AbstractEntityPersister));
 
+		public const string EntityID = "id";
 		public const string EntityClass = "class";
 
 		private readonly Dialect.Dialect dialect;
@@ -648,13 +648,13 @@ namespace NHibernate.Persister.Entity
 			{
 				InitPropertyPaths(null, IdentifierType, IdentifierColumnNames, null, factory);
 			}
-			InitPropertyPaths(PathExpressionParser.EntityID, IdentifierType, IdentifierColumnNames, null, factory);
+			InitPropertyPaths(EntityID, IdentifierType, IdentifierColumnNames, null, factory);
 
 			if (IsPolymorphic)
 			{
-				AddPropertyPath(PathExpressionParser.EntityClass, DiscriminatorType, new string[] {DiscriminatorColumnName},
-				                null
-					// TODO H3: new string[ ] { DiscriminatorFormulaTemplate }
+				AddPropertyPath(EntityClass, DiscriminatorType,
+				                new string[] { DiscriminatorColumnName },
+				                new string[ ] { DiscriminatorFormulaTemplate }
 					);
 			}
 		}
@@ -1034,7 +1034,7 @@ namespace NHibernate.Persister.Entity
 			if (HasIdentifierProperty)
 			{
 				subclassPropertyAliases[IdentifierPropertyName] = identifierAliases;
-				subclassPropertyAliases[PathExpressionParser.EntityID] = identifierAliases;
+				subclassPropertyAliases[EntityID] = identifierAliases;
 			}
 
 			if (HasEmbeddedIdentifier)
@@ -1052,7 +1052,7 @@ namespace NHibernate.Persister.Entity
 
 			if (IsPolymorphic)
 			{
-				subclassPropertyAliases[PathExpressionParser.EntityClass] = new string[] {DiscriminatorAlias};
+				subclassPropertyAliases[EntityClass] = new string[] {DiscriminatorAlias};
 			}
 		}
 
@@ -2935,6 +2935,11 @@ namespace NHibernate.Persister.Entity
 		public bool HasSubselectLoadableCollections
 		{
 			get { return hasSubselectLoadableCollections; }
+		}
+
+		protected virtual string DiscriminatorFormulaTemplate
+		{
+			get { return null; }
 		}
 	}
 }

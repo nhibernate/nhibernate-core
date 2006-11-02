@@ -1074,7 +1074,7 @@ namespace NHibernate.Hql.Classic
 					// a null key in .net - it is valid for a null key to be in a java.util.Set
 					if (
 						((last != null && beforeClassTokens.Contains(last)) && (next == null || !notAfterClassTokens.Contains(next))) ||
-							"class".Equals(last))
+							PathExpressionParser.EntityClass.Equals(last))
 					{
 						System.Type clazz = GetImportedClass(token, factory);
 						if (clazz != null)

@@ -47,7 +47,7 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorAlias; }
 		}
 
-		protected string DiscriminatorFormulaTemplate
+		protected override string DiscriminatorFormulaTemplate
 		{
 			get { return discriminatorFormulaTemplate; }
 		}

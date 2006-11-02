@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
@@ -40,7 +39,7 @@ namespace NHibernate.Loader
 			if( keyColumnsCandidates == null )
 			{
 				suffixedKeyColumns = GetUserProvidedAliases(
-					"id",
+					AbstractEntityPersister.EntityID,
 					GetIdentifierAliases( persister, suffix )
 					);
 			}
@@ -52,7 +51,7 @@ namespace NHibernate.Loader
 
 			suffixedPropertyColumns = GetSuffixedPropertyAliases( persister );
 			suffixedDiscriminatorColumn = GetUserProvidedAlias(
-				"class",
+				AbstractEntityPersister.EntityClass,
 				GetDiscriminatorAlias( persister, suffix )
 				);
 			if( persister.IsVersioned )
