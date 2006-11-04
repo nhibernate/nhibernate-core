@@ -196,11 +196,11 @@ namespace NHibernate.Test.Legacy
 
 			// not doing a flush because the Find will do an auto flush unless we tell the session a 
 			// different FlushMode
-			IList list = s.Find( "select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString = 'FRIEND'" );
+			IList list = s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString = 'FRIEND'").List();
 
 			Assert.AreEqual( 2, list.Count, "List Identifiers" );
 
-			IEnumerator enumerator = s.Enumerable( "select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'" ).GetEnumerator();
+			IEnumerator enumerator = s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").Enumerable().GetEnumerator();
 			int i = 0;
 			while( enumerator.MoveNext() )
 			{
@@ -277,10 +277,10 @@ namespace NHibernate.Test.Legacy
 			fum.Fo = fum2;
 			s.Save( fum2 );
 
-			IList list = s.Find( "from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'" );
+			IList list = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").List();
 			Assert.AreEqual( 2, list.Count, "Find a List of Composite Keyed objects" );
 
-			IList list2 = s.Find( "select fum from fum in class NHibernate.DomainModel.Fum where fum.FumString='fee fi fo'" );
+			IList list2 = s.CreateQuery("select fum from fum in class NHibernate.DomainModel.Fum where fum.FumString='fee fi fo'").List();
 			Assert.AreEqual( fum, ( Fum ) list2[ 0 ], "Find one Composite Keyed object" );
 
 			fum.Fo = null;
@@ -290,7 +290,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator enumerator = s.Enumerable( "from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'" ).GetEnumerator();
+			IEnumerator enumerator = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").Enumerable().GetEnumerator();
 			int i = 0;
 			while( enumerator.MoveNext() )
 			{
@@ -350,26 +350,26 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			// Try to find the Fum object "fo" that we inserted searching by the string in the id
-			IList vList = s.Find( "from fum in class NHibernate.DomainModel.Fum where fum.Id.String='fo'" );
+			IList vList = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.String='fo'").List();
 			Assert.AreEqual( 1, vList.Count, "find by composite key query (find fo object)" );
 			fum = ( Fum ) vList[ 0 ];
 			Assert.AreEqual( "fo", fum.Id.String, "find by composite key query (check fo object)" );
 
 			// Try to fnd the Fum object "fi" that we inserted by searching the date in the id
-			vList = s.Find( "from fum in class NHibernate.DomainModel.Fum where fum.Id.Short = ?", fiShort, NHibernateUtil.Int16 );
+			vList = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.Short = ?").SetInt16(0, fiShort).List();
 			Assert.AreEqual( 1, vList.Count, "find by composite key query (find fi object)" );
 			fi = ( Fum ) vList[ 0 ];
 			Assert.AreEqual( "fi", fi.Id.String, "find by composite key query (check fi object)" );
 
 			// make sure we can return all of the objects by searching by the date id
-			vList = s.Find( "from fum in class NHibernate.DomainModel.Fum where fum.Id.Date <= ? and not fum.FumString='FRIEND'", DateTime.Now, NHibernateUtil.Date );
+			vList = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.Date <= ? and not fum.FumString='FRIEND'").SetDateTime(0, DateTime.Now).List();
 			Assert.AreEqual( 4, vList.Count, "find by composite key query with arguments" );
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
-			Assert.IsTrue( s.Enumerable( "select fum.Id.Short, fum.Id.Date, fum.Id.String from fum in class NHibernate.DomainModel.Fum" ).GetEnumerator().MoveNext() );
-			Assert.IsTrue( s.Enumerable( "select fum.Id from fum in class NHibernate.DomainModel.Fum" ).GetEnumerator().MoveNext() );
+			Assert.IsTrue(s.CreateQuery("select fum.Id.Short, fum.Id.Date, fum.Id.String from fum in class NHibernate.DomainModel.Fum").Enumerable().GetEnumerator().MoveNext());
+			Assert.IsTrue(s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum").Enumerable().GetEnumerator().MoveNext());
 
 			IQuery qu = s.CreateQuery( "select fum.FumString, fum, fum.FumString, fum.Id.Date from fum in class NHibernate.DomainModel.Fum" );
 			IType[ ] types = qu.ReturnTypes;
@@ -392,13 +392,13 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual( 8, j, "iterate on composite key" );
 
 			fum = ( Fum ) s.Load( typeof( Fum ), fum.Id );
-			s.Filter( fum.QuxArray, "where this.Foo is null" );
-			s.Filter( fum.QuxArray, "where this.Foo.id = ?", "fooid", NHibernateUtil.String );
+			s.CreateFilter( fum.QuxArray, "where this.Foo is null").List();
+			s.CreateFilter(fum.QuxArray, "where this.Foo.id = ?").SetString(0, "fooid");
 			IQuery f = s.CreateFilter( fum.QuxArray, "where this.Foo.id = :fooId" );
 			f.SetString( "fooId", "abc" );
 			Assert.IsFalse( f.Enumerable().GetEnumerator().MoveNext() );
 
-			enumer = s.Enumerable( "from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'" ).GetEnumerator();
+			enumer = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").Enumerable().GetEnumerator();
 			int i = 0;
 			while( enumer.MoveNext() )
 			{
@@ -409,8 +409,8 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual( 4, i, "iterate on composite key" );
 			s.Flush();
 
-			s.Enumerable( "from fu in class Fum, fo in class Fum where fu.Fo.Id.String = fo.Id.String and fo.FumString is not null" );
-			s.Find( "from Fumm f1 inner join f1.Fum f2" );
+			s.CreateQuery("from fu in class Fum, fo in class Fum where fu.Fo.Id.String = fo.Id.String and fo.FumString is not null").Enumerable();
+			s.CreateQuery("from Fumm f1 inner join f1.Fum f2").List();
 			s.Close();
 		}
 
@@ -485,7 +485,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			list = s.Find( "from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'" );
+			list = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").List();
 			Assert.AreEqual( 2, list.Count, "deleted owner" );
 			s.Lock( list[ 0 ], LockMode.Upgrade );
 			s.Lock( list[ 1 ], LockMode.Upgrade );
@@ -517,7 +517,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			fo = ( Fo ) s.Load( typeof( Fo ), FumTest.FumKey( "an instance of fo" ) );
 			Assert.AreEqual( 5, fo.X );
-			IEnumerator enumer = s.Enumerable( "from fo in class NHibernate.DomainModel.Fo where fo.id.String like 'an instance of fo'" ).GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("from fo in class NHibernate.DomainModel.Fo where fo.id.String like 'an instance of fo'").Enumerable().GetEnumerator();
 			Assert.IsTrue( enumer.MoveNext() );
 			Assert.AreSame( fo, enumer.Current );
 			s.Delete( fo );
@@ -575,10 +575,10 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			d = ( Outer ) s.Find( "from Outer o where o.id.DetailId=?", d.Id.DetailId, NHibernateUtil.String )[ 0 ];
-			s.Find( "from Outer o where o.Id.Master.Id.Sup.Dudu is not null" );
-			s.Find( "from Outer o where o.Id.Master.Bla = ''" );
-			s.Find( "from Outer o where o.Id.Master.Id.One = ''" );
+			d = (Outer)s.CreateQuery("from Outer o where o.id.DetailId=?").SetString(0, d.Id.DetailId).List()[0];
+			s.CreateQuery("from Outer o where o.Id.Master.Id.Sup.Dudu is not null").List();
+			s.CreateQuery("from Outer o where o.Id.Master.Bla = ''").List();
+			s.CreateQuery("from Outer o where o.Id.Master.Id.One = ''").List();
 			s.Delete( d );
 			s.Delete( d.Id.Master );
 			s.Delete( d.Id.Master.Id.Sup );
@@ -592,15 +592,15 @@ namespace NHibernate.Test.Legacy
 		{
 			using( ISession s = OpenSession() )
 			{
-				s.Find( "select fum1.Fo from fum1 in class Fum where fum1.Fo.FumString is not null" );
-				s.Find( "from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString" );
+				s.CreateQuery("select fum1.Fo from fum1 in class Fum where fum1.Fo.FumString is not null").List();
+				s.CreateQuery("from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString").List();
 				if( dialect.SupportsSubSelects )
 				{
-					s.Find( "from fum1 in class Fum where exists elements(fum1.Friends)" );
-					s.Find( "from fum1 in class Fum where size(fum1.Friends) = 0" );
+					s.CreateQuery("from fum1 in class Fum where exists elements(fum1.Friends)").List();
+					s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").List();
 				}
-				s.Find( "select fum1.Friends.elements from fum1 in class Fum" );
-				s.Find( "from fum1 in class Fum, fr in elements( fum1.Friends )" );
+				s.CreateQuery("select fum1.Friends.elements from fum1 in class Fum").List();
+				s.CreateQuery("from fum1 in class Fum, fr in elements( fum1.Friends )").List();
 			}
 		}
 

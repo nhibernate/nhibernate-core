@@ -16,8 +16,10 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 	// A component class
 	public class Name
 	{
+		#pragma warning disable 169
 		string first;
 		string last;
+		#pragma warning restore 169
 	}
 
 	/// <summary>

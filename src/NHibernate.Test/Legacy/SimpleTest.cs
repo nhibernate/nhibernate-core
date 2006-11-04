@@ -79,7 +79,7 @@ namespace NHibernate.Test.Legacy
 			ITransaction t3 = s3.BeginTransaction();
 
 //			Simple simple3 = (Simple)s3.Load(typeof(Simple), key);
-			Simple simple3 = (Simple)s3.Find( "from Simple as s where s.id = ? and '?'='?'", key, NHibernateUtil.Int64 )[0];
+			Simple simple3 = (Simple)s3.CreateQuery("from Simple as s where s.id = ? and '?'='?'").SetInt64(0, key).List()[0];
 			Simple otherSimple3;
 
 			Assert.AreEqual(simple2.Count, simple3.Count);

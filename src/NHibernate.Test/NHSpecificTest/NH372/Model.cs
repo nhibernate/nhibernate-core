@@ -4,7 +4,9 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 {
 	public class BaseParent
 	{
+		#pragma warning disable 649
 		private int _Id;
+		#pragma warning restore 649
 		public virtual int Id
 		{
 			get { return _Id; }

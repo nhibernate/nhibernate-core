@@ -35,20 +35,20 @@ namespace NHibernate.Test.Legacy
 		public void Joins() 
 		{
 			ISession s = OpenSession();
-			s.Find( "from Lower l join l.YetAnother l2 where lower(l2.Name) > 'a'" );
-			s.Find("from SubMulti sm join sm.Children smc where smc.Name > 'a'");
-			s.Find("select s, ya from Lower s join s.YetAnother ya");
-			s.Find("from Lower s1 join s1.Bag s2");
-			s.Find("from Lower s1 left join s1.Bag s2");
-			s.Find("select s, a from Lower s join s.Another a");
-			s.Find("select s, a from Lower s left join s.Another a");
-			s.Find("from Top s, Lower ls");
-			s.Find("from Lower ls join ls.Set s where s.Name > 'a'");
-			s.Find("from Po po join po.List sm where sm.Name > 'a'");
-			s.Find("from Lower ls inner join ls.Another s where s.Name is not null");
-			s.Find("from Lower ls where ls.Other.Another.Name is not null");
-			s.Find( "from Multi m where m.Derived like 'F%'" );
-			s.Find( "from SubMulti m where m.Derived like 'F%'" );
+			s.CreateQuery( "from Lower l join l.YetAnother l2 where lower(l2.Name) > 'a'").List();
+			s.CreateQuery("from SubMulti sm join sm.Children smc where smc.Name > 'a'").List();
+			s.CreateQuery("select s, ya from Lower s join s.YetAnother ya").List();
+			s.CreateQuery("from Lower s1 join s1.Bag s2").List();
+			s.CreateQuery("from Lower s1 left join s1.Bag s2").List();
+			s.CreateQuery("select s, a from Lower s join s.Another a").List();
+			s.CreateQuery("select s, a from Lower s left join s.Another a").List();
+			s.CreateQuery("from Top s, Lower ls").List();
+			s.CreateQuery("from Lower ls join ls.Set s where s.Name > 'a'").List();
+			s.CreateQuery("from Po po join po.List sm where sm.Name > 'a'").List();
+			s.CreateQuery("from Lower ls inner join ls.Another s where s.Name is not null").List();
+			s.CreateQuery("from Lower ls where ls.Other.Another.Name is not null").List();
+			s.CreateQuery( "from Multi m where m.Derived like 'F%'").List();
+			s.CreateQuery( "from SubMulti m where m.Derived like 'F%'").List();
 			s.Close();
 		}
 
@@ -59,7 +59,7 @@ namespace NHibernate.Test.Legacy
 			// Known bug in H2.1, fixed in H3
 			/*
 			ISession s = OpenSession();
-			s.Find("from Lower l where lower(l.YetAnother.Top.Name) > 'a'");
+			s.CreateQuery("from Lower l where lower(l.YetAnother.Top.Name) > 'a'").List();
 			s.Close();
 			*/
 		}
@@ -93,13 +93,13 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			// TODO: I don't understand why h2.0.3/h2.1 issues a select statement here
 			
-			Assert.AreEqual( 2, s.Find("select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").Count );
-			Assert.AreEqual( 2, s.Find("select elements(sm.Children) from SubMulti as sm").Count );
-			Assert.AreEqual( 1, s.Find("select distinct sm from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").Count );
+			Assert.AreEqual( 2, s.CreateQuery("select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").List().Count );
+			Assert.AreEqual( 2, s.CreateQuery("select elements(sm.Children) from SubMulti as sm").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select distinct sm from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").List().Count );
 			sm = (SubMulti)s.Load( typeof(SubMulti), id );
 			Assert.AreEqual( 2, sm.Children.Count );
 
-			ICollection filterColl = s.Filter( sm.MoreChildren, "select count(*) where this.Amount>-1 and this.Name is null");
+			ICollection filterColl = s.CreateFilter( sm.MoreChildren, "select count(*) where this.Amount>-1 and this.Name is null").List();
 			foreach(object obj in filterColl) 
 			{
 				Assert.AreEqual( 2, obj );
@@ -108,7 +108,7 @@ namespace NHibernate.Test.Legacy
 			}
 			Assert.AreEqual( "FOO", sm.Derived , "should have uppercased the column in a formula" );
 			
-			IEnumerator enumer = s.Enumerable("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").Enumerable().GetEnumerator();
 			Assert.IsTrue( enumer.MoveNext() );
 			Assert.AreSame( sm, enumer.Current );
 			Assert.AreEqual( 2, sm.MoreChildren.Count );
@@ -163,16 +163,16 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			TrivialClass tc = (TrivialClass)s.Load( typeof(TrivialClass), id );
-			s.Find("from s in class TrivialClass where s.id = 2");
-			s.Find("select s.Count from s in class Top");
-			s.Find("from s in class Lower where s.Another.Name='name'");
-			s.Find("from s in class Lower where s.YetAnother.Name='name'");
-			s.Find("from s in class Lower where s.YetAnother.Name='name' and s.YetAnother.Foo is null");
-			s.Find("from s in class Top where s.Count=1");
-			s.Find("select s.Count from s in class Top, ls in class Lower where ls.Another=s");
-			s.Find("select ls.Bag.elements, ls.Set.elements from ls in class Lower");
-			s.Enumerable("from s in class Lower");
-			s.Enumerable("from s in class Top");
+			s.CreateQuery("from s in class TrivialClass where s.id = 2").List();
+			s.CreateQuery("select s.Count from s in class Top").List();
+			s.CreateQuery("from s in class Lower where s.Another.Name='name'").List();
+			s.CreateQuery("from s in class Lower where s.YetAnother.Name='name'").List();
+			s.CreateQuery("from s in class Lower where s.YetAnother.Name='name' and s.YetAnother.Foo is null").List();
+			s.CreateQuery("from s in class Top where s.Count=1").List();
+			s.CreateQuery("select s.Count from s in class Top, ls in class Lower where ls.Another=s").List();
+			s.CreateQuery("select ls.Bag.elements, ls.Set.elements from ls in class Lower").List();
+			s.CreateQuery("from s in class Lower").Enumerable();
+			s.CreateQuery("from s in class Top").Enumerable();
 			s.Delete(tc);
 			s.Flush();
 			s.Close();
@@ -281,7 +281,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator enumer = s.Enumerable("select\n\ns from s in class Top where s.Count>0").GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("select\n\ns from s in class Top where s.Count>0").Enumerable().GetEnumerator();
 			bool foundSimp = false;
 			bool foundMulti = false;
 			bool foundSubMulti = false;
@@ -296,27 +296,27 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue( foundMulti );
 			Assert.IsTrue( foundSubMulti );
 			
-			s.Find("from m in class Multi where m.Count>0 and m.ExtraProp is not null");
-			s.Find("from m in class Top where m.Count>0 and m.Name is not null");
-			s.Find("from m in class Lower where m.Other is not null");
-			s.Find("from m in class Multi where m.Other.id = 1");
-			s.Find("from m in class SubMulti where m.Amount > 0.0");
+			s.CreateQuery("from m in class Multi where m.Count>0 and m.ExtraProp is not null").List();
+			s.CreateQuery("from m in class Top where m.Count>0 and m.Name is not null").List();
+			s.CreateQuery("from m in class Lower where m.Other is not null").List();
+			s.CreateQuery("from m in class Multi where m.Other.id = 1").List();
+			s.CreateQuery("from m in class SubMulti where m.Amount > 0.0").List();
 			
-			Assert.AreEqual( 2, s.Find("from m in class Multi").Count );
+			Assert.AreEqual( 2, s.CreateQuery("from m in class Multi").List().Count );
 
 			//if( !(dialect is Dialect.HSQLDialect) ) 
 			//{
-			Assert.AreEqual( 1, s.Find("from m in class Multi where m.class = SubMulti").Count );
-			Assert.AreEqual( 1, s.Find("from m in class Top where m.class = Multi").Count );
+			Assert.AreEqual( 1, s.CreateQuery("from m in class Multi where m.class = SubMulti").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("from m in class Top where m.class = Multi").List().Count );
 			//}
 
-			Assert.AreEqual( 3, s.Find("from s in class Top").Count );
-			Assert.AreEqual( 0, s.Find("from ls in class Lower").Count );
-			Assert.AreEqual( 1, s.Find("from sm in class SubMulti").Count );
+			Assert.AreEqual( 3, s.CreateQuery("from s in class Top").List().Count );
+			Assert.AreEqual( 0, s.CreateQuery("from ls in class Lower").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("from sm in class SubMulti").List().Count );
 
-			s.Find("from ls in class Lower, s in ls.Bag.elements where s.id is not null");
-			s.Find("from ls in class Lower, s in ls.Set.elements where s.id is not null");
-			s.Find("from sm in class SubMulti where exists sm.Children.elements");
+			s.CreateQuery("from ls in class Lower, s in ls.Bag.elements where s.id is not null").List();
+			s.CreateQuery("from ls in class Lower, s in ls.Set.elements where s.id is not null").List();
+			s.CreateQuery("from sm in class SubMulti where exists sm.Children.elements").List();
 			
 			t.Commit();
 			s.Close();
@@ -398,7 +398,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerable enumer = s.Enumerable("select\n\ns from s in class Top where s.Count>0");
+			IEnumerable enumer = s.CreateQuery("select\n\ns from s in class Top where s.Count>0").Enumerable();
 			bool foundSimp = false;
 			bool foundMulti = false;
 			bool foundSubMulti = false;
@@ -413,19 +413,19 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(foundMulti);
 			Assert.IsTrue(foundSubMulti);
 
-			s.Find("from m in class Multi where m.Count>0 and m.ExtraProp is not null");
-			s.Find("from m in class Top where m.Count>0 and m.Name is not null");
-			s.Find("from m in class Lower where m.Other is not null");
-			s.Find("from m in class Multi where m.Other.id = 1");
-			s.Find("from m in class SubMulti where m.Amount > 0.0");
+			s.CreateQuery("from m in class Multi where m.Count>0 and m.ExtraProp is not null").List();
+			s.CreateQuery("from m in class Top where m.Count>0 and m.Name is not null").List();
+			s.CreateQuery("from m in class Lower where m.Other is not null").List();
+			s.CreateQuery("from m in class Multi where m.Other.id = 1").List();
+			s.CreateQuery("from m in class SubMulti where m.Amount > 0.0").List();
 			
-			Assert.AreEqual( 2, s.Find("from m in class Multi").Count );
-			Assert.AreEqual( 3, s.Find("from s in class Top").Count );
-			Assert.AreEqual( 0, s.Find("from s in class Lower").Count );
-			Assert.AreEqual( 1, s.Find("from sm in class SubMulti").Count );
+			Assert.AreEqual( 2, s.CreateQuery("from m in class Multi").List().Count );
+			Assert.AreEqual( 3, s.CreateQuery("from s in class Top").List().Count );
+			Assert.AreEqual( 0, s.CreateQuery("from s in class Lower").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("from sm in class SubMulti").List().Count );
 
-			s.Find("from ls in class Lower, s in ls.Bag.elements where s.id is not null");
-			s.Find("from sm in class SubMulti where exists sm.Children.elements");
+			s.CreateQuery("from ls in class Lower, s in ls.Bag.elements where s.id is not null").List();
+			s.CreateQuery("from sm in class SubMulti where exists sm.Children.elements").List();
 			
 			t.Commit();
 			s.Close();
@@ -457,7 +457,7 @@ namespace NHibernate.Test.Legacy
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.AreEqual( 0, s.Find("from s in class Top").Count );
+			Assert.AreEqual( 0, s.CreateQuery("from s in class Top").List().Count );
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
 			multi.Name = "name";
@@ -538,7 +538,7 @@ namespace NHibernate.Test.Legacy
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.AreEqual( 0, s.Find("from s in class Top").Count );
+			Assert.AreEqual( 0, s.CreateQuery("from s in class Top").List().Count );
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
 			multi.Name = "name";
@@ -634,7 +634,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual( 2, po.Set.Count );
 			Assert.AreEqual( 1, po.List.Count );
 			s.Delete(po);
-			Assert.AreEqual( 0, s.Find("from s in class Top").Count );
+			Assert.AreEqual( 0, s.CreateQuery("from s in class Top").List().Count );
 			t.Commit();
 			s.Close();
 

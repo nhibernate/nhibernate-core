@@ -53,7 +53,7 @@ namespace NHibernate.Test.Legacy
 			session.Close();
 	      
 			session = OpenSession();
-			Assert.AreEqual( 0, session.Find("from N").Count );
+			Assert.AreEqual( 0, session.CreateQuery("from N").List().Count );
 			session.Delete("from M");
 			session.Flush();
 			session.Close();
@@ -196,11 +196,11 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList list = s.Find( "from Up up order by up.Id2 asc" );
+			IList list = s.CreateQuery( "from Up up order by up.Id2 asc").List();
 			Assert.IsTrue( list.Count == 2 );
 			Assert.IsFalse( list[0] is Down );
 			Assert.IsTrue( list[1] is Down );
-			list = s.Find( "from Down down" );
+			list = s.CreateQuery( "from Down down").List();
 			Assert.IsTrue( list.Count == 1 );
 			Assert.IsTrue( list[0] is Down );
 			s.Delete( "from Up up" );
@@ -223,7 +223,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator enumer = s.Enumerable("from m in class Master").GetEnumerator();
+			IEnumerator enumer = s.CreateQuery("from m in class Master").Enumerable().GetEnumerator();
 			enumer.MoveNext();
 			m = (Master)enumer.Current;
 			Assert.AreSame(m, m.OtherMaster);
@@ -329,14 +329,14 @@ namespace NHibernate.Test.Legacy
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				s.Find("from s in class Several");
+				s.CreateQuery("from s in class Several").List();
 				t.Commit();
 			}
 
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				s.Find("from s in class Single");
+				s.CreateQuery("from s in class Single").List();
 				t.Commit();
 			}
 
@@ -356,13 +356,13 @@ namespace NHibernate.Test.Legacy
 
 			if( dialect.SupportsSubSelects ) 
 			{
-				s.Enumerable("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM d in m.Details.elements WHERE NOT d.I=5 )");
-				s.Enumerable("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN m.Details.elements )");
+				s.CreateQuery("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM d in m.Details.elements WHERE NOT d.I=5 )").Enumerable();
+				s.CreateQuery("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN m.Details.elements )").Enumerable();
 			}
 
-			s.Enumerable("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5");
-			s.Find("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5");
-			s.Find("SELECT m.id FROM m IN CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5");
+			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5").Enumerable();
+			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5").List();
+			s.CreateQuery("SELECT m.id FROM m IN CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5").List();
 			t.Commit();
 			s.Close();
 		}
@@ -391,8 +391,8 @@ namespace NHibernate.Test.Legacy
 			{
 				string hql = "from d in class NHibernate.DomainModel.Detail, m in class NHibernate.DomainModel.Master " + 
 					"where m = d.Master and m.Outgoing.size = 0 and m.Incoming.size = 0";
-				
-				Assert.AreEqual( 2, s.Find(hql).Count, "query" );
+
+				Assert.AreEqual(2, s.CreateQuery(hql).List().Count, "query");
 
 			}
 			t.Commit();
@@ -415,17 +415,17 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			Assert.AreEqual( 2, s.Find("select elements(master.Details) from Master master").Count );
+			Assert.AreEqual( 2, s.CreateQuery("select elements(master.Details) from Master master").List().Count );
 			t.Commit();
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList list = s.Find("from Master m left join fetch m.Details");
+			IList list = s.CreateQuery("from Master m left join fetch m.Details").List();
 			Master m = (Master)list[0];
 			Assert.IsTrue( NHibernateUtil.IsInitialized( m.Details ), "joined fetch should initialize collection" );
 			Assert.AreEqual( 2, m.Details.Count );
-			list = s.Find("from Detail d inner join fetch d.Master");
+			list = s.CreateQuery("from Detail d inner join fetch d.Master").List();
 			Detail dt = (Detail)list[0];
 			object dtid = s.GetIdentifier(dt);
 			Assert.AreSame( m, dt.Master );
@@ -434,7 +434,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			list = s.Find("select m from Master m1, Master m left join fetch m.Details where m.Name=m1.Name");
+			list = s.CreateQuery("select m from Master m1, Master m left join fetch m.Details where m.Name=m1.Name").List();
 			Assert.IsTrue( NHibernateUtil.IsInitialized( ((Master)list[0]).Details ) );
 			dt = (Detail)s.Load( typeof(Detail), dtid );
 			Assert.IsTrue( ((Master)list[0]).Details.Contains(dt) );
@@ -443,12 +443,12 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			list = s.Find("select m, m1.Name from Master m1, Master m left join fetch m.Details where m.Name=m1.Name");
+			list = s.CreateQuery("select m, m1.Name from Master m1, Master m left join fetch m.Details where m.Name=m1.Name").List();
 			Master masterFromHql = (Master)((object[])list[0])[0];
 			Assert.IsTrue( NHibernateUtil.IsInitialized( masterFromHql.Details ) );
 			dt = (Detail)s.Load( typeof(Detail), dtid );
 			Assert.IsTrue( masterFromHql.Details.Contains(dt) );
-			list = s.Find("select m.id from Master m inner join fetch m.Details");
+			list = s.CreateQuery("select m.id from Master m inner join fetch m.Details").List();
 			t.Commit();
 			s.Close();
 
@@ -457,8 +457,8 @@ namespace NHibernate.Test.Legacy
 			Detail dd = (Detail)s.Load( typeof(Detail), did );
 			master = dd.Master;
 			Assert.IsTrue( master.Details.Contains(dd), "detail-master" );
-			Assert.AreEqual( 2, s.Filter( master.Details, "order by this.I desc").Count );
-			Assert.AreEqual( 2, s.Filter( master.Details, "select this where this.id > -1").Count );
+			Assert.AreEqual(2, s.CreateFilter(master.Details, "order by this.I desc").List().Count);
+			Assert.AreEqual(2, s.CreateFilter(master.Details, "select this where this.id > -1").List().Count);
 			
 			IQuery q = s.CreateFilter( master.Details, "where this.id > :id" );
 			q.SetInt32("id", -1);
@@ -479,11 +479,11 @@ namespace NHibernate.Test.Legacy
 			
 			Assert.AreEqual( 1, q.List().Count );
 			Assert.IsTrue( q.Enumerable().GetEnumerator().MoveNext() );
-			
-			Assert.AreEqual( 2, s.Filter( master.Details, "where this.id > -1").Count );
-			Assert.AreEqual( 2, s.Filter( master.Details, "select this.Master where this.id > -1").Count );
-			Assert.AreEqual( 2, s.Filter( master.Details, "select m from m in class Master where this.id > -1 and this.Master=m").Count );
-			Assert.AreEqual( 0, s.Filter( master.Incoming, "where this.id > -1 and this.Name is not null").Count );
+
+			Assert.AreEqual(2, s.CreateFilter(master.Details, "where this.id > -1").List().Count);
+			Assert.AreEqual(2, s.CreateFilter(master.Details, "select this.Master where this.id > -1").List().Count);
+			Assert.AreEqual(2, s.CreateFilter(master.Details, "select m from m in class Master where this.id > -1 and this.Master=m").List().Count);
+			Assert.AreEqual(0, s.CreateFilter(master.Incoming, "where this.id > -1 and this.Name is not null").List().Count);
 
 			IQuery filter = s.CreateFilter( master.Details, "select max(this.I)");
 			enumer = filter.Enumerable().GetEnumerator();
@@ -558,7 +558,7 @@ namespace NHibernate.Test.Legacy
 			master3.AddOutgoing(master1);
 			object m1id = s.GetIdentifier(master1);
 
-			Assert.AreEqual( 2, s.Filter(master1.Incoming, "where this.id > 0 and this.Name is not null").Count );
+			Assert.AreEqual(2, s.CreateFilter(master1.Incoming, "where this.id > 0 and this.Name is not null").List().Count);
 			s.Flush();
 			s.Close();
 
@@ -982,7 +982,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsNull(list[0]);
 				Assert.IsNotNull(list[1]);
 
-				IEnumerator enumer = s.Enumerable("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").GetEnumerator();
+				IEnumerator enumer = s.CreateQuery("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").Enumerable().GetEnumerator();
 				Assert.IsTrue( enumer.MoveNext() );
 			}
 

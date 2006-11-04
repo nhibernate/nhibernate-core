@@ -41,7 +41,6 @@ namespace NHibernate.Test.SqlCommandTest
 			
 			SqlString sqlString = select.ToSqlString();
 			Parameter[] actualParams = new Parameter[3];
-			int numOfParameters = 0;
 
 			string expectedSql = new StringBuilder().Append("SELECT ")
 				.Append("column_no_alias, ")

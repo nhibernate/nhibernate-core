@@ -31,7 +31,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			IEnumerator iter = s.Enumerable( "select max(s.Count) from s in class Simple" )
+			IEnumerator iter = s.CreateQuery("select max(s.Count) from s in class Simple").Enumerable()
 				.GetEnumerator();
 
 			if( dialect is MySQLDialect
@@ -52,19 +52,19 @@ namespace NHibernate.Test.Legacy
 
 			// Test to make sure allocating an specified object operates correctly.
 			Assert.AreEqual( 1,
-				s.Find("select new S(s.Count, s.Address) from s in class Simple")
+				s.CreateQuery("select new S(s.Count, s.Address) from s in class Simple").List()
 					.Count );
 
 			// Quick check the base dialect functions operate correctly
-			Assert.AreEqual( 1, 
-				s.Find( "select max(s.Count) from s in class Simple" ).Count );
 			Assert.AreEqual( 1,
-				s.Find( "select count(*) from s in class Simple" ).Count );
+				s.CreateQuery("select max(s.Count) from s in class Simple").List().Count);
+			Assert.AreEqual( 1,
+				s.CreateQuery("select count(*) from s in class Simple").List().Count);
 
 			if ( dialect is Oracle9Dialect) 
 			{
 				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
-				IList rset = s.Find( "select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple" );
+				IList rset = s.CreateQuery("select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple").List();
 				object[] row = (object[]) rset[0];
 				Assert.IsNotNull( row[0], "Name string should have been returned" );
 				Assert.IsNotNull( row[1], "Todays Date should have been returned" );
@@ -75,19 +75,19 @@ namespace NHibernate.Test.Legacy
 				s.Update(simple);
 
 				// Test type conversions while using nested functions (Float to Int).
-				rset = s.Find( "select abs(round(s.Pay)) from s in class Simple" );
+				rset = s.CreateQuery("select abs(round(s.Pay)) from s in class Simple").List();
 				Assert.AreEqual( 46f, rset[0], "abs(round(-45.8)) result was incorrect" );
 
 				// Test a larger depth 3 function example - Not a useful combo other than for testing
 				Assert.AreEqual( 1,
-					s.Find( "select trunc(round(sysdate)) from s in class Simple" ).Count );
+					s.CreateQuery("select trunc(round(sysdate)) from s in class Simple").List().Count);
 
 				// Test the oracle standard NVL funtion as a test of multi-param functions...
 				// NOTE: commented out for NH, since Pay is a value type and will never be null
 				//simple.Pay = null;
 				//s.Update( simple );
 				//Assert.AreEqual( 0,
-				//	s.Find("select MOD( NVL(s.Pay, 5000), 2 ) from Simple as s where s.id = 10")[0] );
+				//	s.CreateQuery("select MOD( NVL(s.Pay, 5000), 2 ) from Simple as s where s.id = 10").List()[0] );
 			}
 
 			// NOTE: Commented out for NHibernate, no HSQL dialect.
@@ -285,7 +285,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList result = s.Find(query);
+			IList result = s.CreateQuery(query).List();
 			Assert.IsTrue( result[0] is Simple,
 				"Unexpected result type [" + result[0].GetType().Name + "]" );
 			s.Delete( result[0] );
@@ -417,36 +417,36 @@ namespace NHibernate.Test.Legacy
 
 				if( dialect is Dialect.DB2Dialect ) 
 				{
-					s.Find("from s in class Simple where repeat('foo', 3) = 'foofoofoo'");
-					s.Find("from s in class Simple where repeat(s.Name, 3) = 'foofoofoo'");
-					s.Find("from s in class Simple where repeat( lower(s.Name), 3 + (1-1) / 2) = 'foofoofoo'");
+					s.CreateQuery("from s in class Simple where repeat('foo', 3) = 'foofoofoo'").List();
+					s.CreateQuery("from s in class Simple where repeat(s.Name, 3) = 'foofoofoo'").List();
+					s.CreateQuery("from s in class Simple where repeat( lower(s.Name), 3 + (1-1) / 2) = 'foofoofoo'").List();
 				}
 
-				Assert.AreEqual( 1, s.Find("from s in class Simple where upper(s.Name) = 'SIMPLE 1'").Count );
-				Assert.AreEqual( 1, s.Find("from s in class Simple where not( upper(s.Name)='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar')").Count );
+				Assert.AreEqual(1, s.CreateQuery("from s in class Simple where upper(s.Name) = 'SIMPLE 1'").List().Count);
+				Assert.AreEqual(1, s.CreateQuery("from s in class Simple where not( upper(s.Name)='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar')").List().Count);
 
 				if( !(dialect is Dialect.MySQLDialect) && !(dialect is Dialect.SybaseDialect) && !(dialect is Dialect.MsSql2000Dialect) ) 
 				{
 					// Dialect.MckoiDialect and Dialect.InterbaseDialect also included
 					// My Sql has a funny concatenation operator
-					Assert.AreEqual( 1, s.Find("from s in class Simple where lower(s.Name || ' foo')='simple 1 foo'").Count );
+					Assert.AreEqual(1, s.CreateQuery("from s in class Simple where lower(s.Name || ' foo')='simple 1 foo'").List().Count);
 				}
 
 				if( (dialect is Dialect.SybaseDialect) ) 
 				{
-					Assert.AreEqual( 1, s.Find("from s in class Simple where lower( concat(s.Name, ' foo') ) = 'simple 1 foo'").Count );
+					Assert.AreEqual(1, s.CreateQuery("from s in class Simple where lower( concat(s.Name, ' foo') ) = 'simple 1 foo'").List().Count);
 				}
 
 				if( (dialect is Dialect.MsSql2000Dialect) ) 
 				{
-					Assert.AreEqual( 1, s.Find("from s in class Simple where lower( s.Name + ' foo' ) = 'simple 1 foo'").Count );
+					Assert.AreEqual(1, s.CreateQuery("from s in class Simple where lower( s.Name + ' foo' ) = 'simple 1 foo'").List().Count);
 				}
 
 				/*
 				 * TODO: uncomment if MckoiDialect is ever implemented 
 				if( (dialect is Dialect.MckoiDialect) ) 
 				{
-					Assert.AreEqual( 1, s.Find("from s in class Simple where lower( concat(s.Name, ' foo') ) = 'simple 1 foo'").Count );
+					Assert.AreEqual( 1, s.CreateQuery("from s in class Simple where lower( concat(s.Name, ' foo') ) = 'simple 1 foo'").List().Count );
 				}
 				*/
 
@@ -455,10 +455,10 @@ namespace NHibernate.Test.Legacy
 				other.Count = 12;
 				simple.Other = other;
 				s.Save( other, (long)20 );
-				Assert.AreEqual( 1, s.Find("from s in class Simple where upper( s.Other.Name )='SIMPLE 2'").Count );
-				Assert.AreEqual( 0, s.Find("from s in class Simple where not (upper(s.Other.Name)='SIMPLE 2')").Count );
-				Assert.AreEqual( 1, s.Find("select distinct s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2").Count );
-				Assert.AreEqual( 1, s.Find("select s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2 order by s.Other.Count").Count );
+				Assert.AreEqual(1, s.CreateQuery("from s in class Simple where upper( s.Other.Name )='SIMPLE 2'").List().Count);
+				Assert.AreEqual(0, s.CreateQuery("from s in class Simple where not (upper(s.Other.Name)='SIMPLE 2')").List().Count);
+				Assert.AreEqual(1, s.CreateQuery("select distinct s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2").List().Count);
+				Assert.AreEqual(1, s.CreateQuery("select s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2 order by s.Other.Count").List().Count);
 
 				Simple min = new Simple();
 				min.Count = -1;
@@ -467,25 +467,25 @@ namespace NHibernate.Test.Legacy
 
 				if( dialect.SupportsSubSelects )
 				{
-					Assert.AreEqual( 2, s.Find("from s in class Simple where s.Count > ( select min(sim.Count) from sim in class NHibernate.DomainModel.Simple )").Count );
+					Assert.AreEqual(2, s.CreateQuery("from s in class Simple where s.Count > ( select min(sim.Count) from sim in class NHibernate.DomainModel.Simple )").List().Count);
 					t.Commit();
 					t = s.BeginTransaction();
-					Assert.AreEqual( 2, s.Find("from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Count>=0) and s.Count >= 0").Count );
-					Assert.AreEqual( 1, s.Find("from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Other.Count=s.Other.Count ) and s.Other.Count > 0").Count );
+					Assert.AreEqual(2, s.CreateQuery("from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Count>=0) and s.Count >= 0").List().Count);
+					Assert.AreEqual(1, s.CreateQuery("from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Other.Count=s.Other.Count ) and s.Other.Count > 0").List().Count);
 				}
 
-				IEnumerator enumer = s.Enumerable("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").GetEnumerator();
+				IEnumerator enumer = s.CreateQuery("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").Enumerable().GetEnumerator();
 				Assert.IsTrue( enumer.MoveNext() );
 				Assert.AreEqual(12, (Int64)enumer.Current ); // changed cast from Int32 to Int64 (H3.2)
 				Assert.IsFalse( enumer.MoveNext() );
 
 				if( dialect.SupportsSubSelects ) 
 				{
-					enumer = s.Enumerable("select s.Count from s in class Simple group by s.Count having s.Count = 12").GetEnumerator();
+					enumer = s.CreateQuery("select s.Count from s in class Simple group by s.Count having s.Count = 12").Enumerable().GetEnumerator();
 					Assert.IsTrue( enumer.MoveNext() );
 				}
 
-				enumer = s.Enumerable("select s.id, s.Count, count(t), max(t.Date) from s in class Simple, t in class Simple where s.Count = t.Count group by s.id, s.Count order by s.Count").GetEnumerator();
+				enumer = s.CreateQuery("select s.id, s.Count, count(t), max(t.Date) from s in class Simple, t in class Simple where s.Count = t.Count group by s.id, s.Count order by s.Count").Enumerable().GetEnumerator();
 
 				IQuery q = s.CreateQuery("from s in class Simple");
 				q.SetMaxResults(10);

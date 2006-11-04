@@ -79,15 +79,15 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			object id = s.Save( new Parent() );
-			Assert.AreEqual( 1, s.Find( "from Parent p left join fetch p.Child" ).Count );
+			Assert.AreEqual( 1, s.CreateQuery( "from Parent p left join fetch p.Child").List().Count );
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
 			Parent p = (Parent) s.CreateQuery( "from Parent p left join fetch p.Child").UniqueResult();
 			Assert.IsNull( p.Child );
-			s.Find("from Parent p join p.Child c where c.X > 0");
-			s.Find("from Child c join c.Parent p where p.X > 0");
+			s.CreateQuery("from Parent p join p.Child c where c.X > 0").List();
+			s.CreateQuery("from Child c join c.Parent p where p.X > 0").List();
 			s.Flush();
 			s.Close();
 		
@@ -355,21 +355,21 @@ namespace NHibernate.Test.Legacy
 			c.ManyToMany = l;
 			s.Save(c);
 
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").Count );
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").Count );
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX, s in class Simple where s = c.OneToMany[2]").Count );
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX, s in class Simple where s = c.ManyToMany[2]").Count );
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.OneToMany[0].Name = 's'").Count );
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.ManyToMany[0].Name = 's'").Count );
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").Count );
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.OneToMany[2]").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.ManyToMany[2]").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX where c.OneToMany[0].Name = 's'").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[0].Name = 's'").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").List().Count );
 			if( dialect.SupportsSubSelects ) 
 			{
-				Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").Count );
-				Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").Count );
+				Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").List().Count );
+				Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").List().Count );
 			}
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.OneToMany[ c.ManyToMany[0].Count ].Name = 's'").Count );
-			Assert.AreEqual( 1, s.Find("select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX where c.OneToMany[ c.ManyToMany[0].Count ].Name = 's'").List().Count );
+			Assert.AreEqual( 1, s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").List().Count );
 			
 			s.Delete(c);
 			s.Delete(s1);
@@ -412,13 +412,13 @@ namespace NHibernate.Test.Legacy
 			p = c.Parent;
 			Assert.AreEqual( 66, p.Count, "1-1 update" );
 			Assert.AreEqual( 32, c.Count, "1-1 update" );
-			Assert.AreEqual( 1, s.Find("from c in class NHibernate.DomainModel.Child where c.Parent.Count=66").Count, "1-1 query" );
-			Assert.AreEqual( 2, ((object[])s.Find("from Parent p join p.Child c where p.Count=66")[0]).Length, "1-1 query" );
+			Assert.AreEqual( 1, s.CreateQuery("from c in class NHibernate.DomainModel.Child where c.Parent.Count=66").List().Count, "1-1 query" );
+			Assert.AreEqual( 2, ((object[])s.CreateQuery("from Parent p join p.Child c where p.Count=66").List()[0]).Length, "1-1 query" );
 
-			s.Find("select c, c.Parent from c in class NHibernate.DomainModel.Child order by c.Parent.Count");
-			s.Find("select c, c.Parent from c in class NHibernate.DomainModel.Child where c.Parent.Count=66 order by c.Parent.Count");
-			s.Enumerable("select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count");
-			Assert.AreEqual( 1, s.Find("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?", 66, NHibernateUtil.Int32).Count, "1-1 query" );
+			s.CreateQuery("select c, c.Parent from c in class NHibernate.DomainModel.Child order by c.Parent.Count").List();
+			s.CreateQuery("select c, c.Parent from c in class NHibernate.DomainModel.Child where c.Parent.Count=66 order by c.Parent.Count").List();
+			s.CreateQuery("select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count").Enumerable();
+			Assert.AreEqual(1, s.CreateQuery("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?").SetInt32(0, 66).List().Count, "1-1 query");
 			s.Delete(c);
 			s.Delete(p);
 			t.Commit();
@@ -665,7 +665,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			foreach(Container obj in s.Enumerable("from c in class ContainerX")) 
+			foreach(Container obj in s.CreateQuery("from c in class ContainerX").Enumerable()) 
 			{
 				c = obj;
 				break;
@@ -695,7 +695,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			foreach( Container obj in s.Enumerable("from c in class ContainerX") ) 
+			foreach( Container obj in s.CreateQuery("from c in class ContainerX").Enumerable() ) 
 			{
 				c = obj;
 			}
@@ -737,14 +737,14 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Find("from c in class ContainerX")[0];
+			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
 			Assert.AreEqual( 1, c.LazyBag.Count );
 			t.Commit();
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Find("from c in class ContainerX")[0];
+			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
 			Contained c3 = new Contained();
 			// commented out in h2.0.3 also
 			//c.Bag.Add(c3);
@@ -756,7 +756,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Find("from c in class ContainerX")[0];
+			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
 			Contained c4 = new Contained();
 			c.LazyBag.Add(c4);
 			c4.LazyBag.Add(c);
@@ -771,7 +771,7 @@ namespace NHibernate.Test.Legacy
 			// twice and throw off the count by 1 (or by however many additions were 
 			// made before the flush
 			s = OpenSession();
-			c = (Container)s.Find("from c in class ContainerX")[0];
+			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
 			Contained c5 = new Contained();
 			c.LazyBag.Add( c5 );
 			c5.LazyBag.Add( c );
@@ -784,7 +784,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Find("from c in class ContainerX")[0];
+			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
 			int j = 0;
 			foreach(object obj in c.Bag) 
 			{

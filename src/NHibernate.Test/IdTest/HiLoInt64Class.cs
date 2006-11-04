@@ -8,7 +8,6 @@ namespace NHibernate.Test.IdTest
 	public class HiLoInt64Class
 	{
 		private Int64 _id;
-		private string _clob;
 
 		public Int64 Id
 		{

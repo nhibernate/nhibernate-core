@@ -217,7 +217,7 @@ namespace NHibernate.Test.JoinedSubclass
 			t = s.BeginTransaction();
 			
 			// perform a load based on the base class
-			Person empAsPerson = (Person)s.Find( "from Person as p where p.id = ?", empId, NHibernateUtil.Int32 )[0];
+			Person empAsPerson = (Person)s.CreateQuery( "from Person as p where p.id = ?").SetInt32(0,empId).List()[0];
 			person = (Person)s.Load( typeof(Person), personId );
 			
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded

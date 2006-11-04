@@ -89,7 +89,7 @@ namespace NHibernate.Test.TypesTest
 
 			using (ISession s = sessions.OpenSession())
 			{
-				s.Find( "select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p");
+				s.CreateQuery( "select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p").List();
 				s.Delete( "from PersistentEnumClass" );
 				s.Flush();
 			}
@@ -107,7 +107,7 @@ namespace NHibernate.Test.TypesTest
 			ISession s2 = sessions.OpenSession();
 			try
 			{
-				s2.Find( "select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p");
+				s2.CreateQuery( "select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").List();
 			}
 			finally
 			{

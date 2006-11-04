@@ -96,7 +96,7 @@ namespace NHibernate.Test.Legacy
 			d.Id = c1.Id;
 			s.Save(d);
 		
-			Assert.IsTrue( s.Find("from c in class C2 where 1=1 or 1=1").Count ==0 );
+			Assert.IsTrue( s.CreateQuery("from c in class C2 where 1=1 or 1=1").List().Count ==0 );
 		
 			t.Commit();
 			s.Close();
@@ -139,7 +139,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.Find("from b in class B");
+			s.CreateQuery("from b in class B").List();
 			t.Commit();
 			s.Close();
 
@@ -149,8 +149,8 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			IList aList = s.Find( "from A" );
-			IList dList = s.Find( "from D" );
+			IList aList = s.CreateQuery("from A").List();
+			IList dList = s.CreateQuery("from D").List();
 
 			foreach( A aToDelete in aList )
 			{

@@ -149,11 +149,11 @@ namespace NHibernate.Test.Subclass
 			s.Close();
 
 			s = OpenSession();
-			IList list = s.Find( "from SubclassBase as sb where sb.class=SubclassBase" );
+			IList list = s.CreateQuery( "from SubclassBase as sb where sb.class=SubclassBase").List();
 			Assert.AreEqual( 1, list.Count );
 			Assert.AreEqual( typeof(SubclassBase), list[0].GetType(), "should be base" );
 
-			list = s.Find( "from SubclassBase as sb where sb.class=SubclassOne" );
+			list = s.CreateQuery( "from SubclassBase as sb where sb.class=SubclassOne").List();
 			Assert.AreEqual( 1, list.Count );
 			Assert.AreEqual( typeof(SubclassOne), list[0].GetType(), "should be one" );
 			s.Close();

@@ -71,7 +71,7 @@ namespace NHibernate.Test.Legacy
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				IList list = s.Find("from B");
+				IList list = s.CreateQuery("from B").List();
 				Assert.AreEqual( 2, list.Count );
 				t.Commit();
 			}
@@ -232,8 +232,8 @@ namespace NHibernate.Test.Legacy
 			{
 				s.Save( new B() );
 				s.Save( new A() );
-				Assert.IsTrue( s.Find("from b in class B").Count==1 );
-				Assert.IsTrue( s.Find("from a in class A").Count==2 );
+				Assert.IsTrue( s.CreateQuery("from b in class B").List().Count==1 );
+				Assert.IsTrue( s.CreateQuery("from a in class A").List().Count==2 );
 				s.Delete("from a in class A");
 				s.Delete( c1.D );
 				t.Commit();
@@ -296,9 +296,9 @@ namespace NHibernate.Test.Legacy
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				IList l = s.Find( "from E e, A a where e.Reverse = a.Forward and a = ?", a, NHibernateUtil.Entity (typeof(A)) );
+				IList l = s.CreateQuery("from E e, A a where e.Reverse = a.Forward and a = ?").SetEntity(0, a).List();
 				Assert.AreEqual( 1, l.Count );
-				l = s.Find( "from E e join fetch e.Reverse" );
+				l = s.CreateQuery( "from E e join fetch e.Reverse").List();
 				Assert.AreEqual( 2, l.Count );
 				t.Commit();
 			}
@@ -306,7 +306,7 @@ namespace NHibernate.Test.Legacy
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				IList l = s.Find( "from E e" );
+				IList l = s.CreateQuery( "from E e").List();
 				Assert.AreEqual( 2, l.Count );
 				E e = (E) l[ 0 ];
 				Assert.AreSame( e, e.Reverse.Forward );
@@ -332,7 +332,7 @@ namespace NHibernate.Test.Legacy
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				IList l = s.Find( "from E e" );
+				IList l = s.CreateQuery( "from E e").List();
 				Assert.AreEqual( 0, l.Count ); 
 				t.Commit();
 			}

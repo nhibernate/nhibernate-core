@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			using( ISession s = OpenSession() )
 			{
-				s.Find( "from SomeInvalidClass" );
+				s.CreateQuery( "from SomeInvalidClass").List();
 			}
 		}
 

@@ -63,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 		}
 
 		
-		public bool Equals(object x, object y)
+		public new bool Equals(object x, object y)
 		{
 			return StringComparer.InvariantCultureIgnoreCase.Equals((string)x, (string)y);
 		}

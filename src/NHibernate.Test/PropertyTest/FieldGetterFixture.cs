@@ -84,11 +84,13 @@ namespace NHibernate.Test.PropertyTest
 
 		public class FieldGetterClass 
 		{
+			#pragma warning disable 414
 			private int Id = 7;
 			private DateTime propertyOne = DateTime.Parse( "2000-01-01" );
 			private bool _propertyTwo = true;
 			private TimeSpan m_PropertyThree = new TimeSpan( DateTime.Parse("2001-01-01" ).Ticks );
 			private long _propertyfour = Int64.MaxValue;
+			#pragma warning restore 414
 		}
 	}
 

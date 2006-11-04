@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 		public void WhereAttribute()
 		{
 			ISession s = OpenSession();
-			IList list = s.Find( "from User" );
+			IList list = s.CreateQuery("from User").List();
 
 			foreach( User u in list )
 			{

@@ -25,7 +25,7 @@ namespace NHibernate.Test.Unconstrained
 				NHibernateUtil.Initialize(obj);
 				Assert.Fail();
 			}
-			catch (ObjectNotFoundException onfe)
+			catch (ObjectNotFoundException)
 			{
 				// OK
 			}

@@ -81,21 +81,21 @@ namespace NHibernate.Test.TransactionTest
 				{
 				}
 
-				s.Find("from Simple");
+				s.CreateQuery("from Simple").List();
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					t.Commit();
 				}
 
-				s.Find("from Simple");
+				s.CreateQuery("from Simple").List();
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					t.Rollback();
 				}
 
-				s.Find("from Simple");
+				s.CreateQuery("from Simple").List();
 			}
 		}
 

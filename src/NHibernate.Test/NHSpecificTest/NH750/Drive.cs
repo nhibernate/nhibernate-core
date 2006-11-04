@@ -34,5 +34,10 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			else
 			  return base.Equals(obj);
 		}
+
+		public override int GetHashCode()
+		{
+			return _classFullName.GetHashCode();
+		}
 	}
 }

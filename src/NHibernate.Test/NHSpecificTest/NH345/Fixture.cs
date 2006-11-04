@@ -44,15 +44,15 @@ namespace NHibernate.Test.NHSpecificTest.NH345
 				s.Save( project1 );
 				s.Save( project2 );
 
-				IList listAsc = s.Find(
-					"select p from Project as p order by p.Client.Name asc" );
+				IList listAsc = s.CreateQuery(
+					"select p from Project as p order by p.Client.Name asc" ).List();
 
 				Assert.AreEqual( 2, listAsc.Count );
 				Assert.AreSame( project1, listAsc[0] );
 				Assert.AreSame( project2, listAsc[1] );
 
-				IList listDesc = s.Find(
-					"select p from Project as p order by p.Client.Name desc" );
+				IList listDesc = s.CreateQuery(
+					"select p from Project as p order by p.Client.Name desc" ).List();
 				Assert.AreEqual( 2, listDesc.Count );
 				Assert.AreSame( project1, listDesc[1] );
 				Assert.AreSame( project2, listDesc[0] );

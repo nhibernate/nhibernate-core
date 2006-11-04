@@ -8,7 +8,6 @@ namespace NHibernate.Test.IdTest
 	public class HiLoInt16Class
 	{
 		private Int16 _id;
-		private string _clob;
 
 		public Int16 Id
 		{
