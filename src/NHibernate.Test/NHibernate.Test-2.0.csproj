@@ -374,6 +374,7 @@
     <Compile Include="QueryTest\NamedParametersFixture.cs" />
     <Compile Include="QueryTest\PositionalParametersFixture.cs" />
     <Compile Include="QueryTest\QueryParametersFixture.cs" />
+    <Compile Include="ReflectionOptimizerTest\LcgFixture.cs" />
     <Compile Include="SecondLevelCacheTest\Item.cs" />
     <Compile Include="SecondLevelCacheTest\SecondLevelCacheTest.cs" />
     <Compile Include="SessionCacheTest.cs" />

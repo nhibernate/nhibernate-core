@@ -91,7 +91,12 @@ namespace NHibernate.Property
 
 		public void Emit( ILGenerator il )
 		{
-			il.EmitCall( OpCodes.Callvirt, Method, null ); 
+			MethodInfo method = Method;
+			if (method == null)
+			{
+				throw new PropertyNotFoundException(clazz, property.Name, "setter");
+			}
+			il.EmitCall( OpCodes.Callvirt, method, null ); 
 		}
 	}
 }
