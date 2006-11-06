@@ -742,7 +742,7 @@ namespace NHibernate.Test.Legacy
 			s.CreateQuery( "select baz.Code, min(baz.Count) from baz in class Baz group by baz.Code").Enumerable();
 
 			Assert.IsTrue(IsEmpty(s.CreateQuery("selecT baz from baz in class Baz where baz.StringDateMap['foo'] is not null or baz.StringDateMap['bar'] = ?")
-																					.SetDateTime(0, new DateTime()).List()));
+																					.SetDateTime(0, DateTime.Today).Enumerable()));
 
 			list = s.CreateQuery( "select baz from baz in class Baz where baz.StringDateMap['now'] is not null").List();
 			Assert.AreEqual( 1, list.Count );
