@@ -35,25 +35,16 @@ namespace NHibernate.Connection
 		/// <returns>
 		/// An Open <see cref="IDbConnection"/>.
 		/// </returns>
-		/// <exception cref="ADOException">
+		/// <exception>
 		/// If there is any problem creating or opening the <see cref="IDbConnection"/>.
 		/// </exception>
 		public override IDbConnection GetConnection()
 		{
 			log.Debug( "Obtaining IDbConnection from Driver" );
-			try
-			{
-				IDbConnection conn = Driver.CreateConnection();
-				conn.ConnectionString = ConnectionString;
-				conn.Open();
-				return conn;
-			}
-			catch( Exception e )
-			{
-				throw new ADOException( "Could not create connection from Driver", e );
-			}
+			IDbConnection conn = Driver.CreateConnection();
+			conn.ConnectionString = ConnectionString;
+			conn.Open();
+			return conn;
 		}
-
-
 	}
 }
