@@ -3,7 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-
+using Iesi.Collections;
 using log4net;
 
 using NHibernate.Cache;
@@ -11,7 +11,6 @@ using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Context;
 using NHibernate.Engine;
-using NHibernate.Hql.Classic;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -320,15 +319,33 @@ namespace NHibernate.Impl
 		/// A class that can be used as a Key in a Hashtable for 
 		/// a Query Cache.
 		/// </summary>
+		[Serializable]
 		private class QueryCacheKey
 		{
 			private string _query;
 			private bool _scalar;
+			private ISet _filterNames;
+			private int _hashCode;
 
-			internal QueryCacheKey(string query, bool scalar)
+			internal QueryCacheKey(string query, bool scalar, IDictionary enabledFilters)
 			{
 				_query = query;
 				_scalar = scalar;
+				if (enabledFilters == null || enabledFilters.Count == 0)
+				{
+					_filterNames = new HashedSet();
+				}
+				else
+				{
+					_filterNames = new HashedSet(enabledFilters.Keys);
+				}
+
+				unchecked
+				{
+					_hashCode = query.GetHashCode();
+					_hashCode = 29 * _hashCode + (scalar ? 1 : 0);
+					_hashCode = 29 * _hashCode + CollectionHelper.GetHashCode(_filterNames);
+				}
 			}
 
 			public string Query
@@ -339,6 +356,11 @@ namespace NHibernate.Impl
 			public bool Scalar
 			{
 				get { return _scalar; }
+			}
+
+			public ISet FilterNames
+			{
+				get { return _filterNames; }
 			}
 
 			#region System.Object Members
@@ -356,15 +378,15 @@ namespace NHibernate.Impl
 
 			public bool Equals(QueryCacheKey obj)
 			{
-				return this.Query.Equals(obj.Query) && this.Scalar == obj.Scalar;
+				return this._hashCode == obj._hashCode &&
+				       this.Query.Equals(obj.Query) &&
+				       this.Scalar == obj.Scalar &&
+				       CollectionHelper.SetEquals(this.FilterNames, obj.FilterNames);
 			}
 
 			public override int GetHashCode()
 			{
-				unchecked
-				{
-					return this.Query.GetHashCode() + this.Scalar.GetHashCode();
-				}
+				return _hashCode;
 			}
 
 			#endregion
@@ -451,13 +473,13 @@ namespace NHibernate.Impl
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IQueryTranslator[] CreateQueryTranslators(string[] concreteQueryStrings, QueryCacheKey cacheKey)
+		private IQueryTranslator[] CreateQueryTranslators(string[] concreteQueryStrings, QueryCacheKey cacheKey, IDictionary enabledFilters)
 		{
 			int length = concreteQueryStrings.Length;
 			IQueryTranslator[] queries = new IQueryTranslator[length];
 			for (int i = 0; i < length; i++)
 			{
-				queries[i] = settings.QueryTranslatorFactory.CreateQueryTranslator(concreteQueryStrings[i], filters, this);
+				queries[i] = settings.QueryTranslatorFactory.CreateQueryTranslator(concreteQueryStrings[i], enabledFilters, this);
 			}
 			Put(cacheKey, queries);
 			return queries;
@@ -471,9 +493,9 @@ namespace NHibernate.Impl
 			return filter;
 		}
 
-		public IQueryTranslator[] GetQuery(string queryString, bool shallow)
+		public IQueryTranslator[] GetQuery(string queryString, bool shallow, IDictionary enabledFilters)
 		{
-			QueryCacheKey cacheKey = new QueryCacheKey(queryString, shallow);
+			QueryCacheKey cacheKey = new QueryCacheKey(queryString, shallow, enabledFilters);
 
 			// have to be careful to ensure that if the JVM does out-of-order execution
 			// then another thread can't get an uncompiled QueryTranslator from the cache
@@ -487,7 +509,7 @@ namespace NHibernate.Impl
 				// a query that names an interface or unmapped class in the from clause
 				// is actually executed as multiple queries
 				string[] concreteQueryStrings = QuerySplitter.ConcreteQueries(queryString, this);
-				queries = CreateQueryTranslators(concreteQueryStrings, cacheKey);
+				queries = CreateQueryTranslators(concreteQueryStrings, cacheKey, enabledFilters);
 			}
 
 			foreach (IQueryTranslator q in queries)
@@ -763,7 +785,7 @@ namespace NHibernate.Impl
 			{
 				throw new HibernateException("Query does not refer to any persistent classes: " + queryString);
 			}
-			return GetQuery(queries[0], true)[0].ReturnTypes;
+			return GetQuery(queries[0], false, CollectionHelper.EmptyMap)[0].ReturnTypes;
 		}
 
 		/// <summary></summary>

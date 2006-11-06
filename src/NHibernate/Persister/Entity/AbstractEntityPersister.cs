@@ -2428,7 +2428,7 @@ namespace NHibernate.Persister.Entity
 
 		private IUniqueEntityLoader GetAppropriateLoader(LockMode lockMode, ISessionImplementor session)
 		{
-			IDictionary enabledFilters = CollectionHelper.EmptyMap; // TODO H3: session.EnabledFilters;
+			IDictionary enabledFilters = session.EnabledFilters;
 			if( queryLoader != null )
 			{
 				return queryLoader;

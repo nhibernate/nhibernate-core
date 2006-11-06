@@ -5,6 +5,7 @@ using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Id;
+using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Type;
 
@@ -201,6 +202,8 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		bool HasOrdering { get; }
 
+		bool HasManyToManyOrdering { get; }
+
 		/// <summary>
 		/// Get the "space" that holds the persistent state
 		/// </summary>
@@ -243,5 +246,7 @@ namespace NHibernate.Persister.Collection
 		string GetIdentifierColumnAlias( string suffix );
 
 		ISessionFactoryImplementor Factory { get; }
+		
+		bool IsAffectedByEnabledFilters(ISessionImplementor session);
 	}
 }

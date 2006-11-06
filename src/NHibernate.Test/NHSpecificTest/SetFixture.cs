@@ -347,6 +347,17 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return null; }
 		}
 
+
+		public bool IsAffectedByEnabledFilters(ISessionImplementor session)
+		{
+			return false;
+		}
+
+		public bool HasManyToManyOrdering
+		{
+			get { return false; }
+		}
+
 		#endregion
 	}
 

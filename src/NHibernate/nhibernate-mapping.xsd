@@ -850,6 +850,7 @@
 			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto" />
 			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="not-found" type="notFoundMode" use="optional" />
+			<xs:attribute name="where" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="many-to-one">

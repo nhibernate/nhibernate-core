@@ -13,7 +13,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.FilterTest
 {
-	[TestFixture, Ignore("Filters not yet implemented")]
+	[TestFixture]
 	public class DynamicFilterTest : TestCase
 	{
 		private ILog log = LogManager.GetLogger(typeof(DynamicFilterTest));
@@ -32,7 +32,9 @@ namespace NHibernate.Test.FilterTest
 			ICollectionPersister persister = ((ISessionFactoryImplementor) sessions)
 					.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
-			object[] cachedData = (object[]) persister.Cache.Cache.Get(testData.steveId);
+			CacheKey cacheKey =
+				new CacheKey(testData.steveId, persister.KeyType, persister.Role, (ISessionFactoryImplementor) sessions);
+			object[] cachedData = (object[]) persister.Cache.Cache.Get(cacheKey);
 			Assert.IsNotNull(cachedData, "collection was not in cache");
 
 			session.Close();
@@ -44,7 +46,7 @@ namespace NHibernate.Test.FilterTest
 					.UniqueResult();
 			Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
-			object[] cachedData2 = (object[]) persister.Cache.Cache.Get(testData.steveId);
+			object[] cachedData2 = (object[]) persister.Cache.Cache.Get(cacheKey);
 			Assert.IsNotNull(cachedData2, "collection no longer in cache!");
 			Assert.AreSame(cachedData, cachedData2, "Different cache values!");
 
@@ -85,7 +87,7 @@ namespace NHibernate.Test.FilterTest
 			session.Clear();
 
 			// test retreival through hql with the collection join fetched
-			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.orders").List();
+			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").List();
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			sp = (Salesperson) salespersons[0];
 			Assert.AreEqual(sp.Orders.Count, 1, "Incorrect order count");
@@ -152,7 +154,7 @@ namespace NHibernate.Test.FilterTest
 
 			log.Info("Criteria query against Product...");
 			IList products = session.CreateCriteria(typeof(Product))
-					.Add(Expression.Expression.Eq("stockNumber", 124))
+					.Add(Expression.Expression.Eq("StockNumber", 124))
 					.List();
 			Assert.AreEqual(1, products.Count, "Incorrect product count");
 
@@ -160,7 +162,8 @@ namespace NHibernate.Test.FilterTest
 			testData.Release();
 		}
 
-		public void testGetFilters()
+		[Test]
+		public void GetFilters()
 		{
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// Get() test
@@ -181,7 +184,8 @@ namespace NHibernate.Test.FilterTest
 			testData.Release();
 		}
 
-		public void testOneToManyFilters()
+		[Test]
+		public void OneToManyFilters()
 		{
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// one-to-many loading tests
@@ -245,49 +249,50 @@ namespace NHibernate.Test.FilterTest
 			testData.Release();
 		}
 
-		[Test, Ignore("Statistics not implemented")]
+		[Test]
 		public void ManyToManyFilterOnLoad()
 		{
-			//TestData testData = new TestData(this);
-			//testData.Prepare();
+			TestData testData = new TestData(this);
+			testData.Prepare();
 
-			//ISession session = OpenSession();
-			//session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
+			ISession session = OpenSession();
+			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
 
-			//Product prod = (Product) session.Get(typeof(Product), testData.prod1Id);
+			Product prod = (Product) session.Get(typeof(Product), testData.prod1Id);
 
-			//long initLoadCount = sessions.getStatistics().getCollectionLoadCount();
-			//long initFetchCount = sessions.getStatistics().getCollectionFetchCount();
+			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
+			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
 
-			//// should already have been initialized...
-			//int size = prod.Categories.Count;
-			//Assert.AreEqual(1, size, "Incorrect filtered collection count");
+			// should already have been initialized...
+			Assert.IsTrue(NHibernateUtil.IsInitialized(prod.Categories));
+			int size = prod.Categories.Count;
+			Assert.AreEqual(1, size, "Incorrect filtered collection count");
 
-			//long currLoadCount = sessions.getStatistics().getCollectionLoadCount();
-			//long currFetchCount = sessions.getStatistics().getCollectionFetchCount();
+			//long currLoadCount = sessions.Statistics.CollectionLoadCount;
+			//long currFetchCount = sessions.Statistics.CollectionFetchCount;
 
 			//Assert.IsTrue(
 			//    (initLoadCount == currLoadCount) && (initFetchCount == currFetchCount),
 			//    "Load with join fetch of many-to-many did not trigger join fetch"
-
 			//    );
 
-			//// make sure we did not get back a collection of proxies
-			//long initEntityLoadCount = sessions.getStatistics().getEntityLoadCount();
+			// make sure we did not get back a collection of proxies
+			//long initEntityLoadCount = sessions.Statistics.EntityLoadCount;
 
-			//foreach (Category cat in prod.Categories)
-			//{
-			//    Console.WriteLine(" ===> " + cat.Name);
-			//}
-			//long currEntityLoadCount = sessions.getStatistics().getEntityLoadCount();
+			foreach (Category cat in prod.Categories)
+			{
+				Assert.IsTrue(NHibernateUtil.IsInitialized(cat), "Load with join fetch of many-to-many did not trigger *complete* join fetch");
+			    //Console.WriteLine(" ===> " + cat.Name);
+			}
+			//long currEntityLoadCount = sessions.Statistics.EntityLoadCount;
 
 			//Assert.IsTrue(
 			//    (initEntityLoadCount == currEntityLoadCount),
 			//    "Load with join fetch of many-to-many did not trigger *complete* join fetch"
 			//    );
 
-			//session.Close();
-			//testData.Release();
+			session.Close();
+			testData.Release();
 		}
 
 		[Test]
@@ -322,7 +327,7 @@ namespace NHibernate.Test.FilterTest
 			ISession session = OpenSession();
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
 
-			IList result = session.CreateQuery("from Product p inner join fetch p.categories").List();
+			IList result = session.CreateQuery("from Product p inner join fetch p.Categories").List();
 			Assert.IsTrue(result.Count > 0, "No products returned from HQL many-to-many filter case");
 
 			Product prod = (Product) result[0];
@@ -334,92 +339,98 @@ namespace NHibernate.Test.FilterTest
 			testData.Release();
 		}
 
-		[Test, Ignore("Statistics not implemented")]
+		[Test]
 		public void ManyToManyBase()
 		{
-			//TestData testData = new TestData(this);
-			//testData.Prepare();
+			TestData testData = new TestData(this);
+			testData.Prepare();
 
-			//ISession session = OpenSession();
+			ISession session = OpenSession();
 
-			//Product prod = ( Product ) session.Get( typeof(Product), testData.prod1Id );
+			Product prod = ( Product ) session.Get( typeof(Product), testData.prod1Id );
 
-			//long initLoadCount = sessions.getStatistics().getCollectionLoadCount();
-			//long initFetchCount = sessions.getStatistics().getCollectionFetchCount();
+			// TODO H3: Statistics
+			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
+			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
 
-			//// should already have been initialized...
-			//int size = prod.Categories.Count;
-			//Assert.AreEqual(2, size,  "Incorrect non-filtered collection count" );
+			// should already have been initialized...
+			Assert.IsTrue(NHibernateUtil.IsInitialized(prod.Categories), "Load with join fetch of many-to-many did not trigger join fetch");
+			int size = prod.Categories.Count;
+			Assert.AreEqual(2, size,  "Incorrect non-filtered collection count" );
 
-			//long currLoadCount = sessions.getStatistics().getCollectionLoadCount();
-			//long currFetchCount = sessions.getStatistics().getCollectionFetchCount();
+			//long currLoadCount = sessions.Statistics.CollectionLoadCount;
+			//long currFetchCount = sessions.Statistics.CollectionFetchCount;
 
 			//Assert.IsTrue(
 			//        ( initLoadCount == currLoadCount ) && ( initFetchCount == currFetchCount ),
 			//        "Load with join fetch of many-to-many did not trigger join fetch"
 			//);
 
-			//// make sure we did not get back a collection of proxies
-			//long initEntityLoadCount = sessions.getStatistics().getEntityLoadCount();
-			//foreach (Category cat in prod.Categories)
-			//{
-			//    Console.WriteLine(" ===> " + cat.Name);
-			//}
-			//long currEntityLoadCount = sessions.getStatistics().getEntityLoadCount();
+			// make sure we did not get back a collection of proxies
+			// TODO H3: statistics
+			//long initEntityLoadCount = sessions.Statistics.EntityLoadCount;
+			foreach (Category cat in prod.Categories)
+			{
+				Assert.IsTrue(NHibernateUtil.IsInitialized(cat), "Load with join fetch of many-to-many did not trigger *complete* join fetch");
+				//Console.WriteLine(" ===> " + cat.Name);
+			}
+			//long currEntityLoadCount = sessions.Statistics.EntityLoadCount;
 
 			//Assert.IsTrue(
 			//        ( initEntityLoadCount == currEntityLoadCount ),
 			//        "Load with join fetch of many-to-many did not trigger *complete* join fetch"
 			//);
 
-			//session.Close();
-			//testData.Release();
+			session.Close();
+			testData.Release();
 		}
 
-		[Test, Ignore("Statistics not implemented")]
+		[Test]
 		public void ManyToManyBaseThruCriteria()
 		{
-			//TestData testData = new TestData(this);
-			//testData.Prepare();
+			TestData testData = new TestData(this);
+			testData.Prepare();
 
-			//ISession session = OpenSession();
+			ISession session = OpenSession();
 
-			//IList result = session.CreateCriteria(typeof(Product))
-			//    .Add(Expression.Expression.Eq("id", testData.prod1Id))
-			//    .List();
+			IList result = session.CreateCriteria(typeof(Product))
+			    .Add(Expression.Expression.Eq("id", testData.prod1Id))
+			    .List();
 
-			//Product prod = (Product) result[0];
+			Product prod = (Product) result[0];
 
-			//long initLoadCount = sessions.getStatistics().getCollectionLoadCount();
-			//long initFetchCount = sessions.getStatistics().getCollectionFetchCount();
+			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
+			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
 
-			//// should already have been initialized...
-			//int size = prod.Categories.Count;
-			//Assert.AreEqual(2, size, "Incorrect non-filtered collection count");
+			// should already have been initialized...
+			Assert.IsTrue(NHibernateUtil.IsInitialized(prod.Categories), "Load with join fetch of many-to-many did not trigger join fetch");
+			int size = prod.Categories.Count;
+			Assert.AreEqual(2, size, "Incorrect non-filtered collection count");
 
-			//long currLoadCount = sessions.getStatistics().getCollectionLoadCount();
-			//long currFetchCount = sessions.getStatistics().getCollectionFetchCount();
+			//long currLoadCount = sessions.Statistics.CollectionLoadCount;
+			//long currFetchCount = sessions.Statistics.CollectionFetchCount;
 
 			//Assert.IsTrue(
 			//    (initLoadCount == currLoadCount) && (initFetchCount == currFetchCount),
 			//    "Load with join fetch of many-to-many did not trigger join fetch"
 			//    );
 
-			//// make sure we did not get back a collection of proxies
-			//long initEntityLoadCount = sessions.getStatistics().getEntityLoadCount();
-			//foreach (Category cat in prod.Categories)
-			//{
-			//    Console.WriteLine(" ===> " + cat.Name);
-			//}
-			//long currEntityLoadCount = sessions.getStatistics().getEntityLoadCount();
+			// make sure we did not get back a collection of proxies
+			//long initEntityLoadCount = sessions.Statistics.EntityLoadCount;
+			foreach (Category cat in prod.Categories)
+			{
+				Assert.IsTrue(NHibernateUtil.IsInitialized(cat), "Load with join fetch of many-to-many did not trigger *complete* join fetch");
+			    //Console.WriteLine(" ===> " + cat.Name);
+			}
+			//long currEntityLoadCount = sessions.Statistics.EntityLoadCount;
 
 			//Assert.IsTrue(
 			//    (initEntityLoadCount == currEntityLoadCount),
 			//    "Load with join fetch of many-to-many did not trigger *complete* join fetch"
 			//    );
 
-			//session.Close();
-			//testData.Release();
+			session.Close();
+			testData.Release();
 		}
 
 		protected override string MappingsAssembly

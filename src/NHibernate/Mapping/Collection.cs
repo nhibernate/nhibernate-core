@@ -70,6 +70,8 @@ namespace NHibernate.Mapping
        	private IDictionary filters = new Hashtable();
         private IDictionary manyToManyFilters = new Hashtable();
 		private bool subselectLoadable;
+		private string manyToManyWhere;
+		private string manyToManyOrderBy;
 
 		protected Collection( PersistentClass owner )
 		{
@@ -460,6 +462,18 @@ namespace NHibernate.Mapping
 		{
 			get { return subselectLoadable; }
 			set { subselectLoadable = value; }
+		}
+
+		public string ManyToManyWhere
+		{
+			get { return manyToManyWhere; }
+			set { manyToManyWhere = value; }
+		}
+		
+		public string ManyToManyOrdering
+		{
+			get { return manyToManyOrderBy; }
+			set { manyToManyOrderBy = value; }
 		}
 	}
 }

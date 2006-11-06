@@ -1671,6 +1671,7 @@ namespace NHibernate.Cfg
 					ManyToOne element = new ManyToOne(model.CollectionTable);
 					model.Element = element;
 					BindManyToOne(subnode, element, Mapping.Collection.DefaultElementColumnName, false, mappings);
+					BindManyToManySubelements(model, subnode, mappings);
 				}
 				else if ("composite-element".Equals(name))
 				{
@@ -2410,6 +2411,53 @@ namespace NHibernate.Cfg
 		private static void BindResultSetMappingDefinition(XmlNode resultSetElem, string path, Mappings mappings)
 		{
 			mappings.AddSecondPass(new ResultSetMappingSecondPass(resultSetElem, path, mappings));
+		}
+
+		private static void BindManyToManySubelements(Mapping.Collection collection,
+			XmlNode manyToManyNode,
+			Mappings model)
+		{
+			// Bind the where
+			XmlAttribute where = manyToManyNode.Attributes["where"];
+			String whereCondition = where == null ? null : where.Value;
+			collection.ManyToManyWhere = whereCondition;
+
+			// Bind the order-by
+			XmlAttribute order = manyToManyNode.Attributes["order-by"];
+			String orderFragment = order == null ? null : order.Value;
+			collection.ManyToManyOrdering = orderFragment;
+
+			// Bind the filters
+			if ((manyToManyNode.SelectSingleNode(HbmConstants.nsFilter, nsmgr) != null || whereCondition != null) &&
+			    collection.FetchMode == FetchMode.Join &&
+			    collection.Element.FetchMode != FetchMode.Join)
+			{
+				throw new MappingException(
+					"many-to-many defining filter or where without join fetching " +
+					"not valid within collection using join fetching [" + collection.Role + "]"
+					);
+			}
+			foreach (XmlNode filterElement in manyToManyNode.SelectNodes(HbmConstants.nsFilter, nsmgr))
+			{
+				string name = XmlHelper.GetAttributeValue(filterElement, "name");
+				string condition = filterElement.InnerText.Trim();
+				if (StringHelper.IsEmpty(condition))
+					condition = XmlHelper.GetAttributeValue(filterElement, "condition");
+				if (StringHelper.IsEmpty(condition))
+				{
+					condition = model.GetFilterDefinition(name).DefaultFilterCondition;
+				}
+				if (condition == null)
+				{
+					throw new MappingException("no filter condition found for filter: " + name);
+				}
+				log.Debug(
+					"Applying many-to-many filter [" + name +
+					"] as [" + condition +
+					"] to role [" + collection.Role + "]"
+					);
+				collection.AddManyToManyFilter(name, condition);
+			}
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -713,6 +714,13 @@ namespace NHibernate.SqlCommand
 			}
 
 			return result.ToSqlString();
+		}
+
+		// Exposing the internal parts now because I'm too lazy to write SqlStringTokenizer.
+		// Use is strongly discouraged.
+		public ICollection Parts
+		{
+			get { return sqlParts; }
 		}
 	}
 }

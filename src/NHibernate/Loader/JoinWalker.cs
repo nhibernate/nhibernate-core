@@ -796,18 +796,39 @@ namespace NHibernate.Loader
 		{
 			StringBuilder buf = new StringBuilder();
 
+			OuterJoinableAssociation last = null;
 			foreach( OuterJoinableAssociation oj in associations )
 			{
-				if( oj.JoinType == JoinType.LeftOuterJoin && oj.Joinable.IsCollection )
+				if( oj.JoinType == JoinType.LeftOuterJoin )
 				{
-					IQueryableCollection queryableCollection = ( IQueryableCollection ) oj.Joinable;
-
-					if( queryableCollection.HasOrdering )
+					if (oj.Joinable.IsCollection)
 					{
-						string orderByString = queryableCollection.GetSQLOrderByString( oj.RHSAlias );
-						buf.Append( orderByString ).Append( ", " );
+						IQueryableCollection queryableCollection = (IQueryableCollection) oj.Joinable;
+						if (queryableCollection.HasOrdering)
+						{
+							string orderByString = queryableCollection.GetSQLOrderByString(oj.RHSAlias);
+							buf.Append(orderByString).Append(", ");
+						}
+					}
+					else
+					{
+						// it might still need to apply a collection ordering based on a
+						// many-to-many defined order-by...
+						if (last != null && last.Joinable.IsCollection)
+						{
+							IQueryableCollection queryableCollection = (IQueryableCollection) last.Joinable;
+							if (queryableCollection.IsManyToMany && last.IsManyToManyWith(oj))
+							{
+								if (queryableCollection.HasManyToManyOrdering)
+								{
+									string orderByString = queryableCollection.GetManyToManyOrderByString(oj.RHSAlias);
+									buf.Append(orderByString).Append(", ");
+								}
+							}
+						}
 					}
 				}
+				last = oj;
 			}
 
 			if( buf.Length > 0 )

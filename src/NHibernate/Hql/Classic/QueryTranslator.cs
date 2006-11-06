@@ -1011,11 +1011,7 @@ namespace NHibernate.Hql.Classic
 
 		public IEnumerable GetEnumerable(QueryParameters parameters, ISessionImplementor session)
 		{
-			SqlString sqlWithLock = ApplyLocks(SqlString, parameters.LockModes, session.Factory.Dialect);
-
-			IDbCommand cmd = PrepareQueryCommand(
-				sqlWithLock,
-				parameters, false, session);
+			IDbCommand cmd = PrepareQueryCommand(parameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
 			IDataReader rs = GetResultSet(cmd, parameters.RowSelection, session);

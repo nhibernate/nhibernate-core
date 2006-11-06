@@ -313,7 +313,10 @@ namespace NHibernate.Collection
 		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
 		{
 			object element = role.ReadElement( rs, owner, descriptor.SuffixedElementAliases, Session );
-			tempList.Add( element );
+			if (element != null)
+			{
+				tempList.Add(element);
+			}
 			return element;
 		}
 

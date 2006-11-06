@@ -116,6 +116,10 @@ namespace NHibernate.Persister.Collection
 
 		// dynamic filters specifically for many-to-many inside the collection
 		private readonly FilterHelper manyToManyFilterHelper;
+		private readonly string manyToManyWhereString;
+		private readonly string manyToManyWhereTemplate;
+		private readonly string manyToManyOrderByString;
+		private readonly string manyToManyOrderByTemplate;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof (ICollectionPersister));
 		private string queryLoaderName;
@@ -371,6 +375,21 @@ namespace NHibernate.Persister.Collection
 
 			// Handle any filters applied to this collection
 			filterHelper = new FilterHelper(collection.FilterMap, dialect);
+
+			// Handle any filters applied to this collection for many-to-many
+			manyToManyFilterHelper = new FilterHelper(collection.ManyToManyFilterMap, dialect);
+			manyToManyWhereString = StringHelper.IsNotEmpty(collection.ManyToManyWhere) ?
+			                        "( " + collection.ManyToManyWhere + " )" :
+			                        null;
+			manyToManyWhereTemplate = manyToManyWhereString == null
+			                          	?
+			                          null
+			                          	:
+			                          Template.RenderWhereStringTemplate(manyToManyWhereString, factory.Dialect); // , factory.getSqlFunctionRegistry() );
+			manyToManyOrderByString = collection.ManyToManyOrdering;
+			manyToManyOrderByTemplate = manyToManyOrderByString == null
+			                            	? null
+			                            	: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect); // , factory.getSqlFunctionRegistry() );
 
 			InitCollectionPropertyMap();
 		}
@@ -1329,12 +1348,22 @@ namespace NHibernate.Persister.Collection
 
 		public string GetManyToManyFilterFragment(string alias, IDictionary enabledFilters)
 		{
-			return string.Empty;
+			StringBuilder buffer = new StringBuilder();
+			manyToManyFilterHelper.Render(buffer, alias, enabledFilters);
+
+			if (manyToManyWhereString != null)
+			{
+			    buffer.Append(" and ")
+			        .Append(StringHelper.Replace(manyToManyWhereTemplate, Template.Placeholder, alias));
+			}
+
+			return buffer.ToString();
 		}
 
 		public bool IsAffectedByEnabledFilters(ISessionImplementor session)
 		{
-			return filterHelper.IsAffectedBy(session.EnabledFilters);
+			return filterHelper.IsAffectedBy(session.EnabledFilters)
+			       || (IsManyToMany && manyToManyFilterHelper.IsAffectedBy(session.EnabledFilters));
 		}
 
 		public ISessionFactoryImplementor Factory
@@ -1464,6 +1493,23 @@ namespace NHibernate.Persister.Collection
 		public IEntityPersister OwnerEntityPersister
 		{
 			get { return ownerPersister; }
+		}
+
+		public bool HasManyToManyOrdering
+		{
+			get { return IsManyToMany && manyToManyOrderByTemplate != null; }
+		}
+
+		public string GetManyToManyOrderByString(string alias)
+		{
+			if (IsManyToMany && manyToManyOrderByString != null)
+			{
+				return StringHelper.Replace(manyToManyOrderByTemplate, Template.Placeholder, alias);
+			}
+			else
+			{
+				return "";
+			}
 		}
 	}
 }

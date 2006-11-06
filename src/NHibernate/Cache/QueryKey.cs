@@ -46,62 +46,6 @@ namespace NHibernate.Cache
 			this.hashCode = ComputeHashCode();
 		}
 
-		private static bool DictionariesAreEqual( IDictionary a, IDictionary b )
-		{
-			if (Equals(a, b))
-			{
-				return true;
-			}
-
-			if( a == null || b == null )
-			{
-				return false;
-			}
-
-			if( a.Count != b.Count )
-			{
-				return false;
-			}
-
-			foreach( object key in a.Keys )
-			{
-				if( !object.Equals( a[ key ], b[ key ] ) )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-		
-		private static bool SetsAreEqual( ISet a, ISet b )
-		{
-			if (Equals(a, b))
-			{
-				return true;
-			}
-
-			if( a == null || b == null )
-			{
-				return false;
-			}
-
-			if( a.Count != b.Count )
-			{
-				return false;
-			}
-
-			foreach (object obj in a)
-			{
-				if (!b.Contains(obj))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
 		public override bool Equals( object other )
 		{
 			QueryKey that = ( QueryKey ) other;
@@ -151,12 +95,12 @@ namespace NHibernate.Cache
 				}
 			}
 
-			if( !DictionariesAreEqual( namedParameters, that.namedParameters ) )
+			if( !CollectionHelper.DictionaryEquals( namedParameters, that.namedParameters ) )
 			{
 				return false;
 			}
 			
-			if (!SetsAreEqual(filters, that.filters))
+			if (!CollectionHelper.SetEquals(filters, that.filters))
 			{
 				return false;
 			}

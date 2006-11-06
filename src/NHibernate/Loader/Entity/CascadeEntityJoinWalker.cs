@@ -10,11 +10,13 @@ namespace NHibernate.Loader.Entity
 {
 	public class CascadeEntityJoinWalker : AbstractEntityJoinWalker
 	{
-		private Cascades.CascadingAction cascadeAction;
+		private Cascades.CascadingAction cascadeAction;
+
 		public CascadeEntityJoinWalker( IOuterJoinLoadable persister, Cascades.CascadingAction action, ISessionFactoryImplementor factory )
 			: base( persister, factory, CollectionHelper.EmptyMap )
 		{
-			this.cascadeAction = action;			SqlStringBuilder whereCondition = WhereString( Alias, persister.IdentifierColumnNames, persister.IdentifierType, 1 )
+			this.cascadeAction = action;
+			SqlStringBuilder whereCondition = WhereString( Alias, persister.IdentifierColumnNames, persister.IdentifierType, 1 )
 				//include the discriminator and class-level where, but not filters
 				.Add( persister.FilterFragment( Alias, CollectionHelper.EmptyMap ) );
 
@@ -35,5 +37,6 @@ namespace NHibernate.Loader.Entity
 		public override string Comment
 		{
 			get { return "load " + Persister.ClassName; }
-		}	}
+		}
+	}
 }

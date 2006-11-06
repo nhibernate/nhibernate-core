@@ -1,6 +1,5 @@
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Persister.Collection
 {
@@ -64,5 +63,12 @@ namespace NHibernate.Persister.Collection
 		/// Should we load this collection role by outer joining?
 		/// </summary>
 		FetchMode FetchMode { get; }
+
+		/// <summary>
+		/// Get the order-by to be applied at the target table of a many to many
+		/// </summary>
+		/// <param name="alias">The alias for the many-to-many target table</param>
+		/// <returns>Appropriate order-by fragment or empty string.</returns>
+		string GetManyToManyOrderByString( string alias );
 	}
 }

@@ -158,7 +158,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Modify the SQL, adding lock hints and comments, if necessary
 		/// </summary>
-		protected SqlString PreprocessSQL( SqlString sql, QueryParameters parameters, Dialect.Dialect dialect )
+		protected virtual SqlString PreprocessSQL( SqlString sql, QueryParameters parameters, Dialect.Dialect dialect )
 		{
 			sql = ApplyLocks( sql, parameters.LockModes, dialect );
 			
@@ -373,7 +373,7 @@ namespace NHibernate.Loader
 				}
 			}
 		}
-
+		
 		private IList DoQuery(
 			ISessionImplementor session,
 			QueryParameters queryParameters,
@@ -387,10 +387,7 @@ namespace NHibernate.Loader
 			int entitySpan = EntityPersisters.Length;
 
 			ArrayList hydratedObjects = entitySpan > 0 ? new ArrayList() : null;
-			SqlString sql = ApplyLocks( SqlString, queryParameters.LockModes, session.Factory.Dialect );
-			IDbCommand st = PrepareQueryCommand(
-				sql,
-				queryParameters, false, session );
+			IDbCommand st = PrepareQueryCommand(queryParameters, false, session );
 
 			IDataReader rs = GetResultSet( st, selection, session );
 
@@ -1177,6 +1174,12 @@ namespace NHibernate.Loader
 
 			return span;
 		}
+		
+		protected virtual SqlString ProcessFilters(QueryParameters parameters, ISessionImplementor session)
+		{
+            parameters.ProcessFilters(SqlString, session);
+            return parameters.FilteredSQL;
+		}
 
 		/// <summary>
 		/// Obtain an <c>IDbCommand</c> with all parameters pre-bound. Bind positional parameters,
@@ -1186,19 +1189,16 @@ namespace NHibernate.Loader
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
 		/// </remarks>
-		/// <param name="sqlString">The SqlString to convert into a prepared IDbCommand.</param>
 		/// <param name="parameters">The <see cref="QueryParameters"/> to use for the IDbCommand.</param>
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
 		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
 		protected virtual IDbCommand PrepareQueryCommand(
-			SqlString sqlString,
 			QueryParameters parameters,
 			bool scroll,
 			ISessionImplementor session )
 		{
-            parameters.ProcessFilters(sqlString, session);
-            sqlString = parameters.FilteredSQL;
+			SqlString sqlString = ProcessFilters(parameters, session);
             Dialect.Dialect dialect = session.Factory.Dialect;
 
 			RowSelection selection = parameters.RowSelection;
@@ -1212,6 +1212,9 @@ namespace NHibernate.Loader
 				                                    useOffset ? GetFirstRow( selection ) : 0,
 				                                    GetMaxOrLimit( dialect, selection ) );
 			}
+
+			sqlString = PreprocessSQL(sqlString, parameters, dialect);
+			
             IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, GetParameterTypes(parameters, useLimit, useOffset));
 
 			try
@@ -1807,7 +1810,7 @@ namespace NHibernate.Loader
 			ArrayList paramTypeList = new ArrayList();
 			int span = 0;
 
-			foreach( IType type in parameters.PositionalParameterTypes )
+			foreach( IType type in parameters.FilteredPositionalParameterTypes )
 			{
 				paramTypeList.Add(type);
 				span += type.GetColumnSpan(Factory);

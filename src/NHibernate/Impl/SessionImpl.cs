@@ -1822,7 +1822,7 @@ namespace NHibernate.Impl
 		private IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
 			// take the union of the query spaces (ie the queried tables)
-			IQueryTranslator[] q = factory.GetQuery(query, scalar);
+			IQueryTranslator[] q = factory.GetQuery(query, scalar, enabledFilters);
 			HashedSet qs = new HashedSet();
 			for (int i = 0; i < q.Length; i++)
 			{
@@ -4204,27 +4204,10 @@ namespace NHibernate.Impl
 					ce.PostInitialize(lce.Collection);
 				}
 
-				if (noQueueAdds && persister.HasCache && !ce.IsDoremove)
+				bool addToCache = noQueueAdds && persister.HasCache && !ce.IsDoremove;
+				if (addToCache)
 				{
-					if (log.IsDebugEnabled)
-					{
-						log.Debug("caching collection: " + MessageHelper.InfoString(persister, lce.Id));
-					}
-					IEntityPersister ownerPersister = factory.GetEntityPersister(persister.OwnerClass);
-					object version;
-					IComparer versionComparator;
-					if (ownerPersister.IsVersioned)
-					{
-						version = GetEntry(GetCollectionOwner(ce)).Version;
-						versionComparator = ownerPersister.VersionType.Comparator;
-					}
-					else
-					{
-						version = null;
-						versionComparator = null;
-					}
-					CacheKey ck = new CacheKey(lce.Id, persister.KeyType, persister.Role, factory);
-					persister.Cache.Put(ck, lce.Collection.Disassemble(persister), Timestamp, version, versionComparator, factory.Settings.IsMinimalPutsEnabled /*&& cacheMode != CacheMode.REFRESH*/);
+					AddCollectionToCache(lce, persister);
 				}
 				if (log.IsDebugEnabled)
 				{
@@ -4236,6 +4219,37 @@ namespace NHibernate.Impl
 			{
 				log.Debug(string.Format("{0} collections initialized", count));
 			}
+		}
+		
+		private void AddCollectionToCache(LoadingCollectionEntry lce, ICollectionPersister persister)
+		{
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("caching collection: " + MessageHelper.InfoString(persister, lce.Id));
+			}
+
+			if (EnabledFilters.Count > 0 && persister.IsAffectedByEnabledFilters(this))
+			{
+				// some filters affecting the collection are enabled on the session, so do not do the put into the cache.
+				log.Debug("Refusing to add to cache due to enabled filters");
+				return; // EARLY EXIT!!!!!
+			}
+
+			IEntityPersister ownerPersister = factory.GetEntityPersister(persister.OwnerClass);
+			object version;
+			IComparer versionComparator;
+			if (ownerPersister.IsVersioned)
+			{
+				version = GetEntry(GetCollectionOwner(lce.Id, persister)).Version;
+				versionComparator = ownerPersister.VersionType.Comparator;
+			}
+			else
+			{
+				version = null;
+				versionComparator = null;
+			}
+			CacheKey ck = new CacheKey(lce.Id, persister.KeyType, persister.Role, factory);
+			persister.Cache.Put(ck, lce.Collection.Disassemble(persister), Timestamp, version, versionComparator, factory.Settings.IsMinimalPutsEnabled /*&& cacheMode != CacheMode.REFRESH*/);
 		}
 
 		private IPersistentCollection GetLoadingCollection(ICollectionPersister persister, object id)
@@ -5552,6 +5566,12 @@ namespace NHibernate.Impl
 		/// <returns><c>true</c> if the collection was initialized from the cache, otherwise <c>false</c>.</returns>
 		private bool InitializeCollectionFromCache(object id, object owner, ICollectionPersister persister, IPersistentCollection collection)
 		{
+			if (enabledFilters.Count > 0 && persister.IsAffectedByEnabledFilters(this))
+			{
+				log.Debug("disregarding cached version (if any) of collection due to enabled filters ");
+				return false;
+			}
+
 			if (!persister.HasCache)
 			{
 				return false;
@@ -5763,7 +5783,7 @@ namespace NHibernate.Impl
 			FilterImpl filter = (FilterImpl) enabledFilters[parsed[0]];
 			if (filter == null)
 			{
-				throw new ArgumentNullException(parsed[0], "Filter [" + parsed[0] + "] currently not enabled");
+				throw new ArgumentException("Filter [" + parsed[0] + "] currently not enabled");
 			}
 			return filter.GetParameter(parsed[1]);
 		}

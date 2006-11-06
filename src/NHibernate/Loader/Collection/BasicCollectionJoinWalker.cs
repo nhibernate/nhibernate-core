@@ -41,7 +41,7 @@ namespace NHibernate.Loader.Collection
 			                     	alias,
 			                     	JoinType.LeftOuterJoin,
 			                     	Factory,
-			                     	CollectionHelper.EmptyMap
+			                     	enabledFilters
 			                     	) );
 			InitPersisters( allAssociations, LockMode.None );
 			InitStatementString( alias, batchSize, subquery );
