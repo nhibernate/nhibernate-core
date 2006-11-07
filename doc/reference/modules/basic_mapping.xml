@@ -814,12 +814,14 @@
                     <area id="discriminator2" coords="3 40" />
                     <area id="discriminator3" coords="4 40" />
                     <area id="discriminator4" coords="5 40" />
+                    <area id="discriminator5" coords="6 40" />
                 </areaspec>
                 <programlisting><![CDATA[<discriminator
         column="discriminator_column"
         type="discriminator_type"
         force="true|false"
         insert="true|false"
+        formula="arbitrary SQL expression"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="discriminator1">
@@ -848,6 +850,12 @@
                             of a mapped composite identifier.
                         </para>
                     </callout>
+                    <callout arearefs="discriminator5">
+                        <para>
+                            <literal>formula</literal> (optional) an arbitrary SQL expression that is 
+                            executed when a type has to be evaluated. Allows content-based discrimination.
+                        </para>
+                    </callout>
                 </calloutlist>
             </programlistingco>
 
@@ -862,6 +870,15 @@
                 "extra" discriminator values that are not mapped to a persistent class. This will not
                 usually be the case.
             </para>
+
+            <para>
+                Using the <literal>formula</literal> attribute you can declare an arbitrary SQL expression
+                that will be used to evaluate the type of a row:
+            </para>
+
+            <programlisting><![CDATA[<discriminator
+    formula="case when CLASS_TYPE in ('a', 'b', 'c') then 0 else 1 end"
+    type="Int32"/>]]></programlisting>
         </sect2>
 
         <sect2 id="mapping-declaration-version">
