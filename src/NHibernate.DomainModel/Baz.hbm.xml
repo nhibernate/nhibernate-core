@@ -209,7 +209,7 @@
 			<jcs-cache usage="read-write"/>
 			<key column="id_"/>
 			<index column="i"/>
-			<many-to-many class="NHibernate.DomainModel.Foo, NHibernate.DomainModel">
+			<many-to-many class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" fetch="select">
 				<column name="foo" length="36"/>
 			</many-to-many>
 		</array>

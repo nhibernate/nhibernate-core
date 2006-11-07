@@ -2495,7 +2495,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public object InternalLoad(System.Type clazz, object id, bool isNullable)
 		{
-			object result = DoLoadByClass(clazz, id, false, true);
+			object result = DoLoadByClass(clazz, id, false, !isNullable);
 			if (!isNullable)
 			{
 				UnresolvableObjectException.ThrowIfNull(result, id, clazz);

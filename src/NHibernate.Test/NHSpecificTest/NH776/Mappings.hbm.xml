@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH776">
+	<class name="A" table="A" lazy="false">
+		<id name="Id" column="Id" type="Int32" unsaved-value="0">
+			<generator class="assigned" />
+		</id>
+		<property name="Foo" />
+		<one-to-one name="NotProxied" class="NotProxied"/>
+		<one-to-one name="Proxied" class="Proxied"/>
+	</class>
+
+	<class name="NotProxied" table="NotProxied" lazy="false">
+		<id name="Id" column="Id" type="Int32" unsaved-value="0">
+			<generator class="foreign">
+				<param name="property">A</param>
+			</generator>
+		</id>
+		<property name="Foo" />
+		<one-to-one name="A" class="A"  constrained="true"/>
+	</class>
+
+	<class name="Proxied" table="Proxied" lazy="true">
+		<id name="Id" column="Id" type="Int32" unsaved-value="0">
+			<generator class="foreign">
+				<param name="property">A</param>
+			</generator>
+		</id>
+		<property name="Foo" />
+		<one-to-one name="A" class="A" constrained="true"/>
+	</class>
+</hibernate-mapping>
