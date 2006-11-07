@@ -335,6 +335,11 @@ namespace NHibernate.Util
 			string trimmed = value.Trim().ToLower( CultureInfo.InvariantCulture );
 			return trimmed.Equals( "true" ) || trimmed.Equals( "t" );
 		}
+		
+		private static string NullSafeToString(object obj)
+		{
+			return obj == null ? "(null)" : obj.ToString();
+		}
 
 		/// <summary>
 		/// 
@@ -354,9 +359,9 @@ namespace NHibernate.Util
 			StringBuilder buf = new StringBuilder( len*12 );
 			for( int i = 0; i < len - 1; i++ )
 			{
-				buf.Append( array[ i ] ).Append( CommaSpace );
+				buf.Append( NullSafeToString(array[i]) ).Append( CommaSpace );
 			}
-			return buf.Append( array[ len - 1 ] ).ToString();
+			return buf.Append( NullSafeToString(array[ len - 1 ]) ).ToString();
 		}
 
 		/// <summary>
