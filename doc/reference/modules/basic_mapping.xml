@@ -2186,7 +2186,8 @@
             </para>
 
             <para>
-                The <literal>ICompositeUserType</literal> and <literal>IUserCollectionType</literal>
+                The <literal>ICompositeUserType</literal>, <literal>IEnhancedUserType</literal>,
+                <literal>IUserCollectionType</literal>, and <literal>IUserVersionType</literal>
                 interfaces provide support for more specialized uses.
             </para>
             
