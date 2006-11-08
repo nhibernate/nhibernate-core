@@ -15,6 +15,7 @@
 <!ENTITY query-hql              SYSTEM "modules/query_hql.xml">
 <!ENTITY query-criteria         SYSTEM "modules/query_criteria.xml">
 <!ENTITY query-sql              SYSTEM "modules/query_sql.xml">
+<!ENTITY filters                SYSTEM "modules/filters.xml">
 <!ENTITY performance            SYSTEM "modules/performance.xml">
 <!ENTITY toolset-guide          SYSTEM "modules/toolset_guide.xml">
 <!ENTITY example-parentchild    SYSTEM "modules/example_parentchild.xml">
@@ -60,7 +61,9 @@
 	&query-hql;
 	&query-criteria;
 	&query-sql;
-	
+
+	&filters;
+
 	&performance;
 	
 	&toolset-guide;
