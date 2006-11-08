@@ -28,7 +28,7 @@ namespace NHibernate.Mapping
 				{
 					Type = TypeFactory.ManyToOne(
 						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName, propertyAccess ),
-						ReferencedPropertyName, isIgnoreNotFound);
+						ReferencedPropertyName, IsLazy, isIgnoreNotFound);
 				}
 			}
 			catch( HibernateException he )

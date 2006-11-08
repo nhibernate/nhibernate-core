@@ -19,6 +19,7 @@ namespace NHibernate.Type
 		private readonly System.Type associatedClass;
 		private readonly bool niceEquals;
 		protected readonly string uniqueKeyPropertyName;
+		private bool eager;
 
 		public override sealed bool IsEntityType
 		{
@@ -52,11 +53,12 @@ namespace NHibernate.Type
 			return persister.IdentifierType.GetHashCode(id, factory);
 		}
 
-		protected EntityType(System.Type persistentClass, string uniqueKeyPropertyName)
+		protected EntityType(System.Type persistentClass, string uniqueKeyPropertyName, bool eager)
 		{
 			this.associatedClass = persistentClass;
 			this.niceEquals = !ReflectHelper.OverridesEquals(persistentClass);
 			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
+			this.eager = eager;
 		}
 
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
@@ -254,7 +256,7 @@ namespace NHibernate.Type
 		/// </summary>
 		protected object ResolveIdentifier(object id, ISessionImplementor session)
 		{
-			return session.InternalLoad(AssociatedClass, id, IsNullable);
+			return session.InternalLoad(AssociatedClass, id, eager, IsNullable);
 		}
 
 		/// <summary>

@@ -228,7 +228,7 @@ namespace NHibernate
 		public static IType Association( System.Type persistentClass )
 		{
 			// not really a many-to-one association *necessarily*
-			return new ManyToOneType( persistentClass, null );
+			return new ManyToOneType( persistentClass );
 		}
 
 		/// <summary>
@@ -239,7 +239,7 @@ namespace NHibernate
 		public static IType Entity( System.Type persistentClass )
 		{
 			// not really a many-to-one association *necessarily*
-			return new ManyToOneType( persistentClass, null );
+			return new ManyToOneType( persistentClass );
 		}
 
 		/// <summary>

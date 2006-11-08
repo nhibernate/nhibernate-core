@@ -38,7 +38,8 @@ namespace NHibernate.Mapping
 					Type = TypeFactory.OneToOne(
 						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName, propertyAccess ),
 						foreignKeyDirection,
-						ReferencedPropertyName );
+						ReferencedPropertyName,
+						IsLazy );
 				}
 			}
 			catch( HibernateException he )

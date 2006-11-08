@@ -915,6 +915,7 @@ namespace NHibernate.Cfg
 					ClassForNameChecked(typeNode.Value, mappings,
 					                    "could not find class: {0}"),
 					model.ReferencedPropertyName,
+					model.IsLazy,
 					model.IsIgnoreNotFound);
 			}
 
@@ -1005,7 +1006,10 @@ namespace NHibernate.Cfg
 			{
 				model.Type = TypeFactory.OneToOne(
 					ClassForNameChecked(classNode.Value, mappings, "could not find class: {0}"),
-					model.ForeignKeyDirection, model.ReferencedPropertyName);
+					model.ForeignKeyDirection,
+					model.ReferencedPropertyName,
+					model.IsLazy
+					);
 			}
 		}
 

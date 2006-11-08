@@ -37,21 +37,26 @@ namespace NHibernate.Type
 			return GetReferencedType( mapping ).SqlTypes( mapping );
 		}
 
-		public ManyToOneType(System.Type persistentClass, string uniqueKeyPropertyName, bool ignoreNotFound)
-			: base(persistentClass, uniqueKeyPropertyName)
+		public ManyToOneType(System.Type persistentClass)
+			: this( persistentClass, false )
+		{
+		}
+
+		public ManyToOneType( System.Type persistentClass, bool lazy )
+			: this( persistentClass, null, lazy, false )
+		{
+		}
+		
+		public ManyToOneType(
+			System.Type persistentClass,
+			string uniqueKeyPropertyName,
+			bool lazy,
+			bool ignoreNotFound)
+			: base( persistentClass, uniqueKeyPropertyName, !lazy )
 		{
 			_isIgnoreNotFound = ignoreNotFound;
 		}
 
-		public ManyToOneType(System.Type persistentClass)
-			: this( persistentClass, null )
-		{
-		}
-
-		public ManyToOneType( System.Type persistentClass, string uniqueKeyPropertyName )
-			: this( persistentClass, uniqueKeyPropertyName, false )
-		{
-		}
 
 		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
 		{

@@ -2493,9 +2493,11 @@ namespace NHibernate.Impl
 		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
 		/// return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
 		/// </summary>
-		public object InternalLoad(System.Type clazz, object id, bool isNullable)
+		public object InternalLoad(System.Type clazz, object id, bool eager, bool isNullable)
 		{
-			object result = DoLoadByClass(clazz, id, false, !isNullable);
+			bool allowProxyCreation = !isNullable && !eager;
+
+			object result = DoLoadByClass(clazz, id, false, allowProxyCreation);
 			if (!isNullable)
 			{
 				UnresolvableObjectException.ThrowIfNull(result, id, clazz);

@@ -69,6 +69,22 @@
 			<xs:enumeration value="write" />
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="laziness">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="false" />
+			<xs:enumeration value="proxy" />
+		</xs:restriction>
+	</xs:simpleType>
+	<!--
+		This is the same as laziness for now, but H3.2 allows lazy="no-proxy"
+		in some elements but not in others, so separate types are used.
+	-->
+	<xs:simpleType name="restrictedLaziness">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="false" />
+			<xs:enumeration value="proxy" />
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:attributeGroup name="baseClassAttributes">
 		<xs:attribute name="name" type="xs:string" use="required" />
 		<xs:attribute name="proxy" type="xs:string" use="optional">
@@ -813,6 +829,7 @@
 			<xs:attribute name="class" type="xs:string" />
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
+			<xs:attribute name="lazy" type="restrictedLaziness" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="key-property">
@@ -851,6 +868,7 @@
 			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="not-found" type="notFoundMode" use="optional" />
 			<xs:attribute name="where" type="xs:string" use="optional" />
+			<xs:attribute name="lazy" type="restrictedLaziness" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="many-to-one">
@@ -873,6 +891,7 @@
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
 			<xs:attribute name="property-ref" type="xs:string" />
 			<xs:attribute name="not-found" type="notFoundMode" use="optional" />
+			<xs:attribute name="lazy" type="laziness" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="meta">
@@ -916,6 +935,7 @@
 			<xs:attribute name="constrained" type="xs:boolean" default="false" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
 			<xs:attribute name="property-ref" type="xs:string" />
+			<xs:attribute name="lazy" type="laziness" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="param">

@@ -626,22 +626,11 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <param name="foreignKeyDirection"></param>
-		/// <returns></returns>
-		public static IType OneToOne( System.Type persistentClass, ForeignKeyDirection foreignKeyDirection )
-		{
-			return OneToOne( persistentClass, foreignKeyDirection, null );
-		}
-
-		/// <summary>
-		/// A one-to-one association type for the given class and cascade style.
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="foreignKeyDirection"></param>
 		/// <param name="uniqueKeyPropertyName"></param>
 		/// <returns></returns>
-		public static IType OneToOne( System.Type persistentClass, ForeignKeyDirection foreignKeyDirection, string uniqueKeyPropertyName )
+		public static IType OneToOne( System.Type persistentClass, ForeignKeyDirection foreignKeyDirection, string uniqueKeyPropertyName, bool lazy )
 		{
-			return new OneToOneType( persistentClass, foreignKeyDirection, uniqueKeyPropertyName );
+			return new OneToOneType( persistentClass, foreignKeyDirection, uniqueKeyPropertyName, lazy );
 		}
 
 		/// <summary>
@@ -651,18 +640,15 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static EntityType ManyToOne( System.Type persistentClass )
 		{
-			return ManyToOne( persistentClass, null );
+			return new ManyToOneType( persistentClass );
 		}
 
 		/// <summary>
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="uniqueKeyPropertyName"></param>
-		/// <returns></returns>
-		public static EntityType ManyToOne( System.Type persistentClass, string uniqueKeyPropertyName )
+		public static EntityType ManyToOne( System.Type persistentClass, bool lazy )
 		{
-			return new ManyToOneType( persistentClass, uniqueKeyPropertyName );
+			return new ManyToOneType( persistentClass, lazy );
 		}
 
 		/// <summary>
@@ -672,9 +658,13 @@ namespace NHibernate.Type
 		/// <param name="uniqueKeyPropertyName"></param>
 		/// <param name="ignoreNotFound"></param>
 		/// <returns></returns>
-		public static EntityType ManyToOne(System.Type persistentClass, string uniqueKeyPropertyName, bool ignoreNotFound)
+		public static EntityType ManyToOne(
+			System.Type persistentClass,
+			string uniqueKeyPropertyName,
+			bool lazy,
+			bool ignoreNotFound)
 		{
-			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, ignoreNotFound);
+			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, ignoreNotFound);
 		}
 
 		/// <summary>

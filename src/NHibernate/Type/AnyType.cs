@@ -147,7 +147,7 @@ namespace NHibernate.Type
 		{
 			return ( clazz == null || id == null ) ?
 				null :
-				session.InternalLoad( clazz, id, false );
+				session.InternalLoad( clazz, id, false, false );
 		}
 
 		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
@@ -230,7 +230,7 @@ namespace NHibernate.Type
 		public override object Assemble( object cached, ISessionImplementor session, object owner )
 		{
 			ObjectTypeCacheEntry e = ( ObjectTypeCacheEntry ) cached;
-			return ( cached == null ) ? null : session.InternalLoad( e.clazz, e.id, false );
+			return ( cached == null ) ? null : session.InternalLoad( e.clazz, e.id, false, false );
 		}
 
 		public override object Disassemble( object value, ISessionImplementor session )

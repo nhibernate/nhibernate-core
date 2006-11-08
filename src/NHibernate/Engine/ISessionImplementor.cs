@@ -103,11 +103,12 @@ namespace NHibernate.Engine
 		/// <param name="persistentClass">The <see cref="System.Type"/> to load.</param>
 		/// <param name="id">The identifier of the object in the database.</param>
 		/// <param name="isNullable">Allow null instance</param>
+		/// <param name="eager">When enabled, the object is eagerly fetched.</param>
 		/// <returns>
 		/// A proxy of the object or an instance of the object if the <c>persistentClass</c> does not have a proxy.
 		/// </returns>
 		/// <exception cref="ObjectNotFoundException">No object could be found with that <c>id</c>.</exception>
-		object InternalLoad( System.Type persistentClass, object id, bool isNullable );
+		object InternalLoad( System.Type persistentClass, object id, bool eager, bool isNullable );
 
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy.

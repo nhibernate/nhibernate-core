@@ -25,7 +25,15 @@ namespace NHibernate.Type
 			return NoSqlTypes;
 		}
 
-		public OneToOneType( System.Type persistentClass, ForeignKeyDirection foreignKeyDirection, string uniqueKeyPropertyName ) : base( persistentClass, uniqueKeyPropertyName )
+		public OneToOneType(
+			System.Type persistentClass,
+			ForeignKeyDirection foreignKeyDirection,
+			string uniqueKeyPropertyName,
+			bool lazy )
+			: base(
+				persistentClass,
+				uniqueKeyPropertyName,
+				!lazy )
 		{
 			this.foreignKeyDirection = foreignKeyDirection;
 		}
