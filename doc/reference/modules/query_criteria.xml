@@ -2,9 +2,7 @@
     <title>Criteria Queries</title>
 
     <para>
-        NHibernate now features an intuitive, extensible criteria query API. For now, this API
-        is less powerful than the more mature HQL query facilities. In particular, criteria
-        queries do not support projection or aggregation.
+        NHibernate features an intuitive, extensible criteria query API.
     </para>
     
     <sect1 id="querycriteria-creating">
@@ -67,16 +65,8 @@ List cats = crit.List();]]></programlisting>
 
         <programlisting><![CDATA[
         // Create a string parameter for the SqlString below
-        Parameter paramName = new Parameter("someName", new StringSqlType());
-
         IList cats = sess.CreateCriteria(typeof(Cat))
-            .Add( Expression.Sql(
-                new SqlString( new object[] {
-                    "lower({alias}.Name) like lower(",
-                    paramName,
-                    ")" } ),
-                "Fritz%",
-                NHibernateUtil.String )
+            .Add( Expression.Sql("lower({alias}.Name) like lower(?)", "Fritz%", NHibernateUtil.String )
             .List();]]></programlisting>
     
         <para>
@@ -195,7 +185,7 @@ List results = session.CreateCriteria(typeof(Cat))
     
         <para>
            Version properties, identifiers and associations are ignored. By default,
-           null valued properties and properties which return an empty string from
+           null-valued properties and properties which return an empty string from
            the call to <code>ToString()</code> are excluded.
         </para>
 
@@ -204,7 +194,7 @@ List results = session.CreateCriteria(typeof(Cat))
         </para>
 
         <programlisting><![CDATA[Example example = Example.Create(cat)
-    .ExcludeZeroes()           //exclude null or zero valued properties
+    .ExcludeZeroes()           //exclude null- or zero-valued properties
     .ExcludeProperty("Color")  //exclude the property named "color"
     .IgnoreCase()              //perform case insensitive string comparisons
     .EnableLike();             //use like for string comparisons
@@ -240,9 +230,9 @@ IList results = session.CreateCriteria(typeof(Cat))
         <programlisting><![CDATA[List results = session.CreateCriteria(typeof(Cat))
     .SetProjection( Projections.ProjectionList()
         .Add( Projections.RowCount() )
-        .Add( Projections.Avg("weight") )
-        .Add( Projections.Max("weight") )
-        .Add( Projections.GroupProperty("color") )
+        .Add( Projections.Avg("Weight") )
+        .Add( Projections.Max("Weight") )
+        .Add( Projections.GroupProperty("Color") )
     )
     .List();]]></programlisting>
     
@@ -296,6 +286,53 @@ IList results = session.CreateCriteria(typeof(Cat))
     .AddOrder( Order.Asc("kitName") )
     .List();]]></programlisting>
     
+    </sect1>
+
+    <sect1 id="querycriteria-detachedqueries">
+        <title>Detached queries and subqueries</title>
+        <para>
+            The <literal>DetachedCriteria</literal> class lets you create a query outside the scope 
+            of a session, and then later execute it using some arbitrary <literal>ISession</literal>.
+        </para>
+        
+        <programlisting><![CDATA[DetachedCriteria query = DetachedCriteria.For(typeof(Cat))
+    .Add( Expression.Eq("sex", 'F') );
+    
+ISession session = ....;
+ITransaction txn = session.BeginTransaction();
+IList results = query.GetExecutableCriteria(session).SetMaxResults(100).List();
+txn.Commit();
+session.Close();]]></programlisting>
+
+        <para>
+            A <literal>DetachedCriteria</literal> may also be used to express a subquery. ICriterion
+            instances involving subqueries may be obtained via <literal>Subqueries</literal>
+            <!-- or <literal>Property</literal> -->.
+        </para>
+        
+        <programlisting><![CDATA[DetachedCriteria avgWeight = DetachedCriteria.For(typeof(Cat))
+    .SetProjection( Projections.Avg("Weight") );
+session.CreateCriteria(typeof(Cat))
+    .Add( Subqueries.Gt("Weight", avgWeight) )
+    .List();]]></programlisting>
+    
+        <programlisting><![CDATA[DetachedCriteria weights = DetachedCriteria.For(typeof(Cat))
+    .SetProjection( Projections.Property("Weight") );
+session.CreateCriteria(typeof(Cat))
+    .add( Subqueries.GeAll("Weight", weights) )
+    .list();]]></programlisting>
+    
+        <para>
+            Even correlated subqueries are possible:
+        </para>
+        
+        <programlisting><![CDATA[DetachedCriteria avgWeightForSex = DetachedCriteria.For(typeof(Cat), "cat2")
+    .SetProjection( Projections.Avg("Weight") )
+    .Add( Expression.EqProperty("cat2.Sex", "cat.Sex") );
+session.CreateCriteria(typeof(Cat), "cat")
+    .Add( Subqueries.Gt("weight", avgWeightForSex) )
+    .List();]]></programlisting>
+
     </sect1>
 
 </chapter>
