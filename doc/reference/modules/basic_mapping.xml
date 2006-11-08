@@ -1275,8 +1275,18 @@
                                         The <literal>name</literal> attribute is prefixed with an underscore to find the field.
                                         <literal>&lt;property name="Foo" ... &gt;</literal> uses the field <literal>_Foo</literal>.
                                     </para>
-                                </entry>	
-                            </row>		
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><literal>pascalcase-m</literal></entry>
+                                <entry>
+                                    <para>
+                                        The <literal>name</literal> attribute is prefixed with the character
+                                        <literal>m</literal> to find the field.
+                                        <literal>&lt;property name="Foo" ... &gt;</literal> uses the field <literal>mFoo</literal>.
+                                    </para>
+                                </entry>
+                            </row>
                             <row>
                                 <entry><literal>pascalcase-m-underscore</literal></entry>
                                 <entry>
@@ -1285,7 +1295,7 @@
                                         <literal>m</literal> and an underscore to find the field.
                                         <literal>&lt;property name="Foo" ... &gt;</literal> uses the field <literal>m_Foo</literal>.
                                     </para>
-                                </entry>	
+                                </entry>
                             </row>	
                         </tbody>
                     </tgroup>
