@@ -301,19 +301,20 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public static AbstractCriterion Sql( SqlString sql, object value, IType type )
 		{
-			return new SQLCriterion( sql, new object[ ] {value}, new IType[ ] {type} );
+			return Sql( sql, new object[ ] {value}, new IType[ ] {type} );
 		}
 		
 		/// <summary>
 		/// Apply a constraint expressed in SQL, with the given SQL parameter
 		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="value"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
 		public static AbstractCriterion Sql( string sql, object value, IType type )
 		{
-			return new SQLCriterion( new SqlString( sql ), new object[ ] {value}, new IType[ ] {type} );
+			return Sql( sql, new object[ ] {value}, new IType[ ] {type} );
+		}
+		
+		public static AbstractCriterion Sql(string sql, object[] values, IType[] types)
+		{
+			return new SQLCriterion(SqlString.Parse(sql), values, types);
 		}
 
 		/// <summary>
@@ -323,7 +324,7 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public static AbstractCriterion Sql( SqlString sql )
 		{
-			return new SQLCriterion( sql, ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray );
+			return Sql( sql, ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray );
 		}
 
 		/// <summary>
@@ -333,7 +334,7 @@ namespace NHibernate.Expression
 		/// <returns></returns>
 		public static AbstractCriterion Sql( string sql )
 		{
-			return new SQLCriterion( new SqlString( sql ), ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray );
+			return Sql( sql, ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray );
 		}
 
 		/// <summary>
