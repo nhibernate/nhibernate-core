@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.SqlTest">
+
+	<class name="Item">
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+
+		<property name="AlternativeItemId" update="false" />
+		<set name="AlternativeItems">
+			<key />
+			<one-to-many class="Item" />
+			<loader query-ref="getAlternativeItems" />
+			<sql-delete>UPDATE Item SET Id = Id WHERE Id = ?</sql-delete>
+			<sql-delete-all>UPDATE Item SET Id = Id WHERE Id = ?</sql-delete-all>
+		</set>
+	</class>
+
+	<sql-query name="getAlternativeItems">
+		<load-collection alias="ai" role="Item.AlternativeItems">
+			<return-property name="key" column="collectionKey" />
+			<return-property name="element" column="Id" />
+			<return-property name="element.id" column="Id" />
+			<return-property name="element.AlternativeItemId" column="AlternativeItemId" />
+		</load-collection>
+		<!-- Suppose alternate items for every item are all items except the item itself. -->
+		SELECT :id as collectionKey, * FROM Item WHERE Id != :id
+	</sql-query>
+
+</hibernate-mapping>

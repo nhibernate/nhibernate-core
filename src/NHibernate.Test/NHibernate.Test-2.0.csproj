@@ -395,6 +395,7 @@
     <Compile Include="SqlTest\FireBirdTest.cs" />
     <Compile Include="SqlTest\GeneralTest.cs" />
     <Compile Include="SqlTest\HandSQLTest.cs" />
+    <Compile Include="SqlTest\Item.cs" />
     <Compile Include="SqlTest\MonetaryAmount.cs" />
     <Compile Include="SqlTest\MonetaryAmountUserType.cs" />
     <Compile Include="SqlTest\MSSQLTest.cs" />
@@ -403,6 +404,7 @@
     <Compile Include="SqlTest\Organization.cs" />
     <Compile Include="SqlTest\Person.cs" />
     <Compile Include="SqlTest\Product.cs" />
+    <Compile Include="SqlTest\SelfReferencingCollectionLoadTest.cs" />
     <Compile Include="SqlTest\SpaceShip.cs" />
     <Compile Include="SqlTest\Speech.cs" />
     <Compile Include="Subclass\SubclassAssert.cs" />
@@ -712,6 +714,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH776\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SqlTest\Item.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
