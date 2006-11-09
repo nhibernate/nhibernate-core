@@ -168,8 +168,11 @@ namespace NHibernate.Transaction
 				AfterTransactionCompletion( true );
 				Dispose();
 			}
-			catch( HibernateException )
+			catch( HibernateException e )
 			{
+				log.Error( "Commit failed", e );
+				AfterTransactionCompletion( false );
+				commitFailed = true;
 				// Don't wrap HibernateExceptions
 				throw;
 			}
@@ -205,8 +208,9 @@ namespace NHibernate.Transaction
 					rolledBack = true;
 					Dispose();
 				}
-				catch( HibernateException )
+				catch( HibernateException e )
 				{
+					log.Error( "Rollback failed", e );
 					// Don't wrap HibernateExceptions
 					throw;
 				}
