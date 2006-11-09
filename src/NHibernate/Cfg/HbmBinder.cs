@@ -792,6 +792,8 @@ namespace NHibernate.Cfg
 				model.GenericArguments = genericArguments;
 			}
 #endif
+			HandleCustomSQL(node, model);
+
 			//set up second pass
 			if (model is List)
 			{
