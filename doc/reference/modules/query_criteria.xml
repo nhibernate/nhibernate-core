@@ -163,7 +163,7 @@ foreach ( IDictionary map in cats )
     
         <para>
             This query will fetch both <literal>Mate</literal> and <literal>Kittens</literal>
-            by outer join.
+            by outer join. See <xref linkend="performance-fetching"/> for more information.
         </para>
     
     </sect1>

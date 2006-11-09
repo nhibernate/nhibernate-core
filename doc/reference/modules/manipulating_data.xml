@@ -106,6 +106,13 @@ return cat;]]></programlisting>
 sess.Flush(); //force the SQL INSERT
 sess.Refresh(cat); //re-read the state (after the trigger executes)]]></programlisting>
 
+        <para>
+            An important question usually appears at this point: How much does Hibernate load
+            from the database and how many SQL <literal>SELECT</literal>s will it use? This
+            depends on the <emphasis>fetching strategy</emphasis> and is explained in
+            <xref linkend="performance-fetching"/>.
+        </para>
+
     </sect1>
 
     <sect1 id="manipulatingdata-querying">

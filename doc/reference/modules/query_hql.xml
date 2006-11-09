@@ -128,7 +128,8 @@ from Formula form full join form.Parameter param]]></programlisting>
             In addition, a "fetch" join allows associations or collections of values to be 
             initialized along with their parent objects, using a single select. This is particularly 
             useful in the case of a collection. It effectively overrides the outer join and
-            lazy declarations of the mapping file for associations and collections.
+            lazy declarations of the mapping file for associations and collections. See
+            <xref linkend="performance-fetching"/> for more information.
         </para>
     
         <programlisting><![CDATA[from Eg.Cat as cat 

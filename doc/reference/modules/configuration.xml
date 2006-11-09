@@ -719,6 +719,10 @@ ISession session = sessions.OpenSession(conn);
             </para>
             
             <para>
+                See <xref linkend="performance-fetching"/> for more information.
+            </para>
+
+            <para>
                 In NHibernate 1.0, <literal>outer-join</literal> attribute could be used to achieve
                 a similar effect. This attribute is now deprecated in favor of <literal>fetch</literal>.
             </para>
@@ -732,7 +736,8 @@ ISession session = sessions.OpenSession(conn);
                 You may integrate a process-level (or clustered) second-level cache system by
                 implementing the interface <literal>NHibernate.Cache.ICacheProvider</literal>.
                 You may select the custom implementation by setting
-                <literal>hibernate.cache.provider_class</literal>.
+                <literal>hibernate.cache.provider_class</literal>. See the 
+                <xref linkend="performance-cache"/> for more details.
             </para>
 
         </sect2>
