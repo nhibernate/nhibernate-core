@@ -20,7 +20,7 @@
 			<include name="System.Data.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
-			<include name="HashCodeProvider.dll" />
+			<include name="HashCodeProvider.dll" if="${nant.settings.currentframework == 'net-1.1'}" />
 			<include name="Castle.DynamicProxy.dll" />
 		</assemblyfileset>
 
@@ -29,6 +29,11 @@
 			<include name="**/*.xml" />
 			<exclude name="bin/**/*.xml" />
 		</resourcefileset>
+		
+		<fileset id="project.sources">
+			<include name="**/*.cs" />
+			<exclude name="IdentityHashCodeProvider.cs" if="${nant.settings.currentframework == 'net-1.1'}" />
+		</fileset>
 	</target>
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />

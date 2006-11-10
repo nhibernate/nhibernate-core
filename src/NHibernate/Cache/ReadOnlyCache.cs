@@ -15,11 +15,6 @@ namespace NHibernate.Cache
 		private ICache cache;
 		private static readonly ILog log = LogManager.GetLogger( typeof( ReadOnlyCache ) );
 
-		/// <summary></summary>
-		public ReadOnlyCache()
-		{
-		}
-
 		/// <summary>
 		/// Gets the cache region name.
 		/// </summary>
@@ -34,12 +29,6 @@ namespace NHibernate.Cache
 			set { cache = value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="timestamp"></param>
-		/// <returns></returns>
 		public object Get( object key, long timestamp )
 		{
 			lock( lockObject )
@@ -56,21 +45,12 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="version"></param>
 		public ISoftLock Lock( object key, object version )
 		{
 			log.Error( "Application attempted to edit read only item: " + key );
 			throw new InvalidOperationException( "Can't write to a readonly object" );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="timestamp"></param>
-		/// <returns></returns>
 		public bool Put( object key, object value, long timestamp, object version, IComparer versionComparator, bool minimalPut )
 		{
 			if( timestamp == long.MinValue )
@@ -101,8 +81,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="lock"></param>
 		public void Release( object key, ISoftLock @lock )
 		{
 			log.Error( "Application attempted to edit read only item: " + key );
@@ -134,10 +112,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="version"></param>
-		/// <param name="lock"></param>
 		public void AfterUpdate( object key, object value, object version, ISoftLock @lock )
 		{
 			log.Error( "Application attempted to edit read only item: " + key );
@@ -147,9 +121,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing.
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="version"></param>
 		public void AfterInsert( object key, object value, object version )
 		{
 			// Ignore
@@ -158,7 +129,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing.
 		/// </summary>
-		/// <param name="key"></param>
 		public void Evict( object key )
 		{
 			// NOOP
@@ -167,8 +137,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing.
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
 		public void Insert( object key, object value )
 		{
 			// NOOP
@@ -177,8 +145,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
 		public void Update( object key, object value )
 		{
 			log.Error( "Application attempted to edit read only item: " + key );

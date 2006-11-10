@@ -250,7 +250,7 @@ namespace NHibernate.Type
 		public abstract object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, Object owner );
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
 		public abstract void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session );
 

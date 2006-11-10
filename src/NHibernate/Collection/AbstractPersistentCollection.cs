@@ -131,6 +131,8 @@ namespace NHibernate.Collection
 		/// add the queued elements to the underlying collection.
 		/// </summary>
 		/// <param name="coll">The <see cref="ICollection"/> to add.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister" /> that
+		/// is currently loading the collection.</param>
 		/// <remarks>
 		/// The default implementation is to throw an <see cref="AssertionFailure"/>
 		/// because most collections do not support delayed addition.  If the collection
@@ -547,8 +549,6 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all "orphaned" elements
 		/// </summary>
-		/// <param name="snapshot"></param>
-		/// <returns></returns>
 		public abstract ICollection GetOrphans( object snapshot, System.Type entityName );
 
 		public static void IdentityRemoveAll( IList list, ICollection collection, System.Type entityName, ISessionImplementor session )

@@ -1,3 +1,4 @@
+#if NET_2_0
 using System;
 using NHibernate.Bytecode.Lightweight;
 using NHibernate.Property;
@@ -55,3 +56,4 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 		}
 	}
 }
+#endif

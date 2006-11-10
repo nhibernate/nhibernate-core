@@ -85,7 +85,6 @@ namespace NHibernate.Hql.Classic
 		/// <summary> 
 		/// Construct a query translator
 		/// </summary>
-		/// <param name="queryString"></param>
 		public QueryTranslator(ISessionFactoryImplementor factory, string queryString, IDictionary enabledFilters)
 			: base(factory)
 		{

@@ -29,6 +29,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="sql">The <see cref="SqlString"/> to convert to an <see cref="IDbCommand"/>.</param>
 		/// <param name="commandType">The <see cref="CommandType"/> of the command.</param>
+		/// <param name="parameterTypes">The <see cref="SqlType">SqlTypes</see> of parameters
+		/// in <paramref name="sql" />.</param>
 		/// <returns>
 		/// An <see cref="IDbCommand"/> that is ready to be executed.
 		/// </returns>
@@ -58,6 +60,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="sql">The <see cref="SqlString"/> to convert to an <see cref="IDbCommand"/>.</param>
 		/// <param name="commandType">The <see cref="CommandType"/> of the command.</param>
+		/// <param name="parameterTypes">The <see cref="SqlType">SqlTypes</see> of parameters
+		/// in <paramref name="sql" />.</param>
 		/// <returns>
 		/// An <see cref="IDbCommand"/> that is ready to have the parameter values set
 		/// and then executed.
@@ -81,6 +85,8 @@ namespace NHibernate.Engine
 		/// </remarks>
 		/// <param name="sql">The <see cref="SqlString"/> to convert to an <see cref="IDbCommand"/>.</param>
 		/// <param name="commandType">The <see cref="CommandType"/> of the command.</param>
+		/// <param name="parameterTypes">The <see cref="SqlType">SqlTypes</see> of parameters
+		/// in <paramref name="sql" />.</param>
 		/// <returns></returns>
 		IDbCommand PrepareBatchCommand( CommandType commandType, SqlString sql, SqlType[] parameterTypes );
 

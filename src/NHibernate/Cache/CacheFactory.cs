@@ -17,13 +17,10 @@ namespace NHibernate.Cache
 			// not publically creatable
 		}
 
-		/// <summary></summary>
 		public const string ReadOnly = "read-only";
-		/// <summary></summary>
 		public const string ReadWrite = "read-write";
-		/// <summary></summary>
 		public const string NonstrictReadWrite = "nonstrict-read-write";
-		/// <summary></summary>
+
 		/// <remarks>
 		/// No providers implement transactional caching currently,
 		/// it was ported from Hibernate just for the sake of completeness.
@@ -36,6 +33,8 @@ namespace NHibernate.Cache
 		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>
 		/// <param name="name">The name of the class the strategy is being created for.</param>
 		/// <param name="mutable"><c>true</c> if the object being stored in the cache is mutable.</param>
+		/// <param name="settings">Used to retrieve the global cache region prefix.</param>
+		/// <param name="properties">Properties the cache provider can use to configure the cache.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
 		// was private in h2.1
 		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, bool mutable, Settings settings, IDictionary properties )
@@ -50,7 +49,7 @@ namespace NHibernate.Cache
 				log.Debug( string.Format( "cache for: {0} usage strategy: {1}", name, usage ) );
 			}
 
-			ICacheConcurrencyStrategy ccs = null;
+			ICacheConcurrencyStrategy ccs;
 			switch( usage )
 			{
 				case CacheFactory.ReadOnly:

@@ -19,10 +19,6 @@ namespace NHibernate.Type
 		private readonly ICompositeUserType userType;
 		private readonly string name;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="userTypeClass"></param>
 		public CompositeCustomType( System.Type userTypeClass, IDictionary parameters )
 		{
 			name = userTypeClass.Name;

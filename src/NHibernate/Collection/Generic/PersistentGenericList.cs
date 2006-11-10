@@ -340,6 +340,8 @@ namespace NHibernate.Collection.Generic
 		/// Get all "orphaned" elements.
 		/// </summary>
 		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <param name="entityName">The type of the entities the collection
+		/// is supposed to contain.</param>
 		/// <returns>
 		/// An <see cref="System.Collections.ICollection"/> that contains all of the elements
 		/// that have been orphaned.

@@ -1606,8 +1606,6 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Transform the array of property indexes to an array of booleans
 		/// </summary>
-		/// <param name="dirtyProperties"></param>
-		/// <returns></returns>
 		protected bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
 		{
 			bool[] propsToUpdate = new bool[HydrateSpan];
@@ -2777,7 +2775,7 @@ namespace NHibernate.Persister.Entity
 				IType[] types = PropertyTypes;
 
                 bool[] versionability = PropertyVersionability;
-                ///bool[] includeInWhere = PropertyUpdateability;
+                //bool[] includeInWhere = PropertyUpdateability;
 
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{

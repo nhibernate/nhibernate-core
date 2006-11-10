@@ -110,7 +110,6 @@ namespace NHibernate.Proxy
 		/// reconstruct the proxy during deserialization or to replace the proxy
 		/// with the instantiated target.
 		/// </summary>
-		/// <param name="info">The <see cref="SerializationInfo"/> to write the object to.</param>
 		/// <remarks>
 		/// This will only be called if the Dynamic Proxy generator does not handle serialization
 		/// itself or delegates calls to the method GetObjectData to the LazyInitializer.
@@ -125,6 +124,7 @@ namespace NHibernate.Proxy
 		/// </summary>
 		/// <param name="method">The name of the method/property to Invoke.</param>
 		/// <param name="args">The arguments to pass the method/property.</param>
+		/// <param name="proxy">The proxy object that the method is being invoked on.</param>
 		/// <returns>
 		/// The result of the Invoke if the underlying proxied object is not needed.  If the 
 		/// underlying proxied object is needed then it returns the result <see cref="InvokeImplementation"/>

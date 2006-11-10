@@ -19,11 +19,6 @@ namespace NHibernate.Cache
 
 		private static readonly ILog log = LogManager.GetLogger( typeof( NonstrictReadWriteCache ) );
 
-		/// <summary></summary>
-		public NonstrictReadWriteCache()
-		{
-		}
-
 		/// <summary>
 		/// Gets the cache region name.
 		/// </summary>
@@ -32,7 +27,6 @@ namespace NHibernate.Cache
 			get { return cache.RegionName; }
 		}
 
-		/// <summary></summary>
 		public ICache Cache
 		{
 			get { return cache; }
@@ -42,9 +36,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Get the most recent version, if available.
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="txTimestamp"></param>
-		/// <returns></returns>
 		public object Get( object key, long txTimestamp )
 		{
 			if( log.IsDebugEnabled )
@@ -67,10 +58,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Add an item to the cache
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="txTimestamp"></param>
-		/// <returns></returns>
 		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator, bool minimalPut )
 		{
 			if( txTimestamp == long.MinValue )
@@ -98,8 +85,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="version"></param>
 		public ISoftLock Lock( object key, object version )
 		{
 			return null;
@@ -123,7 +108,6 @@ namespace NHibernate.Cache
 			cache.Clear();
 		}
 
-		/// <summary></summary>
 		public void Destroy()
 		{
 			try
@@ -139,7 +123,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		/// <param name="key"></param>
 		public void Evict( object key )
 		{
 			if( log.IsDebugEnabled )
@@ -152,8 +135,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
 		public void Update( object key, object value )
 		{
 			Evict( key );
@@ -162,8 +143,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
 		public void Insert( object key, object value )
 		{
 		}
@@ -171,8 +150,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="lock"></param>
 		public void Release( object key, ISoftLock @lock )
 		{
 			if( log.IsDebugEnabled )
@@ -186,10 +163,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="version"></param>
-		/// <param name="lock"></param>
 		public void AfterUpdate( object key, object value, object version, ISoftLock @lock )
 		{
 			Release( key, @lock );
@@ -198,9 +171,6 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="version"></param>
 		public void AfterInsert( object key, object value, object version )
 		{
 		}

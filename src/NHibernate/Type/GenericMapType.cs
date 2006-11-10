@@ -26,6 +26,9 @@ namespace NHibernate.Type
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		public GenericMapType( string role, string propertyRef )
 			: base( role, propertyRef )
 		{

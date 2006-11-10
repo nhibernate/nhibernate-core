@@ -362,6 +362,8 @@ namespace NHibernate.Dialect
 		/// The default implementation (in this class) returns <c>null</c>.
 		/// </summary>
 		/// <param name="insertSql">a parameterized SQL statement to insert a row into a table.</param>
+		/// <param name="identityColumn">The column for which the identity generator was specified.</param>
+		/// <param name="tableName">The name of the table the row is being inserted in.</param>
 		/// <returns>a SQL statement that has the same effect as insertSQL
 		/// and also gets the identifier of the inserted row.
 		/// Return <c>null</c> if this dialect doesn't support this feature.

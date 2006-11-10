@@ -26,6 +26,9 @@ namespace NHibernate.Type
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		public GenericSetType( string role, string propertyRef )
 			: base( role, propertyRef )
 		{
@@ -35,6 +38,7 @@ namespace NHibernate.Type
 		/// Instantiates a new <see cref="IPersistentCollection"/> for the set.
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the set.</param>
+		/// <param name="persister">The current <see cref="ICollectionPersister" /> for the set.</param>
 		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
 		{
 			return new PersistentGenericSet<T>( session );

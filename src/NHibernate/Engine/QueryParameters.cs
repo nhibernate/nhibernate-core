@@ -127,6 +127,14 @@ namespace NHibernate.Engine
 		/// <param name="namedParameters">An <see cref="IDictionary"/> that is <c>parameter name</c> keyed to a <see cref="TypedValue"/> value.</param>
 		/// <param name="lockModes">An <see cref="IDictionary"/> that is <c>hql alias</c> keyed to a LockMode value.</param>
 		/// <param name="rowSelection"></param>
+		/// <param name="cacheable"></param>
+		/// <param name="cacheRegion"></param>
+		/// <param name="forceCacheRefresh"></param>
+		/// <param name="collectionKeys"></param>
+		/// <param name="optionalObject"></param>
+		/// <param name="optionalEntityName"></param>
+		/// <param name="optionalId"></param>
+		/// <param name="resultTransformer"></param>
 		public QueryParameters(
 			IType[] positionalParameterTypes,
 			object[] positionalParameterValues,

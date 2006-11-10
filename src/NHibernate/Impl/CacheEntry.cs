@@ -50,14 +50,6 @@ namespace NHibernate.Impl
 			return values;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="instance"></param>
-		/// <param name="id"></param>
-		/// <param name="persister"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public object[ ] Assemble( object instance, object id, IEntityPersister persister, IInterceptor interceptor, ISessionImplementor session )
 		{
 			if( subclass != persister.MappedClass )
@@ -68,15 +60,6 @@ namespace NHibernate.Impl
 			return Assemble( state, instance, id, persister, interceptor, session );
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="values"></param>
-		/// <param name="result"></param>
-		/// <param name="id"></param>
-		/// <param name="persister"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		private static object[ ] Assemble( object[ ] values, object result, object id, IEntityPersister persister, IInterceptor interceptor, ISessionImplementor session )
 		{
 			IType[ ] propertyTypes = persister.PropertyTypes;

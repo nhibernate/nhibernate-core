@@ -64,8 +64,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Get a hashcode, consistent with persistence "equality"
 		/// </summary>
-		/// <param name="x"></param>
-		/// <returns></returns>
 		int GetHashCode(object x, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
@@ -88,7 +86,7 @@ namespace NHibernate.Type
 		object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner );
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
 		void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session );
 

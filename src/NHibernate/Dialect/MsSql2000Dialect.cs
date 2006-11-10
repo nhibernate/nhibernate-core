@@ -188,11 +188,6 @@ namespace NHibernate.Dialect
 			get { return string.Empty; }
 		}
 
-		/// <summary>
-		/// Add the Identity Select string to the Insert Sql.
-		/// </summary>
-		/// <param name="insertSql">The SqlString that contains the INSERT sql.</param>
-		/// <returns>A new SqlString with <c>; SELECT SCOPE_IDENTITY()</c> at the end.</returns>
 		public override SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
 		{
 			return insertSql.Append( "; " + GetIdentitySelectString( identityColumn, tableName ) );

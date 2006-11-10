@@ -366,6 +366,7 @@ namespace NHibernate.Cfg
 		/// Read mappings from an <c>XmlDocument</c>.
 		/// </summary>
 		/// <param name="doc">A loaded XmlDocument that contains the Mappings.</param>
+		/// <param name="name">The name of the document, for error reporting purposes.</param>
 		/// <returns>This Configuration object.</returns>
 		public Configuration AddDocument( XmlDocument doc, string name )
 		{
@@ -400,6 +401,7 @@ namespace NHibernate.Cfg
 		/// creating Mapping objects from the Mapping Xml.
 		/// </summary>
 		/// <param name="doc">The <b>validated</b> XmlDocument that contains the Mappings.</param>
+		/// <param name="name">The name of the document, for error reporting purposes.</param>
 		private void AddValidatedDocument( XmlDocument doc, string name )
 		{
 			try
@@ -1522,6 +1524,7 @@ namespace NHibernate.Cfg
 		/// to be called by end users.
 		/// </remarks>
 		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
+		/// <param name="name">The name of the document, for error reporting purposes.</param>
 		/// <returns>Validated XmlDocument built from the XmlReader.</returns>
 		public XmlDocument LoadMappingDocument( XmlTextReader hbmReader, string name )
 		{

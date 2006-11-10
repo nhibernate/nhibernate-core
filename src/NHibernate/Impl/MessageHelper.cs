@@ -58,6 +58,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="persister">The <see cref="IEntityPersister" /> for the class in question.</param>
 		/// <param name="id">The identifier of the object.</param>
+		/// <param name="factory">The <see cref="ISessionFactory" />.</param>
 		/// <returns>A descriptive <see cref="String" /> in the format of <c>[classname#id]</c></returns>
 		public static string InfoString( IEntityPersister persister, object id, ISessionFactoryImplementor factory )
 		{
@@ -91,6 +92,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="persister">The <see cref="IEntityPersister" /> for the class in question.</param>
 		/// <param name="id">The identifier of the object.</param>
+		/// <param name="factory">The <see cref="ISessionFactory" />.</param>
+		/// <param name="identifierType">The NHibernate type of the identifier.</param>
 		/// <returns>A descriptive <see cref="String" /> in the format of <c>[classname#id]</c></returns>
 		public static string InfoString( IEntityPersister persister, object id, IType identifierType, ISessionFactoryImplementor factory )
 		{

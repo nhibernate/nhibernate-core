@@ -23,6 +23,9 @@ namespace NHibernate.Type
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="elementClass">The <see cref="System.Type"/> of the element contained in the array.</param>
 		/// <remarks>
 		/// This creates a bag that is non-generic.

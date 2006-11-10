@@ -16,23 +16,20 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class ValidClass
 		{
-#pragma warning disable 169
 			private int privateField;
-#pragma warning restore 169
 			protected int protectedField;
 
 			public virtual int SomeProperty
 			{
-				get { return 0; }
-				set { }
+				get { return privateField; }
+				set { privateField = value; }
 			}
 
 			public virtual void SomeMethod( int arg1, object arg2 )
 			{
 			}
-#pragma warning disable 67
+
 			public virtual event EventHandler VirtualEvent;
-#pragma warning restore 67
 		}
 
 		[Test]
@@ -85,9 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class InvalidNonVirtualEvent : ValidClass
 		{
-#pragma warning disable 67
 			public event EventHandler NonVirtualEvent;
-#pragma warning restore 67
 		}
 
 		[Test]

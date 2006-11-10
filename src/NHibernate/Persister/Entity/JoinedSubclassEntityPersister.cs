@@ -257,7 +257,9 @@ namespace NHibernate.Persister.Entity
 		/// Constructs the NormalizedEntityPerister for the PersistentClass.
 		/// </summary>
 		/// <param name="model">The PeristentClass to create the EntityPersister for.</param>
+		/// <param name="cache">The configured <see cref="ICacheConcurrencyStrategy" />.</param>
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
+		/// <param name="mapping">The mapping used to retrieve type information.</param>
 		public JoinedSubclassEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, IMapping mapping)
 			: base(model, cache, factory)
 		{

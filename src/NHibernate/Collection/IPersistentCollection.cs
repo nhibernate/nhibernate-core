@@ -274,6 +274,8 @@ namespace NHibernate.Collection
 		/// Get all "orphaned" elements
 		/// </summary>
 		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <param name="entityName">The persistent class whose objects
+		/// the collection is expected to contain.</param>
 		/// <returns>
 		/// An <see cref="ICollection"/> that contains all of the elements
 		/// that have been orphaned.

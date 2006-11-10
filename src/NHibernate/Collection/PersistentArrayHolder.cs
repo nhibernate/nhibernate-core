@@ -64,11 +64,6 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="snapshot"></param>
-		/// <returns></returns>
 		public override ICollection GetOrphans( object snapshot, System.Type entityName )
 		{
 			object[ ] sn = ( object[ ] ) snapshot;
@@ -86,11 +81,6 @@ namespace NHibernate.Collection
 		}
 
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
 		public PersistentArrayHolder( ISessionImplementor session, ICollectionPersister persister )
 			: base( session )
 		{
@@ -276,11 +266,6 @@ namespace NHibernate.Collection
 			return array;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
 		{
 			IList deletes = new ArrayList();

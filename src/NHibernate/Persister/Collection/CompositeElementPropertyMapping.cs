@@ -11,12 +11,6 @@ namespace NHibernate.Persister.Collection
 	{
 		private readonly IAbstractComponentType compositeType;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elementColumns"></param>
-		/// <param name="compositeType"></param>
-		/// <param name="factory"></param>
 		public CompositeElementPropertyMapping( string[] elementColumns, string[] elementFormulaTemplates,
 			IAbstractComponentType compositeType, ISessionFactoryImplementor factory )
 		{

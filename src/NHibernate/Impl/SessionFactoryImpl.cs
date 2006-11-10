@@ -129,11 +129,6 @@ namespace NHibernate.Impl
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryImpl));
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cfg"></param>
-		/// <param name="settings"></param>
 		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings)
 		{
 			log.Info("building session factory");

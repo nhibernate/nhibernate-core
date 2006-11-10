@@ -11,9 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 			_description = description;
 		}
 
-		#pragma warning disable 649
 		private int _id;
-		#pragma warning restore 649
 		public int Id
 		{
 			get { return _id; }

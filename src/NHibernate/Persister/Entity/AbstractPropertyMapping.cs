@@ -145,13 +145,6 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="type"></param>
-		/// <param name="columns"></param>
-		/// <param name="factory"></param>
 		protected void InitComponentPropertyPaths( string path, IAbstractComponentType type, string[] columns, string[] formulaTemplates, IMapping factory )
 		{
 			IType[] types = type.Subtypes;

@@ -27,6 +27,7 @@ namespace NHibernate.Impl
 		/// <param name="id">The identifier of the object.</param>
 		/// <param name="fields">An array of objects that contains the value of each Property.</param>
 		/// <param name="dirtyProperties">An array that contains the indexes of the dirty Properties.</param>
+		/// <param name="hasDirtyCollection">Whether the object contains a dirty collection.</param>
 		/// <param name="oldFields"></param>
 		/// <param name="lastVersion">The current version of the object.</param>
 		/// <param name="nextVersion">The version the object should be after update.</param>

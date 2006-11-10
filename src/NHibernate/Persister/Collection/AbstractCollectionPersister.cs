@@ -55,7 +55,8 @@ namespace NHibernate.Persister.Collection
 		private readonly string sqlWhereStringTemplate;
 		private readonly bool hasOrder;
 		private readonly bool hasWhere;
-		private readonly int baseIndex;
+		// TODO H3:
+		//private readonly int baseIndex;
 
 		private readonly bool hasOrphanDelete;
 
@@ -68,8 +69,9 @@ namespace NHibernate.Persister.Collection
 		//columns
 		private readonly string[] keyColumnNames;
 		private readonly string[] indexColumnNames;
-		private readonly string[] indexFormulaTemplates;
-		private readonly string[] indexFormulas;
+		// TODO H3:
+		//private readonly string[] indexFormulaTemplates;
+		//private readonly string[] indexFormulas;
 		private readonly string[] elementColumnNames;
 		protected readonly string[] elementFormulaTemplates;
 		protected readonly string[] elementFormulas;

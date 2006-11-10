@@ -624,10 +624,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A one-to-one association type for the given class and cascade style.
 		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="foreignKeyDirection"></param>
-		/// <param name="uniqueKeyPropertyName"></param>
-		/// <returns></returns>
 		public static IType OneToOne( System.Type persistentClass, ForeignKeyDirection foreignKeyDirection, string uniqueKeyPropertyName, bool lazy )
 		{
 			return new OneToOneType( persistentClass, foreignKeyDirection, uniqueKeyPropertyName, lazy );
@@ -654,10 +650,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="uniqueKeyPropertyName"></param>
-		/// <param name="ignoreNotFound"></param>
-		/// <returns></returns>
 		public static EntityType ManyToOne(
 			System.Type persistentClass,
 			string uniqueKeyPropertyName,
@@ -671,6 +663,9 @@ namespace NHibernate.Type
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="System.Array"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="elementClass">The <see cref="System.Type"/> to use to create the array.</param>
 		/// <returns>
 		/// An <see cref="ArrayType"/> for the specified role.
@@ -684,6 +679,9 @@ namespace NHibernate.Type
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
 		/// </returns>
@@ -697,6 +695,9 @@ namespace NHibernate.Type
 		/// with bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
 		/// </returns>
@@ -710,6 +711,9 @@ namespace NHibernate.Type
 		/// with id-bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="IdentifierBagType"/> for the specified role.
 		/// </returns>
@@ -722,6 +726,9 @@ namespace NHibernate.Type
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
@@ -734,6 +741,9 @@ namespace NHibernate.Type
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.ISet"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="SetType"/> for the specified role.
 		/// </returns>
@@ -747,6 +757,9 @@ namespace NHibernate.Type
 		/// that is sorted by an <see cref="IComparer"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
 		/// <returns>
 		/// A <see cref="SortedMapType"/> for the specified role.
@@ -761,6 +774,9 @@ namespace NHibernate.Type
 		/// that maintains insertion order of elements.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="OrderedMapType"/> for the specified role.
 		/// </returns>
@@ -774,6 +790,9 @@ namespace NHibernate.Type
 		/// that is sorted by an <see cref="IComparer"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
 		/// <returns>
 		/// A <see cref="SortedSetType"/> for the specified role.
@@ -818,6 +837,9 @@ namespace NHibernate.Type
 		/// <see cref="System.Collections.Generic.IList{T}"/> with bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
 		/// <see cref="System.Collections.Generic.IList{T}"/> with.
@@ -836,6 +858,9 @@ namespace NHibernate.Type
 		/// bag semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
 		/// <see cref="System.Collections.Generic.IList{T}"/> with.
@@ -854,6 +879,9 @@ namespace NHibernate.Type
 		/// semantics.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
 		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with.
@@ -871,6 +899,9 @@ namespace NHibernate.Type
 		/// <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/>.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="indexClass">
 		/// The <see cref="System.Type"/> to use as the <c>TKey</c> to create the
 		/// <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/> with.
@@ -901,6 +932,10 @@ namespace NHibernate.Type
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet{T}" />.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
+		/// <param name="elementClass">The type of the set elements.</param>
 		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
 		public static CollectionType GenericSet( string role, string propertyRef, System.Type elementClass )
 		{
@@ -911,6 +946,11 @@ namespace NHibernate.Type
 		/// Creates a new <see cref="CollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet{T}" />.
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
+		/// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}" /> to use for the set.</param>
+		/// <param name="elementType">The type of the elements in the set.</param>
 		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
 		public static CollectionType GenericSortedSet( string role, string propertyRef, object comparer, System.Type elementType )
 		{
@@ -922,10 +962,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Deep copy values in the first array into the second
 		/// </summary>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <param name="copy"></param>
-		/// <param name="target"></param>
 		public static void DeepCopy( object[] values, IType[] types, bool[] copy, object[] target )
 		{
 			for( int i = 0; i < types.Length; i++ )

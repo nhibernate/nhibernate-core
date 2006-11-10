@@ -18,6 +18,9 @@ namespace NHibernate.Type
 		/// a specific role using the <see cref="IComparer"/> to do the sorting.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> to use for the sorting.</param>
 		public SortedSetType( string role, string propertyRef, IComparer comparer )
 			: base( role, propertyRef )

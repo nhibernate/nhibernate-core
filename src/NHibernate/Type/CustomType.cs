@@ -26,10 +26,6 @@ namespace NHibernate.Type
 			get { return userType; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="userTypeClass"></param>
 		public CustomType( System.Type userTypeClass, IDictionary parameters )
 		{
 			name = userTypeClass.Name;

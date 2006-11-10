@@ -12,12 +12,14 @@ namespace NHibernate.Type
 		/// When implemented by a class, increments the version.
 		/// </summary>
 		/// <param name="current">The current version</param>
+		/// <param name="session">The current session, if available.</param>
 		/// <returns>an instance of the <see cref="IType"/> that has been incremented.</returns>
 		object Next(object current, ISessionImplementor session);
 
 		/// <summary>
 		/// When implemented by a class, gets an initial version.
 		/// </summary>
+		/// <param name="session">The current session, if available.</param>
 		/// <value>Returns an instance of the <see cref="IType"/></value>
 		object Seed(ISessionImplementor session);
 

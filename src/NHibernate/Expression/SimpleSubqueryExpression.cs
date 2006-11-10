@@ -3,7 +3,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Expression
 {
-	///<suammary>
+	/// <summary>
 	/// A comparison between a constant value and the the result of a subquery
 	/// </summary>
 	public class SimpleSubqueryExpression : SubqueryExpression

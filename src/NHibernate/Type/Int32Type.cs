@@ -91,11 +91,6 @@ namespace NHibernate.Type
 
 		#region IVersionType Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="current"></param>
-		/// <returns></returns>
 		public virtual object Next(object current, ISessionImplementor session)
 		{
 			return ((int) current) + 1;

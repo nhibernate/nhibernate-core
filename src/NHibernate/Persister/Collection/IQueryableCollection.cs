@@ -11,8 +11,6 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Generate a list of collection index and element columns
 		/// </summary>
-		/// <param name="alias"></param>
-		/// <returns></returns>
 		string SelectFragment( string alias, string columnSuffix );
 
 		/// <summary>

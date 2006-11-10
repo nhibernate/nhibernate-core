@@ -21,7 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\NHibernate.XML</DocumentationFile>
-    <NoWarn>1573;1591</NoWarn>
+    <NoWarn>1591</NoWarn>
     <WarningsAsErrors>1717;1574</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

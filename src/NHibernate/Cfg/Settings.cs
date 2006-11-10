@@ -42,8 +42,6 @@ namespace NHibernate.Cfg
 		
 		// New in NH:
 		private IsolationLevel _isolationLevel;
-		private bool _prepareSql;
-		private int _commandTimeout;
 
 		public bool IsShowSqlEnabled
 		{

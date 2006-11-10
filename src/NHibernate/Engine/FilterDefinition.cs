@@ -23,6 +23,9 @@ namespace NHibernate.Engine
         /// Set the named parameter's value list for this filter. 
         /// </summary>
         /// <param name="name">The name of the filter for which this configuration is in effect.</param>
+        /// <param name="defaultCondition">The default filter condition.</param>
+        /// <param name="parameterTypes">A dictionary storing the NHibernate <see cref="IType" /> type
+        /// of each parameter under its name.</param>
         public FilterDefinition(string name, string defaultCondition, IDictionary parameterTypes) 
         {
 		    this.filterName = name;

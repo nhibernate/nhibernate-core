@@ -13,8 +13,8 @@ using NHibernate.Loader;
 namespace NHibernate.Collection.Generic
 {
 	/// <summary>
-	/// A persistent wrapper for a <see cref="IDictionary{TKey,TValue}&lt;TKey,TValue&gt;"/>.  Underlying
-	/// collection is a <see cref="Dictionary&lt;TKey,TValue&gt;"/>
+	/// A persistent wrapper for a <see cref="IDictionary{TKey,TValue}"/>.  Underlying
+	/// collection is a <see cref="Dictionary{TKey,TValue}"/>
 	/// </summary>
 	/// <typeparam name="TKey">The type of the keys in the IDictionary.</typeparam>
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>

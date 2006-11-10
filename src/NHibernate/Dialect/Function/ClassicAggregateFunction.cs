@@ -15,6 +15,7 @@ namespace NHibernate.Dialect.Function
 		/// Initializes a new instance of the StandardSQLFunction class.
 		/// </summary>
 		/// <param name="name">SQL function name.</param>
+		/// <param name="acceptAsterisk">Whether the function accepts an asterisk (*) in place of arguments</param>
 		public ClassicAggregateFunction(string name, bool acceptAsterisk)
 		{
 			this.name = name;

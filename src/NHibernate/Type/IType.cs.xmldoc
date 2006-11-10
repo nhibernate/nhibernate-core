@@ -141,7 +141,7 @@
 		</remarks>
 	</member>
 	
-	<member name="M:IType.NullSafeSet">
+	<member name="M:IType.NullSafeSet(settable)">
 		<summary>
 		When implemented by a class, puts the value/values from the mapped 
 		class into the <see cref="IDbCommand"/>.
@@ -150,12 +150,32 @@
 		<param name="value">The object that contains the values.</param>
 		<param name="index">The index of the <see cref="IDbDataParameter"/> to start writing the values to.</param>
 		<param name="session"></param>
+		<param name="settable">Indicates which columns are to be set.</param>
 		<remarks>
 		Implementors should handle possibility of null values.
-		A multi-column type should be written to parameters starting from <c>Index</c>.
+		A multi-column type should be written to parameters starting from <paramref name="index"/>.
 		</remarks>
 	</member>
-	
+
+	<member name="M:IType.NullSafeSet">
+		<summary>
+			When implemented by a class, puts the value/values from the mapped
+			class into the <see cref="IDbCommand"/>.
+		</summary>
+		<param name="st">
+			The <see cref="IDbCommand"/> to put the values into.
+		</param>
+		<param name="value">The object that contains the values.</param>
+		<param name="index">
+			The index of the <see cref="IDbDataParameter"/> to start writing the values to.
+		</param>
+		<param name="session"></param>
+		<remarks>
+			Implementors should handle possibility of null values.
+			A multi-column type should be written to parameters starting from <paramref name="index"/>.
+		</remarks>
+	</member>
+
 	<member name="M:IType.ToString">
 		<summary>
 		When implemented by a class, a representation of the value to be 
