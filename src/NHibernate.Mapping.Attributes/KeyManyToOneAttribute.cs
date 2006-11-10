@@ -26,6 +26,8 @@ namespace NHibernate.Mapping.Attributes
 	public class KeyManyToOneAttribute : BaseAttribute
 	{
 		
+		private RestrictedLaziness _lazy = RestrictedLaziness.Unspecified;
+		
 		private string _foreignkey = null;
 		
 		private string _name = null;
@@ -142,6 +144,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._foreignkey = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual RestrictedLaziness Lazy
+		{
+			get
+			{
+				return this._lazy;
+			}
+			set
+			{
+				this._lazy = value;
 			}
 		}
 	}

@@ -115,6 +115,7 @@
     <Compile Include="ClassAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CollectionFetchMode.cs" />
     <Compile Include="CollectionIdAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -214,6 +215,7 @@
     <Compile Include="KeyPropertyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Laziness.cs" />
     <Compile Include="ListAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -276,6 +278,7 @@
     <Compile Include="RawXmlAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RestrictedLaziness.cs" />
     <Compile Include="ResultSetAttribute.cs" />
     <Compile Include="ReturnAttribute.cs" />
     <Compile Include="ReturnColumnAttribute.cs" />

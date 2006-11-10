@@ -51,7 +51,7 @@ namespace NHibernate.Mapping.Attributes
 			get
 			{
 				if(_startQuote==null || _startQuote.Length==0)
-					_startQuote = "{";
+					_startQuote = "{{";
 				return _startQuote;
 			}
 			set
@@ -66,7 +66,7 @@ namespace NHibernate.Mapping.Attributes
 			get
 			{
 				if(_endQuote==null || _endQuote.Length==0)
-					_endQuote = "}";
+					_endQuote = "}}";
 				return _endQuote;
 			}
 			set
@@ -2688,6 +2688,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <insert>
 			if( attribute.InsertSpecified )
 			writer.WriteAttributeString("insert", attribute.Insert ? "true" : "false");
+			// Attribute: <formula>
+			if(attribute.Formula != null)
+			writer.WriteAttributeString("formula", GetAttributeValue(attribute.Formula, mappedClass));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4503,8 +4506,8 @@ namespace NHibernate.Mapping.Attributes
 			if(attribute.OuterJoin != OuterJoinStrategy.Unspecified)
 			writer.WriteAttributeString("outer-join", GetXmlEnumValue(typeof(OuterJoinStrategy), attribute.OuterJoin));
 			// Attribute: <fetch>
-			if(attribute.Fetch != FetchMode.Unspecified)
-			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(FetchMode), attribute.Fetch));
+			if(attribute.Fetch != CollectionFetchMode.Unspecified)
+			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(CollectionFetchMode), attribute.Fetch));
 			// Attribute: <cascade>
 			if(attribute.Cascade != CascadeStyle.Unspecified)
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
@@ -4988,6 +4991,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <foreign-key>
 			if(attribute.ForeignKey != null)
 			writer.WriteAttributeString("foreign-key", GetAttributeValue(attribute.ForeignKey, mappedClass));
+			// Attribute: <lazy>
+			if(attribute.Lazy != RestrictedLaziness.Unspecified)
+			writer.WriteAttributeString("lazy", GetXmlEnumValue(typeof(RestrictedLaziness), attribute.Lazy));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -5145,6 +5151,12 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <not-found>
 			if(attribute.NotFound != NotFoundMode.Unspecified)
 			writer.WriteAttributeString("not-found", GetXmlEnumValue(typeof(NotFoundMode), attribute.NotFound));
+			// Attribute: <where>
+			if(attribute.Where != null)
+			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
+			// Attribute: <lazy>
+			if(attribute.Lazy != RestrictedLaziness.Unspecified)
+			writer.WriteAttributeString("lazy", GetXmlEnumValue(typeof(RestrictedLaziness), attribute.Lazy));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -5253,6 +5265,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <not-found>
 			if(attribute.NotFound != NotFoundMode.Unspecified)
 			writer.WriteAttributeString("not-found", GetXmlEnumValue(typeof(NotFoundMode), attribute.NotFound));
+			// Attribute: <lazy>
+			if(attribute.Lazy != Laziness.Unspecified)
+			writer.WriteAttributeString("lazy", GetXmlEnumValue(typeof(Laziness), attribute.Lazy));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -5451,6 +5466,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <property-ref>
 			if(attribute.PropertyRef != null)
 			writer.WriteAttributeString("property-ref", GetAttributeValue(attribute.PropertyRef, mappedClass));
+			// Attribute: <lazy>
+			if(attribute.Lazy != Laziness.Unspecified)
+			writer.WriteAttributeString("lazy", GetXmlEnumValue(typeof(Laziness), attribute.Lazy));
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -5883,8 +5901,8 @@ namespace NHibernate.Mapping.Attributes
 			if(attribute.OuterJoin != OuterJoinStrategy.Unspecified)
 			writer.WriteAttributeString("outer-join", GetXmlEnumValue(typeof(OuterJoinStrategy), attribute.OuterJoin));
 			// Attribute: <fetch>
-			if(attribute.Fetch != FetchMode.Unspecified)
-			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(FetchMode), attribute.Fetch));
+			if(attribute.Fetch != CollectionFetchMode.Unspecified)
+			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(CollectionFetchMode), attribute.Fetch));
 			// Attribute: <cascade>
 			if(attribute.Cascade != CascadeStyle.Unspecified)
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
@@ -6122,8 +6140,8 @@ namespace NHibernate.Mapping.Attributes
 			if(attribute.OuterJoin != OuterJoinStrategy.Unspecified)
 			writer.WriteAttributeString("outer-join", GetXmlEnumValue(typeof(OuterJoinStrategy), attribute.OuterJoin));
 			// Attribute: <fetch>
-			if(attribute.Fetch != FetchMode.Unspecified)
-			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(FetchMode), attribute.Fetch));
+			if(attribute.Fetch != CollectionFetchMode.Unspecified)
+			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(CollectionFetchMode), attribute.Fetch));
 			// Attribute: <cascade>
 			if(attribute.Cascade != CascadeStyle.Unspecified)
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
@@ -6428,8 +6446,8 @@ namespace NHibernate.Mapping.Attributes
 			if(attribute.OuterJoin != OuterJoinStrategy.Unspecified)
 			writer.WriteAttributeString("outer-join", GetXmlEnumValue(typeof(OuterJoinStrategy), attribute.OuterJoin));
 			// Attribute: <fetch>
-			if(attribute.Fetch != FetchMode.Unspecified)
-			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(FetchMode), attribute.Fetch));
+			if(attribute.Fetch != CollectionFetchMode.Unspecified)
+			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(CollectionFetchMode), attribute.Fetch));
 			// Attribute: <cascade>
 			if(attribute.Cascade != CascadeStyle.Unspecified)
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));
@@ -6737,8 +6755,8 @@ namespace NHibernate.Mapping.Attributes
 			if(attribute.OuterJoin != OuterJoinStrategy.Unspecified)
 			writer.WriteAttributeString("outer-join", GetXmlEnumValue(typeof(OuterJoinStrategy), attribute.OuterJoin));
 			// Attribute: <fetch>
-			if(attribute.Fetch != FetchMode.Unspecified)
-			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(FetchMode), attribute.Fetch));
+			if(attribute.Fetch != CollectionFetchMode.Unspecified)
+			writer.WriteAttributeString("fetch", GetXmlEnumValue(typeof(CollectionFetchMode), attribute.Fetch));
 			// Attribute: <cascade>
 			if(attribute.Cascade != CascadeStyle.Unspecified)
 			writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));

@@ -23,6 +23,15 @@
 			<!-- equivalent to outer-join="true" -->
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="collectionFetchMode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="select" />
+			<!-- equivalent to outer-join="false" -->
+			<xs:enumeration value="join" />
+			<!-- equivalent to outer-join="true" -->
+			<xs:enumeration value="subselect" />
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="flushMode">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="auto" />
@@ -60,6 +69,22 @@
 			<xs:enumeration value="write" />
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="laziness">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="false" />
+			<xs:enumeration value="proxy" />
+		</xs:restriction>
+	</xs:simpleType>
+	<!--
+		This is the same as laziness for now, but H3.2 allows lazy="no-proxy"
+		in some elements but not in others, so separate types are used.
+	-->
+	<xs:simpleType name="restrictedLaziness">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="false" />
+			<xs:enumeration value="proxy" />
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:attributeGroup name="baseClassAttributes">
 		<xs:attribute name="name" type="xs:string" use="required" />
 		<xs:attribute name="proxy" type="xs:string" use="optional">
@@ -87,7 +112,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
-		<xs:attribute name="fetch" type="fetchMode" use="optional" />
+		<xs:attribute name="fetch" type="collectionFetchMode" use="optional" />
 		<xs:attribute name="cascade" type="cascadeStyle" use="optional" />
 		<xs:attribute name="where" type="xs:string" use="optional" />
 		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false" />
@@ -108,7 +133,7 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="cacheType">
-		<xs:attribute name='region' />
+		<xs:attribute name="region" type="xs:string" use="optional" />
 		<xs:attribute name="usage" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -404,6 +429,7 @@
 			<xs:attribute name="length" type="xs:positiveInteger" />
 			<xs:attribute name="force" type="xs:boolean" default="false" />
 			<xs:attribute name="insert" type="xs:boolean" default="true" />
+			<xs:attribute name="formula" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="version">
@@ -803,6 +829,7 @@
 			<xs:attribute name="class" type="xs:string" />
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
+			<xs:attribute name="lazy" type="restrictedLaziness" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="key-property">
@@ -837,9 +864,11 @@
 			<xs:attribute name="class" type="xs:string" use="required" />
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
-			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto" />
+			<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
 			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="not-found" type="notFoundMode" use="optional" />
+			<xs:attribute name="where" type="xs:string" use="optional" />
+			<xs:attribute name="lazy" type="restrictedLaziness" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="many-to-one">
@@ -855,13 +884,14 @@
 			<xs:attribute name="not-null" type="xs:boolean" default="false" />
 			<xs:attribute name="unique" type="xs:boolean" default="false" />
 			<xs:attribute name="cascade" type="cascadeStyle" />
-			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto" />
+			<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
 			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="update" type="xs:boolean" default="true" />
 			<xs:attribute name="insert" type="xs:boolean" default="true" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
 			<xs:attribute name="property-ref" type="xs:string" />
 			<xs:attribute name="not-found" type="notFoundMode" use="optional" />
+			<xs:attribute name="lazy" type="laziness" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="meta">
@@ -900,11 +930,12 @@
 			<xs:attribute name="access" type="xs:string" />
 			<xs:attribute name="class" type="xs:string" />
 			<xs:attribute name="cascade" type="cascadeStyle" />
-			<xs:attribute name="outer-join" type="outerJoinStrategy" default="auto" />
+			<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
 			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="constrained" type="xs:boolean" default="false" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
 			<xs:attribute name="property-ref" type="xs:string" />
+			<xs:attribute name="lazy" type="laziness" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="param">

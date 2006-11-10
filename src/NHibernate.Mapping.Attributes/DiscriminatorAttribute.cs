@@ -44,6 +44,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _column = null;
 		
+		private string _formula = null;
+		
 		/// <summary> Default constructor (position=0) </summary>
 		public DiscriminatorAttribute() : 
 				base(0)
@@ -177,6 +179,19 @@ namespace NHibernate.Mapping.Attributes
 			get
 			{
 				return this._insertspecified;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual string Formula
+		{
+			get
+			{
+				return this._formula;
+			}
+			set
+			{
+				this._formula = value;
 			}
 		}
 	}

@@ -131,6 +131,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CollectionFetchMode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "CollectionIdAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -326,6 +331,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Laziness.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ListAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -446,6 +456,11 @@
                 />
                 <File
                     RelPath = "RawXmlAttribute.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "RestrictedLaziness.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -25,14 +25,17 @@ namespace NHibernate.Mapping.Attributes.Generator
 				{
 					_knowEnums = new System.Collections.Specialized.StringCollection();
 					_knowEnums.Add("cascadeStyle");
+					_knowEnums.Add("collectionFetchMode");
 					_knowEnums.Add("customSQLCheck");
 					_knowEnums.Add("fetchMode");
 					_knowEnums.Add("flushMode");
+					_knowEnums.Add("laziness");
 					_knowEnums.Add("lockMode");
 					_knowEnums.Add("notFoundMode");
-					_knowEnums.Add("polymorphismType");
 					_knowEnums.Add("optimisticLockMode");
 					_knowEnums.Add("outerJoinStrategy");
+					_knowEnums.Add("polymorphismType");
+					_knowEnums.Add("restrictedLaziness");
 					_knowEnums.Add("unsavedValueType");
 				}
 				return _knowEnums;
@@ -242,7 +245,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				case "positiveInteger" : return "-1"; // value should be positive (so we can use -1 as unspecified value)
 				case "string" : return "null";
 				default: // => Treat it as Enumeration
-					return Utils.GetAttributeTypeName(parentElt, attrib) + ".Unspecified";
+					return GetAttributeTypeName(parentElt, attrib) + ".Unspecified";
 			}
 		}
 
@@ -257,8 +260,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 			switch(attribTypeName)
 			{
 				case "" : // => Dynamically generated enumeration
-					return Utils.Capitalize(parentElt.Name)
-						+ Utils.Capitalize(attrib.Name);
+					return Capitalize(parentElt.Name)
+						+ Capitalize(attrib.Name);
 				case "boolean" : return "System.Boolean";
 				case "positiveInteger" : return "System.Int32";
 				case "string" : return "System.String";

@@ -56,6 +56,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _class = null;
 		
+		private Laziness _lazy = Laziness.Unspecified;
+		
 		private CascadeStyle _cascade = CascadeStyle.Unspecified;
 		
 		private FetchMode _fetch = FetchMode.Unspecified;
@@ -325,6 +327,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._notfound = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual Laziness Lazy
+		{
+			get
+			{
+				return this._lazy;
+			}
+			set
+			{
+				this._lazy = value;
 			}
 		}
 	}

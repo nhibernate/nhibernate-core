@@ -62,7 +62,7 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _persister = null;
 		
-		private FetchMode _fetch = FetchMode.Unspecified;
+		private CollectionFetchMode _fetch = CollectionFetchMode.Unspecified;
 		
 		/// <summary> Default constructor (position=0) </summary>
 		public IdBagAttribute() : 
@@ -181,7 +181,7 @@ namespace NHibernate.Mapping.Attributes
 		}
 		
 		/// <summary> </summary>
-		public virtual FetchMode Fetch
+		public virtual CollectionFetchMode Fetch
 		{
 			get
 			{

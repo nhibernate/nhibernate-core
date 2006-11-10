@@ -85,6 +85,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 "join",
 "joined",
 "key",
+"laziness",
 "lazy",
 "length",
 "list",
@@ -125,7 +126,9 @@ namespace NHibernate.Mapping.Attributes.Generator
 "quote",
 "read",
 "ref",
+"region",
 "rename",
+"restricted",
 "result",
 "return",
 "role",
@@ -145,6 +148,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 "strict",
 "style",
 "subclass",
+"subselect",
 "synchronize",
 "table",
 "timestamp",
@@ -198,7 +202,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				log.Info("Generation of NHibernate.Mapping.Attributes");
 
 				// Open the Schema (in /NHMA/ directory)
-				System.Xml.XmlTextReader reader = new System.Xml.XmlTextReader("../../../nhibernate-mapping-2.2.xsd");
+				System.Xml.XmlTextReader reader = new System.Xml.XmlTextReader("../../../nhibernate-mapping.xsd");
 				schema = System.Xml.Schema.XmlSchema.Read(reader, null);
 
 				Refly.CodeDom.NamespaceDeclaration nd = new Refly.CodeDom.NamespaceDeclaration("NHibernate.Mapping.Attributes", conformer);
@@ -218,7 +222,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				// Add its public property with a comment
 				Refly.CodeDom.PropertyDeclaration pdStartQuote = hbmWriter.AddProperty(fdStartQuote, false, true, false);
 				pdStartQuote.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_startQuote==null || _startQuote.Length==0)
-					_startQuote = ""{"";
+					_startQuote = ""{{"";
 				return _startQuote") );
 				pdStartQuote.Doc.Summary.AddText(" Gets or sets the beginning string used when declaring an identifier for an AttributeIdenfierAttribute "); // Create the <summary />
 
@@ -226,7 +230,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 				// Add its public property with a comment
 				Refly.CodeDom.PropertyDeclaration pdEndQuote = hbmWriter.AddProperty(fdEndQuote, false, true, false);
 				pdEndQuote.Get.Add( new Refly.CodeDom.Expressions.SnippetExpression(@"if(_endQuote==null || _endQuote.Length==0)
-					_endQuote = ""}"";
+					_endQuote = ""}}"";
 				return _endQuote") );
 				pdEndQuote.Doc.Summary.AddText(" Gets or sets the ending string used when declaring an identifier for an AttributeIdenfierAttribute "); // Create the <summary />
 

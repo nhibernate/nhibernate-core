@@ -26,17 +26,21 @@ namespace NHibernate.Mapping.Attributes
 	public class ManyToManyAttribute : BaseAttribute
 	{
 		
-		private OuterJoinStrategy _outerjoin = OuterJoinStrategy.Unspecified;
-		
-		private string _foreignkey = null;
-		
-		private string _column = null;
+		private RestrictedLaziness _lazy = RestrictedLaziness.Unspecified;
 		
 		private string _class = null;
 		
+		private OuterJoinStrategy _outerjoin = OuterJoinStrategy.Unspecified;
+		
 		private NotFoundMode _notfound = NotFoundMode.Unspecified;
 		
+		private string _column = null;
+		
 		private FetchMode _fetch = FetchMode.Unspecified;
+		
+		private string _foreignkey = null;
+		
+		private string _where = null;
 		
 		/// <summary> Default constructor (position=0) </summary>
 		public ManyToManyAttribute() : 
@@ -141,6 +145,32 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._notfound = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual string Where
+		{
+			get
+			{
+				return this._where;
+			}
+			set
+			{
+				this._where = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual RestrictedLaziness Lazy
+		{
+			get
+			{
+				return this._lazy;
+			}
+			set
+			{
+				this._lazy = value;
 			}
 		}
 	}

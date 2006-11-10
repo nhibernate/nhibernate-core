@@ -46,6 +46,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private FetchMode _fetch = FetchMode.Unspecified;
 		
+		private Laziness _lazy = Laziness.Unspecified;
+		
 		/// <summary> Default constructor (position=0) </summary>
 		public OneToOneAttribute() : 
 				base(0)
@@ -214,6 +216,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._propertyref = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual Laziness Lazy
+		{
+			get
+			{
+				return this._lazy;
+			}
+			set
+			{
+				this._lazy = value;
 			}
 		}
 	}

@@ -150,7 +150,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	 /// <summary>
 	 /// Gets or sets the _collectionComponent
 	 /// </summary> 
-	[NHMA.ManyToOne(NotNull=true, NotFound=NHMA.NotFoundMode.Ignore, ClassType=typeof(int), AccessType=typeof(Foo), Fetch=FetchMode.Select, OuterJoin=NHMA.OuterJoinStrategy.True)]
+	[NHMA.ManyToOne(NotNull=true, Lazy=NHMA.Laziness.False, NotFound=NHMA.NotFoundMode.Ignore, ClassType=typeof(int), AccessType=typeof(Foo), Fetch=FetchMode.Select, OuterJoin=NHMA.OuterJoinStrategy.True)]
 	 public NestingComponent CollectionComponent
 	 {
 		 get 
@@ -171,7 +171,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 		[NHMA.Generator(-2, Class="uuid.hex")]
 			[NHMA.Param(-1, Name="property", Content="Y")]
 			[NHMA.Param(Name="Unknow")] // Default to 0 :)
-	[NHMA.Discriminator(1, Column="clazz_discriminator", TypeType=typeof(string), NotNull=true, Length=256, Force=true, Insert=false)]
+	[NHMA.Discriminator(1, Column="clazz_discriminator", Formula="1==2", TypeType=typeof(string), NotNull=true, Length=256, Force=true, Insert=false)]
 	public String Code
 	{
 		get
@@ -219,7 +219,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for Foo
 	/// </summary>
-	[NHMA.ManyToOne(0, Name="Foo", Column="F", Update=false, Insert=true, PropertyRef="0", AccessType=typeof(int), ClassType=typeof(Foo), Fetch=FetchMode.Join, OuterJoin=NHMA.OuterJoinStrategy.True)]
+	[NHMA.ManyToOne(0, Name="Foo", Column="F", Lazy=NHMA.Laziness.Proxy, Update=false, Insert=true, PropertyRef="0", AccessType=typeof(int), ClassType=typeof(Foo), Fetch=FetchMode.Join, OuterJoin=NHMA.OuterJoinStrategy.True)]
 	public Foo Foo
 	{
 		get
@@ -289,7 +289,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for topComponents
 	/// </summary>
-	[NHMA.List(0, Table="topcomponents", Schema="Schema", Where="0", Inverse=false, Fetch=FetchMode.Select, PersisterType=typeof(int))]
+	[NHMA.List(0, Table="topcomponents", Schema="Schema", Where="0", Inverse=false, Fetch=CollectionFetchMode.Select, PersisterType=typeof(int))]
 		[NHMA.Cache(1, Region="kmer", Usage=NHMA.CacheUsage.ReadWrite)]
 		[NHMA.Key(2, Column="id_")]
 		[NHMA.Index(3, Column="i")]
@@ -315,7 +315,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 		[NHMA.Key(1)]
 			[NHMA.Column(2, Name="baz_id", Length=16)]
 		[NHMA.IndexManyToMany(3, Column="foo_id", ClassType=typeof(Foo))]
-		[NHMA.ManyToMany(4, Column="glarch_id", ClassType=typeof(Glarch))]
+		[NHMA.ManyToMany(4, Column="glarch_id", ClassType=typeof(Glarch), Lazy=NHMA.RestrictedLaziness.Proxy, Where="0==0", OuterJoin=NHMA.OuterJoinStrategy.Auto)]
 	public System.Collections.IDictionary FooToGlarch
 	{
 		get
@@ -354,7 +354,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for glarchToFoo
 	/// </summary>
-	[NHMA.Map(Name="GTF", AccessType=typeof(int), Schema="Schema", Inverse=false, Fetch=FetchMode.Select, PersisterType=typeof(Foo))]
+	[NHMA.Map(Name="GTF", AccessType=typeof(int), Schema="Schema", Inverse=false, Fetch=CollectionFetchMode.Subselect, PersisterType=typeof(Foo))]
 		[NHMA.Key(1)]
 			[NHMA.Column(2, Name="gtf_baz_id", Length=16)]
 		[NHMA.IndexManyToMany(3, Column="gtf_foo_id", ClassType=typeof(string), ForeignKey="FK")]
@@ -730,7 +730,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for bazez
 	/// </summary>
-	[NHMA.Set(Name="Bazez", AccessType=typeof(Foo), Table="SetTable", Schema="Schema", Lazy=true, Check="0", OrderBy="1", BatchSize=3, Fetch=FetchMode.Join, PersisterType=typeof(int), SortType=typeof(Foo))]
+	[NHMA.Set(Name="Bazez", AccessType=typeof(Foo), Table="SetTable", Schema="Schema", Lazy=true, Check="0", OrderBy="1", BatchSize=3, Fetch=CollectionFetchMode.Join, PersisterType=typeof(int), SortType=typeof(Foo))]
 		[NHMA.Key(1, Column="col")]
 		[NHMA.OneToMany(2, ClassType=typeof(int))]
 	public System.Collections.IList Bazez
@@ -752,7 +752,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 		[NHMA.CollectionId(1, Column="pkid", TypeType=typeof(System.Int64), Length=8)]
 			[NHMA.Generator(2, Class="hilo")]
 		[NHMA.Key(3, Column="baz")]
-		[NHMA.ManyToMany(4, NotFound=NHMA.NotFoundMode.Exception, ClassType=typeof(Foo), Column="the_time", Fetch=FetchMode.Select, OuterJoin=NHMA.OuterJoinStrategy.True)]
+		[NHMA.ManyToMany(4, NotFound=NHMA.NotFoundMode.Exception, ClassType=typeof(Foo), Column="the_time", Fetch=FetchMode.Select, OuterJoin=NHMA.OuterJoinStrategy.False)]
 	public System.Collections.IList IdFooBag
 	{
 		get
@@ -799,7 +799,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set {}
 		}
 
-		[NHMA.Property(Column="{City.Column}")]
+		[NHMA.Property(Column="{{City.Column}}")]
 			[NHMA.AttributeIdentifierAttribute("City.Column", ValueFormat="x", ValueObject=System.DayOfWeek.Wednesday)] // Default value
 		public string City
 		{
@@ -837,9 +837,9 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 
 		[NHMA.Key(Column="JoinedID")]
 
-		[NHMA.OneToOne(1, Name="Reverse", ClassType=typeof(FooProxy), AccessType=typeof(Foo), ForeignKey="FK", Fetch=FetchMode.Join, Cascade=NHMA.CascadeStyle.SaveUpdate)]
+		[NHMA.OneToOne(1, Name="Reverse", ClassType=typeof(FooProxy), Lazy=NHMA.Laziness.False, AccessType=typeof(Foo), ForeignKey="FK", Fetch=FetchMode.Join, Cascade=NHMA.CascadeStyle.SaveUpdate)]
 			[NHMA.Meta(2, Attribute="OneToOne Meta", Inherit=false)]
-		[NHMA.OneToOne(3, ClassType=typeof(int), AccessType=typeof(int), PropertyRef="TWO", OuterJoin=NHMA.OuterJoinStrategy.Auto, Constrained=true)]
+		[NHMA.OneToOne(3, ClassType=typeof(int), Lazy=NHMA.Laziness.Proxy, AccessType=typeof(int), PropertyRef="TWO", OuterJoin=NHMA.OuterJoinStrategy.Auto, Constrained=true)]
 			[NHMA.Meta(4, Attribute="OneToOne Meta TWO")]
 		public virtual FooProxy Reverse
 		{
@@ -905,7 +905,8 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 		[NHMA.Meta(Attribute="ClassName", Content="Stuff :)")]
 		[NHMA.CompositeId(1, Name="ID", ClassType=typeof(long), AccessType=typeof(int), UnsavedValue=NHMA.UnsavedValueType.Any)]
 			[NHMA.KeyProperty(2, Name="Id", AccessType=typeof(int), TypeType=typeof(Foo))]
-			[NHMA.KeyManyToOne(3, Name="Foo", ClassType=typeof(Foo), AccessType=typeof(int), Column="-", ForeignKey="x")]
+			[NHMA.KeyManyToOne(3, Name="Foo", ClassType=typeof(Foo), Lazy=NHMA.RestrictedLaziness.False, AccessType=typeof(int), Column="-", ForeignKey="x")]
+			[NHMA.KeyManyToOne(4, Name="Bar", ClassType=typeof(int), Lazy=NHMA.RestrictedLaziness.Proxy, AccessType=typeof(Bar))]
 		public long Id
 		{
 			get { return _id; }

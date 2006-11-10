@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Generated from NHibernate.Mapping.Attributes on 2006-09-24 10:40:14Z.-->
+<!--Generated from NHibernate.Mapping.Attributes on 2006-11-10 01:11:11Z.-->
 <hibernate-mapping auto-import="true" default-lazy="true" xmlns="urn:nhibernate-mapping-2.2">
   <class name="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" proxy="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" discriminator-value="base" mutable="false" polymorphism="explicit" persister="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" where="1" batch-size="9" check="0">
     <id name="Code" access="Int32" column="Id" type="String" length="8" unsaved-value="null">
@@ -9,11 +9,11 @@
         <param name="Unknow" />
       </generator>
     </id>
-    <discriminator column="clazz_discriminator" type="String" not-null="true" length="256" force="true" insert="false" />
+    <discriminator column="clazz_discriminator" type="String" not-null="true" length="256" force="true" insert="false" formula="1==2" />
     <version name="Count" access="Int32" column="count_count" type="Int32" unsaved-value="0" />
     <property name="Name" column="name_b" />
-    <many-to-one name="CollectionComponent" access="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" class="Int32" not-null="true" outer-join="true" fetch="select" not-found="ignore" />
-    <many-to-one name="Foo" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="F" outer-join="true" fetch="join" update="false" insert="true" property-ref="0" />
+    <many-to-one name="CollectionComponent" access="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" class="Int32" not-null="true" outer-join="true" fetch="select" not-found="ignore" lazy="false" />
+    <many-to-one name="Foo" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="F" outer-join="true" fetch="join" update="false" insert="true" property-ref="0" lazy="proxy" />
     <component name="BazComponent" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Baz+NestingComponent, NHibernate.Mapping.Attributes.Test" update="false" insert="false" />
     <any id-type="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" meta-type="Int32" name="StringArray" access="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" insert="true" update="true" index="null">
       <meta-value value="val2" class="Int32" />
@@ -24,7 +24,7 @@
         <column name="baz_id" length="16" />
       </key>
       <index-many-to-many class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="foo_id" />
-      <many-to-many class="NHibernate.Mapping.Attributes.Test.DomainModel.Glarch, NHibernate.Mapping.Attributes.Test" column="glarch_id" />
+      <many-to-many class="NHibernate.Mapping.Attributes.Test.DomainModel.Glarch, NHibernate.Mapping.Attributes.Test" column="glarch_id" outer-join="auto" where="0==0" lazy="proxy" />
     </map>
     <map name="FooComponentToFoo">
       <jcs-cache region="togs" usage="read-write" />
@@ -37,7 +37,7 @@
       </composite-index>
       <many-to-many class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="foo_id" outer-join="true" />
     </map>
-    <map name="GTF" access="Int32" schema="Schema" fetch="select" inverse="false" persister="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test">
+    <map name="GTF" access="Int32" schema="Schema" fetch="subselect" inverse="false" persister="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test">
       <key>
         <column name="gtf_baz_id" length="16" />
       </key>
@@ -140,7 +140,7 @@
         <generator class="hilo" />
       </collection-id>
       <key column="baz" />
-      <many-to-many class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="the_time" outer-join="true" fetch="select" not-found="exception" />
+      <many-to-many class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="the_time" outer-join="false" fetch="select" not-found="exception" />
     </idbag>
     <idbag name="ByteBag" table="baz_byte_bag" lazy="true" cascade="all" inverse="true">
       <collection-id column="pkid" type="Int64">
@@ -217,7 +217,8 @@
     <meta attribute="ClassName">Stuff :)</meta>
     <composite-id class="Int64" name="ID" access="Int32" unsaved-value="any">
       <key-property name="Id" access="Int32" type="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" />
-      <key-many-to-one name="Foo" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="-" foreign-key="x" />
+      <key-many-to-one name="Foo" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="-" foreign-key="x" lazy="false" />
+      <key-many-to-one name="Bar" access="NHibernate.Mapping.Attributes.Test.DomainModel.Bar, NHibernate.Mapping.Attributes.Test" class="Int32" lazy="proxy" />
     </composite-id>
     <timestamp name="Timestamp" access="Boolean" column="`timestamp`" unsaved-value="True" />
     <property name="Foo" optimistic-lock="true">
@@ -275,10 +276,10 @@
   <joined-subclass name="NHibernate.Mapping.Attributes.Test.DomainModel.JoinedBaz, NHibernate.Mapping.Attributes.Test" proxy="NHibernate.Mapping.Attributes.Test.DomainModel.JoinedBaz, NHibernate.Mapping.Attributes.Test" select-before-update="true" extends="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test">
     <meta attribute="Meta">Content</meta>
     <key column="JoinedID" />
-    <one-to-one name="Reverse" access="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" class="NHibernate.Mapping.Attributes.Test.DomainModel.FooProxy, NHibernate.Mapping.Attributes.Test" cascade="save-update" fetch="join" foreign-key="FK">
+    <one-to-one name="Reverse" access="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" class="NHibernate.Mapping.Attributes.Test.DomainModel.FooProxy, NHibernate.Mapping.Attributes.Test" cascade="save-update" fetch="join" foreign-key="FK" lazy="false">
       <meta attribute="OneToOne Meta" inherit="false" />
     </one-to-one>
-    <one-to-one name="Reverse" access="Int32" class="Int32" outer-join="auto" constrained="true" property-ref="TWO">
+    <one-to-one name="Reverse" access="Int32" class="Int32" outer-join="auto" constrained="true" property-ref="TWO" lazy="proxy">
       <meta attribute="OneToOne Meta TWO" />
     </one-to-one>
     <component name="MyAddress">
