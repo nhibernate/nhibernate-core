@@ -128,7 +128,8 @@
 		<property overwrite="false" name="assembly.title"
 			value="${project::get-name()} for ${framework::get-description(framework::get-target-framework())}" />
 		<property overwrite="false" name="assembly.version" value="${project.version.numeric}" />
-		<property overwrite="false" name="assembly.version.informational" value="${project.version}" />
+		<property overwrite="false" name="assembly.version.informational" value="${project.version.numeric}" />
+		<property overwrite="false" name="assembly.version.file" value="${project.version.numeric}" />
 		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
 		<property overwrite="false" name="assembly.keyfile" value="${key.file}" />
 		<property overwrite="false" name="assembly.sign" value="${sign}" />
@@ -161,7 +162,7 @@
 				<attribute type="AssemblyCopyrightAttribute" value="${assembly.copyright}" />
 				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
 				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version.file}" />
 				<attribute type="AssemblyKeyFileAttribute" value="${assembly.keyfile}" if="${assembly.sign}"/>
 				<attribute type="AssemblyDelaySignAttribute" value="false" />
 				
