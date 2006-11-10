@@ -1,3 +1,87 @@
+Build 1.2.0.Beta2
+========================
+
+Breaking Changes:
+    * XML schema versions have been changed from 2.0 to 2.2.
+
+Patches Applied:
+
+    * [NH-247] - Expression.InsensitiveLike support for Firebird
+    * [NH-335] - discriminator formula
+    * [NH-723] - SqlTest for Firebird
+    * [NH-725] - null reference exception which attempting to flush a versioned object
+    * [NH-747] - Invalid number of SQL parameters when calling ISession.Delete on an optimistic-locked object with 1 or more NULL properties
+    * [NH-749] - NHb tests using Firebird
+    * [NH-751] - hasDataTypeInIdentityColumn to support Informix and similar
+    * [NH-757] - Patch for JetDriver
+    * [NH-762] - Patch to fix errors in Expression.AbstractEmptiness
+    * [NH-765] - Use "(" and ")" to enclose the ToString of LogicalExpression.cs
+
+Bugs Fixed:
+
+    * [NH-528] - Fix GROUP BY example in documentation (GROUP BY object instance does not work)
+    * [NH-555] - Problems with complex aggregate queries
+    * [NH-585] - Unknown version when using replicate and joined-subclass
+    * [NH-593] - Throw a meaningful exception when using Expression.In with collection types
+    * [NH-600] - TimestampType precision problems
+    * [NH-622] - Collection of subtypes with discriminators not working
+    * [NH-623] - Where attribute of collection not rendered when eager fetched
+    * [NH-637] - Between Criterion Parameters Applied Incorrectly for Component
+    * [NH-642] - ArgumentNullException if no setter exists and no access strategy was specified
+    * [NH-681] - Generic List Error
+    * [NH-697] - System.MissingMethodException: Method not found: Int32 System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(System.Object).
+    * [NH-704] - Lock(obj, LockMode.None) not working when there is collection
+    * [NH-716] - Dirty Checking exception (many-to-one, select-before-update)
+    * [NH-732] - Can't use UserType for keys
+    * [NH-734] - ArgumentOutOfRangeException when setting LIMIT parameters using MySQL
+    * [NH-735] - Oracle Driver/Dialect
+    * [NH-739] - Saving transient item in the PersistantBag results duplicate items
+    * [NH-740] - Logging for tests is sometimes not configured properly
+    * [NH-741] - Invalid parameter handling when using functions
+    * [NH-742] - Error with computed property (property ... formula="... ) inside <component> block
+    * [NH-746] - NHibernate.SqlCommand.Template quoted Token when not required
+    * [NH-750] - <not-found> with many-to-many
+    * [NH-753] - Composite ID with Positional Parameters in sql-query
+    * [NH-768] - Delete fails when using optimistic-lock and bags
+    * [NH-775] - IQuery.SetResultTransformer() doesn't work
+    * [NH-776] - one-to-one to proxied types not handling missing associated classes correctly (as null)
+    * [NH-777] - ArgumentNullException: Value cannot be null. Reflection exception.
+    * [NH-782] - Update to latest DynamicProxy to fix race condition
+    * [NH-798] - Custom insert/update/delete SQL ignored for collections
+
+New Features:
+
+    * [NH-432] - Port sessionFactory.getCurrentSession() from H3.1
+    * [NH-499] - NHibernate filters
+    * [NH-515] - Port subselect fetching from Hibernate 3.1
+    * [NH-755] - Port DetachedCriteria from Hibernate 3
+    * [NH-758] - Allow Schema Export to work directly against an IDbConnection or TextWriter
+    * [NH-783] - Port Subquery support for the Criteria API
+    * [NH-795] - Implement lazy="proxy|false" for *-to-one associations
+
+Tasks Completed:
+
+    * [NH-412] - Improve build files
+    * [NH-663] - Update readme.html
+
+Improvements:
+
+    * [NH-372] - Allow insert="false", update="false" for components
+    * [NH-575] - Enhance user types support
+    * [NH-606] - Throw an meaningfull exception when collectionType.GetGenericArguments() returns 0 arguments.
+    * [NH-608] - Add ICriteria.CreateCriteria and CreateAlias overloads taking a JoinType parameter.
+    * [NH-614] - Optimize generic IQuery.List implementation
+    * [NH-615] - Change XML schema names to -2.2
+    * [NH-632] - Change the error message for a database driver assembly that wasn't found.
+    * [NH-696] - upgrade to log4net 1.2.10.0
+    * [NH-712] - Improve returned error message when default constructor is not present on a class mapped as a component
+    * [NH-726] - Document that custom insert sql ignored when id generator not "assigned"
+    * [NH-744] - Add DDL logging to SchemaExport
+    * [NH-760] - Allow replacing a registered function in Dialect.RegisterFunction
+    * [NH-761] - Change ISession.Get() to initialize a proxy if it returns one, like in H3.2
+    * [NH-778] - Adding pascalcase-m (without the underscore)
+    * [NH-792] - Do not wrap exceptions in DriverConnectionProvider.GetConnection
+
 Build 1.2.0.Beta1
 ========================
 
