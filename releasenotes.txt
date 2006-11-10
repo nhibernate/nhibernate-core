@@ -3,6 +3,9 @@ Build 1.2.0.Beta2
 
 Breaking Changes:
     * XML schema versions have been changed from 2.0 to 2.2.
+    * This version includes an updated Castle.DynamicProxy library. However,
+      its maintainers have not changed the version number with the update. Remember
+      to update Castle.DynamicProxy when updating NHibernate from an earlier version.
 
 Patches Applied:
 
