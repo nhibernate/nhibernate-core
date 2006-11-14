@@ -280,6 +280,35 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Criteria\Course.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Criteria\CriteriaQueryTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Criteria\Enrolment.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Criteria\Enrolment.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Criteria\Student.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Criteria\StudentDTO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DialectTest\DB2DialectFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1794,6 +1823,20 @@
                 />
                 <File
                     RelPath = "NHSpecificTest\NH750\Mappings.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH776\Domain.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH776\Fixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NHSpecificTest\NH776\Mappings.hbm.xml"
                     BuildAction = "EmbeddedResource"
                 />
                 <File

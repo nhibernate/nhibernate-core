@@ -1229,6 +1229,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Expression\IdentifierEqExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Expression\IdentifierProjection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2426,6 +2431,11 @@
                 />
                 <File
                     RelPath = "Property\CamelCaseUnderscoreStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Property\ChainedPropertyAccessor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
