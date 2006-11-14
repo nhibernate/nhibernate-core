@@ -20,6 +20,16 @@ namespace NHibernate.Expression
 		}
 
 		/// <summary>
+		/// Apply an "equal" constraint to the identifier property
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns>ICriterion</returns>
+		public static ICriterion IdEq(object value)
+		{
+			return new IdentifierEqExpression(value);
+		}
+
+		/// <summary>
 		/// Apply an "equal" constraint to the named property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>

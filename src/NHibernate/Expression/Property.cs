@@ -6,6 +6,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// A factory for property-specific  AbstractCriterion  and projection instances
 	/// </summary>
+	[Serializable]
 	public class Property : PropertyProjection
 	{
 		internal Property(String propertyName) : base(propertyName)

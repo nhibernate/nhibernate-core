@@ -1,8 +1,11 @@
+using System;
+
 namespace NHibernate.Expression
 {
 	/// <summary>
 	/// An <see cref="ICriterion"/> that represents an "equal" constraint.
 	/// </summary>
+	[Serializable]
 	public class EqExpression : SimpleExpression
 	{
 		/// <summary>

@@ -1,4 +1,5 @@
 using System;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
@@ -16,9 +17,9 @@ namespace NHibernate.Expression
 			this.propertyName = propertyName;
 		}
 
-		protected override String ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return criteriaQuery.GetColumn(criteria, propertyName);
+			return new SqlString(criteriaQuery.GetColumn(criteria, propertyName));
 		}
 	}
 }

@@ -17,10 +17,11 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Implementation of the <see cref="ICriteria"/> interface
 	/// </summary>
+	[Serializable]
 	public class CriteriaImpl : ICriteria
 	{
-        // This result transformer is selected implicitly by calling <tt>setProjection()</tt>
-        private static IResultTransformer ProjectionTransformer = new PassThroughResultTransformer();
+		// This result transformer is selected implicitly by calling <tt>setProjection()</tt>
+		private static IResultTransformer ProjectionTransformer = new PassThroughResultTransformer();
 
 		private IList criteria = new ArrayList();
 		private IList orderEntries = new ArrayList();
@@ -39,67 +40,69 @@ namespace NHibernate.Impl
 		private IList subcriteriaList = new ArrayList();
 		private string rootAlias;
 
-        // Projection Fields
-        private IProjection projection;
-        private ICriteria projectionCriteria;
+		// Projection Fields
+		private IProjection projection;
+		private ICriteria projectionCriteria;
 
+		[Serializable]
 		public sealed class Subcriteria : ICriteria
 		{
 			// Added to simulate Java-style inner class
 			private CriteriaImpl root;
 
-            private ICriteria parent;
-			private string    alias;
-			private string    path;
-			private LockMode  lockMode;
-			private JoinType  joinType;
+			private ICriteria parent;
+			private string alias;
+			private string path;
+			private LockMode lockMode;
+			private JoinType joinType;
 
-			internal Subcriteria( CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType )
+			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType)
 			{
-				this.root     = root;
-				this.parent   = parent;
-				this.alias    = alias;
-				this.path     = path;
+				this.root = root;
+				this.parent = parent;
+				this.alias = alias;
+				this.path = path;
 				this.joinType = joinType;
 
-				root.subcriteriaList.Add( this );
+				root.subcriteriaList.Add(this);
 			}
 
-			internal Subcriteria( CriteriaImpl root, ICriteria parent, string path, JoinType joinType )
-				: this( root, parent, path, null, joinType )
+			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, JoinType joinType)
+				: this(root, parent, path, null, joinType)
 			{
 			}
 
-			public ICriteria Add( ICriterion expression )
+			public ICriteria Add(ICriterion expression)
 			{
-				root.Add( this, expression );
+				root.Add(this, expression);
 				return this;
 			}
 
-			public ICriteria CreateAlias( string associationPath, string alias )
+			public ICriteria CreateAlias(string associationPath, string alias)
 			{
-				return CreateAlias( associationPath, alias, JoinType.InnerJoin );
+				return CreateAlias(associationPath, alias, JoinType.InnerJoin);
 			}
 
-			public ICriteria CreateAlias( string associationPath, string alias, JoinType joinType)
+			public ICriteria CreateAlias(string associationPath, string alias, JoinType joinType)
 			{
-				new Subcriteria( root, this, associationPath, alias, joinType );
+				new Subcriteria(root, this, associationPath, alias, joinType);
 				return this;
 			}
-	
-			public ICriteria CreateCriteria( string associationPath )
+
+			public ICriteria CreateCriteria(string associationPath)
 			{
-				return CreateCriteria( associationPath, JoinType.InnerJoin );
+				return CreateCriteria(associationPath, JoinType.InnerJoin);
 			}
 
-			public ICriteria CreateCriteria( string associationPath, JoinType joinType )
+			public ICriteria CreateCriteria(string associationPath, JoinType joinType)
 			{
-				return new Subcriteria( root, this, associationPath, joinType );
+				return new Subcriteria(root, this, associationPath, joinType);
 			}
 
-			public ICriteria AddOrder( Order order )
+			public ICriteria AddOrder(Order order)
 			{
-				throw new NotSupportedException( "subcriteria cannot be ordered" );
+				root.orderEntries.Add(new OrderEntry(order, this));
+				return this;
 			}
 
 			public IList List()
@@ -107,9 +110,9 @@ namespace NHibernate.Impl
 				return root.List();
 			}
 
-			public void List( IList results )
+			public void List(IList results)
 			{
-				root.List( results );
+				root.List(results);
 			}
 
 #if NET_2_0
@@ -117,10 +120,10 @@ namespace NHibernate.Impl
 			{
 				return root.List<T>();
 			}
-			
+
 			public T UniqueResult<T>()
 			{
-				return (T) UniqueResult();
+				return (T)UniqueResult();
 			}
 #endif
 
@@ -129,44 +132,44 @@ namespace NHibernate.Impl
 				return root.UniqueResult();
 			}
 
-			public ICriteria SetFetchMode( string associationPath, FetchMode mode )
+			public ICriteria SetFetchMode(string associationPath, FetchMode mode)
 			{
-				root.SetFetchMode( StringHelper.Qualify( path, associationPath ), mode );
+				root.SetFetchMode(StringHelper.Qualify(path, associationPath), mode);
 				return this;
 			}
 
-			public ICriteria SetFirstResult( int firstResult )
+			public ICriteria SetFirstResult(int firstResult)
 			{
-				root.SetFirstResult( firstResult );
+				root.SetFirstResult(firstResult);
 				return this;
 			}
 
-			public ICriteria SetMaxResults( int maxResults )
+			public ICriteria SetMaxResults(int maxResults)
 			{
-				root.SetMaxResults( maxResults );
+				root.SetMaxResults(maxResults);
 				return this;
 			}
 
-			public ICriteria SetTimeout( int timeout )
+			public ICriteria SetTimeout(int timeout)
 			{
-				root.SetTimeout( timeout );
+				root.SetTimeout(timeout);
 				return this;
 			}
 
-			public ICriteria SetFetchSize( int fetchSize )
+			public ICriteria SetFetchSize(int fetchSize)
 			{
-				root.SetFetchSize( fetchSize );
+				root.SetFetchSize(fetchSize);
 				return this;
 			}
 
-			public ICriteria CreateCriteria( string associationPath, string alias )
+			public ICriteria CreateCriteria(string associationPath, string alias)
 			{
-				return CreateCriteria( associationPath, alias, JoinType.InnerJoin );
+				return CreateCriteria(associationPath, alias, JoinType.InnerJoin);
 			}
 
-			public ICriteria CreateCriteria( string associationPath, string alias, JoinType joinType )
+			public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType)
 			{
-				return new Subcriteria ( root, this, associationPath, alias, JoinType.InnerJoin );
+				return new Subcriteria(root, this, associationPath, alias, JoinType.InnerJoin);
 			}
 
 			// Deprecated methods not ported: ReturnMaps, ReturnRootEntities
@@ -176,15 +179,15 @@ namespace NHibernate.Impl
 				get { return lockMode; }
 			}
 
-			public ICriteria SetLockMode( LockMode lockMode )
+			public ICriteria SetLockMode(LockMode lockMode)
 			{
 				this.lockMode = lockMode;
 				return this;
 			}
 
-			public ICriteria SetLockMode( string alias, LockMode lockMode )
+			public ICriteria SetLockMode(string alias, LockMode lockMode)
 			{
-				root.SetLockMode( alias, lockMode );
+				root.SetLockMode(alias, lockMode);
 				return this;
 			}
 
@@ -209,21 +212,21 @@ namespace NHibernate.Impl
 				get { return path; }
 			}
 
-			public ICriteria SetResultTransformer( IResultTransformer resultProcessor )
+			public ICriteria SetResultTransformer(IResultTransformer resultProcessor)
 			{
-				root.SetResultTransformer( resultProcessor );
+				root.SetResultTransformer(resultProcessor);
 				return this;
 			}
 
-			public ICriteria SetCacheable( bool cacheable )
+			public ICriteria SetCacheable(bool cacheable)
 			{
-				root.SetCacheable( cacheable );
+				root.SetCacheable(cacheable);
 				return this;
 			}
 
-			public ICriteria SetCacheRegion( string cacheRegion )
+			public ICriteria SetCacheRegion(string cacheRegion)
 			{
-				root.SetCacheRegion( cacheRegion );
+				root.SetCacheRegion(cacheRegion);
 				return this;
 			}
 
@@ -231,36 +234,36 @@ namespace NHibernate.Impl
 			{
 				root.SetProjection(projection);
 				return this;
-            }
+			}
 		}
 
-		public ICriteria SetMaxResults( int maxResults )
+		public ICriteria SetMaxResults(int maxResults)
 		{
 			this.maxResults = maxResults;
 			return this;
 		}
 
-		public ICriteria SetFirstResult( int firstResult )
+		public ICriteria SetFirstResult(int firstResult)
 		{
 			this.firstResult = firstResult;
 			return this;
 		}
 
-		public ICriteria SetTimeout( int timeout )
+		public ICriteria SetTimeout(int timeout)
 		{
 			this.timeout = timeout;
 			return this;
 		}
 
-		public ICriteria SetFetchSize( int fetchSize )
+		public ICriteria SetFetchSize(int fetchSize)
 		{
 			this.fetchSize = fetchSize;
 			return this;
 		}
 
-		public ICriteria Add( ICriterion expression )
+		public ICriteria Add(ICriterion expression)
 		{
-			Add( this, expression );
+			Add(this, expression);
 			return this;
 		}
 
@@ -284,12 +287,12 @@ namespace NHibernate.Impl
 			get { return fetchSize; }
 		}
 
-		public CriteriaImpl( System.Type persistentClass, SessionImpl session )
-			: this( persistentClass, CriteriaUtil.RootAlias, session )
+		public CriteriaImpl(System.Type persistentClass, SessionImpl session)
+			: this(persistentClass, CriteriaUtil.RootAlias, session)
 		{
 		}
 
-		public CriteriaImpl( System.Type persistentClass, string alias, SessionImpl session )
+		public CriteriaImpl(System.Type persistentClass, string alias, SessionImpl session)
 		{
 			this.persistentClass = persistentClass;
 			this.session = session;
@@ -299,25 +302,25 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			return session.Find( this );
+			return session.Find(this);
 		}
 
-		public void List( IList results )
+		public void List(IList results)
 		{
-			session.Find( this, results );
+			session.Find(this, results);
 		}
 
 #if NET_2_0
 		public IList<T> List<T>()
 		{
-			return session.Find<T>( this );
+			return session.Find<T>(this);
 		}
-		
+
 		public T UniqueResult<T>()
 		{
-			return (T) UniqueResult();
+			return (T)UniqueResult();
 		}
-		
+
 #endif
 
 		public IEnumerable IterateExpressionEntries()
@@ -340,33 +343,33 @@ namespace NHibernate.Impl
 			return criteria.ToString();
 		}
 
-		public ICriteria AddOrder( Order ordering )
+		public ICriteria AddOrder(Order ordering)
 		{
-			orderEntries.Add( new OrderEntry( ordering, this ) );
+			orderEntries.Add(new OrderEntry(ordering, this));
 			return this;
 		}
 
-		public FetchMode GetFetchMode( string path )
+		public FetchMode GetFetchMode(string path)
 		{
-			object result = fetchModes[ path ];
-			return result == null ? FetchMode.Default : ( FetchMode ) result;
+			object result = fetchModes[path];
+			return result == null ? FetchMode.Default : (FetchMode)result;
 		}
 
-		public ICriteria SetFetchMode( string associationPath, FetchMode mode )
+		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
 		{
-			fetchModes[ associationPath ] = mode;
+			fetchModes[associationPath] = mode;
 			return this;
 		}
 
-		public ICriteria CreateAlias( string associationPath, string alias )
+		public ICriteria CreateAlias(string associationPath, string alias)
 		{
-			CreateAlias( associationPath, alias, JoinType.InnerJoin );
+			CreateAlias(associationPath, alias, JoinType.InnerJoin);
 			return this;
 		}
 
-		public ICriteria CreateAlias( string associationPath, string alias, JoinType joinType )
+		public ICriteria CreateAlias(string associationPath, string alias, JoinType joinType)
 		{
-			new Subcriteria( this, this, associationPath, alias, joinType );
+			new Subcriteria(this, this, associationPath, alias, joinType);
 			return this;
 		}
 
@@ -375,35 +378,35 @@ namespace NHibernate.Impl
 			get { return rootAlias; }
 		}
 
-		public ICriteria Add( ICriteria criteriaInst, ICriterion expression )
+		public ICriteria Add(ICriteria criteriaInst, ICriterion expression)
 		{
-			criteria.Add( new CriterionEntry( expression, criteriaInst ) );
+			criteria.Add(new CriterionEntry(expression, criteriaInst));
 			return this;
 		}
 
-		public ICriteria CreateCriteria( string associationPath )
+		public ICriteria CreateCriteria(string associationPath)
 		{
-			return CreateCriteria( associationPath, JoinType.InnerJoin );
+			return CreateCriteria(associationPath, JoinType.InnerJoin);
 		}
 
-		public ICriteria CreateCriteria( string associationPath, JoinType joinType )
+		public ICriteria CreateCriteria(string associationPath, JoinType joinType)
 		{
-			return new Subcriteria( this, this, associationPath, joinType );
+			return new Subcriteria(this, this, associationPath, joinType);
 		}
 
-		public ICriteria CreateCriteria( string associationPath, string alias )
+		public ICriteria CreateCriteria(string associationPath, string alias)
 		{
-			return CreateCriteria( associationPath, alias, JoinType.InnerJoin );
+			return CreateCriteria(associationPath, alias, JoinType.InnerJoin);
 		}
 
-		public ICriteria CreateCriteria( string associationPath, string alias, JoinType joinType )
+		public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType)
 		{
-			return new Subcriteria( this, this, associationPath, alias, joinType );
+			return new Subcriteria(this, this, associationPath, alias, joinType);
 		}
 
 		public object UniqueResult()
 		{
-			return AbstractQueryImpl.UniqueElement( List() );
+			return AbstractQueryImpl.UniqueElement(List());
 		}
 
 		public System.Type CriteriaClass
@@ -413,14 +416,14 @@ namespace NHibernate.Impl
 
 		// Deprecated methods not ported: ReturnMaps, ReturnRootEntities
 
-		public ICriteria SetLockMode( LockMode lockMode )
+		public ICriteria SetLockMode(LockMode lockMode)
 		{
-			return SetLockMode( CriteriaUtil.RootAlias, lockMode );
+			return SetLockMode(CriteriaUtil.RootAlias, lockMode);
 		}
 
-		public ICriteria SetLockMode( string alias, LockMode lockMode )
+		public ICriteria SetLockMode(string alias, LockMode lockMode)
 		{
-			lockModes[ alias ] = lockMode;
+			lockModes[alias] = lockMode;
 			return this;
 		}
 
@@ -434,7 +437,7 @@ namespace NHibernate.Impl
 			get { return resultTransformer; }
 		}
 
-		public ICriteria SetResultTransformer( IResultTransformer tupleMapper )
+		public ICriteria SetResultTransformer(IResultTransformer tupleMapper)
 		{
 			resultTransformer = tupleMapper;
 			return this;
@@ -456,13 +459,13 @@ namespace NHibernate.Impl
 			get { return cacheRegion; }
 		}
 
-		public ICriteria SetCacheable( bool cacheable )
+		public ICriteria SetCacheable(bool cacheable)
 		{
 			this.cacheable = cacheable;
 			return this;
 		}
 
-		public ICriteria SetCacheRegion( string cacheRegion )
+		public ICriteria SetCacheRegion(string cacheRegion)
 		{
 			this.cacheRegion = cacheRegion.Trim();
 			return this;
@@ -471,24 +474,24 @@ namespace NHibernate.Impl
 		public bool IsLookupByNaturalKey()
 		{
 			// TODO H3:
-//			if ( projection != null ) 
-//			{
-//				return false;
-//			}
-			if ( subcriteriaList.Count > 0 ) 
+			//			if ( projection != null ) 
+			//			{
+			//				return false;
+			//			}
+			if (subcriteriaList.Count > 0)
 			{
 				return false;
 			}
-			if ( criteria.Count != 1 ) 
+			if (criteria.Count != 1)
 			{
 				return false;
 			}
-			
+
 			return false;
-//			CriterionEntry ce = (CriterionEntry) criteria[ 0 ];
-//			return ce.Criterion is NaturalIdentifier;
+			//			CriterionEntry ce = (CriterionEntry) criteria[ 0 ];
+			//			return ce.Criterion is NaturalIdentifier;
 		}
-		
+
 		public IProjection Projection
 		{
 			get { return projection; }
@@ -496,26 +499,27 @@ namespace NHibernate.Impl
 
 		public ICriteria SetProjection(IProjection projection)
 		{
-            this.projection = projection;
-            projectionCriteria = this;
-            SetResultTransformer(ProjectionTransformer);
+			this.projection = projection;
+			projectionCriteria = this;
+			SetResultTransformer(ProjectionTransformer);
 			return this;
-        }
+		}
 
-        public ICriteria ProjectionCriteria
-        {
-            get { return projectionCriteria; }
-        }
+		public ICriteria ProjectionCriteria
+		{
+			get { return projectionCriteria; }
+		}
 
+		[Serializable]
 		public sealed class CriterionEntry
 		{
 			private readonly ICriterion criterion;
-			private readonly ICriteria  criteria;
+			private readonly ICriteria criteria;
 
-			internal CriterionEntry( ICriterion criterion, ICriteria criteria )
+			internal CriterionEntry(ICriterion criterion, ICriteria criteria)
 			{
 				this.criterion = criterion;
-				this.criteria  = criteria;
+				this.criteria = criteria;
 			}
 
 			public ICriterion Criterion
@@ -534,17 +538,18 @@ namespace NHibernate.Impl
 			}
 		}
 
+		[Serializable]
 		public sealed class OrderEntry
 		{
 			private readonly Order order;
 			private readonly ICriteria criteria;
-			
-			internal OrderEntry( Order order, ICriteria criteria )
+
+			internal OrderEntry(Order order, ICriteria criteria)
 			{
-				this.order    = order;
+				this.order = order;
 				this.criteria = criteria;
 			}
-			
+
 			public Order Order
 			{
 				get { return order; }
@@ -554,7 +559,7 @@ namespace NHibernate.Impl
 			{
 				get { return criteria; }
 			}
-			
+
 			public override string ToString()
 			{
 				return order.ToString();

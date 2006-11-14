@@ -9,6 +9,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// A single-column projection that may be aliased
 	/// </summary>
+	[Serializable]
 	abstract public class SimpleProjection : IProjection
 	{
 		public IProjection As(string alias)

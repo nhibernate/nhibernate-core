@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 using NHibernate.Engine;
@@ -8,6 +9,7 @@ namespace NHibernate.Expression
 	/// Represents an order imposed upon a <see cref="ICriteria"/>
 	/// result set.
 	/// </summary>
+	[Serializable]
 	public class Order
 	{
 		private bool _ascending;
@@ -18,7 +20,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <param name="ascending"></param>
-		public Order( string propertyName, bool ascending )
+		public Order(string propertyName, bool ascending)
 		{
 			_propertyName = propertyName;
 			_ascending = ascending;
@@ -28,37 +30,37 @@ namespace NHibernate.Expression
 		/// <summary>
 		/// Render the SQL fragment
 		/// </summary>
-		public string ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public string ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			string[ ] columns = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
+			string[] columns = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
 
 			StringBuilder fragment = new StringBuilder();
 
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
-			for( int i = 0; i < columns.Length; i++ )
+			for (int i = 0; i < columns.Length; i++)
 			{
 				// TODO H3: bool lower = _ignoreCase && type.SqlTypes( factory )[ i ] == Types.VARCHAR
 				bool lower = false;
-				if( lower )
+				if (lower)
 				{
-					fragment.Append( factory.Dialect.LowercaseFunction )
-						.Append( '(' );
+					fragment.Append(factory.Dialect.LowercaseFunction)
+						.Append('(');
 				}
-				fragment.Append( columns[ i ] );
-				
-				if( lower )
+				fragment.Append(columns[i]);
+
+				if (lower)
 				{
-					fragment.Append( ')' );
+					fragment.Append(')');
 				}
-				
-				fragment.Append( _ascending ? " asc" : " desc" );
-				
-				if( i < columns.Length - 1)
+
+				fragment.Append(_ascending ? " asc" : " desc");
+
+				if (i < columns.Length - 1)
 				{
-					fragment.Append( ", " );
+					fragment.Append(", ");
 				}
 			}
-			
+
 			return fragment.ToString();
 		}
 
@@ -67,9 +69,9 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public static Order Asc( string propertyName )
+		public static Order Asc(string propertyName)
 		{
-			return new Order( propertyName, true );
+			return new Order(propertyName, true);
 		}
 
 		/// <summary>
@@ -77,9 +79,9 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public static Order Desc( string propertyName )
+		public static Order Desc(string propertyName)
 		{
-			return new Order( propertyName, false );
+			return new Order(propertyName, false);
 		}
 	}
 }

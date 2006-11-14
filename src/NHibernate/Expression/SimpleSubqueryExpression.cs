@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
@@ -27,9 +28,9 @@ namespace NHibernate.Expression
 			return result;
 		}
 
-		protected override String ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return "?";
+			return new SqlString(Parameter.Placeholder);
 		}
 	}
 }

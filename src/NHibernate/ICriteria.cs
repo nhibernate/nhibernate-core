@@ -173,6 +173,15 @@ namespace NHibernate
 		/// <returns>The created "sub criteria"</returns>
 		ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType);
 
+		/// <summary>
+		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity, 
+		/// using the specified join type.
+		/// </summary>
+		/// <param name="associationPath">A dot-seperated property path</param>
+		/// <param name="joinType">The type of join to use</param>
+		/// <returns>The created "sub criteria"</returns>
+		ICriteria CreateCriteria(string associationPath, JoinType joinType);
+
 		// NH: Deprecated methods not ported
 
 		/// <summary>

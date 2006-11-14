@@ -8,6 +8,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// A property value, or grouped property value
 	/// </summary>
+	[Serializable]
 	public class PropertyProjection : SimpleProjection
 	{
 		string propertyName;

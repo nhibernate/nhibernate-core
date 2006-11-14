@@ -14,6 +14,7 @@ namespace NHibernate.Expression
 	/// same semantics and behavior as the corresponding methods of the
 	/// <c>ICriteria</c> interface.
 	/// </summary>
+	[Serializable]
 	public class DetachedCriteria
 	{
 		private CriteriaImpl impl;
@@ -42,7 +43,7 @@ namespace NHibernate.Expression
 		/// to actually run the query.</summary>
 		public ICriteria GetExecutableCriteria(ISession session)
 		{
-			impl.Session = (SessionImpl) session;
+			impl.Session = (SessionImpl)session;
 			return impl;
 		}
 
@@ -54,7 +55,7 @@ namespace NHibernate.Expression
 #if NET_2_0
 		public static DetachedCriteria For<T>()
 		{
-			return new DetachedCriteria(typeof (T));
+			return new DetachedCriteria(typeof(T));
 		}
 #endif
 

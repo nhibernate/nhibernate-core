@@ -78,6 +78,11 @@
     <Compile Include="CompositeId\ClassWithCompositeIdFixture.cs" />
     <Compile Include="CompositeId\Id.cs" />
     <Compile Include="ConnectionStringTest\NamedConnectionStringFixture.cs" />
+    <Compile Include="Criteria\Course.cs" />
+    <Compile Include="Criteria\CriteriaQueryTest.cs" />
+    <Compile Include="Criteria\Enrolment.cs" />
+    <Compile Include="Criteria\Student.cs" />
+    <Compile Include="Criteria\StudentDTO.cs" />
     <Compile Include="DebugConnectionProvider.cs" />
     <Compile Include="DialectTest\DB2DialectFixture.cs" />
     <Compile Include="DialectTest\DialectFixture.cs" />
@@ -717,6 +722,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SqlTest\Item.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Criteria\Enrolment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -8,6 +8,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// Base class for <see cref="ICriterion"/> implementations.
 	/// </summary>
+	[Serializable]
 	public abstract class AbstractCriterion : ICriterion
 	{
 		/// <summary>

@@ -34,19 +34,18 @@ namespace NHibernate.Transform
 			if (resultClass == null)
 				throw new ArgumentNullException("resultClass");
 			this.resultClass = resultClass;
-			propertyAccessor = PropertyAccessorFactory.GetPropertyAccessor(null);
-			// TODO H3:
-			//= new ChainedPropertyAccessor(
-			//    new IPropertyAccessor[]
-			//    {
-			//        PropertyAccessorFactory.GetPropertyAccessor(resultClass, null),
-			//        PropertyAccessorFactory.GetPropertyAccessor("field")
-			//    });
+			propertyAccessor = new ChainedPropertyAccessor(
+					new IPropertyAccessor[]
+			    {
+						// TODO H3:	PropertyAccessorFactory.GetPropertyAccessor(resultClass, null),
+		        PropertyAccessorFactory.GetPropertyAccessor(null),
+		        PropertyAccessorFactory.GetPropertyAccessor("field")
+			    });
 		}
 
-		public Object TransformTuple(Object[] tuple, String[] aliases)
+		public object TransformTuple(object[] tuple, String[] aliases)
 		{
-			Object result;
+			object result;
 
 			try
 			{
@@ -55,7 +54,7 @@ namespace NHibernate.Transform
 					setters = new ISetter[aliases.Length];
 					for (int i = 0; i < aliases.Length; i++)
 					{
-						String alias = aliases[i];
+						string alias = aliases[i];
 						if (alias != null)
 						{
 							setters[i] = propertyAccessor.GetSetter(resultClass, alias);

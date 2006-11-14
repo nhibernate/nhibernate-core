@@ -28,7 +28,7 @@ namespace NHibernate.Expression
 			this.op = op;
 		}
 
-		protected abstract String ToLeftSqlString(ICriteria criteria, ICriteriaQuery outerQuery);
+		protected abstract SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery outerQuery);
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{

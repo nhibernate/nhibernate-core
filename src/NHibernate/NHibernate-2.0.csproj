@@ -532,6 +532,7 @@
     <Compile Include="Expression\ExistsSubqueryExpression.cs" />
     <Compile Include="Expression\GePropertyExpression.cs" />
     <Compile Include="Expression\GtPropertyExpression.cs" />
+    <Compile Include="Expression\IdentifierEqExpression.cs" />
     <Compile Include="Expression\Property.cs" />
     <Compile Include="Expression\PropertySubqueryExpression.cs" />
     <Compile Include="Expression\SimpleSubqueryExpression.cs" />
@@ -674,6 +675,7 @@
     <Compile Include="Persister\Entity\LoadableConstants.cs" />
     <Compile Include="Persister\Entity\NamedQueryLoader.cs" />
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
+    <Compile Include="Property\ChainedPropertyAccessor.cs" />
     <Compile Include="Property\IOptimizableGetter.cs" />
     <Compile Include="Property\IOptimizableSetter.cs" />
     <Compile Include="Property\PascalCaseMStrategy.cs" />

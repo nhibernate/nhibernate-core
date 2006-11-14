@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -9,6 +10,7 @@ namespace NHibernate.Expression
 	/// The base class for an <see cref="ICriterion"/> that compares a single Property
 	/// to a value.
 	/// </summary>
+	[Serializable]
 	public abstract class SimpleExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;

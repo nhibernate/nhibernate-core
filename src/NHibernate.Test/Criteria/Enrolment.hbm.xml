@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Criteria">
+
+	<class name="Course">
+		<id name="CourseCode">
+			<generator class="assigned"/>
+		</id>
+		<property name="Description"/>
+	</class>
+	
+	<class name="Student">
+		<id name="StudentNumber">
+		    <column name="studentId"/>
+			<generator class="assigned"/>
+		</id>
+		<property name="Name" not-null="true"/>
+		<set name="Enrolments" inverse="true" cascade="delete">
+			<key column="studentId"/>
+			<one-to-many class="Enrolment"/>
+		</set>
+        <many-to-one name="PreferredCourse" column="preferredCourseCode"/>
+	</class>
+	
+	<class name="Enrolment">
+		<composite-id>
+			<key-property name="StudentNumber">
+				<column name="studentId"/>
+			</key-property>
+			<key-property name="CourseCode"/>
+		</composite-id>
+		<many-to-one name="Student" insert="false" update="false">
+			<column name="studentId"/>
+		</many-to-one>
+		<many-to-one name="Course" insert="false" update="false">
+			<column name="CourseCode"/>
+		</many-to-one>
+		<property name="Semester" not-null="true"/>
+		<property name="Year" column="`Year`" not-null="true"/>
+	</class>
+
+</hibernate-mapping>
