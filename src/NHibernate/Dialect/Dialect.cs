@@ -621,12 +621,12 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Whether this dialect have an Identity clause added to the data type or a
-		/// completely seperate identity data type
+		/// Whether this dialect has an identity clause added to the data type or a
+		/// completely seperate identity data type.
 		/// </summary>
-		public virtual bool hasDataTypeInIdentityColumn() 
+		public virtual bool HasDataTypeInIdentityColumn
 		{
-			return true;
+			get { return true; }
 		}
 		 
 		/// <summary>

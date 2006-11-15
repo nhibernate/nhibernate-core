@@ -520,6 +520,7 @@
     <Compile Include="Dialect\Function\SQLFunctionTemplate.cs" />
     <Compile Include="Dialect\Function\StandardSQLFunction.cs" />
     <Compile Include="Dialect\Function\VarArgsSQLFunction.cs" />
+    <Compile Include="Dialect\InformixDialect.cs" />
     <Compile Include="Dialect\MsSqlCeDialect.cs" />
     <Compile Include="Dialect\MySQL5Dialect.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />

@@ -318,7 +318,8 @@ namespace NHibernate.Mapping
 				if( identityColumn && col.GetQuotedName( dialect ).Equals( pkname ) )
 				{
  					// to support dialects that have their own identity data type
- 					if ( dialect.hasDataTypeInIdentityColumn() ) {
+ 					if ( dialect.HasDataTypeInIdentityColumn )
+ 					{
  						buf.Append( col.GetSqlType( dialect, p ) );
  					}
 					buf.Append( ' ' )
