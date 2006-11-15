@@ -888,9 +888,7 @@ order by account.Type.SortOrder, account.AccountNumber, payment.DueDate]]></prog
             You can count the number of query results without actually returning them:
         </para>
 
-        <programlisting><![CDATA[IEnumerator countEn = session.Enumerable("select count(*) from ....").GetEnumerator();
-countEn.MoveNext();
-int count = (int) countEn.Current;]]></programlisting>
+        <programlisting><![CDATA[int count = (int) session.CreateQuery("select count(*) from ....").UniqueResult();]]></programlisting>
 
         <para>
             To order a result by the size of a collection, use the following query:
