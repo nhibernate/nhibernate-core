@@ -11,14 +11,14 @@ namespace NHibernate.Collection
 {
 	/// <summary>
 	/// An unordered, unkeyed collection that can contain the same element
-	/// multiple times. The .net collections API, has no <c>Bag</c>.
+	/// multiple times. The .NET collections API has no <c>Bag</c>.
 	/// Most developers seem to use <see cref="IList" />s to represent bag semantics,
 	/// so NHibernate follows this practice.
 	/// </summary>
 	[Serializable]
 	public class PersistentBag : AbstractPersistentCollection, IList
 	{
-		private IList bag;
+		protected IList bag;
 
 		public PersistentBag( ISessionImplementor session ) : base( session )
 		{
