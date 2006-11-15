@@ -9,12 +9,13 @@ using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using System.Text;
 using NHibernate.SqlTypes;
+
 namespace NHibernate.Impl
 {
 	/// <summary>
 	/// Manages prepared statements and batching. Class exists to enforce separation of concerns
 	/// </summary>
-	internal abstract class BatcherImpl : IBatcher
+	public abstract class BatcherImpl : IBatcher
 	{
 		protected static readonly ILog log = LogManager.GetLogger(typeof(BatcherImpl));
 		protected static readonly ILog logSql = LogManager.GetLogger("NHibernate.SQL");
