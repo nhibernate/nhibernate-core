@@ -899,6 +899,19 @@ namespace NHibernate.Impl
 			return collectionMetadata;
 		}
 
+		private bool disposed;
+		
+		public void Dispose()
+		{
+			if (disposed)
+			{
+				return;
+			}
+
+			disposed = true;
+			Close();
+		}
+
 		/// <summary>
 		/// Closes the session factory, releasing all held resources.
 		/// <list>
@@ -1233,5 +1246,7 @@ namespace NHibernate.Impl
 				return null;
 			}
 		}
+		
+		
 	}
 }

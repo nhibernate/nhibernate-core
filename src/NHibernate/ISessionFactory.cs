@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Cfg;
@@ -21,7 +22,7 @@ namespace NHibernate
 	/// These properties are defined on <c>Environment</c>
 	/// </para>
 	/// </remarks>
-	public interface ISessionFactory
+	public interface ISessionFactory : IDisposable
 	{
 		/// <summary>
 		/// Open a <c>ISession</c> on the given connection
