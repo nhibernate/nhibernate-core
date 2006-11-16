@@ -776,5 +776,16 @@ namespace NHibernate.Test.Criteria
 			t.Commit();
 			session.Close();
 		}
+		
+		[Test, ExpectedException(typeof(QueryException))]
+		public void TypeMismatch()
+		{
+			using (ISession session = OpenSession())
+			{
+				session.CreateCriteria(typeof (Enrolment))
+					.Add(Expression.Expression.Eq("Student", 10)) // Type mismatch!
+					.List();
+			}
+		}
 	}
 }

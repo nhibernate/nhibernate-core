@@ -193,7 +193,9 @@ namespace NHibernate.Util
 			get
 			{
 				if( key == null ) return null;
-				return map[ VerifyValidKey( key ) ];
+				// Disable validation on get since it leads to better error messages
+				//return map[ VerifyValidKey( key ) ];
+				return map[key];
 			}
 			set { map[ VerifyValidKey( key ) ] = value; }
 		}
