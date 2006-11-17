@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Criteria"
+	default-access="field.camelcase-underscore"
+	default-lazy="false">
+
+	<class name="MaterialResource" table="MaterialResources" discriminator-value="MR">
+		<id name="Id" type="Int64">
+			<generator class="native"/>
+		</id>
+		<discriminator column="materialType" length="2"/>
+		<property name="Description"/>
+	</class>
+
+	<subclass name="MaterialUnitable" extends="MaterialResource" discriminator-value="MU"/>
+
+	<class name="MaterialUnit" table="MaterialUnits">
+		<id name="Id" type="Int64">
+			<generator class="native"/>
+		</id>
+		<many-to-one name="Material" class="MaterialUnitable" column="materialId" not-null="true"/>
+		<property name="SerialNumber" length="60" index="MuSerialNumber" not-null="true"/>
+	</class>
+
+</hibernate-mapping>

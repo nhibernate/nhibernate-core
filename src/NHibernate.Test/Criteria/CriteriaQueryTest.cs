@@ -16,7 +16,15 @@ namespace NHibernate.Test.Criteria
 
 		protected override System.Collections.IList Mappings
 		{
-			get { return new string[] { "Criteria.Enrolment.hbm.xml" }; }
+			get 
+			{
+				return new string[] 
+						{ 
+							"Criteria.Enrolment.hbm.xml", 
+							"Criteria.Animal.hbm.xml", 
+							"Criteria.MaterialResource.hbm.xml" 
+						};
+			}
 		}
 
 		[Test, Ignore("EscapeCharacter not implemented yet in NHibernate.Expression.LikeExpression")]
@@ -105,10 +113,6 @@ namespace NHibernate.Test.Criteria
 			enrolment2.Student = gavin;
 			enrolment2.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment2);
-			session.Save(enrolment2);
-			t.Commit();
-
-			t = session.BeginTransaction();
 
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Property.ForName("StudentNumber").Eq(232L))
@@ -650,35 +654,35 @@ namespace NHibernate.Test.Criteria
 			s.Close();
 		}
 
-		[Test, Ignore(@"TODO: import class and mapping from H3.2 \test\org\hibernate\test\hql")]
+		[Test]
 		public void RestrictionOnSubclassCollection()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			//s.CreateCriteria(typeof(Reptile))
-			//    .Add(Expression.Expression.IsEmpty("offspring"))
-			//    .List();
+			s.CreateCriteria(typeof(Reptile))
+					.Add(Expression.Expression.IsEmpty("offspring"))
+					.List();
 
-			//s.CreateCriteria(typeof(Reptile))
-			//    .Add(Expression.Expression.IsNotEmpty("offspring"))
-			//    .List();
+			s.CreateCriteria(typeof(Reptile))
+					.Add(Expression.Expression.IsNotEmpty("offspring"))
+					.List();
 
 			t.Rollback();
 			s.Close();
 		}
 
-		[Test, Ignore(@"TODO: import class and mapping from H3.2 \test\org\hibernate\test\hql")]
+		[Test]
 		public void ClassProperty()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			// HQL: from Animal a where a.mother.class = Reptile
-			//ICriteria c = s.CreateCriteria(typeof(Animal),"a")
-			//  .CreateAlias("Mother","m")
-			//  .Add(Expression.Property.ForName("m.class").Eq(typeof(Reptile)));
-			//c.List();
+			ICriteria c = s.CreateCriteria(typeof(Animal), "a")
+				.CreateAlias("mother", "m")
+					.Add(Expression.Property.ForName("m.class").Eq(typeof(Reptile)));
+			c.List();
 			t.Rollback();
 			s.Close();
 		}
@@ -784,6 +788,19 @@ namespace NHibernate.Test.Criteria
 			{
 				session.CreateCriteria(typeof (Enrolment))
 					.Add(Expression.Expression.Eq("Student", 10)) // Type mismatch!
+					.List();
+			}
+		}
+
+		[Test]
+		public void PropertySubClassDiscriminator()
+		{
+			// The test pass if discriminator type is int or if is string without length
+			using (ISession session = OpenSession())
+			{
+				session.CreateCriteria(typeof(MaterialUnit),"mu")
+						.CreateAlias("mu.Material", "ma")
+						.Add(Expression.Property.ForName("ma.class").Eq(typeof(MaterialUnitable)))
 					.List();
 			}
 		}

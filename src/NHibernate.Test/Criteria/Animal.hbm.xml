@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Criteria"
+	default-access="field">
+
+	<class name="Animal">
+		<id name="id">
+			<generator class="native"/>
+		</id>
+		<property name="description"/>
+		<property name="bodyWeight" column="body_weight"/>
+		<many-to-one name="mother" column="mother_id"/>
+		<many-to-one name="father" column="father_id"/>
+		<property name="serialNumber"/>
+		<set name="offspring" order-by="father_id">
+			<key column="mother_id"/>
+			<one-to-many class="Animal"/>
+		</set>
+		<joined-subclass name="Reptile">
+			<key column="animal"/>
+			<property name="bodyTemperature"/>
+			<joined-subclass name="Lizard">
+				<key column="reptile"/>
+			</joined-subclass>
+		</joined-subclass>
+	</class>
+
+</hibernate-mapping>
