@@ -26,7 +26,7 @@
 			<return-property name="element.AlternativeItemId" column="AlternativeItemId" />
 		</load-collection>
 		<!-- Suppose alternate items for every item are all items except the item itself. -->
-		SELECT :id as collectionKey, * FROM Item WHERE Id != :id
+		SELECT CAST(:id AS INTEGER) as collectionKey, Item.* FROM Item WHERE Item.Id != :id
 	</sql-query>
 
 </hibernate-mapping>
