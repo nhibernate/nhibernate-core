@@ -30,6 +30,10 @@ namespace NHibernate.Test.Criteria
 	{
 	}
 
+	public class DeviceDef : MaterialUnitable
+	{
+	}
+
 	public class MaterialUnit
 	{
 		private long _id;

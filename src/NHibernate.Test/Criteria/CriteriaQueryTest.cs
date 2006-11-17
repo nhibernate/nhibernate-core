@@ -795,13 +795,44 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void PropertySubClassDiscriminator()
 		{
-			// The test pass if discriminator type is int or if is string without length
+			using (ISession s = OpenSession())
+			{
+				MaterialUnitable bo1 = new MaterialUnitable();
+				bo1.Description = "Seal";
+				MaterialUnitable bo2 = new MaterialUnitable();
+				bo2.Description = "Meter";
+				MaterialUnitable dv = new DeviceDef();
+				dv.Description = "Printer";
+				s.Save(bo1);
+				s.Save(bo2);
+				s.Save(dv);
+				s.Flush();
+
+				MaterialUnit mu = new MaterialUnit(bo1,"S1");
+				s.Save(mu); mu = null;
+				mu = new MaterialUnit(bo1, "S2");
+				s.Save(mu); mu = null;
+				mu = new MaterialUnit(bo2, "M1");
+				s.Save(mu); mu = null;
+				mu = new MaterialUnit(dv, "D1");
+				s.Save(mu); mu = null;
+				s.Flush();
+			}
+
 			using (ISession session = OpenSession())
 			{
-				session.CreateCriteria(typeof(MaterialUnit),"mu")
+				IList l = session.CreateCriteria(typeof(MaterialUnit), "mu")
 						.CreateAlias("mu.Material", "ma")
 						.Add(Expression.Property.ForName("ma.class").Eq(typeof(MaterialUnitable)))
-					.List();
+						.List();
+				Assert.AreEqual(3, l.Count);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from MaterialUnit");
+				s.Delete("from MaterialResource");
+				s.Flush();
 			}
 		}
 	}

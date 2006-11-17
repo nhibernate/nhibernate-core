@@ -14,6 +14,7 @@
 	</class>
 
 	<subclass name="MaterialUnitable" extends="MaterialResource" discriminator-value="MU"/>
+	<subclass name="DeviceDef" extends="MaterialUnitable" discriminator-value="GD"/>
 
 	<class name="MaterialUnit" table="MaterialUnits">
 		<id name="Id" type="Int64">
