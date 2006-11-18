@@ -81,6 +81,7 @@
     <Compile Include="Criteria\Animal.cs" />
     <Compile Include="Criteria\Course.cs" />
     <Compile Include="Criteria\CriteriaQueryTest.cs" />
+    <Compile Include="Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Criteria\Enrolment.cs" />
     <Compile Include="Criteria\MaterialResource.cs" />
     <Compile Include="Criteria\Reptile.cs" />
