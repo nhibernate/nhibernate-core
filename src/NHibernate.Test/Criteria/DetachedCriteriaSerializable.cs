@@ -5,6 +5,7 @@ using System.Reflection;
 using NUnit.Framework;
 using NHibernate.Expression;
 using NHibernate.Util;
+using NHibernate.Transform;
 
 namespace NHibernate.Test.Criteria
 {
@@ -52,17 +53,25 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void AllCriterionHareSerializable()
 		{
-			Assembly nhbA = Assembly.GetAssembly(typeof(ICriterion));
-			IList types = ClassList(nhbA, typeof(ICriterion));
+			Assembly nhbA = Assembly.GetAssembly(typeof(NHibernate.Expression.ICriterion));
+			IList types = ClassList(nhbA, typeof(NHibernate.Expression.ICriterion));
 			CheckSerializable(types, "Criterion");
 		}
 
 		[Test]
 		public void AllProjectionHareSerializable()
 		{
-			Assembly nhbA = Assembly.GetAssembly(typeof(IProjection));
-			IList types = ClassList(nhbA, typeof(IProjection));
+			Assembly nhbA = Assembly.GetAssembly(typeof(NHibernate.Expression.IProjection));
+			IList types = ClassList(nhbA, typeof(NHibernate.Expression.IProjection));
 			CheckSerializable(types, "Projection");
+		}
+
+		[Test]
+		public void AllEmbeddedResultTrasformesHareSerializable()
+		{
+			Assembly nhbA = Assembly.GetAssembly(typeof(NHibernate.Transform.IResultTransformer));
+			IList types = ClassList(nhbA, typeof(NHibernate.Transform.IResultTransformer));
+			CheckSerializable(types, "EmbeddedResultTrasformes");
 		}
 
 		private void CheckSerializable(IList types, string context)
@@ -347,6 +356,25 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
+		public void ResultTransformes()
+		{
+			IResultTransformer rt = new RootEntityResultTransformer();
+			AssertSerializable(rt);
+
+			rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(new System.Type[] { }));
+			AssertSerializable(rt);
+
+			rt = new AliasToBeanResultTransformer(typeof(StudentDTO));
+			AssertSerializable(rt);
+
+			rt = new DistinctRootEntityResultTransformer();
+			AssertSerializable(rt);
+
+			rt = new PassThroughResultTransformer();
+			AssertSerializable(rt);
+		}
+
+		[Test]
 		public void ExecutableCriteria()
 		{
 			// All query below don't have sense, are only to test if all needed classes are serializable
@@ -390,7 +418,7 @@ namespace NHibernate.Test.Criteria
 			// Logical Expression
 			dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Expression.Or(Expression.Expression.Eq("Name", "Ralph"), Expression.Expression.Eq("Name", "Gavin")))
-				.Add(Expression.Expression.And(Expression.Expression.Gt("StudentNumber", 1), Expression.Expression.Lt("StudentNumber", 10)));
+				.Add(Expression.Expression.And(Expression.Expression.Gt("StudentNumber", 1L), Expression.Expression.Lt("StudentNumber", 10L)));
 
 			SerializeAndList(dc);
 
@@ -418,7 +446,7 @@ namespace NHibernate.Test.Criteria
 			dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Expression.Conjunction()
 					.Add(Expression.Expression.Eq("Name", "Ralph"))
-					.Add(Expression.Expression.Eq("StudentNumber", "1")))
+					.Add(Expression.Expression.Eq("StudentNumber", 1L)))
 				.Add(Expression.Expression.Disjunction()
 					.Add(Expression.Expression.Eq("Name", "Ralph"))
 					.Add(Expression.Expression.Eq("Name", "Gavin")));
@@ -435,7 +463,7 @@ namespace NHibernate.Test.Criteria
 
 			// SQLCriterion
 			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Expression.Sql("{alias}.Name"));
+				.Add(Expression.Expression.Sql("{alias}.Name = 'Gavin'"));
 			SerializeAndList(dc);
 
 			// SQLProjection
@@ -449,6 +477,18 @@ namespace NHibernate.Test.Criteria
 				.SetProjection(Projections.SqlGroupProjection("COUNT({alias}.studentId), {alias}.preferredCourseCode", "{alias}.preferredCourseCode",
 					new string[] { "studentsOfCourse", "CourseCode" },
 					new NHibernate.Type.IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }));
+			SerializeAndList(dc);
+
+			// Result transformers
+			dc = DetachedCriteria.For(typeof(Enrolment))
+				.CreateAlias("Student", "st")
+				.CreateAlias("Course", "co")
+				.SetProjection(Projections.ProjectionList()
+						.Add(Projections.Property("st.Name"), "studentName")
+						.Add(Projections.Property("co.Description"), "courseDescription")
+				)
+				.AddOrder(Order.Desc("studentName"))
+				.SetResultTransformer(NHibernate.Transform.Transformers.AliasToBean(typeof(StudentDTO)));
 			SerializeAndList(dc);
 		}
 	}
