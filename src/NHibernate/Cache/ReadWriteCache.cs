@@ -79,7 +79,7 @@ namespace NHibernate.Cache
 		/// problem would be caught by the update-time version-checking, if 
 		/// the data is versioned or timestamped.
 		/// </remarks>
-		public object Get( object key, long txTimestamp )
+		public object Get( CacheKey key, long txTimestamp )
 		{
 			lock( _lockObject )
 			{
@@ -136,7 +136,7 @@ namespace NHibernate.Cache
 		/// locks by transactions which simultaneously attempt to write to an
 		/// item.
 		/// </summary>
-		public ISoftLock Lock( object key, object version )
+		public ISoftLock Lock( CacheKey key, object version )
 		{
 			lock( _lockObject )
 			{
@@ -171,7 +171,7 @@ namespace NHibernate.Cache
 		/// database is operating in repeatable read isolation mode.)
 		/// </summary>
 		/// <returns>Whether the item was actually put into the cache</returns>
-		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator, bool minimalPut )
+		public bool Put( CacheKey key, object value, long txTimestamp, object version, IComparer versionComparator, bool minimalPut )
 		{
 			if( txTimestamp == long.MinValue )
 			{
@@ -237,7 +237,7 @@ namespace NHibernate.Cache
 			cache.Put( key, @lock );
 		}
 
-		public void Release( object key, ISoftLock clientLock )
+		public void Release( CacheKey key, ISoftLock clientLock )
 		{
 			lock( _lockObject )
 			{
@@ -282,7 +282,7 @@ namespace NHibernate.Cache
 			cache.Clear();
 		}
 
-		public void Remove( object key )
+		public void Remove( CacheKey key )
 		{
 			cache.Remove( key );
 		}
@@ -303,7 +303,7 @@ namespace NHibernate.Cache
 		/// Re-cache the updated state, if and only if there there are
 		/// no other concurrent soft locks. Release our lock.
 		/// </summary>
-		public void AfterUpdate( object key, object value, object version, ISoftLock clientLock )
+		public void AfterUpdate( CacheKey key, object value, object version, ISoftLock clientLock )
 		{
 			lock( _lockObject )
 			{
@@ -348,7 +348,7 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public void AfterInsert( object key, object value, object version )
+		public void AfterInsert( CacheKey key, object value, object version )
 		{
 			lock( _lockObject )
 			{
@@ -378,17 +378,17 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public void Evict( object key )
+		public void Evict( CacheKey key )
 		{
 			// NOOP
 		}
 
-		public void Insert( object key, object value )
+		public void Insert( CacheKey key, object value )
 		{
 			// NOOP
 		}
 
-		public void Update( object key, object value )
+		public void Update( CacheKey key, object value )
 		{
 			// NOOP
 		}

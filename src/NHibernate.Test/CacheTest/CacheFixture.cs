@@ -14,6 +14,11 @@ namespace NHibernate.Test.CacheTest {
 		{
 			DoTestCache( new HashtableCacheProvider() );
 		}
+		
+		private CacheKey CreateCacheKey(string text)
+		{
+			return new CacheKey(text, NHibernateUtil.String, "Foo", null);
+		}
 	
 		public void DoTestCache(ICacheProvider cacheProvider) 
 		{
@@ -31,106 +36,108 @@ namespace NHibernate.Test.CacheTest {
 			ccs.Cache = cache;
 
 			// cache something
+			CacheKey fooKey = CreateCacheKey("foo");
 
-			Assert.IsTrue( ccs.Put("foo", "foo", before, null, null, false) );
+			Assert.IsTrue( ccs.Put(fooKey, "foo", before, null, null, false) );
 
 			System.Threading.Thread.Sleep(15);
 
 			long after = Timestamper.Next();
 
-			Assert.IsNull( ccs.Get("foo", longBefore) );
-			Assert.AreEqual( "foo", ccs.Get("foo", after) );
-			Assert.IsFalse( ccs.Put("foo", "foo", before, null, null, false) );
+			Assert.IsNull( ccs.Get(fooKey, longBefore) );
+			Assert.AreEqual( "foo", ccs.Get(fooKey, after) );
+			Assert.IsFalse( ccs.Put(fooKey, "foo", before, null, null, false) );
 
 			// update it;
 
-			ISoftLock fooLock = ccs.Lock("foo", null);
+			ISoftLock fooLock = ccs.Lock(fooKey, null);
 
-			Assert.IsNull( ccs.Get("foo", after) );
-			Assert.IsNull( ccs.Get("foo", longBefore) );
-			Assert.IsFalse(ccs.Put("foo", "foo", before, null, null, false));
+			Assert.IsNull( ccs.Get(fooKey, after) );
+			Assert.IsNull( ccs.Get(fooKey, longBefore) );
+			Assert.IsFalse(ccs.Put(fooKey, "foo", before, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
 			long whileLocked = Timestamper.Next();
 
-			Assert.IsFalse(ccs.Put("foo", "foo", whileLocked, null, null, false));
+			Assert.IsFalse(ccs.Put(fooKey, "foo", whileLocked, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
-			ccs.Release("foo", fooLock);
+			ccs.Release(fooKey, fooLock);
 
-			Assert.IsNull( ccs.Get("foo", after) );
-			Assert.IsNull( ccs.Get("foo", longBefore) );
-			Assert.IsFalse(ccs.Put("foo", "bar", whileLocked, null, null, false));
-			Assert.IsFalse(ccs.Put("foo", "bar", after, null, null, false));
+			Assert.IsNull( ccs.Get(fooKey, after) );
+			Assert.IsNull( ccs.Get(fooKey, longBefore) );
+			Assert.IsFalse(ccs.Put(fooKey, "bar", whileLocked, null, null, false));
+			Assert.IsFalse(ccs.Put(fooKey, "bar", after, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
 			long longAfter = Timestamper.Next();
 
-			Assert.IsTrue(ccs.Put("foo", "baz", longAfter, null, null, false));
-			Assert.IsNull( ccs.Get("foo", after) );
-			Assert.IsNull( ccs.Get("foo", whileLocked) );
+			Assert.IsTrue(ccs.Put(fooKey, "baz", longAfter, null, null, false));
+			Assert.IsNull( ccs.Get(fooKey, after) );
+			Assert.IsNull( ccs.Get(fooKey, whileLocked) );
 
 			System.Threading.Thread.Sleep(15);
 
 			long longLongAfter = Timestamper.Next();
 
-			Assert.AreEqual("baz", ccs.Get("foo", longLongAfter) );
+			Assert.AreEqual("baz", ccs.Get(fooKey, longLongAfter) );
 
 			// update it again, with multiple locks
 
-			ISoftLock fooLock1 = ccs.Lock("foo", null);
-			ISoftLock fooLock2 = ccs.Lock("foo", null);
+			ISoftLock fooLock1 = ccs.Lock(fooKey, null);
+			ISoftLock fooLock2 = ccs.Lock(fooKey, null);
 
-			Assert.IsNull( ccs.Get("foo", longLongAfter) );
+			Assert.IsNull( ccs.Get(fooKey, longLongAfter) );
 
 			System.Threading.Thread.Sleep(15);
 
 			whileLocked = Timestamper.Next();
 
-			Assert.IsFalse(ccs.Put("foo", "foo", whileLocked, null, null, false));
+			Assert.IsFalse(ccs.Put(fooKey, "foo", whileLocked, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
-			ccs.Release("foo", fooLock2);
+			ccs.Release(fooKey, fooLock2);
 
 			System.Threading.Thread.Sleep(15);
 
 			long betweenReleases = Timestamper.Next();
 
-			Assert.IsFalse(ccs.Put("foo", "bar", betweenReleases, null, null, false));
-			Assert.IsNull( ccs.Get("foo", betweenReleases) );
+			Assert.IsFalse(ccs.Put(fooKey, "bar", betweenReleases, null, null, false));
+			Assert.IsNull( ccs.Get(fooKey, betweenReleases) );
 
 			System.Threading.Thread.Sleep(15);
 
-			ccs.Release("foo", fooLock1);
+			ccs.Release(fooKey, fooLock1);
 
-			Assert.IsFalse(ccs.Put("foo", "bar", whileLocked, null, null, false));
+			Assert.IsFalse(ccs.Put(fooKey, "bar", whileLocked, null, null, false));
 
 			System.Threading.Thread.Sleep(15);
 
 			longAfter = Timestamper.Next();
 
-			Assert.IsTrue(ccs.Put("foo", "baz", longAfter, null, null, false));
-			Assert.IsNull( ccs.Get("foo", whileLocked) );
+			Assert.IsTrue(ccs.Put(fooKey, "baz", longAfter, null, null, false));
+			Assert.IsNull( ccs.Get(fooKey, whileLocked) );
 
 			System.Threading.Thread.Sleep(15);
 
 			longLongAfter = Timestamper.Next();
 
-			Assert.AreEqual("baz", ccs.Get("foo", longLongAfter) );
+			Assert.AreEqual("baz", ccs.Get(fooKey, longLongAfter) );
 
 		}
 
 		private void DoTestMinValueTimestampOnStrategy( ICache cache, ICacheConcurrencyStrategy strategy )
 		{
+			CacheKey key = CreateCacheKey("key");
 			strategy.Cache = cache;
-			strategy.Put("key", "value", long.MinValue, 0, null, false);
+			strategy.Put(key, "value", long.MinValue, 0, null, false);
 
-			Assert.IsNull( strategy.Get( "key", long.MinValue ), "{0} strategy fails the test", strategy.GetType() );
-			Assert.IsNull( strategy.Get( "key", long.MaxValue ), "{0} strategy fails the test", strategy.GetType() );
+			Assert.IsNull( strategy.Get( key, long.MinValue ), "{0} strategy fails the test", strategy.GetType() );
+			Assert.IsNull( strategy.Get( key, long.MaxValue ), "{0} strategy fails the test", strategy.GetType() );
 		}
 
 		[Test]

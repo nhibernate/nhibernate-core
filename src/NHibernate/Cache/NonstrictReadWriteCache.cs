@@ -36,7 +36,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Get the most recent version, if available.
 		/// </summary>
-		public object Get( object key, long txTimestamp )
+		public object Get( CacheKey key, long txTimestamp )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -58,7 +58,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Add an item to the cache
 		/// </summary>
-		public bool Put( object key, object value, long txTimestamp, object version, IComparer versionComparator, bool minimalPut )
+		public bool Put( CacheKey key, object value, long txTimestamp, object version, IComparer versionComparator, bool minimalPut )
 		{
 			if( txTimestamp == long.MinValue )
 			{
@@ -85,12 +85,12 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public ISoftLock Lock( object key, object version )
+		public ISoftLock Lock( CacheKey key, object version )
 		{
 			return null;
 		}
 
-		public void Remove( object key )
+		public void Remove( CacheKey key )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -123,7 +123,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		public void Evict( object key )
+		public void Evict( CacheKey key )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -135,7 +135,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		public void Update( object key, object value )
+		public void Update( CacheKey key, object value )
 		{
 			Evict( key );
 		}
@@ -143,14 +143,14 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public void Insert( object key, object value )
+		public void Insert( CacheKey key, object value )
 		{
 		}
 
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		public void Release( object key, ISoftLock @lock )
+		public void Release( CacheKey key, ISoftLock @lock )
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -163,7 +163,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		public void AfterUpdate( object key, object value, object version, ISoftLock @lock )
+		public void AfterUpdate( CacheKey key, object value, object version, ISoftLock @lock )
 		{
 			Release( key, @lock );
 		}
@@ -171,7 +171,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public void AfterInsert( object key, object value, object version )
+		public void AfterInsert( CacheKey key, object value, object version )
 		{
 		}
 	}
