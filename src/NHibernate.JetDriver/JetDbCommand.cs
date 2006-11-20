@@ -185,9 +185,16 @@ namespace NHibernate.JetDriver
 			get { return _transaction; }
 			set
 			{
-				_transaction = ( JetDbTransaction ) value;
-
-				Command.Transaction = _transaction.Transaction;
+				if (value == null)
+				{
+					_transaction = null;
+					Command.Transaction = null;
+				}
+				else
+				{
+					_transaction = ( JetDbTransaction ) value;
+					Command.Transaction = _transaction.Transaction;
+				}
 			}
 		}
 
