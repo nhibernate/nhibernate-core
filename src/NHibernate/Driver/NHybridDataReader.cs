@@ -111,8 +111,8 @@ namespace NHibernate.Driver
 		/// <summary></summary>
 		public bool Read()
 		{
-			_isMidstream = true;
-			return _reader.Read();
+			_isMidstream = _reader.Read();
+			return _isMidstream;
 		}
 
 		/// <summary></summary>
