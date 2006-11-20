@@ -104,31 +104,11 @@ namespace NHibernate.Test.Criteria
 				System.Type[] types = assembly.GetTypes();
 				foreach (System.Type tp in types)
 				{
-					if (ImplementInterface(tp, interfaceType))
+					if (interfaceType.IsAssignableFrom(tp) && !tp.IsInterface)
 						result.Add(tp);
 				}
 			}
 			return result;
-		}
-
-		private bool ImplementInterface(System.Type objType, System.Type interfaceType)
-		{
-			if (objType != null)
-			{
-				TypeFilter intf = new TypeFilter(ImplementInterfaceFilter);
-				System.Type[] _AvalInterfaces = objType.FindInterfaces(intf, interfaceType);
-				return _AvalInterfaces.Length > 0;
-			}
-			else
-				return false;
-		}
-
-		private static bool ImplementInterfaceFilter(System.Type typeObj, object criteria)
-		{
-			if (criteria != null)
-				return typeObj == criteria;
-			else
-				return false;
 		}
 
 		[Test]
