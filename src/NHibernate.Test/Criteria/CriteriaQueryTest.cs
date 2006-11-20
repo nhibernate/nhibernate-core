@@ -113,6 +113,7 @@ namespace NHibernate.Test.Criteria
 			enrolment2.Student = gavin;
 			enrolment2.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment2);
+			session.Save(enrolment2);
 
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Property.ForName("StudentNumber").Eq(232L))
