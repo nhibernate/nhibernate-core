@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Expression
 {
 	/// <summary>
@@ -8,6 +10,7 @@ namespace NHibernate.Expression
 	/// comparisons.  Use <see cref="InsensitiveLikeExpression"/> if the
 	/// string comparison should not be case sensitive.
 	/// </remarks>
+	[Serializable]
 	public class LikeExpression : SimpleExpression
 	{
 		public LikeExpression( string propertyName, object value, bool ignoreCase )

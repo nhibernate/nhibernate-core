@@ -10,6 +10,7 @@ namespace NHibernate.Expression
 	/// A sequence of logical <see cref="ICriterion"/>s combined by some associative
 	/// logical operator.
 	/// </summary>
+	[Serializable]
 	public abstract class Junction : AbstractCriterion
 	{
 		private IList _criteria = new ArrayList();

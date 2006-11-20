@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -8,6 +9,7 @@ namespace NHibernate.Expression
 	/// Superclass for an <see cref="ICriterion"/> that represents a
 	/// constraint between two properties (with SQL binary operators).
 	/// </summary>
+	[Serializable]
 	public abstract class PropertyExpression : AbstractCriterion
 	{
 		private string _lhsPropertyName;

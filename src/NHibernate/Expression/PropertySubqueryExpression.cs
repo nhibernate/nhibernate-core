@@ -7,6 +7,7 @@ namespace NHibernate.Expression
 	/// A comparison between a property value in the outer query and the
 	///  result of a subquery
 	/// </summary>
+	[Serializable]
 	public class PropertySubqueryExpression : SubqueryExpression
 	{
 		private String propertyName;

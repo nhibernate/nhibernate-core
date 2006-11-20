@@ -3,6 +3,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
+	[Serializable]
 	public class ExistsSubqueryExpression : SubqueryExpression
 	{
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery outerQuery)

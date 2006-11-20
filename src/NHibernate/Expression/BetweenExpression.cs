@@ -7,6 +7,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// An <see cref="ICriterion"/> that represents a "between" constraint.
 	/// </summary>
+	[Serializable]
 	public class BetweenExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;

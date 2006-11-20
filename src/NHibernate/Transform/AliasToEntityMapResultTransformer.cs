@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace NHibernate.Transform
 {
+	[Serializable]
 	public class AliasToEntityMapResultTransformer : IResultTransformer
 	{
 		public object TransformTuple(object[] tuple, string[] aliases)

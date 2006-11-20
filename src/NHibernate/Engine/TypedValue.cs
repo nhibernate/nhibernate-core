@@ -1,8 +1,10 @@
+using System;
 using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
 	/// <summary></summary>
+	[Serializable]
 	public sealed class TypedValue
 	{
 		private IType type;

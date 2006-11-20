@@ -1,9 +1,12 @@
+using System;
+
 namespace NHibernate.Expression
 {
 	/// <summary>
 	/// An <see cref="LogicalExpression"/> that combines two <see cref="ICriterion"/>s 
 	/// with an <c>and</c> between them.
 	/// </summary>
+	[Serializable]
 	public class AndExpression : LogicalExpression
 	{
 		/// <summary>

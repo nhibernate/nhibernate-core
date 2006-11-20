@@ -5,6 +5,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
+	[Serializable]
 	public class Distinct : IProjection
 	{
 		readonly IProjection projection;

@@ -1,9 +1,12 @@
+using System;
+
 namespace NHibernate.Expression
 {
 	/// <summary>
 	/// An <see cref="ICriterion" /> that combines two <see cref="ICriterion"/>s with an 
 	/// <c>"or"</c> between them.
 	/// </summary>
+	[Serializable]
 	public class OrExpression : LogicalExpression
 	{
 		/// <summary>

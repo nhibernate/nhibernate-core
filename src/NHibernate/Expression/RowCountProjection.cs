@@ -6,6 +6,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
+	[Serializable]
 	public class RowCountProjection : SimpleProjection
 	{
 		protected internal RowCountProjection() { }

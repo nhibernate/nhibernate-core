@@ -7,6 +7,7 @@ using log4net;
 
 namespace NHibernate.Transform
 {
+	[Serializable]
 	public class DistinctRootEntityResultTransformer : IResultTransformer
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( DistinctRootEntityResultTransformer ) );

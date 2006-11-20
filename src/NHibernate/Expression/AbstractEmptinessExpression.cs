@@ -7,7 +7,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
-	abstract public class AbstractEmptinessExpression : ICriterion
+	[Serializable]
+	public abstract class AbstractEmptinessExpression : ICriterion
 	{
 		readonly TypedValue[] NO_VALUES = new TypedValue[0];
 		readonly string propertyName;

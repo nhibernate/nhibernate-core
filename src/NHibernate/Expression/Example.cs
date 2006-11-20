@@ -12,6 +12,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// Support for <c>Query By Example</c>.
 	/// </summary>
+	[Serializable]
 	public class Example : AbstractCriterion
 	{
 		private readonly object _entity;

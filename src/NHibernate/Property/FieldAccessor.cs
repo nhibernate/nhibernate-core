@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace NHibernate.Property
@@ -10,6 +11,7 @@ namespace NHibernate.Property
 	/// for a Property, but they have extra code in them that shouldn't be executed when NHibernate
 	/// is setting or getting the values for loads or saves.
 	/// </remarks>
+	[Serializable]
 	public class FieldAccessor : IPropertyAccessor
 	{
 		private IFieldNamingStrategy namingStrategy;

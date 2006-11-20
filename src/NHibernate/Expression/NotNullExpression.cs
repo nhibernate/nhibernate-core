@@ -7,6 +7,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// An <see cref="ICriterion"/> that represents "not null" constraint.
 	/// </summary>
+	[Serializable]
 	public class NotNullExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;

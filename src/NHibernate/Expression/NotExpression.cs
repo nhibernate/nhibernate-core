@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -6,6 +7,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// An <see cref="ICriterion"/> that negates another <see cref="ICriterion"/>.
 	/// </summary>
+	[Serializable]
 	public class NotExpression : AbstractCriterion
 	{
 		private ICriterion _criterion;

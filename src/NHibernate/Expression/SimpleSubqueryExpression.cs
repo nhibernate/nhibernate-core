@@ -7,6 +7,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// A comparison between a constant value and the the result of a subquery
 	/// </summary>
+	[Serializable]
 	public class SimpleSubqueryExpression : SubqueryExpression
 	{
 		private Object value;

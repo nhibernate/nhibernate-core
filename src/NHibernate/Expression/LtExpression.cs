@@ -5,6 +5,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// An <see cref="ICriterion"/> that represents an "less than" constraint.
 	/// </summary>
+	[Serializable]
 	public class LtExpression : SimpleExpression
 	{
 		/// <summary>

@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -12,6 +13,7 @@ namespace NHibernate.Expression
 	/// This allows for database specific Expressions at the cost of needing to 
 	/// write a correct <see cref="SqlString"/>.
 	/// </remarks>
+	[Serializable]
 	public class SQLCriterion : AbstractCriterion
 	{
 		private readonly SqlString _sql;

@@ -15,6 +15,7 @@ namespace NHibernate.Expression
 	/// <remarks>
 	/// InExpression - should only be used with a Single Value column - no multicolumn properties...
 	/// </remarks>
+	[Serializable]
 	public class InExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;

@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using log4net;
 
@@ -7,6 +8,7 @@ namespace NHibernate.Property
 	/// Accesses mapped property values via a get/set pair, which may be nonpublic.
 	/// The default (and recommended strategy).
 	/// </summary>
+	[Serializable]
 	public class BasicPropertyAccessor : IPropertyAccessor
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( BasicPropertyAccessor ) );

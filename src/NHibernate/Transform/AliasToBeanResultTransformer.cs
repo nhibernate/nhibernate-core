@@ -23,6 +23,7 @@ namespace NHibernate.Transform
 	/// StudentDTO dto = (StudentDTO)resultWithAliasedBean[0];
 	/// </code>
 	/// </example>
+	[Serializable]
 	public class AliasToBeanResultTransformer : IResultTransformer
 	{
 		private readonly System.Type resultClass;

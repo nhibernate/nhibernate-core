@@ -2,6 +2,7 @@ using System;
 
 namespace NHibernate.Property
 {
+	[Serializable]
 	public class ChainedPropertyAccessor : IPropertyAccessor
 	{
 		private readonly IPropertyAccessor[] chain;

@@ -8,6 +8,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// A Count
 	/// </summary>
+	[Serializable]
 	public class CountProjection : AggregateProjection
 	{
 		bool distinct;

@@ -8,6 +8,7 @@ namespace NHibernate.Expression
 	/// <summary>
 	/// An Aggregation
 	/// </summary>
+	[Serializable]
 	public class AggregateProjection : SimpleProjection
 	{
 		protected readonly string propertyName;

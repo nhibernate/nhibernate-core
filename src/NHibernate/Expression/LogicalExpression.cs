@@ -8,6 +8,7 @@ namespace NHibernate.Expression
 	/// An <see cref="ICriterion"/> that combines two <see cref="ICriterion"/>s 
 	/// with a operator (either "<c>and</c>" or "<c>or</c>") between them.
 	/// </summary>
+	[Serializable]
 	public abstract class LogicalExpression : AbstractCriterion
 	{
 		private ICriterion _lhs;

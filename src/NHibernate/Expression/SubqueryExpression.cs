@@ -8,6 +8,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
+	[Serializable]
 	public abstract class SubqueryExpression : AbstractCriterion
 	{
 		private CriteriaImpl criteriaImpl;

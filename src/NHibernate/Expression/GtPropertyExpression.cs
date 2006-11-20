@@ -1,9 +1,12 @@
+using System;
+
 namespace NHibernate.Expression
 {
 	/// <summary>
 	/// An <see cref="ICriterion"/> that represents an "greater than" constraint 
 	/// between two properties.
 	/// </summary>
+	[Serializable]
 	public class GtPropertyExpression : PropertyExpression
 	{
 		/// <summary>

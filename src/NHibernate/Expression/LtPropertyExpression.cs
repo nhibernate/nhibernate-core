@@ -6,6 +6,7 @@ namespace NHibernate.Expression
 	/// An <see cref="ICriterion"/> that represents an "less than" constraint 
 	/// between two properties.
 	/// </summary>
+	[Serializable]
 	public class LtPropertyExpression : PropertyExpression
 	{
 		/// <summary>

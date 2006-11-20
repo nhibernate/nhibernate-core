@@ -11,6 +11,7 @@ namespace NHibernate.Expression
 	/// that is <b>not</b> case sensitive.
 	/// </summary>
 	//TODO:H2.0.3 renamed this to ILikeExpression
+	[Serializable]
 	public class InsensitiveLikeExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;

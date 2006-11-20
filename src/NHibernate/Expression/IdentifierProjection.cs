@@ -5,6 +5,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
+	[Serializable]
 	public class IdentifierProjection : SimpleProjection
 	{
 		bool grouped;

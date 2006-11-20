@@ -16,6 +16,7 @@ namespace NHibernate.Engine
 	/// <summary>
 	/// Container for data that is used during the NHibernate query/load process. 
 	/// </summary>
+	[Serializable]
 	public sealed class QueryParameters
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(QueryParameters));

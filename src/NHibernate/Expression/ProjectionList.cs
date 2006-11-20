@@ -11,6 +11,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
+	[Serializable]
 	public class ProjectionList : IProjection
 	{
 #if NET_2_0

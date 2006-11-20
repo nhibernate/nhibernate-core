@@ -4,6 +4,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
+	[Serializable]
 	public class AvgProjection : AggregateProjection
 	{
 
