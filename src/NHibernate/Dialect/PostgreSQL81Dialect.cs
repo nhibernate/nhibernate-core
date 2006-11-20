@@ -13,12 +13,12 @@ namespace NHibernate.Dialect
 	{
 		public override string ForUpdateNowaitString
 		{
-			get { return "for update nowait"; }
+			get { return " for update nowait"; }
 		}
 
 		public override string GetForUpdateNowaitString( string aliases )
 		{
-			return "for update of " + aliases + " nowait";
+			return " for update of " + aliases + " nowait";
 		}
 	}
 }
