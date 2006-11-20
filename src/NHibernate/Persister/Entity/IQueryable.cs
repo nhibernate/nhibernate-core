@@ -29,6 +29,11 @@ namespace NHibernate.Persister.Entity
 		string DiscriminatorSQLValue { get; }
 
 		/// <summary>
+		/// The discriminator value for this particular concrete subclass (the value in the hbm)
+		/// </summary>
+		object DiscriminatorValue { get; }
+
+		/// <summary>
 		/// Get the where clause fragment, give a query alias
 		/// </summary>
 		/// <param name="alias">SQL alias to use for column names in the returned query</param>

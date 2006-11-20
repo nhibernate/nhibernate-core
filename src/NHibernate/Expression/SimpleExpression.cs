@@ -69,11 +69,11 @@ namespace NHibernate.Expression
 			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
 			IType propertyType = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
 
-			if (_value != null && !propertyType.ReturnedClass.IsInstanceOfType(_value))
+			if (_value != null && !(_value is System.Type) && !propertyType.ReturnedClass.IsInstanceOfType(_value))
 			{
-				throw new QueryException(string.Format(
-				                         	"Type mismatch in {0}: expected type {1}, actual type {2}",
-				                         	GetType(), propertyType.ReturnedClass, _value.GetType()));
+			    throw new QueryException(string.Format(
+			                                "Type mismatch in {0}: expected type {1}, actual type {2}",
+			                                GetType(), propertyType.ReturnedClass, _value.GetType()));
 			}
 			
 			if (propertyType.IsCollectionType)

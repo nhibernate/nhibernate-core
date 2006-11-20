@@ -1675,6 +1675,8 @@ namespace NHibernate.Persister.Entity
 
 		public abstract string DiscriminatorSQLValue { get; }
 
+		public abstract object DiscriminatorValue { get; }
+
 		public abstract object[] PropertySpaces { get; }
 
 		/// <summary>

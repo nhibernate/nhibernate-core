@@ -82,6 +82,7 @@ namespace NHibernate.Persister.Entity
 
 		private readonly IDiscriminatorType discriminatorType;
 		private readonly string discriminatorSQLString;
+		private readonly object discriminatorValue;
 		private readonly string discriminatorColumnName;
 
 		public override string DiscriminatorColumnName
@@ -108,6 +109,11 @@ namespace NHibernate.Persister.Entity
 		public override string DiscriminatorSQLValue
 		{
 			get { return discriminatorSQLString; }
+		}
+
+		public override object DiscriminatorValue
+		{
+			get { return discriminatorValue; }
 		}
 
 		public override System.Type GetSubclassForDiscriminatorValue(object value)
@@ -274,7 +280,6 @@ namespace NHibernate.Persister.Entity
 
 			// DISCRIMINATOR
 
-			object discriminatorValue;
 			if (model.IsPolymorphic)
 			{
 				// when we have a Polymorphic model then we are going to add a column "clazz_" to 
@@ -286,7 +291,7 @@ namespace NHibernate.Persister.Entity
 				{
 					this.discriminatorType = (IDiscriminatorType) NHibernateUtil.Int32;
 					discriminatorValue = model.SubclassId;
-					this.discriminatorSQLString = discriminatorValue.ToString();
+					this.discriminatorSQLString = this.discriminatorType.ObjectToSQLString(discriminatorValue);
 				}
 				catch (Exception e)
 				{

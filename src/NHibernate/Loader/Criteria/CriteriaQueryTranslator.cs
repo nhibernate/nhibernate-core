@@ -546,21 +546,9 @@ namespace NHibernate.Loader.Criteria
 
 				if ( q != null ) 
 				{
-					IType type = q.DiscriminatorType;
-					string stringValue = q.DiscriminatorSQLValue;
-					// Convert the string value into the proper type.
-					if( type is NullableType ) 
-					{
-						NullableType nullableType = ( NullableType ) type;
-						value = nullableType.FromStringValue( stringValue );
-					}
-					else 
-					{
-						throw new QueryException( "Unsupported discriminator type " + type );
-					}
 					return new TypedValue(
-						type,
-						value
+						q.DiscriminatorType,
+						q.DiscriminatorValue
 						// TODO H3: EntityMode.POJO
 						);
 				}

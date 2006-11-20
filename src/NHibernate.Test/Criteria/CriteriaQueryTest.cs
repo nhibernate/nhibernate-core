@@ -349,7 +349,7 @@ namespace NHibernate.Test.Criteria
 			int count = (int)s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.Count("StudentNumber").SetDistinct())
 				.UniqueResult();
-			Assert.AreEqual((int)2, count);
+			Assert.AreEqual(2, count);
 
 			object obj = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()
@@ -361,7 +361,7 @@ namespace NHibernate.Test.Criteria
 				.UniqueResult();
 			object[] result = (object[])obj;
 
-			Assert.AreEqual((int)2, result[0]);
+			Assert.AreEqual(2, result[0]);
 			Assert.AreEqual(667L, result[1]);
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (Double)result[3], 0.01D);
@@ -536,7 +536,7 @@ namespace NHibernate.Test.Criteria
 				.UniqueResult();
 			object[] result = (object[])obj;
 
-			Assert.AreEqual((int)2, result[0]);
+			Assert.AreEqual(2, result[0]);
 			Assert.AreEqual(667L, result[1]);
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (double)result[3], 0.01D);
@@ -809,13 +809,13 @@ namespace NHibernate.Test.Criteria
 				s.Flush();
 
 				MaterialUnit mu = new MaterialUnit(bo1,"S1");
-				s.Save(mu); mu = null;
+				s.Save(mu);
 				mu = new MaterialUnit(bo1, "S2");
-				s.Save(mu); mu = null;
+				s.Save(mu);
 				mu = new MaterialUnit(bo2, "M1");
-				s.Save(mu); mu = null;
+				s.Save(mu);
 				mu = new MaterialUnit(dv, "D1");
-				s.Save(mu); mu = null;
+				s.Save(mu);
 				s.Flush();
 			}
 

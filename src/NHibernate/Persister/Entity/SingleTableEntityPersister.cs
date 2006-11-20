@@ -30,6 +30,7 @@ namespace NHibernate.Persister.Entity
 		private readonly string discriminatorAlias;
 		private readonly IType discriminatorType;
 		private readonly string discriminatorSQLValue;
+		private readonly object discriminatorValue;
 		private readonly bool discriminatorInsertable;
 
 		private readonly int[] propertyTableNumbers;
@@ -65,6 +66,11 @@ namespace NHibernate.Persister.Entity
 		public override string DiscriminatorSQLValue
 		{
 			get { return discriminatorSQLValue; }
+		}
+
+		public override object DiscriminatorValue
+		{
+			get { return discriminatorValue; }
 		}
 
 		public virtual System.Type[] SubclassClosure
@@ -300,7 +306,6 @@ namespace NHibernate.Persister.Entity
 			HashedSet distinctColumns = new HashedSet();
 
 			// DISCRIMINATOR
-			object discriminatorValue;
 			if (model.IsPolymorphic)
 			{
 				IValue d = model.Discriminator;
