@@ -170,7 +170,7 @@ namespace NHibernate.Impl
 		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary parameters)
 		{
 			return new NativeSQLQuerySpecification(
-				BindParameterLists(NamedParams),
+				BindParameterLists(parameters),
 				GetQueryReturns(),
 				querySpaces);
 		}

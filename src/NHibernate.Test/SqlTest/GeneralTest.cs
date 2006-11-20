@@ -529,8 +529,8 @@ namespace NHibernate.Test.SqlTest
 			object[] result = (object[]) s.GetNamedQuery("spaceship").UniqueResult();
 			enterprise = (SpaceShip) result[0];
 			Assert.IsTrue(50d == enterprise.Speed);
-			Assert.IsTrue(450d == extractDoubleValue(result[1]));
-			Assert.IsTrue(4500d == extractDoubleValue(result[2]));
+			Assert.IsTrue(450d == ExtractDoubleValue(result[1]));
+			Assert.IsTrue(4500d == ExtractDoubleValue(result[2]));
 			s.Delete(dim);
 			t.Commit();
 			s.Close();
@@ -566,8 +566,20 @@ namespace NHibernate.Test.SqlTest
 			t.Rollback();
 			s.Close();
 		}
+		
+		[Test]
+		public void ParameterList()
+		{
+			using (ISession s = OpenSession())
+			{
+				IList l = s.CreateSQLQuery("select id from Speech where id in (:idList)")
+					.AddScalar("id", NHibernateUtil.Int32)
+					.SetParameterList("idList", new int[] { 0, 1, 2, 3 }, NHibernateUtil.Int32)
+					.List();
+			}
+		}
 
-		private double extractDoubleValue(object value)
+		private double ExtractDoubleValue(object value)
 		{
 			if (value is double)
 			{
