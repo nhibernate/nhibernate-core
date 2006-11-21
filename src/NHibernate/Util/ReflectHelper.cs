@@ -11,9 +11,10 @@ namespace NHibernate.Util
 	/// </summary>
 	public sealed class ReflectHelper
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( ReflectHelper ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof (ReflectHelper));
 
-        public static BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+		public static BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
+		                                                   BindingFlags.NonPublic;
 
 		private ReflectHelper()
 		{
@@ -28,12 +29,12 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="clazz">The <see cref="System.Type"/> to reflect.</param>
 		/// <returns><c>true</c> if any type in the hierarchy overrides Equals(object).</returns>
-		public static bool OverridesEquals( System.Type clazz )
+		public static bool OverridesEquals(System.Type clazz)
 		{
 			try
 			{
-				MethodInfo equals = clazz.GetMethod( "Equals", new System.Type[] {typeof( object )} );
-				if( equals == null )
+				MethodInfo equals = clazz.GetMethod("Equals", new System.Type[] {typeof (object)});
+				if (equals == null)
 				{
 					return false;
 				}
@@ -41,16 +42,15 @@ namespace NHibernate.Util
 				{
 					// make sure that the DeclaringType is not System.Object - if that is the
 					// declaring type then there is no override.
-					return !equals.DeclaringType.Equals( typeof( object ) );
+					return !equals.DeclaringType.Equals(typeof (object));
 				}
 			}
-			catch( AmbiguousMatchException )
+			catch (AmbiguousMatchException)
 			{
 				// an ambigious match means that there is an override and it
 				// can't determine which one to use.
 				return true;
 			}
-
 		}
 
 		/// <summary>
@@ -59,12 +59,12 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="clazz">The <see cref="System.Type"/> to reflect.</param>
 		/// <returns><c>true</c> if any type in the hierarchy overrides GetHashCode().</returns>
-		public static bool OverridesGetHashCode( System.Type clazz )
+		public static bool OverridesGetHashCode(System.Type clazz)
 		{
 			try
 			{
-				MethodInfo getHashCode = clazz.GetMethod( "GetHashCode", new System.Type[0] );
-				if( getHashCode == null )
+				MethodInfo getHashCode = clazz.GetMethod("GetHashCode", new System.Type[0]);
+				if (getHashCode == null)
 				{
 					return false;
 				}
@@ -72,10 +72,10 @@ namespace NHibernate.Util
 				{
 					// make sure that the DeclaringType is not System.Object - if that is the
 					// declaring type then there is no override.
-					return !getHashCode.DeclaringType.Equals( typeof( object ) );
+					return !getHashCode.DeclaringType.Equals(typeof (object));
 				}
 			}
-			catch( AmbiguousMatchException )
+			catch (AmbiguousMatchException)
 			{
 				// an ambigious match means that there is an override and it
 				// can't determine which one to use.
@@ -93,11 +93,11 @@ namespace NHibernate.Util
 		/// <remarks>
 		/// This one takes a propertyAccessor name as we might know the correct strategy by now so we avoid Exceptions which are costly
 		/// </remarks>
-		public static IGetter GetGetter( System.Type theClass, string propertyName, string propertyAccessorName )
+		public static IGetter GetGetter(System.Type theClass, string propertyName, string propertyAccessorName)
 		{
-			IPropertyAccessor accessor = null;
-			accessor = PropertyAccessorFactory.GetPropertyAccessor( propertyAccessorName );
-			return accessor.GetGetter( theClass, propertyName );
+			return PropertyAccessorFactory
+				.GetPropertyAccessor(propertyAccessorName)
+				.GetGetter(theClass, propertyName);
 		}
 
 		//TODO: add a method in here ReflectedPropertyClass and replace most calls to GetGetter
@@ -112,21 +112,21 @@ namespace NHibernate.Util
 		/// <returns>
 		/// The NHibernate <see cref="IType"/> for the named property.
 		/// </returns>
-		public static IType ReflectedPropertyType( System.Type theClass, string name, string access )
+		public static IType ReflectedPropertyType(System.Type theClass, string name, string access)
 		{
-			System.Type propertyClass = ReflectedPropertyClass( theClass, name, access );
+			System.Type propertyClass = ReflectedPropertyClass(theClass, name, access);
 
 			System.Type heuristicClass = propertyClass;
 
 #if NET_2_0
-			if( propertyClass.IsGenericType
-				&& propertyClass.GetGenericTypeDefinition().Equals( typeof( Nullable<> ) ) )
+			if (propertyClass.IsGenericType
+			    && propertyClass.GetGenericTypeDefinition().Equals(typeof (Nullable<>)))
 			{
-				heuristicClass = propertyClass.GetGenericArguments()[ 0 ];
+				heuristicClass = propertyClass.GetGenericArguments()[0];
 			}
 #endif
 
-			return TypeFactory.HeuristicType( heuristicClass.AssemblyQualifiedName );
+			return TypeFactory.HeuristicType(heuristicClass.AssemblyQualifiedName);
 		}
 
 		/// <summary>
@@ -136,9 +136,9 @@ namespace NHibernate.Util
 		/// <param name="name">The name of the property/field to find in the class.</param>
 		/// <param name="access">The name of the property accessor for the property.</param>
 		/// <returns>The <see cref="System.Type" /> for the named property.</returns>
-		public static System.Type ReflectedPropertyClass( System.Type theClass, string name, string access )
+		public static System.Type ReflectedPropertyClass(System.Type theClass, string name, string access)
 		{
-			return GetGetter( theClass, name, access ).ReturnType;
+			return GetGetter(theClass, name, access).ReturnType;
 		}
 
 		/// <summary>
@@ -146,25 +146,21 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="name">The name of the class or a fully qualified name.</param>
 		/// <returns>The Type for the Class.</returns>
-		/// <remarks>
-		/// See <see cref="System.Type.GetType(System.String, System.Boolean)"/> for a full
-		/// description of how this works. This method trims the <c>name</c> before passing
-		/// it to GetType.
-		/// </remarks>
-		public static System.Type ClassForName( string name )
+		public static System.Type ClassForName(string name)
 		{
-			AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse( name );
-			System.Type result = TypeFromAssembly( parsedName );
-			if( result == null )
+			AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(name);
+			System.Type result = TypeFromAssembly(parsedName);
+			if (result == null)
 			{
-				throw new TypeLoadException( "Could not load type '" + parsedName + "', check that type and assembly names are correct" );
+				throw new TypeLoadException("Could not load type '" + parsedName +
+				                            "', check that type and assembly names are correct");
 			}
 			return result;
 		}
 
-		public static System.Type TypeFromAssembly( string type, string assembly )
+		public static System.Type TypeFromAssembly(string type, string assembly)
 		{
-			return TypeFromAssembly( new AssemblyQualifiedTypeName( type, assembly ) );
+			return TypeFromAssembly(new AssemblyQualifiedTypeName(type, assembly));
 		}
 
 		/// <summary>
@@ -181,70 +177,71 @@ namespace NHibernate.Util
 		/// type cannot be found then the assembly is loaded using
 		/// <see cref="Assembly.Load(string)" />.
 		/// </remarks>
-		public static System.Type TypeFromAssembly( AssemblyQualifiedTypeName name )
+		public static System.Type TypeFromAssembly(AssemblyQualifiedTypeName name)
 		{
 			try
 			{
 				// Try to get the type from an already loaded assembly
-				System.Type type = System.Type.GetType( name.ToString() );
+				System.Type type = System.Type.GetType(name.ToString());
 
-				if( type != null )
+				if (type != null)
 				{
 					return type;
 				}
 
-				if( name.Assembly == null )
+				if (name.Assembly == null)
 				{
 					// No assembly was specified for the type, so just fail
-					log.Warn( "Could not load type " + name + ". Possible cause: no assembly name specified." );
+					log.Warn("Could not load type " + name + ". Possible cause: no assembly name specified.");
 					return null;
 				}
 
-				Assembly assembly = Assembly.Load( name.Assembly );
+				Assembly assembly = Assembly.Load(name.Assembly);
 
-				if( assembly == null )
+				if (assembly == null)
 				{
-					log.Warn( "Could not load type " + name + ". Possible cause: incorrect assembly name specified." );
+					log.Warn("Could not load type " + name + ". Possible cause: incorrect assembly name specified.");
 					return null;
 				}
-			
-				type = assembly.GetType( name.Type );
 
-				if( type == null )
+				type = assembly.GetType(name.Type);
+
+				if (type == null)
 				{
-					log.Warn( "Could not load type " + name + "." );
+					log.Warn("Could not load type " + name + ".");
 					return null;
 				}
 
 				return type;
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				if( log.IsErrorEnabled )
+				if (log.IsErrorEnabled)
 				{
-					log.Error( "Could not load type " + name + ".", e );
+					log.Error("Could not load type " + name + ".", e);
 				}
 				return null;
 			}
 		}
 
 		/// <summary>
-		/// Returns the value contained in the static field.
+		/// Returns the value of the static field <paramref name="fieldName"/> of <paramref name="type"/>.
 		/// </summary>
-		/// <param name="typeName">The name of the <see cref="System.Type"/>.</param>
-		/// <param name="fieldName">The name of the Field in the <see cref="System.Type"/>.</param>
-		/// <returns>The value contained in that field or <c>null</c> if the Type or Field does not exist.</returns>
-		public static object GetConstantValue( string typeName, string fieldName )
+		/// <param name="type">The <see cref="System.Type"/> .</param>
+		/// <param name="fieldName">The name of the field in the <paramref name="type"/>.</param>
+		/// <returns>The value contained in the field, or <c>null</c> if the type or the field does not exist.</returns>
+		public static object GetConstantValue(System.Type type, string fieldName)
 		{
-			System.Type clazz = System.Type.GetType( typeName, false );
-
-			if( clazz == null ) return null;
-
 			try
 			{
-				return clazz.GetField( fieldName ).GetValue( null );
+				FieldInfo field = type.GetField(fieldName);
+				if (field == null)
+				{
+					return null;
+				}
+				return field.GetValue(null);
 			}
-			catch( Exception )
+			catch
 			{
 				return null;
 			}
@@ -261,18 +258,20 @@ namespace NHibernate.Util
 		/// <exception cref="InstantiationException">
 		/// Thrown when there is a problem calling the method GetConstructor on <see cref="System.Type"/>.
 		/// </exception>
-		public static ConstructorInfo GetDefaultConstructor( System.Type type )
+		public static ConstructorInfo GetDefaultConstructor(System.Type type)
 		{
-			if( IsAbstractClass( type ) ) return null;
+			if (IsAbstractClass(type))
+				return null;
 
 			try
 			{
-				ConstructorInfo constructor = type.GetConstructor( ReflectHelper.AnyVisibilityInstance, null, CallingConventions.HasThis, NoClasses, null );
+				ConstructorInfo constructor =
+					type.GetConstructor(AnyVisibilityInstance, null, CallingConventions.HasThis, NoClasses, null);
 				return constructor;
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new InstantiationException( "A default (no-arg) constructor could not be found for: ", e, type );
+				throw new InstantiationException("A default (no-arg) constructor could not be found for: ", e, type);
 			}
 		}
 
@@ -288,37 +287,37 @@ namespace NHibernate.Util
 		/// <exception cref="InstantiationException">
 		/// Thrown when no constructor with the correct signature can be found.
 		/// </exception>
-		public static ConstructorInfo GetConstructor( System.Type type, IType[] types )
+		public static ConstructorInfo GetConstructor(System.Type type, IType[] types)
 		{
-            ConstructorInfo[] candidates = type.GetConstructors(ReflectHelper.AnyVisibilityInstance);
+			ConstructorInfo[] candidates = type.GetConstructors(AnyVisibilityInstance);
 
-			foreach( ConstructorInfo constructor in candidates )
+			foreach (ConstructorInfo constructor in candidates)
 			{
 				ParameterInfo[] parameters = constructor.GetParameters();
 
-				if( parameters.Length == types.Length )
+				if (parameters.Length == types.Length)
 				{
 					bool found = true;
 
-					for( int j = 0; j < parameters.Length; j++ )
+					for (int j = 0; j < parameters.Length; j++)
 					{
-						bool ok = parameters[ j ].ParameterType.IsAssignableFrom(
-							types[ j ].ReturnedClass );
+						bool ok = parameters[j].ParameterType.IsAssignableFrom(
+							types[j].ReturnedClass);
 
-						if( !ok )
+						if (!ok)
 						{
 							found = false;
 							break;
 						}
 					}
 
-					if( found )
+					if (found)
 					{
 						return constructor;
 					}
 				}
 			}
-			throw new InstantiationException( "no appropriate constructor in class: ", null, type );
+			throw new InstantiationException("no appropriate constructor in class: ", null, type);
 		}
 
 		/// <summary>
@@ -326,12 +325,12 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> to check.</param>
 		/// <returns><c>true</c> if the <see cref="System.Type"/> is an Abstract Class or an Interface.</returns>
-		public static bool IsAbstractClass( System.Type type )
+		public static bool IsAbstractClass(System.Type type)
 		{
-			return ( type.IsAbstract || type.IsInterface );
+			return (type.IsAbstract || type.IsInterface);
 		}
 
-		public static bool IsFinalClass( System.Type type )
+		public static bool IsFinalClass(System.Type type)
 		{
 			return type.IsSealed;
 		}

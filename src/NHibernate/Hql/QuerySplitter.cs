@@ -2,6 +2,7 @@ using System;
 using log4net;
 using Iesi.Collections;
 using NHibernate.Engine;
+using NHibernate.Hql.Util;
 using NHibernate.Util;
 using System.Collections;
 using System.Text;
@@ -89,12 +90,12 @@ namespace NHibernate.Hql
 						}
 					}
 
-					// NHb: This block is not an exactly port from H3.2 but a port from previous implementation of QueryTraslator
+					// NHb: This block is not an exactly port from H3.2 but a port from previous implementation of QueryTranslator
 					if (((last != null && beforeClassTokens.Contains(last)) &&
 						(next == null || !notAfterClassTokens.Contains(next))) ||
 						PathExpressionParser.EntityClass.Equals(last))
 					{
-						System.Type clazz = GetImportedClass(token, factory);
+						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
 						if (clazz != null)
 						{
 							string[] implementors = factory.GetImplementors(clazz);
@@ -123,20 +124,6 @@ namespace NHibernate.Hql
 		{
 			return PathExpressionParser.EntityClass.Equals(last) || 
 				(beforeClassTokens.Contains(last) && !notAfterClassTokens.Contains(next));
-		}
-
-		/// <summary>
-		/// Gets the Type for the name that might be an Imported Class.
-		/// </summary>
-		/// <param name="name">The name that might be an ImportedClass.</param>
-		/// <param name="factory">The <see cref="ISessionFactoryImplementor"/> that contains the Imported Classes.</param>
-		/// <returns>A <see cref="System.Type"/> if <c>name</c> is an Imported Class, <c>null</c> otherwise.</returns>
-		private static System.Type GetImportedClass(string name, ISessionFactoryImplementor factory)
-		{
-			string importedName = factory.GetImportedClassName(name);
-
-			// don't care about the exception, just give us a null value.
-			return System.Type.GetType(importedName, false);
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GetConstantValueEnum()
 		{
-			object result = ReflectHelper.GetConstantValue( "NHibernate.DomainModel.FooStatus, NHibernate.DomainModel", "ON" );
+			object result = ReflectHelper.GetConstantValue( typeof(NHibernate.DomainModel.FooStatus), "ON" );
 			Assert.AreEqual( 1, ( int ) result, "Should have found value of 1" );
 		}
 

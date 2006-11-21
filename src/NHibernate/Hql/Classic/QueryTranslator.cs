@@ -7,6 +7,7 @@ using System.Text;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -374,11 +375,7 @@ namespace NHibernate.Hql.Classic
 
 		internal IQueryable GetPersisterUsingImports(string className)
 		{
-			// Slightly altered from H2.1 to avoid needlessly throwing
-			// and catching a MappingException.
-			return (IQueryable)Factory.GetEntityPersister(
-				Factory.GetImportedClassName(className),
-				false);
+			return SessionFactoryHelper.FindQueryableUsingImports(Factory, className);
 		}
 
 		internal IQueryable GetPersister(System.Type clazz)
@@ -1071,7 +1068,7 @@ namespace NHibernate.Hql.Classic
 						((last != null && beforeClassTokens.Contains(last)) && (next == null || !notAfterClassTokens.Contains(next))) ||
 							PathExpressionParser.EntityClass.Equals(last))
 					{
-						System.Type clazz = GetImportedClass(token, factory);
+						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
 						if (clazz != null)
 						{
 							string[] implementors = factory.GetImplementors(clazz);
@@ -1121,21 +1118,7 @@ namespace NHibernate.Hql.Classic
 		/// <returns>A <see cref="System.Type"/> if <c>name</c> is an Imported Class, <c>null</c> otherwise.</returns>
 		internal System.Type GetImportedClass(string name)
 		{
-			return GetImportedClass(name, Factory);
-		}
-
-		/// <summary>
-		/// Gets the Type for the name that might be an Imported Class.
-		/// </summary>
-		/// <param name="name">The name that might be an ImportedClass.</param>
-		/// <param name="factory">The <see cref="ISessionFactoryImplementor"/> that contains the Imported Classes.</param>
-		/// <returns>A <see cref="System.Type"/> if <c>name</c> is an Imported Class, <c>null</c> otherwise.</returns>
-		private static System.Type GetImportedClass(string name, ISessionFactoryImplementor factory)
-		{
-			string importedName = factory.GetImportedClassName(name);
-
-			// don't care about the exception, just give us a null value.
-			return System.Type.GetType(importedName, false);
+			return SessionFactoryHelper.GetImportedClass(Factory, name);
 		}
 
 		private static string[][] GenerateColumnNames(IType[] types, ISessionFactoryImplementor f)

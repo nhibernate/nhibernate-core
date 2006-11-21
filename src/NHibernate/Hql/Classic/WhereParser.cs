@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
+using NHibernate.Hql.Util;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -475,7 +476,7 @@ namespace NHibernate.Hql.Classic
 					object constant;
 					string fieldName = null;
 					string typeName;
-					string importedName = null;
+					System.Type importedType = null;
 
 					int indexOfDot = token.IndexOf( StringHelper.Dot );
 					// don't even bother to do the lookups if the indexOfDot is not 
@@ -486,11 +487,11 @@ namespace NHibernate.Hql.Classic
 					{
 						fieldName = StringHelper.Unqualify( token );
 						typeName = StringHelper.Qualifier( token );
-						importedName = q.Factory.GetImportedClassName( typeName );
+						importedType = SessionFactoryHelper.GetImportedClass(q.Factory, typeName);
 					}
 
-					if( indexOfDot > - 1 &&
-						( constant = ReflectHelper.GetConstantValue( importedName, fieldName ) ) != null )
+					if( indexOfDot > - 1 && importedType != null &&
+						( constant = ReflectHelper.GetConstantValue( importedType, fieldName ) ) != null )
 					{
 						// need to get the NHibernate Type so we can convert the Enum or field from 
 						// a class into it's string representation for hql.

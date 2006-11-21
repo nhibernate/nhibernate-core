@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
@@ -10,22 +9,28 @@ namespace NHibernate.Hql.Util
 	/// </summary>
 	public class SessionFactoryHelper
 	{
-		public static IQueryable FindQueryableUsingImports( ISessionFactoryImplementor sfi, string className )
+		public static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className)
 		{
-			string importedClassName = sfi.GetImportedClassName( className );
-			if ( importedClassName == null ) 
+			string importedClassName = sfi.GetImportedClassName(className);
+			
+			if (importedClassName == null)
+			{
+				return null;
+			}
+			
+			return (IQueryable) sfi.GetEntityPersister(importedClassName, false);
+		}
+
+		public static System.Type GetImportedClass(ISessionFactoryImplementor sfi, string className)
+		{
+			string importedName = sfi.GetImportedClassName(className);
+
+			if (importedName == null)
 			{
 				return null;
 			}
 
-			try 
-			{
-				return ( IQueryable ) sfi.GetEntityPersister( importedClassName );
-			}
-			catch ( MappingException )
-			{
-				return null;
-			}
+			return System.Type.GetType(importedName, false);
 		}
 	}
 }
