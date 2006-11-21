@@ -24,6 +24,8 @@
 
 using System;
 using System.Collections;
+using System.Security.Cryptography;
+using System.Text;
 using log4net;
 using Memcached.ClientLibrary;
 using NHibernate.Cache;
@@ -32,6 +34,7 @@ namespace NHibernate.Caches.MemCache
 {
 	public class MemCacheClient : ICache
 	{
+		private HashAlgorithm hasher = HashAlgorithm.Create();
 		private static readonly ILog _log;
 		private string _region;
 		private int _expiry;
@@ -78,9 +81,20 @@ namespace NHibernate.Caches.MemCache
 			}
 		}
 		
+		/// <summary>
+		/// Turn the key obj into a string, preperably using human readable
+		/// string, and if the srtring is too long (>=250) it will be hashed
+		/// </summary>
 		private string KeyAsString( object key )
 		{
-			return string.Format( "{0}@{1}", _region, ( key == null ? string.Empty : key.ToString() ) );
+			string fullKey = string.Format( "{0}@{1}", _region, ( key == null ? string.Empty : key.ToString() ) );
+			if(fullKey.Length>=250)//max key size for memcache
+			{
+				byte[] bytes = Encoding.ASCII.GetBytes(fullKey);
+				byte[] computedHash = hasher.ComputeHash(bytes);
+				return Convert.ToBase64String(computedHash);
+			}
+			return fullKey.Replace(' ', '-');
 		}
 
 		public object Get( object key )
