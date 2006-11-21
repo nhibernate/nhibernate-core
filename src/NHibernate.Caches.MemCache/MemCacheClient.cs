@@ -107,7 +107,16 @@ namespace NHibernate.Caches.MemCache
 			{
 				_log.DebugFormat( "fetching object {0} from the cache", key );
 			}
-			return _client.Get( KeyAsString( key ) );
+			object maybeObj = _client.Get(KeyAsString(key));
+			if(maybeObj==null)
+				return null;
+			//we need to check here that the key that we stored is really the key that we got
+			//the reason is that for long keys, we hash the value, and this mean that we may get
+			//hash collisions. The chance is very low, but it is better to be safe
+			DictionaryEntry de = (DictionaryEntry)maybeObj;
+			if(key.Equals(de.Key)==false)
+				return null;
+			return de.Value;
 		}
 
 		public void Put( object key, object value )
@@ -125,7 +134,7 @@ namespace NHibernate.Caches.MemCache
 			{
 				_log.DebugFormat( "setting value for item {0}", key );
 			}
-			bool returnOK = _client.Set( KeyAsString( key ), value, DateTime.Now.AddSeconds( _expiry ) );
+			bool returnOK = _client.Set(KeyAsString(key), new DictionaryEntry(key, value), DateTime.Now.AddSeconds(_expiry));
 			if( !returnOK )
 			{
 				if( _log.IsWarnEnabled )
