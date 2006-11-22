@@ -1111,16 +1111,6 @@ namespace NHibernate.Hql.Classic
 			notAfterClassTokens.Add(")");
 		}
 
-		/// <summary>
-		/// Gets the Type for the name that might be an Imported Class.
-		/// </summary>
-		/// <param name="name">The name that might be an ImportedClass.</param>
-		/// <returns>A <see cref="System.Type"/> if <c>name</c> is an Imported Class, <c>null</c> otherwise.</returns>
-		internal System.Type GetImportedClass(string name)
-		{
-			return SessionFactoryHelper.GetImportedClass(Factory, name);
-		}
-
 		private static string[][] GenerateColumnNames(IType[] types, ISessionFactoryImplementor f)
 		{
 			string[][] names = new string[types.Length][];

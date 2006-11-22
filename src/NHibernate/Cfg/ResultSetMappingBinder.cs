@@ -61,7 +61,7 @@ namespace NHibernate.Cfg
 			{
 				throw new MappingException("<return alias='" + alias + "'> must specify either a class or entity-name");
 			}
-			LockMode lockMode = getLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
+			LockMode lockMode = GetLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
 
 			PersistentClass pc = mappings.GetClass(ReflectHelper.ClassForName(entityName));
 			IDictionary propertyResults = BindPropertyResults(alias, returnElem, pc, mappings);
@@ -78,7 +78,7 @@ namespace NHibernate.Cfg
 		{
 			String alias = XmlHelper.GetAttributeValue(returnElem, "alias");
 			String roleAttribute = XmlHelper.GetAttributeValue(returnElem, "property");
-			LockMode lockMode = getLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
+			LockMode lockMode = GetLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
 			int dot = roleAttribute.LastIndexOf('.');
 			if (dot == -1)
 			{
@@ -106,7 +106,7 @@ namespace NHibernate.Cfg
 		{
 			string alias = XmlHelper.GetAttributeValue(returnElem, "alias");
 			string collectionAttribute = XmlHelper.GetAttributeValue(returnElem, "role");
-			LockMode lockMode = getLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
+			LockMode lockMode = GetLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
 			int dot = collectionAttribute.LastIndexOf('.');
 			if (dot == -1)
 			{
@@ -137,16 +137,16 @@ namespace NHibernate.Cfg
 
 			IDictionary propertyresults = new Hashtable(); // maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
 
-			XmlNode discriminatorResult = returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, HbmBinder.nsmgr);
+			XmlNode discriminatorResult = returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, HbmBinder.NamespaceManager);
 			if (discriminatorResult != null)
 			{
-				ArrayList resultColumns = getResultColumns(discriminatorResult);
+				ArrayList resultColumns = GetResultColumns(discriminatorResult);
 				propertyresults["class"] = ArrayHelper.ToStringArray(resultColumns);
 			}
 			IList properties = new ArrayList();
 			IList propertyNames = new ArrayList();
 
-			foreach (XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, HbmBinder.nsmgr))
+			foreach (XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, HbmBinder.NamespaceManager))
 			{
 				String name = XmlHelper.GetAttributeValue(propertyresult, "name");
 				if (pc == null || name.IndexOf('.') == -1)
@@ -223,7 +223,7 @@ namespace NHibernate.Cfg
 					for (int loop = 0; loop < followersSize; loop++)
 					{
 						String follower = (String) followers[loop];
-						int currentIndex = getIndexOfFirstMatchingProperty(propertyNames, follower);
+						int currentIndex = GetIndexOfFirstMatchingProperty(propertyNames, follower);
 						index = currentIndex != -1 && currentIndex < index ? currentIndex : index;
 					}
 					propertyNames.Insert(index, name);
@@ -242,7 +242,7 @@ namespace NHibernate.Cfg
 						);
 				}
 				//TODO: validate existing of property with the chosen name. (secondpass )
-				ArrayList allResultColumns = getResultColumns(propertyresult);
+				ArrayList allResultColumns = GetResultColumns(propertyresult);
 
 				if (allResultColumns.Count == 0)
 				{
@@ -310,7 +310,7 @@ namespace NHibernate.Cfg
 			return newPropertyResults.Count == 0 ? CollectionHelper.EmptyMap : newPropertyResults;
 		}
 
-		private static int getIndexOfFirstMatchingProperty(IList propertyNames, string follower)
+		private static int GetIndexOfFirstMatchingProperty(IList propertyNames, string follower)
 		{
 			int propertySize = propertyNames.Count;
 			for (int propIndex = 0; propIndex < propertySize; propIndex++)
@@ -323,22 +323,22 @@ namespace NHibernate.Cfg
 			return -1;
 		}
 
-		private static ArrayList getResultColumns(XmlNode propertyresult)
+		private static ArrayList GetResultColumns(XmlNode propertyresult)
 		{
-			String column = unquote(XmlHelper.GetAttributeValue(propertyresult, "column"));
+			String column = Unquote(XmlHelper.GetAttributeValue(propertyresult, "column"));
 			ArrayList allResultColumns = new ArrayList();
 			if (column != null)
 			{
 				allResultColumns.Add(column);
 			}
-			foreach (XmlNode element in propertyresult.SelectNodes(HbmConstants.nsReturnColumn, HbmBinder.nsmgr))
+			foreach (XmlNode element in propertyresult.SelectNodes(HbmConstants.nsReturnColumn, HbmBinder.NamespaceManager))
 			{
-				allResultColumns.Add(unquote(XmlHelper.GetAttributeValue(element, "name")));
+				allResultColumns.Add(Unquote(XmlHelper.GetAttributeValue(element, "name")));
 			}
 			return allResultColumns;
 		}
 
-		private static String unquote(String name)
+		private static String Unquote(String name)
 		{
 			if (name != null && name[0] == '`')
 			{
@@ -347,7 +347,7 @@ namespace NHibernate.Cfg
 			return name;
 		}
 
-		private static LockMode getLockMode(string lockMode)
+		private static LockMode GetLockMode(string lockMode)
 		{
 			if (lockMode == null || "read".Equals(lockMode))
 			{

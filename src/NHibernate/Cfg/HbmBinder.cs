@@ -19,7 +19,12 @@ namespace NHibernate.Cfg
 		private static readonly ILog log = LogManager.GetLogger(typeof (HbmBinder));
 
 		// Made internal to be accessible from Cfg.CollectionSecondPass
-		internal static XmlNamespaceManager nsmgr;
+		private static XmlNamespaceManager nsmgr;
+		
+		internal static XmlNamespaceManager NamespaceManager
+		{
+			get { return nsmgr; }
+		}
 
 		internal static Dialect.Dialect dialect;
 

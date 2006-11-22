@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Iesi.Collections;
 using NHibernate.Dialect;
+using NHibernate.Hql.Util;
 using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Dialect.Function;
@@ -74,7 +75,7 @@ namespace NHibernate.Hql.Classic
 			if( afterNew )
 			{
 				afterNew = false;
-				holderClass = q.GetImportedClass( token );
+				holderClass = SessionFactoryHelper.GetImportedClass( q.Factory, token );
 				if( holderClass == null )
 				{
 					throw new QueryException( "class not found: " + token );

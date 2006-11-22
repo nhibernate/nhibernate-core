@@ -45,7 +45,7 @@ namespace NHibernate.Cfg
 
 			IList synchronizedTables = new ArrayList();
 
-			foreach (XmlNode item in queryElem.SelectNodes(HbmConstants.nsSynchronize, HbmBinder.nsmgr))
+			foreach (XmlNode item in queryElem.SelectNodes(HbmConstants.nsSynchronize, HbmBinder.NamespaceManager))
 			{
 				synchronizedTables.Add(XmlHelper.GetAttributeValue(item, "table"));
 			}
