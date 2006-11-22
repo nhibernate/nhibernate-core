@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Assertions\InheritedAreMarkedSerializable.cs" />
+    <Compile Include="Assertions\IsSerializable.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
@@ -189,6 +191,7 @@
     <Compile Include="MappingTest\ColumnFixture.cs" />
     <Compile Include="MappingTest\ForeignKeyFixture.cs" />
     <Compile Include="MappingTest\TableFixture.cs" />
+    <Compile Include="NHbAssert.cs" />
     <Compile Include="NHSpecificTest\AliasFixture.cs" />
     <Compile Include="NHSpecificTest\BasicClassFixture.cs" />
     <Compile Include="NHSpecificTest\BasicObjectFixture.cs" />
@@ -388,6 +391,7 @@
     <Compile Include="ReflectionOptimizerTest\LcgFixture.cs" />
     <Compile Include="SecondLevelCacheTest\Item.cs" />
     <Compile Include="SecondLevelCacheTest\SecondLevelCacheTest.cs" />
+    <Compile Include="Assertions\HaveSerializableAttributeAsserter.cs" />
     <Compile Include="SessionCacheTest.cs" />
     <Compile Include="SqlCommandTest\InFragmentFixture.cs" />
     <Compile Include="SqlCommandTest\SqlDeleteBuilderFixture.cs" />
@@ -453,6 +457,7 @@
     <Compile Include="TypesTest\PersistentEnumClass.cs" />
     <Compile Include="TypesTest\PersistentEnumTypeFixture.cs" />
     <Compile Include="TypesTest\SByteTypeFixture.cs" />
+    <Compile Include="TypesTest\SerializableTypesFixture.cs" />
     <Compile Include="TypesTest\StringClass.cs" />
     <Compile Include="TypesTest\StringClobClass.cs" />
     <Compile Include="TypesTest\StringClobTypeFixture.cs" />

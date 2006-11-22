@@ -37,78 +37,22 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
-		private void AssertSerializable(object toSerialize)
+		[Test]
+		public void AllCriterionAreSerializable()
 		{
-			try
-			{
-				byte[] bytes = SerializationHelper.Serialize(toSerialize);
-				object ds = SerializationHelper.Deserialize(bytes);
-			}
-			catch (System.Runtime.Serialization.SerializationException e)
-			{
-				Assert.Fail(string.Format("For class {0}: {1}", toSerialize.GetType().Name, e.Message));
-			}
+			NHAssert.InheritedAreMarkedSerializable(typeof(NHibernate.Expression.ICriterion));
 		}
 
 		[Test]
-		public void AllCriterionHareSerializable()
+		public void AllProjectionAreSerializable()
 		{
-			Assembly nhbA = Assembly.GetAssembly(typeof(NHibernate.Expression.ICriterion));
-			IList types = ClassList(nhbA, typeof(NHibernate.Expression.ICriterion));
-			CheckSerializable(types, "Criterion");
-		}
-
-		[Test]
-		public void AllProjectionHareSerializable()
-		{
-			Assembly nhbA = Assembly.GetAssembly(typeof(NHibernate.Expression.IProjection));
-			IList types = ClassList(nhbA, typeof(NHibernate.Expression.IProjection));
-			CheckSerializable(types, "Projection");
+			NHAssert.InheritedAreMarkedSerializable(typeof(NHibernate.Expression.IProjection));
 		}
 
 		[Test]
 		public void AllEmbeddedResultTrasformesHareSerializable()
 		{
-			Assembly nhbA = Assembly.GetAssembly(typeof(NHibernate.Transform.IResultTransformer));
-			IList types = ClassList(nhbA, typeof(NHibernate.Transform.IResultTransformer));
-			CheckSerializable(types, "EmbeddedResultTrasformes");
-		}
-
-		private void CheckSerializable(IList types, string context)
-		{
-			IList noSerializableCriterions = new ArrayList(types.Count);
-			foreach (System.Type tp in types)
-			{
-				object[] atts = tp.GetCustomAttributes(typeof(System.SerializableAttribute), false);
-				if (atts.Length == 0)
-				{
-					noSerializableCriterions.Add(tp.Name);
-				}
-			}
-			if (noSerializableCriterions.Count > 0)
-			{
-				Console.WriteLine("--------------> No serializable "+ context+":");
-				foreach (string name in noSerializableCriterions)
-					Console.WriteLine(name);
-				Console.WriteLine("<- Make it serializable and add to test ");
-				Console.WriteLine("<--------------------------------------");
-			}
-			Assert.AreEqual(0, noSerializableCriterions.Count, "Some " + context + " are not Serializable.");
-		}
-
-		private IList ClassList(Assembly assembly, System.Type interfaceType)
-		{
-			IList result = new ArrayList();
-			if (assembly != null)
-			{
-				System.Type[] types = assembly.GetTypes();
-				foreach (System.Type tp in types)
-				{
-					if (interfaceType.IsAssignableFrom(tp) && !tp.IsInterface)
-						result.Add(tp);
-				}
-			}
-			return result;
+			NHAssert.InheritedAreMarkedSerializable(typeof(NHibernate.Transform.IResultTransformer));
 		}
 
 		[Test]
@@ -123,105 +67,105 @@ namespace NHibernate.Test.Criteria
 		public void BasicCriterions()
 		{
 			ICriterion c = Expression.Expression.Eq("Name", "Gavin King");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			IDictionary nameValue = new Hashtable(1);
 			nameValue.Add("Name", "Ralph");
 			c = Expression.Expression.AllEq(nameValue);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Between("Name", "aaaaa", "zzzzz");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.EqProperty("Name", "Name");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Ge("Name", "a");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.GeProperty("Name", "Name");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Gt("Name", "z");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.GtProperty("Name", "Name");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.IdEq(1);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.In("Name", new string[] { "Gavin", "Ralph" });
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.InsensitiveLike("Name", "GAVIN");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.IsEmpty("Enrolments");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.IsNotEmpty("Enrolments");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.IsNotNull("PreferredCourse");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.IsNull("PreferredCourse");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Le("Name", "a");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.LeProperty("Name", "Name");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Lt("Name", "z");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.LtProperty("Name", "Name");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Like("Name", "G%");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Not(Expression.Expression.Eq("Name", "Ralph"));
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.NotEqProperty("Name", "Name");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 		}
 
 		[Test]
 		public void LikeCriterions()
 		{
 			ICriterion c = Expression.Expression.Like("Name", "Gavin", MatchMode.Anywhere);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Like("Name", "Gavin", MatchMode.End);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Like("Name", "Gavin", MatchMode.Exact);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Like("Name", "Gavin", MatchMode.Start);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 		}
 
 		[Test]
 		public void LogicalCriterions()
 		{
 			ICriterion c = Expression.Expression.Or(Expression.Expression.Eq("Name", "Ralph"), Expression.Expression.Eq("Name", "Gavin"));
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.And(Expression.Expression.Gt("StudentNumber", 1), Expression.Expression.Lt("StudentNumber", 10));
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 		}
 
 		[Test]
 		public void ProjectionsExpressions()
 		{
 			IProjection p = Expression.Projections.Avg("StudentNumber");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.Count("StudentNumber");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.CountDistinct("StudentNumber");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.GroupProperty("Name");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.Id();
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.Max("StudentNumber");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.Min("StudentNumber");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.Property("StudentNumber");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.RowCount();
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.Sum("StudentNumber");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 
 			p = Expression.Projections.Alias(Expression.Projections.Count("StudentNumber"),"alias");
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.Distinct(Expression.Projections.Id());
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Expression.Projections.ProjectionList().Add(Expression.Projections.Max("StudentNumber"));
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 		}
 
 		[Test]
@@ -230,11 +174,11 @@ namespace NHibernate.Test.Criteria
 			ICriterion c = Expression.Expression.Conjunction()
 				.Add(Expression.Expression.Eq("Name", "Ralph"))
 				.Add(Expression.Expression.Eq("StudentNumber", "1"));
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Expression.Disjunction()
 				.Add(Expression.Expression.Eq("Name", "Ralph"))
 				.Add(Expression.Expression.Eq("Name", "Gavin"));
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 		}
 
 		[Test]
@@ -243,84 +187,84 @@ namespace NHibernate.Test.Criteria
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Expression.Eq("Name", "Gavin King"));
 			ICriterion c = Expression.Subqueries.Eq("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.EqAll("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.Exists(dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.Ge("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.GeAll("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.GeSome("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.Gt("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.GtAll("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.GtSome("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.In("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.Le("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.LeAll("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.LeSome("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.Lt("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.LtAll("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.LtSome("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.Ne("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.NotExists(dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.NotIn("Gavin King", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyEq("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyEqAll("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyGe("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyGeAll("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyGeSome("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyGt("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyGtAll("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyGtSome("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyIn("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyLe("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyLeAll("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyLeSome("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyLt("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyLtAll("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyLtSome("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyNe("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 			c = Expression.Subqueries.PropertyNotIn("Name", dc);
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 		}
 
 		[Test]
 		public void SQLCriterion()
 		{
 			ICriterion c = Expression.Expression.Sql("SELECT Name FROM Student");
-			AssertSerializable(c);
+			NHAssert.IsSerializable(c);
 		}
 
 		[Test]
@@ -328,30 +272,30 @@ namespace NHibernate.Test.Criteria
 		{
 			IProjection p = Expression.Projections.SqlProjection("COUNT(*)",
 				new string[] { "tStudent" }, new NHibernate.Type.IType[] { NHibernateUtil.Int32 });
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 			p = Projections.SqlGroupProjection("COUNT({alias}.studentId), {alias}.preferredCourseCode", "{alias}.preferredCourseCode",
 					new string[] { "studentsOfCourse", "CourseCode" },
 					new NHibernate.Type.IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 });
-			AssertSerializable(p);
+			NHAssert.IsSerializable(p);
 		}
 
 		[Test]
 		public void ResultTransformes()
 		{
 			IResultTransformer rt = new RootEntityResultTransformer();
-			AssertSerializable(rt);
+			NHAssert.IsSerializable(rt);
 
 			rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(new System.Type[] { }));
-			AssertSerializable(rt);
+			NHAssert.IsSerializable(rt);
 
 			rt = new AliasToBeanResultTransformer(typeof(StudentDTO));
-			AssertSerializable(rt);
+			NHAssert.IsSerializable(rt);
 
 			rt = new DistinctRootEntityResultTransformer();
-			AssertSerializable(rt);
+			NHAssert.IsSerializable(rt);
 
 			rt = new PassThroughResultTransformer();
-			AssertSerializable(rt);
+			NHAssert.IsSerializable(rt);
 		}
 
 		[Test]
