@@ -50,6 +50,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -504,6 +505,7 @@
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
     <Compile Include="Context\ICurrentSessionContext.cs" />
+    <Compile Include="Context\ManagedWebSessionContext.cs" />
     <Compile Include="Dialect\Function\AnsiSubstringFunction.cs" />
     <Compile Include="Dialect\Function\AnsiTrimEmulationFunction.cs" />
     <Compile Include="Dialect\Function\CastFunction.cs" />

@@ -1231,10 +1231,14 @@ namespace NHibernate.Impl
 		{
 			string impl = properties[Cfg.Environment.CurrentSessionContextClass] as string;
 
-			if (impl == null)
+			switch (impl)
 			{
-				return null;
+				case null:
+					return null;
+				case "managed_web":
+					return new ManagedWebSessionContext(this);
 			}
+
 			try
 			{
 				System.Type implClass = ReflectHelper.ClassForName(impl);
