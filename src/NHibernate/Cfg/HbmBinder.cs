@@ -3,7 +3,6 @@ using System.Collections;
 using System.Text;
 using System.Xml;
 using log4net;
-using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
@@ -1894,10 +1893,16 @@ namespace NHibernate.Cfg
 			mappings.IsAutoImport = (aiNode == null) ? true : "true".Equals(aiNode.Value);
 
 			XmlAttribute nsNode = hmNode.Attributes["namespace"];
-			mappings.DefaultNamespace = (nsNode == null) ? null : nsNode.Value;
+			if (nsNode != null)
+			{
+				mappings.DefaultNamespace = nsNode.Value;
+			}
 
 			XmlAttribute assemblyNode = hmNode.Attributes["assembly"];
-			mappings.DefaultAssembly = (assemblyNode == null) ? null : assemblyNode.Value;
+			if (assemblyNode != null)
+			{
+				mappings.DefaultAssembly = assemblyNode.Value;
+			}
 		}
 
 		private static PersistentClass GetSuperclass(Mappings model, XmlNode subnode)

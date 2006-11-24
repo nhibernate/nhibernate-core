@@ -318,5 +318,44 @@ namespace NHibernate.Test.CfgTest
 			cfg.Properties[ Cfg.Environment.UseProxyValidator ] = "false";
 			cfg.AddXmlString( hbm ).BuildSessionFactory();
 		}
+
+		/// <summary>
+		/// Verify that setting the default assembly and namespace through
+		/// <see cref="Configuration" /> works as intended.
+		/// </summary>
+		[Test]
+		public void SetDefaultAssemblyAndNamespace()
+		{
+			string hbmFromDomainModel = @"<?xml version='1.0' ?>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
+	<class name='A'>
+		<id name='Id' column='somecolumn'>
+			<generator class='native' />
+		</id>
+	</class>
+</hibernate-mapping>";
+			
+			string hbmFromTest = @"<?xml version='1.0' ?>
+<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
+	<class name='LocatedInTestAssembly' lazy='false'>
+		<id name='Id' column='somecolumn'>
+			<generator class='native' />
+		</id>
+	</class>
+</hibernate-mapping>";
+			
+			Configuration cfg = new Configuration();
+			cfg
+				.SetDefaultAssembly("NHibernate.DomainModel")
+				.SetDefaultNamespace("NHibernate.DomainModel")
+				.AddXmlString(hbmFromDomainModel);
+
+			cfg
+				.SetDefaultAssembly("NHibernate.Test")
+				.SetDefaultNamespace(typeof (LocatedInTestAssembly).Namespace)
+				.AddXmlString(hbmFromTest);
+
+			cfg.BuildSessionFactory().Close();
+		}
 	}
 }

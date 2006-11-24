@@ -8,7 +8,6 @@ using System.Xml;
 using System.Xml.Schema;
 using Iesi.Collections;
 using log4net;
-using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Impl;
@@ -432,7 +431,9 @@ namespace NHibernate.Cfg
 				propertyReferences,
 				namingStrategy,
                 filterDefinitions,
-				auxiliaryDatabaseObjects
+				auxiliaryDatabaseObjects,
+				defaultAssembly,
+				defaultNamespace
 				);
 		}
 
@@ -1022,6 +1023,8 @@ namespace NHibernate.Cfg
 		}
 
 		private static readonly IInterceptor emptyInterceptor = new EmptyInterceptor();
+		private string defaultAssembly;
+		private string defaultNamespace;
 
 		/// <summary>
 		/// Instantitate a new <c>ISessionFactory</c>, using the properties and mappings in this
@@ -1065,6 +1068,34 @@ namespace NHibernate.Cfg
 		{
 			get { return properties; }
 			set { this.properties = value; }
+		}
+		
+		/// <summary>
+		/// Set the default assembly to use for the mappings added to the configuration
+		/// afterwards.
+		/// </summary>
+		/// <remarks>
+		/// This setting can be overridden for a mapping file by setting <c>default-assembly</c>
+		/// attribute of <c>&lt;hibernate-mapping&gt;</c> element.
+		/// </remarks>
+		public Configuration SetDefaultAssembly(string defaultAssembly)
+		{
+			this.defaultAssembly = defaultAssembly;
+			return this;
+		}
+		
+		/// <summary>
+		/// Set the default namespace to use for the mappings added to the configuration
+		/// afterwards.
+		/// </summary>
+		/// <remarks>
+		/// This setting can be overridden for a mapping file by setting <c>default-namespace</c>
+		/// attribute of <c>&lt;hibernate-mapping&gt;</c> element.
+		/// </remarks>
+		public Configuration SetDefaultNamespace(string defaultNamespace)
+		{
+			this.defaultNamespace = defaultNamespace;
+			return this;
 		}
 
 		/// <summary>
@@ -1438,9 +1469,6 @@ namespace NHibernate.Cfg
 
 		internal void SetCacheConcurrencyStrategy( string collectionRole, string concurrencyStrategy, string region )
 		{
-			// TODO: this is ported from H2.1.8, but the implementation looks
-			// very strange to me - region parameter is ignored,
-			// collection.Role is used instead of collectionRole, etc.
 			NHibernate.Mapping.Collection collection = GetCollectionMapping( collectionRole );
 			collection.CacheConcurrencyStrategy = concurrencyStrategy;
 			collection.CacheRegionName = region;

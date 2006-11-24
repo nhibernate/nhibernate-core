@@ -55,7 +55,9 @@ namespace NHibernate.Cfg
 			IList propertyReferences,
 			INamingStrategy namingStrategy,
 			IDictionary filterDefinitions,
-			IList auxiliaryDatabaseObjects
+			IList auxiliaryDatabaseObjects,
+			string defaultAssembly,
+			string defaultNamespace
             )
 		{
 			this.classes = classes;
@@ -70,6 +72,8 @@ namespace NHibernate.Cfg
 			this.namingStrategy = namingStrategy;
             this.filterDefinitions = filterDefinitions;
 			this.auxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
+			this.defaultAssembly = defaultAssembly;
+			this.defaultNamespace = defaultNamespace;
 		}
 
 		/// <summary>

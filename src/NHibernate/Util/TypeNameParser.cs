@@ -104,7 +104,7 @@ namespace NHibernate.Util
 			text = text.Trim();
 
 			StringBuilder type = new StringBuilder( text.Length );
-			string assembly = defaultAssembly;
+			string assembly = StringHelper.IsEmpty(defaultAssembly) ? null : defaultAssembly;
 
 			try
 			{
@@ -143,7 +143,7 @@ namespace NHibernate.Util
 
 				input.Close();
 
-				if( !seenNamespace && defaultNamespace != null )
+				if( !seenNamespace && StringHelper.IsNotEmpty(defaultNamespace) )
 				{
 					type.Insert( 0, '.' )
 						.Insert( 0, defaultNamespace );
