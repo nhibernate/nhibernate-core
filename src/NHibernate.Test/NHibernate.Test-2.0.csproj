@@ -68,7 +68,6 @@
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
     <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
-    <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
     <Compile Include="CollectionTest\A.cs" />
     <Compile Include="CollectionTest\IdBagFixture.cs" />
     <Compile Include="CompositeCollection\BaseClassA.cs" />
@@ -192,6 +191,7 @@
     <Compile Include="MappingTest\ColumnFixture.cs" />
     <Compile Include="MappingTest\ForeignKeyFixture.cs" />
     <Compile Include="MappingTest\TableFixture.cs" />
+    <Compile Include="NHbAssert.cs" />
     <Compile Include="NHSpecificTest\AliasFixture.cs" />
     <Compile Include="NHSpecificTest\BasicClassFixture.cs" />
     <Compile Include="NHSpecificTest\BasicObjectFixture.cs" />

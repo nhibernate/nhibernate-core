@@ -39,36 +39,6 @@ namespace NHibernate.Test.TypesTest
 			Assert.IsFalse(string25==string30, "string25 & string30 should be different strings");
 		}
 		
-		[Test]
-		public void AllITypesAreSerializable()
-		{
-			Assembly nhibernate = typeof (IType).Assembly;
-			System.Type[] allTypes = nhibernate.GetTypes();
-			
-			ArrayList shouldBeSerializable = new ArrayList();
-			
-			foreach( System.Type type in allTypes )
-			{
-				if( type.IsClass && typeof( IType ).IsAssignableFrom( type ) )
-				{
-					if (!type.IsSerializable)
-					{
-						shouldBeSerializable.Add(type);
-					}
-				}
-			}
-
-			if (shouldBeSerializable.Count > 0)
-			{
-				StringBuilder message = new StringBuilder();
-				foreach (System.Type type in shouldBeSerializable)
-				{
-					message.Append('\t').Append(type).Append('\n');
-				}
-				Assert.Fail("These types should be serializable:\n{0}", message.ToString());
-			}
-		}
-
 #if NET_2_0
 		/// <summary>
 		/// Test that Nullable&lt;&gt; wrappers around structs are returning the
