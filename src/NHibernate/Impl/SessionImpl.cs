@@ -5711,7 +5711,10 @@ namespace NHibernate.Impl
 					}
 					else if (NHibernateUtil.GetClass(result) != clazz)
 					{
-						throw new WrongClassException("class of the given object did not match class of persistent copy", id, clazz);
+						string errorMsg = string.Format("class of the given object did not match class of persistent copy but was [{0}]",
+						                                NHibernateUtil.GetClass(result).FullName);
+						throw new WrongClassException(errorMsg, 
+						                              id, clazz);
 					}
 					else if (persister.IsVersioned && !persister.VersionType.Equals(persister.GetVersion(result), persister.GetVersion(obj)))
 					{

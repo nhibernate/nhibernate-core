@@ -230,7 +230,8 @@ namespace NHibernate.Loader
 			}
 			catch( Exception sqle )
 			{
-				throw ADOExceptionHelper.Convert( sqle, "could not read next row of results", SqlString );
+				throw ADOExceptionHelper.Convert( sqle, "could not read next row of results", SqlString,
+					queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
 			}
 
 			InitializeEntitiesAndCollections(
@@ -911,7 +912,8 @@ namespace NHibernate.Loader
 		{
 			if( !persister.MappedClass.IsAssignableFrom( obj.GetType() ) )
 			{
-				throw new WrongClassException( "loading object was of wrong class", key.Identifier, persister.MappedClass );
+				string errorMsg = string.Format("loading object was of wrong class [{0}]", obj.GetType().FullName);
+				throw new WrongClassException(errorMsg, key.Identifier, persister.MappedClass);
 			}
 
 			if( LockMode.None != lockMode && UpgradeLocks() )
@@ -1058,7 +1060,7 @@ namespace NHibernate.Loader
 				if( result == null )
 				{
 					// woops we got an instance of another class hierarchy branch.
-					throw new WrongClassException( "Discriminator: " + discriminatorValue, id, topClass );
+					throw new WrongClassException( string.Format("Discriminator was: '{0}'", discriminatorValue), id, topClass );
 				}
 
 				return result;
@@ -1667,7 +1669,7 @@ namespace NHibernate.Loader
 					sqle,
 					"could not load collection by subselect: " +
 					MessageHelper.InfoString(CollectionPersisters[0], ids),
-					SqlString
+					SqlString, parameterValues,namedParameters
 					);
 			}
 		}
@@ -1761,7 +1763,9 @@ namespace NHibernate.Loader
 				throw ADOExceptionHelper.Convert(
 					sqle,
 					"could not execute query",
-					SqlString );
+					SqlString, 
+					queryParameters.PositionalParameterValues, 
+					queryParameters.NamedParameters);
 			}
 		}
 
