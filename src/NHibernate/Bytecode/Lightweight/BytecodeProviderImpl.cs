@@ -21,13 +21,6 @@ namespace NHibernate.Bytecode.Lightweight
 		private static readonly ILog log = LogManager.GetLogger( typeof( BytecodeProviderImpl ) );
 
 		/// <summary>
-		/// Private ctor. Can't create an empty object
-		/// </summary>
-		public BytecodeProviderImpl()
-		{
-		}
-
-		/// <summary>
 		/// Generate the IReflectionOptimizer object
 		/// </summary>
 		/// <param name="mappedClass">The target class</param>

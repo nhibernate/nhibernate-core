@@ -2,7 +2,8 @@
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
-
+using System.Security;
+using System.Security.Permissions;
 using NHibernate.Property;
 using NHibernate.Util;
 
@@ -96,7 +97,8 @@ namespace NHibernate.Bytecode.Lightweight
 		protected DynamicMethod CreateDynamicMethod( System.Type returnType, System.Type[] argumentTypes )
 		{
 			System.Type owner = mappedType.IsInterface ? typeof( object ) : mappedType;
-			return new DynamicMethod( string.Empty, returnType, argumentTypes, owner, true );
+			bool canSkipChecks = SecurityManager.IsGranted(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+			return new DynamicMethod( string.Empty, returnType, argumentTypes, owner, canSkipChecks );
 		}
 
 		private static void EmitCastToReference( ILGenerator il, System.Type type )

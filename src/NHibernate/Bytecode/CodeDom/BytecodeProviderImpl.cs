@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using log4net;
 using Microsoft.CSharp;
-using NHibernate.Persister.Entity;
 using NHibernate.Property;
 
 namespace NHibernate.Bytecode.CodeDom
@@ -16,10 +15,6 @@ namespace NHibernate.Bytecode.CodeDom
 	public class BytecodeProviderImpl : IBytecodeProvider
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( BytecodeProviderImpl ) );
-
-		public BytecodeProviderImpl()
-		{
-		}
 
 		public IReflectionOptimizer GetReflectionOptimizer( System.Type clazz, IGetter[] getters, ISetter[] setters )
 		{

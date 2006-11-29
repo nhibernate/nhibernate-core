@@ -1229,17 +1229,17 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Configure NHibernate using the file specified.
 		/// </summary>
-		/// <param name="resource">The location of the Xml file to use to configure NHibernate.</param>
+		/// <param name="fileName">The location of the XML file to use to configure NHibernate.</param>
 		/// <returns>A Configuration object initialized with the file.</returns>
 		/// <remarks>
 		/// Calling Configure(string) will overwrite the values set in app.config or web.config
 		/// </remarks>
-		public Configuration Configure( string resource )
+		public Configuration Configure( string fileName )
 		{
 			XmlTextReader reader = null;
 			try
 			{
-				reader = new XmlTextReader( resource );
+				reader = new XmlTextReader( fileName );
 				return Configure( reader );
 			}
 			finally
