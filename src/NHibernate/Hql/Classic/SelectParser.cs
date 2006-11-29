@@ -146,7 +146,7 @@ namespace NHibernate.Hql.Classic
 				q.AppendScalarSelectToken( token );
 				if( "*".Equals( token ) && !afterAggregatePath)
 				{
-					q.AddSelectScalar( NHibernateUtil.Int32 );
+					q.AddSelectScalar(GetFunction("count", q).ReturnType(NHibernateUtil.Int64, q.Factory));
 				} //special case
 				afterAggregatePath = false;
 			}

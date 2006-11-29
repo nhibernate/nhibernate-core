@@ -630,7 +630,7 @@ namespace NHibernate.Test.Legacy
 			enumerable = s.CreateQuery( "select count(*), foo.Int from foo in class Foo group by foo.Int").Enumerable();
 			enumerator = enumerable.GetEnumerator();
 			Assert.IsTrue( enumerator.MoveNext() );
-			Assert.AreEqual( 3, ( int ) ( ( object[ ] ) enumerator.Current )[ 0 ] );
+			Assert.AreEqual( 3L, ( long ) ( ( object[ ] ) enumerator.Current )[ 0 ] );
 			Assert.IsFalse( enumerator.MoveNext() );
 
 			enumerable = s.CreateQuery( "select sum(foo.TheFoo.Int) from foo in class Foo").Enumerable();
@@ -2545,7 +2545,7 @@ namespace NHibernate.Test.Legacy
 
 			IEnumerator enumer = s.CreateQuery( "select count(*) from b in class Bar").Enumerable().GetEnumerator();
 			enumer.MoveNext();
-			Assert.AreEqual( 0, enumer.Current );
+			Assert.AreEqual( 0L, enumer.Current );
 
 			Baz baz = new Baz();
 			s.Save( baz );

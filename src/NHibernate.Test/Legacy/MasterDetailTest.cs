@@ -498,7 +498,7 @@ namespace NHibernate.Test.Legacy
 			filter = s.CreateFilter( master.Details, "select count(*)" );
 			enumer = filter.Enumerable().GetEnumerator();
 			Assert.IsTrue( enumer.MoveNext() );
-			Assert.IsTrue( enumer.Current is Int32 );
+			Assert.IsTrue( enumer.Current is Int64 );
 
 			Assert.AreEqual( 2, s.CreateFilter( master.Details, "select this.Master" ).List().Count );
 
