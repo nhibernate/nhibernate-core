@@ -59,7 +59,11 @@ namespace NHibernate.Connection
 #endif
 			if( connString == null )
 			{
-				throw new HibernateException( "Could not find connection string setting" );
+				throw new HibernateException( "Could not find connection string setting (set " +
+				                              Environment.ConnectionString +
+											  " or " +
+				                              Environment.ConnectionStringName +
+											  " property)");
 			}
 
 			ConfigureDriver( settings );
