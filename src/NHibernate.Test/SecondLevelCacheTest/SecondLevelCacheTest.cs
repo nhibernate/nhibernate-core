@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
-using System.Data;
-using System.Diagnostics;
-using System.Text;
 using NHibernate.Cache;
+using NHibernate.Cfg;
 using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
 
@@ -26,7 +23,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
         protected override void OnSetUp()
         {
-            cfg.Properties["hibernate.cache.provider_class"] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
+            cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
+			cfg.Properties[Environment.UseQueryCache] = "true";
             sessions = cfg.BuildSessionFactory();
 
 			using (ISession session = OpenSession())
@@ -38,6 +36,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				{
 					Item child = new Item();
 					child.Id = i + 2;
+					child.Parent = item;
 					session.Save(child);
 					item.Children.Add(child);					
 					
@@ -57,6 +56,33 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				session.Flush();
 			} 
 		}
+
+    	[Test]
+    	public void CachedQueriesHandlesEntitiesParametersCorrectly()
+    	{
+			using (ISession session = OpenSession())
+			{
+				Item one = (Item)session.Load(typeof(Item), 1);
+				IList results = session.CreateQuery("from Item item where item.Parent = :parent")
+					.SetEntity("parent", one)
+					.SetCacheable(true).List();
+				Assert.AreEqual(4, results.Count );
+				foreach (Item item in results)
+				{
+					Assert.AreEqual(1, item.Parent.Id );
+				}
+			}
+
+			using (ISession session = OpenSession())
+			{
+				Item two = (Item)session.Load(typeof(Item), 2);
+				IList results = session.CreateQuery("from Item item where item.Parent = :parent")
+					.SetEntity("parent", two)
+					.SetCacheable(true).List();
+				Assert.AreEqual(0, results.Count);
+			}
+    		
+    	}
 
         [Test]
         public void DeleteItemFromCollectionThatIsInTheSecondLevelCache()

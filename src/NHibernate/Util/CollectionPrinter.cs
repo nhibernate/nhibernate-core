@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using Iesi.Collections;
+using NHibernate.Engine;
 
 namespace NHibernate.Util
 {
@@ -19,7 +20,12 @@ namespace NHibernate.Util
 			}
 		}
 
-		public static string ToString( IDictionary dictionary )
+		public static string ToString(IDictionary dictionary)
+		{
+			return ToString(null, dictionary);
+		}
+
+		public static string ToString(ISessionImplementor session, IDictionary dictionary)
 		{
 			StringBuilder result = new StringBuilder();
 			result.Append( "{" );
@@ -33,7 +39,10 @@ namespace NHibernate.Util
 				}
 				AppendNullOrValue( result, de.Key );
 				result.Append( "=" );
-				AppendNullOrValue( result, de.Value );
+				if(session!=null)
+					result.Append(StringHelper.ToStringWithEntityId(session, de.Value));
+				else
+					AppendNullOrValue(result, de.Value);
 				first = false;
 			}
 

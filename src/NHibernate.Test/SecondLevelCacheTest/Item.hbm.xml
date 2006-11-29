@@ -5,6 +5,10 @@
 		<id name="Id">
 			<generator class="assigned"/>
 		</id>
+		<many-to-one name="Parent"
+					 column="ParentId"
+					 lazy="proxy"
+					 class="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test"/>
 		<bag name="Children"
 			 table="Item" 
 			 lazy="true">

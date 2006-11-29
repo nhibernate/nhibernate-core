@@ -13,6 +13,7 @@ namespace NHibernate.Cache
 	[Serializable]
 	public class QueryKey
 	{
+		private readonly ISessionImplementor session;
 		private readonly SqlString sqlQueryString;
 		private readonly IType[ ] types;
 		private readonly object[ ] values;
@@ -23,8 +24,10 @@ namespace NHibernate.Cache
 		private readonly IResultTransformer customTransformer;
 		private readonly int hashCode;
 
-		public QueryKey( SqlString queryString, QueryParameters queryParameters, ISet filters )
+		/// <param name="session">the sesion for this query key, required to get the identifiers of entities that are used as values.</param>
+		public QueryKey( ISessionImplementor session, SqlString queryString, QueryParameters queryParameters, ISet filters )
 		{
+			this.session = session;
 			sqlQueryString = queryString;
 			types = queryParameters.PositionalParameterTypes;
 			values = queryParameters.PositionalParameterValues;
@@ -150,6 +153,7 @@ namespace NHibernate.Cache
 
 		public override string ToString()
 		{
+			
 			StringBuilder buf = new StringBuilder()
 				.Append( "sql: " )
 				.Append( sqlQueryString );
@@ -159,14 +163,14 @@ namespace NHibernate.Cache
 				buf.Append( "; parameters: " );
 				for( int i = 0; i < values.Length; i++ )
 				{
-					buf.Append( values[ i ] )
+					buf.Append( StringHelper.ToStringWithEntityId(session, values[ i ]) )
 						.Append( ", " );
 				}
 			}
 			if( namedParameters != null )
 			{
 				buf.Append( "; named parameters: " )
-					.Append( CollectionPrinter.ToString( namedParameters ) );
+					.Append( CollectionPrinter.ToString( session, namedParameters ) );
 			}
 			if( firstRow != RowSelection.NoValue )
 			{

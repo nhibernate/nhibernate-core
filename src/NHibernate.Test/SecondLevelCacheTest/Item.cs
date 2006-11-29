@@ -9,7 +9,14 @@ namespace NHibernate.Test.SecondLevelCacheTests
     {
         int id;
         IList children = new ArrayList();
-	
+		Item parent;
+
+    	public virtual Item Parent
+    	{
+    		get { return parent; }
+    		set { parent = value; }
+    	}
+
     	public virtual int Id
         {
             get { return id; }
