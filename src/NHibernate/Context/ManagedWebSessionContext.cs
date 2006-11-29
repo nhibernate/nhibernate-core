@@ -32,12 +32,12 @@ namespace NHibernate.Context
 			GetSessionMap(context, true)[((ISessionImplementor) session).Factory] = session;
 		}
 
-		public static bool HasBind(HttpContext context, ISessionFactoryImplementor factory)
+		public static bool HasBind(HttpContext context, ISessionFactory factory)
 		{
 			return GetExistingSession(context, factory) != null;
 		}
 		
-		public static ISession Unbind(HttpContext context, ISessionFactoryImplementor factory)
+		public static ISession Unbind(HttpContext context, ISessionFactory factory)
 		{
 			ISession result = null;
 			IDictionary sessionMap = GetSessionMap(context, false);
@@ -51,7 +51,7 @@ namespace NHibernate.Context
 
 		#endregion
 
-		private static ISession GetExistingSession(HttpContext context, ISessionFactoryImplementor factory)
+		private static ISession GetExistingSession(HttpContext context, ISessionFactory factory)
 		{
 			IDictionary sessionMap = GetSessionMap(context, false);
 			if (sessionMap == null)
