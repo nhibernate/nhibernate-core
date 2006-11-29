@@ -1,0 +1,1 @@
+This is a minimal Web application using NHibernate under Medium Trust Level.
