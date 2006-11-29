@@ -149,18 +149,13 @@ namespace NHibernate.Util
 		public static System.Type ClassForName(string name)
 		{
 			AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(name);
-			System.Type result = TypeFromAssembly(parsedName);
-			if (result == null)
-			{
-				throw new TypeLoadException("Could not load type '" + parsedName +
-				                            "', check that type and assembly names are correct");
-			}
+			System.Type result = TypeFromAssembly(parsedName, true);
 			return result;
 		}
 
-		public static System.Type TypeFromAssembly(string type, string assembly)
+		public static System.Type TypeFromAssembly(string type, string assembly, bool throwIfError)
 		{
-			return TypeFromAssembly(new AssemblyQualifiedTypeName(type, assembly));
+			return TypeFromAssembly(new AssemblyQualifiedTypeName(type, assembly), throwIfError);
 		}
 
 		/// <summary>
@@ -177,7 +172,7 @@ namespace NHibernate.Util
 		/// type cannot be found then the assembly is loaded using
 		/// <see cref="Assembly.Load(string)" />.
 		/// </remarks>
-		public static System.Type TypeFromAssembly(AssemblyQualifiedTypeName name)
+		public static System.Type TypeFromAssembly(AssemblyQualifiedTypeName name, bool throwOnError)
 		{
 			try
 			{
@@ -192,7 +187,9 @@ namespace NHibernate.Util
 				if (name.Assembly == null)
 				{
 					// No assembly was specified for the type, so just fail
-					log.Warn("Could not load type " + name + ". Possible cause: no assembly name specified.");
+					string message = "Could not load type " + name + ". Possible cause: no assembly name specified.";
+					log.Warn(message);
+					if (throwOnError) throw new TypeLoadException(message);
 					return null;
 				}
 
@@ -204,7 +201,7 @@ namespace NHibernate.Util
 					return null;
 				}
 
-				type = assembly.GetType(name.Type);
+				type = assembly.GetType(name.Type, throwOnError);
 
 				if (type == null)
 				{
@@ -220,6 +217,7 @@ namespace NHibernate.Util
 				{
 					log.Error("Could not load type " + name + ".", e);
 				}
+				if (throwOnError) throw;
 				return null;
 			}
 		}

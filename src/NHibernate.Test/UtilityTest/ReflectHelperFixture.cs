@@ -29,17 +29,17 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void NoTypeFoundReturnsNull()
 		{
-			System.Type noType = ReflectHelper.TypeFromAssembly( "noclass", "noassembly" );
+			System.Type noType = ReflectHelper.TypeFromAssembly( "noclass", "noassembly", false );
 			Assert.IsNull( noType );
 		}
 
 		[Test]
 		public void TypeFoundInNotLoadedAssembly()
 		{
-			System.Type httpRequest = ReflectHelper.TypeFromAssembly( "System.Web.HttpRequest", "System.Web" );
+			System.Type httpRequest = ReflectHelper.TypeFromAssembly( "System.Web.HttpRequest", "System.Web", false );
 			Assert.IsNotNull( httpRequest );
 
-			System.Type sameType = ReflectHelper.TypeFromAssembly( "System.Web.HttpRequest", "System.Web" );
+			System.Type sameType = ReflectHelper.TypeFromAssembly( "System.Web.HttpRequest", "System.Web", false );
 			Assert.AreEqual( httpRequest, sameType, "should be the exact same Type" );
 		}
 

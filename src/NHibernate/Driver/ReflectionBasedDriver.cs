@@ -18,8 +18,8 @@ namespace NHibernate.Driver
 		public ReflectionBasedDriver( string driverAssemblyName, string connectionTypeName, string commandTypeName )
 		{
 			// Try to get the types from an already loaded assembly
-			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionTypeName, driverAssemblyName );
-			commandType    = Util.ReflectHelper.TypeFromAssembly( commandTypeName,    driverAssemblyName );
+			connectionType = Util.ReflectHelper.TypeFromAssembly( connectionTypeName, driverAssemblyName, false );
+			commandType    = Util.ReflectHelper.TypeFromAssembly( commandTypeName,    driverAssemblyName, false );
 
 			if( connectionType == null || commandType == null )
 			{

@@ -1222,7 +1222,7 @@ namespace NHibernate.Impl
 		{
 			if (currentSessionContext == null)
 			{
-				throw new HibernateException("No CurrentSessionContext configured!");
+				throw new HibernateException("No CurrentSessionContext configured (set the property " + Cfg.Environment.CurrentSessionContextClass + ")!");
 			}
 			return currentSessionContext.CurrentSession();
 		}
