@@ -38,7 +38,7 @@ namespace NHibernate.Exceptions
 		public static ADOException Convert(Exception sqle, string message, SqlString sql, object[] parameterValues, IDictionary namedParameters)
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine(message).Append("[ ").Append(sql).AppendLine(" ]");
+			sb.Append(message).Append("\n").Append("[ ").Append(sql).Append(" ]\n");
 			if (parameterValues.Length > 0)
 			{
 				sb.Append("Positinal Parameters: ");
@@ -48,7 +48,7 @@ namespace NHibernate.Exceptions
 					object value = parameterValue;
 					if (value == null)
 						value = "null";
-					sb.Append("  ").Append(index).Append(" ").Append(value).AppendLine();
+					sb.Append("  ").Append(index).Append(" ").Append(value).Append("\n");
 				}
 			}
 			if (namedParameters.Count > 0)
@@ -59,7 +59,7 @@ namespace NHibernate.Exceptions
 					if (value == null)
 						value = "null";
 					sb.Append("  ").Append("Name: ").Append(namedParameter.Key)
-						.Append(" - Value: ").Append(value).AppendLine();
+						.Append(" - Value: ").Append(value).Append("\n");
 				}
 			}
 			ADOExceptionReporter.LogExceptions(sqle, sb.ToString());

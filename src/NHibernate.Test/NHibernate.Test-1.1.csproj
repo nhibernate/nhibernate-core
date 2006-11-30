@@ -142,6 +142,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "NHbAssert.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "NHibernate.Test.build"
                     BuildAction = "None"
                 />
@@ -166,6 +171,21 @@
                 />
                 <File
                     RelPath = "TestTestCase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\HaveSerializableAttributeAsserter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\InheritedAreMarkedSerializable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\IsSerializable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -196,6 +216,11 @@
                 />
                 <File
                     RelPath = "CfgTest\HbmOrderingFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CfgTest\LocatedInTestAssembly.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -280,12 +305,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Criteria\Animal.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Criteria\Animal.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Criteria\Course.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Criteria\CriteriaQueryTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Criteria\DetachedCriteriaSerializable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -297,6 +336,20 @@
                 <File
                     RelPath = "Criteria\Enrolment.hbm.xml"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Criteria\MaterialResource.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Criteria\MaterialResource.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Criteria\Reptile.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Criteria\Student.cs"
@@ -2080,6 +2133,15 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SqlTest\Item.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTest\Item.hbm.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "SqlTest\MonetaryAmount.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2120,6 +2182,11 @@
                 />
                 <File
                     RelPath = "SqlTest\Product.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlTest\SelfReferencingCollectionLoadTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2361,6 +2428,11 @@
                 />
                 <File
                     RelPath = "TypesTest\SByteTypeFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypesTest\SerializableTypesFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

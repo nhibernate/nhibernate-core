@@ -84,7 +84,7 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				Log(cmd);
+				LogCommand(cmd);
 
 				if (cmd.Connection != null)
 				{
@@ -358,7 +358,7 @@ namespace NHibernate.Impl
 			get { return session; }
 		}
 
-		protected void Log(IDbCommand command)
+		protected void LogCommand(IDbCommand command)
 		{
 			if (logSql.IsDebugEnabled || factory.IsShowSqlEnabled)
 			{

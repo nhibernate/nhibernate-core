@@ -35,7 +35,7 @@ namespace NHibernate.Impl
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			log.Info("Adding to batch");
 			IDbCommand batchUpdate = CurrentCommand;
-			Log(batchUpdate);
+			LogCommand(batchUpdate);
 
 			currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 			if (currentBatch.CountOfCommands >= batchSize)

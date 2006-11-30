@@ -4,7 +4,7 @@ using NHibernate.Test.Assertions;
 
 namespace NHibernate.Test
 {
-	public static class NHAssert
+	public class NHAssert
 	{
 		#region Serializable
 		public static void HaveSerializableAttribute(System.Type clazz)

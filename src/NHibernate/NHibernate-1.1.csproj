@@ -99,6 +99,11 @@
                     AssemblyName = "HashCodeProvider"
                     HintPath = "..\..\lib\net\1.1\HashCodeProvider.dll"
                 />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -689,6 +694,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Context\ManagedWebSessionContext.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Dialect\DB2400Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -710,6 +720,11 @@
                 />
                 <File
                     RelPath = "Dialect\GenericDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\InformixDialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1790,16 +1805,6 @@
                 />
                 <File
                     RelPath = "Impl\SessionImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SqlClientBatchingBatcher.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Impl\SqlClientSqlCommandSet.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
