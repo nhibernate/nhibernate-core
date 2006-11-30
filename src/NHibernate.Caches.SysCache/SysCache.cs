@@ -181,7 +181,14 @@ namespace NHibernate.Caches.SysCache
 			}
 
 			DictionaryEntry de = ( DictionaryEntry ) obj;
-			return de.Value;
+			if (key.Equals(de.Key))
+			{
+			    return de.Value;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		/// <summary></summary>

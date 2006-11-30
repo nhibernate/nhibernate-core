@@ -204,7 +204,7 @@ namespace NHibernate.Caches.SysCache.Tests
 
 			public override int GetHashCode()
 			{
-				return Id.GetHashCode();
+				return 1;
 			}
 
 			public override string ToString()
