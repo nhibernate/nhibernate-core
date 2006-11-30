@@ -474,7 +474,7 @@ namespace NHibernate.Impl
 			get { return session.Factory.GetReturnTypes( queryString ); }
 		}
 
-		public IQuery SetParameterList( string name, ICollection vals, IType type )
+		public IQuery SetParameterList( string name, IEnumerable vals, IType type )
 		{
 			if ( !actualNamedParameters.Contains(name) )
 				throw new ArgumentOutOfRangeException(string.Format("Parameter {0} does not exist as a named parameter in [{1}]", name, queryString));
@@ -495,25 +495,25 @@ namespace NHibernate.Impl
 
 		private string BindParameterList( string queryString, string name, TypedValue typedList, IDictionary namedParams )
 		{
-			ICollection vals = ( ICollection ) typedList.Value;
+			IEnumerable vals = ( IEnumerable ) typedList.Value;
 			IType type = typedList.Type;
 			StringBuilder list = new StringBuilder( 16 );
 			int i = 0;
 			foreach( object obj in vals )
 			{
-				string alias = name + i++ + StringHelper.Underscore;
-				namedParams.Add( alias, new TypedValue( type, obj ) );
-				list.Append( ParserHelper.HqlVariablePrefix + alias );
-				if( i < vals.Count )
+				if( i > 0 )
 				{
 					list.Append( StringHelper.CommaSpace );
 				}
+				string alias = name + i++ + StringHelper.Underscore;
+				namedParams.Add( alias, new TypedValue( type, obj ) );
+				list.Append( ParserHelper.HqlVariablePrefix + alias );
 			}
 
 			return StringHelper.Replace( queryString, ParserHelper.HqlVariablePrefix + name, list.ToString() );
 		}
 
-		public IQuery SetParameterList( string name, ICollection vals )
+		public IQuery SetParameterList( string name, IEnumerable vals )
 		{
 			foreach( object obj in vals )
 			{
@@ -572,16 +572,6 @@ namespace NHibernate.Impl
 				}
 			}
 			return this;
-		}
-
-		public IQuery SetParameterList( string name, object[ ] vals, IType type )
-		{
-			return SetParameterList( name, vals, type );
-		}
-
-		public IQuery SetParameterList( string name, object[ ] vals )
-		{
-			return SetParameterList( name, vals );
 		}
 
 		public virtual void SetLockMode( string alias, LockMode lockMode )
