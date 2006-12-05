@@ -200,11 +200,7 @@ namespace NHibernate.Dialect
 
 		private static int GetAfterSelectInsertPoint(SqlString text)
 		{
-			if (text.StartsWithCaseInsensitive("select distinct"))
-			{
-				return 15;
-			}
-			else if (text.StartsWithCaseInsensitive("select"))
+			if (text.StartsWithCaseInsensitive("select"))
 			{
 				return 6;
 			}

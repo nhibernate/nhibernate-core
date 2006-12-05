@@ -20,6 +20,12 @@ namespace NHibernate.Test.DialectTest
 
 			str = d.GetLimitString(new SqlString("SELECT * FROM fish ORDER BY name DESC"), 7, 28);
 			Assert.AreEqual("SELECT first 28 skip 7 * FROM fish ORDER BY name DESC", str.ToString());
+
+			str = d.GetLimitString(new SqlString("SELECT DISTINCT fish.family FROM fish ORDER BY name DESC"), 0, 28);
+			Assert.AreEqual("SELECT first 28 DISTINCT fish.family FROM fish ORDER BY name DESC", str.ToString());
+
+			str = d.GetLimitString(new SqlString("SELECT DISTINCT fish.family FROM fish ORDER BY name DESC"), 7, 28);
+			Assert.AreEqual("SELECT first 28 skip 7 DISTINCT fish.family FROM fish ORDER BY name DESC", str.ToString());
 		}
 	}
 }
