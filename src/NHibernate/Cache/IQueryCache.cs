@@ -16,8 +16,8 @@ namespace NHibernate.Cache
 	public interface IQueryCache
 	{
 		void Clear();
-		void Put( QueryKey key, IType[ ] returnTypes, IList result, ISessionImplementor session );
-		IList Get( QueryKey key, IType[ ] returnTypes, ISet spaces, ISessionImplementor session );
+		void Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, ISessionImplementor session);
+		IList Get(QueryKey key, ICacheAssembler[] returnTypes, ISet spaces, ISessionImplementor session);
 		void Destroy();
 	}
 }

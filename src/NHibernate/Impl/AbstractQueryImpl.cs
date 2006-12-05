@@ -59,7 +59,7 @@ namespace NHibernate.Impl
 			get { return queryString; }
 		}
 
-		protected IDictionary NamedParams
+		protected internal IDictionary NamedParams
 		{
 			// NB The java one always returns a copy, so I'm going to reproduce that behaviour
 			get { return new Hashtable( namedParameters ); }
@@ -483,6 +483,11 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public string BindParameterLists()
+		{
+			return BindParameterLists(NamedParams);
+		}
+		
 		protected string BindParameterLists( IDictionary namedParams )
 		{
 			string query = queryString;
@@ -633,7 +638,12 @@ namespace NHibernate.Impl
 		{
 			return ( object[ ] ) values.ToArray( typeof( object ) );
 		}
-
+		
+		public virtual QueryParameters GetQueryParameters( )
+		{
+			return GetQueryParameters(NamedParams);
+		}
+		
 		public virtual QueryParameters GetQueryParameters( IDictionary namedParams )
 		{
 			return new QueryParameters(
@@ -731,6 +741,11 @@ namespace NHibernate.Impl
 		{
 			this.resultTransformer = transformer;
 			return this;
+		}
+
+		public override string ToString()
+		{
+			return queryString;
 		}
 	}
 }

@@ -187,7 +187,7 @@ namespace NHibernate.Hql.Classic
 		/// <c>setter</c> will attempt to cast the <c>ILoadable</c> array passed in into an 
 		/// <c>IQueryable</c> array.
 		/// </remarks>
-		protected override ILoadable[] EntityPersisters
+		protected internal override ILoadable[] EntityPersisters
 		{
 			get { return persisters; }
 			set { persisters = (IQueryable[])value; }
@@ -202,6 +202,11 @@ namespace NHibernate.Hql.Classic
 			get { return returnTypes; }
 		}
 
+		internal virtual IType[] ActualReturnTypes
+		{
+			get { return actualReturnTypes; }
+		}
+		
 		public virtual string[][] ScalarColumnNames
 		{
 			get { return scalarColumnNames; }
@@ -1211,7 +1216,7 @@ namespace NHibernate.Hql.Classic
 			set { holderClass = value; }
 		}
 
-		protected override LockMode[] GetLockModes(IDictionary lockModes)
+		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
 		{
 			// unfortunately this stuff can't be cached because
 			// it is per-invocation, not constant for the
@@ -1309,7 +1314,7 @@ namespace NHibernate.Hql.Classic
 			AddJoin(name, joinSequence.GetFromPart());
 		}
 		
-		protected override bool IsSubselectLoadingEnabled
+		protected internal override bool IsSubselectLoadingEnabled
 		{
 			get { return HasSubselectLoadableCollections(); }
 		}

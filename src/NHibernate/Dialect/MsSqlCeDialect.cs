@@ -58,7 +58,15 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
-
+		
+		public override bool SupportsMultipleQueries
+		{
+			get
+			{
+				return true;
+			}
+		}
+		
 		public override string ForUpdateString
 		{
 			get { return string.Empty; }

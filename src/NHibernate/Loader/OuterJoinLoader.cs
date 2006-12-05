@@ -57,7 +57,7 @@ namespace NHibernate.Loader
 			set { sql = value; }
 		}
 
-		protected override ILoadable[ ] EntityPersisters
+		protected internal override ILoadable[ ] EntityPersisters
 		{
 			get { return persisters; }
 			set { persisters = value; }
@@ -74,7 +74,7 @@ namespace NHibernate.Loader
 			get { return ownerAssociationTypes; }
 		}
 
-		protected override LockMode[ ] GetLockModes( IDictionary lockModes )
+		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
 		{
 			return lockModeArray;
 		}

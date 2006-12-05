@@ -20,7 +20,7 @@
     <DefineConstants>TRACE;DEBUG;NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\NHibernate.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
     <WarningsAsErrors>1717;1574</WarningsAsErrors>
   </PropertyGroup>
@@ -596,8 +596,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IdentityHashCodeProvider.cs" />
+    <Compile Include="Impl\MultiQueryImpl.cs" />
     <Compile Include="Impl\SqlClientSqlCommandSet.cs" />
     <Compile Include="Impl\QueryFilterImpl.cs" />
+    <Compile Include="IMultiQuery.cs" />
     <Compile Include="ISQLQuery.cs" />
     <Compile Include="Loader\AbstractEntityJoinWalker.cs" />
     <Compile Include="Loader\BasicLoader.cs" />
@@ -701,6 +703,7 @@
     <Compile Include="Type\BaseCharType.cs" />
     <Compile Include="Type\CollectionType.cs" />
     <Compile Include="Type\CustomCollectionType.cs" />
+    <Compile Include="Type\ICacheAssembler.cs" />
     <Compile Include="Type\OrderedSetType.cs" />
     <Compile Include="Type\OrderedMapType.cs" />
     <Compile Include="Type\GenericSortedDictionaryType.cs" />

@@ -73,7 +73,7 @@ namespace NHibernate.Loader
 		/// The <c>setter</c> was added so that classes inheriting from Loader could write a 
 		/// value using the Property instead of directly to the field.
 		/// </remarks>
-		protected abstract ILoadable[ ] EntityPersisters { get; set; }
+		protected internal abstract ILoadable[ ] EntityPersisters { get; set; }
 
 		// TODO H3: EntityEagerPropertyFetches
 
@@ -113,7 +113,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="lockModes">A Collection of lock modes specified dynamically via the Query Interface</param>
 		/// <returns></returns>
-		protected abstract LockMode[ ] GetLockModes( IDictionary lockModes );
+		protected internal abstract LockMode[ ] GetLockModes( IDictionary lockModes );
 
 
 		/// <summary>
@@ -244,7 +244,7 @@ namespace NHibernate.Loader
 
 		// Not ported: sequentialLoad, loadSequentialRowsForward, loadSequentialRowsReverse
 
-		private static EntityKey GetOptionalObjectKey( QueryParameters queryParameters, ISessionImplementor session )
+		internal static EntityKey GetOptionalObjectKey( QueryParameters queryParameters, ISessionImplementor session )
 		{
 			object optionalObject = queryParameters.OptionalObject;
 			object optionalId = queryParameters.OptionalId;
@@ -265,7 +265,31 @@ namespace NHibernate.Loader
 
 		}
 
-		private object GetRowFromResultSet(
+		public virtual SqlCommandInfo GetQueryStringAndTypes(
+			ISessionImplementor session,
+			QueryParameters parameters
+			)
+		{
+			SqlString sqlString = ProcessFilters(parameters, session);
+			Dialect.Dialect dialect = session.Factory.Dialect;
+
+			RowSelection selection = parameters.RowSelection;
+			bool useLimit = UseLimit(selection, dialect);
+			bool hasFirstRow = GetFirstRow(selection) > 0;
+			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
+
+			if (useLimit)
+			{
+				sqlString = dialect.GetLimitString(sqlString.Trim(),
+													useOffset ? GetFirstRow(selection) : 0,
+													GetMaxOrLimit(dialect, selection));
+			}
+
+			sqlString = PreprocessSQL(sqlString, parameters, dialect);
+			return new SqlCommandInfo(sqlString, GetParameterTypes(parameters, useLimit, useOffset));
+		}
+
+		internal object GetRowFromResultSet(
 			IDataReader resultSet,
 			ISessionImplementor session,
 			QueryParameters queryParameters,
@@ -460,7 +484,7 @@ namespace NHibernate.Loader
 			return results; // GetResultList( results );
 		}
 
-		protected virtual bool IsSubselectLoadingEnabled
+		protected internal virtual bool IsSubselectLoadingEnabled
 		{
 			get { return false; }
 		}
@@ -496,7 +520,7 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		private void CreateSubselects(IList keys, QueryParameters queryParameters, ISessionImplementor session)
+		internal void CreateSubselects(IList keys, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			if (keys.Count > 1)
 			{
@@ -549,7 +573,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private void InitializeEntitiesAndCollections(
+		internal void InitializeEntitiesAndCollections(
 			IList hydratedObjects,
 			object resultSetId,
 			ISessionImplementor session )
@@ -742,7 +766,7 @@ namespace NHibernate.Loader
 		/// is being initilized, to account for the possibility of the collection having
 		/// no elements (hence no rows in the result set).
 		/// </summary>
-		private void HandleEmptyCollections(
+		internal void HandleEmptyCollections(
 			object[ ] keys,
 			object resultSetId,
 			ISessionImplementor session
@@ -1110,7 +1134,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="rs"></param>
 		/// <param name="selection"></param>
-		private void Advance( IDataReader rs, RowSelection selection )
+		internal void Advance( IDataReader rs, RowSelection selection )
 		{
 			int firstRow = GetFirstRow( selection );
 
@@ -1124,7 +1148,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private static bool HasMaxRows( RowSelection selection )
+		internal static bool HasMaxRows( RowSelection selection )
 		{
 			// it used to be selection.MaxRows != null -> since an Int32 will always
 			// have a value I'll compare it to the static field NoValue used to initialize 
@@ -1144,7 +1168,7 @@ namespace NHibernate.Loader
 		/// <param name="selection"></param>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		private static bool UseLimit( RowSelection selection, Dialect.Dialect dialect )
+		internal static bool UseLimit( RowSelection selection, Dialect.Dialect dialect )
 		{
 			return dialect.SupportsLimit && HasMaxRows( selection );
 		}
@@ -1158,7 +1182,7 @@ namespace NHibernate.Loader
 		/// <param name="start"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		protected int BindPositionalParameters(
+		protected internal int BindPositionalParameters(
 			IDbCommand st,
 			QueryParameters queryParameters,
 			int start,
@@ -1294,7 +1318,7 @@ namespace NHibernate.Loader
 		/// Bind parameters needed by the dialect-specific LIMIT clause
 		/// </summary>
 		/// <returns>The number of parameters bound</returns>
-		private int BindLimitParameters( IDbCommand st, int index, RowSelection selection, ISessionImplementor session )
+		internal int BindLimitParameters( IDbCommand st, int index, RowSelection selection, ISessionImplementor session )
 		{
 			Dialect.Dialect dialect = session.Factory.Dialect;
 			if( !dialect.SupportsVariableLimit )
@@ -1407,7 +1431,7 @@ namespace NHibernate.Loader
 		/// <param name="namedParams">The named parameters (key) and the values to set.</param>
 		/// <param name="session">The <see cref="ISession"/> this Loader is using.</param>
 		/// <param name="start"></param>
-		protected virtual int BindNamedParameters( IDbCommand st, IDictionary namedParams, int start, ISessionImplementor session )
+		protected internal virtual int BindNamedParameters( IDbCommand st, IDictionary namedParams, int start, ISessionImplementor session )
 		{
 			if( namedParams != null )
 			{

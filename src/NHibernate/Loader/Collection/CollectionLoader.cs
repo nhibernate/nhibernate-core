@@ -22,7 +22,7 @@ namespace NHibernate.Loader.Collection
 			this.collectionPersister = persister;
 		}
 
-		protected override bool IsSubselectLoadingEnabled
+		protected internal override bool IsSubselectLoadingEnabled
 		{
 			get { return HasSubselectLoadableCollections(); }
 		}

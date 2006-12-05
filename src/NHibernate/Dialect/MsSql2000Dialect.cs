@@ -183,6 +183,14 @@ namespace NHibernate.Dialect
 			return String.Format( dropTable, tableName );
 		}
 
+		public override bool SupportsMultipleQueries
+		{
+			get
+			{
+				return true;
+			}
+		}
+		
 		public override string ForUpdateString
 		{
 			get { return string.Empty; }

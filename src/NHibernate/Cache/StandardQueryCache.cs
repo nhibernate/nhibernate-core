@@ -44,7 +44,7 @@ namespace NHibernate.Cache
 			this.regionName = regionName;
 		}
 
-		public void Put( QueryKey key, IType[ ] returnTypes, IList result, ISessionImplementor session )
+		public void Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, ISessionImplementor session)
 		{
 			if( log.IsDebugEnabled )
 			{
@@ -66,7 +66,7 @@ namespace NHibernate.Cache
 			queryCache.Put( key, cacheable );
 		}
 
-		public IList Get( QueryKey key, IType[ ] returnTypes, ISet spaces, ISessionImplementor session )
+		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, ISet spaces, ISessionImplementor session)
 		{
 			if( log.IsDebugEnabled )
 			{

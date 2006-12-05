@@ -121,7 +121,7 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		protected override LockMode[] GetLockModes( IDictionary lockModes )
+		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
 		{
 			string[] entityAliases = Aliases;
 			if( entityAliases == null )
@@ -138,7 +138,7 @@ namespace NHibernate.Loader.Criteria
 			return lockModesArray;
 		}
 
-		protected override bool IsSubselectLoadingEnabled
+		protected internal override bool IsSubselectLoadingEnabled
 		{
 			get { return HasSubselectLoadableCollections(); }
 		}

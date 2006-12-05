@@ -705,5 +705,16 @@ namespace NHibernate
         /// </summary>
         /// <param name="filterName">The name of the filter to be disabled.</param>
         void DisableFilter(string filterName);
-    }
+
+		/// <summary>
+		/// Create a multi query, a query that can send several
+		/// queries to the server, and return all their results in a single
+		/// call.
+		/// </summary>
+		/// <returns>
+		/// A list of all the results of all the queries.
+		/// Note that each query result is itself usually a list.
+		/// </returns>
+		IMultiQuery CreateMultiQuery();
+	}
 }

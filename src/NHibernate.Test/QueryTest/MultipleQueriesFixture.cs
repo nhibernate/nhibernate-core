@@ -1,0 +1,214 @@
+using System.Collections;
+using System.Data.SqlClient;
+using System.Reflection;
+using NHibernate.Cache;
+using NHibernate.Cfg;
+using NHibernate.Engine;
+using NHibernate.Test.SecondLevelCacheTests;
+using NUnit.Framework;
+
+namespace NHibernate.Test.QueryTest
+{
+	/// <summary>
+	/// Tests functionality for named parameter queries.
+	/// </summary>
+	[TestFixture]
+	public class MultipleQueriesFixture : TestCase
+	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
+		}
+
+		[Test]
+		public void CanGetMultiQueryFromSecondLevelCache()
+		{
+
+			SetSecondLevelCacheAndCreateItems();
+			//set the query in the cache
+			DoMutiQueryAndAssert();
+			
+			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
+			IList cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
+			IList cachedQuery = (IList)cachedListEntry[1];
+
+			IList firstQueryResults = (IList)cachedQuery[0];
+			firstQueryResults.Clear();
+			firstQueryResults.Add(3);
+			firstQueryResults.Add(4);
+
+			IList secondQueryResults = (IList)cachedQuery[1];
+			secondQueryResults[0] = 2L;
+
+			using (ISession s = sessions.OpenSession())
+			{
+				IMultiQuery MultiQuery = s.CreateMultiQuery()
+						.Add(s.CreateQuery("from Item i where i.Id > ?")
+								.SetInt32(0, 50)
+								.SetFirstResult(10))
+						.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
+								.SetInt32(0, 50));
+				MultiQuery.SetCacheable(true);
+				IList results = MultiQuery.List();
+				IList items = (IList)results[0];
+				Assert.AreEqual(2, items.Count);
+				long count = (long)((IList)results[1])[0];
+				Assert.AreEqual(2L, count);
+			}
+			
+			RemoveAllItems();
+		}
+
+		[Test]
+		public void CanUseSecondLevelCacheWithPositionalParameters()
+		{
+			SetSecondLevelCacheAndCreateItems();
+
+			DoMutiQueryAndAssert();
+
+			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
+
+			Assert.AreEqual(1, cacheHashtable.Count);
+		
+			RemoveAllItems();
+		}
+
+		private void DoMutiQueryAndAssert()
+		{
+			using (ISession s = OpenSession())
+			{
+				IMultiQuery MultiQuery = s.CreateMultiQuery()
+					.Add(s.CreateQuery("from Item i where i.Id > ?")
+					     	.SetInt32(0, 50)
+					     	.SetFirstResult(10))
+					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
+					     	.SetInt32(0, 50));
+				MultiQuery.SetCacheable(true);
+				IList results = MultiQuery.List();
+				IList items = (IList)results[0];
+				Assert.AreEqual(89, items.Count);
+				long count = (long)((IList)results[1])[0];
+				Assert.AreEqual(99L, count);
+			}
+		}
+
+		private void SetSecondLevelCacheAndCreateItems()
+		{
+			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
+			cfg.Properties[Environment.UseQueryCache] = "true";
+			sessions = cfg.BuildSessionFactory();
+			using (ISession s = OpenSession())
+			{
+				for (int i = 0; i < 150; i++)
+				{
+					Item item = new Item();
+					item.Id = i;
+					s.Save(item);
+				}
+				s.Flush();
+			}
+		}
+
+		private Hashtable GetHashTableUsedAsQueryCache()
+		{
+			ISessionFactoryImplementor factory = (ISessionFactoryImplementor)sessions;
+			//need the inner hashtable in the cache
+			HashtableCache cache = (HashtableCache)
+			                       typeof(StandardQueryCache)
+			                       	.GetField("queryCache", BindingFlags.Instance | BindingFlags.NonPublic)
+			                       	.GetValue(factory.GetQueryCache(null));
+
+			return (Hashtable)typeof(HashtableCache)
+			                  	.GetField("hashtable", BindingFlags.Instance | BindingFlags.NonPublic)
+			                  	.GetValue(cache);
+		}
+
+		[Test]
+		public void CanUseWithParameterizedQueriesAndLimit()
+		{
+			using (ISession s = OpenSession())
+			{
+
+				for (int i = 0; i < 150; i++)
+				{
+					Item item = new Item();
+					item.Id = i;
+					s.Save(item);
+				}
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				IQuery getItems = s.CreateQuery("from Item i where i.Id > :id")
+						.SetFirstResult(10);
+				IQuery countItems = s.CreateQuery("select count(*) from Item i where i.Id > :id");
+
+				IList results = s.CreateMultiQuery()
+					.Add(getItems)
+					.Add(countItems)
+					.SetInt32("id", 50)
+					.List();
+				IList items = (IList)results[0];
+				Assert.AreEqual(89, items.Count);
+				long count = (long)((IList)results[1])[0];
+				Assert.AreEqual(99L, count);
+			}
+
+			RemoveAllItems();
+		}
+
+		private void RemoveAllItems()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from Item");
+				s.Flush();
+			}
+		}
+
+		[Test]
+		public void CanExecuteMultiplyQueriesInSingleRoundTrip()
+		{
+			using (ISession s = OpenSession())
+			{
+				Item item = new Item();
+				item.Id = 1;
+				s.Save(item);
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				IQuery getItems = s.CreateQuery("from Item");
+				IQuery countItems = s.CreateQuery("select count(*) from Item");
+
+				IList results = s.CreateMultiQuery()
+					.Add(getItems)
+					.Add(countItems)
+					.List();
+				IList items = (IList)results[0];
+				Item fromDb = (Item)items[0];
+				Assert.AreEqual(1, fromDb.Id);
+
+				IList counts = (IList)results[1];
+				long count = (long)counts[0];
+				Assert.AreEqual(1L, count);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from Item");
+				s.Flush();
+			}
+		}
+	}
+}

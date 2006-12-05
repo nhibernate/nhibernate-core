@@ -8,7 +8,6 @@ using NHibernate.Type;
 
 namespace NHibernate
 {
-
 	/// <summary>
 	/// An object-oriented representation of a NHibernate query.
 	/// </summary>

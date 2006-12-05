@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// <include file='IType.cs.xmldoc' 
 	///		path='//members[@type="IType"]/member[@name="T:IType"]/*'
 	/// />
-	public interface IType
+	public interface IType : ICacheAssembler
 	{
 		// QUESTION:
 		// How do we implement Serializable interface? Standard .NET pattern or other?
@@ -119,16 +119,6 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
 		/// /> 
 		bool IsMutable { get; }
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.Disassemble"]/*'
-		/// /> 
-		object Disassemble( object value, ISessionImplementor session );
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.Assemble"]/*'
-		/// /> 
-		object Assemble( object cached, ISessionImplementor session, object owner );
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.HasNiceEquals"]/*'

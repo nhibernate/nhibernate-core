@@ -1819,7 +1819,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private IQueryTranslator[] GetQueries(string query, bool scalar)
+		public IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
 			// take the union of the query spaces (ie the queried tables)
 			IQueryTranslator[] q = factory.GetQuery(query, scalar, enabledFilters);
@@ -5895,6 +5895,11 @@ namespace NHibernate.Impl
 			}
 
 			return result;
+		}
+
+		public IMultiQuery CreateMultiQuery()
+		{
+			return new MultiQueryImpl(this);
 		}
 	}
 }

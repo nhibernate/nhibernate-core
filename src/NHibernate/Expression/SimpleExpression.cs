@@ -72,8 +72,8 @@ namespace NHibernate.Expression
 			if (_value != null && !(_value is System.Type) && !propertyType.ReturnedClass.IsInstanceOfType(_value))
 			{
 			    throw new QueryException(string.Format(
-			                                "Type mismatch in {0}: expected type {1}, actual type {2}",
-			                                GetType(), propertyType.ReturnedClass, _value.GetType()));
+			                                "Type mismatch in {0}: {1} expected type {2}, actual type {3}",
+											GetType(), _propertyName, propertyType.ReturnedClass, _value.GetType()));
 			}
 			
 			if (propertyType.IsCollectionType)

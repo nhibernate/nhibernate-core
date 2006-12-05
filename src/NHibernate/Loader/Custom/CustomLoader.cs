@@ -246,13 +246,13 @@ namespace NHibernate.Loader.Custom
 		}
 
 
-		protected override ILoadable[] EntityPersisters
+		protected internal override ILoadable[] EntityPersisters
 		{
 			get { return entityPersisters; }
 			set { throw new NotSupportedException("CustomLoader.set_EntityPersisters"); }
 		}
 
-		protected override LockMode[] GetLockModes(IDictionary lockModesMap)
+		protected internal override LockMode[] GetLockModes(IDictionary lockModesMap)
 		{
 			return lockModes;
 		}

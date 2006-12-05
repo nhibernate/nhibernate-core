@@ -386,6 +386,7 @@
     <Compile Include="ProxyInterface\CastleProxyImpl.cs" />
     <Compile Include="ProxyTest\AProxy.cs" />
     <Compile Include="ProxyTest\NHibernateProxyHelperFixture.cs" />
+    <Compile Include="QueryTest\MultipleQueriesFixture.cs" />
     <Compile Include="QueryTest\NamedParametersFixture.cs" />
     <Compile Include="QueryTest\PositionalParametersFixture.cs" />
     <Compile Include="QueryTest\QueryParametersFixture.cs" />

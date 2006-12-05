@@ -1071,7 +1071,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public static object[] Assemble( object[] row, IType[] types, ISessionImplementor session, object owner )
+		public static object[] Assemble(object[] row, ICacheAssembler[] types, ISessionImplementor session, object owner)
 		{
 			object[] assembled = new object[ row.Length ];
 			for( int i = 0; i < row.Length; i++ )
@@ -1088,7 +1088,7 @@ namespace NHibernate.Type
 		/// <param name="types"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public static object[] Disassemble( object[] row, IType[] types, ISessionImplementor session )
+		public static object[] Disassemble(object[] row, ICacheAssembler[] types, ISessionImplementor session)
 		{
 			object[] disassembled = new object[ row.Length ];
 			for( int i = 0; i < row.Length; i++ )

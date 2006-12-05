@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using NHibernate.Collection;
 using NHibernate.Engine.Query;
+using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -380,6 +381,8 @@ namespace NHibernate.Engine
 		IEnumerable CollectionEntries { get; }
 
 		IQuery GetNamedSQLQuery(string name);
+
+		IQueryTranslator[] GetQueries(string query, bool scalar);
 
 		bool ContainsEntity(EntityKey key);
 	}
