@@ -41,7 +41,7 @@ namespace NHibernate.Exceptions
 			sb.Append(message).Append(Environment.NewLine).
 				Append("[ ").Append(sql).Append(" ]")
 				.Append(Environment.NewLine);
-			if (parameterValues.Length > 0)
+			if (parameterValues != null && parameterValues.Length > 0)
 			{
 				sb.Append("Positinal Parameters: ");
 				int index = 0;
@@ -53,7 +53,7 @@ namespace NHibernate.Exceptions
 					sb.Append("  ").Append(index).Append(" ").Append(value).Append(Environment.NewLine);
 				}
 			}
-			if (namedParameters.Count > 0)
+			if (namedParameters != null && namedParameters.Count > 0)
 			{
 				foreach (DictionaryEntry namedParameter in namedParameters)
 				{
