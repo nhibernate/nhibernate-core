@@ -85,7 +85,7 @@ namespace NHibernate.Expression
 
 		public DetachedCriteria CreateCriteria(String associationPath, String alias)
 		{
-			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath));
+			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath, alias));
 		}
 
 		public DetachedCriteria CreateCriteria(String associationPath)
@@ -121,7 +121,7 @@ namespace NHibernate.Expression
 			return "DetachableCriteria(" + criteria.ToString() + ')';
 		}
 
-		public CriteriaImpl GetCriteriaImpl()
+		protected internal CriteriaImpl GetCriteriaImpl()
 		{
 			return impl;
 		}

@@ -92,5 +92,23 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 				Assert.AreEqual(1, list.Count);
 			}
 		}
+
+		[Test]
+		public void ComplexSubQuery_QueryingByGrandChildren()
+		{
+			DetachedCriteria comment = DetachedCriteria.For(typeof (Comment), "comment")
+				.SetProjection(Expression.Property.ForName("id"))
+				.Add(Expression.Property.ForName("Post.id").EqProperty("post.id"))
+				.Add(Expression.Expression.Eq("Text", "foo"));
+
+			using(ISession s = OpenSession())
+			{
+				DetachedCriteria dc = DetachedCriteria.For(typeof (Blog))
+					.CreateCriteria("Posts", "post")
+					.Add(Subqueries.Exists(comment));
+				IList list = dc.GetExecutableCriteria(s).List();
+				Assert.AreEqual(1, list.Count );
+			}
+		}
 	}
 }
