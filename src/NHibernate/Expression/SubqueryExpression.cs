@@ -33,14 +33,14 @@ namespace NHibernate.Expression
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			ISessionImplementor session = ((CriteriaImpl) criteria).Session; //ugly!
+			ISessionImplementor session = GetSession(criteria);
 			ISessionFactoryImplementor factory = session.Factory;
 
-			IOuterJoinLoadable persister = (IOuterJoinLoadable) factory.GetEntityPersister(criteriaImpl.CriteriaClass);
+			IOuterJoinLoadable persister = (IOuterJoinLoadable) factory.GetEntityPersister(this.criteriaImpl.CriteriaClass);
 			CriteriaQueryTranslator innerQuery =
 				new CriteriaQueryTranslator(factory,
-				                            criteriaImpl,
-				                            criteriaImpl.CriteriaClass,
+				                            this.criteriaImpl,
+				                            this.criteriaImpl.CriteriaClass,
 				                            //implicit polymorphism not supported (would need a union) 
 				                            criteriaQuery.GenerateSQLAlias(),
 				                            criteriaQuery);
@@ -66,6 +66,25 @@ namespace NHibernate.Expression
 			if (quantifier != null)
 				buf.Add(quantifier).Add(" ");
 			return buf.Add("(").Add(sql).Add(")").ToSqlString();
+		}
+
+		private static ISessionImplementor GetSession(ICriteria criteria)
+		{
+			CriteriaImpl temp = criteria as CriteriaImpl;
+			if(temp!=null)
+			{
+				return temp.Session;
+			}
+			else
+			{
+				CriteriaImpl.Subcriteria subCriteria = criteria as CriteriaImpl.Subcriteria;
+				if(subCriteria==null)
+				{
+					throw new HibernateException(
+						string.Format("Can't get Session from criteria {0} because it is not CriteriaImpl or SubCriteria.", criteria.GetType().FullName));
+				}
+				return GetSession(subCriteria.Parent);
+			}
 		}
 
 		public override string ToString()
