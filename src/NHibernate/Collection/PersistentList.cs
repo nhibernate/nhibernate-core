@@ -15,6 +15,9 @@ namespace NHibernate.Collection
 	/// The underlying collection used in an <see cref="ArrayList"/>.
 	/// </remarks>
 	[Serializable]
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy))]
+#endif
 	public class PersistentList : AbstractPersistentCollection, IList
 	{
 		private IList list;

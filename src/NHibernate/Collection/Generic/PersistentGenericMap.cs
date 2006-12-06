@@ -19,6 +19,9 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TKey">The type of the keys in the IDictionary.</typeparam>
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.DictionaryProxy<,>))]
+#endif
 	public class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, System.Collections.IDictionary
 	{
 		protected IDictionary<TKey, TValue> map;

@@ -63,6 +63,7 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Text;
 
 namespace NHibernate.Util
@@ -74,6 +75,9 @@ namespace NHibernate.Util
 	/// <remarks>
 	/// This class is not thread safe.
 	/// </remarks>
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy<>))]
+#endif
 	[ Serializable ]
 	public class SequencedHashMap : IDictionary
 	{

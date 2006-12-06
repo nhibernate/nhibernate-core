@@ -20,6 +20,9 @@ namespace NHibernate.Collection
 	/// to .NET</a> that was written by JasonSmith.
 	/// </remarks>
 	[Serializable]
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy))]
+#endif
 	public class PersistentSet : AbstractPersistentCollection, ISet
 	{
 		/// <summary>

@@ -25,6 +25,9 @@ namespace NHibernate.Collection
 	/// </para>
 	/// </remarks>
 	[Serializable]
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy))]
+#endif
 	public class PersistentIdentifierBag : AbstractPersistentCollection, IList
 	{
 		private IList values;	//element

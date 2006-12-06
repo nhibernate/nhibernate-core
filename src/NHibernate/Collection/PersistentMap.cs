@@ -13,6 +13,9 @@ namespace NHibernate.Collection
 	/// is a <see cref="Hashtable" />.
 	/// </summary>
 	[Serializable]
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.DictionaryProxy))]
+#endif
 	public class PersistentMap : AbstractPersistentCollection, IDictionary
 	{
 		protected IDictionary map;

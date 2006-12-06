@@ -5,6 +5,9 @@ namespace NHibernate.Util
 {
 	// This class does not inherit from WeakReference but uses composition
 	// instead to avoid requiring UnmanagedCode permission.
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.DictionaryProxy))]
+#endif
 	public class WeakRefWrapper
 	{
 		private WeakReference reference;

@@ -13,6 +13,9 @@ namespace NHibernate.Collection
 	/// A persistent wrapper for an array. lazy initialization is NOT supported
 	/// </summary>
 	[Serializable]
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy))]
+#endif
 	public class PersistentArrayHolder : AbstractPersistentCollection
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentArrayHolder ) );

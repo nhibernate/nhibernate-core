@@ -16,6 +16,9 @@ namespace NHibernate.Collection
 	/// so NHibernate follows this practice.
 	/// </summary>
 	[Serializable]
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy))]
+#endif
 	public class PersistentBag : AbstractPersistentCollection, IList
 	{
 		protected IList bag;

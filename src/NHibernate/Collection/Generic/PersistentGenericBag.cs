@@ -23,6 +23,9 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="T">The type of the element the bag should hold.</typeparam>
 	/// <remarks>The underlying collection used is an <see cref="List{T}"/></remarks>
 	[Serializable]
+#if NET_2_0
+	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy<>))]
+#endif
 	public class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		private IList<T> bag;

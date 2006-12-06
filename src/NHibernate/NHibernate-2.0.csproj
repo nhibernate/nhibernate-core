@@ -506,6 +506,8 @@
     <Compile Include="Collection\PersistentSet.cs" />
     <Compile Include="Context\ICurrentSessionContext.cs" />
     <Compile Include="Context\ManagedWebSessionContext.cs" />
+    <Compile Include="DebugHelpers\DictionaryProxy.cs" />
+    <Compile Include="DebugHelpers\CollectionProxy.cs" />
     <Compile Include="Dialect\Function\AnsiSubstringFunction.cs" />
     <Compile Include="Dialect\Function\AnsiTrimEmulationFunction.cs" />
     <Compile Include="Dialect\Function\CastFunction.cs" />
