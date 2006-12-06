@@ -119,7 +119,7 @@ namespace NHibernate.Cfg
 		// NHibernate-specific properties
 		public const string PrepareSql = "hibernate.prepare_sql";
 		public const string CommandTimeout = "hibernate.command_timeout";
-		public const string BatchSize = "hibernate.batch_size";
+		public const string BatchSize = "hibernate.adonet.batch_size";
 		
 		
 		public const string PropertyBytecodeProvider = "hibernate.bytecode.provider";
