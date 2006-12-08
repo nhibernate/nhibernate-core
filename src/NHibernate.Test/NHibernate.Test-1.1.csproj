@@ -2021,6 +2021,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QueryTest\MultipleQueriesFixture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QueryTest\NamedParametersFixture.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -184,6 +184,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "IMultiQuery.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "InstantiationException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1704,6 +1709,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\MultiQueryImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\NonBatchingBatcher.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -3031,6 +3041,11 @@
                 />
                 <File
                     RelPath = "Type\IAssociationType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Type\ICacheAssembler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
