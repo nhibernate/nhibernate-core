@@ -88,7 +88,20 @@ namespace NHibernate.Caches.Prevalence
 					{
 						dataDir = Path.Combine( Environment.CurrentDirectory, prevalenceBase );
 					}
+
+                    if (properties["regionPrefix"] != null)
+                    {
+                        string regionPrefix = properties["regionPrefix"].ToString();
+
+                        if (log.IsDebugEnabled)
+                        {
+                            log.DebugFormat("new regionPrefix :{0}", regionPrefix);
+                        }
+
+                        dataDir = Path.Combine(dataDir, regionPrefix);
+                    }
 				}
+			    
 			}
 			if( Directory.Exists( dataDir ) == false )
 			{
