@@ -43,8 +43,13 @@ namespace NHibernate.Connection
 					throw new HibernateException( "Could not instantiate connection provider: " + providerClass, e );
 				}
 			}
+			else if (settings[ Environment.ConnectionString ] != null || settings[Environment.ConnectionStringName] != null)
+			{
+				connections = new DriverConnectionProvider();
+			}
 			else
 			{
+				log.Info("No connection provider specified, UserSuppliedConnectionProvider will be used.");
 				connections = new UserSuppliedConnectionProvider();
 			}
 			connections.Configure( settings );
