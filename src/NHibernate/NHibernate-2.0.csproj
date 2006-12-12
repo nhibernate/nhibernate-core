@@ -598,6 +598,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IdentityHashCodeProvider.cs" />
+    <Compile Include="Impl\ConnectionManager.cs" />
     <Compile Include="Impl\MultiQueryImpl.cs" />
     <Compile Include="Impl\SqlClientSqlCommandSet.cs" />
     <Compile Include="Impl\QueryFilterImpl.cs" />

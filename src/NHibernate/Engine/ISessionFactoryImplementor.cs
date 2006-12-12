@@ -3,6 +3,7 @@ using NHibernate.Cache;
 using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Transaction;
 using NHibernate.Type;
 
 namespace NHibernate.Engine
@@ -160,5 +161,7 @@ namespace NHibernate.Engine
 		IIdentifierGenerator GetIdentifierGenerator( System.Type rootClass );
 
 		ResultSetMappingDefinition GetResultSetMapping(string resultSetRef);
+
+		ITransactionFactory TransactionFactory { get; }
 	}
 }

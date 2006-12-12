@@ -45,7 +45,6 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private SessionFactoryImpl factory;
 
-		private bool autoClose;
 		private readonly long timestamp;
 
 		/// <summary>
@@ -114,35 +113,7 @@ namespace NHibernate.Impl
 
 		private IInterceptor interceptor;
 
-		[NonSerialized]
-		private IDbConnection connection;
-
-		/// <summary>
-		/// A boolean indicating if the Session should automattically connect to the
-		/// database - ie, open a new <see cref="IDbConnection"/> for the operation if
-		/// <c>this.Connection==null</c>.
-		/// </summary>
-		/// <remarks>
-		/// <p>
-		/// This will be initialzed to <c>true</c> by the ctor if NHibernate is managing
-		/// the Connections, <c>false</c> if the user passes in their own connection - 
-		/// indicating they will be responsible for managing connections.
-		/// </p>
-		/// <p>
-		/// This can also be set to <c>false</c> when NHibernate has opened the connection
-		/// on its own and the Session has had the methods <c>Close()</c> or 
-		/// <c>Disconnect()</c> invoked.
-		/// </p>
-		/// <p>
-		/// This can also be set to <c>true</c> when the Session has had the method 
-		/// <c>Reconnect()</c> invoked.
-		/// </p>
-		/// </remarks>
-		[NonSerialized]
-		private bool connect;
-
-		[NonSerialized]
-		private ITransaction transaction;
+		private ConnectionManager connectionManager;
 
 		// We keep scheduled insertions, deletions and updates in collections
 		// and actually execute them as part of the flush() process. Actually,
@@ -217,7 +188,6 @@ namespace NHibernate.Impl
 		/// </remarks>
 		private SessionImpl(SerializationInfo info, StreamingContext context)
 		{
-			this.autoClose = info.GetBoolean("autoClose");
 			this.timestamp = info.GetInt64("timestamp");
 
 			this.factory = (SessionFactoryImpl) info.GetValue("factory", typeof(SessionFactoryImpl));
@@ -250,6 +220,8 @@ namespace NHibernate.Impl
 			//this.enabledFilters = (IDictionary) info.GetValue("enabledFilters", typeof(IDictionary));
 			tmpEnabledFiltersKey = (ArrayList) info.GetValue("tmpEnabledFiltersKey", typeof(ArrayList));
 			tmpEnabledFiltersValue = (ArrayList) info.GetValue("tmpEnabledFiltersValue", typeof(ArrayList));
+
+			this.connectionManager = (ConnectionManager) info.GetValue("connectionManager", typeof(ConnectionManager));
 		}
 
 		/// <summary>
@@ -268,13 +240,12 @@ namespace NHibernate.Impl
 		{
 			log.Debug("writting session to serializer");
 
-			if (IsConnected)
+			if (connectionManager.IsConnected)
 			{
 				throw new InvalidOperationException("Cannot serialize a Session while connected");
 			}
 
 			info.AddValue("factory", factory, typeof(SessionFactoryImpl));
-			info.AddValue("autoClose", autoClose);
 			info.AddValue("timestamp", timestamp);
 			info.AddValue("closed", closed);
 			info.AddValue("flushMode", flushMode);
@@ -322,6 +293,8 @@ namespace NHibernate.Impl
 			//info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary));
 			info.AddValue("tmpEnabledFiltersKey", tmpEnabledFiltersKey);
 			info.AddValue("tmpEnabledFiltersValue", tmpEnabledFiltersValue);
+
+			info.AddValue("connectionManager", connectionManager, typeof(ConnectionManager));
 		}
 
 		#endregion
@@ -437,11 +410,9 @@ namespace NHibernate.Impl
 			if (interceptor == null)
 				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
 
-			this.connection = connection;
-			connect = connection == null;
+			this.connectionManager = new ConnectionManager(this, connection, autoClose);
 			this.interceptor = interceptor;
 
-			this.autoClose = autoClose;
 			this.timestamp = timestamp;
 
 			this.factory = factory;
@@ -492,18 +463,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				// when the connection is null nothing needs to be done - if there
-				// is a value for connection then Disconnect() was not called - so we
-				// need to ensure it gets called.
-				if (connection == null)
-				{
-					connect = false;
-					return null;
-				}
-				else
-				{
-					return Disconnect();
-				}
+				return connectionManager.Close();
 			}
 			finally
 			{
@@ -519,7 +479,7 @@ namespace NHibernate.Impl
 		/// <param name="success"></param>
 		public void AfterTransactionCompletion(bool success)
 		{
-			transaction = null;
+			connectionManager.AfterTransactionCompletion();
 			log.Debug("transaction completion");
 
 			// Downgrade locks
@@ -3008,29 +2968,18 @@ namespace NHibernate.Impl
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
 			CheckIsOpen();
-			transaction = Transaction;
-			transaction.Begin(isolationLevel);
-			return transaction;
+			return connectionManager.BeginTransaction(isolationLevel);
 		}
 
 		public ITransaction BeginTransaction()
 		{
 			CheckIsOpen();
-			transaction = Transaction;
-			transaction.Begin();
-			return transaction;
+			return connectionManager.BeginTransaction();
 		}
 
 		public ITransaction Transaction
 		{
-			get
-			{
-				if (transaction == null)
-				{
-					transaction = factory.TransactionFactory.CreateTransaction(this);
-				}
-				return transaction;
-			}
+			get { return connectionManager.Transaction; }
 		}
 
 		/// <summary>
@@ -4495,32 +4444,7 @@ namespace NHibernate.Impl
 
 		public IDbConnection Connection
 		{
-			get
-			{
-				if (connection == null)
-				{
-					if (connect)
-					{
-						Connect();
-					}
-					else if (IsOpen)
-					{
-						throw new HibernateException("Session is currently disconnected");
-					}
-					else
-					{
-						throw new HibernateException("Session is closed");
-					}
-				}
-				return connection;
-			}
-		}
-
-		private void Connect()
-		{
-			// TODO: H2.1 delegates this to batcher, not factory
-			connection = factory.OpenConnection();
-			connect = false;
+			get { return connectionManager.GetConnection(); }
 		}
 
 		/// <summary>
@@ -4536,100 +4460,29 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public bool IsConnected
 		{
-			get { return connection != null || connect; }
+			get { return connectionManager.IsConnected; }
 		}
 
 		/// <summary></summary>
 		public IDbConnection Disconnect()
 		{
 			CheckIsOpen();
-
 			log.Debug("disconnecting session");
-
-			try
-			{
-				// the Session is flagged as needing to create a Connection for the
-				// next operation
-				if (connect)
-				{
-					// a Disconnected Session should not automattically "connect"
-					connect = false;
-					return null;
-				}
-				else
-				{
-					if (connection == null)
-					{
-						throw new HibernateException("Session already disconnected");
-					}
-
-					if (batcher != null)
-					{
-						batcher.CloseCommands();
-					}
-
-					// get a new reference to the the Session's connection before 
-					// closing it - and set the existing to Session's connection to
-					// null but don't close it yet
-					IDbConnection c = connection;
-					connection = null;
-
-					// if Session is supposed to auto-close the connection then
-					// the Sesssion is managing the IDbConnection. 
-					if (autoClose)
-					{
-						// let the SessionFactory close it and return null
-						// because the connection is internal to the Session
-
-						// TODO: H2.1 delegates this to batcher, not factory
-						factory.CloseConnection(c);
-						return null;
-					}
-					else
-					{
-						// return the connection the user provided - at this point
-						// it has been disassociated with the NHibernate session. 
-						return c;
-					}
-				}
-			}
-			finally
-			{
-				// ensure that AfterTransactionCompletion gets called since
-				// it takes care of the Locks and Cache.
-				if (!IsInActiveTransaction)
-				{
-					// We don't know the state of the transaction
-					AfterTransactionCompletion(false);
-				}
-			}
+			return connectionManager.Disconnect();
 		}
 
 		public void Reconnect()
 		{
 			CheckIsOpen();
-
-			if (IsConnected)
-			{
-				throw new HibernateException("session already connected");
-			}
-
 			log.Debug("reconnecting session");
-
-			connect = true;
-			autoClose = true;
+			connectionManager.Reconnect();
 		}
 
 		public void Reconnect(IDbConnection conn)
 		{
 			CheckIsOpen();
-
-			if (IsConnected)
-			{
-				throw new HibernateException("session already connected");
-			}
-			this.connection = conn;
-			autoClose = false;
+			log.Debug("reconnecting session");
+			connectionManager.Reconnect(conn);
 		}
 
 		#region System.IDisposable Members
@@ -4677,35 +4530,13 @@ namespace NHibernate.Impl
 			// know this call came through Dispose()
 			if (isDisposing)
 			{
-				if (transaction != null)
-				{
-					transaction.Dispose();
-				}
-
 				if (batcher != null)
 				{
 					batcher.Dispose();
 				}
 
-				// we are not reusing the Close() method because that sets the connection==null
-				// during the Close() - if the connection is null we can't get to it to Dispose
-				// of it.
-				if (connection != null)
-				{
-					if (connection.State == ConnectionState.Closed)
-					{
-						log.Warn("finalizing unclosed session with closed connection");
-					}
-					else
-					{
-						// if the Session is responsible for managing the connection then make sure
-						// the connection is disposed of.
-						if (autoClose)
-						{
-							factory.CloseConnection(connection);
-						}
-					}
-				}
+				connectionManager.Dispose();
+
 				// it is important to call Cleanup because that marks the Session as being
 				// closed - the Session could still be associated with a Proxy that is attempting
 				// to be reassociated with another Session.  If the Proxy sees ISession.IsOpen==true
@@ -4735,14 +4566,6 @@ namespace NHibernate.Impl
 			return Filter(collection, filter, qp);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="filter"></param>
-		/// <param name="values"></param>
-		/// <param name="types"></param>
-		/// <returns></returns>
 		public ICollection Filter(object collection, string filter, object[] values, IType[] types)
 		{
 			CheckIsOpen();
@@ -5621,12 +5444,6 @@ namespace NHibernate.Impl
 			return DoCopy(obj, null, IdentityMap.Instantiate(10));
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="copiedAlready"></param>
-		/// <returns></returns>
 		public object Copy(object obj, IDictionary copiedAlready)
 		{
 			return DoCopy(obj, null, copiedAlready);
@@ -5842,11 +5659,6 @@ namespace NHibernate.Impl
 		{
 			SqlQueryImpl query = new SqlQueryImpl(sql, this);
 			return query;
-		}
-		
-		private bool IsInActiveTransaction
-		{
-			get { return transaction != null && transaction.IsActive; }
 		}
 		
 		public IEnumerable CollectionEntries
