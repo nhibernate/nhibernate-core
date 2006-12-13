@@ -454,6 +454,11 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public bool HasOpenResources
+		{
+			get { return commandsToClose.Count > 0 || readersToClose.Count > 0; }
+		}
+
 		protected ADOException Convert(Exception sqlException, string message)
 		{
 			return ADOExceptionHelper.Convert(sqlException, message);

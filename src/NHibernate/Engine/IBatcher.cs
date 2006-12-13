@@ -143,5 +143,11 @@ namespace NHibernate.Engine
 		/// Cancel the current query statement
 		/// </summary>
 		void CancelLastQuery();
+
+		/// <summary>
+		/// Gets the value indicating whether there are any open resources
+		/// managed by this batcher (IDbCommands or IDataReaders).
+		/// </summary>
+		bool HasOpenResources { get; }
 	}
 }
