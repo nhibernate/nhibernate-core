@@ -1413,7 +1413,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseQueryCommand(st, rs);
+					session.Batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (HibernateException)

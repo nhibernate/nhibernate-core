@@ -397,24 +397,20 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="connection"></param>
-		/// <param name="factory"></param>
-		/// <param name="autoClose"></param>
-		/// <param name="timestamp"></param>
-		/// <param name="interceptor"></param>
-		internal SessionImpl(IDbConnection connection, SessionFactoryImpl factory, bool autoClose, long timestamp, IInterceptor interceptor)
+		internal SessionImpl(
+			IDbConnection connection,
+			SessionFactoryImpl factory,
+			bool autoClose,
+			long timestamp,
+			IInterceptor interceptor,
+			ConnectionReleaseMode connectionReleaseMode)
 		{
 			if (interceptor == null)
 				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
 
-			this.connectionManager = new ConnectionManager(this, connection, autoClose);
+			this.connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, autoClose);
 			this.interceptor = interceptor;
-
 			this.timestamp = timestamp;
-
 			this.factory = factory;
 
 			entitiesByKey = new Hashtable(50);
@@ -554,11 +550,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		public LockMode GetCurrentLockMode(object obj)
 		{
 			CheckIsOpen();
@@ -1568,11 +1559,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="id"></param>
 		public void Update(object obj, object id)
 		{
 			CheckIsOpen();

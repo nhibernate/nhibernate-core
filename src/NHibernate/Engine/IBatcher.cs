@@ -36,7 +36,7 @@ namespace NHibernate.Engine
 		/// </returns>
 		/// <remarks>
 		/// <para>
-		/// If not explicitly released by <c>CloseQueryStatement()</c>, it will be 
+		/// If not explicitly released by <see cref="CloseCommand" />, it will be 
 		/// released when the session is closed or disconnected.
 		/// </para>
 		/// <para>
@@ -45,14 +45,6 @@ namespace NHibernate.Engine
 		/// </para>
 		/// </remarks>
 		IDbCommand PrepareQueryCommand( CommandType commandType, SqlString sql, SqlType[] parameterTypes );
-
-		/// <summary>
-		/// Closes the <see cref="IDbCommand"/> &amp; the <see cref="IDataReader"/> that was
-		/// opened with the method <c>PrepareQueryCommand</c>.
-		/// </summary>
-		/// <param name="cmd">The <see cref="IDbCommand"/> to close.</param>
-		/// <param name="reader">The <see cref="IDataReader"/> to close.</param>
-		void CloseQueryCommand( IDbCommand cmd, IDataReader reader );
 
 		/// <summary>
 		/// Get a non-batchable an <see cref="IDbCommand"/> to use for inserting / deleting / updating.

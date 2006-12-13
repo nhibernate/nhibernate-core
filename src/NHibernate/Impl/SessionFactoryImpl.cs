@@ -530,35 +530,24 @@ namespace NHibernate.Impl
 			return filter;
 		}
 
-		private ISession OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor interceptor)
+		private ISession OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor interceptor, ConnectionReleaseMode connectionReleaseMode)
 		{
-			return new SessionImpl(connection, this, autoClose, timestamp, interceptor);
+			return new SessionImpl(connection, this, autoClose, timestamp, interceptor, connectionReleaseMode);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="connection"></param>
-		/// <param name="interceptor"></param>
-		/// <returns></returns>
 		public ISession OpenSession(IDbConnection connection, IInterceptor interceptor)
 		{
 			// specify false for autoClose because the user has passed in an IDbConnection
 			// and they assume responsibility for it.
-			return OpenSession(connection, false, long.MinValue, interceptor);
+			return OpenSession(connection, false, long.MinValue, interceptor, ConnectionReleaseMode.OnClose);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="interceptor"></param>
-		/// <returns></returns>
 		public ISession OpenSession(IInterceptor interceptor)
 		{
 			long timestamp = Timestamper.Next();
 			// specify true for autoClose because NHibernate has responsibility for
 			// the IDbConnection.
-			return OpenSession(null, true, timestamp, interceptor);
+			return OpenSession(null, true, timestamp, interceptor, ConnectionReleaseMode.OnClose);
 		}
 
 		/// <summary>

@@ -471,7 +471,7 @@ namespace NHibernate.Loader
 			}
 			finally
 			{
-				session.Batcher.CloseQueryCommand( st, rs );
+				session.Batcher.CloseCommand( st, rs );
 			}
 
 			InitializeEntitiesAndCollections( hydratedObjects, rs, session );
@@ -1282,13 +1282,13 @@ namespace NHibernate.Loader
 			}
 			catch( HibernateException )
 			{
-				session.Batcher.CloseQueryCommand( command, null );
+				session.Batcher.CloseCommand( command, null );
 				throw;
 			}
 			catch( Exception sqle )
 			{
 				ADOExceptionReporter.LogExceptions( sqle );
-				session.Batcher.CloseQueryCommand( command, null );
+				session.Batcher.CloseCommand( command, null );
 				throw;
 			}
 
@@ -1388,7 +1388,7 @@ namespace NHibernate.Loader
 			catch( Exception sqle )
 			{
 				ADOExceptionReporter.LogExceptions( sqle );
-				session.Batcher.CloseQueryCommand( st, rs );
+				session.Batcher.CloseCommand( st, rs );
 				throw;
 			}
 		}

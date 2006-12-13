@@ -30,12 +30,18 @@ namespace NHibernate.Impl
 
 		private readonly ISessionImplementor session;
 		private bool autoClose;
+		private readonly ConnectionReleaseMode connectionReleaseMode;
 
-		public ConnectionManager(ISessionImplementor session, IDbConnection connection, bool autoClose)
+		public ConnectionManager(
+			ISessionImplementor session,
+			IDbConnection connection,
+			ConnectionReleaseMode connectionReleaseMode,
+			bool autoClose)
 		{
 			this.session = session;
 			this.connection = connection;
 			this.connectForNextOperation = connection == null;
+			this.connectionReleaseMode = connectionReleaseMode;
 			this.autoClose = autoClose;
 		}
 
@@ -202,6 +208,11 @@ namespace NHibernate.Impl
 			transaction = null;
 		}
 
+		public void AfterStatement()
+		{
+			// TODO
+		}
+
 		#region Serialization
 
 		private ConnectionManager(SerializationInfo info, StreamingContext context)
@@ -209,6 +220,8 @@ namespace NHibernate.Impl
 			this.connectForNextOperation = false;
 			this.autoClose = info.GetBoolean("autoClose");
 			this.session = (ISessionImplementor) info.GetValue("session", typeof (ISessionImplementor));
+			this.connectionReleaseMode =
+				(ConnectionReleaseMode) info.GetValue("connectionReleaseMode", typeof (ConnectionReleaseMode));
 		}
 
 		[SecurityPermission(SecurityAction.LinkDemand,
@@ -217,6 +230,7 @@ namespace NHibernate.Impl
 		{
 			info.AddValue("autoClose", autoClose);
 			info.AddValue("session", session, typeof(ISessionImplementor));
+			info.AddValue("connectionReleaseMode", connectionReleaseMode, typeof(ConnectionReleaseMode));
 		}
 
 		#endregion
@@ -249,6 +263,32 @@ namespace NHibernate.Impl
 		{
 			log.Debug("after autocommit");
 			session.AfterTransactionCompletion(success);
+		}
+
+		private bool IsAfterTransactionRelease
+		{
+			get { return connectionReleaseMode == ConnectionReleaseMode.AfterTransaction; }
+		}
+
+		private bool IsOnCloseRelease
+		{
+			get { return connectionReleaseMode == ConnectionReleaseMode.OnClose; }
+		}
+
+		private bool IsAggressiveRelease
+		{
+			get
+			{
+				if (connectionReleaseMode == ConnectionReleaseMode.AfterStatement)
+				{
+					return true;
+				}
+				else if (connectionReleaseMode == ConnectionReleaseMode.AfterTransaction)
+				{
+					return !IsInActiveTransaction;
+				}
+				return false;
+			}
 		}
 	}
 }

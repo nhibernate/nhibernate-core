@@ -213,11 +213,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void CloseCommand(IDbCommand cmd, IDataReader reader)
-		{
-			CloseQueryCommand(cmd, reader);
-		}
-
 		public void CloseCommands()
 		{
 			foreach (IDataReader reader in readersToClose)
@@ -238,7 +233,7 @@ namespace NHibernate.Impl
 			{
 				try
 				{
-					CloseQueryCommand(cmd);
+					CloseCommand(cmd);
 				}
 				catch (Exception e)
 				{
@@ -249,16 +244,13 @@ namespace NHibernate.Impl
 			commandsToClose.Clear();
 		}
 
-		private void CloseQueryCommand(IDbCommand cmd)
+		private void CloseCommand(IDbCommand cmd)
 		{
 			try
 			{
 				// no equiv to the java code in here
-				if (cmd != null)
-				{
-					cmd.Dispose();
-					LogClosePreparedCommand();
-				}
+				cmd.Dispose();
+				LogClosePreparedCommand();
 			}
 			catch (Exception e)
 			{
@@ -273,26 +265,27 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void CloseQueryCommand(IDbCommand st, IDataReader reader)
+		public void CloseCommand(IDbCommand st, IDataReader reader)
 		{
 			commandsToClose.Remove(st);
-			if (reader != null)
-			{
-				readersToClose.Remove(reader);
-			}
 			try
 			{
 				if (reader != null)
 				{
-					reader.Close();
-					reader.Dispose();
-					LogCloseReader();
+					readersToClose.Remove(reader);
+					CloseReader(reader);
 				}
 			}
 			finally
 			{
-				CloseQueryCommand(st);
+				CloseCommand(st);
 			}
+		}
+
+		private void CloseReader(IDataReader reader)
+		{
+			reader.Dispose();
+			LogCloseReader();
 		}
 
 		/// <summary></summary>

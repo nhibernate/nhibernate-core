@@ -468,7 +468,7 @@ namespace NHibernate.Impl
 			}
 			finally
 			{
-				session.Batcher.CloseQueryCommand(command, reader);
+				session.Batcher.CloseCommand(command, reader);
 			}
 			for (int i = 0; i < translators.Count; i++)
 			{

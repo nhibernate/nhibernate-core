@@ -504,6 +504,7 @@
     <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
+    <Compile Include="ConnectionReleaseMode.cs" />
     <Compile Include="Context\ICurrentSessionContext.cs" />
     <Compile Include="Context\ManagedWebSessionContext.cs" />
     <Compile Include="DebugHelpers\DictionaryProxy.cs" />

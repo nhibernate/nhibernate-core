@@ -73,7 +73,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug( "exhausted results" );
 				_currentResult = null;
-				_sess.Batcher.CloseQueryCommand( _cmd, _reader );
+				_sess.Batcher.CloseCommand( _cmd, _reader );
 			}
 			else
 			{
@@ -216,7 +216,7 @@ namespace NHibernate.Impl
 				if( _hasNext ) 
 				{
 					_currentResult = null;
-					_sess.Batcher.CloseQueryCommand( _cmd, _reader );
+					_sess.Batcher.CloseCommand( _cmd, _reader );
 				}
 			}
 
