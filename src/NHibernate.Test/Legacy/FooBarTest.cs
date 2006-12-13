@@ -1456,6 +1456,8 @@ namespace NHibernate.Test.Legacy
 		public void QueryLockMode()
 		{
 			ISession s = OpenSession();
+			ITransaction tx = s.BeginTransaction();
+
 			Bar bar = new Bar();
 			Assert.IsNull( bar.Bytes );
 			s.Save( bar );
@@ -1477,11 +1479,12 @@ namespace NHibernate.Test.Legacy
 			object b = result[ 0 ];
 
 			Assert.IsTrue( s.GetCurrentLockMode( b ) == LockMode.Write && s.GetCurrentLockMode( result[ 1 ] ) == LockMode.Write );
-			s.Flush();
+			tx.Commit();
 			Assert.IsNotNull( bar.Bytes );
 			s.Disconnect();
 
 			s.Reconnect();
+			tx = s.BeginTransaction();
 			Assert.IsNotNull( bar.Bytes );
 
 			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode( b ) );
@@ -1496,17 +1499,21 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual( LockMode.Read, s.GetCurrentLockMode( b ) );
 			s.Evict( baz );
 
+			tx.Commit();
 			s.Disconnect();
+			
 			s.Reconnect();
+			tx = s.BeginTransaction();
 
 			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode( b ) );
 			s.Delete( s.Load( typeof( Baz ), baz.Code ) );
 			Assert.AreEqual( LockMode.None, s.GetCurrentLockMode( b ) );
 
-			s.Flush();
+			tx.Commit();
 			s.Close();
 
 			s = OpenSession();
+			tx = s.BeginTransaction();
 			q = s.CreateQuery( "from Foo foo, Bar bar, Bar bar2" );
 			q.SetLockMode( "bar", LockMode.Upgrade );
 			q.SetLockMode( "bar2", LockMode.Read );
@@ -1514,7 +1521,7 @@ namespace NHibernate.Test.Legacy
 
 			Assert.IsTrue( s.GetCurrentLockMode( result[ 0 ] ) == LockMode.Upgrade && s.GetCurrentLockMode( result[ 1 ] ) == LockMode.Upgrade );
 			s.Delete( result[ 0 ] );
-			s.Flush();
+			tx.Commit();
 			s.Close();
 		}
 

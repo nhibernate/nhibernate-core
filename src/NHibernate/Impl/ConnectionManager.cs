@@ -197,7 +197,7 @@ namespace NHibernate.Impl
 			return connection;
 		}
 
-		public void AfterTransactionCompletion()
+		public void AfterTransaction()
 		{
 			transaction = null;
 		}
@@ -243,6 +243,12 @@ namespace NHibernate.Impl
 				}
 				return transaction;
 			}
+		}
+
+		public void AfterNonTransactionalQuery(bool success)
+		{
+			log.Debug("after autocommit");
+			session.AfterTransactionCompletion(success);
 		}
 	}
 }

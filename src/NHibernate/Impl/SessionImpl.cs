@@ -479,7 +479,7 @@ namespace NHibernate.Impl
 		/// <param name="success"></param>
 		public void AfterTransactionCompletion(bool success)
 		{
-			connectionManager.AfterTransactionCompletion();
+			connectionManager.AfterTransaction();
 			log.Debug("transaction completion");
 
 			// Downgrade locks
@@ -1757,12 +1757,14 @@ namespace NHibernate.Impl
 			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 
 			//execute the queries and return all result lists as a single list
+			bool success = false;
 			try
 			{
 				for (int i = q.Length - 1; i >= 0; i--)
 				{
 					ArrayHelper.AddAll(results, q[i].List(this, parameters));
 				}
+				success = true;
 			}
 			catch (HibernateException)
 			{
@@ -1776,6 +1778,7 @@ namespace NHibernate.Impl
 			finally
 			{
 				dontFlushFromFind--;
+				AfterOperation(success);
 			}
 		}
 
@@ -2399,9 +2402,18 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentNullException("id", "null is not a valid identifier");
 			}
-			object result = DoLoadByClass(clazz, id, true, true);
-			ObjectNotFoundException.ThrowIfNull(result, id, clazz);
-			return result;
+			bool success = false;
+			try
+			{
+				object result = DoLoadByClass(clazz, id, true, true);
+				ObjectNotFoundException.ThrowIfNull(result, id, clazz);
+				success = true;
+				return result;
+			}
+			finally
+			{
+				AfterOperation(success);
+			}
 		}
 
 #if NET_2_0
@@ -2434,8 +2446,18 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentNullException("id", "null is not a valid identifier");
 			}
-			object result = DoLoadByClass(clazz, id, true, false);
-			return result;
+
+			bool success = false;
+			try
+			{
+				object result = DoLoadByClass(clazz, id, true, false);
+				success = true;
+				return result;
+			}
+			finally
+			{
+				AfterOperation(success);
+			}
 		}
 
 		///<summary> 
@@ -2471,9 +2493,6 @@ namespace NHibernate.Impl
 		/// existing uninitialized proxy, this will break identity equals as far
 		/// as the application is concerned.
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
 		private void DoLoadByObject(object obj, object id, LockMode lockMode)
 		{
 			System.Type clazz = obj.GetType();
@@ -4699,6 +4718,7 @@ namespace NHibernate.Impl
 
 			}
 
+			bool success = false;
 			dontFlushFromFind++; // stops flush being called multiple times if this method is recursively called
 
 			try
@@ -4707,6 +4727,7 @@ namespace NHibernate.Impl
 				{
 					ArrayHelper.AddAll(results, filters[i].List(this, parameters));
 				}
+				success = true;
 			}
 			catch (HibernateException)
 			{
@@ -4720,6 +4741,7 @@ namespace NHibernate.Impl
 			finally
 			{
 				dontFlushFromFind--;
+				AfterOperation(success);
 			}
 		}
 
@@ -4895,12 +4917,14 @@ namespace NHibernate.Impl
 
 			dontFlushFromFind++;
 
+			bool success = false;
 			try
 			{
 				for (int i = size - 1; i >= 0; i--)
 				{
 					ArrayHelper.AddAll(results, loaders[i].List(this));
 				}
+				success = true;
 			}
 			catch (HibernateException)
 			{
@@ -4914,6 +4938,7 @@ namespace NHibernate.Impl
 			finally
 			{
 				dontFlushFromFind--;
+				AfterOperation(success);
 			}
 		}
 
@@ -5165,14 +5190,17 @@ namespace NHibernate.Impl
 			CustomLoader loader = new CustomLoader(customQuery, factory);
 			AutoFlushIfRequired(loader.QuerySpaces);
 
+			bool success = false;
 			dontFlushFromFind++;
 			try
 			{
 				ArrayHelper.AddAll(results, loader.List(this, queryParameters));
+				success = true;
 			}
 			finally
 			{
 				dontFlushFromFind--;
+				AfterOperation(success);
 			}
 		}
 
@@ -5712,6 +5740,14 @@ namespace NHibernate.Impl
 		public IMultiQuery CreateMultiQuery()
 		{
 			return new MultiQueryImpl(this);
+		}
+
+		private void AfterOperation(bool success)
+		{
+			if (!connectionManager.IsInActiveTransaction)
+			{
+				connectionManager.AfterNonTransactionalQuery(success);
+			}
 		}
 	}
 }
