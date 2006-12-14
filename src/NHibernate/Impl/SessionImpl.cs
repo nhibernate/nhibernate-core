@@ -521,7 +521,7 @@ namespace NHibernate.Impl
 			loadingCollections = new Hashtable();
 			nonlazyCollections = new ArrayList(20);
 
-			batcher = SessionFactory.ConnectionProvider.Driver.CreateBatcher(this);
+			batcher = SessionFactory.ConnectionProvider.Driver.CreateBatcher(connectionManager);
 		}
 
 		/// <summary>
@@ -3157,6 +3157,8 @@ namespace NHibernate.Impl
 
 			try
 			{
+				connectionManager.FlushBeginning();
+
 				// we need to lock the collection caches before
 				// executing entity insert/updates in order to
 				// account for bidi associations
@@ -3177,6 +3179,10 @@ namespace NHibernate.Impl
 			{
 				log.Error("could not synchronize database state with session", he);
 				throw;
+			}
+			finally
+			{
+				connectionManager.FlushEnding();
 			}
 		}
 

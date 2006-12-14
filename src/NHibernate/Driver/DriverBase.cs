@@ -201,9 +201,9 @@ namespace NHibernate.Driver
 		/// By default, .Net doesn't have any batching capabilities, drivers that does have
 		/// batching support need to override this method and return their own batcher.
 		/// </remarks>
-		public virtual IBatcher CreateBatcher(ISessionImplementor session)
+		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager)
 		{
-			return new NonBatchingBatcher(session);
+			return new NonBatchingBatcher(connectionManager);
 		}
 
 		/// <summary>

@@ -32,6 +32,9 @@ namespace NHibernate.Impl
 		private bool autoClose;
 		private readonly ConnectionReleaseMode connectionReleaseMode;
 
+		[NonSerialized]
+		private bool isFlushing;
+
 		public ConnectionManager(
 			ISessionImplementor session,
 			IDbConnection connection,
@@ -124,19 +127,19 @@ namespace NHibernate.Impl
 					// it - and set the existing connection to null but don't
 					// close it yet.
 					IDbConnection c = connection;
-					connection = null;
 
 					if (autoClose)
 					{
 						// Let the SessionFactory close it and return null
 						// because the connection is internal to the Session
-						session.Factory.CloseConnection(c);
+						CloseConnection();
 						return null;
 					}
 					else
 					{
 						// Return the connection the user provided - at this point
-						// it has been dissociated from the NHibernate session. 
+						// it has been dissociated from the NHibernate session.
+						connection = null;
 						return c;
 					}
 				}
@@ -177,10 +180,16 @@ namespace NHibernate.Impl
 					// the connection is disposed of.
 					if (autoClose)
 					{
-						session.Factory.CloseConnection(connection);
+						CloseConnection();
 					}
 				}
 			}
+		}
+
+		private void CloseConnection()
+		{
+			session.Factory.CloseConnection(connection);
+			connection = null;
 		}
 
 		public IDbConnection GetConnection()
@@ -205,12 +214,72 @@ namespace NHibernate.Impl
 
 		public void AfterTransaction()
 		{
+			if (IsAfterTransactionRelease)
+			{
+				AggressiveRelease();
+			}
+			else if (IsAggressiveRelease && session.Batcher.HasOpenResources)
+			{
+				log.Info("forcing batcher resource cleanup on transaction completion; forgot to close ScrollableResults/Enumerable?");
+				session.Batcher.CloseCommands();
+				AggressiveRelease();
+			}
+			else if (IsOnCloseRelease)
+			{
+				// log a message about potential connection leaks
+				log.Debug(
+					"transaction completed on session with on_close connection release mode; be sure to close the session to release JDBC resources!");
+			}
 			transaction = null;
 		}
 
 		public void AfterStatement()
 		{
-			// TODO
+			if (IsAggressiveRelease)
+			{
+				if (isFlushing)
+				{
+					log.Debug("skipping aggressive-release due to flush cycle");
+				}
+				else if (session.Batcher.HasOpenResources)
+				{
+					log.Debug("skipping aggressive-release due to open resources on batcher");
+				}
+				// TODO H3:
+				//else if (borrowedConnection != null)
+				//{
+				//    log.Debug("skipping aggressive-release due to borrowed connection");
+				//}
+				else
+				{
+					AggressiveRelease();
+				}
+			}
+		}
+
+		private void AggressiveRelease()
+		{
+			if (autoClose)
+			{
+				log.Debug("aggressively releasing database connection");
+				if (connection != null)
+				{
+					CloseConnection();
+				}
+			}
+		}
+
+		public void FlushBeginning()
+		{
+			log.Debug("registering flush begin");
+			isFlushing = true;
+		}
+
+		public void FlushEnding()
+		{
+			log.Debug("registering flush end");
+			isFlushing = false;
+			AfterStatement();
 		}
 
 		#region Serialization
@@ -289,6 +358,11 @@ namespace NHibernate.Impl
 				}
 				return false;
 			}
+		}
+
+		public ISessionFactoryImplementor Factory
+		{
+			get { return session.Factory; }
 		}
 	}
 }

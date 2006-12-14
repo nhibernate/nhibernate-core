@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -80,8 +81,8 @@ namespace NHibernate.Driver
 		/// Create an instance of <see cref="IBatcher"/> according to the configuration 
 		/// and the capabilities of the driver
 		/// </summary>
-		/// <param name="session">The session to associate with the batch</param>
+		/// <param name="connectionManager">The connection manager for the batcher.</param>
 		/// <returns></returns>
-		IBatcher CreateBatcher(ISessionImplementor session);
+		IBatcher CreateBatcher(ConnectionManager connectionManager);
 	}
 }

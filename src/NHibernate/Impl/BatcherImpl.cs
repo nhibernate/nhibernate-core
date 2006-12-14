@@ -23,7 +23,7 @@ namespace NHibernate.Impl
 		private static int openCommandCount;
 		private static int openReaderCount;
 
-		private readonly ISessionImplementor session;
+		private readonly ConnectionManager connectionManager;
 		private readonly ISessionFactoryImplementor factory;
 
 		// batchCommand used to be called batchUpdate - that name to me implied that updates
@@ -36,14 +36,16 @@ namespace NHibernate.Impl
 		private ISet readersToClose = new HashedSet();
 		private IDbCommand lastQuery;
 
+		private bool releasing;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BatcherImpl"/> class.
 		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> this Batcher is executing in.</param>
-		public BatcherImpl(ISessionImplementor session)
+		/// <param name="connectionManager">The <see cref="ConnectionManager"/> owning this batcher.</param>
+		public BatcherImpl(ConnectionManager connectionManager)
 		{
-			this.session = session;
-			this.factory = session.Factory;
+			this.connectionManager = connectionManager;
+			this.factory = connectionManager.Factory;
 		}
 
 		private IDriver Driver
@@ -85,33 +87,28 @@ namespace NHibernate.Impl
 			try
 			{
 				LogCommand(cmd);
+				IDbConnection sessionConnection = connectionManager.GetConnection();
 
 				if (cmd.Connection != null)
 				{
 					// make sure the commands connection is the same as the Sessions connection
 					// these can be different when the session is disconnected and then reconnected
-					if (cmd.Connection != session.Connection)
+					if (cmd.Connection != sessionConnection)
 					{
-						cmd.Connection = session.Connection;
+						cmd.Connection = sessionConnection;
 					}
 				}
 				else
 				{
-					cmd.Connection = session.Connection;
+					cmd.Connection = sessionConnection;
 				}
 
-				if (session.Transaction != null)
-				{
-					session.Transaction.Enlist(cmd);
-				}
-
+				connectionManager.Transaction.Enlist(cmd);
 				Driver.PrepareCommand(cmd);
 			}
 			catch (InvalidOperationException ioe)
 			{
-				throw new ADOException(
-					"While preparing " + cmd.CommandText + " an error occurred"
-					, ioe);
+				throw new ADOException("While preparing " + cmd.CommandText + " an error occurred", ioe);
 			}
 		}
 
@@ -180,14 +177,12 @@ namespace NHibernate.Impl
 		{
 			CheckReaders();
 			Prepare(cmd);
-			IDataReader reader;
-			if (factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders == false)
+
+			IDataReader reader = cmd.ExecuteReader();
+
+			if (!factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
-				reader = new NHybridDataReader(cmd.ExecuteReader());
-			}
-			else
-			{
-				reader = cmd.ExecuteReader();
+				reader = new NHybridDataReader(reader);
 			}
 
 			readersToClose.Add(reader);
@@ -215,33 +210,41 @@ namespace NHibernate.Impl
 
 		public void CloseCommands()
 		{
-			foreach (IDataReader reader in readersToClose)
+			releasing = true;
+			try
 			{
-				try
+				foreach (IDataReader reader in readersToClose)
 				{
-					LogCloseReader();
-					reader.Dispose();
+					try
+					{
+						LogCloseReader();
+						reader.Dispose();
+					}
+					catch (Exception e)
+					{
+						log.Warn("Could not close IDataReader", e);
+					}
 				}
-				catch (Exception e)
-				{
-					log.Warn("Could not close IDataReader", e);
-				}
-			}
-			readersToClose.Clear();
+				readersToClose.Clear();
 
-			foreach (IDbCommand cmd in commandsToClose)
-			{
-				try
+				foreach (IDbCommand cmd in commandsToClose)
 				{
-					CloseCommand(cmd);
+					try
+					{
+						CloseCommand(cmd);
+					}
+					catch (Exception e)
+					{
+						// no big deal
+						log.Warn("Could not close ADO.NET Command", e);
+					}
 				}
-				catch (Exception e)
-				{
-					// no big deal
-					log.Warn("Could not close ADO.NET Command", e);
-				}
+				commandsToClose.Clear();
 			}
-			commandsToClose.Clear();
+			finally
+			{
+				releasing = false;
+			}
 		}
 
 		private void CloseCommand(IDbCommand cmd)
@@ -255,8 +258,14 @@ namespace NHibernate.Impl
 			catch (Exception e)
 			{
 				log.Warn("exception clearing maxRows/queryTimeout", e);
-				//cmd.close();  if there was a close method in command
 				return; // NOTE: early exit!
+			}
+			finally
+			{
+				if (!releasing)
+				{
+					connectionManager.AfterStatement();
+				}
 			}
 
 			if (lastQuery == cmd)
@@ -339,16 +348,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Gets the <see cref="ISessionImplementor"/> the Batcher is handling the 
-		/// sql actions for.
+		/// Gets the <see cref="ConnectionManager"/> for this batcher.
 		/// </summary>
-		/// <value>
-		/// The <see cref="ISessionImplementor"/> the Batcher is handling the 
-		/// sql actions for.
-		/// </value>
-		protected ISessionImplementor Session
+		protected ConnectionManager ConnectionManager
 		{
-			get { return session; }
+			get { return connectionManager; }
 		}
 
 		protected void LogCommand(IDbCommand command)

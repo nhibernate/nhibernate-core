@@ -13,8 +13,9 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonBatchingBatcher"/> class.
 		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> the Batcher is in.</param>
-		public NonBatchingBatcher( ISessionImplementor session ) : base( session )
+		/// <param name="connectionManager">The <see cref="ConnectionManager"/> for this batcher.</param>
+		public NonBatchingBatcher(ConnectionManager connectionManager)
+			: base(connectionManager)
 		{
 		}
 

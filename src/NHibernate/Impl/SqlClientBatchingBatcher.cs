@@ -19,12 +19,8 @@ namespace NHibernate.Impl
 		private int totalExpectedRowsAffected;
 		SqlClientSqlCommandSet currentBatch;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		public SqlClientBatchingBatcher(ISessionImplementor session)
-			: base(session)
+		public SqlClientBatchingBatcher(ConnectionManager connectionManager)
+			: base(connectionManager)
 		{
 			batchSize = Factory.BatchSize;
 			currentBatch = new SqlClientSqlCommandSet();
