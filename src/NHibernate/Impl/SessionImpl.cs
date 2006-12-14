@@ -580,11 +580,6 @@ namespace NHibernate.Impl
 			return e.LockMode;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entity"></param>
-		/// <returns></returns>
 		public LockMode GetLockMode(object entity)
 		{
 			return GetEntry(entity).LockMode;
@@ -3206,6 +3201,16 @@ namespace NHibernate.Impl
 			entry.ExistsInDatabase = false;
 			EntityKey key = new EntityKey(entry.Id, entry.Persister);
 			RemoveEntity(key);
+			RemoveProxy(key);
+		}
+
+		private void RemoveProxy(EntityKey key)
+		{
+			if (batchFetchQueue != null)
+			{
+				batchFetchQueue.RemoveSubselect(key);
+				batchFetchQueue.RemoveBatchLoadableEntityKey(key);
+			}
 			proxiesByKey.Remove(key);
 		}
 
@@ -3789,6 +3794,11 @@ namespace NHibernate.Impl
 		private void PostFlush()
 		{
 			log.Debug("post flush");
+
+			if (batchFetchQueue != null)
+			{
+				batchFetchQueue.ClearSubselects();
+			}
 
 			ISet keysToRemove = new HashedSet();
 			foreach (DictionaryEntry me in collectionEntries)
@@ -4982,7 +4992,7 @@ namespace NHibernate.Impl
 				object id = li.Identifier;
 				IEntityPersister persister = GetClassPersister(li.PersistentClass);
 				EntityKey key = new EntityKey(id, persister);
-				proxiesByKey.Remove(key);
+				RemoveProxy(key);
 				if (!li.IsUninitialized)
 				{
 					object entity = RemoveEntity(key);
