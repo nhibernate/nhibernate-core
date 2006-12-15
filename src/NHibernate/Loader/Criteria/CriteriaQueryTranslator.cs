@@ -8,6 +8,7 @@ using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -27,6 +28,8 @@ namespace NHibernate.Loader.Criteria
 		private int aliasCount = 0;
 
 		private readonly IDictionary criteriaEntityNames = new SequencedHashMap();
+		private readonly ISet criteriaCollectionPersisters = new HashedSet();
+
 		private readonly IDictionary criteriaSQLAliasMap = new Hashtable();
 		private readonly IDictionary aliasCriteriaMap = new Hashtable();
 		private readonly IDictionary associationPathCriteriaMap = new SequencedHashMap();
@@ -59,6 +62,7 @@ namespace NHibernate.Loader.Criteria
 			CreateAliasCriteriaMap();
 			CreateAssociationPathCriteriaMap();
 			CreateCriteriaEntityNameMap();
+			CreateCriteriaCollectionPersisters();
 			CreateCriteriaSQLAliasMap();
 		}
 
@@ -95,6 +99,11 @@ namespace NHibernate.Loader.Criteria
 			foreach( System.Type entityName in criteriaEntityNames.Values )
 			{
 				result.AddAll( Factory.GetEntityPersister( entityName ).QuerySpaces );
+			}
+
+			foreach (ICollectionPersister collectionPersister in criteriaCollectionPersisters)
+			{
+				result.Add(collectionPersister.CollectionSpace);
 			}
 			return result;
 		}
@@ -192,36 +201,53 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		private System.Type GetPathEntityName( string path ) 
+		private void CreateCriteriaCollectionPersisters()
 		{
-			IQueryable persister = ( IQueryable ) Factory.GetEntityPersister( rootEntityName );
-			StringTokenizer tokens = new StringTokenizer( path, ".", false );
+			foreach (DictionaryEntry me in associationPathCriteriaMap)
+			{
+				IJoinable joinable = GetPathJoinable((string) me.Key);
+				if (joinable.IsCollection)
+				{
+					criteriaCollectionPersisters.Add(joinable);
+				}
+			}
+		}
+
+		private IJoinable GetPathJoinable(string path)
+		{
+			IJoinable last = (IJoinable) Factory.GetEntityPersister(rootEntityName);
+			IPropertyMapping lastEntity = (IPropertyMapping) last;
+
 			string componentPath = "";
 
-			IEnumerator tokensEnum = tokens.GetEnumerator();
-
-			while ( tokensEnum.MoveNext() )
+			StringTokenizer tokens = new StringTokenizer( path, ".", false );
+			foreach (string token in tokens)
 			{
-				componentPath += tokensEnum.Current;
-				IType type = persister.ToType( componentPath );
-				if ( type.IsAssociationType ) 
+				componentPath += token;
+				IType type = lastEntity.ToType( componentPath );
+				if (type.IsAssociationType)
 				{
-					IAssociationType atype = ( IAssociationType ) type;
-					persister = ( IQueryable ) Factory.GetEntityPersister(
-						atype.GetAssociatedClass( Factory )
-						);
+					IAssociationType atype = (IAssociationType) type;
+					last = atype.GetAssociatedJoinable(Factory);
+					lastEntity = (IPropertyMapping) Factory.GetEntityPersister(atype.GetAssociatedClass(Factory));
 					componentPath = "";
 				}
-				else if ( type.IsComponentType ) 
+				else if (type.IsComponentType)
 				{
 					componentPath += '.';
 				}
-				else 
+				else
 				{
-					throw new QueryException( "not an association: " + componentPath );
+					throw new QueryException("not an association: " + componentPath);
 				}
 			}
-			return persister.MappedClass;
+			return last;
+		}
+
+		private System.Type GetPathEntityName( string path ) 
+		{
+			IPropertyMapping propertyMapping = (IPropertyMapping) GetPathJoinable(path);
+			return ((IAssociationType) propertyMapping.Type).GetAssociatedClass(Factory);
 		}
 
 		public int SQLAliasCount
