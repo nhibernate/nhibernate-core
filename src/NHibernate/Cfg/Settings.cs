@@ -39,6 +39,7 @@ namespace NHibernate.Cfg
 		// not ported - private bool _jdbcBatchVersionedData
 		// TODO: private bool _sqlExceptionConverter;
 		// TODO: private bool _wrapDataReadersEnabled;
+		private ConnectionReleaseMode connectionReleaseMode;
 		
 		// New in NH:
 		private IsolationLevel _isolationLevel;
@@ -187,5 +188,10 @@ namespace NHibernate.Cfg
 			set { _queryTranslatorFactory = value; }
 		}
 
+		public ConnectionReleaseMode ConnectionReleaseMode
+		{
+			get { return connectionReleaseMode; }
+			set { connectionReleaseMode = value; }
+		}
 	}
 }

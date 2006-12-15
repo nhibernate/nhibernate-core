@@ -81,6 +81,10 @@
     <Compile Include="CompositeId\ClassWithCompositeIdFixture.cs" />
     <Compile Include="CompositeId\Id.cs" />
     <Compile Include="ConnectionStringTest\NamedConnectionStringFixture.cs" />
+    <Compile Include="ConnectionTest\AggressiveReleaseTest.cs" />
+    <Compile Include="ConnectionTest\ConnectionManagementTestCase.cs" />
+    <Compile Include="ConnectionTest\Other.cs" />
+    <Compile Include="ConnectionTest\Silly.cs" />
     <Compile Include="Criteria\Animal.cs" />
     <Compile Include="Criteria\Course.cs" />
     <Compile Include="Criteria\CriteriaQueryTest.cs" />
@@ -744,6 +748,9 @@
     <EmbeddedResource Include="Criteria\Animal.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ConnectionTest\Silly.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -755,8 +762,10 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>copy "$(ProjectDir)\App.config" "$(TargetPath).config"
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)\App.config" "$(TargetPath).config"
 copy "$(ProjectDir)\hibernate.cfg.xml" "hibernate.cfg.xml"
-copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PreBuildEvent>
+copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>

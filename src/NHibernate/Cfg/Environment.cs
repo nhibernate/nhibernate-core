@@ -65,6 +65,8 @@ namespace NHibernate.Cfg
 		public const string ConnectionDriver = "hibernate.connection.driver_class";
 		public const string ConnectionString = "hibernate.connection.connection_string";
 		public const string Isolation = "hibernate.connection.isolation";
+		public const string ReleaseConnections = "hibernate.connection.release_mode";
+
 		/// <summary>
 		/// Used to find the .Net 2.0 named connection string
 		/// </summary>

@@ -24,6 +24,7 @@ namespace NHibernate.Impl
 		private bool _single;
 		private object _currentResult;
 		private bool _hasNext;
+		private bool _startedReading; // True if at least one MoveNext call was made.
 		private string[ ][ ] _names;
 		private IDbCommand _cmd;
 
@@ -62,6 +63,7 @@ namespace NHibernate.Impl
 
 		private void PostMoveNext( bool hasNext )
 		{
+			_startedReading = true;
 			_hasNext = hasNext;
 			_currentRow++;
 			if( _selection != null && _selection.MaxRows != RowSelection.NoValue )
@@ -213,7 +215,7 @@ namespace NHibernate.Impl
 				// if there is still a possibility of moving next then we need to clean up
 				// the resources - otherwise the cleanup has already been done by the 
 				// PostMoveNext method.
-				if( _hasNext ) 
+				if( _hasNext || !_startedReading ) 
 				{
 					_currentResult = null;
 					_sess.Batcher.CloseCommand( _cmd, _reader );

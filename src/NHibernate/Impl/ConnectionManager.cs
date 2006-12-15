@@ -190,6 +190,7 @@ namespace NHibernate.Impl
 		{
 			session.Factory.CloseConnection(connection);
 			connection = null;
+			connectForNextOperation = true;
 		}
 
 		public IDbConnection GetConnection()
@@ -348,11 +349,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				if (connectionReleaseMode == ConnectionReleaseMode.AfterStatement)
-				{
-					return true;
-				}
-				else if (connectionReleaseMode == ConnectionReleaseMode.AfterTransaction)
+				if (connectionReleaseMode == ConnectionReleaseMode.AfterTransaction)
 				{
 					return !IsInActiveTransaction;
 				}
@@ -363,6 +360,21 @@ namespace NHibernate.Impl
 		public ISessionFactoryImplementor Factory
 		{
 			get { return session.Factory; }
+		}
+
+		public bool IsReadyForSerialization
+		{
+			get
+			{
+				if (autoClose)
+				{
+					return connection == null && !session.Batcher.HasOpenResources;
+				}
+				else
+				{
+					return connection == null;
+				}
+			}
 		}
 	}
 }

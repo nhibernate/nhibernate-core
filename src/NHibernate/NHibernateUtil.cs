@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using NHibernate.Collection;
+using NHibernate.Impl;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.SqlTypes;
@@ -392,5 +394,34 @@ namespace NHibernate
 			return new ClobImpl(reader, length);
 		}
 		*/
+
+		/// <summary>
+		/// Close an <see cref="IEnumerator" /> obtained from an <see cref="IEnumerable" />
+		/// returned by NHibernate immediately, instead of waiting until the session is
+		/// closed or disconnected.
+		/// </summary>
+		public static void Close(IEnumerator enumerator)
+		{
+			EnumerableImpl hibernateEnumerator = enumerator as EnumerableImpl;
+			if (hibernateEnumerator == null)
+			{
+				throw new ArgumentException("Not a NHibernate enumerator", "enumerator");
+			}
+			hibernateEnumerator.Dispose();
+		}
+
+		/// <summary>
+		/// Close an <see cref="IEnumerable" /> returned by NHibernate immediately,
+		/// instead of waiting until the session is closed or disconnected.
+		/// </summary>
+		public static void Close(IEnumerable enumerable)
+		{
+			EnumerableImpl hibernateEnumerable = enumerable as EnumerableImpl;
+			if (hibernateEnumerable == null)
+			{
+				throw new ArgumentException("Not a NHibernate enumerable", "enumerable");
+			}
+			hibernateEnumerable.Dispose();
+		}
 	}
 }

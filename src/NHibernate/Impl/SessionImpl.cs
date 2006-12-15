@@ -240,7 +240,7 @@ namespace NHibernate.Impl
 		{
 			log.Debug("writting session to serializer");
 
-			if (connectionManager.IsConnected)
+			if (!connectionManager.IsReadyForSerialization)
 			{
 				throw new InvalidOperationException("Cannot serialize a Session while connected");
 			}
@@ -5707,7 +5707,12 @@ namespace NHibernate.Impl
 				return batchFetchQueue;
 			}
 		}
-		
+
+		public ConnectionManager ConnectionManager
+		{
+			get { return connectionManager; }
+		}
+
 		public bool ContainsEntity(EntityKey key)
 		{
 			return GetEntity(key) != null;

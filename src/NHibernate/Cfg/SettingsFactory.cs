@@ -68,6 +68,19 @@ namespace NHibernate.Cfg
 			bool useMinimalPuts = PropertiesHelper.GetBoolean( Environment.UseMinimalPuts, properties, false );
 			log.Info( "Optimize cache for minimal puts: " + useMinimalPuts );
 
+			string releaseModeName = PropertiesHelper.GetString(Environment.ReleaseConnections, properties, "auto");
+			log.Info( "Connection release mode: " + releaseModeName );
+			ConnectionReleaseMode releaseMode;
+			if ("auto".Equals(releaseModeName))
+			{
+				releaseMode = ConnectionReleaseMode.AfterTransaction; //transactionFactory.DefaultReleaseMode;
+			}
+			else
+			{
+				releaseMode = ParseConnectionReleaseMode(releaseModeName);
+			}
+			settings.ConnectionReleaseMode = releaseMode;
+
 			string defaultSchema = properties[ Environment.DefaultSchema ] as string;
 			if( defaultSchema != null )
 			{
@@ -195,6 +208,21 @@ namespace NHibernate.Cfg
 		private SettingsFactory()
 		{
 			//should not be publically creatable
+		}
+
+		private static ConnectionReleaseMode ParseConnectionReleaseMode(string name)
+		{
+			switch (name)
+			{
+				case "after_statement":
+					throw new HibernateException("aggressive connection release (after_statement) not supported by NHibernate");
+				case "after_transaction":
+					return ConnectionReleaseMode.AfterTransaction;
+				case "on_close":
+					return ConnectionReleaseMode.OnClose;
+				default:
+					throw new HibernateException("could not determine appropriate connection release mode [" + name + "]");
+			}
 		}
 
 		// visibility changed and static modifier added until complete H3.2 porting of SettingsFactory

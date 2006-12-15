@@ -535,11 +535,21 @@ namespace NHibernate.Impl
 			return new SessionImpl(connection, this, autoClose, timestamp, interceptor, connectionReleaseMode);
 		}
 
+		public ISession OpenSession()
+		{
+			return OpenSession(interceptor);
+		}
+
+		public ISession OpenSession(IDbConnection connection)
+		{
+			return OpenSession(connection, interceptor);
+		}
+
 		public ISession OpenSession(IDbConnection connection, IInterceptor interceptor)
 		{
 			// specify false for autoClose because the user has passed in an IDbConnection
 			// and they assume responsibility for it.
-			return OpenSession(connection, false, long.MinValue, interceptor, ConnectionReleaseMode.OnClose);
+			return OpenSession(connection, false, long.MinValue, interceptor, settings.ConnectionReleaseMode);
 		}
 
 		public ISession OpenSession(IInterceptor interceptor)
@@ -547,23 +557,7 @@ namespace NHibernate.Impl
 			long timestamp = Timestamper.Next();
 			// specify true for autoClose because NHibernate has responsibility for
 			// the IDbConnection.
-			return OpenSession(null, true, timestamp, interceptor, ConnectionReleaseMode.OnClose);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="connection"></param>
-		/// <returns></returns>
-		public ISession OpenSession(IDbConnection connection)
-		{
-			return OpenSession(connection, interceptor);
-		}
-
-		/// <summary></summary>
-		public ISession OpenSession()
-		{
-			return OpenSession(interceptor);
+			return OpenSession(null, true, timestamp, interceptor, settings.ConnectionReleaseMode);
 		}
 
 		public IEntityPersister GetEntityPersister(string className)
