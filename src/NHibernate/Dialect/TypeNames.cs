@@ -96,6 +96,7 @@ namespace NHibernate.Dialect
 					}
 				}
 			}
+			//Could not find a specific type for the size, using the default
 			return StringHelper.ReplaceOnce( Get( typecode ), placeholder, size.ToString() );
 		}
 
