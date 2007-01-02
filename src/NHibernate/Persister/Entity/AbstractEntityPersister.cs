@@ -619,11 +619,12 @@ namespace NHibernate.Persister.Entity
 				// TODO H3: if (!IsNullableTable(tableNumber))
 				throw new StaleObjectStateException(MappedClass, id);
 			}
-			catch (TooManyRowsAffectedException)
+			catch (TooManyRowsAffectedException ex)
 			{
 				throw new HibernateException(
 					"Duplicate identifier in table for: " +
-					MessageHelper.InfoString(this, id, Factory));
+					MessageHelper.InfoString(this, id, Factory),
+					ex);
 			}
 		}
 
