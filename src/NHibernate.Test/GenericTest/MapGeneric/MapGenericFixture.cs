@@ -44,26 +44,37 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			a.Items.Add( "first", firstB );
 			a.Items.Add( "second", secondB );
 
-			ISession s = OpenSession();
-			s.SaveOrUpdate( a );
-			// this flush should test how NH wraps a generic collection with its
-			// own persistent collection
-			s.Flush();
-			s.Close();
+			using (ISession s = OpenSession())
+			{
+				s.SaveOrUpdate(a);
+				// this flush should test how NH wraps a generic collection with its
+				// own persistent collection
+				s.Flush();
+			}
+
 			Assert.IsNotNull( a.Id );
 			// should have cascaded down to B
 			Assert.IsNotNull( firstB.Id );
 			Assert.IsNotNull( secondB.Id );
 
-			s = OpenSession();
-			a = s.Load<A>( a.Id );
-			B thirdB = new B();
-			thirdB.Name = "third B";
-			// ensuring the correct generic type was constructed
-			a.Items.Add( "third", thirdB );
-			Assert.AreEqual( 3, a.Items.Count, "3 items in the map now" );
-			s.Flush();
-			s.Close();
+			using (ISession s = OpenSession())
+			{
+				a = s.Load<A>(a.Id);
+				B thirdB = new B();
+				thirdB.Name = "third B";
+				// ensuring the correct generic type was constructed
+				a.Items.Add("third", thirdB);
+				Assert.AreEqual(3, a.Items.Count, "3 items in the map now");
+				s.Flush();
+			}
+
+			// NH-839
+			using (ISession s = OpenSession())
+			{
+				a = s.Load<A>( a.Id );
+				a.Items["second"] = a.Items["third"];
+				s.Flush();
+			}
 		}
 
 		// NH-669

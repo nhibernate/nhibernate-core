@@ -203,10 +203,14 @@ namespace NHibernate.Collection.Generic
 			return ( ( KeyValuePair<TKey, TValue> ) entry ).Value;
 		}
 
-		public override object GetSnapshotElement( object entry, int i )
+		public override object GetSnapshotElement(object entry, int i)
 		{
-			IList<TValue> sn = ( IList<TValue> ) GetSnapshot();
-			return sn[ i ];
+			// The snapshot is a Dictionary<TKey, TValue> which is an IDictionary as well.
+			// IDictionary is used here so that the indexer returns null if the key
+			// is not found, instead of throwing an exception.
+			IDictionary sn = (IDictionary) GetSnapshot();
+			TKey key = ((KeyValuePair<TKey, TValue>) entry).Key;
+			return sn[key];
 		}
 
 		#endregion
