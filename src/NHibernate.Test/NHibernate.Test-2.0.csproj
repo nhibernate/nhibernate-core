@@ -358,6 +358,8 @@
     <Compile Include="NHSpecificTest\NH750\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH776\Domain.cs" />
     <Compile Include="NHSpecificTest\NH776\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH826\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH826\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH830\AutoFlushTestFixture.cs" />
     <Compile Include="NHSpecificTest\NH830\Cat.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
@@ -754,6 +756,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH830\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH826\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

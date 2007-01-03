@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH826" default-lazy="false">
+	<class name="ActivitySet" table="co_activity_set" discriminator-value="">
+		<cache usage="read-write" />
+		<id name="Id" column="Id" type="Int32" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<bag name="Activities" lazy="true" table="co_activity_set_membership" cascade="save-update" outer-join="true" inverse="false">
+			<key column="ActivitySetId" />
+			<many-to-many column="ActivityId" class="Activity" />
+		</bag>
+	</class>
+
+	<class name="Activity" table="co_activity" discriminator-value="0">
+		<cache usage="read-write" />
+		<id name="Id" column="Id" type="Int32" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="ActivityType" type="String" />
+
+		<subclass name="EvaluationActivity" discriminator-value="3">
+			<bag name="Questions" lazy="true" table="" cascade="all-delete-orphan" outer-join="true" inverse="false">
+				<key column="EvaluationActivityId" />
+				<one-to-many class="Question" />
+			</bag>
+		</subclass>
+	</class>
+
+	<class name="Question" table="co_question" discriminator-value="">
+		<cache usage="read-write" />
+		<id name="Id" column="Id" type="Int32" unsaved-value="0">
+			<generator class="native" />
+		</id>
+	</class>
+
+</hibernate-mapping>

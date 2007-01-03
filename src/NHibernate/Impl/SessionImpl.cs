@@ -3895,6 +3895,36 @@ namespace NHibernate.Impl
 		/// <param name="coll"></param>
 		private void UpdateUnreachableCollection(IPersistentCollection coll)
 		{
+			if (coll.Owner == null)
+			{
+				ProcessNeverReferencedCollection(coll);
+			}
+			else
+			{
+				ProcessDereferencedCollection(coll);
+			}
+		}
+
+		private void ProcessNeverReferencedCollection(IPersistentCollection coll)
+		{
+			CollectionEntry entry = GetCollectionEntry(coll);
+
+			log.Debug(
+				"Found collection with unloaded owner: " +
+				MessageHelper.InfoString(
+					entry.LoadedPersister,
+					entry.LoadedKey
+					)
+				);
+
+			entry.CurrentPersister = entry.LoadedPersister;
+			entry.CurrentKey = entry.LoadedKey;
+
+			PrepareCollectionForUpdate(coll, entry);
+		}
+
+		private void ProcessDereferencedCollection(IPersistentCollection coll)
+		{
 			CollectionEntry entry = GetCollectionEntry(coll);
 
 			if (log.IsDebugEnabled && entry.LoadedPersister != null)
