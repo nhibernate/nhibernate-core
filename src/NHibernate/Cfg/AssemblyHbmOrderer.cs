@@ -18,7 +18,7 @@ namespace NHibernate.Cfg
 	/// attribute.  This ensures that those subclasses/joined-subclasses will not be
 	/// processed until after the class they extend is processed.
 	/// </remarks>
-	internal class AssemblyHbmOrderer
+	public class AssemblyHbmOrderer
 	{
 		/*
 		 * It almost seems like a better way to handle this would be to have
@@ -34,31 +34,45 @@ namespace NHibernate.Cfg
 		/// An unordered <see cref="IList"/> of all the mapped classes contained
 		/// in the assembly.
 		/// </summary>
-		ArrayList _classes;
+		ArrayList _classes = new ArrayList();
 		
 		/// <summary>
 		/// An <see cref="IList"/> of all the <c>hbm.xml</c> resources found
 		/// in the assembly.
 		/// </summary>
-		ArrayList _hbmResources;
-			
+		ArrayList _hbmResources = new ArrayList();
+
 		/// <summary>
-		/// Creates a new instance of <see cref="AssemblyHbmOrderer"/>
+		/// Creates a new instance of AssemblyHbmOrderer with all embedded resources
+		/// ending in <c>.hbm.xml</c> added.
 		/// </summary>
-		/// <param name="assembly">The <see cref="Assembly"/> to order the <c>hbm.xml</c> files in.</param>
-		public AssemblyHbmOrderer(Assembly assembly) 
+		public static AssemblyHbmOrderer CreateWithAllResourcesIn(Assembly assembly)
 		{
-			_assembly = assembly;	
-			_classes = new ArrayList();
-			_hbmResources = new ArrayList();
+			AssemblyHbmOrderer result = new AssemblyHbmOrderer(assembly);
 
 			foreach( string fileName in assembly.GetManifestResourceNames() )
 			{
 				if( fileName.EndsWith( ".hbm.xml" ) )
 				{
-					_hbmResources.Add( fileName );
+					result.AddResource( fileName );
 				}
 			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Creates a new instance of <see cref="AssemblyHbmOrderer"/>
+		/// </summary>
+		/// <param name="assembly">The <see cref="Assembly"/> to get resources from.</param>
+		public AssemblyHbmOrderer(Assembly assembly) 
+		{
+			_assembly = assembly;
+		}
+
+		public void AddResource(string fileName)
+		{
+			_hbmResources.Add(fileName);
 		}
 
 		/// <summary>
@@ -71,17 +85,18 @@ namespace NHibernate.Cfg
 		{
 			// tracks if any hbm.xml files make use of the "extends" attribute
 			bool containsExtends = false;
+			// tracks any extra files, i.e. those that do not contain a class definition.
+			StringCollection extraFiles = new StringCollection();
 
 			foreach( string fileName in _hbmResources ) 
 			{
 				Stream xmlInputStream = null;
 				XmlReader xmlReader = null;
+				bool addedToClasses = false;
 
-				try 
+				using (xmlInputStream = _assembly.GetManifestResourceStream( fileName ))
+				using (xmlReader = new XmlTextReader( xmlInputStream ))
 				{
-					xmlInputStream = _assembly.GetManifestResourceStream( fileName );
-					xmlReader = new XmlTextReader( xmlInputStream );
-
 					while( xmlReader.Read() )
 					{
 						if( xmlReader.NodeType != XmlNodeType.Element )
@@ -95,6 +110,7 @@ namespace NHibernate.Cfg
 							string className = StringHelper.GetClassname( xmlReader.Value );
 							ClassEntry ce = new ClassEntry( null, className, fileName );
 							_classes.Add(ce);
+							addedToClasses = true;
 						}
 						else if( xmlReader.Name=="joined-subclass" || xmlReader.Name=="subclass" )
 						{
@@ -106,20 +122,15 @@ namespace NHibernate.Cfg
 								string baseClassName = StringHelper.GetClassname( xmlReader.Value );
 								ClassEntry ce = new ClassEntry( baseClassName, className, fileName );
 								_classes.Add(ce);
+								addedToClasses = true;
 							}
 						}
 					}
 				}
-				finally 
+
+				if (!addedToClasses)
 				{
-					if( xmlReader!=null ) 
-					{
-						xmlReader.Close();
-					}
-					if( xmlInputStream!=null )
-					{
-						xmlInputStream.Close();
-					}
+					extraFiles.Add(fileName);
 				}
 			}
 
@@ -128,13 +139,16 @@ namespace NHibernate.Cfg
 			// need to spend the time doing that then don't bother.
 			if( containsExtends )
 			{
-				return OrderedHbmFiles( _classes );
+				string[] extraFilesArray = new string[extraFiles.Count];
+				extraFiles.CopyTo(extraFilesArray, 0);
+				StringCollection result = OrderedHbmFiles( _classes );
+				result.AddRange(extraFilesArray);
+				return result;
 			}
 			else
 			{
 				return _hbmResources;
 			}
-			
 		}
 
 		/// <summary>
@@ -145,7 +159,7 @@ namespace NHibernate.Cfg
 		/// <returns>
 		/// An <see cref="IList"/> of <see cref="String"/> objects that contain the <c>hbm.xml</c> file names.
 		/// </returns>
-		private IList OrderedHbmFiles(IList unorderedClasses)
+		private StringCollection OrderedHbmFiles(IList unorderedClasses)
 		{
 			// Make sure joined-subclass mappings are loaded after base class
 			ArrayList sortedList = new ArrayList();

@@ -362,6 +362,7 @@
     <Compile Include="NHSpecificTest\NH826\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH830\AutoFlushTestFixture.cs" />
     <Compile Include="NHSpecificTest\NH830\Cat.cs" />
+    <Compile Include="NHSpecificTest\NH845\Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />

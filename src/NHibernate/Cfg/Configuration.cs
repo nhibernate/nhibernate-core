@@ -621,7 +621,7 @@ namespace NHibernate.Cfg
 			}
 			else
 			{
-				AssemblyHbmOrderer orderer = new AssemblyHbmOrderer( assembly );
+				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithAllResourcesIn( assembly );
 				resources = orderer.GetHbmFiles();
 			}
 
