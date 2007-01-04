@@ -149,7 +149,7 @@ namespace NHibernate.Tool.hbm2net
 			string saveToPackage = renderer.getSaveToPackage(classMapping);
 			string saveToClassName = renderer.getSaveToClassName(classMapping);
 			FileInfo dir = this.getDir(saveToPackage);
-			FileInfo file = new FileInfo(dir.FullName + "\\" + this.getFileName(saveToClassName));
+			FileInfo file = new FileInfo(Path.Combine(dir.FullName, this.getFileName(saveToClassName)));
 			log.Debug("Writing " + file);
 			
 			StreamWriter writer = new StreamWriter(new FileStream(file.FullName, FileMode.Create));
@@ -200,7 +200,7 @@ namespace NHibernate.Tool.hbm2net
 			
 			string p = getPackageName(packageName);
 			
-			dir = new FileInfo(baseDir.FullName + "\\" + p.Replace(StringHelper.Dot, Path.DirectorySeparatorChar));
+			dir = new FileInfo(Path.Combine(baseDir.FullName, p.Replace(StringHelper.Dot, Path.DirectorySeparatorChar)));
 			
 			// if the directory exists, make sure it is a directory
 			bool tmpBool;
