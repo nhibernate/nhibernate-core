@@ -162,7 +162,6 @@
     <EmbeddedResource Include="ABC.hbm.xml" />
     <EmbeddedResource Include="ABCExtends.hbm.xml" />
     <EmbeddedResource Include="ABCProxy.hbm.xml" />
-    <EmbeddedResource Include="AltSimple.hbm.xml" />
     <EmbeddedResource Include="Baz.hbm.xml" />
     <EmbeddedResource Include="Blobber.hbm.xml" />
     <EmbeddedResource Include="Broken.hbm.xml" />
