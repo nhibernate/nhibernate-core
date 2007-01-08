@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Get the persister for a class
 		/// </summary>
-		IEntityPersister GetEntityPersister( System.Type clazz );
+		IEntityPersister GetEntityPersister(System.Type clazz);
 
 		/// <summary>
 		/// Get the persister for the named class
@@ -25,7 +25,7 @@ namespace NHibernate.Engine
 		/// <param name="className">The name of the class that is persisted.</param>
 		/// <returns>The <see cref="IEntityPersister"/> for the class.</returns>
 		/// <exception cref="MappingException">If no <see cref="IEntityPersister"/> can be found.</exception>
-		IEntityPersister GetEntityPersister( string className );
+		IEntityPersister GetEntityPersister(string className);
 
 		/// <summary>
 		/// Get the persister for the named class
@@ -36,20 +36,20 @@ namespace NHibernate.Engine
 		/// <returns>The <see cref="IEntityPersister"/> for the class.</returns>
 		/// <exception cref="MappingException">If no <see cref="IEntityPersister"/> can be found
 		/// and throwIfNotFound is true.</exception>
-		IEntityPersister GetEntityPersister( string className, bool throwIfNotFound );
-		
+		IEntityPersister GetEntityPersister(string className, bool throwIfNotFound);
+
 		/// <summary>
 		/// Get the persister object for a collection role
 		/// </summary>
 		/// <param name="role"></param>
 		/// <returns></returns>
-		ICollectionPersister GetCollectionPersister( string role );
+		ICollectionPersister GetCollectionPersister(string role);
 
 		/// <summary>
 		/// Is outerjoin fetching enabled?
 		/// </summary>
 		bool IsOuterJoinedFetchEnabled { get; }
-		
+
 		/// <summary>
 		/// Are scrollable <c>ResultSet</c>s supported?
 		/// </summary>
@@ -70,21 +70,21 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="queryString"></param>
 		/// <returns></returns>
-		IType[ ] GetReturnTypes( string queryString );
+		IType[] GetReturnTypes(string queryString);
 
 		/// <summary>
 		/// Get the names of all persistent classes that implement/extend the given interface/class
 		/// </summary>
 		/// <param name="clazz"></param>
 		/// <returns></returns>
-		string[ ] GetImplementors( System.Type clazz );
+		string[] GetImplementors(System.Type clazz);
 
 		/// <summary>
 		/// Get a class name, using query language imports
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		string GetImportedClassName( string name );
+		string GetImportedClassName(string name);
 
 		/// <summary>
 		/// 
@@ -118,8 +118,8 @@ namespace NHibernate.Engine
 		/// query cache</param>
 		/// <returns>the existing cache, or a newly created cache if none by that
 		/// region name</returns>
-		IQueryCache GetQueryCache( string regionName );
-		
+		IQueryCache GetQueryCache(string regionName);
+
 		/// <summary>
 		/// Is query caching enabled?
 		/// </summary>
@@ -135,7 +135,7 @@ namespace NHibernate.Engine
 		/// Release an ADO.NET connection
 		/// </summary>
 		/// <param name="conn"></param>
-		void CloseConnection( IDbConnection conn );
+		void CloseConnection(IDbConnection conn);
 
 		/// <summary>
 		/// Gets the IsolationLevel an IDbTransaction should be set to.
@@ -154,14 +154,26 @@ namespace NHibernate.Engine
 		/// is calculated from <c>hibernate.adonet.batch_size</c> if the value exists and greater than 0.
 		/// </summary>
 		bool IsBatchUpdateEnabled { get; }
-		
+
 		/// <summary>
 		/// Get the identifier generator for the hierarchy
 		/// </summary>
-		IIdentifierGenerator GetIdentifierGenerator( System.Type rootClass );
+		IIdentifierGenerator GetIdentifierGenerator(System.Type rootClass);
 
 		ResultSetMappingDefinition GetResultSetMapping(string resultSetRef);
 
 		ITransactionFactory TransactionFactory { get; }
+
+		/// <summary>
+		/// Open a session conforming to the given parameters. For use mainly by
+		/// <see cref="Context.ICurrentSessionContext" /> implementations.
+		/// </summary>
+		/// <param name="connection">The external ADO.NET connection to use, if any (i.e., optional).</param>
+		/// <param name="connectionReleaseMode">The release mode for managed database connections.</param>
+		/// <returns>An appropriate session.</returns>
+		/// <exception cref="HibernateException" />
+		ISession OpenSession(
+			IDbConnection connection,
+			ConnectionReleaseMode connectionReleaseMode);
 	}
 }

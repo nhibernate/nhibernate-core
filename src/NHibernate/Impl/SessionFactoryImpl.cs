@@ -560,6 +560,11 @@ namespace NHibernate.Impl
 			return OpenSession(null, true, timestamp, interceptor, settings.ConnectionReleaseMode);
 		}
 
+		public ISession OpenSession(IDbConnection connection, ConnectionReleaseMode connectionReleaseMode)
+		{
+			return OpenSession(connection, connection != null, Timestamper.Next(), interceptor, connectionReleaseMode);
+		}
+
 		public IEntityPersister GetEntityPersister(string className)
 		{
 			return GetEntityPersister(className, true);
