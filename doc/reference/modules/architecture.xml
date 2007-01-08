@@ -165,5 +165,98 @@
         </para>
     </sect1>
 
-</chapter>
+    <sect1 id="architecture-states">
+        <title>Instance states</title>
+        <para>
+            An instance of a persistent classes may be in one of three different states,
+            which are defined with respect to a <emphasis>persistence context</emphasis>.
+            The NHibernate <literal>ISession</literal> object is the persistence context:
+        </para>
+        
+       <variablelist spacing="compact">
+            <varlistentry>
+                <term>transient</term>
+                <listitem>
+                    <para>
+                        The instance is not, and has never been associated with
+                        any persistence context. It has no persistent identity
+                        (primary key value).
+                    </para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>persistent</term>
+                <listitem>
+                    <para>
+                        The instance is currently associated with a persistence 
+                        context. It has a persistent identity (primary key value)
+                        and, perhaps, a corresponding row in the database. For a
+                        particular persistence context, NHibernate 
+                        <emphasis>guarantees</emphasis> that persistent identity
+                        is equivalent to CLR identity (in-memory location of the
+                        object).
+                    </para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>detached</term>
+                <listitem>
+                    <para>
+                        The instance was once associated with a persistence
+                        context, but that context was closed, or the instance
+                        was serialized to another process. It has a persistent 
+                        identity and, perhaps, a corrsponding row in the database.
+                        For detached instances, NHibernate makes no guarantees 
+                        about the relationship between persistent identity and
+                        CLR identity.
+                    </para>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+    </sect1>    
 
+    <sect1 id="architecture-current-session">
+        <title>Contextual Sessions</title>
+        <para>
+            Most applications using NHibernate need some form of "contextual" sessions, where a given
+            session is in effect throughout the scope of a given context. However, across applications
+            the definition of what constitutes a context is typically different; and different contexts
+            define different scopes to the notion of current.
+        </para>
+        <para>
+            Starting with version 1.2, NHibernate added the <literal>ISessionFactory.GetCurrentSession()</literal>
+            method. The processing behind <literal>ISessionFactory.GetCurrentSession()</literal> is pluggable.
+            An extension interface (<literal>NHibernate.Context.ICurrentSessionContext</literal>) and a new
+            configuration parameter (<literal>hibernate.current_session_context_class</literal>) have been added
+            to allow pluggability of the scope and context of defining current sessions.
+        </para>
+        <para>
+            See the API documentation for the <literal>NHibernate.Context.ICurrentSessionContext</literal>
+            interface for a detailed discussion of its contract.  It defines a single method,
+            <literal>CurrentSession()</literal>, by which the implementation is responsible for
+            tracking the current contextual session.  Out-of-the-box, NHibernate comes with one
+            implementation of this interface:
+        </para>
+
+        <itemizedlist>
+            <listitem>
+                <para>
+                    <literal>NHibernate.Context.ManagedWebSessionContext</literal> - current
+                    sessions are tracked by <literal>HttpContext</literal>. However, you are responsible to
+                    bind and unbind an <literal>ISession</literal> instance with static methods
+                    on this class, it never opens, flushes, or closes an <literal>ISession</literal> itself.
+                </para>
+            </listitem>
+        </itemizedlist>
+
+        <para>
+            The <literal>hibernate.current_session_context_class</literal> configuration parameter
+            defines which <literal>NHibernate.Context.ICurrentSessionContext</literal> implementation
+            should be used. Typically, the value of this parameter would just name the implementation
+            class to use (including the assembly name); for the out-of-the-box implementation, however,
+            there is a corresponding short name, "managed_web".
+        </para>
+        
+    </sect1>
+    
+</chapter>
