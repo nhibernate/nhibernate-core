@@ -287,6 +287,16 @@ ISession session = sessions.OpenSession(conn);
                     </para>
                 </entry>
             </row>
+            <row>
+                <entry>
+                    <literal>hibernate.adonet.batch_size</literal>
+                </entry>
+                <entry>
+                    Specify the batch size to use when batching update statements. Setting this to 0
+                    (the default) disables the functionality.
+                    See <xref linkend="performance-batch-updates" />.
+                </entry>
+            </row>
             </tbody>
             </tgroup>
         </table>
@@ -695,11 +705,11 @@ ISession session = sessions.OpenSession(conn);
                         <row>
                             <entry>SQLite</entry>
                             <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
-							<entry>
-								Set <literal>hibernate.driver_class</literal> to
-								<literal>NHibernate.Driver.SQLite20Driver</literal>
-								for System.Data.SQLite provider for .NET 2.0.
-							</entry>
+                            <entry>
+                                Set <literal>hibernate.driver_class</literal> to
+                                <literal>NHibernate.Driver.SQLite20Driver</literal>
+                                for System.Data.SQLite provider for .NET 2.0.
+                            </entry>
                         </row>
                         <row>
                             <entry>Ingres 3.0</entry>

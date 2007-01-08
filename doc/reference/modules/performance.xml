@@ -1149,4 +1149,36 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
 
     </sect1>
 
+    <sect1 id="performance-batch-updates">
+        <title>Batch updates</title>
+        
+        <para>
+            NHibernate 1.2 supports batching SQL update commands (<literal>INSERT</literal>,
+            <literal>UPDATE</literal>, <literal>DELETE</literal>) with the following limitations:
+        </para>
+            
+        <itemizedlist>
+            <listitem>
+                <para>.NET Framework 2.0 or above is required,</para>
+            </listitem>
+            <listitem>
+                <para>only Microsoft SQL Server is supported currently,</para>
+            </listitem>
+            <listitem>
+                <para>since the implementation uses reflection to access members and types
+                in System.Data assembly which are not normally visible, it may not function
+                in environments where necessary permissions are not granted,</para>
+            </listitem>
+            <listitem>
+                <para>optimistic concurrency checking may be impaired since ADO.NET 2.0 does not
+                return the number of rows affected by each statement in the batch, only
+                the total number of rows affected by the batch.</para>
+            </listitem>
+        </itemizedlist>
+
+        <para>
+            Update batching is enabled by setting <literal>hibernate.adonet.batch_size</literal>
+            to a non-zero value.
+        </para>
+    </sect1>
 </chapter>
