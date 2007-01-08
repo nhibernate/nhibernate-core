@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
@@ -48,6 +49,11 @@ namespace NHibernate.Dialect
 		public override string GetIdentitySelectString( string identityColumn, string tableName )
 		{
 			return "select last_insert_rowid()";
+		}
+		
+		public override SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
+		{
+			return insertSql.Append( "; " + GetIdentitySelectString( identityColumn, tableName ) );
 		}
 
 		public override bool HasAlterTable
