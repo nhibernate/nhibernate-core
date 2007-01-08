@@ -104,6 +104,11 @@ namespace NHibernate.JetDriver
 			int beginOfFrom = sqlString.IndexOfCaseInsensitive("from");
 			int endOfFrom = sqlString.IndexOfCaseInsensitive("where");
 
+			if (beginOfFrom < 0)
+			{
+				return sqlString;
+			}
+
 			if (endOfFrom < 0)
 			{
 				endOfFrom = sqlString.Length;
