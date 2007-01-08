@@ -98,9 +98,6 @@ namespace NHibernate.JetDriver
 				return (SqlString) _queryCache[sqlString];
 			}
 
-			SqlStringBuilder beginning = new SqlStringBuilder(sqlString.Count);
-			SqlStringBuilder end = new SqlStringBuilder(sqlString.Count);
-
 			int beginOfFrom = sqlString.IndexOfCaseInsensitive("from");
 			int endOfFrom = sqlString.IndexOfCaseInsensitive("where");
 
