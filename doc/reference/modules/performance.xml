@@ -1178,7 +1178,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
 
         <para>
             Update batching is enabled by setting <literal>hibernate.adonet.batch_size</literal>
-            to a non-zero value.
+            to a non-zero value. This setting has no effect unless <literal>SqlClientDriver </literal> is used.
         </para>
     </sect1>
 </chapter>
