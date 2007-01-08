@@ -265,6 +265,28 @@ ISession session = sessions.OpenSession(conn);
                     </para>
                 </entry>
             </row>
+            <row>
+                <entry>
+                    <literal>hibernate.connection.release_mode</literal>
+                </entry>
+                <entry>
+                    Specify when NHibernate should release ADO.NET connections.
+                    See <xref linkend="transactions-connection-release" />.
+                    <para>
+                        <emphasis role="strong">eg.</emphasis> 
+                        <literal>auto</literal> (default) | <literal>on_close</literal> |
+                        <literal>after_transaction</literal>
+                    </para>
+                    <para>
+                        Note that this setting only affects <literal>ISession</literal>s returned from
+                        <literal>ISessionFactory.OpenSession</literal>.  For <literal>ISession</literal>s
+                        obtained through <literal>ISessionFactory.GetCurrentSession</literal>, the
+                        <literal>ICurrentSessionContext</literal> implementation configured for use
+                        controls the connection release mode for those <literal>ISession</literal>s.
+                        See <xref linkend="architecture-current-session"/>.
+                    </para>
+                </entry>
+            </row>
             </tbody>
             </tgroup>
         </table>

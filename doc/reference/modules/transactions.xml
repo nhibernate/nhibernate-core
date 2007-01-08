@@ -509,5 +509,66 @@ finally
         
     </sect1>
 
+    <sect1 id="transactions-connection-release">
+        <title>Connection Release Modes</title>
+
+        <para>
+            The legacy (1.0.x) behavior of NHibernate in regards to ADO.NET connection management
+            was that a <literal>ISession</literal> would obtain a connection when it was first
+            needed and then hold unto that connection until the session was closed.
+            NHibernate 1.2 introduced the notion of connection release modes to tell a session
+            how to handle its ADO.NET connections.  Note that the following discussion is pertinent
+            only to connections provided through a configured <literal>IConnectionProvider</literal>;
+            user-supplied connections are outside the breadth of this discussion.  The different
+            release modes are identified by the enumerated values of
+            <literal>NHibernate.ConnectionReleaseMode</literal>:
+        </para>
+
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>
+                    <literal>OnClose</literal> - is essentially the legacy behavior described above. The
+                    NHibernate session obatins a connection when it first needs to perform some database
+                    access and holds unto that connection until the session is closed.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>AfterTransaction</literal> - says to release connections after a
+                    <literal>NHibernate.ITransaction</literal> has completed.
+                </para>
+            </listitem>
+        </itemizedlist>
+
+        <para>
+            The configuration parameter <literal>hibernate.connection.release_mode</literal> is used
+            to specify which release mode to use.  The possible values:
+        </para>
+
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>
+                    <literal>auto</literal> (the default) - equivalent to <literal>after_transaction</literal>
+                    in the current release. It is rarely a good idea to change this default behavior as failures
+                    due to the value of this setting tend to indicate bugs and/or invalid assumptions in user code.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>on_close</literal> - says to use <literal>ConnectionReleaseMode.OnClose</literal>.
+                    This setting is left for backwards compatibility, but its use is highly discouraged.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>after_transaction</literal> - says to use <literal>ConnectionReleaseMode.AfterTransaction</literal>.
+                    Note that with ConnectionReleaseMode.AfterTransaction, if a session is considered to be in auto-commit
+                    mode (i.e. no transaction was started) connections will be released after every operation.
+                </para>
+            </listitem>
+        </itemizedlist>
+
+    </sect1>
+
 </chapter>
 
