@@ -244,6 +244,15 @@ ISession session = sessions.OpenSession(conn);
             </row>
             <row>
                 <entry>
+                    <literal>hibernate.connection.connection_string_name</literal>
+                </entry>
+                <entry>
+                    The name of the connection string (defined in <literal>&lt;connectionStrings&gt;</literal>
+                    configuration file element) to use to obtain the connection.
+                </entry>
+            </row>
+            <row>
+                <entry>
                     <literal>hibernate.connection.isolation</literal>
                 </entry>
                 <entry>
