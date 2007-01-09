@@ -11,7 +11,11 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	{
 		private void Validate( System.Type type )
 		{
-			ProxyTypeValidator.ValidateType( type );
+			InvalidProxyTypeException ex = ProxyTypeValidator.ValidateType( type );
+			if (ex != null)
+			{
+				throw ex;
+			}
 		}
 
 		public class ValidClass

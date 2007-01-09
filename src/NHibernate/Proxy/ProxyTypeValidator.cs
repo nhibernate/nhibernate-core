@@ -15,30 +15,36 @@ namespace NHibernate.Proxy
 
 		/// <summary>
 		/// Validates whether <paramref name="type"/> can be specified as the base class
-		/// for a dynamically-generated proxy. Throws a <see cref="InvalidProxyTypeException" />
-		/// if any problems are detected.
+		/// (or an interface) for a dynamically-generated proxy.
 		/// </summary>
-		/// <param name="type"></param>
-		public static void ValidateType( System.Type type )
+		/// <returns>A <see cref="InvalidProxyTypeException" /> instance containing
+		/// problems detected, or <c>null</c> if no problems were found.
+		/// </returns>
+		/// <param name="type">The type to validate.</param>
+		public static InvalidProxyTypeException ValidateType( System.Type type )
 		{
 			ArrayList errors = new ArrayList();
 
 			if( type.IsInterface )
 			{
 				// Any interface is valid as a proxy
-				return;
+				return null;
 			}
 			CheckHasVisibleDefaultConstructor( type, errors );
 			CheckEveryPublicMemberIsVirtual( type, errors );
 			CheckNotSealed( type, errors );
-			ThrowIfAnyErrors(type, errors);
+			return ConvertToException(type, errors);
 		}
 
-		private static void ThrowIfAnyErrors(System.Type type, ArrayList errors)
+		private static InvalidProxyTypeException ConvertToException(System.Type type, ArrayList errors)
 		{
 			if (errors.Count > 0)
 			{
-				throw new InvalidProxyTypeException(type, errors);
+				return new InvalidProxyTypeException(type, errors);
+			}
+			else
+			{
+				return null;
 			}
 		}
 
