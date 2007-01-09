@@ -1240,7 +1240,14 @@ long count = (long)((IList)results[1])[0];]]></programlisting>
             throw an exception executing this query:
         </para>
         
-        <programlisting>TODO</programlisting>
+        <programlisting><![CDATA[IList allEmployeesId  = ...; //1,500 items
+IMultiQuery multiQuery = s.CreateMultiQuery()
+	.Add(s.CreateQuery("from Employee e where e.Id in :empIds")
+		.SetParameter("empIds", allEmployeesId).SetFirstResult(10))
+	.Add(s.CreateQuery("select count(*) from Employee e where e.Id in :empIds")
+		.SetParameter("empIds", allEmployeesId));
+	IList results = multiQuery.List(); // will throw an exception from SQL Server]]>
+	</programlisting>
 
         <para>
             An interesting usage of this feature is to load several collections of an object in one
