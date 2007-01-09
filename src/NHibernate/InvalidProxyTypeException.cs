@@ -3,6 +3,7 @@ using System.Collections;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -14,19 +15,12 @@ namespace NHibernate
 	[Serializable]
 	public class InvalidProxyTypeException : MappingException
 	{
-		private System.Type type;
 		private ICollection errors;
 
-		public InvalidProxyTypeException( System.Type type, IList errors )
-			: base(FormatMessage(type, errors))
+		public InvalidProxyTypeException(ICollection errors)
+			: base (FormatMessage(errors))
 		{
-			this.type = type;
 			this.errors = errors;
-		}
-
-		public System.Type Type
-		{
-			get { return type; }
 		}
 
 		public ICollection Errors
@@ -34,13 +28,12 @@ namespace NHibernate
 			get { return errors; }
 		}
 
-		private static string FormatMessage(System.Type type, IList errors)
+		private static string FormatMessage(ICollection errors)
 		{
-			StringBuilder result = new StringBuilder();
-			result.AppendFormat("Type '{0}' cannot be specified as proxy:", type.FullName);
+			StringBuilder result = new StringBuilder("The following types may not be used as proxies:");
 			foreach (string error in errors)
 			{
-				result.Append("\n - ").Append(error);
+				result.Append('\n').Append(error);
 			}
 			return result.ToString();
 		}
@@ -50,7 +43,7 @@ namespace NHibernate
 		public InvalidProxyTypeException( SerializationInfo info, StreamingContext context )
 			: base( info, context )
 		{
-			this.type = ( System.Type ) info.GetValue( "type", typeof( System.Type ) );
+			this.errors = ( ICollection ) info.GetValue( "errors", typeof( ICollection ) );
 		}
 
 		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
@@ -58,7 +51,7 @@ namespace NHibernate
 		public override void GetObjectData( SerializationInfo info, StreamingContext context )
 		{
 			base.GetObjectData (info, context);
-			info.AddValue( "type", type );
+			info.AddValue( "errors", errors, typeof(ICollection) );
 		}
 
 		#endregion

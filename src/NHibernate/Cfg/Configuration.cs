@@ -882,36 +882,41 @@ namespace NHibernate.Cfg
 
 		private void Validate()
 		{
-			bool validateProxy = PropertiesHelper.GetBoolean( Environment.UseProxyValidator, properties, true );
-			InvalidProxyTypeException lastProxyException = null;
+			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
+			ArrayList allProxyErrors = null;
 
-			foreach( PersistentClass clazz in classes.Values )
+			foreach (PersistentClass clazz in classes.Values)
 			{
-				clazz.Validate( mapping );
-				if( validateProxy )
+				clazz.Validate(mapping);
+				if (validateProxy)
 				{
-					InvalidProxyTypeException ex = ValidateProxyInterface( clazz );
-					if (ex != null)
+					ICollection errors = ValidateProxyInterface(clazz);
+					if (errors != null)
 					{
-						log.Error(ex.ToString());
-						lastProxyException = ex;
+						if (allProxyErrors == null)
+						{
+							allProxyErrors = new ArrayList(errors);
+						}
+						else
+						{
+							allProxyErrors.AddRange(errors);
+						}
 					}
 				}
 			}
 
-			if (lastProxyException != null)
+			if (allProxyErrors != null)
 			{
-				throw new MappingException("Proxy type validation failed. See the inner exception or enable logging to see more details.",
-					lastProxyException);
+				throw new InvalidProxyTypeException(allProxyErrors);
 			}
 
-			foreach( NHibernate.Mapping.Collection col in collections.Values )
+			foreach (NHibernate.Mapping.Collection col in collections.Values)
 			{
-				col.Validate( mapping );
+				col.Validate(mapping);
 			}
 		}
 
-		private static InvalidProxyTypeException ValidateProxyInterface( PersistentClass persistentClass )
+		private static ICollection ValidateProxyInterface( PersistentClass persistentClass )
 		{
 			if( !persistentClass.IsLazy )
 			{

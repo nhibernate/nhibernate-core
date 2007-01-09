@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Reflection;
-using System.Text;
-using NHibernate;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy
@@ -17,13 +16,13 @@ namespace NHibernate.Proxy
 		/// Validates whether <paramref name="type"/> can be specified as the base class
 		/// (or an interface) for a dynamically-generated proxy.
 		/// </summary>
-		/// <returns>A <see cref="InvalidProxyTypeException" /> instance containing
-		/// problems detected, or <c>null</c> if no problems were found.
+		/// <returns>
+		/// A collection of errors, if any, or <c>null</c> if none were found.
 		/// </returns>
 		/// <param name="type">The type to validate.</param>
-		public static InvalidProxyTypeException ValidateType( System.Type type )
+		public static ICollection ValidateType( System.Type type )
 		{
-			ArrayList errors = new ArrayList();
+			StringCollection errors = new StringCollection();
 
 			if( type.IsInterface )
 			{
@@ -33,35 +32,27 @@ namespace NHibernate.Proxy
 			CheckHasVisibleDefaultConstructor( type, errors );
 			CheckEveryPublicMemberIsVirtual( type, errors );
 			CheckNotSealed( type, errors );
-			return ConvertToException(type, errors);
-		}
-
-		private static InvalidProxyTypeException ConvertToException(System.Type type, ArrayList errors)
-		{
 			if (errors.Count > 0)
 			{
-				return new InvalidProxyTypeException(type, errors);
+				return errors;
 			}
-			else
-			{
-				return null;
-			}
+			return null;
 		}
 
-		private static void Error( ArrayList errors, string text )
+		private static void Error( IList errors, System.Type type, string text )
 		{
-			errors.Add(text);
+			errors.Add(string.Format("{0}: {1}", type, text));
 		}
 
-		private static void CheckHasVisibleDefaultConstructor( System.Type type, ArrayList errors )
+		private static void CheckHasVisibleDefaultConstructor( System.Type type, IList errors )
 		{
 			if( !HasVisibleDefaultConstructor( type ) )
 			{
-				Error( errors, "type does not have a visible (public or protected) no-argument constructor" );
+				Error( errors, type, "type should have a visible (public or protected) no-argument constructor" );
 			}
 		}
 
-		private static void CheckEveryPublicMemberIsVirtual( System.Type type, ArrayList errors )
+		private static void CheckEveryPublicMemberIsVirtual( System.Type type, IList errors )
 		{
 			MemberInfo[] members = type.GetMembers( BindingFlags.Instance | BindingFlags.Public );
 
@@ -89,16 +80,16 @@ namespace NHibernate.Proxy
 				}
 				else if( member is FieldInfo )
 				{
-					Error( errors, "public field " + member.Name + " is not allowed" );
+					Error( errors, type, "field " + member.Name + " should not be public" );
 				}
 			}
 		}
 
-		private static void CheckMethodIsVirtual( System.Type type, MethodInfo method, ArrayList errors )
+		private static void CheckMethodIsVirtual( System.Type type, MethodInfo method, IList errors )
 		{
 			if( !method.IsVirtual )
 			{
-				Error( errors, "method " + method.Name + " should be virtual" );
+				Error( errors, type, "method " + method.Name + " should be virtual" );
 			}
 		}
 
@@ -112,11 +103,11 @@ namespace NHibernate.Proxy
 				&& !constructor.IsPrivate;
 		}
 
-		private static void CheckNotSealed( System.Type type, ArrayList errors )
+		private static void CheckNotSealed( System.Type type, IList errors )
 		{
 			if( ReflectHelper.IsFinalClass( type ) )
 			{
-				Error( errors, "type is sealed" );
+				Error( errors, type, "type should not be sealed" );
 			}
 		}
 	}

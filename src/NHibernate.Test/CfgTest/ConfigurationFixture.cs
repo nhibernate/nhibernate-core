@@ -297,7 +297,7 @@ namespace NHibernate.Test.CfgTest
 			}
 			catch( MappingException e )
 			{
-				Assert.IsTrue( e.InnerException is InvalidProxyTypeException );
+				Assert.IsTrue( e is InvalidProxyTypeException );
 			}
 		}
 

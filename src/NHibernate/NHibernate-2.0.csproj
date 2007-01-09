@@ -248,7 +248,6 @@
     <Compile Include="Impl\Status.cs" />
     <Compile Include="Impl\WrapVisitor.cs" />
     <Compile Include="InstantiationException.cs" />
-    <Compile Include="InvalidProxyTypeException.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ISessionFactory.cs" />
@@ -604,6 +603,9 @@
     <Compile Include="Impl\SqlClientSqlCommandSet.cs" />
     <Compile Include="Impl\QueryFilterImpl.cs" />
     <Compile Include="IMultiQuery.cs" />
+    <Compile Include="InvalidProxyTypeException.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ISQLQuery.cs" />
     <Compile Include="Loader\AbstractEntityJoinWalker.cs" />
     <Compile Include="Loader\BasicLoader.cs" />
