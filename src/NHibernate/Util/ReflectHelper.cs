@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Text;
 using log4net;
 using NHibernate.Property;
 using NHibernate.Type;
@@ -315,7 +316,25 @@ namespace NHibernate.Util
 					}
 				}
 			}
-			throw new InstantiationException("no appropriate constructor in class: ", null, type);
+
+			throw new InstantiationException(FormatConstructorNotFoundMessage(types), null, type);
+		}
+
+		private static string FormatConstructorNotFoundMessage(IType[] types)
+		{
+			StringBuilder result = new StringBuilder("no constructor compatible with (");
+			bool first = true;
+			foreach (IType type in types)
+			{
+				if (!first)
+				{
+					result.Append(", ");
+				}
+				first = false;
+				result.Append(type.ReturnedClass);
+			}
+			result.Append(") found in class: ");
+			return result.ToString();
 		}
 
 		/// <summary>

@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 			}
 			catch( Exception e )
 			{
-				throw new InstantiationException( "could not instantiate test object", e, constructor.DeclaringType );
+				throw new InstantiationException( "could not instantiate test object: ", e, constructor.DeclaringType );
 			}
 		}
 
