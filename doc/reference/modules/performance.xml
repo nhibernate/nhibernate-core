@@ -1181,4 +1181,77 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             to a non-zero value.
         </para>
     </sect1>
+
+    <sect1 id="performance-multi-query">
+        <title>Multi Query</title>
+        
+        <para>
+            This functionality allows you to execute several HQL queries in one round-trip
+            against the database server. The common use case is executing a paged query while
+            also getting the total count of results, in a single round-trip. Here is a simple
+            example:
+        </para>
+        
+        <programlisting><![CDATA[IMultiQuery multiQuery = s.CreateMultiQuery()
+    .Add(s.CreateQuery("from Item i where i.Id > ?")
+            .SetInt32(0, 50).SetFirstResult(10))
+    .Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
+            .SetInt32(0, 50));
+IList results = multiQuery.List();
+IList items = (IList)results[0];
+long count = (long)((IList)results[1])[0];]]></programlisting>
+
+        <para>
+            The result is a list of query results, ordered according to the order of queries
+            added to the multi query. Named parameters can be set on the multi query, and are
+            shared among all the queries contained in the multi query, like this:
+        </para>
+
+        <programlisting><![CDATA[IList results = s.CreateMultiQuery()
+    .Add(s.CreateQuery("from Item i where i.Id > :id")
+        .SetFirstResult(10) )
+    .Add("select count(*) from Item i where i.Id > :id")
+    .SetInt32("id", 50)
+    .List();
+IList items = (IList)results[0];
+long count = (long)((IList)results[1])[0];]]></programlisting>
+
+        <para>
+            Positional parameters are not supported on the multi query, only on the individual
+            queries.
+        </para>
+
+        <para>
+            As shown above, if you do not need to configure the query separately, you can simply
+            pass the HQL directly to the <literal>IMultiQuery.Add()</literal> method.
+        </para>
+
+        <para>
+            Multi query is executed by concatenating the queries and sending the query to the database
+            as a single string. This means that the database should support returning several result sets
+            in a single query. At the moment this functionality is only enabled for Microsoft SQL Server.
+        </para>
+
+        <para>
+            Note that the database server is likely to impose a limit on the maximum number of parameters
+            in a query, in which case the limit applies to the multi query as a whole. Queries using
+            <literal>in</literal> with a large number of arguments passed as parameters may easily exceed
+            this limit. For example, SQL Server has a limit of 2,100 parameters per round-trip, and will
+            throw an exception executing this query:
+        </para>
+        
+        <programlisting>TODO</programlisting>
+
+        <para>
+            An interesting usage of this feature is to load several collections of an object in one
+            round-trip:
+        </para>
+
+        <programlisting><![CDATA[Blog blog = s.CreateMultiQuery()
+    .Add("select b from Blog b left join fetch b.Users where b.Id = :id")
+    .Add("select b from Blog b left join fetch b.Posts where b.Id = :id")
+    .SetInt32("id", 123)
+    .UniqueResult<Blog>();]]></programlisting>
+
+    </sect1>
 </chapter>
