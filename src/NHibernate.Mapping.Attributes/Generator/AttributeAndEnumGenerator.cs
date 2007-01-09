@@ -23,10 +23,16 @@ namespace NHibernate.Mapping.Attributes.Generator
 			cd.Parent = new Refly.CodeDom.StringTypeDeclaration("BaseAttribute");
 			// Add [AttributeUsage(AttributeTargets, AllowMultiple]  and  [Serializable]
 			// Note: There is a problem with the order of the arguments, that's why they are together
+			bool targetsAll = Utils.TargetsAll(Utils.Capitalize(attElt.Name));
+			string attributeTargets = "System.AttributeTargets.";
+			if( Utils.IsRoot(Utils.Capitalize(attElt.Name)) || targetsAll)
+				attributeTargets += "Class | System.AttributeTargets.Struct | System.AttributeTargets.Interface";
+			if(targetsAll) attributeTargets += " | System.AttributeTargets.";
+			if( !Utils.IsRoot(Utils.Capitalize(attElt.Name)) || targetsAll)
+				attributeTargets += "Property | System.AttributeTargets.Field";
 			Refly.CodeDom.AttributeDeclaration attribUsage = cd.CustomAttributes.Add("System.AttributeUsage");
-			attribUsage.Arguments.Add( "", new Refly.CodeDom.Expressions.SnippetExpression( "System.AttributeTargets."
-				+ (Utils.IsRoot(Utils.Capitalize(attElt.Name)) ? "Class | System.AttributeTargets.Struct" : "Property | System.AttributeTargets.Field")
-				+ ", AllowMultiple=" + Utils.AllowMultipleValue(attElt.Name) ) );
+			attribUsage.Arguments.Add( "", new Refly.CodeDom.Expressions.SnippetExpression( 
+				attributeTargets + ", AllowMultiple=" + Utils.AllowMultipleValue(attElt.Name) ) );
 			cd.CustomAttributes.Add("System.Serializable");
 
 			// Add the constructors

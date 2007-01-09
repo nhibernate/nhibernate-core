@@ -87,10 +87,10 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set {  }
 		}
 		
-// TODO:		[NHMA.Loader(QueryRef="queryRef")]
-//		[NHMA.SqlInsert(1, Content="C")]
-//		[NHMA.SqlUpdate(5, Content="U")]
-//		[NHMA.SqlDelete(3, Content="D")]
+		[NHMA.Loader(QueryRef="queryRef")]
+		[NHMA.SqlInsert(1, Content="C")]
+		[NHMA.SqlUpdate(2, Content="U")]
+		[NHMA.SqlDelete(3, Content="D")]
 		public int sql = 1;
 	}
 	#endregion
@@ -830,12 +830,11 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 
 	#region class JoinedBaz
 	[NHMA.JoinedSubclass(NameType=typeof(JoinedBaz), ProxyType=typeof(JoinedBaz), ExtendsType=typeof(Baz), SelectBeforeUpdate=true)]
+	[NHMA.Key(Column="JoinedId")]
 	internal class JoinedBaz : Baz
 	{
 		private FooProxy _reverse;
 		private object _object;
-
-		[NHMA.Key(Column="JoinedID")]
 
 		[NHMA.OneToOne(1, Name="Reverse", ClassType=typeof(FooProxy), Lazy=NHMA.Laziness.False, AccessType=typeof(Foo), ForeignKey="FK", Fetch=FetchMode.Join, Cascade=NHMA.CascadeStyle.SaveUpdate)]
 			[NHMA.Meta(2, Attribute="OneToOne Meta", Inherit=false)]
@@ -883,10 +882,10 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set {  }
 		}
 		
-// TODO:		[NHMA.Loader(QueryRef="ref")]
-//		[NHMA.SqlInsert(1, Content="INSERT")]
-//		[NHMA.SqlUpdate(2, Content="UPDATE")]
-//		[NHMA.SqlDelete(3, Content="DELETE")]
+		[NHMA.Loader(QueryRef="ref")]
+		[NHMA.SqlInsert(1, Content="INSERT")]
+		[NHMA.SqlUpdate(2, Content="UPDATE")]
+		[NHMA.SqlDelete(3, Content="DELETE")]
 		public int sql = 2;
 	}
 	#endregion
@@ -894,6 +893,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 
 	#region class Stuff
 	[NHMA.Class(-1, NameType=typeof(int), Table="Stuff", DiscriminatorValueEnumFormat="none", DiscriminatorValueObject=7, Schema="none", Lazy=true, DynamicUpdate=false, DynamicInsert=false, SelectBeforeUpdate=true, OptimisticLock=NHMA.OptimisticLockMode.None, ProxyType=typeof(bool), PersisterType=typeof(string))]
+	[NHMA.JcsCache(Usage=NHMA.JcsCacheUsage.NonStrictReadWrite)]
 	public class Stuff
 	{
 		private long _id;
@@ -968,22 +968,24 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	#endregion
 
 
-	#region class Sql
+	#region interface Sql
 	[NHMA.Class]
-	public class Sql
+		[NHMA.Cache(Usage=NHMA.CacheUsage.NonStrictReadWrite)]
+		[NHMA.Discriminator]
+	public interface Sql
 	{
 		[NHMA.Id(-1)]
 			[NHMA.Generator(Class="?")]
-		protected long id;
+		long id { get; }
 		
-// TODO:		[NHMA.Loader(QueryRef="ref")]
-//		[NHMA.SqlInsert(Check=CustomSqlCheck.None, Content="INSERT INTO Table (Col1, Col2) VALUES ( UPPER(?), ? )")]
-//		[NHMA.SqlUpdate(Check=CustomSqlCheck.None, Content="UPDATE Table SET Col1=UPPER(?) WHERE Id=?")]
-//		[NHMA.SqlDelete(Check=CustomSqlCheck.RowCount, Content="DELETE FROM Table WHERE Id=?")]
-		protected int sql;
+		[NHMA.Loader(QueryRef="ref")]
+		[NHMA.SqlInsert(1, Check=CustomSqlCheck.None, Content="INSERT INTO Table (Col1, Col2) VALUES ( UPPER(?), ? )")]
+		[NHMA.SqlUpdate(2, Check=CustomSqlCheck.None, Content="UPDATE Table SET Col1=UPPER(?) WHERE Id=?")]
+		[NHMA.SqlDelete(3, Check=CustomSqlCheck.RowCount, Content="DELETE FROM Table WHERE Id=?")]
+		int sql { get; }
 		
 		[NHMA.Filter(Name="Null", Condition="1==2")]
-		protected int filter;
+		int filter { get; }
 	}
 	#endregion
 }

@@ -82,6 +82,12 @@ public class Base {
 				<para>Two <methodname>WriteUserDefinedContent()</methodname> methods have been added to <classname>HbmWriter</classname>. They improve the extensibility of this library; it is now very easy to create a .NET attribute and integrate it in the mapping.</para>
 			</listitem>
 			<listitem>
+				<para>Attributes <classname>[(Jcs)Cache]</classname>, <classname>[Discriminator]</classname> and <classname>[Key]</classname> can be specified at class-level.</para>
+			</listitem>
+			<listitem>
+				<para>Interfaces can be mapped (just like classes and structs).</para>
+			</listitem>
+			<listitem>
 				<para>A notable "bug" fix is the re-ordering of (joined-)subclasses; This operation may be required when a subclass extends another subclass. In this case, the extended class mapping must come before the extending class mapping. Note that the re-ordering takes place only for "top-level" classes (that is not nested in other mapped classes). Anyway, it is quite unusual to put a interdependent mapped subclasses in a mapped class.</para>
 			</listitem>
 			<listitem>

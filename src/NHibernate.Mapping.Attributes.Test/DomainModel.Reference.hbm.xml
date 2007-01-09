@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Generated from NHibernate.Mapping.Attributes on 2006-11-10 01:11:11Z.-->
+<!--Generated from NHibernate.Mapping.Attributes on 2007-01-09 18:25:12Z.-->
 <hibernate-mapping auto-import="true" default-lazy="true" xmlns="urn:nhibernate-mapping-2.2">
   <class name="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" proxy="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" discriminator-value="base" mutable="false" polymorphism="explicit" persister="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" where="1" batch-size="9" check="0">
     <id name="Code" access="Int32" column="Id" type="String" length="8" unsaved-value="null">
@@ -211,10 +211,15 @@
           </nested-composite-element>
         </composite-element>
       </array>
+      <loader query-ref="queryRef" />
+      <sql-insert>C</sql-insert>
+      <sql-update>U</sql-update>
+      <sql-delete>D</sql-delete>
     </subclass>
   </class>
   <class name="Int32" proxy="Boolean" lazy="true" dynamic-update="false" dynamic-insert="false" select-before-update="true" table="Stuff" schema="none" discriminator-value="7" persister="String" optimistic-lock="none">
     <meta attribute="ClassName">Stuff :)</meta>
+    <jcs-cache usage="nonstrict-read-write" />
     <composite-id class="Int64" name="ID" access="Int32" unsaved-value="any">
       <key-property name="Id" access="Int32" type="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" />
       <key-many-to-one name="Foo" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="-" foreign-key="x" lazy="false" />
@@ -244,9 +249,15 @@
     </set>
   </class>
   <class name="NHibernate.Mapping.Attributes.Test.DomainModel.Sql, NHibernate.Mapping.Attributes.Test">
+    <cache usage="nonstrict-read-write" />
     <id>
       <generator class="?" />
     </id>
+    <discriminator />
+    <loader query-ref="ref" />
+    <sql-insert check="none">INSERT INTO Table (Col1, Col2) VALUES ( UPPER(?), ? )</sql-insert>
+    <sql-update check="none">UPDATE Table SET Col1=UPPER(?) WHERE Id=?</sql-update>
+    <sql-delete check="rowcount">DELETE FROM Table WHERE Id=?</sql-delete>
     <filter name="Null" condition="1==2" />
   </class>
   <class name="X+PrivS+PrivC, NHibernate.Mapping.Attributes.Test">
@@ -275,7 +286,7 @@
   </joined-subclass>
   <joined-subclass name="NHibernate.Mapping.Attributes.Test.DomainModel.JoinedBaz, NHibernate.Mapping.Attributes.Test" proxy="NHibernate.Mapping.Attributes.Test.DomainModel.JoinedBaz, NHibernate.Mapping.Attributes.Test" select-before-update="true" extends="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test">
     <meta attribute="Meta">Content</meta>
-    <key column="JoinedID" />
+    <key column="JoinedId" />
     <one-to-one name="Reverse" access="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" class="NHibernate.Mapping.Attributes.Test.DomainModel.FooProxy, NHibernate.Mapping.Attributes.Test" cascade="save-update" fetch="join" foreign-key="FK" lazy="false">
       <meta attribute="OneToOne Meta" inherit="false" />
     </one-to-one>
@@ -297,5 +308,9 @@
       <meta-value value="val1" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" />
       <column name="clazz" length="200" />
     </any>
+    <loader query-ref="ref" />
+    <sql-insert>INSERT</sql-insert>
+    <sql-update>UPDATE</sql-update>
+    <sql-delete>DELETE</sql-delete>
   </joined-subclass>
 </hibernate-mapping>

@@ -131,9 +131,10 @@ namespace NHibernate.Mapping.Attributes
 		public virtual System.Collections.ArrayList GetSortedAttributes(System.Reflection.MemberInfo member)
 		{
 			System.Collections.ArrayList list = new System.Collections.ArrayList();
-			foreach(object attrib in member.GetCustomAttributes(false))
-				if(attrib is BaseAttribute)
-					list.Add(attrib);
+			if(member != null)
+				foreach(object attrib in member.GetCustomAttributes(false))
+					if(attrib is BaseAttribute)
+						list.Add(attrib);
 			list.Sort();
 			return list;
 		}

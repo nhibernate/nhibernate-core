@@ -345,9 +345,10 @@ namespace NHibernate.Mapping.Attributes.Generator
 
 			method.Body.Add(Refly.CodeDom.Stm.Snippet(
 				@"System.Collections.ArrayList list = new System.Collections.ArrayList();
-			foreach(object attrib in member.GetCustomAttributes(false))
-				if(attrib is BaseAttribute)
-					list.Add(attrib);
+			if(member != null)
+				foreach(object attrib in member.GetCustomAttributes(false))
+					if(attrib is BaseAttribute)
+						list.Add(attrib);
 			list.Sort();
 			return list;"));
 			// -----------------------------------------------------------------

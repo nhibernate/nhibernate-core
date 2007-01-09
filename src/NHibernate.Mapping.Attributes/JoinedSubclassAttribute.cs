@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.Attributes
 	
 	
 	/// <summary>Joined subclasses are used for the normalized table-per-subclass mapping strategy</summary>
-	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct, AllowMultiple=false)]
+	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct | System.AttributeTargets.Interface, AllowMultiple=false)]
 	[System.Serializable()]
 	public class JoinedSubclassAttribute : BaseAttribute
 	{

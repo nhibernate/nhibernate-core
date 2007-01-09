@@ -38,8 +38,9 @@ namespace NHibernate.Mapping.Attributes
 		{
 			base.WriteUserDefinedContent(writer, classType, contentAttributeType, parentAttribute);
 
-			System.Collections.ArrayList RawXmlList = FindSystemAttributedMembers( typeof(RawXmlAttribute), classType );
-			foreach( System.Reflection.MemberInfo member in RawXmlList )
+			// Insert [RawXml] after the specified type of attribute
+			System.Collections.ArrayList RawXmlAttributedMembersList = FindSystemAttributedMembers( typeof(RawXmlAttribute), classType );
+			foreach( System.Reflection.MemberInfo member in RawXmlAttributedMembersList )
 			{
 				RawXmlAttribute rawXml = member.GetCustomAttributes(typeof(RawXmlAttribute), false)[0] as RawXmlAttribute;
 				if(contentAttributeType != rawXml.After)
@@ -74,6 +75,31 @@ namespace NHibernate.Mapping.Attributes
 					object[] objects = member.GetCustomAttributes(typeof(ComponentPropertyAttribute), false);
 					WriteComponentProperty(writer, member, objects[0] as ComponentPropertyAttribute, parentAttribute);
 				}
+			}
+
+			if(contentAttributeType == typeof(CacheAttribute)) 
+			{
+				object[] attributes = classType.GetCustomAttributes(typeof(CacheAttribute), false);
+				if(attributes.Length > 0)
+					WriteCache(writer, null, (CacheAttribute)attributes[0], parentAttribute, classType);
+			}
+			if(contentAttributeType == typeof(JcsCacheAttribute)) 
+			{
+				object[] attributes = classType.GetCustomAttributes(typeof(JcsCacheAttribute), false);
+				if(attributes.Length > 0)
+					WriteJcsCache(writer, null, (JcsCacheAttribute)attributes[0], parentAttribute, classType);
+			}
+			if(contentAttributeType == typeof(DiscriminatorAttribute)) 
+			{
+				object[] attributes = classType.GetCustomAttributes(typeof(DiscriminatorAttribute), false);
+				if(attributes.Length > 0)
+					WriteDiscriminator(writer, null, (DiscriminatorAttribute)attributes[0], parentAttribute, classType);
+			}
+			if(contentAttributeType == typeof(KeyAttribute)) 
+			{
+				object[] attributes = classType.GetCustomAttributes(typeof(KeyAttribute), false);
+				if(attributes.Length > 0)
+					WriteKey(writer, null, (KeyAttribute)attributes[0], parentAttribute, classType);
 			}
 		}
 

@@ -15,8 +15,8 @@ namespace NHibernate.Mapping.Attributes
 		protected virtual string ThrowRequiredValueNotProvidedException(System.Reflection.MemberInfo member)
 		{
 			throw new MappingException(
-				string.Format("This required value hasn't been provided.\nClass: {0}\nMember: {1}\nUse the name of the method causing this exception to know which value is missing.",
-					member.DeclaringType, member.Name) );
+				string.Format("This required value hasn't been provided (your mapping is incomplete).\nClass: {0}\nMember: {1}\nUse the name of the method causing this exception to know which value is missing (it is YYY in the method called: Get_XXX_YYY_DefaultValue()).",
+					member==null? "Unknow" : member.DeclaringType.ToString(), member==null? "Unknow" : member.Name) );
 		}
 
 

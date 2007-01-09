@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.Attributes
 	
 	
 	/// <summary> </summary>
-	[System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field, AllowMultiple=true)]
+	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct | System.AttributeTargets.Interface | System.AttributeTargets.Property | System.AttributeTargets.Field, AllowMultiple=true)]
 	[System.Serializable()]
 	public class JcsCacheAttribute : BaseAttribute
 	{

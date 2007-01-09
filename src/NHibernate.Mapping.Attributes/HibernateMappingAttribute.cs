@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.Attributes
 	
 	
 	/// <summary>hibernate-mapping is the document root</summary>
-	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct, AllowMultiple=false)]
+	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct | System.AttributeTargets.Interface, AllowMultiple=false)]
 	[System.Serializable()]
 	public class HibernateMappingAttribute : BaseAttribute
 	{

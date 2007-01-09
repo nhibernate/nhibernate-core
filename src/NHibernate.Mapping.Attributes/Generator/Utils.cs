@@ -62,6 +62,14 @@ namespace NHibernate.Mapping.Attributes.Generator
 		}
 
 
+		/// <summary> Tells if it is the name of an attribute that can be applied on classes and properties. </summary>
+		public static bool TargetsAll(string name)
+		{
+			return name=="Cache" || name=="JcsCache"
+				|| name=="Discriminator" || name=="Key";
+		}
+
+
 		/// <summary> Tells if it is the name of a class-level attribute. </summary>
 		public static bool IsRoot(string name)
 		{

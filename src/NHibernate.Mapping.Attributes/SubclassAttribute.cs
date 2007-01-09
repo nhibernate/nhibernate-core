@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.Attributes
 	
 	
 	/// <summary>Subclass declarations are nested beneath the root class declaration to achieve polymorphic persistence</summary>
-	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct, AllowMultiple=false)]
+	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct | System.AttributeTargets.Interface, AllowMultiple=false)]
 	[System.Serializable()]
 	public class SubclassAttribute : BaseAttribute
 	{

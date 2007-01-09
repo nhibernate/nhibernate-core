@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.Attributes
 	
 	
 	/// <summary>Map properties of a child object to columns of the table of a parent class</summary>
-	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct, AllowMultiple=true)]
+	[System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct | System.AttributeTargets.Interface, AllowMultiple=true)]
 	[System.Serializable()]
 	public class ComponentAttribute : BaseAttribute
 	{
