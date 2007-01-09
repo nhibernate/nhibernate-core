@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Text;
 
 namespace NHibernate
 {
@@ -13,11 +15,13 @@ namespace NHibernate
 	public class InvalidProxyTypeException : MappingException
 	{
 		private System.Type type;
+		private ICollection errors;
 
-		public InvalidProxyTypeException( System.Type type, string message )
-			: base( message )
+		public InvalidProxyTypeException( System.Type type, IList errors )
+			: base(FormatMessage(type, errors))
 		{
 			this.type = type;
+			this.errors = errors;
 		}
 
 		public System.Type Type
@@ -25,14 +29,20 @@ namespace NHibernate
 			get { return type; }
 		}
 
-		public override string Message
+		public ICollection Errors
 		{
-			get
+			get { return errors; }
+		}
+
+		private static string FormatMessage(System.Type type, IList errors)
+		{
+			StringBuilder result = new StringBuilder();
+			result.AppendFormat("Type '{0}' cannot be specified as proxy:", type.FullName);
+			foreach (string error in errors)
 			{
-				return string.Format(
-					"Type '{0}' cannot be specified as proxy: {1}",
-					type.FullName, base.Message );
+				result.Append("\n - ").Append(error);
 			}
+			return result.ToString();
 		}
 
 		#region Serialization

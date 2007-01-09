@@ -101,5 +101,34 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		{
 			Validate( typeof( ValidInterface ) );
 		}
+
+		public class MultipleErrors
+		{
+			private MultipleErrors()
+			{
+			}
+
+			public int publicField;
+			public event EventHandler NonVirtualEvent;
+			public int NonVirtualProperty
+			{
+				get { return 1; }
+				set { }
+			}
+		}
+
+		[Test]
+		public void MultipleErrorsReported()
+		{
+			try
+			{
+				Validate(typeof (MultipleErrors));
+				Assert.Fail("Should have failed validation");
+			}
+			catch (InvalidProxyTypeException e)
+			{
+				Assert.IsTrue(e.Errors.Count > 1);
+			}
+		}
 	}
 }
