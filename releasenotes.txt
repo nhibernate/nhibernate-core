@@ -1,3 +1,66 @@
+Build 1.2.0.Beta3
+========================
+
+Breaking Changes
+    * ConnectionReleaseMode support ported from Hibernate. By default, connections are released after every transaction,
+      or after every operation if no NHibernate transaction is in progress.
+
+Patches Applied:
+
+    * [NH-807] - Criteria Tests
+    * [NH-813] - CacheKey key is invalid - memcached fails to store objects.
+
+Bugs Fixed:
+
+    * [NH-793] - NHybridDataReader.ReadIntoMemory fails when the result is 0 records. "Invalid attempt to read when no data is present".
+    * [NH-812] - PostgreSQL - for update no wait
+    * [NH-815] - SQLQueryImpl fails to bind parameter lists
+    * [NH-816] - Criteria using class with discriminator
+    * [NH-818] - NHibernate.JetDriver Not Working at all in 1.2.0.Beta2 (encounters System.NullReferenceException)
+    * [NH-819] - Memcached.Client library is using log4net 1.2.9, instead of 1.2.10
+    * [NH-825] - QueryKey doesn't take into account the entity ID when generating ToString()
+    * [NH-826] - Using Criteria to query for an item throws on Flush in some situations
+    * [NH-829] - pagination select doesn't support 'distinct' for NHibernate.Dialect.FirebirdDialect
+    * [NH-830] - ICriteria does not automatically flush the session for many-to-many association change
+    * [NH-837] - Error using Limits with DB2400Dialect
+    * [NH-839] - PersistentGenericMap GetSnapshotElement InvalidCastException
+    * [NH-841] - generator class="native" not works with NHibernate.JetDriver
+    * [NH-845] - Queries and imports in separate hmb.xml are not parsed (re-opening)
+    * [NH-850] - Non-portable file path for generated source files by hbm2net
+
+New Features:
+
+    * [NH-370] - Add Configuration.SetDefaultAssembly and SetDefaultNamespace methods
+    * [NH-752] - Informix Dialect
+    * [NH-828] - Port connection release mode from H3
+
+Tasks Completed:
+
+    * [NH-796] - Document ISessionFactory.GetCurrentSession functionality
+    * [NH-801] - Upgrade NAnt libraries to 0.85
+    * [NH-833] - Document SQL Server command batching functionality
+    * [NH-834] - Document hibernate.connection.connection_string_name
+
+Improvements:
+
+    * [NH-383] - SessionFactory should implement System.IDisposable
+    * [NH-442] - Medium Trust level support
+    * [NH-648] - NHibernate.Mapping.Attributes - Allow [(Jcs)Cache], [Discriminator] and [Key] at class-level
+    * [NH-666] - IQuery.SetParameterList should support generics
+    * [NH-729] - Add ICurrentSessionContext implementation for ASP.NET apps.
+    * [NH-730] - make the bag Attribute protected instead of private in PersistentBag.cs
+    * [NH-743] - change BatcherImpl to public
+    * [NH-780] - Obsolete code in the tips 'n tricks
+    * [NH-808] - Type of count(*) should be Int64
+    * [NH-810] - Prevent use of many-to-one association in Expression.Eq
+    * [NH-817] - DetachedCriteria Serializable
+    * [NH-835] - Document MultiQuery
+    * [NH-840] - Include Inner Exception on 'Duplicate identifier in table for:' exception msg
+    * [NH-851] - More descriptive error message for 'Cannot find constructor' on projections
+    * [NH-852] - Report proxy validator errors in bulk
+    * [NH-856] - NHibernate.Mapping.Attributes - Allow mapping attributes on interfaces
+
+
 Build 1.2.0.Beta2
 ========================
 
