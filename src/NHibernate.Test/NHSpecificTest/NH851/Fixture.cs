@@ -25,8 +25,8 @@ namespace NHibernate.Test.NHSpecificTest.NH851
 			}
 			catch (InstantiationException e)
 			{
-				Assert.IsTrue(e.Message.Contains("String"));
-				Assert.IsTrue(e.Message.Contains(typeof(SomeClass).ToString()));
+				Assert.IsTrue(e.Message.IndexOf("String") >= 0);
+				Assert.IsTrue(e.Message.IndexOf(typeof(SomeClass).ToString()) >= 0);
 			}
 		}
 	}

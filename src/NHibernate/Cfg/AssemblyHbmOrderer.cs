@@ -90,41 +90,48 @@ namespace NHibernate.Cfg
 
 			foreach( string fileName in _hbmResources ) 
 			{
-				Stream xmlInputStream = null;
-				XmlReader xmlReader = null;
 				bool addedToClasses = false;
 
-				using (xmlInputStream = _assembly.GetManifestResourceStream( fileName ))
-				using (xmlReader = new XmlTextReader( xmlInputStream ))
+				using (Stream xmlInputStream = _assembly.GetManifestResourceStream(fileName))
 				{
-					while( xmlReader.Read() )
+					// XmlReader does not implement IDisposable on .NET 1.1 so have to use
+					// try/finally instead of using here.
+					XmlTextReader xmlReader = new XmlTextReader(xmlInputStream);
+					try
 					{
-						if( xmlReader.NodeType != XmlNodeType.Element )
+						while (xmlReader.Read())
 						{
-							continue;
-						}
-
-						if( xmlReader.Name=="class" )
-						{
-							xmlReader.MoveToAttribute("name");
-							string className = StringHelper.GetClassname( xmlReader.Value );
-							ClassEntry ce = new ClassEntry( null, className, fileName );
-							_classes.Add(ce);
-							addedToClasses = true;
-						}
-						else if( xmlReader.Name=="joined-subclass" || xmlReader.Name=="subclass" )
-						{
-							xmlReader.MoveToAttribute("name");
-							string className = StringHelper.GetClassname( xmlReader.Value );
-							if( xmlReader.MoveToAttribute("extends") )
+							if (xmlReader.NodeType != XmlNodeType.Element)
 							{
-								containsExtends = true;
-								string baseClassName = StringHelper.GetClassname( xmlReader.Value );
-								ClassEntry ce = new ClassEntry( baseClassName, className, fileName );
+								continue;
+							}
+
+							if (xmlReader.Name == "class")
+							{
+								xmlReader.MoveToAttribute("name");
+								string className = StringHelper.GetClassname(xmlReader.Value);
+								ClassEntry ce = new ClassEntry(null, className, fileName);
 								_classes.Add(ce);
 								addedToClasses = true;
 							}
+							else if (xmlReader.Name == "joined-subclass" || xmlReader.Name == "subclass")
+							{
+								xmlReader.MoveToAttribute("name");
+								string className = StringHelper.GetClassname(xmlReader.Value);
+								if (xmlReader.MoveToAttribute("extends"))
+								{
+									containsExtends = true;
+									string baseClassName = StringHelper.GetClassname(xmlReader.Value);
+									ClassEntry ce = new ClassEntry(baseClassName, className, fileName);
+									_classes.Add(ce);
+									addedToClasses = true;
+								}
+							}
 						}
+					}
+					finally
+					{
+						xmlReader.Close();
 					}
 				}
 
