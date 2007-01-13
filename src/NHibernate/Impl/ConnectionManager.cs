@@ -229,7 +229,7 @@ namespace NHibernate.Impl
 			{
 				// log a message about potential connection leaks
 				log.Debug(
-					"transaction completed on session with on_close connection release mode; be sure to close the session to release JDBC resources!");
+					"transaction completed on session with on_close connection release mode; be sure to close the session to release ADO.Net resources!");
 			}
 			transaction = null;
 		}
