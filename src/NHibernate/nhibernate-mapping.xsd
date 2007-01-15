@@ -266,7 +266,7 @@
 	<xs:element name="filter-def">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="filter-param" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element ref="filter-param" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="condition" type="xs:string" use="optional" default="" />
