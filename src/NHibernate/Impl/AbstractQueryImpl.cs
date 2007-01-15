@@ -488,7 +488,7 @@ namespace NHibernate.Impl
 			return BindParameterLists(NamedParams);
 		}
 		
-		protected string BindParameterLists( IDictionary namedParams )
+		protected internal string BindParameterLists( IDictionary namedParams )
 		{
 			string query = queryString;
 			foreach( DictionaryEntry de in namedParameterLists )

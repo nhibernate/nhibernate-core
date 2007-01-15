@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Text.RegularExpressions;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Cache;
@@ -27,15 +28,16 @@ namespace NHibernate.Impl
 		private ISessionImplementor session;
 		private IResultTransformer resultTransformer;
 		private ArrayList types = new ArrayList();
-		private SqlString sqlString;
+		private SqlString sqlString = null;
 		private Dialect.Dialect dialect;
 		private bool forceCacheRefresh;
 		private QueryParameters combinedParameters;
 		private IList namedParametersThatAreSafeToDuplicate = new ArrayList();
 		private FlushMode flushMode = FlushMode.Unspecified;
 		private FlushMode sessionFlushMode = FlushMode.Unspecified;
-		
-		public MultiQueryImpl(ISessionImplementor session)
+	    private static readonly Regex parseParameterListOrignialName = new Regex(@"(.*?)\d+_",RegexOptions.Compiled);
+
+	    public MultiQueryImpl(ISessionImplementor session)
 		{
 			dialect = session.Factory.Dialect;
 			if (dialect.SupportsMultipleQueries == false)
@@ -495,7 +497,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				if (sqlString == null)
+                if (sqlString==null)
 					AggregateQueriesInformation();
 				return sqlString;
 			}
@@ -508,7 +510,7 @@ namespace NHibernate.Impl
 			{
 				QueryParameters queryParameters = query.GetQueryParameters();
 				queryParameters.ValidateParameters();
-				IQueryTranslator[] queryTranslators = session.GetQueries(query.BindParameterLists(), false);
+				IQueryTranslator[] queryTranslators = session.GetQueries(query.BindParameterLists(queryParameters.NamedParameters), false);
 				foreach (QueryTranslator translator in queryTranslators)
 				{
 					translators.Add(translator);
@@ -684,7 +686,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				if (sqlString == null)
+                if (sqlString == null)
 					AggregateQueriesInformation();
 				return translators;
 			}
@@ -720,11 +722,11 @@ namespace NHibernate.Impl
 
 		private void CopyNamedParametersDictionary(IDictionary dest, IDictionary src)
 		{
-			foreach (DictionaryEntry dictionaryEntry in src)
+		    foreach (DictionaryEntry dictionaryEntry in src)
 			{
 				if (dest.Contains(dictionaryEntry.Key))
 				{
-					if (namedParametersThatAreSafeToDuplicate.Contains(dictionaryEntry.Key) )
+				    if (IsParameterSafeToDuplicate(dictionaryEntry.Key.ToString()))
 						continue;//we specify it for all the queries, so it is okay.
 					
 					throw new QueryException(
@@ -736,7 +738,20 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static IList GetResultFromQueryCache(
+	    private bool IsParameterSafeToDuplicate(string name)
+	    {
+            if(namedParametersThatAreSafeToDuplicate.Contains(name))
+                return true;
+	        Match match = parseParameterListOrignialName.Match(name);
+            if(match!=null)
+            {
+                string originalName = match.Groups[1].Value;
+                return namedParametersThatAreSafeToDuplicate.Contains(originalName);
+            }
+	        return false;
+	    }
+
+	    private static IList GetResultFromQueryCache(
 			ISessionImplementor session,
 			QueryParameters queryParameters,
 			ISet querySpaces,

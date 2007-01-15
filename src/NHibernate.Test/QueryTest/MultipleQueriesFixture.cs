@@ -175,7 +175,42 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		[Test]
+        [Test]
+        public void CanUseSetParameterList()
+        {
+            using (ISession s = OpenSession())
+            {
+                Item item = new Item();
+                item.Id = 1;
+                s.Save(item);
+                s.Flush();
+            }
+
+            using (ISession s = OpenSession())
+            {
+                IList results =s.CreateMultiQuery()
+                    .Add("from Item i where i.id in (:items)")
+                    .Add("select count(*) from Item i where i.id in (:items)")
+                    .SetParameterList("items", new int[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16})
+                    .List();
+
+                IList items = (IList)results[0];
+                Item fromDb = (Item)items[0];
+                Assert.AreEqual(1, fromDb.Id);
+
+                IList counts = (IList)results[1];
+                long count = (long)counts[0];
+                Assert.AreEqual(1L, count);
+            }
+
+            using (ISession s = OpenSession())
+            {
+                s.Delete("from Item");
+                s.Flush();
+            }
+        }
+
+	    [Test]
 		public void CanExecuteMultiplyQueriesInSingleRoundTrip()
 		{
 			using (ISession s = OpenSession())
