@@ -562,11 +562,19 @@ finally
             <listitem>
                 <para>
                     <literal>after_transaction</literal> - says to use <literal>ConnectionReleaseMode.AfterTransaction</literal>.
-                    Note that with ConnectionReleaseMode.AfterTransaction, if a session is considered to be in auto-commit
-                    mode (i.e. no transaction was started) connections will be released after every operation.
+                    Note that with <literal>ConnectionReleaseMode.AfterTransaction</literal>, if a session is considered to be in
+                    auto-commit mode (i.e. no transaction was started) connections will be released after every operation.
                 </para>
             </listitem>
         </itemizedlist>
+
+        <para>
+            As of NHibernate 1.2.0, if your application manages transactions through .NET APIs such as <literal>
+            System.Transactions</literal> library, <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
+            NHibernate to open and close several connections during one transaction, leading to unnecessary overhead and
+            transaction promotion from local to distributed. Specifying <literal>ConnectionReleaseMode.OnClose</literal>
+            will revert to the legacy behavior and prevent this problem from occuring.
+        </para>
 
     </sect1>
 
