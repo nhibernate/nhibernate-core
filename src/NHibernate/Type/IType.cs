@@ -145,5 +145,15 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.Copy"]/*'
 		/// /> 
 		object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready );
+
+		/// <summary>
+		/// Determines whether the specified value is represented as <c>NULL</c> in the database.
+		/// </summary>
+		/// <param name="value">The value, may be <c>null</c>.</param>
+		/// <returns>
+		/// <c>true</c> if the specified value is represented as <c>NULL</c> in the database;
+		/// otherwise, <c>false</c>.
+		/// </returns>
+		bool IsDatabaseNull(object value);
 	}
 }

@@ -1,11 +1,9 @@
 using System;
-using System.ComponentModel;
-using System.Runtime.Serialization;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
 	/// <summary>
-	/// An <see cref="INullableType"/> that wraps an <see cref="Int32"/> value.
+	/// A nullable type that wraps an <see cref="Int32"/> value.
 	/// </summary>
 	[System.ComponentModel.TypeConverter(typeof(NullableInt32Converter)), Serializable()]
 	public struct NullableInt32 : IFormattable, IComparable

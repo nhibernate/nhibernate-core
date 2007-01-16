@@ -50,5 +50,10 @@ namespace Nullables.NHibernate
 		}
 
 		public abstract object NullValue { get; }
+
+		public override bool IsDatabaseNull(object value)
+		{
+			return value == null || Equals(value, NullValue);
+		}
 	}
 }

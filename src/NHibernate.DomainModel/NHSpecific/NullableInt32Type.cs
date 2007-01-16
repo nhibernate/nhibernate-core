@@ -49,5 +49,10 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			return NullableInt32.Parse( xml );
 		}
+
+		public override bool IsDatabaseNull(object value)
+		{
+			return value == null || NullableInt32.Default.Equals(value);
+		}
 	}
 }

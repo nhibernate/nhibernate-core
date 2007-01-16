@@ -1190,7 +1190,7 @@ namespace NHibernate.Persister.Entity
 
 			for (int i = 0; i < fields.Length; i++)
 			{
-				notNull[i] = insertable[i] && fields[i] != null;
+				notNull[i] = insertable[i] && !PropertyTypes[i].IsDatabaseNull(fields[i]);
 			}
 
 			return notNull;
@@ -1810,7 +1810,7 @@ namespace NHibernate.Persister.Entity
                                            versionability[i];
 							if (include)
 							{
-								if (oldFields[i] != null)
+								if (!PropertyTypes[i].IsDatabaseNull(oldFields[i]))
 								{
 									PropertyTypes[i].NullSafeSet(statement, oldFields[i], index, session);
 									index += GetPropertyColumnSpan(i);
@@ -2612,7 +2612,7 @@ namespace NHibernate.Persister.Entity
 					if (include)
 					{
 						string[] propertyColumnNames = GetPropertyColumnNames(i);
-						if (oldFields[i] == null)
+						if (PropertyTypes[i].IsDatabaseNull(oldFields[i]))
 						{
 							foreach (string column in propertyColumnNames)
 							{
@@ -2720,7 +2720,7 @@ namespace NHibernate.Persister.Entity
 						bool[] versionability = PropertyVersionability;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-                            if (IsPropertyOfTable(i, j) && versionability[i] && loadedState[i] != null)
+                            if (IsPropertyOfTable(i, j) && versionability[i] && !types[i].IsDatabaseNull(loadedState[i]))
 							{
 								types[i].NullSafeSet(statement, loadedState[i], index, session);
 								index += GetPropertyColumnSpan(i);
@@ -2790,7 +2790,7 @@ namespace NHibernate.Persister.Entity
 						// this property belongs to the table and it is not specifically
 						// excluded from optimistic locking by optimistic-lock="false"
 						string[] propertyColumnNames = GetPropertyColumnNames(i);
-						if (loadedState[i] == null)
+						if (types[i].IsDatabaseNull(loadedState[i]))
 						{
 							for (int k = 0; k < propertyColumnNames.Length; k++)
 							{

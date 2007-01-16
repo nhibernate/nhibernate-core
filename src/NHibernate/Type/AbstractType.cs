@@ -224,6 +224,18 @@ namespace NHibernate.Type
 			return x.GetHashCode();
 		}
 
+		/// <summary>
+		/// Determines whether the specified value is represented as <c>NULL</c> in the database.
+		/// </summary>
+		/// <param name="value">The value, may be <c>null</c>.</param>
+		/// <returns>
+		/// <c>true</c> if the specified value is <c>null</c>; otherwise, <c>false</c>.
+		/// </returns>
+		public virtual bool IsDatabaseNull(object value)
+		{
+			return value == null;
+		}
+
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
 		/// /> 

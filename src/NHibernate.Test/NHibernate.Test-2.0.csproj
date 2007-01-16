@@ -364,6 +364,8 @@
     <Compile Include="NHSpecificTest\NH830\Cat.cs" />
     <Compile Include="NHSpecificTest\NH845\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH851\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH864\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH864\ObjectWithNullableInt32.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -761,6 +763,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH826\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH864\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

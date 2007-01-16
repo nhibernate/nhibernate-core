@@ -86,6 +86,5 @@ namespace NHibernate
 		/// Are objects of this type mutable?
 		/// </summary>
 		bool IsMutable { get; }
-
 	}
 }
