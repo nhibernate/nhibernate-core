@@ -366,6 +366,9 @@
     <Compile Include="NHSpecificTest\NH851\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH864\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH864\ObjectWithNullableInt32.cs" />
+    <Compile Include="NHSpecificTest\NH873\Fixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />

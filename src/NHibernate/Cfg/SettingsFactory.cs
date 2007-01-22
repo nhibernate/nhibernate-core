@@ -17,6 +17,7 @@ namespace NHibernate.Cfg
 	public sealed class SettingsFactory
 	{
 		private static readonly ILog log = LogManager.GetLogger( typeof( SettingsFactory ) );
+		private static readonly string DefaultCacheProvider = typeof (NoCacheProvider).AssemblyQualifiedName;
 
 		public static Settings BuildSettings( IDictionary properties )
 		{
@@ -119,26 +120,23 @@ namespace NHibernate.Cfg
 			}
 
 			bool useSecondLevelCache = PropertiesHelper.GetBoolean(Environment.UseSecondLevelCache, properties, true);
-			if (useSecondLevelCache)
+			bool useQueryCache = PropertiesHelper.GetBoolean( Environment.UseQueryCache, properties );
+
+			if (useSecondLevelCache || useQueryCache)
 			{
-				string cacheClassName = PropertiesHelper.GetString(Environment.CacheProvider, properties, "NHibernate.Cache.HashtableCacheProvider");
-				log.Info("cache provider: " + cacheClassName);
-				try
-				{
-					settings.CacheProvider = (ICacheProvider)Activator.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
-				}
-				catch (Exception e)
-				{
-					throw new HibernateException("could not instantiate CacheProvider: " + cacheClassName, e);
-				}
+				// The cache provider is needed when we either have second-level cache enabled
+				// or query cache enabled.  Note that useSecondLevelCache is enabled by default
+				settings.CacheProvider = CreateCacheProvider(properties);
+			}
+			else
+			{
+				settings.CacheProvider = new NoCacheProvider();
 			}
 
 			string cacheRegionPrefix = PropertiesHelper.GetString(Environment.CacheRegionPrefix, properties, null);
 			if (StringHelper.IsEmpty(cacheRegionPrefix)) cacheRegionPrefix = null;
 			if (cacheRegionPrefix != null) log.Info("Cache region prefix: " + cacheRegionPrefix);
 
-
-			bool useQueryCache = PropertiesHelper.GetBoolean( Environment.UseQueryCache, properties );
 
 			if( useQueryCache )
 			{
@@ -203,6 +201,20 @@ namespace NHibernate.Cfg
 			settings.IsolationLevel = isolation;
 
 			return settings;
+		}
+
+		private static ICacheProvider CreateCacheProvider(IDictionary properties)
+		{
+			string cacheClassName = PropertiesHelper.GetString(Environment.CacheProvider, properties, DefaultCacheProvider);
+			log.Info("cache provider: " + cacheClassName);
+			try
+			{
+				return (ICacheProvider)Activator.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not instantiate CacheProvider: " + cacheClassName, e);
+			}
 		}
 
 		private SettingsFactory()

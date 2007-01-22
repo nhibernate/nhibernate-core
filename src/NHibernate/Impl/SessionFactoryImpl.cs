@@ -554,7 +554,7 @@ namespace NHibernate.Impl
 
 		public ISession OpenSession(IInterceptor interceptor)
 		{
-			long timestamp = Timestamper.Next();
+			long timestamp = settings.CacheProvider.NextTimestamp();
 			// specify true for autoClose because NHibernate has responsibility for
 			// the IDbConnection.
 			return OpenSession(null, true, timestamp, interceptor, settings.ConnectionReleaseMode);
