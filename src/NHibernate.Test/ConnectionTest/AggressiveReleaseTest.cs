@@ -30,12 +30,12 @@ namespace NHibernate.Test.ConnectionTest
 			session.Reconnect();
 		}
 
-		protected void Prepare()
+		protected override void Prepare()
 		{
 			//DummyTransactionManager.INSTANCE.Begin();
 		}
 
-		protected void Done()
+		protected override void Done()
 		{
 			//DummyTransactionManager.INSTANCE.Commit();
 		}
