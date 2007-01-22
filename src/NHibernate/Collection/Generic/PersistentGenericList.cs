@@ -58,14 +58,16 @@ namespace NHibernate.Collection.Generic
 
 		public void Insert( int index, T item )
 		{
-			Write();
+			Initialize(true);
 			list.Insert( index, item );
+			Dirty();
 		}
 
 		public void RemoveAt( int index )
 		{
-			Write();
+			Initialize(true);
 			list.RemoveAt( index );
+			Dirty();
 		}
 
 		public T this[ int index ]
@@ -99,8 +101,12 @@ namespace NHibernate.Collection.Generic
 
 		public void Clear()
 		{
-			Write();
-			list.Clear();
+			Initialize(true);
+			if (list.Count > 0)
+			{
+				Dirty();
+				list.Clear();
+			}
 		}
 
 		public bool Contains( T item )
@@ -131,8 +137,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove( T item )
 		{
-			Write();
-			return list.Remove( item );
+			Initialize(true);
+			return MakeDirtyIfTrue(list.Remove(item));
 		}
 
 		#endregion
@@ -398,8 +404,9 @@ namespace NHibernate.Collection.Generic
 
 		void IList.Insert( int index, object value )
 		{
-			Write();
+			Initialize(true);
 			( ( IList ) list ).Insert( index, value );
+			Dirty();
 		}
 
 		bool IList.IsFixedSize
@@ -414,8 +421,13 @@ namespace NHibernate.Collection.Generic
 
 		void IList.Remove( object value )
 		{
-			Write();
+			Initialize(true);
+			int oldCount = list.Count;
 			( ( IList ) list ).Remove( value );
+			if (oldCount != list.Count)
+			{
+				Dirty();
+			}
 		}
 
 		void IList.RemoveAt( int index )

@@ -72,6 +72,7 @@ namespace NHibernate.Mapping
 		private bool subselectLoadable;
 		private string manyToManyWhere;
 		private string manyToManyOrderBy;
+		private bool optimisticLocked;
 
 		protected Collection( PersistentClass owner )
 		{
@@ -474,6 +475,12 @@ namespace NHibernate.Mapping
 		{
 			get { return manyToManyOrderBy; }
 			set { manyToManyOrderBy = value; }
+		}
+
+		public bool IsOptimisticLocked
+		{
+			get { return optimisticLocked; }
+			set { optimisticLocked = value; }
 		}
 	}
 }

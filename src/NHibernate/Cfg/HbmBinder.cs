@@ -657,7 +657,9 @@ namespace NHibernate.Cfg
 				model.IsInverse = StringHelper.BooleanValue(inverseNode.Value);
 			}
 
-			// TODO: H3.1 - not ported: mutable, optimistic-lock
+			// TODO: H3.1 - not ported: mutable
+			XmlAttribute olNode = node.Attributes["optimistic-lock"];
+			model.IsOptimisticLocked = olNode == null || "true".Equals(olNode.Value);
 
 			XmlAttribute orderNode = node.Attributes["order-by"];
 			if (orderNode != null)

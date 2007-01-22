@@ -180,20 +180,30 @@ namespace NHibernate.Collection
 
 		public void Insert( int index, object obj )
 		{
-			Write();
+			Initialize(true);
 			list.Insert( index, obj );
+			Dirty();
 		}
 
 		public void Remove( object obj )
 		{
-			Write();
+			Initialize(true);
+			int oldCount = list.Count;
 			list.Remove( obj );
+			if (oldCount != list.Count)
+			{
+				Dirty();
+			}
 		}
 
 		public void Clear()
 		{
-			Write();
-			list.Clear();
+			Initialize(true);
+			if (list.Count > 0)
+			{
+				list.Clear();
+				Dirty();
+			}
 		}
 
 		public object this[ int index ]
@@ -212,8 +222,9 @@ namespace NHibernate.Collection
 
 		public void RemoveAt( int index )
 		{
-			Write();
+			Initialize(true);
 			list.RemoveAt( index );
+			Dirty();
 		}
 
 		public int IndexOf( object obj )

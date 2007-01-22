@@ -99,9 +99,13 @@ namespace NHibernate.Collection
 
 		public void Clear()
 		{
-			Write();
-			values.Clear();
-			identifiers.Clear();
+			Initialize(true);
+			if (values.Count > 0 || identifiers.Count > 0)
+			{
+				values.Clear();
+				identifiers.Clear();
+				Dirty();
+			}
 		}
 
 		public bool IsReadOnly
@@ -130,9 +134,10 @@ namespace NHibernate.Collection
 
 		public void RemoveAt( int index )
 		{
-			Write();
+			Initialize(true);
 			BeforeRemove( index );
 			( ( IList ) values ).RemoveAt( index );
+			Dirty();
 		}
 
 		public void Remove( object value )
@@ -208,9 +213,10 @@ namespace NHibernate.Collection
 
 		public void Insert( int index, T item )
 		{
-			Write();
+			Initialize(true);
 			BeforeAdd( index );
 			values.Insert( index, item );
+			Dirty();
 		}
 
 		T IList<T>.this[ int index ]
@@ -229,8 +235,9 @@ namespace NHibernate.Collection
 
 		public void Add( T item )
 		{
-			Write();
+			Initialize(true);
 			values.Add( item );
+			Dirty();
 		}
 
 		public bool Contains( T item )
@@ -247,7 +254,7 @@ namespace NHibernate.Collection
 
 		public bool Remove( T item )
 		{
-			Write();
+			Initialize(true);
 			int index = values.IndexOf( item );
 			if( index >= 0 )
 			{

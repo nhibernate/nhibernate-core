@@ -127,6 +127,7 @@ namespace NHibernate.Persister.Collection
 		private string queryLoaderName;
 		private bool subselectLoadable;
 		private IEntityPersister ownerPersister;
+		private bool isVersioned;
 
 		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
@@ -152,6 +153,7 @@ namespace NHibernate.Persister.Collection
 			hasOrphanDelete = collection.OrphanDelete;
 
 			batchSize = collection.BatchSize;
+			isVersioned = collection.IsOptimisticLocked;
 
 			keyType = collection.Key.Type;
 			int keySpan = collection.Key.ColumnSpan;
@@ -1512,6 +1514,11 @@ namespace NHibernate.Persister.Collection
 			{
 				return "";
 			}
+		}
+
+		public bool IsVersioned
+		{
+			get { return isVersioned && OwnerEntityPersister.IsVersioned; }
 		}
 	}
 }

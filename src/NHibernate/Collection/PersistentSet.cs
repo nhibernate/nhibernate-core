@@ -191,16 +191,30 @@ namespace NHibernate.Collection
 
 		public bool Add( object value )
 		{
-			Write();
-			return internalSet.Add( value );
+			Initialize(true);
+			if (internalSet.Add( value ))
+			{
+				Dirty();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool AddAll( ICollection coll )
 		{
-			if( coll.Count > 0 )
+			if( coll.Count < 0 )
 			{
-				Write();
-				return internalSet.AddAll( coll );
+				return false;
+			}
+
+			Initialize(true);
+			if (internalSet.AddAll( coll ))
+			{
+				Dirty();
+				return true;
 			}
 			else
 			{
@@ -210,8 +224,12 @@ namespace NHibernate.Collection
 
 		public void Clear()
 		{
-			Write();
-			internalSet.Clear();
+			Initialize(true);
+			if (internalSet.Count > 0)
+			{
+				internalSet.Clear();
+				Dirty();
+			}
 		}
 
 		public bool Contains( object key )
@@ -255,20 +273,44 @@ namespace NHibernate.Collection
 
 		public bool Remove( object key )
 		{
-			Write();
-			return internalSet.Remove( key );
+			Initialize(true);
+			if (internalSet.Remove( key ))
+			{
+				Dirty();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool RemoveAll( ICollection c )
 		{
-			Write();
-			return internalSet.RemoveAll( c );
+			Initialize(true);
+			if (internalSet.RemoveAll( c ))
+			{
+				Dirty();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool RetainAll( ICollection c )
 		{
-			Write();
-			return internalSet.RetainAll( c );
+			Initialize(true);
+			if (internalSet.RetainAll( c ))
+			{
+				Dirty();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		public ISet Union( ISet a )

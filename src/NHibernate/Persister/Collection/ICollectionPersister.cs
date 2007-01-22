@@ -246,7 +246,9 @@ namespace NHibernate.Persister.Collection
 		string GetIdentifierColumnAlias( string suffix );
 
 		ISessionFactoryImplementor Factory { get; }
-		
+
+		bool IsVersioned { get; }
+
 		bool IsAffectedByEnabledFilters(ISessionImplementor session);
 	}
 }

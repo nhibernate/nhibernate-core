@@ -3374,8 +3374,10 @@ namespace NHibernate.Impl
 				interceptorHandledDirtyCheck = true;
 			}
 
+			bool hasDirtyCollections = false;
+
 			// compare to cached state (ignoring nested collections)
-			if (IsUpdateNecessary(persister, cannotDirtyCheck, status, dirtyProperties, values, types))
+			if (IsUpdateNecessary(persister, cannotDirtyCheck, status, dirtyProperties, values, types, ref hasDirtyCollections))
 			{
 				// its dirty!
 
@@ -3420,7 +3422,7 @@ namespace NHibernate.Impl
 				}
 
 				//increment the version number (if necessary)
-				object nextVersion = GetNextVersion(persister, values, entry);
+				object nextVersion = GetNextVersion(persister, values, entry, hasDirtyCollections, dirtyProperties);
 
 				// get the updated snapshot by cloning current state
 				object[] updatedState = null;
@@ -3438,7 +3440,6 @@ namespace NHibernate.Impl
 
 				CheckNullability(values, persister, true);
 
-                bool hasDirtyCollections = HasDirtyCollections(persister, status, values, types);
 				//note that we intentionally did _not_ pass in currentPersistentState!
 				updates.Add(
                     new ScheduledUpdate(entry.Id, values, dirtyProperties, hasDirtyCollections, entry.LoadedState, entry.Version, nextVersion, obj, updatedState, persister, this)
@@ -3466,32 +3467,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-        private bool HasDirtyCollections(
-            IEntityPersister persister,
-            Status status,
-            object[] values,
-            IType[] types)
-        {
-            if (status == Status.Loaded && persister.IsVersioned && persister.HasCollections)
-            {
-                DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(this, persister.PropertyVersionability);
-                visitor.ProcessEntityPropertyValues(values, types);
-                return visitor.WasDirtyCollectionFound;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-
 		private bool IsUpdateNecessary(
 			IEntityPersister persister,
 			bool cannotDirtyCheck,
 			Status status,
 			int[] dirtyProperties,
 			object[] values,
-			IType[] types)
+			IType[] types,
+			ref bool hasDirtyCollections)
 		{
 			if (!persister.IsMutable)
 			{
@@ -3510,7 +3493,8 @@ namespace NHibernate.Impl
 			if (status == Status.Loaded && persister.IsVersioned && persister.HasCollections)
 			{
 				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(this, persister.PropertyVersionability);
-				visitor.ProcessValues(values, types);
+				visitor.ProcessEntityPropertyValues(values, types);
+				hasDirtyCollections = visitor.WasDirtyCollectionFound;
 				return visitor.WasDirtyCollectionFound;
 			}
 			else
@@ -3519,7 +3503,19 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private object GetNextVersion(IEntityPersister persister, object[] values, EntityEntry entry)
+		private bool IsVersionIncrementRequired(bool hasDirtyCollection, EntityEntry entry, IEntityPersister persister, int[] dirtyProperties)
+		{
+			return entry.Status != Status.Deleted
+			       && (dirtyProperties == null ||
+			           Versioning.IsVersionIncrementRequired(
+			           	dirtyProperties,
+			           	hasDirtyCollection,
+			           	persister.PropertyVersionability
+			           	)
+			          );
+		}
+
+		private object GetNextVersion(IEntityPersister persister, object[] values, EntityEntry entry, bool hasDirtyCollection, int[] dirtyProperties)
 		{
 			if (persister.IsVersioned)
 			{
@@ -3529,9 +3525,11 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					Object nextVersion = entry.Status == Status.Deleted ?
-						entry.Version :
-						Versioning.Increment(entry.Version, persister.VersionType, this);
+					bool isVersionIncrementRequired = IsVersionIncrementRequired(hasDirtyCollection, entry, persister, dirtyProperties);
+
+					object nextVersion = isVersionIncrementRequired
+						? Versioning.Increment(entry.Version, persister.VersionType, this)
+						: entry.Version;
 					Versioning.SetVersion(values, nextVersion, persister);
 					return nextVersion;
 				}
@@ -4012,24 +4010,12 @@ namespace NHibernate.Impl
 						}
 					}
 				}
-				else if (entry.Dirty)
+				else if (coll.IsDirty)
 				{
 					// else if it's elements changed
 					entry.IsDoupdate = true;
 				}
 			}
-		}
-
-		/// <summary>
-		/// ONLY near the end of the flush process, determine if the collection is dirty
-		/// by checking its entry
-		/// </summary>
-		/// <param name="coll"></param>
-		/// <returns></returns>
-		internal bool CollectionIsDirty(IPersistentCollection coll)
-		{
-			CollectionEntry entry = GetCollectionEntry(coll);
-			return coll.WasInitialized && entry.Dirty; //( entry.dirty || coll.hasQueuedAdds() ); 
 		}
 
 		private sealed class LoadingCollectionEntry
@@ -4240,7 +4226,7 @@ namespace NHibernate.Impl
 			IEntityPersister ownerPersister = factory.GetEntityPersister(persister.OwnerClass);
 			object version;
 			IComparer versionComparator;
-			if (ownerPersister.IsVersioned)
+			if (persister.IsVersioned)
 			{
 				version = GetEntry(GetCollectionOwner(lce.Id, persister)).Version;
 				versionComparator = ownerPersister.VersionType.Comparator;
@@ -4361,7 +4347,7 @@ namespace NHibernate.Impl
 
 		private CollectionEntry AddCollection(IPersistentCollection collection)
 		{
-			CollectionEntry ce = new CollectionEntry();
+			CollectionEntry ce = new CollectionEntry(collection);
 			collectionEntries[collection] = ce;
 			collection.CollectionSnapshot = ce;
 			return ce;

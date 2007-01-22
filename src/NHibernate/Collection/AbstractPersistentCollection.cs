@@ -36,6 +36,10 @@ namespace NHibernate.Collection
 
 		private object owner;
 
+		// collections detect changes made via their public interface and mark
+		// themselves as dirty as a performance optimization
+		private bool dirty;
+
 		//careful: these methods do not initialize the collection
 		
 		/// <summary>
@@ -65,7 +69,7 @@ namespace NHibernate.Collection
 		protected void Write()
 		{
 			Initialize( true );
-			collectionSnapshot.SetDirty();
+			Dirty();
 		}
 
 		/// <summary>
@@ -97,7 +101,7 @@ namespace NHibernate.Collection
 					additions = new ArrayList( 10 );
 				}
 				additions.Add( element );
-				collectionSnapshot.SetDirty(); //needed so that we remove this collection from the second-level cache
+				Dirty(); //needed so that we remove this collection from the second-level cache
 				return true;
 			}
 			else
@@ -648,6 +652,31 @@ namespace NHibernate.Collection
 		{
 			get { return owner; }
 			set { owner = value; }
+		}
+
+		public bool IsDirty
+		{
+			get { return dirty; }
+		}
+
+		public void ClearDirty()
+		{
+			dirty = false;
+		}
+
+		public void Dirty()
+		{
+			dirty = true;
+		}
+
+		// Utility method
+		protected bool MakeDirtyIfTrue(bool result)
+		{
+			if (result)
+			{
+				Dirty();
+			}
+			return result;
 		}
 
 		#region - Hibernate Collection Proxy Classes

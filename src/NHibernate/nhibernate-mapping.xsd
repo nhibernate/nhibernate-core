@@ -120,6 +120,7 @@
 		<xs:attribute name="batch-size" type="xs:positiveInteger" use="optional" default="1" />
 		<xs:attribute name="check" type="xs:string" use="optional" />
 		<xs:attribute name="collection-type" type="xs:string" use="optional" />
+		<xs:attribute name="optimistic-lock" type="xs:boolean" use="optional" />
 		<xs:attribute name="generic" type="xs:boolean" use="optional">
 			<xs:annotation>
 				<xs:documentation>The concrete collection should use a generic version or an object-based version.</xs:documentation>
@@ -630,6 +631,7 @@
 			<xs:attribute name="element-class" type="xs:string" />
 			<xs:attribute name="cascade" type="cascadeStyle" />
 			<xs:attribute name="where" type="xs:string" />
+			<xs:attribute name="optimistic-lock" type="xs:boolean" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="cache" type="cacheType" />

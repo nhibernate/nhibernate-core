@@ -504,6 +504,10 @@
     <Compile Include="UtilityTest\StringTokenizerFixture.cs" />
     <Compile Include="UtilityTest\TypeNameParserFixture.cs" />
     <Compile Include="UtilityTest\WeakHashtableFixture.cs" />
+    <Compile Include="VersionTest\Person.cs" />
+    <Compile Include="VersionTest\Task.cs" />
+    <Compile Include="VersionTest\Thing.cs" />
+    <Compile Include="VersionTest\VersionFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CompositeCollection\BaseClassA.hbm.xml" />
@@ -766,6 +770,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH864\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="VersionTest\PersonThing.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

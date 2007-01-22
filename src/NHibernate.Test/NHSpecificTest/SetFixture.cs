@@ -358,6 +358,11 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return false; }
 		}
 
+		public bool IsVersioned
+		{
+			get { return false; }
+		}
+
 		#endregion
 	}
 

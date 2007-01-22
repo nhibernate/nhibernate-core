@@ -96,9 +96,13 @@ namespace NHibernate.Collection
 
 		public void Clear()
 		{
-			Write();
-			values.Clear();
-			identifiers.Clear();
+			Initialize(true);
+			if (values.Count > 0 || identifiers.Count > 0)
+			{
+				Dirty();
+				values.Clear();
+				identifiers.Clear();
+			}
 		}
 
 		public bool IsReadOnly
@@ -122,21 +126,23 @@ namespace NHibernate.Collection
 
 		public void Insert( int index, object value )
 		{
-			Write();
+			Initialize(true);
 			BeforeAdd( index );
 			values.Insert( index, value );
+			Dirty();
 		}
 
 		public void RemoveAt( int index )
 		{
-			Write();
+			Initialize(true);
 			BeforeRemove( index );
 			values.RemoveAt( index );
+			Dirty();
 		}
 
 		public void Remove( object value )
 		{
-			Write();
+			Initialize(true);
 			int index = values.IndexOf( value );
 			if( index >= 0 )
 			{

@@ -205,16 +205,16 @@ namespace NHibernate.Collection.Generic
 
 		public bool Add( object value )
 		{
-			Write();
-			return ( ( ISet ) internalSet ).Add( value );
+			Initialize(true);
+			return MakeDirtyIfTrue(((ISet) internalSet).Add(value));
 		}
 
 		public bool AddAll( ICollection coll )
 		{
 			if( coll.Count > 0 )
 			{
-				Write();
-				return ( ( ISet ) internalSet ).AddAll( coll );
+				Initialize(true);
+				return MakeDirtyIfTrue(((ISet) internalSet).AddAll(coll));
 			}
 			else
 			{
@@ -224,8 +224,12 @@ namespace NHibernate.Collection.Generic
 
 		public void Clear()
 		{
-			Write();
-			internalSet.Clear();
+			Initialize(true);
+			if (!internalSet.IsEmpty)
+			{
+				internalSet.Clear();
+				Dirty();
+			}
 		}
 
 		public bool Contains( object key )
@@ -261,6 +265,15 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		private bool MakeDirtyIfTrue(bool makeDirty)
+		{
+			if (makeDirty)
+			{
+				Dirty();
+			}
+			return makeDirty;
+		}
+
 		public ISet Minus( ISet a )
 		{
 			Read();
@@ -269,20 +282,20 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove( object key )
 		{
-			Write();
-			return ( ( ISet ) internalSet ).Remove( key );
+			Initialize(true);
+			return MakeDirtyIfTrue(((ISet) internalSet).Remove(key));
 		}
 
 		public bool RemoveAll( ICollection c )
 		{
-			Write();
-			return ( ( ISet ) internalSet ).RemoveAll( c );
+			Initialize(true);
+			return MakeDirtyIfTrue(((ISet) internalSet).RemoveAll(c));
 		}
 
 		public bool RetainAll( ICollection c )
 		{
-			Write();
-			return ( ( ISet ) internalSet ).RetainAll( c );
+			Initialize(true);
+			return MakeDirtyIfTrue(((ISet) internalSet).RetainAll(c));
 		}
 
 		public ISet Union( ISet a )
@@ -443,22 +456,22 @@ namespace NHibernate.Collection.Generic
 
 		public bool Add( T o )
 		{
-			Write();
-			return internalSet.Add( o );
+			Initialize(true);
+			return MakeDirtyIfTrue(internalSet.Add(o));
 		}
 
 		void ICollection<T>.Add( T o )
 		{
-			Write();
-			internalSet.Add( o );
+			Initialize(true);
+			MakeDirtyIfTrue(internalSet.Add(o));
 		}
 
 		public bool AddAll( ICollection<T> c )
 		{
 			if( c.Count > 0 )
 			{
-				Write();
-				return internalSet.AddAll( c );
+				Initialize(true);
+				return MakeDirtyIfTrue(internalSet.AddAll(c));
 			}
 			else
 			{
@@ -492,14 +505,14 @@ namespace NHibernate.Collection.Generic
 
 		public bool RemoveAll( ICollection<T> c )
 		{
-			Write();
-			return internalSet.RemoveAll( c );
+			Initialize(true);
+			return MakeDirtyIfTrue(internalSet.RemoveAll( c ));
 		}
 
 		public bool RetainAll( ICollection<T> c )
 		{
-			Write();
-			return internalSet.RetainAll( c );
+			Initialize(true);
+			return MakeDirtyIfTrue(internalSet.RetainAll( c ));
 		}
 
 		public ISet<T> Union( ISet<T> a )
@@ -527,8 +540,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove( T item )
 		{
-			Write();
-			return internalSet.Remove( item );
+			Initialize(true);
+			return MakeDirtyIfTrue(internalSet.Remove(item));
 		}
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()

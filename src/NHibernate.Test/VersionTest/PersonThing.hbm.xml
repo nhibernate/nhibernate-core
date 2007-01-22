@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- 
+    Demonstrates how to control the optimistic locking behavior
+    of a collection (do changes to the collection result in
+    a version increment on the owning instance)
+ -->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+		namespace="NHibernate.Test.VersionTest"
+		assembly="NHibernate.Test">
+
+	<class name="Person">
+		<id name="Name">
+			<generator class="assigned" />
+		</id>
+		<version name="Version"/>
+		<bag name="Things" 
+				inverse="true"
+				cascade="all-delete-orphan">
+			<key column="person"/>
+			<one-to-many class="Thing"/>
+		</bag>
+		<bag name="Tasks"
+				inverse="true"
+				cascade="all-delete-orphan"
+				optimistic-lock="false">
+			<key column="person"/>
+			<one-to-many class="Task"/>
+		</bag>
+	</class>
+
+	<class name="Thing">
+		<id name="Description">
+			<generator class="assigned" />
+		</id>
+		<version name="Version"/>
+		<property name="LongDescription"/>
+		<many-to-one name="Person" column="person" />
+	</class>
+
+	<class name="Task">
+		<id name="Description">
+			<generator class="assigned" />
+		</id>
+		<version name="Version"/>
+		<many-to-one name="Person" column="person" />
+	</class>
+
+</hibernate-mapping>

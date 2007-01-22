@@ -19,12 +19,6 @@ namespace NHibernate.Impl
 		private static readonly ILog log = LogManager.GetLogger( typeof( CollectionEntry ) );
 
 		/// <summary>
-		/// Collections detect changes made via their public interface
-		/// and mark themselves as dirty. False by default.
-		/// </summary>
-		private bool dirty;
-
-		/// <summary>
 		/// Indicates that the Collection can still be reached by an Entity
 		/// that exist in the <see cref="ISession"/>.
 		/// </summary>
@@ -131,14 +125,14 @@ namespace NHibernate.Impl
 		/// The CollectionEntry is for a Collection that is not dirty and 
 		/// has already been initialized.
 		/// </remarks>
-		public CollectionEntry()
+		public CollectionEntry(IPersistentCollection collection)
 		{
-			//a newly wrapped collection is NOT dirty (or we get unnecessary version updates)
-			this.dirty = false;
-			//this.initialized = true;
-
 			// New collections that get found and wrapped during flush shouldn't be ignored
 			this.ignore = false;
+
+			//a newly wrapped collection is NOT dirty (or we get unnecessary version updates)
+			collection.ClearDirty();
+			//this.initialized = true;
 		}
 
 		public CollectionEntry( ICollectionPersister loadedPersister, object loadedID )
@@ -149,14 +143,14 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Initializes a new instance of <see cref="CollectionEntry"/>. 
+		/// Initializes a new instance of <see cref="CollectionEntry"/> for collections just loaded from the database.
 		/// </summary>
 		/// <param name="loadedPersister">The <see cref="ICollectionPersister"/> that persists this Collection type.</param>
 		/// <param name="loadedID">The identifier of the Entity that is the owner of this Collection.</param>
 		/// <param name="ignore">A boolean indicating whether to ignore the collection during current (or next) flush.</param>
 		public CollectionEntry( ICollectionPersister loadedPersister, object loadedID, bool ignore )
 		{
-			this.dirty = false;
+			//this.dirty = false;
 			//this.initialized = false;
 			this.loadedKey = loadedID;
 			SetLoadedPersister( loadedPersister );
@@ -164,7 +158,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Initializes a new instance of <see cref="CollectionEntry"/>. 
+		/// Initializes a new instance of <see cref="CollectionEntry"/> for initialized detached collections.
 		/// </summary>
 		/// <param name="cs">The <see cref="ICollectionSnapshot"/> from another <see cref="ISession"/>.</param>
 		/// <param name="factory">The <see cref="ISessionFactoryImplementor"/> that created this <see cref="ISession"/>.</param>
@@ -175,7 +169,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public CollectionEntry( ICollectionSnapshot cs, ISessionFactoryImplementor factory )
 		{
-			this.dirty = cs.Dirty;
+			//this.dirty = cs.Dirty;
 			this.snapshot = cs.Snapshot;
 			this.loadedKey = cs.Key;
 			//this.initialized = true;
@@ -185,32 +179,20 @@ namespace NHibernate.Impl
 			SetLoadedPersister( factory.GetCollectionPersister( cs.Role ) );
 		}
 
-		/// <summary>
-		/// Checks to see if the <see cref="AbstractPersistentCollection"/> has had any changes to the 
-		/// collections contents or if any of the elements in the collection have been modified.
-		/// </summary>
-		/// <param name="coll"></param>
-		/// <returns><c>true</c> if the <see cref="IPersistentCollection"/> is dirty.</returns>
-		/// <remarks>
-		/// default behavior; will be overridden in deep lazy collections
-		/// </remarks>
-		private bool IsDirty( IPersistentCollection coll )
+		private void Dirty(IPersistentCollection collection)
 		{
-			// if this has already been marked as dirty or the collection can not 
-			// be directly accessed (ie- we can guarantee that the NHibernate collection
-			// wrappers are used) and the elements in the collection are not mutable 
-			// then return the dirty flag.
-			if( dirty || (
-				!coll.IsDirectlyAccessible && !loadedPersister.ElementType.IsMutable
-				) )
+			// if the collection is initialized and it was previously persistent
+			// initialize the dirty flag
+			bool forceDirty = collection.WasInitialized &&
+			                  !collection.IsDirty && //optimization
+			                  LoadedPersister != null &&
+			                  // TODO H3: LoadedPersister.IsMutable && //optimization
+			                  (collection.IsDirectlyAccessible || LoadedPersister.ElementType.IsMutable) && //optimization
+			                  !collection.EqualsSnapshot(LoadedPersister.ElementType);
+
+			if (forceDirty)
 			{
-				return dirty;
-			}
-			else
-			{
-				// need to have the coll determine if it is the same as the snapshot
-				// that was last taken.
-				return !coll.EqualsSnapshot( loadedPersister.ElementType );
+				collection.Dirty();
 			}
 		}
 
@@ -220,12 +202,9 @@ namespace NHibernate.Impl
 		/// <param name="collection">The <see cref="IPersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
 		public void PreFlush( IPersistentCollection collection )
 		{
-			// if the collection is initialized and it was previously persistent
-			// initialize the dirty flag
-			dirty = ( collection.WasInitialized && loadedPersister != null && IsDirty( collection ) ) ||
-				( !collection.WasInitialized && dirty ); //only need this so collection with queued adds will be removed from second-level cache
+			Dirty(collection);
 
-			if( log.IsDebugEnabled && dirty && loadedPersister != null )
+			if( log.IsDebugEnabled && collection.IsDirty && loadedPersister != null )
 			{
 				log.Debug( "Collection dirty: " + MessageHelper.InfoString( loadedPersister, loadedKey ) );
 			}
@@ -275,7 +254,7 @@ namespace NHibernate.Impl
 				// are in synch.
 				loadedKey = currentKey;
 				SetLoadedPersister( currentPersister );
-				dirty = false;
+				//dirty = false;
 
 				// collection needs to know its' representation in memory and with
 				// the db is now in synch - esp important for collections like a bag
@@ -318,20 +297,6 @@ namespace NHibernate.Impl
 			get { return snapshot; }
 		}
 
-		/// <summary></summary>
-		public bool Dirty
-		{
-			get { return dirty; }
-		}
-
-		public void SetDirty()
-		{
-			dirty = true;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		public bool WasDereferenced
 		{
 			get { return loadedKey == null; }

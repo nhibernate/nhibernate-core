@@ -219,8 +219,9 @@ namespace NHibernate.Collection.Generic
 
 		public void Add( TKey key, TValue value )
 		{
-			Write();
-			map.Add( key, value );
+			Initialize(true);
+			map.Add(key, value);
+			Dirty();
 		}
 
 		public bool ContainsKey( TKey key )
@@ -240,8 +241,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove( TKey key )
 		{
-			Write();
-			return map.Remove( key );
+			Initialize(true);
+			return MakeDirtyIfTrue(map.Remove( key ));
 		}
 
 		public bool TryGetValue( TKey key, out TValue value )
@@ -279,14 +280,19 @@ namespace NHibernate.Collection.Generic
 
 		public void Add( KeyValuePair<TKey, TValue> item )
 		{
-			Write();
+			Initialize(true);
 			map.Add( item );
+			Dirty();
 		}
 
 		public void Clear()
 		{
-			Write();
-			map.Clear();
+			Initialize(true);
+			if (map.Count > 0)
+			{
+				map.Clear();
+				Dirty();
+			}
 		}
 
 		public bool Contains( KeyValuePair<TKey, TValue> item )
@@ -315,10 +321,19 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
+		private bool MakeDirtyIfTrue(bool result)
+		{
+			if (result)
+			{
+				Dirty();
+			}
+			return result;
+		}
+
 		public bool Remove( KeyValuePair<TKey, TValue> item )
 		{
-			Write();
-			return map.Remove( item );
+			Initialize(true);
+			return MakeDirtyIfTrue(map.Remove( item ));
 		}
 
 		#endregion
@@ -337,14 +352,19 @@ namespace NHibernate.Collection.Generic
 
 		void System.Collections.IDictionary.Add( object key, object value )
 		{
-			Write();
+			Initialize(true);
 			( ( System.Collections.IDictionary ) map ).Add( key, value );
+			Dirty();
 		}
 
 		void System.Collections.IDictionary.Clear()
 		{
-			Write();
-			map.Clear();
+			Initialize(true);
+			if (map.Count > 0)
+			{
+				map.Clear();
+				Dirty();
+			}
 		}
 
 		bool System.Collections.IDictionary.Contains( object key )
@@ -384,8 +404,13 @@ namespace NHibernate.Collection.Generic
 
 		void System.Collections.IDictionary.Remove( object key )
 		{
-			Write();
+			Initialize(true);
+			int oldCount = map.Count;
 			( ( System.Collections.IDictionary ) map ).Remove( key );
+			if (oldCount != map.Count)
+			{
+				Dirty();
+			}
 		}
 
 		System.Collections.ICollection System.Collections.IDictionary.Values

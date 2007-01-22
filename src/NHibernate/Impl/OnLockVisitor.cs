@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 					if( SessionImpl.IsOwnerUnchanged( snapshot, persister, this.Key ) )
 					{
 						// a "detached" collection that originally belonged to the same entity
-						if( snapshot.Dirty )
+						if( coll.IsDirty )
 						{
 							throw new HibernateException( "reassociated object has dirty collection" );
 						}

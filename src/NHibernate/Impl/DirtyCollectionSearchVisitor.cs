@@ -72,7 +72,7 @@ namespace NHibernate.Impl
 					coll = (IPersistentCollection)collection;
 				}
 
-				if( session.CollectionIsDirty( coll ) )
+				if( coll.IsDirty )
 				{
 					_dirty = true;
 					return null; // NOTE: early exit

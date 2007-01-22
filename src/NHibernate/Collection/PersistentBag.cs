@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -272,20 +271,27 @@ namespace NHibernate.Collection
 
 		public void RemoveAt( int index )
 		{
-			Write();
+			Initialize(true);
 			bag.RemoveAt( index );
+			Dirty();
 		}
 
 		public void Insert( int index, object value )
 		{
-			Write();
+			Initialize(true);
 			bag.Insert( index, value );
+			Dirty();
 		}
 
 		public void Remove( object value )
 		{
-			Write();
+			Initialize(true);
+			int oldCount = bag.Count;
 			bag.Remove( value );
+			if (oldCount != bag.Count)
+			{
+				Dirty();
+			}
 		}
 
 		public bool Contains( object value )
@@ -296,8 +302,12 @@ namespace NHibernate.Collection
 
 		public void Clear()
 		{
-			Write();
-			bag.Clear();
+			Initialize(true);
+			if (bag.Count > 0)
+			{
+				Dirty();
+				bag.Clear();
+			}
 		}
 
 		public int IndexOf( object value )

@@ -294,5 +294,24 @@ namespace NHibernate.Collection
 		/// </summary>
 		// NH: added persister parameter to fix NH-739
 		bool AfterInitialize(ICollectionPersister persister);
+
+		/// <summary>
+		/// Is the collection dirty? Note that this is only
+		/// reliable during the flush cycle, after the
+		/// collection elements are dirty checked against
+		/// the snapshot.
+		/// </summary>
+		bool IsDirty { get; }
+
+		/// <summary>
+		/// Clear the dirty flag, after flushing changes
+		/// to the database.
+		/// </summary>
+		void ClearDirty();
+
+		/// <summary>
+		/// Mark the collection as dirty
+		/// </summary>
+		void Dirty();
 	}
 }

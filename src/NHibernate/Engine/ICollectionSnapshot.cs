@@ -27,17 +27,6 @@ namespace NHibernate.Engine
 		ICollection Snapshot { get; }
 
 		/// <summary>
-		/// Gets a <see cref="bool"/> indicating if some action has been performed on the
-		/// actual collection instance that has modified it.
-		/// </summary>
-		bool Dirty { get; }
-
-		/// <summary>
-		/// Marks the <see cref="ICollectionSnapshot"/> as being dirty.
-		/// </summary>
-		void SetDirty();
-
-		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if the collection was at one time
 		/// associated with an Entity and then later dereferenced during a Flush().
 		/// </summary>

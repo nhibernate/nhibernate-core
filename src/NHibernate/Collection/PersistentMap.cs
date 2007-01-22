@@ -166,8 +166,9 @@ namespace NHibernate.Collection
 
 		public void Add( object key, object value )
 		{
-			Write();
+			Initialize(true);
 			map.Add( key, value );
+			Dirty();
 		}
 
 		public bool Contains( object key )
@@ -192,14 +193,23 @@ namespace NHibernate.Collection
 
 		public void Remove( object key )
 		{
-			Write();
+			Initialize(true);
+			int oldCount = map.Count;
 			map.Remove( key );
+			if (oldCount != map.Count)
+			{
+				Dirty();
+			}
 		}
 
 		public void Clear()
 		{
-			Write();
-			map.Clear();
+			Initialize(true);
+			if (map.Count > 0)
+			{
+				Dirty();
+				map.Clear();
+			}
 		}
 
 		public override bool Empty
