@@ -48,11 +48,17 @@ namespace NHibernate.Expression
 
 		}
 
+		/// <summary>
+		/// The <see cref="SqlString" /> corresponding to an instance with no added
+		/// subcriteria.
+		/// </summary>
+		protected abstract SqlString EmptyExpression { get; }
+
 		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
 		{
 			if( _criteria.Count == 0 )
 			{
-				return new SqlString( "1=1" );
+				return EmptyExpression;
 			}
 
 			//TODO: add default capacity

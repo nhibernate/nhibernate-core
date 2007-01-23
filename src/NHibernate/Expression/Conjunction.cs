@@ -1,4 +1,5 @@
 using System;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Expression
 {
@@ -16,6 +17,11 @@ namespace NHibernate.Expression
 		protected override string Op
 		{
 			get { return " and "; }
+		}
+
+		protected override NHibernate.SqlCommand.SqlString EmptyExpression
+		{
+			get { return new SqlString("1=1"); }
 		}
 	}
 }
