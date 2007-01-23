@@ -5360,6 +5360,17 @@ namespace NHibernate.Test.Legacy
 			}
 		}
 
+		[Test]
+		public void ParameterInHavingClause()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.CreateQuery("select f.id from Foo f group by f.id having count(f.id) >= ?")
+					.SetInt32(0, 0)
+					.List();
+			}
+		}
+
 		#endregion
 	}
 }

@@ -1,3 +1,5 @@
+using NHibernate.SqlCommand;
+
 namespace NHibernate.Hql.Classic
 {
 	/// <summary> 
@@ -18,8 +20,18 @@ namespace NHibernate.Hql.Classic
 			// it since it adds nothing to the sql being generated.
 			if( token != null && token.Length > 0 )
 			{
-				q.AppendHavingToken( token );
+				q.AppendHavingToken( new SqlString(token) );
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="q"></param>
+		/// <param name="token"></param>
+		protected override void AppendToken(QueryTranslator q, SqlString token)
+		{
+			q.AppendHavingToken( token );
 		}
 	}
 }

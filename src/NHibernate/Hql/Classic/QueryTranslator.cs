@@ -457,17 +457,12 @@ namespace NHibernate.Hql.Classic
 			scalarTypes.Add(type);
 		}
 
-		internal void AppendWhereToken(string token)
-		{
-			whereTokens.Add(token);
-		}
-
 		internal void AppendWhereToken(SqlString token)
 		{
 			whereTokens.Add(token);
 		}
 
-		internal void AppendHavingToken(string token)
+		internal void AppendHavingToken(SqlString token)
 		{
 			havingTokens.Add(token);
 		}
