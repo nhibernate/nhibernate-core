@@ -97,6 +97,38 @@ namespace NHibernate.Test.FilterTest
 		}
 
 		[Test]
+		public void FiltersWithQueryCache()
+		{
+			TestData testData = new TestData(this);
+			testData.Prepare();
+
+			ISession session = OpenSession();
+			session.EnableFilter("regionlist").SetParameterList("regions", new string[] { "LA", "APAC" });
+			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
+
+			// test retreival through hql with the collection as non-eager
+			IList salespersons = session.CreateQuery("select s from Salesperson as s").SetCacheable(true).List();
+			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
+
+			// Try a second time, to make use of query cache
+			salespersons = session.CreateQuery("select s from Salesperson as s").SetCacheable(true).List();
+			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
+
+			session.Clear();
+
+			// test retreival through hql with the collection join fetched
+			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).List();
+			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
+
+			// A second time, to make use of query cache
+			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).List();
+			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
+
+			session.Close();
+			testData.Release();
+		}
+
+		[Test]
 		public void HqlFilters()
 		{
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

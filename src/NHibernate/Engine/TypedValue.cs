@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -54,8 +56,19 @@ namespace NHibernate.Engine
 				return false;
 			}
 
-			return that.type.Equals( type )
-				&& object.Equals( that.value, value );
+			if (!that.type.Equals(type))
+			{
+				return false;
+			}
+
+			if (value is ICollection && that.value is ICollection)
+			{
+			    return CollectionHelper.CollectionEquals((ICollection) value, (ICollection) that.value);
+			}
+			else
+			{
+				return object.Equals(that.value, value);
+			}
 		}
 
 		public override string ToString()

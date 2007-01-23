@@ -39,7 +39,7 @@ namespace NHibernate.Cache
 			FilterKey that = (FilterKey) other;
 			if (!that.filterName.Equals(filterName))
 				return false;
-			if (!that.filterParameters.Equals(filterParameters))
+			if (!CollectionHelper.DictionaryEquals(that.filterParameters, filterParameters))
 				return false;
 			return true;
 		}
@@ -54,7 +54,7 @@ namespace NHibernate.Cache
 			if (enabledFilters.Count == 0)
 				return null;
 			Set result = new HashedSet();
-			foreach (FilterImpl filter in enabledFilters)
+			foreach (FilterImpl filter in enabledFilters.Values)
 			{
 				FilterKey key = new FilterKey(
 						filter.Name,
