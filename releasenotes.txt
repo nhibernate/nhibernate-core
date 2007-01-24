@@ -1,3 +1,10 @@
+Build 1.0.4.0
+========================
+
+Bugs Fixed
+
+    * [NH-716] - Dirty Checking exception (many-to-one, select-before-update)
+
 Build 1.0.3.0
 ========================
 
