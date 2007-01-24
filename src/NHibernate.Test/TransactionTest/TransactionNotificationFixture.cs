@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TransactionTest

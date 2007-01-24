@@ -83,7 +83,6 @@
     <Compile Include="Cfg\Configuration.cs" />
     <Compile Include="Cfg\ConfigurationSectionHandler.cs" />
     <Compile Include="Cfg\DefaultNamingStrategy.cs" />
-    <Compile Include="Cfg\EmptyInterceptor.cs" />
     <Compile Include="Cfg\Environment.cs" />
     <Compile Include="Cfg\ImprovedNamingStrategy.cs" />
     <Compile Include="Cfg\INamingStrategy.cs" />
@@ -531,6 +530,7 @@
     <Compile Include="Dialect\MySQL5Dialect.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
+    <Compile Include="EmptyInterceptor.cs" />
     <Compile Include="Engine\BatchFetchQueue.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Engine\SubselectFetch.cs" />

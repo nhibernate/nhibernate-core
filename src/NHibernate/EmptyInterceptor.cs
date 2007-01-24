@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Type;
 
-namespace NHibernate.Cfg
+namespace NHibernate
 {
 	[Serializable]
 	public class EmptyInterceptor : IInterceptor
@@ -61,5 +61,4 @@ namespace NHibernate.Cfg
 		{
 		}
 	}
-
 }
