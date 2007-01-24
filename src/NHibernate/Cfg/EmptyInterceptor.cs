@@ -48,6 +48,18 @@ namespace NHibernate.Cfg
 		{
 			return null;
 		}
+
+		public virtual void AfterTransactionBegin(ITransaction tx)
+		{
+		}
+
+		public virtual void BeforeTransactionCompletion(ITransaction tx)
+		{
+		}
+
+		public virtual void AfterTransactionCompletion(ITransaction tx)
+		{
+		}
 	}
 
 }

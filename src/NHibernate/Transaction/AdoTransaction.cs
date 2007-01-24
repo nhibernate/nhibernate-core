@@ -132,11 +132,13 @@ namespace NHibernate.Transaction
 			begun = true;
 			committed = false;
 			rolledBack = false;
+
+			session.AfterTransactionBegin(this);
 		}
 
 		private void AfterTransactionCompletion( bool successful )
 		{
-			session.AfterTransactionCompletion( successful );
+			session.AfterTransactionCompletion( successful, this );
 			session = null;
 			begun = false;
 		}
@@ -160,6 +162,8 @@ namespace NHibernate.Transaction
 			{
 				session.Flush();
 			}
+
+			session.BeforeTransactionCompletion(this);
 
 			try
 			{

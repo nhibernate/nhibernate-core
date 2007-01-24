@@ -267,11 +267,21 @@ namespace NHibernate.Engine
 		object ProxyFor( object impl );
 
 		/// <summary>
+		/// Notify the session that an NHibernate transaction has begun.
+		/// </summary>
+		void AfterTransactionBegin(ITransaction tx);
+		
+		/// <summary>
+		/// Notify the session that the transaction is about to complete
+		/// </summary>
+		void BeforeTransactionCompletion(ITransaction tx);
+
+		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
 		/// (Also we shold release cache softlocks). May be called multiple times during the transaction
 		/// completion process.
 		/// </summary>
-		void AfterTransactionCompletion( bool successful );
+		void AfterTransactionCompletion(bool successful, ITransaction tx);
 
 		/// <summary>
 		/// Return the identifier of the persistent object, or null if transient

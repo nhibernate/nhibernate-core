@@ -139,5 +139,20 @@ namespace NHibernate
 		/// <returns>An instance of the class, or <c>null</c> to choose default behaviour</returns>
 		object Instantiate( System.Type type, object id );
 
+		/// <summary>
+		/// Called when a NHibernate transaction is begun via the NHibernate <see cref="ITransaction" />
+		/// API. Will not be called if transactions are being controlled via some other mechanism.
+		/// </summary>
+		void AfterTransactionBegin(ITransaction tx);
+
+		/// <summary>
+		/// Called before a transaction is committed (but not before rollback).
+		/// </summary>
+		void BeforeTransactionCompletion(ITransaction tx);
+
+		/// <summary>
+		/// Called after a transaction is committed or rolled back.
+		/// </summary>
+		void AfterTransactionCompletion(ITransaction tx);
 	}
 }

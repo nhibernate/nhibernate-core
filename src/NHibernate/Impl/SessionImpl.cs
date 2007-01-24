@@ -472,8 +472,7 @@ namespace NHibernate.Impl
 		/// and that all of the softlocks in the <see cref="Cache"/> have
 		/// been released.
 		/// </summary>
-		/// <param name="success"></param>
-		public void AfterTransactionCompletion(bool success)
+		public void AfterTransactionCompletion(bool success, ITransaction tx)
 		{
 			connectionManager.AfterTransaction();
 			log.Debug("transaction completion");
@@ -513,6 +512,19 @@ namespace NHibernate.Impl
 				}
 			}
 			executions.Clear();
+			
+			if ( //rootSession == null &&
+				tx != null)
+			{
+				try
+				{
+					interceptor.AfterTransactionCompletion(tx);
+				}
+				catch (Exception e)
+				{
+					log.Error("exception in interceptor AfterTransactionCompletion()", e);
+				}
+			}
 		}
 
 		private void InitTransientState()
@@ -5771,6 +5783,27 @@ namespace NHibernate.Impl
 			{
 				connectionManager.AfterNonTransactionalQuery(success);
 			}
+		}
+
+		public void AfterTransactionBegin(ITransaction tx)
+		{
+			CheckIsOpen();
+			interceptor.AfterTransactionBegin(tx);
+		}
+
+		public void BeforeTransactionCompletion(ITransaction tx)
+		{
+			log.Debug("before transaction completion");
+			//if ( rootSession == null ) {
+			try
+			{
+				interceptor.BeforeTransactionCompletion(tx);
+			}
+			catch (Exception e)
+			{
+				log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+			}
+			//}
 		}
 	}
 }

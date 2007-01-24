@@ -151,7 +151,7 @@ namespace NHibernate.Impl
 				if (!IsInActiveTransaction)
 				{
 					// We don't know the state of the transaction
-					session.AfterTransactionCompletion(false);
+					session.AfterTransactionCompletion(false, null);
 				}
 			}
 		}
@@ -332,7 +332,7 @@ namespace NHibernate.Impl
 		public void AfterNonTransactionalQuery(bool success)
 		{
 			log.Debug("after autocommit");
-			session.AfterTransactionCompletion(success);
+			session.AfterTransactionCompletion(success, null);
 		}
 
 		private bool IsAfterTransactionRelease

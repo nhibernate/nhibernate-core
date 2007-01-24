@@ -449,6 +449,7 @@
     <Compile Include="TestCase.cs" />
     <Compile Include="TestTestCase.cs" />
     <Compile Include="TransactionTest\TransactionFixture.cs" />
+    <Compile Include="TransactionTest\TransactionNotificationFixture.cs" />
     <Compile Include="TypeParameters\DefaultValueIntegerType.cs" />
     <Compile Include="TypeParameters\TypeParameterTest.cs" />
     <Compile Include="TypeParameters\Widget.cs" />
