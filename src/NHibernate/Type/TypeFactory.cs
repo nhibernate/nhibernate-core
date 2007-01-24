@@ -799,18 +799,18 @@ namespace NHibernate.Type
 		/// the dirty fields or null if no fields are modified.
 		/// </summary>
 		/// <param name="types"></param>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
 		/// <param name="check"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public static int[ ] FindModified( IType[ ] types, object[ ] old, object[ ] current, bool[ ] check, ISessionImplementor session )
+		public static int[ ] FindModified( IType[ ] types, object[ ] x, object[ ] y, bool[ ] check, ISessionImplementor session )
 		{
 			int[ ] results = null;
 			int count = 0;
 			for( int i = 0; i < types.Length; i++ )
 			{
-				if( check[ i ] && types[ i ].IsModified( old[ i ], current[ i ], session ) )
+				if( check[ i ] && types[ i ].IsModified( y[ i ], x[ i ], session ) )
 				{
 					if( results == null )
 					{
