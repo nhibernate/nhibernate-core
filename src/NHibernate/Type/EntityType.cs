@@ -132,7 +132,7 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 
-		public override object Copy(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
+		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
 		{
 			if (original == null)
 			{
@@ -158,7 +158,7 @@ namespace NHibernate.Type
 					throw new AssertionFailure("cannot copy a reference to an object with a null id");
 				}
 
-				id = idType.Copy(id, null, session, owner, copyCache);
+				id = idType.Replace(id, null, session, owner, copyCache);
 
 				// Replace a property-ref'ed entity by its id
 				if (uniqueKeyPropertyName != null && idType.IsEntityType)

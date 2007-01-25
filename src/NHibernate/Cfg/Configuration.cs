@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Schema;
 using Iesi.Collections;
 using log4net;
+using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Impl;
@@ -1556,6 +1557,7 @@ namespace NHibernate.Cfg
 		{
 			auxiliaryDatabaseObjects.Add(obj);
 		}
+
 		#region NHibernate-Specific Members
 
 		/// <summary>

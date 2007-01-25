@@ -180,7 +180,7 @@ namespace NHibernate.Type
 		/// <param name="owner"></param>
 		/// <param name="copiedAlready"></param>
 		/// <returns></returns>
-		public virtual object Copy( object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		public virtual object Replace( object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready )
 		{
 			if ( original == null )
 			{

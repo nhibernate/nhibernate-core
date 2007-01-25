@@ -82,8 +82,8 @@ namespace NHibernate.Type
 		{
 			DictionaryEntry de = ( DictionaryEntry ) element;
 			return new DictionaryEntry(
-				persister.IndexType.Copy( de.Key, null, session, owner, copiedAlready ),
-				persister.ElementType.Copy( de.Value, null, session, owner, copiedAlready ) );
+				persister.IndexType.Replace( de.Key, null, session, owner, copiedAlready ),
+				persister.ElementType.Replace( de.Value, null, session, owner, copiedAlready ) );
 		}
 
 		public override object Instantiate()

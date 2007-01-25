@@ -120,7 +120,7 @@ namespace NHibernate.Type
 			return base.ReplaceElements( original, target, owner, copyCache, session );
 		}
 
-		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
+		public override object Replace( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
 		{
 			System.Array originalArray = ( System.Array ) original;
 			System.Array targetArray = ( System.Array ) target;
@@ -137,7 +137,7 @@ namespace NHibernate.Type
 			for( int i = 0; i < length; i++ )
 			{
 				targetArray.SetValue(
-					elemType.Copy( originalArray.GetValue( i ), null, session, owner, copyCache ),
+					elemType.Replace( originalArray.GetValue( i ), null, session, owner, copyCache ),
 					i );
 			}
 

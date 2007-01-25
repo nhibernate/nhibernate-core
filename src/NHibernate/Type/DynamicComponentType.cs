@@ -115,7 +115,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		public override object Replace( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
 		{
 			if( original == null )
 			{
@@ -126,7 +126,7 @@ namespace NHibernate.Type
 				return target;
 			}
 
-			object[ ] values = TypeFactory.Copy(
+			object[ ] values = TypeFactory.Replace(
 				GetPropertyValues( original ),
 				GetPropertyValues( target ),
 				propertyTypes, session, owner, copiedAlready );

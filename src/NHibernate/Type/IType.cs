@@ -144,7 +144,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Copy"]/*'
 		/// /> 
-		object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready );
+		object Replace( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready );
 
 		/// <summary>
 		/// Determines whether the specified value is represented as <c>NULL</c> in the database.

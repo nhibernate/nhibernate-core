@@ -5595,7 +5595,7 @@ namespace NHibernate.Impl
 			}
 
 			// no need to handle the version differently
-			object[] copiedValues = TypeFactory.Copy(
+			object[] copiedValues = TypeFactory.Replace(
 				persister.GetPropertyValues(obj),
 				persister.GetPropertyValues(target),
 				persister.PropertyTypes,

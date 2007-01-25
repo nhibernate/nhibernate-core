@@ -281,7 +281,7 @@ namespace NHibernate.Type
 			return Instantiate();
 		}
 
-		public override object Copy( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
+		public override object Replace( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
 		{
 			if ( original == null )
 			{
@@ -357,7 +357,7 @@ namespace NHibernate.Type
 
 		protected virtual object CopyElement( ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready )
 		{
-			return persister.ElementType.Copy( element, null, session, owner, copiedAlready );
+			return persister.ElementType.Replace( element, null, session, owner, copiedAlready );
 		}
 
 		public string LHSPropertyName

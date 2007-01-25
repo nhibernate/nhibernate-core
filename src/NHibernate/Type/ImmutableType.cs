@@ -65,7 +65,7 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override object Copy( object original, object current, NHibernate.Engine.ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready )
+		public override object Replace( object original, object current, NHibernate.Engine.ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready )
 		{
 			return original;
 		}

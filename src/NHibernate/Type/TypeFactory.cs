@@ -1109,12 +1109,12 @@ namespace NHibernate.Type
 		/// <param name="owner"></param>
 		/// <param name="copiedAlready"></param>
 		/// <returns></returns>
-		public static object[] Copy( object[] original, object[] target, IType[] types, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		public static object[] Replace( object[] original, object[] target, IType[] types, ISessionImplementor session, object owner, IDictionary copiedAlready )
 		{
 			object[] copied = new object[ original.Length ];
 			for( int i = 0; i < original.Length; i++ )
 			{
-				copied[ i ] = types[ i ].Copy( original[ i ], target[ i ], session, owner, copiedAlready );
+				copied[ i ] = types[ i ].Replace( original[ i ], target[ i ], session, owner, copiedAlready );
 			}
 			return copied;
 		}

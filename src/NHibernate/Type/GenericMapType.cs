@@ -73,8 +73,8 @@ namespace NHibernate.Type
 		{
 			KeyValuePair<TKey, TValue> pair = ( KeyValuePair<TKey, TValue> ) element;
 			return new KeyValuePair<TKey, TValue>(
-				( TKey ) persister.IndexType.Copy( pair.Key, null, session, owner, copiedAlready ),
-				( TValue ) persister.ElementType.Copy( pair.Value, null, session, owner, copiedAlready ) );
+				( TKey ) persister.IndexType.Replace( pair.Key, null, session, owner, copiedAlready ),
+				( TValue ) persister.ElementType.Replace( pair.Value, null, session, owner, copiedAlready ) );
 		}
 
 		public override object Instantiate()
