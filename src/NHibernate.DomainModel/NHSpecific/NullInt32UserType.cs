@@ -4,6 +4,7 @@ using System.Data;
 using NHibernate;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.UserTypes;
 
 namespace NHibernate.DomainModel.NHSpecific 
 {

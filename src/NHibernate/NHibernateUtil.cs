@@ -6,6 +6,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.SqlTypes;
 using System.Data;
+using NHibernate.UserTypes;
 
 namespace NHibernate
 {

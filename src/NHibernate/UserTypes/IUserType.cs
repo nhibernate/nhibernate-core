@@ -1,7 +1,7 @@
 using System.Data;
 using NHibernate.SqlTypes;
 
-namespace NHibernate
+namespace NHibernate.UserTypes
 {
 	/// <summary>
 	/// The inteface to be implemented by user-defined types.

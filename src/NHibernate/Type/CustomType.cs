@@ -58,7 +58,7 @@ namespace NHibernate.Type
 			}
 			catch( InvalidCastException ice )
 			{
-				throw new MappingException( userTypeClass.Name + " must implement NHibernate.IUserType", ice );
+				throw new MappingException( userTypeClass.Name + " must implement NHibernate.UserTypes.IUserType", ice );
 			}
 		    TypeFactory.InjectParameters(userType,parameters);
 			sqlTypes = userType.SqlTypes;

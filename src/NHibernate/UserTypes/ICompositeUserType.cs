@@ -3,7 +3,7 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate
+namespace NHibernate.UserTypes
 {
 	/// <summary>
 	/// A UserType that may be dereferenced in a query.

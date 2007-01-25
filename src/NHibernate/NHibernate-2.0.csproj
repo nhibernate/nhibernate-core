@@ -184,7 +184,6 @@
     <Compile Include="Hql\Classic\SelectParser.cs" />
     <Compile Include="Hql\Classic\SelectPathExpressionParser.cs" />
     <Compile Include="Hql\Classic\WhereParser.cs" />
-    <Compile Include="ICompositeUserType.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IDatabinder.cs" />
     <Compile Include="Id\Assigned.cs" />
@@ -250,7 +249,6 @@
     <Compile Include="ISession.cs" />
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
-    <Compile Include="IUserType.cs" />
     <Compile Include="LazyInitializationException.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
@@ -729,10 +727,12 @@
     <Compile Include="Type\GenericMapType.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UserTypes\ICompositeUserType.cs" />
     <Compile Include="UserTypes\IEnhancedUserType.cs" />
     <Compile Include="UserTypes\INullableUserType.cs" />
     <Compile Include="UserTypes\IParameterizedType.cs" />
     <Compile Include="UserTypes\IUserCollectionType.cs" />
+    <Compile Include="UserTypes\IUserType.cs" />
     <Compile Include="UserTypes\IUserVersionType.cs" />
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Util\CollectionHelper.cs" />

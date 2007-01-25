@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.SqlTypes;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Type
 {
@@ -41,7 +42,7 @@ namespace NHibernate.Type
 			}
 			catch( InvalidCastException ice )
 			{
-				throw new MappingException( name + " must implement NHibernate.ICompositeUserType", ice );
+				throw new MappingException( name + " must implement NHibernate.UserTypes.ICompositeUserType", ice );
 			}
 		    TypeFactory.InjectParameters(userType,parameters);
 			if( !userType.ReturnedClass.IsSerializable )

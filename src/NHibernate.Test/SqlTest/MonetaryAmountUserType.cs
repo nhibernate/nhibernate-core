@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using NHibernate.SqlTypes;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Test.SqlTest
 {
