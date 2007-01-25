@@ -5158,28 +5158,20 @@ namespace NHibernate.Impl
 			BatchFetchQueue.AddBatchLoadableEntityKey(new EntityKey(id, persister));
 		}
 
-		public ISQLQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
+		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
 		{
 			CheckIsOpen();
 
 			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, null);
 		}
 
-		public ISQLQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
+		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
 		{
 			CheckIsOpen();
 
 			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, null);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sql"></param>
-		/// <param name="returnAliases"></param>
-		/// <param name="returnClasses"></param>
-		/// <param name="querySpaces"></param>
-		/// <returns></returns>
 		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses, ICollection querySpaces)
 		{
 			CheckIsOpen();

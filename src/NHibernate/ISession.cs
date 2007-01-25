@@ -628,7 +628,8 @@ namespace NHibernate
 		/// <param name="returnAlias">a table alias that appears inside <c>{}</c> in the SQL string</param>
 		/// <param name="returnClass">the returned persistent class</param>
 		/// <returns></returns>
-		ISQLQuery CreateSQLQuery( string sql, string returnAlias, System.Type returnClass );
+		[Obsolete("Use CreateSQLQuery().AddEntity()")]
+		IQuery CreateSQLQuery( string sql, string returnAlias, System.Type returnClass );
 
 		/// <summary>
 		/// Create a new instance of <see cref="IQuery" /> for the given SQL string.
@@ -637,7 +638,8 @@ namespace NHibernate
 		/// <param name="returnAliases">an array of table aliases that appear inside <c>{}</c> in the SQL string</param>
 		/// <param name="returnClasses">the returned persistent classes</param>
 		/// <returns></returns>
-		ISQLQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses );
+		[Obsolete("Use CreateSQLQuery().AddEntity()")]
+		IQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses );
 
 		/// <summary>
 		/// Create a new instance of <see cref="ISQLQuery" /> for the given SQL query string.
