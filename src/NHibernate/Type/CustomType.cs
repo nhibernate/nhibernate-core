@@ -281,5 +281,20 @@ namespace NHibernate.Type
 				return base.IsDatabaseNull(value);
 			}
 		}
+
+		public override object Replace(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready)
+		{
+			return userType.Replace(original, current, owner);
+		}
+
+		public object Assemble(object cached, ISessionImplementor session, object owner)
+		{
+			return userType.Assemble(cached, owner);
+		}
+
+		public object Disassemble(object value, ISessionImplementor session, object owner)
+		{
+			return userType.Disassemble(value);
+		}
 	}
 }

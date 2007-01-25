@@ -40,7 +40,7 @@ namespace NHibernate.UserTypes
 		/// <param name="component">an instance of class mapped by this "type"</param>
 		/// <param name="property"></param>
 		/// <returns>the property value</returns>
-		object GetPropertyValue( object component, int property );
+		object GetPropertyValue(object component, int property);
 
 		/// <summary>
 		/// Set the value of a property
@@ -48,7 +48,7 @@ namespace NHibernate.UserTypes
 		/// <param name="component">an instance of class mapped by this "type"</param>
 		/// <param name="property"></param>
 		/// <param name="value">the value to set</param>
-		void SetPropertyValue( object component, int property, object value );
+		void SetPropertyValue(object component, int property, object value);
 
 		/// <summary>
 		/// The class returned by NullSafeGet().
@@ -62,7 +62,7 @@ namespace NHibernate.UserTypes
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		bool Equals( Object x, Object y );
+		bool Equals(Object x, Object y);
 
 		/// <summary>
 		/// Get a hashcode for the instance, consistent with persistence "equality"
@@ -78,7 +78,7 @@ namespace NHibernate.UserTypes
 		/// <param name="session"></param>
 		/// <param name="owner">the containing entity</param>
 		/// <returns></returns>
-		object NullSafeGet( IDataReader dr, string[] names, ISessionImplementor session, object owner );
+		object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner);
 
 		/// <summary>
 		/// Write an instance of the mapped class to a prepared statement.
@@ -89,14 +89,14 @@ namespace NHibernate.UserTypes
 		/// <param name="value"></param>
 		/// <param name="index"></param>
 		/// <param name="session"></param>
-		void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session );
+		void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session);
 
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
 		/// </summary>
 		/// <param name="value">generally a collection element or entity field</param>
 		/// <returns></returns>
-		object DeepCopy( object value );
+		object DeepCopy(object value);
 
 		/// <summary>
 		/// Are objects of this type mutable?
@@ -111,7 +111,7 @@ namespace NHibernate.UserTypes
 		/// <param name="value">the object to be cached</param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object Disassemble( object value, ISessionImplementor session );
+		object Disassemble(object value, ISessionImplementor session);
 
 		/// <summary>
 		/// Reconstruct an object from the cacheable representation.
@@ -121,6 +121,16 @@ namespace NHibernate.UserTypes
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		object Assemble( object cached, ISessionImplementor session, object owner );
+		object Assemble(object cached, ISessionImplementor session, object owner);
+
+		/// <summary>
+		/// During merge, replace the existing (target) value in the entity we are merging to
+		/// with a new (original) value from the detached entity we are merging. For immutable
+		/// objects, or null values, it is safe to simply return the first parameter. For
+		/// mutable objects, it is safe to return a copy of the first parameter. However, since
+		/// composite user types often define component values, it might make sense to recursively 
+		/// replace component values in the target object.
+		/// </summary>
+		object Replace(object original, object target, ISessionImplementor session, object owner);
 	}
 }

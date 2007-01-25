@@ -344,5 +344,10 @@ namespace NHibernate.Type
 		{
 			get { return null; }
 		}
+
+		public override object Replace(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready)
+		{
+			return userType.Replace(original, current, session, owner);
+		}
 	}
 }

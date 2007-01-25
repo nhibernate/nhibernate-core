@@ -111,6 +111,21 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 		{
 			return "'" + value.ToString() + "'";
 		}
+
+		public object Replace(object original, object target, object owner)
+		{
+			return original;
+		}
+
+		public object Assemble(object cached, object owner)
+		{
+			return cached;
+		}
+
+		public object Disassemble(object value)
+		{
+			return value;
+		}
 	}
 	
 	public class User

@@ -86,5 +86,38 @@ namespace NHibernate.UserTypes
 		/// Are objects of this type mutable?
 		/// </summary>
 		bool IsMutable { get; }
+
+		/// <summary>
+		/// During merge, replace the existing (<paramref name="target" />) value in the entity
+		/// we are merging to with a new (<paramref name="original" />) value from the detached
+		/// entity we are merging. For immutable objects, or null values, it is safe to simply
+		/// return the first parameter. For mutable objects, it is safe to return a copy of the
+		/// first parameter. For objects with component values, it might make sense to
+		/// recursively replace component values.
+		/// </summary>
+		/// <param name="original">the value from the detached entity being merged</param>
+		/// <param name="target">the value in the managed entity</param>
+		/// <param name="owner">the managed entity</param>
+		/// <returns>the value to be merged</returns>
+		object Replace(object original, object target, object owner);
+		
+		/// <summary>
+		/// Reconstruct an object from the cacheable representation. At the very least this
+		/// method should perform a deep copy if the type is mutable. (optional operation)
+		/// </summary>
+		/// <param name="cached">the object to be cached</param>
+		/// <param name="owner">the owner of the cached object</param>
+		/// <returns>a reconstructed object from the cachable representation</returns>
+		object Assemble(object cached, object owner);
+		
+		/// <summary>
+		/// Transform the object into its cacheable representation. At the very least this
+		/// method should perform a deep copy if the type is mutable. That may not be enough
+		/// for some implementations, however; for example, associations must be cached as
+		/// identifier values. (optional operation)
+		/// </summary>
+		/// <param name="value">the object to be cached</param>
+		/// <returns>a cacheable representation of the object</returns>
+		object Disassemble(object value);
 	}
 }

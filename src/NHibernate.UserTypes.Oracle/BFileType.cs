@@ -104,12 +104,36 @@ namespace NHibernate.UserTypes.Oracle
 
 		public object DeepCopy( object value )
 		{
-			return value;
+			if (value == null)
+			{
+				return null;
+			}
+
+			BFileType valueBFile = (BFileType) value;
+			return new BFileType(
+				valueBFile.DirName,
+				valueBFile.FileName,
+				valueBFile.Binary);
 		}
 
 		public bool IsMutable
 		{
 			get { return true; }
+		}
+
+		public object Replace(object original, object target, object owner)
+		{
+			return DeepCopy(original);
+		}
+
+		public object Assemble(object cached, object owner)
+		{
+			return DeepCopy(cached);
+		}
+
+		public object Disassemble(object value)
+		{
+			return DeepCopy(value);
 		}
 	}
 }

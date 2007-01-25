@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.UserTypes;
 
 namespace NHibernate.DomainModel
@@ -109,6 +110,11 @@ namespace NHibernate.DomainModel
 		public object Disassemble(Object value, Engine.ISessionImplementor session) 
 		{
 			return DeepCopy(value);
+		}
+
+		public object Replace(object original, object target, ISessionImplementor session, object owner)
+		{
+			return DeepCopy(original);
 		}
 	}
 }

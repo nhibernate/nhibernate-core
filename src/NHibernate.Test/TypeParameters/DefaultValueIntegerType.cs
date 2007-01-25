@@ -82,6 +82,21 @@ namespace NHibernate.Test.TypeParameters
             get { return _int32Type.IsMutable; }
         }
 
+		public object Replace(object original, object target, object owner)
+		{
+			return original;
+		}
+
+		public object Assemble(object cached, object owner)
+		{
+			return cached;
+		}
+
+		public object Disassemble(object value)
+		{
+			return value;
+		}
+
         #endregion
         
     }
