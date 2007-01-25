@@ -77,7 +77,7 @@
                 <para>
                     Suppose you have a type, say from some library, that needs to be persisted but doesn't 
                     provide the accessors needed to map it as a component. You should consider implementing
-                    <literal>NHibernate.IUserType</literal>. This approach frees the application
+                    <literal>NHibernate.UserTypes.IUserType</literal>. This approach frees the application
                     code from implementing transformations to / from an NHibernate type.
                 </para>
             </listitem>

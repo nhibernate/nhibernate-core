@@ -2195,8 +2195,8 @@
             </para>
             
             <para>
-                To implement a custom type, implement either <literal>NHibernate.IUserType</literal> 
-                or <literal>NHibernate.ICompositeUserType</literal> and declare properties using the 
+                To implement a custom type, implement either <literal>NHibernate.UserTypes.IUserType</literal> 
+                or <literal>NHibernate.UserTypes.ICompositeUserType</literal> and declare properties using the 
                 fully qualified name of the type. Check out 
                 <literal>NHibernate.DomainModel.DoubleStringType</literal> to see the kind of things that 
                 are possible.
