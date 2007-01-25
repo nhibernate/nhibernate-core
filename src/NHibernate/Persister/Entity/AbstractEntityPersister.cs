@@ -8,6 +8,7 @@ using log4net;
 using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
+using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Id;

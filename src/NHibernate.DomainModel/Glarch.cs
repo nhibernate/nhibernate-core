@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using Iesi.Collections;
+using NHibernate.Classic;
 
 namespace NHibernate.DomainModel
 {
@@ -109,7 +110,7 @@ namespace NHibernate.DomainModel
 			set { _proxySet = value; }
 		}
 
-		#region NHibernate.ILifecycle Members
+		#region NHibernate.Classic.ILifecycle Members
 
 		public LifecycleVeto OnDelete( ISession s )
 		{

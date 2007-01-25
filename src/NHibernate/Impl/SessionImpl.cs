@@ -9,6 +9,7 @@ using Iesi.Collections;
 using log4net;
 
 using NHibernate.Cache;
+using NHibernate.Classic;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;

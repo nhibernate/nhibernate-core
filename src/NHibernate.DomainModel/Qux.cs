@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Classic;
 
 namespace NHibernate.DomainModel
 {

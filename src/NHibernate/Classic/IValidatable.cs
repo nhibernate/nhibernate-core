@@ -1,4 +1,4 @@
-namespace NHibernate
+namespace NHibernate.Classic
 {
 	/// <summary>
 	/// Implemented by persistent classes with invariants that must be checked before inserting

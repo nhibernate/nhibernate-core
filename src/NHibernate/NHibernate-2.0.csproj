@@ -206,7 +206,6 @@
     <Compile Include="Id\UUIDHexGenerator.cs" />
     <Compile Include="Id\UUIDStringGenerator.cs" />
     <Compile Include="IInterceptor.cs" />
-    <Compile Include="ILifecycle.cs" />
     <Compile Include="Impl\AbstractQueryImpl.cs" />
     <Compile Include="Impl\AbstractVisitor.cs" />
     <Compile Include="Impl\BatcherImpl.cs" />
@@ -252,7 +251,6 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="IUserType.cs" />
-    <Compile Include="IValidatable.cs" />
     <Compile Include="LazyInitializationException.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
@@ -453,7 +451,6 @@
     <Compile Include="Util\SequencedHashMap.cs" />
     <Compile Include="Util\StringHelper.cs" />
     <Compile Include="Util\StringTokenizer.cs" />
-    <Compile Include="ValidationFailure.cs" />
     <Compile Include="WrongClassException.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -486,6 +483,9 @@
     <Compile Include="Cfg\NamedSQLQuerySecondPass.cs" />
     <Compile Include="Cfg\ResultSetMappingBinder.cs" />
     <Compile Include="Cfg\ResultSetMappingSecondPass.cs" />
+    <Compile Include="Classic\ILifecycle.cs" />
+    <Compile Include="Classic\IValidatable.cs" />
+    <Compile Include="Classic\ValidationFailure.cs" />
     <Compile Include="Collection\AbstractPersistentCollection.cs" />
     <Compile Include="Collection\Generic\PersistentGenericSet.cs" />
     <Compile Include="Collection\Generic\PersistentGenericBag.cs">

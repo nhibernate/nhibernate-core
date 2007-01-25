@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;

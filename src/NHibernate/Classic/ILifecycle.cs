@@ -1,4 +1,4 @@
-namespace NHibernate
+namespace NHibernate.Classic
 {
 	/// <summary>
 	/// Provides callbacks from the <c>ISession</c> to the persistent object. Persistent classes may

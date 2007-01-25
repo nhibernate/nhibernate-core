@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Tuple;

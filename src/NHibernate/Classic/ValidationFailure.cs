@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace NHibernate
+namespace NHibernate.Classic
 {
 	/// <summary>
 	/// Thrown from <c>IValidatable.Validate()</c> when an invariant was violated. Some applications

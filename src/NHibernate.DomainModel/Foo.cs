@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System;
-
+using NHibernate.Classic;
 using NHibernate.DomainModel.NHSpecific;
 
 namespace NHibernate.DomainModel
