@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Data.SqlClient;
 using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Cfg;

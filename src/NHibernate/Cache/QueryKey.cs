@@ -154,7 +154,6 @@ namespace NHibernate.Cache
 
 		public override string ToString()
 		{
-			
 			StringBuilder buf = new StringBuilder()
 				.Append( "sql: " )
 				.Append( sqlQueryString );
