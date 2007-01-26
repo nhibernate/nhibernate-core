@@ -287,12 +287,12 @@ namespace NHibernate.Type
 			return userType.Replace(original, current, owner);
 		}
 
-		public object Assemble(object cached, ISessionImplementor session, object owner)
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			return userType.Assemble(cached, owner);
 		}
 
-		public object Disassemble(object value, ISessionImplementor session, object owner)
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
 			return userType.Disassemble(value);
 		}
