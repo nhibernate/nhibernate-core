@@ -63,6 +63,7 @@
     <Compile Include="Assertions\InheritedAreMarkedSerializable.cs" />
     <Compile Include="Assertions\IsSerializable.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
+    <Compile Include="CacheTest\QueryCacheFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
