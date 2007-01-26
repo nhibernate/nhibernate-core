@@ -678,7 +678,7 @@ namespace NHibernate.Persister.Entity
 			                         	?
 			                         null
 			                         	:
-			                         Template.RenderWhereStringTemplate(sqlWhereString, Dialect);
+			                         Template.RenderWhereStringTemplate(sqlWhereString, Dialect, factory.SQLFunctionRegistry);
 
 			batchSize = persistentClass.BatchSize;
 			hasSubselectLoadableCollections = persistentClass.HasSubselectLoadableCollections;
@@ -827,11 +827,11 @@ namespace NHibernate.Persister.Entity
 					if (thing.IsFormula)
 					{
 						foundFormula = true;
-						templates[k] = thing.GetTemplate(factory.Dialect);
+						templates[k] = thing.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
 					}
 					else
 					{
-						colNames[k] = thing.GetTemplate(factory.Dialect);
+						colNames[k] = thing.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
 					}
 					k++;
 				}
@@ -887,7 +887,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (thing.IsFormula)
 					{
-						string template = thing.GetTemplate(factory.Dialect);
+						string template = thing.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
 						formnos[l] = formulaTemplates.Count;
 						colnos[l] = -1;
 						formulaTemplates.Add(template);
@@ -898,7 +898,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						String colName = thing.GetTemplate(factory.Dialect);
+						String colName = thing.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
 						colnos[l] = columns.Count; //before add :-)
 						formnos[l] = -1;
 						columns.Add(colName);
@@ -1015,7 +1015,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			// Handle any filters applied to the class level
-			filterHelper = new FilterHelper(persistentClass.FilterMap, factory.Dialect);
+			filterHelper = new FilterHelper(persistentClass.FilterMap, factory.Dialect, factory.SQLFunctionRegistry);
 		}
 
 		protected virtual IProxyFactory CreateProxyFactory()

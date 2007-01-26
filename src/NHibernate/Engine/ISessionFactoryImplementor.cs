@@ -1,5 +1,6 @@
 using System.Data;
 using NHibernate.Cache;
+using NHibernate.Dialect.Function;
 using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -163,6 +164,8 @@ namespace NHibernate.Engine
 		ResultSetMappingDefinition GetResultSetMapping(string resultSetRef);
 
 		ITransactionFactory TransactionFactory { get; }
+
+		SQLFunctionRegistry SQLFunctionRegistry { get; }
 
 		/// <summary>
 		/// Open a session conforming to the given parameters. For use mainly by

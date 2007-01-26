@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Mapping
 {
@@ -7,7 +8,7 @@ namespace NHibernate.Mapping
 		string GetAlias( Dialect.Dialect dialect );
 		string GetAlias( Dialect.Dialect dialect, Table table );
 		bool IsFormula { get; }
-		string GetTemplate( Dialect.Dialect dialect );
+		string GetTemplate( Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry );
 		string GetText( Dialect.Dialect dialect );
 		string Text { get; }
 	}

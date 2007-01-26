@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -388,7 +389,7 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
-		public string GetTemplate( Dialect.Dialect dialect )
+		public string GetTemplate( Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry )
 		{
 			return GetQuotedName( dialect );
 		}

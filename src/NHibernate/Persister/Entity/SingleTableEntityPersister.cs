@@ -322,7 +322,7 @@ namespace NHibernate.Persister.Entity
 					{
 						Formula formula = (Formula)selectable;
 						discriminatorFormula = formula.FormulaString;
-						discriminatorFormulaTemplate = formula.GetTemplate(factory.Dialect);
+						discriminatorFormulaTemplate = formula.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
 						discriminatorColumnName = null;
 						discriminatorAlias = "clazz_";
 					}

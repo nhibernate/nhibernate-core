@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.Text;
 using Iesi.Collections;
+using NHibernate.Dialect.Function;
 using NHibernate.Hql.Classic;
 using NHibernate.Util;
 
@@ -64,12 +65,12 @@ namespace NHibernate.SqlCommand
 
 		private Template() { }
 		
-		public static string RenderWhereStringTemplate(string sqlWhereString, Dialect.Dialect dialect)
+		public static string RenderWhereStringTemplate(string sqlWhereString, Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
 		{
-			return RenderWhereStringTemplate(sqlWhereString, Placeholder, dialect);
+			return RenderWhereStringTemplate(sqlWhereString, Placeholder, dialect, functionRegistry);
 		}
 
-		public static string RenderWhereStringTemplate(string sqlWhereString, string placeholder, Dialect.Dialect dialect)
+		public static string RenderWhereStringTemplate(string sqlWhereString, string placeholder, Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
 		{
 			//TODO: make this a bit nicer
 			string symbols = new StringBuilder()
@@ -169,7 +170,7 @@ namespace NHibernate.SqlCommand
 				}
 				else if (
 					IsIdentifier(token, dialect) &&
-					!IsFunctionOrKeyword(lcToken, nextToken, dialect)
+					!IsFunctionOrKeyword(lcToken, nextToken, dialect, functionRegistry)
 				)
 				{
 					result.Append(placeholder)
@@ -203,7 +204,7 @@ namespace NHibernate.SqlCommand
 			return result.ToString();
 		}
 
-		public static string RenderOrderByStringTemplate(string sqlOrderByString, Dialect.Dialect dialect)
+		public static string RenderOrderByStringTemplate(string sqlOrderByString, Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
 		{
 			//TODO: make this a bit nicer
 			string symbols = new StringBuilder()
@@ -284,7 +285,7 @@ namespace NHibernate.SqlCommand
 				}
 				else if (
 					IsIdentifier(token, dialect) &&
-					!IsFunctionOrKeyword(lcToken, nextToken, dialect)
+					!IsFunctionOrKeyword(lcToken, nextToken, dialect, functionRegistry)
 				)
 				{
 					result.Append(Placeholder)
@@ -304,11 +305,11 @@ namespace NHibernate.SqlCommand
 			return token.StartsWith(":");
 		}
 
-		private static bool IsFunctionOrKeyword(string lcToken, string nextToken, Dialect.Dialect dialect)
+		private static bool IsFunctionOrKeyword(string lcToken, string nextToken, Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
 		{
 			return "(".Equals(nextToken) ||
 				Keywords.Contains(lcToken) ||
-				dialect.Functions.Contains(lcToken) ||
+				functionRegistry.HasFunction(lcToken) ||
 				// TODO H3: dialect.Keywords.Contains(lcToken) ||
 				FunctionKeywords.Contains(lcToken);
 		}

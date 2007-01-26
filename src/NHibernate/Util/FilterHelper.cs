@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
-
+using NHibernate.Dialect.Function;
 using NHibernate.Impl;
 using NHibernate.Dialect;
 using NHibernate.SqlCommand;
@@ -14,7 +14,7 @@ namespace NHibernate.Util
 	    private readonly string[] filterNames;
         private readonly string[] filterConditions;
 
-	    public FilterHelper(IDictionary filters, Dialect.Dialect dialect) {
+	    public FilterHelper(IDictionary filters, Dialect.Dialect dialect, SQLFunctionRegistry sqlFunctionRegistry) {
 		    int filterCount = filters.Count;
 		    filterNames = new string[filterCount];
 		    filterConditions = new string[filterCount];
@@ -24,7 +24,8 @@ namespace NHibernate.Util
 			    filterConditions[filterCount] = Template.RenderWhereStringTemplate(
 					    (String) entry.Value,
 					    FilterImpl.MARKER,
-					    dialect
+					    dialect,
+						sqlFunctionRegistry
 				    );
 			    filterConditions[filterCount] = StringHelper.Replace( filterConditions[filterCount],
 					    ":",

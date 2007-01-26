@@ -10,6 +10,7 @@ using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Context;
+using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Mapping;
@@ -125,6 +126,9 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary allCacheRegions = new Hashtable();
 
+		[NonSerialized]
+		private readonly SQLFunctionRegistry sqlFunctionRegistry;
+
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryImpl));
@@ -136,6 +140,7 @@ namespace NHibernate.Impl
 			this.properties = cfg.Properties;
 			this.interceptor = cfg.Interceptor;
 			this.settings = settings;
+			this.sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 
 			if (log.IsDebugEnabled)
 			{
@@ -1239,6 +1244,9 @@ namespace NHibernate.Impl
 			}
 		}
 		
-		
+		public SQLFunctionRegistry SQLFunctionRegistry
+		{
+			get { return sqlFunctionRegistry; }
+		}
 	}
 }

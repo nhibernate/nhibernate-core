@@ -144,11 +144,11 @@ namespace NHibernate.Persister.Collection
 
 			sqlOrderByString = collection.OrderBy;
 			hasOrder = sqlOrderByString != null;
-			sqlOrderByStringTemplate = hasOrder ? Template.RenderOrderByStringTemplate(sqlOrderByString, dialect) : null;
+			sqlOrderByStringTemplate = hasOrder ? Template.RenderOrderByStringTemplate(sqlOrderByString, dialect, factory.SQLFunctionRegistry) : null;
 
 			sqlWhereString = collection.Where;
 			hasWhere = sqlWhereString != null;
-			sqlWhereStringTemplate = hasWhere ? Template.RenderWhereStringTemplate(sqlWhereString, dialect) : null;
+			sqlWhereStringTemplate = hasWhere ? Template.RenderWhereStringTemplate(sqlWhereString, dialect, factory.SQLFunctionRegistry) : null;
 
 			hasOrphanDelete = collection.OrphanDelete;
 
@@ -211,7 +211,7 @@ namespace NHibernate.Persister.Collection
 				if (selectable.IsFormula)
 				{
 					Formula form = (Formula) selectable;
-					elementFormulaTemplates[j] = form.GetTemplate(dialect);
+					elementFormulaTemplates[j] = form.GetTemplate(dialect, factory.SQLFunctionRegistry);
 					elementFormulas[j] = form.FormulaString;
 				}
 				else
@@ -378,10 +378,10 @@ namespace NHibernate.Persister.Collection
 			}
 
 			// Handle any filters applied to this collection
-			filterHelper = new FilterHelper(collection.FilterMap, dialect);
+			filterHelper = new FilterHelper(collection.FilterMap, dialect, factory.SQLFunctionRegistry);
 
 			// Handle any filters applied to this collection for many-to-many
-			manyToManyFilterHelper = new FilterHelper(collection.ManyToManyFilterMap, dialect);
+			manyToManyFilterHelper = new FilterHelper(collection.ManyToManyFilterMap, dialect, factory.SQLFunctionRegistry);
 			manyToManyWhereString = StringHelper.IsNotEmpty(collection.ManyToManyWhere) ?
 			                        "( " + collection.ManyToManyWhere + " )" :
 			                        null;
@@ -389,11 +389,11 @@ namespace NHibernate.Persister.Collection
 			                          	?
 			                          null
 			                          	:
-			                          Template.RenderWhereStringTemplate(manyToManyWhereString, factory.Dialect); // , factory.getSqlFunctionRegistry() );
+			                          Template.RenderWhereStringTemplate(manyToManyWhereString, factory.Dialect, factory.SQLFunctionRegistry); // , factory.getSqlFunctionRegistry() );
 			manyToManyOrderByString = collection.ManyToManyOrdering;
 			manyToManyOrderByTemplate = manyToManyOrderByString == null
 			                            	? null
-			                            	: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect); // , factory.getSqlFunctionRegistry() );
+			                            	: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect, factory.SQLFunctionRegistry); // , factory.getSqlFunctionRegistry() );
 
 			InitCollectionPropertyMap();
 		}

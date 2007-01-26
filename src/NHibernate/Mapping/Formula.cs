@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
@@ -26,9 +27,9 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public string GetTemplate( Dialect.Dialect dialect )
+		public string GetTemplate( Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry )
 		{
-			return Template.RenderWhereStringTemplate( formula, dialect );
+			return Template.RenderWhereStringTemplate( formula, dialect, functionRegistry );
 		}
 
 		/// <summary></summary>

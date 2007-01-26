@@ -100,6 +100,7 @@ namespace NHibernate.Cfg
 		private IDictionary properties;
         private IDictionary filterDefinitions;
 		private IList auxiliaryDatabaseObjects;
+		private IDictionary sqlFunctions;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 
@@ -124,6 +125,7 @@ namespace NHibernate.Cfg
 			mapping = new Mapping( this );
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new ArrayList();
+			sqlFunctions = new Hashtable();
 		}
 
 		private class Mapping : IMapping
@@ -1556,6 +1558,16 @@ namespace NHibernate.Cfg
 		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject obj)
 		{
 			auxiliaryDatabaseObjects.Add(obj);
+		}
+
+		public IDictionary SqlFunctions
+		{
+			get { return sqlFunctions; }
+		}
+
+		public void AddSqlFunction(string functionName, ISQLFunction sqlFunction)
+		{
+			sqlFunctions[functionName] = sqlFunction;
 		}
 
 		#region NHibernate-Specific Members

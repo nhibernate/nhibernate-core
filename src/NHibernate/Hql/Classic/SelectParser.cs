@@ -289,7 +289,7 @@ namespace NHibernate.Hql.Classic
 
 		private ISQLFunction GetFunction( string name, QueryTranslator q ) 
 		{
-			return (ISQLFunction) q.Factory.Dialect.Functions[ name ];
+			return q.Factory.SQLFunctionRegistry.FindSQLFunction(name);
 		}
 
 		/// <summary>
