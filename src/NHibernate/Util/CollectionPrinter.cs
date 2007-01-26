@@ -2,10 +2,17 @@ using System;
 using System.Collections;
 using System.Text;
 using Iesi.Collections;
-using NHibernate.Engine;
 
 namespace NHibernate.Util
 {
+	/// <summary>
+	/// Utility class implementing ToString for collections. All <c>ToString</c>
+	/// overloads call <c>element.ToString()</c>.
+	/// </summary>
+	/// <remarks>
+	/// To print collections of entities or typed values, use
+	/// <see cref="NHibernate.Impl.Printer" />.
+	/// </remarks>
 	public sealed class CollectionPrinter
 	{
 		private static void AppendNullOrValue( StringBuilder builder, object value )
@@ -22,11 +29,6 @@ namespace NHibernate.Util
 
 		public static string ToString(IDictionary dictionary)
 		{
-			return ToString(null, dictionary);
-		}
-
-		public static string ToString(ISessionImplementor session, IDictionary dictionary)
-		{
 			StringBuilder result = new StringBuilder();
 			result.Append( "{" );
 
@@ -37,12 +39,9 @@ namespace NHibernate.Util
 				{
 					result.Append( ", " );
 				}
-				AppendNullOrValue( result, de.Key );
+				AppendNullOrValue(result, de.Key);
 				result.Append( "=" );
-				if(session!=null)
-					result.Append(StringHelper.ToStringWithEntityId(session, de.Value));
-				else
-					AppendNullOrValue(result, de.Value);
+				AppendNullOrValue(result, de.Value);
 				first = false;
 			}
 

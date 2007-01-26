@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
@@ -13,7 +14,7 @@ namespace NHibernate.Cache
 	[Serializable]
 	public class QueryKey
 	{
-		private readonly ISessionImplementor session;
+		private readonly ISessionFactoryImplementor factory;
 		private readonly SqlString sqlQueryString;
 		private readonly IType[ ] types;
 		private readonly object[ ] values;
@@ -24,10 +25,10 @@ namespace NHibernate.Cache
 		private readonly IResultTransformer customTransformer;
 		private readonly int hashCode;
 
-		/// <param name="session">the sesion for this query key, required to get the identifiers of entities that are used as values.</param>
-		public QueryKey( ISessionImplementor session, SqlString queryString, QueryParameters queryParameters, ISet filters )
+		/// <param name="factory">the sesion factory for this query key, required to get the identifiers of entities that are used as values.</param>
+		public QueryKey( ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters, ISet filters )
 		{
-			this.session = session;
+			this.factory = factory;
 			sqlQueryString = queryString;
 			types = queryParameters.PositionalParameterTypes;
 			values = queryParameters.PositionalParameterValues;
@@ -158,19 +159,19 @@ namespace NHibernate.Cache
 				.Append( "sql: " )
 				.Append( sqlQueryString );
 
+			Printer print = new Printer(factory);
+
 			if( values != null )
 			{
-				buf.Append( "; parameters: " );
-				for( int i = 0; i < values.Length; i++ )
-				{
-					buf.Append( StringHelper.ToStringWithEntityId(session, values[ i ]) )
-						.Append( ", " );
-				}
+				buf
+					.Append("; parameters: ")
+					.Append(print.ToString(types, values));
 			}
 			if( namedParameters != null )
 			{
-				buf.Append( "; named parameters: " )
-					.Append( CollectionPrinter.ToString( session, namedParameters ) );
+				buf
+					.Append("; named parameters: ")
+					.Append(print.ToString(namedParameters));
 			}
 			if( firstRow != RowSelection.NoValue )
 			{

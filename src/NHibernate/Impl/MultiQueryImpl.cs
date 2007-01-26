@@ -661,7 +661,7 @@ namespace NHibernate.Impl
 			}
 			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
 
-			QueryKey key = new QueryKey(session, SqlString, combinedParameters, filterKeys);
+			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys);
 
 			IList result =
 				GetResultFromQueryCache(session,

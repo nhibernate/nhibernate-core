@@ -604,26 +604,5 @@ namespace NHibernate.Util
 			int loc = qualifiedName.IndexOf(".");
 			return (loc < 0) ? qualifiedName : qualifiedName.Substring(loc + 1);
 		}
-
-		/// <summary>
-		/// This method turns an object into a string, taking into account its identifier, if needed.
-		/// </summary>
-		public static string ToStringWithEntityId(ISessionImplementor session, object value)
-		{
-			if (value == null)
-				return "null";
-			// May be TypedValue, if it is a query parameter, if so, use 
-			// the value for the calculation
-			TypedValue tv = value as TypedValue;
-			if (tv != null)
-			{
-				value = tv.Value;
-			}
-			object entityIdentifier = session.GetEntityIdentifier(value);
-			if (entityIdentifier != null)
-				return value.ToString() + "#"+ entityIdentifier.ToString();
-			return value.ToString();
-		}
-
 	}
 }

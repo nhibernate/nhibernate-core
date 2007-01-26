@@ -1742,7 +1742,7 @@ namespace NHibernate.Loader
 			ISet filterKeys = FilterKey.CreateFilterKeys( 
 					session.EnabledFilters
 				);
-			QueryKey key = new QueryKey( session, SqlString, queryParameters, filterKeys );
+			QueryKey key = new QueryKey( Factory, SqlString, queryParameters, filterKeys );
 
 			IList result = GetResultFromQueryCache( session, queryParameters, querySpaces, resultTypes, queryCache, key );
 			

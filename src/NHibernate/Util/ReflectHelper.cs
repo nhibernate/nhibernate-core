@@ -164,6 +164,8 @@ namespace NHibernate.Util
 		/// Assembly that is loaded with a partial name.
 		/// </summary>
 		/// <param name="name">An <see cref="AssemblyQualifiedTypeName" />.</param>
+		/// <param name="throwOnError"><c>true</c> if an exception should be thrown
+		/// in case of an error, <c>false</c> otherwise.</param>
 		/// <returns>
 		/// A <see cref="System.Type"/> object that represents the specified type,
 		/// or <c>null</c> if the type cannot be loaded.
