@@ -265,15 +265,6 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		private bool MakeDirtyIfTrue(bool makeDirty)
-		{
-			if (makeDirty)
-			{
-				Dirty();
-			}
-			return makeDirty;
-		}
-
 		public ISet Minus( ISet a )
 		{
 			Read();

@@ -321,15 +321,6 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		private bool MakeDirtyIfTrue(bool result)
-		{
-			if (result)
-			{
-				Dirty();
-			}
-			return result;
-		}
-
 		public bool Remove( KeyValuePair<TKey, TValue> item )
 		{
 			Initialize(true);
