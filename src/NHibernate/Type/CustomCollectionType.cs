@@ -4,7 +4,7 @@ using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
-using NHibernate.UserType;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Type
 {

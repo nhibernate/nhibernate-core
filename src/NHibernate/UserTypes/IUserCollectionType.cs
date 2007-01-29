@@ -5,7 +5,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 
-namespace NHibernate.UserType
+namespace NHibernate.UserTypes
 {
 	public interface IUserCollectionType
 	{
