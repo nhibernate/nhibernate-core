@@ -403,6 +403,8 @@
     <Compile Include="ProxyInterface\CastleProxyImpl.cs" />
     <Compile Include="ProxyTest\AProxy.cs" />
     <Compile Include="ProxyTest\NHibernateProxyHelperFixture.cs" />
+    <Compile Include="QueryTest\Aggregated.cs" />
+    <Compile Include="QueryTest\AggregateReturnTypesFixture.cs" />
     <Compile Include="QueryTest\CountFixture.cs" />
     <Compile Include="QueryTest\MultipleQueriesFixture.cs" />
     <Compile Include="QueryTest\NamedParametersFixture.cs" />
@@ -780,6 +782,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="VersionTest\PersonThing.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="QueryTest\Aggregated.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

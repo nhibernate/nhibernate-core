@@ -998,21 +998,26 @@ namespace NHibernate.Dialect
 				// TODO: (H3.2 for nullable types) First allow the actual type to control the return value. (the actual underlying sqltype could actually be different)
 
 				// finally use the sqltype if == on Hibernate types did not find a match.
-				if (sqlType.DbType == DbType.Single || sqlType.DbType == DbType.Double)
+				switch (sqlType.DbType)
 				{
-					return NHibernateUtil.Double;
-				}
-				else if (sqlType.DbType == DbType.Int16 || sqlType.DbType == DbType.Int32 || sqlType.DbType == DbType.Int64)
-				{
-					return NHibernateUtil.Int64;
-				}
-				else if (sqlType.DbType == DbType.UInt16 || sqlType.DbType == DbType.UInt32 || sqlType.DbType == DbType.UInt64)
-				{
-					return NHibernateUtil.UInt64;
-				}
-				else
-				{
-					return columnType;
+					case DbType.Single:
+					case DbType.Double:
+						return NHibernateUtil.Double;
+
+					case DbType.SByte:
+					case DbType.Int16:
+					case DbType.Int32:
+					case DbType.Int64:
+						return NHibernateUtil.Int64;
+
+					case DbType.Byte:
+					case DbType.UInt16:
+					case DbType.UInt32:
+					case DbType.UInt64:
+						return NHibernateUtil.UInt64;
+
+					default:
+						return columnType;
 				}
 			}
 		}

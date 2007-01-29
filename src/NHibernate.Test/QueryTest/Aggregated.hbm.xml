@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.QueryTest"
+				   assembly="NHibernate.Test">
+	<class name="Aggregated">
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<property name="AByte" />
+		<property name="AShort" />
+		<property name="AnInt" />
+		<property name="ALong" />
+		<property name="AFloat" />
+		<property name="ADouble" />
+		<property name="ADecimal" />
+	</class>
+</hibernate-mapping>
