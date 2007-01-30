@@ -751,7 +751,7 @@ namespace NHibernate.Mapping
             filters.Add(name, condition);
         }
 
-        public IDictionary FilterMap
+        public virtual IDictionary FilterMap
         {
             get { return filters; }
         }

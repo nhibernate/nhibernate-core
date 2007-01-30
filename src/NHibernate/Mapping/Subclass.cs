@@ -440,5 +440,10 @@ namespace NHibernate.Mapping
 			get { return base.HasSubselectLoadableCollections || Superclass.HasSubselectLoadableCollections; }
 			set { base.HasSubselectLoadableCollections = value; }
 		}
+
+		public override IDictionary FilterMap
+		{
+			get { return Superclass.FilterMap; }
+		}
 	}
 }
