@@ -126,9 +126,11 @@
     <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
     <Compile Include="ExpressionTest\SubQueries\Classes.cs" />
     <Compile Include="ExpressionTest\SubQueries\SubQueriesSqlFixture.cs" />
+    <Compile Include="FilterTest\BinaryFiltered.cs" />
     <Compile Include="FilterTest\Category.cs" />
     <Compile Include="FilterTest\Department.cs" />
     <Compile Include="FilterTest\DynamicFilterTest.cs" />
+    <Compile Include="FilterTest\FilterBinaryParameterTest.cs" />
     <Compile Include="FilterTest\FilterConfig.cs" />
     <Compile Include="FilterTest\LineItem.cs" />
     <Compile Include="FilterTest\Order.cs" />
@@ -796,6 +798,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SubclassFilterTest\joined-subclass.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FilterTest\BinaryFiltered.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

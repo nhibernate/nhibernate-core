@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<hibernate-mapping assembly="NHibernate.Test" namespace="NHibernate.Test.FilterTest" xmlns="urn:nhibernate-mapping-2.2">
+	<class name="BinaryFiltered">
+		<id name="Id" column="id" type="long">
+			<generator class="assigned" />
+		</id>
+
+		<property name="BinValue" column="binvalue" type="binary"/>
+
+		<filter name="BinaryFilter" condition="binvalue = :BinaryValue"/>
+	</class>
+
+	<filter-def name="BinaryFilter">
+		<filter-param name="BinaryValue" type="binary"/>
+	</filter-def>
+</hibernate-mapping>

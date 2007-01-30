@@ -403,7 +403,11 @@ namespace NHibernate.Engine
 							string filterParameterName = token.Substring(1);
 							object value = session.GetFilterParameterValue(filterParameterName);
 							IType type = session.GetFilterParameterType(filterParameterName);
-							if (value != null && typeof(ICollection).IsAssignableFrom(value.GetType()))
+
+							// If the value is not a value of the type but a collection of values...
+							if (value != null &&
+								!type.ReturnedClass.IsAssignableFrom(value.GetType()) && // Added to fix NH-882
+								typeof(ICollection).IsAssignableFrom(value.GetType()))
 							{
 								ICollection coll = (ICollection) value;
 								int i = 0;
