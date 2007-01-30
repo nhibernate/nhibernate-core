@@ -198,7 +198,7 @@
     <Compile Include="MappingTest\ColumnFixture.cs" />
     <Compile Include="MappingTest\ForeignKeyFixture.cs" />
     <Compile Include="MappingTest\TableFixture.cs" />
-    <Compile Include="NHbAssert.cs" />
+    <Compile Include="NHAssert.cs" />
     <Compile Include="NHSpecificTest\AliasFixture.cs" />
     <Compile Include="NHSpecificTest\BasicClassFixture.cs" />
     <Compile Include="NHSpecificTest\BasicObjectFixture.cs" />
