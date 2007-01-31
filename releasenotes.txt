@@ -1,3 +1,35 @@
+Build 1.2.0.CR1
+========================
+
+Patches Applied:
+
+    * [NH-874] - Named Parameters do not work in Having Clause
+    * [NH-875] - Query cache does not work when filters are enabled
+
+Bugs Fixed:
+
+    * [NH-857] - Filter parameter is mandatory and should be optional
+    * [NH-864] - Dynamic update of NULL column using Nullables.NullableInt32 with "dirty" optimistic locking fails
+    * [NH-870] - Expression.Disjunction has wrong semantics when empty
+    * [NH-872] - SetCacheable(true) with an enabled filter fails
+    * [NH-873] - Setting hibernate.cache.use_second_level_cache to false throws NRE in SessionFactoryImpl constructor
+    * [NH-876] - NullReferenceException on query exection with SetCacheable(true) and null parameters
+    * [NH-882] - using binary type in filter does not work
+    * [NH-883] - Update to Bag cannot be flushed more than once.
+
+Tasks Completed:
+
+    * [NH-862] - Document that aggressive connection release does not work well with System.Transactions
+    * [NH-867] - Write a migration guide from 1.0.x to 1.2.0
+
+Improvements:
+
+    * [NH-868] - Add optimistic-lock attribute to all elements that have it in H3
+    * [NH-869] - Implement IInterceptor.BeforeTransactionCompletion and others
+    * [NH-879] - Deprecate ILifecycle and IValidatable; move them to NHibernate.Classic.
+    * [NH-880] - Move IUserType and ICompositeUserType to NHibernate.UserTypes
+    * [NH-881] - Add Configuration.AddSqlFunction
+
 Build 1.2.0.Beta3
 ========================
 

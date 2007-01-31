@@ -74,7 +74,7 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="1.2.0.Beta3" overwrite="false" />
+	<property name="project.version" value="1.2.0.CR1" overwrite="false" />
 
 	<!-- Compute and set project.version.numeric from project.version if it hasn't been set already -->
 	<if test="${not property::exists('project.version.numeric')}">
