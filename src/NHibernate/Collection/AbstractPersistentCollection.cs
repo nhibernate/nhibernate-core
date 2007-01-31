@@ -155,12 +155,10 @@ namespace NHibernate.Collection
 		/// contents of the Collection.  Since everything is in synch remove
 		/// any Queued Additions.
 		/// </remarks>
-		public virtual void PostFlush()
+		public virtual void PostAction()
 		{
-			if( additions != null )
-			{
-				additions = null;
-			}
+			additions = null;
+			ClearDirty();
 		}
 
 		/// <summary>

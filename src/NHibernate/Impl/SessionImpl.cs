@@ -1419,7 +1419,7 @@ namespace NHibernate.Impl
 				throw new HibernateException( "You may not dereference a collection with cascade=\"all-delete-orphan\"" );
 			}
 			*/
-			collectionRemovals.Add(new ScheduledCollectionRemove(role, id, false, this));
+			collectionRemovals.Add(new ScheduledCollectionRemove(null, role, id, false, this));
 		}
 
 		private static bool IsCollectionSnapshotValid(ICollectionSnapshot snapshot)
@@ -3794,7 +3794,7 @@ namespace NHibernate.Impl
 				}
 				if (ce.IsDoremove)
 				{
-					collectionRemovals.Add(new ScheduledCollectionRemove(ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), this));
+					collectionRemovals.Add(new ScheduledCollectionRemove(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), this));
 				}
 				if (ce.IsDoupdate)
 				{

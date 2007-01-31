@@ -30,6 +30,7 @@ namespace NHibernate.Impl
 		public override void Execute()
 		{
 			Persister.Recreate( _collection, Id, Session );
+			Session.GetCollectionEntry(_collection).AfterAction(_collection);
 			Evict();
 		}
 	}

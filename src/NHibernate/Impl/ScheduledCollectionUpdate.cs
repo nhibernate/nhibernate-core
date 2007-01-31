@@ -76,6 +76,9 @@ namespace NHibernate.Impl
 				Persister.UpdateRows( _collection, Id, Session );
 				Persister.InsertRows( _collection, Id, Session );
 			}
+
+			Session.GetCollectionEntry(_collection).AfterAction(_collection);
+
 			Evict();
 		}
 	}

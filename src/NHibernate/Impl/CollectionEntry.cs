@@ -248,25 +248,6 @@ namespace NHibernate.Impl
 				{
 					throw new AssertionFailure( "collection was not processed by Flush()" );
 				}
-
-				// now that the flush has gone through move everything that is the current
-				// over to the loaded fields and set dirty to false since the db & collection
-				// are in synch.
-				loadedKey = currentKey;
-				SetLoadedPersister( currentPersister );
-				//dirty = false;
-
-				// collection needs to know its' representation in memory and with
-				// the db is now in synch - esp important for collections like a bag
-				// that can add without initializing the collection.
-				collection.PostFlush();
-
-				// if it was initialized or any of the scheduled actions were performed then
-				// need to resnapshot the contents of the collection.
-				if( collection.WasInitialized && ( doremove || dorecreate || doupdate ) )
-				{
-					InitSnapshot( collection, loadedPersister );
-				}
 			}
 
 			return loadedPersister == null;
@@ -388,6 +369,25 @@ namespace NHibernate.Impl
 				throw new AssertionFailure( "no collection snapshot for orphan delete" );
 			}
 			return collection.GetOrphans( snapshot, entityName );
+		}
+
+		public void AfterAction(IPersistentCollection collection)
+		{
+			loadedKey = CurrentKey;
+			SetLoadedPersister(CurrentPersister);
+
+			bool resnapshot = collection.WasInitialized &&
+			                  (IsDoremove || IsDorecreate || IsDoupdate);
+			if (resnapshot)
+			{
+				snapshot = loadedPersister == null
+				           	? //|| !loadedPersister.IsMutable ? 
+				           null
+				           	:
+				           collection.GetSnapshot(loadedPersister); //re-snapshot
+			}
+
+			collection.PostAction();
 		}
 	}
 }

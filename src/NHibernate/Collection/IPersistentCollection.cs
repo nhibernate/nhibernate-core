@@ -64,7 +64,7 @@ namespace NHibernate.Collection
 		/// contents of the Collection.  Since everything is in synch remove
 		/// any Queued Additions.
 		/// </remarks>
-		void PostFlush();
+		void PostAction();
 
 		/// <summary>
 		/// Return the user-visible collection (or array) instance
