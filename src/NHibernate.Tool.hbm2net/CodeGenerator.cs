@@ -164,12 +164,16 @@ namespace NHibernate.Tool.hbm2net
 		
 		private static ICollection GetFiles( string fileSpec )
 		{
-			int posn = fileSpec.LastIndexOf( Path.DirectorySeparatorChar );
-			string path = fileSpec.Substring( 0, posn );
-			string names = fileSpec.Substring( posn + 1 );
-			DirectoryInfo di = new DirectoryInfo( path );
+			string path = Path.GetDirectoryName(fileSpec);
+			string names = Path.GetFileName(fileSpec);
 
-			FileInfo[] files = di.GetFiles( names );
+			if (path == "")
+			{
+				path = Environment.CurrentDirectory;
+			}
+
+			DirectoryInfo di = new DirectoryInfo(path);
+			FileInfo[] files = di.GetFiles(names);
 			
 			ArrayList fileNames = new ArrayList( files.Length );
 
