@@ -373,7 +373,19 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetEntity( string name, object val )
+		public IQuery SetGuid(string name, Guid val)
+		{
+			SetParameter(name, val, NHibernateUtil.Guid);
+			return this;
+		}
+
+		public IQuery SetGuid(int position, Guid val)
+		{
+			SetParameter(position, val, NHibernateUtil.Guid);
+			return this;
+		}
+
+		public IQuery SetEntity(string name, object val)
 		{
 			SetParameter( name, val, NHibernateUtil.Entity( NHibernateProxyHelper.GuessClass( val ) ) );
 			return this;

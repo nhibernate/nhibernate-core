@@ -511,6 +511,22 @@ namespace NHibernate
 		IQuery SetTimestamp( string name, DateTime val );
 
 		/// <summary>
+		/// Bind an instance of a <see cref="Guid" /> to a named parameter
+		/// using an NHibernate <see cref="GuidType"/>.
+		/// </summary>
+		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">An instance of a <see cref="Guid"/>.</param>
+		IQuery SetGuid( int position, Guid val );
+
+		/// <summary>
+		/// Bind an instance of a <see cref="Guid" /> to a named parameter
+		/// using an NHibernate <see cref="GuidType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">An instance of a <see cref="Guid"/>.</param>
+		IQuery SetGuid( string name, Guid val );
+
+		/// <summary>
 		/// Override the current session flush mode, just for this query.
 		/// </summary>
 		IQuery SetFlushMode(FlushMode flushMode);
