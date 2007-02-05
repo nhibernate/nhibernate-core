@@ -336,16 +336,16 @@ namespace NHibernate.Hql.Classic
 				}
 
 				// Add any joins
-				StringBuilder lastJoin = ( StringBuilder ) joins[ joins.Count - 1 ];
+				SqlStringBuilder lastJoin = ( SqlStringBuilder ) joins[ joins.Count - 1 ];
 				joins.RemoveAt( joins.Count - 1 );
-				AppendToken( q, lastJoin.ToString() );
+				AppendToken( q, lastJoin.ToSqlString() );
 			}
 			else
 			{
 				//unaryCounts.removeLast(); //check that its zero? (As an assertion)
-				StringBuilder join = ( StringBuilder ) joins[ joins.Count - 1 ];
+				SqlStringBuilder join = ( SqlStringBuilder ) joins[ joins.Count - 1 ];
 				joins.RemoveAt( joins.Count - 1 );
-				( ( StringBuilder ) joins[ joins.Count - 1 ] ).Append( join.ToString() );
+				( ( SqlStringBuilder ) joins[ joins.Count - 1 ] ).Add( join.ToSqlString() );
 			}
 
 			bool lastNots = ( bool ) nots[ nots.Count - 1 ];
@@ -365,7 +365,7 @@ namespace NHibernate.Hql.Classic
 		{
 			nots.Add( false );
 			booleanTests.Add( false );
-			joins.Add( new StringBuilder() );
+			joins.Add( new SqlStringBuilder() );
 			if( !StringHelper.OpenParen.Equals( lcToken ) )
 			{
 				AppendToken( q, StringHelper.OpenParen );
@@ -431,7 +431,7 @@ namespace NHibernate.Hql.Classic
 			q.AddFromJoinOnly(pathExpressionParser.Name, joinSequence);
 			try
 			{
-				AddToCurrentJoin(joinSequence.ToJoinFragment(q.EnabledFilters, true).ToWhereFragmentString.ToString());
+				AddToCurrentJoin(joinSequence.ToJoinFragment(q.EnabledFilters, true).ToWhereFragmentString);
 			}
 			catch (MappingException me)
 			{
@@ -537,16 +537,16 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
-		private void AddToCurrentJoin( string sql )
+		private void AddToCurrentJoin( SqlString sql )
 		{
-			( ( StringBuilder ) joins[ joins.Count - 1 ] ).Append( sql );
+			( ( SqlStringBuilder ) joins[ joins.Count - 1 ] ).Add( sql );
 		}
 
 		private void AddToCurrentJoin( PathExpressionParser.CollectionElement ce )
 		{
 			try
 			{
-				AddToCurrentJoin(ce.JoinSequence.ToJoinFragment().ToWhereFragmentString + ce.IndexValue.ToString());
+				AddToCurrentJoin(ce.JoinSequence.ToJoinFragment().ToWhereFragmentString + ce.IndexValue.ToSqlString());
 			}
 			catch (MappingException me)
 			{
@@ -579,7 +579,7 @@ namespace NHibernate.Hql.Classic
 		{
 			if( expectingIndex > 0 )
 			{
-				pathExpressionParser.LastCollectionElementIndexValue = token;
+				pathExpressionParser.SetLastCollectionElementIndexValue(new SqlString(token));
 			}
 			else
 			{
@@ -602,7 +602,7 @@ namespace NHibernate.Hql.Classic
 		{
 			if( expectingIndex > 0 )
 			{
-				pathExpressionParser.LastCollectionElementIndexValue = token.ToString();
+				pathExpressionParser.SetLastCollectionElementIndexValue(token);
 			}
 			else
 			{

@@ -3,7 +3,9 @@ using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Impl
@@ -154,8 +156,16 @@ namespace NHibernate.Impl
 		///</returns>
 		public bool MoveNext()
 		{
-			PostMoveNext( _reader.Read() );
-
+			bool readResult;
+			try
+			{
+				readResult = _reader.Read();
+			}
+			catch (Exception e)
+			{
+				throw ADOExceptionHelper.Convert(e, "Error executing Enumerable() query", new SqlString(this._cmd.CommandText));
+			}
+			PostMoveNext( readResult );
 			return _hasNext;
 		}
 

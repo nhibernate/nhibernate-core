@@ -142,7 +142,12 @@ namespace NHibernate.SqlCommand
 
 			// remarks - we should not get to here - this is a problem with the 
 			// SQL being generated.
-			throw new ArgumentException( "Part was not a Parameter, String, or SqlString." );
+			if (paramPart == null && stringPart == null && sqlPart == null)
+			{
+				throw new ArgumentException("Part was not a Parameter, String, or SqlString.");
+			}
+
+			return this;
 		}
 
 		/// <summary>

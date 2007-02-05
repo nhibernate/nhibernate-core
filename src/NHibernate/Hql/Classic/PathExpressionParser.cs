@@ -462,7 +462,7 @@ namespace NHibernate.Hql.Classic
 			public JoinSequence JoinSequence;
 
 			/// <summary></summary>
-			public StringBuilder IndexValue = new StringBuilder();
+			public SqlStringBuilder IndexValue = new SqlStringBuilder();
 		}
 
 		private bool expectingCollectionIndex;
@@ -477,12 +477,9 @@ namespace NHibernate.Hql.Classic
 		}
 
 		/// <summary></summary>
-		public string LastCollectionElementIndexValue
+		public void SetLastCollectionElementIndexValue(SqlString value)
 		{
-			set
-			{
-				( ( CollectionElement ) collectionElements[ collectionElements.Count - 1 ] ).IndexValue.Append( value ); //getlast
-			}
+			( ( CollectionElement ) collectionElements[ collectionElements.Count - 1 ] ).IndexValue.Add( value ); //getlast
 		}
 
 		/// <summary></summary>

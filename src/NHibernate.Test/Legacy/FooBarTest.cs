@@ -744,10 +744,13 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(IsEmpty(s.CreateQuery("selecT baz from baz in class Baz where baz.StringDateMap['foo'] is not null or baz.StringDateMap['bar'] = ?")
 																					.SetDateTime(0, DateTime.Today).Enumerable()));
 
-			list = s.CreateQuery( "select baz from baz in class Baz where baz.StringDateMap['now'] is not null").List();
+			list = s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap['now'] is not null").List();
 			Assert.AreEqual( 1, list.Count );
 
-			list = s.CreateQuery( "select baz from baz in class Baz where baz.StringDateMap['now'] is not null and baz.StringDateMap['big bang'] < baz.StringDateMap['now']").List();
+			list = s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap[:now] is not null").SetString("now", "now").List();
+			Assert.AreEqual(1, list.Count);
+
+			list = s.CreateQuery("select baz from baz in class Baz where baz.StringDateMap['now'] is not null and baz.StringDateMap['big bang'] < baz.StringDateMap['now']").List();
 			Assert.AreEqual( 1, list.Count );
 
 			list = s.CreateQuery( "select index(date) from Baz baz join baz.StringDateMap date").List();
