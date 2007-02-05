@@ -445,5 +445,20 @@ namespace NHibernate.Mapping
 		{
 			get { return Superclass.FilterMap; }
 		}
+
+		public override ICollection ReferenceablePropertyCollection
+		{
+			get
+			{
+				if (IsJoinedSubclass)
+				{
+					return PropertyCollection;
+				}
+				else
+				{
+					return base.ReferenceablePropertyCollection;
+				}
+			}
+		}
 	}
 }

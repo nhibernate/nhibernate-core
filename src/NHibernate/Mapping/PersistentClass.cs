@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-
+using NHibernate;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -655,18 +655,7 @@ namespace NHibernate.Mapping
 
 		public Property GetRecursiveProperty(string propertyPath)
 		{
-			ICollection iter = PropertyCollection;
-			try
-			{
-				return GetRecursiveProperty( propertyPath, iter );
-			}
-			catch (MappingException e)
-			{
-				throw new MappingException(
-						"property not found: " + propertyPath +
-						"in entity: " + Name, e
-					);
-			}
+			return GetRecursiveProperty( propertyPath, PropertyCollection );
 		}
 
 		private Property GetRecursiveProperty(string propertyPath, ICollection iter)
@@ -693,7 +682,7 @@ namespace NHibernate.Mapping
 			{
 				throw new MappingException(
 						"property not found: " + propertyPath +
-						"in entity: " + Name, e
+						" in entity: " + Name, e
 					);
 			}
 
@@ -765,5 +754,40 @@ namespace NHibernate.Mapping
 		internal abstract int NextSubclassId();
 
 		public abstract int SubclassId { get; }
+
+		/// <summary>
+		/// Given a property path, locate the appropriate referenceable property reference.
+		/// </summary>
+		/// <remarks>
+		/// A referenceable property is a property  which can be a target of a foreign-key
+		/// mapping (an identifier or explicitly named in a property-ref).
+		/// </remarks>
+		/// <param name="propertyPath">The property path to resolve into a property reference.</param>
+		/// <returns>The property reference (never null).</returns>
+		/// <exception cref="MappingException">If the property could not be found.</exception>
+		public Property GetReferencedProperty(string propertyPath)
+		{
+			try
+			{
+				return GetRecursiveProperty(propertyPath, ReferenceablePropertyCollection);
+			}
+			catch (MappingException e)
+			{
+				throw new MappingException(
+						"property-ref [" + propertyPath + "] not found on entity [" + MappedClass + "]", e
+				);
+			}
+		}
+
+		/// <summary>
+		/// Build a collection of properties which are "referenceable".
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="GetReferencedProperty"/> for a discussion of "referenceable".
+		/// </remarks>
+		public virtual ICollection ReferenceablePropertyCollection
+		{
+			get { return PropertyClosureCollection; }
+		}
 	}
 }

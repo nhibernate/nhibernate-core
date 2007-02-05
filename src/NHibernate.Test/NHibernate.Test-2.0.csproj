@@ -375,6 +375,10 @@
     <Compile Include="NHSpecificTest\NH873\Fixture.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NHSpecificTest\NH887\Child.cs" />
+    <Compile Include="NHSpecificTest\NH887\Consumer.cs" />
+    <Compile Include="NHSpecificTest\NH887\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH887\Parent.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -806,6 +810,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH883\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH887\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

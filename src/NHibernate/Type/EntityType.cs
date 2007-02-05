@@ -161,7 +161,7 @@ namespace NHibernate.Type
 				id = idType.Replace(id, null, session, owner, copyCache);
 
 				// Replace a property-ref'ed entity by its id
-				if (uniqueKeyPropertyName != null && idType.IsEntityType)
+				if (IsUniqueKeyReference && idType.IsEntityType)
 				{
 					id = ((EntityType) idType).GetIdentifier(id, session);
 				}
