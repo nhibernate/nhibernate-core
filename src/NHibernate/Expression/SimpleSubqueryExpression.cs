@@ -31,7 +31,7 @@ namespace NHibernate.Expression
 
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new SqlString(Parameter.Placeholder);
+			return SqlString.Parameter;
 		}
 	}
 }

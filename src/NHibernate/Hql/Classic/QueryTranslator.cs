@@ -474,7 +474,7 @@ namespace NHibernate.Hql.Classic
 
 		internal void AppendOrderByParameter()
 		{
-			orderByTokens.Add(new SqlString(Parameter.Placeholder));
+			orderByTokens.Add(SqlString.Parameter);
 		}
 
 		internal void AppendGroupByToken(string token)
