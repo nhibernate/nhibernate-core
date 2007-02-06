@@ -146,6 +146,7 @@
 				<exec program="nant.exe">
 					<arg value="-f:${buildfile}" />
 					<arg value="-t:${nant.settings.currentframework}" />
+					<arg value="-D:project.config=${project.config}" />
 					<arg value="test" />
 				</exec>
 			</do>
