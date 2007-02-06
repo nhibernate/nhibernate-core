@@ -16,6 +16,12 @@ Bugs Fixed:
     * [NH-876] - NullReferenceException on query exection with SetCacheable(true) and null parameters
     * [NH-882] - using binary type in filter does not work
     * [NH-883] - Update to Bag cannot be flushed more than once.
+    * [NH-890] - hbm2net cannot handle wildcards without a path
+    * [NH-891] - Parameters do not work in HQL array access expression
+
+New Features:
+
+    * [NH-888] - RFE: IQuery.SetGuid
 
 Tasks Completed:
 
