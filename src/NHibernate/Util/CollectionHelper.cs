@@ -232,6 +232,39 @@ namespace NHibernate.Util
 			}
 		}
 
-		private CollectionHelper() {}
+		/// <summary>
+		/// Creates a <see cref="Hashtable" /> that uses case-insensitive string comparison
+		/// associated with invariant culture.
+		/// </summary>
+		/// <remarks>
+		/// This is different from the method in <see cref="System.Collections.Specialized.CollectionsUtil" />
+		/// in that the latter uses the current culture and is thus vulnerable to the "Turkish I" problem.
+		/// </remarks>
+		public static Hashtable CreateCaseInsensitiveHashtable()
+		{
+			return new Hashtable(
+				CaseInsensitiveHashCodeProvider.DefaultInvariant,
+				CaseInsensitiveComparer.DefaultInvariant
+				);
+		}
+
+		/// <summary>
+		/// Creates a <see cref="Hashtable" /> that uses case-insensitive string comparison
+		/// associated with invariant culture.
+		/// </summary>
+		/// <remarks>
+		/// This is different from the method in <see cref="System.Collections.Specialized.CollectionsUtil" />
+		/// in that the latter uses the current culture and is thus vulnerable to the "Turkish I" problem.
+		/// </remarks>
+		public static Hashtable CreateCaseInsensitiveHashtable(IDictionary dictionary)
+		{
+			return new Hashtable(
+				dictionary,
+				CaseInsensitiveHashCodeProvider.DefaultInvariant,
+				CaseInsensitiveComparer.DefaultInvariant
+				);
+		}
+
+		private CollectionHelper() { }
 	}
 }

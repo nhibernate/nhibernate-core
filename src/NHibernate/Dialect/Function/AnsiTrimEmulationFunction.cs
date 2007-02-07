@@ -3,6 +3,7 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
 using System.Collections;
+using NHibernate.Util;
 
 namespace NHibernate.Dialect.Function
 {
@@ -81,7 +82,7 @@ namespace NHibernate.Dialect.Function
 				//      so we trim leading and trailing spaces
 				return BothSpaceTrim.Render(args, factory);
 			}
-			else if ("from".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+			else if (StringHelper.EqualsCaseInsensitive("from", firstArg))
 			{
 				// we have the form: trim(from trimSource).
 				//      This is functionally equivalent to trim(trimSource)
@@ -101,15 +102,15 @@ namespace NHibernate.Dialect.Function
 				// trim-specification has been specified.  we handle the
 				// exception to that explicitly
 				int potentialTrimCharacterArgIndex = 1;
-				if ("leading".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+				if (StringHelper.EqualsCaseInsensitive("leading", firstArg))
 				{
 					trailing = false;
 				}
-				else if ("trailing".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+				else if (StringHelper.EqualsCaseInsensitive("trailing", firstArg))
 				{
 					leading = false;
 				}
-				else if ("both".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+				else if (StringHelper.EqualsCaseInsensitive("both", firstArg))
 				{
 				}
 				else
@@ -118,7 +119,7 @@ namespace NHibernate.Dialect.Function
 				}
 
 				string potentialTrimCharacter = (string)args[potentialTrimCharacterArgIndex];
-				if ("from".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+				if (StringHelper.EqualsCaseInsensitive("from", firstArg))
 				{
 					trimCharacter = "' '";
 					trimSource = (string)args[potentialTrimCharacterArgIndex + 1];
@@ -131,7 +132,7 @@ namespace NHibernate.Dialect.Function
 				else
 				{
 					trimCharacter = potentialTrimCharacter;
-					if ("from".Equals(((string)args[potentialTrimCharacterArgIndex + 1]).ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+					if (StringHelper.EqualsCaseInsensitive("from", (string)args[potentialTrimCharacterArgIndex + 1]))
 					{
 						trimSource = (string)args[potentialTrimCharacterArgIndex + 2];
 					}

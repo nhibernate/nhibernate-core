@@ -61,7 +61,7 @@ namespace NHibernate.Hql
 			string next = null;
 
 			templateQuery.Append(tokens[0]);
-			bool isSelectClause = "select".Equals(tokens[0].ToLower(System.Globalization.CultureInfo.InvariantCulture));
+			bool isSelectClause = StringHelper.EqualsCaseInsensitive("select", tokens[0]);
 
 			for (int i = 1; i < tokens.Length; i++)
 			{
@@ -72,7 +72,7 @@ namespace NHibernate.Hql
 				}
 
 				// select-range is terminated by declaration of "from"
-				isSelectClause = !("from".Equals(tokens[i].ToLower(System.Globalization.CultureInfo.InvariantCulture)));
+				isSelectClause = !StringHelper.EqualsCaseInsensitive("from", tokens[i]);
 
 				string token = tokens[i];
 				if (!ParserHelper.IsWhitespace(token) || last == null)

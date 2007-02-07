@@ -604,5 +604,25 @@ namespace NHibernate.Util
 			int loc = qualifiedName.IndexOf(".");
 			return (loc < 0) ? qualifiedName : qualifiedName.Substring(loc + 1);
 		}
+
+		public static bool EqualsCaseInsensitive(string a, string b)
+		{
+			return CultureInfo.InvariantCulture.CompareInfo.Compare(a, b, CompareOptions.OrdinalIgnoreCase) == 0;
+		}
+
+		public static int IndexOfCaseInsensitive(string source, string value)
+		{
+			return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, CompareOptions.OrdinalIgnoreCase);
+		}
+
+		public static int LastIndexOfCaseInsensitive(string source, string value)
+		{
+			return CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(source, value, CompareOptions.OrdinalIgnoreCase);
+		}
+
+		public static bool StartsWithCaseInsensitive(string source, string prefix)
+		{
+			return CultureInfo.InvariantCulture.CompareInfo.IsPrefix(source, prefix, CompareOptions.OrdinalIgnoreCase);
+		}
 	}
 }

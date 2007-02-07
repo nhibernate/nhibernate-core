@@ -1,6 +1,5 @@
 using System;
 using System.CodeDom.Compiler;
-using System.Globalization;
 using System.Reflection;
 using System.Text;
 using log4net;
@@ -148,7 +147,7 @@ namespace NHibernate.Bytecode.CodeDom
 				System.Type[] types = assembly.GetTypes();
 				IReflectionOptimizer optimizer = ( IReflectionOptimizer ) assembly.CreateInstance( types[ 0 ].FullName, false,
 																				  BindingFlags.CreateInstance, null, new object[] { setters, getters },
-																				  CultureInfo.InvariantCulture, null );
+																				  null, null );
 
 				return optimizer;
 			}

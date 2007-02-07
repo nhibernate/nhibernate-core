@@ -32,7 +32,7 @@ namespace NHibernate.Dialect
 		private IDictionary properties = new Hashtable();
 		private IDictionary sqlFunctions;
 
-		private static readonly IDictionary standardAggregateFunctions = new Hashtable();
+		private static readonly IDictionary standardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable();
 
 		/// <summary></summary>
 		protected const string DefaultBatchSize = "15";
@@ -65,7 +65,7 @@ namespace NHibernate.Dialect
 		protected Dialect()
 		{
 			log.Info( "Using dialect: " + this );
-			sqlFunctions = new Hashtable( standardAggregateFunctions ) ;
+			sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable( standardAggregateFunctions );
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
 			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
@@ -647,7 +647,8 @@ namespace NHibernate.Dialect
 		}
 		 
 		/// <summary>
-		/// Aggregate SQL functions as defined in general.
+		/// Aggregate SQL functions as defined in general. This is
+		/// a case-insensitive hashtable!
 		/// </summary>
 		/// <remarks>
 		/// The results of this method should be integrated with the 

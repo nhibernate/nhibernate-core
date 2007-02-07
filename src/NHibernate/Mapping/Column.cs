@@ -128,7 +128,7 @@ namespace NHibernate.Mapping
 			}
 			bool useRawName = name.Equals(alias) && 
 				!quoted &&
-				!name.ToLower(System.Globalization.CultureInfo.InvariantCulture).Equals("rowid");
+				!StringHelper.EqualsCaseInsensitive(name, "rowid");
 			
 			if ( useRawName )
 			{

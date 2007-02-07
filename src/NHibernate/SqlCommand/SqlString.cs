@@ -232,7 +232,7 @@ namespace NHibernate.SqlCommand
 				return false;
 			}
 
-			return firstPart.ToLower(CultureInfo.InvariantCulture).StartsWith(value);
+			return StringHelper.StartsWithCaseInsensitive(firstPart, value);
 		}
 		
 		private SqlStringBuilder BuildSubstring(int startIndex)
@@ -384,7 +384,7 @@ namespace NHibernate.SqlCommand
 				string partString = part as string;
 				if (partString != null)
 				{
-					int indexOf = System.Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(partString, text, System.Globalization.CompareOptions.IgnoreCase);
+					int indexOf = StringHelper.IndexOfCaseInsensitive(partString, text);
 
 					if (indexOf >= 0)
 					{
@@ -410,7 +410,7 @@ namespace NHibernate.SqlCommand
 				string partString = part as string;
 				if (partString != null)
 				{
-					int indexOf = System.Globalization.CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(partString, text, System.Globalization.CompareOptions.IgnoreCase);
+					int indexOf = StringHelper.LastIndexOfCaseInsensitive(partString, text);
 
 					if (indexOf >= 0)
 					{

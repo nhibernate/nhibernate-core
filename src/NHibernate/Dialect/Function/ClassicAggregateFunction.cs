@@ -2,6 +2,7 @@ using System;
 using NHibernate.Type;
 using NHibernate.Engine;
 using System.Text;
+using NHibernate.Util;
 
 namespace NHibernate.Dialect.Function
 {
@@ -73,8 +74,8 @@ namespace NHibernate.Dialect.Function
 			if (args.Count > 1)
 			{
 				string firstArg = args[0].ToString();
-				if (!"distinct".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)) &&
-					!"all".Equals(firstArg.ToLower(System.Globalization.CultureInfo.InvariantCulture)))
+				if (!StringHelper.EqualsCaseInsensitive("distinct", firstArg) &&
+					!StringHelper.EqualsCaseInsensitive("all", firstArg))
 				{
 					throw new QueryException(string.Format("Aggregate {0}(): token unknow {1}.", name, firstArg));
 				}

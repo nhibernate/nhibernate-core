@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
@@ -603,10 +604,9 @@ namespace NHibernate.Driver
 				}
 				else
 				{
-					string colNameLower = colName.ToLower( System.Globalization.CultureInfo.InvariantCulture );
 					foreach( DictionaryEntry entry in fieldNameToIndex )
 					{
-						if( entry.Key.ToString().ToLower( System.Globalization.CultureInfo.InvariantCulture ) == colNameLower )
+						if( StringHelper.EqualsCaseInsensitive((string) entry.Key, colName))
 						{
 							return ( int ) entry.Value;
 						}

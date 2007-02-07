@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -40,7 +41,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return code.ToUpper( System.Globalization.CultureInfo.InvariantCulture ).Equals( TrueString );
+				return StringHelper.EqualsCaseInsensitive(code, TrueString);
 			}
 		}
 
@@ -83,11 +84,11 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object StringToObject( String xml )
 		{
-			if( TrueString.Equals( xml.ToUpper( System.Globalization.CultureInfo.InvariantCulture ) ) )
+			if(StringHelper.EqualsCaseInsensitive(TrueString, xml))
 			{
 				return true;
 			}
-			else if( FalseString.Equals( xml.ToUpper( System.Globalization.CultureInfo.InvariantCulture ) ) )
+			else if(StringHelper.EqualsCaseInsensitive(FalseString, xml))
 			{
 				return false;
 			}
