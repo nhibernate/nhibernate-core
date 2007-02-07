@@ -5,6 +5,7 @@ Patches Applied:
 
     * [NH-874] - Named Parameters do not work in Having Clause
     * [NH-875] - Query cache does not work when filters are enabled
+    * [NH-859] - Improve SubselectFetch performance
 
 Bugs Fixed:
 
