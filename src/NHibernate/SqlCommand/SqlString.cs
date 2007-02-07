@@ -384,7 +384,7 @@ namespace NHibernate.SqlCommand
 				string partString = part as string;
 				if (partString != null)
 				{
-					int indexOf = partString.ToLower(CultureInfo.InvariantCulture).IndexOf(text);
+					int indexOf = System.Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(partString, text, System.Globalization.CompareOptions.IgnoreCase);
 
 					if (indexOf >= 0)
 					{
@@ -410,7 +410,7 @@ namespace NHibernate.SqlCommand
 				string partString = part as string;
 				if (partString != null)
 				{
-					int indexOf = partString.ToLower(CultureInfo.InvariantCulture).LastIndexOf(text);
+					int indexOf = System.Globalization.CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(partString, text, System.Globalization.CompareOptions.IgnoreCase);
 
 					if (indexOf >= 0)
 					{
