@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -10,8 +11,8 @@ namespace NHibernate.Expression
 	[Serializable]
 	public abstract class AbstractEmptinessExpression : ICriterion
 	{
-		readonly TypedValue[] NO_VALUES = new TypedValue[0];
-		readonly string propertyName;
+		private readonly TypedValue[] NO_VALUES = new TypedValue[0];
+		private readonly string propertyName;
 
 		protected abstract bool ExcludeEmpty { get; }
 
@@ -26,7 +27,7 @@ namespace NHibernate.Expression
 			return NO_VALUES;
 		}
 
-		public sealed override string ToString()
+		public override sealed string ToString()
 		{
 			return propertyName + (ExcludeEmpty ? " is not empty" : " is empty");
 		}
@@ -38,35 +39,44 @@ namespace NHibernate.Expression
 			string sqlAlias = criteriaQuery.GetSQLAlias(criteria, propertyName);
 
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
-            IQueryableCollection collectionPersister = GetQueryableCollection(entityType, actualPropertyName, factory);
+			IQueryableCollection collectionPersister = GetQueryableCollection(entityType, actualPropertyName, factory);
 
 			string[] collectionKeys = collectionPersister.KeyColumnNames;
-			string[] ownerKeys = ((ILoadable)factory.GetEntityPersister(entityType)).IdentifierColumnNames;
+			string[] ownerKeys = ((ILoadable) factory.GetEntityPersister(entityType)).IdentifierColumnNames;
 
-			string innerSelect = "(select 1 from " + collectionPersister.TableName
-							+ " where "
-							+ new ConditionalFragment().SetTableAlias(sqlAlias).SetCondition(ownerKeys, collectionKeys).ToSqlStringFragment()
-							+ ")";
+			StringBuilder innerSelect = new StringBuilder();
+				innerSelect.Append("(select 1 from ")
+					.Append(collectionPersister.TableName)
+					.Append(" where ")
+					.Append(new ConditionalFragment().SetTableAlias(sqlAlias).SetCondition(ownerKeys, collectionKeys).ToSqlStringFragment());
+			if (collectionPersister.HasWhere)
+			{
+				innerSelect.Append(" and (")
+					.Append(collectionPersister.GetSQLWhereString(collectionPersister.TableName))
+					.Append(") ");
+			}
 
-            return new SqlString(new string[] {ExcludeEmpty ? "exists" : "not exists", innerSelect});
+			innerSelect.Append(")");
+
+			return new SqlString(new string[] {ExcludeEmpty ? "exists" : "not exists", innerSelect.ToString()});
 		}
 
 
 		protected IQueryableCollection GetQueryableCollection(System.Type entityType, string actualPropertyName, ISessionFactoryImplementor factory)
 		{
-			IPropertyMapping ownerMapping = (IPropertyMapping)factory.GetEntityPersister(entityType);
+			IPropertyMapping ownerMapping = (IPropertyMapping) factory.GetEntityPersister(entityType);
 			IType type = ownerMapping.ToType(actualPropertyName);
 			if (!type.IsCollectionType)
 			{
 				throw new MappingException(
-								"Property path [" + entityType + "." + actualPropertyName + "] does not reference a collection"
-				);
+					"Property path [" + entityType + "." + actualPropertyName + "] does not reference a collection"
+					);
 			}
 
-			string role = ((CollectionType)type).Role;
+			string role = ((CollectionType) type).Role;
 			try
 			{
-				return (IQueryableCollection)factory.GetCollectionPersister(role);
+				return (IQueryableCollection) factory.GetCollectionPersister(role);
 			}
 			catch (InvalidCastException cce)
 			{
