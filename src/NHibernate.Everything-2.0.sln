@@ -2,58 +2,166 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate-2.0", "NHibernate\NHibernate-2.0.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel-2.0", "NHibernate.DomainModel\NHibernate.DomainModel-2.0.csproj", "{5C649B55-1B3F-4C38-9998-1B043E94A244}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test-2.0", "NHibernate.Test\NHibernate.Test-2.0.csproj", "{7AEE5B37-C552-4E59-9B6F-88755BCB5070}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test.Performance-2.0", "NHibernate.Test.Performance\NHibernate.Test.Performance-2.0.csproj", "{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence-2.0", "NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence-2.0.csproj", "{51179C23-5555-45A4-9BBB-8F6E24D05C2B}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence.Tests-2.0", "NHibernate.Caches.Prevalence.Tests\NHibernate.Caches.Prevalence.Tests-2.0.csproj", "{C04709C0-2FF9-424A-82FF-235312877853}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache-2.0", "NHibernate.Caches.SysCache\NHibernate.Caches.SysCache-2.0.csproj", "{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache.Tests-2.0", "NHibernate.Caches.SysCache.Tests\NHibernate.Caches.SysCache.Tests-2.0.csproj", "{53E01216-76B6-4920-A386-2486ACEE5AEA}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Examples-2.0", "NHibernate.Examples\NHibernate.Examples-2.0.csproj", "{E3482030-5828-4112-9906-D4C5153DCE3F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.JetDriver-2.0", "NHibernate.JetDriver\NHibernate.JetDriver-2.0.csproj", "{3905D37C-CA49-4C13-99A4-4D815EFCAA56}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tasks-2.0", "NHibernate.Tasks\NHibernate.Tasks-2.0.csproj", "{C6F085E3-17FA-424A-9A09-143F3E177FEB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net-2.0", "NHibernate.Tool.hbm2net\NHibernate.Tool.hbm2net-2.0.csproj", "{136FFE16-EE3B-4556-90FB-E265113CB13F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net.Console-2.0", "NHibernate.Tool.hbm2net.Console\NHibernate.Tool.hbm2net.Console-2.0.csproj", "{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.hbm2net.Tests-2.0", "NHibernate.Tool.hbm2net.Tests\NHibernate.Tool.hbm2net.Tests-2.0.csproj", "{F2FBD35E-28C4-461F-804D-0E43BED01185}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.Oracle-2.0", "NHibernate.UserTypes.Oracle\NHibernate.UserTypes.Oracle-2.0.csproj", "{21192DFF-BB53-4164-850F-A500E6ED9A66}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.SqlTypes-2.0", "NHibernate.UserTypes.SqlTypes\NHibernate.UserTypes.SqlTypes-2.0.csproj", "{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.UserTypes.Tests-2.0", "NHibernate.UserTypes.Tests\NHibernate.UserTypes.Tests-2.0.csproj", "{094F49F9-499A-40DE-97E4-AB0C5C883355}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache-2.0", "NHibernate.Caches.MemCache\NHibernate.Caches.MemCache-2.0.csproj", "{EE1CD14F-FE9F-4DB4-ADE2-A8853935F44E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache.Tests-2.0", "NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests-2.0.csproj", "{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables-2.0", "Nullables\Nullables-2.0.csproj", "{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.NHibernate-2.0", "Nullables.NHibernate\Nullables.NHibernate-2.0.csproj", "{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.Tests-2.0", "Nullables.Tests\Nullables.Tests-2.0.csproj", "{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Mapping.Attributes-2.0", "NHibernate.Mapping.Attributes\NHibernate.Mapping.Attributes-2.0.csproj", "{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Mapping.Attributes.Test-2.0", "NHibernate.Mapping.Attributes.Test\NHibernate.Mapping.Attributes.Test-2.0.csproj", "{A6585067-79C1-41A9-A006-A83C3A800B21}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections-2.0", "Iesi.Collections\Iesi.Collections-2.0.csproj", "{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test-2.0", "Iesi.Collections.Test\Iesi.Collections.Test-2.0.csproj", "{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9BDB5C84-14EC-4384-B423-9E319675B3CA}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(SolutionItems) = preProject
 		..\build-common\common-project.xml = ..\build-common\common-project.xml
 		..\build-common\common.xml = ..\build-common\common.xml
@@ -354,6 +462,7 @@ Global
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Debug|.NET.ActiveCfg = Debug|.NET
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Debug|.NET.Build.0 = Debug|.NET
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Debug|Any CPU.ActiveCfg = Debug|.NET
+		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Debug|Any CPU.Build.0 = Debug|.NET
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Debug|Mixed Platforms.ActiveCfg = Debug|.NET
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Debug|Mixed Platforms.Build.0 = Debug|.NET
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Release|.NET.ActiveCfg = Debug|.NET
