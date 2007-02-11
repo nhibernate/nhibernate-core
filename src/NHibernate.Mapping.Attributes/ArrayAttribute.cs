@@ -26,17 +26,21 @@ namespace NHibernate.Mapping.Attributes
 	public class ArrayAttribute : BaseAttribute
 	{
 		
-		private string _table = null;
-		
-		private CascadeStyle _cascade = CascadeStyle.Unspecified;
-		
 		private string _name = null;
-		
-		private string _schema = null;
 		
 		private string _elementclass = null;
 		
 		private string _access = null;
+		
+		private bool _optimisticlock = false;
+		
+		private string _schema = null;
+		
+		private CascadeStyle _cascade = CascadeStyle.Unspecified;
+		
+		private string _table = null;
+		
+		private bool _optimisticlockspecified;
 		
 		private string _where = null;
 		
@@ -156,6 +160,29 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._where = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual bool OptimisticLock
+		{
+			get
+			{
+				return this._optimisticlock;
+			}
+			set
+			{
+				this._optimisticlock = value;
+				_optimisticlockspecified = true;
+			}
+		}
+		
+		/// <summary> Tells if OptimisticLock has been specified. </summary>
+		public virtual bool OptimisticLockSpecified
+		{
+			get
+			{
+				return this._optimisticlockspecified;
 			}
 		}
 	}

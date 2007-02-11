@@ -34,6 +34,10 @@ namespace NHibernate.Mapping.Attributes
 		
 		private int _batchsize = -1;
 		
+		private bool _optimisticlockspecified;
+		
+		private bool _optimisticlock = false;
+		
 		private string _table = null;
 		
 		private string _name = null;
@@ -323,6 +327,29 @@ namespace NHibernate.Mapping.Attributes
 					this.CollectionType = value.FullName.Substring(7);
 				else
 					this.CollectionType = value.FullName + ", " + value.Assembly.GetName().Name;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual bool OptimisticLock
+		{
+			get
+			{
+				return this._optimisticlock;
+			}
+			set
+			{
+				this._optimisticlock = value;
+				_optimisticlockspecified = true;
+			}
+		}
+		
+		/// <summary> Tells if OptimisticLock has been specified. </summary>
+		public virtual bool OptimisticLockSpecified
+		{
+			get
+			{
+				return this._optimisticlockspecified;
 			}
 		}
 		

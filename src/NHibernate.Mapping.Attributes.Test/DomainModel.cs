@@ -50,7 +50,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	[NHMA.Subclass(DiscriminatorValueEnumFormat="d", DiscriminatorValueObject=DiscEnum.Val1, NameType=typeof(NestedBaz), ProxyType=typeof(NestedBaz), ExtendsType=typeof(Baz))]
 	private class NestedBaz : Baz // Test access to private field (in a private nested class)
 	{
-		[NHMA.Array(0, Table="bazcomponents", AccessType=typeof(int))]
+		[NHMA.Array(0, Table="bazcomponents", AccessType=typeof(int), OptimisticLock=true)]
 			[NHMA.Key(1)]
 				[NHMA.Column(2, Name="baz_id", Length=16)]
 			[NHMA.Index(3, Column="i")]
@@ -268,7 +268,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for customs
 	/// </summary>
-	[NHMA.List]
+	[NHMA.List(OptimisticLock=true)]
 		[NHMA.Key(1, Column="id_")]
 		[NHMA.Index(2, Column="indx")]
 		[NHMA.Element(3, TypeType=typeof(double))]
@@ -331,7 +331,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for fooComponentToFoo
 	/// </summary>
-	[NHMA.Map]
+	[NHMA.Map(OptimisticLock=true)]
 		[NHMA.JcsCache(1, Region="togs", Usage=NHMA.JcsCacheUsage.ReadWrite)]
 		[NHMA.Key(2)]
 			[NHMA.Column(3, Name="baz_id", Length=16)]
@@ -692,7 +692,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for bag
 	/// </summary>
-	[NHMA.Bag(-2, Name="Bag", Generic=false, OrderBy="x", Where="1", Lazy=true, Check="0", AccessType=typeof(Foo), PersisterType=typeof(string), Cascade=NHMA.CascadeStyle.All)]
+	[NHMA.Bag(-2, Name="Bag", OptimisticLock=true, Generic=false, OrderBy="x", Where="1", Lazy=true, Check="0", AccessType=typeof(Foo), PersisterType=typeof(string), Cascade=NHMA.CascadeStyle.All)]
 		[NHMA.Key(-1, Column="baz")]
 			[NHMA.Column(Name="`baz_id@#$`", NotNull=true, Unique=false, UniqueKey="1")]
 		[NHMA.Element(1, Column="`name!`", TypeType=typeof(string))]
@@ -768,7 +768,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for byteBag
 	/// </summary>
-	[NHMA.IdBag(0, Lazy=true, Inverse=true, Table="baz_byte_bag", Cascade=NHMA.CascadeStyle.All)]
+	[NHMA.IdBag(0, Lazy=true, Inverse=true, Table="baz_byte_bag", Cascade=NHMA.CascadeStyle.All, OptimisticLock=true)]
 		[NHMA.CollectionId(1, Column="pkid", TypeType=typeof(System.Int64))]
 			[NHMA.Generator(2, Class="hilo")]
 		[NHMA.Key(3, Column="baz")]
@@ -929,7 +929,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set { _timestamp = value; }
 		}
 
-		[NHMA.Set(-2, Generic=true, Inverse=true, CollectionTypeType=typeof(Stuff), Cascade=NHMA.CascadeStyle.All, OuterJoin=NHMA.OuterJoinStrategy.True, AccessType=typeof(bool), Where="1=1", PersisterType=typeof(Foo), SortType=typeof(bool))]
+		[NHMA.Set(-2, Generic=true, Inverse=true, OptimisticLock=true, CollectionTypeType=typeof(Stuff), Cascade=NHMA.CascadeStyle.All, OuterJoin=NHMA.OuterJoinStrategy.True, AccessType=typeof(bool), Where="1=1", PersisterType=typeof(Foo), SortType=typeof(bool))]
 			[NHMA.Key(-1, Column="col")]
 			[NHMA.OneToMany(ClassType=typeof(int))]
 		public Iesi.Collections.ISet Set

@@ -3560,6 +3560,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <where>
 			if(attribute.Where != null)
 			writer.WriteAttributeString("where", GetAttributeValue(attribute.Where, mappedClass));
+			// Attribute: <optimistic-lock>
+			if( attribute.OptimisticLockSpecified )
+			writer.WriteAttributeString("optimistic-lock", attribute.OptimisticLock ? "true" : "false");
 			
 			WriteUserDefinedContent(writer, member, null, attribute);
 			
@@ -4530,6 +4533,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
 			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
+			// Attribute: <optimistic-lock>
+			if( attribute.OptimisticLockSpecified )
+			writer.WriteAttributeString("optimistic-lock", attribute.OptimisticLock ? "true" : "false");
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
@@ -5925,6 +5931,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
 			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
+			// Attribute: <optimistic-lock>
+			if( attribute.OptimisticLockSpecified )
+			writer.WriteAttributeString("optimistic-lock", attribute.OptimisticLock ? "true" : "false");
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
@@ -6164,6 +6173,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
 			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
+			// Attribute: <optimistic-lock>
+			if( attribute.OptimisticLockSpecified )
+			writer.WriteAttributeString("optimistic-lock", attribute.OptimisticLock ? "true" : "false");
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
@@ -6470,6 +6482,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
 			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
+			// Attribute: <optimistic-lock>
+			if( attribute.OptimisticLockSpecified )
+			writer.WriteAttributeString("optimistic-lock", attribute.OptimisticLock ? "true" : "false");
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
@@ -6779,6 +6794,9 @@ namespace NHibernate.Mapping.Attributes
 			// Attribute: <collection-type>
 			if(attribute.CollectionType != null)
 			writer.WriteAttributeString("collection-type", GetAttributeValue(attribute.CollectionType, mappedClass));
+			// Attribute: <optimistic-lock>
+			if( attribute.OptimisticLockSpecified )
+			writer.WriteAttributeString("optimistic-lock", attribute.OptimisticLock ? "true" : "false");
 			// Attribute: <generic>
 			if( attribute.GenericSpecified )
 			writer.WriteAttributeString("generic", attribute.Generic ? "true" : "false");
