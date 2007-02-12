@@ -1,0 +1,66 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProductVersion>3.0</ProductVersion>
+    <ProjectGuid>{c801dd1e-8550-4b81-94b0-8afaf4e3d34f}</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>NHibernate.Setup</OutputName>
+    <OutputType>Package</OutputType>
+    <WixToolPath>C:\Program Files\Windows Installer XML v3\bin\</WixToolPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+    <DefineConstants>Debug;ShortVersion=1.2;FullVersion=1.2.0.CR1;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
+    <IncludeSearchPaths>
+    </IncludeSearchPaths>
+    <Pedantic>True</Pedantic>
+    <ShowSourceTrace>False</ShowSourceTrace>
+    <SuppressSchemaValidation>False</SuppressSchemaValidation>
+    <SuppressSpecificWarnings>
+    </SuppressSpecificWarnings>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <VerboseOutput>False</VerboseOutput>
+    <AllowIdenticalRows>False</AllowIdenticalRows>
+    <CabinetCachePath>
+    </CabinetCachePath>
+    <CabinetCreationThreadCount>-1</CabinetCreationThreadCount>
+    <Cultures>en-us</Cultures>
+    <LeaveTemporaryFiles>False</LeaveTemporaryFiles>
+    <LinkerPedantic>True</LinkerPedantic>
+    <ReuseCabinetCache>False</ReuseCabinetCache>
+    <SetMsiAssemblyNameFileVersion>False</SetMsiAssemblyNameFileVersion>
+    <SuppressAclReset>False</SuppressAclReset>
+    <SuppressAssemblies>False</SuppressAssemblies>
+    <SuppressDefaultAdminSequenceActions>False</SuppressDefaultAdminSequenceActions>
+    <SuppressDefaultAdvSequenceActions>False</SuppressDefaultAdvSequenceActions>
+    <SuppressDefaultUISequenceActions>False</SuppressDefaultUISequenceActions>
+    <SuppressDroppingUnrealTables>False</SuppressDroppingUnrealTables>
+    <SuppressFileHashAndInfo>False</SuppressFileHashAndInfo>
+    <SuppressFiles>False</SuppressFiles>
+    <SuppressIces>
+    </SuppressIces>
+    <LinkerSuppressIntermediateFileVersionMatching>False</LinkerSuppressIntermediateFileVersionMatching>
+    <SuppressLayout>False</SuppressLayout>
+    <SuppressMsiAssemblyTableProcessing>False</SuppressMsiAssemblyTableProcessing>
+    <LinkerSuppressSchemaValidation>False</LinkerSuppressSchemaValidation>
+    <LinkerSuppressSpecificWarnings>
+    </LinkerSuppressSpecificWarnings>
+    <SuppressValidation>False</SuppressValidation>
+    <LinkerTreatWarningsAsErrors>False</LinkerTreatWarningsAsErrors>
+    <LinkerVerboseOutput>False</LinkerVerboseOutput>
+    <WixVariables>
+    </WixVariables>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="NHibernate.Setup.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="C:\Program Files\Windows Installer XML v3\bin\WixUIExtension.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WiX\v3.0\Wix.targets" />
+</Project>

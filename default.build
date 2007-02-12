@@ -49,8 +49,8 @@
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
 			if="${run.performance.tests}" />
-		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" /> -->
-		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" /> -->
+		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />
+		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" />
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
@@ -154,7 +154,7 @@
 		<!-- -->
 	</target>
 	
-	<target name="coverage-report" description="Builds the Test Coverage reports"
+	<target name="coverage-report" description="Builds the test coverage reports"
 		 if="${clover.enabled}">
 
 		<mkdir dir="${build.dir}/clover" />
@@ -328,6 +328,8 @@
 		<foreach item="String" delim=" " property="framework" in="net-1.1 net-2.0">
 			<call target="set-${framework}-framework-configuration" />
 			<call target="build" />
+			<!-- Copy and rename the license -->
+			<copy file="lgpl.txt" tofile="${bin.dir}/NHibernate.license.txt"  />
 		</foreach>
 
 		<!-- Reset the current framework to the saved value -->
@@ -338,9 +340,6 @@
 		<property name="clover.enabled" value="false" />
 
 		<call target="build-all-frameworks" />
-
-		<!-- Copy and rename the license -->
-		<copy file="lgpl.txt" tofile="${bin.dir}/NHibernate.license.txt"  />
 	</target>
 
 	<target name="test-all-frameworks" depends="init">
@@ -365,7 +364,8 @@
 	</target>
 
 	<target name="sources" depends="init">
-		<copy todir="${build.dir}">
+		<property name="source.tmpdir" value="${build.dir}/tmp-src" />
+		<copy todir="${source.tmpdir}">
 			<fileset>
 				<!-- copy dlls used by this build -->
 				<include name="${lib.dir}/**"  />
@@ -400,11 +400,20 @@
 		</copy>
 
 		<!-- Generate AssemblyInfo.cs files for Visual Studio -->
-		<nant buildfile="${build.dir}/default.build" target="visual-studio" />
+		<nant buildfile="${source.tmpdir}/default.build" target="visual-studio" />
+
+		<mkdir dir="${build.dir}/src" />
+		<zip zipfile="${build.dir}/src/NHibernate-${project.version}-src.zip">
+			<fileset basedir="${source.tmpdir}">
+				<include name="**/*" />
+			</fileset>
+		</zip>
+
+		<delete dir="${source.tmpdir}" />
 	</target>
 
 	<target name="package" depends="init test-all-frameworks binaries doc sources"
-		description="Creates Zip files for the File Release System on SourceForge">
+		description="Creates ZIP files for the File Release System on SourceForge">
 
 		<property name="zip.output.dir" value="${project::get-base-directory()}/build/" />
 		<property name="zip.file.name" value="${zip.output.dir}/${build.name}.zip" />
