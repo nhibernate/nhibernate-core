@@ -314,11 +314,20 @@
 							</Directory>
 						</Directory>
 					</Directory>
-					<Directory Id="INSTALL_DOC" Name="doc">
+					<Directory Id="doc" Name="doc">
+						<Component Id="NHibernate.API.chm" Guid="{5E218CF6-F36A-4F54-98C2-27728A79DB56}">
+							<File Id="NHibernate.API.chm" Name="NHibernate.API.chm" KeyPath="yes" />
+						</Component>
+						<Component Id="NHibernate.Documentation.chm" Guid="{BDDA5742-7E4D-4B76-A23F-B948D2544C0F}">
+							<File Id="NHibernate.Documentation.chm" Name="NHibernate.Documentation.chm" KeyPath="yes" />
+						</Component>
+						<Component Id="nhibernate_reference.pdf" Guid="{A760C7CB-354B-419E-90DD-C27AA24F434E}">
+							<File Id="nhibernate_reference.pdf" Name="nhibernate_reference.pdf" KeyPath="yes" />
+						</Component>
 					</Directory>
-					<Directory Id="INSTALL_SRC" Name="src">
+					<Directory Id="src" Name="src">
 						<Component Id="SourceZip" Guid="CAD2DAF4-AD0E-4E0D-9726-94F2F7F95301">
-							<File Id="SourceZip" KeyPath="yes" Name="NHibernate-$(var.FullVersion)-src.zip" />
+							<File Id="SourceZip" KeyPath="yes" Name="NHibernate-src.zip" />
 						</Component>
 					</Directory>
 				</Directory>
@@ -520,8 +529,11 @@
 
 		<Feature Id="Documentation" Title="Documentation" Level="1">
 			<Feature Id="ApiDocumentation" Title="API Documentation" Level="1">
+				<ComponentRef Id="NHibernate.API.chm" />
 			</Feature>
 			<Feature Id="Reference" Title="Reference" Level="1">
+				<ComponentRef Id="NHibernate.Documentation.chm" />
+				<ComponentRef Id="nhibernate_reference.pdf" />
 			</Feature>
 		</Feature>
 

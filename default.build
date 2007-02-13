@@ -403,7 +403,7 @@
 		<nant buildfile="${source.tmpdir}/default.build" target="visual-studio" />
 
 		<mkdir dir="${build.dir}/src" />
-		<zip zipfile="${build.dir}/src/NHibernate-${project.version}-src.zip">
+		<zip zipfile="${build.dir}/src/NHibernate-src.zip">
 			<fileset basedir="${source.tmpdir}">
 				<include name="**/*" />
 			</fileset>
