@@ -537,6 +537,7 @@
 			</Feature>
 		</Feature>
 
+		<WixVariable Id="WixUILicenseRtf" Value="lgpl.rtf" />
 		<UIRef Id="WixUI_Mondo" />
 		<UIRef Id="WixUI_ErrorProgressText" />
 	</Product>

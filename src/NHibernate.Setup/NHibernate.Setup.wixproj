@@ -4,7 +4,7 @@
     <ProductVersion>3.0</ProductVersion>
     <ProjectGuid>{c801dd1e-8550-4b81-94b0-8afaf4e3d34f}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>NHibernate.Setup</OutputName>
+    <OutputName>NHibernate</OutputName>
     <OutputType>Package</OutputType>
     <WixToolPath>C:\Program Files\Windows Installer XML v3\bin\</WixToolPath>
   </PropertyGroup>
@@ -55,12 +55,25 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
     <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+    <DefineConstants>ShortVersion=1.2;FullVersion=1.2.0.CR1;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
+    <IncludeSearchPaths>
+    </IncludeSearchPaths>
+    <Pedantic>True</Pedantic>
+    <ShowSourceTrace>False</ShowSourceTrace>
+    <SuppressSchemaValidation>False</SuppressSchemaValidation>
+    <SuppressSpecificWarnings>
+    </SuppressSpecificWarnings>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <VerboseOutput>False</VerboseOutput>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="NHibernate.Setup.wxs" />
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="C:\Program Files\Windows Installer XML v3\bin\WixUIExtension.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lgpl.rtf" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WiX\v3.0\Wix.targets" />
 </Project>
