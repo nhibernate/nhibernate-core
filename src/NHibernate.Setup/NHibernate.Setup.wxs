@@ -335,125 +335,55 @@
 		</Directory>
 
 		<Feature Id="Binaries" Title="Binaries" Level="1">
-			<Feature Id="BinariesNet20" Title=".NET 2.0" Level="1">
-				<Feature Id="CoreNet20" Title="NHibernate Core" Level="1" Absent="disallow" InstallDefault="followParent">
-					<ComponentRef Id="NHibernate.dll_net20" />
-					<ComponentRef Id="NHibernate.xml_net20" />
-					<ComponentRef Id="NHibernate.license.txt_net20" />
+			<Feature Id="Core" Title="NHibernate Core" Level="1" Absent="disallow" InstallDefault="followParent">
+				<ComponentRef Id="NHibernate.dll_net20" />
+				<ComponentRef Id="NHibernate.xml_net20" />
+				<ComponentRef Id="NHibernate.license.txt_net20" />
 
-					<ComponentRef Id="log4net.dll_net20" />
-					<ComponentRef Id="log4net.xml_net20" />
-					<ComponentRef Id="log4net.license.txt_net20" />
+				<ComponentRef Id="log4net.dll_net20" />
+				<ComponentRef Id="log4net.xml_net20" />
+				<ComponentRef Id="log4net.license.txt_net20" />
 
-					<ComponentRef Id="Iesi.Collections.dll_net20" />
-					<ComponentRef Id="Iesi.Collections.xml_net20" />
-					<ComponentRef Id="Iesi.Collections.license.txt_net20" />
+				<ComponentRef Id="Iesi.Collections.dll_net20" />
+				<ComponentRef Id="Iesi.Collections.xml_net20" />
+				<ComponentRef Id="Iesi.Collections.license.txt_net20" />
 
-					<ComponentRef Id="Castle.DynamicProxy.dll_net20" />
-					<ComponentRef Id="Castle.DynamicProxy.xml_net20" />
-					<ComponentRef Id="Castle.DynamicProxy.license.txt_net20" />
-				</Feature>
+				<ComponentRef Id="Castle.DynamicProxy.dll_net20" />
+				<ComponentRef Id="Castle.DynamicProxy.xml_net20" />
+				<ComponentRef Id="Castle.DynamicProxy.license.txt_net20" />
 
-				<Feature Id="ContribNet20" Title="Contributions (Unsupported)" Level="1">
-					<Feature Id="Nullables20"
+				<ComponentRef Id="NHibernate.dll_net11" />
+				<ComponentRef Id="NHibernate.xml_net11" />
+				<ComponentRef Id="NHibernate.license.txt_net11" />
+
+				<ComponentRef Id="log4net.dll_net11" />
+				<ComponentRef Id="log4net.xml_net11" />
+				<ComponentRef Id="log4net.license.txt_net11" />
+
+				<ComponentRef Id="Iesi.Collections.dll_net11" />
+				<ComponentRef Id="Iesi.Collections.xml_net11" />
+				<ComponentRef Id="Iesi.Collections.license.txt_net11" />
+
+				<ComponentRef Id="Castle.DynamicProxy.dll_net11" />
+				<ComponentRef Id="Castle.DynamicProxy.xml_net11" />
+				<ComponentRef Id="Castle.DynamicProxy.license.txt_net11" />
+
+				<ComponentRef Id="HashCodeProvider.dll_net11" />
+				<ComponentRef Id="HashCodeProvider.license.txt_net11" />
+			</Feature>
+
+			<Feature Id="Contrib" Title="Contributions (Unsupported)" Level="1">
+				<Feature Id="UserTypes" Level="1" Title="User Types" Description="Extensions for NHibernate to support non-standard types.">
+					<Feature Id="Nullables"
 							 Title="Nullables"
-							 Description="Provides nullable versions of standard value types on .NET 2.0. Provided for compatibility with the .NET 1.1 version of Nullables, not needed for new applications."
+							 Description="Provides nullable versions of standard value types (primarily for use on .NET 1.1)."
 							 Level="1">
 						<ComponentRef Id="Nullables.dll_net20" />
 						<ComponentRef Id="Nullables.xml_net20" />
 
 						<ComponentRef Id="Nullables.NHibernate.dll_net20" />
 						<ComponentRef Id="Nullables.NHibernate.xml_net20" />
-					</Feature>
 
-					<Feature Id="Memcached20" Title="Memcached Cache Provider" Level="1">
-						<ComponentRef Id="NHibernate.Caches.MemCache.dll_net20" />
-						<ComponentRef Id="NHibernate.Caches.MemCache.xml_net20" />
-
-						<ComponentRef Id="ICSharpCode.SharpZipLib.dll_net20" />
-						<ComponentRef Id="Memcached.ClientLibrary.dll_net20" />
-						<ComponentRef Id="Memcached.ClientLibrary.license.txt_net20" />
-					</Feature>
-
-					<Feature Id="Prevalence20" Title="Prevalence Cache Provider" Level="1">
-						<ComponentRef Id="Bamboo.Prevalence.dll_net20" />
-						<ComponentRef Id="Bamboo.Prevalence.license.txt_net20"/>
-						<ComponentRef Id="Bamboo.Prevalence.Util.dll_net20" />
-						<ComponentRef Id="NHibernate.Caches.Prevalence.dll_net20" />
-						<ComponentRef Id="NHibernate.Caches.Prevalence.xml_net20" />
-					</Feature>
-
-					<Feature Id="SysCache20" Title="SysCache Cache Provider" Level="1">
-						<ComponentRef Id="NHibernate.Caches.SysCache.dll_net20" />
-						<ComponentRef Id="NHibernate.Caches.SysCache.xml_net20" />
-					</Feature>
-
-					<Feature Id="Attributes20" Title="Mapping Attributes" Level="1">
-						<ComponentRef Id="NHibernate.Mapping.Attributes.dll_net20" />
-						<ComponentRef Id="NHibernate.Mapping.Attributes.xml_net20" />
-					</Feature>
-
-					<Feature Id="Hbm2net20" Title="Hbm2Net Tool" Level="1">
-						<ComponentRef Id="NHibernate.Tool.hbm2net.Console.exe_net20" />
-						<ComponentRef Id="NHibernate.Tool.hbm2net.dll_net20" />
-						<ComponentRef Id="NHibernate.Tool.hbm2net.xml_net20" />
-						<ComponentRef Id="NVelocity.dll_net20" />
-						<ComponentRef Id="NVelocity.license.txt_net20" />
-					</Feature>
-
-					<Feature Id="NAntTasks20" Title="NAnt Tasks" Level="1">
-						<ComponentRef Id="NHibernate.Tasks.dll_net20" />
-						<ComponentRef Id="NHibernate.Tasks.xml_net20" />
-						<ComponentRef Id="log4net.dll_nant_net20" />
-						<ComponentRef Id="NAnt.Core.dll_net20" />
-						<ComponentRef Id="NAnt.Core.xml_net20" />
-						<ComponentRef Id="NAnt.Core.license.txt_net20" />
-					</Feature>
-
-					<Feature Id="OracleUserTypes20" Title="Oracle-specific Usertypes" Level="1">
-						<ComponentRef Id="NHibernate.UserTypes.Oracle.dll_net20" />
-						<ComponentRef Id="NHibernate.UserTypes.Oracle.xml_net20" />
-					</Feature>
-
-					<Feature Id="SqlUserTypes20" Title="SQL Server-specific Usertypes" Level="1">
-						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.dll_net20" />
-						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.xml_net20" />
-					</Feature>
-
-					<Feature Id="JetDriver20" Title="Driver for Microsoft Access (Jet DB)" Level="1">
-						<ComponentRef Id="NHibernate.JetDriver.dll_net20" />
-						<ComponentRef Id="NHibernate.JetDriver.xml_net20" />
-					</Feature>
-				</Feature>
-			</Feature>
-
-			<Feature Id="Net11Binaries" Title=".NET 1.1" Level="1">
-				<Feature Id="CoreNet11" Title="NHibernate Core" Level="1" Absent="disallow" InstallDefault="followParent">
-					<ComponentRef Id="NHibernate.dll_net11" />
-					<ComponentRef Id="NHibernate.xml_net11" />
-					<ComponentRef Id="NHibernate.license.txt_net11" />
-
-					<ComponentRef Id="log4net.dll_net11" />
-					<ComponentRef Id="log4net.xml_net11" />
-					<ComponentRef Id="log4net.license.txt_net11" />
-
-					<ComponentRef Id="Iesi.Collections.dll_net11" />
-					<ComponentRef Id="Iesi.Collections.xml_net11" />
-					<ComponentRef Id="Iesi.Collections.license.txt_net11" />
-
-					<ComponentRef Id="Castle.DynamicProxy.dll_net11" />
-					<ComponentRef Id="Castle.DynamicProxy.xml_net11" />
-					<ComponentRef Id="Castle.DynamicProxy.license.txt_net11" />
-
-					<ComponentRef Id="HashCodeProvider.dll_net11" />
-					<ComponentRef Id="HashCodeProvider.license.txt_net11" />
-				</Feature>
-				
-				<Feature Id="ContribNet11" Title="Contributions (Unsupported)" Level="1">
-					<Feature Id="Nullables11"
-							 Title="Nullables"
-							 Description="Provides nullable versions of standard value types on .NET 1.1"
-							 Level="1">
 						<ComponentRef Id="Nullables.dll_net11" />
 						<ComponentRef Id="Nullables.xml_net11" />
 
@@ -461,16 +391,49 @@
 						<ComponentRef Id="Nullables.NHibernate.xml_net11" />
 					</Feature>
 
-					<Feature Id="Memcached11" Title="Memcached Cache Provider" Level="1">
+					<Feature Id="OracleUserTypes" Title="Oracle-Specific User Types" Level="1">
+						<ComponentRef Id="NHibernate.UserTypes.Oracle.dll_net20" />
+						<ComponentRef Id="NHibernate.UserTypes.Oracle.xml_net20" />
+
+						<ComponentRef Id="NHibernate.UserTypes.Oracle.dll_net11" />
+						<ComponentRef Id="NHibernate.UserTypes.Oracle.xml_net11" />
+					</Feature>
+
+					<Feature Id="SqlUserTypes" Title="SQL Server-Specific User Types" Level="1">
+						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.dll_net20" />
+						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.xml_net20" />
+
+						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.dll_net11" />
+						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.xml_net11" />
+					</Feature>
+				</Feature>
+
+				<Feature Id="CacheProviders" Level="1" Title="Cache Providers"
+						 Description="Second-level cache provider implementations.">
+
+					<Feature Id="Memcached" Title="Memcached Cache Provider" Level="1">
+						<ComponentRef Id="NHibernate.Caches.MemCache.dll_net20" />
+						<ComponentRef Id="NHibernate.Caches.MemCache.xml_net20" />
+
+						<ComponentRef Id="ICSharpCode.SharpZipLib.dll_net20" />
+						<ComponentRef Id="Memcached.ClientLibrary.dll_net20" />
+						<ComponentRef Id="Memcached.ClientLibrary.license.txt_net20" />
+
 						<ComponentRef Id="NHibernate.Caches.MemCache.dll_net11" />
 						<ComponentRef Id="NHibernate.Caches.MemCache.xml_net11" />
-						
+
 						<ComponentRef Id="ICSharpCode.SharpZipLib.dll_net11" />
 						<ComponentRef Id="Memcached.ClientLibrary.dll_net11" />
 						<ComponentRef Id="Memcached.ClientLibrary.license.txt_net11" />
 					</Feature>
 
-					<Feature Id="Prevalence11" Title="Prevalence Cache Provider" Level="1">
+					<Feature Id="Prevalence" Title="Prevalence Cache Provider" Level="1">
+						<ComponentRef Id="Bamboo.Prevalence.dll_net20" />
+						<ComponentRef Id="Bamboo.Prevalence.license.txt_net20"/>
+						<ComponentRef Id="Bamboo.Prevalence.Util.dll_net20" />
+						<ComponentRef Id="NHibernate.Caches.Prevalence.dll_net20" />
+						<ComponentRef Id="NHibernate.Caches.Prevalence.xml_net20" />
+
 						<ComponentRef Id="Bamboo.Prevalence.dll_net11" />
 						<ComponentRef Id="Bamboo.Prevalence.license.txt_net11"/>
 						<ComponentRef Id="Bamboo.Prevalence.Util.dll_net11" />
@@ -478,17 +441,32 @@
 						<ComponentRef Id="NHibernate.Caches.Prevalence.xml_net11" />
 					</Feature>
 
-					<Feature Id="SysCache11" Title="SysCache Cache Provider" Level="1">
+					<Feature Id="SysCache" Title="SysCache Cache Provider" Level="1">
+						<ComponentRef Id="NHibernate.Caches.SysCache.dll_net20" />
+						<ComponentRef Id="NHibernate.Caches.SysCache.xml_net20" />
+
 						<ComponentRef Id="NHibernate.Caches.SysCache.dll_net11" />
 						<ComponentRef Id="NHibernate.Caches.SysCache.xml_net11" />
 					</Feature>
+				</Feature>
 
-					<Feature Id="Attributes11" Title="Mapping Attributes" Level="1">
-						<ComponentRef Id="NHibernate.Mapping.Attributes.dll_net11" />
-						<ComponentRef Id="NHibernate.Mapping.Attributes.xml_net11" />
-					</Feature>
+				<Feature Id="Attributes" Title="Mapping Attributes" Level="1">
+					<ComponentRef Id="NHibernate.Mapping.Attributes.dll_net20" />
+					<ComponentRef Id="NHibernate.Mapping.Attributes.xml_net20" />
 
-					<Feature Id="Hbm2net11" Title="Hbm2Net Tool" Level="1">
+					<ComponentRef Id="NHibernate.Mapping.Attributes.dll_net11" />
+					<ComponentRef Id="NHibernate.Mapping.Attributes.xml_net11" />
+				</Feature>
+
+				<Feature Id="Tools" Title="Tools" Level="1">
+
+					<Feature Id="Hbm2net" Title="hbm2net" Level="1">
+						<ComponentRef Id="NHibernate.Tool.hbm2net.Console.exe_net20" />
+						<ComponentRef Id="NHibernate.Tool.hbm2net.dll_net20" />
+						<ComponentRef Id="NHibernate.Tool.hbm2net.xml_net20" />
+						<ComponentRef Id="NVelocity.dll_net20" />
+						<ComponentRef Id="NVelocity.license.txt_net20" />
+
 						<ComponentRef Id="NHibernate.Tool.hbm2net.Console.exe_net11" />
 						<ComponentRef Id="NHibernate.Tool.hbm2net.dll_net11" />
 						<ComponentRef Id="NHibernate.Tool.hbm2net.xml_net11" />
@@ -496,7 +474,14 @@
 						<ComponentRef Id="NVelocity.license.txt_net11" />
 					</Feature>
 
-					<Feature Id="NAntTasks11" Title="NAnt Tasks" Level="1">
+					<Feature Id="NAntTasks" Title="NAnt Tasks" Level="1">
+						<ComponentRef Id="NHibernate.Tasks.dll_net20" />
+						<ComponentRef Id="NHibernate.Tasks.xml_net20" />
+						<ComponentRef Id="log4net.dll_nant_net20" />
+						<ComponentRef Id="NAnt.Core.dll_net20" />
+						<ComponentRef Id="NAnt.Core.xml_net20" />
+						<ComponentRef Id="NAnt.Core.license.txt_net20" />
+
 						<ComponentRef Id="NHibernate.Tasks.dll_net11" />
 						<ComponentRef Id="NHibernate.Tasks.xml_net11" />
 						<ComponentRef Id="log4net.dll_nant_net11" />
@@ -505,20 +490,14 @@
 						<ComponentRef Id="NAnt.Core.license.txt_net11" />
 					</Feature>
 
-					<Feature Id="OracleUserTypes11" Title="Oracle-specific Usertypes" Level="1">
-						<ComponentRef Id="NHibernate.UserTypes.Oracle.dll_net11" />
-						<ComponentRef Id="NHibernate.UserTypes.Oracle.xml_net11" />
-					</Feature>
+				</Feature>
 
-					<Feature Id="SqlUserTypes11" Title="SQL Server-specific Usertypes" Level="1">
-						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.dll_net11" />
-						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.xml_net11" />
-					</Feature>
+				<Feature Id="JetDriver" Title="Driver for Microsoft Access (Jet DB)" Level="1">
+					<ComponentRef Id="NHibernate.JetDriver.dll_net20" />
+					<ComponentRef Id="NHibernate.JetDriver.xml_net20" />
 
-					<Feature Id="JetDriver11" Title="Driver for Microsoft Access (Jet DB)" Level="1">
-						<ComponentRef Id="NHibernate.JetDriver.dll_net11" />
-						<ComponentRef Id="NHibernate.JetDriver.xml_net11" />
-					</Feature>
+					<ComponentRef Id="NHibernate.JetDriver.dll_net11" />
+					<ComponentRef Id="NHibernate.JetDriver.xml_net11" />
 				</Feature>
 			</Feature>
 		</Feature>
