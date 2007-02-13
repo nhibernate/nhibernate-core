@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product Id="0DF4DA42-605B-4E19-AE18-D066BD4700C3"
-			 Name="NHibernate $(var.ShortVersion)"
+			 Name="NHibernate $(var.Version)"
 			 Language="1033"
-			 Version="$(var.ShortVersion)"
+			 Version="$(var.NumericVersion)"
 			 Manufacturer="JBoss, a division of Red Hat"
 			 UpgradeCode="76FD76E1-09F6-4D03-9A5B-8B93948FD0FB">
 
-		<Package InstallerVersion="200" Compressed="yes" Description="NHibernate $(var.FullVersion)" />
+		<Package InstallerVersion="200" Compressed="yes" Description="NHibernate $(var.Version)" />
 
 		<Media Id="1" Cabinet="NHibernate.Setup.cab" EmbedCab="yes" />
 
@@ -327,7 +327,7 @@
 					</Directory>
 					<Directory Id="src" Name="src">
 						<Component Id="SourceZip" Guid="CAD2DAF4-AD0E-4E0D-9726-94F2F7F95301">
-							<File Id="SourceZip" KeyPath="yes" Name="NHibernate-src.zip" />
+							<File Id="SourceZip" KeyPath="yes" Name="NHibernate-src.zip" Source="$(var.BuildDir)\src\NHibernate-$(var.Version)-src.zip" />
 						</Component>
 					</Directory>
 				</Directory>
@@ -335,7 +335,7 @@
 		</Directory>
 
 		<Feature Id="Binaries" Title="Binaries" Level="1">
-			<Feature Id="Core" Title="NHibernate Core" Level="1" Absent="disallow" InstallDefault="followParent">
+			<Feature Id="Core" Title="NHibernate Core" Level="1" Absent="disallow" InstallDefault="followParent" AllowAdvertise="no">
 				<ComponentRef Id="NHibernate.dll_net20" />
 				<ComponentRef Id="NHibernate.xml_net20" />
 				<ComponentRef Id="NHibernate.license.txt_net20" />
@@ -372,12 +372,14 @@
 				<ComponentRef Id="HashCodeProvider.license.txt_net11" />
 			</Feature>
 
-			<Feature Id="Contrib" Title="Contributions (Unsupported)" Level="1">
-				<Feature Id="UserTypes" Level="1" Title="User Types" Description="Extensions for NHibernate to support non-standard types.">
+			<Feature Id="Contrib" Title="Contributions (Unsupported)" Level="1" AllowAdvertise="no">
+				<Feature Id="UserTypes" Level="1" Title="User Types" Description="Extensions for NHibernate to support non-standard types."
+						 AllowAdvertise="no">
 					<Feature Id="Nullables"
 							 Title="Nullables"
 							 Description="Provides nullable versions of standard value types (primarily for use on .NET 1.1)."
-							 Level="1">
+							 Level="1"
+							 AllowAdvertise="no">
 						<ComponentRef Id="Nullables.dll_net20" />
 						<ComponentRef Id="Nullables.xml_net20" />
 
@@ -391,7 +393,7 @@
 						<ComponentRef Id="Nullables.NHibernate.xml_net11" />
 					</Feature>
 
-					<Feature Id="OracleUserTypes" Title="Oracle-Specific User Types" Level="1">
+					<Feature Id="OracleUserTypes" Title="Oracle-Specific User Types" Level="1" AllowAdvertise="no">
 						<ComponentRef Id="NHibernate.UserTypes.Oracle.dll_net20" />
 						<ComponentRef Id="NHibernate.UserTypes.Oracle.xml_net20" />
 
@@ -399,7 +401,7 @@
 						<ComponentRef Id="NHibernate.UserTypes.Oracle.xml_net11" />
 					</Feature>
 
-					<Feature Id="SqlUserTypes" Title="SQL Server-Specific User Types" Level="1">
+					<Feature Id="SqlUserTypes" Title="SQL Server-Specific User Types" Level="1" AllowAdvertise="no">
 						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.dll_net20" />
 						<ComponentRef Id="NHibernate.UserTypes.SqlTypes.xml_net20" />
 
@@ -409,9 +411,9 @@
 				</Feature>
 
 				<Feature Id="CacheProviders" Level="1" Title="Cache Providers"
-						 Description="Second-level cache provider implementations.">
+						 Description="Second-level cache provider implementations." AllowAdvertise="no">
 
-					<Feature Id="Memcached" Title="Memcached Cache Provider" Level="1">
+					<Feature Id="Memcached" Title="Memcached Cache Provider" Level="1" AllowAdvertise="no">
 						<ComponentRef Id="NHibernate.Caches.MemCache.dll_net20" />
 						<ComponentRef Id="NHibernate.Caches.MemCache.xml_net20" />
 
@@ -427,7 +429,7 @@
 						<ComponentRef Id="Memcached.ClientLibrary.license.txt_net11" />
 					</Feature>
 
-					<Feature Id="Prevalence" Title="Prevalence Cache Provider" Level="1">
+					<Feature Id="Prevalence" Title="Prevalence Cache Provider" Level="1" AllowAdvertise="no">
 						<ComponentRef Id="Bamboo.Prevalence.dll_net20" />
 						<ComponentRef Id="Bamboo.Prevalence.license.txt_net20"/>
 						<ComponentRef Id="Bamboo.Prevalence.Util.dll_net20" />
@@ -441,7 +443,7 @@
 						<ComponentRef Id="NHibernate.Caches.Prevalence.xml_net11" />
 					</Feature>
 
-					<Feature Id="SysCache" Title="SysCache Cache Provider" Level="1">
+					<Feature Id="SysCache" Title="SysCache Cache Provider" Level="1" AllowAdvertise="no">
 						<ComponentRef Id="NHibernate.Caches.SysCache.dll_net20" />
 						<ComponentRef Id="NHibernate.Caches.SysCache.xml_net20" />
 
@@ -450,7 +452,7 @@
 					</Feature>
 				</Feature>
 
-				<Feature Id="Attributes" Title="Mapping Attributes" Level="1">
+				<Feature Id="Attributes" Title="Mapping Attributes" Level="1" AllowAdvertise="no">
 					<ComponentRef Id="NHibernate.Mapping.Attributes.dll_net20" />
 					<ComponentRef Id="NHibernate.Mapping.Attributes.xml_net20" />
 
@@ -458,9 +460,9 @@
 					<ComponentRef Id="NHibernate.Mapping.Attributes.xml_net11" />
 				</Feature>
 
-				<Feature Id="Tools" Title="Tools" Level="1">
+				<Feature Id="Tools" Title="Tools" Level="1" AllowAdvertise="no">
 
-					<Feature Id="Hbm2net" Title="hbm2net" Level="1">
+					<Feature Id="Hbm2net" Title="hbm2net" Level="1" AllowAdvertise="no">
 						<ComponentRef Id="NHibernate.Tool.hbm2net.Console.exe_net20" />
 						<ComponentRef Id="NHibernate.Tool.hbm2net.dll_net20" />
 						<ComponentRef Id="NHibernate.Tool.hbm2net.xml_net20" />
@@ -474,7 +476,7 @@
 						<ComponentRef Id="NVelocity.license.txt_net11" />
 					</Feature>
 
-					<Feature Id="NAntTasks" Title="NAnt Tasks" Level="1">
+					<Feature Id="NAntTasks" Title="NAnt Tasks" Level="1" AllowAdvertise="no">
 						<ComponentRef Id="NHibernate.Tasks.dll_net20" />
 						<ComponentRef Id="NHibernate.Tasks.xml_net20" />
 						<ComponentRef Id="log4net.dll_nant_net20" />
@@ -492,7 +494,7 @@
 
 				</Feature>
 
-				<Feature Id="JetDriver" Title="Driver for Microsoft Access (Jet DB)" Level="1">
+				<Feature Id="JetDriver" Title="Driver for Microsoft Access (Jet DB)" Level="1" AllowAdvertise="no">
 					<ComponentRef Id="NHibernate.JetDriver.dll_net20" />
 					<ComponentRef Id="NHibernate.JetDriver.xml_net20" />
 

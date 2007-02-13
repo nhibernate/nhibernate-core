@@ -11,7 +11,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
-    <DefineConstants>Debug;ShortVersion=1.2;FullVersion=1.2.0.CR1;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
+    <DefineConstants>Version=1.2.0.CR1;NumericVersion=1.2.0.3001;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
     <IncludeSearchPaths>
     </IncludeSearchPaths>
     <Pedantic>True</Pedantic>
@@ -54,8 +54,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
-    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
-    <DefineConstants>ShortVersion=1.2;FullVersion=1.2.0.CR1;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
+    <IntermediateOutputPath>
+    </IntermediateOutputPath>
+    <DefineConstants>Version=1.2.0.CR1;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
     <IncludeSearchPaths>
     </IncludeSearchPaths>
     <Pedantic>True</Pedantic>

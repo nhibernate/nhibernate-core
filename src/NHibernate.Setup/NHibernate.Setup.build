@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate.Setup" 
+	default="msi" 
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
+
+	<property name="root.dir" value="../.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+	
+	<property name="wix.bin.dir" value="${environment::get-folder-path('ProgramFiles')}/Windows Installer XML v3\bin" />
+	<loadtasks assembly="${wix.bin.dir}/Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" />
+
+	<target name="init" depends="common.init" />
+
+	<target name="msi" depends="init">
+		<property name="msi.tmp.dir" value="${build.dir}/msi-tmp" />
+		<mkdir dir="${msi.tmp.dir}" />
+		<candle
+			out="${msi.tmp.dir}/"
+			exedir="${wix.bin.dir}"
+			extensions="${wix.bin.dir}/WixUIExtension.dll">
+			<sources>
+				<include name="*.wxs" />
+			</sources>
+			<arg line="-dVersion=${project.version}" />
+			<arg line="-dNumericVersion=${project.version.numeric}" />
+			<arg line="-dBuildDir=${build.dir}" />
+		</candle>
+		
+		<light
+			out="${build.dir}/NHibernate-${project.version}.msi"
+			exedir="${wix.bin.dir}"
+			extensions="${wix.bin.dir}/WixUIExtension.dll"
+			cultures="en-us">
+			<sources>
+				<include name="${msi.tmp.dir}/*.wixobj" />
+			</sources>
+		</light>
+
+		<delete dir="${msi.tmp.dir}" />
+	</target>
+</project>
