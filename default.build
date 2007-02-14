@@ -171,153 +171,9 @@
 
 	</target>
 
-	<target name="doc" depends="init doc-clean doc-manual doc-api"
-		description="Builds the Help Documentation and the API documentation" />
-
-	<target name="doc-clean">
-		<nant target="clean" buildfile="doc/reference/documentation.build" />
-	</target>
-
-	<target name="doc-manual" depends="init" description="Builds the Help Documentation" >
-		<property name="lang" value="en" />
-		<nant target="build" buildfile="doc/reference/documentation.build">
-			<properties>
-				<property name="lang" value="${lang}" />
-			</properties>
-		</nant>
-	</target>
-
-	<target name="doc-api" depends="init" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
-		<!-- Force .NET 1.1 configuration because NDoc fails with .NET 2.0 assemblies -->
-		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
-		<call target="set-net-1.1-framework-configuration" />
-
-		<ndoc>
-			<assemblies basedir="${bin.dir}">
-				<include name="Iesi.Collections.dll" />
-				<include name="NHibernate*.dll" />
-				<include name="Nullables*.dll" />
-
-				<exclude name="*Test*" />
-				<exclude name="NHibernate.DomainModel.dll" />
-				<exclude name="NHibernate.Examples.dll" />
-			</assemblies>
-			<summaries>
-				<include name="src/NHibernate/NamespaceSummary.xml" />
-				<include name="src/Iesi.Collections/NamespaceSummary.xml" />
-			</summaries>
-			<documenters>
-				<documenter name="MSDN">
-					<property name="OutputDirectory" value="${build.dir}/doc/temp" />
-					<property name="HtmlHelpName" value="NHibernate.API" />
-					<property name="IncludeFavorites" value="False" />
-					<property name="Title" value="NHibernate Class Library - v.${project.version}" />
-					<property name="SplitTOCs" value="False" />
-					<property name="DefaulTOC" value="" />
-					<property name="IncludeHierarchy" value="False" />
-					<property name="ShowVisualBasic" value="False" />
-					<property name="RootPageContainsNamespaces" value="False" />
-					<property name="SortTOCByNamespace" value="True" />
-					<property name="OutputTarget" value="HtmlHelp" />
-					<property name="HeaderHtml" value="" />
-					<property name="FooterHtml" value="" />
-					<property name="FilesToInclude" value="" />
-					<property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
-					<property name="ShowMissingSummaries" value="${build.debug}" />
-					<property name="ShowMissingRemarks" value="${build.debug}" />
-					<property name="ShowMissingParams" value="${build.debug}" />
-					<property name="ShowMissingReturns" value="${build.debug}" />
-					<property name="ShowMissingValues" value="${build.debug}" />
-					<property name="DocumentInternals" value="False" />
-					<property name="DocumentProtected" value="True" />
-					<property name="DocumentPrivates" value="False" />
-					<property name="DocumentProtectedInternalAsProtected" value="False" />
-					<property name="DocumentEmptyNamespaces" value="False" />
-					<property name="IncludeAssemblyVersion" value="False" />
-					<property name="CopyrightText" value="NHibernate is licensed under GNU LGPL." />
-					<property name="CopyrightHref" value="http://www.nhibernate.org/" />
-					<property name="FeedbackEmailAddress" value="nhibernate-development@lists.sourceforge.net" />
-					<property name="ReferencesPath" value="" />
-					<property name="SkipNamespacesWithoutSummaries" value="False" />
-					<property name="UseNamespaceDocSummaries" value="False" />
-					<property name="AutoPropertyBackerSummaries" value="False" />
-					<property name="AutoDocumentConstructors" value="True" />
-					<property name="DocumentAttributes" value="True" />
-					<property name="ShowTypeIdInAttributes" value="False" />
-					<property name="DocumentedAttributes" value="" />
-					<property name="GetExternalSummaries" value="True" />
-					<property name="EditorBrowsableFilter" value="Off" />
-					<property name="UseNDocXmlFile" value="" />
-				</documenter>
-			</documenters>
-		</ndoc>
-		<copy todir="${build.dir}/doc">
-			<fileset basedir="${build.dir}/doc/temp">
-				<include name="*.chm" />
-			</fileset>
-		</copy>
-
-		<if test="${vshik.installed}">
-			<ndoc>
-				<assemblies basedir="${bin.dir}">
-					<include name="NHibernate.dll" />
-					<include name="Iesi.Collections.dll" />
-				</assemblies>
-				<summaries>
-					<include name="src/NHibernate/NamespaceSummary.xml" />
-					<include name="src/Iesi.Collections/NamespaceSummary.xml" />
-				</summaries>
-				<documenters>
-					<documenter name="VS.NET 2003">
-						<property name="OutputDirectory" value="${build.dir}/doc/temp" />
-						<property name="HtmlHelpName" value="NHibernate.API" />
-						<property name="Title" value="NHibernate Class Library - v.${project.version}" />
-						<property name="HeaderHtml" value="" />
-						<property name="FooterHtml" value="" />
-						<property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
-						<property name="ShowMissingSummaries" value="${build.debug}" />
-						<property name="ShowMissingRemarks" value="${build.debug}" />
-						<property name="ShowMissingParams" value="${build.debug}" />
-						<property name="ShowMissingReturns" value="${build.debug}" />
-						<property name="ShowMissingValues" value="${build.debug}" />
-						<property name="DocumentInternals" value="False" />
-						<property name="DocumentProtected" value="True" />
-						<property name="DocumentPrivates" value="False" />
-						<property name="DocumentProtectedInternalAsProtected" value="False" />
-						<property name="DocumentEmptyNamespaces" value="False" />
-						<property name="CopyrightText" value="NHibernate is licensed under GNU LGPL." />
-						<property name="CopyrightHref" value="http://www.nhibernate.org/" />
-						<property name="FeedbackEmailAddress" value="nhibernate-development@lists.sourceforge.net" />
-						<property name="ReferencesPath" value="" />
-						<property name="SkipNamespacesWithoutSummaries" value="False" />
-						<property name="UseNamespaceDocSummaries" value="False" />
-						<property name="AutoPropertyBackerSummaries" value="False" />
-						<property name="AutoDocumentConstructors" value="True" />
-						<property name="DocumentAttributes" value="True" />
-						<property name="ShowTypeIdInAttributes" value="False" />
-						<property name="DocumentedAttributes" value="" />
-						<property name="EditorBrowsableFilter" value="Off" />
-						<property name="UseNDocXmlFile" value="" />
-					</documenter>
-				</documenters>
-			</ndoc>
-
-			<copy todir="${build.dir}/doc/help2">
-				<fileset basedir="${build.dir}/doc/temp">
-					<include name="*.HxS" />
-				</fileset>
-			</copy>
-			<copy todir="${build.dir}/doc/help2">
-				<fileset basedir="doc/reference/support/help2">
-					<include name="*" />
-				</fileset>
-			</copy>
-		</if>
-
-		<delete dir="${build.dir}/doc/temp" />
-
-		<!-- Restore the original framework configuration -->
-		<call target="set-${current.framework.saved}-framework-configuration" />
+	<target name="doc" depends="init"
+		description="Builds the Help Documentation and the API documentation">
+		<nant buildfile="doc/documentation.build" target="api manual" />
 	</target>
 
 	<target name="build-all-frameworks" depends="init">
@@ -421,7 +277,7 @@
 
 		<property name="dist.output.dir" value="${project::get-base-directory()}/build/" />
 		<move file="${build.dir}/NHibernate-${project.version}.msi" todir="${dist.output.dir}" />
-		<move file="${build.dir}/src/NHibernate-${project.version}.zip" todir="${dist.output.dir}" />
+		<move file="${build.dir}/src/NHibernate-${project.version}-src.zip" todir="${dist.output.dir}" />
 
 		<!--
 		<property name="zip.file.name" value="${dist.output.dir}/${build.name}.zip" />
@@ -480,10 +336,6 @@
 	<target name="clean" depends="init" description="Deletes current build">
 		<delete dir="${build.dir}" failonerror="false" />
 		<delete dir="${clover.src}" failonerror="false" />
-	</target>
-
-	<target name="clean-bin" depends="init" description="Deletes the current bin folder">
-		<delete dir="${bin.dir}" failonerror="false" />
 	</target>
 
 </project>
