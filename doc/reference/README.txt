@@ -5,15 +5,17 @@
 Introduction
 ================================================================================
 
-This is the source files used to generate the NHibernate Documentation.
-These files (in /doc/src/) are represented as DocBook (xml) files.
+This directory contains the DocBook source files used to generate the NHibernate
+Documentation.
 
-To build the documentation, you have to install some tools; and after that,
-you can simply run "Build.bat" (the result will be in
-/build/NHibernate-<version>/doc/).
+To build the documentation, you have to install some tools; after that, running
+
+    nant doc
+
+in the project directory. The result will be in /build/NHibernate-<version>/doc.
 
 ================================================================================
-Required DLLs and EXEs
+Prerequisites
 ================================================================================
 You need a Java Runtime Environment (JRE) to run Saxon which is used to build
 the documentation. You don't need to download and install Saxon, its jars are
@@ -23,7 +25,7 @@ You need HTML Help Workshop to build the CHM help file, and Visual Studio
 Help Integration Kit (VSHIK) to build the HtmlHelp2 help file.
 
 ================================================================================
-Quick Start
+DocBook Quick Start
 ================================================================================
 Read this article on Code Project (by Jim Crafton)
 	"Documention with DocBook on Win32"
@@ -31,7 +33,7 @@ Read this article on Code Project (by Jim Crafton)
 
 
 ================================================================================
-Docbook Manual
+DocBook Manual
 ================================================================================
 Can be downloaded at http://docbook.org/tdg/en/tdg-en-html-2.0.10.zip
 Can be viewed (online) at
@@ -39,7 +41,7 @@ http://www.oasis-open.org/docbook/documentation/reference/html/docbook.html
 
 
 ================================================================================
-Docbook XSL Guide
+DocBook XSL Guide
 ================================================================================
 Can be viewed at http://www.sagehill.net/docbookxsl/index.html
 
