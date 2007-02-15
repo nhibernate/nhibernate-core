@@ -35,7 +35,7 @@ namespace NHibernate.Connection
 		/// <returns>
 		/// An Open <see cref="IDbConnection"/>.
 		/// </returns>
-		/// <exception>
+		/// <exception cref="Exception">
 		/// If there is any problem creating or opening the <see cref="IDbConnection"/>.
 		/// </exception>
 		public override IDbConnection GetConnection()
