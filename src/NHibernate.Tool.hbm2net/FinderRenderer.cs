@@ -141,7 +141,7 @@ namespace NHibernate.Tool.hbm2net
 		
 		
 		/// <summary> Render finder classes.</summary>
-		/// <exception>Exception</exception>
+		/// <exception cref="Exception">Exception</exception>
 		public override void  render(string savedToPackage, string savedToClass, ClassMapping classMapping, IDictionary class2classmap, StreamWriter mainwriter)
 		{
 			
