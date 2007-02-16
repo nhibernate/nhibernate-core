@@ -11,6 +11,8 @@
 
 	<target name="init" depends="common.init">
 		<property name="doc.out.dir" value="${build.dir}/doc" />
+		<property name="doc.help2.out.dir" value="${doc.out.dir}/help2" />
+		<property name="doc.chm.out.dir" value="${doc.out.dir}" />
 		<property name="doc.tmp.dir" value="${path::get-full-path(doc.out.dir)}/temp" />
 	</target>
 
@@ -19,6 +21,7 @@
 	<target name="clean" depends="init">
 		<nant target="clean" buildfile="reference/reference.build" />
 		<delete dir="${doc.out.dir}" />
+		<delete file="NHibernate.ndoc" />
 	</target>
 
 	<target name="manual" depends="init">
@@ -30,137 +33,26 @@
 		</nant>
 	</target>
 
-	<target name="api" depends="init" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
-		<!-- Force .NET 1.1 configuration because NDoc fails with .NET 2.0 assemblies -->
-		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
-		<call target="set-net-1.1-framework-configuration" />
-
-		<ndoc>
-			<assemblies basedir="${bin.dir}">
-				<include name="Iesi.Collections.dll" />
-				<include name="NHibernate*.dll" />
-				<include name="Nullables*.dll" />
-
-				<exclude name="*Test*" />
-				<exclude name="NHibernate.DomainModel.dll" />
-				<exclude name="NHibernate.Examples.dll" />
-			</assemblies>
-			<summaries>
-				<include name="src/NHibernate/NamespaceSummary.xml" />
-				<include name="src/Iesi.Collections/NamespaceSummary.xml" />
-			</summaries>
-			<documenters>
-				<documenter name="MSDN">
-					<property name="OutputDirectory" value="${doc.tmp.dir}" />
-					<property name="HtmlHelpName" value="NHibernate.API" />
-					<property name="IncludeFavorites" value="False" />
-					<property name="Title" value="NHibernate Class Library - v.${project.version}" />
-					<property name="SplitTOCs" value="False" />
-					<property name="DefaulTOC" value="" />
-					<property name="IncludeHierarchy" value="False" />
-					<property name="ShowVisualBasic" value="False" />
-					<property name="RootPageContainsNamespaces" value="False" />
-					<property name="SortTOCByNamespace" value="True" />
-					<property name="OutputTarget" value="HtmlHelp" />
-					<property name="HeaderHtml" value="" />
-					<property name="FooterHtml" value="" />
-					<property name="FilesToInclude" value="" />
-					<property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
-					<property name="ShowMissingSummaries" value="${build.debug}" />
-					<property name="ShowMissingRemarks" value="${build.debug}" />
-					<property name="ShowMissingParams" value="${build.debug}" />
-					<property name="ShowMissingReturns" value="${build.debug}" />
-					<property name="ShowMissingValues" value="${build.debug}" />
-					<property name="DocumentInternals" value="False" />
-					<property name="DocumentProtected" value="True" />
-					<property name="DocumentPrivates" value="False" />
-					<property name="DocumentProtectedInternalAsProtected" value="False" />
-					<property name="DocumentEmptyNamespaces" value="False" />
-					<property name="IncludeAssemblyVersion" value="False" />
-					<property name="CopyrightText" value="NHibernate is licensed under GNU LGPL." />
-					<property name="CopyrightHref" value="http://www.nhibernate.org/" />
-					<property name="FeedbackEmailAddress" value="nhibernate-development@lists.sourceforge.net" />
-					<property name="ReferencesPath" value="" />
-					<property name="SkipNamespacesWithoutSummaries" value="False" />
-					<property name="UseNamespaceDocSummaries" value="False" />
-					<property name="AutoPropertyBackerSummaries" value="False" />
-					<property name="AutoDocumentConstructors" value="True" />
-					<property name="DocumentAttributes" value="True" />
-					<property name="ShowTypeIdInAttributes" value="False" />
-					<property name="DocumentedAttributes" value="" />
-					<property name="GetExternalSummaries" value="True" />
-					<property name="EditorBrowsableFilter" value="Off" />
-					<property name="UseNDocXmlFile" value="" />
-				</documenter>
-			</documenters>
-		</ndoc>
-		<copy todir="${doc.out.dir}">
-			<fileset basedir="${doc.tmp.dir}">
-				<include name="*.chm" />
-			</fileset>
+	<target name="ndoc-project" depends="init">
+		<copy file="NHibernate.ndoc.in" tofile="NHibernate.ndoc" overwrite="true">
+			<filterchain>
+				<expandproperties />
+			</filterchain>
 		</copy>
+	</target>
 
-		<if test="${vshik.installed}">
-			<ndoc>
-				<assemblies basedir="${bin.dir}">
-					<include name="NHibernate.dll" />
-					<include name="Iesi.Collections.dll" />
-				</assemblies>
-				<summaries>
-					<include name="src/NHibernate/NamespaceSummary.xml" />
-					<include name="src/Iesi.Collections/NamespaceSummary.xml" />
-				</summaries>
-				<documenters>
-					<documenter name="VS.NET 2003">
-						<property name="OutputDirectory" value="${doc.tmp.dir}" />
-						<property name="HtmlHelpName" value="NHibernate.API" />
-						<property name="Title" value="NHibernate Class Library - v.${project.version}" />
-						<property name="HeaderHtml" value="" />
-						<property name="FooterHtml" value="" />
-						<property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
-						<property name="ShowMissingSummaries" value="${build.debug}" />
-						<property name="ShowMissingRemarks" value="${build.debug}" />
-						<property name="ShowMissingParams" value="${build.debug}" />
-						<property name="ShowMissingReturns" value="${build.debug}" />
-						<property name="ShowMissingValues" value="${build.debug}" />
-						<property name="DocumentInternals" value="False" />
-						<property name="DocumentProtected" value="True" />
-						<property name="DocumentPrivates" value="False" />
-						<property name="DocumentProtectedInternalAsProtected" value="False" />
-						<property name="DocumentEmptyNamespaces" value="False" />
-						<property name="CopyrightText" value="NHibernate is licensed under GNU LGPL." />
-						<property name="CopyrightHref" value="http://www.nhibernate.org/" />
-						<property name="FeedbackEmailAddress" value="nhibernate-development@lists.sourceforge.net" />
-						<property name="ReferencesPath" value="" />
-						<property name="SkipNamespacesWithoutSummaries" value="False" />
-						<property name="UseNamespaceDocSummaries" value="False" />
-						<property name="AutoPropertyBackerSummaries" value="False" />
-						<property name="AutoDocumentConstructors" value="True" />
-						<property name="DocumentAttributes" value="True" />
-						<property name="ShowTypeIdInAttributes" value="False" />
-						<property name="DocumentedAttributes" value="" />
-						<property name="EditorBrowsableFilter" value="Off" />
-						<property name="UseNDocXmlFile" value="" />
-					</documenter>
-				</documenters>
-			</ndoc>
+	<target name="api" depends="init ndoc-project" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
+		<property name="ndocconsole.exe" value="C:\net\NDoc2Alpha\NDocConsole.exe" />
+		<exec program="${ndocconsole.exe}">
+			<arg line="-documenter=MSDN-Help2" />
+			<arg line="-project=NHibernate.ndoc" />
+		</exec>
 
-			<copy todir="${doc.out.dir}/help2">
-				<fileset basedir="${doc.tmp.dir}">
-					<include name="*.HxS" />
-				</fileset>
-			</copy>
-			<copy todir="${doc.out.dir}/help2">
-				<fileset basedir="reference/support/help2">
-					<include name="*" />
-				</fileset>
-			</copy>
-		</if>
-
-		<!-- Restore the original framework configuration -->
-		<call target="set-${current.framework.saved}-framework-configuration" />
-
-		<delete dir="${doc.tmp.dir}" />
+		<property name="ndocconsole.exe" value="C:\net\NDoc2Alpha\NDocConsole.exe" />
+		<exec program="${ndocconsole.exe}">
+			<arg line="-documenter=MSDN-CHM" />
+			<arg line="-project=NHibernate.ndoc" />
+		</exec>
 	</target>
 
 </project>
