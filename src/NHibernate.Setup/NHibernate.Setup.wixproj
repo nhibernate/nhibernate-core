@@ -10,7 +10,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>
+    </IntermediateOutputPath>
     <DefineConstants>Version=1.2.0.CR1;NumericVersion=1.2.0.3001;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
     <IncludeSearchPaths>
     </IncludeSearchPaths>
@@ -56,7 +57,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <IntermediateOutputPath>
     </IntermediateOutputPath>
-    <DefineConstants>Version=1.2.0.CR1;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
+    <DefineConstants>Version=1.2.0.CR1;NumericVersion=1.2.0.3001;BuildDir=..\..\..\..\build\NHibernate-1.2.0.CR1</DefineConstants>
     <IncludeSearchPaths>
     </IncludeSearchPaths>
     <Pedantic>True</Pedantic>
@@ -72,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="C:\Program Files\Windows Installer XML v3\bin\WixUIExtension.dll" />
+    <WixExtension Include="C:\Program Files\Windows Installer XML v3\bin\WixVSExtension.dll" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lgpl.rtf" />
