@@ -808,12 +808,11 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
 
         <table frame="topbot">
             <title>Cache Concurrency Strategy Support</title>
-            <tgroup cols='5' align='left' colsep='1' rowsep='1'>
+            <tgroup cols='4' align='left' colsep='1' rowsep='1'>
             <colspec colname='c1' colwidth="1*"/>
             <colspec colname='c2' colwidth="1*"/>
             <colspec colname='c3' colwidth="1*"/>
             <colspec colname='c4' colwidth="1*"/>
-            <colspec colname='c5' colwidth="1*"/>
             <thead>
             <row>
               <entry>Cache</entry>
@@ -1116,15 +1115,15 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
 
             <para>
                 However, suppose that we remove eighteen elements, leaving two and then add thee new elements.
-                There are two possible ways to proceed
+                There are two possible ways to proceed:
             </para>
 
             <itemizedlist>
             <listitem>
-                <para>delete eighteen rows one by one and then insert three rows</para>
+                <para>Delete eighteen rows one by one and then insert three rows</para>
             </listitem>
             <listitem>
-                <para>remove the whole collection (in one SQL <literal>DELETE</literal>) and insert
+                <para>Remove the whole collection (in one SQL <literal>DELETE</literal>) and insert
                 all five current elements (one by one)</para>
             </listitem>
             </itemizedlist>

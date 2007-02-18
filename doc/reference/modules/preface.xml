@@ -48,21 +48,23 @@
 			<para>
 				Use this reference documentation as your primary source of information.
 				Consider reading <emphasis>Hibernate in Action</emphasis>
-				(http://www.manning.com/bauer) if you need more help with application
-				design or if you prefer a step-by-step tutorial. Also visit
-				http://nhibernate.sourceforge.net/NHibernateEg/ for NHibernate
+				(<ulink url="http://www.manning.com/bauer/" />)
+				or the work-in-progress <emphasis>NHibernate in Action</emphasis>
+				(<ulink url="http://www.manning.com/kuate/" />) if you need more help
+				with application design or if you prefer a step-by-step tutorial. Also visit
+				<ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" /> for NHibernate
 				tutorial with examples.
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				FAQs are answered on the NHibernate website.
+				FAQs are answered on the <ulink url="http://www.nhibernate.org/">NHibernate website</ulink>.
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				Third party demos, examples and tutorials are linked on the NHibernate
-				website.
+				Third party demos, examples and tutorials are linked on the
+				<ulink url="http://www.hibernate.org/365.html">NHibernate Resources page</ulink>.
 			</para>
 		</listitem>
 		<listitem>
@@ -75,10 +77,12 @@
 	 </orderedlist>
 
 	 <para>
-		 If you have questions, use the user forum linked on the NHibernate website. We also
-		 provide a JIRA issue trackings system for bug reports and feature requests. If you
-		 are interested in the development of NHibernate, join the developer mailing list. If
-		 you are interested in translating this documentation into your language, contact us
-		 on the developer mailing list.
+		 If you have questions, use the
+		 <ulink url="http://forum.hibernate.org/viewforum.php?f=25">NHibernate user forum</ulink>.
+		 We also provide a <ulink url="http://jira.nhibernate.org/">JIRA issue trackings system</ulink>
+		 for bug reports and feature requests.
+		 If you are interested in the development of NHibernate, join the developer mailing list.
+		 If you are interested in translating this documentation into your language, contact us
+		 on the <ulink url="http://sourceforge.net/mail/?group_id=29446">developer mailing list</ulink>.
 	 </para>
 </preface>

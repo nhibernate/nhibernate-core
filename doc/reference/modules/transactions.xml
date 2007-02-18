@@ -528,7 +528,7 @@ finally
             <listitem>
                 <para>
                     <literal>OnClose</literal> - is essentially the legacy behavior described above. The
-                    NHibernate session obatins a connection when it first needs to perform some database
+                    NHibernate session obtains a connection when it first needs to perform some database
                     access and holds unto that connection until the session is closed.
                 </para>
             </listitem>
