@@ -276,36 +276,11 @@
 		description="Creates files for the File Release System on SourceForge">
 
 		<property name="dist.output.dir" value="${project::get-base-directory()}/build/" />
-		<move file="${build.dir}/NHibernate-${project.version}.msi" todir="${dist.output.dir}" />
+		<move file="${build.dir}/*.msi" todir="${dist.output.dir}" />
 		<move file="${build.dir}/src/NHibernate-${project.version}-src.zip" todir="${dist.output.dir}" />
 
-		<!--
-		<property name="zip.file.name" value="${dist.output.dir}/${build.name}.zip" />
-		-->
-
-		<!--
-			Don't zip reports - temporarily disabled
-		<zip zipfile="${project::get-base-directory()}/build/${build.name}-clover-${nant.settings.currentframework}.zip" ziplevel="9">
-			<fileset basedir="${build.dir}">
-				<include name="clover/**" />
-			</fileset>
-		</zip>
-		-->
-
-		<!--
-		<zip zipfile="${zip.file.name}" ziplevel="9">
-			<fileset basedir="${build.dir}">
-				<include name="**/*" />
-				<exclude name="clover/**" />
-				<exclude name="bin/log.txt" />
-				<exclude name="bin/*-results.xml" />
-				<exclude name="*.msi" />
-			</fileset>
-		</zip>
-		-->
-
 		<echo message="Created a '${project.config}' package in ${dist.output.dir}" />
-		
+
 	</target>
 
 	<target name="fxcop" depends="init" >
