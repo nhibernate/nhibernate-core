@@ -43,7 +43,7 @@ namespace NHibernate.Impl
 			if (dialect.SupportsMultipleQueries == false)
 			{
 				throw new NotSupportedException(
-					string.Format("The dialect {0} does not support mutliply queries.", dialect.GetType().FullName));
+					string.Format("The dialect {0} does not support multiple queries.", dialect.GetType().FullName));
 			}
 			this.session = session;
 		}
