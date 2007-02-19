@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.SqlTypes;
 using NUnit.Framework;
 using NHibernate.Dialect.Function;
 using NHibernate;
@@ -64,7 +65,7 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			args.Add("'123'");
 			args.Add("long");
-			string expected = string.Format("cast({0} as {1})", args[0], "BIGINT");
+			string expected = string.Format("cast({0} as {1})", args[0], factoryImpl.Dialect.GetCastTypeName(SqlTypeFactory.Int64));
 			Assert.AreEqual(expected, cf.Render(args, factoryImpl));
 
 			args.Clear();
