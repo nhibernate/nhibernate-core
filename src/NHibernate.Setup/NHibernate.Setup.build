@@ -13,7 +13,9 @@
 
 	<target name="init" depends="common.init" />
 
-	<target name="msi" depends="init">
+	<target name="msi" depends="msi.nhibernate msi.apidocs" />
+
+	<target name="msi.nhibernate" depends="init">
 		<property name="msi.tmp.dir" value="${build.dir}/msi-tmp" />
 		<mkdir dir="${msi.tmp.dir}" />
 		<candle
@@ -21,10 +23,11 @@
 			exedir="${wix.bin.dir}"
 			extensions="${wix.bin.dir}/WixUIExtension.dll">
 			<sources>
-				<include name="*.wxs" />
+				<include name="NHibernate.Setup.wxs" />
 			</sources>
 			<arg line="-dVersion=${project.version}" />
 			<arg line="-dNumericVersion=${project.version.numeric}" />
+			<arg line="-dShortVersion=${project.version.short}" />
 			<arg line="-dBuildDir=${build.dir}" />
 		</candle>
 		
@@ -34,7 +37,36 @@
 			extensions="${wix.bin.dir}/WixUIExtension.dll"
 			cultures="en-us">
 			<sources>
-				<include name="${msi.tmp.dir}/*.wixobj" />
+				<include name="${msi.tmp.dir}/NHibernate.Setup.wixobj" />
+			</sources>
+		</light>
+
+		<delete dir="${msi.tmp.dir}" />
+	</target>
+
+	<target name="msi.apidocs" depends="init">
+		<property name="msi.tmp.dir" value="${build.dir}/msi-tmp" />
+		<mkdir dir="${msi.tmp.dir}" />
+		<candle
+			out="${msi.tmp.dir}/"
+			exedir="${wix.bin.dir}"
+			extensions="${wix.bin.dir}/WixUIExtension.dll;${wix.bin.dir}/WixVSExtension.dll">
+			<sources>
+				<include name="APIDocumentation.wxs" />
+			</sources>
+			<arg line="-dVersion=${project.version}" />
+			<arg line="-dNumericVersion=${project.version.numeric}" />
+			<arg line="-dShortVersion=${project.version.short}" />
+			<arg line="-dBuildDir=${build.dir}" />
+		</candle>
+		
+		<light
+			out="${build.dir}/NHibernate-${project.version}-APIDocumentation.msi"
+			exedir="${wix.bin.dir}"
+			extensions="${wix.bin.dir}/WixUIExtension.dll;${wix.bin.dir}/WixVSExtension.dll"
+			cultures="en-us">
+			<sources>
+				<include name="${msi.tmp.dir}/APIDocumentation.wixobj" />
 			</sources>
 		</light>
 

@@ -189,12 +189,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "C:\...\NHibernate.Example.W
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "NHibernate.Setup", "NHibernate.Setup\NHibernate.Setup.wixproj", "{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
@@ -476,16 +470,6 @@ Global
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Release|Any CPU.ActiveCfg = Debug|.NET
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Release|Mixed Platforms.ActiveCfg = Debug|.NET
 		{C5D6EE68-1760-4F97-AD31-42343593D8C1}.Release|Mixed Platforms.Build.0 = Debug|.NET
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Release|.NET.ActiveCfg = Release|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C801DD1E-8550-4B81-94B0-8AFAF4E3D34F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
