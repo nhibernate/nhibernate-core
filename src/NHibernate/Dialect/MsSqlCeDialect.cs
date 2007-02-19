@@ -7,7 +7,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Dialect
 {
 	/// <summary>
-	/// A dialect for SQL Server Everywhere.
+	/// A dialect for SQL Server Everywhere (SQL Server CE).
 	/// </summary>
 	public class MsSqlCeDialect : Dialect
 	{
@@ -57,14 +57,6 @@ namespace NHibernate.Dialect
 		public override bool QualifyIndexName
 		{
 			get { return false; }
-		}
-		
-		public override bool SupportsMultipleQueries
-		{
-			get
-			{
-				return true;
-			}
 		}
 		
 		public override string ForUpdateString

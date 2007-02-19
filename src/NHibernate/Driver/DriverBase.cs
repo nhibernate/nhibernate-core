@@ -236,5 +236,10 @@ namespace NHibernate.Driver
 			param.Direction = ParameterDirection.Output;
 			return param;
 		}
+
+		public virtual bool SupportsMultipleQueries
+		{
+			get { return false; }
+		}
 	}
 }

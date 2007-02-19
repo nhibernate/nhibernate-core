@@ -62,6 +62,12 @@ namespace NHibernate.Driver
 		bool SupportsMultipleOpenReaders { get; }
 
 		/// <summary>
+		/// Can we issue several select queries in a single query, and get
+		/// several result sets back?
+		/// </summary>
+		bool SupportsMultipleQueries { get; }
+
+		/// <summary>
 		/// Generates an IDbCommand from the SqlString according to the requirements of the DataProvider.
 		/// </summary>
 		/// <param name="type">The <see cref="CommandType"/> of the command to generate.</param>

@@ -40,7 +40,7 @@ namespace NHibernate.Impl
 	    public MultiQueryImpl(ISessionImplementor session)
 		{
 			dialect = session.Factory.Dialect;
-			if (dialect.SupportsMultipleQueries == false)
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
 				throw new NotSupportedException(
 					string.Format("The dialect {0} does not support multiple queries.", dialect.GetType().FullName));

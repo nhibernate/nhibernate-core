@@ -8,12 +8,12 @@ using NHibernate.Util;
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// A NHibernate Driver for using the SqlClient DataProvider
+	/// A NHibernate driver for Microsoft SQL Server CE data provider
 	/// </summary>
 	public class SqlServerCeDriver : ReflectionBasedDriver
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SqlClientDriver"/> class.
+		/// Initializes a new instance of the <see cref="SqlServerCeDriver"/> class.
 		/// </summary>
 		public SqlServerCeDriver()
 			: base(
@@ -88,6 +88,11 @@ namespace NHibernate.Driver
 			}
 
 			return command;
+		}
+
+		public override bool SupportsMultipleQueries
+		{
+			get { return true; }
 		}
 	}
 }

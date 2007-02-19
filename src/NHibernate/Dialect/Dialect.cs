@@ -204,15 +204,6 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
-		
-		/// <summary>
-		/// Can we issue several select queries in a single query, and get
-		/// several result sets back?
-		/// </summary>
-		public virtual bool SupportsMultipleQueries
-		{
-			get { return false; }
-		}
 
 		/// <summary>
 		/// How we seperate the queries when we use multiply queries.
