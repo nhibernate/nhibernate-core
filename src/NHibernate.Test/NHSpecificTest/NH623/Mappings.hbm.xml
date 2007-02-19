@@ -36,7 +36,7 @@
 			<one-to-many class="Image"/>
 		</bag>
 
-		<bag name="Pages" inverse="true" lazy="true" where="isactive = 1">
+		<bag name="Pages" inverse="true" lazy="true" where="isactive = '1'">
 			<key column="docId"/>
 			<one-to-many class="Page"/>
 		</bag>
