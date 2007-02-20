@@ -1344,7 +1344,7 @@ namespace NHibernate.Cfg
 
 			if( sfNode == null )
 			{
-				throw new MappingException( "<session-factory> element was not found in the configuration file." );
+				throw new MappingException("<session-factory xmlns='" + CfgSchemaXMLNS + "'> element was not found in the configuration file.");
 			}
 
 			XmlAttribute nameNode = sfNode.Attributes[ "name" ];
