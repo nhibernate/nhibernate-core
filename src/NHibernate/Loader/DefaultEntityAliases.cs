@@ -150,9 +150,8 @@ namespace NHibernate.Loader
 		{
 			for( int i = 0; i < strings.Length; i++ )
 			{
-				strings[ i ] = string.Intern( strings[ i ] );
+				strings[i] = StringHelper.InternedIfPossible(strings[i]);
 			}
 		}
-
 	}
 }

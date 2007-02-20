@@ -624,5 +624,27 @@ namespace NHibernate.Util
 		{
 			return CultureInfo.InvariantCulture.CompareInfo.IsPrefix(source, prefix, CompareOptions.IgnoreCase);
 		}
+
+		/// <summary>
+		/// Returns the interned string equal to <paramref name="str"/> if there is one, or <paramref name="str"/>
+		/// otherwise.
+		/// </summary>
+		/// <param name="str">A <see cref="string" /></param>
+		/// <returns>A <see cref="string" /></returns>
+		public static string InternedIfPossible(string str)
+		{
+			if (str == null)
+			{
+				return null;
+			}
+			
+			string interned = string.IsInterned(str);
+			if (interned != null)
+			{
+				return interned;
+			}
+
+			return str;
+		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Loader;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -37,7 +38,7 @@ namespace NHibernate.Mapping
 		public string ReferencedEntityName
 		{
 			get { return referencedEntityName; }
-			set { referencedEntityName = value == null ? null : string.Intern(value); }
+			set { referencedEntityName = StringHelper.InternedIfPossible(value); }
 		}
 
 		public bool IsLazy

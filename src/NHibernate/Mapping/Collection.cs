@@ -358,7 +358,7 @@ namespace NHibernate.Mapping
 		public string ReferencedPropertyName
 		{
 			get { return referencedPropertyName; }
-			set { referencedPropertyName = value == null ? null : string.Intern( value ); }
+			set { referencedPropertyName = StringHelper.InternedIfPossible(value); }
 		}
 
 		public virtual void Validate( IMapping mapping )
@@ -456,7 +456,7 @@ namespace NHibernate.Mapping
 		public string LoaderName
 		{
 			get { return loaderName; }
-			set { loaderName = value == null ? null : string.Intern(value); }
+			set { loaderName = StringHelper.InternedIfPossible(value); }
 		}
 
 		public bool IsSubselectLoadable
