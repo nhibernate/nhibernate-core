@@ -608,11 +608,6 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public override SqlString FromTableFragment(string alias)
-		{
-			return new SqlString(subclassTableNameClosure[0] + ' ' + alias);
-		}
-
 		public override string TableName
 		{
 			get { return subclassTableNameClosure[0]; }

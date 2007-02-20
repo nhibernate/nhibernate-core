@@ -1862,7 +1862,10 @@ namespace NHibernate.Persister.Entity
 
 		public abstract SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
-		public abstract SqlString FromTableFragment(string alias);
+		public virtual SqlString FromTableFragment(string alias)
+		{
+			return new SqlString(TableName + ' ' + alias);
+		}
 
 		public abstract System.Type GetSubclassForDiscriminatorValue(object value);
 
@@ -2045,7 +2048,7 @@ namespace NHibernate.Persister.Entity
 					}
 
 					// Fetch the generated id in a separate query
-					SqlString idselectSql = new SqlString(SqlIdentitySelect(IdentifierColumnNames[0], TableName));
+					SqlString idselectSql = new SqlString(SqlIdentitySelect(IdentifierColumnNames[0], GetTableName(0)));
 					IDbCommand idselect = session.Batcher.PrepareCommand(CommandType.Text, idselectSql, SqlTypeFactory.NoTypes);
 					IDataReader rs = null;
 					try

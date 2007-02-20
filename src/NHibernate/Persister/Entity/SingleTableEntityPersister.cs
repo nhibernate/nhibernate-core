@@ -113,7 +113,7 @@ namespace NHibernate.Persister.Entity
 		protected override SqlCommandInfo GenerateInsertString(bool identityInsert, bool[] includeProperty, int j)
 		{
 			SqlInsertBuilder builder = new SqlInsertBuilder(Factory)
-				.SetTableName(TableName);
+				.SetTableName(GetTableName(j));
 
 			for (int i = 0; i < HydrateSpan; i++)
 			{
@@ -455,11 +455,6 @@ namespace NHibernate.Persister.Entity
 			PostConstruct(mapping);
 		}
 
-		public override SqlString FromTableFragment(string alias)
-		{
-			return new SqlString(TableName + ' ' + alias);
-		}
-
 		public override SqlString QueryWhereFragment(string name, bool innerJoin, bool includeSubclasses)
 		{
 			if (innerJoin && NeedsDiscriminator)
@@ -567,7 +562,7 @@ namespace NHibernate.Persister.Entity
 
 		public override string GetPropertyTableName(string propertyName)
 		{
-			return TableName;
+			return tableNames[0];
 		}
 
 		public override string FilterFragment(string alias)
