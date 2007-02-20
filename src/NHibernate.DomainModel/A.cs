@@ -22,6 +22,11 @@ public class A
 	private String _name;
 
 	/// <summary>
+	/// Holder for anotherName
+	/// </summary>
+	private String _anotherName;
+
+	/// <summary>
 	/// Holder for forward
 	/// </summary>
 	private E _forward;
@@ -63,6 +68,15 @@ public class A
 	{
 		get { return _name; }
 		set { _name = value; }
+	}
+
+	/// <summary>
+	/// Get/set for anotherName
+	/// </summary>
+	public virtual String AnotherName
+	{
+		get { return _anotherName; }
+		set { _anotherName = value; }
 	}
 
 	public virtual E Forward

@@ -337,8 +337,8 @@ namespace NHibernate.Test.Legacy
 
 			session = OpenSession();
 
-			IQuery query = session.CreateSQLQuery("select a.identifier_column as {a1.id}, a.clazz_discriminata as {a1.class}, a.count_ as {a1.Count}, a.name as {a1.Name} " +
-				", b.identifier_column as {a2.id}, b.clazz_discriminata as {a2.class}, b.count_ as {a2.Count}, b.name as {a2.Name} " +
+			IQuery query = session.CreateSQLQuery("select a.identifier_column as {a1.id}, a.clazz_discriminata as {a1.class}, a.count_ as {a1.Count}, a.name as {a1.Name}, a.anothername as {a1.AnotherName} " +
+				", b.identifier_column as {a2.id}, b.clazz_discriminata as {a2.class}, b.count_ as {a2.Count}, b.name as {a2.Name}, b.anothername as {a2.AnotherName} " +
 				" from A a, A b" +
 				" where a.identifier_column = b.identifier_column", new String[] {"a1", "a2" }, new System.Type[] {typeof( A ), typeof( A )});
 			IList list = query.List();
@@ -561,7 +561,8 @@ namespace NHibernate.Test.Legacy
 
 			session = OpenSession();
 
-			IQuery query = session.CreateSQLQuery("select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A", "a", typeof( A ));
+			IQuery query = session.CreateSQLQuery(
+				"select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name}, anothername as {a.AnotherName} from A", "a", typeof( A ));
 			IList list = query.List();
 
 			Assert.IsNotNull(list);

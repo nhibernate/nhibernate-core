@@ -19,8 +19,10 @@
 		/>
 		
 		<property name="Name" >
-			<column name="name" index="indx_a_name2" />
+			<column name="name" index="indx_a_name" />
 		</property>
+
+		<property name="AnotherName" index="indx_a_anothername" />
 
 		<subclass 
 			name="NHibernate.DomainModel.B, NHibernate.DomainModel" 

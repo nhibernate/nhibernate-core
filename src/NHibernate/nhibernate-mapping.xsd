@@ -580,6 +580,7 @@
 					<xs:documentation>only supported for properties of a class (not component)</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="unique-key" type="xs:string" />
 			<xs:attribute name="index" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
@@ -604,6 +605,7 @@
 			<xs:attribute name="update" type="xs:boolean" default="true" />
 			<xs:attribute name="cascade" type="cascadeStyle" default="none" />
 			<xs:attribute name="index" type="xs:string" use="optional" />
+			<xs:attribute name="unique-key" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="array">
@@ -885,6 +887,8 @@
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="not-null" type="xs:boolean" default="false" />
 			<xs:attribute name="unique" type="xs:boolean" default="false" />
+			<xs:attribute name="unique-key" type="xs:string" />
+			<xs:attribute name="index" type="xs:string" />
 			<xs:attribute name="cascade" type="cascadeStyle" />
 			<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
 			<xs:attribute name="fetch" type="fetchMode" use="optional" />

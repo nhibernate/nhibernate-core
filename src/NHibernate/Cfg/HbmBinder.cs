@@ -474,12 +474,12 @@ namespace NHibernate.Cfg
 		public static void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn, string propertyPath,
 		                               Mappings mappings)
 		{
+			Table table = model.Table;
 			//COLUMN(S)
 			XmlAttribute columnAttribute = node.Attributes["column"];
 			if (columnAttribute == null)
 			{
 				int count = 0;
-				Table table = model.Table;
 
 				foreach (XmlNode columnElement in node.SelectNodes(HbmConstants.nsColumn, nsmgr))
 				{
@@ -496,23 +496,12 @@ namespace NHibernate.Cfg
 					model.AddColumn(col);
 
 					//column index
-					XmlAttribute indexNode = columnElement.Attributes["index"];
-					if (indexNode != null && table != null)
-					{
-						table.GetIndex(indexNode.Value).AddColumn(col);
-					}
-
+					BindIndex(columnElement.Attributes["index"], table, col, mappings);
 					//column group index (although it can serve as a separate column index)
-					XmlAttribute parentElementIndexAttr = node.Attributes["index"];
-					if (parentElementIndexAttr != null && table != null)
-					{
-						table.GetIndex(parentElementIndexAttr.Value).AddColumn(col);
-					}
-					XmlAttribute uniqueNode = columnElement.Attributes["unique-key"];
-					if (uniqueNode != null && table != null)
-					{
-						table.GetUniqueKey(uniqueNode.Value).AddColumn(col);
-					}
+					BindIndex(node.Attributes["index"], table, col, mappings);
+
+					BindUniqueKey(columnElement.Attributes["unique-key"], table, col, mappings);
+					BindUniqueKey(node.Attributes["unique-key"], table, col, mappings);
 				}
 			}
 			else
@@ -520,18 +509,14 @@ namespace NHibernate.Cfg
 				Column col = new Column(model.Type, 0);
 				BindColumn(node, col, isNullable);
 				col.Name = mappings.NamingStrategy.ColumnName(columnAttribute.Value);
-				Table table = model.Table;
 				if (table != null)
 				{
 					table.AddColumn(col);
 				} //table=null -> an association - fill it in later
 				model.AddColumn(col);
 				//column group index (although can serve as a separate column index)
-				XmlAttribute indexAttr = node.Attributes["index"];
-				if (indexAttr != null && table != null)
-				{
-					table.GetIndex(indexAttr.Value).AddColumn(col);
-				}
+				BindIndex(node.Attributes["index"], table, col, mappings);
+				BindUniqueKey(node.Attributes["unique-key"], table, col, mappings);
 			}
 
 			if (autoColumn && model.ColumnSpan == 0)
@@ -541,6 +526,33 @@ namespace NHibernate.Cfg
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
 				model.Table.AddColumn(col);
 				model.AddColumn(col);
+				//column group index (although can serve as a separate column index)
+				BindIndex(node.Attributes["index"], table, col, mappings);
+				BindUniqueKey(node.Attributes["unique-key"], table, col, mappings);
+			}
+		}
+
+		private static void BindIndex(XmlAttribute indexAttribute, Table table, Column column, Mappings mappings)
+		{
+			if (indexAttribute != null && table != null)
+			{
+				StringTokenizer tokens = new StringTokenizer(indexAttribute.Value, ", ");
+				foreach (string token in tokens)
+				{
+					table.GetIndex(token).AddColumn(column);
+				}
+			}
+		}
+
+		private static void BindUniqueKey(XmlAttribute uniqueKeyAttribute, Table table, Column column, Mappings mappings)
+		{
+			if (uniqueKeyAttribute != null && table != null)
+			{
+				StringTokenizer tokens = new StringTokenizer(uniqueKeyAttribute.Value, ", ");
+				foreach (string token in tokens)
+				{
+					table.GetUniqueKey(token).AddColumn(column);
+				}
 			}
 		}
 

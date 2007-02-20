@@ -23,20 +23,21 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		public void HigherLevelIndexDefinition()
+		public void HigherLevelIndexDefinitionInColumnTag()
 		{
 			string[] commands = cfg.GenerateSchemaCreationScript( dialect );
-			int max = commands.Length;
-			bool found = false;
-			
-			foreach( string command in commands )
-			{
-				System.Console.WriteLine("Checking command : " + command);
-				found = command.IndexOf("create index indx_a_name") >= 0;
-				if (found)
-					break;
-			}
-			Assert.IsTrue( found, "Unable to locate indx_a_name index creation" );
+
+			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_name"),
+			  "Unable to locate indx_a_name index creation");
+		}
+
+		[Test]
+		public void HigherLevelIndexDefinitionInPropertyTag()
+		{
+			string[] commands = cfg.GenerateSchemaCreationScript( dialect );
+
+			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_anothername"),
+			  "Unable to locate indx_a_anothername index creation");
 		}
 
 		[Test]
@@ -164,6 +165,19 @@ namespace NHibernate.Test.Legacy
 
 			t.Commit();
 			s.Close();
+		}
+
+		private static bool ContainsCommandWithSubstring(string[] commands, string subString)
+		{
+			foreach (string command in commands)
+			{
+				System.Console.WriteLine("Checking command : " + command);
+				if (command.IndexOf(subString) >= 0)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
