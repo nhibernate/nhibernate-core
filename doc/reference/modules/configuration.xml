@@ -644,6 +644,15 @@ ISession session = sessions.OpenSession(conn);
                             </entry>
                         </row>
                         <row>
+                            <entry>PostgreSQL 8.2</entry> 
+                            <entry><literal>NHibernate.Dialect.PostgreSQL82Dialect</literal></entry>
+                            <entry>
+                                This dialect supports <literal>IF EXISTS</literal> keyword in
+                                <literal>DROP TABLE</literal> and <literal>DROP SEQUENCE</literal>
+                                available in PostgreSQL 8.2.
+                            </entry>
+                        </row>
+                        <row>
                             <entry>MySQL 3 or 4</entry> 
                             <entry><literal>NHibernate.Dialect.MySQLDialect</literal></entry>
                             <entry></entry>
