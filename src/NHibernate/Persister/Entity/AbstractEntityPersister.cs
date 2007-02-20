@@ -2009,7 +2009,7 @@ namespace NHibernate.Persister.Entity
 
 				if (sql.CommandType == CommandType.Text)
 				{
-					insertSelectSQL = Dialect.AddIdentitySelectToInsert(sql.Text, IdentifierColumnNames[0], TableName);
+					insertSelectSQL = Dialect.AddIdentitySelectToInsert(sql.Text, GetKeyColumns(0)[0], GetTableName(0));
 				}
 
 				if (insertSelectSQL != null)
