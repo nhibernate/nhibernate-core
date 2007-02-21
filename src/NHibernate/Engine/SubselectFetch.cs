@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Text;
 using Iesi.Collections;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -23,7 +22,7 @@ namespace NHibernate.Engine
 			QueryParameters queryParameters,
 			ISet resultingEntityKeys,
 			IDictionary namedParameterLocMap
-		)
+			)
 		{
 			this.resultingEntityKeys = resultingEntityKeys;
 			this.queryParameters = queryParameters;
@@ -31,14 +30,7 @@ namespace NHibernate.Engine
 			this.loadable = loadable;
 			this.alias = alias;
 
-			//TODO: ugly here:
-			SqlString queryString = queryParameters.FilteredSQL;
-			int fromIndex = queryString.IndexOfCaseInsensitive(" from ");
-			int orderByIndex = queryString.LastIndexOfCaseInsensitive("order by");
-			this.queryString = orderByIndex > 0 ?
-					queryString.Substring(fromIndex, orderByIndex - fromIndex) :
-					queryString.Substring(fromIndex);
-
+			queryString = queryParameters.FilteredSQL.GetSubselectString();
 		}
 
 		public QueryParameters QueryParameters
@@ -53,10 +45,9 @@ namespace NHibernate.Engine
 
 		public SqlString ToSubselectString(string ukname)
 		{
-
-			string[] joinColumns = ukname == null ?
-				StringHelper.Qualify(alias, loadable.IdentifierColumnNames) :
-				((IPropertyMapping) loadable).ToColumns(alias, ukname);
+			string[] joinColumns = ukname == null
+			                       	? StringHelper.Qualify(alias, loadable.IdentifierColumnNames)
+			                       	: ((IPropertyMapping) loadable).ToColumns(alias, ukname);
 
 			return new SqlStringBuilder()
 				.Add("select ")

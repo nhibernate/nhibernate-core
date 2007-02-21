@@ -615,7 +615,17 @@ namespace NHibernate.Util
 			return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, CompareOptions.IgnoreCase);
 		}
 
-		public static int LastIndexOfCaseInsensitive(string source, string value)
+        public static int IndexOfCaseInsensitive(string source, string value, int startIndex)
+        {
+            return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, CompareOptions.IgnoreCase);
+        }
+
+        public static int IndexOfCaseInsensitive(string source, string value, int startIndex, int count)
+        {
+            return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, count, CompareOptions.IgnoreCase);
+        }
+
+	    public static int LastIndexOfCaseInsensitive(string source, string value)
 		{
 			return CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(source, value, CompareOptions.IgnoreCase);
 		}

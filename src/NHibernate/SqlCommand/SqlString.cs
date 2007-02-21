@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
-using System.Globalization;
 using System.Text;
-
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -31,7 +29,7 @@ namespace NHibernate.SqlCommand
 		{
 			if (StringHelper.IsNotEmpty(sqlPart))
 			{
-				sqlParts = new object[] { sqlPart };
+				sqlParts = new object[] {sqlPart};
 			}
 			else
 			{
@@ -127,7 +125,6 @@ namespace NHibernate.SqlCommand
 					builder.Length = 0;
 					sqlBuilder.Add((Parameter) part);
 				}
-
 			}
 
 			// make sure the contents of the builder have been added to the sqlBuilder
@@ -177,7 +174,7 @@ namespace NHibernate.SqlCommand
 			}
 
 			string lastPart = tempSql.sqlParts[tempSql.Count - 1] as string;
-			
+
 			return lastPart != null && lastPart.EndsWith(value);
 		}
 
@@ -234,17 +231,17 @@ namespace NHibernate.SqlCommand
 
 			return StringHelper.StartsWithCaseInsensitive(firstPart, value);
 		}
-		
+
 		private SqlStringBuilder BuildSubstring(int startIndex)
 		{
 			SqlStringBuilder builder = new SqlStringBuilder(this);
-			
+
 			int offset = 0;
-			
+
 			while (builder.Count > 0)
 			{
 				int nextOffset = offset + LengthOfPart(builder[0]);
-				
+
 				if (nextOffset > startIndex)
 				{
 					break;
@@ -253,7 +250,7 @@ namespace NHibernate.SqlCommand
 				builder.RemoveAt(0);
 				offset = nextOffset;
 			}
-			
+
 			if (builder.Count > 0 && offset < startIndex)
 			{
 				builder[0] = ((string) builder[0]).Substring(startIndex - offset);
@@ -280,12 +277,12 @@ namespace NHibernate.SqlCommand
 			}
 
 			SqlStringBuilder builder = BuildSubstring(startIndex);
-			
+
 			if (builder.Count == 0)
 			{
 				return Empty;
 			}
-			
+
 			SqlString result = builder.ToSqlString();
 			if (isCompacted)
 			{
@@ -293,21 +290,21 @@ namespace NHibernate.SqlCommand
 			}
 			return result;
 		}
-		
+
 		public SqlString Substring(int startIndex, int length)
 		{
 			if (startIndex < 0)
 			{
 				throw new ArgumentException("startIndex should be greater than or equal to 0", "startIndex");
 			}
-			
+
 			if (length < 0)
 			{
 				throw new ArgumentException("length should be greater than or equal to 0", "length");
 			}
-			
+
 			SqlStringBuilder builder = BuildSubstring(startIndex);
-			
+
 			if (builder.Count == 0)
 			{
 				return builder.ToSqlString();
@@ -331,12 +328,12 @@ namespace NHibernate.SqlCommand
 					break;
 				}
 			}
-			
+
 			while (builder.Count > count)
 			{
 				builder.RemoveAt(builder.Count - 1);
 			}
-			
+
 			if (length < nextOffset)
 			{
 				string lastPart = (string) builder[builder.Count - 1];
@@ -356,13 +353,13 @@ namespace NHibernate.SqlCommand
 			isCompacted = true;
 			return this;
 		}
-		
+
 		private static int LengthOfPart(object part)
 		{
 			string partString = part as string;
 			return partString == null ? 1 : partString.Length;
 		}
-		
+
 		/// <summary>
 		/// Returns the index of the first occurence of <paramref name="text" />, case-insensitive.
 		/// </summary>
@@ -392,14 +389,14 @@ namespace NHibernate.SqlCommand
 						return offset + indexOf;
 					}
 				}
-				
+
 				offset += LengthOfPart(part);
 			}
 
 			// Not found
 			return -1;
 		}
-		
+
 		public int LastIndexOfCaseInsensitive(string text)
 		{
 			SqlString compacted = Compact();
@@ -418,7 +415,7 @@ namespace NHibernate.SqlCommand
 						foundOffset = offset + indexOf;
 					}
 				}
-				
+
 				offset += LengthOfPart(part);
 			}
 
@@ -645,7 +642,7 @@ namespace NHibernate.SqlCommand
 
 			return count;
 		}
-		
+
 		public void Visit(ISqlStringVisitor visitor)
 		{
 			foreach (object part in sqlParts)
@@ -661,7 +658,7 @@ namespace NHibernate.SqlCommand
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Parse SQL in <paramref name="sql" /> and create a SqlString representing it.
 		/// </summary>
@@ -697,18 +694,18 @@ namespace NHibernate.SqlCommand
 							result.AddParameter();
 						}
 						break;
-						
+
 					case '\'':
 						inQuote = !inQuote;
 						stringPart.Append(ch);
 						break;
-						
+
 					default:
 						stringPart.Append(ch);
 						break;
 				}
 			}
-			
+
 			if (stringPart.Length > 0)
 			{
 				result.Add(stringPart.ToString());
@@ -722,6 +719,11 @@ namespace NHibernate.SqlCommand
 		public ICollection Parts
 		{
 			get { return sqlParts; }
+		}
+
+		public SqlString GetSubselectString()
+		{
+			return new SubselectClauseExtractor(Compact().sqlParts).GetSqlString();
 		}
 	}
 }
