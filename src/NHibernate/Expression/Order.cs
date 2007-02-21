@@ -64,6 +64,11 @@ namespace NHibernate.Expression
 			return fragment.ToString();
 		}
 
+		public override string ToString()
+		{
+			return _propertyName + (_ascending ? " asc" : " desc");
+		}
+
 		/// <summary>
 		/// Ascending order
 		/// </summary>
