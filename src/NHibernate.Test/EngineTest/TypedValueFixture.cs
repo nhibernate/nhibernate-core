@@ -23,5 +23,11 @@ namespace NHibernate.Test.EngineTest
 
 			Assert.IsTrue(t1.Equals(t2));
 		}
+
+		[Test]
+		public void ToStringWithNullValue()
+		{
+			Assert.AreEqual("null", new TypedValue(NHibernateUtil.Int32, null).ToString());
+		}
 	}
 }

@@ -73,6 +73,10 @@ namespace NHibernate.Engine
 
 		public override string ToString()
 		{
+			if (value == null)
+			{
+				return "null";
+			}
 			return value.ToString();
 		}
 	}
