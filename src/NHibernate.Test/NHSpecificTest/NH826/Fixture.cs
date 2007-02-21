@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 			// This does not
 			ActivitySet loadedActivitySet = (ActivitySet) session
 				.CreateCriteria(typeof(ActivitySet))
-				.Add(Expression.Expression.Eq("Id", 1))
+				.Add(Expression.Expression.Eq("Id", activitySet.Id))
 				.UniqueResult();
 
 			session.Flush();
