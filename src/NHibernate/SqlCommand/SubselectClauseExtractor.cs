@@ -5,8 +5,9 @@ using NHibernate.Util;
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
-	/// Given an SQL SELECT statement, parse it to extract the <c>FROM</c>
-	/// and <c>WHERE</c> clauses (known collectively as a subselect clause).
+	/// Given an SQL SELECT statement, parse it to extract clauses starting with
+	/// <c>FROM</c>, up to and not including <c>ORDER BY</c> (known collectively
+	/// as a subselect clause).
 	/// </summary>
 	public class SubselectClauseExtractor
 	{
@@ -66,8 +67,8 @@ namespace NHibernate.SqlCommand
 		/// being processed.
 		/// </summary>
 		/// <returns>An <see cref="SqlString" /> containing
-		/// the <c>FROM</c> and <c>WHERE</c> clauses of the
-		/// original <c>SELECT</c> statement.</returns>
+		/// the subselect clause of the original <c>SELECT</c>
+		/// statement.</returns>
 		public SqlString GetSqlString()
 		{
 			IEnumerator partEnumerator = sqlParts.GetEnumerator();
