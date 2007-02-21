@@ -124,7 +124,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 
-			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.DB2Driver";
+			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
 		}
 
 		/// <summary></summary>
