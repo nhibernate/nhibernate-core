@@ -43,7 +43,7 @@ namespace NHibernate.Exceptions
 				.Append(Environment.NewLine);
 			if (parameterValues != null && parameterValues.Length > 0)
 			{
-				sb.Append("Positinal Parameters: ");
+				sb.Append("Positional parameters: ");
 				int index = 0;
 				foreach (object parameterValue in parameterValues)
 				{
