@@ -26,7 +26,7 @@
             <property name="AllLinksWithinVSHelpCollection" value="True" />
             <property name="OutputDirectory" value="${doc.help2.out.dir}" />
             <property name="HtmlHelpName" value="NHibernate.API" />
-            <property name="Title" value="NHibernate ${project.version} API Reference" />
+            <property name="Title" value="NHibernate API Reference" />
             <property name="Version" value="${project.version.numeric}" />
             <property name="CopyrightText" value="NHibernate" />
             <property name="CopyrightHref" value="http://www.nhibernate.org" />
@@ -37,7 +37,7 @@
         <documenter name="MSDN-CHM">
             <property name="OutputDirectory" value="${doc.chm.out.dir}" />
             <property name="HtmlHelpName" value="NHibernate.API" />
-            <property name="Title" value="NHibernate ${project.version} API Reference" />
+            <property name="Title" value="NHibernate API Reference" />
             <property name="Version" value="${project.version.numeric}" />
             <property name="CopyrightText" value="NHibernate" />
             <property name="CopyrightHref" value="http://www.nhibernate.org" />
