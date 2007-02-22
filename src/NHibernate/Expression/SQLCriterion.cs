@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -29,7 +30,7 @@ namespace NHibernate.Expression
 			}
 		}
 
-		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
 			return _sql.Replace( "{alias}", criteriaQuery.GetSQLAlias( criteria ) );
 		}

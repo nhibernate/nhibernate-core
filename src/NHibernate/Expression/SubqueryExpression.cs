@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Criteria;
@@ -16,6 +17,8 @@ namespace NHibernate.Expression
 		private String op;
 		private QueryParameters parameters;
 		private IType[] types;
+		[NonSerialized]
+		private CriteriaQueryTranslator innerQuery;
 
 		protected IType[] GetTypes()
 		{
@@ -31,60 +34,41 @@ namespace NHibernate.Expression
 
 		protected abstract SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery outerQuery);
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
-			ISessionImplementor session = GetSession(criteria);
-			ISessionFactoryImplementor factory = session.Factory;
-
-			IOuterJoinLoadable persister = (IOuterJoinLoadable) factory.GetEntityPersister(this.criteriaImpl.CriteriaClass);
-			CriteriaQueryTranslator innerQuery =
-				new CriteriaQueryTranslator(factory,
-				                            this.criteriaImpl,
-				                            this.criteriaImpl.CriteriaClass,
-				                            //implicit polymorphism not supported (would need a union) 
-				                            criteriaQuery.GenerateSQLAlias(),
-				                            criteriaQuery);
-
-			parameters = innerQuery.GetQueryParameters(); //TODO: bad lifecycle....
+			InitializeInnerQueryAndParameters(criteriaQuery);
 
 			if (innerQuery.HasProjection == false)
-				throw new QueryException("Cannot use sub queries on a criteria without a projection.");
+				throw new QueryException("Cannot use subqueries on a criteria without a projection.");
 			types = innerQuery.ProjectedTypes;
 
-			SqlString sql = new SqlSelectBuilder(factory)
-				.SetOuterJoins(SqlString.Empty, SqlString.Empty) // NH Specific: throws null ref otherwise.
-				.SetWhereClause(innerQuery.GetWhereCondition())
-				.SetGroupByClause(innerQuery.GetGroupBy().ToString())
-				.SetSelectClause(innerQuery.GetSelect().ToString())
-				.SetFromClause(persister.FromTableFragment(innerQuery.RootSQLAlias) +
-					persister.FromJoinFragment(innerQuery.RootSQLAlias, true, false))
-				.ToSqlString();
+			ISessionFactoryImplementor factory = criteriaQuery.Factory;
+
+			IOuterJoinLoadable persister = (IOuterJoinLoadable) factory.GetEntityPersister(this.criteriaImpl.CriteriaClass);
+
+			//patch to generate joins on subqueries
+			//stolen from CriteriaLoader
+			CriteriaJoinWalker walker = new CriteriaJoinWalker(
+				persister,
+				innerQuery,
+				factory,
+				criteriaImpl,
+				criteriaImpl.CriteriaClass,
+				enabledFilters);
+
+			SqlString sql = walker.SqlString;
 
 			SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));
 			if (op != null)
+			{
 				buf.Add(" ").Add(op).Add(" ");
-			if (quantifier != null)
-				buf.Add(quantifier).Add(" ");
-			return buf.Add("(").Add(sql).Add(")").ToSqlString();
-		}
+			}
 
-		private static ISessionImplementor GetSession(ICriteria criteria)
-		{
-			CriteriaImpl temp = criteria as CriteriaImpl;
-			if(temp!=null)
+			if (quantifier != null)
 			{
-				return temp.Session;
+				buf.Add(quantifier).Add(" ");
 			}
-			else
-			{
-				CriteriaImpl.Subcriteria subCriteria = criteria as CriteriaImpl.Subcriteria;
-				if(subCriteria==null)
-				{
-					throw new HibernateException(
-						string.Format("Can't get Session from criteria {0} because it is not CriteriaImpl or SubCriteria.", criteria.GetType().FullName));
-				}
-				return GetSession(subCriteria.Parent);
-			}
+			return buf.Add("(").Add(sql).Add(")").ToSqlString();
 		}
 
 		public override string ToString()
@@ -94,6 +78,7 @@ namespace NHibernate.Expression
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			InitializeInnerQueryAndParameters(criteriaQuery);
 			IType[] paramTypes = parameters.PositionalParameterTypes;
 			Object[] values = parameters.PositionalParameterValues;
 			TypedValue[] tv = new TypedValue[paramTypes.Length];
@@ -102,6 +87,26 @@ namespace NHibernate.Expression
 				tv[i] = new TypedValue(paramTypes[i], values[i]);
 			}
 			return tv;
+		}
+
+		// NH: This feels like a hack but I don't understand the code enough yet to code a better solution
+		private void InitializeInnerQueryAndParameters(ICriteriaQuery criteriaQuery)
+		{
+			if (innerQuery != null)
+			{
+				// Already initialized
+				return;
+			}
+
+			ISessionFactoryImplementor factory = criteriaQuery.Factory;
+			innerQuery = new CriteriaQueryTranslator(factory,
+											this.criteriaImpl,
+				//implicit polymorphism not supported (would need a union) 
+											this.criteriaImpl.CriteriaClass,
+											criteriaQuery.GenerateSQLAlias(),
+											criteriaQuery);
+
+			parameters = innerQuery.GetQueryParameters();
 		}
 	}
 }

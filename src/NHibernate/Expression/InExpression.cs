@@ -32,7 +32,7 @@ namespace NHibernate.Expression
 			_values = values;
 		}
 
-		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
 			IType type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
 			if (type.IsCollectionType)

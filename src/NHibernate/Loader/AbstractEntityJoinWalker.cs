@@ -14,11 +14,18 @@ namespace NHibernate.Loader
 		private readonly IOuterJoinLoadable persister;
 		private string alias;
 
-		public AbstractEntityJoinWalker( IOuterJoinLoadable persister, ISessionFactoryImplementor factory, IDictionary enabledFilters )
+		public AbstractEntityJoinWalker(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, IDictionary enabledFilters )
 			: base( factory, enabledFilters )
 		{
 			this.persister = persister;
-			alias = GenerateRootAlias( persister.MappedClass.FullName );
+			alias = GenerateRootAlias(persister.MappedClass.FullName);
+		}
+
+		public AbstractEntityJoinWalker( string alias, IOuterJoinLoadable persister, ISessionFactoryImplementor factory, IDictionary enabledFilters )
+			: base( factory, enabledFilters )
+		{
+			this.persister = persister;
+			this.alias = alias;
 		}
 
 		protected void InitAll(

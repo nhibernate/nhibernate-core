@@ -33,6 +33,11 @@ namespace NHibernate.Expression
 			string[] cols = criteriaQuery.GetIdentifierColumns(criteria);
 			for (int i = 0; i < cols.Length; i++)
 			{
+				if (i > 0)
+				{
+					buf.Add(", ");
+				}
+
 				buf.Add(cols[i])
 					.Add(" as y")
 					.Add((position + i).ToString())

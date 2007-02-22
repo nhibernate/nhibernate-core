@@ -3,7 +3,7 @@ using System;
 using NHibernate.DomainModel;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
-
+using NHibernate.Util;
 using NUnit.Framework;
 
 using NExpression = NHibernate.Expression;
@@ -24,7 +24,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion expression = Expression.Expression.IsNull( "Address" );
 
 			CreateObjects( typeof( Simple ), session );
-			SqlString sqlString = expression.ToSqlString( criteria, criteriaQuery );
+			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
 			string expectedSql = "sql_alias.address is null";
 			CompareSqlStrings( sqlString, expectedSql, 0 );

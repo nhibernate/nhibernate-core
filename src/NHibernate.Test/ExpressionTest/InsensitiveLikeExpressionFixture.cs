@@ -1,11 +1,9 @@
 using System;
-using System.Data;
-using System.Text;
 
 using NHibernate.Engine;
+using NHibernate.Util;
 using NExpression = NHibernate.Expression;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -26,7 +24,7 @@ namespace NHibernate.Test.ExpressionTest
 			NExpression.ICriterion expression = NExpression.Expression.InsensitiveLike("Address", "12 Adress");
 
 			CreateObjects( typeof( Simple ), session );
-			SqlString sqlString = expression.ToSqlString( criteria, criteriaQuery );
+			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 			
 			string expectedSql = "lower(sql_alias.address) like ?";
 			if ((factory as ISessionFactoryImplementor).Dialect is Dialect.PostgreSQLDialect)

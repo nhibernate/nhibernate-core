@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -22,7 +23,7 @@ namespace NHibernate.Expression
 			_criterion = criterion;
 		}
 
-		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
 			//TODO: set default capacity
 			SqlStringBuilder builder = new SqlStringBuilder();
@@ -37,7 +38,7 @@ namespace NHibernate.Expression
 				builder.Add( "not " );
 			}
 
-			builder.Add( _criterion.ToSqlString( criteria, criteriaQuery ) );
+			builder.Add( _criterion.ToSqlString( criteria, criteriaQuery, enabledFilters) );
 
 			if( needsParens )
 			{

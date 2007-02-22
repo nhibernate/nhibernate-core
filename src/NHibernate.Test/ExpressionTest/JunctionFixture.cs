@@ -1,6 +1,7 @@
 using System;
 
 using NHibernate.Engine;
+using NHibernate.Util;
 using NExpression = NHibernate.Expression;
 using NHibernate.SqlCommand;
 
@@ -37,7 +38,7 @@ namespace NHibernate.Test.ExpressionTest
 			using( ISession session = factory.OpenSession() )
 			{
 				CreateObjects( typeof( Simple ), session );
-				sqlString = _conjunction.ToSqlString( criteria, criteriaQuery );
+				sqlString = _conjunction.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 			}
 			
 			string expectedSql = "(sql_alias.address is null and sql_alias.count_ between ? and ?)";

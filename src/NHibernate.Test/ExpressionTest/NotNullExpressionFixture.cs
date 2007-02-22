@@ -1,11 +1,8 @@
 using System;
-using System.Data;
-using System.Text;
 
-using NHibernate.Engine;
+using NHibernate.Util;
 using NExpression = NHibernate.Expression;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -26,7 +23,7 @@ namespace NHibernate.Test.ExpressionTest
 			NExpression.ICriterion notNullExpression = NExpression.Expression.IsNotNull("Address");
 
 			CreateObjects( typeof( Simple ), session );
-			SqlString sqlString = notNullExpression.ToSqlString( criteria, criteriaQuery );
+			SqlString sqlString = notNullExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
 			string expectedSql = "sql_alias.address is not null";
 			CompareSqlStrings(sqlString, expectedSql, 0);

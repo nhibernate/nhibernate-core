@@ -143,16 +143,29 @@ namespace NHibernate.Test.Criteria
 				.Add(Subqueries.Eq("Gavin King", dc2))
 				.List();
 
-			//TODO: join in subselect: HHH-952
-			/*DetachedCriteria dc3 = DetachedCriteria.forClass(Student.class, "st")
-				.createCriteria("enrolments")
-					.createCriteria("course")
-						.add( Property.forName("description").eq("Hibernate Training") )
-						.setProjection( Property.forName("st.name") );
+			DetachedCriteria dc3 = DetachedCriteria.For(typeof(Student), "st")
+				.CreateCriteria("Enrolments")
+					.CreateCriteria("Course")
+						.Add( Expression.Property.ForName("Description").Eq("Hibernate Training") )
+						.SetProjection( Expression.Property.ForName("st.Name") );
 		
-			session.createCriteria(Enrolment.class, "e")
-				.add( Subqueries.eq("Gavin King", dc3) )
-				.list();*/
+			session.CreateCriteria(typeof(Enrolment), "e")
+				.Add( Subqueries.Eq("Gavin King", dc3) )
+				.List();
+
+			DetachedCriteria courseCriteria = DetachedCriteria.For(typeof (Course))
+				.Add(Expression.Property.ForName("Description").Eq("Hibernate Training"))
+				.SetProjection(Projections.Property("CourseCode"));
+
+			DetachedCriteria enrolmentCriteria = DetachedCriteria.For(typeof (Enrolment))
+				.Add(Expression.Property.ForName("CourseCode").Eq(courseCriteria))
+				.SetProjection(Projections.Property("CourseCode"));
+
+			DetachedCriteria studentCriteria = DetachedCriteria.For(typeof (Student))
+				.Add(Subqueries.Exists(enrolmentCriteria));
+
+			object result = studentCriteria.GetExecutableCriteria(session).UniqueResult();
+			Assert.AreSame(gavin, result);
 
 			session.Delete(enrolment2);
 			session.Delete(gavin);

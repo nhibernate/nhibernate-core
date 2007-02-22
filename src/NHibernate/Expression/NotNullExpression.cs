@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -24,7 +25,7 @@ namespace NHibernate.Expression
 			_propertyName = propertyName;
 		}
 
-		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();

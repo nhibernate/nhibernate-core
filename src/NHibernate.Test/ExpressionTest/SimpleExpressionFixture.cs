@@ -1,17 +1,12 @@
 using System;
-using System.Collections;
-using System.Data;
-using System.Text;
 
-using NHibernate.Engine;
+using NHibernate.Util;
 using NExpression = NHibernate.Expression;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -35,7 +30,7 @@ namespace NHibernate.Test.ExpressionTest
 			
 			NExpression.ICriterion andExpression = NExpression.Expression.Eq("Address", "12 Adress");
 
-			SqlString sqlString = andExpression.ToSqlString( criteria, criteriaQuery );
+			SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
 			string expectedSql = "sql_alias.address = ?";
 			CompareSqlStrings(sqlString, expectedSql, 1);
@@ -54,7 +49,7 @@ namespace NHibernate.Test.ExpressionTest
 
 				NExpression.ICriterion andExpression = NExpression.Expression.Eq( "Date", now );
 
-				SqlString sqlString = andExpression.ToSqlString( criteria, criteriaQuery );
+				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 				string quotedColumn = dialect.QuoteForColumnName( "d[at]e_" );
 				string expectedSql = "sql_alias." + quotedColumn + " = ?";
 			
@@ -70,7 +65,7 @@ namespace NHibernate.Test.ExpressionTest
 				CreateObjects( typeof( Simple ), session );
 				NExpression.ICriterion andExpression = NExpression.Expression.Ge( "Date", DateTime.Now );
 
-				SqlString sqlString = andExpression.ToSqlString( criteria, criteriaQuery );
+				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
 				string expectedSql = "sql_alias.date_ >= ?";
 				CompareSqlStrings(sqlString, expectedSql, 1);
@@ -86,7 +81,7 @@ namespace NHibernate.Test.ExpressionTest
 				CreateObjects( typeof( Multi ), session );
 
 				NExpression.ICriterion expression = NExpression.Expression.Eq( "MisspelledProperty", DateTime.Now );
-				expression.ToSqlString( criteria, criteriaQuery );
+				expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 			}
 		}
 

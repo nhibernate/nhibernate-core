@@ -25,7 +25,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
-		private readonly String[] userAliases;
+		private readonly string[] userAliases;
 		private readonly IList userAliasList = new ArrayList();
 
 		public IType[] ResultTypes
@@ -45,7 +45,7 @@ namespace NHibernate.Loader.Criteria
 			CriteriaImpl criteria, 
 			System.Type rootEntityName,
 			IDictionary enabledFilters )
-			: base( persister, factory, enabledFilters )
+			: base( translator.RootSQLAlias, persister, factory, enabledFilters )
 		{
 			this.translator = translator;
 
@@ -57,7 +57,7 @@ namespace NHibernate.Loader.Criteria
 			
 				InitProjection( 
 					translator.GetSelect().ToString(), 
-					translator.GetWhereCondition(), 
+					translator.GetWhereCondition(enabledFilters), 
 					translator.GetOrderBy(),
 					translator.GetGroupBy().ToString(),
 					LockMode.None
@@ -67,7 +67,7 @@ namespace NHibernate.Loader.Criteria
 			{
 				resultTypes = new IType[] { TypeFactory.ManyToOne( persister.MappedClass ) };
 
-				InitAll( translator.GetWhereCondition(), translator.GetOrderBy(), LockMode.None );
+				InitAll( translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None );
 			}
 		
 			userAliasList.Add( criteria.Alias ); //root entity comes *last*
@@ -163,11 +163,6 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 			return base.GenerateTableAlias( n + translator.SQLAliasCount, path, joinable );
-		}
-
-		protected override string GenerateRootAlias(string tableName) 
-		{
-			return CriteriaQueryTranslator.RootSqlAlias;
 		}
 
 		public ISet QuerySpaces 

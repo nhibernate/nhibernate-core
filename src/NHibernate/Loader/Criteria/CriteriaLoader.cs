@@ -31,8 +31,8 @@ namespace NHibernate.Loader.Criteria
 			IOuterJoinLoadable persister,
 			ISessionFactoryImplementor factory,
 			CriteriaImpl rootCriteria,
-			System.Type rootEntityName,
-			IDictionary enabledFilters ) // TODO H3: change to string
+			System.Type rootEntityName, // TODO H3: change to string rootEntityName
+			IDictionary enabledFilters )
 			: base( factory, enabledFilters )
 		{
 			translator = new CriteriaQueryTranslator(

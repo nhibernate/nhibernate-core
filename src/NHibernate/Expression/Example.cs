@@ -254,7 +254,7 @@ namespace NHibernate.Expression
 				_selector.Include( value, name, type );
 		}
 
-		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add( StringHelper.OpenParen );
@@ -280,6 +280,7 @@ namespace NHibernate.Expression
 							(IAbstractComponentType)propertyTypes[ i ],
 							criteria,
 							criteriaQuery,
+							enabledFilters,
 							builder
 							);
 					}
@@ -290,6 +291,7 @@ namespace NHibernate.Expression
 							propertyValue,
 							criteria,
 							criteriaQuery,
+							enabledFilters,
 							builder
 							);
 					}
@@ -404,6 +406,7 @@ namespace NHibernate.Expression
 			object propertyValue,
 			ICriteria criteria,
 			ICriteriaQuery cq,
+			IDictionary enabledFilters,
 			SqlStringBuilder builder)
 		{
 			if( builder.Count > 1 )
@@ -424,7 +427,7 @@ namespace NHibernate.Expression
 			{
 				crit = new NullExpression( propertyName );
 			}
-			builder.Add( crit.ToSqlString( criteria, cq ) );
+			builder.Add( crit.ToSqlString( criteria, cq, enabledFilters) );
 		}
 
 		protected void AppendComponentCondition(
@@ -433,6 +436,7 @@ namespace NHibernate.Expression
 			IAbstractComponentType type,
 			ICriteria criteria,
 			ICriteriaQuery criteriaQuery,
+			IDictionary enabledFilters,
 			SqlStringBuilder builder)
 		{
 			if( component != null )
@@ -455,6 +459,7 @@ namespace NHibernate.Expression
 								(IAbstractComponentType)subtype,
 								criteria,
 								criteriaQuery,
+								enabledFilters,
 								builder );
 						}
 						else
@@ -464,6 +469,7 @@ namespace NHibernate.Expression
 								value,
 								criteria,
 								criteriaQuery,
+								enabledFilters,
 								builder
 								);
 						}

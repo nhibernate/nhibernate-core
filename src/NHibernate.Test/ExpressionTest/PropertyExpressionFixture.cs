@@ -1,5 +1,5 @@
 using System;
-
+using NHibernate.Util;
 using NExpression = NHibernate.Expression;
 using NHibernate.SqlCommand;
 
@@ -28,7 +28,7 @@ namespace NHibernate.Test.ExpressionTest
 			NExpression.ICriterion expression = NExpression.Expression.EqProperty("Address", "Name");
 
 			CreateObjects( typeof( Simple ), session );
-			SqlString sqlString = expression.ToSqlString( criteria, criteriaQuery );
+			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
 			string expectedSql = "sql_alias.address = sql_alias.Name";
 

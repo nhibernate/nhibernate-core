@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -62,13 +63,13 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <returns>A well formed SqlString for the Where clause.</returns>
 		/// <remarks>The SqlString will be enclosed by <c>(</c> and <c>)</c>.</remarks>
-		public override SqlString ToSqlString( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			SqlString lhSqlString = _lhs.ToSqlString( criteria, criteriaQuery );
-			SqlString rhSqlString = _rhs.ToSqlString( criteria, criteriaQuery );
+			SqlString lhSqlString = _lhs.ToSqlString( criteria, criteriaQuery, enabledFilters);
+			SqlString rhSqlString = _rhs.ToSqlString( criteria, criteriaQuery, enabledFilters);
 
 			sqlBuilder.Add( new SqlString[ ] {lhSqlString, rhSqlString},
 			                "(",

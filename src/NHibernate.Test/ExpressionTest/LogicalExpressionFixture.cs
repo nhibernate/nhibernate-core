@@ -3,7 +3,7 @@ using System;
 using NHibernate.DomainModel;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
-
+using NHibernate.Util;
 using NUnit.Framework;
 
 using NExpression = NHibernate.Expression;
@@ -28,7 +28,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion orExpression = Expression.Expression.Or( Expression.Expression.IsNull( "Address" ), Expression.Expression.Between( "Count", 5, 10 ) );
 
 			CreateObjects( typeof( Simple ), session );
-			SqlString sqlString = orExpression.ToSqlString( criteria, criteriaQuery );
+			SqlString sqlString = orExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
 			string expectedSql = "(sql_alias.address is null or sql_alias.count_ between ? and ?)";
 

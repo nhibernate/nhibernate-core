@@ -68,7 +68,7 @@ namespace NHibernate.Loader.Criteria
 
 		public string GenerateSQLAlias()
 		{
-			return StringHelper.GenerateAlias( CriteriaUtil.RootAlias, aliasCount ) + '_';
+			return StringHelper.GenerateAlias( rootSQLAlias, aliasCount );
 		}
 
 		private ICriteria GetAliasedCriteria( string alias )
@@ -371,7 +371,7 @@ namespace NHibernate.Loader.Criteria
             get { return rootCriteria.Projection.Aliases; }
         }
 
-		public SqlString GetWhereCondition() 
+		public SqlString GetWhereCondition(IDictionary enabledFilters) 
 		{
 			SqlStringBuilder condition = new SqlStringBuilder( 30 );
 
@@ -383,7 +383,7 @@ namespace NHibernate.Loader.Criteria
 					condition.Add( " and " );
 				}
 				first = false;
-				SqlString sqlString = entry.Criterion.ToSqlString( entry.Criteria, this );
+				SqlString sqlString = entry.Criterion.ToSqlString( entry.Criteria, this, enabledFilters);
 				condition.Add( sqlString );
 			}
 			return condition.ToSqlString();
