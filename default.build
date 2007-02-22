@@ -276,8 +276,12 @@
 		description="Creates files for the File Release System on SourceForge">
 
 		<property name="dist.output.dir" value="${project::get-base-directory()}/build/" />
-		<move file="${build.dir}/*.msi" todir="${dist.output.dir}" />
-		<move file="${build.dir}/src/NHibernate-${project.version}-src.zip" todir="${dist.output.dir}" />
+		<move todir="${dist.output.dir}">
+			<fileset basedir="${build.dir}">
+				<include name="*.msi" />
+				<include name="src/NHibernate-${project.version}-src.zip" />
+			</fileset>
+		</move>
 
 		<echo message="Created a '${project.config}' package in ${dist.output.dir}" />
 
