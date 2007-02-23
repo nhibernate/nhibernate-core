@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Cfg;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingExceptions
@@ -13,33 +11,33 @@ namespace NHibernate.Test.MappingExceptions
 	public class AddClassFixture
 	{
 		[Test]
-		public void ClassMissingMappingFile() 
+		public void ClassMissingMappingFile()
 		{
 			Configuration cfg = new Configuration();
-			try 
+			try
 			{
-				cfg.AddClass( typeof(A) );
+				cfg.AddClass(typeof(A));
 			}
-			catch( MappingException me ) 
+			catch (MappingException me)
 			{
-				Assert.AreEqual( "Resource not found: " + typeof(A).FullName + ".hbm.xml", me.Message );
+				Assert.AreEqual("Resource not found: " + typeof(A).FullName + ".hbm.xml", me.Message);
 			}
 		}
 
 		[Test]
-		public void AddClassNotFound() 
+		public void AddClassNotFound()
 		{
 			Configuration cfg = new Configuration();
-			try 
+			try
 			{
-				cfg.AddResource( "NHibernate.Test.MappingExceptions.A.ClassNotFound.hbm.xml", this.GetType().Assembly );
+				cfg.AddResource("NHibernate.Test.MappingExceptions.A.ClassNotFound.hbm.xml", this.GetType().Assembly);
 			}
-			catch( MappingException me ) 
+			catch (MappingException me)
 			{
-				Assert.IsTrue( me.InnerException is MappingException );
-				MappingException innerMe = ( MappingException ) me.InnerException;
-				Assert.AreEqual( "persistent class " + typeof(A).FullName + " not found", innerMe.Message );
+				Assert.IsTrue(me.InnerException is MappingException);
+				MappingException innerMe = (MappingException) me.InnerException;
+				Assert.AreEqual("persistent class " + typeof(A).FullName + " not found", innerMe.Message);
 			}
-		}	
+		}
 	}
 }

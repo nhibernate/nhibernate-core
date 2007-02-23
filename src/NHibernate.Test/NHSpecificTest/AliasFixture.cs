@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
-
-using NUnit.Framework;
+using NHibernate.Dialect;
 using NHibernate.SqlCommand;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -12,16 +11,16 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void NoLeadingUnderscores()
 		{
-			Alias alias = new Alias( "suffix" );
-			Dialect.Dialect dialect = new Dialect.MsSql2000Dialect();
-			
-			Assert.IsFalse( 
-				alias.ToAliasString( "__someIdentifier", dialect )
-				.StartsWith( "_" ) );
+			Alias alias = new Alias("suffix");
+			Dialect.Dialect dialect = new MsSql2000Dialect();
 
-			Assert.IsFalse( 
-				alias.ToUnquotedAliasString( "__someIdentifier", dialect )
-				.StartsWith( "_" ) );
+			Assert.IsFalse(
+				alias.ToAliasString("__someIdentifier", dialect)
+					.StartsWith("_"));
+
+			Assert.IsFalse(
+				alias.ToUnquotedAliasString("__someIdentifier", dialect)
+					.StartsWith("_"));
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using NUnit.Framework;
 
@@ -18,39 +18,36 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecificTest.NH440.Fruit.hbm.xml", "NHSpecificTest.NH440.Apple.hbm.xml" };
-			}
+			get { return new string[] {"NHSpecificTest.NH440.Fruit.hbm.xml", "NHSpecificTest.NH440.Apple.hbm.xml"}; }
 		}
 
 
 		protected override void OnSetUp()
 		{
-			base.OnSetUp ();
-			using( ISession session = OpenSession() )
-			using( ITransaction t = session.BeginTransaction() )
+			base.OnSetUp();
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
 			{
 				// pump up the ids for one of the classes to avoid the tests passing coincidentally
-				for( int i = 0; i < 10; i++ )
+				for (int i = 0; i < 10; i++)
 				{
-					session.Save( new Fruit() );
+					session.Save(new Fruit());
 				}
 
-				session.Delete( "from System.Object" ); // clear everything from database
+				session.Delete("from System.Object"); // clear everything from database
 				t.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			using( ISession session = OpenSession() )
-			using( ITransaction t = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
 			{
 				session.Delete("from System.Object"); // clear everything from database
 				t.Commit();
 			}
-			base.OnTearDown ();
+			base.OnTearDown();
 		}
 
 		[Test]
@@ -59,8 +56,8 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 			Apple apple = new Apple();
 			Fruit fruit = new Fruit();
 
-			using( ISession session = OpenSession() )
-			using( ITransaction tx = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
 				session.Save(apple);
 				session.Save(fruit);
@@ -81,8 +78,8 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 			apple.TheFruit = fruit;
 			fruit.TheApple = apple;
 
-			using( ISession session = OpenSession() )
-			using( ITransaction tx = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
 				session.Save(apple);
 				session.Save(fruit);
@@ -90,8 +87,8 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 				tx.Commit();
 			}
 
-			using( ISession session = OpenSession() )
-			using( ITransaction tx = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
 				Apple apple2 = (Apple) session.Get(typeof(Apple), apple.Id);
 				Fruit fruit2 = (Fruit) session.Get(typeof(Fruit), fruit.Id);
@@ -114,18 +111,18 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 			apple.TheFruit = fruit;
 			fruit.TheApple = apple;
 
-			using( ISession session = OpenSession() )
-			using( ITransaction tx = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
 				session.Save(apple);
 				session.Save(fruit);
 				tx.Commit();
 			}
 
-			using( ISession session = OpenSession() )
-			using( ITransaction tx = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				Fruit fruit2 = (Fruit)session.Get(typeof(Fruit), fruit.Id);
+				Fruit fruit2 = (Fruit) session.Get(typeof(Fruit), fruit.Id);
 				Assert.IsNotNull(fruit2);
 				IList results = session
 					.CreateQuery("from Apple a where a.TheFruit = ?")
@@ -133,7 +130,7 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 					.List();
 
 				Assert.AreEqual(1, results.Count);
-				Apple apple2 = (Apple)results[0];
+				Apple apple2 = (Apple) results[0];
 				Assert.IsNotNull(apple2);
 
 				Assert.AreSame(apple2, fruit2.TheApple);

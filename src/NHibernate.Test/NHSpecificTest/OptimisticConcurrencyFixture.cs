@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
-
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
@@ -13,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override IList Mappings
 		{
-			get { return new string[ ] {"Multi.hbm.xml", "NHSpecific.Optimistic.hbm.xml"}; }
+			get { return new string[] {"Multi.hbm.xml", "NHSpecific.Optimistic.hbm.xml"}; }
 		}
 
 		// NH-768
@@ -28,16 +26,16 @@ namespace NHibernate.Test.NHSpecificTest
 
 				s.Save(op);
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.Delete("from Optimistic");
 				s.Flush();
 			}
 		}
-		
+
 		[Test]
-		[ExpectedException( typeof( StaleObjectStateException ) )]
+		[ExpectedException(typeof(StaleObjectStateException))]
 		public void StaleObjectStateCheckWithNormalizedEntityPersister()
 		{
 			Top top = new Top();
@@ -45,14 +43,14 @@ namespace NHibernate.Test.NHSpecificTest
 
 			try
 			{
-				using( ISession session = OpenSession() )
+				using (ISession session = OpenSession())
 				{
-					session.Save( top );
+					session.Save(top);
 					session.Flush();
 
-					using( ISession concurrentSession = OpenSession() )
+					using (ISession concurrentSession = OpenSession())
 					{
-						Top sameTop = ( Top ) concurrentSession.Get( typeof( Top ), top.Id );
+						Top sameTop = (Top) concurrentSession.Get(typeof(Top), top.Id);
 						sameTop.Name = "another name";
 						concurrentSession.Flush();
 					}
@@ -63,17 +61,17 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 			finally
 			{
-				using( ISession session = OpenSession() )
+				using (ISession session = OpenSession())
 				{
-					session.Delete( "from Top" );
+					session.Delete("from Top");
 					session.Flush();
 				}
 			}
 		}
 
 		[Test]
-		[ExpectedException( typeof( StaleObjectStateException ) )]
-		[Ignore( "Not implemented yet, throws HibernateException instead of StaleObjectStateException" )]
+		[ExpectedException(typeof(StaleObjectStateException))]
+		[Ignore("Not implemented yet, throws HibernateException instead of StaleObjectStateException")]
 		public void StaleObjectStateCheckWithEntityPersisterAndOptimisticLock()
 		{
 			Optimistic optimistic = new Optimistic();
@@ -81,14 +79,14 @@ namespace NHibernate.Test.NHSpecificTest
 
 			try
 			{
-				using( ISession session = OpenSession() )
+				using (ISession session = OpenSession())
 				{
-					session.Save( optimistic );
+					session.Save(optimistic);
 					session.Flush();
 
-					using( ISession concurrentSession = OpenSession() )
+					using (ISession concurrentSession = OpenSession())
 					{
-						Optimistic sameOptimistic = ( Optimistic ) concurrentSession.Get( typeof( Optimistic ), optimistic.Id );
+						Optimistic sameOptimistic = (Optimistic) concurrentSession.Get(typeof(Optimistic), optimistic.Id);
 						sameOptimistic.String = "another string";
 						concurrentSession.Flush();
 					}
@@ -99,9 +97,9 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 			finally
 			{
-				using( ISession session = OpenSession() )
+				using (ISession session = OpenSession())
 				{
-					session.Delete( "from Optimistic" );
+					session.Delete("from Optimistic");
 					session.Flush();
 				}
 			}

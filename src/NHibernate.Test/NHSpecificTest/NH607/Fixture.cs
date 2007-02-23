@@ -1,5 +1,4 @@
 using System;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH607
@@ -19,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH607
 			Package pac = new Package();
 
 			PackageItem packageItem = new PackageItem();
-			pac.PackageItems.Add( packageItem );
+			pac.PackageItems.Add(packageItem);
 			packageItem.Package = pac;
 
 			PPP packagePartyParticipant = new PPP();
@@ -28,18 +27,18 @@ namespace NHibernate.Test.NHSpecificTest.NH607
 			packagePartyParticipant.PackageParty = participant;
 
 			// make the relation bi-directional
-			participant.ParticipatingPackages.Add( packagePartyParticipant );
-			packageItem.PackagePartyParticipants.Add( packagePartyParticipant );
+			participant.ParticipatingPackages.Add(packagePartyParticipant);
+			packageItem.PackagePartyParticipants.Add(packagePartyParticipant);
 
-			using( ISession session = OpenSession() )
+			using (ISession session = OpenSession())
 			{
-				session.Save( pac );
+				session.Save(pac);
 				session.Flush();
 			}
-			
-			using( ISession session = OpenSession() )
+
+			using (ISession session = OpenSession())
 			{
-				session.Delete( "from System.Object o" );
+				session.Delete("from System.Object o");
 				session.Flush();
 			}
 		}

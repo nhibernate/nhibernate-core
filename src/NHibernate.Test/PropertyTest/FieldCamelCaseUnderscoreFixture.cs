@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Property;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.PropertyTest
@@ -13,13 +11,13 @@ namespace NHibernate.Test.PropertyTest
 	public class FieldCamelCaseUnderscoreFixture : FieldAccessorFixture
 	{
 		[SetUp]
-		public override void SetUp() 
+		public override void SetUp()
 		{
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field.camelcase-underscore");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "CamelUnderscoreFoo" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "CamelUnderscoreFoo" );
+			_getter = _accessor.GetGetter(typeof(FieldClass), "CamelUnderscoreFoo");
+			_setter = _accessor.GetSetter(typeof(FieldClass), "CamelUnderscoreFoo");
 			_instance = new FieldClass();
-			_instance.InitCamelUnderscoreFoo( 0 );
+			_instance.InitCamelUnderscoreFoo(0);
 		}
 	}
 }

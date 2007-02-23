@@ -7,20 +7,17 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 	[TestFixture]
 	public class UserFixture : TestCase
 	{
-		static int activeId = 1;
-		static int inactiveId = 2;
-		
+		private static int activeId = 1;
+		private static int inactiveId = 2;
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecificTest.NH266.User.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecificTest.NH266.User.hbm.xml"}; }
 		}
 
 		protected override void OnSetUp()
@@ -36,8 +33,8 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			inactive.Name = "inactive user";
 			inactive.IsActive = 0;
 
-			s.Save( active );
-			s.Save( inactive );
+			s.Save(active);
+			s.Save(inactive);
 
 			s.Flush();
 			s.Close();
@@ -46,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 		protected override void OnTearDown()
 		{
 			ISession s = OpenSession();
-			s.Delete( "from User" );
+			s.Delete("from User");
 			s.Flush();
 			s.Close();
 		}
@@ -62,27 +59,27 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			ISession s = OpenSession();
 			IList list = s.CreateQuery("from User").List();
 
-			foreach( User u in list )
+			foreach (User u in list)
 			{
-				Assert.AreEqual( 1, u.IsActive, "should only grab active users" );
+				Assert.AreEqual(1, u.IsActive, "should only grab active users");
 			}
-	
+
 			s.Close();
 
 			// query based on name - ensure that "and" is constructed properly
 			s = OpenSession();
-			IQuery q = s.CreateQuery( "from User as u where u.Name = :name" );
-			q.SetParameter( "name", "active user" );
+			IQuery q = s.CreateQuery("from User as u where u.Name = :name");
+			q.SetParameter("name", "active user");
 			list = q.List();
 
-			Assert.AreEqual( 1, list.Count, "only 1 active user with that name" );
-			Assert.AreEqual( 1, ((User)list[0]).IsActive, "should be active" );
+			Assert.AreEqual(1, list.Count, "only 1 active user with that name");
+			Assert.AreEqual(1, ((User) list[0]).IsActive, "should be active");
 
 			// verify that even a user with a value in the db is 
 			// still not found even though a row exists
-			q.SetParameter( "name", "inactive user" );
+			q.SetParameter("name", "inactive user");
 			list = q.List();
-			Assert.AreEqual( 0, list.Count, "no 'inactive user' according to where clause" );
+			Assert.AreEqual(0, list.Count, "no 'inactive user' according to where clause");
 			s.Close();
 
 
@@ -103,7 +100,5 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 //			Assert.AreEqual( "the b", b.Name );
 //			s.Close();		
 		}
-
-
 	}
 }

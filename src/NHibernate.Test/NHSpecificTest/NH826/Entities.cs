@@ -6,6 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 	public class Entity
 	{
 		private int _id;
+
 		public int Id
 		{
 			get { return _id; }
@@ -15,7 +16,8 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 
 	public class ActivitySet : Entity
 	{
-		IList _activities = new ArrayList();
+		private IList _activities = new ArrayList();
+
 		public IList Activities
 		{
 			get { return _activities; }
@@ -29,7 +31,8 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 
 	public class EvaluationActivity : Activity
 	{
-		IList _questions;
+		private IList _questions;
+
 		public IList Questions
 		{
 			get { return _questions; }

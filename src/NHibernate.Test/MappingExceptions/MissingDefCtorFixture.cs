@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Cfg;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingExceptions
@@ -14,25 +12,27 @@ namespace NHibernate.Test.MappingExceptions
 	public class MissingDefCtorFixture
 	{
 		[Test]
-		public void ClassMissingDefaultCtor() 
+		public void ClassMissingDefaultCtor()
 		{
 			bool excCaught = false;
 
 			// add a resource that doesn't exist
 			string resource = "NHibernate.Test.MappingExceptions.MissingDefCtor.hbm.xml";
 			Configuration cfg = new Configuration();
-			try 
+			try
 			{
-				cfg.AddResource( resource, this.GetType().Assembly );
+				cfg.AddResource(resource, this.GetType().Assembly);
 				cfg.BuildSessionFactory();
 			}
-			catch( MappingException me ) 
+			catch (MappingException me)
 			{
-				Assert.AreEqual( "The mapped class NHibernate.Test.MappingExceptions.MissingDefCtor must declare a default (no-arg) constructor.", me.Message );
+				Assert.AreEqual(
+					"The mapped class NHibernate.Test.MappingExceptions.MissingDefCtor must declare a default (no-arg) constructor.",
+					me.Message);
 				excCaught = true;
 			}
 
-			Assert.IsTrue( excCaught, "Should have caught the MappingException about default ctor being missing." );
+			Assert.IsTrue(excCaught, "Should have caught the MappingException about default ctor being missing.");
 		}
 	}
 }

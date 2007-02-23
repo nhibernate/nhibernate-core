@@ -53,19 +53,18 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 
 		public override bool Equals(object obj)
 		{
-			if( this == obj )
+			if (this == obj)
 			{
 				return true;
 			}
-			
+
 			User other = obj as User;
-			if( other == null )
+			if (other == null)
 			{
 				return false;
 			}
-			
-			return Equals( UserId, other.UserId );
-		}
 
+			return Equals(UserId, other.UserId);
+		}
 	}
 }

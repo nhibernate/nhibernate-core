@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect.Function;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
-using NHibernate.Dialect.Function;
-using NHibernate;
 
 namespace NHibernate.Test.HQLFunctionTest
 {
 	[TestFixture]
-	public class SimpleFunctionsTest: BaseFunctionFixture
+	public class SimpleFunctionsTest : BaseFunctionFixture
 	{
 		[Test]
 		public void NoArgFunction()
@@ -18,7 +17,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			Assert.IsTrue(nf.HasParenthesesIfNoArguments);
 			Assert.AreEqual("noArgs()", nf.Render(args, factoryImpl));
 
-			nf = new NoArgSQLFunction("noArgs", NHibernateUtil.String,false);
+			nf = new NoArgSQLFunction("noArgs", NHibernateUtil.String, false);
 			Assert.IsFalse(nf.HasParenthesesIfNoArguments);
 			Assert.AreEqual("noArgs", nf.Render(args, factoryImpl));
 
@@ -65,7 +64,8 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			args.Add("'123'");
 			args.Add("long");
-			string expected = string.Format("cast({0} as {1})", args[0], factoryImpl.Dialect.GetCastTypeName(SqlTypeFactory.Int64));
+			string expected =
+				string.Format("cast({0} as {1})", args[0], factoryImpl.Dialect.GetCastTypeName(SqlTypeFactory.Int64));
 			Assert.AreEqual(expected, cf.Render(args, factoryImpl));
 
 			args.Clear();
@@ -233,7 +233,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		{
 			IList args = new ArrayList();
 
-			ClassicAggregateFunction caf = new ClassicAggregateFunction("max",false);
+			ClassicAggregateFunction caf = new ClassicAggregateFunction("max", false);
 			args.Add("va1");
 			Assert.AreEqual("max(va1)", caf.Render(args, factoryImpl));
 

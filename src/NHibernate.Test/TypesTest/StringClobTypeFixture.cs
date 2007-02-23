@@ -1,5 +1,4 @@
 using System;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -16,7 +15,7 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		[Test]
-		public void ReadWrite() 
+		public void ReadWrite()
 		{
 			ISession s = OpenSession();
 			StringClobClass b = new StringClobClass();
@@ -26,9 +25,9 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 
 			s = OpenSession();
-			b = (StringClobClass)s.Load( typeof(StringClobClass), b.Id );
-			Assert.AreEqual( "foo/bar/baz", b.StringClob );
-			s.Delete( b );
+			b = (StringClobClass) s.Load(typeof(StringClobClass), b.Id);
+			Assert.AreEqual("foo/bar/baz", b.StringClob);
+			s.Delete(b);
 			s.Flush();
 			s.Close();
 		}
@@ -37,40 +36,42 @@ namespace NHibernate.Test.TypesTest
 		public void LongString()
 		{
 			string longString = new string('x', 10000);
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				StringClobClass b = new StringClobClass();
 				b.StringClob = longString;
 
-				s.Save( b );
+				s.Save(b);
 				s.Flush();
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				StringClobClass b = (StringClobClass) s.CreateCriteria(
-					typeof( StringClobClass ) ).UniqueResult();
-				Assert.AreEqual( longString, b.StringClob );
-				s.Delete( b );
+				                                      	typeof(StringClobClass)).UniqueResult();
+				Assert.AreEqual(longString, b.StringClob);
+				s.Delete(b);
 				s.Flush();
 			}
 		}
+
 		[Test]
-		public void InsertNullValue (){
-			using( ISession s = OpenSession() )
+		public void InsertNullValue()
+		{
+			using (ISession s = OpenSession())
 			{
 				StringClobClass b = new StringClobClass();
 				b.StringClob = null;
-				s.Save( b );
+				s.Save(b);
 				s.Flush();
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				StringClobClass b = (StringClobClass) s.CreateCriteria(
-					typeof( StringClobClass ) ).UniqueResult();
-				Assert.IsNull( b.StringClob );
-				s.Delete( b );
+				                                      	typeof(StringClobClass)).UniqueResult();
+				Assert.IsNull(b.StringClob);
+				s.Delete(b);
 				s.Flush();
 			}
 		}

@@ -5,7 +5,7 @@ namespace NHibernate.Test.PropertyTest
 	/// <summary>
 	/// Contains examples of all of the built in Naming Strategies.
 	/// </summary>
-	public class FieldClass 
+	public class FieldClass
 	{
 		private int Id = 1;
 		private int _camelUnderscoreFoo = 2;
@@ -22,26 +22,26 @@ namespace NHibernate.Test.PropertyTest
 		public bool LowerFooGetterCalled = false;
 		public bool PascalUnderscoreFooCalled = false;
 
-		public FieldClass( ) 
-		{	
+		public FieldClass()
+		{
 		}
 
-		public void InitId(int value) 
+		public void InitId(int value)
 		{
 			Id = value;
 		}
 
-		public void InitCamelUnderscoreFoo(int value) 
+		public void InitCamelUnderscoreFoo(int value)
 		{
 			_camelUnderscoreFoo = value;
 		}
 
-		public void InitBlah(int value) 
+		public void InitBlah(int value)
 		{
 			m_Blah = value;
 		}
 
-		public void InitCamelBaz(int value) 
+		public void InitCamelBaz(int value)
 		{
 			camelBaz = value;
 		}
@@ -56,12 +56,12 @@ namespace NHibernate.Test.PropertyTest
 			_PascalUnderscoreFoo = value;
 		}
 
-		public void InitLowerUnderscoreFoo(int value) 
+		public void InitLowerUnderscoreFoo(int value)
 		{
 			_lowerunderscorefoo = value;
 		}
 
-		public void Increment() 
+		public void Increment()
 		{
 			Id++;
 			_camelUnderscoreFoo++;
@@ -74,35 +74,35 @@ namespace NHibernate.Test.PropertyTest
 
 		public int CamelUnderscoreFoo
 		{
-			get 
-			{ 
+			get
+			{
 				CamelUnderscoreFooGetterCalled = true;
-				return _camelUnderscoreFoo; 
+				return _camelUnderscoreFoo;
 			}
 		}
 
-		
-		public int Blah 
+
+		public int Blah
 		{
-			get 
-			{ 
+			get
+			{
 				BlahGetterCalled = true;
-				return m_Blah; 
+				return m_Blah;
 			}
 		}
 
-		public int CamelBaz 
+		public int CamelBaz
 		{
-			get 
-			{ 
+			get
+			{
 				CamelBazGetterCalled = true;
-				return camelBaz; 
+				return camelBaz;
 			}
 		}
 
-		public int LowerUnderscoreFoo 
+		public int LowerUnderscoreFoo
 		{
-			get 
+			get
 			{
 				LowerUnderscoreFooGetterCalled = true;
 				return _lowerunderscorefoo;

@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using NHibernate;
-using NHibernate.Expression;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH295
@@ -15,10 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecificTest.NH295.JoinedSubclass.hbm.xml" };
-			}
+			get { return new string[] {"NHSpecificTest.NH295.JoinedSubclass.hbm.xml"}; }
 		}
 	}
 }

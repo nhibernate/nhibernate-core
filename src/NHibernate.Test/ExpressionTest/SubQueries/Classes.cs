@@ -6,17 +6,18 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 {
 	public class Blog
 	{
-		ISet _posts;
-		ISet _users;
+		private ISet _posts;
+		private ISet _users;
 
-		int blog_id;
+		private int blog_id;
 
 		public virtual int BlogID
 		{
 			get { return blog_id; }
 			set { blog_id = value; }
 		}
-		string blog_name;
+
+		private string blog_name;
 
 		public virtual string BlogName
 		{
@@ -61,11 +62,11 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			_text = text;
 		}
 
-		int _id;
-		int _indexInPost;
-		string _text;
-		Post _post;
-		User commenter;
+		private int _id;
+		private int _indexInPost;
+		private string _text;
+		private Post _post;
+		private User commenter;
 
 		public User Commenter
 		{
@@ -96,16 +97,15 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			get { return _text; }
 			set { _text = value; }
 		}
-
 	}
 
 	public class Post
 	{
-		int post_id;
-		Blog _blog;
-		string post_title;
-		IList _comments;
-		ISet categories = new HashedSet();
+		private int post_id;
+		private Blog _blog;
+		private string post_title;
+		private IList _comments;
+		private ISet categories = new HashedSet();
 
 		public ISet Categories
 		{
@@ -131,7 +131,6 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			set { post_title = value; }
 		}
 
-		
 
 		public virtual Blog Blog
 		{
@@ -153,9 +152,9 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 
 	public class User
 	{
-		string _userName;
-		int _userId;
-		ISet _blogs;
+		private string _userName;
+		private int _userId;
+		private ISet _blogs;
 
 		public virtual ISet Blogs
 		{
@@ -186,12 +185,12 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			this._userName = name;
 		}
 	}
-	
+
 	public class Category
 	{
-		int category_id;
-		string name;
-		ISet posts = new HashedSet();
+		private int category_id;
+		private string name;
+		private ISet posts = new HashedSet();
 
 		public Category()
 		{

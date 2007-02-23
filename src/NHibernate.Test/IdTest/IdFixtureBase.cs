@@ -3,7 +3,6 @@ using System.Collections;
 
 namespace NHibernate.Test.IdTest
 {
-
 	public abstract class IdFixtureBase : TestCase
 	{
 		protected abstract string TypeName { get; }
@@ -13,13 +12,13 @@ namespace NHibernate.Test.IdTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
 			get
 			{
 				return new string[]
 					{
-						String.Format( "IdTest.{0}Class.hbm.xml", TypeName )
+						String.Format("IdTest.{0}Class.hbm.xml", TypeName)
 					};
 			}
 		}

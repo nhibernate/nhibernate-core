@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH525
 	public class NonAbstract : AbstractBase
 	{
 		public const int AbstractMethodResult = 10;
-		
+
 		public override int AbstractMethod()
 		{
 			return AbstractMethodResult;

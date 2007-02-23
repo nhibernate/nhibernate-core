@@ -25,24 +25,24 @@ namespace NHibernate.Test.NHSpecificTest.NH464
 
 		protected override void OnSetUp()
 		{
-			base.OnSetUp ();
-			using( ISession session = OpenSession() )
-			using( ITransaction t = session.BeginTransaction() )
+			base.OnSetUp();
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
 			{
-				session.Delete( "from System.Object" ); // clear everything from database
+				session.Delete("from System.Object"); // clear everything from database
 				t.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			using( ISession session = OpenSession() )
-			using( ITransaction t = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
 			{
 				session.Delete("from System.Object"); // clear everything from database
 				t.Commit();
 			}
-			base.OnTearDown ();
+			base.OnTearDown();
 		}
 
 		[Test]
@@ -54,21 +54,21 @@ namespace NHibernate.Test.NHSpecificTest.NH464
 			promo.Window.Dates.Add(new DateRange(DateTime.Today, DateTime.Today.AddDays(20)));
 
 			int id = 0;
-			using( ISession session = OpenSession() )
-			using( ITransaction tx = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				id = (int)session.Save(promo);
+				id = (int) session.Save(promo);
 				tx.Commit();
 			}
 
-			using( ISession session = OpenSession() )
-			using( ITransaction tx = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				promo = (Promotion)session.Load(typeof(Promotion), id);
+				promo = (Promotion) session.Load(typeof(Promotion), id);
 
 				Assert.AreEqual(1, promo.Window.Dates.Count);
-				Assert.AreEqual(DateTime.Today, ((DateRange)promo.Window.Dates[0]).Start);
-				Assert.AreEqual(DateTime.Today.AddDays(20), ((DateRange)promo.Window.Dates[0]).End);
+				Assert.AreEqual(DateTime.Today, ((DateRange) promo.Window.Dates[0]).Start);
+				Assert.AreEqual(DateTime.Today.AddDays(20), ((DateRange) promo.Window.Dates[0]).End);
 
 				tx.Commit();
 			}

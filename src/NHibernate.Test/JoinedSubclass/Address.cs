@@ -32,7 +32,5 @@ namespace NHibernate.Test.JoinedSubclass
 			get { return _country; }
 			set { _country = value; }
 		}
-
-
 	}
 }

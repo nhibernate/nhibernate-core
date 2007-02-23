@@ -1,8 +1,8 @@
 using System;
+using System.Collections;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-
 using NHibernate.Proxy;
 using NUnit.Framework;
 
@@ -19,12 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecificTest.NH317.Node.hbm.xml" };
-			}
+			get { return new string[] {"NHSpecificTest.NH317.Node.hbm.xml"}; }
 		}
 
 		[Test]
@@ -33,14 +30,14 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 			Node node = new Node();
 			node.Id = 1;
 			node.Name = "Node 1";
-			
+
 			ISession s = sessions.OpenSession();
 			s.Save(node);
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
-			Node nodeProxy = (Node)s.Load(typeof(Node), 1);
+			Node nodeProxy = (Node) s.Load(typeof(Node), 1);
 			// Test if it is really a proxy
 			Assert.IsTrue(nodeProxy is INHibernateProxy);
 			s.Close();
@@ -52,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 
 			// Deserialize
 			ms.Seek(0, SeekOrigin.Begin);
-			Node deserializedNodeProxy = (Node)formatter.Deserialize(ms);
+			Node deserializedNodeProxy = (Node) formatter.Deserialize(ms);
 			ms.Close();
 
 			// Deserialized proxy should implement the INHibernateProxy interface.

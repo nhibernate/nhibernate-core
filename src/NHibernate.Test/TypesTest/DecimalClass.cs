@@ -7,14 +7,14 @@ namespace NHibernate.Test.TypesTest
 	/// </summary>
 	public class DecimalClass
 	{
-		int _id;
-		decimal _decimalValue;
+		private int _id;
+		private decimal _decimalValue;
 
 		public DecimalClass()
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
@@ -22,10 +22,8 @@ namespace NHibernate.Test.TypesTest
 
 		public decimal DecimalValue
 		{
-			get {return _decimalValue;}
-			set {_decimalValue = value;}
+			get { return _decimalValue; }
+			set { _decimalValue = value; }
 		}
-		
 	}
 }
-

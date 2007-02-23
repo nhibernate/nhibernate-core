@@ -1,33 +1,29 @@
 using System;
 using System.Collections;
-
 using NHibernate.DomainModel;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Legacy
 {
 	[TestFixture]
-	public class SimpleTest : TestCase 
+	public class SimpleTest : TestCase
 	{
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "Simple.hbm.xml" };
-			}
+			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
 		[Test]
-		public void TestCRUD() 
+		public void TestCRUD()
 		{
 			long key = 10;
 			long otherKey = 9;
 
-			using( ISession s1 = OpenSession() )
-			using( ITransaction t1 = s1.BeginTransaction() )
+			using (ISession s1 = OpenSession())
+			using (ITransaction t1 = s1.BeginTransaction())
 			{
 				// create a new
 				Simple simple1 = new Simple();
@@ -44,19 +40,19 @@ namespace NHibernate.Test.Legacy
 				otherSimple1.Count = 98;
 
 				simple1.Other = otherSimple1;
-			
+
 				s1.Save(otherSimple1, otherKey);
 				s1.Save(simple1, key);
-			
+
 				t1.Commit();
 			}
 
 			// try to Load the object to make sure the save worked
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
-			
-			Simple simple2 = (Simple)s2.Load(typeof(Simple), key);
-			Simple otherSimple2 = (Simple)s2.Load(typeof(Simple), otherKey);
+
+			Simple simple2 = (Simple) s2.Load(typeof(Simple), key);
+			Simple otherSimple2 = (Simple) s2.Load(typeof(Simple), otherKey);
 
 			// verify each property was saved as expected
 			Assert.IsNotNull(simple2, "Unable to load object");
@@ -68,9 +64,9 @@ namespace NHibernate.Test.Legacy
 			simple2.Name = "Simple 1 (Update)";
 			simple2.Address = "Street 123";
 			simple2.Date = updateDateTime;
-			
+
 			s2.Update(simple2, key);
-			
+
 			t2.Commit();
 			s2.Close();
 
@@ -79,14 +75,14 @@ namespace NHibernate.Test.Legacy
 			ITransaction t3 = s3.BeginTransaction();
 
 //			Simple simple3 = (Simple)s3.Load(typeof(Simple), key);
-			Simple simple3 = (Simple)s3.CreateQuery("from Simple as s where s.id = ? and '?'='?'").SetInt64(0, key).List()[0];
+			Simple simple3 = (Simple) s3.CreateQuery("from Simple as s where s.id = ? and '?'='?'").SetInt64(0, key).List()[0];
 			Simple otherSimple3;
 
 			Assert.AreEqual(simple2.Count, simple3.Count);
 			Assert.AreEqual(simple2.Name, simple3.Name);
 			Assert.AreEqual(simple2.Address, simple3.Address);
 			Assert.AreEqual(simple2.Date, simple3.Date);
-			
+
 			// note that the Other will not be the same object because
 			// they were loaded in 2 different sessions
 			otherSimple3 = simple3.Other;
@@ -102,18 +98,17 @@ namespace NHibernate.Test.Legacy
 			ISession s4 = OpenSession();
 			Assert.AreEqual(0, s4.CreateCriteria(typeof(Simple)).List().Count);
 			s4.Close();
-
 		}
 
-		
+
 		[Test]
 		public void SetPropertiesOnQuery()
 		{
 			DateTime now = DateTime.Now;
-			
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			
+
 			// create a new
 			long key = 10;
 			Simple simple = new Simple();
@@ -121,27 +116,26 @@ namespace NHibernate.Test.Legacy
 			simple.Address = "Street 12";
 			simple.Date = now;
 			simple.Count = 99;
-			
+
 			s.Save(simple, key);
-			
+
 			t.Commit();
-			
+
 			t = s.BeginTransaction();
 
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
-			
-			Simple loadedSimple = (Simple)q.List()[0];
+
+			Simple loadedSimple = (Simple) q.List()[0];
 			Assert.AreEqual(99, loadedSimple.Count);
 			Assert.AreEqual("Simple 1", loadedSimple.Name);
 			Assert.AreEqual("Street 12", loadedSimple.Address);
 			Assert.AreEqual(now.ToString(), loadedSimple.Date.ToString());
 
 			s.Delete(simple);
-			
+
 			t.Commit();
 			s.Close();
-			
 		}
 	}
 }

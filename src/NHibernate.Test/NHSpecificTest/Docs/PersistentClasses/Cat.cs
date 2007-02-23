@@ -61,7 +61,6 @@ namespace NHibernate.Test.NHSpecificTest.Docs.PersistentClasses
 			get { return _weight; }
 			set { _weight = value; }
 		}
-
 	}
 
 	public enum Color

@@ -7,10 +7,8 @@ namespace NHibernate.Test.ProxyInterface
 	/// </summary>
 	public interface CastleProxy
 	{
-		
 		int Id { get; set; }
 
 		string Name { get; set; }
-
 	}
 }

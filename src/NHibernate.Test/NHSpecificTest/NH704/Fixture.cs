@@ -1,5 +1,4 @@
 using System;
-using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH704

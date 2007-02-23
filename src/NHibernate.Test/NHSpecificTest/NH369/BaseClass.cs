@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH369
 {
@@ -16,13 +15,12 @@ namespace NHibernate.Test.NHSpecificTest.NH369
 		// Just to make NH happy, these methods are not used
 		public override bool Equals(object obj)
 		{
-			return base.Equals (obj);
+			return base.Equals(obj);
 		}
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			return base.GetHashCode();
 		}
-
 	}
 }

@@ -1,7 +1,5 @@
 using System;
-
-using NHibernate;
-
+using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
@@ -14,18 +12,14 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecificTest.Docs.Associations.BiM21.Mappings.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecificTest.Docs.Associations.BiM21.Mappings.hbm.xml"}; }
 		}
 
 		[Test]
 		public void TestCorrectUse()
 		{
-
 			ISession session = OpenSession();
 
 			Person fred = new Person();
@@ -36,27 +30,26 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 			fred.Address = flinstoneWay;
 			wilma.Address = flinstoneWay;
 
-			session.Save( flinstoneWay );
-			session.Save( fred );
-			session.Save( wilma );
+			session.Save(flinstoneWay);
+			session.Save(fred);
+			session.Save(wilma);
 
 			session.Close();
 
 			// clean up
 			session = OpenSession();
 
-			session.Delete( "from Person" );
-			session.Delete( "from Address" );
+			session.Delete("from Person");
+			session.Delete("from Address");
 			session.Flush();
 			session.Close();
-
 		}
 
 		[Test]
-		[ExpectedException( typeof( PropertyValueException ) )]
+		[ExpectedException(typeof(PropertyValueException))]
 		public void TestErrorUsage()
 		{
-			using( ISession session = OpenSession() ) 
+			using (ISession session = OpenSession())
 			{
 				Person fred = new Person();
 				Person wilma = new Person();
@@ -66,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 				fred.Address = flinstoneWay;
 				wilma.Address = flinstoneWay;
 
-				session.Save( fred );
+				session.Save(fred);
 			}
 		}
 	}

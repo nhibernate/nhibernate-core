@@ -1,3 +1,4 @@
+#if NET_2_0
 using System;
 using System.Collections;
 using System.Data;
@@ -7,7 +8,6 @@ using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.ConnectionStringTest
 {
-#if NET_2_0
 	[TestFixture]
 	public class NamedConnectionStringFixture
 	{
@@ -72,5 +72,5 @@ namespace NHibernate.Test.ConnectionStringTest
 		}
 	}
 	
-#endif
 }
+#endif

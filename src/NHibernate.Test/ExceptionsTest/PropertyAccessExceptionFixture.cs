@@ -1,5 +1,4 @@
 using System;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExceptionsTest
@@ -13,8 +12,8 @@ namespace NHibernate.Test.ExceptionsTest
 		[Test]
 		public void MessageWithoutTypeCtor()
 		{
-			PropertyAccessException exc = new PropertyAccessException( null, "notype", true, null, "PropName" );
-			Assert.AreEqual( "notype setter of UnknownType.PropName", exc.Message );
+			PropertyAccessException exc = new PropertyAccessException(null, "notype", true, null, "PropName");
+			Assert.AreEqual("notype setter of UnknownType.PropName", exc.Message);
 		}
 	}
 }

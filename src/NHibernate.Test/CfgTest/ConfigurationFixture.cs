@@ -2,13 +2,11 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Xml;
-
 using NHibernate.Cfg;
-using NHibernate.Tool.hbm2ddl;
-
 using NHibernate.DomainModel;
-
+using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest
 {
@@ -23,13 +21,14 @@ namespace NHibernate.Test.CfgTest
 		/// file and that the values override what is in the app.config.
 		/// </summary>
 		[Test]
-		public void ReadCfgXmlFromDefaultFile() 
+		public void ReadCfgXmlFromDefaultFile()
 		{
 			Configuration cfg = new Configuration();
 			cfg.Configure();
-			
-			Assert.AreEqual( "true 1, false 0, yes 1, no 0", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
-			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;User Id=;Password=", cfg.Properties[Cfg.Environment.ConnectionString]);
+
+			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
+			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
+			                cfg.Properties[Environment.ConnectionString]);
 		}
 
 		/// <summary>
@@ -37,28 +36,28 @@ namespace NHibernate.Test.CfgTest
 		/// manually just need to set all of the properties before adding classes
 		/// </summary>
 		[Test, Explicit]
-		public void ManualConfiguration() 
+		public void ManualConfiguration()
 		{
 			//log4net.Config.DOMConfigurator.ConfigureAndWatch( new FileInfo("log4net.cfg.xml") ); //use xml file instead of config
 			Configuration cfg = new Configuration();
 			IDictionary props = new Hashtable();
 
-			props["hibernate.connection.provider"] = "NHibernate.Connection.DriverConnectionProvider"; 
-			props["hibernate.dialect" ] = "NHibernate.Dialect.MsSql2000Dialect"; 
-			props["hibernate.connection.driver_class" ] = "NHibernate.Driver.SqlClientDriver" ;
-			props["hibernate.connection.connection_string"] = "Server=localhost;initial catalog=nhibernate;Integrated Security=SSPI" ;
-		
-			foreach( DictionaryEntry de in props ) 
+			props["hibernate.connection.provider"] = "NHibernate.Connection.DriverConnectionProvider";
+			props["hibernate.dialect"] = "NHibernate.Dialect.MsSql2000Dialect";
+			props["hibernate.connection.driver_class"] = "NHibernate.Driver.SqlClientDriver";
+			props["hibernate.connection.connection_string"] =
+				"Server=localhost;initial catalog=nhibernate;Integrated Security=SSPI";
+
+			foreach (DictionaryEntry de in props)
 			{
-				cfg.SetProperty( de.Key.ToString(), de.Value.ToString() );
+				cfg.SetProperty(de.Key.ToString(), de.Value.ToString());
 			}
 
-			cfg.AddClass( typeof(Simple) );
+			cfg.AddClass(typeof(Simple));
 
-			new SchemaExport( cfg ).Create( true, true );
+			new SchemaExport(cfg).Create(true, true);
 
 			ISessionFactory factory = cfg.BuildSessionFactory();
-
 		}
 
 		/// <summary>
@@ -66,13 +65,14 @@ namespace NHibernate.Test.CfgTest
 		/// Assembly and that the values override what is in the app.config.
 		/// </summary>
 		[Test]
-		public void ReadCfgXmlFromAssembly() 
+		public void ReadCfgXmlFromAssembly()
 		{
 			Configuration cfg = new Configuration();
-			cfg.Configure( this.GetType().Assembly, "NHibernate.Test.hibernate.cfg.xml" );
-			
-			Assert.AreEqual( "true 1, false 0, yes 1, no 0", cfg.Properties[Cfg.Environment.QuerySubstitutions]);
-			Assert.AreEqual( "Server=localhost;initial catalog=nhibernate;User Id=;Password=", cfg.Properties[Cfg.Environment.ConnectionString]);
+			cfg.Configure(this.GetType().Assembly, "NHibernate.Test.hibernate.cfg.xml");
+
+			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
+			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
+			                cfg.Properties[Environment.ConnectionString]);
 		}
 
 		/// <summary>
@@ -83,39 +83,40 @@ namespace NHibernate.Test.CfgTest
 		public void InvalidXmlInCfgFile()
 		{
 			XmlDocument cfgXml = new XmlDocument();
-			cfgXml.Load( "hibernate.cfg.xml" );
+			cfgXml.Load("hibernate.cfg.xml");
 
 			// this should put us at the first <property> element
-			XmlElement propElement = cfgXml.DocumentElement.GetElementsByTagName( "property" )[0] as XmlElement;
-			
-			// removing this will cause it not to validate
-			propElement.RemoveAttribute( "name" );
+			XmlElement propElement = cfgXml.DocumentElement.GetElementsByTagName("property")[0] as XmlElement;
 
-			cfgXml.Save( "hibernate.invalid.cfg.xml" );
+			// removing this will cause it not to validate
+			propElement.RemoveAttribute("name");
+
+			cfgXml.Save("hibernate.invalid.cfg.xml");
 
 			Configuration cfg = new Configuration();
-			try 
+			try
 			{
-				cfg.Configure( "hibernate.invalid.cfg.xml" );
+				cfg.Configure("hibernate.invalid.cfg.xml");
 			}
-			catch( HibernateException )
+			catch (HibernateException)
 			{
 				// just absorb it - not what we are testing
 			}
-			finally 
+			finally
 			{
 				// clean up the bad file - if the Configure method cleans up after
 				// itself we should be able to do this without problem.  If it does
 				// property release the resource then this won't be able to access
 				// the file to delete.
-				System.IO.File.Delete( "hibernate.invalid.cfg.xml" );
+				File.Delete("hibernate.invalid.cfg.xml");
 			}
 		}
 
 		[Test]
 		public void EmptyPropertyTag()
 		{
-			string xml = @"<?xml version='1.0' encoding='utf-8' ?>
+			string xml =
+				@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 	<session-factory name='NHibernate.Test'>
 		<property name='connection.provider'></property>
@@ -123,18 +124,19 @@ namespace NHibernate.Test.CfgTest
 </hibernate-configuration>";
 
 			XmlDocument cfgXml = new XmlDocument();
-			cfgXml.LoadXml( xml );
+			cfgXml.LoadXml(xml);
 
 			Configuration cfg = new Configuration();
-			XmlTextReader xtr = new XmlTextReader( xml, XmlNodeType.Document, null );
-			cfg.Configure( xtr );
+			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
+			cfg.Configure(xtr);
 		}
 
 		[Test]
-		[ExpectedException( typeof( MappingException ) )]
+		[ExpectedException(typeof(MappingException))]
 		public void CacheConfigurationForUnmappedClass()
 		{
-			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
+			string cfgString =
+				@"<?xml version='1.0' encoding='utf-8' ?> 
 							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 								<session-factory>
 									<class-cache class='NHibernate.DomainModel.A, NHibernate.DomainModel' usage='read-write' region='xx' />
@@ -142,14 +144,15 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-configuration>";
 
 			Configuration cfg = new Configuration();
-			cfg.Configure( new XmlTextReader( cfgString, XmlNodeType.Document, null ) );
+			cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null));
 		}
 
 		[Test]
-		[ExpectedException( typeof( MappingException ) )]
+		[ExpectedException(typeof(MappingException))]
 		public void CacheConfigurationForUnmappedCollection()
 		{
-			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
+			string cfgString =
+				@"<?xml version='1.0' encoding='utf-8' ?> 
 							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 								<session-factory>
 									<mapping resource='NHibernate.DomainModel.ABC.hbm.xml' assembly='NHibernate.DomainModel' />
@@ -158,23 +161,24 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-configuration>";
 
 			Configuration cfg = new Configuration();
-			cfg.Configure( new XmlTextReader( cfgString, XmlNodeType.Document, null ) );
+			cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null));
 		}
 
 		[Test]
-		[ExpectedException( typeof( MappingException ) )]
+		[ExpectedException(typeof(MappingException))]
 		public void NoSessionFactoriesInConfiguration()
 		{
 			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?><someElement />";
 
 			Configuration cfg = new Configuration();
-			cfg.Configure( new XmlTextReader( cfgString, XmlNodeType.Document, null ) );
+			cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null));
 		}
 
 		[Test]
 		public void CacheConfiguration()
 		{
-			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?> 
+			string cfgString =
+				@"<?xml version='1.0' encoding='utf-8' ?> 
 							<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 								<session-factory>
 									<mapping resource='NHibernate.DomainModel.ABC.hbm.xml' assembly='NHibernate.DomainModel' />
@@ -184,7 +188,7 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-configuration>";
 
 			Configuration cfg = new Configuration();
-			cfg.Configure( new XmlTextReader( cfgString, XmlNodeType.Document, null ) ).BuildSessionFactory();
+			cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)).BuildSessionFactory();
 		}
 
 		[Test]
@@ -192,38 +196,40 @@ namespace NHibernate.Test.CfgTest
 		{
 			string filename = "invalid.hbm.xml";
 			// it's missing the class name - won't validate
-			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
+			string hbm =
+				@"<?xml version='1.0' encoding='utf-8' ?> 
 							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 								<class table='a'></class>
 							</hibernate-mapping>";
 			XmlDocument hbmDoc = new XmlDocument();
-			hbmDoc.LoadXml( hbm );
-			hbmDoc.Save( filename );
+			hbmDoc.LoadXml(hbm);
+			hbmDoc.Save(filename);
 
 			Configuration cfg = new Configuration();
-			try 
+			try
 			{
 				cfg.Configure();
-				cfg.AddXmlFile( "invalid.hbm.xml" );
+				cfg.AddXmlFile("invalid.hbm.xml");
 			}
-			catch( HibernateException )
+			catch (HibernateException)
 			{
 				// just absorb it - not what we are testing
 			}
-			finally 
+			finally
 			{
 				// clean up the bad file - if the AddXmlFile method cleans up after
 				// itself we should be able to do this without problem.  If it does
 				// property release the resource then this won't be able to access
 				// the file to delete.
-				System.IO.File.Delete( filename );
+				File.Delete(filename);
 			}
 		}
 
 		[Test]
 		public void ProxyWithDefaultNamespaceAndAssembly()
 		{
-			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
+			string hbm =
+				@"<?xml version='1.0' encoding='utf-8' ?> 
 							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 								namespace='NHibernate.DomainModel'
 								assembly='NHibernate.DomainModel'>
@@ -235,14 +241,15 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-mapping>";
 
 			Configuration cfg = new Configuration();
-			cfg.AddXmlString( hbm )
+			cfg.AddXmlString(hbm)
 				.BuildSessionFactory();
 		}
 
 		[Test]
 		public void PersisterWithDefaultNamespaceAndAssembly()
 		{
-			string hbm = @"<?xml version='1.0' encoding='utf-8' ?> 
+			string hbm =
+				@"<?xml version='1.0' encoding='utf-8' ?> 
 							<hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 								namespace='NHibernate.DomainModel'
 								assembly='NHibernate.DomainModel'>
@@ -254,13 +261,14 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-mapping>";
 
 			Configuration cfg = new Configuration();
-			cfg.AddXmlString( hbm ); //.BuildSessionFactory();
+			cfg.AddXmlString(hbm); //.BuildSessionFactory();
 		}
 
 		[Test]
 		public void AddDocument()
 		{
-			string hbm = @"<?xml version='1.0' ?>
+			string hbm =
+				@"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='NHibernate.DomainModel.A, NHibernate.DomainModel'>
 		<id name='Id' column='somecolumn'>
@@ -271,14 +279,15 @@ namespace NHibernate.Test.CfgTest
 
 			Configuration cfg = new Configuration();
 			XmlDocument doc = new XmlDocument();
-			doc.LoadXml( hbm );
-			cfg.AddDocument( doc );
+			doc.LoadXml(hbm);
+			cfg.AddDocument(doc);
 		}
 
 		[Test]
 		public void ProxyValidator()
 		{
-			string hbm = @"<?xml version='1.0' ?>
+			string hbm =
+				@"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='NHibernate.DomainModel.NHSpecific.InvalidProxyClass, NHibernate.DomainModel'
 		lazy='true'>
@@ -292,19 +301,20 @@ namespace NHibernate.Test.CfgTest
 
 			try
 			{
-				cfg.AddXmlString( hbm ).BuildSessionFactory();
-				Assert.Fail( "Validation should have failed" );
+				cfg.AddXmlString(hbm).BuildSessionFactory();
+				Assert.Fail("Validation should have failed");
 			}
-			catch( MappingException e )
+			catch (MappingException e)
 			{
-				Assert.IsTrue( e is InvalidProxyTypeException );
+				Assert.IsTrue(e is InvalidProxyTypeException);
 			}
 		}
 
 		[Test]
 		public void DisabledProxyValidator()
 		{
-			string hbm = @"<?xml version='1.0' ?>
+			string hbm =
+				@"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='NHibernate.DomainModel.NHSpecific.InvalidProxyClass, NHibernate.DomainModel'
 		lazy='true'>
@@ -315,8 +325,8 @@ namespace NHibernate.Test.CfgTest
 </hibernate-mapping>";
 
 			Configuration cfg = new Configuration();
-			cfg.Properties[ Cfg.Environment.UseProxyValidator ] = "false";
-			cfg.AddXmlString( hbm ).BuildSessionFactory();
+			cfg.Properties[Environment.UseProxyValidator] = "false";
+			cfg.AddXmlString(hbm).BuildSessionFactory();
 		}
 
 		/// <summary>
@@ -326,7 +336,8 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void SetDefaultAssemblyAndNamespace()
 		{
-			string hbmFromDomainModel = @"<?xml version='1.0' ?>
+			string hbmFromDomainModel =
+				@"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='A'>
 		<id name='Id' column='somecolumn'>
@@ -334,8 +345,9 @@ namespace NHibernate.Test.CfgTest
 		</id>
 	</class>
 </hibernate-mapping>";
-			
-			string hbmFromTest = @"<?xml version='1.0' ?>
+
+			string hbmFromTest =
+				@"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='LocatedInTestAssembly' lazy='false'>
 		<id name='Id' column='somecolumn'>
@@ -343,7 +355,7 @@ namespace NHibernate.Test.CfgTest
 		</id>
 	</class>
 </hibernate-mapping>";
-			
+
 			Configuration cfg = new Configuration();
 			cfg
 				.SetDefaultAssembly("NHibernate.DomainModel")
@@ -352,7 +364,7 @@ namespace NHibernate.Test.CfgTest
 
 			cfg
 				.SetDefaultAssembly("NHibernate.Test")
-				.SetDefaultNamespace(typeof (LocatedInTestAssembly).Namespace)
+				.SetDefaultNamespace(typeof(LocatedInTestAssembly).Namespace)
 				.AddXmlString(hbmFromTest);
 
 			cfg.BuildSessionFactory().Close();

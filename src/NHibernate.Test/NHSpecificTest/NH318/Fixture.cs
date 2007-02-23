@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH318
@@ -11,12 +12,9 @@ namespace NHibernate.Test.NHSpecificTest.NH318
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecificTest.NH318.Mappings.hbm.xml" };
-			}
+			get { return new string[] {"NHSpecificTest.NH318.Mappings.hbm.xml"}; }
 		}
 
 		[Test]

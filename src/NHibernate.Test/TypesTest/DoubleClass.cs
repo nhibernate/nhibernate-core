@@ -7,14 +7,14 @@ namespace NHibernate.Test.TypesTest
 	/// </summary>
 	public class DoubleClass
 	{
-		int _id;
-		Double _doubleValue;
+		private int _id;
+		private Double _doubleValue;
 
 		public DoubleClass()
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
@@ -22,10 +22,8 @@ namespace NHibernate.Test.TypesTest
 
 		public double DoubleValue
 		{
-			get {return _doubleValue;}
-			set {_doubleValue = value;}
+			get { return _doubleValue; }
+			set { _doubleValue = value; }
 		}
-		
 	}
 }
-

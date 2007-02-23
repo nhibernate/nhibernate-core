@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -21,17 +20,17 @@ namespace NHibernate.Test.TypesTest
 		/// is dirty.
 		/// </summary>
 		[Test]
-		public void Equals() 
+		public void Equals()
 		{
-			BooleanType type = (BooleanType)NHibernateUtil.Boolean;
+			BooleanType type = (BooleanType) NHibernateUtil.Boolean;
 
-			Assert.IsTrue( type.Equals( true, true ) );
-			Assert.IsTrue( type.Equals( false, false ) );
-			Assert.IsFalse( type.Equals( true, false ) );
+			Assert.IsTrue(type.Equals(true, true));
+			Assert.IsTrue(type.Equals(false, false));
+			Assert.IsFalse(type.Equals(true, false));
 		}
 
 		[Test]
-		public void ReadWrite() 
+		public void ReadWrite()
 		{
 			BooleanClass basic = new BooleanClass();
 			basic.Id = 1;
@@ -43,11 +42,11 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 
 			s = OpenSession();
-			basic = (BooleanClass)s.Load( typeof(BooleanClass), 1 );
+			basic = (BooleanClass) s.Load(typeof(BooleanClass), 1);
 
-			Assert.AreEqual( true, basic.BooleanValue );
+			Assert.AreEqual(true, basic.BooleanValue);
 
-			s.Delete( basic );
+			s.Delete(basic);
 			s.Flush();
 			s.Close();
 		}

@@ -7,14 +7,14 @@ namespace NHibernate.Test.TypesTest
 	/// </summary>
 	public class GuidClass
 	{
-		int _id;
-		Guid _guidValue;
+		private int _id;
+		private Guid _guidValue;
 
 		public GuidClass()
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
@@ -25,6 +25,5 @@ namespace NHibernate.Test.TypesTest
 			get { return _guidValue; }
 			set { _guidValue = value; }
 		}
-		
 	}
 }

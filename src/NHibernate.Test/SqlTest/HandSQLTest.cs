@@ -25,7 +25,7 @@ namespace NHibernate.Test.SqlTest
 			if (!GetDialect().IsInstanceOfType(Dialect.Dialect.GetDialect()))
 				Assert.Ignore("This test is specific for " + GetDialect().ToString());
 		}
-		
+
 		protected override void Configure(Configuration cfg)
 		{
 			CheckDialect();
@@ -55,13 +55,13 @@ namespace NHibernate.Test.SqlTest
 			t.Commit();
 			s.Close();
 
-			sessions.Evict(typeof (Organization));
-			sessions.Evict(typeof (Person));
-			sessions.Evict(typeof (Employment));
+			sessions.Evict(typeof(Organization));
+			sessions.Evict(typeof(Person));
+			sessions.Evict(typeof(Employment));
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			jboss = (Organization) s.Get(typeof (Organization), orgId);
+			jboss = (Organization) s.Get(typeof(Organization), orgId);
 			Assert.AreEqual(jboss.Employments.Count, 2);
 			emp = (Employment) GetFirstItem(jboss.Employments);
 			gavin = emp.Employee;

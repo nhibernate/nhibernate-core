@@ -1,5 +1,4 @@
 using System;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH372
@@ -14,14 +13,14 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			get { return "NH372"; }
 		}
 
-		private void ComponentFieldNotInserted_Generic( System.Type type)
+		private void ComponentFieldNotInserted_Generic(System.Type type)
 		{
 			int id;
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)Activator.CreateInstance( type );
+				BaseParent p = (BaseParent) Activator.CreateInstance(type);
 				p.Component.FieldNotInserted = 10;
 				session.Save(p);
 
@@ -33,10 +32,10 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)session.Get( type, id );
+				BaseParent p = (BaseParent) session.Get(type, id);
 
 				Assert.AreEqual(0, p.Component.FieldNotInserted,
-					"Field should not have been inserted.");
+				                "Field should not have been inserted.");
 
 				tx.Commit();
 			}
@@ -46,14 +45,14 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		public void ComponentFieldNotInserted()
 		{
 			isDynamic = false;
-			ComponentFieldNotInserted_Generic( typeof( Parent ) );
+			ComponentFieldNotInserted_Generic(typeof(Parent));
 		}
 
 		[Test]
 		public void ComponentFieldNotInserted_Dynamic()
 		{
 			isDynamic = true;
-			ComponentFieldNotInserted_Generic( typeof( DynamicParent ) );
+			ComponentFieldNotInserted_Generic(typeof(DynamicParent));
 		}
 
 		private void ComponentFieldNotUpdated_Generic(System.Type type)
@@ -65,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)Activator.CreateInstance( type );
+				BaseParent p = (BaseParent) Activator.CreateInstance(type);
 				p.Component.FieldNotUpdated = fieldInitialValue;
 				session.Save(p);
 
@@ -77,10 +76,10 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)session.Get( type, id );
+				BaseParent p = (BaseParent) session.Get(type, id);
 
 				Assert.AreEqual(fieldInitialValue, p.Component.FieldNotUpdated,
-					String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
+				                String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
 
 				p.Component.FieldNotUpdated = fieldNewValue;
 				p.Component.NormalField = 10;
@@ -91,10 +90,10 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)session.Get( type, id );
+				BaseParent p = (BaseParent) session.Get(type, id);
 
 				Assert.AreEqual(fieldInitialValue, p.Component.FieldNotUpdated,
-					"Field should not have been updated.");
+				                "Field should not have been updated.");
 
 				tx.Commit();
 			}
@@ -104,26 +103,26 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		public void ComponentFieldNotUpdated()
 		{
 			isDynamic = false;
-			ComponentFieldNotUpdated_Generic( typeof( Parent ) );
+			ComponentFieldNotUpdated_Generic(typeof(Parent));
 		}
 
 		[Test]
 		public void ComponentFieldNotUpdated_Dynamic()
 		{
 			isDynamic = true;
-			ComponentFieldNotUpdated_Generic( typeof( DynamicParent ) );
+			ComponentFieldNotUpdated_Generic(typeof(DynamicParent));
 		}
 
-		private void SubComponentFieldNotInserted_Generic( System.Type type)
+		private void SubComponentFieldNotInserted_Generic(System.Type type)
 		{
 			int id;
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)Activator.CreateInstance( type );
+				BaseParent p = (BaseParent) Activator.CreateInstance(type);
 				p.Component.SubComponent.FieldNotInserted = 10;
-				session.Save( p );
+				session.Save(p);
 
 				tx.Commit();
 
@@ -133,29 +132,30 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)session.Get( type, id );
+				BaseParent p = (BaseParent) session.Get(type, id);
 
-				Assert.AreEqual( 0, p.Component.SubComponent.FieldNotInserted,
-					"Field should not have been inserted." );
+				Assert.AreEqual(0, p.Component.SubComponent.FieldNotInserted,
+				                "Field should not have been inserted.");
 
 				tx.Commit();
 			}
 		}
 
 		[Test]
-		public void SubComponentFieldNotInserted() {
+		public void SubComponentFieldNotInserted()
+		{
 			isDynamic = false;
-			SubComponentFieldNotInserted_Generic( typeof( Parent ) );
+			SubComponentFieldNotInserted_Generic(typeof(Parent));
 		}
 
 		[Test]
 		public void SubComponentFieldNotInserted_Dynamic()
 		{
 			isDynamic = false;
-			SubComponentFieldNotInserted_Generic( typeof( DynamicParent ) );
+			SubComponentFieldNotInserted_Generic(typeof(DynamicParent));
 		}
 
-		private void SubComponentFieldNotUpdated_Generic( System.Type type )
+		private void SubComponentFieldNotUpdated_Generic(System.Type type)
 		{
 			int id;
 			int fieldInitialValue = 10;
@@ -164,9 +164,9 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)Activator.CreateInstance( type );
+				BaseParent p = (BaseParent) Activator.CreateInstance(type);
 				p.Component.SubComponent.FieldNotUpdated = fieldInitialValue;
-				session.Save( p );
+				session.Save(p);
 
 				tx.Commit();
 
@@ -176,10 +176,10 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)session.Get( type, id );
+				BaseParent p = (BaseParent) session.Get(type, id);
 
-				Assert.AreEqual( fieldInitialValue, p.Component.SubComponent.FieldNotUpdated,
-					String.Format( "Field should have initial inserted value of {0}.", fieldInitialValue ) );
+				Assert.AreEqual(fieldInitialValue, p.Component.SubComponent.FieldNotUpdated,
+				                String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
 
 				p.Component.SubComponent.FieldNotUpdated = fieldNewValue;
 				p.Component.SubComponent.NormalField = 10;
@@ -190,10 +190,10 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				BaseParent p = (BaseParent)session.Get( type, id );
+				BaseParent p = (BaseParent) session.Get(type, id);
 
-				Assert.AreEqual( fieldInitialValue, p.Component.SubComponent.FieldNotUpdated,
-					"Field should not have been updated." );
+				Assert.AreEqual(fieldInitialValue, p.Component.SubComponent.FieldNotUpdated,
+				                "Field should not have been updated.");
 
 				tx.Commit();
 			}
@@ -203,14 +203,14 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		public void SubComponentFieldNotUpdated()
 		{
 			isDynamic = false;
-			SubComponentFieldNotUpdated_Generic( typeof( Parent ) );
+			SubComponentFieldNotUpdated_Generic(typeof(Parent));
 		}
 
 		[Test]
 		public void SubComponentFieldNotUpdated_Dynamic()
 		{
 			isDynamic = false;
-			SubComponentFieldNotUpdated_Generic( typeof( DynamicParent ) );
+			SubComponentFieldNotUpdated_Generic(typeof(DynamicParent));
 		}
 
 		protected override void OnTearDown()
@@ -220,11 +220,11 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			{
 				if (isDynamic)
 				{
-					session.Delete( "from DynamicParent" );
+					session.Delete("from DynamicParent");
 				}
 				else
 				{
-					session.Delete( "from Parent" );
+					session.Delete("from Parent");
 				}
 				tx.Commit();
 			}

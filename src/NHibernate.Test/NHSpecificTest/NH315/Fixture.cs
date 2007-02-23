@@ -1,5 +1,4 @@
 using System;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH315
@@ -23,22 +22,22 @@ namespace NHibernate.Test.NHSpecificTest.NH315
 
 			client.Contacts = new ClientPersons();
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				s.Save( person );
+				s.Save(person);
 
 				client.Contacts.PersonId = person.Id;
-				client.Contacts.Person   = person;
+				client.Contacts.Person = person;
 
-				s.Save( client );
+				s.Save(client);
 
 				s.Flush();
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				s.Delete( client );
-				s.Delete( person );
+				s.Delete(client);
+				s.Delete(person);
 
 				s.Flush();
 			}

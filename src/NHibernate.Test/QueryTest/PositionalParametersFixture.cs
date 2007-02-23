@@ -12,13 +12,10 @@ namespace NHibernate.Test.QueryTest
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "Simple.hbm.xml" };
-			}
+			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
-		[Test, ExpectedException(typeof(NHibernate.QueryException))]
+		[Test, ExpectedException(typeof(QueryException))]
 		public void TestMissingHQLParameters()
 		{
 			ISession s = OpenSession();
@@ -40,7 +37,7 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(NHibernate.QueryException))]
+		[Test, ExpectedException(typeof(QueryException))]
 		public void TestMissingHQLParameters2()
 		{
 			ISession s = OpenSession();
@@ -108,15 +105,15 @@ namespace NHibernate.Test.QueryTest
 		/// Verifying that a <c>null</c> value passed into SetParameter(index, val) throws
 		/// an exception
 		/// </summary>
-		[Test, ExpectedException( typeof( ArgumentNullException ) )]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullIndexedParameter()
 		{
 			ISession s = OpenSession();
 
 			try
 			{
-				IQuery q = s.CreateQuery( "from Simple as s where s.Name=?" );
-				q.SetParameter( 0, null );
+				IQuery q = s.CreateQuery("from Simple as s where s.Name=?");
+				q.SetParameter(0, null);
 			}
 			finally
 			{

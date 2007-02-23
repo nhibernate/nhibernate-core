@@ -1,15 +1,14 @@
 using System;
-using System.Text;
-using NUnit.Framework;
-using System.Reflection;
 using System.Collections;
-
+using System.Reflection;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Assertions
 {
 	public class InheritedAreMarkedSerializable : AbstractAsserter
 	{
 		private readonly System.Type type;
+
 		public InheritedAreMarkedSerializable(System.Type type, string message, params object[] args)
 			: base(message, args)
 		{
@@ -23,7 +22,7 @@ namespace NHibernate.Test.Assertions
 			IList types = ClassList(nhbA);
 			foreach (System.Type tp in types)
 			{
-				object[] atts = tp.GetCustomAttributes(typeof(System.SerializableAttribute), false);
+				object[] atts = tp.GetCustomAttributes(typeof(SerializableAttribute), false);
 				if (atts.Length == 0)
 				{
 					FailureMessage.AddLine(string.Format("    class {0} is not marked as Serializable", tp.FullName));

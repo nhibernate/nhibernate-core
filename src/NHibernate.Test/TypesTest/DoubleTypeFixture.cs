@@ -1,7 +1,6 @@
 using System;
-
+using NHibernate.Dialect;
 using NHibernate.Type;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -12,7 +11,7 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class DoubleTypeFixture : TypeFixtureBase
 	{
-		double[] _values = new double[2];
+		private double[] _values = new double[2];
 
 		protected override string TypeName
 		{
@@ -21,13 +20,13 @@ namespace NHibernate.Test.TypesTest
 
 		protected override void OnSetUp()
 		{
-			base.OnSetUp ();
-			if( dialect is Dialect.Oracle9Dialect ) 
+			base.OnSetUp();
+			if (dialect is Oracle9Dialect)
 			{
 				_values[0] = 1.5e20;
 				_values[1] = 1.2e-20;
 			}
-			else 
+			else
 			{
 				_values[0] = 1.5e35;
 				_values[1] = 1.2e-35;
@@ -39,16 +38,16 @@ namespace NHibernate.Test.TypesTest
 		/// is dirty.
 		/// </summary>
 		[Test]
-		public void Equals() 
+		public void Equals()
 		{
-			DoubleType type = (DoubleType)NHibernateUtil.Double;
+			DoubleType type = (DoubleType) NHibernateUtil.Double;
 
-			Assert.IsTrue( type.Equals( 1.5e20, 1.5e20 ) );
-			Assert.IsFalse( type.Equals( 1.5e20, 1.4e20 ) );
+			Assert.IsTrue(type.Equals(1.5e20, 1.5e20));
+			Assert.IsFalse(type.Equals(1.5e20, 1.4e20));
 		}
 
 		[Test]
-		public void ReadWrite() 
+		public void ReadWrite()
 		{
 			DoubleClass basic = new DoubleClass();
 			basic.Id = 1;
@@ -60,14 +59,13 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 
 			s = OpenSession();
-			basic = (DoubleClass)s.Load( typeof(DoubleClass), 1 );
+			basic = (DoubleClass) s.Load(typeof(DoubleClass), 1);
 
-			Assert.AreEqual( _values[0], basic.DoubleValue );
+			Assert.AreEqual(_values[0], basic.DoubleValue);
 
-			s.Delete( basic );
+			s.Delete(basic);
 			s.Flush();
 			s.Close();
 		}
 	}
 }
-

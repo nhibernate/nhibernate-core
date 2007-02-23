@@ -7,14 +7,14 @@ namespace NHibernate.Test.TypesTest
 	/// </summary>
 	public class BooleanClass
 	{
-		int _id;
-		bool _booleanValue;
+		private int _id;
+		private bool _booleanValue;
 
 		public BooleanClass()
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
@@ -22,9 +22,8 @@ namespace NHibernate.Test.TypesTest
 
 		public bool BooleanValue
 		{
-			get {return _booleanValue;}
-			set {_booleanValue = value;}
+			get { return _booleanValue; }
+			set { _booleanValue = value; }
 		}
-		
 	}
 }

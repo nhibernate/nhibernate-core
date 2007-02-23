@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-
-using NUnit.Framework;
-using NHibernate;
+using NHibernate.Dialect;
 using NHibernate.DomainModel;
-
+using NUnit.Framework;
 
 namespace NHibernate.Test.Legacy
 {
@@ -16,35 +14,32 @@ namespace NHibernate.Test.Legacy
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "ABC.hbm.xml"};
-			}
+			get { return new string[] {"ABC.hbm.xml"}; }
 		}
 
 		[Test]
 		public void HigherLevelIndexDefinitionInColumnTag()
 		{
-			string[] commands = cfg.GenerateSchemaCreationScript( dialect );
+			string[] commands = cfg.GenerateSchemaCreationScript(dialect);
 
 			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_name"),
-			  "Unable to locate indx_a_name index creation");
+			              "Unable to locate indx_a_name index creation");
 		}
 
 		[Test]
 		public void HigherLevelIndexDefinitionInPropertyTag()
 		{
-			string[] commands = cfg.GenerateSchemaCreationScript( dialect );
+			string[] commands = cfg.GenerateSchemaCreationScript(dialect);
 
 			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_anothername"),
-			  "Unable to locate indx_a_anothername index creation");
+			              "Unable to locate indx_a_anothername index creation");
 		}
 
 		[Test]
 		public void Subselect()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				B b = new B();
 				IDictionary map = new Hashtable();
@@ -55,85 +50,85 @@ namespace NHibernate.Test.Legacy
 				t.Commit();
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				B b = (B) s.CreateQuery( "from B" ).UniqueResult();
+				B b = (B) s.CreateQuery("from B").UniqueResult();
 				t.Commit();
 			}
 
-			if( dialect is Dialect.FirebirdDialect )
+			if (dialect is FirebirdDialect)
 			{
 				// Firebird has problems deleting the map contents
-				ExecuteStatement( "delete from Map" );
-				ExecuteStatement( "delete from A" );
+				ExecuteStatement("delete from Map");
+				ExecuteStatement("delete from A");
 			}
 			else
 			{
-				using( ISession s = OpenSession() )
-				using( ITransaction t = s.BeginTransaction() )
+				using (ISession s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
 				{
-					s.Delete( "from B" );
+					s.Delete("from B");
 					t.Commit();
 				}
 			}
 		}
 
 		[Test]
-		public void Subclassing() 
+		public void Subclassing()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			C1 c1 = new C1();
 			D d = new D();
-			d.Amount =213.34f;
+			d.Amount = 213.34f;
 			// id used to be a increment
 			c1.Id = 1;
 			c1.Address = "foo bar";
 			c1.Count = 23432;
-			c1.Name ="c1";
+			c1.Name = "c1";
 			c1.D = d;
 			s.Save(c1);
 			d.Id = c1.Id;
 			s.Save(d);
-		
-			Assert.IsTrue( s.CreateQuery("from c in class C2 where 1=1 or 1=1").List().Count ==0 );
-		
+
+			Assert.IsTrue(s.CreateQuery("from c in class C2 where 1=1 or 1=1").List().Count == 0);
+
 			t.Commit();
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1) s.Load( typeof(A), c1.Id );
+			c1 = (C1) s.Load(typeof(A), c1.Id);
 			Assert.IsTrue(
 				c1.Address.Equals("foo bar") &&
-				(c1.Count==23432) &&
+				(c1.Count == 23432) &&
 				c1.Name.Equals("c1") &&
-				c1.D.Amount>213.3f
+				c1.D.Amount > 213.3f
 				);
 			t.Commit();
 			s.Close();
-		
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1) s.Load( typeof(B), c1.Id );
+			c1 = (C1) s.Load(typeof(B), c1.Id);
 			Assert.IsTrue(
 				c1.Address.Equals("foo bar") &&
-				(c1.Count==23432) &&
+				(c1.Count == 23432) &&
 				c1.Name.Equals("c1") &&
-				c1.D.Amount>213.3f
+				c1.D.Amount > 213.3f
 				);
 			t.Commit();
 			s.Close();
-		
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1) s.Load( typeof(C1), c1.Id );
+			c1 = (C1) s.Load(typeof(C1), c1.Id);
 			Assert.IsTrue(
 				c1.Address.Equals("foo bar") &&
-				(c1.Count==23432) &&
+				(c1.Count == 23432) &&
 				c1.Name.Equals("c1") &&
-				c1.D.Amount>213.3f
+				c1.D.Amount > 213.3f
 				);
 			t.Commit();
 			s.Close();
@@ -153,14 +148,14 @@ namespace NHibernate.Test.Legacy
 			IList aList = s.CreateQuery("from A").List();
 			IList dList = s.CreateQuery("from D").List();
 
-			foreach( A aToDelete in aList )
+			foreach (A aToDelete in aList)
 			{
-				s.Delete( aToDelete );
+				s.Delete(aToDelete);
 			}
 
-			foreach( D dToDelete in dList )
+			foreach (D dToDelete in dList)
 			{
-				s.Delete( dToDelete );
+				s.Delete(dToDelete);
 			}
 
 			t.Commit();
@@ -171,7 +166,7 @@ namespace NHibernate.Test.Legacy
 		{
 			foreach (string command in commands)
 			{
-				System.Console.WriteLine("Checking command : " + command);
+				Console.WriteLine("Checking command : " + command);
 				if (command.IndexOf(subString) >= 0)
 				{
 					return true;

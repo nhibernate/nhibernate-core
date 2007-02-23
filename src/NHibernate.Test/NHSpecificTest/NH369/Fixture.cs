@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Cfg;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH369
@@ -14,9 +12,9 @@ namespace NHibernate.Test.NHSpecificTest.NH369
 		{
 			Configuration cfg = new Configuration();
 			cfg
-				.AddClass( typeof( BaseClass ) )
-				.AddClass( typeof( KeyManyToOneClass ) )
-                .BuildSessionFactory().Close();
+				.AddClass(typeof(BaseClass))
+				.AddClass(typeof(KeyManyToOneClass))
+				.BuildSessionFactory().Close();
 		}
 	}
 }

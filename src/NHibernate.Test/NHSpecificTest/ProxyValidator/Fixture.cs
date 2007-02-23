@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using NHibernate.Proxy;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.ProxyValidator
@@ -9,9 +8,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	[TestFixture]
 	public class Fixture
 	{
-		private void Validate( System.Type type )
+		private void Validate(System.Type type)
 		{
-			ICollection errors = ProxyTypeValidator.ValidateType( type );
+			ICollection errors = ProxyTypeValidator.ValidateType(type);
 			if (errors != null)
 			{
 				throw new InvalidProxyTypeException(errors);
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 				set { privateField = value; }
 			}
 
-			public virtual void SomeMethod( int arg1, object arg2 )
+			public virtual void SomeMethod(int arg1, object arg2)
 			{
 			}
 
@@ -39,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void ValidClassTest()
 		{
-			Validate( typeof( ValidClass ) );
+			Validate(typeof(ValidClass));
 		}
 
 		public class InvalidPrivateConstructor : ValidClass
@@ -50,10 +49,10 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException( typeof( InvalidProxyTypeException ) )]
+		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void PrivateConstructor()
 		{
-			Validate( typeof( InvalidPrivateConstructor ) );
+			Validate(typeof(InvalidPrivateConstructor));
 		}
 
 		public class InvalidNonVirtualProperty : ValidClass
@@ -66,10 +65,10 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException( typeof( InvalidProxyTypeException ) )]
+		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void NonVirtualProperty()
 		{
-			Validate( typeof( InvalidNonVirtualProperty ) );
+			Validate(typeof(InvalidNonVirtualProperty));
 		}
 
 		public class InvalidPublicField : ValidClass
@@ -78,10 +77,10 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException( typeof( InvalidProxyTypeException ) )]
+		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void PublicField()
 		{
-			Validate( typeof( InvalidPublicField ) );
+			Validate(typeof(InvalidPublicField));
 		}
 
 		public class InvalidNonVirtualEvent : ValidClass
@@ -90,10 +89,10 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException( typeof( InvalidProxyTypeException ) )]
+		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void NonVirtualEvent()
 		{
-			Validate( typeof( InvalidNonVirtualEvent ) );
+			Validate(typeof(InvalidNonVirtualEvent));
 		}
 
 		public interface ValidInterface
@@ -103,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void Interface()
 		{
-			Validate( typeof( ValidInterface ) );
+			Validate(typeof(ValidInterface));
 		}
 
 		public class MultipleErrors
@@ -114,6 +113,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 			public int publicField;
 			public event EventHandler NonVirtualEvent;
+
 			public int NonVirtualProperty
 			{
 				get { return 1; }
@@ -126,7 +126,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		{
 			try
 			{
-				Validate(typeof (MultipleErrors));
+				Validate(typeof(MultipleErrors));
 				Assert.Fail("Should have failed validation");
 			}
 			catch (InvalidProxyTypeException e)

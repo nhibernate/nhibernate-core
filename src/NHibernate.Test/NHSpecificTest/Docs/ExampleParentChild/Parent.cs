@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 	public class Parent
 	{
 		private long _id;
-		private Iesi.Collections.ISet _children;
+		private ISet _children;
 
 		public Parent()
 		{
@@ -26,11 +26,11 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 
 		public void AddChild(Child c)
 		{
-			if( this.Children==null )
+			if (this.Children == null)
 			{
 				this.Children = new HashedSet();
 			}
-			this.Children.Add( c );
+			this.Children.Add(c);
 			c.Parent = this;
 		}
 	}

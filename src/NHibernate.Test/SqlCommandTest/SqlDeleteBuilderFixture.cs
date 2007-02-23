@@ -1,17 +1,13 @@
 using System;
-using System.Data;
-
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
-
-using NUnit.Framework;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.SqlCommandTest
 {
-
 	/// <summary>
 	/// Tests all of the functionallity of the SqlDeleteBuilderFixture
 	/// </summary>
@@ -30,8 +26,8 @@ namespace NHibernate.Test.SqlCommandTest
 			delete.SetTableName("test_delete_builder");
 
 
-			delete.SetIdentityColumn(new string[] { "decimalColumn" }, NHibernateUtil.Decimal);
-			delete.SetVersionColumn(new string[] { "versionColumn" }, (IVersionType) NHibernateUtil.Int32);
+			delete.SetIdentityColumn(new string[] {"decimalColumn"}, NHibernateUtil.Decimal);
+			delete.SetVersionColumn(new string[] {"versionColumn"}, (IVersionType) NHibernateUtil.Int32);
 
 			delete.AddWhereFragment("a=b");
 

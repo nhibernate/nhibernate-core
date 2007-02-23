@@ -18,13 +18,13 @@ namespace NHibernate.Test.TypesTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
 			get
 			{
 				return new string[]
 					{
-						String.Format( "TypesTest.{0}Class.hbm.xml", TypeName )
+						String.Format("TypesTest.{0}Class.hbm.xml", TypeName)
 					};
 			}
 		}

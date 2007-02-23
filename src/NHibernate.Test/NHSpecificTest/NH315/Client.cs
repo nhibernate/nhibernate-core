@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH315
 {
 	public class Client
 	{
-		int _id;
-		ClientPersons _contacts;
+		private int _id;
+		private ClientPersons _contacts;
 
 		public int Id
 		{

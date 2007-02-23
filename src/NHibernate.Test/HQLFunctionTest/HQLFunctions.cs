@@ -1,7 +1,6 @@
 using System;
-using NUnit.Framework;
-using NHibernate.Dialect.Function;
 using System.Collections;
+using NUnit.Framework;
 
 namespace NHibernate.Test.HQLFunctionTest
 {
@@ -19,8 +18,7 @@ namespace NHibernate.Test.HQLFunctionTest
 
 		protected override IList Mappings
 		{
-			get
-			{ return new string[] { "HQLFunctionTest.Animal.hbm.xml" }; }
+			get { return new string[] {"HQLFunctionTest.Animal.hbm.xml"}; }
 		}
 
 		protected override void OnTearDown()
@@ -56,8 +54,8 @@ namespace NHibernate.Test.HQLFunctionTest
 		{
 			using (ISession s = OpenSession())
 			{
-				Animal a1 = new Animal("a1",20);
-				Animal a2 = new Animal("a2",10);
+				Animal a1 = new Animal("a1", 20);
+				Animal a2 = new Animal("a2", 10);
 				s.Save(a1);
 				s.Save(a2);
 				s.Flush();
@@ -143,13 +141,13 @@ namespace NHibernate.Test.HQLFunctionTest
 				Assert.AreEqual(1, lresult.Count);
 
 				hql = "from Animal a where substring(a.description, 2, 3) = 'bcd'";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
 				hql = "from Animal a where substring(a.description, 4) = 'def'";
-				result = (Animal)s.CreateQuery(hql).UniqueResult();
+				result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
-			}			
+			}
 		}
 
 		[Test]
@@ -164,11 +162,11 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal a where locate('bc', a.Description, 2) = 2";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
 				hql = "from Animal a where locate('bc', a.Description) = 2";
-				result = (Animal)s.CreateQuery(hql).UniqueResult();
+				result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -193,15 +191,15 @@ namespace NHibernate.Test.HQLFunctionTest
 				Assert.AreEqual(2, lresult.Count);
 
 				hql = "from Animal a where trim('_' from a.Description) = 'abc'";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("___abc__", result.Description);
 
 				hql = "from Animal a where trim(trailing from a.Description) = 'abc'";
-				result = (Animal)s.CreateQuery(hql).UniqueResult();
+				result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abc   ", result.Description);
 
 				hql = "from Animal a where trim(leading from a.Description) = 'abc'";
-				result = (Animal)s.CreateQuery(hql).UniqueResult();
+				result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("   abc", result.Description);
 
 				hql = "from Animal a where trim(both from a.Description) = 'abc'";
@@ -224,7 +222,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal a where length(a.Description) = 5";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("12345", result.Description);
 			}
 		}
@@ -244,7 +242,6 @@ namespace NHibernate.Test.HQLFunctionTest
 		public void Coalesce()
 		{
 			//session.createQuery("from Human h where coalesce(h.nickName, h.name.first, h.name.last) = 'max'").list();
-
 		}
 
 		[Test]
@@ -271,7 +268,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal a where mod(16, 4) = 4";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -288,7 +285,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal an where sqrt(an.bodyWeight)/2 > 10";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -305,7 +302,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal an where upper(an.Description)='ABCDEF'";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -322,7 +319,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal an where lower(an.Description)='abcdef'";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("ABCDEF", result.Description);
 			}
 		}
@@ -339,11 +336,11 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal a where cast(a.bodyWeight as string) like '1.%'";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
 				hql = "from Animal a where cast(a.bodyWeight as integer) = 1";
-				result = (Animal)s.CreateQuery(hql).UniqueResult();
+				result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -351,16 +348,16 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Extract()
 		{
-		//Session session = openSession();
-		//Transaction txn = session.beginTransaction();
-		//session.createQuery("select second(current_timestamp()), minute(current_timestamp()), hour(current_timestamp()) from Mammal m").list();
-		//session.createQuery("select day(m.birthdate), month(m.birthdate), year(m.birthdate) from Mammal m").list();
-		//if ( !(getDialect() instanceof DB2Dialect) ) { //no ANSI extract
-		//  session.createQuery("select extract(second from current_timestamp()), extract(minute from current_timestamp()), extract(hour from current_timestamp()) from Mammal m").list();
-		//  session.createQuery("select extract(day from m.birthdate), extract(month from m.birthdate), extract(year from m.birthdate) from Mammal m").list();
-		//}
-		//txn.commit();
-		//session.close();					
+			//Session session = openSession();
+			//Transaction txn = session.beginTransaction();
+			//session.createQuery("select second(current_timestamp()), minute(current_timestamp()), hour(current_timestamp()) from Mammal m").list();
+			//session.createQuery("select day(m.birthdate), month(m.birthdate), year(m.birthdate) from Mammal m").list();
+			//if ( !(getDialect() instanceof DB2Dialect) ) { //no ANSI extract
+			//  session.createQuery("select extract(second from current_timestamp()), extract(minute from current_timestamp()), extract(hour from current_timestamp()) from Mammal m").list();
+			//  session.createQuery("select extract(day from m.birthdate), extract(month from m.birthdate), extract(year from m.birthdate) from Mammal m").list();
+			//}
+			//txn.commit();
+			//session.close();					
 		}
 
 		[Test]
@@ -375,7 +372,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal a where a.description = concat('a', concat('b','c'), 'd'||'e')||'f'";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -434,7 +431,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			using (ISession s = OpenSession())
 			{
 				string hql = "from Animal a where str(123) = '123'";
-				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}

@@ -9,7 +9,7 @@ using NHibernate.Mapping;
 using NHibernate.Persister.Collection;
 using NHibernate.Transform;
 using NUnit.Framework;
-using Environment = NHibernate.Cfg.Environment;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.FilterTest
 {
@@ -30,7 +30,7 @@ namespace NHibernate.Test.FilterTest
 			Salesperson sp = (Salesperson) session.Load(typeof(Salesperson), testData.steveId);
 			NHibernateUtil.Initialize(sp.Orders);
 			ICollectionPersister persister = ((ISessionFactoryImplementor) sessions)
-					.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
+				.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
 			CacheKey cacheKey =
 				new CacheKey(testData.steveId, persister.KeyType, persister.Role, (ISessionFactoryImplementor) sessions);
@@ -42,8 +42,8 @@ namespace NHibernate.Test.FilterTest
 			session = OpenSession();
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 			sp = (Salesperson) session.CreateQuery("from Salesperson as s where s.id = :id")
-					.SetInt64("id", testData.steveId)
-					.UniqueResult();
+			                   	.SetInt64("id", testData.steveId)
+			                   	.UniqueResult();
 			Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
 			object[] cachedData2 = (object[]) persister.Cache.Cache.Get(cacheKey);
@@ -75,7 +75,7 @@ namespace NHibernate.Test.FilterTest
 			testData.Prepare();
 
 			ISession session = OpenSession();
-			session.EnableFilter("regionlist").SetParameterList("regions", new string[] { "LA", "APAC" });
+			session.EnableFilter("regionlist").SetParameterList("regions", new string[] {"LA", "APAC"});
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 
 			// test retreival through hql with the collection as non-eager
@@ -103,7 +103,7 @@ namespace NHibernate.Test.FilterTest
 			testData.Prepare();
 
 			ISession session = OpenSession();
-			session.EnableFilter("regionlist").SetParameterList("regions", new string[] { "LA", "APAC" });
+			session.EnableFilter("regionlist").SetParameterList("regions", new string[] {"LA", "APAC"});
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 
 			// test retreival through hql with the collection as non-eager
@@ -117,11 +117,13 @@ namespace NHibernate.Test.FilterTest
 			session.Clear();
 
 			// test retreival through hql with the collection join fetched
-			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).List();
+			salespersons =
+				session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).List();
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			// A second time, to make use of query cache
-			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).List();
+			salespersons =
+				session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).List();
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			session.Close();
@@ -142,7 +144,7 @@ namespace NHibernate.Test.FilterTest
 			session.EnableFilter("region").SetParameter("region", "APAC");
 
 			session.EnableFilter("effectiveDate")
-					.SetParameter("asOfDate", testData.lastMonth);
+				.SetParameter("asOfDate", testData.lastMonth);
 
 			log.Info("HQL against Salesperson...");
 			IList results = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").List();
@@ -157,7 +159,7 @@ namespace NHibernate.Test.FilterTest
 			session.Close();
 			testData.Release();
 		}
-		
+
 		[Test]
 		public void CriteriaQueryFilters()
 		{
@@ -172,22 +174,22 @@ namespace NHibernate.Test.FilterTest
 			session.EnableFilter("region").SetParameter("region", "APAC");
 
 			session.EnableFilter("fulfilledOrders")
-					.SetParameter("asOfDate", testData.lastMonth);
+				.SetParameter("asOfDate", testData.lastMonth);
 
 			session.EnableFilter("effectiveDate")
-					.SetParameter("asOfDate", testData.lastMonth);
+				.SetParameter("asOfDate", testData.lastMonth);
 
 			log.Info("Criteria query against Salesperson...");
 			IList salespersons = session.CreateCriteria(typeof(Salesperson))
-					.SetFetchMode("orders", FetchMode.Join)
-					.List();
+				.SetFetchMode("orders", FetchMode.Join)
+				.List();
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			Assert.AreEqual(1, ((Salesperson) salespersons[0]).Orders.Count, "Incorrect order count");
 
 			log.Info("Criteria query against Product...");
 			IList products = session.CreateCriteria(typeof(Product))
-					.Add(Expression.Expression.Eq("StockNumber", 124))
-					.List();
+				.Add(Expression.Expression.Eq("StockNumber", 124))
+				.List();
 			Assert.AreEqual(1, products.Count, "Incorrect product count");
 
 			session.Close();
@@ -251,7 +253,7 @@ namespace NHibernate.Test.FilterTest
 
 			ISession session = OpenSession();
 			session.EnableFilter("regionlist")
-					.SetParameterList("regions", new string[] { "LA", "APAC" });
+				.SetParameterList("regions", new string[] {"LA", "APAC"});
 
 			log.Debug("Performing query of Salespersons");
 			IList salespersons = session.CreateQuery("from Salesperson").List();
@@ -270,9 +272,9 @@ namespace NHibernate.Test.FilterTest
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
 
 			Product prod = (Product) session.CreateCriteria(typeof(Product))
-					.SetResultTransformer(new DistinctRootEntityResultTransformer())
-					.Add(Expression.Expression.Eq("id", testData.prod1Id))
-					.UniqueResult();
+			                         	.SetResultTransformer(new DistinctRootEntityResultTransformer())
+			                         	.Add(Expression.Expression.Eq("id", testData.prod1Id))
+			                         	.UniqueResult();
 
 			Assert.IsNotNull(prod);
 			Assert.AreEqual(1, prod.Categories.Count, "Incorrect Product.categories count for filter");
@@ -313,8 +315,9 @@ namespace NHibernate.Test.FilterTest
 
 			foreach (Category cat in prod.Categories)
 			{
-				Assert.IsTrue(NHibernateUtil.IsInitialized(cat), "Load with join fetch of many-to-many did not trigger *complete* join fetch");
-			    //Console.WriteLine(" ===> " + cat.Name);
+				Assert.IsTrue(NHibernateUtil.IsInitialized(cat),
+				              "Load with join fetch of many-to-many did not trigger *complete* join fetch");
+				//Console.WriteLine(" ===> " + cat.Name);
 			}
 			//long currEntityLoadCount = sessions.Statistics.EntityLoadCount;
 
@@ -338,8 +341,8 @@ namespace NHibernate.Test.FilterTest
 
 			// Force the categories to not get initialized here
 			IList result = session.CreateQuery("from Product as p where p.id = :id")
-					.SetInt64("id", testData.prod1Id)
-					.List();
+				.SetInt64("id", testData.prod1Id)
+				.List();
 			Assert.IsTrue(result.Count > 0, "No products returned from HQL");
 
 			Product prod = (Product) result[0];
@@ -379,16 +382,17 @@ namespace NHibernate.Test.FilterTest
 
 			ISession session = OpenSession();
 
-			Product prod = ( Product ) session.Get( typeof(Product), testData.prod1Id );
+			Product prod = (Product) session.Get(typeof(Product), testData.prod1Id);
 
 			// TODO H3: Statistics
 			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
 			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
 
 			// should already have been initialized...
-			Assert.IsTrue(NHibernateUtil.IsInitialized(prod.Categories), "Load with join fetch of many-to-many did not trigger join fetch");
+			Assert.IsTrue(NHibernateUtil.IsInitialized(prod.Categories),
+			              "Load with join fetch of many-to-many did not trigger join fetch");
 			int size = prod.Categories.Count;
-			Assert.AreEqual(2, size,  "Incorrect non-filtered collection count" );
+			Assert.AreEqual(2, size, "Incorrect non-filtered collection count");
 
 			//long currLoadCount = sessions.Statistics.CollectionLoadCount;
 			//long currFetchCount = sessions.Statistics.CollectionFetchCount;
@@ -403,7 +407,8 @@ namespace NHibernate.Test.FilterTest
 			//long initEntityLoadCount = sessions.Statistics.EntityLoadCount;
 			foreach (Category cat in prod.Categories)
 			{
-				Assert.IsTrue(NHibernateUtil.IsInitialized(cat), "Load with join fetch of many-to-many did not trigger *complete* join fetch");
+				Assert.IsTrue(NHibernateUtil.IsInitialized(cat),
+				              "Load with join fetch of many-to-many did not trigger *complete* join fetch");
 				//Console.WriteLine(" ===> " + cat.Name);
 			}
 			//long currEntityLoadCount = sessions.Statistics.EntityLoadCount;
@@ -426,8 +431,8 @@ namespace NHibernate.Test.FilterTest
 			ISession session = OpenSession();
 
 			IList result = session.CreateCriteria(typeof(Product))
-			    .Add(Expression.Expression.Eq("id", testData.prod1Id))
-			    .List();
+				.Add(Expression.Expression.Eq("id", testData.prod1Id))
+				.List();
 
 			Product prod = (Product) result[0];
 
@@ -435,7 +440,8 @@ namespace NHibernate.Test.FilterTest
 			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
 
 			// should already have been initialized...
-			Assert.IsTrue(NHibernateUtil.IsInitialized(prod.Categories), "Load with join fetch of many-to-many did not trigger join fetch");
+			Assert.IsTrue(NHibernateUtil.IsInitialized(prod.Categories),
+			              "Load with join fetch of many-to-many did not trigger join fetch");
 			int size = prod.Categories.Count;
 			Assert.AreEqual(2, size, "Incorrect non-filtered collection count");
 
@@ -451,8 +457,9 @@ namespace NHibernate.Test.FilterTest
 			//long initEntityLoadCount = sessions.Statistics.EntityLoadCount;
 			foreach (Category cat in prod.Categories)
 			{
-				Assert.IsTrue(NHibernateUtil.IsInitialized(cat), "Load with join fetch of many-to-many did not trigger *complete* join fetch");
-			    //Console.WriteLine(" ===> " + cat.Name);
+				Assert.IsTrue(NHibernateUtil.IsInitialized(cat),
+				              "Load with join fetch of many-to-many did not trigger *complete* join fetch");
+				//Console.WriteLine(" ===> " + cat.Name);
 			}
 			//long currEntityLoadCount = sessions.Statistics.EntityLoadCount;
 
@@ -488,7 +495,7 @@ namespace NHibernate.Test.FilterTest
 			//		cfg.setProperty( Environment.MAX_FETCH_DEPTH, "2" );
 			//cfg.SetProperty(Environment.GenerateStatistics, "true");
 			cfg.SetProperty(Environment.UseQueryCache, "true");
-			
+
 			foreach (PersistentClass clazz in cfg.ClassMappings)
 			{
 				if (!clazz.IsInherited)
@@ -496,7 +503,7 @@ namespace NHibernate.Test.FilterTest
 					cfg.SetCacheConcurrencyStrategy(clazz.MappedClass, "nonstrict-read-write");
 				}
 			}
-			
+
 			foreach (Mapping.Collection coll in cfg.CollectionMappings)
 			{
 				cfg.SetCacheConcurrencyStrategy(coll.Role, "nonstrict-read-write");
@@ -514,7 +521,7 @@ namespace NHibernate.Test.FilterTest
 			public DateTime fourMonthsAgo;
 
 			private DynamicFilterTest outer;
-			
+
 			public TestData(DynamicFilterTest outer)
 			{
 				this.outer = outer;

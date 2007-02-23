@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH266
@@ -8,21 +7,18 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		static int aId = 1;
-		static int bId = 2;
-		static int cId = 3;
+		private static int aId = 1;
+		private static int bId = 2;
+		private static int cId = 3;
 
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecificTest.NH266.Mappings.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecificTest.NH266.Mappings.hbm.xml"}; }
 		}
 
 		protected override void OnSetUp()
@@ -42,9 +38,9 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			c.Name = "the c";
 			c.Code = 'c';
 
-			s.Save( a );
-			s.Save( b );
-			s.Save( c );
+			s.Save(a);
+			s.Save(b);
+			s.Save(c);
 
 			s.Flush();
 			s.Close();
@@ -53,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 		protected override void OnTearDown()
 		{
 			ISession s = OpenSession();
-			s.Delete( "from A" );
+			s.Delete("from A");
 			s.Flush();
 			s.Close();
 		}
@@ -62,32 +58,30 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 		[Test]
 		public void BaseClassLoad()
 		{
-			
 			// just do a straight load
 			ISession s = OpenSession();
-			A a = s.Load( typeof(A), aId ) as A;
-			Assert.AreEqual( "the a", a.Name );
+			A a = s.Load(typeof(A), aId) as A;
+			Assert.AreEqual("the a", a.Name);
 			s.Close();
 
 
 			// load instance through hql
 			s = OpenSession();
-			IQuery q = s.CreateQuery( "from A as a where a.id = :id ");
-			q.SetParameter( "id", aId );
+			IQuery q = s.CreateQuery("from A as a where a.id = :id ");
+			q.SetParameter("id", aId);
 			a = q.UniqueResult() as A;
-			Assert.AreEqual( "the a", a.Name );
-			
+			Assert.AreEqual("the a", a.Name);
+
 			s.Close();
 
 			// load instance through Criteria
 			s = OpenSession();
-			ICriteria c = s.CreateCriteria( typeof(A) );
-			c.Add( Expression.Expression.Eq( "Id", aId ) );
+			ICriteria c = s.CreateCriteria(typeof(A));
+			c.Add(Expression.Expression.Eq("Id", aId));
 			a = c.UniqueResult() as A;
 
-			Assert.AreEqual( "the a", a.Name );
+			Assert.AreEqual("the a", a.Name);
 			s.Close();
-
 		}
 
 		/// <summary>
@@ -98,28 +92,26 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 		public void SpecificSubclass()
 		{
 			ISession s = OpenSession();
-			B b = s.Load( typeof(B), bId ) as B;
-			Assert.AreEqual( "the b", b.Name );
+			B b = s.Load(typeof(B), bId) as B;
+			Assert.AreEqual("the b", b.Name);
 			s.Close();
 
 			// load a instance of B through hql
 			s = OpenSession();
-			IQuery q = s.CreateQuery( "from B as b where b.id = :id" );
-			q.SetParameter( "id", bId );
+			IQuery q = s.CreateQuery("from B as b where b.id = :id");
+			q.SetParameter("id", bId);
 			b = q.UniqueResult() as B;
-			Assert.AreEqual( "the b", b.Name );
+			Assert.AreEqual("the b", b.Name);
 			s.Close();
 
 			// load a instance of B through Criteria
 			s = OpenSession();
-			ICriteria c = s.CreateCriteria( typeof(B) );
-			c.Add( Expression.Expression.Eq( "Id", bId ) );
+			ICriteria c = s.CreateCriteria(typeof(B));
+			c.Add(Expression.Expression.Eq("Id", bId));
 			b = c.UniqueResult() as B;
 
-			Assert.AreEqual( "the b", b.Name );
+			Assert.AreEqual("the b", b.Name);
 			s.Close();
 		}
-
-		
 	}
 }

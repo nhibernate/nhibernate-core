@@ -10,18 +10,18 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 		{
 			get { return "NH401"; }
 		}
-		
+
 		[Test]
 		public void SaveOrUpdateCopy()
 		{
 			object clubId;
 
-            using (ISession s = OpenSession())
-            {
-                Club club1 = new Club();
+			using (ISession s = OpenSession())
+			{
+				Club club1 = new Club();
 				clubId = s.Save(club1);
 				s.Flush();
-            }
+			}
 
 			Clubmember mem = new Clubmember();
 
@@ -35,14 +35,14 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 
 			sess.SaveOrUpdateCopy(mem);
 			sess.Flush();
-			
+
 			sess.Close();
-            
-            using (ISession s = OpenSession())
-            {
-                s.Delete("from System.Object");
-                s.Flush();
-            }
+
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from System.Object");
+				s.Flush();
+			}
 		}
 	}
 }

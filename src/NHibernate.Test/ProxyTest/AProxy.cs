@@ -7,8 +7,8 @@ namespace NHibernate.Test.ProxyTest
 	/// </summary>
 	public class AProxy
 	{
-		int _id;
-		string _name;
+		private int _id;
+		private string _name;
 
 		public AProxy()
 		{
@@ -25,6 +25,5 @@ namespace NHibernate.Test.ProxyTest
 			get { return _name; }
 			set { _name = value; }
 		}
-
 	}
 }

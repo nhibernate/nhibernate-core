@@ -1,7 +1,6 @@
 using System;
-
+using NHibernate.Dialect;
 using NHibernate.Id;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.IdTest
@@ -14,11 +13,11 @@ namespace NHibernate.Test.IdTest
 		/// caught with a bad class name passed in.
 		/// </summary>
 		[Test]
-		[ExpectedException( typeof(MappingException), "could not instantiate id generator for strategy 'Guid'" )]
+		[ExpectedException(typeof(MappingException), "could not instantiate id generator for strategy 'Guid'")]
 		public void NonCreatableStrategy()
 		{
 			IIdentifierGenerator idGenerator = null;
-			idGenerator = IdentifierGeneratorFactory.Create( "Guid", NHibernateUtil.Guid, null, new Dialect.MsSql2000Dialect() );
+			idGenerator = IdentifierGeneratorFactory.Create("Guid", NHibernateUtil.Guid, null, new MsSql2000Dialect());
 		}
 	}
 }

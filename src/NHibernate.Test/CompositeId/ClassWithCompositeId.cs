@@ -10,22 +10,24 @@ namespace NHibernate.Test.CompositeId
 		private Id _id;
 		private int _oneProperty;
 
-		public ClassWithCompositeId(){}
-	
-		public ClassWithCompositeId(Id id ) 
+		public ClassWithCompositeId()
+		{
+		}
+
+		public ClassWithCompositeId(Id id)
 		{
 			_id = id;
 		}
 
-		public Id Id 
+		public Id Id
 		{
-			get {return _id;}
+			get { return _id; }
 		}
 
-		public int OneProperty 
+		public int OneProperty
 		{
-			get {return _oneProperty;}
-			set {_oneProperty = value;}
+			get { return _oneProperty; }
+			set { _oneProperty = value; }
 		}
 	}
 }

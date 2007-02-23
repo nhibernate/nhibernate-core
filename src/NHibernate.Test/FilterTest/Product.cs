@@ -7,7 +7,7 @@ namespace NHibernate.Test.FilterTest
 	{
 		private long id;
 		private string name;
-		private int stockNumber;  // int for ease of hashCode() impl
+		private int stockNumber; // int for ease of hashCode() impl
 		private DateTime effectiveStartDate;
 		private DateTime effectiveEndDate;
 		private ISet orderLineItems;

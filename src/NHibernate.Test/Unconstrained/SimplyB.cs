@@ -6,7 +6,10 @@ namespace NHibernate.Test.Unconstrained
 	{
 		private int _id = 0;
 
-		public SimplyB() { }
+		public SimplyB()
+		{
+		}
+
 		public SimplyB(int id)
 			: this()
 		{

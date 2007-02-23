@@ -7,15 +7,12 @@ namespace NHibernate.Test.ConnectionTest
 	{
 		protected override IList Mappings
 		{
-			get { return new string[] { "ConnectionTest.Silly.hbm.xml" }; }
+			get { return new string[] {"ConnectionTest.Silly.hbm.xml"}; }
 		}
 
 		protected override string MappingsAssembly
 		{
-			get
-			{
-				return "NHibernate.Test";
-			}
+			get { return "NHibernate.Test"; }
 		}
 
 		protected virtual void Prepare()

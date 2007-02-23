@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Iesi.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH295
@@ -7,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 	[Serializable]
 	public class UserGroup : Party
 	{
-		ISet _users = new HashedSet();
+		private ISet _users = new HashedSet();
 
 		public UserGroup()
 		{

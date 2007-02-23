@@ -5,6 +5,7 @@ namespace NHibernate.Test.Criteria
 	public class MaterialResource
 	{
 		private long _id;
+
 		public long Id
 		{
 			get { return _id; }
@@ -12,15 +13,18 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private string _description;
+
 		public string Description
 		{
 			get { return _description; }
 			set { _description = value; }
 		}
 
-		public MaterialResource() : base() { }
+		public MaterialResource() : base()
+		{
+		}
 
-		public MaterialResource(string description) : this() 
+		public MaterialResource(string description) : this()
 		{
 			_description = description;
 		}
@@ -37,6 +41,7 @@ namespace NHibernate.Test.Criteria
 	public class MaterialUnit
 	{
 		private long _id;
+
 		public long Id
 		{
 			get { return _id; }
@@ -44,6 +49,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private MaterialUnitable _material;
+
 		public MaterialUnitable Material
 		{
 			get { return _material; }
@@ -51,15 +57,18 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private string _serialNumber;
+
 		public string SerialNumber
 		{
 			get { return _serialNumber; }
 			set { _serialNumber = value; }
 		}
 
-		protected MaterialUnit() : base() { }
+		protected MaterialUnit() : base()
+		{
+		}
 
-		public MaterialUnit(MaterialUnitable material, string serialNumber) : this() 
+		public MaterialUnit(MaterialUnitable material, string serialNumber) : this()
 		{
 			_material = material;
 			_serialNumber = serialNumber;

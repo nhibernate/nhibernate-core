@@ -8,39 +8,40 @@ namespace NHibernate.Test.MappingExceptions
 	public class PropertyNotFoundExceptionFixture
 	{
 		[Test]
-		public void MisspelledPropertyName() 
+		public void MisspelledPropertyName()
 		{
 			bool excCaught = false;
 
 			// add a resource that has a bad mapping
 			string resource = "NHibernate.Test.MappingExceptions.A.PropertyNotFound.hbm.xml";
 			Configuration cfg = new Configuration();
-			try 
+			try
 			{
-				cfg.AddResource( resource, this.GetType().Assembly );
+				cfg.AddResource(resource, this.GetType().Assembly);
 				cfg.BuildSessionFactory();
 			}
-			catch( MappingException me ) 
+			catch (MappingException me)
 			{
 				//"Problem trying to set property type by reflection"
 				// "Could not find a getter for property 'Naame' in class 'NHibernate.Test.MappingExceptions.A'"
-				Assert.IsTrue( me.InnerException is MappingException );
-				Assert.IsTrue( me.InnerException.InnerException is PropertyNotFoundException );
+				Assert.IsTrue(me.InnerException is MappingException);
+				Assert.IsTrue(me.InnerException.InnerException is PropertyNotFoundException);
 
 				Exception inner = me.InnerException.InnerException;
-				Assert.IsTrue( inner.Message.IndexOf( "Naame" ) > 0, "should contain name of missing property 'Naame' in exception" );
-				Assert.IsTrue( inner.Message.IndexOf( "NHibernate.Test.MappingExceptions.A" ) > 0, "should contain name of class that is missing the property" );
+				Assert.IsTrue(inner.Message.IndexOf("Naame") > 0, "should contain name of missing property 'Naame' in exception");
+				Assert.IsTrue(inner.Message.IndexOf("NHibernate.Test.MappingExceptions.A") > 0,
+				              "should contain name of class that is missing the property");
 				excCaught = true;
 			}
 
-			Assert.IsTrue( excCaught, "Should have caught the MappingException that contains the property not found exception." );
+			Assert.IsTrue(excCaught, "Should have caught the MappingException that contains the property not found exception.");
 		}
 
 		[Test]
 		public void ConstructWithNullType()
 		{
-			new PropertyNotFoundException( null, "someField" );
-			new PropertyNotFoundException( null, "SomeProperty", "getter" );
+			new PropertyNotFoundException(null, "someField");
+			new PropertyNotFoundException(null, "SomeProperty", "getter");
 		}
 	}
 }

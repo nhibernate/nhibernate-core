@@ -7,9 +7,9 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 	/// </summary>
 	public class Category
 	{
-		int id;
-		string name;
-		Category parent;
+		private int id;
+		private string name;
+		private Category parent;
 
 		public Category()
 		{

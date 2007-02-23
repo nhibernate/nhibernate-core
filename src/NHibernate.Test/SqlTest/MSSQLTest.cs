@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest
@@ -14,7 +15,7 @@ namespace NHibernate.Test.SqlTest
 
 		protected override System.Type GetDialect()
 		{
-			return typeof(NHibernate.Dialect.MsSql2000Dialect);
+			return typeof(MsSql2000Dialect);
 		}
 	}
 }

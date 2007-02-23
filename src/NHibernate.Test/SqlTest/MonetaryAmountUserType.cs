@@ -8,16 +8,22 @@ namespace NHibernate.Test.SqlTest
 	[Serializable]
 	public class MonetaryAmountUserType : IUserType
 	{
-		private static readonly SqlType[] MySqlTypes = { SqlTypeFactory.Decimal, SqlTypeFactory.GetString(3) };
+		private static readonly SqlType[] MySqlTypes = {SqlTypeFactory.Decimal, SqlTypeFactory.GetString(3)};
 
 		public SqlType[] SqlTypes
 		{
 			get { return MySqlTypes; }
 		}
 
-		public System.Type ReturnedType { get { return typeof(MonetaryAmount); } }
+		public System.Type ReturnedType
+		{
+			get { return typeof(MonetaryAmount); }
+		}
 
-		public bool IsMutable { get { return false; } }
+		public bool IsMutable
+		{
+			get { return false; }
+		}
 
 		public object DeepCopy(object value)
 		{
@@ -30,8 +36,8 @@ namespace NHibernate.Test.SqlTest
 		}
 
 		public object NullSafeGet(IDataReader resultSet,
-								  string[] names,
-								  object owner)
+		                          string[] names,
+		                          object owner)
 		{
 			int index0 = resultSet.GetOrdinal(names[0]);
 			int index1 = resultSet.GetOrdinal(names[1]);
@@ -45,10 +51,9 @@ namespace NHibernate.Test.SqlTest
 		}
 
 		public void NullSafeSet(IDbCommand statement,
-								object value,
-								int index)
+		                        object value,
+		                        int index)
 		{
-
 			if (value == null)
 			{
 				((IDbDataParameter) statement.Parameters[index]).Value = DBNull.Value;

@@ -2,19 +2,20 @@ using System;
 
 namespace NHibernate.Test.Unconstrained
 {
-	public class Person 
+	public class Person
 	{
 		private string _name;
 		private string _employeeId;
 		private Employee _employee;
- 	
- 	  public Person()
+
+		public Person()
 		{
 		}
- 	  public Person(string name):this() 
+
+		public Person(string name) : this()
 		{
 			_name = name;
- 	  }
+		}
 
 		public virtual string Name
 		{
@@ -33,5 +34,5 @@ namespace NHibernate.Test.Unconstrained
 			get { return _employeeId; }
 			set { _employeeId = value; }
 		}
- 	}
+	}
 }

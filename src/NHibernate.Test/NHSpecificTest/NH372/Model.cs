@@ -5,12 +5,14 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 	public class BaseParent
 	{
 		private int _Id;
+
 		public virtual int Id
 		{
 			get { return _Id; }
 		}
 
 		private string _Name;
+
 		public virtual string Name
 		{
 			get { return _Name; }
@@ -18,21 +20,26 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		private Component _Component = new Component();
+
 		public virtual Component Component
 		{
 			get { return _Component; }
 			set { _Component = value; }
 		}
-
 	}
 
-	public class Parent : BaseParent { }
+	public class Parent : BaseParent
+	{
+	}
 
-	public class DynamicParent : BaseParent { }
+	public class DynamicParent : BaseParent
+	{
+	}
 
 	public class Component
 	{
 		private int _NormalField;
+
 		public virtual int NormalField
 		{
 			get { return _NormalField; }
@@ -40,6 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		private int _FieldNotInserted;
+
 		public virtual int FieldNotInserted
 		{
 			get { return _FieldNotInserted; }
@@ -47,6 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		private int _FieldNotUpdated;
+
 		public virtual int FieldNotUpdated
 		{
 			get { return _FieldNotUpdated; }
@@ -54,6 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		private SubComponent _SubComponent = new SubComponent();
+
 		public virtual SubComponent SubComponent
 		{
 			get { return _SubComponent; }
@@ -64,6 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 	public class SubComponent
 	{
 		private int _NormalField;
+
 		public virtual int NormalField
 		{
 			get { return _NormalField; }
@@ -71,6 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		private int _FieldNotInserted;
+
 		public virtual int FieldNotInserted
 		{
 			get { return _FieldNotInserted; }
@@ -78,6 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 
 		private int _FieldNotUpdated;
+
 		public virtual int FieldNotUpdated
 		{
 			get { return _FieldNotUpdated; }

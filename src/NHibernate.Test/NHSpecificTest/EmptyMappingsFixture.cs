@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Transaction;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
@@ -24,34 +22,34 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void BeginWithIsolationLevel()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction( IsolationLevel.ReadCommitted ) )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction(IsolationLevel.ReadCommitted))
 			{
-				AdoTransaction at = ( AdoTransaction ) t;
-				Assert.AreEqual( IsolationLevel.ReadCommitted, at.IsolationLevel );
+				AdoTransaction at = (AdoTransaction) t;
+				Assert.AreEqual(IsolationLevel.ReadCommitted, at.IsolationLevel);
 			}
 		}
 
-		[Test, ExpectedException( typeof( ObjectDisposedException ) )]
+		[Test, ExpectedException(typeof(ObjectDisposedException))]
 		public void ReconnectAfterClose()
 		{
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				s.Close();
 				s.Reconnect();
 			}
 		}
 
-		[Test, ExpectedException( typeof( QueryException ) )]
+		[Test, ExpectedException(typeof(QueryException))]
 		public void InvalidQuery()
 		{
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				s.CreateQuery( "from SomeInvalidClass").List();
+				s.CreateQuery("from SomeInvalidClass").List();
 			}
 		}
 
-		[Test, ExpectedException( typeof( ArgumentNullException ) )]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void NullInterceptor()
 		{
 			IInterceptor nullInterceptor = null;
@@ -64,17 +62,17 @@ namespace NHibernate.Test.NHSpecificTest
 			IDbConnection conn = sessions.ConnectionProvider.GetConnection();
 			try
 			{
-				using( ISession s = OpenSession() )
+				using (ISession s = OpenSession())
 				{
 					s.Disconnect();
-					s.Reconnect( conn );
-					Assert.AreSame( conn, s.Disconnect() );
-					Assert.AreEqual( ConnectionState.Open, conn.State );
+					s.Reconnect(conn);
+					Assert.AreSame(conn, s.Disconnect());
+					Assert.AreEqual(ConnectionState.Open, conn.State);
 				}
 			}
 			finally
 			{
-				sessions.ConnectionProvider.CloseConnection( conn );
+				sessions.ConnectionProvider.CloseConnection(conn);
 			}
 		}
 	}

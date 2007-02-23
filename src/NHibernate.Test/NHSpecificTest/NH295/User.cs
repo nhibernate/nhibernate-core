@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Iesi.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH295
@@ -9,12 +8,12 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 	{
 		private ISet _groups = new HashedSet();
 
-		internal User() : this( "" )
+		internal User() : this("")
 		{
 		}
 
-		internal User( string name )
-			: base( name )
+		internal User(string name)
+			: base(name)
 		{
 		}
 

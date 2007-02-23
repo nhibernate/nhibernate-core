@@ -4,12 +4,16 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 {
 	public class Drive
 	{
-		public Drive() : base() { }
+		public Drive() : base()
+		{
+		}
+
 		public Drive(string classFullName)
 			: this()
 		{
 			_classFullName = classFullName;
 		}
+
 		private int _id;
 
 		public int Id
@@ -32,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			if (that != null)
 				return that.ClassFullName.Equals(_classFullName);
 			else
-			  return base.Equals(obj);
+				return base.Equals(obj);
 		}
 
 		public override int GetHashCode()

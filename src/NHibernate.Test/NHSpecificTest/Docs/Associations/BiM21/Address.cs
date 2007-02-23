@@ -5,9 +5,9 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 {
 	public class Address
 	{
-		private Iesi.Collections.ISet _people;
+		private ISet _people;
 		private int _id;
-		
+
 		public Address()
 		{
 		}
@@ -23,7 +23,5 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 			get { return _people; }
 			set { _people = value; }
 		}
-
-		
 	}
 }

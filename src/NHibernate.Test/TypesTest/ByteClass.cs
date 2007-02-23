@@ -7,14 +7,14 @@ namespace NHibernate.Test.TypesTest
 	/// </summary>
 	public class ByteClass
 	{
-		int _id;
-		byte _byteValue;
+		private int _id;
+		private byte _byteValue;
 
 		public ByteClass()
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
@@ -25,6 +25,5 @@ namespace NHibernate.Test.TypesTest
 			get { return _byteValue; }
 			set { _byteValue = value; }
 		}
-		
 	}
 }

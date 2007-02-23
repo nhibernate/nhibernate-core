@@ -4,7 +4,10 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 {
 	public class LiteralDescription
 	{
-		public LiteralDescription() : base() { }
+		public LiteralDescription() : base()
+		{
+		}
+
 		public LiteralDescription(string description)
 			: this()
 		{
@@ -12,17 +15,18 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 		}
 
 		private int _id;
+
 		public int Id
 		{
 			get { return _id; }
 		}
 
 		private string _description = string.Empty;
+
 		public string Description
 		{
 			get { return _description; }
 			set { _description = value; }
 		}
-
 	}
 }

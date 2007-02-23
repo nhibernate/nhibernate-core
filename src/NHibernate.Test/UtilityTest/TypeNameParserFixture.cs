@@ -1,44 +1,42 @@
 using System;
-
-using NUnit.Framework;
-
 using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
 	public class TypeNameParserFixture
 	{
-		private void CheckInput( string input, string expectedType, string expectedAssembly )
+		private void CheckInput(string input, string expectedType, string expectedAssembly)
 		{
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( input );
-			Assert.AreEqual( expectedType, tn.Type, "Type name should match" );
-			Assert.AreEqual( expectedAssembly, tn.Assembly, "Assembly name should match" );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse(input);
+			Assert.AreEqual(expectedType, tn.Type, "Type name should match");
+			Assert.AreEqual(expectedAssembly, tn.Assembly, "Assembly name should match");
 		}
 
 		[Test]
 		public void ParseSimple()
 		{
-			CheckInput( "SomeType", "SomeType", null );
+			CheckInput("SomeType", "SomeType", null);
 		}
 
 		[Test]
 		public void ParseQualified()
 		{
-			CheckInput( "SomeType,SomeAssembly", "SomeType", "SomeAssembly" );
+			CheckInput("SomeType,SomeAssembly", "SomeType", "SomeAssembly");
 		}
 
 		[Test]
 		public void ParseWithEscapes()
 		{
-			CheckInput( "Some\\,Type, SomeAssembly\\,", "Some\\,Type", "SomeAssembly\\," );
+			CheckInput("Some\\,Type, SomeAssembly\\,", "Some\\,Type", "SomeAssembly\\,");
 		}
 
 		[Test]
 		public void ParseFullAssemblyName()
 		{
 			string assemblyName = "SomeAssembly, SomeCulture, SomethingElse";
-			CheckInput( "SomeType, " + assemblyName, "SomeType", assemblyName );
+			CheckInput("SomeType, " + assemblyName, "SomeType", assemblyName);
 		}
 
 		[Test]
@@ -47,7 +45,7 @@ namespace NHibernate.Test.UtilityTest
 			string assemblyName = "SomeAssembly";
 			string typeName = "SomeType`1[System.Int32]";
 
-			CheckInput( typeName + ", " + assemblyName, typeName, assemblyName );
+			CheckInput(typeName + ", " + assemblyName, typeName, assemblyName);
 		}
 
 		[Test]
@@ -55,37 +53,37 @@ namespace NHibernate.Test.UtilityTest
 		{
 			string typeName = "SomeType`1[[System.Int32, mscorlib], System.Int32]";
 
-			CheckInput( typeName, typeName, null );
+			CheckInput(typeName, typeName, null);
 		}
 
-		[Test, ExpectedException( typeof( ArgumentException ) )]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void ParseUnmatchedBracket()
 		{
-			TypeNameParser.Parse( "SomeName[" );
+			TypeNameParser.Parse("SomeName[");
 		}
 
 		[Test]
 		public void ParseUnmatchedEscapedBracket()
 		{
-			TypeNameParser.Parse( "SomeName\\[" );
+			TypeNameParser.Parse("SomeName\\[");
 		}
 
 		[Test]
 		public void ParseWithDefaultAssemblyUnused()
 		{
 			string defaultAssembly = "DefaultAssembly";
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeType, AnotherAssembly", null, defaultAssembly );
-			Assert.AreEqual( "SomeType", tn.Type );
-			Assert.AreEqual( "AnotherAssembly", tn.Assembly );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeType, AnotherAssembly", null, defaultAssembly);
+			Assert.AreEqual("SomeType", tn.Type);
+			Assert.AreEqual("AnotherAssembly", tn.Assembly);
 		}
 
 		[Test]
 		public void ParseWithDefaultAssembly()
 		{
 			string defaultAssembly = "SomeAssembly";
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeType", null, defaultAssembly );
-			Assert.AreEqual( "SomeType", tn.Type );
-			Assert.AreEqual( defaultAssembly, tn.Assembly );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeType", null, defaultAssembly);
+			Assert.AreEqual("SomeType", tn.Type);
+			Assert.AreEqual(defaultAssembly, tn.Assembly);
 		}
 
 		[Test]
@@ -94,8 +92,8 @@ namespace NHibernate.Test.UtilityTest
 			string defaultAssembly = "DefaultAssembly";
 			string defaultNamespace = "DefaultNamespace";
 
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeType", defaultNamespace, defaultAssembly );
-			Assert.AreEqual( "DefaultNamespace.SomeType", tn.Type );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeType", defaultNamespace, defaultAssembly);
+			Assert.AreEqual("DefaultNamespace.SomeType", tn.Type);
 		}
 
 		[Test]
@@ -103,9 +101,9 @@ namespace NHibernate.Test.UtilityTest
 		{
 			string defaultNamespace = "DefaultNamespace";
 
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeType", defaultNamespace, null );
-			Assert.AreEqual( "DefaultNamespace.SomeType", tn.Type );
-			Assert.IsNull( tn.Assembly );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeType", defaultNamespace, null);
+			Assert.AreEqual("DefaultNamespace.SomeType", tn.Type);
+			Assert.IsNull(tn.Assembly);
 		}
 
 		[Test]
@@ -114,20 +112,20 @@ namespace NHibernate.Test.UtilityTest
 			string defaultAssembly = "DefaultAssembly";
 			string defaultNamespace = "DefaultNamespace";
 
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( "SomeNamespace.SomeType", defaultNamespace, defaultAssembly );
-			Assert.AreEqual( "SomeNamespace.SomeType", tn.Type );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeNamespace.SomeType", defaultNamespace, defaultAssembly);
+			Assert.AreEqual("SomeNamespace.SomeType", tn.Type);
 		}
 
 		[Test]
 		public void ParseTrims()
 		{
-			CheckInput( "\t  \nSomeType, SomeAssembly\n   \r\t", "SomeType", "SomeAssembly" );
+			CheckInput("\t  \nSomeType, SomeAssembly\n   \r\t", "SomeType", "SomeAssembly");
 		}
 
-		[Test, ExpectedException( typeof( ArgumentException ) )]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void ParseInvalidEscape()
 		{
-			TypeNameParser.Parse( "\\" );
+			TypeNameParser.Parse("\\");
 		}
 	}
 }

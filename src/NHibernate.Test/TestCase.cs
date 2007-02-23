@@ -2,13 +2,11 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Reflection;
-
 using log4net;
-
+using log4net.Config;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Tool.hbm2ddl;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test
@@ -20,7 +18,7 @@ namespace NHibernate.Test
 		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
 
-		private static readonly ILog log = LogManager.GetLogger( typeof( TestCase ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 
 		private ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
@@ -37,11 +35,11 @@ namespace NHibernate.Test
 		{
 			get { return "NHibernate.DomainModel"; }
 		}
-		
+
 		static TestCase()
 		{
-		    // Configure log4net here since configuration through an attribute doesn't always work.
-		    log4net.Config.XmlConfigurator.Configure();
+			// Configure log4net here since configuration through an attribute doesn't always work.
+			XmlConfigurator.Configure();
 		}
 
 		/// <summary>
@@ -54,10 +52,10 @@ namespace NHibernate.Test
 			{
 				ExportSchema();
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				log.Error( "Error while setting up the database schema, ignoring the fixture", e );
-				Assert.Ignore( "Error while setting up the database schema: " + e );
+				log.Error("Error while setting up the database schema, ignoring the fixture", e);
+				Assert.Ignore("Error while setting up the database schema: " + e);
 			}
 		}
 
@@ -108,17 +106,17 @@ namespace NHibernate.Test
 			bool wereConnectionsClosed = CheckConnectionsWereClosed();
 			bool fail = !wasClosed || !wasCleaned || !wereConnectionsClosed;
 
-			if( fail )
+			if (fail)
 			{
-				Assert.Fail( "Test didn't clean up after itself" );
+				Assert.Fail("Test didn't clean up after itself");
 			}
 		}
 
 		private bool CheckSessionWasClosed()
 		{
-			if( lastOpenedSession != null && lastOpenedSession.IsOpen )
+			if (lastOpenedSession != null && lastOpenedSession.IsOpen)
 			{
-				log.Error( "Test case didn't close a session, closing" );
+				log.Error("Test case didn't close a session, closing");
 				lastOpenedSession.Close();
 				return false;
 			}
@@ -128,7 +126,7 @@ namespace NHibernate.Test
 
 		private bool CheckDatabaseWasCleaned()
 		{
-			if( sessions.GetAllClassMetadata().Count == 0 )
+			if (sessions.GetAllClassMetadata().Count == 0)
 			{
 				// Return early in the case of no mappings, also avoiding
 				// a warning when executing the HQL below.
@@ -136,14 +134,14 @@ namespace NHibernate.Test
 			}
 
 			int objectCount;
-			using( ISession s = sessions.OpenSession() )
+			using (ISession s = sessions.OpenSession())
 			{
-				objectCount = s.CreateQuery( "from System.Object o" ).List().Count;
+				objectCount = s.CreateQuery("from System.Object o").List().Count;
 			}
 
-			if( objectCount > 0 )
+			if (objectCount > 0)
 			{
-				log.Error( "Test case didn't clean up the database after itself, re-creating the schema" );
+				log.Error("Test case didn't clean up the database after itself, re-creating the schema");
 				DropSchema();
 				ExportSchema();
 				return false;
@@ -154,37 +152,37 @@ namespace NHibernate.Test
 
 		private bool CheckConnectionsWereClosed()
 		{
-			if( connectionProvider == null || !connectionProvider.HasOpenConnections )
+			if (connectionProvider == null || !connectionProvider.HasOpenConnections)
 			{
 				return true;
 			}
 
-			log.Error( "Test case didn't close all open connections, closing" );
+			log.Error("Test case didn't close all open connections, closing");
 			connectionProvider.CloseAllConnections();
 			return false;
 		}
 
 		private void ExportSchema()
 		{
-			ExportSchema( Mappings, MappingsAssembly );
+			ExportSchema(Mappings, MappingsAssembly);
 		}
 
 		protected virtual void Configure(Configuration cfg)
 		{
 		}
 
-		private void ExportSchema( IList files, string assemblyName )
+		private void ExportSchema(IList files, string assemblyName)
 		{
 			cfg = new Configuration();
 
-			for( int i = 0; i < files.Count; i++ )
+			for (int i = 0; i < files.Count; i++)
 			{
-				cfg.AddResource( assemblyName + "." + files[ i ].ToString(), Assembly.Load( assemblyName ) );
+				cfg.AddResource(assemblyName + "." + files[i].ToString(), Assembly.Load(assemblyName));
 			}
 
 			Configure(cfg);
 
-			new SchemaExport( cfg ).Create( OutputDdl, true );
+			new SchemaExport(cfg).Create(OutputDdl, true);
 
 			sessions = cfg.BuildSessionFactory();
 			dialect = Dialect.Dialect.GetDialect();
@@ -202,26 +200,26 @@ namespace NHibernate.Test
 			connectionProvider = null;
 			lastOpenedSession = null;
 
-			new SchemaExport( cfg ).Drop( OutputDdl, true );
+			new SchemaExport(cfg).Drop(OutputDdl, true);
 			cfg = null;
 		}
 
-		public void ExecuteStatement( string sql )
+		public void ExecuteStatement(string sql)
 		{
-			ExecuteStatement( sql, true );
+			ExecuteStatement(sql, true);
 		}
 
-		public void ExecuteStatement( string sql, bool error )
+		public void ExecuteStatement(string sql, bool error)
 		{
 			IDbConnection conn = null;
 			IDbTransaction tran = null;
 			try
 			{
-				if( cfg == null )
+				if (cfg == null)
 				{
 					cfg = new Configuration();
 				}
-				IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider( cfg.Properties );
+				IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
 				conn = prov.GetConnection();
 				tran = conn.BeginTransaction();
 				IDbCommand comm = conn.CreateCommand();
@@ -231,20 +229,20 @@ namespace NHibernate.Test
 				comm.ExecuteNonQuery();
 				tran.Commit();
 			}
-			catch( Exception )
+			catch (Exception)
 			{
-				if( tran != null )
+				if (tran != null)
 				{
 					tran.Rollback();
 				}
-				if( error )
+				if (error)
 				{
 					throw;
 				}
 			}
 			finally
 			{
-				if( conn != null )
+				if (conn != null)
 				{
 					conn.Close();
 				}

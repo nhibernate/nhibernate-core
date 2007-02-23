@@ -1,20 +1,17 @@
 using System;
-
 using NHibernate.Type;
-
 using NUnit.Framework;
 
-namespace NHibernate.Test.TypesTest 
+namespace NHibernate.Test.TypesTest
 {
-
-	public enum A 
+	public enum A
 	{
 		Zero,
 		One,
 		Two
 	}
 
-	public enum B 
+	public enum B
 	{
 		Zero,
 		One,
@@ -37,19 +34,19 @@ namespace NHibernate.Test.TypesTest
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			p = new PersistentEnumClass( 1, A.One, B.Two );
+			p = new PersistentEnumClass(1, A.One, B.Two);
 		}
 
 
 		[Test]
-		public void EqualsTrue() 
+		public void EqualsTrue()
 		{
 			IType type = NHibernateUtil.Enum(typeof(A));
 
 			A lhs = A.One;
 			A rhs = A.One;
 
-			Assert.IsTrue( type.Equals(lhs, rhs) );
+			Assert.IsTrue(type.Equals(lhs, rhs));
 		}
 
 		/// <summary>
@@ -57,7 +54,7 @@ namespace NHibernate.Test.TypesTest
 		/// are different Enums that they are not considered Equal.
 		/// </summary>
 		[Test]
-		public void EqualsFalseSameUnderlyingValue() 
+		public void EqualsFalseSameUnderlyingValue()
 		{
 			IType type = NHibernateUtil.Enum(typeof(A));
 
@@ -68,7 +65,7 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		[Test]
-		public void EqualsFalse() 
+		public void EqualsFalse()
 		{
 			IType type = NHibernateUtil.Enum(typeof(A));
 
@@ -81,16 +78,16 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void UsageInHqlSelectNew()
 		{
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				s.Save( p );
+				s.Save(p);
 				s.Flush();
 			}
 
 			using (ISession s = sessions.OpenSession())
 			{
-				s.CreateQuery( "select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p").List();
-				s.Delete( "from PersistentEnumClass" );
+				s.CreateQuery("select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p").List();
+				s.Delete("from PersistentEnumClass");
 				s.Flush();
 			}
 		}
@@ -98,25 +95,23 @@ namespace NHibernate.Test.TypesTest
 		[Test, ExpectedException(typeof(QueryException))]
 		public void UsageInHqlSelectNewInvalidConstructor()
 		{
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				s.Save( p );
+				s.Save(p);
 				s.Flush();
 			}
 
 			ISession s2 = sessions.OpenSession();
 			try
 			{
-				s2.CreateQuery( "select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").List();
+				s2.CreateQuery("select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").List();
 			}
 			finally
 			{
-				s2.Delete( "from PersistentEnumClass" );
+				s2.Delete("from PersistentEnumClass");
 				s2.Flush();
 				s2.Close();
 			}
 		}
 	}
-
-
 }

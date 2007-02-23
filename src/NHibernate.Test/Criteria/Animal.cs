@@ -6,6 +6,7 @@ namespace NHibernate.Test.Criteria
 	public class Animal
 	{
 		private long id;
+
 		public virtual long Id
 		{
 			get { return id; }
@@ -13,6 +14,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private float bodyWeight;
+
 		public virtual float BodyWeight
 		{
 			get { return bodyWeight; }
@@ -20,6 +22,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private ISet offspring;
+
 		public virtual ISet Offspring
 		{
 			get { return offspring; }
@@ -27,6 +30,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private Animal mother;
+
 		public virtual Animal Mother
 		{
 			get { return mother; }
@@ -34,6 +38,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private Animal father;
+
 		public virtual Animal Father
 		{
 			get { return father; }
@@ -41,6 +46,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private string description;
+
 		public virtual string Description
 		{
 			get { return description; }
@@ -48,6 +54,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private string serialNumber;
+
 		public virtual string SerialNumber
 		{
 			get { return serialNumber; }

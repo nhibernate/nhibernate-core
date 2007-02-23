@@ -26,9 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.NH642
 		private void DoTest(string name)
 		{
 			ISessionFactory factory = new Configuration()
-					.AddResource("NHibernate.Test.NHSpecificTest.NH642." + name + ".hbm.xml",
-					             typeof (Fixture).Assembly)
-					.BuildSessionFactory();
+				.AddResource("NHibernate.Test.NHSpecificTest.NH642." + name + ".hbm.xml",
+				             typeof(Fixture).Assembly)
+				.BuildSessionFactory();
 			factory.Close();
 		}
 

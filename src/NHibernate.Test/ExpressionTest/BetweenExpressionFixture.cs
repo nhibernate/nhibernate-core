@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.DomainModel;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
@@ -16,12 +15,12 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 
-			CreateObjects( typeof( Simple ), session );
-			ICriterion betweenExpression = Expression.Expression.Between( "Count", 5, 10 );
+			CreateObjects(typeof(Simple), session);
+			ICriterion betweenExpression = Expression.Expression.Between("Count", 5, 10);
 			SqlString sqlString = betweenExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
 			string expectedSql = "sql_alias.count_ between ? and ?";
-			CompareSqlStrings( sqlString, expectedSql, 2 );
+			CompareSqlStrings(sqlString, expectedSql, 2);
 
 			session.Close();
 		}

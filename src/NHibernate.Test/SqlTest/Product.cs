@@ -45,7 +45,7 @@ namespace NHibernate.Test.SqlTest
 			get { return productId; }
 			set { productId = value; }
 		}
-		
+
 		public virtual string Name
 		{
 			get { return name; }

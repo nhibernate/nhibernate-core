@@ -1,23 +1,22 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Test.TypesTest
 {
 	public class PersistentEnumHolder
 	{
-		public PersistentEnumHolder( A a, B b )
+		public PersistentEnumHolder(A a, B b)
 		{
 		}
 	}
 
 	public class PersistentEnumClass
 	{
-		int _id;
-		A _a;
-		B _b;
+		private int _id;
+		private A _a;
+		private B _b;
+
 		public int Id
 		{
-
 			get { return _id; }
 			set { _id = value; }
 		}
@@ -38,11 +37,11 @@ namespace NHibernate.Test.TypesTest
 		{
 		}
 
-		public PersistentEnumClass( int id, A a, B b )
+		public PersistentEnumClass(int id, A a, B b)
 		{
 			_id = id;
-			_a  = a;
-			_b  = b;
+			_a = a;
+			_b = b;
 		}
 	}
 }

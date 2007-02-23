@@ -26,13 +26,13 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 
 		public IList Nodes
 		{
-			get 
+			get
 			{
 				if (this._nodes == null)
 				{
 					this._nodes = new ArrayList();
 				}
-				return this._nodes; 
+				return this._nodes;
 			}
 			set { this._nodes = value; }
 		}

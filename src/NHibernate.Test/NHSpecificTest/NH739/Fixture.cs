@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH739
 		public void Bug()
 		{
 			int catId;
-			
+
 			using (ISession sess = OpenSession())
 			{
 				Cat c = new Cat();
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH739
 				catId = c.Id;
 				sess.Flush();
 			}
-			
+
 			using (ISession sess = OpenSession())
 			{
 				Cat c = (Cat) sess.Get(typeof(Cat), catId);

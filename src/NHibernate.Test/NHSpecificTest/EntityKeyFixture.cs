@@ -1,15 +1,18 @@
 using System;
-using System.Collections;
-using NHibernate.Persister.Entity;
-using NUnit.Framework;
-
+using System.Reflection;
+using NHibernate.Cache;
 using NHibernate.Engine;
+using NHibernate.Id;
+using NHibernate.Metadata;
+using NHibernate.Persister.Entity;
+using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
 {
 	public class TestingClassPersister : IEntityPersister
 	{
-		public NHibernate.Type.IType IdentifierType
+		public IType IdentifierType
 		{
 			get { return NHibernateUtil.Int32; }
 		}
@@ -25,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public NHibernate.Metadata.IClassMetadata ClassMetadata
+		public IClassMetadata ClassMetadata
 		{
 			get
 			{
@@ -102,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		public NHibernate.Id.IIdentifierGenerator IdentifierGenerator
+		public IIdentifierGenerator IdentifierGenerator
 		{
 			get
 			{
@@ -120,14 +123,14 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-        public bool[] PropertyVersionability
-        {
-            get 
-            {
-                // TODO:  Add TestingClassPersister.PropertyVersionability getter implementation
-                return null; 
-            }
-        }
+		public bool[] PropertyVersionability
+		{
+			get
+			{
+				// TODO:  Add TestingClassPersister.PropertyVersionability getter implementation
+				return null;
+			}
+		}
 
 
 		public System.Type MappedClass
@@ -171,7 +174,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		public NHibernate.Engine.Cascades.CascadeStyle[] PropertyCascadeStyles
+		public Cascades.CascadeStyle[] PropertyCascadeStyles
 		{
 			get
 			{
@@ -194,7 +197,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add TestingClassPersister.SetPropertyValues implementation
 		}
 
-		public NHibernate.Type.IType[] PropertyTypes
+		public IType[] PropertyTypes
 		{
 			get
 			{
@@ -307,7 +310,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public NHibernate.Type.IType GetPropertyType(string propertyName)
+		public IType GetPropertyType(string propertyName)
 		{
 			// TODO:  Add TestingClassPersister.GetPropertyType implementation
 			return null;
@@ -322,7 +325,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public System.Reflection.PropertyInfo ProxyIdentifierProperty
+		public PropertyInfo ProxyIdentifierProperty
 		{
 			get
 			{
@@ -349,7 +352,8 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields, object oldVersion, object obj, ISessionImplementor session)
+		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
+		                   object oldVersion, object obj, ISessionImplementor session)
 		{
 			// TODO:  Add TestingClassPersister.Update implementation
 		}
@@ -384,7 +388,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		public NHibernate.Cache.ICacheConcurrencyStrategy Cache
+		public ICacheConcurrencyStrategy Cache
 		{
 			get
 			{
@@ -402,7 +406,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public bool IsUnsavedVersion( object [ ] values )
+		public bool IsUnsavedVersion(object[] values)
 		{
 			// TODO:  Add TestingClassPersister.IsDefaultVersion implementation
 			return false;
@@ -422,7 +426,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add TestingClassPersister.PostInstantiate implementation
 		}
 
-		public NHibernate.Type.IVersionType VersionType
+		public IVersionType VersionType
 		{
 			get
 			{
@@ -454,7 +458,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add TestingClassPersister.Lock implementation
 		}
 
-		public object CreateProxy( object id, ISessionImplementor session )
+		public object CreateProxy(object id, ISessionImplementor session)
 		{
 			return null;
 		}
@@ -468,14 +472,14 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			get { return null; }
 		}
-		#endregion
 
-    }
+		#endregion
+	}
 
 	[TestFixture]
 	public class EntityKeyFixture
 	{
-		[Test, ExpectedException( typeof( ArgumentException ) )]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void CreateWithWrongTypeOfId()
 		{
 			IEntityPersister persister = new TestingClassPersister();

@@ -1,12 +1,12 @@
 using System;
-
-using NHibernate.Engine;
-using NHibernate.Util;
-using NExpression = NHibernate.Expression;
-using NHibernate.SqlCommand;
-
+using NHibernate.Dialect;
 using NHibernate.DomainModel;
+using NHibernate.Engine;
+using NHibernate.Expression;
+using NHibernate.SqlCommand;
+using NHibernate.Util;
 using NUnit.Framework;
+using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -17,17 +17,17 @@ namespace NHibernate.Test.ExpressionTest
 	public class InsensitiveLikeExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
-		public void InsentitiveLikeSqlStringTest() 
+		public void InsentitiveLikeSqlStringTest()
 		{
 			ISession session = factory.OpenSession();
-			
-			NExpression.ICriterion expression = NExpression.Expression.InsensitiveLike("Address", "12 Adress");
 
-			CreateObjects( typeof( Simple ), session );
+			ICriterion expression = Expression.Expression.InsensitiveLike("Address", "12 Adress");
+
+			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
-			
+
 			string expectedSql = "lower(sql_alias.address) like ?";
-			if ((factory as ISessionFactoryImplementor).Dialect is Dialect.PostgreSQLDialect)
+			if ((factory as ISessionFactoryImplementor).Dialect is PostgreSQLDialect)
 			{
 				expectedSql = "sql_alias.address ilike ?";
 			}
@@ -36,7 +36,5 @@ namespace NHibernate.Test.ExpressionTest
 
 			session.Close();
 		}
-
-
 	}
 }

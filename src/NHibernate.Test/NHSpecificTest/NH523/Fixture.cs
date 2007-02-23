@@ -17,25 +17,25 @@ namespace NHibernate.Test.NHSpecificTest.NH523
 			ClassA a = new ClassA();
 			a.B = new ClassB();
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save( a );
+				s.Save(a);
 				t.Commit();
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				s.SaveOrUpdateCopy( a );
+				s.SaveOrUpdateCopy(a);
 				t.Commit();
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Delete( a );
-				s.Delete( a.B );
+				s.Delete(a);
+				s.Delete(a.B);
 				t.Commit();
 			}
 		}

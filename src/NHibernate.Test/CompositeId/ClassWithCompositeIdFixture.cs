@@ -1,8 +1,5 @@
 using System;
 using System.Collections;
-using System.Data;
-
-using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CompositeId
@@ -13,7 +10,6 @@ namespace NHibernate.Test.CompositeId
 	[TestFixture]
 	public class ClassWithCompositeIdFixture : TestCase
 	{
-		
 		private DateTime firstDateTime = new DateTime(2003, 8, 16);
 		private DateTime secondDateTime = new DateTime(2003, 8, 17);
 		private Id id;
@@ -26,13 +22,10 @@ namespace NHibernate.Test.CompositeId
 
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "CompositeId.ClassWithCompositeId.hbm.xml" };
-			}
+			get { return new string[] {"CompositeId.ClassWithCompositeId.hbm.xml"}; }
 		}
 
-		protected override void OnSetUp() 
+		protected override void OnSetUp()
 		{
 			id = new Id("stringKey", 3, firstDateTime);
 			secondId = new Id("stringKey2", 5, secondDateTime);
@@ -40,9 +33,9 @@ namespace NHibernate.Test.CompositeId
 
 		protected override void OnTearDown()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using (ISession s = sessions.OpenSession())
 			{
-				s.Delete( "from ClassWithCompositeId" );
+				s.Delete("from ClassWithCompositeId");
 				s.Flush();
 			}
 		}
@@ -75,9 +68,8 @@ namespace NHibernate.Test.CompositeId
 		/// </list>
 		/// </remarks>
 		[Test]
-		public void TestSimpleCRUD() 
+		public void TestSimpleCRUD()
 		{
-			
 			// insert the new objects
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -99,18 +91,18 @@ namespace NHibernate.Test.CompositeId
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 
-			ClassWithCompositeId theClass2 = (ClassWithCompositeId)s2.Load(typeof(ClassWithCompositeId), id);
-			Assert.AreEqual( id, theClass2.Id );
-			
+			ClassWithCompositeId theClass2 = (ClassWithCompositeId) s2.Load(typeof(ClassWithCompositeId), id);
+			Assert.AreEqual(id, theClass2.Id);
+
 			IList results2 = s2.CreateCriteria(typeof(ClassWithCompositeId))
-					.Add(Expression.Expression.Eq("Id", secondId))
-					.List();
+				.Add(Expression.Expression.Eq("Id", secondId))
+				.List();
 
 			Assert.AreEqual(1, results2.Count);
-			ClassWithCompositeId theSecondClass2 = (ClassWithCompositeId)results2[0];
+			ClassWithCompositeId theSecondClass2 = (ClassWithCompositeId) results2[0];
 
-			ClassWithCompositeId theClass2Copy = (ClassWithCompositeId)s2.Load(typeof(ClassWithCompositeId), id);
-			
+			ClassWithCompositeId theClass2Copy = (ClassWithCompositeId) s2.Load(typeof(ClassWithCompositeId), id);
+
 			// verify the same results through Criteria & Load were achieved
 			Assert.AreSame(theClass2, theClass2Copy);
 
@@ -135,13 +127,13 @@ namespace NHibernate.Test.CompositeId
 			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
 
-			ClassWithCompositeId theClass3 = (ClassWithCompositeId)s3.Load(typeof(ClassWithCompositeId), id);
-			ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId)s3.Load(typeof(ClassWithCompositeId), secondId);
+			ClassWithCompositeId theClass3 = (ClassWithCompositeId) s3.Load(typeof(ClassWithCompositeId), id);
+			ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId) s3.Load(typeof(ClassWithCompositeId), secondId);
 
 			// check the update properties
 			Assert.AreEqual(theClass3.OneProperty, theClass2.OneProperty);
 			Assert.AreEqual(theSecondClass3.OneProperty, theSecondClass2.OneProperty);
-			
+
 			// test the delete method
 			s3.Delete(theClass3);
 			s3.Delete(theSecondClass3);
@@ -152,17 +144,17 @@ namespace NHibernate.Test.CompositeId
 			// lets verify the delete went through
 			ISession s4 = OpenSession();
 
-			try 
+			try
 			{
-				ClassWithCompositeId theClass4 = (ClassWithCompositeId)s4.Load(typeof(ClassWithCompositeId), id);
+				ClassWithCompositeId theClass4 = (ClassWithCompositeId) s4.Load(typeof(ClassWithCompositeId), id);
 			}
-			catch(ObjectNotFoundException onfe) 
+			catch (ObjectNotFoundException onfe)
 			{
 				// I expect this to be thrown because the object no longer exists...
 				Assert.IsNotNull(onfe); //getting ride of 'onfe' is never used compile warning
 			}
 
-			IList results =  s4.CreateCriteria(typeof(ClassWithCompositeId))
+			IList results = s4.CreateCriteria(typeof(ClassWithCompositeId))
 				.Add(Expression.Expression.Eq("Id", secondId))
 				.List();
 
@@ -172,7 +164,7 @@ namespace NHibernate.Test.CompositeId
 		}
 
 		[Test]
-		public void Criteria() 
+		public void Criteria()
 		{
 			Id id = new Id("stringKey", 3, firstDateTime);
 			ClassWithCompositeId cId = new ClassWithCompositeId(id);
@@ -187,7 +179,7 @@ namespace NHibernate.Test.CompositeId
 
 			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof(ClassWithCompositeId));
-			c.Add( Expression.Expression.Eq("Id", id) );
+			c.Add(Expression.Expression.Eq("Id", id));
 
 			// right now just want to see if the Criteria is valid
 			IList results = c.List();
@@ -198,7 +190,7 @@ namespace NHibernate.Test.CompositeId
 		}
 
 		[Test]
-		public void Hql() 
+		public void Hql()
 		{
 			// insert the new objects
 			ISession s = OpenSession();
@@ -217,9 +209,9 @@ namespace NHibernate.Test.CompositeId
 			s.Close();
 
 			ISession s2 = OpenSession();
-			
+
 			IQuery hql = s2.CreateQuery("from ClassWithCompositeId as cwid where cwid.Id.KeyString = :keyString");
- 
+
 			hql.SetString("keyString", id.KeyString);
 
 			IList results = hql.List();

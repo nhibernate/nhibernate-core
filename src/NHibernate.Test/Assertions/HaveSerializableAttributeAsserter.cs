@@ -1,14 +1,14 @@
 using System;
-using System.Text;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.Assertions
 {
-	public class HaveSerializableAttributeAsserter: AbstractAsserter
+	public class HaveSerializableAttributeAsserter : AbstractAsserter
 	{
 		private readonly System.Type clazz;
-		public HaveSerializableAttributeAsserter(System.Type clazz, string message, params object[] args):base(message,args)
+
+		public HaveSerializableAttributeAsserter(System.Type clazz, string message, params object[] args)
+			: base(message, args)
 		{
 			this.clazz = clazz;
 		}
@@ -21,7 +21,7 @@ namespace NHibernate.Test.Assertions
 
 		public override bool Test()
 		{
-			object[] atts = clazz.GetCustomAttributes(typeof(System.SerializableAttribute), false);
+			object[] atts = clazz.GetCustomAttributes(typeof(SerializableAttribute), false);
 			return (atts.Length > 0);
 		}
 

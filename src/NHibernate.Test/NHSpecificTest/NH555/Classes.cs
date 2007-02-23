@@ -16,34 +16,19 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 
 		public int Id
 		{
-			get
-			{
-				return _id;
-			}
+			get { return _id; }
 		}
 
 		public string Name
 		{
-			get
-			{
-				return _name;
-			}
-			set
-			{
-				_name = value;
-			}
+			get { return _name; }
+			set { _name = value; }
 		}
 
 		public decimal Price
 		{
-			get
-			{
-				return _price;
-			}
-			set
-			{
-				_price = value;
-			}
+			get { return _price; }
+			set { _price = value; }
 		}
 
 		#region Constructors
@@ -70,22 +55,13 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 
 		public int Id
 		{
-			get
-			{
-				return _id;
-			}
+			get { return _id; }
 		}
 
 		public string Name
 		{
-			get
-			{
-				return _name;
-			}
-			set
-			{
-				_name = value;
-			}
+			get { return _name; }
+			set { _name = value; }
 		}
 
 		#region Constructors
@@ -121,58 +97,34 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 
 		public int Id
 		{
-			get
-			{
-				return _id;
-			}
+			get { return _id; }
 		}
 
 		public DateTime OrderDate
 		{
-			get
-			{
-				return _orderDate;
-			}
+			get { return _orderDate; }
 		}
 
 		public Customer OwningCustomer
 		{
-			get
-			{
-				return _owningCustomer;
-			}
-			set
-			{
-				_owningCustomer = value;
-			}
+			get { return _owningCustomer; }
+			set { _owningCustomer = value; }
 		}
 
 		public IList OrderLines
 		{
-			get
-			{
-				return _orderLines;
-			}
+			get { return _orderLines; }
 		}
 
 		public decimal Discount
 		{
-			get
-			{
-				return _discount;
-			}
+			get { return _discount; }
 		}
 
 		public OrderStatus Status
 		{
-			get
-			{
-				return _status;
-			}
-			set
-			{
-				_status = value;
-			}
+			get { return _status; }
+			set { _status = value; }
 		}
 
 		private Order()
@@ -214,66 +166,39 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 
 		public int Id
 		{
-			get
-			{
-				return _id;
-			}
+			get { return _id; }
 		}
 
 		public int ArticleId
 		{
-			get
-			{
-				return _articleId;
-			}
+			get { return _articleId; }
 		}
 
 		public string ArticleName
 		{
-			get
-			{
-				return _articleName;
-			}
+			get { return _articleName; }
 		}
 
 		public decimal ArticlePrice
 		{
-			get
-			{
-				return _articlePrice;
-			}
+			get { return _articlePrice; }
 		}
 
 		public int NumberOfItems
 		{
-			get
-			{
-				return _numberOfItems;
-			}
-			set
-			{
-				_numberOfItems = value;
-			}
+			get { return _numberOfItems; }
+			set { _numberOfItems = value; }
 		}
 
 		public decimal LineTotal
 		{
-			get
-			{
-				return _numberOfItems * _articlePrice;
-			}
+			get { return _numberOfItems * _articlePrice; }
 		}
 
 		public Order OwningOrder
 		{
-			get
-			{
-				return _owningOrder;
-			}
-			set
-			{
-				_owningOrder = value;
-			}
+			get { return _owningOrder; }
+			set { _owningOrder = value; }
 		}
 
 		public void SetArticle(Article art)

@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-
 using NHibernate.Util;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
@@ -13,7 +11,6 @@ namespace NHibernate.Test.UtilityTest
 	[TestFixture]
 	public class JoinedEnumerableFixture
 	{
-		
 		/// <summary>
 		/// Test that the JoinedEnumerable works with a single wrapped
 		/// IEnumerable as expected when fully enumerating the collection.
@@ -21,21 +18,21 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsSingle()
 		{
-			int[] expected = new int[] { 1, 2, 3 };
-			
+			int[] expected = new int[] {1, 2, 3};
+
 			EnumerableTester first;
-			JoinedEnumerable joined = InitSingle( out first );
+			JoinedEnumerable joined = InitSingle(out first);
 
 			int index = 0;
 
-			foreach( int actual in joined )
+			foreach (int actual in joined)
 			{
-				Assert.AreEqual( expected[index], actual, "Failure at " + index.ToString() );
+				Assert.AreEqual(expected[index], actual, "Failure at " + index.ToString());
 				index++;
 			}
 
-			Assert.AreEqual( expected.Length, index, "Every expected value was found" );
-			Assert.IsTrue( first.WasDisposed, "should have been disposed of." );
+			Assert.AreEqual(expected.Length, index, "Every expected value was found");
+			Assert.IsTrue(first.WasDisposed, "should have been disposed of.");
 		}
 
 		/// <summary>
@@ -46,20 +43,20 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsSingleBreak()
 		{
-			int[] expected = new int[] { 1, 2, 3 };
-			
-			EnumerableTester first;
-			JoinedEnumerable joined = InitSingle( out first );
+			int[] expected = new int[] {1, 2, 3};
 
-			foreach( int actual in joined )
+			EnumerableTester first;
+			JoinedEnumerable joined = InitSingle(out first);
+
+			foreach (int actual in joined)
 			{
-				Assert.AreEqual( expected[0], actual, "first one was not what was expected." );
+				Assert.AreEqual(expected[0], actual, "first one was not what was expected.");
 				break;
 			}
 
 			// ensure that the first was disposed of even though we didn't enumerate
 			// all the way through
-			Assert.IsTrue( first.WasDisposed, "should have been disposed of." );
+			Assert.IsTrue(first.WasDisposed, "should have been disposed of.");
 		}
 
 		/// <summary>
@@ -69,23 +66,23 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsMultiple()
 		{
-			int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
-			
+			int[] expected = new int[] {1, 2, 3, 4, 5, 6};
+
 			EnumerableTester first;
 			EnumerableTester second;
-			JoinedEnumerable joined = InitMultiple( out first, out second );
+			JoinedEnumerable joined = InitMultiple(out first, out second);
 
 			int index = 0;
 
-			foreach( int actual in joined )
+			foreach (int actual in joined)
 			{
-				Assert.AreEqual( expected[index], actual, "Failure at " + index.ToString() );
+				Assert.AreEqual(expected[index], actual, "Failure at " + index.ToString());
 				index++;
 			}
 
-			Assert.AreEqual( expected.Length, index, "Every expected value was found" );
-			Assert.IsTrue( first.WasDisposed, "first should have been disposed of." );
-			Assert.IsTrue( second.WasDisposed, "second should have been disposed of. ");
+			Assert.AreEqual(expected.Length, index, "Every expected value was found");
+			Assert.IsTrue(first.WasDisposed, "first should have been disposed of.");
+			Assert.IsTrue(second.WasDisposed, "second should have been disposed of. ");
 		}
 
 		/// <summary>
@@ -104,48 +101,47 @@ namespace NHibernate.Test.UtilityTest
 
 		private void WrapsMultipleBreak(int breakIndex)
 		{
-			int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
-			
+			int[] expected = new int[] {1, 2, 3, 4, 5, 6};
+
 			EnumerableTester first;
 			EnumerableTester second;
-			JoinedEnumerable joined = InitMultiple( out first, out second );
+			JoinedEnumerable joined = InitMultiple(out first, out second);
 
 			int index = 0;
 
-			foreach( int actual in joined )
+			foreach (int actual in joined)
 			{
-				Assert.AreEqual( expected[index], actual, "Failure at " + index.ToString() );
+				Assert.AreEqual(expected[index], actual, "Failure at " + index.ToString());
 				index++;
-				if( index==breakIndex )
+				if (index == breakIndex)
 				{
 					break;
 				}
 			}
 
-			Assert.IsTrue( first.WasDisposed, "first should have been disposed of." );
-			Assert.IsTrue( second.WasDisposed, "second should have been disposed of. ");
+			Assert.IsTrue(first.WasDisposed, "first should have been disposed of.");
+			Assert.IsTrue(second.WasDisposed, "second should have been disposed of. ");
 		}
 
 
 		private JoinedEnumerable InitSingle(out EnumerableTester first)
 		{
-			first = new EnumerableTester( new ArrayList( new int[] {1,2,3} ) );
-			return new JoinedEnumerable( new IEnumerable[] {first} );
+			first = new EnumerableTester(new ArrayList(new int[] {1, 2, 3}));
+			return new JoinedEnumerable(new IEnumerable[] {first});
 		}
 
 		private JoinedEnumerable InitMultiple(out EnumerableTester first, out EnumerableTester second)
 		{
-			first = new EnumerableTester( new ArrayList( new int[] {1,2,3} ) );
-			second = new EnumerableTester( new ArrayList( new int[] {4,5,6} ) );
-			return new JoinedEnumerable( new IEnumerable[] {first,second} );
+			first = new EnumerableTester(new ArrayList(new int[] {1, 2, 3}));
+			second = new EnumerableTester(new ArrayList(new int[] {4, 5, 6}));
+			return new JoinedEnumerable(new IEnumerable[] {first, second});
 		}
-
 	}
 
 	/// <summary>
 	/// Simple class that wraps an array list for testing purposes.
 	/// </summary>
-	class EnumerableTester : IEnumerable	
+	internal class EnumerableTester : IEnumerable
 	{
 		private ArrayList _list;
 		private EnumerableTesterEnumerator _enumerator;
@@ -153,7 +149,7 @@ namespace NHibernate.Test.UtilityTest
 		public EnumerableTester(ArrayList wrappedList)
 		{
 			_list = wrappedList;
-			_enumerator = new EnumerableTesterEnumerator( _list.GetEnumerator() );
+			_enumerator = new EnumerableTesterEnumerator(_list.GetEnumerator());
 		}
 
 		public bool WasDisposed
@@ -214,7 +210,5 @@ namespace NHibernate.Test.UtilityTest
 
 			#endregion
 		}
-
-		
 	}
 }

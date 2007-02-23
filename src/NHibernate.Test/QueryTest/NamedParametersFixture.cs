@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.QueryTest
@@ -13,21 +12,17 @@ namespace NHibernate.Test.QueryTest
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "Simple.hbm.xml"};
-			}
+			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
-		[Test, ExpectedException(typeof(NHibernate.QueryException))]
+		[Test, ExpectedException(typeof(QueryException))]
 		public void TestMissingHQLParameters()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			
+
 			try
 			{
-				
 				IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 				// Just set the Name property not the count
 				q.SetAnsiString("Name", "Fred");
@@ -46,15 +41,15 @@ namespace NHibernate.Test.QueryTest
 		/// Verifying that a <c>null</c> value passed into SetParameter(name, val) throws
 		/// an exception
 		/// </summary>
-		[Test, ExpectedException( typeof( ArgumentNullException ) )]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullNamedParameter()
 		{
 			ISession s = OpenSession();
 
 			try
 			{
-				IQuery q = s.CreateQuery( "from Simple as s where s.Name=:Name" );
-				q.SetParameter( "Name", null );
+				IQuery q = s.CreateQuery("from Simple as s where s.Name=:Name");
+				q.SetParameter("Name", null);
 			}
 			finally
 			{

@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Util;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
@@ -18,7 +16,7 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
-		public void GetClassnameFromFQType() 
+		public void GetClassnameFromFQType()
 		{
 			string typeName = "ns1.ns2.classname, as1.as2., pk, lang";
 			string expected = "classname";
@@ -27,7 +25,7 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
-		public void GetClassnameFromFQClass() 
+		public void GetClassnameFromFQClass()
 		{
 			string typeName = "ns1.ns2.classname";
 			string expected = "classname";
@@ -66,7 +64,7 @@ namespace NHibernate.Test.UtilityTest
 		/// </summary>
 		public void Qualify()
 		{
-			Assert.AreEqual( "a.b", StringHelper.Qualify( "a", "b" ), "Qualified names differ" );
+			Assert.AreEqual("a.b", StringHelper.Qualify("a", "b"), "Qualified names differ");
 		}
 
 		[Test]
@@ -75,14 +73,14 @@ namespace NHibernate.Test.UtilityTest
 		/// </summary>
 		public void QualifyArray()
 		{
-			string[] simple = { "b", "c" };
-			string[] qual = { "a.b", "a.c" };
+			string[] simple = {"b", "c"};
+			string[] qual = {"a.b", "a.c"};
 
-			string[] result = StringHelper.Qualify( "a", simple );
+			string[] result = StringHelper.Qualify("a", simple);
 
-			for (int i = 0; i < result.Length; i++ )
+			for (int i = 0; i < result.Length; i++)
 			{
-				Assert.AreEqual( qual[i], result[i], "Qualified names differ" );
+				Assert.AreEqual(qual[i], result[i], "Qualified names differ");
 			}
 		}
 
@@ -90,16 +88,16 @@ namespace NHibernate.Test.UtilityTest
 		public void GenerateAliasForGenericTypeName()
 		{
 			string typeName = "A`1[B]";
-			string alias = StringHelper.GenerateAlias( typeName, 10 );
+			string alias = StringHelper.GenerateAlias(typeName, 10);
 
 #if NET_2_0
 			Assert.IsFalse( alias.Contains( "`" ), "alias '{0}' should not contain backticks",     alias );
 			Assert.IsFalse( alias.Contains( "[" ), "alias '{0}' should not contain left bracket",  alias );
 			Assert.IsFalse( alias.Contains( "]" ), "alias '{0}' should not contain right bracket", alias );
 #else
-			Assert.IsFalse( Contains( alias, "`" ), "alias '{0}' should not contain backticks",     alias );
-			Assert.IsFalse( Contains( alias, "[" ), "alias '{0}' should not contain left bracket",  alias );
-			Assert.IsFalse( Contains( alias, "]" ), "alias '{0}' should not contain right bracket", alias );
+			Assert.IsFalse(Contains(alias, "`"), "alias '{0}' should not contain backticks", alias);
+			Assert.IsFalse(Contains(alias, "["), "alias '{0}' should not contain left bracket", alias);
+			Assert.IsFalse(Contains(alias, "]"), "alias '{0}' should not contain right bracket", alias);
 #endif
 		}
 	}

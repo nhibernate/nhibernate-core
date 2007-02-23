@@ -7,7 +7,9 @@ namespace NHibernate.Test.Criteria
 		private string studentName;
 		private string courseDescription;
 
-		public StudentDTO() { }
+		public StudentDTO()
+		{
+		}
 
 		public string Name
 		{

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-
 using Iesi.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH386

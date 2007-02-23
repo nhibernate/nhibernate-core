@@ -7,15 +7,15 @@ namespace NHibernate.Test.TypesTest
 	/// </summary>
 	public class BinaryClass
 	{
-		int _id;
-		byte[] _defaultSize;
-		byte[] _withSize;
+		private int _id;
+		private byte[] _defaultSize;
+		private byte[] _withSize;
 
 		public BinaryClass()
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
@@ -23,17 +23,14 @@ namespace NHibernate.Test.TypesTest
 
 		public byte[] DefaultSize
 		{
-			get {return _defaultSize;}
-			set {_defaultSize = value;}
+			get { return _defaultSize; }
+			set { _defaultSize = value; }
 		}
 
 		public byte[] WithSize
 		{
-			get {return _withSize;}
-			set {_withSize = value;}
+			get { return _withSize; }
+			set { _withSize = value; }
 		}
-
-		
-		
 	}
 }

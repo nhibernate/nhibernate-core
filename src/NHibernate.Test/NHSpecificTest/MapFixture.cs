@@ -1,7 +1,6 @@
 using System;
-using System.Data;
 using System.Collections;
-
+using Iesi.Collections;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
@@ -21,10 +20,10 @@ namespace NHibernate.Test.NHSpecificTest
 			get
 			{
 				return new string[]
-					{ 
-						"NHSpecific.Parent.hbm.xml", 
-						"NHSpecific.Child.hbm.xml", 
-						"NHSpecific.SexType.hbm.xml", 
+					{
+						"NHSpecific.Parent.hbm.xml",
+						"NHSpecific.Child.hbm.xml",
+						"NHSpecific.SexType.hbm.xml",
 						"NHSpecific.Team.hbm.xml"
 					};
 			}
@@ -32,12 +31,12 @@ namespace NHibernate.Test.NHSpecificTest
 
 		protected override void OnTearDown()
 		{
-			using( ISession session = sessions.OpenSession() )
+			using (ISession session = sessions.OpenSession())
 			{
-				session.Delete( "from Team" );
-				session.Delete( "from Child" );
-				session.Delete( "from Parent" );
-				session.Delete( "from SexType" );
+				session.Delete("from Team");
+				session.Delete("from Child");
+				session.Delete("from Parent");
+				session.Delete("from SexType");
 				session.Flush();
 			}
 		}
@@ -53,12 +52,12 @@ namespace NHibernate.Test.NHSpecificTest
 
 			ICriteria chiefsCriteria = s.CreateCriteria(typeof(Team));
 			chiefsCriteria.Add(Expression.Expression.Eq("Name", "Chiefs"));
-			
-			Team chiefs = (Team)chiefsCriteria.List()[0];
+
+			Team chiefs = (Team) chiefsCriteria.List()[0];
 			IList players = chiefs.Players;
-			
-			Parent parentDad = (Parent)s.Load(typeof(Parent), 1);
-			Child amyJones = (Child)s.Load(typeof(Child), 2);
+
+			Parent parentDad = (Parent) s.Load(typeof(Parent), 1);
+			Child amyJones = (Child) s.Load(typeof(Child), 2);
 			Child[] friends = amyJones.Friends;
 
 			Child childOneRef = amyJones.FirstSibling;
@@ -68,20 +67,22 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		[Test]
-		public void TestSort() {
+		public void TestSort()
+		{
 			TestInsert();
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 
-			Parent bobJones = (Parent)s.Load(typeof(Parent), 1);
-			Iesi.Collections.ISet friends = bobJones.AdultFriends;
+			Parent bobJones = (Parent) s.Load(typeof(Parent), 1);
+			ISet friends = bobJones.AdultFriends;
 
 			int currentId = 0;
 			int previousId = 0;
 
-			foreach(Parent friend in friends) {
+			foreach (Parent friend in friends)
+			{
 				previousId = currentId;
 				currentId = friend.Id;
 
@@ -93,7 +94,8 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		[Test]
-		public void TestInsert() {
+		public void TestInsert()
+		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
@@ -145,8 +147,8 @@ namespace NHibernate.Test.NHSpecificTest
 			johnnyJones.Dad = bobJones;
 			johnnyJones.Mom = maryJones;
 			johnnyJones.Sex = male;
-			johnnyJones.Friends = new Child[]{brianSmith, sarahSmith};
-			johnnyJones.FavoriteDate = System.DateTime.Parse("2003-08-16");
+			johnnyJones.Friends = new Child[] {brianSmith, sarahSmith};
+			johnnyJones.FavoriteDate = DateTime.Parse("2003-08-16");
 
 			amyJones.Id = 2;
 			amyJones.FullName = "Amy Jones";
@@ -154,21 +156,21 @@ namespace NHibernate.Test.NHSpecificTest
 			amyJones.Mom = maryJones;
 			amyJones.Sex = female;
 			amyJones.FirstSibling = johnnyJones;
-			amyJones.Friends = new Child[]{johnnyJones, sarahSmith};
+			amyJones.Friends = new Child[] {johnnyJones, sarahSmith};
 
 			brianSmith.Id = 11;
 			brianSmith.FullName = "Brian Smith";
 			brianSmith.Dad = charlieSmith;
 			brianSmith.Mom = cindySmith;
 			brianSmith.Sex = male;
-			brianSmith.Friends = new Child[]{johnnyJones, amyJones, sarahSmith};
+			brianSmith.Friends = new Child[] {johnnyJones, amyJones, sarahSmith};
 
 			sarahSmith.Id = 12;
 			sarahSmith.FullName = "Sarah Smith";
 			sarahSmith.Dad = charlieSmith;
 			sarahSmith.Mom = cindySmith;
 			sarahSmith.Sex = female;
-			sarahSmith.Friends = new Child[]{brianSmith};
+			sarahSmith.Friends = new Child[] {brianSmith};
 
 			Team royals = new Team();
 			royals.Name = "Royals";
@@ -183,7 +185,7 @@ namespace NHibernate.Test.NHSpecificTest
 			chiefs.Players = new ArrayList();
 			chiefs.Players.Add(johnnyJones);
 			chiefs.Players.Add(sarahSmith);
-			
+
 			s.Save(johnnyJones, johnnyJones.Id);
 			s.Save(amyJones, amyJones.Id);
 			s.Save(brianSmith, brianSmith.Id);

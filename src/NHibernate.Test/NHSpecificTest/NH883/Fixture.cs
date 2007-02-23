@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH883
 				catId = c.Id;
 				sess.Flush();
 			}
-			
+
 			using (ISession sess = OpenSession())
 			{
 				Cat c = (Cat) sess.Get(typeof(Cat), catId);
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH883
 				c.Children.Add(kitten);
 				kitten.Mother = c;
 				sess.Save(kitten);
-				
+
 				// Double flush
 				sess.Flush();
 				sess.Flush();

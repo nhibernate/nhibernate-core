@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Criteria
 {
-	public class Reptile: Animal
+	public class Reptile : Animal
 	{
 		private float bodyTemperature;
 

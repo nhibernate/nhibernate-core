@@ -1,6 +1,6 @@
 using System;
-
 using NUnit.Framework;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH548
 {
@@ -15,9 +15,9 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 		[Test]
 		public void ParentPropertyOnCacheHit()
 		{
-			if( cfg.Properties[Cfg.Environment.CacheProvider] == null )
+			if (cfg.Properties[Environment.CacheProvider] == null)
 			{
-				Assert.Ignore( "Only applicable when a cache provider is enabled" );
+				Assert.Ignore("Only applicable when a cache provider is enabled");
 			}
 
 			// make a new MainObject
@@ -26,30 +26,30 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 			main.Component.Note = "Component";
 
 			// save it to the DB
-			using( ISession session = OpenSession() )
+			using (ISession session = OpenSession())
 			{
-				session.Save( main );
+				session.Save(main);
 				session.Flush();
 			}
 
 			// check parent
-			Assert.IsNotNull( main.Component.Parent, "component parent null (saved)" );
+			Assert.IsNotNull(main.Component.Parent, "component parent null (saved)");
 
 			MainObject getMain;
 
-			using( ISession session = OpenSession() )
+			using (ISession session = OpenSession())
 			{
-				getMain = ( MainObject ) session.Get( main.GetType(), main.ID );
+				getMain = (MainObject) session.Get(main.GetType(), main.ID);
 				session.Clear();
-				Assert.IsNotNull( getMain.Component.Parent, "component parent null (cache miss)" );
+				Assert.IsNotNull(getMain.Component.Parent, "component parent null (cache miss)");
 			}
-			
-			using( ISession session = OpenSession() )
+
+			using (ISession session = OpenSession())
 			{
-				getMain = ( MainObject ) session.Get( main.GetType(), main.ID );
-				Assert.IsNotNull( getMain.Component.Parent, "component parent null (cache hit)" );
-				
-				session.Delete( getMain );
+				getMain = (MainObject) session.Get(main.GetType(), main.ID);
+				Assert.IsNotNull(getMain.Component.Parent, "component parent null (cache hit)");
+
+				session.Delete(getMain);
 				session.Flush();
 			}
 		}

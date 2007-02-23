@@ -1,5 +1,4 @@
 using System;
-using NHibernate.Test.ProxyInterface;
 
 namespace NHibernate.Test.ProxyInterface
 {
@@ -25,8 +24,7 @@ namespace NHibernate.Test.ProxyInterface
 			get { return _name; }
 			set { _name = value; }
 		}
-		
-		#endregion
 
+		#endregion
 	}
 }

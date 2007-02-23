@@ -18,29 +18,33 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			for (int i = 0; i < length; i++)
 			{
 				// get a random char between 'a' and 'z'
-				id[i] = (char)random.Next( (int)'a', ((int)'z') + 1 );
+				id[i] = (char) random.Next((int) 'a', ((int) 'z') + 1);
 			}
-			return new string( id );
+			return new string(id);
 		}
 	}
 
 	public class Thing
 	{
-		public Thing() { }
+		public Thing()
+		{
+		}
 
-		public Thing( string classType )
+		public Thing(string classType)
 		{
 			this._ClassType = classType;
 		}
 
 		private string _ID;
+
 		public virtual string ID
 		{
 			get { return _ID; }
 			set { _ID = value; }
 		}
-		
+
 		private string _Name;
+
 		public virtual string Name
 		{
 			get { return _Name; }
@@ -48,6 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 		}
 
 		private string _CommonValue;
+
 		public virtual string CommonValue
 		{
 			get { return _CommonValue; }
@@ -55,6 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 		}
 
 		protected string _ClassType;
+
 		public virtual string ClassType
 		{
 			get { return _ClassType; }
@@ -69,8 +75,8 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			: base()
 		{
 			// randomly assign a class type of 'a', 'b', or 'c'
-			char c = (char)random.Next( (int)'a', ((int)'c') + 1 );
-			_ClassType = new string( c, 1 );
+			char c = (char) random.Next((int) 'a', ((int) 'c') + 1);
+			_ClassType = new string(c, 1);
 		}
 	}
 

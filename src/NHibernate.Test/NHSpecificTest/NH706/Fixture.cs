@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			dc1.Parent = parent;
 			dc1.Name = "Different Child 1";
 			dc1.Child = child1;
-			
+
 			DifferentChild dc2 = new DifferentChild();
 			dc2.Parent = parent;
 			dc2.Name = "Different Child 2";
@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 				session.Save(obj2);
 
 				session.Save(parent);
-				
+
 				session.Save(child1);
 				session.Save(child2);
 
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			int dcId = 0;
 			using (ISession session = OpenSession())
 			{
-				Parent loadedParent = (Parent)session.Get(typeof(Parent), parent.ID);
+				Parent loadedParent = (Parent) session.Get(typeof(Parent), parent.ID);
 				NHibernateUtil.Initialize(loadedParent.DifferentChildren);
 				foreach (DifferentChild dc in loadedParent.DifferentChildren)
 				{
@@ -72,12 +72,12 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 					break;
 				}
 			}
-			
+
 			using (ISession session = OpenSession())
 			{
-				DifferentChild dc = (DifferentChild) session.Get(typeof (DifferentChild), dcId);
+				DifferentChild dc = (DifferentChild) session.Get(typeof(DifferentChild), dcId);
 			}
-			
+
 			using (ISession session = OpenSession())
 			{
 				session.Delete(dc1);

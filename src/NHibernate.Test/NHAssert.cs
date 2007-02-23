@@ -1,15 +1,16 @@
 using System;
-using NUnit.Framework;
 using NHibernate.Test.Assertions;
+using NUnit.Framework;
 
 namespace NHibernate.Test
 {
 	public class NHAssert
 	{
 		#region Serializable
+
 		public static void HaveSerializableAttribute(System.Type clazz)
 		{
-			NHAssert.HaveSerializableAttribute(clazz, null, null);
+			HaveSerializableAttribute(clazz, null, null);
 		}
 
 		public static void HaveSerializableAttribute(System.Type clazz, string message, params object[] args)
@@ -19,7 +20,7 @@ namespace NHibernate.Test
 
 		public static void InheritedAreMarkedSerializable(System.Type clazz)
 		{
-			NHAssert.InheritedAreMarkedSerializable(clazz, null, null);
+			InheritedAreMarkedSerializable(clazz, null, null);
 		}
 
 		public static void InheritedAreMarkedSerializable(System.Type clazz, string message, params object[] args)
@@ -29,7 +30,7 @@ namespace NHibernate.Test
 
 		public static void IsSerializable(object obj)
 		{
-			NHAssert.IsSerializable(obj, null, null);
+			IsSerializable(obj, null, null);
 		}
 
 		public static void IsSerializable(object obj, string message, params object[] args)

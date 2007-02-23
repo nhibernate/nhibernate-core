@@ -83,7 +83,8 @@ namespace NHibernate.Test.ConnectionTest
 			try
 			{
 				SerializationHelper.Serialize(s);
-				Assert.Fail("Serialization allowed on connected session; or aggressive Release released connection with open resources");
+				Assert.Fail(
+					"Serialization allowed on connected session; or aggressive Release released connection with open resources");
 			}
 			catch (InvalidOperationException e)
 			{

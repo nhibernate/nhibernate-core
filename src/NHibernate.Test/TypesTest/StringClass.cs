@@ -15,7 +15,7 @@ namespace NHibernate.Test.TypesTest
 			_id = 0;
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }

@@ -8,7 +8,7 @@ namespace NHibernate.Test.FilterTest
 	[TestFixture]
 	public class FilterConfig
 	{
-		string mappingCfg = "NHibernate.Test.FilterTest.FilterMapping.hbm.xml";
+		private string mappingCfg = "NHibernate.Test.FilterTest.FilterMapping.hbm.xml";
 
 		[Test]
 		public void FilterDefinitionsLoadedCorrectly()

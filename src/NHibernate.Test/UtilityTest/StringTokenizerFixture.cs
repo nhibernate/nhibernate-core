@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
-
-using NUnit.Framework;
-
 using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.UnitTesting
 {
@@ -27,7 +25,7 @@ namespace NHibernate.UnitTesting
 		public void SimpleStringWithDelimiters()
 		{
 			string s = "Hello world!";
-			StringTokenizer st = new StringTokenizer(s," ",true);
+			StringTokenizer st = new StringTokenizer(s, " ", true);
 			IEnumerator enumerator = st.GetEnumerator();
 			enumerator.MoveNext();
 			Assert.AreEqual("Hello", (string) enumerator.Current, "Can't get first token");
@@ -42,7 +40,7 @@ namespace NHibernate.UnitTesting
 		public void NotSoSimpleWithoutDelimiters()
 		{
 			string s = "The lazy... I don't know ";
-			StringTokenizer st = new StringTokenizer(s," .",false);
+			StringTokenizer st = new StringTokenizer(s, " .", false);
 			IEnumerator enumerator = st.GetEnumerator();
 			enumerator.MoveNext();
 			Assert.AreEqual("The", (string) enumerator.Current, "Can't get first token");
@@ -61,7 +59,7 @@ namespace NHibernate.UnitTesting
 		public void NotSoSimpleWithDelimiters()
 		{
 			string s = "The lazy... I don't know ";
-			StringTokenizer st = new StringTokenizer(s," .",true);
+			StringTokenizer st = new StringTokenizer(s, " .", true);
 			IEnumerator enumerator = st.GetEnumerator();
 			enumerator.MoveNext();
 			Assert.AreEqual("The", (string) enumerator.Current, "Can't get first token");
@@ -119,6 +117,5 @@ namespace NHibernate.UnitTesting
 			Assert.AreEqual(",", (string) enumerator.Current, "Can't get fifth delimiter");
 			Assert.AreEqual(false, enumerator.MoveNext(), "Still thinking there are more tokens");
 		}
-
 	}
 }

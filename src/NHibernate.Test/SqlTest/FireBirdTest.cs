@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest
@@ -9,12 +10,12 @@ namespace NHibernate.Test.SqlTest
 	{
 		protected override IList Mappings
 		{
-			get { return new string[] { "SqlTest.FireBirdEmployment.hbm.xml" }; }
+			get { return new string[] {"SqlTest.FireBirdEmployment.hbm.xml"}; }
 		}
 
 		protected override System.Type GetDialect()
 		{
-			return typeof(NHibernate.Dialect.FirebirdDialect);
+			return typeof(FirebirdDialect);
 		}
 	}
 }

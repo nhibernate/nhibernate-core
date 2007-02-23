@@ -6,96 +6,96 @@ using NHibernate.Cache;
 
 namespace NHibernate.Test.NHSpecificTest.NH720
 {
-    public class FooCacheProvider : ICacheProvider
-    {
-        private static readonly ILog log;
-        private static Hashtable caches;
+	public class FooCacheProvider : ICacheProvider
+	{
+		private static readonly ILog log;
+		private static Hashtable caches;
 
-        static FooCacheProvider()
-        {
-            log = LogManager.GetLogger(typeof(FooCacheProvider));
-            caches = new Hashtable();
-        }
-        
-        public static ICache BuildCacheStatic(string regionName, IDictionary properties)
-        {
-            if (regionName != null && caches[regionName] != null)
-            {
-                return caches[regionName] as ICache;
-            }
+		static FooCacheProvider()
+		{
+			log = LogManager.GetLogger(typeof(FooCacheProvider));
+			caches = new Hashtable();
+		}
 
-            if (regionName == null)
-            {
-                regionName = "";
-            }
-            if (properties == null)
-            {
-                properties = new Hashtable();
-            }
-            if (log.IsDebugEnabled)
-            {
-                StringBuilder sb = new StringBuilder();
-                foreach (DictionaryEntry de in properties)
-                {
-                    sb.Append("name=");
-                    sb.Append(de.Key.ToString());
-                    sb.Append("&value=");
-                    sb.Append(de.Value.ToString());
-                    sb.Append(";");
-                }
-                log.Debug("building cache with region: " + regionName + ", properties: " + sb.ToString());
-            }
-            FooCache cache = new FooCache(regionName, properties);
-            caches.Add(regionName, cache);
-            return cache;
-        }
+		public static ICache BuildCacheStatic(string regionName, IDictionary properties)
+		{
+			if (regionName != null && caches[regionName] != null)
+			{
+				return caches[regionName] as ICache;
+			}
 
-        public ICache BuildCache(string regionName, IDictionary properties)
-        {
-            return BuildCacheStatic(regionName, properties);
-        }
-        
-        public static bool RegionExists(string regionName)
-        {
-            return caches.ContainsKey(regionName);
-        }
-        
-        public static int RegionCount
-        {
-            get { return caches.Count; }
-        }
+			if (regionName == null)
+			{
+				regionName = "";
+			}
+			if (properties == null)
+			{
+				properties = new Hashtable();
+			}
+			if (log.IsDebugEnabled)
+			{
+				StringBuilder sb = new StringBuilder();
+				foreach (DictionaryEntry de in properties)
+				{
+					sb.Append("name=");
+					sb.Append(de.Key.ToString());
+					sb.Append("&value=");
+					sb.Append(de.Value.ToString());
+					sb.Append(";");
+				}
+				log.Debug("building cache with region: " + regionName + ", properties: " + sb.ToString());
+			}
+			FooCache cache = new FooCache(regionName, properties);
+			caches.Add(regionName, cache);
+			return cache;
+		}
 
-        /// <summary></summary>
-        /// <returns></returns>
-        public long NextTimestamp()
-        {
-            return Timestamper.Next();
-        }
+		public ICache BuildCache(string regionName, IDictionary properties)
+		{
+			return BuildCacheStatic(regionName, properties);
+		}
 
-        /// <summary></summary>
-        /// <param name="properties"></param>
-        public void Start(IDictionary properties)
-        {
-        }
+		public static bool RegionExists(string regionName)
+		{
+			return caches.ContainsKey(regionName);
+		}
 
-        /// <summary></summary>
-        public void Stop()
-        {
-        }
-    }
-    
+		public static int RegionCount
+		{
+			get { return caches.Count; }
+		}
+
+		/// <summary></summary>
+		/// <returns></returns>
+		public long NextTimestamp()
+		{
+			return Timestamper.Next();
+		}
+
+		/// <summary></summary>
+		/// <param name="properties"></param>
+		public void Start(IDictionary properties)
+		{
+		}
+
+		/// <summary></summary>
+		public void Stop()
+		{
+		}
+	}
+
 	public class FooCache : ICache
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( FooCache ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(FooCache));
 		private string _region;
 		private TimeSpan _expiration;
-		public static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds( 300 );
+		public static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
 
-		public FooCache( string region, IDictionary properties )
+		public FooCache(string region, IDictionary properties)
 		{
 			_region = region;
 
-			Configure( properties );
+			Configure(properties);
 		}
 
 		public string RegionName
@@ -103,64 +103,64 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			get { return _region; }
 		}
 
-	    public TimeSpan Expiration
-	    {
-	        get { return _expiration; }
-	    }
-
-		private void Configure( IDictionary props )
+		public TimeSpan Expiration
 		{
-			if( props == null )
+			get { return _expiration; }
+		}
+
+		private void Configure(IDictionary props)
+		{
+			if (props == null)
 			{
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "configuring cache with default values" );
+					log.Debug("configuring cache with default values");
 				}
 				_expiration = DefaultExpiration;
 			}
 			else
 			{
-				if( props[ "expiration" ] != null )
+				if (props["expiration"] != null)
 				{
 					try
 					{
-						int seconds = Convert.ToInt32( props[ "expiration" ] );
-						_expiration = TimeSpan.FromSeconds( seconds );
-						if( log.IsDebugEnabled )
+						int seconds = Convert.ToInt32(props["expiration"]);
+						_expiration = TimeSpan.FromSeconds(seconds);
+						if (log.IsDebugEnabled)
 						{
-							log.Debug( "new expiration value: " + seconds.ToString() );
+							log.Debug("new expiration value: " + seconds.ToString());
 						}
 					}
-					catch( Exception ex )
+					catch (Exception ex)
 					{
-						if( log.IsWarnEnabled )
+						if (log.IsWarnEnabled)
 						{
-							log.Warn( "error parsing expiration value" );
+							log.Warn("error parsing expiration value");
 						}
-						throw new ArgumentException( "could not parse exception as a number of seconds", "expiration", ex );
+						throw new ArgumentException("could not parse exception as a number of seconds", "expiration", ex);
 					}
 				}
 				else
 				{
-					if( log.IsDebugEnabled )
+					if (log.IsDebugEnabled)
 					{
-						log.Debug( "no expiration value given, using defaults" );
+						log.Debug("no expiration value given, using defaults");
 					}
 					_expiration = DefaultExpiration;
 				}
 			}
 		}
 
-		public object Get( object key )
+		public object Get(object key)
 		{
-		    return null;
+			return null;
 		}
 
-		public void Put( object key, object value )
+		public void Put(object key, object value)
 		{
 		}
 
-		public void Remove( object key )
+		public void Remove(object key)
 		{
 		}
 
@@ -173,11 +173,11 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			Clear();
 		}
 
-		public void Lock( object key )
+		public void Lock(object key)
 		{
 		}
 
-		public void Unlock( object key )
+		public void Unlock(object key)
 		{
 		}
 
@@ -192,73 +192,73 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		}
 	}
 
-    public class A
-    {
-        private int id;
-        private string foo;
-        private IList bees;
+	public class A
+	{
+		private int id;
+		private string foo;
+		private IList bees;
 
-        protected A()
-        {
-        }
+		protected A()
+		{
+		}
 
-        public A(int id, string foo)
-        {
-            this.id = id;
-            this.foo = foo;
-            bees = new ArrayList();
-        }
+		public A(int id, string foo)
+		{
+			this.id = id;
+			this.foo = foo;
+			bees = new ArrayList();
+		}
 
-        public virtual int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
+		public virtual int Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
 
-        public virtual string Foo
-        {
-            get { return foo; }
-            set { foo = value; }
-        }
+		public virtual string Foo
+		{
+			get { return foo; }
+			set { foo = value; }
+		}
 
-        public virtual IList Bees
-        {
-            get { return bees; }
-        }
-    }
+		public virtual IList Bees
+		{
+			get { return bees; }
+		}
+	}
 
-    public class B
-    {
-        private int id;
-        private A a;
-        private string foo;
+	public class B
+	{
+		private int id;
+		private A a;
+		private string foo;
 
-        protected B()
-        {
-        }
+		protected B()
+		{
+		}
 
-        public B(int id, A a, string foo)
-        {
-            this.id = id;
-            this.a = a;
-            this.foo = foo;
-        }
+		public B(int id, A a, string foo)
+		{
+			this.id = id;
+			this.a = a;
+			this.foo = foo;
+		}
 
-        public int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
+		public int Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
 
-        public A A
-        {
-            get { return a; }
-        }
+		public A A
+		{
+			get { return a; }
+		}
 
-        public string Foo
-        {
-            get { return foo; }
-            set { foo = value; }
-        }
-    }
+		public string Foo
+		{
+			get { return foo; }
+			set { foo = value; }
+		}
+	}
 }

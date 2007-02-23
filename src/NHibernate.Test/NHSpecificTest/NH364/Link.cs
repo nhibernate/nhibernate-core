@@ -5,9 +5,9 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 {
 	public class Link
 	{
-		int id;
-		string name;
-		IList categories;
+		private int id;
+		private string name;
+		private IList categories;
 
 		public Link()
 		{

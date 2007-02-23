@@ -1,19 +1,18 @@
 using System;
 using System.Collections;
-using System.Text;
 using NHibernate.Collection;
 using NHibernate.Engine;
 
 namespace NHibernate.Test.UserCollection
 {
-    public class PersistentMylist : PersistentList
-    {
-        public PersistentMylist(ISessionImplementor session, IList list) : base(session, list)
-        {
-        }
+	public class PersistentMylist : PersistentList
+	{
+		public PersistentMylist(ISessionImplementor session, IList list) : base(session, list)
+		{
+		}
 
-        public PersistentMylist(ISessionImplementor session) : base(session)
-        {
-        }
-    }
+		public PersistentMylist(ISessionImplementor session) : base(session)
+		{
+		}
+	}
 }

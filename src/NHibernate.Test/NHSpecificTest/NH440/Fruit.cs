@@ -5,6 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 	public class Fruit
 	{
 		private int id;
+
 		public int Id
 		{
 			get { return id; }
@@ -12,6 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 		}
 
 		private Apple theApple;
+
 		public Apple TheApple
 		{
 			get { return theApple; }

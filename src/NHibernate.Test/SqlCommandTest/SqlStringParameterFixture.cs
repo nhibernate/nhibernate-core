@@ -1,6 +1,5 @@
 using System;
 using NHibernate.SqlCommand;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlCommandTest

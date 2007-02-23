@@ -25,6 +25,5 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 			get { return _location; }
 			set { _location = value; }
 		}
-
 	}
 }

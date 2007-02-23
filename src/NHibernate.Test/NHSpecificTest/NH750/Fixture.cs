@@ -1,11 +1,10 @@
 using System;
 using NUnit.Framework;
-using NHibernate;
 
 namespace NHibernate.Test.NHSpecificTest.NH750
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
 		protected override void OnTearDown()
 		{
@@ -31,8 +30,8 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				s.Save(dr1);
 				s.Save(dr2);
 				s.Save(dr3);
-				dvSavedId[0]= (int)s.Save(dv1);
-				dvSavedId[1]= (int)s.Save(dv2);
+				dvSavedId[0] = (int) s.Save(dv1);
+				dvSavedId[1] = (int) s.Save(dv2);
 				s.Flush();
 			}
 
@@ -42,8 +41,8 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			dv2.Drives.Add(dr3);
 			using (ISession s = sessions.OpenSession())
 			{
-				dvSavedId[0] = (int)s.Save(dv1);
-				dvSavedId[1] = (int)s.Save(dv2);
+				dvSavedId[0] = (int) s.Save(dv1);
+				dvSavedId[1] = (int) s.Save(dv2);
 				s.Flush();
 			}
 			dv1 = null;
@@ -52,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			{
 				s.Delete(dr3);
 				s.Flush();
-				dv1= (Device) s.Load(typeof(Device), dvSavedId[0]);
+				dv1 = (Device) s.Load(typeof(Device), dvSavedId[0]);
 				dv2 = (Device) s.Load(typeof(Device), dvSavedId[1]);
 			}
 			Assert.AreEqual(2, dv1.Drives.Count);
@@ -71,7 +70,6 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				if (dv2.Drives[i] == null) nullCount++;
 			}
 			Assert.AreEqual(1, nullCount);
-			
 		}
 	}
 }

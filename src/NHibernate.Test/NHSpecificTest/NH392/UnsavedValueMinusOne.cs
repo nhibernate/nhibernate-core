@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 		private DateTime _updateTimestamp;
 
 		public int Id
-		{ 
+		{
 			get { return this._id; }
 			set { this._id = value; }
 		}

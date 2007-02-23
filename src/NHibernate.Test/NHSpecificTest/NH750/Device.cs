@@ -5,12 +5,16 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 {
 	public class Device
 	{
-		public Device() : base() { }
+		public Device() : base()
+		{
+		}
+
 		public Device(string manifacturer)
 			: this()
 		{
 			_manifacturer = manifacturer;
 		}
+
 		private int _id;
 
 		public int Id
@@ -27,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			set { _manifacturer = value; }
 		}
 
-		private IList _drives= new ArrayList();
+		private IList _drives = new ArrayList();
 
 		public IList Drives
 		{

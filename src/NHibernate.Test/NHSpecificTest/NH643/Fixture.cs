@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 			try
 			{
 				AddChild();
-				CheckChildrenCount(1); 
+				CheckChildrenCount(1);
 				AddChild();
 				CheckChildrenCount(2);
 			}

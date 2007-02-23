@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Property;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.PropertyTest
@@ -18,11 +16,10 @@ namespace NHibernate.Test.PropertyTest
 			_expectedCamelUnderscoreFooGetterCalled = true;
 
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("nosetter.camelcase-underscore");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "CamelUnderscoreFoo" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "CamelUnderscoreFoo" );
+			_getter = _accessor.GetGetter(typeof(FieldClass), "CamelUnderscoreFoo");
+			_setter = _accessor.GetSetter(typeof(FieldClass), "CamelUnderscoreFoo");
 			_instance = new FieldClass();
-			_instance.InitCamelUnderscoreFoo( 0 );
+			_instance.InitCamelUnderscoreFoo(0);
 		}
-	
 	}
 }

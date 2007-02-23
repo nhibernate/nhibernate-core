@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Cfg;
 using NUnit.Framework;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH873
 {
@@ -11,9 +12,9 @@ namespace NHibernate.Test.NHSpecificTest.NH873
 		public void CacheDisabled()
 		{
 			Configuration cfg = new Configuration();
-			cfg.SetProperty(Cfg.Environment.UseSecondLevelCache, "false");
-			cfg.SetProperty(Cfg.Environment.UseQueryCache, "false");
-			cfg.SetProperty(Cfg.Environment.CacheProvider, null);
+			cfg.SetProperty(Environment.UseSecondLevelCache, "false");
+			cfg.SetProperty(Environment.UseQueryCache, "false");
+			cfg.SetProperty(Environment.CacheProvider, null);
 			cfg.BuildSessionFactory().Close();
 		}
 	}

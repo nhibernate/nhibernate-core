@@ -1,5 +1,5 @@
 using System;
-
+using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH309
@@ -15,12 +15,15 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
 			get
 			{
-				return new string[] {	"NHSpecificTest.NH309.Node.hbm.xml", 
-										"NHSpecificTest.NH309.Menu.hbm.xml" };
+				return new string[]
+					{
+						"NHSpecificTest.NH309.Node.hbm.xml",
+						"NHSpecificTest.NH309.Menu.hbm.xml"
+					};
 			}
 		}
 
@@ -57,9 +60,9 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			s.Close();
 
 			s = OpenSession();
-			rootNode = (Node)s.Load(typeof(Node), 1);
-			Node nodeToBeRemoved = (Node)s.Load(typeof(Node), 3); // childNode 2 with Id 3
-			Menu menu2 = (Menu)s.Load(typeof(Menu), 1);
+			rootNode = (Node) s.Load(typeof(Node), 1);
+			Node nodeToBeRemoved = (Node) s.Load(typeof(Node), 3); // childNode 2 with Id 3
+			Menu menu2 = (Menu) s.Load(typeof(Menu), 1);
 
 			int nodePostion = menu2.Nodes.IndexOf(nodeToBeRemoved);
 			Assert.AreEqual(2, nodePostion, "Test IndexOf");
@@ -67,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			Assert.AreEqual(2, menu2.Nodes.Count, "Test count after removal");
 			Assert.AreEqual(rootNode, menu2.Nodes[0], "Test identity first node in menu");
 
-			
+
 			s.Delete("from Node");
 			s.Delete("from Menu");
 			s.Flush();

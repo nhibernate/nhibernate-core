@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Xml;
-using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH734
@@ -10,10 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 	{
 		public override string BugNumber
 		{
-			get
-			{
-				return "NH734";
-			}
+			get { return "NH734"; }
 		}
 
 		[TestAttribute]
@@ -21,7 +16,6 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 		{
 			using (ISession session = sessions.OpenSession())
 			{
-
 				ICriteria criteria = session.CreateCriteria(typeof(MyClass));
 				criteria.SetMaxResults(100);
 				criteria.SetFirstResult(0);
@@ -30,7 +24,6 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 					session.BeginTransaction();
 					IList result = criteria.List();
 					session.Transaction.Commit();
-
 				}
 				catch
 				{

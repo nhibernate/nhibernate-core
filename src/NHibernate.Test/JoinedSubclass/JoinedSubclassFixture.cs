@@ -1,8 +1,5 @@
 using System;
 using System.Collections;
-
-using NHibernate.Proxy;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.JoinedSubclass
@@ -11,7 +8,7 @@ namespace NHibernate.Test.JoinedSubclass
 	/// Test the use of <c>&lt;class&gt;</c> and <c>&lt;joined-subclass&gt;</c> mappings.
 	/// </summary>
 	[TestFixture]
-	public class JoinedSubclassFixture : TestCase 
+	public class JoinedSubclassFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -20,10 +17,7 @@ namespace NHibernate.Test.JoinedSubclass
 
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "JoinedSubclass.JoinedSubclass.hbm.xml" };
-			}
+			get { return new string[] {"JoinedSubclass.JoinedSubclass.hbm.xml"}; }
 		}
 
 
@@ -31,10 +25,10 @@ namespace NHibernate.Test.JoinedSubclass
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 
 		[Test]
-		public void TestJoinedSubclass() 
+		public void TestJoinedSubclass()
 		{
 			ISession s = OpenSession();
-			
+
 			Employee mark = new Employee();
 			mark.Name = "Mark";
 			mark.Title = "internal sales";
@@ -56,58 +50,57 @@ namespace NHibernate.Test.JoinedSubclass
 			mom.Name = "mom";
 			mom.Sex = 'F';
 
-			s.Save( mom );
-			s.Save( mark );
-			s.Save( joe );
+			s.Save(mom);
+			s.Save(mark);
+			s.Save(joe);
 
 			s.Flush();
 
-			Assert.AreEqual( 3, s.CreateQuery( "from Person" ).List().Count );
-			IQuery query = s.CreateQuery( "from Customer" );
+			Assert.AreEqual(3, s.CreateQuery("from Person").List().Count);
+			IQuery query = s.CreateQuery("from Customer");
 			IList results = query.List();
-			Assert.AreEqual( 1, results.Count );
-			Assert.IsTrue( results[0] is Customer, "should be a customer" );
+			Assert.AreEqual(1, results.Count);
+			Assert.IsTrue(results[0] is Customer, "should be a customer");
 
 			// in later versions of hibernate a Clear method was added to session
 			s.Close();
 			s = OpenSession();
-			
-			IList customers = s.CreateQuery( "from Customer c left join fetch c.Salesperson" ).List();
-			foreach( Customer c in customers ) 
+
+			IList customers = s.CreateQuery("from Customer c left join fetch c.Salesperson").List();
+			foreach (Customer c in customers)
 			{
 				// when proxies is working this is important
-				Assert.IsTrue( NHibernateUtil.IsInitialized( c.Salesperson ) );
-				Assert.AreEqual( "Mark", c.Salesperson.Name );
+				Assert.IsTrue(NHibernateUtil.IsInitialized(c.Salesperson));
+				Assert.AreEqual("Mark", c.Salesperson.Name);
 			}
-			Assert.AreEqual( 1, customers.Count );
+			Assert.AreEqual(1, customers.Count);
 			s.Close();
 			s = OpenSession();
 
-			customers = s.CreateQuery( "from Customer" ).List();
-			foreach( Customer c in customers ) 
+			customers = s.CreateQuery("from Customer").List();
+			foreach (Customer c in customers)
 			{
 				//TODO: proxies make this work
-				Assert.IsFalse( NHibernateUtil.IsInitialized( c.Salesperson ) );
-				Assert.AreEqual( "Mark", c.Salesperson.Name );
+				Assert.IsFalse(NHibernateUtil.IsInitialized(c.Salesperson));
+				Assert.AreEqual("Mark", c.Salesperson.Name);
 			}
-			Assert.AreEqual( 1, customers.Count );
+			Assert.AreEqual(1, customers.Count);
 
 			s.Close();
 			s = OpenSession();
 
-			mark = (Employee)s.Load( typeof(Employee), mark.Id );
-			joe = (Customer)s.Load( typeof(Customer), joe.Id );
+			mark = (Employee) s.Load(typeof(Employee), mark.Id);
+			joe = (Customer) s.Load(typeof(Customer), joe.Id);
 
-			mark.Address.Zip = "30306" ;
-			Assert.AreEqual( 1, s.CreateQuery( "from Person p where p.Address.Zip = '30306'" ).List().Count );
+			mark.Address.Zip = "30306";
+			Assert.AreEqual(1, s.CreateQuery("from Person p where p.Address.Zip = '30306'").List().Count);
 
-			s.Delete( mom );
-			s.Delete( joe );
-			s.Delete( mark );
+			s.Delete(mom);
+			s.Delete(joe);
+			s.Delete(mark);
 
-			Assert.AreEqual( 0, s.CreateQuery( "from Person" ).List().Count );
+			Assert.AreEqual(0, s.CreateQuery("from Person").List().Count);
 			s.Close();
-										 
 		}
 
 		[Test]
@@ -124,45 +117,45 @@ namespace NHibernate.Test.JoinedSubclass
 			Employee dilbert = new Employee();
 			dilbert.Name = "dilbert";
 			dilbert.Title = "office clown";
-			
+
 			Employee pointyhair = new Employee();
 			pointyhair.Name = "pointyhair";
 			pointyhair.Title = "clown watcher";
 
 			dilbert.Manager = pointyhair;
 
-			s.Save( wally );
-			s.Save( dilbert );
-			s.Save( pointyhair );
+			s.Save(wally);
+			s.Save(dilbert);
+			s.Save(pointyhair);
 			t.Commit();
 			s.Close();
 
 			// get a proxied - initialized version of manager
 			s = OpenSession();
-			pointyhair = (Employee) s.Load( typeof(Employee), pointyhair.Id );
-			NHibernateUtil.Initialize( pointyhair );
+			pointyhair = (Employee) s.Load(typeof(Employee), pointyhair.Id);
+			NHibernateUtil.Initialize(pointyhair);
 			s.Close();
 
 			s = OpenSession();
-			IQuery q = s.CreateQuery( "from Employee as e where e.Manager = :theMgr" );
-			q.SetParameter( "theMgr", pointyhair );
+			IQuery q = s.CreateQuery("from Employee as e where e.Manager = :theMgr");
+			q.SetParameter("theMgr", pointyhair);
 			IList results = q.List();
-			Assert.AreEqual( 1, results.Count, "should only return 1 employee.");
-			dilbert = (Employee)results[0];
-			Assert.AreEqual( "dilbert", dilbert.Name, "should have been dilbert returned.");
+			Assert.AreEqual(1, results.Count, "should only return 1 employee.");
+			dilbert = (Employee) results[0];
+			Assert.AreEqual("dilbert", dilbert.Name, "should have been dilbert returned.");
 
-			s.Delete( wally );
-			s.Delete( pointyhair );
-			s.Delete( dilbert );
+			s.Delete(wally);
+			s.Delete(pointyhair);
+			s.Delete(dilbert);
 			s.Flush();
-			s.Close();			
+			s.Close();
 		}
-		
+
 		[Test]
 		public void SelectByClass()
 		{
 			using (ISession s = OpenSession())
-			using( ITransaction t = s.BeginTransaction() )
+			using (ITransaction t = s.BeginTransaction())
 			{
 				Person wally = new Person();
 				wally.Name = "wally";
@@ -189,8 +182,8 @@ namespace NHibernate.Test.JoinedSubclass
 		/// Right now - the only way to verify this is to watch SQL Profiler
 		/// </summary>
 		[Test]
-		public void TestCRUD() {
-			
+		public void TestCRUD()
+		{
 			// test the Save
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -203,7 +196,7 @@ namespace NHibernate.Test.JoinedSubclass
 
 			Person person = new Person();
 			person.Name = "the test string";
-			
+
 			s.Save(person);
 
 			t.Commit();
@@ -215,15 +208,16 @@ namespace NHibernate.Test.JoinedSubclass
 			// lets verify the correct classes were saved
 			s = OpenSession();
 			t = s.BeginTransaction();
-			
+
 			// perform a load based on the base class
-			Person empAsPerson = (Person)s.CreateQuery( "from Person as p where p.id = ?").SetInt32(0,empId).List()[0];
-			person = (Person)s.Load( typeof(Person), personId );
-			
+			Person empAsPerson = (Person) s.CreateQuery("from Person as p where p.id = ?").SetInt32(0, empId).List()[0];
+			person = (Person) s.Load(typeof(Person), personId);
+
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
 			// the sublcass
-			Assert.AreEqual( typeof(Employee), empAsPerson.GetType(), "even though person was queried, should have returned correct subclass.");
-			emp = (Employee)s.Load( typeof(Employee), empId );
+			Assert.AreEqual(typeof(Employee), empAsPerson.GetType(),
+			                "even though person was queried, should have returned correct subclass.");
+			emp = (Employee) s.Load(typeof(Employee), empId);
 
 			// lets update the objects
 			person.Name = "Did it get updated";
@@ -232,15 +226,15 @@ namespace NHibernate.Test.JoinedSubclass
 			// update the properties from the subclass and base class
 			emp.Name = "Updated Employee String";
 			emp.Title = "office dunce";
-			
+
 			// verify the it actually changes the same object
-			Assert.AreEqual( emp.Name, empAsPerson.Name, "emp and empAsPerson should refer to same object." );
-			
+			Assert.AreEqual(emp.Name, empAsPerson.Name, "emp and empAsPerson should refer to same object.");
+
 			// save it through the base class reference and make sure that the
 			// subclass properties get updated.
-			s.Update( empAsPerson );
-			s.Update( person );
-			
+			s.Update(empAsPerson);
+			s.Update(person);
+
 			t.Commit();
 			s.Close();
 
@@ -248,29 +242,29 @@ namespace NHibernate.Test.JoinedSubclass
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			IList results = s.CreateCriteria( typeof(Person) )
-				.Add(Expression.Expression.In( "Name", new string[] {"Did it get updated", "Updated Employee String" }))
+			IList results = s.CreateCriteria(typeof(Person))
+				.Add(Expression.Expression.In("Name", new string[] {"Did it get updated", "Updated Employee String"}))
 				.List();
 
-			Assert.AreEqual( 2, results.Count);
+			Assert.AreEqual(2, results.Count);
 
 			person = null;
 			emp = null;
 
-			foreach(Person obj in results) 
+			foreach (Person obj in results)
 			{
-				if(obj is Employee) 
-					emp = (Employee)obj;
-				else 
+				if (obj is Employee)
+					emp = (Employee) obj;
+				else
 					person = obj;
 			}
 
 			// verify the properties got updated
-			Assert.AreEqual( 'M', person.Sex );
-			Assert.AreEqual( "office dunce", emp.Title );
+			Assert.AreEqual('M', person.Sex);
+			Assert.AreEqual("office dunce", emp.Title);
 
-			s.Delete( emp );
-			s.Delete( person );
+			s.Delete(emp);
+			s.Delete(person);
 
 			t.Commit();
 			s.Close();

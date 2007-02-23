@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH845
 		[Test]
 		public void HbmOrdererForgetsMappingFilesWithoutClassesIfExtendsIsUsed()
 		{
-			Assembly domain = typeof (Master).Assembly;
+			Assembly domain = typeof(Master).Assembly;
 			AssemblyHbmOrderer orderer = new AssemblyHbmOrderer(domain);
 			orderer.AddResource("NHibernate.DomainModel.MultiExtends.hbm.xml");
 			orderer.AddResource("NHibernate.DomainModel.Query.hbm.xml");

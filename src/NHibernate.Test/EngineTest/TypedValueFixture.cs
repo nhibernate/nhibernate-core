@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using NHibernate.Engine;
-using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.EngineTest

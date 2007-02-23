@@ -1,86 +1,77 @@
-using System; 
-using System.Data; 
-using System.Collections; 
+using System;
+using System.Collections;
+using NHibernate.DomainModel.NHSpecific;
+using NUnit.Framework;
+using NExp = NHibernate.Expression;
 
-using NHibernate; 
-using NExp = NHibernate.Expression; 
-using NHibernate.DomainModel.NHSpecific; 
-
-using NUnit.Framework; 
-
-
-namespace NHibernate.Test.NHSpecificTest  
-{ 
+namespace NHibernate.Test.NHSpecificTest
+{
 	[TestFixture]
 	public class NH47Fixture : TestCase
-	{ 
+	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecific.UnsavedType.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecific.UnsavedType.hbm.xml"}; }
 		}
 
-		public TimeSpan BatchInsert(object[] objs) 
-		{ 
-			System.TimeSpan tspan = TimeSpan.Zero; 
+		public TimeSpan BatchInsert(object[] objs)
+		{
+			TimeSpan tspan = TimeSpan.Zero;
 
-			if (objs != null && objs.Length > 0) 
-			{ 
-				ISession s = OpenSession(); 
-				ITransaction t = s.BeginTransaction(); 
+			if (objs != null && objs.Length > 0)
+			{
+				ISession s = OpenSession();
+				ITransaction t = s.BeginTransaction();
 
-				int count = objs.Length; 
+				int count = objs.Length;
 
-				Console.WriteLine(); 
-				Console.WriteLine("Start batch insert " + count.ToString() + " objects"); 
+				Console.WriteLine();
+				Console.WriteLine("Start batch insert " + count.ToString() + " objects");
 
-				DateTime startTime = DateTime.Now; 
+				DateTime startTime = DateTime.Now;
 
-				for(int i = 0; i < count; ++i) 
-				{ 
-					s.Save(objs[i]); 
-				} 
-				t.Commit(); 
-				s.Close(); 
+				for (int i = 0; i < count; ++i)
+				{
+					s.Save(objs[i]);
+				}
+				t.Commit();
+				s.Close();
 
-				tspan = DateTime.Now.Subtract(startTime); 
+				tspan = DateTime.Now.Subtract(startTime);
 
-				Console.WriteLine("Finish in " + tspan.TotalMilliseconds.ToString() + " milliseconds"); 
-			} 
+				Console.WriteLine("Finish in " + tspan.TotalMilliseconds.ToString() + " milliseconds");
+			}
 
-			return tspan; 
-		} 
+			return tspan;
+		}
 
 		[Test, Explicit]
-		public void TestNH47() 
-		{ 
-			
-			int testCount = 100; 
+		public void TestNH47()
+		{
+			int testCount = 100;
 
-			object[] al = new object[testCount]; 
+			object[] al = new object[testCount];
 
-			TimeSpan tspan = TimeSpan.Zero; 
+			TimeSpan tspan = TimeSpan.Zero;
 
-			int times = 1000; 
+			int times = 1000;
 
-			for (int i = 0; i < times; ++i) 
-			{ 
-				for (int j = 0; j < testCount; ++j) 
-				{ 
-					UnsavedType ut = new UnsavedType(); 
-					ut.Id = j + 1 + testCount * (i + 1); 
-					ut.TypeName = System.Guid.NewGuid().ToString(); 
-					al[j] = ut; 
-				} 
+			for (int i = 0; i < times; ++i)
+			{
+				for (int j = 0; j < testCount; ++j)
+				{
+					UnsavedType ut = new UnsavedType();
+					ut.Id = j + 1 + testCount * (i + 1);
+					ut.TypeName = Guid.NewGuid().ToString();
+					al[j] = ut;
+				}
 
-				tspan = tspan.Add(BatchInsert(al)); 
-			} 
+				tspan = tspan.Add(BatchInsert(al));
+			}
 
-			Console.WriteLine("Finish average in " + (tspan.TotalMilliseconds / times).ToString() + " milliseconds for " + times.ToString() + " times"); 
-			Console.Read(); 
-		} 
-	} 
+			Console.WriteLine("Finish average in " + (tspan.TotalMilliseconds / times).ToString() + " milliseconds for " +
+			                  times.ToString() + " times");
+			Console.Read();
+		}
+	}
 }
-

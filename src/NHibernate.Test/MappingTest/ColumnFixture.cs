@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
-
-using NUnit.Framework;
+using NHibernate.Dialect;
 using NHibernate.Mapping;
+using NUnit.Framework;
 
 namespace NHibernate.Test.MappingTest
 {
@@ -14,7 +13,7 @@ namespace NHibernate.Test.MappingTest
 		[SetUp]
 		public void SetUp()
 		{
-			_dialect = new Dialect.MsSql2000Dialect();
+			_dialect = new MsSql2000Dialect();
 		}
 
 		[Test]
@@ -33,7 +32,6 @@ namespace NHibernate.Test.MappingTest
 
 			column.Length = 100;
 			Assert.AreEqual("NVARCHAR(100)", column.GetSqlType(_dialect, null));
-
 		}
 	}
 }

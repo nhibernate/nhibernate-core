@@ -1,11 +1,11 @@
 using System;
-
-using NHibernate.Util;
-using NExpression = NHibernate.Expression;
-using NHibernate.SqlCommand;
-
+using NHibernate.Dialect;
 using NHibernate.DomainModel;
+using NHibernate.Expression;
+using NHibernate.SqlCommand;
+using NHibernate.Util;
 using NUnit.Framework;
+using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -16,23 +16,22 @@ namespace NHibernate.Test.ExpressionTest
 	public class NotExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
-		public void NotSqlStringTest() 
+		public void NotSqlStringTest()
 		{
 			ISession session = factory.OpenSession();
-			
-			NExpression.ICriterion notExpression = NExpression.Expression.Not(NExpression.Expression.Eq("Address", "12 Adress"));
 
-			CreateObjects( typeof( Simple ), session );
+			ICriterion notExpression = Expression.Expression.Not(Expression.Expression.Eq("Address", "12 Adress"));
+
+			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = notExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
-			string expectedSql = dialect is Dialect.MySQLDialect ?
-				"not (sql_alias.address = ?)" :
-				"not sql_alias.address = ?";
-			
+			string expectedSql = dialect is MySQLDialect ?
+			                     "not (sql_alias.address = ?)" :
+			                     "not sql_alias.address = ?";
+
 			CompareSqlStrings(sqlString, expectedSql, 1);
-			
+
 			session.Close();
 		}
-		
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest
@@ -6,9 +7,9 @@ namespace NHibernate.Test.SqlTest
 	[TestFixture]
 	public class SelfReferencingCollectionLoadTest : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get { return new string[] { "SqlTest.Item.hbm.xml" }; }
+			get { return new string[] {"SqlTest.Item.hbm.xml"}; }
 		}
 
 		protected override string MappingsAssembly
@@ -34,7 +35,7 @@ namespace NHibernate.Test.SqlTest
 			{
 				Item item1 = (Item) session.Get(typeof(Item), 1);
 				Assert.AreEqual(2, item1.AlternativeItems.Count);
-			
+
 				session.Delete("from Item");
 
 				tx.Commit();

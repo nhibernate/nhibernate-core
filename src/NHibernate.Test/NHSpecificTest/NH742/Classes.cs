@@ -4,14 +4,14 @@ namespace NHibernate.Test.NHSpecificTest.NH742
 {
 	public class Point
 	{
-		int x, y;
-		
+		private int x, y;
+
 		public int X
 		{
 			get { return x; }
 			set { x = value; }
 		}
-		
+
 		public int Y
 		{
 			get { return y; }
@@ -36,5 +36,4 @@ namespace NHibernate.Test.NHSpecificTest.NH742
 			set { point = value; }
 		}
 	}
-
 }

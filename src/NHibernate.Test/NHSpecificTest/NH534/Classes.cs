@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 			set { versionCounter = value; }
 		}
 	}
-	
+
 	public class Parent : Base
 	{
 		private ISet children;
@@ -40,11 +40,11 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 			children.Add(child);
 		}
 	}
-	
+
 	public class Child : Base
 	{
 		private Parent owner;
-		
+
 		public Child()
 		{
 		}

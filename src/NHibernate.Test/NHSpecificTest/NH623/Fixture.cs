@@ -1,14 +1,16 @@
 using System;
-using NHibernate;
-using NUnit.Framework;
 using System.Collections;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH623
 {
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber { get { return "NH623"; } }
+		public override string BugNumber
+		{
+			get { return "NH623"; }
+		}
 
 		private ISession session;
 		private ITransaction tran;

@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
-using NUnit.Framework;
-
 using NHibernate.Engine;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -14,9 +12,9 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			Cascades.VersionValue negative = Cascades.VersionValue.VersionNegative;
 
-			Assert.AreEqual(true, negative.IsUnsaved( (short) -1 ) );
-			Assert.AreEqual(true, negative.IsUnsaved( -1  ) );
-			Assert.AreEqual(true, negative.IsUnsaved( -1L ) );
+			Assert.AreEqual(true, negative.IsUnsaved((short) -1));
+			Assert.AreEqual(true, negative.IsUnsaved(-1));
+			Assert.AreEqual(true, negative.IsUnsaved(-1L));
 		}
 	}
 }

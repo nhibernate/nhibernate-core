@@ -1,1 +1,2 @@
-[assembly: log4net.Config.XmlConfigurator()]
+using log4net.Config;
+[assembly: XmlConfigurator()]

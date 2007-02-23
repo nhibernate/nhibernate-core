@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH276
@@ -8,18 +7,14 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecificTest.NH276.Mappings.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecificTest.NH276.Mappings.hbm.xml"}; }
 		}
 
 		/// <summary>
@@ -53,38 +48,38 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 			it.Location = madison;
 
 			ISession s = OpenSession();
-			s.Save( madison );
-			s.Save( college );
-			s.Save( acctg );
-			s.Save( hr );
-			s.Save( it );
+			s.Save(madison);
+			s.Save(college);
+			s.Save(acctg);
+			s.Save(hr);
+			s.Save(it);
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
 
-			ICriteria c = s.CreateCriteria( typeof( Office ) );
-			c.Add( Expression.Expression.Eq( "Location.Id", madison.Id ) );
+			ICriteria c = s.CreateCriteria(typeof(Office));
+			c.Add(Expression.Expression.Eq("Location.Id", madison.Id));
 			IList results = c.List();
 
-			Assert.AreEqual( 2, results.Count, "2 objects");
-			foreach( Office office in results )
+			Assert.AreEqual(2, results.Count, "2 objects");
+			foreach (Office office in results)
 			{
-				Assert.AreEqual( madison.Id, office.Location.Id, "same location as criteria specified" );
+				Assert.AreEqual(madison.Id, office.Location.Id, "same location as criteria specified");
 			}
 
-			c = s.CreateCriteria( typeof( Office ) );
-			c.Add( Expression.Expression.Eq( "Location.Id", college.Id ) );
+			c = s.CreateCriteria(typeof(Office));
+			c.Add(Expression.Expression.Eq("Location.Id", college.Id));
 			results = c.List();
 
-			Assert.AreEqual( 1, results.Count, "1 objects");
-			foreach( Office office in results )
+			Assert.AreEqual(1, results.Count, "1 objects");
+			foreach (Office office in results)
 			{
-				Assert.AreEqual( college.Id, office.Location.Id, "same location as criteria specified" );
+				Assert.AreEqual(college.Id, office.Location.Id, "same location as criteria specified");
 			}
-			
-			s.Delete( "from Office ");
-			s.Delete( "from Building" );
+
+			s.Delete("from Office ");
+			s.Delete("from Building");
 			s.Flush();
 			s.Close();
 		}

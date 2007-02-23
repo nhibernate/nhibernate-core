@@ -1,7 +1,5 @@
 using System;
-
-using NHibernate;
-
+using System.Text;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -18,19 +16,19 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		[Test]
-		public void ReadWrite() 
+		public void ReadWrite()
 		{
 			ISession s = OpenSession();
 			BinaryBlobClass b = new BinaryBlobClass();
-			b.BinaryBlob = System.Text.UnicodeEncoding.UTF8.GetBytes("foo/bar/baz");
+			b.BinaryBlob = UnicodeEncoding.UTF8.GetBytes("foo/bar/baz");
 			s.Save(b);
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
-			b = (BinaryBlobClass)s.Load( typeof(BinaryBlobClass), b.Id );
-			ObjectAssert.AreEqual( System.Text.UnicodeEncoding.UTF8.GetBytes("foo/bar/baz") , b.BinaryBlob );
-			s.Delete( b );
+			b = (BinaryBlobClass) s.Load(typeof(BinaryBlobClass), b.Id);
+			ObjectAssert.AreEqual(UnicodeEncoding.UTF8.GetBytes("foo/bar/baz"), b.BinaryBlob);
+			s.Delete(b);
 			s.Flush();
 			s.Close();
 		}
@@ -40,15 +38,15 @@ namespace NHibernate.Test.TypesTest
 		{
 			ISession s = OpenSession();
 			BinaryBlobClass b = new BinaryBlobClass();
-			b.BinaryBlob = System.Text.UnicodeEncoding.UTF8.GetBytes(new string('T', 10000));
+			b.BinaryBlob = UnicodeEncoding.UTF8.GetBytes(new string('T', 10000));
 			s.Save(b);
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
-			b = (BinaryBlobClass)s.Load( typeof(BinaryBlobClass), b.Id );
-			ObjectAssert.AreEqual( System.Text.UnicodeEncoding.UTF8.GetBytes(new string('T', 10000)) , b.BinaryBlob );
-			s.Delete( b );
+			b = (BinaryBlobClass) s.Load(typeof(BinaryBlobClass), b.Id);
+			ObjectAssert.AreEqual(UnicodeEncoding.UTF8.GetBytes(new string('T', 10000)), b.BinaryBlob);
+			s.Delete(b);
 			s.Flush();
 			s.Close();
 		}

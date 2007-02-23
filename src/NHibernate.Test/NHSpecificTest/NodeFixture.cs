@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
@@ -10,20 +9,16 @@ namespace NHibernate.Test.NHSpecificTest
 	/// Summary description for NodeFixture.
 	/// </summary>
 	[TestFixture]
-	public class NodeFixture : TestCase 
+	public class NodeFixture : TestCase
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecific.Node.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecific.Node.hbm.xml"}; }
 		}
 
 		[Test]
-		public void InsertNodes() 
+		public void InsertNodes()
 		{
-			
 			Node startNode = new Node("start");
 			Node levelOneNode = new Node("1");
 			Node levelTwoFirstNode = new Node("2-1");
@@ -56,11 +51,11 @@ namespace NHibernate.Test.NHSpecificTest
 			// verify these nodes were actually saved and can be queried correctly.
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
-			
-			Node startNode2 = (Node)s2.CreateCriteria(typeof(Node))
-								.Add(Expression.Expression.Eq("Id", "start"))
-								.List()[0];
-								
+
+			Node startNode2 = (Node) s2.CreateCriteria(typeof(Node))
+			                         	.Add(Expression.Expression.Eq("Id", "start"))
+			                         	.List()[0];
+
 			Assert.AreEqual(1, startNode2.DestinationNodes.Count, "Start Node goes to 1 Node");
 			Assert.AreEqual(0, startNode2.PreviousNodes.Count, "Start Node has no previous Nodes");
 
@@ -71,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest
 			Node levelTwoSecondNode2 = new Node("2-2");
 
 			// only one node
-			foreach( Node node in startNode2.DestinationNodes ) 
+			foreach (Node node in startNode2.DestinationNodes)
 			{
 				// replace the levelOneNode from previous session with the one from this Session.
 				levelOneNode2 = node;
@@ -91,8 +86,8 @@ namespace NHibernate.Test.NHSpecificTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			levelThreeNode = (Node)s.Load( typeof(Node), "3" );
-			endNode = (Node)s.Load( typeof(Node), "end" );
+			levelThreeNode = (Node) s.Load(typeof(Node), "3");
+			endNode = (Node) s.Load(typeof(Node), "end");
 
 			Node levelFourOneNode = new Node("4-1");
 			Node levelFourTwoNode = new Node("4-2");
@@ -106,39 +101,38 @@ namespace NHibernate.Test.NHSpecificTest
 
 			s.Save(levelFourOneNode);
 			s.Save(levelFourTwoNode);
-			
+
 			t.Commit();
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			levelThreeNode = (Node)s.Load( typeof(Node), "3" );
-			endNode = (Node)s.Load( typeof(Node), "end" );
+			levelThreeNode = (Node) s.Load(typeof(Node), "3");
+			endNode = (Node) s.Load(typeof(Node), "end");
 
-			Assert.AreEqual( 2, levelThreeNode.DestinationNodes.Count, "should be attached to the 2 level 4 nodes" );
-			foreach( Node node in levelThreeNode.DestinationNodes ) 
+			Assert.AreEqual(2, levelThreeNode.DestinationNodes.Count, "should be attached to the 2 level 4 nodes");
+			foreach (Node node in levelThreeNode.DestinationNodes)
 			{
-				Assert.IsFalse( node.Equals(endNode), "one of the Dest Nodes in levelThreeNode should not be the end node");
+				Assert.IsFalse(node.Equals(endNode), "one of the Dest Nodes in levelThreeNode should not be the end node");
 			}
 
-			Assert.AreEqual( 2, endNode.PreviousNodes.Count, "end node should have two nodes leading into it" );
+			Assert.AreEqual(2, endNode.PreviousNodes.Count, "end node should have two nodes leading into it");
 
-			foreach( Node node in endNode.PreviousNodes ) 
+			foreach (Node node in endNode.PreviousNodes)
 			{
-				Assert.IsFalse( node.Equals(levelThreeNode) , "one of the Prev Nodes in should not be the level 3 node, only level 4 nodes" );
+				Assert.IsFalse(node.Equals(levelThreeNode),
+				               "one of the Prev Nodes in should not be the level 3 node, only level 4 nodes");
 			}
 
 			t.Commit();
 			s.Close();
 
-			using( ISession s3 = OpenSession() )
+			using (ISession s3 = OpenSession())
 			{
-				s3.Delete( "from Node" );
+				s3.Delete("from Node");
 				s3.Flush();
 			}
 		}
-
-
 	}
 }

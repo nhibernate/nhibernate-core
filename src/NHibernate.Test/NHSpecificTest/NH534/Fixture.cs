@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 		{
 			get { return "NH534"; }
 		}
-		
+
 		[Test]
 		public void Bug()
 		{
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 				s.Save(c);
 				s.Flush();
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.Delete(c);

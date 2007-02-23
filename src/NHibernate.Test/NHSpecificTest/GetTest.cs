@@ -1,6 +1,5 @@
-using NHibernate;
+using System.Collections;
 using NHibernate.DomainModel;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
@@ -8,21 +7,21 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class GetTest : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
 			get
 			{
 				// have to use classes with proxies to test difference
 				// between Get() and Load()
-				return new string[] { "ABCProxy.hbm.xml" };
+				return new string[] {"ABCProxy.hbm.xml"};
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using (ISession s = sessions.OpenSession())
 			{
-				s.Delete( "from A" );
+				s.Delete("from A");
 				s.Flush();
 			}
 		}
@@ -30,58 +29,58 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void GetVsLoad()
 		{
-			A a = new A( "name" );
+			A a = new A("name");
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				s.Save( a );
+				s.Save(a);
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				A loadedA = ( A )s.Load( typeof( A ), a.Id );
-				Assert.IsFalse( NHibernateUtil.IsInitialized( loadedA ),
-					"Load should not initialize the object" );
+				A loadedA = (A) s.Load(typeof(A), a.Id);
+				Assert.IsFalse(NHibernateUtil.IsInitialized(loadedA),
+				               "Load should not initialize the object");
 
-				Assert.IsNotNull( s.Load( typeof( A ), ( a.Id + 1 ) ),
-					"Loading non-existent object should not return null" );
+				Assert.IsNotNull(s.Load(typeof(A), (a.Id + 1)),
+				                 "Loading non-existent object should not return null");
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				A gotA = (A)s.Get( typeof( A ), a.Id );
-				Assert.IsTrue(NHibernateUtil.IsInitialized( gotA ),
-					"Get should initialize the object" );
+				A gotA = (A) s.Get(typeof(A), a.Id);
+				Assert.IsTrue(NHibernateUtil.IsInitialized(gotA),
+				              "Get should initialize the object");
 
-				Assert.IsNull( s.Get( typeof( A ), ( a.Id + 1 ) ),
-					"Getting non-existent object should return null" );
+				Assert.IsNull(s.Get(typeof(A), (a.Id + 1)),
+				              "Getting non-existent object should return null");
 			}
 		}
 
 		[Test]
-		public void GetAndModify() 
+		public void GetAndModify()
 		{
-			A a = new A( "name" );
-			using( ISession s = OpenSession() )
+			A a = new A("name");
+			using (ISession s = OpenSession())
 			{
-				s.Save( a );
+				s.Save(a);
 				s.Flush();
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				a = s.Get( typeof(A), a.Id ) as A;
+				a = s.Get(typeof(A), a.Id) as A;
 				a.Name = "modified";
 				s.Flush();
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				a = s.Get( typeof(A), a.Id ) as A;
-				Assert.AreEqual( "modified", a.Name, "the name was modified" );
+				a = s.Get(typeof(A), a.Id) as A;
+				Assert.AreEqual("modified", a.Name, "the name was modified");
 			}
 		}
-		
+
 		[Test]
 		public void GetAfterLoad()
 		{
@@ -94,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest
 				id = (long) s.Save(a);
 				tx.Commit();
 			}
-		
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -105,16 +104,19 @@ namespace NHibernate.Test.NHSpecificTest
 				Assert.AreSame(loadedA, gotA);
 				tx.Commit();
 			}
-		
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				A loadedNonExistentA = (A) s.Load(typeof(A), -id);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(loadedNonExistentA));
-				try {
+				try
+				{
 					s.Get(typeof(A), -id);
 					Assert.Fail();
-				} catch (ObjectNotFoundException) {
+				}
+				catch (ObjectNotFoundException)
+				{
 					// ok
 				}
 				tx.Commit();

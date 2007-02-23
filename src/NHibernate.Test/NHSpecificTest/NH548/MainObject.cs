@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 
 		public MainObject()
 		{
-			_component = new ComponentObject( this );
+			_component = new ComponentObject(this);
 		}
 
 		public int ID

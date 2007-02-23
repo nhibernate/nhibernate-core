@@ -1,8 +1,6 @@
 using System;
 using NHibernate.Cfg;
 using NHibernate.Engine;
-using NHibernate.Impl;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.HQLFunctionTest
@@ -19,7 +17,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			Configuration cfg = new Configuration();
 
 			factory = cfg.BuildSessionFactory();
-			factoryImpl = (ISessionFactoryImplementor)factory;
+			factoryImpl = (ISessionFactoryImplementor) factory;
 			dialect = Dialect.Dialect.GetDialect();
 		}
 	}

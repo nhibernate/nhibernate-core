@@ -1,7 +1,4 @@
 using System;
-
-using NHibernate.Id;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.IdTest
@@ -26,12 +23,11 @@ namespace NHibernate.Test.IdTest
 			s.Close();
 
 			s = OpenSession();
-			b = (HiLoInt64Class)s.Load(typeof(HiLoInt64Class), b.Id);
+			b = (HiLoInt64Class) s.Load(typeof(HiLoInt64Class), b.Id);
 			Assert.AreEqual(id, b.Id);
 			s.Delete(b);
 			s.Flush();
 			s.Close();
 		}
-
 	}
 }

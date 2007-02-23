@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 	public class Point
 	{
 		private int x, y;
-		
+
 		public Point()
 		{
 		}
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 			set { y = value; }
 		}
 	}
-	
+
 	public class PointHolder
 	{
 		private int id;
@@ -56,16 +56,16 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 		{
 			PointHolder holder = new PointHolder();
 			holder.Point = new Point(20, 10);
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.Save(holder);
-				
+
 				PointHolder result = (PointHolder) s
-					.CreateCriteria(typeof (PointHolder))
-					.Add(Expression.Expression.Between("Point", new Point(19, 9), new Point(21, 11)))
-					.UniqueResult();
-				
+				                                   	.CreateCriteria(typeof(PointHolder))
+				                                   	.Add(Expression.Expression.Between("Point", new Point(19, 9), new Point(21, 11)))
+				                                   	.UniqueResult();
+
 				Assert.AreSame(holder, result);
 
 				s.Delete(holder);

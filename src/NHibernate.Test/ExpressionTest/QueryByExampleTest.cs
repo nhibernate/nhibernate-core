@@ -4,7 +4,6 @@ using NHibernate.DomainModel;
 using NHibernate.Expression;
 using NUnit.Framework;
 
-
 namespace NHibernate.Test.ExpressionTest
 {
 	[TestFixture]
@@ -12,16 +11,14 @@ namespace NHibernate.Test.ExpressionTest
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "Componentizable.hbm.xml"};
-			}
+			get { return new string[] {"Componentizable.hbm.xml"}; }
 		}
-		protected override void OnSetUp() 
+
+		protected override void OnSetUp()
 		{
 			InitData();
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			DeleteData();
@@ -30,8 +27,8 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void TestSimpleQBE()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
@@ -47,21 +44,21 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void TestJunctionNotExpressionQBE()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike();
 
-			
+
 				crit.Add(Expression.Expression.Or(Expression.Expression.Not(ex), ex));
 
 				IList result = crit.List();
 				Assert.IsNotNull(result);
 				//if ( !(dialect is HSQLDialect - h2.1 test
-				
-				Assert.AreEqual( 2, result.Count, "expected 2 objects" );
+
+				Assert.AreEqual(2, result.Count, "expected 2 objects");
 				t.Commit();
 			}
 		}
@@ -69,8 +66,8 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void TestExcludingQBE()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				Componentizable master = GetMaster("hibernate", null, "ope%");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
@@ -95,21 +92,21 @@ namespace NHibernate.Test.ExpressionTest
 
 		private void InitData()
 		{
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				Componentizable master = GetMaster("hibernate", "ORM tool", "ORM tool1");
 				s.Save(master);
 				s.Flush();
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				Componentizable master = GetMaster("hibernate", "open source", "open source1");
 				s.Save(master);
 				s.Flush();
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				Componentizable master = GetMaster("hibernate", null, null);
 				s.Save(master);
@@ -119,8 +116,8 @@ namespace NHibernate.Test.ExpressionTest
 
 		private void DeleteData()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Delete("from Componentizable");
 				t.Commit();

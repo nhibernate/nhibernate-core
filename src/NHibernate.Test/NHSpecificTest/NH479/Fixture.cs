@@ -20,26 +20,26 @@ namespace NHibernate.Test.NHSpecificTest.NH479
 			main.Aggregate = aggregate;
 			aggregate.Main = main;
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save( main );
+				s.Save(main);
 				t.Commit();
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				using( ITransaction t = s.BeginTransaction() )
+				using (ITransaction t = s.BeginTransaction())
 				{
-					s.SaveOrUpdateCopy( main );
-					s.SaveOrUpdateCopy( aggregate );
+					s.SaveOrUpdateCopy(main);
+					s.SaveOrUpdateCopy(aggregate);
 					t.Commit();
 				}
 
-				using( ITransaction t = s.BeginTransaction() )
+				using (ITransaction t = s.BeginTransaction())
 				{
-					s.Delete( "from Aggregate" );
-					s.Delete( "from Main" );
+					s.Delete("from Aggregate");
+					s.Delete("from Main");
 					t.Commit();
 				}
 			}

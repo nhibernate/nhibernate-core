@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Type;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -13,26 +11,26 @@ namespace NHibernate.Test.TypesTest
 	public class SByteTypeFixture
 	{
 		[Test]
-		public void Equals() 
+		public void Equals()
 		{
-			SByteType type = (SByteType)NHibernateUtil.SByte;
+			SByteType type = (SByteType) NHibernateUtil.SByte;
 
-			Assert.IsTrue( type.Equals( (sbyte)-1, (sbyte)-1 ) );
-			Assert.IsFalse( type.Equals( (sbyte)-2, (sbyte)-1 ) );
+			Assert.IsTrue(type.Equals((sbyte) -1, (sbyte) -1));
+			Assert.IsFalse(type.Equals((sbyte) -2, (sbyte) -1));
 		}
 
 		[Test]
-		public void ObjectToSQLString() 
+		public void ObjectToSQLString()
 		{
-			SByteType type = (SByteType)NHibernateUtil.SByte;
-			Assert.AreEqual( "-1", type.ObjectToSQLString( (sbyte)-1 ) );
+			SByteType type = (SByteType) NHibernateUtil.SByte;
+			Assert.AreEqual("-1", type.ObjectToSQLString((sbyte) -1));
 		}
 
 		[Test]
-		public void StringToObject() 
+		public void StringToObject()
 		{
-			SByteType type = (SByteType)NHibernateUtil.SByte;
-			Assert.AreEqual( (sbyte)-1, type.StringToObject( "-1" ) );
+			SByteType type = (SByteType) NHibernateUtil.SByte;
+			Assert.AreEqual((sbyte) -1, type.StringToObject("-1"));
 		}
 	}
 }

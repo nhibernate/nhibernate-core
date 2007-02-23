@@ -1,9 +1,9 @@
 using System;
-using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.DomainModel;
 using NUnit.Framework;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.QueryTest
 {
@@ -14,8 +14,8 @@ namespace NHibernate.Test.QueryTest
 		public void Default()
 		{
 			Configuration cfg = new Configuration();
-			cfg.AddResource("NHibernate.DomainModel.Simple.hbm.xml", typeof (Simple).Assembly);
-			cfg.SetProperty(Cfg.Environment.Hbm2ddlAuto, "create-drop");
+			cfg.AddResource("NHibernate.DomainModel.Simple.hbm.xml", typeof(Simple).Assembly);
+			cfg.SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 			ISessionFactory sf = cfg.BuildSessionFactory();
 
 			using (ISession s = sf.OpenSession())
@@ -30,8 +30,8 @@ namespace NHibernate.Test.QueryTest
 		public void Overridden()
 		{
 			Configuration cfg = new Configuration();
-			cfg.SetProperty(Cfg.Environment.Hbm2ddlAuto, "create-drop");
-			cfg.AddResource("NHibernate.DomainModel.Simple.hbm.xml", typeof (Simple).Assembly);
+			cfg.SetProperty(Environment.Hbm2ddlAuto, "create-drop");
+			cfg.AddResource("NHibernate.DomainModel.Simple.hbm.xml", typeof(Simple).Assembly);
 			cfg.AddSqlFunction("count", new ClassicCountFunction());
 
 			ISessionFactory sf = cfg.BuildSessionFactory();

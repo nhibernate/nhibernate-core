@@ -23,4 +23,3 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 }
-

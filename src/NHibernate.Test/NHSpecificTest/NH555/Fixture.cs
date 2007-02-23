@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 
 				Assert.AreEqual(52.5m, (decimal) q.UniqueResult());
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				Order o = (Order) s.CreateQuery("from Order").UniqueResult();

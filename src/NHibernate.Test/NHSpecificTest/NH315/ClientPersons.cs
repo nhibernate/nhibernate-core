@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH315
 {

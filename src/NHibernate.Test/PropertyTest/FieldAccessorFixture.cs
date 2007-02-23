@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Property;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.PropertyTest
@@ -26,35 +24,34 @@ namespace NHibernate.Test.PropertyTest
 		/// going to be reflected upon is initialized to 0.
 		/// </remarks>
 		[SetUp]
-		public virtual void SetUp() 
+		public virtual void SetUp()
 		{
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "Id" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "Id" );
+			_getter = _accessor.GetGetter(typeof(FieldClass), "Id");
+			_setter = _accessor.GetSetter(typeof(FieldClass), "Id");
 			_instance = new FieldClass();
-			_instance.InitId( 0 );
+			_instance.InitId(0);
 		}
 
 		[Test]
-		public void GetValue() 
+		public void GetValue()
 		{
-			
-			Assert.AreEqual( 0, _getter.Get(_instance) );
+			Assert.AreEqual(0, _getter.Get(_instance));
 			_instance.Increment();
-			Assert.AreEqual( 1, _getter.Get(_instance) );
-			
-			Assert.IsFalse( _instance.BlahGetterCalled );
-			Assert.IsFalse( _instance.CamelBazGetterCalled );
-			Assert.IsFalse( _instance.CamelUnderscoreFooGetterCalled );
-			Assert.IsFalse( _instance.LowerUnderscoreFooGetterCalled );
+			Assert.AreEqual(1, _getter.Get(_instance));
+
+			Assert.IsFalse(_instance.BlahGetterCalled);
+			Assert.IsFalse(_instance.CamelBazGetterCalled);
+			Assert.IsFalse(_instance.CamelUnderscoreFooGetterCalled);
+			Assert.IsFalse(_instance.LowerUnderscoreFooGetterCalled);
 		}
 
 		[Test]
-		public void SetValue() 
+		public void SetValue()
 		{
-			Assert.AreEqual( 0, _getter.Get(_instance) );
-			_setter.Set( _instance, 5 );
-			Assert.AreEqual( 5, _getter.Get(_instance) );
+			Assert.AreEqual(0, _getter.Get(_instance));
+			_setter.Set(_instance, 5);
+			Assert.AreEqual(5, _getter.Get(_instance));
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace NHibernate.Test.TransactionTest
 	{
 		protected override IList Mappings
 		{
-			get { return new string[] { }; }
+			get { return new string[] {}; }
 		}
 
 		public class RecordingInterceptor : EmptyInterceptor

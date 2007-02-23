@@ -1,12 +1,11 @@
 using System;
-
-using NHibernate.Util;
-using NExpression = NHibernate.Expression;
-using NHibernate.SqlCommand;
-
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
+using NHibernate.Expression;
+using NHibernate.SqlCommand;
+using NHibernate.Util;
 using NUnit.Framework;
+using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -22,13 +21,13 @@ namespace NHibernate.Test.ExpressionTest
 	public class SimpleExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
-		public void SimpleSqlStringTest() 
+		public void SimpleSqlStringTest()
 		{
 			ISession session = factory.OpenSession();
-			
-			CreateObjects( typeof( Simple ), session );
-			
-			NExpression.ICriterion andExpression = NExpression.Expression.Eq("Address", "12 Adress");
+
+			CreateObjects(typeof(Simple), session);
+
+			ICriterion andExpression = Expression.Expression.Eq("Address", "12 Adress");
 
 			SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
@@ -37,33 +36,33 @@ namespace NHibernate.Test.ExpressionTest
 
 			session.Close();
 		}
-	
+
 		[Test]
-		public void TestQuoting() 
+		public void TestQuoting()
 		{
-			using( ISession session = factory.OpenSession() )
+			using (ISession session = factory.OpenSession())
 			{
 				DateTime now = DateTime.Now;
 
-				CreateObjects( typeof( SimpleComponent ), session );
+				CreateObjects(typeof(SimpleComponent), session);
 
-				NExpression.ICriterion andExpression = NExpression.Expression.Eq( "Date", now );
+				ICriterion andExpression = Expression.Expression.Eq("Date", now);
 
 				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
-				string quotedColumn = dialect.QuoteForColumnName( "d[at]e_" );
+				string quotedColumn = dialect.QuoteForColumnName("d[at]e_");
 				string expectedSql = "sql_alias." + quotedColumn + " = ?";
-			
-				CompareSqlStrings( sqlString, expectedSql );
+
+				CompareSqlStrings(sqlString, expectedSql);
 			}
 		}
 
 		[Test]
-		public void SimpleDateExpression() 
+		public void SimpleDateExpression()
 		{
-			using( ISession session = factory.OpenSession() )
+			using (ISession session = factory.OpenSession())
 			{
-				CreateObjects( typeof( Simple ), session );
-				NExpression.ICriterion andExpression = NExpression.Expression.Ge( "Date", DateTime.Now );
+				CreateObjects(typeof(Simple), session);
+				ICriterion andExpression = Expression.Expression.Ge("Date", DateTime.Now);
 
 				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
@@ -74,16 +73,15 @@ namespace NHibernate.Test.ExpressionTest
 
 		[Test]
 		[ExpectedException(typeof(QueryException))]
-		public void MisspelledPropertyWithNormalizedEntityPersister() 
+		public void MisspelledPropertyWithNormalizedEntityPersister()
 		{
-			using( ISession session = factory.OpenSession() )
+			using (ISession session = factory.OpenSession())
 			{
-				CreateObjects( typeof( Multi ), session );
+				CreateObjects(typeof(Multi), session);
 
-				NExpression.ICriterion expression = NExpression.Expression.Eq( "MisspelledProperty", DateTime.Now );
+				ICriterion expression = Expression.Expression.Eq("MisspelledProperty", DateTime.Now);
 				expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 			}
 		}
-
 	}
 }

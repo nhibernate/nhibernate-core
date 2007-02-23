@@ -1,7 +1,5 @@
 using System;
-
 using NUnit.Framework;
-using NHibernate;
 
 namespace NHibernate.Test.NHSpecificTest.NH392
 {
@@ -22,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 
 			Assert.AreEqual(-1, uvmo.Id);
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				ITransaction tran = s.BeginTransaction();
 				try

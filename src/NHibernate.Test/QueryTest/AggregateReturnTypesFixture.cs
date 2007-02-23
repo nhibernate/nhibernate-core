@@ -62,61 +62,61 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void Sum()
 		{
-			CheckType("sum(a.AByte)", typeof (UInt64));
+			CheckType("sum(a.AByte)", typeof(UInt64));
 
-			CheckType("sum(a.AShort)", typeof (Int64));
-			CheckType("sum(a.AnInt)", typeof (Int64));
-			CheckType("sum(a.ALong)", typeof (Int64));
+			CheckType("sum(a.AShort)", typeof(Int64));
+			CheckType("sum(a.AnInt)", typeof(Int64));
+			CheckType("sum(a.ALong)", typeof(Int64));
 
-			CheckType("sum(a.AFloat)", typeof (Double));
-			CheckType("sum(a.ADouble)", typeof (Double));
+			CheckType("sum(a.AFloat)", typeof(Double));
+			CheckType("sum(a.ADouble)", typeof(Double));
 
-			CheckType("sum(a.ADecimal)", typeof (Decimal));			
+			CheckType("sum(a.ADecimal)", typeof(Decimal));
 		}
 
 		[Test]
 		public void Avg()
 		{
-			CheckType("avg(a.AByte)", typeof (Double));
+			CheckType("avg(a.AByte)", typeof(Double));
 
-			CheckType("avg(a.AShort)", typeof (Double));
-			CheckType("avg(a.AnInt)", typeof (Double));
-			CheckType("avg(a.ALong)", typeof (Double));
+			CheckType("avg(a.AShort)", typeof(Double));
+			CheckType("avg(a.AnInt)", typeof(Double));
+			CheckType("avg(a.ALong)", typeof(Double));
 
-			CheckType("avg(a.AFloat)", typeof (Double));
-			CheckType("avg(a.ADouble)", typeof (Double));
+			CheckType("avg(a.AFloat)", typeof(Double));
+			CheckType("avg(a.ADouble)", typeof(Double));
 
-			CheckType("avg(a.ADecimal)", typeof (Double));
+			CheckType("avg(a.ADecimal)", typeof(Double));
 		}
 
 		[Test]
 		public void Min()
 		{
-			CheckType("min(a.AByte)", typeof (Byte));
+			CheckType("min(a.AByte)", typeof(Byte));
 
-			CheckType("min(a.AShort)", typeof (Int16));
-			CheckType("min(a.AnInt)", typeof (Int32));
-			CheckType("min(a.ALong)", typeof (Int64));
+			CheckType("min(a.AShort)", typeof(Int16));
+			CheckType("min(a.AnInt)", typeof(Int32));
+			CheckType("min(a.ALong)", typeof(Int64));
 
-			CheckType("min(a.AFloat)", typeof (Single));
-			CheckType("min(a.ADouble)", typeof (Double));
+			CheckType("min(a.AFloat)", typeof(Single));
+			CheckType("min(a.ADouble)", typeof(Double));
 
-			CheckType("min(a.ADecimal)", typeof (Decimal));			
+			CheckType("min(a.ADecimal)", typeof(Decimal));
 		}
 
 		[Test]
 		public void Max()
 		{
-			CheckType("max(a.AByte)", typeof (Byte));
+			CheckType("max(a.AByte)", typeof(Byte));
 
-			CheckType("max(a.AShort)", typeof (Int16));
-			CheckType("max(a.AnInt)", typeof (Int32));
-			CheckType("max(a.ALong)", typeof (Int64));
+			CheckType("max(a.AShort)", typeof(Int16));
+			CheckType("max(a.AnInt)", typeof(Int32));
+			CheckType("max(a.ALong)", typeof(Int64));
 
-			CheckType("max(a.AFloat)", typeof (Single));
-			CheckType("max(a.ADouble)", typeof (Double));
+			CheckType("max(a.AFloat)", typeof(Single));
+			CheckType("max(a.ADouble)", typeof(Double));
 
-			CheckType("max(a.ADecimal)", typeof (Decimal));			
+			CheckType("max(a.ADecimal)", typeof(Decimal));
 		}
 	}
 }

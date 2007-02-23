@@ -10,7 +10,9 @@ namespace NHibernate.Test.FilterTest
 		private Product product;
 		private long quantity;
 
-		protected internal LineItem() { }
+		protected internal LineItem()
+		{
+		}
 
 		public static LineItem generate(Order order, int sequence, Product product, long quantity)
 		{

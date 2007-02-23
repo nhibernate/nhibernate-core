@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
@@ -16,14 +15,11 @@ namespace NHibernate.Test.NHSpecificTest
 
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecific.UnsavedType.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecific.UnsavedType.hbm.xml"}; }
 		}
 
 		[Test]
-		public void TestCRUD() 
+		public void TestCRUD()
 		{
 			// make a new object outside of the Session
 			UnsavedType unsavedToSave = new UnsavedType();
@@ -47,10 +43,10 @@ namespace NHibernate.Test.NHSpecificTest
 			IList results2 = s2.CreateCriteria(typeof(UnsavedType))
 				.Add(Expression.Expression.Eq("Id", unsavedToSave.Id))
 				.List();
-			
+
 			Assert.AreEqual(1, results2.Count, "Should have found a match for the new Id");
-			
-			UnsavedType unsavedToUpdate = (UnsavedType)results2[0];
+
+			UnsavedType unsavedToUpdate = (UnsavedType) results2[0];
 
 			// make sure it has the same Id
 			Assert.AreEqual(unsavedToSave.Id, unsavedToUpdate.Id, "Should have the same Id");
@@ -83,31 +79,29 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(1, results4.Count, "Should only be one item");
 
 			// lets make sure the object was updated
-			UnsavedType unsavedToDelete = (UnsavedType)results4[0];
+			UnsavedType unsavedToDelete = (UnsavedType) results4[0];
 			Assert.AreEqual(unsavedToUpdate.TypeName, unsavedToDelete.TypeName);
 
 			s4.Delete(unsavedToDelete);
- 
+
 			t4.Commit();
 			s4.Close();
 
 			// lets make sure the object was deleted
 
 			ISession s5 = OpenSession();
-			try 
+			try
 			{
-				UnsavedType unsavedNull = (UnsavedType)s5.Load(typeof(UnsavedType), unsavedToDelete.Id);
+				UnsavedType unsavedNull = (UnsavedType) s5.Load(typeof(UnsavedType), unsavedToDelete.Id);
 				Assert.IsNull(unsavedNull);
 			}
-			catch(ObjectNotFoundException onfe) 
+			catch (ObjectNotFoundException onfe)
 			{
 				// do nothing it was expected
 				Assert.IsNotNull(onfe); //getting ride of 'onfe' is never used compile warning
 			}
 
 			s5.Close();
-
 		}
-
 	}
 }

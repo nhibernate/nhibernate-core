@@ -6,15 +6,16 @@ namespace NHibernate.Test.Unconstrained
 	{
 		private string _name;
 		private SimplyB _simplyB;
- 	
- 	  public SimplyA()
+
+		public SimplyA()
 		{
 		}
+
 		public SimplyA(string name)
-			: this() 
+			: this()
 		{
 			_name = name;
- 	  }
+		}
 
 		public string Name
 		{
@@ -27,6 +28,5 @@ namespace NHibernate.Test.Unconstrained
 			get { return _simplyB; }
 			set { _simplyB = value; }
 		}
-
 	}
 }

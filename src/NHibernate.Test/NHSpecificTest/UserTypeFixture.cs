@@ -1,24 +1,21 @@
 using System;
+using System.Collections;
 using System.Data;
-
+using NHibernate.Connection;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest 
+namespace NHibernate.Test.NHSpecificTest
 {
-
 	/// <summary>
 	/// Summary description for UserTypeFixture.
 	/// </summary>
 	[TestFixture]
 	public class UserTypeFixture : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecific.ClassWithNullColumns.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecific.ClassWithNullColumns.hbm.xml"}; }
 		}
 
 		/// <summary>
@@ -26,9 +23,9 @@ namespace NHibernate.Test.NHSpecificTest
 		/// persist to the db as a null.
 		/// </summary>
 		[Test]
-		public void InsertNull() 
+		public void InsertNull()
 		{
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				ClassWithNullColumns userTypeClass = new ClassWithNullColumns();
 				userTypeClass.Id = 5;
@@ -40,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 
 			// manually read from the db
-			Connection.IConnectionProvider provider = Connection.ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
+			IConnectionProvider provider = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
 			IDbConnection conn = provider.GetConnection();
 			IDbCommand cmd = conn.CreateCommand();
 			cmd.Connection = conn;
@@ -48,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			IDataReader reader = cmd.ExecuteReader();
 
-			while(reader.Read()) 
+			while (reader.Read())
 			{
 				Assert.AreEqual(5, reader[0]);
 				Assert.AreEqual(4, reader[1]);
@@ -58,9 +55,9 @@ namespace NHibernate.Test.NHSpecificTest
 
 			conn.Close();
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				s.Delete( "from ClassWithNullColumns" );
+				s.Delete("from ClassWithNullColumns");
 				s.Flush();
 			}
 		}

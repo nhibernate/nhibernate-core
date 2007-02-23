@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
-using NUnit.Framework;
 using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -11,7 +11,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void AllEmbeddedTypesAreMarkedSerializable()
 		{
-			NHAssert.InheritedAreMarkedSerializable(typeof(NHibernate.Type.IType));
+			NHAssert.InheritedAreMarkedSerializable(typeof(IType));
 		}
 
 		[Test]
@@ -20,7 +20,7 @@ namespace NHibernate.Test.TypesTest
 			FieldInfo[] builtInCustomTypes = typeof(NHibernateUtil).GetFields(BindingFlags.Public | BindingFlags.Static);
 			foreach (FieldInfo fieldInfo in builtInCustomTypes)
 			{
-				IType ntp = (IType)fieldInfo.GetValue(null);
+				IType ntp = (IType) fieldInfo.GetValue(null);
 				NHAssert.IsSerializable(ntp, fieldInfo.Name + " is not serializable");
 			}
 		}

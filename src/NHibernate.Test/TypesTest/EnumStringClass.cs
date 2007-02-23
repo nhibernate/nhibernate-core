@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Type;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -24,19 +25,18 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	public enum SampleEnum 
+	public enum SampleEnum
 	{
 		On,
 		Off,
 		Dimmed
 	}
 
-	public class SampleEnumType : NHibernate.Type.EnumStringType
+	public class SampleEnumType : EnumStringType
 	{
-		public SampleEnumType() 
-			: base( typeof( SampleEnum ), 10 )
+		public SampleEnumType()
+			: base(typeof(SampleEnum), 10)
 		{
-			
 		}
 	}
 }

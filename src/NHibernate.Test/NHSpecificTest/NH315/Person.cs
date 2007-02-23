@@ -1,11 +1,10 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH315
 {
 	public class Person
 	{
-		int _id;
+		private int _id;
 
 		public int Id
 		{

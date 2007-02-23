@@ -23,16 +23,16 @@ namespace NHibernate.Test.NHSpecificTest.NH480
 	[TestFixture]
 	public class Fixture
 	{
-		private System.Globalization.CultureInfo currentCulture = null;
-		private System.Globalization.CultureInfo currentUICulture = null;
+		private CultureInfo currentCulture = null;
+		private CultureInfo currentUICulture = null;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
 			currentCulture = Thread.CurrentThread.CurrentCulture;
 			currentUICulture = Thread.CurrentThread.CurrentUICulture;
-			
-			System.Globalization.CultureInfo turkish = new CultureInfo( "tr-TR" );
+
+			CultureInfo turkish = new CultureInfo("tr-TR");
 			Thread.CurrentThread.CurrentCulture = turkish;
 			Thread.CurrentThread.CurrentUICulture = turkish;
 		}
@@ -44,19 +44,19 @@ namespace NHibernate.Test.NHSpecificTest.NH480
 			Thread.CurrentThread.CurrentUICulture = currentUICulture;
 		}
 
-        [Test]
+		[Test]
 		public void CheckIII()
-        {
-			Assert.AreEqual( "iii", new CamelCaseStrategy().GetFieldName( "Iii" ) );
-			Assert.AreEqual( "_iii", new CamelCaseUnderscoreStrategy().GetFieldName( "Iii" ) );
+		{
+			Assert.AreEqual("iii", new CamelCaseStrategy().GetFieldName("Iii"));
+			Assert.AreEqual("_iii", new CamelCaseUnderscoreStrategy().GetFieldName("Iii"));
 
-			Assert.AreEqual( "iii", new LowerCaseStrategy().GetFieldName( "III" ) );
-			Assert.AreEqual( "_iii", new LowerCaseUnderscoreStrategy().GetFieldName( "III" ) );
+			Assert.AreEqual("iii", new LowerCaseStrategy().GetFieldName("III"));
+			Assert.AreEqual("_iii", new LowerCaseUnderscoreStrategy().GetFieldName("III"));
 
-			Assert.AreEqual( "m_Iii", new PascalCaseMUnderscoreStrategy().GetFieldName( "iii" ) );
-			Assert.AreEqual( "_Iii", new PascalCaseUnderscoreStrategy().GetFieldName( "iii" ) );
+			Assert.AreEqual("m_Iii", new PascalCaseMUnderscoreStrategy().GetFieldName("iii"));
+			Assert.AreEqual("_Iii", new PascalCaseUnderscoreStrategy().GetFieldName("iii"));
 
-			Assert.AreEqual( "iii_iii_iii", ImprovedNamingStrategy.Instance.ColumnName( "IiiIiiIii" ) );
+			Assert.AreEqual("iii_iii_iii", ImprovedNamingStrategy.Instance.ColumnName("IiiIiiIii"));
 		}
 	}
 }

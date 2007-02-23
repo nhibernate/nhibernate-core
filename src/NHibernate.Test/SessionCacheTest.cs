@@ -13,7 +13,7 @@ namespace NHibernate.Test
 	{
 		protected override IList Mappings
 		{
-			get { return new string[] { "Simple.hbm.xml" }; }
+			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
 		[Test]
@@ -21,34 +21,34 @@ namespace NHibernate.Test
 		{
 			ISession fixture = OpenSession();
 
-			for( long i = 1L; i < 6L; i++ )
+			for (long i = 1L; i < 6L; i++)
 			{
-				Simple s = new Simple( (int) i );
+				Simple s = new Simple((int) i);
 				s.Address = "dummy collection address " + i;
 				s.Date = DateTime.Now;
 				s.Name = "dummy collection name " + i;
 				s.Pay = i * 1279L;
-				fixture.Save( s, i );
+				fixture.Save(s, i);
 			}
-			
+
 			fixture.Flush();
 
-			IList list = fixture.CreateCriteria( typeof( Simple ) ).List();
+			IList list = fixture.CreateCriteria(typeof(Simple)).List();
 
-			Assert.IsNotNull( list );
-			Assert.IsTrue( list.Count == 5 );
-			Assert.IsTrue( fixture.Contains( list[2] ) );
+			Assert.IsNotNull(list);
+			Assert.IsTrue(list.Count == 5);
+			Assert.IsTrue(fixture.Contains(list[2]));
 
 			fixture.Clear();
 
-			Assert.IsTrue( list.Count == 5 );
-			Assert.IsFalse( fixture.Contains( list[2] ) );
+			Assert.IsTrue(list.Count == 5);
+			Assert.IsFalse(fixture.Contains(list[2]));
 
 			fixture.Flush();
-			
-			Assert.IsTrue( list.Count == 5 );
 
-			fixture.Delete( "from System.Object o" );
+			Assert.IsTrue(list.Count == 5);
+
+			fixture.Delete("from System.Object o");
 			fixture.Flush();
 			fixture.Close();
 		}
@@ -61,9 +61,9 @@ namespace NHibernate.Test
 			// First, prime the fixture session to think the entity does not exist
 			try
 			{
-				fixture.Load( typeof( Simple ), -1L );
+				fixture.Load(typeof(Simple), -1L);
 			}
-			catch( ObjectNotFoundException )
+			catch (ObjectNotFoundException)
 			{
 				// this is expected
 			}
@@ -74,26 +74,26 @@ namespace NHibernate.Test
 			{
 				anotherSession = OpenSession();
 
-				Simple oneSimple = new Simple( 1 );
+				Simple oneSimple = new Simple(1);
 				oneSimple.Name = "hidden entity";
 				oneSimple.Address = "SessionCacheTest.LoadAfterNotExists";
 				oneSimple.Date = DateTime.Now;
 				oneSimple.Pay = 1000000f;
-				
-				anotherSession.Save( oneSimple, -1L );
+
+				anotherSession.Save(oneSimple, -1L);
 				anotherSession.Flush();
 			}
 			finally
 			{
-				QuietlyClose( anotherSession );
+				QuietlyClose(anotherSession);
 			}
 
 			// Verify that the original session is still unable to see the new entry...
 			try
 			{
-				fixture.Load( typeof( Simple ), -1L );
+				fixture.Load(typeof(Simple), -1L);
 			}
-			catch( ObjectNotFoundException )
+			catch (ObjectNotFoundException)
 			{
 			}
 
@@ -103,31 +103,32 @@ namespace NHibernate.Test
 			string failedMessage = "Unable to load entity with id = -1.";
 			try
 			{
-				Simple dummy = fixture.Load( typeof( Simple ), -1L ) as Simple;
-				Assert.IsNotNull( dummy, failedMessage );
-				fixture.Delete( dummy );
+				Simple dummy = fixture.Load(typeof(Simple), -1L) as Simple;
+				Assert.IsNotNull(dummy, failedMessage);
+				fixture.Delete(dummy);
 				fixture.Flush();
 			}
-			catch( ObjectNotFoundException )
+			catch (ObjectNotFoundException)
 			{
-				Assert.Fail( failedMessage );
+				Assert.Fail(failedMessage);
 			}
 			finally
 			{
-				QuietlyClose( fixture );
+				QuietlyClose(fixture);
 			}
 		}
 
-		private void QuietlyClose( ISession session )
+		private void QuietlyClose(ISession session)
 		{
-			if( session != null )
+			if (session != null)
 			{
 				try
 				{
 					session.Close();
 				}
 				catch
-				{}
+				{
+				}
 			}
 		}
 	}

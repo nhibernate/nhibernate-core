@@ -7,19 +7,19 @@ namespace NHibernate.Test.CompositeCollection
 	/// </summary>
 	public class BaseClassB
 	{
-		private int _baseID = 0; 
-		private ChildColl _children = new ChildColl(); 
- 
-		public int BaseID 
-		{ 
-			get { return _baseID; } 
-			set { _baseID = value; } 
-		} 
- 
-		public ChildColl Children 
-		{ 
-			get { return _children; } 
-			set { _children = value; } 
-		} 
+		private int _baseID = 0;
+		private ChildColl _children = new ChildColl();
+
+		public int BaseID
+		{
+			get { return _baseID; }
+			set { _baseID = value; }
+		}
+
+		public ChildColl Children
+		{
+			get { return _children; }
+			set { _children = value; }
+		}
 	}
 }

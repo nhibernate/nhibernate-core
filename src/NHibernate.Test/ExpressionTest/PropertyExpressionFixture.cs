@@ -1,11 +1,10 @@
 using System;
-using NHibernate.Util;
-using NExpression = NHibernate.Expression;
-using NHibernate.SqlCommand;
-
 using NHibernate.DomainModel;
-
+using NHibernate.Expression;
+using NHibernate.SqlCommand;
+using NHibernate.Util;
 using NUnit.Framework;
+using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -21,13 +20,13 @@ namespace NHibernate.Test.ExpressionTest
 	public class PropertyExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
-		public void SqlStringTest() 
+		public void SqlStringTest()
 		{
 			ISession session = factory.OpenSession();
-			
-			NExpression.ICriterion expression = NExpression.Expression.EqProperty("Address", "Name");
 
-			CreateObjects( typeof( Simple ), session );
+			ICriterion expression = Expression.Expression.EqProperty("Address", "Name");
+
+			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
 
 			string expectedSql = "sql_alias.address = sql_alias.Name";

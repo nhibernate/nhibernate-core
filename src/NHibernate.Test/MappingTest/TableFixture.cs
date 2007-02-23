@@ -1,7 +1,6 @@
 using System;
-
+using NHibernate.Dialect;
 using NHibernate.Mapping;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingTest
@@ -13,41 +12,41 @@ namespace NHibernate.Test.MappingTest
 	public class TableFixture
 	{
 		[Test]
-		public void TableNameQuoted() 
+		public void TableNameQuoted()
 		{
 			Table tbl = new Table();
 			tbl.Name = "`keyword`";
 
-			Dialect.Dialect dialect = new Dialect.MsSql2000Dialect();
+			Dialect.Dialect dialect = new MsSql2000Dialect();
 
-			Assert.AreEqual( "[keyword]", tbl.GetQuotedName( dialect ) );
+			Assert.AreEqual("[keyword]", tbl.GetQuotedName(dialect));
 
-			Assert.AreEqual( "dbo.[keyword]", tbl.GetQualifiedName( dialect, "dbo" ) );
+			Assert.AreEqual("dbo.[keyword]", tbl.GetQualifiedName(dialect, "dbo"));
 
-			Assert.AreEqual( "[keyword]", tbl.GetQualifiedName( dialect, null ) );
+			Assert.AreEqual("[keyword]", tbl.GetQualifiedName(dialect, null));
 
 			tbl.Schema = "sch";
 
-			Assert.AreEqual( "sch.[keyword]", tbl.GetQualifiedName( dialect ) );
+			Assert.AreEqual("sch.[keyword]", tbl.GetQualifiedName(dialect));
 		}
 
 		[Test]
-		public void TableNameNotQuoted() 
+		public void TableNameNotQuoted()
 		{
 			Table tbl = new Table();
 			tbl.Name = "notkeyword";
 
-			Dialect.Dialect dialect = new Dialect.MsSql2000Dialect();
+			Dialect.Dialect dialect = new MsSql2000Dialect();
 
-			Assert.AreEqual( "notkeyword", tbl.GetQuotedName( dialect ) );
+			Assert.AreEqual("notkeyword", tbl.GetQuotedName(dialect));
 
-			Assert.AreEqual( "dbo.notkeyword", tbl.GetQualifiedName( dialect, "dbo" ) );
+			Assert.AreEqual("dbo.notkeyword", tbl.GetQualifiedName(dialect, "dbo"));
 
-			Assert.AreEqual( "notkeyword", tbl.GetQualifiedName( dialect, null ) );
+			Assert.AreEqual("notkeyword", tbl.GetQualifiedName(dialect, null));
 
 			tbl.Schema = "sch";
 
-			Assert.AreEqual( "sch.notkeyword", tbl.GetQualifiedName( dialect ) );
+			Assert.AreEqual("sch.notkeyword", tbl.GetQualifiedName(dialect));
 		}
 
 		[Test]
@@ -57,9 +56,9 @@ namespace NHibernate.Test.MappingTest
 			tbl.Schema = "`schema`";
 			tbl.Name = "name";
 
-			Dialect.Dialect dialect = new Dialect.MsSql2000Dialect();
+			Dialect.Dialect dialect = new MsSql2000Dialect();
 
-			Assert.AreEqual( "[schema].name", tbl.GetQualifiedName( dialect ) );
+			Assert.AreEqual("[schema].name", tbl.GetQualifiedName(dialect));
 		}
 	}
 }

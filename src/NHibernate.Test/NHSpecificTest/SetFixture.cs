@@ -1,14 +1,19 @@
 using System;
 using System.Collections;
-using NHibernate.Persister.Collection;
-using NUnit.Framework;
+using System.Data;
+using Iesi.Collections;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Id;
+using NHibernate.Metadata;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
 {
-	class CollectionSnapshotStub : ICollectionSnapshot
+	internal class CollectionSnapshotStub : ICollectionSnapshot
 	{
 		#region ICollectionSnapshot Members
 
@@ -66,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest
 	}
 
 
-	class CollectionPersisterStub : ICollectionPersister
+	internal class CollectionPersisterStub : ICollectionPersister
 	{
 		#region ICollectionPersister Members
 
@@ -88,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public NHibernate.Id.IIdentifierGenerator IdentifierGenerator
+		public IIdentifierGenerator IdentifierGenerator
 		{
 			get
 			{
@@ -106,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public NHibernate.Type.IType IndexType
+		public IType IndexType
 		{
 			get
 			{
@@ -133,7 +138,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public string GetManyToManyFilterFragment( string alias, IDictionary enabledFilters )
+		public string GetManyToManyFilterFragment(string alias, IDictionary enabledFilters)
 		{
 			throw new NotImplementedException();
 		}
@@ -147,7 +152,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public NHibernate.Type.IType KeyType
+		public IType KeyType
 		{
 			get
 			{
@@ -170,8 +175,9 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		private CollectionType collectionType = new SetType( null, null );
-		public NHibernate.Type.CollectionType CollectionType
+		private CollectionType collectionType = new SetType(null, null);
+
+		public CollectionType CollectionType
 		{
 			get { return collectionType; }
 		}
@@ -186,7 +192,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.DeleteRows implementation
 		}
 
-		public void WriteElement(System.Data.IDbCommand st, object elt, bool writeOrder, ISessionImplementor session)
+		public void WriteElement(IDbCommand st, object elt, bool writeOrder, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.WriteElement implementation
 		}
@@ -206,6 +212,7 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		private IType elementType;
+
 		public IType ElementType
 		{
 			get { return elementType; }
@@ -217,7 +224,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.Remove implementation
 		}
 
-		public object ReadElement(System.Data.IDataReader rs, object owner, string[] aliases, ISessionImplementor session)
+		public object ReadElement(IDataReader rs, object owner, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadElement implementation
 			return null;
@@ -232,7 +239,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public NHibernate.Metadata.ICollectionMetadata CollectionMetadata
+		public ICollectionMetadata CollectionMetadata
 		{
 			get
 			{
@@ -241,7 +248,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object ReadIndex(System.Data.IDataReader rs, string[] aliases, ISessionImplementor session)
+		public object ReadIndex(IDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadIndex implementation
 			return null;
@@ -252,13 +259,13 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.Initialize implementation
 		}
 
-		public object ReadKey(System.Data.IDataReader rs, string[] aliases, ISessionImplementor session)
+		public object ReadKey(IDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadKey implementation
 			return null;
 		}
 
-		public NHibernate.Type.IType IdentifierType
+		public IType IdentifierType
 		{
 			get
 			{
@@ -276,7 +283,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public NHibernate.Cache.ICacheConcurrencyStrategy Cache
+		public ICacheConcurrencyStrategy Cache
 		{
 			get
 			{
@@ -294,7 +301,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object ReadIdentifier(System.Data.IDataReader rs, string alias, ISessionImplementor session)
+		public object ReadIdentifier(IDataReader rs, string alias, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadIdentifier implementation
 			return null;
@@ -322,26 +329,26 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 		}
 
-		public string[ ] GetKeyColumnAliases( string suffix )
+		public string[] GetKeyColumnAliases(string suffix)
 		{
 			return null;
 		}
 
-		public string[ ] GetIndexColumnAliases( string suffix )
+		public string[] GetIndexColumnAliases(string suffix)
 		{
 			return null;
 		}
 
-		public string[ ] GetElementColumnAliases( string suffix )
+		public string[] GetElementColumnAliases(string suffix)
 		{
 			return null;
 		}
 
-		public string GetIdentifierColumnAlias( string suffix )
+		public string GetIdentifierColumnAlias(string suffix)
 		{
 			return null;
 		}
-		
+
 		public ISessionFactoryImplementor Factory
 		{
 			get { return null; }
@@ -372,7 +379,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void DisassembleAndAssemble()
 		{
-			PersistentSet set = new PersistentSet( null, new Iesi.Collections.ListSet() );
+			PersistentSet set = new PersistentSet(null, new ListSet());
 
 			set.CollectionSnapshot = new CollectionSnapshotStub();
 
@@ -384,12 +391,12 @@ namespace NHibernate.Test.NHSpecificTest
 
 			object disassembled = set.Disassemble(collectionPersister);
 
-			PersistentSet assembledSet = new PersistentSet( null );
-			assembledSet.InitializeFromCache( collectionPersister, disassembled, null );
+			PersistentSet assembledSet = new PersistentSet(null);
+			assembledSet.InitializeFromCache(collectionPersister, disassembled, null);
 
-			Assert.AreEqual( 2, assembledSet.Count );
-			Assert.IsTrue( assembledSet.Contains( 10 ) );
-			Assert.IsTrue( assembledSet.Contains( 20 ) );
+			Assert.AreEqual(2, assembledSet.Count);
+			Assert.IsTrue(assembledSet.Contains(10));
+			Assert.IsTrue(assembledSet.Contains(20));
 		}
 	}
 }

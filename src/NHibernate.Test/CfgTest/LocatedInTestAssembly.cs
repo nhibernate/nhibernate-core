@@ -9,7 +9,7 @@ namespace NHibernate.Test.CfgTest
 	public class LocatedInTestAssembly
 	{
 		private int id;
-		
+
 		public int Id
 		{
 			get { return id; }

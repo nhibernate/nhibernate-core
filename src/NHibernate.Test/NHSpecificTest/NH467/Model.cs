@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH467
 			set { _isActive = value; }
 		}
 	}
-	
+
 	public class Employee
 	{
 		private int _id;

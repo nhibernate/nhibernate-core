@@ -8,12 +8,12 @@ namespace NHibernate.Test.CompositeCollection
 	/// </summary>
 	public class ChildColl
 	{
-		private IList _values = new ArrayList(); 
- 
-		public IList Values 
-		{ 
-			get { return _values; } 
-			set { _values = value; } 
-		} 
+		private IList _values = new ArrayList();
+
+		public IList Values
+		{
+			get { return _values; }
+			set { _values = value; }
+		}
 	}
 }

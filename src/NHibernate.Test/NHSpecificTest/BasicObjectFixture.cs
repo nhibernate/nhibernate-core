@@ -1,13 +1,10 @@
 using System;
-
-using NHibernate;
+using System.Collections;
 using NHibernate.DomainModel.NHSpecific;
-
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest 
+namespace NHibernate.Test.NHSpecificTest
 {
-
 	/// <summary>
 	/// Test mappings of <c>type="Object"</c>
 	/// </summary>
@@ -17,27 +14,24 @@ namespace NHibernate.Test.NHSpecificTest
 	/// would fail.
 	/// </remarks>
 	[TestFixture]
-	public class BasicObjectFixture : TestCase  
+	public class BasicObjectFixture : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecific.BasicObject.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecific.BasicObject.hbm.xml"}; }
 		}
 
 		/// <summary>
 		/// This is the replacement for ParentChildTest.ObjectType() and FooBarTest.ObjectType()
 		/// </summary>
 		[Test]
-		public void TestCRUD() 
+		public void TestCRUD()
 		{
 			ISession s = OpenSession();
-			
+
 			BasicObjectRef any = new BasicObjectRef();
 			any.Name = "the any";
-			
+
 			IBasicObjectProxy anyProxy = new BasicObjectProxy();
 			anyProxy.Name = "proxied object";
 
@@ -53,19 +47,19 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Close();
 
 			s = OpenSession();
-			bo = (BasicObject)s.Load( typeof(BasicObject), bo.Id );
+			bo = (BasicObject) s.Load(typeof(BasicObject), bo.Id);
 
-			
-			Assert.IsNotNull( bo.AnyWithProxy , "AnyWithProxy should not be null" );
-			Assert.IsTrue( bo.AnyWithProxy is IBasicObjectProxy, "AnyWithProxy should have been a IBasicObjectProxy instance" );
-			Assert.AreEqual( anyProxy.Id, ((IBasicObjectProxy)bo.AnyWithProxy).Id );
 
-			Assert.IsNotNull( bo.Any , "any should not be null" );
-			Assert.IsTrue( bo.Any is BasicObjectRef, "any should have been a BasicObjectRef instance" );
-			Assert.AreEqual( any.Id, ((BasicObjectRef)bo.Any).Id );
-			
-			any = (BasicObjectRef)s.Load( typeof(BasicObjectRef), any.Id );
-			Assert.AreSame( any, bo.Any, "any loaded and ref by BasicObject should be the same" );
+			Assert.IsNotNull(bo.AnyWithProxy, "AnyWithProxy should not be null");
+			Assert.IsTrue(bo.AnyWithProxy is IBasicObjectProxy, "AnyWithProxy should have been a IBasicObjectProxy instance");
+			Assert.AreEqual(anyProxy.Id, ((IBasicObjectProxy) bo.AnyWithProxy).Id);
+
+			Assert.IsNotNull(bo.Any, "any should not be null");
+			Assert.IsTrue(bo.Any is BasicObjectRef, "any should have been a BasicObjectRef instance");
+			Assert.AreEqual(any.Id, ((BasicObjectRef) bo.Any).Id);
+
+			any = (BasicObjectRef) s.Load(typeof(BasicObjectRef), any.Id);
+			Assert.AreSame(any, bo.Any, "any loaded and ref by BasicObject should be the same");
 
 			s.Delete(bo.Any);
 			s.Delete(bo.AnyWithProxy);
@@ -73,6 +67,5 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Flush();
 			s.Close();
 		}
-
 	}
 }

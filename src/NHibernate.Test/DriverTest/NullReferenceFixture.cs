@@ -12,10 +12,7 @@ namespace NHibernate.Test.DriverTest
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "Simple.hbm.xml"};
-			}
+			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
 		/// <summary>
@@ -27,26 +24,26 @@ namespace NHibernate.Test.DriverTest
 		/// but all properties were null.
 		/// </remarks>
 		/// TODO: I think this fixture is redundant now due to the QueryTest fixtures, just mark it so that it catches the new exception type for now
-		[Test, ExpectedException(typeof(NHibernate.QueryException))]
+		[Test, ExpectedException(typeof(QueryException))]
 		public void NoParameterNameNullReference()
 		{
 			ISession s = null;
 			try
 			{
 				s = OpenSession();
-				Console.WriteLine( "about to run query" );
-				IQuery q = s.CreateQuery( "from Simple s where s.Name = :missing" );
-				Assert.IsNotNull( q );
+				Console.WriteLine("about to run query");
+				IQuery q = s.CreateQuery("from Simple s where s.Name = :missing");
+				Assert.IsNotNull(q);
 				q.List();
 			}
-			catch( ADOException ae )
+			catch (ADOException ae)
 			{
-				Assert.IsTrue( ae.InnerException is QueryException );
-				Assert.IsTrue( ae.InnerException.Message.StartsWith( "No value assigned to parameter" ) );
+				Assert.IsTrue(ae.InnerException is QueryException);
+				Assert.IsTrue(ae.InnerException.Message.StartsWith("No value assigned to parameter"));
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				Console.WriteLine( e.ToString() );
+				Console.WriteLine(e.ToString());
 				throw;
 			}
 			finally
@@ -65,16 +62,16 @@ namespace NHibernate.Test.DriverTest
 			try
 			{
 				s = OpenSession();
-				Console.WriteLine( "about to run query" );
-				IQuery q = s.CreateQuery( "from Simple s where s.Name = :missing" );
-				Assert.IsNotNull( q );
-				q.SetString( "missing", "nhibernate" );
+				Console.WriteLine("about to run query");
+				IQuery q = s.CreateQuery("from Simple s where s.Name = :missing");
+				Assert.IsNotNull(q);
+				q.SetString("missing", "nhibernate");
 				IList list = q.List();
-				Assert.IsNotNull( list );
+				Assert.IsNotNull(list);
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				Console.WriteLine( e.ToString() );
+				Console.WriteLine(e.ToString());
 				throw;
 			}
 			finally

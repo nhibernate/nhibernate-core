@@ -1,29 +1,25 @@
 using System;
-using System.Data;
-
+using System.Collections;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest 
+namespace NHibernate.Test.NHSpecificTest
 {
 	[TestFixture]
-	public class SimpleComponentFixture : TestCase {
-
+	public class SimpleComponentFixture : TestCase
+	{
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHSpecific.SimpleComponent.hbm.xml"};
-			}
+			get { return new string[] {"NHSpecific.SimpleComponent.hbm.xml"}; }
 		}
 
 		protected override void OnSetUp()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				// create a new
 				SimpleComponent simpleComp = new SimpleComponent();
@@ -31,23 +27,23 @@ namespace NHibernate.Test.NHSpecificTest
 				simpleComp.Address = "Street 12";
 				simpleComp.Date = testDateTime;
 				simpleComp.Count = 99;
-				simpleComp.Audit.CreatedDate = System.DateTime.Now;
+				simpleComp.Audit.CreatedDate = DateTime.Now;
 				simpleComp.Audit.CreatedUserId = "TestCreated";
-				simpleComp.Audit.UpdatedDate = System.DateTime.Now;
+				simpleComp.Audit.UpdatedDate = DateTime.Now;
 				simpleComp.Audit.UpdatedUserId = "TestUpdated";
-			
-			
+
+
 				s.Save(simpleComp, 10L);
-			
+
 				t.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				s.Delete( s.Load( typeof( SimpleComponent ), 10L ) );
+				s.Delete(s.Load(typeof(SimpleComponent), 10L));
 				s.Flush();
 			}
 		}
@@ -56,11 +52,10 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void TestLoad()
 		{
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-
-				SimpleComponent simpleComp = (SimpleComponent)s.Load( typeof( SimpleComponent ), 10L );
+				SimpleComponent simpleComp = (SimpleComponent) s.Load(typeof(SimpleComponent), 10L);
 
 				Assert.AreEqual(10L, simpleComp.Key);
 				Assert.AreEqual("TestCreated", simpleComp.Audit.CreatedUserId);
@@ -69,6 +64,7 @@ namespace NHibernate.Test.NHSpecificTest
 				t.Commit();
 			}
 		}
+
 		/// <summary>
 		/// Test the ability to insert a new row with a User Assigned Key
 		/// Right now - the only way to verify this is to watch SQL Profiler

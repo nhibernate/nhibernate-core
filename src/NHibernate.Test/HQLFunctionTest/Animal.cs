@@ -4,15 +4,18 @@ namespace NHibernate.Test.HQLFunctionTest
 {
 	public class Animal
 	{
-		public Animal() { }
+		public Animal()
+		{
+		}
 
-		public Animal(string description, float bodyWeight):base()
+		public Animal(string description, float bodyWeight) : base()
 		{
 			_description = description;
 			_bodyWeight = bodyWeight;
 		}
 
 		private int _id;
+
 		public virtual int Id
 		{
 			get { return _id; }
@@ -20,6 +23,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		}
 
 		private string _description;
+
 		public virtual string Description
 		{
 			get { return _description; }
@@ -27,6 +31,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		}
 
 		private float _bodyWeight;
+
 		public virtual float BodyWeight
 		{
 			get { return _bodyWeight; }

@@ -2,16 +2,14 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH401
 {
-
-    public class Clubmember
-    {
-
-        private int m_Id;
-        private Club m_Club;
-        private System.DateTime m_Expirydate;
-        private System.DateTime m_Joindate;
+	public class Clubmember
+	{
+		private int m_Id;
+		private Club m_Club;
+		private DateTime m_Expirydate;
+		private DateTime m_Joindate;
 		private Decimal m_ProfileId;
-        private System.Decimal m_Withdrawlamount;
+		private Decimal m_Withdrawlamount;
 
 		public Clubmember()
 		{
@@ -19,30 +17,20 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 			m_Club = new Club();
 		}
 
-        public int Id
-        {
-            get
-            {
-                return m_Id;
-			} set 
-			  {
-				m_Id = value;
-			  }
-        }
-
-		public System.Decimal ProfileId
+		public int Id
 		{
-			get
-			{
-				return m_ProfileId;
-			} set 
-			  {
-				  m_ProfileId = value;
-			  }
+			get { return m_Id; }
+			set { m_Id = value; }
+		}
+
+		public Decimal ProfileId
+		{
+			get { return m_ProfileId; }
+			set { m_ProfileId = value; }
 		}
 
 
-        /*public Accountdistribution Accountdistribution
+		/*public Accountdistribution Accountdistribution
         {
             get
             {
@@ -54,19 +42,13 @@ namespace NHibernate.Test.NHSpecificTest.NH401
             }
         }*/
 
-        public Club Club
-        {
-            get
-            {
-                return m_Club;
-            }
-            set
-            {
-                m_Club = value;
-            }
-        }
+		public Club Club
+		{
+			get { return m_Club; }
+			set { m_Club = value; }
+		}
 
-        /*public System.Collections.IList Clubdistributions
+		/*public System.Collections.IList Clubdistributions
         {
             get
             {
@@ -90,31 +72,19 @@ namespace NHibernate.Test.NHSpecificTest.NH401
             }
         }*/
 
-        public System.DateTime Expirydate
-        {
-            get
-            {
-                return m_Expirydate;
-            }
-            set
-            {
-                m_Expirydate = value;
-            }
-        }
+		public DateTime Expirydate
+		{
+			get { return m_Expirydate; }
+			set { m_Expirydate = value; }
+		}
 
-        public System.DateTime Joindate
-        {
-            get
-            {
-                return m_Joindate;
-            }
-            set
-            {
-                m_Joindate = value;
-            }
-        }
+		public DateTime Joindate
+		{
+			get { return m_Joindate; }
+			set { m_Joindate = value; }
+		}
 
-       /* public System.Collections.IList Payments
+		/* public System.Collections.IList Payments
         {
             get
             {
@@ -150,19 +120,13 @@ namespace NHibernate.Test.NHSpecificTest.NH401
             }
         }*/
 
-        public System.Decimal Withdrawlamount
-        {
-            get
-            {
-                return m_Withdrawlamount;
-            }
-            set
-            {
-                m_Withdrawlamount = value;
-            }
-        }
+		public Decimal Withdrawlamount
+		{
+			get { return m_Withdrawlamount; }
+			set { m_Withdrawlamount = value; }
+		}
 
-        /*public Withdrawlperiod Withdrawlperiodcode
+		/*public Withdrawlperiod Withdrawlperiodcode
         {
             get
             {
@@ -173,11 +137,5 @@ namespace NHibernate.Test.NHSpecificTest.NH401
                 m_Withdrawlperiodcode = value;
             }
         }*/
-
-
-
-
-
-
-    }
+	}
 }

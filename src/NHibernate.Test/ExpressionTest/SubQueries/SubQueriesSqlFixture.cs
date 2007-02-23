@@ -1,16 +1,13 @@
 using System;
 using System.Collections;
-using NHibernate;
-using NHibernate.Engine;
 using NHibernate.Expression;
-using NHibernate.Test.ExpressionTest.SubQueries;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest.SubQueries
 {
 	[TestFixture]
-	public class SubQueriesSqlFixture : NHibernate.Test.TestCase
-    {
+	public class SubQueriesSqlFixture : TestCase
+	{
 		private Post post2;
 		private Post post1;
 
@@ -18,40 +15,37 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		protected override IList Mappings
-        {
-            get
-            {
-				return new string[] { "ExpressionTest.SubQueries.Mappings.hbm.xml" };
-            }
-        }
+		{
+			get { return new string[] {"ExpressionTest.SubQueries.Mappings.hbm.xml"}; }
+		}
 
 		protected override void OnSetUp()
-        {
-            // Create some objects
-            using (ISession session = OpenSession())
-            {
-            	Category category = new Category("NHibernate");
-            	User author = new User("Josh");
-            	User commenter = new User("Ayende");
-            	
-            	Blog blog = new Blog("bar");
+		{
+			// Create some objects
+			using (ISession session = OpenSession())
+			{
+				Category category = new Category("NHibernate");
+				User author = new User("Josh");
+				User commenter = new User("Ayende");
+
+				Blog blog = new Blog("bar");
 				blog.Users.Add(author);
 				author.Blogs.Add(blog);
-            	post1 = new Post("p1");
-            	this.post1.Blog = blog;
+				post1 = new Post("p1");
+				this.post1.Blog = blog;
 				this.post1.Categories.Add(category);
-            	post2 = new Post("p2");
-            	this.post2.Blog = blog;
+				post2 = new Post("p2");
+				this.post2.Blog = blog;
 
-            	Comment comment = new Comment("foo");
+				Comment comment = new Comment("foo");
 				comment.Commenter = commenter;
-            	comment.Post = post1;
+				comment.Post = post1;
 				comment.IndexInPost = 0;
 				post1.Comments.Add(comment);
-            	
-            	
+
+
 				session.Save(category);
 				session.Save(author);
 				session.Save(commenter);
@@ -59,34 +53,34 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 				session.Save(this.post1);
 				session.Save(this.post2);
 				session.Save(comment);
-                session.Flush();
-            }
-        }
+				session.Flush();
+			}
+		}
 
-        protected override void OnTearDown()
-        {
-            using (ISession s = sessions.OpenSession())
-            {
+		protected override void OnTearDown()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
 				s.Delete("from Comment");
 				s.Delete("from Post");
 				s.Delete("from Blog");
-            	s.Delete("from User");
-            	s.Delete("from Category");
-                s.Flush();
-            }
-        }
+				s.Delete("from User");
+				s.Delete("from Category");
+				s.Flush();
+			}
+		}
 
 		[Test]
 		public void CanQueryBlogByItsPosts()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Post), "posts")
-				.SetProjection(NHibernate.Expression.Property.ForName("id"))
+				.SetProjection(Expression.Property.ForName("id"))
 				.Add(Expression.Expression.Eq("id", post1.PostId))
 				.Add(Expression.Property.ForName("posts.Blog.id").EqProperty("blog.id"));
 
 			using (ISession s = sessions.OpenSession())
 			{
-				IList list = s.CreateCriteria(typeof (Blog), "blog")
+				IList list = s.CreateCriteria(typeof(Blog), "blog")
 					.Add(Subqueries.Exists(dc))
 					.List();
 				Assert.AreEqual(1, list.Count);
@@ -96,18 +90,18 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		[Test]
 		public void ComplexSubQuery_QueryingByGrandChildren()
 		{
-			DetachedCriteria comment = DetachedCriteria.For(typeof (Comment), "comment")
+			DetachedCriteria comment = DetachedCriteria.For(typeof(Comment), "comment")
 				.SetProjection(Expression.Property.ForName("id"))
 				.Add(Expression.Property.ForName("Post.id").EqProperty("post.id"))
 				.Add(Expression.Expression.Eq("Text", "foo"));
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				DetachedCriteria dc = DetachedCriteria.For(typeof (Blog))
+				DetachedCriteria dc = DetachedCriteria.For(typeof(Blog))
 					.CreateCriteria("Posts", "post")
 					.Add(Subqueries.Exists(comment));
 				IList list = dc.GetExecutableCriteria(s).List();
-				Assert.AreEqual(1, list.Count );
+				Assert.AreEqual(1, list.Count);
 			}
 		}
 	}

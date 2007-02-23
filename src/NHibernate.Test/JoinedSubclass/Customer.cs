@@ -25,6 +25,5 @@ namespace NHibernate.Test.JoinedSubclass
 			get { return _comments; }
 			set { _comments = value; }
 		}
-
 	}
 }

@@ -1,4 +1,3 @@
-
 //using NHMA = NHibernate.Mapping.Attributes;
 
 namespace NHibernate.Test.NHSpecificTest.NH521

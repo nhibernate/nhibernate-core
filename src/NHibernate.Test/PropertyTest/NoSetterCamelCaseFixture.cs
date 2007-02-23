@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Property;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.PropertyTest
@@ -17,11 +15,10 @@ namespace NHibernate.Test.PropertyTest
 		{
 			_expectedCamelBazGetterCalled = true;
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("nosetter.camelcase");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "CamelBaz" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "CamelBaz" );
+			_getter = _accessor.GetGetter(typeof(FieldClass), "CamelBaz");
+			_setter = _accessor.GetSetter(typeof(FieldClass), "CamelBaz");
 			_instance = new FieldClass();
-			_instance.InitCamelBaz( 0 );
+			_instance.InitCamelBaz(0);
 		}
-	
 	}
 }

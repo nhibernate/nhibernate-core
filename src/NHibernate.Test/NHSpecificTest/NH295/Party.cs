@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH295
 {
@@ -8,14 +7,14 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 	{
 		public const int EMPTY_ID = -1;
 
-		private int    _id = EMPTY_ID;
+		private int _id = EMPTY_ID;
 		private string _name;
 
 		internal Party()
 		{
 		}
 
-		internal Party( string name )
+		internal Party(string name)
 		{
 			_name = name;
 		}

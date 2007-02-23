@@ -1,7 +1,5 @@
-using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Type;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.QueryTest
@@ -12,7 +10,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void ValidateNullParameters()
 		{
-			QueryParameters qp = new QueryParameters( null, null );
+			QueryParameters qp = new QueryParameters(null, null);
 			qp.ValidateParameters();
 		}
 
@@ -20,8 +18,8 @@ namespace NHibernate.Test.QueryTest
 		public void ValidateOk()
 		{
 			QueryParameters qp = new QueryParameters(
-				new IType[] { NHibernateUtil.String },
-				new object[] { "string" });
+				new IType[] {NHibernateUtil.String},
+				new object[] {"string"});
 
 			qp.ValidateParameters();
 		}
@@ -30,8 +28,8 @@ namespace NHibernate.Test.QueryTest
 		public void ValidateFailureDifferentLengths()
 		{
 			QueryParameters qp = new QueryParameters(
-				new IType[] { NHibernateUtil.String },
-				new object[] { });
+				new IType[] {NHibernateUtil.String},
+				new object[] {});
 
 			qp.ValidateParameters();
 		}

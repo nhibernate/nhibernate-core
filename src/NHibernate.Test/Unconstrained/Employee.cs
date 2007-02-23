@@ -8,7 +8,7 @@ namespace NHibernate.Test.Unconstrained
 		{
 		}
 
-		public Employee(string id):this()
+		public Employee(string id) : this()
 		{
 			_id = id;
 		}
@@ -23,6 +23,5 @@ namespace NHibernate.Test.Unconstrained
 		{
 			return _id.ToString();
 		}
-
 	}
 }

@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Property;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.PropertyTest
@@ -35,28 +33,29 @@ namespace NHibernate.Test.PropertyTest
 		public abstract void SetUp();
 
 		[Test]
-		public void GetValue() 
+		public void GetValue()
 		{
-			
-			Assert.AreEqual( 0, _getter.Get(_instance) );
+			Assert.AreEqual(0, _getter.Get(_instance));
 			_instance.Increment();
-			Assert.AreEqual( 1, _getter.Get(_instance) );
-			
-			Assert.AreEqual( _expectedBlahGetterCalled, _instance.BlahGetterCalled, "pascalcase-m-underscore" );
-			Assert.AreEqual( _expectedCamelBazGetterCalled, _instance.CamelBazGetterCalled, "camelcase" );
-			Assert.AreEqual( _expectedCamelUnderscoreFooGetterCalled, _instance.CamelUnderscoreFooGetterCalled, "camelcase-underscore" );
-			Assert.AreEqual( _expectedLowerUnderscoreFooGetterCalled, _instance.LowerUnderscoreFooGetterCalled, "lowercase-underscore" );
-			Assert.AreEqual( _expectedLowerFooGetterCalled, _instance.LowerFooGetterCalled, "lowercase" );
-			Assert.AreEqual( _expectedPascalUnderscoreFooGetterCalled, _instance.PascalUnderscoreFooCalled, "pascalcase-underscore" );
+			Assert.AreEqual(1, _getter.Get(_instance));
 
+			Assert.AreEqual(_expectedBlahGetterCalled, _instance.BlahGetterCalled, "pascalcase-m-underscore");
+			Assert.AreEqual(_expectedCamelBazGetterCalled, _instance.CamelBazGetterCalled, "camelcase");
+			Assert.AreEqual(_expectedCamelUnderscoreFooGetterCalled, _instance.CamelUnderscoreFooGetterCalled,
+			                "camelcase-underscore");
+			Assert.AreEqual(_expectedLowerUnderscoreFooGetterCalled, _instance.LowerUnderscoreFooGetterCalled,
+			                "lowercase-underscore");
+			Assert.AreEqual(_expectedLowerFooGetterCalled, _instance.LowerFooGetterCalled, "lowercase");
+			Assert.AreEqual(_expectedPascalUnderscoreFooGetterCalled, _instance.PascalUnderscoreFooCalled,
+			                "pascalcase-underscore");
 		}
 
 		[Test]
-		public void SetValue() 
+		public void SetValue()
 		{
-			Assert.AreEqual( 0, _getter.Get(_instance) );
-			_setter.Set( _instance, 5 );
-			Assert.AreEqual( 5, _getter.Get(_instance) );
+			Assert.AreEqual(0, _getter.Get(_instance));
+			_setter.Set(_instance, 5);
+			Assert.AreEqual(5, _getter.Get(_instance));
 		}
 	}
 }

@@ -1,11 +1,11 @@
 using System;
-using NUnit.Framework;
 using System.Collections;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Unconstrained
 {
 	[TestFixture]
-	public class UnconstrainedNoLazyTest: TestCase
+	public class UnconstrainedNoLazyTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -14,8 +14,7 @@ namespace NHibernate.Test.Unconstrained
 
 		protected override IList Mappings
 		{
-			get
-			{ return new string[] { "Unconstrained.PersonNoLazy.hbm.xml" }; }
+			get { return new string[] {"Unconstrained.PersonNoLazy.hbm.xml"}; }
 		}
 
 		[Test]
@@ -33,7 +32,7 @@ namespace NHibernate.Test.Unconstrained
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.Get(typeof(Person), "gavin");
+			p = (Person) session.Get(typeof(Person), "gavin");
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
 			tx.Commit();
@@ -43,7 +42,7 @@ namespace NHibernate.Test.Unconstrained
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.Get(typeof(Person), "gavin");
+			p = (Person) session.Get(typeof(Person), "gavin");
 			Assert.IsNotNull(p.Employee);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
 			session.Delete(p);
@@ -66,10 +65,10 @@ namespace NHibernate.Test.Unconstrained
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.CreateCriteria(typeof(Person))
-				.SetFetchMode("Employee", FetchMode.Join)
-				.Add(Expression.Expression.Eq("Name", "gavin"))
-				.UniqueResult();
+			p = (Person) session.CreateCriteria(typeof(Person))
+			             	.SetFetchMode("Employee", FetchMode.Join)
+			             	.Add(Expression.Expression.Eq("Name", "gavin"))
+			             	.UniqueResult();
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
 			tx.Commit();
@@ -79,10 +78,10 @@ namespace NHibernate.Test.Unconstrained
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.CreateCriteria(typeof(Person))
-				.SetFetchMode("Employee", FetchMode.Join)
-				.Add(Expression.Expression.Eq("Name", "gavin"))
-				.UniqueResult();
+			p = (Person) session.CreateCriteria(typeof(Person))
+			             	.SetFetchMode("Employee", FetchMode.Join)
+			             	.Add(Expression.Expression.Eq("Name", "gavin"))
+			             	.UniqueResult();
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
 			Assert.IsNotNull(p.Employee);
 			session.Delete(p);
@@ -103,7 +102,7 @@ namespace NHibernate.Test.Unconstrained
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.Get(typeof(Person), "gavin");
+			p = (Person) session.Get(typeof(Person), "gavin");
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
 			tx.Commit();
@@ -111,7 +110,7 @@ namespace NHibernate.Test.Unconstrained
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.Get(typeof(Person), "gavin");
+			p = (Person) session.Get(typeof(Person), "gavin");
 			Assert.IsNotNull(p.Employee.Id);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
 			session.Delete(p);

@@ -1,12 +1,12 @@
 using System;
-using NUnit.Framework;
 using System.Collections;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Unconstrained
 {
 	// represent another possible ""normal"" use (N.B. H3 create the FK if you don't use <formula>)
 	[TestFixture]
-	public class SimplyManyToOneIgnoreTest:TestCase
+	public class SimplyManyToOneIgnoreTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -15,8 +15,7 @@ namespace NHibernate.Test.Unconstrained
 
 		protected override IList Mappings
 		{
-			get
-			{ return new string[] { "Unconstrained.Simply.hbm.xml" }; }
+			get { return new string[] {"Unconstrained.Simply.hbm.xml"}; }
 		}
 
 		[Test]
@@ -34,11 +33,11 @@ namespace NHibernate.Test.Unconstrained
 
 			using (ISession s = OpenSession())
 			{
-				SimplyB sb = (SimplyB)s.Get(typeof(SimplyB), 100);
+				SimplyB sb = (SimplyB) s.Get(typeof(SimplyB), 100);
 				Assert.IsNotNull(sb);
 				s.Delete(sb);
 				s.Flush();
-				SimplyA sa = (SimplyA)s.Get(typeof(SimplyA), "ralph");
+				SimplyA sa = (SimplyA) s.Get(typeof(SimplyA), "ralph");
 				Assert.IsNull(sa.B);
 				s.Delete(sa);
 				s.Flush();

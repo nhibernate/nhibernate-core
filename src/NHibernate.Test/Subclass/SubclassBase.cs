@@ -10,30 +10,30 @@ namespace NHibernate.Test.Subclass
 		private int _id = 0;
 		private long _testLong;
 		private string _testString;
-		private System.DateTime _testDate;
+		private DateTime _testDate;
 
 		public SubclassBase()
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 		}
 
-		public long TestLong 
+		public long TestLong
 		{
 			get { return _testLong; }
 			set { _testLong = value; }
 		}
 
-		public string TestString 
+		public string TestString
 		{
 			get { return _testString; }
 			set { _testString = value; }
 		}
 
-		public System.DateTime TestDateTime 
+		public DateTime TestDateTime
 		{
 			get { return _testDate; }
 			set { _testDate = value; }

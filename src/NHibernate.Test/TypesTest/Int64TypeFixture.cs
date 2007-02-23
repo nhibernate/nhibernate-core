@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Type;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -13,22 +11,21 @@ namespace NHibernate.Test.TypesTest
 	public class Int64TypeFixture
 	{
 		[Test]
-		public void Next() 
+		public void Next()
 		{
-			Int64Type type = (Int64Type)NHibernateUtil.Int64;
-			object current = (long)1;
-			object next = type.Next( current, null );
-			
-			Assert.IsTrue( next is Int64, "Next should be Int64" );
-			Assert.AreEqual( (long)2, (long)next, "current should have been incremented to 2" );
-			
+			Int64Type type = (Int64Type) NHibernateUtil.Int64;
+			object current = (long) 1;
+			object next = type.Next(current, null);
+
+			Assert.IsTrue(next is Int64, "Next should be Int64");
+			Assert.AreEqual((long) 2, (long) next, "current should have been incremented to 2");
 		}
 
 		[Test]
-		public void Seed() 
+		public void Seed()
 		{
-			Int64Type type = (Int64Type)NHibernateUtil.Int64;
-			Assert.IsTrue( type.Seed(null) is Int64, "seed should be int64" );
+			Int64Type type = (Int64Type) NHibernateUtil.Int64;
+			Assert.IsTrue(type.Seed(null) is Int64, "seed should be int64");
 		}
 
 #if NET_2_0

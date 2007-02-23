@@ -22,6 +22,5 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 			get { return _parent; }
 			set { _parent = value; }
 		}
-
 	}
 }

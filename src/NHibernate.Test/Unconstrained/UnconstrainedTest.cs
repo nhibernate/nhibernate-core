@@ -1,6 +1,6 @@
 using System;
-using NUnit.Framework;
 using System.Collections;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Unconstrained
 {
@@ -9,8 +9,7 @@ namespace NHibernate.Test.Unconstrained
 	{
 		protected override IList Mappings
 		{
-			get
-			{	return new string[] { "Unconstrained.Person.hbm.xml" };	}
+			get { return new string[] {"Unconstrained.Person.hbm.xml"}; }
 		}
 	}
 }

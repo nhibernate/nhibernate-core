@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH335
@@ -22,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			
+
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
@@ -35,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 					// AbcThing.ClassType is automatically generated.
 					newAbcThing.ID = Utils.GetRandomID();
 					newAbcThing.Name = newAbcThing.ID;
-					session.Save( newAbcThing );
+					session.Save(newAbcThing);
 				}
 
 				// Insert a bunch of OtherThings
@@ -47,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 					// OtherThing.ClassType is automatically generated.
 					newOtherThing.ID = Utils.GetRandomID();
 					newOtherThing.Name = newOtherThing.ID;
-					session.Save( newOtherThing );
+					session.Save(newOtherThing);
 				}
 
 				tx.Commit();
@@ -59,8 +58,8 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				session.Delete( "from AbcThing" );
-				session.Delete( "from OtherThing" );
+				session.Delete("from AbcThing");
+				session.Delete("from OtherThing");
 				tx.Commit();
 			}
 
@@ -73,15 +72,15 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				IQuery query = session.CreateQuery( "from Thing" );
+				IQuery query = session.CreateQuery("from Thing");
 				IList list = query.List();
 
-				Assert.AreEqual( numAbcThings + numOtherThings, list.Count,
-					String.Format( "There should be {0} Things.", numAbcThings + numOtherThings ) );
+				Assert.AreEqual(numAbcThings + numOtherThings, list.Count,
+				                String.Format("There should be {0} Things.", numAbcThings + numOtherThings));
 
 				foreach (object thing in list)
 				{
-					Assert.IsTrue( thing is Thing );
+					Assert.IsTrue(thing is Thing);
 				}
 				tx.Commit();
 			}
@@ -93,15 +92,15 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				IQuery query = session.CreateQuery( "from AbcThing" );
+				IQuery query = session.CreateQuery("from AbcThing");
 				IList list = query.List();
 
-				Assert.AreEqual( numAbcThings, list.Count,
-					String.Format( "There should be {0} AbcThings.", numAbcThings ) );
+				Assert.AreEqual(numAbcThings, list.Count,
+				                String.Format("There should be {0} AbcThings.", numAbcThings));
 
 				foreach (object thing in list)
 				{
-					Assert.IsTrue( thing is AbcThing );
+					Assert.IsTrue(thing is AbcThing);
 				}
 				tx.Commit();
 			}
@@ -109,15 +108,15 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				IQuery query = session.CreateQuery( "from OtherThing" );
+				IQuery query = session.CreateQuery("from OtherThing");
 				IList list = query.List();
 
-				Assert.AreEqual( numAbcThings, list.Count,
-					String.Format( "There should be {0} OtherThings.", numAbcThings ) );
-				
+				Assert.AreEqual(numAbcThings, list.Count,
+				                String.Format("There should be {0} OtherThings.", numAbcThings));
+
 				foreach (object thing in list)
 				{
-					Assert.IsTrue( thing is OtherThing );
+					Assert.IsTrue(thing is OtherThing);
 				}
 
 				tx.Commit();
@@ -130,29 +129,27 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				session.Delete( "from AbcThing" );
+				session.Delete("from AbcThing");
 				tx.Commit();
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				IQuery abcThingQuery = session.CreateQuery( "from AbcThing" );
+				IQuery abcThingQuery = session.CreateQuery("from AbcThing");
 				IList abcThings = abcThingQuery.List();
 
-				Assert.AreEqual( 0, abcThings.Count,
-					"All AbcThings should have been deleted." );
+				Assert.AreEqual(0, abcThings.Count,
+				                "All AbcThings should have been deleted.");
 
 				IQuery otherThingQuery = session.CreateQuery("from OtherThing");
 				IList otherThings = otherThingQuery.List();
 
-				Assert.AreEqual( numOtherThings, otherThings.Count,
-					"No OtherThings should have been deleted." );
+				Assert.AreEqual(numOtherThings, otherThings.Count,
+				                "No OtherThings should have been deleted.");
 
 				tx.Commit();
 			}
-
-
 		}
 	}
 }

@@ -1,86 +1,78 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Runtime.Serialization;
-using System.Text;
-using NHibernate.DomainModel.NHSpecific;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Test.TypeParameters
 {
-    public class DefaultValueIntegerType : IUserType, IParameterizedType
-    {
-        int defaultValue;
-        private static NullableType _int32Type = NHibernateUtil.Int32;
+	public class DefaultValueIntegerType : IUserType, IParameterizedType
+	{
+		private int defaultValue;
+		private static NullableType _int32Type = NHibernateUtil.Int32;
 
-        public void SetParameterValues(IDictionary parameters)
-        {
-            defaultValue = int.Parse((string) parameters["default"]);
-        }
+		public void SetParameterValues(IDictionary parameters)
+		{
+			defaultValue = int.Parse((string) parameters["default"]);
+		}
 
-        #region IUserType Members
+		#region IUserType Members
 
-        public new bool Equals(object x, object y)
-        {
+		public new bool Equals(object x, object y)
+		{
+			if (x == y) return true;
 
-            if (x == y) return true;
+			int lhs = (x == null) ? 0 : (int) x;
+			int rhs = (y == null) ? 0 : (int) y;
 
-            int lhs = (x == null) ? 0 : (int)x;
-            int rhs = (y == null) ? 0 : (int)y;
-
-            return _int32Type.Equals(lhs, rhs);
-
-        }
+			return _int32Type.Equals(lhs, rhs);
+		}
 
 		public int GetHashCode(object x)
 		{
 			return (x == null) ? 0 : x.GetHashCode();
 		}
 
-        public SqlType[] SqlTypes
-        {
-            get
-            {
-                return new SqlType[] { _int32Type.SqlType };
-            }
-        }
+		public SqlType[] SqlTypes
+		{
+			get { return new SqlType[] {_int32Type.SqlType}; }
+		}
 
-        public object DeepCopy(object value)
-        {
-            return value;
-        }
+		public object DeepCopy(object value)
+		{
+			return value;
+		}
 
-        public void NullSafeSet(System.Data.IDbCommand cmd, object value, int index)
-        {
-            if (value.Equals(defaultValue))
-            {
-                ((IDbDataParameter)cmd.Parameters[index]).Value = DBNull.Value;
-            }
-            else
-            {
-                _int32Type.Set(cmd, value, index);
-            }
-        }
+		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		{
+			if (value.Equals(defaultValue))
+			{
+				((IDbDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
+			}
+			else
+			{
+				_int32Type.Set(cmd, value, index);
+			}
+		}
 
-        public System.Type ReturnedType
-        {
-            get { return typeof(System.Int32); }
-        }
+		public System.Type ReturnedType
+		{
+			get { return typeof(Int32); }
+		}
 
-        public object NullSafeGet(System.Data.IDataReader rs, string[] names, object owner)
-        {
-            object value = _int32Type.NullSafeGet(rs, names);
-            if (value == null)
-                return defaultValue;
-            return value;
-        }
+		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		{
+			object value = _int32Type.NullSafeGet(rs, names);
+			if (value == null)
+				return defaultValue;
+			return value;
+		}
 
-        public bool IsMutable
-        {
-            get { return _int32Type.IsMutable; }
-        }
+		public bool IsMutable
+		{
+			get { return _int32Type.IsMutable; }
+		}
 
 		public object Replace(object original, object target, object owner)
 		{
@@ -97,7 +89,6 @@ namespace NHibernate.Test.TypeParameters
 			return value;
 		}
 
-        #endregion
-        
-    }
+		#endregion
+	}
 }

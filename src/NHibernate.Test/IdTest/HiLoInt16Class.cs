@@ -14,7 +14,5 @@ namespace NHibernate.Test.IdTest
 			get { return _id; }
 			set { _id = value; }
 		}
-
 	}
 }
-

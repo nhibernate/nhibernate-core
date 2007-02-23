@@ -16,24 +16,24 @@ namespace NHibernate.Test.JoinedSubclass
 		{
 		}
 
-		public virtual int Id 
+		public virtual int Id
 		{
 			get { return _id; }
 		}
 
-		public virtual string Name 
+		public virtual string Name
 		{
 			get { return _name; }
 			set { _name = value; }
 		}
 
-		public virtual char Sex 
+		public virtual char Sex
 		{
 			get { return _sex; }
 			set { _sex = value; }
 		}
 
-		public virtual Address Address 
+		public virtual Address Address
 		{
 			get { return _address; }
 			set { _address = value; }

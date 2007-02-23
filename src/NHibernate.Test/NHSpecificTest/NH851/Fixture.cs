@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH851
 		{
 			try
 			{
-				ReflectHelper.GetConstructor(typeof (SomeClass), new IType[] {NHibernateUtil.String});
+				ReflectHelper.GetConstructor(typeof(SomeClass), new IType[] {NHibernateUtil.String});
 				Assert.Fail("Should have thrown an exception");
 			}
 			catch (InstantiationException e)

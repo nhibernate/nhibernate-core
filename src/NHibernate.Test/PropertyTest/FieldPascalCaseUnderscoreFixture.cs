@@ -11,14 +11,13 @@ namespace NHibernate.Test.PropertyTest
 	public class FieldPascalCaseUnderscoreFixture : FieldAccessorFixture
 	{
 		[SetUp]
-		public override void SetUp() 
+		public override void SetUp()
 		{
 			_accessor = PropertyAccessorFactory.GetPropertyAccessor("field.pascalcase-underscore");
-			_getter = _accessor.GetGetter( typeof(FieldClass), "PascalUnderscoreFoo" );
-			_setter = _accessor.GetSetter( typeof(FieldClass), "PascalUnderscoreFoo" );
+			_getter = _accessor.GetGetter(typeof(FieldClass), "PascalUnderscoreFoo");
+			_setter = _accessor.GetSetter(typeof(FieldClass), "PascalUnderscoreFoo");
 			_instance = new FieldClass();
-			_instance.InitPascalUnderscoreFoo( 0 );
+			_instance.InitPascalUnderscoreFoo(0);
 		}
-		
 	}
 }

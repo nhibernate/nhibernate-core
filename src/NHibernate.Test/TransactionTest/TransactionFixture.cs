@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.TransactionTest
@@ -12,7 +11,7 @@ namespace NHibernate.Test.TransactionTest
 		protected override IList Mappings
 		{
 			// The mapping is only actually needed in one test
-			get { return new string[] { "Simple.hbm.xml" }; }
+			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
 		[Test]

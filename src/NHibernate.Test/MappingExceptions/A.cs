@@ -10,7 +10,7 @@ namespace NHibernate.Test.MappingExceptions
 	{
 		private int _id;
 		private string _name;
-		ISet children = new HashedSet();
+		private ISet children = new HashedSet();
 
 		public ISet Children
 		{
@@ -20,16 +20,15 @@ namespace NHibernate.Test.MappingExceptions
 
 		private A()
 		{
-			
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		public string Name 
+		public string Name
 		{
 			get { return _name; }
 			set { _name = value; }

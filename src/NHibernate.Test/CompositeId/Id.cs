@@ -5,25 +5,27 @@ namespace NHibernate.Test.CompositeId
 	/// <summary>
 	/// Summary description for Id.
 	/// </summary>
-	public class Id 
+	public class Id
 	{
 		private string _keyString;
 		private short _keyShort;
-		private System.DateTime _keyDateTime;
+		private DateTime _keyDateTime;
 
-		public Id() 
+		public Id()
 		{
 		}
 
-		public Id(string keyString, short keyShort, System.DateTime keyDateTime) {
+		public Id(string keyString, short keyShort, DateTime keyDateTime)
+		{
 			_keyString = keyString;
 			_keyShort = keyShort;
 			_keyDateTime = keyDateTime;
 		}
 
-		public string KeyString {
-			get { return _keyString;}
-			set { _keyString = value;}
+		public string KeyString
+		{
+			get { return _keyString; }
+			set { _keyString = value; }
 		}
 
 //		public short KeyShort {
@@ -31,24 +33,26 @@ namespace NHibernate.Test.CompositeId
 //			set {_keyShort = value;}
 //		}
 
-		public System.DateTime KeyDateTime {
-			get { return _keyDateTime;}
+		public DateTime KeyDateTime
+		{
+			get { return _keyDateTime; }
 //			set {_keyDateTime = value;}
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode()
+		{
 			return _keyString.GetHashCode();
 		}
 
-		public override bool Equals(object obj) {
+		public override bool Equals(object obj)
+		{
 			Id otherObj = obj as Id;
 
-			if(otherObj==null) return false;
+			if (otherObj == null) return false;
 
-			if(otherObj.KeyString.Equals(this.KeyString)) return true;
+			if (otherObj.KeyString.Equals(this.KeyString)) return true;
 
 			return false;
-
 		}
 	}
 }

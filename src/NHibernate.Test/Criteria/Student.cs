@@ -6,6 +6,7 @@ namespace NHibernate.Test.Criteria
 	public class Student
 	{
 		private long studentNumber;
+
 		public virtual long StudentNumber
 		{
 			get { return studentNumber; }
@@ -13,6 +14,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private string name;
+
 		public virtual string Name
 		{
 			get { return name; }
@@ -20,6 +22,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private Course preferredCourse;
+
 		public virtual Course PreferredCourse
 		{
 			get { return preferredCourse; }
@@ -27,6 +30,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private ISet enrolments = new HashedSet();
+
 		public virtual ISet Enrolments
 		{
 			get { return enrolments; }

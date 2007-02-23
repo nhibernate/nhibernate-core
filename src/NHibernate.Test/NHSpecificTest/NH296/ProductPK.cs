@@ -4,8 +4,8 @@ namespace NHibernate.Test.NHSpecificTest.NH296
 {
 	public class ProductPK
 	{
-		int _type;
-		int _number;
+		private int _type;
+		private int _number;
 
 		public int Type
 		{
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH296
 
 		public override bool Equals(object obj)
 		{
-			if( !(obj is ProductPK))
+			if (!(obj is ProductPK))
 			{
 				return false;
 			}
@@ -34,6 +34,5 @@ namespace NHibernate.Test.NHSpecificTest.NH296
 		{
 			return _type.GetHashCode();
 		}
-
 	}
 }

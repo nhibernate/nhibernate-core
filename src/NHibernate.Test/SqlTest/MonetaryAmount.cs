@@ -47,7 +47,7 @@ namespace NHibernate.Test.SqlTest
 		{
 			int result;
 			result = value.GetHashCode();
-			result = 29*result + currency.GetHashCode();
+			result = 29 * result + currency.GetHashCode();
 			return result;
 		}
 

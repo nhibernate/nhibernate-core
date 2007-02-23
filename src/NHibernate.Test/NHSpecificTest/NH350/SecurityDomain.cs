@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 				}
 				return m_ChildDomains;
 			}
-			set {m_ChildDomains = value;}
+			set { m_ChildDomains = value; }
 		}
-	} 
+	}
 }

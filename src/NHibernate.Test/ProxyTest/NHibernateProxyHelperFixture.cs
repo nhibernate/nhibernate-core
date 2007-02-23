@@ -1,7 +1,6 @@
 using System;
-
+using System.Collections;
 using NHibernate.Proxy;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.ProxyTest
@@ -17,12 +16,9 @@ namespace NHibernate.Test.ProxyTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "ProxyTest.AProxy.hbm.xml" };
-			}
+			get { return new string[] {"ProxyTest.AProxy.hbm.xml"}; }
 		}
 
 		[Test]
@@ -30,16 +26,16 @@ namespace NHibernate.Test.ProxyTest
 		{
 			ISession s = null;
 			AProxy a = new AProxy();
-			try 
+			try
 			{
 				s = OpenSession();
 				a.Name = "a proxy";
-				s.Save( a );
+				s.Save(a);
 				s.Flush();
 			}
 			finally
 			{
-				if( s!=null )
+				if (s != null)
 				{
 					s.Close();
 				}
@@ -48,25 +44,24 @@ namespace NHibernate.Test.ProxyTest
 			try
 			{
 				s = OpenSession();
-				System.Type type = NHibernateProxyHelper.GetClass( a );
-				Assert.AreEqual( typeof(AProxy), type, "Should have returned 'A' for a non-proxy" );
-				
-				AProxy aProxied = (AProxy)s.Load( typeof(AProxy), a.Id );
-				Assert.IsFalse( NHibernateUtil.IsInitialized( aProxied ), "should be a proxy" );
+				System.Type type = NHibernateProxyHelper.GetClass(a);
+				Assert.AreEqual(typeof(AProxy), type, "Should have returned 'A' for a non-proxy");
 
-				type = NHibernateProxyHelper.GetClass( aProxied );
-				Assert.AreEqual( typeof(AProxy), type, "even though aProxied was a Proxy it should have returned the correct type." );
-				s.Delete( aProxied );
+				AProxy aProxied = (AProxy) s.Load(typeof(AProxy), a.Id);
+				Assert.IsFalse(NHibernateUtil.IsInitialized(aProxied), "should be a proxy");
+
+				type = NHibernateProxyHelper.GetClass(aProxied);
+				Assert.AreEqual(typeof(AProxy), type, "even though aProxied was a Proxy it should have returned the correct type.");
+				s.Delete(aProxied);
 				s.Flush();
 			}
 			finally
 			{
-				if( s!=null )
+				if (s != null)
 				{
 					s.Close();
 				}
 			}
 		}
-		
 	}
 }

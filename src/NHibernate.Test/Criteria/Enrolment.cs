@@ -6,6 +6,7 @@ namespace NHibernate.Test.Criteria
 	public class Enrolment
 	{
 		private Student student;
+
 		public virtual Student Student
 		{
 			get { return student; }
@@ -13,6 +14,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private Course course;
+
 		public virtual Course Course
 		{
 			get { return course; }
@@ -20,6 +22,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private long studentNumber;
+
 		public virtual long StudentNumber
 		{
 			get { return studentNumber; }
@@ -27,6 +30,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private string courseCode = string.Empty;
+
 		public virtual string CourseCode
 		{
 			get { return courseCode; }
@@ -34,6 +38,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private short year;
+
 		public virtual short Year
 		{
 			get { return year; }
@@ -41,6 +46,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		private short semester;
+
 		public virtual short Semester
 		{
 			get { return semester; }

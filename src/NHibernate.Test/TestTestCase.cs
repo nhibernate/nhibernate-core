@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test
@@ -9,7 +10,7 @@ namespace NHibernate.Test
 	[TestFixture]
 	public class TestTestCase : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
 			get { return new string[0]; }
 		}

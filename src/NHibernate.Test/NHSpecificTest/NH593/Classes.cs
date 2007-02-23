@@ -6,18 +6,19 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 {
 	public class Blog
 	{
-		ISet _posts;
-		ISet _users;
-		IDictionary _attributes;
+		private ISet _posts;
+		private ISet _users;
+		private IDictionary _attributes;
 
-		int blog_id;
+		private int blog_id;
 
 		public virtual int BlogID
 		{
 			get { return blog_id; }
 			set { blog_id = value; }
 		}
-		string blog_name;
+
+		private string blog_name;
 
 		public virtual string BlogName
 		{
@@ -69,10 +70,10 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 			_text = text;
 		}
 
-		int _id;
-		int _indexInPost;
-		string _text;
-		Post _post;
+		private int _id;
+		private int _indexInPost;
+		private string _text;
+		private Post _post;
 
 		public virtual int IndexInPost
 		{
@@ -97,13 +98,12 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 			get { return _text; }
 			set { _text = value; }
 		}
-
 	}
 
 	public class Post
 	{
-		int post_id;
-		IList _comments;
+		private int post_id;
+		private IList _comments;
 
 		public virtual IList Comments
 		{
@@ -116,7 +116,8 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 			get { return post_id; }
 			set { post_id = value; }
 		}
-		string post_title;
+
+		private string post_title;
 
 		public virtual string PostTitle
 		{
@@ -124,7 +125,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 			set { post_title = value; }
 		}
 
-		Blog _blog;
+		private Blog _blog;
 
 		public virtual Blog Blog
 		{
@@ -146,9 +147,9 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 
 	public class User
 	{
-		string _userName;
-		int _userId;
-		ISet _blogs;
+		private string _userName;
+		private int _userId;
+		private ISet _blogs;
 
 		public virtual ISet Blogs
 		{

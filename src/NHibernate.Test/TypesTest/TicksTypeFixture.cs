@@ -1,7 +1,5 @@
 using System;
-
 using NHibernate.Type;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -13,22 +11,22 @@ namespace NHibernate.Test.TypesTest
 	public class TicksTypeFixture
 	{
 		[Test]
-		public void Next() 
+		public void Next()
 		{
-			TicksType type = (TicksType)NHibernateUtil.Ticks;
-			object current = new DateTime( 2004, 1, 1, 1, 1, 1, 1 );
-			object next = type.Next( current, null );
-			
-			Assert.IsTrue( next is DateTime, "Next should be DateTime" );
-			Assert.IsTrue( (DateTime)next > (DateTime)current, "next should be greater than current (could be equal depending on how quickly this occurs)" );
-			
+			TicksType type = (TicksType) NHibernateUtil.Ticks;
+			object current = new DateTime(2004, 1, 1, 1, 1, 1, 1);
+			object next = type.Next(current, null);
+
+			Assert.IsTrue(next is DateTime, "Next should be DateTime");
+			Assert.IsTrue((DateTime) next > (DateTime) current,
+			              "next should be greater than current (could be equal depending on how quickly this occurs)");
 		}
 
 		[Test]
-		public void Seed() 
+		public void Seed()
 		{
-			TicksType type = (TicksType)NHibernateUtil.Ticks;
-			Assert.IsTrue( type.Seed(null) is DateTime, "seed should be DateTime" );
+			TicksType type = (TicksType) NHibernateUtil.Ticks;
+			Assert.IsTrue(type.Seed(null) is DateTime, "seed should be DateTime");
 		}
 	}
 }
