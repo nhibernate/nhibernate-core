@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Custom
 		ISet QuerySpaces { get; }
 
 		/// <summary>
-		/// Optional, may return <c>null</c>
+		/// Optional, may return <see langword="null" />
 		/// </summary>
 		IDictionary NamedParameterBindPoints { get; }
 

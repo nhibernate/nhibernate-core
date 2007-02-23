@@ -49,8 +49,8 @@ namespace NHibernate.Impl
 		/// Indicates if the Session has been closed.
 		/// </summary>
 		/// <value>
-		/// <c>false</c> (by default) if the Session is Open and can be used, 
-		/// <c>true</c> if the Session has had the methods <c>Close()</c> or
+		/// <see langword="false" /> (by default) if the Session is Open and can be used, 
+		/// <see langword="true" /> if the Session has had the methods <c>Close()</c> or
 		/// <c>Dispose()</c> invoked.</value>
 		private bool closed = false;
 
@@ -996,7 +996,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="value">A persistable object, proxy, persistent collection or null</param>
 		/// <returns>
-		/// <c>true</c> when an uninitialized proxy was passed into this method, <c>false</c> otherwise.
+		/// <see langword="true" /> when an uninitialized proxy was passed into this method, <see langword="false" /> otherwise.
 		/// </returns>
 		internal bool ReassociateIfUninitializedProxy(object value)
 		{
@@ -2528,9 +2528,9 @@ namespace NHibernate.Impl
 		/// An loaded instance of the object or a proxy of the object is proxies are allowed.
 		/// </returns>
 		/// <remarks>
-		/// If the parameter <c>checkDeleted</c> is <c>false</c> it is possible to return an object that has 
+		/// If the parameter <c>checkDeleted</c> is <see langword="false" /> it is possible to return an object that has 
 		/// been deleted by the user in this <see cref="ISession"/>.  If the parameter <c>checkDeleted</c> is
-		/// <c>true</c> and the object has been deleted then an <see cref="ObjectDeletedException"/> will be
+		/// <see langword="true" /> and the object has been deleted then an <see cref="ObjectDeletedException"/> will be
 		/// thrown.
 		/// </remarks>
 		private object DoLoadByClass(System.Type clazz, object id, bool checkDeleted, bool allowProxyCreation)
@@ -4521,7 +4521,7 @@ namespace NHibernate.Impl
 		/// Gets if the ISession is connected.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if the ISession is connected.
+		/// <see langword="true" /> if the ISession is connected.
 		/// </value>
 		/// <remarks>
 		/// An ISession is considered connected if there is an <see cref="IDbConnection"/> (regardless
@@ -4722,7 +4722,7 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Get the collection entry for a collection passed to filter,
 		/// which might be a collection wrapper, an array, or an unwrapped
-		/// collection. Return <c>null</c> if there is no entry.
+		/// collection. Return <see langword="null" /> if there is no entry.
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
@@ -5458,7 +5458,7 @@ namespace NHibernate.Impl
 		/// <param name="owner"></param>
 		/// <param name="persister"></param>
 		/// <param name="collection"></param>
-		/// <returns><c>true</c> if the collection was initialized from the cache, otherwise <c>false</c>.</returns>
+		/// <returns><see langword="true" /> if the collection was initialized from the cache, otherwise <see langword="false" />.</returns>
 		private bool InitializeCollectionFromCache(object id, object owner, ICollectionPersister persister,
 		                                           IPersistentCollection collection)
 		{

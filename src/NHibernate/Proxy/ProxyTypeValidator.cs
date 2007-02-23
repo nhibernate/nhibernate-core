@@ -17,7 +17,7 @@ namespace NHibernate.Proxy
 		/// (or an interface) for a dynamically-generated proxy.
 		/// </summary>
 		/// <returns>
-		/// A collection of errors, if any, or <c>null</c> if none were found.
+		/// A collection of errors, if any, or <see langword="null" /> if none were found.
 		/// </returns>
 		/// <param name="type">The type to validate.</param>
 		public static ICollection ValidateType(System.Type type)

@@ -5,7 +5,7 @@ namespace NHibernate.Bytecode
 {
 	/// <summary>
 	/// A <see cref="IBytecodeProvider" /> implementation that returns
-	/// <c>null</c>, disabling reflection optimization.
+	/// <see langword="null" />, disabling reflection optimization.
 	/// </summary>
 	public class NullBytecodeProvider : IBytecodeProvider
 	{

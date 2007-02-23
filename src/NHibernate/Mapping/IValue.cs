@@ -66,7 +66,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="mapping">The <see cref="IMapping"/> to validate.</param>
 		/// <returns>
-		/// <c>true</c> if the Value is part of a valid mapping, <c>false</c>
+		/// <see langword="true" /> if the Value is part of a valid mapping, <see langword="false" />
 		/// otherwise.
 		/// </returns>
 		/// <exception cref="MappingException"></exception>

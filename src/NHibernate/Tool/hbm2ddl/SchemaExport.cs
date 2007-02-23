@@ -76,8 +76,8 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
-		/// <param name="script"><c>true</c> if the ddl should be outputted in the Console.</param>
-		/// <param name="export"><c>true</c> if the ddl should be executed against the Database.</param>
+		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool, bool)"/> and sets
 		/// the justDrop parameter to false and the format parameter to true.
@@ -90,8 +90,8 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
-		/// <param name="script"><c>true</c> if the ddl should be outputted in the Console.</param>
-		/// <param name="export"><c>true</c> if the ddl should be executed against the Database.</param>
+		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool, bool)"/> and sets
 		/// the justDrop and format parameter to true.
@@ -150,12 +150,12 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Executes the Export of the Schema in the given connection
 		/// </summary>
-		/// <param name="script"><c>true</c> if the ddl should be outputted in the Console.</param>
-		/// <param name="export"><c>true</c> if the ddl should be executed against the Database.</param>
-		/// <param name="justDrop"><c>true</c> if only the ddl to drop the Database objects should be executed.</param>
-		/// <param name="format"><c>true</c> if the ddl should be nicely formatted instead of one statement per line.</param>
+		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
+		/// <param name="format"><see langword="true" /> if the ddl should be nicely formatted instead of one statement per line.</param>
 		/// <param name="connection">
-		/// The connection to use when executing the commands when export is <c>true</c>.
+		/// The connection to use when executing the commands when export is <see langword="true" />.
 		/// Must be an opened connection. The method doesn't close the connection.
 		/// </param>
 		/// <param name="exportOutput">The writer used to output the generated schema</param>
@@ -223,10 +223,10 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Executes the Export of the Schema.
 		/// </summary>
-		/// <param name="script"><c>true</c> if the ddl should be outputted in the Console.</param>
-		/// <param name="export"><c>true</c> if the ddl should be executed against the Database.</param>
-		/// <param name="justDrop"><c>true</c> if only the ddl to drop the Database objects should be executed.</param>
-		/// <param name="format"><c>true</c> if the ddl should be nicely formatted instead of one statement per line.</param>
+		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
+		/// <param name="format"><see langword="true" /> if the ddl should be nicely formatted instead of one statement per line.</param>
 		/// <remarks>
 		/// This method allows for both the drop and create ddl script to be executed.
 		/// </remarks>

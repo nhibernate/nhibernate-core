@@ -59,7 +59,7 @@ namespace NHibernate.Property
 		/// <summary>
 		/// Gets the name of the Property.
 		/// </summary>
-		/// <value><c>null</c> since this is a Field - not a Property.</value>
+		/// <value><see langword="null" /> since this is a Field - not a Property.</value>
 		public string PropertyName
 		{
 			get { return null; }
@@ -68,7 +68,7 @@ namespace NHibernate.Property
 		/// <summary>
 		/// Gets the <see cref="PropertyInfo"/> for the Property.
 		/// </summary>
-		/// <value><c>null</c> since this is a Field - not a Property.</value>
+		/// <value><see langword="null" /> since this is a Field - not a Property.</value>
 		public MethodInfo Method
 		{
 			get { return null; }

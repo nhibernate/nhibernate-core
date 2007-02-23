@@ -40,7 +40,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="obj">An object to compare to this instance.</param>
 		/// <returns>
-		/// <c>true</c> if the object equals the current instance.
+		/// <see langword="true" /> if the object equals the current instance.
 		/// </returns>
 		public override bool Equals(object obj)
 		{

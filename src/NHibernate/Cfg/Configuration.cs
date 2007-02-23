@@ -20,16 +20,18 @@ using NHibernate.Util;
 namespace NHibernate.Cfg
 {
 	/// <summary>
-	/// An instance of <c>Configuration</c> allows the application to specify properties
-	/// and mapping documents to be used when creating a <c>ISessionFactory</c>.
+	/// Allows the application to specify properties and mapping documents to be used when creating
+	/// a <see cref="ISessionFactory" />.
 	/// </summary>
 	/// <remarks>
-	/// Usually an application will create a single <c>Configuration</c>, build a single instance
-	/// of <c>ISessionFactory</c>, and then instanciate <c>ISession</c>s in threads servicing
-	/// client requests.
 	/// <para>
-	/// The <c>Configuration</c> is meant only as an initialization-time object. <c>ISessionFactory</c>s
-	/// are immutable and do not retain any association back to the <c>Configuration</c>
+	/// Usually an application will create a single <see cref="Configuration" />, build a single instance
+	/// of <see cref="ISessionFactory" />, and then instantiate <see cref="ISession"/> objects in threads
+	/// servicing client requests.
+	/// </para>
+	/// <para>
+	/// The <see cref="Configuration" /> is meant only as an initialization-time object. <see cref="ISessionFactory" />
+	/// is immutable and does not retain any association back to the <see cref="Configuration" />
 	/// </para>
 	/// </remarks>
 	public class Configuration
@@ -292,11 +294,11 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Read mappings from a <c>string</c>. This method is equivalent to
+		/// Read mappings from a <see cref="string" />. This method is equivalent to
 		/// <see cref="AddXmlString(string)" />.
 		/// </summary>
 		/// <param name="xml">an XML string</param>
-		/// <param name="name">The name to use in error reporting. May be <c>null</c>.</param>
+		/// <param name="name">The name to use in error reporting. May be <see langword="null" />.</param>
 		/// <returns>This configuration object.</returns>
 		public Configuration AddXml(string xml, string name)
 		{
@@ -332,7 +334,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Read mappings from a <c>string</c>
+		/// Read mappings from a <see cref="string" />.
 		/// </summary>
 		/// <param name="xml">an XML string</param>
 		/// <returns>This configuration object.</returns>
@@ -368,11 +370,11 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Read mappings from an <c>XmlDocument</c>.
+		/// Read mappings from an <see cref="XmlDocument" />.
 		/// </summary>
-		/// <param name="doc">A loaded XmlDocument that contains the Mappings.</param>
+		/// <param name="doc">A loaded <see cref="XmlDocument" /> that contains the mappings.</param>
 		/// <param name="name">The name of the document, for error reporting purposes.</param>
-		/// <returns>This Configuration object.</returns>
+		/// <returns>This configuration object.</returns>
 		public Configuration AddDocument(XmlDocument doc, string name)
 		{
 			if (log.IsDebugEnabled)
@@ -422,7 +424,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Create a new <c>Mappings</c> to add classes and collection
+		/// Create a new <see cref="Mappings" /> to add classes and collection
 		/// mappings to.
 		/// </summary>
 		public Mappings CreateMappings()
@@ -446,14 +448,14 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Read mappings from a <c>Stream</c>.
+		/// Read mappings from a <see cref="Stream" />.
 		/// </summary>
 		/// <param name="xmlInputStream">The stream containing XML</param>
 		/// <returns>This Configuration object.</returns>
 		/// <remarks>
-		/// The <see cref="Stream"/> passed in through the parameter <c>xmlInputStream</c>
-		/// is not <b>guaranteed</b> to be cleaned up by this method.  It is the callers responsiblity to
-		/// ensure that the <c>xmlInputStream</c> is properly handled when this method
+		/// The <see cref="Stream"/> passed in through the parameter <paramref name="xmlInputStream" />
+		/// is not <em>guaranteed</em> to be cleaned up by this method.  It is the caller's responsiblity to
+		/// ensure that <paramref name="xmlInputStream" /> is properly handled when this method
 		/// completes.
 		/// </remarks>
 		public Configuration AddInputStream(Stream xmlInputStream)
@@ -462,15 +464,15 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Read mappings from a <c>Stream</c>.
+		/// Read mappings from a <see cref="Stream" />.
 		/// </summary>
 		/// <param name="xmlInputStream">The stream containing XML</param>
-		/// <param name="name">The name of the stream to use in error reporting. May be <c>null</c>.</param>
+		/// <param name="name">The name of the stream to use in error reporting. May be <see langword="null" />.</param>
 		/// <returns>This Configuration object.</returns>
 		/// <remarks>
-		/// The <see cref="Stream"/> passed in through the parameter <c>xmlInputStream</c>
-		/// is not <b>guaranteed</b> to be cleaned up by this method.  It is the callers responsiblity to
-		/// ensure that the <c>xmlInputStream</c> is properly handled when this method
+		/// The <see cref="Stream"/> passed in through the parameter <paramref name="xmlInputStream" />
+		/// is not <em>guaranteed</em> to be cleaned up by this method.  It is the caller's responsiblity to
+		/// ensure that <paramref name="xmlInputStream" /> is properly handled when this method
 		/// completes.
 		/// </remarks>
 		public Configuration AddInputStream(Stream xmlInputStream, string name)
@@ -501,11 +503,11 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds the Mappings in the Resource of the Assembly.
+		/// Adds the mappings in the resource of the assembly.
 		/// </summary>
-		/// <param name="path">The path to the Resource file in the Assembly</param>
-		/// <param name="assembly">The Assembly that contains the Resource file.</param>
-		/// <returns>This Configuration object.</returns>
+		/// <param name="path">The path to the resource file in the assembly.</param>
+		/// <param name="assembly">The assembly that contains the resource file.</param>
+		/// <returns>This configuration object.</returns>
 		public Configuration AddResource(string path, Assembly assembly)
 		{
 			log.Info("Mapping resource: " + path);
@@ -540,16 +542,16 @@ namespace NHibernate.Cfg
 		// Not ported - addResource(String path) - not applicable
 
 		/// <summary>
-		/// Read a mapping from an application resource, using a convention.
-		/// The class <c>Foo.Bar.Foo</c> is mapped by the resource named
-		/// <c>Foo.Bar.Foo.hbm.xml</c>, embedded in the class' assembly.
+		/// Read a mapping from an embedded resource, using a convention.
 		/// </summary>
 		/// <param name="persistentClass">The type to map.</param>
 		/// <returns>This configuration object.</returns>
 		/// <remarks>
-		/// If the mappings and classes are defined in different assemblies
-		/// or don't follow the naming convention, then this method cannot
-		/// be used.
+		/// The convention is for class <c>Foo.Bar.Foo</c> to be mapped by
+		/// the resource named <c>Foo.Bar.Foo.hbm.xml</c>, embedded in
+		/// the class' assembly. If the mappings and classes are defined
+		/// in different assemblies or don't follow the naming convention,
+		/// this method cannot be used.
 		/// </remarks>
 		public Configuration AddClass(System.Type persistentClass)
 		{
@@ -557,14 +559,13 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds all of the Assembly's Resource files that end with "<c>hbm.xml</c>"
+		/// Adds all of the assembly's embedded resources whose names end with <c>.hbm.xml</c>.
 		/// </summary>
-		/// <param name="assemblyName">The name of the Assembly to load.</param>
-		/// <returns>This Configuration object.</returns>
+		/// <param name="assemblyName">The name of the assembly to load.</param>
+		/// <returns>This configuration object.</returns>
 		/// <remarks>
-		/// The Assembly must be in the local bin, probing path, or GAC so that the
-		/// Assembly can be loaded by name.  If these conditions are not satisfied
-		/// then your code should load the Assembly and call the override 
+		/// The assembly must be loadable using <see cref="Assembly.Load(string)" />. If this
+		/// condition is not satisfied, load the assembly manually and call
 		/// <see cref="AddAssembly(Assembly)"/> instead.
 		/// </remarks>
 		public Configuration AddAssembly(string assemblyName)
@@ -585,16 +586,15 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds all of the Assembly's Resource files that end with "hbm.xml" 
+		/// Adds all of the assembly's embedded resources whose names end with <c>.hbm.xml</c>.
 		/// </summary>
-		/// <param name="assembly">The loaded Assembly.</param>
-		/// <returns>This Configuration object.</returns>
+		/// <param name="assembly">The assembly.</param>
+		/// <returns>This configuration object.</returns>
 		/// <remarks>
-		/// This assumes that the <c>hbm.xml</c> files in the Assembly need to be put
+		/// This method assumes that the <c>hbm.xml</c> files in the Assembly need to be put
 		/// in the correct order by NHibernate.  See <see cref="AddAssembly(Assembly, bool)">
-		/// AddAssembly(Assembly assembly, bool skipOrdering)</see>
-		/// for the impacts and reasons for letting NHibernate order the 
-		/// <c>hbm.xml</c> files.
+		/// AddAssembly(Assembly assembly, bool skipOrdering)</see> for the impacts and reasons
+		/// for letting NHibernate order the <c>hbm.xml</c> files.
 		/// </remarks>
 		public Configuration AddAssembly(Assembly assembly)
 		{
@@ -604,21 +604,21 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds all of the Assembly's Resource files that end with "hbm.xml" 
+		/// Adds all of the assembly's embedded resources whose names end with <c>.hbm.xml</c>.
 		/// </summary>
-		/// <param name="assembly">The loaded Assembly.</param>
+		/// <param name="assembly">The loaded assembly.</param>
 		/// <param name="skipOrdering">
 		/// A <see cref="Boolean"/> indicating if the ordering of hbm.xml files can be skipped.
 		/// </param>
-		/// <returns>This Configuration object.</returns>
+		/// <returns>This configuration object.</returns>
 		/// <remarks>
-		/// <p>
+		/// <para>
 		/// The order of <c>hbm.xml</c> files only matters if the attribute "extends" is used.
 		/// The ordering should only be done when needed because it takes extra time 
-		/// to read the Xml files to find out the order the files should be passed to the Binder.  
-		/// If you don't use the "extends" attribute then it is reccommended to call this 
-		/// with <c>skipOrdering=true</c>.
-		/// </p>
+		/// to read the XML files to find out the order the files should be passed to
+		/// the <see cref="HbmBinder" />. If you don't use the "extends" attribute then it is
+		/// reccommended to call this with <c>skipOrdering=true</c>.
+		/// </para>
 		/// </remarks>
 		public Configuration AddAssembly(Assembly assembly, bool skipOrdering)
 		{
@@ -697,9 +697,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Generate DDL for droping tables
 		/// </summary>
-		/// <remarks>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaExport" />
-		/// </remarks>
 		public string[] GenerateDropSchemaScript(Dialect.Dialect dialect)
 		{
 			SecondPassCompile();
@@ -1035,11 +1033,11 @@ namespace NHibernate.Cfg
 		private string defaultNamespace;
 
 		/// <summary>
-		/// Instantitate a new <c>ISessionFactory</c>, using the properties and mappings in this
-		/// configuration. The <c>ISessionFactory</c> will be immutable, so changes made to the
-		/// <c>Configuration</c> after building the <c>ISessionFactory</c> will not affect it.
+		/// Instantiate a new <see cref="ISessionFactory" />, using the properties and mappings in this
+		/// configuration. The <see cref="ISessionFactory" /> will be immutable, so changes made to the
+		/// configuration after building the <see cref="ISessionFactory" /> will not affect it.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
 		public ISessionFactory BuildSessionFactory()
 		{
 			SecondPassCompile();
@@ -1066,11 +1064,11 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Gets or sets the <see cref="IDictionary"/> that contains the configuration
-		/// Properties and their values.
+		/// properties and their values.
 		/// </summary>
 		/// <value>
 		/// The <see cref="IDictionary"/> that contains the configuration
-		/// Properties and their values.
+		/// properties and their values.
 		/// </value>
 		public IDictionary Properties
 		{
@@ -1082,6 +1080,8 @@ namespace NHibernate.Cfg
 		/// Set the default assembly to use for the mappings added to the configuration
 		/// afterwards.
 		/// </summary>
+		/// <param name="defaultAssembly">The default assembly name.</param>
+		/// <returns>This configuration instance.</returns>
 		/// <remarks>
 		/// This setting can be overridden for a mapping file by setting <c>default-assembly</c>
 		/// attribute of <c>&lt;hibernate-mapping&gt;</c> element.
@@ -1096,6 +1096,8 @@ namespace NHibernate.Cfg
 		/// Set the default namespace to use for the mappings added to the configuration
 		/// afterwards.
 		/// </summary>
+		/// <param name="defaultNamespace">The default namespace.</param>
+		/// <returns>This configuration instance.</returns>
 		/// <remarks>
 		/// This setting can be overridden for a mapping file by setting <c>default-namespace</c>
 		/// attribute of <c>&lt;hibernate-mapping&gt;</c> element.
@@ -1107,8 +1109,10 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Configure an <see cref="IInterceptor" />
+		/// Sets the default interceptor for use by all sessions.
 		/// </summary>
+		/// <param name="interceptor">The default interceptor.</param>
+		/// <returns>This configuration instance.</returns>
 		public Configuration SetInterceptor(IInterceptor interceptor)
 		{
 			this.interceptor = interceptor;
@@ -1148,7 +1152,7 @@ namespace NHibernate.Cfg
 		/// <param name="name">The name of the property.</param>
 		/// <param name="value">The value of the property.</param>
 		/// <returns>
-		/// This <see cref="Configuration"/> object.
+		/// This configuration object.
 		/// </returns>
 		public Configuration SetProperty(string name, string value)
 		{
@@ -1160,7 +1164,7 @@ namespace NHibernate.Cfg
 		/// Gets the value of the configuration property.
 		/// </summary>
 		/// <param name="name">The name of the property.</param>
-		/// <returns>The configured value of the property, or <c>null</c> if the property was not specified.</returns>
+		/// <returns>The configured value of the property, or <see langword="null" /> if the property was not specified.</returns>
 		public string GetProperty(string name)
 		{
 			return properties[name] as string;
@@ -1192,12 +1196,12 @@ namespace NHibernate.Cfg
 		/// from the application config file, if found, or the file <c>hibernate.cfg.xml</c>
 		/// otherwise.
 		/// </summary>
-		/// <returns>A Configuration object initialized with the file.</returns>
+		/// <returns>A configuration object initialized with the file.</returns>
 		/// <remarks>
 		/// To configure NHibernate explicitly using <c>hibernate.cfg.xml</c>, ignoring
 		/// the application configuration file, use this code:
 		/// <code>
-		///		configuration.Configure( "path/to/hibernate.cfg.xml" );
+		///		configuration.Configure("path/to/hibernate.cfg.xml");
 		/// </code>
 		/// </remarks>
 		public Configuration Configure()
@@ -1617,7 +1621,7 @@ namespace NHibernate.Cfg
 		/// against the nhibernate-mapping-2.2 schema.
 		/// </summary>
 		/// <param name="hbmReader">The XmlTextReader that contains the mapping.</param>
-		/// <param name="name">The name of the document to use for error reporting. May be <c>null</c>.</param>
+		/// <param name="name">The name of the document to use for error reporting. May be <see langword="null" />.</param>
 		/// <returns>This Configuration object.</returns>
 		public Configuration AddXmlReader(XmlTextReader hbmReader, string name)
 		{

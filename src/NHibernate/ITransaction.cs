@@ -56,7 +56,7 @@ namespace NHibernate
 		/// Was the transaction successfully committed?
 		/// </summary>
 		/// <remarks>
-		/// This method could return <c>false</c> even after successful invocation of <c>Commit()</c>
+		/// This method could return <see langword="false" /> even after successful invocation of <c>Commit()</c>
 		/// </remarks>
 		bool WasCommitted { get; }
 

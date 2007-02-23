@@ -68,7 +68,7 @@ namespace NHibernate.Property
 		/// <param name="type">The <see cref="System.Type"/> to find the Property in.</param>
 		/// <param name="propertyName">The name of the mapped Property to get.</param>
 		/// <returns>
-		/// The <see cref="BasicGetter"/> for the Property <c>get</c> or <c>null</c>
+		/// The <see cref="BasicGetter"/> for the Property <c>get</c> or <see langword="null" />
 		/// if the Property could not be found.
 		/// </returns>
 		internal static BasicGetter GetGetterOrNull(System.Type type, string propertyName)
@@ -113,7 +113,7 @@ namespace NHibernate.Property
 		/// <param name="type">The <see cref="System.Type"/> to find the Property in.</param>
 		/// <param name="propertyName">The name of the mapped Property to set.</param>
 		/// <returns>
-		/// The <see cref="BasicSetter"/> for the Property <c>set</c> or <c>null</c>
+		/// The <see cref="BasicSetter"/> for the Property <c>set</c> or <see langword="null" />
 		/// if the Property could not be found.
 		/// </returns>
 		internal static BasicSetter GetSetterOrNull(System.Type type, string propertyName)

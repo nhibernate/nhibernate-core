@@ -29,7 +29,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
 		/// <param name="foreignKeyPropertyName">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		protected CollectionType(string role, string foreignKeyPropertyName)
 		{

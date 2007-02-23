@@ -53,7 +53,7 @@ namespace Iesi.Collections.Generic
 		/// Adds the specified element to this set if it is not already present.
 		/// </summary>
 		/// <param name="o">The <typeparamref name="T"/> to add to the set.</param>
-		/// <returns><c>true</c> is the object was added, <c>false</c> if it was already present.</returns>
+		/// <returns><see langword="true" /> is the object was added, <see langword="false" /> if it was already present.</returns>
 		public override bool Add(T o)
 		{
 			if (InternalDictionary.ContainsKey(o))
@@ -73,7 +73,7 @@ namespace Iesi.Collections.Generic
 		/// Adds all the elements in the specified collection to the set if they are not already present.
 		/// </summary>
 		/// <param name="c">A collection of objects to add to the set.</param>
-		/// <returns><c>true</c> is the set changed as a result of this operation, <c>false</c> if not.</returns>
+		/// <returns><see langword="true" /> is the set changed as a result of this operation, <see langword="false" /> if not.</returns>
 		public override bool AddAll(ICollection<T> c)
 		{
 			bool changed = false;
@@ -93,20 +93,20 @@ namespace Iesi.Collections.Generic
 		}
 
 		/// <summary>
-		/// Returns <c>true</c> if this set contains the specified element.
+		/// Returns <see langword="true" /> if this set contains the specified element.
 		/// </summary>
 		/// <param name="o">The element to look for.</param>
-		/// <returns><c>true</c> if this set contains the specified element, <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if this set contains the specified element, <see langword="false" /> otherwise.</returns>
 		public override bool Contains(T o)
 		{
 			return InternalDictionary.ContainsKey(o);
 		}
 
 		/// <summary>
-		/// Returns <c>true</c> if the set contains all the elements in the specified collection.
+		/// Returns <see langword="true" /> if the set contains all the elements in the specified collection.
 		/// </summary>
 		/// <param name="c">A collection of objects.</param>
-		/// <returns><c>true</c> if the set contains all the elements in the specified collection, <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the set contains all the elements in the specified collection, <see langword="false" /> otherwise.</returns>
 		public override bool ContainsAll(ICollection<T> c)
 		{
 			foreach (T o in c)
@@ -120,7 +120,7 @@ namespace Iesi.Collections.Generic
 		}
 
 		/// <summary>
-		/// Returns <c>true</c> if this set contains no elements.
+		/// Returns <see langword="true" /> if this set contains no elements.
 		/// </summary>
 		public override bool IsEmpty
 		{
@@ -131,7 +131,7 @@ namespace Iesi.Collections.Generic
 		/// Removes the specified element from the set.
 		/// </summary>
 		/// <param name="o">The element to be removed.</param>
-		/// <returns><c>true</c> if the set contained the specified element, <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the set contained the specified element, <see langword="false" /> otherwise.</returns>
 		public override bool Remove(T o)
 		{
 			bool contained = this.Contains(o);
@@ -146,7 +146,7 @@ namespace Iesi.Collections.Generic
 		/// Remove all the specified elements from this set, if they exist in this set.
 		/// </summary>
 		/// <param name="c">A collection of elements to remove.</param>
-		/// <returns><c>true</c> if the set was modified as a result of this operation.</returns>
+		/// <returns><see langword="true" /> if the set was modified as a result of this operation.</returns>
 		public override bool RemoveAll(ICollection<T> c)
 		{
 			bool changed = false;
@@ -161,7 +161,7 @@ namespace Iesi.Collections.Generic
 		/// Retains only the elements in this set that are contained in the specified collection.
 		/// </summary>
 		/// <param name="c">Collection that defines the set of elements to be retained.</param>
-		/// <returns><c>true</c> if this set changed as a result of this operation.</returns>
+		/// <returns><see langword="true" /> if this set changed as a result of this operation.</returns>
 		public override bool RetainAll(ICollection<T> c)
 		{
 			//Put data from C into a set so we can use the Contains() method.

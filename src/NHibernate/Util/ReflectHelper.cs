@@ -29,7 +29,7 @@ namespace NHibernate.Util
 		/// implementation of Equals from <see cref="Object"/>
 		/// </summary>
 		/// <param name="clazz">The <see cref="System.Type"/> to reflect.</param>
-		/// <returns><c>true</c> if any type in the hierarchy overrides Equals(object).</returns>
+		/// <returns><see langword="true" /> if any type in the hierarchy overrides Equals(object).</returns>
 		public static bool OverridesEquals(System.Type clazz)
 		{
 			try
@@ -59,7 +59,7 @@ namespace NHibernate.Util
 		/// implementation of GetHashCode from <see cref="Object"/>
 		/// </summary>
 		/// <param name="clazz">The <see cref="System.Type"/> to reflect.</param>
-		/// <returns><c>true</c> if any type in the hierarchy overrides GetHashCode().</returns>
+		/// <returns><see langword="true" /> if any type in the hierarchy overrides GetHashCode().</returns>
 		public static bool OverridesGetHashCode(System.Type clazz)
 		{
 			try
@@ -164,11 +164,11 @@ namespace NHibernate.Util
 		/// Assembly that is loaded with a partial name.
 		/// </summary>
 		/// <param name="name">An <see cref="AssemblyQualifiedTypeName" />.</param>
-		/// <param name="throwOnError"><c>true</c> if an exception should be thrown
-		/// in case of an error, <c>false</c> otherwise.</param>
+		/// <param name="throwOnError"><see langword="true" /> if an exception should be thrown
+		/// in case of an error, <see langword="false" /> otherwise.</param>
 		/// <returns>
 		/// A <see cref="System.Type"/> object that represents the specified type,
-		/// or <c>null</c> if the type cannot be loaded.
+		/// or <see langword="null" /> if the type cannot be loaded.
 		/// </returns>
 		/// <remarks>
 		/// Attempts to get a reference to the type from an already loaded assembly.  If the 
@@ -230,7 +230,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> .</param>
 		/// <param name="fieldName">The name of the field in the <paramref name="type"/>.</param>
-		/// <returns>The value contained in the field, or <c>null</c> if the type or the field does not exist.</returns>
+		/// <returns>The value contained in the field, or <see langword="null" /> if the type or the field does not exist.</returns>
 		public static object GetConstantValue(System.Type type, string fieldName)
 		{
 			try
@@ -253,7 +253,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> to find the constructor for.</param>
 		/// <returns>
-		/// The <see cref="ConstructorInfo"/> for the no argument constructor, or <c>null</c> if the
+		/// The <see cref="ConstructorInfo"/> for the no argument constructor, or <see langword="null" /> if the
 		/// <c>type</c> is an abstract class.
 		/// </returns>
 		/// <exception cref="InstantiationException">
@@ -343,7 +343,7 @@ namespace NHibernate.Util
 		/// Determines if the <see cref="System.Type"/> is a non creatable class.
 		/// </summary>
 		/// <param name="type">The <see cref="System.Type"/> to check.</param>
-		/// <returns><c>true</c> if the <see cref="System.Type"/> is an Abstract Class or an Interface.</returns>
+		/// <returns><see langword="true" /> if the <see cref="System.Type"/> is an Abstract Class or an Interface.</returns>
 		public static bool IsAbstractClass(System.Type type)
 		{
 			return (type.IsAbstract || type.IsInterface);

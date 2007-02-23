@@ -524,7 +524,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets the schema the table is in.
 		/// </summary>
 		/// <value>
-		/// The schema the table is in or <c>null</c> if no schema is specified.
+		/// The schema the table is in or <see langword="null" /> if no schema is specified.
 		/// </value>
 		public string Schema
 		{
@@ -553,7 +553,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or sets if the column needs to be quoted in SQL statements.
 		/// </summary>
-		/// <value><c>true</c> if the column is quoted.</value>
+		/// <value><see langword="true" /> if the column is quoted.</value>
 		public bool IsQuoted
 		{
 			get { return quoted; }

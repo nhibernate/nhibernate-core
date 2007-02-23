@@ -10,7 +10,7 @@ namespace NHibernate
 	/// </summary>
 	/// <remarks>
 	/// Exceptions thrown by various ADO.NET providers are not derived from
-	/// a common base class (<c>SQLException</c> in Java), so <c>Exception</c>
+	/// a common base class (<c>SQLException</c> in Java), so <see cref="Exception" />
 	/// is used instead in NHibernate.
 	/// </remarks>
 	[Serializable]

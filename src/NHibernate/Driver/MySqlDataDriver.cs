@@ -35,7 +35,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// MySql.Data uses named parameters in the sql.
 		/// </summary>
-		/// <value><c>true</c> - MySql uses <c>?</c> in the sql.</value>
+		/// <value><see langword="true" /> - MySql uses <c>?</c> in the sql.</value>
 		public override bool UseNamedPrefixInSql
 		{
 			get { return true; }
@@ -60,7 +60,7 @@ namespace NHibernate.Driver
 		/// The MySql.Data driver does NOT support more than 1 open IDataReader
 		/// with only 1 IDbConnection.
 		/// </summary>
-		/// <value><c>false</c> - it is not supported.</value>
+		/// <value><see langword="false" /> - it is not supported.</value>
 		public override bool SupportsMultipleOpenReaders
 		{
 			get { return false; }
@@ -69,7 +69,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// MySql.Data does not support preparing of commands.
 		/// </summary>
-		/// <value><c>false</c> - it is not supported.</value>
+		/// <value><see langword="false" /> - it is not supported.</value>
 		/// <remarks>
 		/// With the Gamma MySql.Data provider it is throwing an exception with the 
 		/// message "Expected End of data packet" when a select command is prepared.

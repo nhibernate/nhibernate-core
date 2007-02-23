@@ -149,8 +149,8 @@ namespace NHibernate.Impl
 		/// Advances the enumerator to the next element of the query results.
 		/// </summary>
 		/// <returns>
-		/// <c>true</c> if the enumerator was successfully advanced to the next query results
-		/// ; <c>false</c> if the enumerator has passed the end of the query results.
+		/// <see langword="true" /> if the enumerator was successfully advanced to the next query results
+		/// ; <see langword="false" /> if the enumerator has passed the end of the query results.
 		///</returns>
 		public bool MoveNext()
 		{

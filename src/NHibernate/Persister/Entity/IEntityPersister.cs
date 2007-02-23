@@ -156,7 +156,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="y"></param>
 		/// <param name="owner"></param>
 		/// <param name="session"></param>
-		/// <returns><c>null</c> or the indices of the dirty properties</returns>
+		/// <returns><see langword="null" /> or the indices of the dirty properties</returns>
 		int[] FindDirty(object[] x, object[] y, object owner, ISessionImplementor session);
 
 		/// <summary>
@@ -166,7 +166,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="current"></param>
 		/// <param name="owner"></param>
 		/// <param name="session"></param>
-		/// <returns>return <c>null</c> or the indicies of the modified properties</returns>
+		/// <returns>return <see langword="null" /> or the indicies of the modified properties</returns>
 		int[] FindModified(object[] old, object[] current, object owner, ISessionImplementor session);
 
 		/// <summary>
@@ -282,7 +282,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="id">The id.</param>
 		/// <param name="fields">The fields.</param>
 		/// <param name="dirtyFields">The dirty fields.</param>
-		/// <param name="hasDirtyCollection">if set to <c>true</c> [has dirty collection].</param>
+		/// <param name="hasDirtyCollection">if set to <see langword="true" /> [has dirty collection].</param>
 		/// <param name="oldFields">The old fields.</param>
 		/// <param name="oldVersion">The old version.</param>
 		/// <param name="obj">The obj.</param>
@@ -304,7 +304,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Gets if the Property is updatable
 		/// </summary>
-		/// <value><c>true</c> if the Property's value can be updated.</value>
+		/// <value><see langword="true" /> if the Property's value can be updated.</value>
 		/// <remarks>
 		/// This is for formula columns and if the user sets the update attribute on the &lt;property&gt; element.
 		/// </remarks>
@@ -324,7 +324,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Gets if the Property is insertable.
 		/// </summary>
-		/// <value><c>true</c> if the Property's value can be inserted.</value>
+		/// <value><see langword="true" /> if the Property's value can be inserted.</value>
 		/// <remarks>
 		/// This is for formula columns and if the user sets the insert attribute on the &lt;property&gt; element.
 		/// </remarks>
@@ -333,7 +333,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the "versionability" of the properties of this class (is the property optimistic-locked)
 		/// </summary>
-		/// <value><c>true</c> if the property is optimistic-locked; otherwise, <c>false</c>.</value>
+		/// <value><see langword="true" /> if the property is optimistic-locked; otherwise, <see langword="false" />.</value>
 		bool[] PropertyVersionability { get; }
 
 		/// <summary>
@@ -391,7 +391,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="id"></param>
 		/// <param name="version"></param>
 		/// <param name="session"></param>
-		/// <returns><c>null</c> if select-before-update is not enabled or not supported</returns>
+		/// <returns><see langword="null" /> if select-before-update is not enabled or not supported</returns>
 		object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session);
 
 		/// <summary>

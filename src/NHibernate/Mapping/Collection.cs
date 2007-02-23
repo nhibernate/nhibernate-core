@@ -284,8 +284,8 @@ namespace NHibernate.Mapping
 		/// mapping for a generic collection.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if a collection from the System.Collections.Generic namespace
-		/// should be used, <c>false</c> if a collection from the System.Collections 
+		/// <see langword="true" /> if a collection from the System.Collections.Generic namespace
+		/// should be used, <see langword="false" /> if a collection from the System.Collections 
 		/// namespace should be used.
 		/// </value>
 		/// <remarks>

@@ -67,27 +67,27 @@ namespace Iesi.Collections.Generic
 		}
 
 		/// <summary>
-		/// Returns <c>true</c> if this set contains the specified element.
+		/// Returns <see langword="true" /> if this set contains the specified element.
 		/// </summary>
 		/// <param name="o">The element to look for.</param>
-		/// <returns><c>true</c> if this set contains the specified element, <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if this set contains the specified element, <see langword="false" /> otherwise.</returns>
 		public override sealed bool Contains(T o)
 		{
 			return mBasisSet.Contains(o);
 		}
 
 		/// <summary>
-		/// Returns <c>true</c> if the set contains all the elements in the specified collection.
+		/// Returns <see langword="true" /> if the set contains all the elements in the specified collection.
 		/// </summary>
 		/// <param name="c">A collection of objects.</param>
-		/// <returns><c>true</c> if the set contains all the elements in the specified collection, <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the set contains all the elements in the specified collection, <see langword="false" /> otherwise.</returns>
 		public override sealed bool ContainsAll(ICollection<T> c)
 		{
 			return mBasisSet.ContainsAll(c);
 		}
 
 		/// <summary>
-		/// Returns <c>true</c> if this set contains no elements.
+		/// Returns <see langword="true" /> if this set contains no elements.
 		/// </summary>
 		public override sealed bool IsEmpty
 		{

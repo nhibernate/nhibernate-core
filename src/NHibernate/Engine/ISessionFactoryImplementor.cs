@@ -33,7 +33,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="className">The name of the class that is persisted.</param>
 		/// <param name="throwIfNotFound">Whether to throw an exception if the class is not found,
-		/// or just return <c>null</c></param>
+		/// or just return <see langword="null" /></param>
 		/// <returns>The <see cref="IEntityPersister"/> for the class.</returns>
 		/// <exception cref="MappingException">If no <see cref="IEntityPersister"/> can be found
 		/// and throwIfNotFound is true.</exception>

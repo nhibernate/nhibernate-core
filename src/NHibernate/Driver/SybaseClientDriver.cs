@@ -26,7 +26,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Sybase.Data.AseClient uses named parameters in the sql.
 		/// </summary>
-		/// <value><c>true</c> - Sybase uses <c>@</c> in the sql.</value>
+		/// <value><see langword="true" /> - Sybase uses <c>@</c> in the sql.</value>
 		public override bool UseNamedPrefixInSql
 		{
 			get { return true; }

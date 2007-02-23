@@ -264,7 +264,7 @@ namespace NHibernate.Cfg
 			}
 
 			/// <summary>
-			/// Gets the name of the Class that this Class inherits from, or <c>null</c>
+			/// Gets the name of the Class that this Class inherits from, or <see langword="null" />
 			/// if this does not inherit from any mapped Class.
 			/// </summary>
 			public string BaseClassName

@@ -35,7 +35,7 @@ namespace NHibernate.Transaction
 		/// <remarks>
 		/// <para>
 		/// This takes care of making sure the <see cref="IDbCommand"/>'s Transaction property 
-		/// contains the correct <see cref="IDbTransaction"/> or <c>null</c> if there is no
+		/// contains the correct <see cref="IDbTransaction"/> or <see langword="null" /> if there is no
 		/// Transaction for the ISession - ie <c>BeginTransaction()</c> not called.
 		/// </para>
 		/// <para>
@@ -233,7 +233,7 @@ namespace NHibernate.Transaction
 		/// Gets a <see cref="Boolean"/> indicating if the transaction was rolled back.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if the <see cref="IDbTransaction"/> had <c>Rollback</c> called
+		/// <see langword="true" /> if the <see cref="IDbTransaction"/> had <c>Rollback</c> called
 		/// without any exceptions.
 		/// </value>
 		public bool WasRolledBack
@@ -245,7 +245,7 @@ namespace NHibernate.Transaction
 		/// Gets a <see cref="Boolean"/> indicating if the transaction was committed.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if the <see cref="IDbTransaction"/> had <c>Commit</c> called
+		/// <see langword="true" /> if the <see cref="IDbTransaction"/> had <c>Commit</c> called
 		/// without any exceptions.
 		/// </value>
 		public bool WasCommitted

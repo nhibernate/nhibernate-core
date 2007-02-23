@@ -39,7 +39,7 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-		/// A read-only dictionary that is always empty and permits lookup by <c>null</c> key.
+		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
 		private class EmptyMapClass : IDictionary
 		{

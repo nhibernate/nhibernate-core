@@ -60,7 +60,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
 		/// </summary>
-		/// <value><c>true</c> if the Sql is built at runtime.</value>
+		/// <value><see langword="true" /> if the Sql is built at runtime.</value>
 		/// <remarks>
 		/// The value of this is set by the <c>dynamic-insert</c> attribute. 
 		/// </remarks>
@@ -73,7 +73,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or Sets if the Update Sql is built dynamically.
 		/// </summary>
-		/// <value><c>true</c> if the Sql is built at runtime.</value>
+		/// <value><see langword="true" /> if the Sql is built at runtime.</value>
 		/// <remarks>
 		/// The value of this is set by the <c>dynamic-update</c> attribute. 
 		/// </remarks>
@@ -124,7 +124,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets a boolean indicating if this PersistentClass has any subclasses.
 		/// </summary>
-		/// <value><c>true</c> if this PeristentClass has any subclasses.</value>
+		/// <value><see langword="true" /> if this PeristentClass has any subclasses.</value>
 		public virtual bool HasSubclasses
 		{
 			get { return subclasses.Count > 0; }
@@ -255,7 +255,7 @@ namespace NHibernate.Mapping
 		/// When implemented by a class, gets or set a boolean indicating 
 		/// if the mapped class has properties that can be changed.
 		/// </summary>
-		/// <value><c>true</c> if the object is mutable.</value>
+		/// <value><see langword="true" /> if the object is mutable.</value>
 		/// <remarks>
 		/// The value of this is set by the <c>mutable</c> attribute. 
 		/// </remarks>
@@ -265,7 +265,7 @@ namespace NHibernate.Mapping
 		/// When implemented by a class, gets a boolean indicating
 		/// if the mapped class has a Property for the <c>id</c>.
 		/// </summary>
-		/// <value><c>true</c> if there is a Property for the <c>id</c>.</value>
+		/// <value><see langword="true" /> if there is a Property for the <c>id</c>.</value>
 		public abstract bool HasIdentifierProperty { get; }
 
 		/// <summary>
@@ -303,7 +303,7 @@ namespace NHibernate.Mapping
 		/// mapped class is inherited from another. 
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this class is a <c>subclass</c> or <c>joined-subclass</c>
+		/// <see langword="true" /> if this class is a <c>subclass</c> or <c>joined-subclass</c>
 		/// that inherited from another <c>class</c>.
 		/// </value>
 		public abstract bool IsInherited { get; }
@@ -313,7 +313,7 @@ namespace NHibernate.Mapping
 		/// a subclass.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if the mapped class has subclasses or is a subclass.
+		/// <see langword="true" /> if the mapped class has subclasses or is a subclass.
 		/// </value>
 		public abstract bool IsPolymorphic { get; set; }
 
@@ -321,7 +321,7 @@ namespace NHibernate.Mapping
 		/// When implemented by a class, gets a boolean indicating if the mapped class
 		/// has a version property.
 		/// </summary>
-		/// <value><c>true</c> if there is a <c>&lt;version&gt;</c> property.</value>
+		/// <value><see langword="true" /> if there is a <c>&lt;version&gt;</c> property.</value>
 		public abstract bool IsVersioned { get; }
 
 		/// <summary>
@@ -345,7 +345,7 @@ namespace NHibernate.Mapping
 		/// explicit polymorphism should be used in Queries.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if only classes queried on should be returned, <c>false</c>
+		/// <see langword="true" /> if only classes queried on should be returned, <see langword="false" />
 		/// if any class in the heirarchy should implicitly be returned.</value>
 		/// <remarks>
 		/// The value of this is set by the <c>polymorphism</c> attribute. 
@@ -452,7 +452,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets a boolean indicating if only values in the discriminator column that
 		/// are mapped will be included in the sql.
 		/// </summary>
-		/// <value><c>true</c> if the mapped discriminator values should be forced.</value>
+		/// <value><see langword="true" /> if the mapped discriminator values should be forced.</value>
 		/// <remarks>
 		/// The value of this is set by the <c>force</c> attribute on the <c>discriminator</c> element. 
 		/// </remarks>
@@ -499,7 +499,7 @@ namespace NHibernate.Mapping
 		/// When implemented by a class, gets or sets a boolean indicating if the identifier is 
 		/// embedded in the class.
 		/// </summary>
-		/// <value><c>true</c> if the class identifies itself.</value>
+		/// <value><see langword="true" /> if the class identifies itself.</value>
 		/// <remarks>
 		/// An embedded identifier is true when using a <c>composite-id</c> specifying
 		/// properties of the class as the <c>key-property</c> instead of using a class

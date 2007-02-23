@@ -179,7 +179,7 @@ namespace NHibernate.Collection.Generic
 		/// <summary>
 		/// Is the initialized GenericBag empty?
 		/// </summary>
-		/// <value><c>true</c> if the bag has a Count==0, <c>false</c> otherwise.</value>
+		/// <value><see langword="true" /> if the bag has a Count==0, <see langword="false" /> otherwise.</value>
 		public override bool Empty
 		{
 			get { return bag.Count == 0; }
@@ -202,7 +202,7 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
-		/// <c>false</c> if this is a <c>one-to-many</c> Bag, <c>true</c> if this is not
+		/// <see langword="false" /> if this is a <c>one-to-many</c> Bag, <see langword="true" /> if this is not
 		/// a <c>one-to-many</c> Bag.  Since a Bag is an unordered, unindexed collection 
 		/// that permits duplicates it is not possible to determine what has changed in a
 		/// <c>many-to-many</c> so it is just recreated.
@@ -396,7 +396,7 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="collection">The bag that might be wrapped.</param>
 		/// <returns>
-		/// <c>true</c> if the <paramref name="collection"/> is equal to the
+		/// <see langword="true" /> if the <paramref name="collection"/> is equal to the
 		/// wrapped collection by object reference.
 		/// </returns>
 		public override bool IsWrapper(object collection)

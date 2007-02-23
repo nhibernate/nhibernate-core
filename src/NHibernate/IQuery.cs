@@ -123,7 +123,7 @@ namespace NHibernate
 		/// Convenience method to return a single instance that matches
 		/// the query, or null if the query returns no results.
 		/// </summary>
-		/// <returns>the single result or <c>null</c></returns>
+		/// <returns>the single result or <see langword="null" /></returns>
 		/// <exception cref="HibernateException">
 		/// Thrown when there is more than one matching result.
 		/// </exception>
@@ -156,7 +156,7 @@ namespace NHibernate
 		IQuery SetCacheable(bool cacheable);
 
 		/// Set the name of the cache region.
-		/// <param name="cacheRegion">The name of a query cache region, or <c>null</c>
+		/// <param name="cacheRegion">The name of a query cache region, or <see langword="null" />
 		/// for the default query cache</param>
 		IQuery SetCacheRegion(string cacheRegion);
 

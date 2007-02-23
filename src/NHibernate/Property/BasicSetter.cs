@@ -75,7 +75,7 @@ namespace NHibernate.Property
 		/// <summary>
 		/// Gets the name of the mapped Property.
 		/// </summary>
-		/// <value>The name of the mapped Property or <c>null</c>.</value>
+		/// <value>The name of the mapped Property or <see langword="null" />.</value>
 		public string PropertyName
 		{
 			get { return property.Name; }

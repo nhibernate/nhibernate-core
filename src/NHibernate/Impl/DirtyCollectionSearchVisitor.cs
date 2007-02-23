@@ -43,7 +43,7 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if a dirty collection was found.
 		/// </summary>
-		/// <value><c>true</c> if a dirty collection was found.</value>
+		/// <value><see langword="true" /> if a dirty collection was found.</value>
 		public bool WasDirtyCollectionFound
 		{
 			get { return _dirty; }

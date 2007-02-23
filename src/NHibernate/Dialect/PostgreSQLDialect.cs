@@ -16,7 +16,7 @@ namespace NHibernate.Dialect
 	///		</listheader>
 	///		<item>
 	///			<term>hibernate.use_outer_join</term>
-	///			<description><c>true</c></description>
+	///			<description><see langword="true" /></description>
 	///		</item>
 	///		<item>
 	///			<term>hibernate.connection.driver_class</term>

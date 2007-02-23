@@ -89,7 +89,7 @@ namespace NHibernate.Collection
 		/// Queue an addition if the peristent collection supports it
 		/// </summary>
 		/// <returns>
-		/// <c>true</c> if the addition was queued up, <c>false</c> if the persistent collection
+		/// <see langword="true" /> if the addition was queued up, <see langword="false" /> if the persistent collection
 		/// doesn't support Queued Addition.
 		/// </returns>
 		protected bool QueueAdd(object element)
@@ -280,11 +280,11 @@ namespace NHibernate.Collection
 		/// accessable through code.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if we are not guaranteed that the NHibernate collection wrapper
+		/// <see langword="true" /> if we are not guaranteed that the NHibernate collection wrapper
 		/// is being used.
 		/// </value>
 		/// <remarks>
-		/// This is typically <c>false</c> whenever a transient object that contains a collection is being
+		/// This is typically <see langword="false" /> whenever a transient object that contains a collection is being
 		/// associated with an ISession through <c>Save</c> or <c>SaveOrUpdate</c>.  NHibernate can't guarantee
 		/// that it will know about all operations that would call cause NHibernate's collections to call
 		/// <c>Read()</c> or <c>Write()</c>.
@@ -412,7 +412,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
-		/// <c>false</c> by default since most collections can determine which rows need to be
+		/// <see langword="false" /> by default since most collections can determine which rows need to be
 		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>

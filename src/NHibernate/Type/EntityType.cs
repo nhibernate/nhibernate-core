@@ -192,7 +192,7 @@ namespace NHibernate.Type
 		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
 		/// <returns>
-		/// An instance of the object or <c>null</c> if the identifer was null.
+		/// An instance of the object or <see langword="null" /> if the identifer was null.
 		/// </returns>
 		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{

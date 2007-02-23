@@ -169,7 +169,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns>
-		/// <c>false</c> if this is a <c>one-to-many</c> Bag, <c>true</c> if this is not
+		/// <see langword="false" /> if this is a <c>one-to-many</c> Bag, <see langword="true" /> if this is not
 		/// a <c>one-to-many</c> Bag.  Since a Bag is an unordered, unindexed collection 
 		/// that permits duplicates it is not possible to determine what has changed in a
 		/// <c>many-to-many</c> so it is just recreated.

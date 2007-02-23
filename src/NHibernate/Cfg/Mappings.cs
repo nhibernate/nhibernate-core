@@ -169,12 +169,12 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds an import to allow for the full class name <c>Namespace.BusClass</c> 
-		/// to be referenced as <c>BusClass</c> or some other name in Hql.
+		/// Adds an import to allow for the full class name <c>Namespace.Entity</c> 
+		/// to be referenced as <c>Entity</c> or some other name in HQL.
 		/// </summary>
-		/// <param name="className">The name of the class that is being renamed.</param>
-		/// <param name="rename">The new name to use in Hql for the class.</param>
-		/// <exception cref="MappingException">Thrown when the rename already identifies another Class.</exception>
+		/// <param name="className">The name of the type that is being renamed.</param>
+		/// <param name="rename">The new name to use in HQL for the type.</param>
+		/// <exception cref="MappingException">Thrown when the rename already identifies another type.</exception>
 		public void AddImport(string className, string rename)
 		{
 			// if the imports dictionary already contains the rename, then make sure 
@@ -282,13 +282,13 @@ namespace NHibernate.Cfg
 		/// Gets or sets a boolean indicating if the Fully Qualified Type name should
 		/// automattically have an import added as the class name.
 		/// </summary>
-		/// <value><c>true</c> if the class name should be used as an import.</value>
+		/// <value><see langword="true" /> if the class name should be used as an import.</value>
 		/// <remarks>
-		/// AutoImport is used to shorten the string used to refer to Types to just their
-		/// class.  So if the type <c>MyAssembly.MyNamespace.MyClass, MyAssembly</c> has an <c>auto-import="false"</c>
-		/// then all use of in HQL would need to be the fully qualified version <c>MyAssembly.MyNamespace.MyClass</c>.
-		/// If <c>auto-import="true"</c> the the Type could be referred to in hql by just the class
-		/// name of <c>MyClass</c>.
+		/// Auto-import is used to shorten the string used to refer to types to just their
+		/// unqualified name.  So if the type <c>MyAssembly.MyNamespace.MyClass, MyAssembly</c> has
+		/// <c>auto-import="false"</c> then all use of it in HQL would need to be the fully qualified
+		/// version <c>MyAssembly.MyNamespace.MyClass</c>. If <c>auto-import="true"</c>, the type could
+		/// be referred to in HQL as just <c>MyClass</c>.
 		/// </remarks>
 		public bool IsAutoImport
 		{

@@ -732,7 +732,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="name">The name of that identifies the query.</param>
 		/// <returns>
-		/// A <c>hql</c> query or <c>null</c> if the named
+		/// A <c>hql</c> query or <see langword="null" /> if the named
 		/// query does not exist.
 		/// </returns>
 		public NamedQueryDefinition GetNamedQuery(string name)

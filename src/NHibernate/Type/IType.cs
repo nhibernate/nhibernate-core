@@ -146,12 +146,12 @@ namespace NHibernate.Type
 		object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready);
 
 		/// <summary>
-		/// Determines whether the specified value is represented as <c>NULL</c> in the database.
+		/// Determines whether the specified value is represented as <see langword="null" /> in the database.
 		/// </summary>
-		/// <param name="value">The value, may be <c>null</c>.</param>
+		/// <param name="value">The value, may be <see langword="null" />.</param>
 		/// <returns>
-		/// <c>true</c> if the specified value is represented as <c>NULL</c> in the database;
-		/// otherwise, <c>false</c>.
+		/// <see langword="true" /> if the specified value is represented as <see langword="null" /> in the database;
+		/// otherwise, <see langword="false" />.
 		/// </returns>
 		bool IsDatabaseNull(object value);
 	}

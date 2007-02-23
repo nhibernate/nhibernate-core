@@ -109,7 +109,7 @@ namespace NHibernate
 		/// pool. Otherwise return it to the application. This is used by applications which require
 		/// long transactions.
 		/// </remarks>
-		/// <returns>The connection provided by the application or <c>null</c></returns>
+		/// <returns>The connection provided by the application or <see langword="null" /></returns>
 		IDbConnection Disconnect();
 
 		/// <summary>
@@ -134,7 +134,7 @@ namespace NHibernate
 		/// It is not strickly necessary to <c>Close()</c> the <c>ISession</c> but you must
 		/// at least <c>Disconnect()</c> it.
 		/// </remarks>
-		/// <returns>The connection provided by the application or <c>null</c></returns>
+		/// <returns>The connection provided by the application or <see langword="null" /></returns>
 		IDbConnection Close();
 
 		/// <summary>
@@ -292,7 +292,7 @@ namespace NHibernate
 		/// </summary>
 		/// <remarks>
 		/// If there is a persistent instance with the same identifier, an exception is thrown. If
-		/// the given transient instance has a <c>null</c> identifier, an exception will be thrown.
+		/// the given transient instance has a <see langword="null" /> identifier, an exception will be thrown.
 		/// </remarks>
 		/// <param name="obj">A transient instance containing updated state</param>
 		void Update(object obj);

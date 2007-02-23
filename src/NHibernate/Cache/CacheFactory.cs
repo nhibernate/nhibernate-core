@@ -31,7 +31,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>
 		/// <param name="name">The name of the class the strategy is being created for.</param>
-		/// <param name="mutable"><c>true</c> if the object being stored in the cache is mutable.</param>
+		/// <param name="mutable"><see langword="true" /> if the object being stored in the cache is mutable.</param>
 		/// <param name="settings">Used to retrieve the global cache region prefix.</param>
 		/// <param name="properties">Properties the cache provider can use to configure the cache.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>

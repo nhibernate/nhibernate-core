@@ -35,7 +35,7 @@ namespace NHibernate.Driver
 		/// MsSql requires the use of a Named Prefix in the SQL statement.  
 		/// </summary>
 		/// <remarks>
-		/// <c>true</c> because MsSql uses "<c>@</c>".
+		/// <see langword="true" /> because MsSql uses "<c>@</c>".
 		/// </remarks>
 		public override bool UseNamedPrefixInSql
 		{
@@ -46,7 +46,7 @@ namespace NHibernate.Driver
 		/// MsSql requires the use of a Named Prefix in the Parameter.  
 		/// </summary>
 		/// <remarks>
-		/// <c>true</c> because MsSql uses "<c>@</c>".
+		/// <see langword="true" /> because MsSql uses "<c>@</c>".
 		/// </remarks>
 		public override bool UseNamedPrefixInParameter
 		{
@@ -68,7 +68,7 @@ namespace NHibernate.Driver
 		/// The SqlClient driver does NOT support more than 1 open IDataReader
 		/// with only 1 IDbConnection.
 		/// </summary>
-		/// <value><c>false</c> - it is not supported.</value>
+		/// <value><see langword="false" /> - it is not supported.</value>
 		/// <remarks>
 		/// Ms Sql 2000 (and 7) throws an Exception when multiple DataReaders are 
 		/// attempted to be Opened.  When Yukon comes out a new Driver will be 

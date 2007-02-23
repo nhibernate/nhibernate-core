@@ -245,7 +245,7 @@ namespace NHibernate.Proxy
 		/// Return the Underlying Persistent Object in a given <see cref="ISession"/>, or null.
 		/// </summary>
 		/// <param name="s">The Session to get the object from.</param>
-		/// <returns>The Persistent Object this proxy is Proxying, or <c>null</c>.</returns>
+		/// <returns>The Persistent Object this proxy is Proxying, or <see langword="null" />.</returns>
 		public object GetImplementation(ISessionImplementor s)
 		{
 			EntityKey key = new EntityKey(Identifier, s.Factory.GetEntityPersister(PersistentClass));

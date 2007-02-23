@@ -60,7 +60,7 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// There is no concrete rule that <see cref="ImmutableType"/>s implement
 		/// a well-behaived <c>Equals()</c>.  If the <see cref="ImmutableType"/> does 
-		/// not implement the <c>Equals()</c> then set this to <c>false</c>.
+		/// not implement the <c>Equals()</c> then set this to <see langword="false" />.
 		/// </remarks>
 		public override bool HasNiceEquals
 		{

@@ -24,7 +24,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <param name="mappedClass">The target class</param>
 		/// <param name="setters">Array of setters</param>
 		/// <param name="getters">Array of getters</param>
-		/// <returns><c>null</c> if the generation fails</returns>
+		/// <returns><see langword="null" /> if the generation fails</returns>
 		public IReflectionOptimizer GetReflectionOptimizer(
 			System.Type mappedClass, IGetter[] getters, ISetter[] setters)
 		{

@@ -98,7 +98,7 @@ namespace NHibernate.Impl
 		/// The <see cref="ICollectionPersister"/> when the Collection was loaded.
 		/// </summary>
 		/// <remarks>
-		/// This can be <c>null</c> if the Collection was not loaded by NHibernate and 
+		/// This can be <see langword="null" /> if the Collection was not loaded by NHibernate and 
 		/// was passed in along with a transient object.
 		/// </remarks>
 		[NonSerialized]

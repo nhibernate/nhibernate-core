@@ -77,7 +77,7 @@ namespace NHibernate.Impl
 		/// Gets or sets the identifier of the Entity in the database.
 		/// </summary>
 		/// <value>The identifier of the Entity in the database if one has been assigned.</value>
-		/// <remarks>This might be <c>null</c> when the <see cref="EntityEntry.Status"/> is 
+		/// <remarks>This might be <see langword="null" /> when the <see cref="EntityEntry.Status"/> is 
 		/// <see cref="Impl.Status.Saving"/> and the database generates the id.</remarks>
 		public object Id
 		{
@@ -102,7 +102,7 @@ namespace NHibernate.Impl
 		/// Gets or sets the snapshot of the Entity when it was marked as being ready for deletion.
 		/// </summary>
 		/// <value>The snapshot of the Entity.</value>
-		/// <remarks>This will be <c>null</c> if the Entity is not being deleted.</remarks>
+		/// <remarks>This will be <see langword="null" /> if the Entity is not being deleted.</remarks>
 		public object[] DeletedState
 		{
 			get { return deletedState; }
@@ -112,10 +112,10 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Gets or sets a <see cref="Boolean"/> indicating if this Entity exists in the database.
 		/// </summary>
-		/// <value><c>true</c> if it is already in the database.</value>
+		/// <value><see langword="true" /> if it is already in the database.</value>
 		/// <remarks>
-		/// It can also be <c>true</c> if it does not exists in the database yet and the 
-		/// <see cref="IEntityPersister.IsIdentifierAssignedByInsert"/> is <c>true</c>.
+		/// It can also be <see langword="true" /> if it does not exists in the database yet and the 
+		/// <see cref="IEntityPersister.IsIdentifierAssignedByInsert"/> is <see langword="true" />.
 		/// </remarks>
 		public bool ExistsInDatabase
 		{

@@ -3,7 +3,7 @@ using System.Collections;
 namespace NHibernate.Cache
 {
 	/// <summary>
-	/// A simple <c>Hashtable</c> based cache
+	/// A simple <see cref="Hashtable" />-based cache
 	/// </summary>
 	public class HashtableCache : ICache
 	{

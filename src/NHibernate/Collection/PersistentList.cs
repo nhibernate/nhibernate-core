@@ -56,7 +56,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="elementType">The <see cref="IType"/> to compare the elements of the Collection.</param>
 		/// <returns>
-		/// <c>true</c> if the wrapped list is different than the snapshot
+		/// <see langword="true" /> if the wrapped list is different than the snapshot
 		/// of the list or if one of the elements in the collection is
 		/// dirty.
 		/// </returns>

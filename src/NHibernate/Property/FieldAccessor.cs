@@ -36,7 +36,7 @@ namespace NHibernate.Property
 		/// Gets the <see cref="IFieldNamingStrategy"/> used to convert the name of the
 		/// mapped Property in the hbm.xml file to the name of the field in the class.
 		/// </summary>
-		/// <value>The <see cref="IFieldNamingStrategy"/> or <c>null</c>.</value>
+		/// <value>The <see cref="IFieldNamingStrategy"/> or <see langword="null" />.</value>
 		public IFieldNamingStrategy NamingStrategy
 		{
 			get { return namingStrategy; }

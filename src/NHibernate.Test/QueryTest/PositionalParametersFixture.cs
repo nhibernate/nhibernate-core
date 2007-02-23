@@ -102,7 +102,7 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		/// <summary>
-		/// Verifying that a <c>null</c> value passed into SetParameter(index, val) throws
+		/// Verifying that a <see langword="null" /> value passed into SetParameter(index, val) throws
 		/// an exception
 		/// </summary>
 		[Test, ExpectedException(typeof(ArgumentNullException))]

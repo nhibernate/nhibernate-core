@@ -39,7 +39,7 @@ namespace NHibernate.Driver
 		/// Initializes a new instance of the NHybridDataReader class.
 		/// </summary>
 		/// <param name="reader">The underlying IDataReader to use.</param>
-		/// <param name="inMemory"><c>true</c> if the contents of the IDataReader should be read into memory right away.</param>
+		/// <param name="inMemory"><see langword="true" /> if the contents of the IDataReader should be read into memory right away.</param>
 		public NHybridDataReader(IDataReader reader, bool inMemory)
 		{
 			if (inMemory)
@@ -74,7 +74,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Gets if the object is in the middle of reading a Result.
 		/// </summary>
-		/// <value><c>true</c> if NextResult and Read have been called on the <see cref="IDataReader"/>.</value>
+		/// <value><see langword="true" /> if NextResult and Read have been called on the <see cref="IDataReader"/>.</value>
 		public bool IsMidstream
 		{
 			get { return _isMidstream; }

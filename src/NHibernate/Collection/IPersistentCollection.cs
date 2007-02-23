@@ -95,11 +95,11 @@ namespace NHibernate.Collection
 		/// accessable through code.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if we are not guaranteed that the NHibernate collection wrapper
+		/// <see langword="true" /> if we are not guaranteed that the NHibernate collection wrapper
 		/// is being used.
 		/// </value>
 		/// <remarks>
-		/// This is typically <c>false</c> whenever a transient object that contains a collection is being
+		/// This is typically <see langword="false" /> whenever a transient object that contains a collection is being
 		/// associated with an ISession through <c>Save</c> or <c>SaveOrUpdate</c>.  NHibernate can't guarantee
 		/// that it will know about all operations that would call cause NHibernate's collections to call
 		/// <c>Read()</c> or <c>Write()</c>.
@@ -174,7 +174,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="elementType">The <see cref="IType"/> to compare the elements of the Collection.</param>
 		/// <returns>
-		/// <c>true</c> if the wrapped collection is different than the snapshot
+		/// <see langword="true" /> if the wrapped collection is different than the snapshot
 		/// of the collection or if one of the elements in the collection is
 		/// dirty.
 		/// </returns>
@@ -193,7 +193,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
-		/// <c>false</c> by default since most collections can determine which rows need to be
+		/// <see langword="false" /> by default since most collections can determine which rows need to be
 		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
@@ -238,8 +238,8 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="collection">The collection to see if this IPersistentCollection is wrapping.</param>
 		/// <returns>
-		/// <c>true</c> if the IPersistentCollection is wrappping the collection instance,
-		/// <c>false</c> otherwise.
+		/// <see langword="true" /> if the IPersistentCollection is wrappping the collection instance,
+		/// <see langword="false" /> otherwise.
 		/// </returns>
 		bool IsWrapper(object collection);
 

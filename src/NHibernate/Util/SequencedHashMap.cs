@@ -148,7 +148,7 @@ namespace NHibernate.Util
 
 		/// <summary>
 		/// Construct an empty sentinel used to hold the head (sentinel.next) and the tail (sentinal.prev)
-		/// of the list. The sentinal has a <c>null</c> key and value
+		/// of the list. The sentinal has a <see langword="null" /> key and value
 		/// </summary>
 		/// <returns></returns>
 		private static Entry CreateSentinel()

@@ -10,9 +10,10 @@ namespace NHibernate.Cache
 	/// Transactions pass in a timestamp indicating transaction start time.
 	/// </para>
 	/// <para>
-	/// When used to Cache Entities and Collections the <c>key</c> is the <c>id</c> of the
-	/// Entity/Collection and the <c>value</c> should be set to the <see cref="Impl.CacheEntry"/> 
-	/// for an Entity and the results of <see cref="Collection.AbstractPersistentCollection"/>.Disassemble for a Collection.
+	/// When used to cache entities and collections the key is the identifier of the
+	/// entity/collection and the value should be set to the <see cref="Impl.CacheEntry"/> 
+	/// for an entity and the results of <see cref="Collection.AbstractPersistentCollection.Disassemble"/>
+	/// for a collection.
 	/// </para>
 	/// </remarks>
 	public interface ICacheConcurrencyStrategy
@@ -22,7 +23,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="key">The key (id) of the object to get out of the Cache.</param>
 		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
-		/// <returns>The cached object or <c>null</c></returns>
+		/// <returns>The cached object or <see langword="null" /></returns>
 		/// <exception cref="CacheException"></exception>
 		object Get(CacheKey key, long txTimestamp);
 
@@ -35,7 +36,7 @@ namespace NHibernate.Cache
 		/// <param name="version">the version number of the object we are putting</param>
 		/// <param name="versionComparer">a Comparer to be used to compare version numbers</param>
 		/// <param name="minimalPut">indicates that the cache should avoid a put if the item is already cached</param>
-		/// <returns><c>true</c> if the object was successfully cached</returns>
+		/// <returns><see langword="true" /> if the object was successfully cached</returns>
 		/// <exception cref="CacheException"></exception>
 		bool Put(CacheKey key, object value, long txTimestamp, object version, IComparer versionComparer, bool minimalPut);
 

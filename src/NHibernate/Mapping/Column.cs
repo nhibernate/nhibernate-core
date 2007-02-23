@@ -174,7 +174,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or sets if the column can have null values in it.
 		/// </summary>
-		/// <value><c>true</c> if the column can have a null value in it.</value>
+		/// <value><see langword="true" /> if the column can have a null value in it.</value>
 		public bool IsNullable
 		{
 			get { return nullable; }
@@ -232,7 +232,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or sets if the column contains unique values.
 		/// </summary>
-		/// <value><c>true</c> if the column contains unique values.</value>
+		/// <value><see langword="true" /> if the column contains unique values.</value>
 		public bool IsUnique
 		{
 			get { return unique; }
@@ -280,8 +280,8 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="obj">An <see cref="Object"/> that should be a <see cref="Column"/>.</param>
 		/// <returns>
-		/// <c>true</c> if the name of this Column and the other Column are the same, 
-		/// otherwise <c>false</c>.
+		/// <see langword="true" /> if the name of this Column and the other Column are the same, 
+		/// otherwise <see langword="false" />.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -295,8 +295,8 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="column">A <see cref="Column"/> to compare to this Column.</param>
 		/// <returns>
-		/// <c>true</c> if the name of this Column and the other Column are the same, 
-		/// otherwise <c>false</c>.
+		/// <see langword="true" /> if the name of this Column and the other Column are the same, 
+		/// otherwise <see langword="false" />.
 		/// </returns>
 		public bool Equals(Column column)
 		{
@@ -341,7 +341,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or sets if the column needs to be quoted in SQL statements.
 		/// </summary>
-		/// <value><c>true</c> if the column is quoted.</value>
+		/// <value><see langword="true" /> if the column is quoted.</value>
 		public bool IsQuoted
 		{
 			get { return quoted; }

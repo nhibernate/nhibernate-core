@@ -656,7 +656,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">The <see cref="System.Type"/> to use to create the array.</param>
 		/// <returns>
@@ -672,7 +672,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
@@ -688,7 +688,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
@@ -704,7 +704,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="IdentifierBagType"/> for the specified role.
@@ -719,7 +719,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
@@ -734,7 +734,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="SetType"/> for the specified role.
@@ -750,7 +750,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
 		/// <returns>
@@ -767,7 +767,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <returns>
 		/// A <see cref="OrderedMapType"/> for the specified role.
@@ -783,7 +783,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
 		/// <returns>
@@ -830,7 +830,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
@@ -851,7 +851,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
@@ -872,7 +872,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">
 		/// The <see cref="System.Type"/> to use to create the 
@@ -892,7 +892,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="indexClass">
 		/// The <see cref="System.Type"/> to use as the <c>TKey</c> to create the
@@ -931,7 +931,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">The type of the set elements.</param>
 		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
@@ -945,7 +945,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}" /> to use for the set.</param>
 		/// <param name="elementType">The type of the elements in the set.</param>

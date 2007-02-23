@@ -13,7 +13,7 @@ namespace NHibernate
 	public enum FlushMode
 	{
 		/// <summary>
-		/// Special value for unspecified flush mode (like <c>null</c> in Java).
+		/// Special value for unspecified flush mode (like <see langword="null" /> in Java).
 		/// </summary>
 		Unspecified = -1,
 

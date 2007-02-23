@@ -83,7 +83,7 @@ namespace NHibernate.Dialect
 		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
 		/// functionallity.
 		/// </summary>
-		/// <value><c>true</c></value>
+		/// <value><see langword="true" /></value>
 		public override bool SupportsLimit
 		{
 			get { return true; }
@@ -93,7 +93,7 @@ namespace NHibernate.Dialect
 		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
 		/// functionallity with an offset.
 		/// </summary>
-		/// <value><c>true</c></value>
+		/// <value><see langword="true" /></value>
 		public override bool SupportsLimitOffset
 		{
 			get { return true; }

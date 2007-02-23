@@ -223,7 +223,7 @@ namespace NHibernate.Util
 
 		/// <summary>
 		/// Sets <paramref name="list" /> item at position <paramref name="index" /> to <paramref name="value" />.
-		/// Expands the list by adding <c>null</c> values, if needed.
+		/// Expands the list by adding <see langword="null" /> values, if needed.
 		/// </summary>
 		public static void SafeSetValue(IList list, int index, object value)
 		{

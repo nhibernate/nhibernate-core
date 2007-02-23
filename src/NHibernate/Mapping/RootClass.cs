@@ -82,7 +82,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets a boolean indicating if the mapped class has a Property for the <c>id</c>.
 		/// </summary>
-		/// <value><c>true</c> if there is a Property for the <c>id</c>.</value>
+		/// <value><see langword="true" /> if there is a Property for the <c>id</c>.</value>
 		public override bool HasIdentifierProperty
 		{
 			get { return identifierProperty != null; }
@@ -102,7 +102,7 @@ namespace NHibernate.Mapping
 		/// Gets a boolean indicating if this mapped class is inherited from another. 
 		/// </summary>
 		/// <value>
-		/// <c>false</c> because this is the root mapped class.
+		/// <see langword="false" /> because this is the root mapped class.
 		/// </value>
 		public override bool IsInherited
 		{
@@ -113,7 +113,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets if the mapped class has subclasses.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if the mapped class has subclasses.
+		/// <see langword="true" /> if the mapped class has subclasses.
 		/// </value>
 		public override bool IsPolymorphic
 		{
@@ -172,7 +172,7 @@ namespace NHibernate.Mapping
 		/// <param name="subclass">The <see cref="Subclass"/> to add to the hierarchy.</param>
 		/// <remarks>
 		/// When a <see cref="Subclass"/> is added this mapped class has the property <see cref="IsPolymorphic"/>
-		/// set to <c>true</c>.
+		/// set to <see langword="true" />.
 		/// </remarks>
 		public override void AddSubclass(Subclass subclass)
 		{
@@ -184,7 +184,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets a boolean indicating if explicit polymorphism should be used in Queries.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if only classes queried on should be returned, <c>false</c>
+		/// <see langword="true" /> if only classes queried on should be returned, <see langword="false" />
 		/// if any class in the heirarchy should implicitly be returned.
 		/// </value>
 		public override bool IsExplicitPolymorphism
@@ -210,7 +210,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets a boolean indicating if the mapped class has a version property.
 		/// </summary>
-		/// <value><c>true</c> if there is a Property for a <c>version</c>.</value>
+		/// <value><see langword="true" /> if there is a Property for a <c>version</c>.</value>
 		public override bool IsVersioned
 		{
 			get { return version != null; }
@@ -240,7 +240,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or set a boolean indicating if the mapped class has properties that can be changed.
 		/// </summary>
-		/// <value><c>true</c> if the object is mutable.</value>
+		/// <value><see langword="true" /> if the object is mutable.</value>
 		public override bool IsMutable
 		{
 			get { return mutable; }
@@ -251,7 +251,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets a boolean indicating if the identifier is 
 		/// embedded in the class.
 		/// </summary>
-		/// <value><c>true</c> if the class identifies itself.</value>
+		/// <value><see langword="true" /> if the class identifies itself.</value>
 		/// <remarks>
 		/// An embedded identifier is true when using a <c>composite-id</c> specifying
 		/// properties of the class as the <c>key-property</c> instead of using a class
@@ -289,7 +289,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets the <see cref="PersistentClass"/> that this mapped class is extending.
 		/// </summary>
 		/// <value>
-		/// <c>null</c> since this is the root class.
+		/// <see langword="null" /> since this is the root class.
 		/// </value>
 		/// <exception cref="InvalidOperationException">
 		/// Thrown when the setter is called.  The Superclass can not be set on the 
@@ -315,7 +315,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets a boolean indicating if only values in the discriminator column that
 		/// are mapped will be included in the sql.
 		/// </summary>
-		/// <value><c>true</c> if the mapped discriminator values should be forced.</value>
+		/// <value><see langword="true" /> if the mapped discriminator values should be forced.</value>
 		public override bool IsForceDiscriminator
 		{
 			get { return forceDiscriminator; }

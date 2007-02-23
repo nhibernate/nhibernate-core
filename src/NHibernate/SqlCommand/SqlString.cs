@@ -164,7 +164,7 @@ namespace NHibernate.SqlCommand
 		/// Determines whether the end of this instance matches the specified String.
 		/// </summary>
 		/// <param name="value">A string to seek at the end.</param>
-		/// <returns><c>true</c> if the end of this instance matches value; otherwise, <c>false</c></returns>
+		/// <returns><see langword="true" /> if the end of this instance matches value; otherwise, <see langword="false" /></returns>
 		public bool EndsWith(string value)
 		{
 			SqlString tempSql = Compact();

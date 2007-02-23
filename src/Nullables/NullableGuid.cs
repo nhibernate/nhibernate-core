@@ -33,8 +33,8 @@ namespace Nullables
 		/// in the <see cref="Guid(String)"/> constructor.
 		/// </param>
 		/// <remarks>
-		/// If the <c>guid</c> string is <c>null</c> or <c>Empty</c> then the <c>HasValue</c> 
-		/// property will be <c>false</c>.		
+		/// If the <c>guid</c> string is <see langword="null" /> or <c>Empty</c> then the <c>HasValue</c> 
+		/// property will be <see langword="false" />.		
 		/// </remarks>
 		/// <exception cref="FormatException">
 		/// The format of <c>g</c> is invalid.

@@ -34,8 +34,8 @@ namespace NHibernate.Expression
 			/// <param name="propertyName">The name of the property that is being checked for inclusion.</param>
 			/// <param name="type">The <see cref="IType"/> of the property.</param>
 			/// <returns>
-			/// <c>true</c> if the Property should be included in the Query, 
-			/// <c>false</c> otherwise.
+			/// <see langword="true" /> if the Property should be included in the Query, 
+			/// <see langword="false" /> otherwise.
 			/// </returns>
 			bool Include(object propertyValue, String propertyName, IType type);
 		}
@@ -98,7 +98,7 @@ namespace NHibernate.Expression
 
 		/// <summary>
 		/// Implementation of <see cref="IPropertySelector"/> that includes the
-		/// properties that are not <c>null</c> and do not have an <see cref="String.Empty"/>
+		/// properties that are not <see langword="null" /> and do not have an <see cref="String.Empty"/>
 		/// returned by <c>propertyValue.ToString()</c>.
 		/// </summary>
 		/// <remarks>
@@ -243,7 +243,7 @@ namespace NHibernate.Expression
 		/// <param name="name">The name of the property.</param>
 		/// <param name="type">The <see cref="IType"/> of the property.</param>
 		/// <returns>
-		/// <c>true</c> if the Property should be included, <c>false</c> if
+		/// <see langword="true" /> if the Property should be included, <see langword="false" /> if
 		/// the Property should not be a part of the Query.
 		/// </returns>
 		private bool IsPropertyIncluded(object value, String name, IType type)

@@ -33,7 +33,7 @@ namespace NHibernate
 		/// The interceptor may change the <c>state</c>, which will be propagated to the persistent
 		/// object. Note that when this method is called, <c>entity</c> will be an empty
 		/// uninitialized instance of the class.</remarks>
-		/// <returns><c>true</c> if the user modified the <c>state</c> in any way</returns>
+		/// <returns><see langword="true" /> if the user modified the <c>state</c> in any way</returns>
 		bool OnLoad(object entity, object id, object[] state, string[] propertyNames, IType[] types);
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace NHibernate
 		/// to the object, but not necessarily (immediately) to the database. It is strongly recommended
 		/// that the interceptor <b>not</b> modify the <c>previousState</c>.
 		/// </remarks>
-		/// <returns><c>true</c> if the user modified the <c>currentState</c> in any way</returns>
+		/// <returns><see langword="true" /> if the user modified the <c>currentState</c> in any way</returns>
 		bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames,
 		                  IType[] types);
 
@@ -68,7 +68,7 @@ namespace NHibernate
 		/// The interceptor may modify the <c>state</c>, which will be used for the SQL <c>INSERT</c>
 		/// and propagated to the persistent object
 		/// </remarks>
-		/// <returns><c>true</c> if the user modified the <c>state</c> in any way</returns>
+		/// <returns><see langword="true" /> if the user modified the <c>state</c> in any way</returns>
 		bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types);
 
 		/// <summary>
@@ -103,9 +103,9 @@ namespace NHibernate
 		/// <remarks>
 		///	The return value determines if the object is saved
 		///	<list>
-		///		<item><c>true</c> - the entity is passed to <c>Save()</c>, resulting in an <c>INSERT</c></item>
-		///		<item><c>false</c> - the entity is passed to <c>Update()</c>, resulting in an <c>UPDATE</c></item>
-		///		<item><c>null</c> - Hibernate uses the <c>unsaved-value</c> mapping to determine if the object is unsaved</item>
+		///		<item><see langword="true" /> - the entity is passed to <c>Save()</c>, resulting in an <c>INSERT</c></item>
+		///		<item><see langword="false" /> - the entity is passed to <c>Update()</c>, resulting in an <c>UPDATE</c></item>
+		///		<item><see langword="null" /> - Hibernate uses the <c>unsaved-value</c> mapping to determine if the object is unsaved</item>
 		///	</list>
 		/// </remarks>
 		/// <param name="entity">A transient entity</param>
@@ -119,7 +119,7 @@ namespace NHibernate
 		///		<list>
 		///			<item>an array of property indicies - the entity is dirty</item>
 		///			<item>an empty array - the entity is not dirty</item>
-		///			<item><c>null</c> - use Hibernate's default dirty-checking algorithm</item>
+		///			<item><see langword="null" /> - use Hibernate's default dirty-checking algorithm</item>
 		///		</list>
 		/// </remarks>
 		/// <param name="entity">A persistent entity</param>
@@ -128,17 +128,17 @@ namespace NHibernate
 		/// <param name="previousState"></param>
 		/// <param name="propertyNames"></param>
 		/// <param name="types"></param>
-		/// <returns>An array of dirty property indicies or <c>null</c> to choose default behavior</returns>
+		/// <returns>An array of dirty property indicies or <see langword="null" /> to choose default behavior</returns>
 		int[] FindDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames,
 		                IType[] types);
 
 		/// <summary>
-		/// Instantiate the entity class. Return <c>null</c> to indicate that Hibernate should use the default
+		/// Instantiate the entity class. Return <see langword="null" /> to indicate that Hibernate should use the default
 		/// constructor of the class
 		/// </summary>
 		/// <param name="type">A mapped type</param>
 		/// <param name="id">The identifier of the new instance</param>
-		/// <returns>An instance of the class, or <c>null</c> to choose default behaviour</returns>
+		/// <returns>An instance of the class, or <see langword="null" /> to choose default behaviour</returns>
 		object Instantiate(System.Type type, object id);
 
 		/// <summary>

@@ -34,7 +34,7 @@ namespace NHibernate.Driver
 		/// Creates a NDataReader from a <see cref="IDataReader" />
 		/// </summary>
 		/// <param name="reader">The <see cref="IDataReader" /> to get the records from the Database.</param>
-		/// <param name="isMidstream"><c>true</c> if we are loading the <see cref="IDataReader" /> in the middle of reading it.</param>
+		/// <param name="isMidstream"><see langword="true" /> if we are loading the <see cref="IDataReader" /> in the middle of reading it.</param>
 		/// <remarks>
 		/// NHibernate attempts to not have to read the contents of an <see cref="IDataReader"/> into memory until it absolutely
 		/// has to.  What that means is that it might have processed some records from the <see cref="IDataReader"/> and will
@@ -493,7 +493,7 @@ namespace NHibernate.Driver
 			/// </summary>
 			/// <param name="reader">The IDataReader to populate the Result with.</param>
 			/// <param name="isMidstream">
-			/// <c>true</c> if the <see cref="IDataReader"/> is already positioned on the record
+			/// <see langword="true" /> if the <see cref="IDataReader"/> is already positioned on the record
 			/// to start reading from.
 			/// </param>
 			internal NResult(IDataReader reader, bool isMidstream)

@@ -28,10 +28,10 @@ namespace NHibernate.Property
 		/// <summary>
 		/// When implemented by a class, gets the name of the Property.
 		/// </summary>
-		/// <value>The name of the Property or <c>null</c>.</value>
+		/// <value>The name of the Property or <see langword="null" />.</value>
 		/// <remarks>
 		/// This is an optional operation - if the <see cref="IGetter"/> is not 
-		/// for a Property <c>get</c> then <c>null</c> is an acceptable value to return.
+		/// for a Property <c>get</c> then <see langword="null" /> is an acceptable value to return.
 		/// </remarks>
 		string PropertyName { get; }
 
@@ -41,7 +41,7 @@ namespace NHibernate.Property
 		/// </summary>
 		/// <remarks>
 		/// This is an optional operation - if the <see cref="IGetter"/> is not 
-		/// for a property <c>get</c> then <c>null</c> is an acceptable value to return.
+		/// for a property <c>get</c> then <see langword="null" /> is an acceptable value to return.
 		/// It is used by the proxies to determine which getter to intercept for the
 		/// identifier property.
 		/// </remarks>

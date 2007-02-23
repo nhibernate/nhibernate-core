@@ -17,7 +17,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <c>null</c> if it is
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> to use for the sorting.</param>
 		public SortedMapType(string role, string propertyRef, IComparer comparer)

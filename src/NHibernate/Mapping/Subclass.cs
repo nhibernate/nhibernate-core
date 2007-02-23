@@ -114,7 +114,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets a boolean indicating if the mapped class has a Property for the <c>id</c>.
 		/// </summary>
-		/// <value><c>true</c> if in the Superclass there is a Property for the <c>id</c>.</value>
+		/// <value><see langword="true" /> if in the Superclass there is a Property for the <c>id</c>.</value>
 		public override bool HasIdentifierProperty
 		{
 			get { return Superclass.HasIdentifierProperty; }
@@ -133,7 +133,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets or set a boolean indicating if the mapped class has properties that can be changed.
 		/// </summary>
-		/// <value><c>true</c> if the Superclass is mutable.</value>
+		/// <value><see langword="true" /> if the Superclass is mutable.</value>
 		public override bool IsMutable
 		{
 			get { return Superclass.IsMutable; }
@@ -144,7 +144,7 @@ namespace NHibernate.Mapping
 		/// Gets a boolean indicating if this mapped class is inherited from another. 
 		/// </summary>
 		/// <value>
-		/// <c>true</c> because this is a Subclass.
+		/// <see langword="true" /> because this is a Subclass.
 		/// </value>
 		public override bool IsInherited
 		{
@@ -155,10 +155,10 @@ namespace NHibernate.Mapping
 		/// Gets or sets if the mapped class is a subclass.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> since this mapped class is a subclass.
+		/// <see langword="true" /> since this mapped class is a subclass.
 		/// </value>
 		/// <remarks>
-		/// The setter should not be used to set the value to anything but <c>true</c>.  
+		/// The setter should not be used to set the value to anything but <see langword="true" />.  
 		/// </remarks>
 		public override bool IsPolymorphic
 		{
@@ -280,7 +280,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets a boolean indicating if the mapped class has a version property.
 		/// </summary>
-		/// <value><c>true</c> if for the Superclass there is a Property for a <c>version</c>.</value>
+		/// <value><see langword="true" /> if for the Superclass there is a Property for a <c>version</c>.</value>
 		public override bool IsVersioned
 		{
 			get { return Superclass.IsVersioned; }
@@ -300,7 +300,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets a boolean indicating if the identifier is 
 		/// embedded in the class.
 		/// </summary>
-		/// <value><c>true</c> if the Superclass has an embedded identifier.</value>
+		/// <value><see langword="true" /> if the Superclass has an embedded identifier.</value>
 		/// <remarks>
 		/// An embedded identifier is true when using a <c>composite-id</c> specifying
 		/// properties of the class as the <c>key-property</c> instead of using a class

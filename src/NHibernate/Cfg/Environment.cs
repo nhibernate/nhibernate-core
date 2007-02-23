@@ -11,25 +11,26 @@ using NHibernate.Util;
 namespace NHibernate.Cfg
 {
 	/// <summary>
-	/// Provides access to configuration info
+	/// Provides access to configuration information.
 	/// </summary>
 	/// <remarks>
-	/// Hibernate has two property scopes:
+	/// NHibernate has two property scopes:
 	/// <list>
-	///		<item>
-	///		 Factory-Level properties may be passed to the <c>ISessionFactory</c> when it is instantiated.
-	///		 Each instance might have different property values. If no properties are specified, the
-	///		 factory gets them from Environment
-	///		</item>
-	///		<item>
-	///		 System-Level properties are shared by all factory instances and are always determined
-	///		 by the <c>Environment</c> properties
-	///		</item>
+	///		<item><description>
+	///		 Factory-level properties may be passed to the <see cref="ISessionFactory" /> when it is
+	///		 instantiated. Each instance might have different property values. If no properties are
+	///		 specified, the factory gets them from Environment
+	///		</description></item>
+	///		<item><description>
+	///		 System-level properties are shared by all factory instances and are always determined
+	///		 by the <see cref="Cfg.Environment" /> properties
+	///		</description></item>
 	/// </list>
 	/// In NHibernate, <c>&lt;nhibernate&gt;</c> section in the application configuration file
 	/// corresponds to Java system-level properties; <c>&lt;hibernate-configuration&gt;</c>
 	/// section is considered to be the session-factory-level configuration. It is possible
-	/// to use the configuration file at the same time.
+	/// to use the applicatoin configuration file (App.config) together with the NHibernate configuration
+	/// file (hibernate.cfg.xml) at the same time.
 	/// </remarks>
 	public sealed class Environment
 	{

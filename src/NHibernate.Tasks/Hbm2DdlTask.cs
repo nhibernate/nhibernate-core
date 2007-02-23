@@ -109,7 +109,7 @@ namespace NHibernate.Tasks
 		/// <summary>
 		/// Gets or sets a value indicating whether the schema should be outputted to the console
 		/// </summary>
-		/// <value><c>true</c> to output to the console; otherwise, <c>false</c>.</value>
+		/// <value><see langword="true" /> to output to the console; otherwise, <see langword="false" />.</value>
 		[TaskAttribute("outputtoconsole")]
 		public bool OutputToConsole
 		{
@@ -121,7 +121,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets a value indicating whether the schema ddl script should only be exported
 		/// or if it should be executed on the database server.
 		/// </summary>
-		/// <value><c>true</c> if only output the script; otherwise, <c>false</c> - Execute the script on the db server.</value>
+		/// <value><see langword="true" /> if only output the script; otherwise, <see langword="false" /> - Execute the script on the db server.</value>
 		[TaskAttribute("exportonly")]
 		public bool ExportOnly
 		{
@@ -132,7 +132,7 @@ namespace NHibernate.Tasks
 		/// <summary>
 		/// Gets or sets a value indicating whether only the drop script should be executed
 		/// </summary>
-		/// <value><c>true</c> if only drop objects; otherwise, <c>false</c> - Drop and Create objects.</value>
+		/// <value><see langword="true" /> if only drop objects; otherwise, <see langword="false" /> - Drop and Create objects.</value>
 		[TaskAttribute("droponly")]
 		public bool DropOnly
 		{
@@ -143,7 +143,7 @@ namespace NHibernate.Tasks
 		/// <summary>
 		/// Gets or sets a value indicating whether the ddl script should be formatted nicely
 		/// </summary>
-		/// <value><c>true</c> for nice format; otherwise, <c>false</c> - One statement per line.</value>
+		/// <value><see langword="true" /> for nice format; otherwise, <see langword="false" /> - One statement per line.</value>
 		[TaskAttribute("formatnice")]
 		public bool FormatNice
 		{

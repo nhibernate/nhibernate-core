@@ -112,12 +112,12 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// A value of <c>false</c> indicates that an exception would be thrown or the 
+		/// A value of <see langword="false" /> indicates that an exception would be thrown or the 
 		/// company that produces the Driver we are wrapping does not recommend using
 		/// IDbCommand.Prepare().
 		/// </para>
 		/// <para>
-		/// A value of <c>true</c> indicates that calling IDbCommand.Prepare() will function
+		/// A value of <see langword="true" /> indicates that calling IDbCommand.Prepare() will function
 		/// fine on this Driver.
 		/// </para>
 		/// </remarks>

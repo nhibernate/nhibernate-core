@@ -45,14 +45,14 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Attempts to find a type by its full name. Throws a MappingException using
-		/// the provided <c>errorMessage</c> in case of failure.
+		/// Attempts to find a type by its full name. Throws a <see cref="MappingException" />
+		/// using the provided <paramref name="errorMessage" /> in case of failure.
 		/// </summary>
 		/// <param name="fullName">name of the class to find</param>
 		/// <param name="errorMessage">Error message to use for
 		/// the <see cref="MappingException" /> in case of failure. Should contain
 		/// the <c>{0}</c> formatting placeholder.</param>
-		/// <returns></returns>
+		/// <returns>A <see cref="System.Type" /> instance.</returns>
 		/// <exception cref="MappingException">
 		/// Thrown when there is an error loading the class.
 		/// </exception>

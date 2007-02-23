@@ -37,7 +37,7 @@ namespace NHibernate
 		IMultiQuery SetCacheable(bool cacheable);
 
 		/// Set the name of the cache region.
-		/// <param name="cacheRegion">The name of a query cache region, or <c>null</c>
+		/// <param name="cacheRegion">The name of a query cache region, or <see langword="null" />
 		/// for the default query cache</param>
 		IMultiQuery SetCacheRegion(string cacheRegion);
 

@@ -9,10 +9,10 @@ using NHibernate.UserTypes;
 namespace Nullables.NHibernate
 {
 	/// <summary>
-	/// An <see cref="IUserType"/> that reads a <c>null</c> value from an <c>ansi string</c>
+	/// An <see cref="IUserType"/> that reads a <see langword="null" /> value from an <c>ansi string</c>
 	/// column in the database as a <see cref="String.Empty">String.Empty</see>
 	/// and writes a <see cref="String.Empty">String.Empty</see> to the database
-	/// as <c>null</c>.
+	/// as <see langword="null" />.
 	/// </summary>
 	/// <remarks>
 	/// This is intended to help with Windows Forms DataBinding and the problems associated

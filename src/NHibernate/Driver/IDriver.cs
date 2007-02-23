@@ -47,16 +47,16 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// A value of <c>false</c> indicates that an exception would be thrown if NHibernate
+		/// A value of <see langword="false" /> indicates that an exception would be thrown if NHibernate
 		/// attempted to have 2 IDataReaders open using the same IDbConnection.  NHibernate
 		/// (since this version is a close to straight port of Hibernate) relies on the 
 		/// ability to recursively open 2 IDataReaders.  If the Driver does not support it
 		/// then NHibernate will read the values from the IDataReader into an <see cref="NDataReader"/>.
 		/// </para>
 		/// <para>
-		/// A value of <c>true</c> will result in greater performance because an IDataReader can be used
+		/// A value of <see langword="true" /> will result in greater performance because an IDataReader can be used
 		/// instead of the <see cref="NDataReader"/>.  So if the Driver supports it then make sure
-		/// it is set to <c>true</c>.
+		/// it is set to <see langword="true" />.
 		/// </para>
 		/// </remarks>
 		bool SupportsMultipleOpenReaders { get; }

@@ -4,10 +4,12 @@ namespace NHibernate.Cache
 	/// Implementors define a caching algorithm.
 	/// </summary>
 	/// <remarks>
-	/// All implementations MUST be threadsafe.
-	/// 
+	/// <threadsafety instance="true" />
 	/// <para>
-	/// The key is the <c>id</c> of the object that is being cached and the 
+	/// All implementations <em>must</em> be threadsafe.
+	/// </para>
+	/// <para>
+	/// The key is the identifier of the object that is being cached and the 
 	/// value is a <see cref="CachedItem"/>.
 	/// </para>
 	/// </remarks>

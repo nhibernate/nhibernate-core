@@ -21,7 +21,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// iAnywhere.Data.AsaClient uses named parameters in the sql.
 		/// </summary>
-		/// <value><c>true</c> - Sybase uses <c>String.Empty</c> in the sql.</value>
+		/// <value><see langword="true" /> - Sybase uses <c>String.Empty</c> in the sql.</value>
 		public override bool UseNamedPrefixInSql
 		{
 			get { return false; }
