@@ -1,5 +1,4 @@
 using System;
-using System.Xml;
 using System.Collections;
 using log4net;
 using NHibernate.Mapping;
@@ -8,7 +7,7 @@ namespace NHibernate.Cfg
 {
 	public abstract class CollectionSecondPass : ISecondPass
 	{
-		private static ILog log = LogManager.GetLogger( typeof(CollectionSecondPass) );
+		private static ILog log = LogManager.GetLogger(typeof(CollectionSecondPass));
 		protected Mappings mappings;
 		protected Mapping.Collection collection;
 
@@ -45,7 +44,6 @@ namespace NHibernate.Cfg
 				}
 				log.Debug(msg);
 			}
-
 		}
 
 		public abstract void SecondPass(IDictionary persistentClasses);

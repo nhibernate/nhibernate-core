@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -14,12 +13,12 @@ namespace NHibernate.Loader.Entity
 	/// </summary>
 	public class BatchingEntityLoader : IUniqueEntityLoader
 	{
-		private readonly Loader[ ] loaders;
-		private readonly int[ ] batchSizes;
+		private readonly Loader[] loaders;
+		private readonly int[] batchSizes;
 		private readonly IEntityPersister persister;
 		private readonly IType idType;
 
-		public BatchingEntityLoader( IEntityPersister persister, int[ ] batchSizes, Loader[ ] loaders )
+		public BatchingEntityLoader(IEntityPersister persister, int[] batchSizes, Loader[] loaders)
 		{
 			this.batchSizes = batchSizes;
 			this.loaders = loaders;
@@ -27,16 +26,16 @@ namespace NHibernate.Loader.Entity
 			idType = persister.IdentifierType;
 		}
 
-		private object GetObjectFromList( IList results, object id, ISessionImplementor session )
+		private object GetObjectFromList(IList results, object id, ISessionImplementor session)
 		{
 			// get the right object from the list ... would it be easier to just call getEntity() ??
-			foreach( object obj in results )
+			foreach (object obj in results)
 			{
 				bool equal = idType.Equals(
 					id,
-					session.GetEntityIdentifier( obj ) );
+					session.GetEntityIdentifier(obj));
 
-				if( equal )
+				if (equal)
 				{
 					return obj;
 				}
@@ -45,32 +44,32 @@ namespace NHibernate.Loader.Entity
 			return null;
 		}
 
-		public object Load( object id, object optionalObject, ISessionImplementor session )
+		public object Load(object id, object optionalObject, ISessionImplementor session)
 		{
-			object[ ] batch = session.BatchFetchQueue.GetEntityBatch( persister, id, batchSizes[ 0 ] );
+			object[] batch = session.BatchFetchQueue.GetEntityBatch(persister, id, batchSizes[0]);
 
-			for( int i = 0; i < batchSizes.Length - 1; i++ )
+			for (int i = 0; i < batchSizes.Length - 1; i++)
 			{
-				int smallBatchSize = batchSizes[ i ];
-				if( batch[ smallBatchSize - 1 ] != null )
+				int smallBatchSize = batchSizes[i];
+				if (batch[smallBatchSize - 1] != null)
 				{
-					object[ ] smallBatch = new object[smallBatchSize];
-					Array.Copy( batch, 0, smallBatch, 0, smallBatchSize );
+					object[] smallBatch = new object[smallBatchSize];
+					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
-					IList results = loaders[ i ].LoadEntityBatch(
+					IList results = loaders[i].LoadEntityBatch(
 						session,
 						smallBatch,
 						idType,
 						optionalObject,
 						persister.MappedClass,
 						id,
-						persister );
+						persister);
 
-					return GetObjectFromList( results, id, session ); //EARLY EXIT
+					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}
 			}
 
-			return ( ( IUniqueEntityLoader ) loaders[ batchSizes.Length - 1 ] ).Load( id, optionalObject, session );
+			return ((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).Load(id, optionalObject, session);
 		}
 
 		public static IUniqueEntityLoader CreateBatchingEntityLoader(
@@ -78,21 +77,21 @@ namespace NHibernate.Loader.Entity
 			int maxBatchSize,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters )
+			IDictionary enabledFilters)
 		{
-			if( maxBatchSize > 1 )
+			if (maxBatchSize > 1)
 			{
-				int[ ] batchSizesToCreate = ArrayHelper.GetBatchSizes( maxBatchSize );
-				Loader[ ] loadersToCreate = new Loader[batchSizesToCreate.Length];
-				for( int i = 0; i < batchSizesToCreate.Length; i++ )
+				int[] batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);
+				Loader[] loadersToCreate = new Loader[batchSizesToCreate.Length];
+				for (int i = 0; i < batchSizesToCreate.Length; i++)
 				{
-					loadersToCreate[ i ] = new EntityLoader( persister, batchSizesToCreate[ i ], lockMode, factory, enabledFilters );
+					loadersToCreate[i] = new EntityLoader(persister, batchSizesToCreate[i], lockMode, factory, enabledFilters);
 				}
-				return new BatchingEntityLoader( persister, batchSizesToCreate, loadersToCreate );
+				return new BatchingEntityLoader(persister, batchSizesToCreate, loadersToCreate);
 			}
 			else
 			{
-				return new EntityLoader( persister, lockMode, factory, enabledFilters );
+				return new EntityLoader(persister, lockMode, factory, enabledFilters);
 			}
 		}
 	}

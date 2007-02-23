@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Globalization;
 using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Util;
@@ -40,11 +40,11 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that knows how to Quote the Table name.</param>
 		/// <returns>The name of the table qualified with the schema if one is specified.</returns>
-		public string GetQualifiedName( Dialect.Dialect dialect )
+		public string GetQualifiedName(Dialect.Dialect dialect)
 		{
-			string quotedName = GetQuotedName( dialect );
+			string quotedName = GetQuotedName(dialect);
 			return schema == null ? quotedName :
-				GetQuotedSchemaName( dialect ) + StringHelper.Dot + quotedName;
+			       GetQuotedSchemaName(dialect) + StringHelper.Dot + quotedName;
 		}
 
 
@@ -55,12 +55,12 @@ namespace NHibernate.Mapping
 		/// <param name="defaultQualifier">The Qualifier to use when accessing the table.</param>
 		/// <returns>A String representing the Qualified name.</returns>
 		/// <remarks>If this were used with MSSQL it would return a dbo.table_name.</remarks>
-		public string GetQualifiedName( Dialect.Dialect dialect, string defaultQualifier )
+		public string GetQualifiedName(Dialect.Dialect dialect, string defaultQualifier)
 		{
-			string quotedName = GetQuotedName( dialect );
+			string quotedName = GetQuotedName(dialect);
 			return schema == null ?
-				( ( defaultQualifier == null ) ? quotedName : defaultQualifier + StringHelper.Dot + quotedName ) :
-				GetQualifiedName( dialect );
+			       ((defaultQualifier == null) ? quotedName : defaultQualifier + StringHelper.Dot + quotedName) :
+			       GetQualifiedName(dialect);
 		}
 
 		/// <summary>
@@ -86,10 +86,10 @@ namespace NHibernate.Mapping
 			get { return name; }
 			set
 			{
-				if( value[ 0 ] == '`' )
+				if (value[0] == '`')
 				{
 					quoted = true;
-					name = value.Substring( 1, value.Length - 2 );
+					name = value.Substring(1, value.Length - 2);
 				}
 				else
 				{
@@ -108,11 +108,11 @@ namespace NHibernate.Mapping
 		/// The Table name in a form that is safe to use inside of a SQL statement.
 		/// Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
-		public string GetQuotedName( Dialect.Dialect dialect )
+		public string GetQuotedName(Dialect.Dialect dialect)
 		{
 			return IsQuoted ?
-				dialect.QuoteForTableName( name ) :
-				name;
+			       dialect.QuoteForTableName(name) :
+			       name;
 		}
 
 		/// <summary>
@@ -125,16 +125,16 @@ namespace NHibernate.Mapping
 		/// The schema name for this table in a form that is safe to use inside
 		/// of a SQL statement. Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
-		private string GetQuotedSchemaName( Dialect.Dialect dialect )
+		private string GetQuotedSchemaName(Dialect.Dialect dialect)
 		{
-			if( schema == null )
+			if (schema == null)
 			{
 				return null;
 			}
 
-			if( schema.StartsWith( "`" ) )
+			if (schema.StartsWith("`"))
 			{
-				return dialect.QuoteForSchemaName( schema.Substring( 1, schema.Length - 2 ) );
+				return dialect.QuoteForSchemaName(schema.Substring(1, schema.Length - 2));
 			}
 
 			return schema;
@@ -147,14 +147,14 @@ namespace NHibernate.Mapping
 		/// <returns> 
 		/// The <see cref="Column"/> at the specified index.
 		/// </returns>
-		public Column GetColumn( int n )
+		public Column GetColumn(int n)
 		{
 			IEnumerator iter = columns.Values.GetEnumerator();
-			for( int i = 0; i < n; i++ )
+			for (int i = 0; i < n; i++)
 			{
 				iter.MoveNext();
 			}
-			return ( Column ) iter.Current;
+			return (Column) iter.Current;
 		}
 
 		/// <summary>
@@ -162,12 +162,12 @@ namespace NHibernate.Mapping
 		/// Columns that are part of the Table.
 		/// </summary>
 		/// <param name="column">The <see cref="Column"/> to include in the Table.</param>
-		public void AddColumn( Column column )
+		public void AddColumn(Column column)
 		{
-			Column old = ( Column ) columns[ column.Name ];
-			if( old == null )
+			Column old = (Column) columns[column.Name];
+			if (old == null)
 			{
-				columns[ column.Name ] = column;
+				columns[column.Name] = column;
 				column.uniqueInteger = columns.Count;
 			}
 			else
@@ -246,33 +246,33 @@ namespace NHibernate.Mapping
 		/// <param name="p"></param>
 		/// <param name="tableInfo"></param>
 		/// <returns></returns>
-		public IList SqlAlterStrings( Dialect.Dialect dialect, IMapping p, DataTable tableInfo )
+		public IList SqlAlterStrings(Dialect.Dialect dialect, IMapping p, DataTable tableInfo)
 		{
-			StringBuilder root = new StringBuilder( "alter table " )
-				.Append( GetQualifiedName( dialect ) )
-				.Append( " " )
-				.Append( dialect.AddColumnString );
+			StringBuilder root = new StringBuilder("alter table ")
+				.Append(GetQualifiedName(dialect))
+				.Append(" ")
+				.Append(dialect.AddColumnString);
 
-			IList results = new ArrayList( ColumnCollection.Count );
+			IList results = new ArrayList(ColumnCollection.Count);
 
-			foreach( Column col in ColumnCollection )
+			foreach (Column col in ColumnCollection)
 			{
-				DataColumn columnInfo = tableInfo.Columns[ col.Name ];
+				DataColumn columnInfo = tableInfo.Columns[col.Name];
 
-				if( columnInfo == null )
+				if (columnInfo == null)
 				{
-					StringBuilder alter = new StringBuilder( root.ToString() )
-						.Append( " " )
-						.Append( col.GetQuotedName( dialect ) )
-						.Append( " " )
-						.Append( col.GetSqlType( dialect, p ) );
+					StringBuilder alter = new StringBuilder(root.ToString())
+						.Append(" ")
+						.Append(col.GetQuotedName(dialect))
+						.Append(" ")
+						.Append(col.GetSqlType(dialect, p));
 
-					if( col.IsUnique && dialect.SupportsUnique )
+					if (col.IsUnique && dialect.SupportsUnique)
 					{
-						alter.Append( " unique" );
+						alter.Append(" unique");
 					}
 
-					results.Add( alter.ToString() );
+					results.Add(alter.ToString());
 				}
 			}
 
@@ -289,89 +289,89 @@ namespace NHibernate.Mapping
 		/// A string that contains the SQL to create this Table, Primary Key Constraints
 		/// , and Unique Key Constraints.
 		/// </returns>
-		public string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema )
+		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
 		{
-			StringBuilder buf = new StringBuilder( "create table " )
-				.Append( GetQualifiedName( dialect, defaultSchema ) )
-				.Append( " (" );
+			StringBuilder buf = new StringBuilder("create table ")
+				.Append(GetQualifiedName(dialect, defaultSchema))
+				.Append(" (");
 
-			bool identityColumn = idValue != null && idValue.CreateIdentifierGenerator( dialect ) is IdentityGenerator;
+			bool identityColumn = idValue != null && idValue.CreateIdentifierGenerator(dialect) is IdentityGenerator;
 
 			// try to find out the name of the pk to create it as identity if the 
 			// identitygenerator is used
 			string pkname = null;
-			if( primaryKey != null && identityColumn )
+			if (primaryKey != null && identityColumn)
 			{
-				foreach( Column col in primaryKey.ColumnCollection )
+				foreach (Column col in primaryKey.ColumnCollection)
 				{
-					pkname = col.GetQuotedName( dialect ); //should only go through this loop once
+					pkname = col.GetQuotedName(dialect); //should only go through this loop once
 				}
 			}
 
 			int i = 0;
-			foreach( Column col in ColumnCollection )
+			foreach (Column col in ColumnCollection)
 			{
 				i++;
-				buf.Append( col.GetQuotedName( dialect ) )
-					.Append( ' ' );
+				buf.Append(col.GetQuotedName(dialect))
+					.Append(' ');
 
-				if( identityColumn && col.GetQuotedName( dialect ).Equals( pkname ) )
+				if (identityColumn && col.GetQuotedName(dialect).Equals(pkname))
 				{
- 					// to support dialects that have their own identity data type
- 					if ( dialect.HasDataTypeInIdentityColumn )
- 					{
- 						buf.Append( col.GetSqlType( dialect, p ) );
- 					}
-					buf.Append( ' ' )
-						.Append( dialect.IdentityColumnString );
+					// to support dialects that have their own identity data type
+					if (dialect.HasDataTypeInIdentityColumn)
+					{
+						buf.Append(col.GetSqlType(dialect, p));
+					}
+					buf.Append(' ')
+						.Append(dialect.IdentityColumnString);
 				}
 				else
 				{
-					buf.Append( col.GetSqlType( dialect, p ) );
-					if( col.IsNullable )
+					buf.Append(col.GetSqlType(dialect, p));
+					if (col.IsNullable)
 					{
-						buf.Append( dialect.NullColumnString );
+						buf.Append(dialect.NullColumnString);
 					}
 					else
 					{
-						buf.Append( " not null" );
+						buf.Append(" not null");
 					}
 				}
 
-				if( col.IsUnique )
+				if (col.IsUnique)
 				{
-					if( dialect.SupportsUnique )
+					if (dialect.SupportsUnique)
 					{
-						buf.Append( " unique" );
+						buf.Append(" unique");
 					}
 					else
 					{
-						UniqueKey uk = GetUniqueKey( col.GetQuotedName( dialect ) + "_" );
-						uk.AddColumn( col );
+						UniqueKey uk = GetUniqueKey(col.GetQuotedName(dialect) + "_");
+						uk.AddColumn(col);
 					}
 				}
-				if( i < ColumnCollection.Count )
+				if (i < ColumnCollection.Count)
 				{
-					buf.Append( StringHelper.CommaSpace );
+					buf.Append(StringHelper.CommaSpace);
 				}
 			}
 
-			if( primaryKey != null )
+			if (primaryKey != null)
 			{
 				//if ( dialect is HSQLDialect && identityColumn ) {
 				// // skip the primary key definition	
 				// //ugly hack...
 				//} else {
-				buf.Append( ',' ).Append( primaryKey.SqlConstraintString( dialect, defaultSchema ) );
+				buf.Append(',').Append(primaryKey.SqlConstraintString(dialect, defaultSchema));
 				//}
 			}
 
-			foreach( UniqueKey uk in UniqueKeyCollection )
+			foreach (UniqueKey uk in UniqueKeyCollection)
 			{
-				buf.Append( ',' ).Append( uk.SqlConstraintString( dialect ) );
+				buf.Append(',').Append(uk.SqlConstraintString(dialect));
 			}
 
-			buf.Append( StringHelper.ClosedParen );
+			buf.Append(StringHelper.ClosedParen);
 
 			return buf.ToString();
 		}
@@ -385,9 +385,9 @@ namespace NHibernate.Mapping
 		/// A string that contains the SQL to drop this Table and to cascade the drop to 
 		/// the constraints if the database supports it.
 		/// </returns>
-		public string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
+		public string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
 		{
-			return dialect.GetDropTableString( GetQualifiedName( dialect, defaultSchema ) );
+			return dialect.GetDropTableString(GetQualifiedName(dialect, defaultSchema));
 		}
 
 		/// <summary>
@@ -408,16 +408,16 @@ namespace NHibernate.Mapping
 		/// The <see cref="Index"/> identified by the name.  If the <see cref="Index"/>
 		/// identified by the name does not exist then it is created.
 		/// </returns>
-		public Index GetIndex( string name )
+		public Index GetIndex(string name)
 		{
-			Index index = ( Index ) indexes[ name ];
+			Index index = (Index) indexes[name];
 
-			if( index == null )
+			if (index == null)
 			{
 				index = new Index();
 				index.Name = name;
 				index.Table = this;
-				indexes.Add( name, index );
+				indexes.Add(name, index);
 			}
 
 			return index;
@@ -431,16 +431,16 @@ namespace NHibernate.Mapping
 		/// The <see cref="UniqueKey"/> identified by the name.  If the <see cref="UniqueKey"/>
 		/// identified by the name does not exist then it is created.
 		/// </returns>
-		public UniqueKey GetUniqueKey( string name )
+		public UniqueKey GetUniqueKey(string name)
 		{
-			UniqueKey uk = ( UniqueKey ) uniqueKeys[ name ];
+			UniqueKey uk = (UniqueKey) uniqueKeys[name];
 
-			if( uk == null )
+			if (uk == null)
 			{
 				uk = new UniqueKey();
 				uk.Name = name;
 				uk.Table = this;
-				uniqueKeys.Add( name, uk );
+				uniqueKeys.Add(name, uk);
 			}
 
 			return uk;
@@ -460,34 +460,34 @@ namespace NHibernate.Mapping
 		/// one already exists for the columns then it will return an 
 		/// existing <see cref="ForeignKey"/>.
 		/// </remarks>
-		public ForeignKey CreateForeignKey( string keyName, IList columns, System.Type referencedClass )
+		public ForeignKey CreateForeignKey(string keyName, IList columns, System.Type referencedClass)
 		{
-			if( keyName == null )
+			if (keyName == null)
 			{
-				keyName = "FK" + UniqueColumnString( columns );
+				keyName = "FK" + UniqueColumnString(columns);
 			}
-			ForeignKey fk = ( ForeignKey ) foreignKeys[ keyName ];
+			ForeignKey fk = (ForeignKey) foreignKeys[keyName];
 
-			if( fk == null )
+			if (fk == null)
 			{
 				fk = new ForeignKey();
 				fk.Name = keyName;
 				fk.Table = this;
 				fk.ReferencedClass = referencedClass;
-				foreignKeys.Add( keyName, fk );
-				foreach( Column col in columns )
+				foreignKeys.Add(keyName, fk);
+				foreach (Column col in columns)
 				{
-					fk.AddColumn( col );
+					fk.AddColumn(col);
 				}
 			}
 			else
 			{
 				// "X"= hexadecimal format
-				if( fk.ReferencedClass != referencedClass )
+				if (fk.ReferencedClass != referencedClass)
 				{
-					foreignKeys.Remove( keyName );
-					keyName += referencedClass.Name.GetHashCode().ToString( "X" ).ToUpper( System.Globalization.CultureInfo.InvariantCulture );
-					return CreateForeignKey( keyName, columns, referencedClass );
+					foreignKeys.Remove(keyName);
+					keyName += referencedClass.Name.GetHashCode().ToString("X").ToUpper(CultureInfo.InvariantCulture);
+					return CreateForeignKey(keyName, columns, referencedClass);
 				}
 			}
 			return fk;
@@ -501,11 +501,11 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// An unique string for the <see cref="Column"/> objects.
 		/// </returns>
-		public string UniqueColumnString( ICollection col )
+		public string UniqueColumnString(ICollection col)
 		{
 			int result = 0;
 
-			foreach( object obj in col )
+			foreach (object obj in col)
 			{
 				// this is marked as unchecked because the GetHashCode could potentially
 				// cause an integer overflow.  This way if there is an overflow it will
@@ -517,7 +517,7 @@ namespace NHibernate.Mapping
 				}
 			}
 			// "X"= hexadecimal format
-			return ( name.GetHashCode().ToString( "X" ) + result.GetHashCode().ToString( "X" ) );
+			return (name.GetHashCode().ToString("X") + result.GetHashCode().ToString("X"));
 		}
 
 		/// <summary>
@@ -545,7 +545,7 @@ namespace NHibernate.Mapping
 		/// Sets the Identifier of the Table.
 		/// </summary>
 		/// <param name="idValue">The <see cref="SimpleValue"/> that represents the Identifier.</param>
-		public void SetIdentifierValue( SimpleValue idValue )
+		public void SetIdentifierValue(SimpleValue idValue)
 		{
 			this.idValue = idValue;
 		}
@@ -564,9 +564,9 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="constraint"></param>
-		public void AddCheckConstraint( string constraint )
+		public void AddCheckConstraint(string constraint)
 		{
-			checkConstraints.Add( constraint );
+			checkConstraints.Add(constraint);
 		}
 	}
 }

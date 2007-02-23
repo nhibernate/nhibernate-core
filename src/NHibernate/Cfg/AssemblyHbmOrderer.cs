@@ -26,21 +26,21 @@ namespace NHibernate.Cfg
 		 * couldn't find their base class mapping.  The AddAssembly method could
 		 * "queue" up the problem hbm.xml files and run through them at the end.
 		 * This method solves the problem WELL enough to get by with for now.
-		 */ 
+		 */
 
-		Assembly _assembly;
-		
+		private Assembly _assembly;
+
 		/// <summary>
 		/// An unordered <see cref="IList"/> of all the mapped classes contained
 		/// in the assembly.
 		/// </summary>
-		ArrayList _classes = new ArrayList();
-		
+		private ArrayList _classes = new ArrayList();
+
 		/// <summary>
 		/// An <see cref="IList"/> of all the <c>hbm.xml</c> resources found
 		/// in the assembly.
 		/// </summary>
-		ArrayList _hbmResources = new ArrayList();
+		private ArrayList _hbmResources = new ArrayList();
 
 		/// <summary>
 		/// Creates a new instance of AssemblyHbmOrderer with all embedded resources
@@ -50,11 +50,11 @@ namespace NHibernate.Cfg
 		{
 			AssemblyHbmOrderer result = new AssemblyHbmOrderer(assembly);
 
-			foreach( string fileName in assembly.GetManifestResourceNames() )
+			foreach (string fileName in assembly.GetManifestResourceNames())
 			{
-				if( fileName.EndsWith( ".hbm.xml" ) )
+				if (fileName.EndsWith(".hbm.xml"))
 				{
-					result.AddResource( fileName );
+					result.AddResource(fileName);
 				}
 			}
 
@@ -65,7 +65,7 @@ namespace NHibernate.Cfg
 		/// Creates a new instance of <see cref="AssemblyHbmOrderer"/>
 		/// </summary>
 		/// <param name="assembly">The <see cref="Assembly"/> to get resources from.</param>
-		public AssemblyHbmOrderer(Assembly assembly) 
+		public AssemblyHbmOrderer(Assembly assembly)
 		{
 			_assembly = assembly;
 		}
@@ -88,7 +88,7 @@ namespace NHibernate.Cfg
 			// tracks any extra files, i.e. those that do not contain a class definition.
 			StringCollection extraFiles = new StringCollection();
 
-			foreach( string fileName in _hbmResources ) 
+			foreach (string fileName in _hbmResources)
 			{
 				bool addedToClasses = false;
 
@@ -144,11 +144,11 @@ namespace NHibernate.Cfg
 			// only bother to do the sorting if one of the hbm files uses 'extends' - 
 			// the sorting does quite a bit of looping through collections so if we don't
 			// need to spend the time doing that then don't bother.
-			if( containsExtends )
+			if (containsExtends)
 			{
 				string[] extraFilesArray = new string[extraFiles.Count];
 				extraFiles.CopyTo(extraFilesArray, 0);
-				StringCollection result = OrderedHbmFiles( _classes );
+				StringCollection result = OrderedHbmFiles(_classes);
 				result.AddRange(extraFilesArray);
 				return result;
 			}
@@ -171,75 +171,75 @@ namespace NHibernate.Cfg
 			// Make sure joined-subclass mappings are loaded after base class
 			ArrayList sortedList = new ArrayList();
 
-			foreach( ClassEntry ce in unorderedClasses )
+			foreach (ClassEntry ce in unorderedClasses)
 			{
 				// this class extends nothing - so put it at the front of
 				// the list because it is safe to process at any time.
-				if( ce.BaseClassName==null )
+				if (ce.BaseClassName == null)
 				{
-					sortedList.Insert( 0, ce );
+					sortedList.Insert(0, ce);
 				}
 				else
 				{
 					int insertIndex = -1;
-					
+
 					// try to find this classes base class in the list already
-					for( int i=0; i<sortedList.Count; i++ )
+					for (int i = 0; i < sortedList.Count; i++)
 					{
-						ClassEntry sce = (ClassEntry)sortedList[i];
-						
+						ClassEntry sce = (ClassEntry) sortedList[i];
+
 						// base class was found - insert at the index 
 						// immediately following it
-						if( sce.ClassName == ce.BaseClassName )
+						if (sce.ClassName == ce.BaseClassName)
 						{
 							insertIndex = i + 1;
 							break;
 						}
 					}
-					
+
 					// This Classes' baseClass was not found in the list so we still don't 
 					// know where to insert it.  Check to see if any of the classes that
 					// have already been sorted derive from this class. 
-					if( insertIndex==-1 )
+					if (insertIndex == -1)
 					{
-						for( int j=0; j<sortedList.Count; j++ )
+						for (int j = 0; j < sortedList.Count; j++)
 						{
-							ClassEntry sce = (ClassEntry)sortedList[j];
-							
+							ClassEntry sce = (ClassEntry) sortedList[j];
+
 							// A class already in the sorted list derives from this class so
 							// insert this class before the class deriving from it.
-							if( sce.BaseClassName == ce.ClassName )
+							if (sce.BaseClassName == ce.ClassName)
 							{
 								insertIndex = j;
 								break;
 							}
 						}
 					}
-					
+
 					// could not find any classes that were subclasses of this one or
 					// that this class was a subclass of so it should be inserted at 
 					// then end.
-					if( insertIndex==-1 )
+					if (insertIndex == -1)
 					{
 						// Insert at end
 						insertIndex = sortedList.Count;
 					}
 
 
-					sortedList.Insert( insertIndex, ce );
+					sortedList.Insert(insertIndex, ce);
 				}
 			}
 
 			// now that we know the order the classes should be loaded - order the
 			// hbm.xml files those classes are contained in.
 			StringCollection loadedFiles = new StringCollection();
-			foreach( ClassEntry ce in sortedList )
+			foreach (ClassEntry ce in sortedList)
 			{
 				// Check if this file already loaded (this can happen if
 				// we have mappings for multiple classes in one file).
-				if (loadedFiles.Contains( ce.FileName )==false )
+				if (loadedFiles.Contains(ce.FileName) == false)
 				{
-					loadedFiles.Add( ce.FileName );
+					loadedFiles.Add(ce.FileName);
 				}
 			}
 
@@ -256,7 +256,7 @@ namespace NHibernate.Cfg
 			private string _className;
 			private string _fileName;
 
-			public ClassEntry(string baseClassName, string className, string fileName)   
+			public ClassEntry(string baseClassName, string className, string fileName)
 			{
 				_baseClassName = baseClassName;
 				_className = className;

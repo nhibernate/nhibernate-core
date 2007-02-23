@@ -14,7 +14,7 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="PersistentObjectException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public PersistentObjectException( string message ) : base( message )
+		public PersistentObjectException(string message) : base(message)
 		{
 		}
 
@@ -29,10 +29,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected PersistentObjectException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected PersistentObjectException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
-
-
 	}
 }

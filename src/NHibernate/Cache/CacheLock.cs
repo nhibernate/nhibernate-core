@@ -20,7 +20,7 @@ namespace NHibernate.Cache
 		private readonly int id;
 		private readonly object version;
 
-		public CacheLock( long timeout, int id, object version )
+		public CacheLock(long timeout, int id, object version)
 		{
 			this.timeout = timeout;
 			this.id = id;
@@ -31,7 +31,7 @@ namespace NHibernate.Cache
 		/// Increment the lock, setting the
 		/// new lock timeout
 		/// </summary>
-		public CacheLock Lock( long timeout, int id )
+		public CacheLock Lock(long timeout, int id)
 		{
 			concurrentLock = true;
 			multiplicity++;
@@ -44,9 +44,9 @@ namespace NHibernate.Cache
 		/// timestamp if now unlocked
 		/// </summary>
 		/// <param name="currentTimestamp"></param>
-		public void Unlock( long currentTimestamp )
+		public void Unlock(long currentTimestamp)
 		{
-			if( --multiplicity == 0 )
+			if (--multiplicity == 0)
 			{
 				unlockTimestamp = currentTimestamp;
 			}
@@ -56,19 +56,20 @@ namespace NHibernate.Cache
 		/// Can the timestamped transaction re-cache this
 		/// locked item now?
 		/// </summary>
-		public bool IsPuttable( long txTimestamp, object newVersion, IComparer comparator )
+		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator)
 		{
-			if( timeout < txTimestamp )
+			if (timeout < txTimestamp)
 			{
 				return true;
 			}
-			if( multiplicity > 0 )
+			if (multiplicity > 0)
 			{
 				return false;
 			}
 			return version == null ?
-				unlockTimestamp < txTimestamp :
-				comparator.Compare( version, newVersion ) < 0; //by requiring <, we rely on lock timeout in the case of an unsuccessful update!
+			       unlockTimestamp < txTimestamp :
+			       comparator.Compare(version, newVersion) < 0;
+				//by requiring <, we rely on lock timeout in the case of an unsuccessful update!
 		}
 
 		/// <summary>
@@ -91,7 +92,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// locks are not returned to the client!
 		/// </summary>
-		public bool IsGettable( long txTimestamp )
+		public bool IsGettable(long txTimestamp)
 		{
 			return false;
 		}
@@ -104,10 +105,10 @@ namespace NHibernate.Cache
 		public override string ToString()
 		{
 			return "CacheLock{id=" + id +
-				",version=" + version +
-				",multiplicity=" + multiplicity +
-				",unlockTimestamp=" + unlockTimestamp +
-				"}";
+			       ",version=" + version +
+			       ",multiplicity=" + multiplicity +
+			       ",unlockTimestamp=" + unlockTimestamp +
+			       "}";
 		}
 	}
 }

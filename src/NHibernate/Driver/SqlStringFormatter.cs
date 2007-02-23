@@ -14,12 +14,12 @@ namespace NHibernate.Driver
 		{
 			this.formatter = formatter;
 		}
-		
+
 		public void Format(SqlString text)
 		{
 			text.Visit(this);
 		}
-		
+
 		public string GetFormattedText()
 		{
 			return result.ToString();

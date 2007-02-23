@@ -16,7 +16,7 @@ namespace NHibernate.AdoNet
 			this.expectedRowCount = expectedRowCount;
 			this.actualRowCount = actualRowCount;
 		}
-		
+
 		protected TooManyRowsAffectedException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
@@ -24,8 +24,8 @@ namespace NHibernate.AdoNet
 			this.actualRowCount = info.GetInt32("actualRowCount");
 		}
 
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);

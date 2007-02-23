@@ -17,7 +17,7 @@ namespace NHibernate.Util
 		/// 
 		/// </summary>
 		/// <param name="str"></param>
-		public StringTokenizer( string str )
+		public StringTokenizer(string str)
 		{
 			_origin = str;
 			_delim = _defaultDelim;
@@ -29,7 +29,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="str"></param>
 		/// <param name="delim"></param>
-		public StringTokenizer( string str, string delim )
+		public StringTokenizer(string str, string delim)
 		{
 			_origin = str;
 			_delim = delim;
@@ -42,7 +42,7 @@ namespace NHibernate.Util
 		/// <param name="str"></param>
 		/// <param name="delim"></param>
 		/// <param name="returnDelims"></param>
-		public StringTokenizer( string str, string delim, bool returnDelims )
+		public StringTokenizer(string str, string delim, bool returnDelims)
 		{
 			_origin = str;
 			_delim = delim;
@@ -52,7 +52,7 @@ namespace NHibernate.Util
 		/// <summary></summary>
 		public IEnumerator GetEnumerator()
 		{
-			return new StringTokenizerEnumerator( this );
+			return new StringTokenizerEnumerator(this);
 		}
 
 		private class StringTokenizerEnumerator : IEnumerator
@@ -61,7 +61,7 @@ namespace NHibernate.Util
 			private int _cursor = 0;
 			private String _next = null;
 
-			public StringTokenizerEnumerator( StringTokenizer stok )
+			public StringTokenizerEnumerator(StringTokenizer stok)
 			{
 				_stokenizer = stok;
 			}
@@ -87,33 +87,32 @@ namespace NHibernate.Util
 				char c;
 				bool isDelim;
 
-				if( _cursor >= _stokenizer._origin.Length )
+				if (_cursor >= _stokenizer._origin.Length)
 					return null;
 
-				c = _stokenizer._origin[ _cursor ];
-				isDelim = ( _stokenizer._delim.IndexOf( c ) != -1 );
+				c = _stokenizer._origin[_cursor];
+				isDelim = (_stokenizer._delim.IndexOf(c) != -1);
 
-				if( isDelim )
+				if (isDelim)
 				{
 					_cursor++;
-					if( _stokenizer._returnDelim )
+					if (_stokenizer._returnDelim)
 					{
 						return c.ToString();
 					}
 					return GetNext();
 				}
 
-				int nextDelimPos = _stokenizer._origin.IndexOfAny( _stokenizer._delim.ToCharArray(), _cursor );
-				if( nextDelimPos == -1 )
+				int nextDelimPos = _stokenizer._origin.IndexOfAny(_stokenizer._delim.ToCharArray(), _cursor);
+				if (nextDelimPos == -1)
 				{
 					nextDelimPos = _stokenizer._origin.Length;
 				}
 
-				string nextToken = _stokenizer._origin.Substring( _cursor, nextDelimPos - _cursor );
+				string nextToken = _stokenizer._origin.Substring(_cursor, nextDelimPos - _cursor);
 				_cursor = nextDelimPos;
 				return nextToken;
 			}
-
 		}
 	}
 }

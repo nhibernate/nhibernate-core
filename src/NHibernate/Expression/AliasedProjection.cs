@@ -1,15 +1,14 @@
 using System;
-
-using NHibernate.Type;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
 	[Serializable]
 	public class AliasedProjection : IProjection
 	{
-		readonly IProjection projection;
-		readonly string alias;
+		private readonly IProjection projection;
+		private readonly string alias;
 
 		protected internal AliasedProjection(IProjection projection, string alias)
 		{
@@ -35,8 +34,8 @@ namespace NHibernate.Expression
 		public virtual IType[] GetTypes(String alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return this.alias.Equals(alias) ?
-					GetTypes(criteria, criteriaQuery) :
-					null;
+			       GetTypes(criteria, criteriaQuery) :
+			       null;
 		}
 
 		public virtual string[] GetColumnAliases(int loc)
@@ -47,16 +46,19 @@ namespace NHibernate.Expression
 		public virtual string[] GetColumnAliases(string alias, int loc)
 		{
 			return this.alias.Equals(alias) ?
-					GetColumnAliases(loc) :
-					null;
+			       GetColumnAliases(loc) :
+			       null;
 		}
 
 		public virtual string[] Aliases
 		{
-			get { return new string[] { alias }; }
+			get { return new string[] {alias}; }
 		}
 
-		public virtual bool IsGrouped { get { return projection.IsGrouped; } }
+		public virtual bool IsGrouped
+		{
+			get { return projection.IsGrouped; }
+		}
 
 		public override string ToString()
 		{

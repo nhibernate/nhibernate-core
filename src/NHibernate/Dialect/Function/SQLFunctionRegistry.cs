@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using NHibernate.Util;
 
 namespace NHibernate.Dialect.Function
@@ -18,8 +17,8 @@ namespace NHibernate.Dialect.Function
 
 		public ISQLFunction FindSQLFunction(string functionName)
 		{
-			ISQLFunction userFunction = (ISQLFunction)userFunctions[functionName];
-			return userFunction != null ? userFunction : (ISQLFunction)dialect.Functions[functionName];
+			ISQLFunction userFunction = (ISQLFunction) userFunctions[functionName];
+			return userFunction != null ? userFunction : (ISQLFunction) dialect.Functions[functionName];
 		}
 
 		public bool HasFunction(string functionName)

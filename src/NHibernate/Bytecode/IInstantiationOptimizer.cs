@@ -13,5 +13,4 @@ namespace NHibernate.Bytecode
 		/// <returns>The new instance.</returns>
 		object CreateInstance();
 	}
-
 }

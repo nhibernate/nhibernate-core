@@ -34,7 +34,7 @@ namespace NHibernate.SqlTypes
 		/// Initializes a new instance of the <see cref="StringClobSqlType"/> class.
 		/// </summary>
 		/// <param name="length">The length of the string the <see cref="IDbDataParameter"/> should hold.</param>
-		public StringClobSqlType( int length ) : base( length )
+		public StringClobSqlType(int length) : base(length)
 		{
 		}
 	}

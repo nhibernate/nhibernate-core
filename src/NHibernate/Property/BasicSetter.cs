@@ -19,7 +19,7 @@ namespace NHibernate.Property
 		/// <param name="clazz">The <see cref="System.Type"/> that contains the Property <c>set</c>.</param>
 		/// <param name="property">The <see cref="PropertyInfo"/> for reflection.</param>
 		/// <param name="propertyName">The name of the mapped Property.</param>
-		public BasicSetter( System.Type clazz, PropertyInfo property, string propertyName )
+		public BasicSetter(System.Type clazz, PropertyInfo property, string propertyName)
 		{
 			this.clazz = clazz;
 			this.property = property;
@@ -41,31 +41,34 @@ namespace NHibernate.Property
 		/// <exception cref="PropertyAccessException">
 		/// Thrown when there is a problem setting the value in the target.
 		/// </exception>
-		public void Set( object target, object value )
+		public void Set(object target, object value)
 		{
 			try
 			{
-				property.SetValue( target, value, new object[0] );
+				property.SetValue(target, value, new object[0]);
 			}
-			catch( ArgumentException ae )
+			catch (ArgumentException ae)
 			{
 				// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
 				// would be thrown, but it doesn't hurt to make sure.
-				if( property.PropertyType.IsAssignableFrom( value.GetType() )==false )
+				if (property.PropertyType.IsAssignableFrom(value.GetType()) == false)
 				{
 					// add some details to the error message - there have been a few forum posts an they are 
 					// all related to an ISet and IDictionary mixups.
-					string msg = String.Format( "The type {0} can not be assigned to a property of type {1}", value.GetType().ToString(), property.PropertyType.ToString() );
-					throw new PropertyAccessException( ae, msg, true, clazz, propertyName );
+					string msg =
+						String.Format("The type {0} can not be assigned to a property of type {1}", value.GetType().ToString(),
+						              property.PropertyType.ToString());
+					throw new PropertyAccessException(ae, msg, true, clazz, propertyName);
 				}
 				else
 				{
-					throw new PropertyAccessException( ae, "ArgumentException while setting the property value by reflection", true, clazz, propertyName );
+					throw new PropertyAccessException(ae, "ArgumentException while setting the property value by reflection", true,
+					                                  clazz, propertyName);
 				}
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new PropertyAccessException( e, "could not set a property value by reflection", true, clazz, propertyName );
+				throw new PropertyAccessException(e, "could not set a property value by reflection", true, clazz, propertyName);
 			}
 		}
 
@@ -77,26 +80,26 @@ namespace NHibernate.Property
 		{
 			get { return property.Name; }
 		}
-		
+
 		/// <summary>
 		/// Gets the <see cref="PropertyInfo"/> for the mapped Property.
 		/// </summary>
 		/// <value>The <see cref="PropertyInfo"/> for the mapped Property.</value>
 		public MethodInfo Method
 		{
-			get { return property.GetSetMethod( true ); }
+			get { return property.GetSetMethod(true); }
 		}
 
 		#endregion
 
-		public void Emit( ILGenerator il )
+		public void Emit(ILGenerator il)
 		{
 			MethodInfo method = Method;
 			if (method == null)
 			{
 				throw new PropertyNotFoundException(clazz, property.Name, "setter");
 			}
-			il.EmitCall( OpCodes.Callvirt, method, null ); 
+			il.EmitCall(OpCodes.Callvirt, method, null);
 		}
 	}
 }

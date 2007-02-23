@@ -30,23 +30,23 @@ namespace NHibernate.Type
 	[Serializable]
 	public class TimestampType : ValueTypeType, IVersionType, ILiteralType
 	{
-		public TimestampType() : base( SqlTypeFactory.DateTime )
+		public TimestampType() : base(SqlTypeFactory.DateTime)
 		{
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToDateTime( rs[ index ] );
+			return Convert.ToDateTime(rs[index]);
 		}
 
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( DateTime ); }
+			get { return typeof(DateTime); }
 		}
 
 		/// <summary>
@@ -58,11 +58,11 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// No null values will be written to the IDbCommand for this Type. 
 		/// </remarks>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
 
-			if( !( value is DateTime ) )
+			if (!(value is DateTime))
 			{
 				parm.Value = DateTime.Now;
 			}
@@ -77,17 +77,17 @@ namespace NHibernate.Type
 			get { return "Timestamp"; }
 		}
 
-		public override string ToString( object val )
+		public override string ToString(object val)
 		{
-			return ( ( DateTime ) val ).ToShortTimeString();
+			return ((DateTime) val).ToShortTimeString();
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return DateTime.Parse( xml );
+			return DateTime.Parse(xml);
 		}
 
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
 			return object.Equals(x, y);
 		}
@@ -108,7 +108,7 @@ namespace NHibernate.Type
 		{
 			return Seed(session);
 		}
-		
+
 		public static DateTime Round(DateTime value, long resolution)
 		{
 			return value.AddTicks(-(value.Ticks % resolution));
@@ -130,12 +130,12 @@ namespace NHibernate.Type
 
 		#endregion
 
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
-			return DateTime.Parse( xml );
+			return DateTime.Parse(xml);
 		}
 
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return "'" + value.ToString() + "'";
 		}

@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
 using System.Data;
-
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Type {
-
+namespace NHibernate.Type
+{
 	/// <summary>
 	/// Maps a <see cref="System.Enum"/> to a 
 	/// <see cref="DbType.String">DbType.String</see>.
@@ -63,7 +61,7 @@ namespace NHibernate.Type {
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public abstract class EnumStringType : ImmutableType, IDiscriminatorType 
+	public abstract class EnumStringType : ImmutableType, IDiscriminatorType
 	{
 		private readonly System.Type enumClass;
 
@@ -76,15 +74,14 @@ namespace NHibernate.Type {
 		/// use to create the column.
 		/// </value>
 		public const int MaxLengthForEnumString = 255;
-		
+
 		/// <summary>
 		/// Initializes a new instance of <see cref="EnumStringType"/>.
 		/// </summary>
 		/// <param name="enumClass">The <see cref="System.Type"/> of the Enum.</param>
-		protected EnumStringType(System.Type enumClass) 
-			: this( enumClass, MaxLengthForEnumString ) 
+		protected EnumStringType(System.Type enumClass)
+			: this(enumClass, MaxLengthForEnumString)
 		{
-			
 		}
 
 		/// <summary>
@@ -93,15 +90,15 @@ namespace NHibernate.Type {
 		/// <param name="enumClass">The <see cref="System.Type"/> of the Enum.</param>
 		/// <param name="length">The length of the string that can be written to the column.</param>
 		protected EnumStringType(System.Type enumClass, int length)
-			: base( SqlTypeFactory.GetString( length ) )
+			: base(SqlTypeFactory.GetString(length))
 		{
-			if(enumClass.IsEnum) 
+			if (enumClass.IsEnum)
 			{
 				this.enumClass = enumClass;
 			}
-			else 
+			else
 			{
-				throw new MappingException(enumClass.Name + " did not inherit from System.Enum" );
+				throw new MappingException(enumClass.Name + " did not inherit from System.Enum");
 			}
 		}
 
@@ -110,16 +107,16 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="code"></param>
 		/// <returns></returns>
-		public virtual object GetInstance(object code) 
+		public virtual object GetInstance(object code)
 		{
 			//code is an named constants defined for the enumeration.
-			try 
+			try
 			{
-				return Enum.Parse( enumClass, code as string, true );
+				return Enum.Parse(enumClass, code as string, true);
 			}
-			catch (ArgumentException ae) 
+			catch (ArgumentException ae)
 			{
-				throw new HibernateException( string.Format( "Can't Parse {0} as {1}", code, enumClass.Name), ae );
+				throw new HibernateException(string.Format("Can't Parse {0} as {1}", code, enumClass.Name), ae);
 			}
 		}
 
@@ -128,44 +125,45 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="code"></param>
 		/// <returns></returns>
-		public virtual object GetValue(object code) {
+		public virtual object GetValue(object code)
+		{
 			//code is an enum instance.
 			return code == null ? string.Empty : code.ToString();
 		}
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals(object x, object y) 
+		public override bool Equals(object x, object y)
 		{
-			return (x==y) || ( x!=null && y!=null && x.Equals(y) ) ;
+			return (x == y) || (x != null && y != null && x.Equals(y));
 		}
-	
+
 		/// <summary>
 		/// 
 		/// </summary>
-		public override System.Type ReturnedClass 
+		public override System.Type ReturnedClass
 		{
 			get { return enumClass; }
 		}
-	
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set(IDbCommand cmd, object value, int index) 
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
 			IDataParameter par = (IDataParameter) cmd.Parameters[index];
-			if( value==null ) 
+			if (value == null)
 			{
 				par.Value = DBNull.Value;
 			}
-			else 
+			else
 			{
 				par.Value = Enum.Format(this.enumClass, value, "G");
 			}
@@ -177,14 +175,14 @@ namespace NHibernate.Type {
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, int index) 
+		public override object Get(IDataReader rs, int index)
 		{
 			object code = rs[index];
-			if ( code==DBNull.Value || code==null) 
+			if (code == DBNull.Value || code == null)
 			{
 				return null;
 			}
-			else 
+			else
 			{
 				return GetInstance(code);
 			}
@@ -196,7 +194,7 @@ namespace NHibernate.Type {
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, string name) 
+		public override object Get(IDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
@@ -210,19 +208,19 @@ namespace NHibernate.Type {
 		/// using the underlying value through the <see cref="PersistentEnumType"/>
 		/// also.
 		/// </remarks>
-		public override string Name 
+		public override string Name
 		{
 			get { return "enumstring - " + enumClass.Name; }
 		}
-	
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ToString(object value) 
+		public override string ToString(object value)
 		{
-			return (value==null) ? null : GetValue(value).ToString();
+			return (value == null) ? null : GetValue(value).ToString();
 		}
 
 		/// <summary>
@@ -232,13 +230,13 @@ namespace NHibernate.Type {
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object Assemble(object cached, ISessionImplementor session, object owner) 
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			if (cached==null) 
+			if (cached == null)
 			{
 				return null;
 			}
-			else 
+			else
 			{
 				return GetInstance(cached);
 			}
@@ -250,17 +248,17 @@ namespace NHibernate.Type {
 		/// <param name="value"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public override object Disassemble(object value, ISessionImplementor session) 
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
-			return (value==null) ? null : GetValue(value);
+			return (value == null) ? null : GetValue(value);
 		}
-	
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public string ObjectToSQLString(object value) 
+		public string ObjectToSQLString(object value)
 		{
 			return GetValue(value).ToString();
 		}
@@ -270,15 +268,14 @@ namespace NHibernate.Type {
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
-			return FromString( xml );
+			return FromString(xml);
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return GetInstance( xml );
+			return GetInstance(xml);
 		}
-
 	}
 }

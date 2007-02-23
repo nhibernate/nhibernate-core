@@ -10,6 +10,6 @@ namespace NHibernate.Property
 		/// </summary>
 		/// <param name="propertyName">The name of the mapped property.</param>
 		/// <returns>The name of the Field.</returns>
-		string GetFieldName( string propertyName );
+		string GetFieldName(string propertyName);
 	}
 }

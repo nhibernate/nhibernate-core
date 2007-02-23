@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class AnsiCharType : BaseCharType
 	{
-		internal AnsiCharType() : base( new AnsiStringFixedLengthSqlType( 1 ) )
+		internal AnsiCharType() : base(new AnsiStringFixedLengthSqlType(1))
 		{
 		}
 

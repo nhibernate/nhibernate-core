@@ -13,14 +13,14 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		IType GetIdentifierType( System.Type persistentClass );
+		IType GetIdentifierType(System.Type persistentClass);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		string GetIdentifierPropertyName( System.Type persistentClass );
+		string GetIdentifierPropertyName(System.Type persistentClass);
 
 		/// <summary>
 		/// 
@@ -28,6 +28,6 @@ namespace NHibernate.Engine
 		/// <param name="persistentClass"></param>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		IType GetPropertyType( System.Type persistentClass, string propertyName );
+		IType GetPropertyType(System.Type persistentClass, string propertyName);
 	}
 }

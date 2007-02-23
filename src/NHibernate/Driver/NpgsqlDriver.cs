@@ -32,7 +32,7 @@ namespace NHibernate.Driver
 		public NpgsqlDriver() : base(
 			"Npgsql",
 			"Npgsql.NpgsqlConnection",
-			"Npgsql.NpgsqlCommand" )
+			"Npgsql.NpgsqlCommand")
 		{
 		}
 

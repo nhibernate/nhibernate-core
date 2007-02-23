@@ -22,12 +22,11 @@ namespace NHibernate.Persister.Entity
 
 		public object Load(object id, object optionalObject, ISessionImplementor session)
 		{
-
 			if (log.IsDebugEnabled)
 			{
 				log.Debug(
-						"loading entity: " + persister.MappedClass.FullName +
-						" using named query: " + queryName
+					"loading entity: " + persister.MappedClass.FullName +
+					" using named query: " + queryName
 					);
 			}
 
@@ -35,9 +34,9 @@ namespace NHibernate.Persister.Entity
 			if (query.HasNamedParameters)
 			{
 				query.SetParameter(
-						query.NamedParameters[0],
-						id,
-						persister.IdentifierType
+					query.NamedParameters[0],
+					id,
+					persister.IdentifierType
 					);
 			}
 			else
@@ -54,7 +53,6 @@ namespace NHibernate.Persister.Entity
 			// (this lets us correctly handle proxies and multi-row
 			// or multi-column queries)
 			return session.GetEntity(new EntityKey(id, persister));
-
 		}
 	}
 }

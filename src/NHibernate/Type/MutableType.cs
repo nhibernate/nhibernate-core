@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -14,7 +16,7 @@ namespace NHibernate.Type
 		/// <see cref="SqlType"/>. 
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		protected MutableType( SqlType sqlType ) : base( sqlType )
+		protected MutableType(SqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -50,10 +52,10 @@ namespace NHibernate.Type
 			get { return false; } //default ... may be overridden
 		}
 
-		public override object Replace( object original, object current, NHibernate.Engine.ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready )
+		public override object Replace(object original, object current, ISessionImplementor session, object owner,
+		                               IDictionary copiedAlready)
 		{
-			return DeepCopy( original );
+			return DeepCopy(original);
 		}
-
 	}
 }

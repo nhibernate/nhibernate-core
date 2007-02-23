@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-
 using Iesi.Collections;
-
 using NHibernate.Loader.Custom;
 using NHibernate.Util;
 
@@ -18,19 +16,19 @@ namespace NHibernate.Engine.Query
 		public NativeSQLQuerySpecification(
 			string queryString,
 			ISQLQueryReturn[] sqlQueryReturns,
-			ICollection querySpaces )
+			ICollection querySpaces)
 		{
 			this.queryString = queryString;
 			this.sqlQueryReturns = sqlQueryReturns;
 
-			if( querySpaces == null )
+			if (querySpaces == null)
 			{
 				this.querySpaces = new HashedSet();
 			}
 			else
 			{
 				ISet tmp = new HashedSet();
-				tmp.AddAll( querySpaces );
+				tmp.AddAll(querySpaces);
 				// Can't use ImmutableSet here because it doesn't implement GetHashCode properly.
 				this.querySpaces = tmp;
 			}
@@ -40,7 +38,7 @@ namespace NHibernate.Engine.Query
 			unchecked
 			{
 				hashCode = 29 * hashCode + this.querySpaces.GetHashCode();
-				if( this.sqlQueryReturns != null )
+				if (this.sqlQueryReturns != null)
 				{
 					hashCode = 29 * hashCode + sqlQueryReturns.Length;
 				}
@@ -64,25 +62,25 @@ namespace NHibernate.Engine.Query
 			get { return querySpaces; }
 		}
 
-		public override bool Equals( object o )
+		public override bool Equals(object o)
 		{
-			if( this == o )
+			if (this == o)
 			{
 				return true;
 			}
 
-			if( o == null || GetType() != o.GetType() )
+			if (o == null || GetType() != o.GetType())
 			{
 				return false;
 			}
 
-			NativeSQLQuerySpecification that = ( NativeSQLQuerySpecification ) o;
+			NativeSQLQuerySpecification that = (NativeSQLQuerySpecification) o;
 
 			return hashCode == that.hashCode &&
-				CollectionHelper.CollectionEquals(querySpaces, that.querySpaces) &&
-				querySpaces.Equals(that.querySpaces) &&
-				queryString.Equals(that.queryString) &&
-				CollectionHelper.CollectionEquals(sqlQueryReturns, that.sqlQueryReturns);
+			       CollectionHelper.CollectionEquals(querySpaces, that.querySpaces) &&
+			       querySpaces.Equals(that.querySpaces) &&
+			       queryString.Equals(that.queryString) &&
+			       CollectionHelper.CollectionEquals(sqlQueryReturns, that.sqlQueryReturns);
 		}
 
 		public override int GetHashCode()

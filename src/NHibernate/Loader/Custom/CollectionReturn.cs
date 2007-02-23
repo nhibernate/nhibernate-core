@@ -10,12 +10,12 @@ namespace NHibernate.Loader.Custom
 		private readonly IEntityAliases elementEntityAliases;
 
 		public CollectionReturn(
-				String alias,
-				String ownerEntityName,
-				String ownerProperty,
-				ICollectionAliases collectionAliases,
-				IEntityAliases elementEntityAliases,
-				LockMode lockMode)
+			String alias,
+			String ownerEntityName,
+			String ownerProperty,
+			ICollectionAliases collectionAliases,
+			IEntityAliases elementEntityAliases,
+			LockMode lockMode)
 			: base(alias, lockMode)
 		{
 			this.ownerEntityName = ownerEntityName;

@@ -38,7 +38,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class TableHiLoGenerator : TableGenerator
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( TableHiLoGenerator ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(TableHiLoGenerator));
 
 		/// <summary>
 		/// The name of the max lo parameter.
@@ -59,10 +59,10 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
-		public override void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
+		public override void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
-			base.Configure( type, parms, dialect );
-			maxLo = PropertiesHelper.GetInt64( MaxLo, parms, short.MaxValue );
+			base.Configure(type, parms, dialect);
+			maxLo = PropertiesHelper.GetInt64(MaxLo, parms, short.MaxValue);
 			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
 		}
@@ -78,21 +78,20 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
-		[MethodImpl( MethodImplOptions.Synchronized )]
-		public override object Generate( ISessionImplementor session, object obj )
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public override object Generate(ISessionImplementor session, object obj)
 		{
-			if( lo > maxLo )
+			if (lo > maxLo)
 			{
-				long hival = ( ( long ) base.Generate( session, obj ) );
+				long hival = ((long) base.Generate(session, obj));
 				lo = 1;
-				hi = hival*( maxLo + 1 );
-				log.Debug( "new hi value: " + hival );
+				hi = hival * (maxLo + 1);
+				log.Debug("new hi value: " + hival);
 			}
 
-			return IdentifierGeneratorFactory.CreateNumber( hi + lo++, returnClass );
+			return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
 		}
 
 		#endregion
-
 	}
 }

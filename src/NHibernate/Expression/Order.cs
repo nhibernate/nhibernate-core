@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-
 using NHibernate.Engine;
 
 namespace NHibernate.Expression

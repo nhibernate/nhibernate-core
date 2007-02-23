@@ -16,7 +16,7 @@ namespace NHibernate.Expression
 		private string _lhsPropertyName;
 		private string _rhsPropertyName;
 
-		private static TypedValue[ ] NoTypedValues = new TypedValue[0];
+		private static TypedValue[] NoTypedValues = new TypedValue[0];
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="PropertyExpression" /> class 
@@ -32,24 +32,24 @@ namespace NHibernate.Expression
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
-			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _lhsPropertyName );
-			string[ ] otherColumnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _rhsPropertyName );
+			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _lhsPropertyName);
+			string[] otherColumnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _rhsPropertyName);
 
 			string result = string.Join(
 				" and ",
-				StringHelper.Add( columnNames, Op, otherColumnNames )
-			);
+				StringHelper.Add(columnNames, Op, otherColumnNames)
+				);
 
-			if( columnNames.Length > 1 )
+			if (columnNames.Length > 1)
 			{
 				result = StringHelper.OpenParen + result + StringHelper.ClosedParen;
 			}
 
-			return new SqlString( result );
+			return new SqlString(result);
 			//TODO: get SQL rendering out of this package!
 		}
 
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return NoTypedValues;
 		}

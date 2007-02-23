@@ -32,7 +32,7 @@ namespace NHibernate.Id
 		/// <c>IdentityColumnIndicator</c> Indicates to the Session that identity (i.e. identity/autoincrement column)
 		/// key generation should be used.
 		/// </returns>
-		public object Generate( ISessionImplementor s, object obj )
+		public object Generate(ISessionImplementor s, object obj)
 		{
 			return IdentifierGeneratorFactory.IdentityColumnIndicator;
 		}

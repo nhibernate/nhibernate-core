@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	public class SingleType : ValueTypeType
 	{
 		/// <summary></summary>
-		internal SingleType() : base( SqlTypeFactory.Single )
+		internal SingleType() : base(SqlTypeFactory.Single)
 		{
 		}
 
@@ -26,9 +26,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToSingle( rs[ index ] );
+			return Convert.ToSingle(rs[index]);
 		}
 
 		/// <summary>
@@ -37,15 +37,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Convert.ToSingle( rs[ name ] );
+			return Convert.ToSingle(rs[name]);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( Single ); }
+			get { return typeof(Single); }
 		}
 
 		/// <summary>
@@ -54,9 +54,9 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
 			parm.Value = value;
 		}
 
@@ -71,14 +71,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return value.ToString();
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return float.Parse( xml );
+			return float.Parse(xml);
 		}
 	}
 }

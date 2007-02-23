@@ -21,8 +21,8 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
-		public ListType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public ListType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 
@@ -34,13 +34,13 @@ namespace NHibernate.Type
 		/// <returns>A new <see cref="NHibernate.Collection.PersistentList"/>.</returns>
 		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new PersistentList( session );
+			return new PersistentList(session);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( IList ); }
+			get { return typeof(IList); }
 		}
 
 		/// <summary>
@@ -53,17 +53,17 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentList( session, ( IList ) collection );
+			return new PersistentList(session, (IList) collection);
 		}
 
-		protected override void Add( object collection, object element )
+		protected override void Add(object collection, object element)
 		{
-			( ( IList ) collection ).Add( element );
+			((IList) collection).Add(element);
 		}
 
-		protected override void Clear( object collection )
+		protected override void Clear(object collection)
 		{
-			( ( IList ) collection ).Clear();
+			((IList) collection).Clear();
 		}
 
 		public override object Instantiate()

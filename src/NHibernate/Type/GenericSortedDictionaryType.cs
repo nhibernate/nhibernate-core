@@ -9,8 +9,8 @@ namespace NHibernate.Type
 	{
 		private IComparer<TKey> comparer;
 
-		public GenericSortedDictionaryType( string role, string propertyRef, IComparer<TKey> comparer )
-			: base( role, propertyRef )
+		public GenericSortedDictionaryType(string role, string propertyRef, IComparer<TKey> comparer)
+			: base(role, propertyRef)
 		{
 			this.comparer = comparer;
 		}
@@ -22,8 +22,9 @@ namespace NHibernate.Type
 
 		public override object Instantiate()
 		{
-			return new SortedDictionary<TKey, TValue>( comparer );
+			return new SortedDictionary<TKey, TValue>(comparer);
 		}
 	}
 }
+
 #endif

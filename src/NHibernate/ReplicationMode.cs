@@ -18,7 +18,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="level"></param>
 		/// <param name="name"></param>
-		public ReplicationMode( int level, string name )
+		public ReplicationMode(int level, string name)
 		{
 			this.code = level;
 			this.name = name;
@@ -32,14 +32,15 @@ namespace NHibernate
 		/// <param name="newVersion"></param>
 		/// <param name="versionType"></param>
 		/// <returns></returns>
-		public abstract bool ShouldOverwriteCurrentVersion( object entity, object currentVersion, object newVersion, IVersionType versionType );
+		public abstract bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
+		                                                   IVersionType versionType);
 
 		/// <summary></summary>
-		public static readonly ReplicationMode Exception = new ExceptionReplicationMode( 0, "EXCEPTION" );
+		public static readonly ReplicationMode Exception = new ExceptionReplicationMode(0, "EXCEPTION");
 
 		private sealed class ExceptionReplicationMode : ReplicationMode
 		{
-			public ExceptionReplicationMode( int level, string name ) : base( level, name )
+			public ExceptionReplicationMode(int level, string name) : base(level, name)
 			{
 			}
 
@@ -51,18 +52,19 @@ namespace NHibernate
 			/// <param name="newVersion"></param>
 			/// <param name="versionType"></param>
 			/// <returns></returns>
-			public override bool ShouldOverwriteCurrentVersion( object entity, object currentVersion, object newVersion, IVersionType versionType )
+			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
+			                                                   IVersionType versionType)
 			{
-				throw new NotSupportedException( "should not be called" );
+				throw new NotSupportedException("should not be called");
 			}
 		}
 
 		/// <summary></summary>
-		public static readonly ReplicationMode Ignore = new IgnoreReplicationMode( 1, "IGNORE" );
+		public static readonly ReplicationMode Ignore = new IgnoreReplicationMode(1, "IGNORE");
 
 		private sealed class IgnoreReplicationMode : ReplicationMode
 		{
-			public IgnoreReplicationMode( int level, string name ) : base( level, name )
+			public IgnoreReplicationMode(int level, string name) : base(level, name)
 			{
 			}
 
@@ -74,18 +76,19 @@ namespace NHibernate
 			/// <param name="newVersion"></param>
 			/// <param name="versionType"></param>
 			/// <returns></returns>
-			public override bool ShouldOverwriteCurrentVersion( object entity, object currentVersion, object newVersion, IVersionType versionType )
+			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
+			                                                   IVersionType versionType)
 			{
 				return false;
 			}
 		}
 
 		/// <summary></summary>
-		public static readonly ReplicationMode Overwrite = new OverwriteReplicationMode( 3, "OVERWRITE" );
+		public static readonly ReplicationMode Overwrite = new OverwriteReplicationMode(3, "OVERWRITE");
 
 		private sealed class OverwriteReplicationMode : ReplicationMode
 		{
-			public OverwriteReplicationMode( int level, string name ) : base( level, name )
+			public OverwriteReplicationMode(int level, string name) : base(level, name)
 			{
 			}
 
@@ -97,18 +100,19 @@ namespace NHibernate
 			/// <param name="newVersion"></param>
 			/// <param name="versionType"></param>
 			/// <returns></returns>
-			public override bool ShouldOverwriteCurrentVersion( object entity, object currentVersion, object newVersion, IVersionType versionType )
+			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
+			                                                   IVersionType versionType)
 			{
 				return true;
 			}
 		}
 
 		/// <summary></summary>
-		public static readonly ReplicationMode LatestVersion = new LatestVersionReplicationMode( 2, "LATEST_VERSION" );
+		public static readonly ReplicationMode LatestVersion = new LatestVersionReplicationMode(2, "LATEST_VERSION");
 
 		private sealed class LatestVersionReplicationMode : ReplicationMode
 		{
-			public LatestVersionReplicationMode( int level, string name ) : base( level, name )
+			public LatestVersionReplicationMode(int level, string name) : base(level, name)
 			{
 			}
 
@@ -120,15 +124,16 @@ namespace NHibernate
 			/// <param name="newVersion"></param>
 			/// <param name="versionType"></param>
 			/// <returns></returns>
-			public override bool ShouldOverwriteCurrentVersion( object entity, object currentVersion, object newVersion, IVersionType versionType )
+			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
+			                                                   IVersionType versionType)
 			{
-				if ( versionType == null )
+				if (versionType == null)
 				{
 					// always overwrite nonversioned data
 					return true;
 				}
 
-				return versionType.Comparator.Compare( currentVersion, newVersion ) <= 0;
+				return versionType.Comparator.Compare(currentVersion, newVersion) <= 0;
 			}
 		}
 	}

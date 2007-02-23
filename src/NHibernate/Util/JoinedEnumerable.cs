@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
-#if NET_2_0
 using System.Collections.Generic;
+using log4net;
+#if NET_2_0
 #endif
 
 namespace NHibernate.Util
@@ -11,21 +12,21 @@ namespace NHibernate.Util
 	/// </summary>
 	public class JoinedEnumerable : IEnumerable, IEnumerator, IDisposable
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger( typeof( JoinedEnumerable ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(JoinedEnumerable));
 
-		private IEnumerator[ ] _enumerators;
+		private IEnumerator[] _enumerators;
 		private int _current;
 
 		/// <summary>
 		/// Creates an IEnumerable object from multiple IEnumerables.
 		/// </summary>
 		/// <param name="enumerables">The IEnumerables to join together.</param>
-		public JoinedEnumerable( IEnumerable[ ] enumerables )
+		public JoinedEnumerable(IEnumerable[] enumerables)
 		{
 			_enumerators = new IEnumerator[enumerables.Length];
-			for( int i = 0; i < enumerables.Length; i++ )
+			for (int i = 0; i < enumerables.Length; i++)
 			{
-				_enumerators[ i ] = enumerables[ i ].GetEnumerator();
+				_enumerators[i] = enumerables[i].GetEnumerator();
 			}
 			_current = 0;
 		}
@@ -35,9 +36,9 @@ namespace NHibernate.Util
 		/// <summary></summary>
 		public bool MoveNext()
 		{
-			for(; _current < _enumerators.Length; _current++ )
+			for (; _current < _enumerators.Length; _current++)
 			{
-				if( _enumerators[ _current ].MoveNext() )
+				if (_enumerators[_current].MoveNext())
 				{
 					return true;
 				}
@@ -45,8 +46,8 @@ namespace NHibernate.Util
 				{
 					// there are no items left to iterate over in the current
 					// enumerator so go ahead and dispose of it.
-					IDisposable disposable = _enumerators[ _current ] as IDisposable;
-					if( disposable!=null )
+					IDisposable disposable = _enumerators[_current] as IDisposable;
+					if (disposable != null)
 					{
 						disposable.Dispose();
 					}
@@ -58,16 +59,16 @@ namespace NHibernate.Util
 		/// <summary></summary>
 		public void Reset()
 		{
-			for( int i = 0; i < _enumerators.Length; i++ )
+			for (int i = 0; i < _enumerators.Length; i++)
 			{
-				_enumerators[ i ].Reset();
+				_enumerators[i].Reset();
 			}
 		}
 
 		/// <summary></summary>
 		public object Current
 		{
-			get { return _enumerators[ _current ].Current; }
+			get { return _enumerators[_current].Current; }
 		}
 
 		#endregion
@@ -95,7 +96,7 @@ namespace NHibernate.Util
 		/// </summary>
 		~JoinedEnumerable()
 		{
-			Dispose( false );
+			Dispose(false);
 		}
 
 		/// <summary>
@@ -104,11 +105,10 @@ namespace NHibernate.Util
 		/// </summary>
 		public void Dispose()
 		{
-			log.Debug( "running JoinedEnumerable.Dispose()" );
-			Dispose( true );
+			log.Debug("running JoinedEnumerable.Dispose()");
+			Dispose(true);
 		}
 
-		
 
 		/// <summary>
 		/// Takes care of freeing the managed and unmanaged resources that 
@@ -122,7 +122,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		protected virtual void Dispose(bool isDisposing)
 		{
-			if( _isAlreadyDisposed )
+			if (_isAlreadyDisposed)
 			{
 				// don't dispose of multiple times.
 				return;
@@ -130,13 +130,13 @@ namespace NHibernate.Util
 
 			// free managed resources that are being managed by the JoinedEnumerable if we
 			// know this call came through Dispose()
-			if( isDisposing )
+			if (isDisposing)
 			{
 				// dispose each IEnumerable that still needs to be disposed of
-				for( ; _current < _enumerators.Length; _current++ )
+				for (; _current < _enumerators.Length; _current++)
 				{
-					IDisposable currentDisposable = _enumerators[ _current ] as IDisposable;
-					if( currentDisposable!=null )
+					IDisposable currentDisposable = _enumerators[_current] as IDisposable;
+					if (currentDisposable != null)
 					{
 						currentDisposable.Dispose();
 					}
@@ -144,10 +144,10 @@ namespace NHibernate.Util
 			}
 
 			// free unmanaged resources here
-			
+
 			_isAlreadyDisposed = true;
 			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize( this );
+			GC.SuppressFinalize(this);
 		}
 
 		#endregion
@@ -156,8 +156,8 @@ namespace NHibernate.Util
 #if NET_2_0
 	public class GenericJoinedEnumerable<T> : JoinedEnumerable, IEnumerable<T>, IEnumerator<T>
 	{
-		public GenericJoinedEnumerable( IEnumerable[] enumerables )
-			: base( enumerables )
+		public GenericJoinedEnumerable(IEnumerable[] enumerables)
+			: base(enumerables)
 		{
 		}
 
@@ -169,7 +169,7 @@ namespace NHibernate.Util
 
 		T IEnumerator<T>.Current
 		{
-			get { return ( T ) this.Current; }
+			get { return (T) this.Current; }
 		}
 	}
 #endif

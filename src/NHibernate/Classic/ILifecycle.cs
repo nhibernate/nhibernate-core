@@ -36,7 +36,7 @@ namespace NHibernate.Classic
 		/// </summary>
 		/// <param name="s">The session</param>
 		/// <returns>If we should veto the save</returns>
-		LifecycleVeto OnSave( ISession s );
+		LifecycleVeto OnSave(ISession s);
 
 		/// <summary>
 		/// Called when an entity is passed to <c>ISession.Update()</c>.
@@ -47,14 +47,14 @@ namespace NHibernate.Classic
 		/// </remarks>
 		/// <param name="s">The session</param>
 		/// <returns>If we should veto the update</returns>
-		LifecycleVeto OnUpdate( ISession s );
+		LifecycleVeto OnUpdate(ISession s);
 
 		/// <summary>
 		/// Called when an entity is deleted
 		/// </summary>
 		/// <param name="s">The session</param>
 		/// <returns>If we should veto the delete</returns>
-		LifecycleVeto OnDelete( ISession s );
+		LifecycleVeto OnDelete(ISession s);
 
 		/// <summary>
 		/// Called after an entity is loaded. 
@@ -65,7 +65,7 @@ namespace NHibernate.Classic
 		/// </remarks>
 		/// <param name="s">The session</param>
 		/// <param name="id">The identifier</param>
-		void OnLoad( ISession s, object id );
+		void OnLoad(ISession s, object id);
 	}
 
 	/// <summary></summary>

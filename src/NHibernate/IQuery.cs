@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 using NHibernate.Transform;
 using NHibernate.Type;
+#if NET_2_0
+#endif
 
 namespace NHibernate
 {
@@ -110,7 +110,7 @@ namespace NHibernate
 		/// Return the query results an place them into the <see cref="IList"/>.
 		/// </summary>
 		/// <param name="results">The <see cref="IList"/> to place the results in.</param>
-		void List( IList results );
+		void List(IList results);
 
 #if NET_2_0
 		/// <summary>
@@ -136,28 +136,29 @@ namespace NHibernate
 		/// </summary>
 		T UniqueResult<T>();
 #endif
+
 		/// <summary>
 		/// Set the maximum number of rows to retrieve.
 		/// </summary>
 		/// <param name="maxResults">The maximum number of rows to retreive.</param>
-		IQuery SetMaxResults( int maxResults );
+		IQuery SetMaxResults(int maxResults);
 
 		/// <summary>
 		/// Sets the first row to retrieve.
 		/// </summary>
 		/// <param name="firstResult">The first row to retreive.</param>
-		IQuery SetFirstResult( int firstResult );
+		IQuery SetFirstResult(int firstResult);
 
 		/// <summary>
 		/// Enable caching of this query result set.
 		/// </summary>
 		/// <param name="cacheable">Should the query results be cacheable?</param>
-		IQuery SetCacheable( bool cacheable );
+		IQuery SetCacheable(bool cacheable);
 
 		/// Set the name of the cache region.
 		/// <param name="cacheRegion">The name of a query cache region, or <c>null</c>
 		/// for the default query cache</param>
-		IQuery SetCacheRegion( string cacheRegion );
+		IQuery SetCacheRegion(string cacheRegion);
 
 		/// Should the query force a refresh of the specified query cache region?
 		/// This is particularly useful in cases where underlying data may have been
@@ -166,13 +167,13 @@ namespace NHibernate
 		/// based on its knowledge of those events.
 		/// <param name="forceCacheRefresh">Should the query result in a forceable refresh of
 		/// the query cache?</param>
-		IQuery SetForceCacheRefresh( bool forceCacheRefresh );
+		IQuery SetForceCacheRefresh(bool forceCacheRefresh);
 
 		/// <summary>
 		/// The timeout for the underlying ADO query
 		/// </summary>
 		/// <param name="timeout"></param>
-		IQuery SetTimeout( int timeout );
+		IQuery SetTimeout(int timeout);
 
 		/// <summary>
 		/// Set the lockmode for the objects idententified by the
@@ -180,7 +181,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="alias">alias a query alias, or <c>this</c> for a collection filter</param>
 		/// <param name="lockMode"></param>
-		void SetLockMode( string alias, LockMode lockMode );
+		void SetLockMode(string alias, LockMode lockMode);
 
 		/// <summary>
 		/// Bind a value to an indexed parameter.
@@ -188,7 +189,7 @@ namespace NHibernate
 		/// <param name="position">Postion of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The Hibernate type</param>
-		IQuery SetParameter( int position, object val, IType type );
+		IQuery SetParameter(int position, object val, IType type);
 
 		/// <summary>
 		/// Bind a value to a named query parameter
@@ -196,7 +197,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
-		IQuery SetParameter( string name, object val, IType type );
+		IQuery SetParameter(string name, object val, IType type);
 
 		/// <summary>
 		/// Bind a value to an indexed parameter, guessing the Hibernate type from
@@ -204,7 +205,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The non-null parameter value</param>
-		IQuery SetParameter( int position, object val );
+		IQuery SetParameter(int position, object val);
 
 		/// <summary>
 		/// Bind a value to a named query parameter, guessing the NHibernate <see cref="IType"/>
@@ -212,7 +213,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The non-null parameter value</param>
-		IQuery SetParameter( string name, object val );
+		IQuery SetParameter(string name, object val);
 
 		/// <summary>
 		/// Bind multiple values to a named query parameter. This is useful for binding a list
@@ -221,7 +222,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
 		/// <param name="type">The Hibernate type of the values</param>
-		IQuery SetParameterList( string name, IEnumerable vals, IType type );
+		IQuery SetParameterList(string name, IEnumerable vals, IType type);
 
 		/// <summary>
 		/// Bind multiple values to a named query parameter, guessing the Hibernate
@@ -230,7 +231,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
-		IQuery SetParameterList( string name, IEnumerable vals );
+		IQuery SetParameterList(string name, IEnumerable vals);
 
 		/// <summary>
 		/// Bind the property values of the given object to named paramters of the query,
@@ -238,7 +239,7 @@ namespace NHibernate
 		/// Hibernate types using hueristics.
 		/// </summary>
 		/// <param name="obj">Any PONO</param>
-		IQuery SetProperties( object obj );
+		IQuery SetProperties(object obj);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="String" /> to an indexed parameter
@@ -246,7 +247,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
-		IQuery SetAnsiString( int position, string val );
+		IQuery SetAnsiString(int position, string val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="String" /> to a named parameter
@@ -254,7 +255,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
-		IQuery SetAnsiString( string name, string val );
+		IQuery SetAnsiString(string name, string val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Byte" /> array to an indexed parameter
@@ -262,7 +263,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Byte"/> array.</param>
-		IQuery SetBinary( int position, byte[] val );
+		IQuery SetBinary(int position, byte[] val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Byte" /> array to a named parameter
@@ -270,7 +271,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Byte"/> array.</param>
-		IQuery SetBinary( string name, byte[] val );
+		IQuery SetBinary(string name, byte[] val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Boolean" /> to an indexed parameter
@@ -278,7 +279,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Boolean"/>.</param>
-		IQuery SetBoolean( int position, bool val );
+		IQuery SetBoolean(int position, bool val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Boolean" /> to a named parameter
@@ -286,7 +287,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Boolean"/>.</param>
-		IQuery SetBoolean( string name, bool val );
+		IQuery SetBoolean(string name, bool val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Byte" /> to an indexed parameter
@@ -294,7 +295,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Byte"/>.</param>
-		IQuery SetByte( int position, byte val );
+		IQuery SetByte(int position, byte val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Byte" /> to a named parameter
@@ -302,7 +303,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Byte"/>.</param>
-		IQuery SetByte( string name, byte val );
+		IQuery SetByte(string name, byte val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Char" /> to an indexed parameter
@@ -310,7 +311,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Char"/>.</param>
-		IQuery SetCharacter( int position, char val );
+		IQuery SetCharacter(int position, char val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Char" /> to a named parameter
@@ -318,7 +319,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Char"/>.</param>
-		IQuery SetCharacter( string name, char val );
+		IQuery SetCharacter(string name, char val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
@@ -326,7 +327,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
-		IQuery SetDateTime( int position, DateTime val );
+		IQuery SetDateTime(int position, DateTime val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
@@ -334,7 +335,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <param name="name">The name of the parameter</param>
-		IQuery SetDateTime( string name, DateTime val );
+		IQuery SetDateTime(string name, DateTime val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Decimal" /> to an indexed parameter
@@ -342,7 +343,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Decimal"/>.</param>
-		IQuery SetDecimal( int position, decimal val );
+		IQuery SetDecimal(int position, decimal val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Decimal" /> to a named parameter
@@ -350,7 +351,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Decimal"/>.</param>
-		IQuery SetDecimal( string name, decimal val );
+		IQuery SetDecimal(string name, decimal val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Double" /> to an indexed parameter
@@ -358,7 +359,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Double"/>.</param>
-		IQuery SetDouble( int position, double val );
+		IQuery SetDouble(int position, double val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Double" /> to a named parameter
@@ -366,21 +367,21 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Double"/>.</param>
-		IQuery SetDouble( string name, double val );
+		IQuery SetDouble(string name, double val);
 
 		/// <summary>
 		/// Bind an instance of a mapped persistent class to an indexed parameter.
 		/// </summary>
 		/// <param name="position">Position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a persistent class</param>
-		IQuery SetEntity( int position, object val );
+		IQuery SetEntity(int position, object val);
 
 		/// <summary>
 		/// Bind an instance of a mapped persistent class to a named parameter.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent class</param>
-		IQuery SetEntity( string name, object val );
+		IQuery SetEntity(string name, object val);
 
 		/// <summary>
 		/// Bind an instance of a persistent enumeration class to an indexed parameter
@@ -388,7 +389,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
-		IQuery SetEnum( int position, Enum val );
+		IQuery SetEnum(int position, Enum val);
 
 		/// <summary>
 		/// Bind an instance of a persistent enumeration class to a named parameter
@@ -396,7 +397,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
-		IQuery SetEnum( string name, Enum val );
+		IQuery SetEnum(string name, Enum val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Int16" /> to an indexed parameter
@@ -404,7 +405,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Int16"/>.</param>
-		IQuery SetInt16( int position, short val );
+		IQuery SetInt16(int position, short val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Int16" /> to a named parameter
@@ -412,7 +413,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Int16"/>.</param>
-		IQuery SetInt16( string name, short val );
+		IQuery SetInt16(string name, short val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Int32" /> to an indexed parameter
@@ -420,7 +421,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Int32"/>.</param>
-		IQuery SetInt32( int position, int val );
+		IQuery SetInt32(int position, int val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Int32" /> to a named parameter
@@ -428,7 +429,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Int32"/>.</param>
-		IQuery SetInt32( string name, int val );
+		IQuery SetInt32(string name, int val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Int64" /> to an indexed parameter
@@ -436,7 +437,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Int64"/>.</param>
-		IQuery SetInt64( int position, long val );
+		IQuery SetInt64(int position, long val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Int64" /> to a named parameter
@@ -444,7 +445,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Int64"/>.</param>
-		IQuery SetInt64( string name, long val );
+		IQuery SetInt64(string name, long val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Single" /> to an indexed parameter
@@ -452,7 +453,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="Single"/>.</param>
-		IQuery SetSingle( int position, float val );
+		IQuery SetSingle(int position, float val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Single" /> to a named parameter
@@ -460,7 +461,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Single"/>.</param>
-		IQuery SetSingle( string name, float val );
+		IQuery SetSingle(string name, float val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="String" /> to an indexed parameter
@@ -468,7 +469,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
-		IQuery SetString( int position, string val );
+		IQuery SetString(int position, string val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="String" /> to a named parameter
@@ -476,7 +477,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
-		IQuery SetString( string name, string val );
+		IQuery SetString(string name, string val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
@@ -484,7 +485,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
-		IQuery SetTime( int position, DateTime val );
+		IQuery SetTime(int position, DateTime val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
@@ -492,7 +493,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
-		IQuery SetTime( string name, DateTime val );
+		IQuery SetTime(string name, DateTime val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
@@ -500,7 +501,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
-		IQuery SetTimestamp( int position, DateTime val );
+		IQuery SetTimestamp(int position, DateTime val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
@@ -508,7 +509,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
-		IQuery SetTimestamp( string name, DateTime val );
+		IQuery SetTimestamp(string name, DateTime val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Guid" /> to a named parameter
@@ -516,7 +517,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">An instance of a <see cref="Guid"/>.</param>
-		IQuery SetGuid( int position, Guid val );
+		IQuery SetGuid(int position, Guid val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="Guid" /> to a named parameter
@@ -524,7 +525,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">An instance of a <see cref="Guid"/>.</param>
-		IQuery SetGuid( string name, Guid val );
+		IQuery SetGuid(string name, Guid val);
 
 		/// <summary>
 		/// Override the current session flush mode, just for this query.

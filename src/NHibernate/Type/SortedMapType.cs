@@ -1,10 +1,6 @@
 using System;
 using System.Collections;
 
-using NHibernate.Collection;
-using NHibernate.Engine;
-using NHibernate.Persister.Collection;
-
 namespace NHibernate.Type
 {
 	/// <summary>
@@ -24,8 +20,8 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> to use for the sorting.</param>
-		public SortedMapType( string role, string propertyRef, IComparer comparer )
-			: base( role, propertyRef )
+		public SortedMapType(string role, string propertyRef, IComparer comparer)
+			: base(role, propertyRef)
 		{
 			this.comparer = comparer;
 		}
@@ -37,7 +33,7 @@ namespace NHibernate.Type
 
 		public override object Instantiate()
 		{
-			return new SortedList( comparer );
+			return new SortedList(comparer);
 		}
 	}
 }

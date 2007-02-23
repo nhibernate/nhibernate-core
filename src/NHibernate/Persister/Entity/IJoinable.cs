@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Persister.Entity
@@ -25,7 +24,8 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// All columns to select, when loading.
 		/// </summary>
-		string SelectFragment( IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix, string currentCollectionSuffix, bool includeCollectionColumns );
+		string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
+		                      string currentCollectionSuffix, bool includeCollectionColumns);
 
 		/// <summary>
 		/// Get the where clause part of any joins (optional operation)
@@ -34,7 +34,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="innerJoin"></param>
 		/// <param name="includeSubclasses"></param>
 		/// <returns></returns>
-		SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses );
+		SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
 		/// <summary>
 		/// Get the from clause part of any joins (optional operation)
@@ -43,7 +43,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="innerJoin"></param>
 		/// <param name="includeSubclasses"></param>
 		/// <returns></returns>
-		SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses );
+		SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
 		/// <summary>
 		/// The columns to join on.
@@ -53,7 +53,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the where clause filter, given a query alias and considering enabled session filters
 		/// </summary>
-		string FilterFragment( string alias, IDictionary enabledFilters );
+		string FilterFragment(string alias, IDictionary enabledFilters);
 
 		/// <summary>
 		/// Is this instance actually a ICollectionPersister?
@@ -70,15 +70,15 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <value>Does this persister "consume" entity column aliases in the result
 		/// set?</value>
-		bool ConsumesEntityAlias( );
+		bool ConsumesEntityAlias();
 
 		/// <summary>
 		/// Very, very, very ugly...
 		/// </summary>
 		/// <value>Does this persister "consume" collection column aliases in the result
 		/// set?</value>
-		bool ConsumesCollectionAlias( );
+		bool ConsumesCollectionAlias();
 
-		string OneToManyFilterFragment( string alias );
+		string OneToManyFilterFragment(string alias);
 	}
 }

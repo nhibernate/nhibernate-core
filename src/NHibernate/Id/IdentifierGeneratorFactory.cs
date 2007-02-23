@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -88,18 +87,18 @@ namespace NHibernate.Id
 		/// Thrown if there is any problem getting the value from the <see cref="IDataReader"/>
 		/// or with converting it to the <see cref="System.Type"/>.
 		/// </exception>
-		public static object Get( IDataReader rs, IType type, ISessionImplementor session )
+		public static object Get(IDataReader rs, IType type, ISessionImplementor session)
 		{
 			// here is an interesting one: 
 			// - MsSql's @@identity returns a Decimal
 			// - MySql LAST_IDENITY() returns an Int64 			
 			try
 			{
-				return type.NullSafeGet( rs, rs.GetName( 0 ), session, null );
+				return type.NullSafeGet(rs, rs.GetName(0), session, null);
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new IdentifierGenerationException( "could not retrieve identifier value", e );
+				throw new IdentifierGenerationException("could not retrieve identifier value", e);
 			}
 		}
 
@@ -128,25 +127,25 @@ namespace NHibernate.Id
 		/// </summary>
 		static IdentifierGeneratorFactory()
 		{
-			idgenerators.Add( "uuid.hex", typeof( UUIDHexGenerator ) );
-			idgenerators.Add( "uuid.string", typeof( UUIDStringGenerator ) );
-			idgenerators.Add( "hilo", typeof( TableHiLoGenerator ) );
-			idgenerators.Add( "assigned", typeof( Assigned ) );
-			idgenerators.Add( "counter", typeof( CounterGenerator ) );
-			idgenerators.Add( "identity", typeof( IdentityGenerator ) );
-			idgenerators.Add( "increment", typeof( IncrementGenerator ) );
-			idgenerators.Add( "sequence", typeof( SequenceGenerator ) );
-			idgenerators.Add( "seqhilo", typeof( SequenceHiLoGenerator ) );
-			idgenerators.Add( "vm", typeof( CounterGenerator ) );
-			idgenerators.Add( "foreign", typeof( ForeignGenerator ) );
-			idgenerators.Add( "guid", typeof( GuidGenerator ) );
-			idgenerators.Add( "guid.comb", typeof( GuidCombGenerator ) );
+			idgenerators.Add("uuid.hex", typeof(UUIDHexGenerator));
+			idgenerators.Add("uuid.string", typeof(UUIDStringGenerator));
+			idgenerators.Add("hilo", typeof(TableHiLoGenerator));
+			idgenerators.Add("assigned", typeof(Assigned));
+			idgenerators.Add("counter", typeof(CounterGenerator));
+			idgenerators.Add("identity", typeof(IdentityGenerator));
+			idgenerators.Add("increment", typeof(IncrementGenerator));
+			idgenerators.Add("sequence", typeof(SequenceGenerator));
+			idgenerators.Add("seqhilo", typeof(SequenceHiLoGenerator));
+			idgenerators.Add("vm", typeof(CounterGenerator));
+			idgenerators.Add("foreign", typeof(ForeignGenerator));
+			idgenerators.Add("guid", typeof(GuidGenerator));
+			idgenerators.Add("guid.comb", typeof(GuidCombGenerator));
 		}
 
 		private IdentifierGeneratorFactory()
 		{
 			//cannot be instantiated
-		} 
+		}
 
 		/// <summary>
 		/// Creates an <see cref="IIdentifierGenerator"/> from the named strategy.
@@ -165,50 +164,50 @@ namespace NHibernate.Id
 		/// <exception cref="MappingException">
 		/// Thrown if there are any exceptions while creating the <see cref="IIdentifierGenerator"/>.
 		/// </exception>
-		public static IIdentifierGenerator Create( string strategy, IType type, IDictionary parms, Dialect.Dialect dialect )
+		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
 			try
 			{
-				System.Type clazz = ( System.Type ) idgenerators[ strategy ];
-				if( "native".Equals( strategy ) )
+				System.Type clazz = (System.Type) idgenerators[strategy];
+				if ("native".Equals(strategy))
 				{
-					if( dialect.SupportsIdentityColumns )
+					if (dialect.SupportsIdentityColumns)
 					{
-						clazz = typeof( IdentityGenerator );
+						clazz = typeof(IdentityGenerator);
 					}
-					else if( dialect.SupportsSequences )
+					else if (dialect.SupportsSequences)
 					{
-						clazz = typeof( SequenceGenerator );
+						clazz = typeof(SequenceGenerator);
 					}
 					else
 					{
-						clazz = typeof( TableHiLoGenerator );
+						clazz = typeof(TableHiLoGenerator);
 					}
 				}
-				if( clazz == null )
+				if (clazz == null)
 				{
-					clazz = ReflectHelper.ClassForName( strategy );
+					clazz = ReflectHelper.ClassForName(strategy);
 				}
-				
-				IIdentifierGenerator idgen = ( IIdentifierGenerator ) Activator.CreateInstance( clazz );
-				
+
+				IIdentifierGenerator idgen = (IIdentifierGenerator) Activator.CreateInstance(clazz);
+
 				// configure if the generator supports it.
 				IConfigurable configurable = idgen as IConfigurable;
-				if( configurable!=null )
+				if (configurable != null)
 				{
-					configurable.Configure( type, parms, dialect );
+					configurable.Configure(type, parms, dialect);
 				}
 
 				return idgen;
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
 				string message = "could not instantiate id generator";
-				if( strategy!=null )
+				if (strategy != null)
 				{
 					message += " for strategy '" + strategy + "'";
 				}
-				throw new MappingException( message, e );
+				throw new MappingException(message, e);
 			}
 		}
 
@@ -224,56 +223,56 @@ namespace NHibernate.Id
 		/// The <c>type</c> parameter must be an <see cref="Int16"/>, <see cref="Int32"/>,
 		/// or <see cref="Int64"/>.
 		/// </exception>
-		public static object CreateNumber( long value, System.Type type )
+		public static object CreateNumber(long value, System.Type type)
 		{
 			// Convert.ChangeType would be better here, but it fails if the value does not fit
 			// in the destination type, while we need the value to be truncated in this case.
 
-			if( type == typeof( byte ) )
+			if (type == typeof(byte))
 			{
-				return ( byte ) value;
+				return (byte) value;
 			}
-			else if( type == typeof( sbyte ) )
+			else if (type == typeof(sbyte))
 			{
-				return ( sbyte ) value;
+				return (sbyte) value;
 			}
-			else if( type == typeof( short ) )
+			else if (type == typeof(short))
 			{
-				return ( short ) value;
+				return (short) value;
 			}
-			else if( type == typeof( ushort ) )
+			else if (type == typeof(ushort))
 			{
-				return ( ushort ) value;
+				return (ushort) value;
 			}
-			else if( type == typeof( int ) )
+			else if (type == typeof(int))
 			{
-				return ( int ) value;
+				return (int) value;
 			}
-			else if( type == typeof( uint ) )
+			else if (type == typeof(uint))
 			{
-				return ( uint ) value;
+				return (uint) value;
 			}
-			else if( type == typeof( long ) )
+			else if (type == typeof(long))
 			{
-				return ( long ) value;
+				return (long) value;
 			}
-			else if( type == typeof( ulong ) )
+			else if (type == typeof(ulong))
 			{
-				return ( ulong ) value;
+				return (ulong) value;
 			}
-			else if( type == typeof( decimal ) )
+			else if (type == typeof(decimal))
 			{
-				return ( decimal ) value;
+				return (decimal) value;
 			}
 			else
 			{
 				try
 				{
-					return Convert.ChangeType( value, type );
+					return Convert.ChangeType(value, type);
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					throw new IdentifierGenerationException( "could not convert generated value to type " + type, e );
+					throw new IdentifierGenerationException("could not convert generated value to type " + type, e);
 				}
 			}
 		}

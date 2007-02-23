@@ -8,12 +8,12 @@ namespace NHibernate.Cache
 	/// </summary>
 	public interface ILockable
 	{
-		CacheLock Lock( long timeout, int id );
+		CacheLock Lock(long timeout, int id);
 
 		bool IsLock { get; }
 
-		bool IsGettable( long txTimestamp );
+		bool IsGettable(long txTimestamp);
 
-		bool IsPuttable( long txTimestamp, object newVersion, IComparer comparator );
+		bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator);
 	}
 }

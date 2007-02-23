@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -19,36 +18,36 @@ namespace NHibernate.Type
 	{
 		private readonly IUserCollectionType userType;
 
-		public CustomCollectionType( System.Type userTypeClass, string role, string foreignKeyPropertyName )
-			: base( role, foreignKeyPropertyName )
+		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName)
+			: base(role, foreignKeyPropertyName)
 		{
-			if( !typeof( IUserCollectionType ).IsAssignableFrom( userTypeClass ) )
+			if (!typeof(IUserCollectionType).IsAssignableFrom(userTypeClass))
 			{
-				throw new MappingException( "Custom type does not implement UserCollectionType: " + userTypeClass.FullName );
+				throw new MappingException("Custom type does not implement UserCollectionType: " + userTypeClass.FullName);
 			}
 
 			try
 			{
-				userType = ( IUserCollectionType ) Activator.CreateInstance( userTypeClass );
+				userType = (IUserCollectionType) Activator.CreateInstance(userTypeClass);
 			}
-			catch( InstantiationException ie )
+			catch (InstantiationException ie)
 			{
-				throw new MappingException( "Cannot instantiate custom type: " + userTypeClass.FullName, ie );
+				throw new MappingException("Cannot instantiate custom type: " + userTypeClass.FullName, ie);
 			}
-			catch( MemberAccessException mae )
+			catch (MemberAccessException mae)
 			{
-				throw new MappingException( "MemberAccessException trying to instantiate custom type: " + userTypeClass.FullName, mae );
+				throw new MappingException("MemberAccessException trying to instantiate custom type: " + userTypeClass.FullName, mae);
 			}
 		}
 
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return userType.Instantiate( session, persister );
+			return userType.Instantiate(session, persister);
 		}
 
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return userType.Wrap( session, collection );
+			return userType.Wrap(session, collection);
 		}
 
 		public override System.Type ReturnedClass
@@ -61,25 +60,26 @@ namespace NHibernate.Type
 			return userType.Instantiate();
 		}
 
-		public IEnumerable GetElements( object collection )
+		public IEnumerable GetElements(object collection)
 		{
-			return userType.GetElements( collection );
+			return userType.GetElements(collection);
 		}
 
-		public bool Contains( object collection, object entity, ISessionImplementor session )
+		public bool Contains(object collection, object entity, ISessionImplementor session)
 		{
-			return userType.Contains( collection, entity );
+			return userType.Contains(collection, entity);
 		}
 
-		public object IndexOf( object collection, object entity )
+		public object IndexOf(object collection, object entity)
 		{
-			return userType.IndexOf( collection, entity );
+			return userType.IndexOf(collection, entity);
 		}
 
-		public override object ReplaceElements( object original, object target, object owner, IDictionary copyCache, ISessionImplementor session )
+		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
+		                                       ISessionImplementor session)
 		{
-			ICollectionPersister cp = session.Factory.GetCollectionPersister( Role );
-			return userType.ReplaceElements( original, target, cp, owner, copyCache, session );
+			ICollectionPersister cp = session.Factory.GetCollectionPersister(Role);
+			return userType.ReplaceElements(original, target, cp, owner, copyCache, session);
 		}
 	}
 }

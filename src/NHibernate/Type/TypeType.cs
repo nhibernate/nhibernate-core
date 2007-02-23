@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using NHibernate;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -14,7 +13,7 @@ namespace NHibernate.Type
 	public class TypeType : ImmutableType
 	{
 		/// <summary></summary>
-		internal TypeType() : base( new StringSqlType() )
+		internal TypeType() : base(new StringSqlType())
 		{
 		}
 
@@ -23,7 +22,7 @@ namespace NHibernate.Type
 		/// <see cref="SqlType"/>. 
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		internal TypeType( StringSqlType sqlType ) : base( sqlType )
+		internal TypeType(StringSqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -36,10 +35,10 @@ namespace NHibernate.Type
 		/// <exception cref="TypeLoadException">
 		/// Thrown when the value in the database can not be loaded as a <see cref="System.Type"/>
 		/// </exception>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			string str = ( string ) NHibernateUtil.String.Get( rs, index );
-			if( str == null )
+			string str = (string) NHibernateUtil.String.Get(rs, index);
+			if (str == null)
 			{
 				return null;
 			}
@@ -47,11 +46,11 @@ namespace NHibernate.Type
 			{
 				try
 				{
-					return ReflectHelper.ClassForName( str );
+					return ReflectHelper.ClassForName(str);
 				}
-				catch( TypeLoadException cnfe )
+				catch (TypeLoadException cnfe)
 				{
-					throw new HibernateException( "Class not found: " + str, cnfe );
+					throw new HibernateException("Class not found: " + str, cnfe);
 				}
 			}
 		}
@@ -71,10 +70,9 @@ namespace NHibernate.Type
 		/// <exception cref="TypeLoadException">
 		/// Thrown when the value in the database can not be loaded as a <see cref="System.Type"/>
 		/// </exception>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
-
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary>
@@ -88,9 +86,9 @@ namespace NHibernate.Type
 		/// This uses the <see cref="NullableType.Set(IDbCommand, Object,Int32)"/> method of the 
 		/// <see cref="NHibernateUtil.String"/> object to do the work.
 		/// </remarks>
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			NHibernateUtil.String.Set( cmd, ( ( System.Type ) value ).AssemblyQualifiedName, index );
+			NHibernateUtil.String.Set(cmd, ((System.Type) value).AssemblyQualifiedName, index);
 		}
 
 		/// <summary>
@@ -99,9 +97,9 @@ namespace NHibernate.Type
 		/// <param name="value">The <see cref="System.Type"/> that contains the values.
 		/// </param>
 		/// <returns>An Xml formatted string that contains the Assembly Qualified Name.</returns>
-		public override string ToString( object value )
+		public override string ToString(object value)
 		{
-			return ( ( System.Type ) value ).AssemblyQualifiedName;
+			return ((System.Type) value).AssemblyQualifiedName;
 		}
 
 		/// <summary>
@@ -113,7 +111,7 @@ namespace NHibernate.Type
 		/// </value>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( System.Type ); }
+			get { return typeof(System.Type); }
 		}
 
 		/// <summary>
@@ -122,9 +120,9 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			return ObjectUtils.Equals( x, y );
+			return ObjectUtils.Equals(x, y);
 		}
 
 		/// <summary></summary>
@@ -133,15 +131,15 @@ namespace NHibernate.Type
 			get { return "Type"; }
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			try 
+			try
 			{
-				return ReflectHelper.ClassForName( xml );
+				return ReflectHelper.ClassForName(xml);
 			}
-			catch( TypeLoadException tle )
+			catch (TypeLoadException tle)
 			{
-				throw new HibernateException( "could not parse xml", tle );
+				throw new HibernateException("could not parse xml", tle);
 			}
 		}
 	}

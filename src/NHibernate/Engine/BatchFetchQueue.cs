@@ -12,6 +12,7 @@ namespace NHibernate.Engine
 	public class BatchFetchQueue
 	{
 		private static readonly object Marker = new object();
+
 		/// <summary>
 		/// Defines a sequence of <see cref="EntityKey" /> elements that are currently
 		/// eligible for batch fetching.
@@ -134,9 +135,9 @@ namespace NHibernate.Engine
 		/// <param name="batchSize">the maximum number of keys to return</param>
 		/// <returns>an array of collection keys, of length batchSize (padded with nulls)</returns>
 		public object[] GetCollectionBatch(
-				ICollectionPersister collectionPersister,
-				object id,
-				int batchSize)
+			ICollectionPersister collectionPersister,
+			object id,
+			int batchSize)
 		{
 			object[] keys = new object[batchSize];
 			keys[0] = id;
@@ -154,7 +155,6 @@ namespace NHibernate.Engine
 				IPersistentCollection collection = (IPersistentCollection) me.Key;
 				if (!collection.WasInitialized && ce.LoadedPersister == collectionPersister)
 				{
-
 					if (checkForEnd && i == end)
 					{
 						return keys; //the first key found after the given key
@@ -163,8 +163,8 @@ namespace NHibernate.Engine
 					//if ( end == -1 && count > batchSize*10 ) return keys; //try out ten batches, max
 
 					bool isEqual = collectionPersister.KeyType.Equals(
-							id,
-							ce.LoadedKey);
+						id,
+						ce.LoadedKey);
 
 					if (isEqual)
 					{
@@ -186,7 +186,6 @@ namespace NHibernate.Engine
 						}
 					}
 				}
-
 			}
 			return keys; //we ran out of keys to try
 		}
@@ -201,9 +200,9 @@ namespace NHibernate.Engine
 		/// <param name="batchSize">The maximum number of keys to return</param>
 		/// <returns>an array of identifiers, of length batchSize (possibly padded with nulls)</returns>
 		public object[] GetEntityBatch(
-				IEntityPersister persister,
-				object id,
-				int batchSize)
+			IEntityPersister persister,
+			object id,
+			int batchSize)
 		{
 			object[] ids = new object[batchSize];
 			ids[0] = id; //first element of array is reserved for the actual instance we are loading!
@@ -244,34 +243,34 @@ namespace NHibernate.Engine
 		}
 
 		private bool IsCached(
-				EntityKey entityKey,
-				IEntityPersister persister)
+			EntityKey entityKey,
+			IEntityPersister persister)
 		{
 			if (persister.HasCache)
 			{
 				CacheKey key = new CacheKey(
-						entityKey.Identifier,
-						persister.IdentifierType,
-						entityKey.MappedClass.FullName,
-						session.Factory
-				);
+					entityKey.Identifier,
+					persister.IdentifierType,
+					entityKey.MappedClass.FullName,
+					session.Factory
+					);
 				return persister.Cache.Cache.Get(key) != null;
 			}
 			return false;
 		}
 
 		private bool IsCached(
-				object collectionKey,
-				ICollectionPersister persister)
+			object collectionKey,
+			ICollectionPersister persister)
 		{
 			if (persister.HasCache)
 			{
 				CacheKey cacheKey = new CacheKey(
-						collectionKey,
-						persister.KeyType,
-						persister.Role,
-						session.Factory
-				);
+					collectionKey,
+					persister.KeyType,
+					persister.Role,
+					session.Factory
+					);
 				return persister.Cache.Cache.Get(cacheKey) != null;
 			}
 			return false;

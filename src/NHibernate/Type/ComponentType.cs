@@ -1,16 +1,12 @@
 using System;
 using System.Collections;
 using System.Data;
-
+using NHibernate.Bytecode;
 using NHibernate.Engine;
-using NHibernate.Impl;
-using NHibernate.Persister;
 using NHibernate.Property;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
-
-using Environment = NHibernate.Cfg.Environment;
-using NHibernate.Bytecode;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Type
 {
@@ -30,43 +26,43 @@ namespace NHibernate.Type
 		private IGetter parentGetter;
 		private IReflectionOptimizer optimizer = null;
 
-		public override SqlType[] SqlTypes( IMapping mapping )
+		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			//not called at runtime so doesn't matter if its slow :)
-			SqlType[] sqlTypes = new SqlType[ GetColumnSpan( mapping ) ];
+			SqlType[] sqlTypes = new SqlType[GetColumnSpan(mapping)];
 			int n = 0;
-			for( int i = 0; i < propertySpan; i++ )
+			for (int i = 0; i < propertySpan; i++)
 			{
-				SqlType[] subtypes = propertyTypes[ i ].SqlTypes( mapping );
-				for( int j = 0; j < subtypes.Length; j++ )
+				SqlType[] subtypes = propertyTypes[i].SqlTypes(mapping);
+				for (int j = 0; j < subtypes.Length; j++)
 				{
-					sqlTypes[ n++ ] = subtypes[ j ];
+					sqlTypes[n++] = subtypes[j];
 				}
 			}
 			return sqlTypes;
 		}
 
-		public override int GetColumnSpan( IMapping mapping )
+		public override int GetColumnSpan(IMapping mapping)
 		{
 			int span = 0;
-			for( int i = 0; i < propertySpan; i++ )
+			for (int i = 0; i < propertySpan; i++)
 			{
-				span += propertyTypes[ i ].GetColumnSpan( mapping );
+				span += propertyTypes[i].GetColumnSpan(mapping);
 			}
 			return span;
 		}
 
-		public ComponentType( System.Type componentClass,
-							  string[] propertyNames,
-							  IGetter[] propertyGetters,
-							  ISetter[] propertySetters,
-			// currently not used, see the comment near the end of the method body
-							  bool foundCustomAcessor,
-							  IType[] propertyTypes,
-							  bool[] nullabilities,
-							  FetchMode[] joinedFetch,
-							  Cascades.CascadeStyle[] cascade,
-							  string parentProperty )
+		public ComponentType(System.Type componentClass,
+		                     string[] propertyNames,
+		                     IGetter[] propertyGetters,
+		                     ISetter[] propertySetters,
+		                     // currently not used, see the comment near the end of the method body
+		                     bool foundCustomAcessor,
+		                     IType[] propertyTypes,
+		                     bool[] nullabilities,
+		                     FetchMode[] joinedFetch,
+		                     Cascades.CascadeStyle[] cascade,
+		                     string parentProperty)
 		{
 			this.componentClass = componentClass;
 			this.propertyTypes = propertyTypes;
@@ -74,35 +70,35 @@ namespace NHibernate.Type
 			propertySpan = propertyNames.Length;
 			getters = propertyGetters;
 			setters = propertySetters;
-			string[] getterNames = new string[ propertySpan ];
-			string[] setterNames = new string[ propertySpan ];
-			System.Type[] propTypes = new System.Type[ propertySpan ];
-			for( int i = 0; i < propertySpan; i++ )
+			string[] getterNames = new string[propertySpan];
+			string[] setterNames = new string[propertySpan];
+			System.Type[] propTypes = new System.Type[propertySpan];
+			for (int i = 0; i < propertySpan; i++)
 			{
-				getterNames[ i ] = getters[ i ].PropertyName;
-				setterNames[ i ] = setters[ i ].PropertyName;
-				propTypes[ i ] = getters[ i ].ReturnType;
+				getterNames[i] = getters[i].PropertyName;
+				setterNames[i] = setters[i].PropertyName;
+				propTypes[i] = getters[i].ReturnType;
 			}
 
-			if( parentProperty == null )
+			if (parentProperty == null)
 			{
 				parentSetter = null;
 				parentGetter = null;
 			}
 			else
 			{
-				IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor( null );
-				parentSetter = pa.GetSetter( componentClass, parentProperty );
-				parentGetter = pa.GetGetter( componentClass, parentProperty );
+				IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor(null);
+				parentSetter = pa.GetSetter(componentClass, parentProperty);
+				parentGetter = pa.GetGetter(componentClass, parentProperty);
 			}
 			this.propertyNames = propertyNames;
 			this.cascade = cascade;
 			this.joinedFetch = joinedFetch;
 
-			if( Environment.UseReflectionOptimizer )
+			if (Environment.UseReflectionOptimizer)
 			{
 				// NH: reflection optimizer works with custom accessors
-				this.optimizer = Environment.BytecodeProvider.GetReflectionOptimizer( componentClass, getters, setters );
+				this.optimizer = Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
 			}
 		}
 
@@ -136,19 +132,19 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			if( x == y )
+			if (x == y)
 			{
 				return true;
 			}
-			if( x == null || y == null )
+			if (x == null || y == null)
 			{
 				return false;
 			}
-			for( int i = 0; i < propertySpan; i++ )
+			for (int i = 0; i < propertySpan; i++)
 			{
-				if( !propertyTypes[ i ].Equals( getters[ i ].Get( x ), getters[ i ].Get( y ) ) )
+				if (!propertyTypes[i].Equals(getters[i].Get(x), getters[i].Get(y)))
 				{
 					return false;
 				}
@@ -175,21 +171,21 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override bool IsDirty( object x, object y, ISessionImplementor session )
+		public override bool IsDirty(object x, object y, ISessionImplementor session)
 		{
-			if( x == y )
+			if (x == y)
 			{
 				return false;
 			}
-			if( x == null || y == null )
+			if (x == null || y == null)
 			{
 				return true;
 			}
-			object[] xvalues = GetPropertyValues( x );
-			object[] yvalues = GetPropertyValues( y );
-			for( int i = 0; i < xvalues.Length; i++ )
+			object[] xvalues = GetPropertyValues(x);
+			object[] yvalues = GetPropertyValues(y);
+			for (int i = 0; i < xvalues.Length; i++)
 			{
-				if( propertyTypes[ i ].IsDirty( xvalues[ i ], yvalues[ i ], session ) )
+				if (propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session))
 				{
 					return true;
 				}
@@ -197,38 +193,38 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override bool IsDirty( object x, object y, bool[] checkable, ISessionImplementor session )
+		public override bool IsDirty(object x, object y, bool[] checkable, ISessionImplementor session)
 		{
-			if( x == y )
+			if (x == y)
 			{
 				return false;
 			}
-			if( x == null || y == null )
+			if (x == null || y == null)
 			{
 				return true;
 			}
 
-			object[] xvalues = GetPropertyValues( x );
-			object[] yvalues = GetPropertyValues( y );
+			object[] xvalues = GetPropertyValues(x);
+			object[] yvalues = GetPropertyValues(y);
 			int loc = 0;
-			for( int i = 0; i < xvalues.Length; i++ )
+			for (int i = 0; i < xvalues.Length; i++)
 			{
-				int len = propertyTypes[ i ].GetColumnSpan( session.Factory );
-				if( len <= 1 )
+				int len = propertyTypes[i].GetColumnSpan(session.Factory);
+				if (len <= 1)
 				{
-					bool dirty = ( len == 0 || checkable[ loc ] ) &&
-						propertyTypes[ i ].IsDirty( xvalues[ i ], yvalues[ i ], session );
-					if( dirty )
+					bool dirty = (len == 0 || checkable[loc]) &&
+					             propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session);
+					if (dirty)
 					{
 						return true;
 					}
 				}
 				else
 				{
-					bool[] subcheckable = new bool[ len ];
-					Array.Copy( checkable, loc, subcheckable, 0, len );
-					bool dirty = propertyTypes[ i ].IsDirty( xvalues[ i ], yvalues[ i ], subcheckable, session );
-					if( dirty )
+					bool[] subcheckable = new bool[len];
+					Array.Copy(checkable, loc, subcheckable, 0, len);
+					bool dirty = propertyTypes[i].IsDirty(xvalues[i], yvalues[i], subcheckable, session);
+					if (dirty)
 					{
 						return true;
 					}
@@ -238,9 +234,9 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override object NullSafeGet( IDataReader rs, string[] names, ISessionImplementor session, object owner )
+		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return ResolveIdentifier( Hydrate( rs, names, session, owner ), session, owner );
+			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
 
 			/*
 			int begin = 0;
@@ -282,27 +278,27 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="begin"></param>
 		/// <param name="session"></param>
-		public override void NullSafeSet( IDbCommand st, object value, int begin, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int begin, ISessionImplementor session)
 		{
-			object[] subvalues = NullSafeGetValues( value );
+			object[] subvalues = NullSafeGetValues(value);
 
-			for( int i = 0; i < propertySpan; i++ )
+			for (int i = 0; i < propertySpan; i++)
 			{
-				propertyTypes[ i ].NullSafeSet( st, subvalues[ i ], begin, session );
-				begin += propertyTypes[ i ].GetColumnSpan( session.Factory );
+				propertyTypes[i].NullSafeSet(st, subvalues[i], begin, session);
+				begin += propertyTypes[i].GetColumnSpan(session.Factory);
 			}
 		}
 
-		public override void NullSafeSet( IDbCommand st, object value, int begin, bool[] settable, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
 		{
-			object[] subvalues = NullSafeGetValues( value );
+			object[] subvalues = NullSafeGetValues(value);
 
 			int subvaluesIndex = 0;
 			int sqlParamIndex = begin;
 			int settableIndex = 0;
 			for (int i = 0; i < propertySpan; i++)
 			{
-				int len = propertyTypes[i].GetColumnSpan( session.Factory );
+				int len = propertyTypes[i].GetColumnSpan(session.Factory);
 				if (len == 0)
 				{
 					// noop
@@ -311,7 +307,7 @@ namespace NHibernate.Type
 				{
 					if (settable[settableIndex])
 					{
-						propertyTypes[i].NullSafeSet( st, subvalues[i], sqlParamIndex, session );
+						propertyTypes[i].NullSafeSet(st, subvalues[i], sqlParamIndex, session);
 						sqlParamIndex++;
 					}
 					settableIndex++;
@@ -319,9 +315,9 @@ namespace NHibernate.Type
 				else
 				{
 					bool[] subsettable = new bool[len];
-					Array.Copy( settable, subvaluesIndex, subsettable, 0, len );
-					propertyTypes[i].NullSafeSet( st, subvalues[i], sqlParamIndex, subsettable, session );
-					int subsettableCount = ArrayHelper.CountTrue( subsettable );
+					Array.Copy(settable, subvaluesIndex, subsettable, 0, len);
+					propertyTypes[i].NullSafeSet(st, subvalues[i], sqlParamIndex, subsettable, session);
+					int subsettableCount = ArrayHelper.CountTrue(subsettable);
 					sqlParamIndex += subsettableCount;
 					settableIndex += subsettableCount;
 				}
@@ -329,15 +325,15 @@ namespace NHibernate.Type
 			}
 		}
 
-		private object[] NullSafeGetValues( object value )
+		private object[] NullSafeGetValues(object value)
 		{
-			if( value == null )
+			if (value == null)
 			{
-				return new object[ propertySpan ];
+				return new object[propertySpan];
 			}
 			else
 			{
-				return GetPropertyValues( value );
+				return GetPropertyValues(value);
 			}
 		}
 
@@ -349,9 +345,9 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
+		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet( rs, new string[] { name }, session, owner );
+			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
 		/// <summary>
@@ -361,9 +357,9 @@ namespace NHibernate.Type
 		/// <param name="i"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object GetPropertyValue( object component, int i, ISessionImplementor session )
+		public object GetPropertyValue(object component, int i, ISessionImplementor session)
 		{
-			return GetPropertyValue( component, i );
+			return GetPropertyValue(component, i);
 		}
 
 		/// <summary>
@@ -372,9 +368,9 @@ namespace NHibernate.Type
 		/// <param name="component"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public object GetPropertyValue( object component, int i )
+		public object GetPropertyValue(object component, int i)
 		{
-			return getters[ i ].Get( component );
+			return getters[i].Get(component);
 		}
 
 		/// <summary>
@@ -383,26 +379,26 @@ namespace NHibernate.Type
 		/// <param name="component"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object[] GetPropertyValues( object component, ISessionImplementor session )
+		public object[] GetPropertyValues(object component, ISessionImplementor session)
 		{
-			return GetPropertyValues( component );
+			return GetPropertyValues(component);
 		}
 
 		/// <remarks>
 		/// Use the access optimizer if available
 		/// </remarks>
-		public object[] GetPropertyValues( object component )
+		public object[] GetPropertyValues(object component)
 		{
-			if( optimizer != null && optimizer.AccessOptimizer != null )
+			if (optimizer != null && optimizer.AccessOptimizer != null)
 			{
-				return optimizer.AccessOptimizer.GetPropertyValues( component );
+				return optimizer.AccessOptimizer.GetPropertyValues(component);
 			}
 			else
 			{
-				object[] values = new object[ propertySpan ];
-				for( int i = 0; i < propertySpan; i++ )
+				object[] values = new object[propertySpan];
+				for (int i = 0; i < propertySpan; i++)
 				{
-					values[ i ] = GetPropertyValue( component, i );
+					values[i] = GetPropertyValue(component, i);
 				}
 				return values;
 			}
@@ -411,27 +407,27 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// Use the access optimizer if available
 		/// </remarks>
-		public void SetPropertyValues( object component, object[] values )
+		public void SetPropertyValues(object component, object[] values)
 		{
-			if( optimizer != null && optimizer.AccessOptimizer != null )
+			if (optimizer != null && optimizer.AccessOptimizer != null)
 			{
 				try
 				{
-					optimizer.AccessOptimizer.SetPropertyValues( component, values );
+					optimizer.AccessOptimizer.SetPropertyValues(component, values);
 				}
-				catch( InvalidCastException e )
+				catch (InvalidCastException e)
 				{
 					throw new MappingException(
 						"Invalid mapping information specified for type " + component.GetType()
 						+ ", check your mapping file for property type mismatches",
-						e );
+						e);
 				}
 			}
 			else
 			{
-				for( int i = 0; i < propertySpan; i++ )
+				for (int i = 0; i < propertySpan; i++)
 				{
-					setters[ i ].Set( component, values[ i ] );
+					setters[i].Set(component, values[i]);
 				}
 			}
 		}
@@ -454,21 +450,21 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			if( value == null )
+			if (value == null)
 			{
 				return "null";
 			}
 			IDictionary result = new Hashtable();
-			object[] values = GetPropertyValues( value );
+			object[] values = GetPropertyValues(value);
 
-			for( int i = 0; i < propertyTypes.Length; i++ )
+			for (int i = 0; i < propertyTypes.Length; i++)
 			{
-				result[ propertyNames[ i ] ] = propertyTypes[ i ].ToLoggableString( values[ i ], factory );
+				result[propertyNames[i]] = propertyTypes[i].ToLoggableString(values[i], factory);
 			}
 
-			return StringHelper.Unqualify( Name ) + CollectionPrinter.ToString( result );
+			return StringHelper.Unqualify(Name) + CollectionPrinter.ToString(result);
 		}
 
 		/// <summary>
@@ -476,7 +472,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public override object FromString( string xml )
+		public override object FromString(string xml)
 		{
 			throw new NotSupportedException();
 		}
@@ -492,21 +488,21 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="component"></param>
 		/// <returns></returns>
-		public override object DeepCopy( object component )
+		public override object DeepCopy(object component)
 		{
-			if( component == null )
+			if (component == null)
 			{
 				return null;
 			}
 
-			object[] values = GetPropertyValues( component );
-			for( int i = 0; i < propertySpan; i++ )
+			object[] values = GetPropertyValues(component);
+			for (int i = 0; i < propertySpan; i++)
 			{
-				values[ i ] = propertyTypes[ i ].DeepCopy( values[ i ] );
+				values[i] = propertyTypes[i].DeepCopy(values[i]);
 			}
 
 			object result = Instantiate();
-			SetPropertyValues( result, values );
+			SetPropertyValues(result, values);
 
 			// TODO NH: The code below is present in H2.1, but it breaks some
 			// tests in NH because FooComponent.Parent setter throws
@@ -515,35 +511,36 @@ namespace NHibernate.Type
 			// not absolutely necessary, but helps for some
 			// Equals/GetHashCode implementations
 			//
-			if( parentGetter != null )
+			if (parentGetter != null)
 			{
-				parentSetter.Set( result, parentGetter.Get( component ) );
+				parentSetter.Set(result, parentGetter.Get(component));
 			}
 
 			return result;
 		}
 
-		public override object Replace( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		public override object Replace(object original, object target, ISessionImplementor session, object owner,
+		                               IDictionary copiedAlready)
 		{
-			if( original == null )
+			if (original == null)
 			{
 				return null;
 			}
 
-			if( original == target )
+			if (original == target)
 			{
 				return target;
 			}
 
 			object result = target == null
-				? Instantiate( owner, session )
-				: target;
+			                	? Instantiate(owner, session)
+			                	: target;
 
 			object[] values = TypeFactory.Replace(
-				GetPropertyValues( original ), GetPropertyValues( result ),
-				propertyTypes, session, owner, copiedAlready );
+				GetPropertyValues(original), GetPropertyValues(result),
+				propertyTypes, session, owner, copiedAlready);
 
-			SetPropertyValues( result, values );
+			SetPropertyValues(result, values);
 			return result;
 		}
 
@@ -555,36 +552,36 @@ namespace NHibernate.Type
 			try
 			{
 				object result;
-				if( optimizer != null && optimizer.InstantiationOptimizer != null )
+				if (optimizer != null && optimizer.InstantiationOptimizer != null)
 				{
 					result = optimizer.InstantiationOptimizer.CreateInstance();
 				}
 				else
 				{
-					result = Activator.CreateInstance( componentClass, true );
+					result = Activator.CreateInstance(componentClass, true);
 				}
 				return result;
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new InstantiationException( "Could not instantiate component: ", e, componentClass );
+				throw new InstantiationException("Could not instantiate component: ", e, componentClass);
 			}
 		}
 
-		public object Instantiate( object parent, ISessionImplementor session )
+		public object Instantiate(object parent, ISessionImplementor session)
 		{
 			object result = Instantiate();
 			try
 			{
-				if( parentSetter != null && parent != null )
+				if (parentSetter != null && parent != null)
 				{
-					parentSetter.Set( result, session.ProxyFor( parent ) );
+					parentSetter.Set(result, session.ProxyFor(parent));
 				}
 				return result;
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new InstantiationException( "Could not set component parent for: ", e, componentClass );
+				throw new InstantiationException("Could not set component parent for: ", e, componentClass);
 			}
 		}
 
@@ -593,9 +590,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public Cascades.CascadeStyle GetCascadeStyle( int i )
+		public Cascades.CascadeStyle GetCascadeStyle(int i)
 		{
-			return cascade[ i ];
+			return cascade[i];
 		}
 
 		/// <summary></summary>
@@ -610,18 +607,18 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public override object Disassemble( object value, ISessionImplementor session )
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
-			if( value == null )
+			if (value == null)
 			{
 				return null;
 			}
 			else
 			{
-				object[] values = GetPropertyValues( value );
-				for( int i = 0; i < propertyTypes.Length; i++ )
+				object[] values = GetPropertyValues(value);
+				for (int i = 0; i < propertyTypes.Length; i++)
 				{
-					values[ i ] = propertyTypes[ i ].Disassemble( values[ i ], session );
+					values[i] = propertyTypes[i].Disassemble(values[i], session);
 				}
 				return values;
 			}
@@ -634,22 +631,22 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object Assemble( object obj, ISessionImplementor session, object owner )
+		public override object Assemble(object obj, ISessionImplementor session, object owner)
 		{
-			if( obj == null )
+			if (obj == null)
 			{
 				return null;
 			}
 			else
 			{
-				object[] values = ( object[] ) obj;
-				object[] assembled = new object[ values.Length ];
-				for( int i = 0; i < propertyTypes.Length; i++ )
+				object[] values = (object[]) obj;
+				object[] assembled = new object[values.Length];
+				for (int i = 0; i < propertyTypes.Length; i++)
 				{
-					assembled[ i ] = propertyTypes[ i ].Assemble( values[ i ], session, owner );
+					assembled[i] = propertyTypes[i].Assemble(values[i], session, owner);
 				}
-				object result = Instantiate( owner, session );
-				SetPropertyValues( result, assembled );
+				object result = Instantiate(owner, session);
+				SetPropertyValues(result, assembled);
 				return result;
 			}
 		}
@@ -665,9 +662,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public FetchMode GetFetchMode( int i )
+		public FetchMode GetFetchMode(int i)
 		{
-			return joinedFetch[ i ];
+			return joinedFetch[i];
 		}
 
 		/// <summary>
@@ -678,39 +675,39 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object Hydrate( IDataReader rs, string[] names, ISessionImplementor session, object owner )
+		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			int begin = 0;
 			bool notNull = false;
-			object[] values = new object[ propertySpan ];
-			for( int i = 0; i < propertySpan; i++ )
+			object[] values = new object[propertySpan];
+			for (int i = 0; i < propertySpan; i++)
 			{
-				int length = propertyTypes[ i ].GetColumnSpan( session.Factory );
-				string[] range = ArrayHelper.Slice( names, begin, length ); //cache this
-				object val = propertyTypes[ i ].Hydrate( rs, range, session, owner );
-				if( val != null )
+				int length = propertyTypes[i].GetColumnSpan(session.Factory);
+				string[] range = ArrayHelper.Slice(names, begin, length); //cache this
+				object val = propertyTypes[i].Hydrate(rs, range, session, owner);
+				if (val != null)
 				{
 					notNull = true;
 				}
-				values[ i ] = val;
+				values[i] = val;
 				begin += length;
 			}
 
 			return notNull ? values : null;
 		}
 
-		public override object ResolveIdentifier( object value, ISessionImplementor session, object owner )
+		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
-			if( value != null )
+			if (value != null)
 			{
-				object result = Instantiate( owner, session );
-				object[] values = ( object[] ) value;
-				object[] resolvedValues = new object[ values.Length ]; //only really need new array during semiresolve!
-				for( int i = 0; i < values.Length; i++ )
+				object result = Instantiate(owner, session);
+				object[] values = (object[]) value;
+				object[] resolvedValues = new object[values.Length]; //only really need new array during semiresolve!
+				for (int i = 0; i < values.Length; i++)
 				{
-					resolvedValues[ i ] = propertyTypes[ i ].ResolveIdentifier( values[ i ], session, owner );
+					resolvedValues[i] = propertyTypes[i].ResolveIdentifier(values[i], session, owner);
 				}
-				SetPropertyValues( result, resolvedValues );
+				SetPropertyValues(result, resolvedValues);
 				return result;
 			}
 			else
@@ -719,30 +716,30 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object SemiResolve( object value, ISessionImplementor session, object owner )
+		public override object SemiResolve(object value, ISessionImplementor session, object owner)
 		{
-			return ResolveIdentifier( value, session, owner );
+			return ResolveIdentifier(value, session, owner);
 		}
 
-		public override bool IsModified( object old, object current, bool[] checkable, ISessionImplementor session )
+		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			if( current == null )
+			if (current == null)
 			{
 				return old != null;
 			}
-			if( old == null )
+			if (old == null)
 			{
 				return current != null;
 			}
-			object[] currentValues = GetPropertyValues( current, session );
-			object[] oldValues = ( Object[] ) old;
+			object[] currentValues = GetPropertyValues(current, session);
+			object[] oldValues = (Object[]) old;
 			int loc = 0;
-			for( int i = 0; i < currentValues.Length; i++ )
+			for (int i = 0; i < currentValues.Length; i++)
 			{
-				int len = propertyTypes[ i ].GetColumnSpan( session.Factory );
-				bool[] subcheckable = new bool[ len ];
-				Array.Copy( checkable, loc, subcheckable, 0, len );
-				if( propertyTypes[ i ].IsModified( oldValues[ i ], currentValues[ i ], subcheckable, session ) )
+				int len = propertyTypes[i].GetColumnSpan(session.Factory);
+				bool[] subcheckable = new bool[len];
+				Array.Copy(checkable, loc, subcheckable, 0, len);
+				if (propertyTypes[i].IsModified(oldValues[i], currentValues[i], subcheckable, session))
 				{
 					return true;
 				}

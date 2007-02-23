@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -49,7 +48,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="metaType"></param>
 		/// <param name="identifierType"></param>
-		internal AnyType( IType metaType, IType identifierType )
+		internal AnyType(IType metaType, IType identifierType)
 		{
 			this.identifierType = identifierType;
 			this.metaType = metaType;
@@ -57,7 +56,7 @@ namespace NHibernate.Type
 
 		/// <summary></summary>
 		internal AnyType()
-			: this( NHibernateUtil.Class, NHibernateUtil.Serializable )
+			: this(NHibernateUtil.Class, NHibernateUtil.Serializable)
 		{
 		}
 
@@ -66,7 +65,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override object DeepCopy( object value )
+		public override object DeepCopy(object value)
 		{
 			return value;
 		}
@@ -77,7 +76,7 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
 			return x == y;
 		}
@@ -87,7 +86,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public override int GetColumnSpan( IMapping session )
+		public override int GetColumnSpan(IMapping session)
 		{
 			/*
 			 * This is set at 2 in Hibernate to support the old depreciated
@@ -112,45 +111,45 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
+		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			throw new NotSupportedException( "object is a multicolumn type" );
+			throw new NotSupportedException("object is a multicolumn type");
 		}
 
-		public override object NullSafeGet( IDataReader rs, string[] names, ISessionImplementor session, object owner )
+		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return Resolve(
-				( System.Type ) metaType.NullSafeGet( rs, names[ 0 ], session, owner ),
-				identifierType.NullSafeGet( rs, names[ 1 ], session, owner ),
-				session );
+				(System.Type) metaType.NullSafeGet(rs, names[0], session, owner),
+				identifierType.NullSafeGet(rs, names[1], session, owner),
+				session);
 		}
 
-		public override object Hydrate( IDataReader rs, string[] names, ISessionImplementor session, object owner )
+		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			System.Type clazz = ( System.Type ) metaType.NullSafeGet( rs, names[ 0 ], session, owner );
-			object id = identifierType.NullSafeGet( rs, names[ 1 ], session, owner );
-			return new ObjectTypeCacheEntry( clazz, id );
+			System.Type clazz = (System.Type) metaType.NullSafeGet(rs, names[0], session, owner);
+			object id = identifierType.NullSafeGet(rs, names[1], session, owner);
+			return new ObjectTypeCacheEntry(clazz, id);
 		}
 
-		public override object ResolveIdentifier( object value, ISessionImplementor session, object owner )
+		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
-			ObjectTypeCacheEntry holder = ( ObjectTypeCacheEntry ) value;
-			return Resolve( holder.clazz, holder.id, session );
-		}
-		
-		public override object SemiResolve( object value, ISessionImplementor session, object owner )
-		{
-			throw new NotSupportedException( "any mappings may not form part of a property-ref" );
+			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) value;
+			return Resolve(holder.clazz, holder.id, session);
 		}
 
-		private object Resolve( System.Type clazz, object id, ISessionImplementor session )
+		public override object SemiResolve(object value, ISessionImplementor session, object owner)
 		{
-			return ( clazz == null || id == null ) ?
-				null :
-				session.InternalLoad( clazz, id, false, false );
+			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
-		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		private object Resolve(System.Type clazz, object id, ISessionImplementor session)
+		{
+			return (clazz == null || id == null) ?
+			       null :
+			       session.InternalLoad(clazz, id, false, false);
+		}
+
+		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			object id;
 			System.Type clazz;
@@ -162,54 +161,54 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				id = session.GetEntityIdentifierIfNotUnsaved( value );
-				clazz = NHibernateProxyHelper.GuessClass( value );
+				id = session.GetEntityIdentifierIfNotUnsaved(value);
+				clazz = NHibernateProxyHelper.GuessClass(value);
 			}
 
 			// metaType is assumed to be single-column type
 			if (settable == null || settable[0])
 			{
-				metaType.NullSafeSet( st, clazz, index, session );
+				metaType.NullSafeSet(st, clazz, index, session);
 			}
 
 			if (settable == null)
 			{
-				identifierType.NullSafeSet( st, id, index + 1, session );
+				identifierType.NullSafeSet(st, id, index + 1, session);
 			}
 			else
 			{
 				bool[] idsettable = new bool[settable.Length - 1];
-				Array.Copy( settable, 1, idsettable, 0, idsettable.Length );
-				identifierType.NullSafeSet( st, id, index + 1, idsettable, session );
+				Array.Copy(settable, 1, idsettable, 0, idsettable.Length);
+				identifierType.NullSafeSet(st, id, index + 1, idsettable, session);
 			}
 		}
 
-		public override void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 		{
-			NullSafeSet( st, value, index, null, session );
+			NullSafeSet(st, value, index, null, session);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( object ); }
+			get { return typeof(object); }
 		}
 
-		public override SqlType[] SqlTypes( IMapping mapping )
+		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			return ArrayHelper.Join(
-				metaType.SqlTypes( mapping ),
-				identifierType.SqlTypes( mapping ) );
+				metaType.SqlTypes(mapping),
+				identifierType.SqlTypes(mapping));
 		}
 
-		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
 			return value == null ?
-				"null" :
-				NHibernateUtil.Entity( NHibernateProxyHelper.GuessClass( value ) )
-					.ToLoggableString( value, factory );
+			       "null" :
+			       NHibernateUtil.Entity(NHibernateProxyHelper.GuessClass(value))
+			       	.ToLoggableString(value, factory);
 		}
 
-		public override object FromString( string xml )
+		public override object FromString(string xml)
 		{
 			throw new NotSupportedException(); //TODO: is this right??
 		}
@@ -220,26 +219,26 @@ namespace NHibernate.Type
 			public System.Type clazz;
 			public object id;
 
-			public ObjectTypeCacheEntry( System.Type clazz, object id )
+			public ObjectTypeCacheEntry(System.Type clazz, object id)
 			{
 				this.clazz = clazz;
 				this.id = id;
 			}
 		}
 
-		public override object Assemble( object cached, ISessionImplementor session, object owner )
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			ObjectTypeCacheEntry e = ( ObjectTypeCacheEntry ) cached;
-			return ( cached == null ) ? null : session.InternalLoad( e.clazz, e.id, false, false );
+			ObjectTypeCacheEntry e = (ObjectTypeCacheEntry) cached;
+			return (cached == null) ? null : session.InternalLoad(e.clazz, e.id, false, false);
 		}
 
-		public override object Disassemble( object value, ISessionImplementor session )
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
-			return ( value == null ) ?
-				null :
-				new ObjectTypeCacheEntry(
-					NHibernateProxyHelper.GuessClass(value),
-					session.GetEntityIdentifier( value ) );
+			return (value == null) ?
+			       null :
+			       new ObjectTypeCacheEntry(
+			       	NHibernateProxyHelper.GuessClass(value),
+			       	session.GetEntityIdentifier(value));
 		}
 
 		public override bool IsAnyType
@@ -247,12 +246,12 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public Cascades.CascadeStyle GetCascadeStyle( int i )
+		public Cascades.CascadeStyle GetCascadeStyle(int i)
 		{
 			return Cascades.CascadeStyle.StyleNone;
 		}
 
-		public FetchMode GetFetchMode( int i )
+		public FetchMode GetFetchMode(int i)
 		{
 			return FetchMode.Select;
 		}
@@ -261,28 +260,28 @@ namespace NHibernate.Type
 
 		public string[] PropertyNames
 		{
-			get { return AnyType.PROPERTY_NAMES; }
+			get { return PROPERTY_NAMES; }
 		}
 
-		public object GetPropertyValue( Object component, int i, ISessionImplementor session )
+		public object GetPropertyValue(Object component, int i, ISessionImplementor session)
 		{
-			return ( i == 0 ) ?
-				NHibernateProxyHelper.GuessClass( component ) :
-				Id( component, session );
+			return (i == 0) ?
+			       NHibernateProxyHelper.GuessClass(component) :
+			       Id(component, session);
 		}
 
-		public object[] GetPropertyValues( Object component, ISessionImplementor session )
+		public object[] GetPropertyValues(Object component, ISessionImplementor session)
 		{
-			return new object[] {NHibernateProxyHelper.GuessClass( component ), Id( component, session )};
+			return new object[] {NHibernateProxyHelper.GuessClass(component), Id(component, session)};
 		}
 
-		private object Id( object component, ISessionImplementor session )
+		private object Id(object component, ISessionImplementor session)
 		{
 			try
 			{
-				return session.GetEntityIdentifierIfNotUnsaved( component );
+				return session.GetEntityIdentifierIfNotUnsaved(component);
 			}
-			catch( TransientObjectException )
+			catch (TransientObjectException)
 			{
 				return null;
 			}
@@ -293,12 +292,12 @@ namespace NHibernate.Type
 			get { return new IType[] {metaType, identifierType}; }
 		}
 
-		public void SetPropertyValues( object component, object[] values )
+		public void SetPropertyValues(object component, object[] values)
 		{
 			throw new NotSupportedException();
 		}
 
-		public object[] GetPropertyValues( object component )
+		public object[] GetPropertyValues(object component)
 		{
 			throw new NotSupportedException();
 		}
@@ -330,19 +329,19 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory )
+		public IJoinable GetAssociatedJoinable(ISessionFactoryImplementor factory)
 		{
-			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
+			throw new InvalidOperationException("any types do not have a unique referenced persister");
 		}
 
-		public string[] GetReferencedColumns( ISessionFactoryImplementor factory )
+		public string[] GetReferencedColumns(ISessionFactoryImplementor factory)
 		{
-			throw new InvalidOperationException( "any types do not have unique referenced columns" );
+			throw new InvalidOperationException("any types do not have unique referenced columns");
 		}
 
-		public System.Type GetAssociatedClass( ISessionFactoryImplementor factory )
+		public System.Type GetAssociatedClass(ISessionFactoryImplementor factory)
 		{
-			throw new InvalidOperationException( "any types do not have a unique referenced persister" );
+			throw new InvalidOperationException("any types do not have a unique referenced persister");
 		}
 
 		public string LHSPropertyName
@@ -355,7 +354,7 @@ namespace NHibernate.Type
 			get { return null; }
 		}
 
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
 			return this == obj;
 		}
@@ -370,33 +369,33 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session )
+		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return IsDirty( old, current, session );
+			return IsDirty(old, current, session);
 		}
 
-		public override bool IsModified( object old, object current, bool[] checkable, ISessionImplementor session )
+		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			if( current == null )
+			if (current == null)
 			{
 				return old != null;
 			}
-			if( old == null )
+			if (old == null)
 			{
 				return current != null;
 			}
-			ObjectTypeCacheEntry holder = ( ObjectTypeCacheEntry ) old;
+			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
 			bool[] idcheckable = new bool[checkable.Length - 1];
-			Array.Copy( checkable, 1, idcheckable, 0, idcheckable.Length );
-			return ( checkable[ 0 ] && holder.clazz != NHibernateProxyHelper.GuessClass( current ) ) ||
-				identifierType.IsModified( holder.id, Id( current, session ), idcheckable, session );
+			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
+			return (checkable[0] && holder.clazz != NHibernateProxyHelper.GuessClass(current)) ||
+			       identifierType.IsModified(holder.id, Id(current, session), idcheckable, session);
 		}
 
 		public bool[] PropertyNullability
 		{
 			get { return null; }
 		}
-		
+
 		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary enabledFilters)
 		{
 			throw new NotSupportedException();

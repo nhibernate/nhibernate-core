@@ -1,17 +1,22 @@
 using System;
+using System.Collections;
+using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
 {
 	/// <summary>
 	/// Emulation of coalesce() on Oracle, using multiple nvl() calls
 	/// </summary>
-	public class NvlFunction: ISQLFunction
+	public class NvlFunction : ISQLFunction
 	{
-		public NvlFunction() { }
+		public NvlFunction()
+		{
+		}
 
 		#region ISQLFunction Members
 
-		public NHibernate.Type.IType ReturnType(NHibernate.Type.IType columnType, NHibernate.Engine.IMapping mapping)
+		public IType ReturnType(IType columnType, IMapping mapping)
 		{
 			return columnType;
 		}
@@ -26,7 +31,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(System.Collections.IList args, NHibernate.Engine.ISessionFactoryImplementor factory)
+		public string Render(IList args, ISessionFactoryImplementor factory)
 		{
 			// DONE: QueryException if args.Count==0 (not present in H3.2)
 			if (args.Count == 0)
@@ -42,7 +47,7 @@ namespace NHibernate.Dialect.Function
 			}
 			object secondLast = args[lastIndex - 1];
 			string nvl = "nvl(" + secondLast + ", " + last + ")";
-			args[lastIndex - 1]= nvl;
+			args[lastIndex - 1] = nvl;
 			return Render(args, factory);
 		}
 

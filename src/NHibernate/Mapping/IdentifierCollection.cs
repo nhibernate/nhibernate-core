@@ -14,7 +14,7 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="owner"></param>
-		protected IdentifierCollection( PersistentClass owner ) : base( owner )
+		protected IdentifierCollection(PersistentClass owner) : base(owner)
 		{
 		}
 
@@ -34,12 +34,12 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override void CreatePrimaryKey()
 		{
-			if ( !IsOneToMany )
+			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				foreach( Column col in Identifier.ColumnCollection )
+				foreach (Column col in Identifier.ColumnCollection)
 				{
-					pk.AddColumn( col );
+					pk.AddColumn(col);
 				}
 				CollectionTable.PrimaryKey = pk;
 			}
@@ -50,12 +50,13 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="mapping"></param>
-		public override void Validate( IMapping mapping )
+		public override void Validate(IMapping mapping)
 		{
-			base.Validate( mapping );
-			if ( !Identifier.IsValid( mapping ) )
+			base.Validate(mapping);
+			if (!Identifier.IsValid(mapping))
 			{
-				throw new MappingException( string.Format( "collection id mapping has wrong number of columns: {0} type: {1}", Role, Identifier.Type.Name ) );
+				throw new MappingException(
+					string.Format("collection id mapping has wrong number of columns: {0} type: {1}", Role, Identifier.Type.Name));
 			}
 		}
 	}

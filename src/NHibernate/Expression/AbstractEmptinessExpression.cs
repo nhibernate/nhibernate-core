@@ -46,10 +46,11 @@ namespace NHibernate.Expression
 			string[] ownerKeys = ((ILoadable) factory.GetEntityPersister(entityType)).IdentifierColumnNames;
 
 			StringBuilder innerSelect = new StringBuilder();
-				innerSelect.Append("(select 1 from ")
-					.Append(collectionPersister.TableName)
-					.Append(" where ")
-					.Append(new ConditionalFragment().SetTableAlias(sqlAlias).SetCondition(ownerKeys, collectionKeys).ToSqlStringFragment());
+			innerSelect.Append("(select 1 from ")
+				.Append(collectionPersister.TableName)
+				.Append(" where ")
+				.Append(
+				new ConditionalFragment().SetTableAlias(sqlAlias).SetCondition(ownerKeys, collectionKeys).ToSqlStringFragment());
 			if (collectionPersister.HasWhere)
 			{
 				innerSelect.Append(" and (")
@@ -63,7 +64,8 @@ namespace NHibernate.Expression
 		}
 
 
-		protected IQueryableCollection GetQueryableCollection(System.Type entityType, string actualPropertyName, ISessionFactoryImplementor factory)
+		protected IQueryableCollection GetQueryableCollection(System.Type entityType, string actualPropertyName,
+		                                                      ISessionFactoryImplementor factory)
 		{
 			IPropertyMapping ownerMapping = (IPropertyMapping) factory.GetEntityPersister(entityType);
 			IType type = ownerMapping.ToType(actualPropertyName);

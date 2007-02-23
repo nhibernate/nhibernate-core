@@ -48,7 +48,7 @@ namespace NHibernate.Dialect
 		/// Constructor.
 		/// </summary>
 		/// <param name="placeholder">String to be replaced by actual size/length in type names</param>
-		public TypeNames( string placeholder )
+		public TypeNames(string placeholder)
 		{
 			this.placeholder = placeholder;
 		}
@@ -58,14 +58,14 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="typecode">the type key</param>
 		/// <returns>the default type name associated with the specified key</returns>
-		public string Get( DbType typecode )
+		public string Get(DbType typecode)
 		{
-			string result = ( string ) defaults[ typecode ];
+			string result = (string) defaults[typecode];
 
-			if( result == null )
+			if (result == null)
 			{
 				throw new ArgumentException("Dialect does not support DbType." + typecode,
-					"typecode");
+				                            "typecode");
 			}
 			return result;
 		}
@@ -79,17 +79,17 @@ namespace NHibernate.Dialect
 		/// The associated name with smallest capacity >= size if available and the
 		/// default type name otherwise
 		/// </returns>
-		public string Get( DbType typecode, int size )
+		public string Get(DbType typecode, int size)
 		{
-			IDictionary map = weighted[ typecode ] as IDictionary;
-			if( map != null && map.Count > 0 )
+			IDictionary map = weighted[typecode] as IDictionary;
+			if (map != null && map.Count > 0)
 			{
-				foreach( int entrySize in map.Keys )
+				foreach (int entrySize in map.Keys)
 				{
-					if( size <= entrySize )
+					if (size <= entrySize)
 					{
 						return StringHelper.ReplaceOnce(
-							( string ) map[ entrySize ],
+							(string) map[entrySize],
 							placeholder,
 							size.ToString()
 							);
@@ -97,7 +97,7 @@ namespace NHibernate.Dialect
 				}
 			}
 			//Could not find a specific type for the size, using the default
-			return StringHelper.ReplaceOnce( Get( typecode ), placeholder, size.ToString() );
+			return StringHelper.ReplaceOnce(Get(typecode), placeholder, size.ToString());
 		}
 
 		/// <summary>
@@ -106,14 +106,14 @@ namespace NHibernate.Dialect
 		/// <param name="typecode">the type key</param>
 		/// <param name="capacity">the (maximum) type size/length</param>
 		/// <param name="value">The associated name</param>
-		public void Put( DbType typecode, int capacity, string value )
+		public void Put(DbType typecode, int capacity, string value)
 		{
-			SequencedHashMap map = weighted[ typecode ] as SequencedHashMap;
-			if( map == null )
+			SequencedHashMap map = weighted[typecode] as SequencedHashMap;
+			if (map == null)
 			{
-				weighted[ typecode ] = map = new SequencedHashMap();
+				weighted[typecode] = map = new SequencedHashMap();
 			}
-			map[ capacity ] = value;
+			map[capacity] = value;
 		}
 
 		/// <summary>
@@ -121,10 +121,9 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="typecode"></param>
 		/// <param name="value"></param>
-		public void Put( DbType typecode, string value )
+		public void Put(DbType typecode, string value)
 		{
-			defaults[ typecode ] = value;
+			defaults[typecode] = value;
 		}
-
 	}
 }

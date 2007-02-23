@@ -19,7 +19,7 @@ namespace NHibernate.Type
 	public class DateTimeType : ValueTypeType, IIdentifierType, ILiteralType, IVersionType
 	{
 		/// <summary></summary>
-		internal DateTimeType() : base( SqlTypeFactory.DateTime )
+		internal DateTimeType() : base(SqlTypeFactory.DateTime)
 		{
 		}
 
@@ -29,10 +29,10 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			DateTime dbValue = Convert.ToDateTime( rs[ index ] );
-			return new DateTime( dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second );
+			DateTime dbValue = Convert.ToDateTime(rs[index]);
+			return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second);
 		}
 
 		/// <summary>
@@ -41,15 +41,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) ); // rs.[name];
+			return Get(rs, rs.GetOrdinal(name)); // rs.[name];
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( DateTime ); }
+			get { return typeof(DateTime); }
 		}
 
 		/// <summary>
@@ -58,11 +58,12 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
-			DateTime dateValue = ( DateTime ) value;
-			parm.Value = new DateTime( dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second );
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			DateTime dateValue = (DateTime) value;
+			parm.Value =
+				new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second);
 		}
 
 		/// <summary>
@@ -71,34 +72,34 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			if( x==y )
+			if (x == y)
 			{
 				return true;
 			}
-			
-			if( x==null || y==null )
+
+			if (x == null || y == null)
 			{
 				return false;
 			}
 
-			DateTime date1 = ( DateTime ) x;
-			DateTime date2 = ( DateTime ) y;
+			DateTime date1 = (DateTime) x;
+			DateTime date2 = (DateTime) y;
 
-			return ( date1.Year == date2.Year &&
-				date1.Month == date2.Month &&
-				date1.Day == date2.Day &&
-				date1.Hour == date2.Hour &&
-				date1.Minute == date2.Minute &&
-				date1.Second == date2.Second );
+			return (date1.Year == date2.Year &&
+			        date1.Month == date2.Month &&
+			        date1.Day == date2.Day &&
+			        date1.Hour == date2.Hour &&
+			        date1.Minute == date2.Minute &&
+			        date1.Second == date2.Second);
 		}
 
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
 		{
 			// Custom hash code implementation because DateTimeType is only accurate
 			// up to seconds.
-			DateTime date = (DateTime)x;
+			DateTime date = (DateTime) x;
 			int hashCode = 1;
 			hashCode = 31 * hashCode + date.Second;
 			hashCode = 31 * hashCode + date.Minute;
@@ -120,9 +121,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		public override string ToString( object val )
+		public override string ToString(object val)
 		{
-			return ( ( DateTime ) val ).ToShortDateString();
+			return ((DateTime) val).ToShortDateString();
 		}
 
 		/// <summary></summary>
@@ -131,9 +132,9 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
-			return FromString( xml );
+			return FromString(xml);
 		}
 
 		/// <summary>
@@ -141,9 +142,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return DateTime.Parse( xml );
+			return DateTime.Parse(xml);
 		}
 
 		/// <summary>
@@ -151,7 +152,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return "'" + value.ToString() + "'";
 		}

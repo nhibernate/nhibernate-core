@@ -15,9 +15,9 @@ namespace NHibernate.Mapping
 		private PersistentClass associatedClass;
 		private bool ignoreNotFound;
 
-		public OneToMany( PersistentClass owner )
+		public OneToMany(PersistentClass owner)
 		{
-			this.referencingTable = ( owner == null ) ? null : owner.Table;
+			this.referencingTable = (owner == null) ? null : owner.Table;
 		}
 
 		public EntityType EntityType
@@ -102,7 +102,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public bool IsValid( IMapping mapping )
+		public bool IsValid(IMapping mapping)
 		{
 			return true;
 		}
@@ -117,7 +117,7 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <remarks>No foreign key element for a one-to-many</remarks>
-		public void CreateForeignKey( )
+		public void CreateForeignKey()
 		{
 		}
 

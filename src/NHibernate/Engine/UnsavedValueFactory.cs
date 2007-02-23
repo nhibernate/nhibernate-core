@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-
 using NHibernate.Property;
 using NHibernate.Type;
 
@@ -14,15 +13,15 @@ namespace NHibernate.Engine
 
 		private static object[] NoParameters = new object[0];
 
-		private static object Instantiate( ConstructorInfo constructor )
+		private static object Instantiate(ConstructorInfo constructor)
 		{
 			try
 			{
-				return constructor.Invoke( NoParameters );
+				return constructor.Invoke(NoParameters);
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new InstantiationException( "could not instantiate test object: ", e, constructor.DeclaringType );
+				throw new InstantiationException("could not instantiate test object: ", e, constructor.DeclaringType);
 			}
 		}
 
@@ -36,18 +35,18 @@ namespace NHibernate.Engine
 			string unsavedValue,
 			IGetter identifierGetter,
 			IType identifierType,
-			ConstructorInfo constructor )
+			ConstructorInfo constructor)
 		{
-			if( unsavedValue == null )
+			if (unsavedValue == null)
 			{
-				if( identifierGetter != null && constructor != null )
+				if (identifierGetter != null && constructor != null)
 				{
 					// use the id value of a newly instantiated instance as the unsaved-value
-					object defaultValue = identifierGetter.Get( Instantiate( constructor ) );
-					return new Cascades.IdentifierValue( defaultValue );
+					object defaultValue = identifierGetter.Get(Instantiate(constructor));
+					return new Cascades.IdentifierValue(defaultValue);
 				}
-				// TODO: NH - the branch below is actually never visited, so it's commented out
-				/*
+					// TODO: NH - the branch below is actually never visited, so it's commented out
+					/*
 				else if( identifierGetter != null && ( identifierType is ValueTypeType ) )
 				{
 					object defaultValue = ( ( ValueTypeType ) identifierType ).DefaultValue;
@@ -59,23 +58,23 @@ namespace NHibernate.Engine
 					return Cascades.IdentifierValue.SaveNull;
 				}
 			}
-			else if( "null" == unsavedValue )
+			else if ("null" == unsavedValue)
 			{
 				return Cascades.IdentifierValue.SaveNull;
 			}
-			// TODO: H3 only, IdentifierValue.IsUnsaved may return true/false/null in H3
-			// and SaveUndefined always returns null.
-			/*
+				// TODO: H3 only, IdentifierValue.IsUnsaved may return true/false/null in H3
+				// and SaveUndefined always returns null.
+				/*
 			else if( "undefined" == unsavedValue )
 			{
 				return Cascades.IdentifierValue.SaveUndefined;
 			}
 			*/
-			else if( "none" == unsavedValue )
+			else if ("none" == unsavedValue)
 			{
 				return Cascades.IdentifierValue.SaveNone;
 			}
-			else if( "any" == unsavedValue )
+			else if ("any" == unsavedValue)
 			{
 				return Cascades.IdentifierValue.SaveAny;
 			}
@@ -83,71 +82,69 @@ namespace NHibernate.Engine
 			{
 				try
 				{
-					return new Cascades.IdentifierValue( ( ( IIdentifierType ) identifierType ).StringToObject( unsavedValue ) );
+					return new Cascades.IdentifierValue(((IIdentifierType) identifierType).StringToObject(unsavedValue));
 				}
-				catch( InvalidCastException cce )
+				catch (InvalidCastException cce)
 				{
-					throw new MappingException( "Bad identifier type: " + identifierType.Name, cce );
+					throw new MappingException("Bad identifier type: " + identifierType.Name, cce);
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					throw new MappingException( "Could not parse identifier unsaved-value: " + unsavedValue, e );
+					throw new MappingException("Could not parse identifier unsaved-value: " + unsavedValue, e);
 				}
 			}
 		}
 
 		public static Cascades.VersionValue GetUnsavedVersionValue(
-			String versionUnsavedValue, 
+			String versionUnsavedValue,
 			IGetter versionGetter,
 			IVersionType versionType,
-			ConstructorInfo constructor) 
+			ConstructorInfo constructor)
 		{
-		
-			if ( versionUnsavedValue == null ) 
+			if (versionUnsavedValue == null)
 			{
-				if ( constructor!=null ) 
+				if (constructor != null)
 				{
-					Object defaultValue = versionGetter.Get( Instantiate(constructor) );
+					Object defaultValue = versionGetter.Get(Instantiate(constructor));
 					// if the version of a newly instantiated object is not the same
 					// as the version seed value, use that as the unsaved-value
-					return versionType.Equals( versionType.Seed(null), defaultValue ) ?
-						Cascades.VersionValue.VersionUndefined :
-						new Cascades.VersionValue( defaultValue );
+					return versionType.Equals(versionType.Seed(null), defaultValue) ?
+					       Cascades.VersionValue.VersionUndefined :
+					       new Cascades.VersionValue(defaultValue);
 				}
-				else 
+				else
 				{
 					return Cascades.VersionValue.VersionUndefined;
 				}
 			}
-			else if ( "undefined" == versionUnsavedValue )
+			else if ("undefined" == versionUnsavedValue)
 			{
 				return Cascades.VersionValue.VersionUndefined;
 			}
-			else if ( "null" == versionUnsavedValue ) 
+			else if ("null" == versionUnsavedValue)
 			{
 				return Cascades.VersionValue.VersionSaveNull;
 			}
-			else if ( "negative" == versionUnsavedValue ) 
+			else if ("negative" == versionUnsavedValue)
 			{
 				return Cascades.VersionValue.VersionNegative;
 			}
-			else 
+			else
 			{
 				// NHibernate-specific
 				try
 				{
-					return new Cascades.VersionValue( versionType.StringToObject( versionUnsavedValue ) );
+					return new Cascades.VersionValue(versionType.StringToObject(versionUnsavedValue));
 				}
-				catch( InvalidCastException ice )
+				catch (InvalidCastException ice)
 				{
-					throw new MappingException( "Bad version type: " + versionType.Name, ice );
+					throw new MappingException("Bad version type: " + versionType.Name, ice);
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					throw new MappingException( "Could not parse version unsaved-value: " + versionUnsavedValue, e );
+					throw new MappingException("Could not parse version unsaved-value: " + versionUnsavedValue, e);
 				}
 			}
-		
 		}
 	}
 }

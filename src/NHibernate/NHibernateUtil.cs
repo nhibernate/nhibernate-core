@@ -4,8 +4,6 @@ using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Proxy;
 using NHibernate.Type;
-using NHibernate.SqlTypes;
-using System.Data;
 using NHibernate.UserTypes;
 
 namespace NHibernate
@@ -196,9 +194,9 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="enumClass"></param>
 		/// <returns></returns>
-		public static IType Enum( System.Type enumClass )
+		public static IType Enum(System.Type enumClass)
 		{
-			return new PersistentEnumType( enumClass );
+			return new PersistentEnumType(enumClass);
 		}
 
 		/// <summary>
@@ -206,9 +204,9 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="serializableClass"></param>
 		/// <returns></returns>
-		public static IType GetSerializable( System.Type serializableClass )
+		public static IType GetSerializable(System.Type serializableClass)
 		{
-			return new SerializableType( serializableClass );
+			return new SerializableType(serializableClass);
 		}
 
 		/// <summary>
@@ -217,9 +215,9 @@ namespace NHibernate
 		/// <param name="metaType">a type mapping <see cref="IType"/> to a single column</param>
 		/// <param name="identifierType">the entity identifier type</param>
 		/// <returns></returns>
-		public static IType Any( IType metaType, IType identifierType )
+		public static IType Any(IType metaType, IType identifierType)
 		{
-			return new AnyType( metaType, identifierType );
+			return new AnyType(metaType, identifierType);
 		}
 
 		/// <summary>
@@ -227,11 +225,11 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="persistentClass">a mapped entity class</param>
 		/// <returns></returns>
-		[Obsolete( "use NHibernate.Entity instead" )]
-		public static IType Association( System.Type persistentClass )
+		[Obsolete("use NHibernate.Entity instead")]
+		public static IType Association(System.Type persistentClass)
 		{
 			// not really a many-to-one association *necessarily*
-			return new ManyToOneType( persistentClass );
+			return new ManyToOneType(persistentClass);
 		}
 
 		/// <summary>
@@ -239,10 +237,10 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="persistentClass">a mapped entity class</param>
 		/// <returns></returns>
-		public static IType Entity( System.Type persistentClass )
+		public static IType Entity(System.Type persistentClass)
 		{
 			// not really a many-to-one association *necessarily*
-			return new ManyToOneType( persistentClass );
+			return new ManyToOneType(persistentClass);
 		}
 
 		/// <summary>
@@ -250,15 +248,15 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="userTypeClass">a class that implements UserType</param>
 		/// <returns></returns>
-		public static IType Custom( System.Type userTypeClass )
+		public static IType Custom(System.Type userTypeClass)
 		{
-			if( typeof( ICompositeUserType ).IsAssignableFrom( userTypeClass ) )
+			if (typeof(ICompositeUserType).IsAssignableFrom(userTypeClass))
 			{
-				return new CompositeCustomType( userTypeClass, null );
+				return new CompositeCustomType(userTypeClass, null);
 			}
 			else
 			{
-                return new CustomType(userTypeClass, null);
+				return new CustomType(userTypeClass, null);
 			}
 		}
 
@@ -268,19 +266,19 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
 		/// <exception cref="HibernateException">if we can't initialize the proxy at this time, eg. the Session was closed</exception>
-		public static void Initialize( object proxy )
+		public static void Initialize(object proxy)
 		{
-			if( proxy == null )
+			if (proxy == null)
 			{
 				return;
 			}
-			else if( proxy is INHibernateProxy )
+			else if (proxy is INHibernateProxy)
 			{
-				NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).Initialize();
+				NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy).Initialize();
 			}
-			else if( proxy is IPersistentCollection )
+			else if (proxy is IPersistentCollection)
 			{
-				( ( IPersistentCollection ) proxy ).ForceInitialization();
+				((IPersistentCollection) proxy).ForceInitialization();
 			}
 		}
 
@@ -289,15 +287,15 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
 		/// <returns>true if the argument is already initialized, or is not a proxy or collection</returns>
-		public static bool IsInitialized( object proxy )
+		public static bool IsInitialized(object proxy)
 		{
-			if( proxy is INHibernateProxy )
+			if (proxy is INHibernateProxy)
 			{
-				return !NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).IsUninitialized;
+				return !NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy).IsUninitialized;
 			}
-			else if( proxy is IPersistentCollection )
+			else if (proxy is IPersistentCollection)
 			{
-				return ( ( IPersistentCollection ) proxy ).WasInitialized;
+				return ((IPersistentCollection) proxy).WasInitialized;
 			}
 			else
 			{
@@ -311,11 +309,11 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="proxy">a persistable object or proxy</param>
 		/// <returns>the true class of the instance</returns>
-		public static System.Type GetClass( object proxy )
+		public static System.Type GetClass(object proxy)
 		{
-			if( proxy is INHibernateProxy )
+			if (proxy is INHibernateProxy)
 			{
-				return NHibernateProxyHelper.GetLazyInitializer( ( INHibernateProxy ) proxy ).GetImplementation().GetType();
+				return NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy).GetImplementation().GetType();
 			}
 			else
 			{

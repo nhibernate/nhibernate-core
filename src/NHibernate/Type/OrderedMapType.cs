@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Specialized;
 
-using NHibernate.Collection;
-using NHibernate.Engine;
-using NHibernate.Persister.Collection;
-
 namespace NHibernate.Type
 {
 	/// <summary>
@@ -19,8 +15,8 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
 		/// <param name="propertyRef"></param>
-		public OrderedMapType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public OrderedMapType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 

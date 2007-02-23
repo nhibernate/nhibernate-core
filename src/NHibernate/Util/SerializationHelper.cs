@@ -6,7 +6,9 @@ namespace NHibernate.Util
 {
 	public class SerializationHelper
 	{
-		private SerializationHelper() {}
+		private SerializationHelper()
+		{
+		}
 
 		public static byte[] Serialize(object obj)
 		{
@@ -17,7 +19,7 @@ namespace NHibernate.Util
 				return ms.ToArray();
 			}
 		}
-		
+
 		public static object Deserialize(byte[] data)
 		{
 			using (MemoryStream ms = new MemoryStream(data))

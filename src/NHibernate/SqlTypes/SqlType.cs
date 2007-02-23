@@ -32,19 +32,19 @@ namespace NHibernate.SqlTypes
 		// false by default
 		private bool _precisionDefined;
 
-		public SqlType( DbType dbType )
+		public SqlType(DbType dbType)
 		{
 			_dbType = dbType;
 		}
 
-		public SqlType( DbType dbType, int length )
+		public SqlType(DbType dbType, int length)
 		{
 			_dbType = dbType;
 			_length = length;
 			_lengthDefined = true;
 		}
 
-		public SqlType( DbType dbType, byte precision, byte scale )
+		public SqlType(DbType dbType, byte precision, byte scale)
 		{
 			_dbType = dbType;
 			_precision = precision;
@@ -107,43 +107,42 @@ namespace NHibernate.SqlTypes
 			}
 		}
 
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
 			SqlType rhsSqlType;
 
 			// Step1: Perform an equals test
-			if( obj == this )
+			if (obj == this)
 			{
 				return true;
 			}
 
 			// Step	2: Instance of check
 			rhsSqlType = obj as SqlType;
-			if( rhsSqlType == null )
+			if (rhsSqlType == null)
 			{
 				return false;
 			}
 
 			//Step 3: Check each important field
 			bool equals = false;
-			if( LengthDefined )
+			if (LengthDefined)
 			{
-				equals = ( DbType.Equals( rhsSqlType.DbType ) )
-					&& ( Length == rhsSqlType.Length );
+				equals = (DbType.Equals(rhsSqlType.DbType))
+				         && (Length == rhsSqlType.Length);
 			}
-			else if( PrecisionDefined )
+			else if (PrecisionDefined)
 			{
-				equals = ( DbType.Equals( rhsSqlType.DbType ) )
-					&& ( Precision == rhsSqlType.Precision )
-					&& ( Scale == rhsSqlType.Scale );
+				equals = (DbType.Equals(rhsSqlType.DbType))
+				         && (Precision == rhsSqlType.Precision)
+				         && (Scale == rhsSqlType.Scale);
 			}
 			else
 			{
-				equals = ( DbType.Equals( rhsSqlType.DbType ) );
+				equals = (DbType.Equals(rhsSqlType.DbType));
 			}
 
 			return equals;
-
 		}
 
 		public override string ToString()

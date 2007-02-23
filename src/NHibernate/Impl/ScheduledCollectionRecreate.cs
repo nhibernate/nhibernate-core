@@ -20,8 +20,9 @@ namespace NHibernate.Impl
 		/// <param name="persister">The <see cref="ICollectionPersister"/> that is responsible for the persisting the Collection.</param>
 		/// <param name="id">The identifier of the Collection owner.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledCollectionRecreate( IPersistentCollection collection, ICollectionPersister persister, object id, ISessionImplementor session )
-			: base( persister, id, session )
+		public ScheduledCollectionRecreate(IPersistentCollection collection, ICollectionPersister persister, object id,
+		                                   ISessionImplementor session)
+			: base(persister, id, session)
 		{
 			_collection = collection;
 		}
@@ -29,7 +30,7 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override void Execute()
 		{
-			Persister.Recreate( _collection, Id, Session );
+			Persister.Recreate(_collection, Id, Session);
 			Session.GetCollectionEntry(_collection).AfterAction(_collection);
 			Evict();
 		}

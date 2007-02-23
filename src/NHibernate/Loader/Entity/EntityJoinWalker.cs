@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -18,32 +17,33 @@ namespace NHibernate.Loader.Entity
 
 		public EntityJoinWalker(
 			IOuterJoinLoadable persister,
-			string[ ] uniqueKey,
+			string[] uniqueKey,
 			IType uniqueKeyType,
 			int batchSize,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters )
-			: base( persister, factory, enabledFilters )
+			IDictionary enabledFilters)
+			: base(persister, factory, enabledFilters)
 		{
 			this.lockMode = lockMode;
 
-			SqlStringBuilder whereCondition = WhereString( Alias, uniqueKey, uniqueKeyType, batchSize )
+			SqlStringBuilder whereCondition = WhereString(Alias, uniqueKey, uniqueKeyType, batchSize)
 				//include the discriminator and class-level where, but not filters
-				.Add( persister.FilterFragment( Alias, CollectionHelper.EmptyMap ) );
+				.Add(persister.FilterFragment(Alias, CollectionHelper.EmptyMap));
 
-			InitAll( whereCondition.ToSqlString(), "", lockMode );
+			InitAll(whereCondition.ToSqlString(), "", lockMode);
 		}
 
 		/// <summary>
 		/// Disable outer join fetching if this loader obtains an
 		/// upgrade lock mode
 		/// </summary>
-		protected override bool IsJoinedFetchEnabled( IAssociationType type, FetchMode config, Cascades.CascadeStyle cascadeStyle )
+		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
+		                                             Cascades.CascadeStyle cascadeStyle)
 		{
-			return lockMode.GreaterThan( LockMode.Read ) ?
+			return lockMode.GreaterThan(LockMode.Read) ?
 			       false :
-			       base.IsJoinedFetchEnabled( type, config, cascadeStyle );
+			       base.IsJoinedFetchEnabled(type, config, cascadeStyle);
 		}
 
 		public override string Comment

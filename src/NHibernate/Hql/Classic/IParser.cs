@@ -13,18 +13,18 @@ namespace NHibernate.Hql.Classic
 		/// </summary>
 		/// <param name="token"></param>
 		/// <param name="q"></param>
-		void Token( string token, QueryTranslator q );
+		void Token(string token, QueryTranslator q);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="q"></param>
-		void Start( QueryTranslator q );
+		void Start(QueryTranslator q);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="q"></param>
-		void End( QueryTranslator q );
+		void End(QueryTranslator q);
 	}
 }

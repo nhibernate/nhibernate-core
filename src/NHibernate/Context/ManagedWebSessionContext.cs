@@ -9,12 +9,12 @@ namespace NHibernate.Context
 	{
 		private const string SessionFactoryMapKey = "NHibernate.Context.ManagedWebSessionContext.SessionFactoryMapKey";
 		private readonly ISessionFactoryImplementor factory;
-		
+
 		public ManagedWebSessionContext(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 		}
-		
+
 		public ISession CurrentSession()
 		{
 			ISession currentSession = GetExistingSession(HttpContext.Current, factory);
@@ -36,7 +36,7 @@ namespace NHibernate.Context
 		{
 			return GetExistingSession(context, factory) != null;
 		}
-		
+
 		public static ISession Unbind(HttpContext context, ISessionFactory factory)
 		{
 			ISession result = null;
@@ -58,10 +58,10 @@ namespace NHibernate.Context
 			{
 				return null;
 			}
-			
+
 			return sessionMap[factory] as ISession;
 		}
-		
+
 		private static IDictionary GetSessionMap(HttpContext context, bool create)
 		{
 			IDictionary map = context.Items[SessionFactoryMapKey] as IDictionary;

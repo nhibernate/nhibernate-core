@@ -19,17 +19,17 @@ namespace NHibernate.Engine
 		private string comment;
 
 		public NamedQueryDefinition(
-				string query,
-				bool cacheable,
-				string cacheRegion,
-				int timeout,
-				int fetchSize,
-				FlushMode flushMode,
-				//CacheMode cacheMode,
-				bool readOnly,
-				string comment,
-				IDictionary parameterTypes
-		)
+			string query,
+			bool cacheable,
+			string cacheRegion,
+			int timeout,
+			int fetchSize,
+			FlushMode flushMode,
+			//CacheMode cacheMode,
+			bool readOnly,
+			string comment,
+			IDictionary parameterTypes
+			)
 		{
 			this.query = query;
 			this.cacheable = cacheable;
@@ -70,7 +70,7 @@ namespace NHibernate.Engine
 
 		public FlushMode FlushMode
 		{
-		    get { return flushMode; }
+			get { return flushMode; }
 		}
 
 		public override string ToString()

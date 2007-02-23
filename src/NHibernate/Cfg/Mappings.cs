@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using log4net;
-using NHibernate.Cache;
-using NHibernate.Mapping;
 using NHibernate.Engine;
+using NHibernate.Mapping;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -32,7 +31,7 @@ namespace NHibernate.Cfg
 		private bool autoImport;
 		private bool defaultLazy;
 		private readonly IList propertyReferences;
-        private readonly IDictionary filterDefinitions;
+		private readonly IDictionary filterDefinitions;
 		private readonly IList auxiliaryDatabaseObjects;
 
 		private INamingStrategy namingStrategy;
@@ -58,7 +57,7 @@ namespace NHibernate.Cfg
 			IList auxiliaryDatabaseObjects,
 			string defaultAssembly,
 			string defaultNamespace
-            )
+			)
 		{
 			this.classes = classes;
 			this.collections = collections;
@@ -70,7 +69,7 @@ namespace NHibernate.Cfg
 			this.secondPasses = secondPasses;
 			this.propertyReferences = propertyReferences;
 			this.namingStrategy = namingStrategy;
-            this.filterDefinitions = filterDefinitions;
+			this.filterDefinitions = filterDefinitions;
 			this.auxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
 			this.defaultAssembly = defaultAssembly;
 			this.defaultNamespace = defaultNamespace;
@@ -186,11 +185,11 @@ namespace NHibernate.Cfg
 			{
 				object existing = imports[rename];
 				throw new DuplicateMappingException("duplicate import: " + rename +
-						" refers to both " + className +
-						" and " + existing +
-						" (try using auto-import=\"false\")",
-						"import",
-						rename);
+				                                    " refers to both " + className +
+				                                    " and " + existing +
+				                                    " (try using auto-import=\"false\")",
+				                                    "import",
+				                                    rename);
 			}
 			imports[rename] = className;
 		}
@@ -303,20 +302,20 @@ namespace NHibernate.Cfg
 			set { defaultLazy = value; }
 		}
 
-        public IDictionary FilterDefinitions
-        {
-            get { return filterDefinitions; }
-        }
+		public IDictionary FilterDefinitions
+		{
+			get { return filterDefinitions; }
+		}
 
-        public void AddFilterDefinition(FilterDefinition definition)
-        {
-            filterDefinitions.Add(definition.FilterName, definition);
-        }
+		public void AddFilterDefinition(FilterDefinition definition)
+		{
+			filterDefinitions.Add(definition.FilterName, definition);
+		}
 
-        public FilterDefinition GetFilterDefinition(string name)
-        {
-            return (FilterDefinition)filterDefinitions[name];
-        }
+		public FilterDefinition GetFilterDefinition(string name)
+		{
+			return (FilterDefinition) filterDefinitions[name];
+		}
 
 		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject auxiliaryDatabaseObject)
 		{

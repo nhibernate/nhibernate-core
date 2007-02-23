@@ -31,17 +31,17 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="String"/>.</returns>
-		public object Generate( ISessionImplementor session, object obj )
+		public object Generate(ISessionImplementor session, object obj)
 		{
-			byte[ ] guidInBytes = new byte[16];
-			StringBuilder guidBuilder = new StringBuilder( 16, 16 );
+			byte[] guidInBytes = new byte[16];
+			StringBuilder guidBuilder = new StringBuilder(16, 16);
 
 			guidInBytes = Guid.NewGuid().ToByteArray();
 
 			// add each item in Byte[] to the string builder
-			for( int i = 0; i < guidInBytes.Length; i++ )
+			for (int i = 0; i < guidInBytes.Length; i++)
 			{
-				guidBuilder.Append( ( char ) guidInBytes[ i ] );
+				guidBuilder.Append((char) guidInBytes[i]);
 			}
 
 			return guidBuilder.ToString();

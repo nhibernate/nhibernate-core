@@ -23,14 +23,14 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
-		public InsensitiveLikeExpression( string propertyName, object value )
+		public InsensitiveLikeExpression(string propertyName, object value)
 		{
 			_propertyName = propertyName;
 			_value = value;
 		}
 
-		public InsensitiveLikeExpression( string propertyName, string value, MatchMode matchMode )
-			: this( propertyName, matchMode.ToMatchString( value ) )
+		public InsensitiveLikeExpression(string propertyName, string value, MatchMode matchMode)
+			: this(propertyName, matchMode.ToMatchString(value))
 		{
 		}
 
@@ -38,25 +38,25 @@ namespace NHibernate.Expression
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
+			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
 
-			if( columnNames.Length != 1 )
+			if (columnNames.Length != 1)
 			{
-				throw new HibernateException( "insensitive like may only be used with single-column properties" );
+				throw new HibernateException("insensitive like may only be used with single-column properties");
 			}
 
-			if( criteriaQuery.Factory.Dialect is PostgreSQLDialect )
+			if (criteriaQuery.Factory.Dialect is PostgreSQLDialect)
 			{
-				sqlBuilder.Add( columnNames[ 0 ] );
-				sqlBuilder.Add( " ilike " );
+				sqlBuilder.Add(columnNames[0]);
+				sqlBuilder.Add(" ilike ");
 			}
 			else
 			{
-				sqlBuilder.Add( criteriaQuery.Factory.Dialect.LowercaseFunction )
-					.Add( "(" )
-					.Add( columnNames[ 0 ] )
-					.Add( ")" )
-					.Add( " like " );
+				sqlBuilder.Add(criteriaQuery.Factory.Dialect.LowercaseFunction)
+					.Add("(")
+					.Add(columnNames[0])
+					.Add(")")
+					.Add(" like ");
 			}
 
 			sqlBuilder.AddParameter();
@@ -64,11 +64,11 @@ namespace NHibernate.Expression
 			return sqlBuilder.ToSqlString();
 		}
 
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[ ]
+			return new TypedValue[]
 				{
-					criteriaQuery.GetTypedValue( criteria, _propertyName, _value.ToString().ToLower() )
+					criteriaQuery.GetTypedValue(criteria, _propertyName, _value.ToString().ToLower())
 				};
 		}
 

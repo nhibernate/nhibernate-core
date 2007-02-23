@@ -9,7 +9,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public class DriverConnectionProvider : ConnectionProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( DriverConnectionProvider ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(DriverConnectionProvider));
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DriverConnectionProvider"/> class.
@@ -22,9 +22,9 @@ namespace NHibernate.Connection
 		/// Closes and Disposes of the <see cref="IDbConnection"/>.
 		/// </summary>
 		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
-		public override void CloseConnection( IDbConnection conn )
+		public override void CloseConnection(IDbConnection conn)
 		{
-			base.CloseConnection( conn );
+			base.CloseConnection(conn);
 			conn.Dispose();
 		}
 
@@ -40,7 +40,7 @@ namespace NHibernate.Connection
 		/// </exception>
 		public override IDbConnection GetConnection()
 		{
-			log.Debug( "Obtaining IDbConnection from Driver" );
+			log.Debug("Obtaining IDbConnection from Driver");
 			IDbConnection conn = Driver.CreateConnection();
 			conn.ConnectionString = ConnectionString;
 			conn.Open();

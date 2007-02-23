@@ -32,7 +32,7 @@ namespace NHibernate.Persister.Entity
 		/// instance are persisted. eg. table names.
 		/// </summary>
 		/// <returns></returns>
-		object[ ] PropertySpaces { get; }
+		object[] PropertySpaces { get; }
 
 		/// <summary>
 		/// The persistent class
@@ -70,7 +70,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="id"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object CreateProxy( object id, ISessionImplementor session );
+		object CreateProxy(object id, ISessionImplementor session);
 
 		/// <summary>
 		/// Do instances of this class contain collections?
@@ -101,21 +101,21 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		bool IsUnsaved( object obj );
+		bool IsUnsaved(object obj);
 
 		/// <summary>
 		/// Set the given values to the mapped properties of the given object
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <param name="values"></param>
-		void SetPropertyValues( object obj, object[ ] values );
+		void SetPropertyValues(object obj, object[] values);
 
 		/// <summary>
 		/// Return the values of the mapped properties of the object
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		object[ ] GetPropertyValues( object obj );
+		object[] GetPropertyValues(object obj);
 
 		/// <summary>
 		/// Set the value of a particular property
@@ -123,7 +123,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="i"></param>
 		/// <param name="value"></param>
-		void SetPropertyValue( object obj, int i, object value );
+		void SetPropertyValue(object obj, int i, object value);
 
 		/// <summary>
 		/// Get the value of a particular property
@@ -131,7 +131,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		object GetPropertyValue( object obj, int i );
+		object GetPropertyValue(object obj, int i);
 
 		/// <summary>
 		/// Get the value of a particular property
@@ -139,14 +139,14 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		object GetPropertyValue( object obj, string name );
+		object GetPropertyValue(object obj, string name);
 
 		/// <summary>
 		/// Get the type of a particular property
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		IType GetPropertyType( string propertyName );
+		IType GetPropertyType(string propertyName);
 
 		/// <summary>
 		/// Compare two snapshots of the state of an instance to determine if the persistent state
@@ -157,7 +157,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="owner"></param>
 		/// <param name="session"></param>
 		/// <returns><c>null</c> or the indices of the dirty properties</returns>
-		int[ ] FindDirty( object[ ] x, object[ ] y, object owner, ISessionImplementor session );
+		int[] FindDirty(object[] x, object[] y, object owner, ISessionImplementor session);
 
 		/// <summary>
 		/// Compare the state of an instance to the current database state
@@ -167,7 +167,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="owner"></param>
 		/// <param name="session"></param>
 		/// <returns>return <c>null</c> or the indicies of the modified properties</returns>
-		int[ ] FindModified( object[ ] old, object[ ] current, object owner, ISessionImplementor session );
+		int[] FindModified(object[] old, object[] current, object owner, ISessionImplementor session);
 
 		/// <summary>
 		/// Does the class have a property holding the identifier value?
@@ -186,14 +186,14 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		object GetIdentifier( object obj );
+		object GetIdentifier(object obj);
 
 		/// <summary>
 		/// Set the identifier of an instance (or do nothing if no identifier property)
 		/// </summary>
 		/// <param name="obj">The object to set the Id property on.</param>
 		/// <param name="id">The value to set the Id property to.</param>
-		void SetIdentifier( object obj, object id );
+		void SetIdentifier(object obj, object id);
 
 		/// <summary>
 		/// Are instances of this class versioned by a timestamp or version number column?
@@ -215,14 +215,14 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		object GetVersion( object obj );
+		object GetVersion(object obj);
 
 		/// <summary>
 		/// Create a class instance initialized with the given identifier
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		object Instantiate( object id );
+		object Instantiate(object id);
 
 		/// <summary>
 		/// Return the <c>IIdentifierGenerator</c> for the class
@@ -237,7 +237,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="lockMode"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object Load( object id, object optionalObject, LockMode lockMode, ISessionImplementor session );
+		object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
 
 		/// <summary>
 		/// Do a version check (optional operation)
@@ -247,7 +247,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="lockMode"></param>
 		/// <param name="session"></param>
-		void Lock( object id, object version, object obj, LockMode lockMode, ISessionImplementor session );
+		void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session);
 
 		/// <summary>
 		/// Persist an instance
@@ -256,7 +256,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="fields"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		void Insert( object id, object[ ] fields, object obj, ISessionImplementor session );
+		void Insert(object id, object[] fields, object obj, ISessionImplementor session);
 
 		/// <summary>
 		/// Persist an instance, using a natively generated identifier (optional operation)
@@ -265,7 +265,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object Insert( object[ ] fields, object obj, ISessionImplementor session );
+		object Insert(object[] fields, object obj, ISessionImplementor session);
 
 		/// <summary>
 		/// Delete a persistent instance
@@ -274,31 +274,32 @@ namespace NHibernate.Persister.Entity
 		/// <param name="version"></param>
 		/// <param name="obj"></param>
 		/// <param name="session"></param>
-		void Delete( object id, object version, object obj, ISessionImplementor session );
+		void Delete(object id, object version, object obj, ISessionImplementor session);
 
-        /// <summary>
-        /// Update a persistent instance
-        /// </summary>
-        /// <param name="id">The id.</param>
-        /// <param name="fields">The fields.</param>
-        /// <param name="dirtyFields">The dirty fields.</param>
-        /// <param name="hasDirtyCollection">if set to <c>true</c> [has dirty collection].</param>
-        /// <param name="oldFields">The old fields.</param>
-        /// <param name="oldVersion">The old version.</param>
-        /// <param name="obj">The obj.</param>
-        /// <param name="session">The session.</param>
-		void Update( object id, object[ ] fields, int[ ] dirtyFields, bool hasDirtyCollection, object[ ] oldFields, object oldVersion, object obj, ISessionImplementor session );
+		/// <summary>
+		/// Update a persistent instance
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <param name="fields">The fields.</param>
+		/// <param name="dirtyFields">The dirty fields.</param>
+		/// <param name="hasDirtyCollection">if set to <c>true</c> [has dirty collection].</param>
+		/// <param name="oldFields">The old fields.</param>
+		/// <param name="oldVersion">The old version.</param>
+		/// <param name="obj">The obj.</param>
+		/// <param name="session">The session.</param>
+		void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
+		            object oldVersion, object obj, ISessionImplementor session);
 
 		/// <summary>
 		/// Get the Hibernate types of the class properties
 		/// </summary>
-		IType[ ] PropertyTypes { get; }
+		IType[] PropertyTypes { get; }
 
 		/// <summary>
 		/// Get the names of the class properties - doesn't have to be the names of the actual
 		/// .NET properties (used for XML generation only)
 		/// </summary>
-		string[ ] PropertyNames { get; }
+		string[] PropertyNames { get; }
 
 		/// <summary>
 		/// Gets if the Property is updatable
@@ -307,18 +308,18 @@ namespace NHibernate.Persister.Entity
 		/// <remarks>
 		/// This is for formula columns and if the user sets the update attribute on the &lt;property&gt; element.
 		/// </remarks>
-		bool[ ] PropertyUpdateability { get; }
+		bool[] PropertyUpdateability { get; }
 
 		/// <summary>
 		/// Properties that may be dirty (and thus should be dirty-checked). These
 		/// include all updatable properties and some associations.
 		/// </summary>
-		bool[ ] PropertyCheckability { get; }
+		bool[] PropertyCheckability { get; }
 
 		/// <summary>
 		/// Get the nullability of the properties of this class
 		/// </summary>
-		bool[ ] PropertyNullability { get; }
+		bool[] PropertyNullability { get; }
 
 		/// <summary>
 		/// Gets if the Property is insertable.
@@ -327,18 +328,18 @@ namespace NHibernate.Persister.Entity
 		/// <remarks>
 		/// This is for formula columns and if the user sets the insert attribute on the &lt;property&gt; element.
 		/// </remarks>
-		bool[ ] PropertyInsertability { get; }
+		bool[] PropertyInsertability { get; }
 
-        /// <summary>
-        /// Get the "versionability" of the properties of this class (is the property optimistic-locked)
-        /// </summary>
-        /// <value><c>true</c> if the property is optimistic-locked; otherwise, <c>false</c>.</value>
-        bool[ ] PropertyVersionability { get; }
+		/// <summary>
+		/// Get the "versionability" of the properties of this class (is the property optimistic-locked)
+		/// </summary>
+		/// <value><c>true</c> if the property is optimistic-locked; otherwise, <c>false</c>.</value>
+		bool[] PropertyVersionability { get; }
 
 		/// <summary>
 		/// Get the cascade styles of the properties (optional operation)
 		/// </summary>
-		Cascades.CascadeStyle[ ] PropertyCascadeStyles { get; }
+		Cascades.CascadeStyle[] PropertyCascadeStyles { get; }
 
 		/// <summary>
 		/// Get the identifier type
@@ -391,7 +392,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="version"></param>
 		/// <param name="session"></param>
 		/// <returns><c>null</c> if select-before-update is not enabled or not supported</returns>
-		object[] GetDatabaseSnapshot( object id, object version, ISessionImplementor session );
+		object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session);
 
 		/// <summary>
 		/// Get the current version of the object, or return null if there is no row for
@@ -401,13 +402,13 @@ namespace NHibernate.Persister.Entity
 		/// <param name="id"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object GetCurrentVersion( object id, ISessionImplementor session );
+		object GetCurrentVersion(object id, ISessionImplementor session);
 
 		/// <summary>
 		/// </summary>
 		/// <param name="values"></param>
 		/// <returns></returns>
 		/// <remarks>NHibernate-specific feature, not present in H2.1</remarks>
-		bool IsUnsavedVersion( object[ ] values );
+		bool IsUnsavedVersion(object[] values);
 	}
 }

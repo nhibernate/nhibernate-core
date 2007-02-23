@@ -14,7 +14,7 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="TransientObjectException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public TransientObjectException( string message ) : base( message )
+		public TransientObjectException(string message) : base(message)
 		{
 		}
 
@@ -29,7 +29,7 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected TransientObjectException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected TransientObjectException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

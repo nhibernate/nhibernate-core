@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Type;
 
 namespace NHibernate.Expression
@@ -7,7 +6,6 @@ namespace NHibernate.Expression
 	[Serializable]
 	public class AvgProjection : AggregateProjection
 	{
-
 		public AvgProjection(String propertyName)
 			: base("avg", propertyName)
 		{
@@ -15,7 +13,7 @@ namespace NHibernate.Expression
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] { NHibernateUtil.Double };
+			return new IType[] {NHibernateUtil.Double};
 		}
 	}
 }

@@ -1,21 +1,23 @@
 using System;
-
-using NHibernate.Type;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Expression
 {
 	[Serializable]
 	public class IdentifierProjection : SimpleProjection
 	{
-		bool grouped;
+		private bool grouped;
 
 		protected internal IdentifierProjection(bool grouped)
 		{
 			this.grouped = grouped;
 		}
 
-		protected internal IdentifierProjection() : this(false) { }
+		protected internal IdentifierProjection() : this(false)
+		{
+		}
 
 		public override string ToString()
 		{
@@ -24,12 +26,12 @@ namespace NHibernate.Expression
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] { criteriaQuery.GetIdentifierType(criteria) };
+			return new IType[] {criteriaQuery.GetIdentifierType(criteria)};
 		}
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-            SqlStringBuilder buf = new SqlStringBuilder();
+			SqlStringBuilder buf = new SqlStringBuilder();
 			string[] cols = criteriaQuery.GetIdentifierColumns(criteria);
 			for (int i = 0; i < cols.Length; i++)
 			{
@@ -46,14 +48,16 @@ namespace NHibernate.Expression
 			return buf.ToSqlString();
 		}
 
-		public override bool IsGrouped { get { return grouped; } }
+		public override bool IsGrouped
+		{
+			get { return grouped; }
+		}
 
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return (grouped) ? 
-                new SqlString(NHibernate.Util.StringHelper.Join(",", criteriaQuery.GetIdentifierColumns(criteria)))
-				: base.ToGroupSqlString(criteria, criteriaQuery);
+			return (grouped) ?
+			       new SqlString(StringHelper.Join(",", criteriaQuery.GetIdentifierColumns(criteria)))
+			       	: base.ToGroupSqlString(criteria, criteriaQuery);
 		}
-
 	}
 }

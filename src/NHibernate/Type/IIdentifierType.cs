@@ -16,6 +16,6 @@ namespace NHibernate.Type
 		/// call System.Type.Parse without verifying that it is a parsable value
 		/// for the System.Type.
 		/// </remarks>
-		object StringToObject( string xml );
+		object StringToObject(string xml);
 	}
 }

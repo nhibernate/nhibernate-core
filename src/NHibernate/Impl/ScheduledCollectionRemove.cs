@@ -30,8 +30,8 @@ namespace NHibernate.Impl
 			ICollectionPersister persister,
 			object id,
 			bool emptySnapshot,
-			ISessionImplementor session )
-			: base( persister, id, session )
+			ISessionImplementor session)
+			: base(persister, id, session)
 		{
 			_emptySnapshot = emptySnapshot;
 			_collection = collection;
@@ -42,9 +42,9 @@ namespace NHibernate.Impl
 		{
 			// if there were no entries in the snapshot of the collection then there
 			// is nothing to remove so verify that the snapshot was not empty.
-			if( !_emptySnapshot )
+			if (!_emptySnapshot)
 			{
-				Persister.Remove( Id, Session );
+				Persister.Remove(Id, Session);
 			}
 
 			if (_collection != null)

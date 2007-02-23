@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Xml;
 using log4net;
 using NHibernate.Cfg;
 
@@ -10,7 +9,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public sealed class CacheFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( CacheFactory ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(CacheFactory));
 
 		private CacheFactory()
 		{
@@ -37,7 +36,8 @@ namespace NHibernate.Cache
 		/// <param name="properties">Properties the cache provider can use to configure the cache.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
 		// was private in h2.1
-		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, bool mutable, Settings settings, IDictionary properties )
+		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, bool mutable, Settings settings,
+		                                                    IDictionary properties)
 		{
 			if (usage == null || !settings.IsSecondLevelCacheEnabled) return null; //no cache
 
@@ -46,38 +46,41 @@ namespace NHibernate.Cache
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug( string.Format( "cache for: {0} usage strategy: {1}", name, usage ) );
+				log.Debug(string.Format("cache for: {0} usage strategy: {1}", name, usage));
 			}
 
 			ICacheConcurrencyStrategy ccs;
-			switch( usage )
+			switch (usage)
 			{
-				case CacheFactory.ReadOnly:
-					if( mutable )
+				case ReadOnly:
+					if (mutable)
 					{
-						log.Warn( "read-only cache configured for mutable: " + name );
+						log.Warn("read-only cache configured for mutable: " + name);
 					}
 					ccs = new ReadOnlyCache();
 					break;
-				case CacheFactory.ReadWrite:
+				case ReadWrite:
 					ccs = new ReadWriteCache();
 					break;
-				case CacheFactory.NonstrictReadWrite:
+				case NonstrictReadWrite:
 					ccs = new NonstrictReadWriteCache();
 					break;
-				//case CacheFactory.Transactional:
-				//	ccs = new TransactionalCache();
-				//	break;
+					//case CacheFactory.Transactional:
+					//	ccs = new TransactionalCache();
+					//	break;
 				default:
-					throw new MappingException( "cache usage attribute should be read-write, read-only, nonstrict-read-write, or transactional" );
+					throw new MappingException(
+						"cache usage attribute should be read-write, read-only, nonstrict-read-write, or transactional");
 			}
-			
+
 			ICache impl;
-			try {
+			try
+			{
 				impl = settings.CacheProvider.BuildCache(name, properties);
 			}
-			catch (CacheException e) {
-				throw new HibernateException( "Could not instantiate cache implementation", e );
+			catch (CacheException e)
+			{
+				throw new HibernateException("Could not instantiate cache implementation", e);
 			}
 			ccs.Cache = impl;
 

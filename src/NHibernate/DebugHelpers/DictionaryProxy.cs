@@ -3,9 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using Iesi.Collections;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DebugHelpers
 {
@@ -26,14 +23,14 @@ namespace NHibernate.DebugHelpers
 		{
 			get
 			{
-				DictionaryEntry [] entries = new DictionaryEntry[set.Count];
-				set.CopyTo(entries,0);
+				DictionaryEntry[] entries = new DictionaryEntry[set.Count];
+				set.CopyTo(entries, 0);
 				return entries;
 			}
 		}
 	}
 
-	public class DictionaryProxy<K,V>
+	public class DictionaryProxy<K, V>
 	{
 		private readonly IDictionary<K, V> dic;
 
@@ -54,4 +51,5 @@ namespace NHibernate.DebugHelpers
 		}
 	}
 }
+
 #endif

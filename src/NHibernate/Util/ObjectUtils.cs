@@ -73,9 +73,9 @@ namespace NHibernate.Util
 		/// <param name="obj"></param>
 		/// <param name="defaultVal"></param>
 		/// <returns></returns>
-		public static object DefaultIfNull( object obj, object defaultVal )
+		public static object DefaultIfNull(object obj, object defaultVal)
 		{
-			return ( obj != null ? obj : defaultVal );
+			return (obj != null ? obj : defaultVal);
 		}
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace NHibernate.Util
 		/// <param name="obj1"></param>
 		/// <param name="obj2"></param>
 		/// <returns></returns>
-		new public static bool Equals( object obj1, object obj2 )
+		public new static bool Equals(object obj1, object obj2)
 		{
 			return object.Equals(obj1, obj2);
 		}
@@ -94,16 +94,16 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public static string IdentityToString( object obj )
+		public static string IdentityToString(object obj)
 		{
-			if( obj == null )
+			if (obj == null)
 			{
 				return null;
 			}
 			return new StringBuilder()
-				.Append( obj.GetType().FullName )
-				.Append( '@' )
-				.Append( obj.GetHashCode() )
+				.Append(obj.GetType().FullName)
+				.Append('@')
+				.Append(obj.GetHashCode())
 				.ToString();
 		}
 

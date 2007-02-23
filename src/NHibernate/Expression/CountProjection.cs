@@ -1,7 +1,6 @@
 using System;
-
-using NHibernate.Type;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
@@ -11,7 +10,7 @@ namespace NHibernate.Expression
 	[Serializable]
 	public class CountProjection : AggregateProjection
 	{
-		bool distinct;
+		private bool distinct;
 
 		protected internal CountProjection(String prop)
 			: base("count", prop)
@@ -20,7 +19,7 @@ namespace NHibernate.Expression
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] { NHibernateUtil.Int32 };
+			return new IType[] {NHibernateUtil.Int32};
 		}
 
 		public override string ToString()
@@ -30,17 +29,17 @@ namespace NHibernate.Expression
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-            SqlStringBuilder buf = new SqlStringBuilder()
-			    .Add("count(");
-            if (distinct)
-            {
-                buf.Add("distinct ");
-            }
+			SqlStringBuilder buf = new SqlStringBuilder()
+				.Add("count(");
+			if (distinct)
+			{
+				buf.Add("distinct ");
+			}
 			buf.Add(criteriaQuery.GetColumn(criteria, propertyName))
 				.Add(") as y")
 				.Add(position.ToString())
 				.Add("_");
-            return buf.ToSqlString();
+			return buf.ToSqlString();
 		}
 
 		public CountProjection SetDistinct()
@@ -48,6 +47,5 @@ namespace NHibernate.Expression
 			distinct = true;
 			return this;
 		}
-
 	}
 }

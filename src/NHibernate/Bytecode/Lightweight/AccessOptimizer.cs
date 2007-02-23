@@ -12,36 +12,37 @@ namespace NHibernate.Bytecode.Lightweight
 		private GetterCallback getterCallback;
 		private SetterCallback setterCallback;
 
-		public AccessOptimizer( GetPropertyValuesInvoker getDelegate, SetPropertyValuesInvoker setDelegate,
-								IGetter[] getters, ISetter[] setters )
+		public AccessOptimizer(GetPropertyValuesInvoker getDelegate, SetPropertyValuesInvoker setDelegate,
+		                       IGetter[] getters, ISetter[] setters)
 		{
 			this.getDelegate = getDelegate;
 			this.setDelegate = setDelegate;
 			this.getters = getters;
 			this.setters = setters;
-			this.getterCallback = new GetterCallback( OnGetterCallback );
-			this.setterCallback = new SetterCallback( OnSetterCallback );
+			this.getterCallback = new GetterCallback(OnGetterCallback);
+			this.setterCallback = new SetterCallback(OnSetterCallback);
 		}
 
-		public object[] GetPropertyValues( object target )
+		public object[] GetPropertyValues(object target)
 		{
-			return getDelegate( target, getterCallback );
+			return getDelegate(target, getterCallback);
 		}
 
-		public void SetPropertyValues( object target, object[] values )
+		public void SetPropertyValues(object target, object[] values)
 		{
-			setDelegate( target, values, setterCallback );
+			setDelegate(target, values, setterCallback);
 		}
 
-		private object OnGetterCallback( object target, int i )
+		private object OnGetterCallback(object target, int i)
 		{
-			return getters[ i ].Get( target );
+			return getters[i].Get(target);
 		}
 
-		private void OnSetterCallback( object target, int i, object value )
+		private void OnSetterCallback(object target, int i, object value)
 		{
-			setters[ i ].Set( target, value );
+			setters[i].Set(target, value);
 		}
 	}
-} 
+}
+
 #endif

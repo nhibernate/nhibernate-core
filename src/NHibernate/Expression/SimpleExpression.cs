@@ -72,17 +72,17 @@ namespace NHibernate.Expression
 
 			if (_value != null && !(_value is System.Type) && !propertyType.ReturnedClass.IsInstanceOfType(_value))
 			{
-			    throw new QueryException(string.Format(
-			                                "Type mismatch in {0}: {1} expected type {2}, actual type {3}",
-											GetType(), _propertyName, propertyType.ReturnedClass, _value.GetType()));
+				throw new QueryException(string.Format(
+				                         	"Type mismatch in {0}: {1} expected type {2}, actual type {3}",
+				                         	GetType(), _propertyName, propertyType.ReturnedClass, _value.GetType()));
 			}
-			
+
 			if (propertyType.IsCollectionType)
 			{
 				throw new QueryException(string.Format(
-					"cannot use collection property ({0}.{1}) directly in a criterion,"
-					+ " use ICriteria.CreateCriteria instead",
-					criteriaQuery.GetEntityName(criteria), _propertyName));
+				                         	"cannot use collection property ({0}.{1}) directly in a criterion,"
+				                         	+ " use ICriteria.CreateCriteria instead",
+				                         	criteriaQuery.GetEntityName(criteria), _propertyName));
 			}
 
 			if (_ignoreCase)
@@ -118,7 +118,6 @@ namespace NHibernate.Expression
 					sqlBuilder.Add(columnNames[i])
 						.Add(Op)
 						.AddParameter();
-
 				}
 				return sqlBuilder.ToSqlString();
 			}
@@ -129,7 +128,7 @@ namespace NHibernate.Expression
 			object icvalue = _ignoreCase ? _value.ToString().ToLower() : _value;
 			return new TypedValue[]
 				{
-					criteriaQuery.GetTypedValue( criteria, _propertyName, icvalue )
+					criteriaQuery.GetTypedValue(criteria, _propertyName, icvalue)
 				};
 		}
 

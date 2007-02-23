@@ -11,7 +11,7 @@ namespace NHibernate
 	public class InstantiationException : HibernateException
 	{
 		private System.Type type;
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InstantiationException"/> class.
 		/// </summary>
@@ -22,8 +22,8 @@ namespace NHibernate
 		/// the inner exception.
 		/// </param>
 		/// <param name="type">The <see cref="System.Type"/> that NHibernate was trying to instantiate.</param>
-		public InstantiationException( string message, Exception innerException, System.Type type )
-			: base( message, innerException )
+		public InstantiationException(string message, Exception innerException, System.Type type)
+			: base(message, innerException)
 		{
 			this.type = type;
 		}
@@ -45,7 +45,7 @@ namespace NHibernate
 		/// </value>
 		public override string Message
 		{
-			get { return base.Message + ( type == null ? "" : type.FullName ); }
+			get { return base.Message + (type == null ? "" : type.FullName); }
 		}
 
 		#region ISerializable Members
@@ -61,9 +61,9 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected InstantiationException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected InstantiationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			this.type = info.GetValue( "type", typeof(System.Type) ) as System.Type;
+			this.type = info.GetValue("type", typeof(System.Type)) as System.Type;
 		}
 
 		/// <summary>
@@ -77,12 +77,12 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData( info, context );
-			info.AddValue( "type", type, typeof(System.Type) );
+			base.GetObjectData(info, context);
+			info.AddValue("type", type, typeof(System.Type));
 		}
 
 		#endregion

@@ -12,31 +12,31 @@ namespace NHibernate.Hql.Classic
 		/// 
 		/// </summary>
 		/// <param name="q"></param>
-		public override void End( QueryTranslator q )
+		public override void End(QueryTranslator q)
 		{
-			if( !IsCollectionValued )
+			if (!IsCollectionValued)
 			{
 				IType type = PropertyType;
-				if( type.IsEntityType )
+				if (type.IsEntityType)
 				{
 					// "finish off" the join
-					Token( ".", q );
-					Token( null, q );
+					Token(".", q);
+					Token(null, q);
 				}
-				else if( type.IsCollectionType )
+				else if (type.IsCollectionType)
 				{
 					// default to element set if no elements() specified
-					Token( ".", q );
-					Token( CollectionPropertyMapping.CollectionElements, q );
+					Token(".", q);
+					Token(CollectionPropertyMapping.CollectionElements, q);
 				}
 			}
-			base.End( q );
+			base.End(q);
 		}
 
 		/// <summary></summary>
 		protected override void SetExpectingCollectionIndex()
 		{
-			throw new QueryException( "expecting .elements or .indices after collection path expression in from" );
+			throw new QueryException("expecting .elements or .indices after collection path expression in from");
 		}
 	}
 }

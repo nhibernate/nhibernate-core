@@ -8,10 +8,10 @@ namespace NHibernate.Loader.Custom
 		private readonly IEntityAliases entityAliases;
 
 		public RootReturn(
-				String alias,
-				String entityName,
-				IEntityAliases entityAliases,
-				LockMode lockMode)
+			String alias,
+			String entityName,
+			IEntityAliases entityAliases,
+			LockMode lockMode)
 			: base(alias, lockMode)
 		{
 			this.entityName = entityName;

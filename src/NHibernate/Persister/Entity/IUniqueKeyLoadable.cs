@@ -14,11 +14,11 @@ namespace NHibernate.Persister.Entity
 		/// <param name="uniqueKey"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object LoadByUniqueKey( string propertyName, object uniqueKey, ISessionImplementor session );
+		object LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session);
 
 		/// <summary>
 		/// Get the property number of the unique key property
 		/// </summary>
-		int GetPropertyIndex( string propertyName );
+		int GetPropertyIndex(string propertyName);
 	}
 }

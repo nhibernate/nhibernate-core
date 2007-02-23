@@ -17,7 +17,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public class ConnectionManager : ISerializable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (ConnectionManager));
+		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionManager));
 
 		[NonSerialized]
 		private bool connectForNextOperation;
@@ -246,11 +246,11 @@ namespace NHibernate.Impl
 				{
 					log.Debug("skipping aggressive-release due to open resources on batcher");
 				}
-				// TODO H3:
-				//else if (borrowedConnection != null)
-				//{
-				//    log.Debug("skipping aggressive-release due to borrowed connection");
-				//}
+					// TODO H3:
+					//else if (borrowedConnection != null)
+					//{
+					//    log.Debug("skipping aggressive-release due to borrowed connection");
+					//}
 				else
 				{
 					AggressiveRelease();
@@ -289,9 +289,9 @@ namespace NHibernate.Impl
 		{
 			this.connectForNextOperation = false;
 			this.autoClose = info.GetBoolean("autoClose");
-			this.session = (ISessionImplementor) info.GetValue("session", typeof (ISessionImplementor));
+			this.session = (ISessionImplementor) info.GetValue("session", typeof(ISessionImplementor));
 			this.connectionReleaseMode =
-				(ConnectionReleaseMode) info.GetValue("connectionReleaseMode", typeof (ConnectionReleaseMode));
+				(ConnectionReleaseMode) info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
 		}
 
 		[SecurityPermission(SecurityAction.LinkDemand,

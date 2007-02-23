@@ -21,7 +21,7 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public override CaseFragment CreateCaseFragment()
 		{
-			return new DecodeCaseFragment( this );
+			return new DecodeCaseFragment(this);
 		}
 	}
 }

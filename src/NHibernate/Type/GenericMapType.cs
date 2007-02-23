@@ -1,21 +1,17 @@
 #if NET_2_0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
-
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
-using NHibernate.Util;
-using System.Collections;
 
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// An <see cref="IType"/> that maps an <see cref="IDictionary&lt;TKey,Tvalue&gt;"/> collection
+	/// An <see cref="IType"/> that maps an <see cref="IDictionary{TKey,TValue}"/> collection
 	/// to the database.
 	/// </summary>
 	[Serializable]
@@ -29,8 +25,8 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
-		public GenericMapType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public GenericMapType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 
@@ -40,14 +36,14 @@ namespace NHibernate.Type
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the map.</param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new PersistentGenericMap<TKey, TValue>( session );
+			return new PersistentGenericMap<TKey, TValue>(session);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( IDictionary<TKey, TValue> ); }
+			get { return typeof(IDictionary<TKey, TValue>); }
 		}
 
 		/// <summary>
@@ -59,22 +55,23 @@ namespace NHibernate.Type
 		/// An <see cref="PersistentGenericMap&lt;TKey,TValue&gt;"/> that wraps the 
 		/// non NHibernate <see cref="IDictionary&lt;TKey,TValue&gt;"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericMap<TKey, TValue>( session, ( IDictionary<TKey, TValue> ) collection );
+			return new PersistentGenericMap<TKey, TValue>(session, (IDictionary<TKey, TValue>) collection);
 		}
 
-		protected override void Add( object collection, object element )
+		protected override void Add(object collection, object element)
 		{
-			( ( IDictionary<TKey, TValue> ) collection ).Add( ( KeyValuePair<TKey, TValue> ) element );
+			((IDictionary<TKey, TValue>) collection).Add((KeyValuePair<TKey, TValue>) element);
 		}
 
-		protected override object CopyElement( ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		protected override object CopyElement(ICollectionPersister persister, object element, ISessionImplementor session,
+		                                      object owner, IDictionary copiedAlready)
 		{
-			KeyValuePair<TKey, TValue> pair = ( KeyValuePair<TKey, TValue> ) element;
+			KeyValuePair<TKey, TValue> pair = (KeyValuePair<TKey, TValue>) element;
 			return new KeyValuePair<TKey, TValue>(
-				( TKey ) persister.IndexType.Replace( pair.Key, null, session, owner, copiedAlready ),
-				( TValue ) persister.ElementType.Replace( pair.Value, null, session, owner, copiedAlready ) );
+				(TKey) persister.IndexType.Replace(pair.Key, null, session, owner, copiedAlready),
+				(TValue) persister.ElementType.Replace(pair.Value, null, session, owner, copiedAlready));
 		}
 
 		public override object Instantiate()
@@ -83,4 +80,5 @@ namespace NHibernate.Type
 		}
 	}
 }
+
 #endif

@@ -9,13 +9,13 @@ namespace NHibernate.Transform
 		public object TransformTuple(object[] tuple, string[] aliases)
 		{
 			IDictionary result = new Hashtable();
-			for( int i = 0; i < tuple.Length; i++ )
+			for (int i = 0; i < tuple.Length; i++)
 			{
-				string alias = aliases[ i ];
-				if( alias != null )
+				string alias = aliases[i];
+				if (alias != null)
 				{
 					// TODO: Incredibly dodgy!! what if the user defines an alias ending in "_"
-					result[ alias ] = tuple[ i ];
+					result[alias] = tuple[i];
 				}
 			}
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -14,79 +13,79 @@ namespace NHibernate.Type
 		private readonly IDictionary keys;
 		private readonly IType baseType;
 
-		public MetaType( IDictionary values, IType baseType )
+		public MetaType(IDictionary values, IType baseType)
 		{
 			this.baseType = baseType;
 			this.values = values;
 			this.keys = new Hashtable();
-			foreach( DictionaryEntry me in values )
+			foreach (DictionaryEntry me in values)
 			{
-				keys[ me.Value ] = me.Key;
+				keys[me.Value] = me.Key;
 			}
 		}
 
-		public override SqlType[] SqlTypes( IMapping mapping )
+		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return baseType.SqlTypes( mapping );
+			return baseType.SqlTypes(mapping);
 		}
 
-		public override int GetColumnSpan( IMapping mapping )
+		public override int GetColumnSpan(IMapping mapping)
 		{
-			return baseType.GetColumnSpan( mapping );
+			return baseType.GetColumnSpan(mapping);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( System.Type ); }
+			get { return typeof(System.Type); }
 		}
 
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			return NHibernateUtil.Class.Equals( x, y );
+			return NHibernateUtil.Class.Equals(x, y);
 		}
 
 		public override object NullSafeGet(
 			IDataReader rs,
 			string[] names,
 			ISessionImplementor session,
-			object owner )
+			object owner)
 		{
-			object key = baseType.NullSafeGet( rs, names, session, owner );
-			return key == null ? null : values[ key ];
+			object key = baseType.NullSafeGet(rs, names, session, owner);
+			return key == null ? null : values[key];
 		}
 
 		public override object NullSafeGet(
 			IDataReader rs,
 			string name,
 			ISessionImplementor session,
-			object owner )
+			object owner)
 		{
-			object key = baseType.NullSafeGet( rs, name, session, owner );
-			return key == null ? null : values[ key ];
+			object key = baseType.NullSafeGet(rs, name, session, owner);
+			return key == null ? null : values[key];
 		}
 
-		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) NullSafeSet( st, value, index, session );
+			if (settable[0]) NullSafeSet(st, value, index, session);
 		}
 
 		public override void NullSafeSet(
 			IDbCommand st,
 			object value,
 			int index,
-			ISessionImplementor session )
+			ISessionImplementor session)
 		{
-			baseType.NullSafeSet( st, value == null ? null : keys[ value ], index, session );
+			baseType.NullSafeSet(st, value == null ? null : keys[value], index, session);
 		}
 
-		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return NHibernateUtil.Class.ToLoggableString( value, factory );
+			return NHibernateUtil.Class.ToLoggableString(value, factory);
 		}
 
-		public override object FromString( string xml )
+		public override object FromString(string xml)
 		{
-			return NHibernateUtil.Class.FromString( xml );
+			return NHibernateUtil.Class.FromString(xml);
 		}
 
 		public override string Name
@@ -94,9 +93,9 @@ namespace NHibernate.Type
 			get { return baseType.Name; } //TODO!
 		}
 
-		public override object DeepCopy( object value )
+		public override object DeepCopy(object value)
 		{
-			return NHibernateUtil.Class.DeepCopy( value );
+			return NHibernateUtil.Class.DeepCopy(value);
 		}
 
 		public override bool IsMutable
@@ -109,10 +108,9 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session )
+		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return checkable[ 0 ] && IsDirty( old, current, session );
+			return checkable[0] && IsDirty(old, current, session);
 		}
-
 	}
 }

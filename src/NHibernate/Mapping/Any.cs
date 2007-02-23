@@ -12,13 +12,13 @@ namespace NHibernate.Mapping
 	public class Any : SimpleValue
 	{
 		private IType identifierType;
-		private IType metaType = NHibernateUtil.Class; 
+		private IType metaType = NHibernateUtil.Class;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="table"></param>
-		public Any( Table table ) : base( table )
+		public Any(Table table) : base(table)
 		{
 		}
 
@@ -34,8 +34,8 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override IType Type
 		{
-			get { return new AnyType( metaType, identifierType ); }
-			set { throw new NotSupportedException( "cannot set type of an Any" ); }
+			get { return new AnyType(metaType, identifierType); }
+			set { throw new NotSupportedException("cannot set type of an Any"); }
 		}
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace NHibernate.Mapping
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
 		/// <param name="propertyAccess"></param>
-		public override void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess )
+		public override void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
 		{
 		}
 

@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
-using NHibernate.Cache;
-using NHibernate.Engine;
 using Iesi.Collections;
+using NHibernate.Engine;
 
 namespace NHibernate.Mapping
 {
@@ -87,10 +86,7 @@ namespace NHibernate.Mapping
 					return classPersisterClass;
 				}
 			}
-			set
-			{
-				classPersisterClass = value;
-			}
+			set { classPersisterClass = value; }
 		}
 
 		/// <summary>
@@ -390,7 +386,11 @@ namespace NHibernate.Mapping
 		public override bool IsDiscriminatorInsertable
 		{
 			get { return Superclass.IsDiscriminatorInsertable; }
-			set { throw new InvalidOperationException("The DiscriminatorInsertable property can not be set on the Subclass - use the Superclass instead."); }
+			set
+			{
+				throw new InvalidOperationException(
+					"The DiscriminatorInsertable property can not be set on the Subclass - use the Superclass instead.");
+			}
 		}
 
 		/// <summary>
@@ -402,7 +402,8 @@ namespace NHibernate.Mapping
 			base.Validate(mapping);
 			if (Key != null && !Key.IsValid(mapping))
 			{
-				throw new MappingException(string.Format("subclass key has wrong number of columns: {0} type: {1}", MappedClass.Name, Key.Type.Name));
+				throw new MappingException(
+					string.Format("subclass key has wrong number of columns: {0} type: {1}", MappedClass.Name, Key.Type.Name));
 			}
 		}
 

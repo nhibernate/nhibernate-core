@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using NHibernate.Transaction;
 
 namespace NHibernate
 {
@@ -68,6 +67,6 @@ namespace NHibernate
 		/// <remarks>
 		/// It is okay for this to be a no op implementation.
 		/// </remarks>
-		void Enlist( IDbCommand command );
+		void Enlist(IDbCommand command);
 	}
 }

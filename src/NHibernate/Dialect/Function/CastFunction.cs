@@ -1,16 +1,19 @@
 using System;
+using System.Collections;
 using NHibernate.Engine;
-using NHibernate.Type;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
 {
 	/// <summary>
 	/// ANSI-SQL style cast(foo as type) where the type is a NHibernate type
 	/// </summary>
-	public class CastFunction: ISQLFunction
+	public class CastFunction : ISQLFunction
 	{
-		public CastFunction() { }
+		public CastFunction()
+		{
+		}
 
 		#region ISQLFunction Members
 
@@ -29,13 +32,13 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(System.Collections.IList args, ISessionFactoryImplementor factory)
+		public string Render(IList args, ISessionFactoryImplementor factory)
 		{
 			if (args.Count != 2)
 			{
 				throw new QueryException("cast() requires two arguments");
 			}
-			string typeName = (string)args[1];
+			string typeName = (string) args[1];
 			string sqlType = string.Empty;
 			IType hqlType = TypeFactory.HeuristicType(typeName);
 			if (hqlType != null)
@@ -63,7 +66,7 @@ namespace NHibernate.Dialect.Function
 			}
 			else
 			{
-				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found",typeName));
+				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 			}
 			return "cast(" + args[0] + " as " + sqlType + ')';
 		}

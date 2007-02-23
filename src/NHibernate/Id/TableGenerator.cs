@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Runtime.CompilerServices;
-
 using log4net;
-
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -35,7 +33,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class TableGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( TableGenerator ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(TableGenerator));
 
 		/// <summary>
 		/// The name of the column parameter.
@@ -71,12 +69,12 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
 		/// <param name="dialect">The <see cref="Dialect"/> to help with Configuration.</param>
-		public virtual void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
+		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
-			tableName = PropertiesHelper.GetString( Table, parms, "hibernate_unique_key" );
-			columnName = PropertiesHelper.GetString( Column, parms, "next_hi" );
-			string schemaName = ( string ) parms[ Schema ];
-			if( schemaName != null && tableName.IndexOf( StringHelper.Dot ) < 0 )
+			tableName = PropertiesHelper.GetString(Table, parms, "hibernate_unique_key");
+			columnName = PropertiesHelper.GetString(Column, parms, "next_hi");
+			string schemaName = (string) parms[Schema];
+			if (schemaName != null && tableName.IndexOf(StringHelper.Dot) < 0)
 			{
 				tableName = schemaName + "." + tableName;
 			}
@@ -84,18 +82,18 @@ namespace NHibernate.Id
 			query = "select " + columnName + " from " + tableName + dialect.ForUpdateString;
 
 			columnType = type as ValueTypeType;
-			if( columnType == null )
+			if (columnType == null)
 			{
-				log.Error( "Column type for TableGenerator is not a value type" );
-				throw new ArgumentException( "type is not a ValueTypeType", "type" );
+				log.Error("Column type for TableGenerator is not a value type");
+				throw new ArgumentException("type is not a ValueTypeType", "type");
 			}
 
 			// build the sql string for the Update since it uses parameters
-			if( type is Int16Type )
+			if (type is Int16Type)
 			{
 				columnSqlType = SqlTypeFactory.Int16;
 			}
-			else if( type is Int64Type )
+			else if (type is Int64Type)
 			{
 				columnSqlType = SqlTypeFactory.Int64;
 			}
@@ -104,17 +102,17 @@ namespace NHibernate.Id
 				columnSqlType = SqlTypeFactory.Int32;
 			}
 
-			parameterTypes = new SqlType[2] { columnSqlType, columnSqlType };
+			parameterTypes = new SqlType[2] {columnSqlType, columnSqlType};
 
 			SqlStringBuilder builder = new SqlStringBuilder();
-			builder.Add( "update " + tableName + " set " )
-				.Add( columnName )
-				.Add( " = " )
-				.Add( Parameter.Placeholder )
-				.Add( " where " )
-				.Add( columnName )
-				.Add( " = " )
-				.Add( Parameter.Placeholder );
+			builder.Add("update " + tableName + " set ")
+				.Add(columnName)
+				.Add(" = ")
+				.Add(Parameter.Placeholder)
+				.Add(" where ")
+				.Add(columnName)
+				.Add(" = ")
+				.Add(Parameter.Placeholder);
 
 			updateSql = builder.ToSqlString();
 		}
@@ -130,8 +128,8 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
-		[MethodImpl( MethodImplOptions.Synchronized )]
-		public virtual object Generate( ISessionImplementor session, object obj )
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public virtual object Generate(ISessionImplementor session, object obj)
 		{
 			// This has to be done using a different connection to the containing
 			// transaction becase the new hi value must remain valid even if the
@@ -142,7 +140,7 @@ namespace NHibernate.Id
 
 			bool isSQLite = session.Factory.Dialect is SQLiteDialect;
 			IDbConnection conn;
-			if( isSQLite )
+			if (isSQLite)
 			{
 				conn = session.Connection;
 			}
@@ -156,7 +154,7 @@ namespace NHibernate.Id
 			try
 			{
 				IDbTransaction trans = null;
-				if( !isSQLite )
+				if (!isSQLite)
 				{
 					trans = conn.BeginTransaction();
 				}
@@ -175,51 +173,51 @@ namespace NHibernate.Id
 					try
 					{
 						rs = qps.ExecuteReader();
-						if( !rs.Read() )
+						if (!rs.Read())
 						{
 							string err = "could not read a hi value - you need to populate the table: " + tableName;
-							log.Error( err );
-							throw new IdentifierGenerationException( err );
+							log.Error(err);
+							throw new IdentifierGenerationException(err);
 						}
-						result = Convert.ToInt64( columnType.Get( rs, 0 ) );
+						result = Convert.ToInt64(columnType.Get(rs, 0));
 					} 
 						// TODO: change to SqlException
-					catch( Exception e )
+					catch (Exception e)
 					{
-						log.Error( "could not read a hi value", e );
+						log.Error("could not read a hi value", e);
 						throw;
 					}
 					finally
 					{
-						if( rs != null ) rs.Close();
+						if (rs != null) rs.Close();
 						qps.Dispose();
 					}
 
-					IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand( CommandType.Text, updateSql, parameterTypes );
+					IDbCommand ups =
+						session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);
 					ups.Connection = conn;
 					ups.Transaction = trans;
 
 					try
 					{
-						columnType.Set( ups, result + 1, 0 );
-						columnType.Set( ups, result, 1 );
+						columnType.Set(ups, result + 1, 0);
+						columnType.Set(ups, result, 1);
 
 						rows = ups.ExecuteNonQuery();
 					} 
 						// TODO: change to SqlException
-					catch( Exception e )
+					catch (Exception e)
 					{
-						log.Error( "could not update hi value in: " + tableName, e );
+						log.Error("could not update hi value in: " + tableName, e);
 						throw;
 					}
 					finally
 					{
 						ups.Dispose();
 					}
-				}
-				while( rows == 0 );
+				} while (rows == 0);
 
-				if( !isSQLite )
+				if (!isSQLite)
 				{
 					trans.Commit();
 				}
@@ -229,9 +227,9 @@ namespace NHibernate.Id
 				// TODO: Shouldn't we have a Catch with a rollback here?
 			finally
 			{
-				if( !isSQLite )
+				if (!isSQLite)
 				{
-					session.Factory.CloseConnection( conn );
+					session.Factory.CloseConnection(conn);
 				}
 			}
 		}
@@ -249,14 +247,14 @@ namespace NHibernate.Id
 		/// create the necessary database objects and to create the first value as <c>1</c> 
 		/// for the TableGenerator.
 		/// </returns>
-		public string[] SqlCreateStrings( Dialect.Dialect dialect )
+		public string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
 			// changed the first value to be "1" by default since an uninitialized Int32 is 0 - leaving
 			// it at 0 would cause problems with an unsaved-value="0" which is what most people are 
 			// defaulting <id>'s with Int32 types at.
 			return new string[]
 				{
-					"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName( columnSqlType ) + " )",
+					"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(columnSqlType) + " )",
 					"insert into " + tableName + " values ( 1 )"
 				};
 		}
@@ -268,9 +266,9 @@ namespace NHibernate.Id
 		/// <returns>
 		/// A <see cref="String"/> that will drop the database objects for the TableGenerator.
 		/// </returns>
-		public string SqlDropString( Dialect.Dialect dialect )
+		public string SqlDropString(Dialect.Dialect dialect)
 		{
-			return dialect.GetDropTableString( tableName );
+			return dialect.GetDropTableString(tableName);
 		}
 
 		/// <summary>

@@ -1,10 +1,8 @@
 using System.Data;
-using System.Globalization;
 using System.Text;
 using NHibernate.Cfg;
-using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Dialect.Function;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
@@ -29,30 +27,30 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public DB2Dialect()
 		{
-			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(254)" );
-			RegisterColumnType( DbType.AnsiStringFixedLength, 254, "CHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, "VARCHAR(254)" );
-			RegisterColumnType( DbType.AnsiString, 8000, "VARCHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, 2147483647, "CLOB" );
-			RegisterColumnType( DbType.Binary, 2147483647, "BLOB" );
-			RegisterColumnType( DbType.Boolean, "SMALLINT" );
-			RegisterColumnType( DbType.Byte, "SMALLINT" );
-			RegisterColumnType( DbType.Currency, "DECIMAL(16,4)" );
-			RegisterColumnType( DbType.Date, "DATE" );
-			RegisterColumnType( DbType.DateTime, "TIMESTAMP" );
-			RegisterColumnType( DbType.Decimal, "DECIMAL(19,5)" );
-			RegisterColumnType( DbType.Decimal, 19, "DECIMAL(19, $1)" );
-			RegisterColumnType( DbType.Double, "DOUBLE" );
-			RegisterColumnType( DbType.Int16, "SMALLINT" );
-			RegisterColumnType( DbType.Int32, "INTEGER" );
-			RegisterColumnType( DbType.Int64, "BIGINT" );
-			RegisterColumnType( DbType.Single, "REAL" );
-			RegisterColumnType( DbType.StringFixedLength, "CHAR(254)" );
-			RegisterColumnType( DbType.StringFixedLength, 254, "CHAR($1)" );
-			RegisterColumnType( DbType.String, "VARCHAR(254)" );
-			RegisterColumnType( DbType.String, 8000, "VARCHAR($1)" );
-			RegisterColumnType( DbType.String, 2147483647, "CLOB" );
-			RegisterColumnType( DbType.Time, "TIME" );
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(254)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 254, "CHAR($1)");
+			RegisterColumnType(DbType.AnsiString, "VARCHAR(254)");
+			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($1)");
+			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB");
+			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
+			RegisterColumnType(DbType.Boolean, "SMALLINT");
+			RegisterColumnType(DbType.Byte, "SMALLINT");
+			RegisterColumnType(DbType.Currency, "DECIMAL(16,4)");
+			RegisterColumnType(DbType.Date, "DATE");
+			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
+			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $1)");
+			RegisterColumnType(DbType.Double, "DOUBLE");
+			RegisterColumnType(DbType.Int16, "SMALLINT");
+			RegisterColumnType(DbType.Int32, "INTEGER");
+			RegisterColumnType(DbType.Int64, "BIGINT");
+			RegisterColumnType(DbType.Single, "REAL");
+			RegisterColumnType(DbType.StringFixedLength, "CHAR(254)");
+			RegisterColumnType(DbType.StringFixedLength, 254, "CHAR($1)");
+			RegisterColumnType(DbType.String, "VARCHAR(254)");
+			RegisterColumnType(DbType.String, 8000, "VARCHAR($1)");
+			RegisterColumnType(DbType.String, 2147483647, "CLOB");
+			RegisterColumnType(DbType.Time, "TIME");
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("absval", new StandardSQLFunction("absval"));
@@ -148,7 +146,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string GetIdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString(string identityColumn, string tableName)
 		{
 			return "select identity_val_local() from sysibm.sysdummy1";
 		}
@@ -166,21 +164,21 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string GetSequenceNextValString( string sequenceName )
+		public override string GetSequenceNextValString(string sequenceName)
 		{
 			return "values nextval for " + sequenceName;
 		}
 
 		/// <summary></summary>
-		public override string GetCreateSequenceString( string sequenceName )
+		public override string GetCreateSequenceString(string sequenceName)
 		{
 			return "create sequence " + sequenceName;
 		}
 
 		/// <summary></summary>
-		public override string GetDropSequenceString( string sequenceName )
+		public override string GetDropSequenceString(string sequenceName)
 		{
-			return string.Concat( "drop sequence ", sequenceName, " restrict" );
+			return string.Concat("drop sequence ", sequenceName, " restrict");
 		}
 
 		/// <summary></summary>
@@ -214,41 +212,41 @@ namespace NHibernate.Dialect
 		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
 		/// <param name="hasOffset">Offset of the first row is not zero</param>
 		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
-		public override SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
+		public override SqlString GetLimitString(SqlString querySqlString, bool hasOffset)
 		{
 			/*
 		     * "select * from (select row_number() over(orderby_clause) as rownum, "
 			 * querySqlString_without select
 			 * " ) as tempresult where rownum between ? and ?"
 			 */
-			string rownumClause = GetRowNumber( querySqlString );
+			string rownumClause = GetRowNumber(querySqlString);
 
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder
-				.Add( "select * from (select " )
+				.Add("select * from (select ")
 				.Add(rownumClause)
 				.Add(querySqlString.Substring(7))
-				.Add( ") as tempresult where rownum " );
+				.Add(") as tempresult where rownum ");
 
-			if( hasOffset )
+			if (hasOffset)
 			{
 				pagingBuilder
-					.Add( "between " )
-					.Add( Parameter.Placeholder )
-					.Add( "+1 and " )
-					.Add( Parameter.Placeholder );
+					.Add("between ")
+					.Add(Parameter.Placeholder)
+					.Add("+1 and ")
+					.Add(Parameter.Placeholder);
 			}
 			else
 			{
 				pagingBuilder
-					.Add( "<= " )
-					.Add( Parameter.Placeholder );
+					.Add("<= ")
+					.Add(Parameter.Placeholder);
 			}
-    
+
 			return pagingBuilder.ToSqlString();
 		}
 
-		private static string GetRowNumber( SqlString sql )
+		private static string GetRowNumber(SqlString sql)
 		{
 			return new StringBuilder()
 				.Append("rownumber() over(")

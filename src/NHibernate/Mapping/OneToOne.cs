@@ -18,7 +18,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="table"></param>
 		/// <param name="identifier"></param>
-		public OneToOne( Table table, SimpleValue identifier ) : base( table )
+		public OneToOne(Table table, SimpleValue identifier) : base(table)
 		{
 			this.identifier = identifier;
 		}
@@ -29,32 +29,32 @@ namespace NHibernate.Mapping
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
 		/// <param name="propertyAccess"></param>
-		public override void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess )
+		public override void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
 		{
 			try
 			{
-				if( Type == null )
+				if (Type == null)
 				{
 					Type = TypeFactory.OneToOne(
-						ReflectHelper.ReflectedPropertyClass( propertyClass, propertyName, propertyAccess ),
+						ReflectHelper.ReflectedPropertyClass(propertyClass, propertyName, propertyAccess),
 						foreignKeyDirection,
 						ReferencedPropertyName,
-						IsLazy );
+						IsLazy);
 				}
 			}
-			catch( HibernateException he )
+			catch (HibernateException he)
 			{
-				throw new MappingException( "Problem trying to set association type by reflection", he );
+				throw new MappingException("Problem trying to set association type by reflection", he);
 			}
 		}
 
 		/// <summary></summary>
 		public override void CreateForeignKey()
 		{
-			if( constrained && ReferencedPropertyName == null )
+			if (constrained && ReferencedPropertyName == null)
 			{
 				// TODO: 2.1+ handle the case of a foreign key to something other than the pk
-				CreateForeignKeyOfClass( ( ( EntityType ) Type ).AssociatedClass );
+				CreateForeignKeyOfClass(((EntityType) Type).AssociatedClass);
 			}
 		}
 
@@ -64,9 +64,9 @@ namespace NHibernate.Mapping
 			get
 			{
 				ArrayList list = new ArrayList();
-				foreach( object obj in identifier.ColumnCollection )
+				foreach (object obj in identifier.ColumnCollection)
 				{
-					list.Add( obj );
+					list.Add(obj);
 				}
 				return list;
 			}

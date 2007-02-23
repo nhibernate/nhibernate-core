@@ -1,8 +1,8 @@
 using System;
 using System.Data;
-using NHibernate.Type;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
 {
@@ -11,11 +11,13 @@ namespace NHibernate.Dialect.Function
 	/// </summary>
 	public class ClassicAvgFunction : ClassicAggregateFunction
 	{
-		public ClassicAvgFunction() : base("avg",false) { }
+		public ClassicAvgFunction() : base("avg", false)
+		{
+		}
 
 		public override IType ReturnType(IType columnType, IMapping mapping)
 		{
-			NHibernate.SqlTypes.SqlType[] sqlTypes;
+			SqlType[] sqlTypes;
 			try
 			{
 				sqlTypes = columnType.SqlTypes(mapping);
@@ -30,7 +32,7 @@ namespace NHibernate.Dialect.Function
 				throw new QueryException("multi-column type can not be in avg()");
 			}
 
-			NHibernate.SqlTypes.SqlType sqlType = sqlTypes[0];
+			SqlType sqlType = sqlTypes[0];
 
 			if (sqlType.DbType == DbType.Int16 || sqlType.DbType == DbType.Int32 || sqlType.DbType == DbType.Int64)
 			{

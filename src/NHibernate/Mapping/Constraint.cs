@@ -38,11 +38,11 @@ namespace NHibernate.Mapping
 		/// Columns that are part of the constraint.
 		/// </summary>
 		/// <param name="column">The <see cref="Column"/> to include in the Constraint.</param>
-		public void AddColumn( Column column )
+		public void AddColumn(Column column)
 		{
-			if( !columns.Contains( column ) )
+			if (!columns.Contains(column))
 			{
-				columns.Add( column );
+				columns.Add(column);
 			}
 		}
 
@@ -79,10 +79,10 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to drop this Constraint.
 		/// </returns>
-		public virtual string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
+		public virtual string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
 		{
 			// TODO: NH-421
-			return string.Format( "alter table {0} drop constraint {1}", Table.GetQualifiedName( dialect, defaultSchema ), Name );
+			return string.Format("alter table {0} drop constraint {1}", Table.GetQualifiedName(dialect, defaultSchema), Name);
 		}
 
 		/// <summary>
@@ -94,10 +94,12 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to create this Constraint.
 		/// </returns>
-		public string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema )
+		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
 		{
 			// TODO: NH-421
-			return string.Format( "alter table {0} {1} ", Table.GetQualifiedName( dialect, defaultSchema ), SqlConstraintString( dialect, Name, defaultSchema ) );
+			return
+				string.Format("alter table {0} {1} ", Table.GetQualifiedName(dialect, defaultSchema),
+				              SqlConstraintString(dialect, Name, defaultSchema));
 		}
 
 		#endregion
@@ -112,7 +114,6 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to create the named Constraint.
 		/// </returns>
-		public abstract string SqlConstraintString( Dialect.Dialect d, string constraintName, string defaultSchema );
-
+		public abstract string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultSchema);
 	}
 }

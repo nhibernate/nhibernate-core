@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
+using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -26,31 +28,31 @@ namespace NHibernate.Collection
 	/// </remarks>
 	[Serializable]
 #if NET_2_0
-	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy))]
+	[DebuggerTypeProxy(typeof(CollectionProxy))]
 #endif
 	public class PersistentIdentifierBag : AbstractPersistentCollection, IList
 	{
-		private IList values;	//element
+		private IList values; //element
 		private IDictionary identifiers; //index -> id 
 
-		public PersistentIdentifierBag( ISessionImplementor session ) : base( session )
+		public PersistentIdentifierBag(ISessionImplementor session) : base(session)
 		{
 		}
 
-		public PersistentIdentifierBag( ISessionImplementor session, ICollection coll ) : base( session )
+		public PersistentIdentifierBag(ISessionImplementor session, ICollection coll) : base(session)
 		{
 			IList list = coll as IList;
 
-			if( list != null )
+			if (list != null)
 			{
 				values = list;
 			}
 			else
 			{
 				values = new ArrayList();
-				foreach( object obj in coll )
+				foreach (object obj in coll)
 				{
-					values.Add( obj );
+					values.Add(obj);
 				}
 			}
 
@@ -65,33 +67,33 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentIdentifierBag.</param>
 		/// <param name="disassembled">The disassembled PersistentIdentifierBag.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
+		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			BeforeInitialize( persister );
-			object[ ] array = ( object[ ] ) disassembled;
+			BeforeInitialize(persister);
+			object[] array = (object[]) disassembled;
 
-			for( int i = 0; i < array.Length; i += 2 )
+			for (int i = 0; i < array.Length; i += 2)
 			{
 				//object obj = persister.ElementType.Assemble( array[ i + 1 ], session, owner );
 				//identifiers[ obj ] = persister.IdentifierType.Assemble( array[ i ], session, owner );
-				identifiers[ i / 2 ] = persister.IdentifierType.Assemble( array[ i ], Session, owner );
-				values.Add( persister.ElementType.Assemble( array[ i + 1 ], Session, owner ) );
+				identifiers[i / 2] = persister.IdentifierType.Assemble(array[i], Session, owner);
+				values.Add(persister.ElementType.Assemble(array[i + 1], Session, owner));
 			}
 
 			SetInitialized();
 		}
 
-		public override bool IsWrapper( object collection )
+		public override bool IsWrapper(object collection)
 		{
 			return values == collection;
 		}
 
 		#region IList Members
 
-		public int Add( object value )
+		public int Add(object value)
 		{
 			Write();
-			return values.Add( value );
+			return values.Add(value);
 		}
 
 		public void Clear()
@@ -110,56 +112,56 @@ namespace NHibernate.Collection
 			get { return false; }
 		}
 
-		public object this[ int index ]
+		public object this[int index]
 		{
 			get
 			{
 				Read();
-				return values[ index ];
+				return values[index];
 			}
 			set
 			{
 				Write();
-				values[ index ] = value;
+				values[index] = value;
 			}
 		}
 
-		public void Insert( int index, object value )
+		public void Insert(int index, object value)
 		{
 			Initialize(true);
-			BeforeAdd( index );
-			values.Insert( index, value );
+			BeforeAdd(index);
+			values.Insert(index, value);
 			Dirty();
 		}
 
-		public void RemoveAt( int index )
+		public void RemoveAt(int index)
 		{
 			Initialize(true);
-			BeforeRemove( index );
-			values.RemoveAt( index );
+			BeforeRemove(index);
+			values.RemoveAt(index);
 			Dirty();
 		}
 
-		public void Remove( object value )
+		public void Remove(object value)
 		{
 			Initialize(true);
-			int index = values.IndexOf( value );
-			if( index >= 0 )
+			int index = values.IndexOf(value);
+			if (index >= 0)
 			{
-				RemoveAt( index );
+				RemoveAt(index);
 			}
 		}
 
-		public bool Contains( object value )
+		public bool Contains(object value)
 		{
 			Read();
-			return values.Contains( value );
+			return values.Contains(value);
 		}
 
-		public int IndexOf( object value )
+		public int IndexOf(object value)
 		{
 			Read();
-			return values.IndexOf( value );
+			return values.IndexOf(value);
 		}
 
 		public bool IsFixedSize
@@ -175,7 +177,7 @@ namespace NHibernate.Collection
 		{
 			get { return false; }
 		}
-		
+
 		public int Count
 		{
 			get
@@ -185,10 +187,10 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public void CopyTo( Array array, int index )
+		public void CopyTo(Array array, int index)
 		{
 			Read();
-			values.CopyTo( array, index );
+			values.CopyTo(array, index);
 		}
 
 		public object SyncRoot
@@ -208,22 +210,22 @@ namespace NHibernate.Collection
 
 		#endregion
 
-		public override void BeforeInitialize( ICollectionPersister persister )
+		public override void BeforeInitialize(ICollectionPersister persister)
 		{
 			identifiers = new Hashtable();
 			values = new ArrayList();
 		}
 
-		public override object Disassemble( ICollectionPersister persister )
+		public override object Disassemble(ICollectionPersister persister)
 		{
-			object[ ] result = new object[ values.Count * 2 ];
+			object[] result = new object[values.Count * 2];
 
 			int i = 0;
-			for( int j = 0; j < values.Count; j++ )
+			for (int j = 0; j < values.Count; j++)
 			{
-				object val = values[ j ];
-				result[ i++ ] = persister.IdentifierType.Disassemble( identifiers[ j ], Session );
-				result[ i++ ] = persister.ElementType.Disassemble( val, Session );
+				object val = values[j];
+				result[i++] = persister.IdentifierType.Disassemble(identifiers[j], Session);
+				result[i++] = persister.ElementType.Disassemble(val, Session);
 			}
 
 			return result;
@@ -231,7 +233,7 @@ namespace NHibernate.Collection
 
 		public override bool Empty
 		{
-			get { return ( values.Count == 0 ); }
+			get { return (values.Count == 0); }
 		}
 
 		public override IEnumerable Entries()
@@ -239,30 +241,30 @@ namespace NHibernate.Collection
 			return values;
 		}
 
-		public override bool EntryExists( object entry, int i )
+		public override bool EntryExists(object entry, int i)
 		{
 			return entry != null;
 		}
 
-		public override bool EqualsSnapshot( IType elementType )
+		public override bool EqualsSnapshot(IType elementType)
 		{
-			IDictionary snap = ( IDictionary ) GetSnapshot();
-			if( snap.Count != values.Count )
+			IDictionary snap = (IDictionary) GetSnapshot();
+			if (snap.Count != values.Count)
 			{
 				return false;
 			}
 
-			for( int i = 0; i < values.Count; i++ )
+			for (int i = 0; i < values.Count; i++)
 			{
-				object val = values[ i ];
-				object id = identifiers[ i ];
-				if( id == null )
+				object val = values[i];
+				object id = identifiers[i];
+				if (id == null)
 				{
 					return false;
 				}
 
-				object old = snap[ id ];
-				if( elementType.IsDirty( old, val, Session ) )
+				object old = snap[id];
+				if (elementType.IsDirty(old, val, Session))
 				{
 					return false;
 				}
@@ -271,25 +273,25 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
+		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
 		{
-			IDictionary snap = ( IDictionary ) GetSnapshot();
-			IList deletes = new ArrayList( snap.Keys );
+			IDictionary snap = (IDictionary) GetSnapshot();
+			IList deletes = new ArrayList(snap.Keys);
 
-			for( int i = 0; i < values.Count; i++ )
+			for (int i = 0; i < values.Count; i++)
 			{
-				if( values[ i ] != null )
+				if (values[i] != null)
 				{
-					deletes.Remove( identifiers[ i ] );
+					deletes.Remove(identifiers[i]);
 				}
 			}
 
 			return deletes;
 		}
 
-		public override object GetIndex( object entry, int i )
+		public override object GetIndex(object entry, int i)
 		{
-			return new NotImplementedException( "Bags don't have indexes" );
+			return new NotImplementedException("Bags don't have indexes");
 		}
 
 		public override object GetElement(object entry)
@@ -299,68 +301,69 @@ namespace NHibernate.Collection
 
 		public override object GetIdentifier(object entry, int i)
 		{
-			return identifiers[ i ];
+			return identifiers[i];
 		}
 
 		public override object GetSnapshotElement(object entry, int i)
 		{
-			IDictionary snap = ( IDictionary ) GetSnapshot();
-			object id = identifiers[ i ];
-			return snap[ id ];
+			IDictionary snap = (IDictionary) GetSnapshot();
+			object id = identifiers[i];
+			return snap[id];
 		}
 
-		public override bool NeedsInserting( object entry, int i, IType elemType )
+		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			IDictionary snap = ( IDictionary ) GetSnapshot();
-			object id = identifiers[ i ];
+			IDictionary snap = (IDictionary) GetSnapshot();
+			object id = identifiers[i];
 
-			return entry != null && ( id == null || snap[ id ] == null );
+			return entry != null && (id == null || snap[id] == null);
 		}
 
-		public override bool NeedsUpdating( object entry, int i, IType elemType )
+		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
-			if( entry == null )
+			if (entry == null)
 			{
 				return false;
 			}
-			IDictionary snap = ( IDictionary ) GetSnapshot();
+			IDictionary snap = (IDictionary) GetSnapshot();
 
-			object id = identifiers[ i ];
-			if( id == null )
+			object id = identifiers[i];
+			if (id == null)
 			{
 				return false;
 			}
 
-			object old = snap[ id ];
-			return old != null && elemType.IsDirty( old, entry, Session );
+			object old = snap[id];
+			return old != null && elemType.IsDirty(old, entry, Session);
 		}
 
-		public override object ReadFrom( IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner )
+		public override object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
+		                                object owner)
 		{
-			object element = role.ReadElement( reader, owner, descriptor.SuffixedElementAliases, Session );
-			values.Add( element );
-			identifiers[ values.Count - 1 ] = role.ReadIdentifier( reader, descriptor.SuffixedIdentifierAlias, Session );
+			object element = role.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
+			values.Add(element);
+			identifiers[values.Count - 1] = role.ReadIdentifier(reader, descriptor.SuffixedIdentifierAlias, Session);
 			return element;
 		}
 
-		protected override ICollection Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
-			IDictionary map = new Hashtable( values.Count );
+			IDictionary map = new Hashtable(values.Count);
 
 			int i = 0;
-			foreach( object obj in values )
+			foreach (object obj in values)
 			{
-				object key = identifiers[ i++ ];
-				if( key != null )
+				object key = identifiers[i++];
+				if (key != null)
 				{
-					map[ key ] = persister.ElementType.DeepCopy( obj );
+					map[key] = persister.ElementType.DeepCopy(obj);
 				}
 			}
 
 			return map;
 		}
 
-		public override ICollection GetOrphans( object snapshot, System.Type entityName )
+		public override ICollection GetOrphans(object snapshot, System.Type entityName)
 		{
 			/*
 			IDictionary sn = ( IDictionary ) GetSnapshot();
@@ -370,58 +373,57 @@ namespace NHibernate.Collection
 			return result;
 			*/
 
-			return AbstractPersistentCollection.GetOrphans( ( ( IDictionary ) snapshot).Values, values, Session );
+			return GetOrphans(((IDictionary) snapshot).Values, values, Session);
 		}
 
-		public override void PreInsert( ICollectionPersister persister )
+		public override void PreInsert(ICollectionPersister persister)
 		{
 			try
 			{
 				int i = 0;
-				foreach( object entry in values )
+				foreach (object entry in values)
 				{
 					int loc = i++;
-					if( !identifiers.Contains( loc ) ) 		// TODO: native ids
+					if (!identifiers.Contains(loc)) // TODO: native ids
 					{
-						object id = persister.IdentifierGenerator.Generate( Session, entry );
-						identifiers[ loc ] = id;
+						object id = persister.IdentifierGenerator.Generate(Session, entry);
+						identifiers[loc] = id;
 					}
 				}
 			}
-			catch( Exception sqle )
+			catch (Exception sqle)
 			{
-				throw new ADOException( "Could not generate idbag row id.", sqle );
+				throw new ADOException("Could not generate idbag row id.", sqle);
 			}
 		}
 
-		private void BeforeRemove( int index ) 
+		private void BeforeRemove(int index)
 		{
 			// Move the identifier being removed to the end of the list (i.e. it isn't actually removed).
-			object removedId = identifiers[ index ];
+			object removedId = identifiers[index];
 			int last = values.Count - 1;
-			for( int i = index; i < last; i++ ) 
+			for (int i = index; i < last; i++)
 			{
-				object id = identifiers[ i + 1 ];
-				if( id == null ) 
+				object id = identifiers[i + 1];
+				if (id == null)
 				{
-					identifiers.Remove( i );
+					identifiers.Remove(i);
 				}
-				else 
+				else
 				{
-					identifiers[ i ] = id;
+					identifiers[i] = id;
 				}
 			}
-			identifiers[ last ] = removedId;
+			identifiers[last] = removedId;
 		}
 
-		private void BeforeAdd( int index ) 
+		private void BeforeAdd(int index)
 		{
-			for( int i = index; i < values.Count; i++ ) 
+			for (int i = index; i < values.Count; i++)
 			{
-				identifiers[ i + 1 ] = identifiers[ i ];
+				identifiers[i + 1] = identifiers[i];
 			}
-			identifiers.Remove( index );
+			identifiers.Remove(index);
 		}
-
 	}
 }

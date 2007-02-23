@@ -12,7 +12,7 @@ namespace NHibernate.Id
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IdentifierGenerationException"/> class.
 		/// </summary>
-		public IdentifierGenerationException(  ) : base( "An exception occurred during ID generation." )
+		public IdentifierGenerationException() : base("An exception occurred during ID generation.")
 		{
 		}
 
@@ -20,7 +20,7 @@ namespace NHibernate.Id
 		/// Initializes a new instance of the <see cref="IdentifierGenerationException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
-		public IdentifierGenerationException( string message ) : base( message )
+		public IdentifierGenerationException(string message) : base(message)
 		{
 		}
 
@@ -33,7 +33,7 @@ namespace NHibernate.Id
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public IdentifierGenerationException( string message, Exception e ) : base( message, e )
+		public IdentifierGenerationException(string message, Exception e) : base(message, e)
 		{
 		}
 
@@ -48,7 +48,7 @@ namespace NHibernate.Id
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected IdentifierGenerationException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected IdentifierGenerationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

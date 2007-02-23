@@ -12,7 +12,7 @@ namespace NHibernate.SqlTypes
 	{
 		// key = typeof(sqlType).Name : ie - BinarySqlType(l), BooleanSqlType, DecimalSqlType(p,s)
 		// value = SqlType
-		private static Hashtable sqlTypes = Hashtable.Synchronized( new Hashtable( 41 ) );
+		private static Hashtable sqlTypes = Hashtable.Synchronized(new Hashtable(41));
 
 		private SqlTypeFactory()
 		{
@@ -36,59 +36,58 @@ namespace NHibernate.SqlTypes
 		public static readonly SqlType UInt16 = new SqlType(DbType.UInt16);
 		public static readonly SqlType UInt32 = new SqlType(DbType.UInt32);
 		public static readonly SqlType UInt64 = new SqlType(DbType.UInt64);
-		
+
 		public static readonly SqlType[] NoTypes = new SqlType[0];
 
-		public static AnsiStringSqlType GetAnsiString( int length )
+		public static AnsiStringSqlType GetAnsiString(int length)
 		{
-			string key = GetKeyForLengthBased( typeof( AnsiStringSqlType ).Name, length );
-			AnsiStringSqlType returnSqlType = ( AnsiStringSqlType ) sqlTypes[ key ];
-			if( returnSqlType == null )
+			string key = GetKeyForLengthBased(typeof(AnsiStringSqlType).Name, length);
+			AnsiStringSqlType returnSqlType = (AnsiStringSqlType) sqlTypes[key];
+			if (returnSqlType == null)
 			{
-				returnSqlType = new AnsiStringSqlType( length );
-				sqlTypes.Add( key, returnSqlType );
+				returnSqlType = new AnsiStringSqlType(length);
+				sqlTypes.Add(key, returnSqlType);
 			}
 			return returnSqlType;
 		}
 
-		public static BinarySqlType GetBinary( int length )
+		public static BinarySqlType GetBinary(int length)
 		{
-			string key = GetKeyForLengthBased( typeof( BinarySqlType ).Name, length );
-			BinarySqlType returnSqlType = ( BinarySqlType ) sqlTypes[ key ];
-			if( returnSqlType == null )
+			string key = GetKeyForLengthBased(typeof(BinarySqlType).Name, length);
+			BinarySqlType returnSqlType = (BinarySqlType) sqlTypes[key];
+			if (returnSqlType == null)
 			{
-				returnSqlType = new BinarySqlType( length );
-				sqlTypes.Add( key, returnSqlType );
+				returnSqlType = new BinarySqlType(length);
+				sqlTypes.Add(key, returnSqlType);
 			}
 			return returnSqlType;
-
 		}
 
-		public static SqlType GetDecimal( byte precision, byte scale )
+		public static SqlType GetDecimal(byte precision, byte scale)
 		{
 			return new SqlType(DbType.Decimal, precision, scale);
 		}
 
-		public static StringSqlType GetString( int length )
+		public static StringSqlType GetString(int length)
 		{
-			string key = GetKeyForLengthBased( typeof( StringSqlType ).Name, length );
+			string key = GetKeyForLengthBased(typeof(StringSqlType).Name, length);
 
-			StringSqlType returnSqlType = ( StringSqlType ) sqlTypes[ key ];
-			if( returnSqlType == null )
+			StringSqlType returnSqlType = (StringSqlType) sqlTypes[key];
+			if (returnSqlType == null)
 			{
-				returnSqlType = new StringSqlType( length );
-				sqlTypes.Add( key, returnSqlType );
+				returnSqlType = new StringSqlType(length);
+				sqlTypes.Add(key, returnSqlType);
 			}
 
 			return returnSqlType;
 		}
 
-		private static string GetKeyForLengthBased( string name, int length )
+		private static string GetKeyForLengthBased(string name, int length)
 		{
 			return name + "(" + length + ")";
 		}
 
-		private static string GetKeyForPrecisionScaleBased( string name, byte precision, byte scale )
+		private static string GetKeyForPrecisionScaleBased(string name, byte precision, byte scale)
 		{
 			return name + "(" + precision + ", " + scale + ")";
 		}

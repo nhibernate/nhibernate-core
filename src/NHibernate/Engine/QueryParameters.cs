@@ -1,15 +1,12 @@
 using System;
 using System.Collections;
-
 using log4net;
-
+using NHibernate.Hql.Classic;
 using NHibernate.Impl;
+using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Hql.Classic;
-using NHibernate.SqlCommand;
-using System.Data;
 
 namespace NHibernate.Engine
 {
@@ -53,7 +50,7 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType type, object value)
-			: this(new IType[] { type }, new object[] { value })
+			: this(new IType[] {type}, new object[] {value})
 		{
 		}
 
@@ -290,13 +287,13 @@ namespace NHibernate.Engine
 			if (_positionalParameterValues.Length != 0)
 			{
 				log.Debug("parameters: "
-						   + print.ToString(_positionalParameterTypes, _positionalParameterValues));
+				          + print.ToString(_positionalParameterTypes, _positionalParameterValues));
 			}
 
 			if (_namedParameters != null)
 			{
 				log.Debug("named parameters: "
-						   + print.ToString(_namedParameters));
+				          + print.ToString(_namedParameters));
 			}
 		}
 
@@ -326,7 +323,8 @@ namespace NHibernate.Engine
 
 			if (typesLength != valuesLength)
 			{
-				throw new QueryException("Number of positional parameter types (" + typesLength + ") does not match number of positional parameter values (" + valuesLength + ")");
+				throw new QueryException("Number of positional parameter types (" + typesLength +
+				                         ") does not match number of positional parameter values (" + valuesLength + ")");
 			}
 		}
 
@@ -393,7 +391,7 @@ namespace NHibernate.Engine
 						result.AddParameter();
 						continue;
 					}
-					
+
 					StringTokenizer tokenizer = new StringTokenizer((string) part, symbols, true);
 
 					foreach (string token in tokenizer)
@@ -406,8 +404,8 @@ namespace NHibernate.Engine
 
 							// If the value is not a value of the type but a collection of values...
 							if (value != null &&
-								!type.ReturnedClass.IsAssignableFrom(value.GetType()) && // Added to fix NH-882
-								typeof(ICollection).IsAssignableFrom(value.GetType()))
+							    !type.ReturnedClass.IsAssignableFrom(value.GetType()) && // Added to fix NH-882
+							    typeof(ICollection).IsAssignableFrom(value.GetType()))
 							{
 								ICollection coll = (ICollection) value;
 								int i = 0;

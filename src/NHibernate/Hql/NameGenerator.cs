@@ -1,7 +1,7 @@
 using System;
 using System.Text;
-using NHibernate.Type;
 using NHibernate.Engine;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Hql
@@ -21,7 +21,7 @@ namespace NHibernate.Hql
 				columnNames[i] = new string[span];
 				for (int j = 0; j < span; j++)
 				{
-					columnNames[i][j] = NameGenerator.ScalarName(i, j);
+					columnNames[i][j] = ScalarName(i, j);
 				}
 			}
 			return columnNames;
@@ -30,12 +30,12 @@ namespace NHibernate.Hql
 		public static string ScalarName(int x, int y)
 		{
 			return new StringBuilder(16)
-					.Append("col_")
-					.Append(x)
-					.Append(StringHelper.Underscore)
-					.Append(y)
-					.Append(StringHelper.Underscore)
-					.ToString();
+				.Append("col_")
+				.Append(x)
+				.Append(StringHelper.Underscore)
+				.Append(y)
+				.Append(StringHelper.Underscore)
+				.ToString();
 		}
 	}
 }

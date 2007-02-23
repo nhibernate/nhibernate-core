@@ -41,14 +41,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		IJoinable GetAssociatedJoinable( ISessionFactoryImplementor factory );
+		IJoinable GetAssociatedJoinable(ISessionFactoryImplementor factory);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		System.Type GetAssociatedClass( ISessionFactoryImplementor factory );
+		System.Type GetAssociatedClass(ISessionFactoryImplementor factory);
 
 		/// <summary>
 		/// Do we dirty check this association, even when there are

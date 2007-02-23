@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Data;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -13,7 +12,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlUpdateBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( SqlUpdateBuilder ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(SqlUpdateBuilder));
 
 		private string tableName;
 
@@ -25,7 +24,7 @@ namespace NHibernate.SqlCommand
 		private ArrayList columnValuesParameterTypes = new ArrayList();
 		private ArrayList whereParameterTypes = new ArrayList();
 
-		public SqlUpdateBuilder( IMapping mapping ) : base( mapping )
+		public SqlUpdateBuilder(IMapping mapping) : base(mapping)
 		{
 		}
 
@@ -34,7 +33,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="tableName"></param>
 		/// <returns></returns>
-		public SqlUpdateBuilder SetTableName( string tableName )
+		public SqlUpdateBuilder SetTableName(string tableName)
 		{
 			this.tableName = tableName;
 			return this;
@@ -48,9 +47,9 @@ namespace NHibernate.SqlCommand
 		/// <param name="val">The value to set for the column.</param>
 		/// <param name="literalType">The NHibernateType to use to convert the value to a sql string.</param>
 		/// <returns>The SqlUpdateBuilder.</returns>
-		public SqlUpdateBuilder AddColumn( string columnName, object val, ILiteralType literalType )
+		public SqlUpdateBuilder AddColumn(string columnName, object val, ILiteralType literalType)
 		{
-			return AddColumn( columnName, literalType.ObjectToSQLString( val ) );
+			return AddColumn(columnName, literalType.ObjectToSQLString(val));
 		}
 
 
@@ -60,10 +59,10 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnName">The name of the Column to add.</param>
 		/// <param name="val">A valid sql string to set as the value of the column.</param>
 		/// <returns>The SqlUpdateBuilder.</returns>
-		public SqlUpdateBuilder AddColumn( string columnName, string val )
+		public SqlUpdateBuilder AddColumn(string columnName, string val)
 		{
-			columnNames.Add( columnName );
-			columnValues.Add( val );
+			columnNames.Add(columnName);
+			columnValues.Add(val);
 
 			return this;
 		}
@@ -74,12 +73,12 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnName">The names of the Column sto add.</param>
 		/// <param name="val">A valid sql string to set as the value of the column.</param>
 		/// <returns>The SqlUpdateBuilder.</returns>
-		public SqlUpdateBuilder AddColumns( string[ ] columnName, string val )
+		public SqlUpdateBuilder AddColumns(string[] columnName, string val)
 		{
-			for( int i = 0; i < columnName.Length; i++ )
+			for (int i = 0; i < columnName.Length; i++)
 			{
-				columnNames.Add( columnName[ i ] );
-				columnValues.Add( val );
+				columnNames.Add(columnName[i]);
+				columnValues.Add(val);
 			}
 
 			return this;
@@ -91,21 +90,21 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="propertyType">The IType of the property.</param>
 		/// <returns>The SqlUpdateBuilder.</returns>
-		public SqlUpdateBuilder AddColumns( string[] columnNames, IType propertyType )
+		public SqlUpdateBuilder AddColumns(string[] columnNames, IType propertyType)
 		{
-			return AddColumns( columnNames, null, propertyType );
+			return AddColumns(columnNames, null, propertyType);
 		}
 
-		public SqlUpdateBuilder AddColumns( string[] columnNames, bool[] updateable, IType propertyType )
+		public SqlUpdateBuilder AddColumns(string[] columnNames, bool[] updateable, IType propertyType)
 		{
-			SqlType[] sqlTypes = propertyType.SqlTypes( Mapping );
+			SqlType[] sqlTypes = propertyType.SqlTypes(Mapping);
 			for (int i = 0; i < columnNames.Length; i++)
 			{
 				if (updateable == null || updateable[i])
 				{
-					this.columnNames.Add( columnNames[i] );
-					this.columnValues.Add( Parameter.Placeholder );
-					this.columnValuesParameterTypes.Add( sqlTypes[i] );
+					this.columnNames.Add(columnNames[i]);
+					this.columnValues.Add(Parameter.Placeholder);
+					this.columnValuesParameterTypes.Add(sqlTypes[i]);
 				}
 			}
 
@@ -118,9 +117,9 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="identityType">The IType of the Identity Property.</param>
 		/// <returns>The SqlUpdateBuilder.</returns>
-		public SqlUpdateBuilder SetIdentityColumn( string[ ] columnNames, IType identityType )
+		public SqlUpdateBuilder SetIdentityColumn(string[] columnNames, IType identityType)
 		{
-			whereStrings.Add( ToWhereString( columnNames ) );
+			whereStrings.Add(ToWhereString(columnNames));
 			whereParameterTypes.AddRange(identityType.SqlTypes(Mapping));
 			return this;
 		}
@@ -131,9 +130,9 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="versionType">The IVersionType of the Version Property.</param>
 		/// <returns>The SqlUpdateBuilder.</returns>
-		public SqlUpdateBuilder SetVersionColumn( string[ ] columnNames, IVersionType versionType )
+		public SqlUpdateBuilder SetVersionColumn(string[] columnNames, IVersionType versionType)
 		{
-			whereStrings.Add( ToWhereString( columnNames ) );
+			whereStrings.Add(ToWhereString(columnNames));
 			whereParameterTypes.AddRange(versionType.SqlTypes(Mapping));
 			return this;
 		}
@@ -145,12 +144,12 @@ namespace NHibernate.SqlCommand
 		/// <param name="type">The IType of the property.</param>
 		/// <param name="op">The operator to put between the column name and value.</param>
 		/// <returns>The SqlUpdateBuilder</returns>
-		public SqlUpdateBuilder AddWhereFragment( string[ ] columnNames, IType type, string op )
+		public SqlUpdateBuilder AddWhereFragment(string[] columnNames, IType type, string op)
 		{
-			if( columnNames.Length > 0 )
+			if (columnNames.Length > 0)
 			{
 				// Don't add empty conditions - we get extra ANDs
-				whereStrings.Add( ToWhereString( columnNames, op ) );
+				whereStrings.Add(ToWhereString(columnNames, op));
 				whereParameterTypes.AddRange(type.SqlTypes(Mapping));
 			}
 
@@ -162,12 +161,12 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="whereSql">A well formed sql string with no parameters.</param>
 		/// <returns>The SqlUpdateBuilder</returns>
-		public SqlUpdateBuilder AddWhereFragment( string whereSql )
+		public SqlUpdateBuilder AddWhereFragment(string whereSql)
 		{
 			// Don't add empty conditions - we get extra ANDs
-			if ( whereSql != null && whereSql.Length > 0 )
+			if (whereSql != null && whereSql.Length > 0)
 			{
-				whereStrings.Add( new SqlString( whereSql ) );
+				whereStrings.Add(new SqlString(whereSql));
 			}
 			return this;
 		}
@@ -182,86 +181,84 @@ namespace NHibernate.SqlCommand
 
 			// will have a comma for all but the first column, and then for each column
 			// will have a name, " = ", value so mulitply by 3
-			if( columnNames.Count > 0 )
+			if (columnNames.Count > 0)
 			{
-				initialCapacity += ( columnNames.Count - 1 ) + ( columnNames.Count*3 );
+				initialCapacity += (columnNames.Count - 1) + (columnNames.Count * 3);
 			}
 			// 1 = "WHERE" 
 			initialCapacity++;
 
 			// the "AND" before all but the first whereString
-			if( whereStrings.Count > 0 )
+			if (whereStrings.Count > 0)
 			{
-				initialCapacity += ( whereStrings.Count - 1 );
-				for( int i = 0; i < whereStrings.Count; i++ )
+				initialCapacity += (whereStrings.Count - 1);
+				for (int i = 0; i < whereStrings.Count; i++)
 				{
-					initialCapacity += ( ( SqlString ) whereStrings[ i ] ).Count;
+					initialCapacity += ((SqlString) whereStrings[i]).Count;
 				}
 			}
 
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder( initialCapacity + 2 );
+			SqlStringBuilder sqlBuilder = new SqlStringBuilder(initialCapacity + 2);
 
 			bool commaNeeded = false;
 			bool andNeeded = false;
 
 
-			sqlBuilder.Add( "UPDATE " )
-				.Add( tableName )
-				.Add( " SET " );
+			sqlBuilder.Add("UPDATE ")
+				.Add(tableName)
+				.Add(" SET ");
 
-			for( int i = 0; i < columnNames.Count; i++ )
+			for (int i = 0; i < columnNames.Count; i++)
 			{
-				if( commaNeeded )
+				if (commaNeeded)
 				{
-					sqlBuilder.Add( StringHelper.CommaSpace );
+					sqlBuilder.Add(StringHelper.CommaSpace);
 				}
 				commaNeeded = true;
 
-				string columnName = ( string ) columnNames[ i ];
-				object columnValue = columnValues[ i ];
+				string columnName = (string) columnNames[i];
+				object columnValue = columnValues[i];
 
-				sqlBuilder.Add( columnName )
-					.Add( " = " );
+				sqlBuilder.Add(columnName)
+					.Add(" = ");
 
 				Parameter param = columnValue as Parameter;
-				if( param != null )
+				if (param != null)
 				{
-					sqlBuilder.Add( param );
+					sqlBuilder.Add(param);
 				}
 				else
 				{
-					sqlBuilder.Add( ( string ) columnValue );
+					sqlBuilder.Add((string) columnValue);
 				}
-
 			}
 
-			sqlBuilder.Add( " WHERE " );
+			sqlBuilder.Add(" WHERE ");
 
-			foreach( SqlString whereString in whereStrings )
+			foreach (SqlString whereString in whereStrings)
 			{
-				if( andNeeded )
+				if (andNeeded)
 				{
-					sqlBuilder.Add( " AND " );
+					sqlBuilder.Add(" AND ");
 				}
 				andNeeded = true;
 
-				sqlBuilder.Add( whereString );
-
+				sqlBuilder.Add(whereString);
 			}
 
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				if( initialCapacity < sqlBuilder.Count )
+				if (initialCapacity < sqlBuilder.Count)
 				{
 					log.Debug(
 						"The initial capacity was set too low at: " + initialCapacity + " for the UpdateSqlBuilder " +
-							"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName );
+						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName);
 				}
-				else if( initialCapacity > 16 && ( ( float ) initialCapacity/sqlBuilder.Count ) > 1.2 )
+				else if (initialCapacity > 16 && ((float) initialCapacity / sqlBuilder.Count) > 1.2)
 				{
 					log.Debug(
 						"The initial capacity was set too high at: " + initialCapacity + " for the UpdateSqlBuilder " +
-							"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName );
+						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName);
 				}
 			}
 
@@ -269,7 +266,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		#endregion
-		
+
 		public SqlCommandInfo ToSqlCommandInfo()
 		{
 			SqlString text = ToSqlString();

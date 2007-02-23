@@ -18,6 +18,7 @@ namespace NHibernate.Cache
 		/// <param name="settings"></param>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		IQueryCache GetQueryCache( string regionName, UpdateTimestampsCache updateTimestampsCache, Settings settings, IDictionary props );
+		IQueryCache GetQueryCache(string regionName, UpdateTimestampsCache updateTimestampsCache, Settings settings,
+		                          IDictionary props);
 	}
 }

@@ -46,7 +46,7 @@ namespace NHibernate.SqlCommand
 		private bool ProcessPartBeforeFrom(object part)
 		{
 			string partString = part as string;
-			
+
 			if (partString == null)
 			{
 				return false;
@@ -72,7 +72,7 @@ namespace NHibernate.SqlCommand
 		public SqlString GetSqlString()
 		{
 			IEnumerator partEnumerator = sqlParts.GetEnumerator();
-			
+
 			// Process the parts until FROM is found
 			while (partEnumerator.MoveNext())
 			{
@@ -82,7 +82,7 @@ namespace NHibernate.SqlCommand
 					break;
 				}
 			}
-			
+
 			// Process the rest
 			while (partEnumerator.MoveNext())
 			{
@@ -168,7 +168,7 @@ namespace NHibernate.SqlCommand
 				// No ORDER BY clause
 				return;
 			}
-			
+
 			while (builder.Count > lastOrderByPartIndex + 1)
 			{
 				builder.RemoveAt(builder.Count - 1);

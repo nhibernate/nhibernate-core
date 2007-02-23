@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -18,7 +19,7 @@ namespace NHibernate.Expression
 		/// <see cref="ICriterion"/>
 		/// </summary>
 		/// <param name="criterion">The <see cref="ICriterion"/> to negate.</param>
-		public NotExpression( ICriterion criterion )
+		public NotExpression(ICriterion criterion)
 		{
 			_criterion = criterion;
 		}
@@ -28,29 +29,29 @@ namespace NHibernate.Expression
 			//TODO: set default capacity
 			SqlStringBuilder builder = new SqlStringBuilder();
 
-			bool needsParens = criteriaQuery.Factory.Dialect is Dialect.MySQLDialect;
-			if( needsParens )
+			bool needsParens = criteriaQuery.Factory.Dialect is MySQLDialect;
+			if (needsParens)
 			{
-				builder.Add( "not (" );
+				builder.Add("not (");
 			}
 			else
 			{
-				builder.Add( "not " );
+				builder.Add("not ");
 			}
 
-			builder.Add( _criterion.ToSqlString( criteria, criteriaQuery, enabledFilters) );
+			builder.Add(_criterion.ToSqlString(criteria, criteriaQuery, enabledFilters));
 
-			if( needsParens )
+			if (needsParens)
 			{
-				builder.Add( ")" );
+				builder.Add(")");
 			}
 
 			return builder.ToSqlString();
 		}
 
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return _criterion.GetTypedValues( criteria, criteriaQuery );
+			return _criterion.GetTypedValues(criteria, criteriaQuery);
 		}
 
 		public override string ToString()

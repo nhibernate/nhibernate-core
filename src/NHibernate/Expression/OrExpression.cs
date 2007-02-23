@@ -15,7 +15,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="lhs">The <see cref="ICriterion"/> to use as the left hand side.</param>
 		/// <param name="rhs">The <see cref="ICriterion"/> to use as the right hand side.</param>
-		public OrExpression( ICriterion lhs, ICriterion rhs ) : base( lhs, rhs )
+		public OrExpression(ICriterion lhs, ICriterion rhs) : base(lhs, rhs)
 		{
 		}
 

@@ -12,7 +12,8 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SerializationException"/> class.
 		/// </summary>
-		public SerializationException(  ) : base( "The Property associated with a SerializableType threw an Exception during serialization or deserialization." )
+		public SerializationException()
+			: base("The Property associated with a SerializableType threw an Exception during serialization or deserialization.")
 		{
 		}
 
@@ -20,9 +21,8 @@ namespace NHibernate.Type
 		/// Initializes a new instance of the <see cref="SerializationException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
-		public SerializationException( string message ) : base( message )
+		public SerializationException(string message) : base(message)
 		{
-		
 		}
 
 		/// <summary>
@@ -34,7 +34,7 @@ namespace NHibernate.Type
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public SerializationException( string message, Exception e ) : base( message, e )
+		public SerializationException(string message, Exception e) : base(message, e)
 		{
 		}
 
@@ -49,7 +49,7 @@ namespace NHibernate.Type
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected SerializationException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected SerializationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

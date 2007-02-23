@@ -43,7 +43,7 @@ namespace NHibernate.Engine
 		/// session cache
 		/// </summary>
 		CascadeOnEvict = 0, //-1
-		
+
 		/// <summary>
 		/// A cascade point that occurs just after locking a transient parent entity into the session cache
 		/// </summary>
@@ -60,7 +60,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public sealed class Cascades
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( Cascades ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(Cascades));
 
 		private Cascades()
 		{
@@ -80,12 +80,12 @@ namespace NHibernate.Engine
 			/// <summary>
 			/// Cascade the action to the child object
 			/// </summary>
-			public abstract void Cascade( ISessionImplementor session, object child, object anything );
+			public abstract void Cascade(ISessionImplementor session, object child, object anything);
 
 			/// <summary>
 			/// The children to whom we should cascade.
 			/// </summary>
-			public abstract ICollection CascadableChildrenCollection( CollectionType collectionType, object collection );
+			public abstract ICollection CascadableChildrenCollection(CollectionType collectionType, object collection);
 
 			/// <summary>
 			/// Do we need to handle orphan delete for this action?
@@ -97,18 +97,18 @@ namespace NHibernate.Engine
 
 			private class ActionDeleteClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child, object anything )
+				public override void Cascade(ISessionImplementor session, object child, object anything)
 				{
-					log.Debug( "cascading to delete()" );
-					if( session.IsSaved( child ) )
+					log.Debug("cascading to delete()");
+					if (session.IsSaved(child))
 					{
-						session.Delete( child );
+						session.Delete(child);
 					}
 				}
 
-				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
 				{
-					return Cascades.GetAllElementsCollection( collectionType, collection );
+					return GetAllElementsCollection(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -122,15 +122,15 @@ namespace NHibernate.Engine
 
 			private class ActionLockClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child, object anything )
+				public override void Cascade(ISessionImplementor session, object child, object anything)
 				{
-					log.Debug( "cascading to lock()" );
-					session.Lock( child, (LockMode) anything );
+					log.Debug("cascading to lock()");
+					session.Lock(child, (LockMode) anything);
 				}
 
-				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
 				{
-					return Cascades.GetLoadedElementsCollection( collectionType, collection );
+					return GetLoadedElementsCollection(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -144,15 +144,15 @@ namespace NHibernate.Engine
 
 			private class ActionEvictClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child, object anything )
+				public override void Cascade(ISessionImplementor session, object child, object anything)
 				{
-					log.Debug( "cascading to evict()" );
-					session.Evict( child );
+					log.Debug("cascading to evict()");
+					session.Evict(child);
 				}
 
-				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
 				{
-					return Cascades.GetLoadedElementsCollection( collectionType, collection );
+					return GetLoadedElementsCollection(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -166,15 +166,15 @@ namespace NHibernate.Engine
 
 			private class ActionSaveUpdateClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child, object anything )
+				public override void Cascade(ISessionImplementor session, object child, object anything)
 				{
-					log.Debug( "cascading to SaveOrUpdate()" );
-					session.SaveOrUpdate( child );
+					log.Debug("cascading to SaveOrUpdate()");
+					session.SaveOrUpdate(child);
 				}
 
-				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
 				{
-					return Cascades.GetLoadedElementsCollection( collectionType, collection );
+					return GetLoadedElementsCollection(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -188,16 +188,16 @@ namespace NHibernate.Engine
 
 			private class ActionCopyClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child, object anything )
+				public override void Cascade(ISessionImplementor session, object child, object anything)
 				{
-					log.Debug( "cascading to Copy()" );
-					session.Copy( child, (IDictionary) anything );
+					log.Debug("cascading to Copy()");
+					session.Copy(child, (IDictionary) anything);
 				}
 
-				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
 				{
 					// saves / updates don't cascade to uninitialized collections
-					return Cascades.GetLoadedElementsCollection( collectionType, collection );
+					return GetLoadedElementsCollection(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -212,15 +212,15 @@ namespace NHibernate.Engine
 
 			private class ActionReplicateClass : CascadingAction
 			{
-				public override void Cascade( ISessionImplementor session, object child, object anything )
+				public override void Cascade(ISessionImplementor session, object child, object anything)
 				{
-					log.Debug( "cascading to Replicate()" );
-					session.Replicate( child, (ReplicationMode) anything );
+					log.Debug("cascading to Replicate()");
+					session.Replicate(child, (ReplicationMode) anything);
 				}
 
-				public override ICollection CascadableChildrenCollection( CollectionType collectionType, object collection )
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
 				{
-					return Cascades.GetLoadedElementsCollection( collectionType, collection );
+					return GetLoadedElementsCollection(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -230,9 +230,9 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static bool CollectionIsInitialized( object collection )
+		private static bool CollectionIsInitialized(object collection)
 		{
-			return !( collection is IPersistentCollection ) || ( ( IPersistentCollection ) collection ).WasInitialized;
+			return !(collection is IPersistentCollection) || ((IPersistentCollection) collection).WasInitialized;
 		}
 
 		/// <summary></summary>
@@ -248,7 +248,7 @@ namespace NHibernate.Engine
 			/// </summary>
 			/// <param name="action"></param>
 			/// <returns></returns>
-			public abstract bool DoCascade( CascadingAction action );
+			public abstract bool DoCascade(CascadingAction action);
 
 			/// <summary>
 			/// Do we delete orphans automatically?
@@ -265,7 +265,7 @@ namespace NHibernate.Engine
 
 			private class StyleAllDeleteOrphanClass : CascadeStyle
 			{
-				public override bool DoCascade( CascadingAction action )
+				public override bool DoCascade(CascadingAction action)
 				{
 					return true;
 				}
@@ -284,7 +284,7 @@ namespace NHibernate.Engine
 
 			private class StyleAllClass : CascadeStyle
 			{
-				public override bool DoCascade( CascadingAction action )
+				public override bool DoCascade(CascadingAction action)
 				{
 					return true;
 				}
@@ -297,12 +297,12 @@ namespace NHibernate.Engine
 
 			private class StyleSaveUpdateClass : CascadeStyle
 			{
-				public override bool DoCascade( CascadingAction action )
+				public override bool DoCascade(CascadingAction action)
 				{
 					return action == CascadingAction.ActionSaveUpdate ||
-							action == CascadingAction.ActionLock ||
-							action == CascadingAction.ActionReplicate ||
-							action == CascadingAction.ActionCopy;
+					       action == CascadingAction.ActionLock ||
+					       action == CascadingAction.ActionReplicate ||
+					       action == CascadingAction.ActionCopy;
 				}
 			}
 
@@ -313,7 +313,7 @@ namespace NHibernate.Engine
 
 			private class StyleOnlyDeleteClass : CascadeStyle
 			{
-				public override bool DoCascade( CascadingAction action )
+				public override bool DoCascade(CascadingAction action)
 				{
 					return action == CascadingAction.ActionDelete;
 				}
@@ -327,7 +327,7 @@ namespace NHibernate.Engine
 
 			private class StyleDeleteOrphanClass : CascadeStyle
 			{
-				public override bool DoCascade( CascadingAction action )
+				public override bool DoCascade(CascadingAction action)
 				{
 					return action == CascadingAction.ActionDelete;
 				}
@@ -345,7 +345,7 @@ namespace NHibernate.Engine
 
 			private class StyleNoneClass : CascadeStyle
 			{
-				public override bool DoCascade( CascadingAction action )
+				public override bool DoCascade(CascadingAction action)
 				{
 					return action == CascadingAction.ActionReplicate;
 				}
@@ -372,7 +372,7 @@ namespace NHibernate.Engine
 			/// equal to <c>Value</c>
 			/// </summary>
 			/// <param name="value"></param>
-			public IdentifierValue( object value )
+			public IdentifierValue(object value)
 			{
 				this.value = value;
 			}
@@ -380,13 +380,13 @@ namespace NHibernate.Engine
 			/// <summary>
 			/// Does the given identifier belong to a new instance
 			/// </summary>
-			public virtual bool IsUnsaved( object id )
+			public virtual bool IsUnsaved(object id)
 			{
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "unsaved-value: " + value );
+					log.Debug("unsaved-value: " + value);
 				}
-				return id == null || id.Equals( value );
+				return id == null || id.Equals(value);
 			}
 
 			/// <summary>
@@ -396,9 +396,9 @@ namespace NHibernate.Engine
 
 			private class SaveAnyClass : IdentifierValue
 			{
-				public override bool IsUnsaved( object id )
+				public override bool IsUnsaved(object id)
 				{
-					log.Debug( "unsaved-value strategy ANY" );
+					log.Debug("unsaved-value strategy ANY");
 					return true;
 				}
 			}
@@ -410,9 +410,9 @@ namespace NHibernate.Engine
 
 			private class SaveNoneClass : IdentifierValue
 			{
-				public override bool IsUnsaved( object id )
+				public override bool IsUnsaved(object id)
 				{
-					log.Debug( "unsaved-value strategy NONE" );
+					log.Debug("unsaved-value strategy NONE");
 					return false;
 				}
 			}
@@ -425,9 +425,9 @@ namespace NHibernate.Engine
 
 			private class SaveNullClass : IdentifierValue
 			{
-				public override bool IsUnsaved( object id )
+				public override bool IsUnsaved(object id)
 				{
-					log.Debug( "unsaved-value strategy NULL" );
+					log.Debug("unsaved-value strategy NULL");
 					return id == null;
 				}
 			}
@@ -454,7 +454,7 @@ namespace NHibernate.Engine
 			/// equal to <c>Value</c>
 			/// </summary>
 			/// <param name="value"></param>
-			public VersionValue( object value )
+			public VersionValue(object value)
 			{
 				this.value = value;
 			}
@@ -462,13 +462,13 @@ namespace NHibernate.Engine
 			/// <summary>
 			/// Does the given identifier belong to a new instance
 			/// </summary>
-			public virtual object IsUnsaved( object version )
+			public virtual object IsUnsaved(object version)
 			{
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "unsaved-value: " + value );
+					log.Debug("unsaved-value: " + value);
 				}
-				return version == null || version.Equals( value );
+				return version == null || version.Equals(value);
 			}
 
 			/// <summary>
@@ -479,9 +479,9 @@ namespace NHibernate.Engine
 
 			private class VersionSaveNullClass : VersionValue
 			{
-				public override object IsUnsaved( object version )
+				public override object IsUnsaved(object version)
 				{
-					log.Debug( "version unsaved-value strategy NULL" );
+					log.Debug("version unsaved-value strategy NULL");
 					return version == null;
 				}
 			}
@@ -494,11 +494,11 @@ namespace NHibernate.Engine
 
 			private class VersionUndefinedClass : VersionValue
 			{
-				public override object IsUnsaved( object version )
+				public override object IsUnsaved(object version)
 				{
-					log.Debug( "version unsaved-value strategy UNDEFINED" );
+					log.Debug("version unsaved-value strategy UNDEFINED");
 					//return version == null ? true : null;
-					if ( version == null )
+					if (version == null)
 					{
 						return true;
 					}
@@ -517,16 +517,16 @@ namespace NHibernate.Engine
 
 			private class VersionNegativeClass : VersionValue
 			{
-				public override object IsUnsaved( object version )
+				public override object IsUnsaved(object version)
 				{
-					log.Debug( "version unsaved-value strategy NEGATIVE" );
-					if ( version is short || version is int || version is long )
+					log.Debug("version unsaved-value strategy NEGATIVE");
+					if (version is short || version is int || version is long)
 					{
-						return Convert.ToInt64( version ) < 0L;
+						return Convert.ToInt64(version) < 0L;
 					}
 					else
 					{
-						throw new MappingException( "unsaved-value strategy NEGATIVE may only be used with short, int and long types" );
+						throw new MappingException("unsaved-value strategy NEGATIVE may only be used with short, int and long types");
 					}
 				}
 			}
@@ -542,29 +542,29 @@ namespace NHibernate.Engine
 		/// <param name="style"></param>
 		/// <param name="cascadeTo"></param>
 		/// <param name="anything"></param>
-		private static void Cascade( 
-			ISessionImplementor session, 
-			object child, 
-			IType type, 
-			CascadingAction action, 
-			CascadeStyle style, 
-			CascadePoint cascadeTo, 
-			object anything )
+		private static void Cascade(
+			ISessionImplementor session,
+			object child,
+			IType type,
+			CascadingAction action,
+			CascadeStyle style,
+			CascadePoint cascadeTo,
+			object anything)
 		{
-			if( child != null )
+			if (child != null)
 			{
-				if( type.IsAssociationType )
+				if (type.IsAssociationType)
 				{
-					if( ( ( IAssociationType ) type ).ForeignKeyDirection.CascadeNow( cascadeTo ) )
+					if (((IAssociationType) type).ForeignKeyDirection.CascadeNow(cascadeTo))
 					{
-						if( type.IsEntityType || type.IsAnyType )
+						if (type.IsEntityType || type.IsAnyType)
 						{
-							action.Cascade( session, child, anything );
+							action.Cascade(session, child, anything);
 						}
-						else if( type.IsCollectionType )
+						else if (type.IsCollectionType)
 						{
 							CascadePoint cascadeVia;
-							if( cascadeTo == CascadePoint.CascadeAfterInsertBeforeDelete )
+							if (cascadeTo == CascadePoint.CascadeAfterInsertBeforeDelete)
 							{
 								cascadeVia = CascadePoint.CascadeAfterInsertBeforeDeleteViaCollection;
 							}
@@ -572,29 +572,29 @@ namespace NHibernate.Engine
 							{
 								cascadeVia = cascadeTo;
 							}
-							CollectionType pctype = ( CollectionType ) type;
-							ICollectionPersister persister = session.Factory.GetCollectionPersister( pctype.Role );
+							CollectionType pctype = (CollectionType) type;
+							ICollectionPersister persister = session.Factory.GetCollectionPersister(pctype.Role);
 							IType elemType = persister.ElementType;
 
 							// cascade to current collection elements
-							if ( elemType.IsEntityType || elemType.IsAnyType || elemType.IsComponentType )
+							if (elemType.IsEntityType || elemType.IsAnyType || elemType.IsComponentType)
 							{
-								CascadeCollection( action, style, pctype, elemType, child, cascadeVia, session, anything );
+								CascadeCollection(action, style, pctype, elemType, child, cascadeVia, session, anything);
 							}
 						}
 					}
 				}
-				else if( type.IsComponentType )
+				else if (type.IsComponentType)
 				{
-					IAbstractComponentType ctype = ( ( IAbstractComponentType ) type );
-					object[ ] children = ctype.GetPropertyValues( child, session );
-					IType[ ] types = ctype.Subtypes;
-					for( int i = 0; i < types.Length; i++ )
+					IAbstractComponentType ctype = ((IAbstractComponentType) type);
+					object[] children = ctype.GetPropertyValues(child, session);
+					IType[] types = ctype.Subtypes;
+					for (int i = 0; i < types.Length; i++)
 					{
-						CascadeStyle componentPropertyStyle = ctype.GetCascadeStyle( i );
-						if( componentPropertyStyle.DoCascade( action ) )
+						CascadeStyle componentPropertyStyle = ctype.GetCascadeStyle(i);
+						if (componentPropertyStyle.DoCascade(action))
 						{
-							Cascade( session, children[ i ], types[ i ], action, componentPropertyStyle, cascadeTo, anything );
+							Cascade(session, children[i], types[i], action, componentPropertyStyle, cascadeTo, anything);
 						}
 					}
 				}
@@ -609,9 +609,10 @@ namespace NHibernate.Engine
 		/// <param name="parent"></param>
 		/// <param name="action"></param>
 		/// <param name="cascadeTo"></param>
-		public static void Cascade( ISessionImplementor session, IEntityPersister persister, object parent, CascadingAction action, CascadePoint cascadeTo )
+		public static void Cascade(ISessionImplementor session, IEntityPersister persister, object parent,
+		                           CascadingAction action, CascadePoint cascadeTo)
 		{
-			Cascade( session, persister, parent, action, cascadeTo, null );
+			Cascade(session, persister, parent, action, cascadeTo, null);
 		}
 
 		/// <summary>
@@ -623,27 +624,28 @@ namespace NHibernate.Engine
 		/// <param name="action"></param>
 		/// <param name="cascadeTo"></param>
 		/// <param name="anything"></param>
-		public static void Cascade( ISessionImplementor session, IEntityPersister persister, object parent, CascadingAction action, CascadePoint cascadeTo, object anything )
+		public static void Cascade(ISessionImplementor session, IEntityPersister persister, object parent,
+		                           CascadingAction action, CascadePoint cascadeTo, object anything)
 		{
-			if( persister.HasCascades )
+			if (persister.HasCascades)
 			{
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "processing cascades for: " + persister.ClassName );
+					log.Debug("processing cascades for: " + persister.ClassName);
 				}
-				IType[ ] types = persister.PropertyTypes;
-				CascadeStyle[ ] cascadeStyles = persister.PropertyCascadeStyles;
-				for( int i = 0; i < types.Length; i++ )
+				IType[] types = persister.PropertyTypes;
+				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
+				for (int i = 0; i < types.Length; i++)
 				{
-					CascadeStyle style = cascadeStyles[ i ];
-					if( style.DoCascade( action ) )
+					CascadeStyle style = cascadeStyles[i];
+					if (style.DoCascade(action))
 					{
-						Cascade( session, persister.GetPropertyValue( parent, i ), types[ i ], action, style, cascadeTo, anything );
+						Cascade(session, persister.GetPropertyValue(parent, i), types[i], action, style, cascadeTo, anything);
 					}
 				}
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "done processing cascades for: " + persister.ClassName );
+					log.Debug("done processing cascades for: " + persister.ClassName);
 				}
 			}
 		}
@@ -665,73 +667,73 @@ namespace NHibernate.Engine
 			CollectionType collectionType,
 			IType elemType,
 			object child,
-			CascadePoint cascadeVia, 
+			CascadePoint cascadeVia,
 			ISessionImplementor session,
-			object anything )
+			object anything)
 		{
 			// cascade to current collection elements
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( "cascading to collection: " + collectionType.Role );
+				log.Debug("cascading to collection: " + collectionType.Role);
 			}
-			ICollection iter = action.CascadableChildrenCollection( collectionType, child );
-			foreach( object obj in iter )
+			ICollection iter = action.CascadableChildrenCollection(collectionType, child);
+			foreach (object obj in iter)
 			{
-				Cascade( session, obj, elemType, action, style, cascadeVia, anything );
+				Cascade(session, obj, elemType, action, style, cascadeVia, anything);
 			}
 
 			// handle oprhaned entities!!
-			if( style.HasOrphanDelete && action.DeleteOrphans() && child is IPersistentCollection )
+			if (style.HasOrphanDelete && action.DeleteOrphans() && child is IPersistentCollection)
 			{
 				// We can do the cast since orphan-delete does not apply to:
 				// 1. newly instatiated collections
 				// 2. arrays ( we can't track orphans for detached arrays)
-				System.Type entityName = collectionType.GetAssociatedClass( session.Factory );
-				DeleteOrphans( entityName, child as IPersistentCollection, session );
+				System.Type entityName = collectionType.GetAssociatedClass(session.Factory);
+				DeleteOrphans(entityName, child as IPersistentCollection, session);
 			}
 		}
 
-		private static void DeleteOrphans( System.Type entityName, IPersistentCollection pc, ISessionImplementor session )
+		private static void DeleteOrphans(System.Type entityName, IPersistentCollection pc, ISessionImplementor session)
 		{
 			ICollection orphans;
-			if( pc.WasInitialized ) // can't be any orphans if it was not initialized
+			if (pc.WasInitialized) // can't be any orphans if it was not initialized
 			{
-				CollectionEntry ce = session.GetCollectionEntry( pc );
+				CollectionEntry ce = session.GetCollectionEntry(pc);
 				orphans = ce == null ? CollectionHelper.EmptyCollection :
-				          ce.GetOrphans( entityName, pc );
+				          ce.GetOrphans(entityName, pc);
 			}
 			else
 			{
 				orphans = CollectionHelper.EmptyCollection;
 			}
 
-			foreach( object orphan in orphans )
+			foreach (object orphan in orphans)
 			{
-				if( orphan != null )
+				if (orphan != null)
 				{
-					session.Delete( orphan );
+					session.Delete(orphan);
 				}
 			}
 		}
 
-		public static ICollection GetLoadedElementsCollection( CollectionType collectionType, object collection )
+		public static ICollection GetLoadedElementsCollection(CollectionType collectionType, object collection)
 		{
-			if ( CollectionIsInitialized( collection ) )
+			if (CollectionIsInitialized(collection))
 			{
 				// handles arrays and newly instantiated collections
-				return collectionType.GetElementsCollection( collection );
+				return collectionType.GetElementsCollection(collection);
 			}
 			else
 			{
 				// does not handle arrays (that's ok, cos they can't be lazy)
 				// or newly instantiated collections so we can do the cast
-				return ( (IPersistentCollection) collection).QueuedAddsCollection;
+				return ((IPersistentCollection) collection).QueuedAddsCollection;
 			}
 		}
 
-		private static ICollection GetAllElementsCollection( CollectionType collectionType, object collection )
+		private static ICollection GetAllElementsCollection(CollectionType collectionType, object collection)
 		{
-			return collectionType.GetElementsCollection( collection );
+			return collectionType.GetElementsCollection(collection);
 		}
 	}
 }

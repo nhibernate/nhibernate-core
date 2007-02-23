@@ -23,28 +23,28 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to create this Index.
 		/// </returns>
-		public string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema )
+		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
 		{
 			// TODO: NH-421
-			StringBuilder buf = new StringBuilder( "create index " )
-				.Append( dialect.QualifyIndexName ? name : StringHelper.Unqualify( name ) )
-				.Append( " on " )
-				.Append( table.GetQualifiedName( dialect ) )
-				.Append( " (" );
+			StringBuilder buf = new StringBuilder("create index ")
+				.Append(dialect.QualifyIndexName ? name : StringHelper.Unqualify(name))
+				.Append(" on ")
+				.Append(table.GetQualifiedName(dialect))
+				.Append(" (");
 
 			bool commaNeeded = false;
-			for( int i = 0; i < columns.Count; i++ )
+			for (int i = 0; i < columns.Count; i++)
 			{
-				if( commaNeeded )
+				if (commaNeeded)
 				{
-					buf.Append( StringHelper.CommaSpace );
+					buf.Append(StringHelper.CommaSpace);
 				}
 				commaNeeded = true;
 
-				buf.Append( ( ( Column ) columns[ i ] ).GetQuotedName( dialect ) );
+				buf.Append(((Column) columns[i]).GetQuotedName(dialect));
 			}
 
-			buf.Append( StringHelper.ClosedParen );
+			buf.Append(StringHelper.ClosedParen);
 			return buf.ToString();
 		}
 
@@ -56,10 +56,10 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to drop this Index.
 		/// </returns>
-		public string SqlDropString( Dialect.Dialect dialect, string defaultSchema )
+		public string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
 		{
 			// TODO: NH-421
-			return string.Format( "drop index {0}.{1}", table.GetQualifiedName( dialect, defaultSchema ), name );
+			return string.Format("drop index {0}.{1}", table.GetQualifiedName(dialect, defaultSchema), name);
 		}
 
 		/// <summary>
@@ -92,11 +92,11 @@ namespace NHibernate.Mapping
 		/// Columns that are part of the Index.
 		/// </summary>
 		/// <param name="column">The <see cref="Column"/> to include in the Index.</param>
-		public void AddColumn( Column column )
+		public void AddColumn(Column column)
 		{
-			if( !columns.Contains( column ) )
+			if (!columns.Contains(column))
 			{
-				columns.Add( column );
+				columns.Add(column);
 			}
 		}
 

@@ -12,7 +12,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CacheException"/> class.
 		/// </summary>
-		public CacheException(  ) : base( "There was an Exception in the Cache." )
+		public CacheException() : base("There was an Exception in the Cache.")
 		{
 		}
 
@@ -20,7 +20,7 @@ namespace NHibernate.Cache
 		/// Initializes a new instance of the <see cref="CacheException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
-		public CacheException( string message ) : base( message )
+		public CacheException(string message) : base(message)
 		{
 		}
 
@@ -32,7 +32,7 @@ namespace NHibernate.Cache
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public CacheException( Exception innerException ) : base( innerException )
+		public CacheException(Exception innerException) : base(innerException)
 		{
 		}
 
@@ -45,7 +45,7 @@ namespace NHibernate.Cache
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public CacheException( string message, Exception innerException ) : base( message, innerException )
+		public CacheException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
@@ -60,7 +60,7 @@ namespace NHibernate.Cache
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected CacheException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected CacheException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

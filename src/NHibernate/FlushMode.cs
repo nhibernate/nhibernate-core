@@ -11,7 +11,7 @@ namespace NHibernate
 	/// </remarks>
 	[Serializable]
 	public enum FlushMode
-	{		
+	{
 		/// <summary>
 		/// Special value for unspecified flush mode (like <c>null</c> in Java).
 		/// </summary>

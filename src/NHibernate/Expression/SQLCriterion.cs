@@ -18,24 +18,24 @@ namespace NHibernate.Expression
 	public class SQLCriterion : AbstractCriterion
 	{
 		private readonly SqlString _sql;
-		private readonly TypedValue[ ] _typedValues;
+		private readonly TypedValue[] _typedValues;
 
-		public SQLCriterion( SqlString sql, object[ ] values, IType[ ] types )
+		public SQLCriterion(SqlString sql, object[] values, IType[] types)
 		{
 			_sql = sql;
 			_typedValues = new TypedValue[values.Length];
-			for( int i = 0; i < _typedValues.Length; i++ )
+			for (int i = 0; i < _typedValues.Length; i++)
 			{
-				_typedValues[ i ] = new TypedValue( types[ i ], values[ i ] );
+				_typedValues[i] = new TypedValue(types[i], values[i]);
 			}
 		}
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
-			return _sql.Replace( "{alias}", criteriaQuery.GetSQLAlias( criteria ) );
+			return _sql.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria));
 		}
 
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return _typedValues;
 		}

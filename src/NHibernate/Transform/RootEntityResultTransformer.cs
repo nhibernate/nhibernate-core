@@ -6,12 +6,12 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class RootEntityResultTransformer : IResultTransformer
 	{
-		public object TransformTuple( object[ ] tuple, string[ ] aliases )
+		public object TransformTuple(object[] tuple, string[] aliases)
 		{
-			return tuple[ tuple.Length - 1 ];
+			return tuple[tuple.Length - 1];
 		}
 
-		public IList TransformList( IList collection )
+		public IList TransformList(IList collection)
 		{
 			return collection;
 		}

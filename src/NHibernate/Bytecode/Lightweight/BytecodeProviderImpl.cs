@@ -1,8 +1,6 @@
 #if NET_2_0
 using System;
-
 using log4net;
-
 using NHibernate.Persister.Entity;
 using NHibernate.Property;
 
@@ -18,7 +16,7 @@ namespace NHibernate.Bytecode.Lightweight
 	/// </remarks>
 	public class BytecodeProviderImpl : IBytecodeProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( BytecodeProviderImpl ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(BytecodeProviderImpl));
 
 		/// <summary>
 		/// Generate the IReflectionOptimizer object
@@ -28,10 +26,11 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <param name="getters">Array of getters</param>
 		/// <returns><c>null</c> if the generation fails</returns>
 		public IReflectionOptimizer GetReflectionOptimizer(
-			System.Type mappedClass, IGetter[] getters, ISetter[] setters )
+			System.Type mappedClass, IGetter[] getters, ISetter[] setters)
 		{
-			return new ReflectionOptimizer( mappedClass, getters, setters );
+			return new ReflectionOptimizer(mappedClass, getters, setters);
 		}
 	}
 }
+
 #endif

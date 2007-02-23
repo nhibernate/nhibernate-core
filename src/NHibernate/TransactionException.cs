@@ -13,7 +13,7 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="TransactionException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public TransactionException( string message ) : base( message )
+		public TransactionException(string message) : base(message)
 		{
 		}
 
@@ -26,7 +26,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public TransactionException( string message, Exception innerException ) : base( message, innerException )
+		public TransactionException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
@@ -41,7 +41,7 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected TransactionException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected TransactionException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

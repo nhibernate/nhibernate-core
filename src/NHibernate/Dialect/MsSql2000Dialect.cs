@@ -1,10 +1,8 @@
 using System;
 using System.Data;
-
-using NHibernate.SqlCommand;
-
-using Environment = NHibernate.Cfg.Environment;
 using NHibernate.Dialect.Function;
+using NHibernate.SqlCommand;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -37,19 +35,19 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public MsSql2000Dialect() : base()
 		{
-			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );
-			RegisterColumnType( DbType.AnsiStringFixedLength, 8000, "CHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, "VARCHAR(255)" );
-			RegisterColumnType( DbType.AnsiString, 8000, "VARCHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, 2147483647, "TEXT" );
-			RegisterColumnType( DbType.Binary, "VARBINARY(8000)" );
-			RegisterColumnType( DbType.Binary, 8000, "VARBINARY($1)" );
-			RegisterColumnType( DbType.Binary, 2147483647, "IMAGE" );
-			RegisterColumnType( DbType.Boolean, "BIT" );
-			RegisterColumnType( DbType.Byte, "TINYINT" );
-			RegisterColumnType( DbType.Currency, "MONEY" );
-			RegisterColumnType( DbType.Date, "DATETIME" );
-			RegisterColumnType( DbType.DateTime, "DATETIME" );
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($1)");
+			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
+			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($1)");
+			RegisterColumnType(DbType.AnsiString, 2147483647, "TEXT");
+			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
+			RegisterColumnType(DbType.Binary, 8000, "VARBINARY($1)");
+			RegisterColumnType(DbType.Binary, 2147483647, "IMAGE");
+			RegisterColumnType(DbType.Boolean, "BIT");
+			RegisterColumnType(DbType.Byte, "TINYINT");
+			RegisterColumnType(DbType.Currency, "MONEY");
+			RegisterColumnType(DbType.Date, "DATETIME");
+			RegisterColumnType(DbType.DateTime, "DATETIME");
 			// TODO: figure out if this is the good way to fix the problem
 			// with exporting a DECIMAL column
 			// NUMERIC(precision, scale) has a hardcoded precision of 19, even though it can range from 1 to 38
@@ -57,20 +55,20 @@ namespace NHibernate.Dialect
 			// I think how I might handle it is keep the type="Decimal(29,5)" and make them specify a 
 			// sql-type="decimal(20,5)" if they need to do that.  The Decimal parameter and ddl will get generated
 			// correctly with minimal work.
-			RegisterColumnType( DbType.Decimal, "DECIMAL(19,5)" );
-			RegisterColumnType( DbType.Decimal, 19, "DECIMAL(19, $1)" );
-			RegisterColumnType( DbType.Double, "DOUBLE PRECISION" ); //synonym for FLOAT(53)
-			RegisterColumnType( DbType.Guid, "UNIQUEIDENTIFIER" );
-			RegisterColumnType( DbType.Int16, "SMALLINT" );
-			RegisterColumnType( DbType.Int32, "INT" );
-			RegisterColumnType( DbType.Int64, "BIGINT" );
-			RegisterColumnType( DbType.Single, "REAL" ); //synonym for FLOAT(24) 
-			RegisterColumnType( DbType.StringFixedLength, "NCHAR(255)" );
-			RegisterColumnType( DbType.StringFixedLength, 4000, "NCHAR($1)" );
-			RegisterColumnType( DbType.String, "NVARCHAR(255)" );
-			RegisterColumnType( DbType.String, 4000, "NVARCHAR($1)" );
-			RegisterColumnType( DbType.String, 1073741823, "NTEXT" );
-			RegisterColumnType( DbType.Time, "DATETIME" );
+			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $1)");
+			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
+			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+			RegisterColumnType(DbType.Int16, "SMALLINT");
+			RegisterColumnType(DbType.Int32, "INT");
+			RegisterColumnType(DbType.Int64, "BIGINT");
+			RegisterColumnType(DbType.Single, "REAL"); //synonym for FLOAT(24) 
+			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
+			RegisterColumnType(DbType.StringFixedLength, 4000, "NCHAR($1)");
+			RegisterColumnType(DbType.String, "NVARCHAR(255)");
+			RegisterColumnType(DbType.String, 4000, "NVARCHAR($1)");
+			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
+			RegisterColumnType(DbType.Time, "DATETIME");
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("absval", new StandardSQLFunction("absval"));
@@ -85,7 +83,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
 			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
-			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double ) );
+			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
 			RegisterFunction("degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double));
 			RegisterFunction("exp", new StandardSQLFunction("exp", NHibernateUtil.Double));
 			RegisterFunction("float", new StandardSQLFunction("float", NHibernateUtil.Double));
@@ -144,8 +142,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 
-			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.SqlClientDriver";
-			DefaultProperties[ Environment.PrepareSql ] = "false";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
+			DefaultProperties[Environment.PrepareSql] = "false";
 		}
 
 		/// <summary></summary>
@@ -177,20 +175,21 @@ namespace NHibernate.Dialect
 		/// <returns>The SQL with the <c>tableName</c> inserted.</returns>
 		public override string GetDropTableString(string tableName)
 		{
-			string dropTable = "if exists (select * from dbo.sysobjects where id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1)" + 
+			string dropTable =
+				"if exists (select * from dbo.sysobjects where id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1)" +
 				" drop table {0}";
 
-			return String.Format( dropTable, tableName );
+			return String.Format(dropTable, tableName);
 		}
-		
+
 		public override string ForUpdateString
 		{
 			get { return string.Empty; }
 		}
 
-		public override SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
+		public override SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
 		{
-			return insertSql.Append( "; " + GetIdentitySelectString( identityColumn, tableName ) );
+			return insertSql.Append("; " + GetIdentitySelectString(identityColumn, tableName));
 		}
 
 		/// <summary></summary>
@@ -200,7 +199,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string GetIdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString(string identityColumn, string tableName)
 		{
 			return "select SCOPE_IDENTITY()";
 		}
@@ -253,6 +252,7 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+
 		/// <summary>
 		/// Add a <c>LIMIT (TOP)</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
@@ -264,7 +264,7 @@ namespace NHibernate.Dialect
 		{
 			if (offset > 0)
 			{
-				throw new NotSupportedException("SQL Server does not support an offset" );
+				throw new NotSupportedException("SQL Server does not support an offset");
 			}
 
 			/*
@@ -293,9 +293,9 @@ namespace NHibernate.Dialect
 		/// MsSql does not require the OpenQuote to be escaped as long as the first char
 		/// is an OpenQuote.
 		/// </remarks>
-		protected override string Quote( string name )
+		protected override string Quote(string name)
 		{
-			return OpenQuote + name.Replace( CloseQuote.ToString(), new string( CloseQuote, 2 ) ) + CloseQuote;
+			return OpenQuote + name.Replace(CloseQuote.ToString(), new string(CloseQuote, 2)) + CloseQuote;
 		}
 
 		/// <summary>
@@ -303,14 +303,14 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="quoted"></param>
 		/// <returns></returns>
-		public override string UnQuote( string quoted )
+		public override string UnQuote(string quoted)
 		{
-			if( IsQuoted( quoted ) )
+			if (IsQuoted(quoted))
 			{
-				quoted = quoted.Substring( 1, quoted.Length - 2 );
+				quoted = quoted.Substring(1, quoted.Length - 2);
 			}
 
-			return quoted.Replace( new string( CloseQuote, 2 ), CloseQuote.ToString() );
+			return quoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
 		}
 
 		private static int GetAfterSelectInsertPoint(SqlString sql)

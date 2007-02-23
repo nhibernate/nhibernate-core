@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -22,10 +21,10 @@ namespace NHibernate.Collection
 	/// <para>
 	/// NHibernate "wraps" a collection in an instance of
 	/// <see cref="IPersistentCollection" />. This mechanism is designed
-    /// to support tracking of changes to the collection's persistent
-    /// state and lazy instantiation of collection elements. The downside
-    /// is that only certain abstract collection types are supported and
-    /// any extra semantics are lost.
+	/// to support tracking of changes to the collection's persistent
+	/// state and lazy instantiation of collection elements. The downside
+	/// is that only certain abstract collection types are supported and
+	/// any extra semantics are lost.
 	/// </para>
 	/// <para>
 	/// Applications should <b>never</b> use classes in this namespace
@@ -112,14 +111,14 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <returns>true if this was currently associated with the given session</returns>
-		bool UnsetSession( ISessionImplementor session );
+		bool UnsetSession(ISessionImplementor session);
 
 		/// <summary>
 		/// Associate the collection with the given session.
 		/// </summary>
 		/// <param name="session"></param>
 		/// <returns>false if the collection was already associated with the session</returns>
-		bool SetCurrentSession( ISessionImplementor session );
+		bool SetCurrentSession(ISessionImplementor session);
 
 		/// <summary>
 		/// Read the state of the collection from a disassembled cached value.
@@ -127,7 +126,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
-		void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner );
+		void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner);
 
 		/// <summary>
 		/// Iterate all collection entries, during update of the database
@@ -146,29 +145,29 @@ namespace NHibernate.Collection
 		/// <param name="descriptor">The descriptor providing result set column names</param>
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
-		object ReadFrom( IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner );
+		object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
 
 		/// <summary>
 		/// Get the identifier of the given collection entry
 		/// </summary>
-		object GetIdentifier( object entry, int i );
+		object GetIdentifier(object entry, int i);
 
 		/// <summary>
 		/// Get the index of the given collection entry
 		/// </summary>
-		object GetIndex( object entry, int i );
+		object GetIndex(object entry, int i);
 
 		/// <summary>
 		/// Get the value of the given collection entry
 		/// </summary>
-		object GetElement( object entry );
+		object GetElement(object entry);
 
 		/// <summary>
 		/// Called before any elements are read into the collection,
 		/// allowing appropriate initializations to occur.
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this persistent collection.</param>
-		void BeforeInitialize( ICollectionPersister persister );
+		void BeforeInitialize(ICollectionPersister persister);
 
 		/// <summary>
 		/// Does the current state exactly match the snapshot?
@@ -179,14 +178,14 @@ namespace NHibernate.Collection
 		/// of the collection or if one of the elements in the collection is
 		/// dirty.
 		/// </returns>
-		bool EqualsSnapshot( IType elementType );
+		bool EqualsSnapshot(IType elementType);
 
 		/// <summary>
 		/// Disassemble the collection, ready for the cache
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>The contents of the persistent collection in a cacheable form.</returns>
-		object Disassemble( ICollectionPersister persister );
+		object Disassemble(ICollectionPersister persister);
 
 		/// <summary>
 		/// Gets a <see cref="Boolean"/> indicating if the rows for this collection
@@ -198,12 +197,12 @@ namespace NHibernate.Collection
 		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
-		bool NeedsRecreate( ICollectionPersister persister );
+		bool NeedsRecreate(ICollectionPersister persister);
 
 		/// <summary>
 		/// Return a new snapshot of the current state of the collection
 		/// </summary>
-		ICollection GetSnapshot( ICollectionPersister persister );
+		ICollection GetSnapshot(ICollectionPersister persister);
 
 		/// <summary>
 		/// To be called internally by the session, forcing
@@ -217,22 +216,22 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Does an element exist at this entry in the collection?
 		/// </summary>
-		bool EntryExists( object entry, int i );
+		bool EntryExists(object entry, int i);
 
 		/// <summary>
 		/// Do we need to insert this element?
 		/// </summary>
-		bool NeedsInserting( object entry, int i, IType elemType );
+		bool NeedsInserting(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Do we need to update this element?
 		/// </summary>
-		bool NeedsUpdating( object entry, int i, IType elemType );
+		bool NeedsUpdating(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		ICollection GetDeletes( IType elemType, bool indexIsFormula );
+		ICollection GetDeletes(IType elemType, bool indexIsFormula);
 
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?
@@ -242,7 +241,7 @@ namespace NHibernate.Collection
 		/// <c>true</c> if the IPersistentCollection is wrappping the collection instance,
 		/// <c>false</c> otherwise.
 		/// </returns>
-		bool IsWrapper( object collection );
+		bool IsWrapper(object collection);
 
 		/// <summary></summary>
 		bool WasInitialized { get; }
@@ -260,7 +259,7 @@ namespace NHibernate.Collection
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
-		void PreInsert( ICollectionPersister persister );
+		void PreInsert(ICollectionPersister persister);
 
 		/// <summary>
 		/// Called after inserting a row, to fetch the natively generated id
@@ -268,7 +267,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
-		void AfterRowInsert( ICollectionPersister persister, object entry, int i );
+		void AfterRowInsert(ICollectionPersister persister, object entry, int i);
 
 		/// <summary>
 		/// Get all "orphaned" elements
@@ -280,14 +279,14 @@ namespace NHibernate.Collection
 		/// An <see cref="ICollection"/> that contains all of the elements
 		/// that have been orphaned.
 		/// </returns>
-		ICollection GetOrphans( object snapshot, System.Type entityName );
+		ICollection GetOrphans(object snapshot, System.Type entityName);
 
 		/// <summary>
 		/// Get the snapshot value of the given collection entry
 		/// </summary>
-		object GetSnapshotElement( object entry, int i );
+		object GetSnapshotElement(object entry, int i);
 
-		bool IsSnapshotEmpty( ICollection snapshot );
+		bool IsSnapshotEmpty(ICollection snapshot);
 
 		/// <summary>
 		/// Called after initializing from cache

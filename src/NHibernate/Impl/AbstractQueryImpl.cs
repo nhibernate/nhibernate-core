@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
@@ -12,6 +10,8 @@ using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+#if NET_2_0
+#endif
 
 namespace NHibernate.Impl
 {
@@ -21,17 +21,17 @@ namespace NHibernate.Impl
 	public abstract class AbstractQueryImpl : IQuery
 	{
 		private string queryString;
-		private IDictionary lockModes = new Hashtable( 2 );
+		private IDictionary lockModes = new Hashtable(2);
 
 		private readonly ISessionImplementor session;
 
 		private RowSelection selection;
-		private ArrayList values = new ArrayList( 4 );
-		private ArrayList types = new ArrayList( 4 );
+		private ArrayList values = new ArrayList(4);
+		private ArrayList types = new ArrayList(4);
 		private int positionalParameterCount = 0;
 		private ISet actualNamedParameters;
-		private IDictionary namedParameters = new Hashtable( 4 );
-		private IDictionary namedParameterLists = new Hashtable( 4 );
+		private IDictionary namedParameters = new Hashtable(4);
+		private IDictionary namedParameterLists = new Hashtable(4);
 		private bool cacheable;
 		private string cacheRegion;
 		private bool forceCacheRefresh;
@@ -45,7 +45,7 @@ namespace NHibernate.Impl
 		private object collectionKey;
 		private IResultTransformer resultTransformer;
 
-		public AbstractQueryImpl( string queryString, FlushMode flushMode, ISessionImplementor session )
+		public AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session)
 		{
 			this.session = session;
 			this.queryString = queryString;
@@ -62,9 +62,9 @@ namespace NHibernate.Impl
 		protected internal IDictionary NamedParams
 		{
 			// NB The java one always returns a copy, so I'm going to reproduce that behaviour
-			get { return new Hashtable( namedParameters ); }
+			get { return new Hashtable(namedParameters); }
 		}
-		
+
 		public bool HasNamedParameters
 		{
 			get { return actualNamedParameters.Count > 0; }
@@ -72,12 +72,13 @@ namespace NHibernate.Impl
 
 		protected virtual void VerifyParameters()
 		{
-			if ( actualNamedParameters.Count != namedParameters.Count + namedParameterLists.Count )
+			if (actualNamedParameters.Count != namedParameters.Count + namedParameterLists.Count)
 			{
-				Set missingParams = new ListSet( actualNamedParameters );
-				missingParams.RemoveAll( namedParameterLists.Keys );
-				missingParams.RemoveAll( namedParameters.Keys );
-				throw new QueryException( "Not all named parameters have been set: " + CollectionPrinter.ToString( missingParams ), QueryString );
+				Set missingParams = new ListSet(actualNamedParameters);
+				missingParams.RemoveAll(namedParameterLists.Keys);
+				missingParams.RemoveAll(namedParameters.Keys);
+				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams),
+				                         QueryString);
 			}
 
 			int positionalValueSpan = 0;
@@ -91,10 +92,12 @@ namespace NHibernate.Impl
 				positionalValueSpan += ((IType) obj).GetColumnSpan(session.Factory);
 			}
 
-			if ( positionalParameterCount != positionalValueSpan ) 
+			if (positionalParameterCount != positionalValueSpan)
 			{
-				throw new QueryException( string.Format( "Not all positional parameters have been set. Expected {0}, set {1}", positionalParameterCount, values.Count ),
-					QueryString );
+				throw new QueryException(
+					string.Format("Not all positional parameters have been set. Expected {0}, set {1}", positionalParameterCount,
+					              values.Count),
+					QueryString);
 			}
 		}
 
@@ -119,257 +122,258 @@ namespace NHibernate.Impl
 			get { return selection; }
 		}
 
-		public IQuery SetMaxResults( int maxResults )
+		public IQuery SetMaxResults(int maxResults)
 		{
 			selection.MaxRows = maxResults;
 			return this;
 		}
 
-		public IQuery SetTimeout( int timeout )
+		public IQuery SetTimeout(int timeout)
 		{
 			selection.Timeout = timeout;
 			return this;
 		}
 
-		public IQuery SetFetchSize( int fetchSize )
+		public IQuery SetFetchSize(int fetchSize)
 		{
 			selection.FetchSize = fetchSize;
 			return this;
 		}
 
-		public IQuery SetFirstResult( int firstResult )
+		public IQuery SetFirstResult(int firstResult)
 		{
 			selection.FirstRow = firstResult;
 			return this;
 		}
 
-		public IQuery SetParameter( int position, object val, IType type )
+		public IQuery SetParameter(int position, object val, IType type)
 		{
-			if ( positionalParameterCount == 0 ) 
+			if (positionalParameterCount == 0)
 			{
-				throw new ArgumentOutOfRangeException( string.Format( "No positional parameters in query: {0}", QueryString ) );
+				throw new ArgumentOutOfRangeException(string.Format("No positional parameters in query: {0}", QueryString));
 			}
 
-			if ( position < 0 || position > positionalParameterCount - 1 ) 
+			if (position < 0 || position > positionalParameterCount - 1)
 			{
-				throw new ArgumentOutOfRangeException( string.Format( "Positional parameter does not exists: {0} in query: {1}", position, QueryString ) );
+				throw new ArgumentOutOfRangeException(
+					string.Format("Positional parameter does not exists: {0} in query: {1}", position, QueryString));
 			}
 
 			int size = values.Count;
-			if ( position < size )
+			if (position < size)
 			{
-				values[ position ] = val;
-				types[ position ] = type;
+				values[position] = val;
+				types[position] = type;
 			}
 			else
 			{
 				// Put guard values in for any positions before the wanted position - allows us to detect unset parameters on validate.
-				for( int i = 0; i < position - size; i++ )
+				for (int i = 0; i < position - size; i++)
 				{
-					values.Add( UNSET_PARAMETER );
-					types.Add( UNSET_TYPE );
+					values.Add(UNSET_PARAMETER);
+					types.Add(UNSET_TYPE);
 				}
-				values.Add( val );
-				types.Add( type );
+				values.Add(val);
+				types.Add(type);
 			}
 			return this;
 		}
 
-		public IQuery SetParameter( string name, object val, IType type )
+		public IQuery SetParameter(string name, object val, IType type)
 		{
-			namedParameters[ name ] = new TypedValue( type, val );
+			namedParameters[name] = new TypedValue(type, val);
 			return this;
 		}
 
-		public IQuery SetAnsiString( int position, string val )
+		public IQuery SetAnsiString(int position, string val)
 		{
-			SetParameter( position, val, NHibernateUtil.AnsiString );
+			SetParameter(position, val, NHibernateUtil.AnsiString);
 			return this;
 		}
 
-		public IQuery SetString( int position, string val )
+		public IQuery SetString(int position, string val)
 		{
-			SetParameter( position, val, NHibernateUtil.String );
+			SetParameter(position, val, NHibernateUtil.String);
 			return this;
 		}
 
-		public IQuery SetCharacter( int position, char val )
+		public IQuery SetCharacter(int position, char val)
 		{
-			SetParameter( position, val, NHibernateUtil.Character ); // );
+			SetParameter(position, val, NHibernateUtil.Character); // );
 			return this;
 		}
 
-		public IQuery SetBoolean( int position, bool val )
+		public IQuery SetBoolean(int position, bool val)
 		{
-			SetParameter( position, val, NHibernateUtil.Boolean ); // );
+			SetParameter(position, val, NHibernateUtil.Boolean); // );
 			return this;
 		}
 
-		public IQuery SetByte( int position, byte val )
+		public IQuery SetByte(int position, byte val)
 		{
-			SetParameter( position, val, NHibernateUtil.Byte );
+			SetParameter(position, val, NHibernateUtil.Byte);
 			return this;
 		}
 
-		public IQuery SetInt16( int position, short val )
+		public IQuery SetInt16(int position, short val)
 		{
-			SetParameter( position, val, NHibernateUtil.Int16 );
+			SetParameter(position, val, NHibernateUtil.Int16);
 			return this;
 		}
 
-		public IQuery SetInt32( int position, int val )
+		public IQuery SetInt32(int position, int val)
 		{
-			SetParameter( position, val, NHibernateUtil.Int32 );
+			SetParameter(position, val, NHibernateUtil.Int32);
 			return this;
 		}
 
-		public IQuery SetInt64( int position, long val )
+		public IQuery SetInt64(int position, long val)
 		{
-			SetParameter( position, val, NHibernateUtil.Int64 );
+			SetParameter(position, val, NHibernateUtil.Int64);
 			return this;
 		}
 
-		public IQuery SetSingle( int position, float val )
+		public IQuery SetSingle(int position, float val)
 		{
-			SetParameter( position, val, NHibernateUtil.Single );
+			SetParameter(position, val, NHibernateUtil.Single);
 			return this;
 		}
 
-		public IQuery SetDouble( int position, double val )
+		public IQuery SetDouble(int position, double val)
 		{
-			SetParameter( position, val, NHibernateUtil.Double );
+			SetParameter(position, val, NHibernateUtil.Double);
 			return this;
 		}
 
-		public IQuery SetBinary( int position, byte[ ] val )
+		public IQuery SetBinary(int position, byte[] val)
 		{
-			SetParameter( position, val, NHibernateUtil.Binary );
+			SetParameter(position, val, NHibernateUtil.Binary);
 			return this;
 		}
 
-		public IQuery SetDecimal( int position, decimal val )
+		public IQuery SetDecimal(int position, decimal val)
 		{
-			SetParameter( position, val, NHibernateUtil.Decimal );
+			SetParameter(position, val, NHibernateUtil.Decimal);
 			return this;
 		}
 
-		public IQuery SetDateTime( int position, DateTime val )
+		public IQuery SetDateTime(int position, DateTime val)
 		{
-			SetParameter( position, val, NHibernateUtil.DateTime );
+			SetParameter(position, val, NHibernateUtil.DateTime);
 			return this;
 		}
 
-		public IQuery SetTime( int position, DateTime val )
+		public IQuery SetTime(int position, DateTime val)
 		{
-			SetParameter( position, val, NHibernateUtil.Time );
+			SetParameter(position, val, NHibernateUtil.Time);
 			return this;
 		}
 
-		public IQuery SetTimestamp( int position, DateTime val )
+		public IQuery SetTimestamp(int position, DateTime val)
 		{
-			SetParameter( position, val, NHibernateUtil.Timestamp );
+			SetParameter(position, val, NHibernateUtil.Timestamp);
 			return this;
 		}
 
-		public IQuery SetEntity( int position, object val )
+		public IQuery SetEntity(int position, object val)
 		{
-			SetParameter( position, val, NHibernateUtil.Entity( NHibernateProxyHelper.GuessClass( val ) ) );
+			SetParameter(position, val, NHibernateUtil.Entity(NHibernateProxyHelper.GuessClass(val)));
 			return this;
 		}
 
-		public IQuery SetEnum( int position, Enum val )
+		public IQuery SetEnum(int position, Enum val)
 		{
-			SetParameter( position, val, NHibernateUtil.Enum( val.GetType() ) );
+			SetParameter(position, val, NHibernateUtil.Enum(val.GetType()));
 			return this;
 		}
 
-		public IQuery SetAnsiString( string name, string val )
+		public IQuery SetAnsiString(string name, string val)
 		{
-			SetParameter( name, val, NHibernateUtil.AnsiString );
+			SetParameter(name, val, NHibernateUtil.AnsiString);
 			return this;
 		}
 
-		public IQuery SetString( string name, string val )
+		public IQuery SetString(string name, string val)
 		{
-			SetParameter( name, val, NHibernateUtil.String );
+			SetParameter(name, val, NHibernateUtil.String);
 			return this;
 		}
 
-		public IQuery SetCharacter( string name, char val )
+		public IQuery SetCharacter(string name, char val)
 		{
-			SetParameter( name, val, NHibernateUtil.Character );
+			SetParameter(name, val, NHibernateUtil.Character);
 			return this;
 		}
 
-		public IQuery SetBoolean( string name, bool val )
+		public IQuery SetBoolean(string name, bool val)
 		{
-			SetParameter( name, val, NHibernateUtil.Boolean );
+			SetParameter(name, val, NHibernateUtil.Boolean);
 			return this;
 		}
 
-		public IQuery SetByte( string name, byte val )
+		public IQuery SetByte(string name, byte val)
 		{
-			SetParameter( name, val, NHibernateUtil.Byte );
+			SetParameter(name, val, NHibernateUtil.Byte);
 			return this;
 		}
 
-		public IQuery SetInt16( string name, short val )
+		public IQuery SetInt16(string name, short val)
 		{
-			SetParameter( name, val, NHibernateUtil.Int16 );
+			SetParameter(name, val, NHibernateUtil.Int16);
 			return this;
 		}
 
-		public IQuery SetInt32( string name, int val )
+		public IQuery SetInt32(string name, int val)
 		{
-			SetParameter( name, val, NHibernateUtil.Int32 );
+			SetParameter(name, val, NHibernateUtil.Int32);
 			return this;
 		}
 
-		public IQuery SetInt64( string name, long val )
+		public IQuery SetInt64(string name, long val)
 		{
-			SetParameter( name, val, NHibernateUtil.Int64 );
+			SetParameter(name, val, NHibernateUtil.Int64);
 			return this;
 		}
 
-		public IQuery SetSingle( string name, float val )
+		public IQuery SetSingle(string name, float val)
 		{
-			SetParameter( name, val, NHibernateUtil.Single );
+			SetParameter(name, val, NHibernateUtil.Single);
 			return this;
 		}
 
-		public IQuery SetDouble( string name, double val )
+		public IQuery SetDouble(string name, double val)
 		{
-			SetParameter( name, val, NHibernateUtil.Double );
+			SetParameter(name, val, NHibernateUtil.Double);
 			return this;
 		}
 
-		public IQuery SetBinary( string name, byte[ ] val )
+		public IQuery SetBinary(string name, byte[] val)
 		{
-			SetParameter( name, val, NHibernateUtil.Binary );
+			SetParameter(name, val, NHibernateUtil.Binary);
 			return this;
 		}
 
-		public IQuery SetDecimal( string name, decimal val )
+		public IQuery SetDecimal(string name, decimal val)
 		{
-			SetParameter( name, val, NHibernateUtil.Decimal );
+			SetParameter(name, val, NHibernateUtil.Decimal);
 			return this;
 		}
 
-		public IQuery SetDateTime( string name, DateTime val )
+		public IQuery SetDateTime(string name, DateTime val)
 		{
-			SetParameter( name, val, NHibernateUtil.DateTime );
+			SetParameter(name, val, NHibernateUtil.DateTime);
 			return this;
 		}
 
-		public IQuery SetTime( string name, DateTime val )
+		public IQuery SetTime(string name, DateTime val)
 		{
-			SetParameter( name, val, NHibernateUtil.Time ); 
+			SetParameter(name, val, NHibernateUtil.Time);
 			return this;
 		}
 
-		public IQuery SetTimestamp( string name, DateTime val )
+		public IQuery SetTimestamp(string name, DateTime val)
 		{
-			SetParameter( name, val, NHibernateUtil.Timestamp );
+			SetParameter(name, val, NHibernateUtil.Timestamp);
 			return this;
 		}
 
@@ -387,33 +391,35 @@ namespace NHibernate.Impl
 
 		public IQuery SetEntity(string name, object val)
 		{
-			SetParameter( name, val, NHibernateUtil.Entity( NHibernateProxyHelper.GuessClass( val ) ) );
+			SetParameter(name, val, NHibernateUtil.Entity(NHibernateProxyHelper.GuessClass(val)));
 			return this;
 		}
 
-		public IQuery SetEnum( string name, Enum val )
+		public IQuery SetEnum(string name, Enum val)
 		{
-			SetParameter( name, val, NHibernateUtil.Enum( val.GetType() ) );
+			SetParameter(name, val, NHibernateUtil.Enum(val.GetType()));
 			return this;
 		}
 
-		public IQuery SetParameter( string name, object val )
+		public IQuery SetParameter(string name, object val)
 		{
-			if( val==null )
+			if (val == null)
 			{
-				throw new ArgumentNullException( "val", "A type specific Set(name, val) should be called because the Type can not be guessed from a null value." );
+				throw new ArgumentNullException("val",
+				                                "A type specific Set(name, val) should be called because the Type can not be guessed from a null value.");
 			}
-			SetParameter( name, val, GuessType( val ) );
+			SetParameter(name, val, GuessType(val));
 			return this;
 		}
 
-		public IQuery SetParameter( int position, object val )
+		public IQuery SetParameter(int position, object val)
 		{
-			if( val==null )
+			if (val == null)
 			{
-				throw new ArgumentNullException( "val", "A type specific Set(position, val) should be called because the Type can not be guessed from a null value." );
+				throw new ArgumentNullException("val",
+				                                "A type specific Set(position, val) should be called because the Type can not be guessed from a null value.");
 			}
-			SetParameter( position, val, GuessType( val ) );
+			SetParameter(position, val, GuessType(val));
 			return this;
 		}
 
@@ -426,15 +432,15 @@ namespace NHibernate.Impl
 		/// Thrown when the <c>param</c> is null because the <see cref="IType"/>
 		/// can't be guess from a null value.
 		/// </exception>
-		private IType GuessType( object param )
+		private IType GuessType(object param)
 		{
-			if( param==null )
+			if (param == null)
 			{
-				throw new ArgumentNullException( "param", "The IType can not be guessed for a null value." );
+				throw new ArgumentNullException("param", "The IType can not be guessed for a null value.");
 			}
-			
-			System.Type clazz = NHibernateProxyHelper.GuessClass( param );
-			return GuessType( clazz );
+
+			System.Type clazz = NHibernateProxyHelper.GuessClass(param);
+			return GuessType(clazz);
 		}
 
 		/// <summary>
@@ -446,34 +452,34 @@ namespace NHibernate.Impl
 		/// Thrown when the <c>clazz</c> is null because the <see cref="IType"/>
 		/// can't be guess from a null type.
 		/// </exception>
-		private IType GuessType( System.Type clazz )
+		private IType GuessType(System.Type clazz)
 		{
-			if( clazz==null )
+			if (clazz == null)
 			{
-				throw new ArgumentNullException( "clazz", "The IType can not be guessed for a null value." );
+				throw new ArgumentNullException("clazz", "The IType can not be guessed for a null value.");
 			}
-			
+
 			string typename = clazz.AssemblyQualifiedName;
-			IType type = TypeFactory.HeuristicType( typename );
-			bool serializable = (type!=null && type is SerializableType);
-			if( type==null || serializable )
+			IType type = TypeFactory.HeuristicType(typename);
+			bool serializable = (type != null && type is SerializableType);
+			if (type == null || serializable)
 			{
 				try
 				{
-					session.Factory.GetEntityPersister( clazz );
+					session.Factory.GetEntityPersister(clazz);
 				}
-				catch( MappingException )
+				catch (MappingException)
 				{
-					if( serializable )
+					if (serializable)
 					{
 						return type;
 					}
 					else
 					{
-						throw new HibernateException( "Could not determine a type for class: " + typename );
+						throw new HibernateException("Could not determine a type for class: " + typename);
 					}
 				}
-				return NHibernateUtil.Entity( clazz );
+				return NHibernateUtil.Entity(clazz);
 			}
 			else
 			{
@@ -481,17 +487,18 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public virtual IType[ ] ReturnTypes
+		public virtual IType[] ReturnTypes
 		{
-			get { return session.Factory.GetReturnTypes( queryString ); }
+			get { return session.Factory.GetReturnTypes(queryString); }
 		}
 
-		public IQuery SetParameterList( string name, IEnumerable vals, IType type )
+		public IQuery SetParameterList(string name, IEnumerable vals, IType type)
 		{
-			if ( !actualNamedParameters.Contains(name) )
-				throw new ArgumentOutOfRangeException(string.Format("Parameter {0} does not exist as a named parameter in [{1}]", name, queryString));
+			if (!actualNamedParameters.Contains(name))
+				throw new ArgumentOutOfRangeException(
+					string.Format("Parameter {0} does not exist as a named parameter in [{1}]", name, queryString));
 
-			namedParameterLists.Add( name, new TypedValue( type, vals ) );
+			namedParameterLists.Add(name, new TypedValue(type, vals));
 			return this;
 		}
 
@@ -499,42 +506,42 @@ namespace NHibernate.Impl
 		{
 			return BindParameterLists(NamedParams);
 		}
-		
-		protected internal string BindParameterLists( IDictionary namedParams )
+
+		protected internal string BindParameterLists(IDictionary namedParams)
 		{
 			string query = queryString;
-			foreach( DictionaryEntry de in namedParameterLists )
+			foreach (DictionaryEntry de in namedParameterLists)
 			{
-				query = BindParameterList( query, ( string ) de.Key, ( TypedValue ) de.Value, namedParams );
+				query = BindParameterList(query, (string) de.Key, (TypedValue) de.Value, namedParams);
 			}
 			return query;
 		}
 
-		private string BindParameterList( string queryString, string name, TypedValue typedList, IDictionary namedParams )
+		private string BindParameterList(string queryString, string name, TypedValue typedList, IDictionary namedParams)
 		{
-			IEnumerable vals = ( IEnumerable ) typedList.Value;
+			IEnumerable vals = (IEnumerable) typedList.Value;
 			IType type = typedList.Type;
-			StringBuilder list = new StringBuilder( 16 );
+			StringBuilder list = new StringBuilder(16);
 			int i = 0;
-			foreach( object obj in vals )
+			foreach (object obj in vals)
 			{
-				if( i > 0 )
+				if (i > 0)
 				{
-					list.Append( StringHelper.CommaSpace );
+					list.Append(StringHelper.CommaSpace);
 				}
 				string alias = name + i++ + StringHelper.Underscore;
-				namedParams.Add( alias, new TypedValue( type, obj ) );
-				list.Append( ParserHelper.HqlVariablePrefix + alias );
+				namedParams.Add(alias, new TypedValue(type, obj));
+				list.Append(ParserHelper.HqlVariablePrefix + alias);
 			}
 
-			return StringHelper.Replace( queryString, ParserHelper.HqlVariablePrefix + name, list.ToString() );
+			return StringHelper.Replace(queryString, ParserHelper.HqlVariablePrefix + name, list.ToString());
 		}
 
-		public IQuery SetParameterList( string name, IEnumerable vals )
+		public IQuery SetParameterList(string name, IEnumerable vals)
 		{
-			foreach( object obj in vals )
+			foreach (object obj in vals)
 			{
-				SetParameterList( name, vals, GuessType( obj ) );
+				SetParameterList(name, vals, GuessType(obj));
 				break; // fairly hackish...need the type of the first object
 			}
 			return this;
@@ -542,58 +549,58 @@ namespace NHibernate.Impl
 
 		private void InitParameterBookKeeping()
 		{
-			StringTokenizer st = new StringTokenizer( queryString, ParserHelper.HqlSeparators, true );
+			StringTokenizer st = new StringTokenizer(queryString, ParserHelper.HqlSeparators, true);
 			ISet result = new HashedSet();
 
 			IEnumerator enumer = st.GetEnumerator();
-			while( enumer.MoveNext() ) 
+			while (enumer.MoveNext())
 			{
 				string str = (string) enumer.Current;
-				if ( str.StartsWith( ParserHelper.HqlVariablePrefix ) )
+				if (str.StartsWith(ParserHelper.HqlVariablePrefix))
 				{
-					result.Add( str.Substring( 1 ) );
+					result.Add(str.Substring(1));
 				}
 			}
 
 			actualNamedParameters = result;
 			// TODO: This is weak as it doesn't take account of ? embedded in the SQL
-			positionalParameterCount = StringHelper.CountUnquoted( queryString, StringHelper.SqlParameter.ToCharArray()[0] );
+			positionalParameterCount = StringHelper.CountUnquoted(queryString, StringHelper.SqlParameter.ToCharArray()[0]);
 		}
 
-		public string[ ] NamedParameters
+		public string[] NamedParameters
 		{
 			get
 			{
-				string[ ] retVal = new String[actualNamedParameters.Count];
+				string[] retVal = new String[actualNamedParameters.Count];
 				int i = 0;
-				foreach( string parm in actualNamedParameters )
+				foreach (string parm in actualNamedParameters)
 				{
-					retVal[ i++ ] = parm;
+					retVal[i++] = parm;
 				}
 				return retVal;
 			}
 		}
 
-		public IQuery SetProperties( object bean )
+		public IQuery SetProperties(object bean)
 		{
 			System.Type clazz = bean.GetType();
-			foreach( string namedParam in actualNamedParameters )
+			foreach (string namedParam in actualNamedParameters)
 			{
 				try
 				{
-					IGetter getter = ReflectHelper.GetGetter( clazz, namedParam, "property" );
-					SetParameter( namedParam, getter.Get( bean ), GuessType( getter.ReturnType ) );
+					IGetter getter = ReflectHelper.GetGetter(clazz, namedParam, "property");
+					SetParameter(namedParam, getter.Get(bean), GuessType(getter.ReturnType));
 				}
-				catch( Exception )
+				catch (Exception)
 				{
 				}
 			}
 			return this;
 		}
 
-		public virtual void SetLockMode( string alias, LockMode lockMode )
+		public virtual void SetLockMode(string alias, LockMode lockMode)
 		{
-			lockModes[ alias ] = lockMode;
+			lockModes[alias] = lockMode;
 		}
 
 		public IDictionary LockModes
@@ -615,22 +622,22 @@ namespace NHibernate.Impl
 
 		public object UniqueResult()
 		{
-			return UniqueElement( List() );
+			return UniqueElement(List());
 		}
 
-		internal static object UniqueElement( IList list )
+		internal static object UniqueElement(IList list)
 		{
 			int size = list.Count;
-			if ( size == 0 )
+			if (size == 0)
 			{
 				return null;
 			}
-			object first = list[ 0 ];
-			for ( int i = 1; i < size; i++ )
+			object first = list[0];
+			for (int i = 1; i < size; i++)
 			{
-				if ( list[ i ] != first )
+				if (list[i] != first)
 				{
-					throw new NonUniqueResultException( size );
+					throw new NonUniqueResultException(size);
 				}
 			}
 			return first;
@@ -643,20 +650,20 @@ namespace NHibernate.Impl
 
 		public virtual IType[] TypeArray()
 		{
-			return ( IType[ ] ) types.ToArray( typeof( IType ) );
+			return (IType[]) types.ToArray(typeof(IType));
 		}
 
 		public virtual object[] ValueArray()
 		{
-			return ( object[ ] ) values.ToArray( typeof( object ) );
+			return (object[]) values.ToArray(typeof(object));
 		}
-		
-		public virtual QueryParameters GetQueryParameters( )
+
+		public virtual QueryParameters GetQueryParameters()
 		{
 			return GetQueryParameters(NamedParams);
 		}
-		
-		public virtual QueryParameters GetQueryParameters( IDictionary namedParams )
+
+		public virtual QueryParameters GetQueryParameters(IDictionary namedParams)
 		{
 			return new QueryParameters(
 				TypeArray(),
@@ -667,27 +674,27 @@ namespace NHibernate.Impl
 				cacheable,
 				cacheRegion,
 				forceCacheRefresh,
-				collectionKey == null ? null : new object[] { collectionKey },
+				collectionKey == null ? null : new object[] {collectionKey},
 				optionalObject,
 				optionalEntityName,
 				optionalId,
 				resultTransformer);
 		}
 
-		public IQuery SetCacheable( bool cacheable )
+		public IQuery SetCacheable(bool cacheable)
 		{
 			this.cacheable = cacheable;
 			return this;
 		}
 
-		public IQuery SetCacheRegion( string cacheRegion )
+		public IQuery SetCacheRegion(string cacheRegion)
 		{
-			if( cacheRegion != null )
+			if (cacheRegion != null)
 				this.cacheRegion = cacheRegion.Trim();
 			return this;
 		}
 
-		public IQuery SetForceCacheRefresh( bool forceCacheRefresh )
+		public IQuery SetForceCacheRefresh(bool forceCacheRefresh)
 		{
 			this.forceCacheRefresh = forceCacheRefresh;
 			return this;
@@ -699,26 +706,26 @@ namespace NHibernate.Impl
 		public abstract IEnumerable<T> Enumerable<T>();
 #endif
 		public abstract IList List();
-		public abstract void List( IList results );
+		public abstract void List(IList results);
 #if NET_2_0
 		public abstract IList<T> List<T>();
 #endif
-		
+
 		public void SetOptionalId(object optionalId)
 		{
 			this.optionalId = optionalId;
 		}
-		
+
 		public void SetOptionalObject(object optionalObject)
 		{
 			this.optionalObject = optionalObject;
 		}
-		
+
 		public void SetOptionalEntityName(System.Type optionalEntityName)
 		{
 			this.optionalEntityName = optionalEntityName;
 		}
-		
+
 		public IQuery SetFlushMode(FlushMode flushMode)
 		{
 			this.flushMode = flushMode;
@@ -733,7 +740,7 @@ namespace NHibernate.Impl
 				Session.FlushMode = flushMode;
 			}
 		}
-		
+
 		protected void After()
 		{
 			if (sessionFlushMode != FlushMode.Unspecified)
@@ -748,7 +755,7 @@ namespace NHibernate.Impl
 			this.collectionKey = collectionKey;
 			return this;
 		}
-		
+
 		public IQuery SetResultTransformer(IResultTransformer transformer)
 		{
 			this.resultTransformer = transformer;

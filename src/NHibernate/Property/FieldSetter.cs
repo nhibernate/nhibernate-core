@@ -19,7 +19,7 @@ namespace NHibernate.Property
 		/// <param name="clazz">The <see cref="System.Type"/> that contains the Field to use for the Property <c>set</c>.</param>
 		/// <param name="field">The <see cref="FieldInfo"/> for reflection.</param>
 		/// <param name="name">The name of the Field.</param>
-		public FieldSetter( FieldInfo field, System.Type clazz, string name )
+		public FieldSetter(FieldInfo field, System.Type clazz, string name)
 		{
 			this.field = field;
 			this.clazz = clazz;
@@ -36,31 +36,34 @@ namespace NHibernate.Property
 		/// <exception cref="PropertyAccessException">
 		/// Thrown when there is a problem setting the value in the target.
 		/// </exception>
-		public void Set( object target, object value )
+		public void Set(object target, object value)
 		{
 			try
 			{
-				field.SetValue( target, value );
+				field.SetValue(target, value);
 			}
-			catch( ArgumentException ae )
+			catch (ArgumentException ae)
 			{
 				// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
 				// would be thrown, but it doesn't hurt to make sure.
-				if( field.FieldType.IsAssignableFrom( value.GetType() )==false )
+				if (field.FieldType.IsAssignableFrom(value.GetType()) == false)
 				{
 					// add some details to the error message - there have been a few forum posts an they are 
 					// all related to an ISet and IDictionary mixups.
-					string msg = String.Format( "The type {0} can not be assigned to a field of type {1}", value.GetType().ToString(), field.FieldType.ToString() );
-					throw new PropertyAccessException( ae, msg, true, clazz, name );
+					string msg =
+						String.Format("The type {0} can not be assigned to a field of type {1}", value.GetType().ToString(),
+						              field.FieldType.ToString());
+					throw new PropertyAccessException(ae, msg, true, clazz, name);
 				}
 				else
 				{
-					throw new PropertyAccessException( ae, "ArgumentException while setting the field value by reflection", true, clazz, name );
+					throw new PropertyAccessException(ae, "ArgumentException while setting the field value by reflection", true, clazz,
+					                                  name);
 				}
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new PropertyAccessException( e, "could not set a field value by reflection", true, clazz, name );
+				throw new PropertyAccessException(e, "could not set a field value by reflection", true, clazz, name);
 			}
 		}
 
@@ -84,10 +87,9 @@ namespace NHibernate.Property
 
 		#endregion
 
-		public void Emit( ILGenerator il )
+		public void Emit(ILGenerator il)
 		{
-			il.Emit( OpCodes.Stfld, field );
+			il.Emit(OpCodes.Stfld, field);
 		}
 	}
-
 }

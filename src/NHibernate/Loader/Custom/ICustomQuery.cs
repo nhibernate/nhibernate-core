@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
-
 using Iesi.Collections;
-
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 
 namespace NHibernate.Loader.Custom
 {

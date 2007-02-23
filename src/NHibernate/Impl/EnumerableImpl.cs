@@ -18,16 +18,16 @@ namespace NHibernate.Impl
 	/// </remarks>
 	public class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( EnumerableImpl ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(EnumerableImpl));
 
 		private IDataReader _reader;
 		private ISessionImplementor _sess;
-		private IType[ ] _types;
+		private IType[] _types;
 		private bool _single;
 		private object _currentResult;
 		private bool _hasNext;
 		private bool _startedReading; // True if at least one MoveNext call was made.
-		private string[ ][ ] _names;
+		private string[][] _names;
 		private IDbCommand _cmd;
 
 		// when we start enumerating through the DataReader we are positioned
@@ -49,8 +49,9 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// The <see cref="IDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
 		/// </remarks>
-		public EnumerableImpl( IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[ ] types, string[ ][ ] columnNames, RowSelection selection,
-			HolderInstantiator holderInstantiator )
+		public EnumerableImpl(IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[] types,
+		                      string[][] columnNames, RowSelection selection,
+		                      HolderInstantiator holderInstantiator)
 		{
 			_reader = reader;
 			_cmd = cmd;
@@ -63,47 +64,47 @@ namespace NHibernate.Impl
 			_single = _types.Length == 1;
 		}
 
-		private void PostMoveNext( bool hasNext )
+		private void PostMoveNext(bool hasNext)
 		{
 			_startedReading = true;
 			_hasNext = hasNext;
 			_currentRow++;
-			if( _selection != null && _selection.MaxRows != RowSelection.NoValue )
+			if (_selection != null && _selection.MaxRows != RowSelection.NoValue)
 			{
-				_hasNext = _hasNext && ( _currentRow < _selection.MaxRows );
+				_hasNext = _hasNext && (_currentRow < _selection.MaxRows);
 			}
 			// there are no more records in the DataReader so clean up
-			if( !_hasNext )
+			if (!_hasNext)
 			{
-				log.Debug( "exhausted results" );
+				log.Debug("exhausted results");
 				_currentResult = null;
-				_sess.Batcher.CloseCommand( _cmd, _reader );
+				_sess.Batcher.CloseCommand(_cmd, _reader);
 			}
 			else
 			{
-				log.Debug( "retreiving next results" );
+				log.Debug("retreiving next results");
 				bool isHolder = _holderInstantiator.IsRequired;
 
-				if( _single && !isHolder )
+				if (_single && !isHolder)
 				{
-					_currentResult = _types[ 0 ].NullSafeGet( _reader, _names[ 0 ], _sess, null );
+					_currentResult = _types[0].NullSafeGet(_reader, _names[0], _sess, null);
 				}
 				else
 				{
-					object[ ] currentResults = new object[_types.Length];
+					object[] currentResults = new object[_types.Length];
 
 					// move through each of the ITypes contained in the IDataReader and convert them
 					// to their objects.  
-					for( int i = 0; i < _types.Length; i++ )
+					for (int i = 0; i < _types.Length; i++)
 					{
 						// The IType knows how to extract its value out of the IDataReader.  If the IType
 						// is a value type then the value will simply be pulled out of the IDataReader.  If
 						// the IType is an Entity type then the IType will extract the id from the IDataReader
 						// and use the ISession to load an instance of the object.
-						currentResults[ i ] = _types[ i ].NullSafeGet( _reader, _names[ i ], _sess, null );
+						currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _sess, null);
 					}
 
-					if( isHolder )
+					if (isHolder)
 					{
 						_currentResult = _holderInstantiator.Instantiate(currentResults);
 					}
@@ -141,10 +142,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public object Current
 		{
-			get
-			{
-				return _currentResult;
-			}
+			get { return _currentResult; }
 		}
 
 		/// <summary>
@@ -165,7 +163,7 @@ namespace NHibernate.Impl
 			{
 				throw ADOExceptionHelper.Convert(e, "Error executing Enumerable() query", new SqlString(this._cmd.CommandText));
 			}
-			PostMoveNext( readResult );
+			PostMoveNext(readResult);
 			return _hasNext;
 		}
 
@@ -187,7 +185,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		~EnumerableImpl()
 		{
-			Dispose( false );
+			Dispose(false);
 		}
 
 		/// <summary>
@@ -196,8 +194,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Dispose()
 		{
-			log.Debug( "running EnumerableImpl.Dispose()" );
-			Dispose( true );
+			log.Debug("running EnumerableImpl.Dispose()");
+			Dispose(true);
 		}
 
 		/// <summary>
@@ -212,7 +210,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		protected virtual void Dispose(bool isDisposing)
 		{
-			if( _isAlreadyDisposed )
+			if (_isAlreadyDisposed)
 			{
 				// don't dispose of multiple times.
 				return;
@@ -220,23 +218,23 @@ namespace NHibernate.Impl
 
 			// free managed resources that are being managed by the EnumerableImpl if we
 			// know this call came through Dispose()
-			if( isDisposing )
+			if (isDisposing)
 			{
 				// if there is still a possibility of moving next then we need to clean up
 				// the resources - otherwise the cleanup has already been done by the 
 				// PostMoveNext method.
-				if( _hasNext || !_startedReading ) 
+				if (_hasNext || !_startedReading)
 				{
 					_currentResult = null;
-					_sess.Batcher.CloseCommand( _cmd, _reader );
+					_sess.Batcher.CloseCommand(_cmd, _reader);
 				}
 			}
 
 			// free unmanaged resources here
-			
+
 			_isAlreadyDisposed = true;
 			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize( this );
+			GC.SuppressFinalize(this);
 		}
 
 		#endregion

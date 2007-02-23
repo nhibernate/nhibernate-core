@@ -27,14 +27,14 @@ namespace NHibernate.Engine
 			bool isBatchLoadable,
 			ISessionFactoryImplementor factory)
 		{
-			if( id == null )
+			if (id == null)
 			{
-				throw new ArgumentNullException( "id" );
+				throw new ArgumentNullException("id");
 			}
 
-			if( !identifierType.ReturnedClass.IsAssignableFrom( id.GetType() ) )
+			if (!identifierType.ReturnedClass.IsAssignableFrom(id.GetType()))
 			{
-				throw new ArgumentException( "identifier type mismatch", "id" );
+				throw new ArgumentException("identifier type mismatch", "id");
 			}
 
 			this.identifier = id;
@@ -51,7 +51,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="p"></param>
-		public EntityKey( object id, IEntityPersister p ) : this( id, p.IdentifierSpace, p.MappedClass, p.IdentifierType, p.IsBatchLoadable, p.Factory )
+		public EntityKey(object id, IEntityPersister p)
+			: this(id, p.IdentifierSpace, p.MappedClass, p.IdentifierType, p.IsBatchLoadable, p.Factory)
 		{
 		}
 
@@ -79,14 +80,15 @@ namespace NHibernate.Engine
 			get { return isBatchLoadable; }
 		}
 
-		public override bool Equals( object other )
+		public override bool Equals(object other)
 		{
 			EntityKey otherKey = other as EntityKey;
-			if( otherKey == null )
+			if (otherKey == null)
 			{
 				return false;
 			}
-			return otherKey.identifierSpace.Equals( this.identifierSpace ) && identifierType.Equals(otherKey.Identifier, this.identifier);
+			return
+				otherKey.identifierSpace.Equals(this.identifierSpace) && identifierType.Equals(otherKey.Identifier, this.identifier);
 		}
 
 		public override int GetHashCode()
@@ -110,6 +112,5 @@ namespace NHibernate.Engine
 		{
 			return identifier.ToString();
 		}
-
 	}
 }

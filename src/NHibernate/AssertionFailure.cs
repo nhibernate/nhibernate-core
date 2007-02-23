@@ -7,24 +7,26 @@ namespace NHibernate
 	/// <summary>
 	/// Indicates failure of an assertion: a possible bug in NHibernate
 	/// </summary>
-	[ Serializable ]
+	[Serializable]
 	public class AssertionFailure : ApplicationException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssertionFailure"/> class.
 		/// </summary>
-		public AssertionFailure() : base( String.Empty )
+		public AssertionFailure() : base(String.Empty)
 		{
-			LogManager.GetLogger( typeof( AssertionFailure ) ).Error( "An AssertionFailure occured - this may indicate a bug in NHibernate" );
+			LogManager.GetLogger(typeof(AssertionFailure)).Error(
+				"An AssertionFailure occured - this may indicate a bug in NHibernate");
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssertionFailure"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public AssertionFailure( string message ) : base( message )
+		public AssertionFailure(string message) : base(message)
 		{
-			LogManager.GetLogger( typeof( AssertionFailure ) ).Error( "An AssertionFailure occured - this may indicate a bug in NHibernate", this );
+			LogManager.GetLogger(typeof(AssertionFailure)).Error(
+				"An AssertionFailure occured - this may indicate a bug in NHibernate", this);
 		}
 
 		/// <summary>
@@ -36,9 +38,10 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public AssertionFailure( string message, Exception innerException ) : base( message, innerException )
+		public AssertionFailure(string message, Exception innerException) : base(message, innerException)
 		{
-			LogManager.GetLogger( typeof( AssertionFailure ) ).Error( "An AssertionFailure occured - this may indicate a bug in NHibernate", innerException );
+			LogManager.GetLogger(typeof(AssertionFailure)).Error(
+				"An AssertionFailure occured - this may indicate a bug in NHibernate", innerException);
 		}
 
 		/// <summary>
@@ -51,7 +54,7 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected AssertionFailure( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected AssertionFailure(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

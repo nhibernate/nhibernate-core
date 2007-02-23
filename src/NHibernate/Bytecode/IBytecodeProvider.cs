@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Property;
 
 namespace NHibernate.Bytecode
@@ -17,6 +16,6 @@ namespace NHibernate.Bytecode
 		/// <param name="getters">All property getters to be accessed via reflection.</param>
 		/// <param name="setters">All property setters to be accessed via reflection.</param>
 		/// <returns>The reflection optimization delegate.</returns>
-		IReflectionOptimizer GetReflectionOptimizer( System.Type clazz, IGetter[] getters, ISetter[] setters );
+		IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters);
 	}
 }

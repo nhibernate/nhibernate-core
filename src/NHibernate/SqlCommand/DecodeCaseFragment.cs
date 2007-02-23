@@ -15,7 +15,7 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="dialect"></param>
-		public DecodeCaseFragment( Dialect.Dialect dialect )
+		public DecodeCaseFragment(Dialect.Dialect dialect)
 		{
 			this.dialect = dialect;
 		}
@@ -28,7 +28,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="returnColumnName"></param>
 		/// <returns></returns>
-		public override CaseFragment SetReturnColumnName( string returnColumnName )
+		public override CaseFragment SetReturnColumnName(string returnColumnName)
 		{
 			this.returnColumnName = returnColumnName;
 			return this;
@@ -40,9 +40,9 @@ namespace NHibernate.SqlCommand
 		/// <param name="returnColumnName"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		public override CaseFragment SetReturnColumnName( string returnColumnName, string suffix )
+		public override CaseFragment SetReturnColumnName(string returnColumnName, string suffix)
 		{
-			return SetReturnColumnName( new Alias( suffix ).ToAliasString( returnColumnName, dialect ) );
+			return SetReturnColumnName(new Alias(suffix).ToAliasString(returnColumnName, dialect));
 		}
 
 		/// <summary>
@@ -52,17 +52,17 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnName"></param>
 		/// <param name="columnValue"></param>
 		/// <returns></returns>
-		public override CaseFragment AddWhenColumnNotNull( string alias, string columnName, string columnValue )
+		public override CaseFragment AddWhenColumnNotNull(string alias, string columnName, string columnValue)
 		{
 			string key = alias + StringHelper.Dot + columnName;
 
-			if( columnValue.Equals( "0" ) )
+			if (columnValue.Equals("0"))
 			{
-				cases.Insert( 0, key );
+				cases.Insert(0, key);
 			}
 			else
 			{
-				cases.Add( ", " + key + ", " + columnValue );
+				cases.Add(", " + key + ", " + columnValue);
 			}
 
 			return this;
@@ -71,24 +71,24 @@ namespace NHibernate.SqlCommand
 		/// <summary></summary>
 		public override SqlString ToSqlStringFragment()
 		{
-			StringBuilder buf = new StringBuilder( cases.Count*15 + 10 );
+			StringBuilder buf = new StringBuilder(cases.Count * 15 + 10);
 
-			buf.Append( "decode (" );
+			buf.Append("decode (");
 
-			for( int i = 0; i < cases.Count; i++ )
+			for (int i = 0; i < cases.Count; i++)
 			{
-				buf.Append( cases[ i ] );
+				buf.Append(cases[i]);
 			}
 
-			buf.Append( ",0 )" );
+			buf.Append(",0 )");
 
-			if( returnColumnName != null )
+			if (returnColumnName != null)
 			{
-				buf.Append( " as " )
-					.Append( returnColumnName );
+				buf.Append(" as ")
+					.Append(returnColumnName);
 			}
 
-			return new SqlString( buf.ToString() );
+			return new SqlString(buf.ToString());
 		}
 	}
 }

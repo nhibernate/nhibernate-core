@@ -266,7 +266,8 @@ namespace NHibernate.Persister.Entity
 		/// <param name="cache">The configured <see cref="ICacheConcurrencyStrategy" />.</param>
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
 		/// <param name="mapping">The mapping used to retrieve type information.</param>
-		public JoinedSubclassEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, IMapping mapping)
+		public JoinedSubclassEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache,
+		                                     ISessionFactoryImplementor factory, IMapping mapping)
 			: base(model, cache, factory)
 		{
 			// I am am making heavy use of the "this." just to help me with debugging what is a local variable to the 
@@ -337,8 +338,8 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			this.naturalOrderTableNames = (string[]) tables.ToArray(typeof (string));
-			this.naturalOrderTableKeyColumns = (string[][]) keyColumns.ToArray(typeof (string[]));
+			this.naturalOrderTableNames = (string[]) tables.ToArray(typeof(string));
+			this.naturalOrderTableKeyColumns = (string[][]) keyColumns.ToArray(typeof(string[]));
 
 			// the description of these variables is the same as before
 			ArrayList subtables = new ArrayList();
@@ -362,8 +363,8 @@ namespace NHibernate.Persister.Entity
 			}
 
 			// convert the local ArrayList variables into arrays for the fields in the class
-			this.subclassTableNameClosure = (string[]) subtables.ToArray(typeof (string));
-			this.subclassTableKeyColumns = (string[][]) keyColumns.ToArray(typeof (string[]));
+			this.subclassTableNameClosure = (string[]) subtables.ToArray(typeof(string));
+			this.subclassTableKeyColumns = (string[][]) keyColumns.ToArray(typeof(string[]));
 			this.isClassOrSuperclassTable = new bool[this.subclassTableNameClosure.Length];
 			for (int j = 0; j < subclassTableNameClosure.Length; j++)
 			{

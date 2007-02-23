@@ -17,7 +17,7 @@ namespace NHibernate.Dialect.Function
 	/// </summary>
 	public class SQLFunctionTemplate : ISQLFunction
 	{
-		private const int InvalidArgumentIndex = -1;		
+		private const int InvalidArgumentIndex = -1;
 		private static readonly Regex SplitRegex = new Regex("(\\?[0-9]+)");
 
 		private struct TemplateChunk
@@ -48,7 +48,7 @@ namespace NHibernate.Dialect.Function
 			returnType = type;
 			this.template = template;
 			this.hasParenthesesIfNoArgs = hasParenthesesIfNoArgs;
-			
+
 			InitFromTemplate();
 			hasArguments = chunks.Length > 1;
 		}
@@ -57,7 +57,7 @@ namespace NHibernate.Dialect.Function
 		{
 			string[] stringChunks = SplitRegex.Split(template);
 			chunks = new TemplateChunk[stringChunks.Length];
-			
+
 			for (int i = 0; i < stringChunks.Length; i++)
 			{
 				string chunk = stringChunks[i];

@@ -8,12 +8,12 @@ namespace NHibernate.Loader.Custom
 		private readonly string ownerProperty;
 
 		public FetchReturn(
-				NonScalarReturn owner,
-				string ownerProperty,
-				string alias,
-				LockMode lockMode)
+			NonScalarReturn owner,
+			string ownerProperty,
+			string alias,
+			LockMode lockMode)
 			:
-			base(alias, lockMode)
+				base(alias, lockMode)
 		{
 			this.owner = owner;
 			this.ownerProperty = ownerProperty;

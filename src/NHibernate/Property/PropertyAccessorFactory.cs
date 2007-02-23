@@ -16,28 +16,28 @@ namespace NHibernate.Property
 		/// </summary>
 		static PropertyAccessorFactory()
 		{
-			accessors = new Hashtable( 13 );
-			accessors[ "property" ] = new BasicPropertyAccessor();
-			accessors[ "field" ] = new FieldAccessor();
-			accessors[ "field.camelcase" ] = new FieldAccessor( new CamelCaseStrategy() );
-			accessors[ "field.camelcase-underscore" ] = new FieldAccessor( new CamelCaseUnderscoreStrategy() );
-			accessors[ "field.lowercase" ] = new FieldAccessor( new LowerCaseStrategy() );
-			accessors[ "field.lowercase-underscore" ] = new FieldAccessor( new LowerCaseUnderscoreStrategy() );
-			accessors[ "field.pascalcase-underscore" ] = new FieldAccessor( new PascalCaseUnderscoreStrategy() );
-			accessors[ "field.pascalcase-m-underscore" ] = new FieldAccessor( new PascalCaseMUnderscoreStrategy() );
-			accessors[ "field.pascalcase-m"] = new FieldAccessor(new PascalCaseMStrategy());
-			accessors[ "nosetter.camelcase" ] = new NoSetterAccessor( new CamelCaseStrategy() );
-			accessors[ "nosetter.camelcase-underscore" ] = new NoSetterAccessor( new CamelCaseUnderscoreStrategy() );
-			accessors[ "nosetter.lowercase" ] = new NoSetterAccessor( new LowerCaseStrategy() );
-			accessors[ "nosetter.lowercase-underscore" ] = new NoSetterAccessor( new LowerCaseUnderscoreStrategy() );
-			accessors[ "nosetter.pascalcase-underscore" ] = new NoSetterAccessor( new PascalCaseUnderscoreStrategy() );
-			accessors[ "nosetter.pascalcase-m-underscore" ] = new NoSetterAccessor( new PascalCaseMUnderscoreStrategy() );
-			accessors[ "nosetter.pascalcase-m"] = new NoSetterAccessor(new PascalCaseMStrategy());
+			accessors = new Hashtable(13);
+			accessors["property"] = new BasicPropertyAccessor();
+			accessors["field"] = new FieldAccessor();
+			accessors["field.camelcase"] = new FieldAccessor(new CamelCaseStrategy());
+			accessors["field.camelcase-underscore"] = new FieldAccessor(new CamelCaseUnderscoreStrategy());
+			accessors["field.lowercase"] = new FieldAccessor(new LowerCaseStrategy());
+			accessors["field.lowercase-underscore"] = new FieldAccessor(new LowerCaseUnderscoreStrategy());
+			accessors["field.pascalcase-underscore"] = new FieldAccessor(new PascalCaseUnderscoreStrategy());
+			accessors["field.pascalcase-m-underscore"] = new FieldAccessor(new PascalCaseMUnderscoreStrategy());
+			accessors["field.pascalcase-m"] = new FieldAccessor(new PascalCaseMStrategy());
+			accessors["nosetter.camelcase"] = new NoSetterAccessor(new CamelCaseStrategy());
+			accessors["nosetter.camelcase-underscore"] = new NoSetterAccessor(new CamelCaseUnderscoreStrategy());
+			accessors["nosetter.lowercase"] = new NoSetterAccessor(new LowerCaseStrategy());
+			accessors["nosetter.lowercase-underscore"] = new NoSetterAccessor(new LowerCaseUnderscoreStrategy());
+			accessors["nosetter.pascalcase-underscore"] = new NoSetterAccessor(new PascalCaseUnderscoreStrategy());
+			accessors["nosetter.pascalcase-m-underscore"] = new NoSetterAccessor(new PascalCaseMUnderscoreStrategy());
+			accessors["nosetter.pascalcase-m"] = new NoSetterAccessor(new PascalCaseMStrategy());
 		}
 
 		private PropertyAccessorFactory()
 		{
-			throw new NotSupportedException( "Should not be creating a PropertyAccessorFactory - only use the static methods." );
+			throw new NotSupportedException("Should not be creating a PropertyAccessorFactory - only use the static methods.");
 		}
 
 		/// <summary>
@@ -163,18 +163,18 @@ namespace NHibernate.Property
 		///	 (assuming CamelCase with an underscore field naming strategy is used).  
 		///	</para>
 		/// </remarks>
-		public static IPropertyAccessor GetPropertyAccessor( string type )
+		public static IPropertyAccessor GetPropertyAccessor(string type)
 		{
 			// if not type is specified then fall back to the default of using
 			// the property.
-			if( type == null )
+			if (type == null)
 			{
 				type = "property";
 			}
 
 			// attempt to find it in the built in types
-			IPropertyAccessor accessor = accessors[ type ] as IPropertyAccessor;
-			if( accessor != null )
+			IPropertyAccessor accessor = accessors[type] as IPropertyAccessor;
+			if (accessor != null)
 			{
 				return accessor;
 			}
@@ -184,24 +184,23 @@ namespace NHibernate.Property
 			System.Type accessorClass;
 			try
 			{
-				accessorClass = ReflectHelper.ClassForName( type );
+				accessorClass = ReflectHelper.ClassForName(type);
 			}
-			catch( TypeLoadException tle )
+			catch (TypeLoadException tle)
 			{
-				throw new MappingException( "could not find PropertyAccessor type: " + type, tle );
+				throw new MappingException("could not find PropertyAccessor type: " + type, tle);
 			}
 
 			try
 			{
-				accessor = ( IPropertyAccessor ) Activator.CreateInstance( accessorClass );
-				accessors[ type ] = accessor;
+				accessor = (IPropertyAccessor) Activator.CreateInstance(accessorClass);
+				accessors[type] = accessor;
 				return accessor;
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new MappingException( "could not instantiate PropertyAccessor type: " + type, e );
+				throw new MappingException("could not instantiate PropertyAccessor type: " + type, e);
 			}
-
 		}
 	}
 }

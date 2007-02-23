@@ -8,12 +8,12 @@ namespace NHibernate.Loader.Custom
 		private readonly IEntityAliases elementEntityAliases;
 
 		public CollectionFetchReturn(
-				String alias,
-				NonScalarReturn owner,
-				String ownerProperty,
-				ICollectionAliases collectionAliases,
-				IEntityAliases elementEntityAliases,
-				LockMode lockMode)
+			String alias,
+			NonScalarReturn owner,
+			String ownerProperty,
+			ICollectionAliases collectionAliases,
+			IEntityAliases elementEntityAliases,
+			LockMode lockMode)
 			: base(owner, ownerProperty, alias, lockMode)
 		{
 			this.collectionAliases = collectionAliases;

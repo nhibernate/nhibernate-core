@@ -5,9 +5,9 @@ using log4net;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Dialect;
+using NHibernate.Hql;
 using NHibernate.Transaction;
 using NHibernate.Util;
-using NHibernate.Hql;
 
 namespace NHibernate.Cfg
 {
@@ -16,32 +16,32 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public sealed class SettingsFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( SettingsFactory ) );
-		private static readonly string DefaultCacheProvider = typeof (NoCacheProvider).AssemblyQualifiedName;
+		private static readonly ILog log = LogManager.GetLogger(typeof(SettingsFactory));
+		private static readonly string DefaultCacheProvider = typeof(NoCacheProvider).AssemblyQualifiedName;
 
-		public static Settings BuildSettings( IDictionary properties )
+		public static Settings BuildSettings(IDictionary properties)
 		{
 			Settings settings = new Settings();
 
 			Dialect.Dialect dialect = null;
 			try
 			{
-				dialect = Dialect.Dialect.GetDialect( properties );
+				dialect = Dialect.Dialect.GetDialect(properties);
 				IDictionary temp = new Hashtable();
 
-				foreach( DictionaryEntry de in dialect.DefaultProperties )
+				foreach (DictionaryEntry de in dialect.DefaultProperties)
 				{
-					temp[ de.Key ] = de.Value;
+					temp[de.Key] = de.Value;
 				}
-				foreach( DictionaryEntry de in properties )
+				foreach (DictionaryEntry de in properties)
 				{
-					temp[ de.Key ] = de.Value;
+					temp[de.Key] = de.Value;
 				}
 				properties = temp;
 			}
-			catch( HibernateException he )
+			catch (HibernateException he)
 			{
-				log.Warn( "No dialect set - using GenericDialect: " + he.Message );
+				log.Warn("No dialect set - using GenericDialect: " + he.Message);
 				dialect = new GenericDialect();
 			}
 
@@ -54,23 +54,24 @@ namespace NHibernate.Cfg
 //				log.Info( "JDBC result set fetch size: " + statementFetchSize );
 //			}
 
-			int maxFetchDepth = PropertiesHelper.GetInt32( Environment.MaxFetchDepth, properties, -1 );
-			if( maxFetchDepth != -1 )
+			int maxFetchDepth = PropertiesHelper.GetInt32(Environment.MaxFetchDepth, properties, -1);
+			if (maxFetchDepth != -1)
 			{
-				log.Info( "Maximum outer join fetch depth: " + maxFetchDepth );
+				log.Info("Maximum outer join fetch depth: " + maxFetchDepth);
 			}
 
-			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider( properties );
-			ITransactionFactory transactionFactory = new AdoNetTransactionFactory(); // = TransactionFactoryFactory.BuildTransactionFactory(properties);
+			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider(properties);
+			ITransactionFactory transactionFactory = new AdoNetTransactionFactory();
+				// = TransactionFactoryFactory.BuildTransactionFactory(properties);
 			// TransactionManagerLookup transactionManagerLookup = TransactionManagerLookupFactory.GetTransactionManagerLookup( properties );
 
 			// Not ported: useGetGeneratedKeys, useScrollableResultSets
 
-			bool useMinimalPuts = PropertiesHelper.GetBoolean( Environment.UseMinimalPuts, properties, false );
-			log.Info( "Optimize cache for minimal puts: " + useMinimalPuts );
+			bool useMinimalPuts = PropertiesHelper.GetBoolean(Environment.UseMinimalPuts, properties, false);
+			log.Info("Optimize cache for minimal puts: " + useMinimalPuts);
 
 			string releaseModeName = PropertiesHelper.GetString(Environment.ReleaseConnections, properties, "auto");
-			log.Info( "Connection release mode: " + releaseModeName );
+			log.Info("Connection release mode: " + releaseModeName);
 			ConnectionReleaseMode releaseMode;
 			if ("auto".Equals(releaseModeName))
 			{
@@ -82,45 +83,46 @@ namespace NHibernate.Cfg
 			}
 			settings.ConnectionReleaseMode = releaseMode;
 
-			string defaultSchema = properties[ Environment.DefaultSchema ] as string;
-			if( defaultSchema != null )
+			string defaultSchema = properties[Environment.DefaultSchema] as string;
+			if (defaultSchema != null)
 			{
-				log.Info( "Default schema set to: " + defaultSchema );
+				log.Info("Default schema set to: " + defaultSchema);
 			}
 
-			bool showSql = PropertiesHelper.GetBoolean( Environment.ShowSql, properties, false );
-			if( showSql )
+			bool showSql = PropertiesHelper.GetBoolean(Environment.ShowSql, properties, false);
+			if (showSql)
 			{
-				log.Info( "echoing all SQL to stdout" );
+				log.Info("echoing all SQL to stdout");
 			}
 
 			// queries:
 
 			settings.QueryTranslatorFactory = CreateQueryTranslatorFactory(properties);
 
-			IDictionary querySubstitutions = PropertiesHelper.ToDictionary( Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties );
-			if( log.IsInfoEnabled )
+			IDictionary querySubstitutions =
+				PropertiesHelper.ToDictionary(Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties);
+			if (log.IsInfoEnabled)
 			{
-				log.Info( "Query language substitutions: " + CollectionPrinter.ToString( querySubstitutions ) );
+				log.Info("Query language substitutions: " + CollectionPrinter.ToString(querySubstitutions));
 			}
 
-			string autoSchemaExport = properties[ Environment.Hbm2ddlAuto ] as string;
-			if( "update" == autoSchemaExport )
+			string autoSchemaExport = properties[Environment.Hbm2ddlAuto] as string;
+			if ("update" == autoSchemaExport)
 			{
 				settings.IsAutoUpdateSchema = true;
 			}
-			if( "create" == autoSchemaExport )
+			if ("create" == autoSchemaExport)
 			{
 				settings.IsAutoCreateSchema = true;
 			}
-			if( "create-drop" == autoSchemaExport )
+			if ("create-drop" == autoSchemaExport)
 			{
 				settings.IsAutoCreateSchema = true;
 				settings.IsAutoDropSchema = true;
 			}
 
 			bool useSecondLevelCache = PropertiesHelper.GetBoolean(Environment.UseSecondLevelCache, properties, true);
-			bool useQueryCache = PropertiesHelper.GetBoolean( Environment.UseQueryCache, properties );
+			bool useQueryCache = PropertiesHelper.GetBoolean(Environment.UseQueryCache, properties);
 
 			if (useSecondLevelCache || useQueryCache)
 			{
@@ -138,48 +140,49 @@ namespace NHibernate.Cfg
 			if (cacheRegionPrefix != null) log.Info("Cache region prefix: " + cacheRegionPrefix);
 
 
-			if( useQueryCache )
+			if (useQueryCache)
 			{
-				string queryCacheFactoryClassName = PropertiesHelper.GetString( Environment.QueryCacheFactory, properties, "NHibernate.Cache.StandardQueryCacheFactory" );
-				log.Info( "query cache factory: " + queryCacheFactoryClassName );
+				string queryCacheFactoryClassName =
+					PropertiesHelper.GetString(Environment.QueryCacheFactory, properties, "NHibernate.Cache.StandardQueryCacheFactory");
+				log.Info("query cache factory: " + queryCacheFactoryClassName);
 				try
 				{
 					settings.QueryCacheFactory = (IQueryCacheFactory) Activator.CreateInstance(
-						ReflectHelper.ClassForName( queryCacheFactoryClassName ) );
+					                                                  	ReflectHelper.ClassForName(queryCacheFactoryClassName));
 				}
-				catch( Exception cnfe )
+				catch (Exception cnfe)
 				{
-					throw new HibernateException( "could not instantiate IQueryCacheFactory: " + queryCacheFactoryClassName, cnfe );
+					throw new HibernateException("could not instantiate IQueryCacheFactory: " + queryCacheFactoryClassName, cnfe);
 				}
 			}
 
-			string sessionFactoryName = ( string ) properties[ Environment.SessionFactoryName ];
+			string sessionFactoryName = (string) properties[Environment.SessionFactoryName];
 
 			// TODO: Environment.BatchVersionedData
 			// TODO: wrapResultSets/DataReaders
 
-			string isolationString = PropertiesHelper.GetString( Environment.Isolation, properties, String.Empty );
+			string isolationString = PropertiesHelper.GetString(Environment.Isolation, properties, String.Empty);
 			IsolationLevel isolation = IsolationLevel.Unspecified;
-			if( isolationString.Length > 0 )
+			if (isolationString.Length > 0)
 			{
 				try
 				{
-					isolation = ( IsolationLevel ) Enum.Parse( typeof( IsolationLevel ), isolationString );
-					log.Info( "Using Isolation Level: " + isolation.ToString() );
+					isolation = (IsolationLevel) Enum.Parse(typeof(IsolationLevel), isolationString);
+					log.Info("Using Isolation Level: " + isolation.ToString());
 				}
-				catch( ArgumentException ae )
+				catch (ArgumentException ae)
 				{
-					log.Error( "error configuring IsolationLevel " + isolationString, ae );
+					log.Error("error configuring IsolationLevel " + isolationString, ae);
 					throw new HibernateException(
 						"The isolation level of " + isolationString + " is not a valid IsolationLevel.  Please " +
-						"use one of the Member Names from the IsolationLevel.", ae );
+						"use one of the Member Names from the IsolationLevel.", ae);
 				}
 			}
 
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled
-			settings.BatchSize = PropertiesHelper.GetInt32(Environment.BatchSize,properties, 0);
+			settings.BatchSize = PropertiesHelper.GetInt32(Environment.BatchSize, properties, 0);
 			settings.DefaultSchemaName = defaultSchema;
 			settings.IsShowSqlEnabled = showSql;
 			settings.Dialect = dialect;
@@ -209,7 +212,7 @@ namespace NHibernate.Cfg
 			log.Info("cache provider: " + cacheClassName);
 			try
 			{
-				return (ICacheProvider)Activator.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
+				return (ICacheProvider) Activator.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
 			}
 			catch (Exception e)
 			{
@@ -241,11 +244,11 @@ namespace NHibernate.Cfg
 		private static IQueryTranslatorFactory CreateQueryTranslatorFactory(IDictionary properties)
 		{
 			string className = PropertiesHelper.GetString(
-					Environment.QueryTranslator, properties, "NHibernate.Hql.Classic.ClassicQueryTranslatorFactory");
+				Environment.QueryTranslator, properties, "NHibernate.Hql.Classic.ClassicQueryTranslatorFactory");
 			log.Info("Query translator: " + className);
 			try
 			{
-				return (IQueryTranslatorFactory)Activator.CreateInstance(ReflectHelper.ClassForName(className));
+				return (IQueryTranslatorFactory) Activator.CreateInstance(ReflectHelper.ClassForName(className));
 			}
 			catch (Exception cnfe)
 			{

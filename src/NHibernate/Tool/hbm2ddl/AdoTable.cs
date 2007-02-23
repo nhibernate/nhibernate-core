@@ -15,12 +15,12 @@ namespace NHibernate.Tool.hbm2ddl
 		/// 
 		/// </summary>
 		/// <param name="table"></param>
-		public AdoTable( DataTable table )
+		public AdoTable(DataTable table)
 		{
 			name = table.TableName;
-			foreach( DataColumn column in table.Columns )
+			foreach (DataColumn column in table.Columns)
 			{
-				columns.Add( column.ColumnName, new AdoColumn( column ) );
+				columns.Add(column.ColumnName, new AdoColumn(column));
 			}
 		}
 
@@ -29,7 +29,5 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			get { return columns.Values; }
 		}
-
-
 	}
 }

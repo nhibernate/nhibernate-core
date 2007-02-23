@@ -28,43 +28,42 @@ namespace NHibernate.Type
 		private System.Type serializableClass;
 		private BinaryType binaryType;
 
-		internal SerializableType() : this( typeof( Object ) )
+		internal SerializableType() : this(typeof(Object))
 		{
 		}
 
-		internal SerializableType( System.Type serializableClass ) : base( new BinarySqlType() )
+		internal SerializableType(System.Type serializableClass) : base(new BinarySqlType())
 		{
 			this.serializableClass = serializableClass;
-			this.binaryType = ( BinaryType ) NHibernateUtil.Binary;
-
+			this.binaryType = (BinaryType) NHibernateUtil.Binary;
 		}
 
-		internal SerializableType( System.Type serializableClass, BinarySqlType sqlType ) : base( sqlType )
+		internal SerializableType(System.Type serializableClass, BinarySqlType sqlType) : base(sqlType)
 		{
 			this.serializableClass = serializableClass;
-			binaryType = ( BinaryType ) TypeFactory.GetBinaryType( sqlType.Length );
+			binaryType = (BinaryType) TypeFactory.GetBinaryType(sqlType.Length);
 		}
 
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			binaryType.Set( st, ToBytes( value ), index );
+			binaryType.Set(st, ToBytes(value), index);
 		}
 
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			byte[ ] bytes = ( byte[ ] ) binaryType.Get( rs, index );
-			if( bytes == null )
+			byte[] bytes = (byte[]) binaryType.Get(rs, index);
+			if (bytes == null)
 			{
 				return null;
 			}
 			else
 			{
-				return FromBytes( bytes );
+				return FromBytes(bytes);
 			}
 		}
 
@@ -73,17 +72,17 @@ namespace NHibernate.Type
 			get { return serializableClass; }
 		}
 
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			if( x == y )
+			if (x == y)
 			{
 				return true;
 			}
-			if( x == null || y == null )
+			if (x == null || y == null)
 			{
 				return false;
 			}
-			return binaryType.Equals( ToBytes( x ), ToBytes( y ) );
+			return binaryType.Equals(ToBytes(x), ToBytes(y));
 		}
 
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
@@ -91,9 +90,9 @@ namespace NHibernate.Type
 			return NHibernateUtil.Binary.GetHashCode(ToBytes(x), factory);
 		}
 
-		public override string ToString( object value )
+		public override string ToString(object value)
 		{
-			return binaryType.ToString( ToBytes( value ) );
+			return binaryType.ToString(ToBytes(value));
 		}
 
 		/// <summary>
@@ -103,7 +102,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
-			return FromBytes( ( byte[ ] ) binaryType.FromString( xml ) );
+			return FromBytes((byte[]) binaryType.FromString(xml));
 		}
 
 		/// <summary></summary>
@@ -117,23 +116,23 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override object DeepCopyNotNull( object value )
+		public override object DeepCopyNotNull(object value)
 		{
-			return FromBytes( ToBytes( value ) );
+			return FromBytes(ToBytes(value));
 		}
 
-		private byte[ ] ToBytes( object obj )
+		private byte[] ToBytes(object obj)
 		{
 			try
 			{
 				BinaryFormatter bf = new BinaryFormatter();
 				MemoryStream stream = new MemoryStream();
-				bf.Serialize( stream, obj );
+				bf.Serialize(stream, obj);
 				return stream.ToArray();
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new SerializationException( "Could not serialize a serializable property: ", e );
+				throw new SerializationException("Could not serialize a serializable property: ", e);
 			}
 		}
 
@@ -142,16 +141,16 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="bytes"></param>
 		/// <returns></returns>
-		public object FromBytes( byte[ ] bytes )
+		public object FromBytes(byte[] bytes)
 		{
 			try
 			{
 				BinaryFormatter bf = new BinaryFormatter();
-				return bf.Deserialize( new MemoryStream( bytes ) );
+				return bf.Deserialize(new MemoryStream(bytes));
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new SerializationException( "Could not deserialize a serializable property: ", e );
+				throw new SerializationException("Could not deserialize a serializable property: ", e);
 			}
 		}
 
@@ -162,9 +161,9 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object Assemble( object cached, ISessionImplementor session, object owner )
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			return ( cached == null ) ? null : FromBytes( ( byte[ ] ) cached );
+			return (cached == null) ? null : FromBytes((byte[]) cached);
 		}
 
 		/// <summary>
@@ -173,10 +172,9 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public override object Disassemble( object value, ISessionImplementor session )
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
-			return ( value == null ) ? null : ToBytes( value );
+			return (value == null) ? null : ToBytes(value);
 		}
-
 	}
 }

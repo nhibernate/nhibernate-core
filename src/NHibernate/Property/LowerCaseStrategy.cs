@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace NHibernate.Property
 {
@@ -16,9 +17,9 @@ namespace NHibernate.Property
 		/// </summary>
 		/// <param name="propertyName">The name of the mapped property.</param>
 		/// <returns>The name of the Field in lowercase.</returns>
-		public string GetFieldName( string propertyName )
+		public string GetFieldName(string propertyName)
 		{
-			return propertyName.ToLower( System.Globalization.CultureInfo.InvariantCulture );
+			return propertyName.ToLower(CultureInfo.InvariantCulture);
 		}
 
 		#endregion

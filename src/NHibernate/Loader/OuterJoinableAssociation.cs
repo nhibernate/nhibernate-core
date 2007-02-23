@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -14,9 +13,9 @@ namespace NHibernate.Loader
 		private readonly IAssociationType joinableType;
 		private readonly IJoinable joinable;
 		private readonly string lhsAlias; // belong to other persister
-		private readonly string[ ] lhsColumns; // belong to other persister
+		private readonly string[] lhsColumns; // belong to other persister
 		private readonly string rhsAlias;
-		private readonly string[ ] rhsColumns;
+		private readonly string[] rhsColumns;
 		private readonly JoinType joinType;
 		private readonly string on;
 		private readonly IDictionary enabledFilters;
@@ -24,20 +23,20 @@ namespace NHibernate.Loader
 		public OuterJoinableAssociation(
 			IAssociationType joinableType,
 			String lhsAlias,
-			String[ ] lhsColumns,
+			String[] lhsColumns,
 			String rhsAlias,
 			JoinType joinType,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters )
+			IDictionary enabledFilters)
 		{
 			this.joinableType = joinableType;
 			this.lhsAlias = lhsAlias;
 			this.lhsColumns = lhsColumns;
 			this.rhsAlias = rhsAlias;
 			this.joinType = joinType;
-			this.joinable = joinableType.GetAssociatedJoinable( factory );
-			this.rhsColumns = JoinHelper.GetRHSColumnNames( joinableType, factory );
-			this.on = joinableType.GetOnCondition( rhsAlias, factory, enabledFilters );
+			this.joinable = joinableType.GetAssociatedJoinable(factory);
+			this.rhsColumns = JoinHelper.GetRHSColumnNames(joinableType, factory);
+			this.on = joinableType.GetOnCondition(rhsAlias, factory, enabledFilters);
 			this.enabledFilters = enabledFilters; // needed later for many-to-many/filter application
 		}
 
@@ -55,9 +54,9 @@ namespace NHibernate.Loader
 		{
 			get
 			{
-				if( joinableType.IsEntityType )
+				if (joinableType.IsEntityType)
 				{
-					EntityType etype = ( EntityType ) joinableType;
+					EntityType etype = (EntityType) joinableType;
 					return etype.IsOneToOne;
 				}
 				else
@@ -87,11 +86,11 @@ namespace NHibernate.Loader
 			get { return joinable; }
 		}
 
-		public int GetOwner( IList associations )
+		public int GetOwner(IList associations)
 		{
-			if( IsOneToOne || IsCollection )
+			if (IsOneToOne || IsCollection)
 			{
-				return GetPosition( lhsAlias, associations );
+				return GetPosition(lhsAlias, associations);
 			}
 			else
 			{
@@ -103,15 +102,15 @@ namespace NHibernate.Loader
 		/// Get the position of the join with the given alias in the
 		/// list of joins
 		/// </summary>
-		private static int GetPosition( string lhsAlias, IList associations )
+		private static int GetPosition(string lhsAlias, IList associations)
 		{
 			int result = 0;
-			for( int i = 0; i < associations.Count; i++ )
+			for (int i = 0; i < associations.Count; i++)
 			{
-				OuterJoinableAssociation oj = ( OuterJoinableAssociation ) associations[ i ];
-				if( oj.Joinable.ConsumesEntityAlias() /*|| oj.getJoinable().consumesCollectionAlias() */ )
+				OuterJoinableAssociation oj = (OuterJoinableAssociation) associations[i];
+				if (oj.Joinable.ConsumesEntityAlias() /*|| oj.getJoinable().consumesCollectionAlias() */)
 				{
-					if( oj.rhsAlias.Equals( lhsAlias ) )
+					if (oj.rhsAlias.Equals(lhsAlias))
 					{
 						return result;
 					}
@@ -121,7 +120,7 @@ namespace NHibernate.Loader
 			return -1;
 		}
 
-		public void AddJoins( JoinFragment outerjoin )
+		public void AddJoins(JoinFragment outerjoin)
 		{
 			outerjoin.AddJoin(
 				joinable.TableName,
@@ -132,30 +131,30 @@ namespace NHibernate.Loader
 				on
 				);
 			outerjoin.AddJoins(
-				joinable.FromJoinFragment( rhsAlias, false, true ),
-				joinable.WhereJoinFragment( rhsAlias, false, true )
+				joinable.FromJoinFragment(rhsAlias, false, true),
+				joinable.WhereJoinFragment(rhsAlias, false, true)
 				);
 		}
 
-		public void ValidateJoin( String path )
+		public void ValidateJoin(String path)
 		{
-			if(
+			if (
 				rhsColumns == null ||
 				lhsColumns == null ||
 				lhsColumns.Length != rhsColumns.Length ||
 				lhsColumns.Length == 0
 				)
 			{
-				throw new MappingException( "invalid join columns for association: " + path );
+				throw new MappingException("invalid join columns for association: " + path);
 			}
 		}
 
-		public bool IsManyToManyWith(OuterJoinableAssociation other) 
+		public bool IsManyToManyWith(OuterJoinableAssociation other)
 		{
-			if ( joinable.IsCollection ) 
+			if (joinable.IsCollection)
 			{
-				IQueryableCollection persister = ( IQueryableCollection ) joinable;
-				if ( persister.IsManyToMany ) 
+				IQueryableCollection persister = (IQueryableCollection) joinable;
+				if (persister.IsManyToMany)
 				{
 					return persister.ElementType == other.JoinableType;
 				}
@@ -165,10 +164,10 @@ namespace NHibernate.Loader
 
 		public void AddManyToManyJoin(JoinFragment outerjoin, IQueryableCollection collection)
 		{
-			String manyToManyFilter = collection.GetManyToManyFilterFragment( rhsAlias, enabledFilters );
-			String condition = "".Equals( manyToManyFilter )
+			String manyToManyFilter = collection.GetManyToManyFilterFragment(rhsAlias, enabledFilters);
+			String condition = "".Equals(manyToManyFilter)
 			                   	? on
-			                   	: "".Equals( on )
+			                   	: "".Equals(on)
 			                   	  	? manyToManyFilter
 			                   	  	: on + " and " + manyToManyFilter;
 			outerjoin.AddJoin(
@@ -184,6 +183,5 @@ namespace NHibernate.Loader
 				joinable.WhereJoinFragment(rhsAlias, false, true)
 				);
 		}
-
 	}
 }

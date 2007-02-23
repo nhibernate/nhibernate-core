@@ -35,14 +35,14 @@ namespace NHibernate.Id
 		/// <see cref="IdentifierGeneratorFactory.ShortCircuitIndicator"/> if the <c>session</c>
 		/// already contains <c>obj</c>.
 		/// </returns>
-		public object Generate( ISessionImplementor session, object obj )
+		public object Generate(ISessionImplementor session, object obj)
 		{
 			object associatedObject = session.Factory
-				.GetClassMetadata( obj.GetType() )
-				.GetPropertyValue( obj, propertyName );
+				.GetClassMetadata(obj.GetType())
+				.GetPropertyValue(obj, propertyName);
 
-			object id = session.Save( associatedObject );
-			if( session.Contains( obj ) )
+			object id = session.Save(associatedObject);
+			if (session.Contains(obj))
 			{
 				//abort the save (the object is already saved by a circular cascade)
 				return IdentifierGeneratorFactory.ShortCircuitIndicator;
@@ -65,12 +65,12 @@ namespace NHibernate.Id
 		/// <exception cref="MappingException">
 		/// Thrown if the key <c>property</c> is not found in the <c>parms</c> parameter.
 		/// </exception>
-		public void Configure( IType type, IDictionary parms, Dialect.Dialect d )
+		public void Configure(IType type, IDictionary parms, Dialect.Dialect d)
 		{
-			propertyName = ( string ) parms[ "property" ];
-			if( propertyName == null || propertyName.Length == 0 )
+			propertyName = (string) parms["property"];
+			if (propertyName == null || propertyName.Length == 0)
 			{
-				throw new MappingException( "param named \"property\" is required for foreign id generation strategy" );
+				throw new MappingException("param named \"property\" is required for foreign id generation strategy");
 			}
 		}
 

@@ -1,18 +1,19 @@
 using System;
-using System.Xml;
-using NHibernate.Util;
 using System.Collections;
-using NHibernate.Mapping;
-using NHibernate.Loader.Custom;
-using NHibernate.Engine;
-using NHibernate.Type;
+using System.Xml;
 using Iesi.Collections;
+using NHibernate.Engine;
+using NHibernate.Loader.Custom;
+using NHibernate.Mapping;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
 	public abstract class ResultSetMappingBinder
 	{
-		protected static ResultSetMappingDefinition BuildResultSetMappingDefinition(XmlNode resultSetElem, string path, Mappings mappings)
+		protected static ResultSetMappingDefinition BuildResultSetMappingDefinition(XmlNode resultSetElem, string path,
+		                                                                            Mappings mappings)
 		{
 			string resultSetName = resultSetElem.Attributes["name"].Value;
 			if (path != null)
@@ -67,10 +68,10 @@ namespace NHibernate.Cfg
 			IDictionary propertyResults = BindPropertyResults(alias, returnElem, pc, mappings);
 
 			return new SQLQueryRootReturn(
-					alias,
-					entityName,
-					propertyResults,
-					lockMode
+				alias,
+				entityName,
+				propertyResults,
+				lockMode
 				);
 		}
 
@@ -83,8 +84,8 @@ namespace NHibernate.Cfg
 			if (dot == -1)
 			{
 				throw new MappingException(
-						"Role attribute for sql query return [alias=" + alias +
-						"] not formatted correctly {owningAlias.propertyName}"
+					"Role attribute for sql query return [alias=" + alias +
+					"] not formatted correctly {owningAlias.propertyName}"
 					);
 			}
 			string roleOwnerAlias = roleAttribute.Substring(0, dot);
@@ -94,11 +95,11 @@ namespace NHibernate.Cfg
 			IDictionary propertyResults = BindPropertyResults(alias, returnElem, null, mappings);
 
 			return new SQLQueryJoinReturn(
-					alias,
-					roleOwnerAlias,
-					roleProperty,
-					propertyResults, // TODO: bindpropertyresults(alias, returnElem)
-					lockMode
+				alias,
+				roleOwnerAlias,
+				roleProperty,
+				propertyResults, // TODO: bindpropertyresults(alias, returnElem)
+				lockMode
 				);
 		}
 
@@ -111,8 +112,8 @@ namespace NHibernate.Cfg
 			if (dot == -1)
 			{
 				throw new MappingException(
-						"Collection attribute for sql query return [alias=" + alias +
-						"] not formatted correctly {OwnerClassName.propertyName}"
+					"Collection attribute for sql query return [alias=" + alias +
+					"] not formatted correctly {OwnerClassName.propertyName}"
 					);
 			}
 			string ownerClassName = HbmBinder.GetClassNameWithoutAssembly(collectionAttribute.Substring(0, dot), mappings);
@@ -122,22 +123,23 @@ namespace NHibernate.Cfg
 			IDictionary propertyResults = BindPropertyResults(alias, returnElem, null, mappings);
 
 			return new SQLQueryCollectionReturn(
-					alias,
-					ownerClassName,
-					ownerPropertyName,
-					propertyResults,
-					lockMode
+				alias,
+				ownerClassName,
+				ownerPropertyName,
+				propertyResults,
+				lockMode
 				);
 		}
 
 		private static IDictionary BindPropertyResults(
-				String alias, XmlNode returnElement, PersistentClass pc, Mappings mappings
-		)
+			String alias, XmlNode returnElement, PersistentClass pc, Mappings mappings
+			)
 		{
+			IDictionary propertyresults = new Hashtable();
+				// maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
 
-			IDictionary propertyresults = new Hashtable(); // maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
-
-			XmlNode discriminatorResult = returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, HbmBinder.NamespaceManager);
+			XmlNode discriminatorResult =
+				returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, HbmBinder.NamespaceManager);
 			if (discriminatorResult != null)
 			{
 				ArrayList resultColumns = GetResultColumns(discriminatorResult);
@@ -146,22 +148,24 @@ namespace NHibernate.Cfg
 			IList properties = new ArrayList();
 			IList propertyNames = new ArrayList();
 
-			foreach (XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, HbmBinder.NamespaceManager))
+			foreach (
+				XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, HbmBinder.NamespaceManager))
 			{
 				String name = XmlHelper.GetAttributeValue(propertyresult, "name");
 				if (pc == null || name.IndexOf('.') == -1)
-				{ //if dotted and not load-collection nor return-join
+				{
+					//if dotted and not load-collection nor return-join
 					//regular property
 					properties.Add(propertyresult);
 					propertyNames.Add(name);
 				}
 				else
 				{
-					 // Reorder properties
-					 // 1. get the parent property
-					 // 2. list all the properties following the expected one in the parent property
-					 // 3. calculate the lowest index and insert the property
-					
+					// Reorder properties
+					// 1. get the parent property
+					// 2. list all the properties following the expected one in the parent property
+					// 3. calculate the lowest index and insert the property
+
 					if (pc == null)
 						throw new MappingException("dotted notation in <return-join> or <load-collection> not yet supported");
 					int dotIndex = name.LastIndexOf('.');
@@ -181,7 +185,8 @@ namespace NHibernate.Cfg
 						{
 							try
 							{
-								parentPropIter = ((Component) referencedPc.GetRecursiveProperty(toOne.ReferencedPropertyName).Value).PropertyCollection;
+								parentPropIter =
+									((Component) referencedPc.GetRecursiveProperty(toOne.ReferencedPropertyName).Value).PropertyCollection;
 							}
 							catch (InvalidCastException e)
 							{
@@ -206,7 +211,7 @@ namespace NHibernate.Cfg
 					}
 					bool hasFollowers = false;
 					IList followers = new ArrayList();
-					foreach(Mapping.Property prop in parentPropIter)
+					foreach (Mapping.Property prop in parentPropIter)
 					{
 						String currentPropertyName = prop.Name;
 						String currentName = reducedName + '.' + currentPropertyName;
@@ -232,13 +237,13 @@ namespace NHibernate.Cfg
 			}
 
 			ISet uniqueReturnProperty = new HashedSet();
-			foreach(XmlNode propertyresult in properties)
+			foreach (XmlNode propertyresult in properties)
 			{
 				string name = XmlHelper.GetAttributeValue(propertyresult, "name");
 				if ("class".Equals(name))
 				{
 					throw new MappingException(
-							"class is not a valid property name to use in a <return-property>, use <return-discriminator> instead"
+						"class is not a valid property name to use in a <return-property>, use <return-discriminator> instead"
 						);
 				}
 				//TODO: validate existing of property with the chosen name. (secondpass )
@@ -247,15 +252,15 @@ namespace NHibernate.Cfg
 				if (allResultColumns.Count == 0)
 				{
 					throw new MappingException(
-							"return-property for alias " + alias +
-							" must specify at least one column or return-column name"
+						"return-property for alias " + alias +
+						" must specify at least one column or return-column name"
 						);
 				}
 				if (uniqueReturnProperty.Contains(name))
 				{
 					throw new MappingException(
-							"duplicate return-property for property " + name +
-							" on alias " + alias
+						"duplicate return-property for property " + name +
+						" on alias " + alias
 						);
 				}
 				uniqueReturnProperty.Add(name);
@@ -369,10 +374,10 @@ namespace NHibernate.Cfg
 			{
 				return LockMode.Write;
 			}
-			//else if ("force".equals(lockMode))
-			//{
-			//    return LockMode.FORCE;
-			//}
+				//else if ("force".equals(lockMode))
+				//{
+				//    return LockMode.FORCE;
+				//}
 			else
 			{
 				throw new MappingException("unknown lockmode " + lockMode);

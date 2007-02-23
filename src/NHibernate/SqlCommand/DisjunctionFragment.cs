@@ -6,16 +6,16 @@ namespace NHibernate.SqlCommand
 	{
 		private SqlStringBuilder buffer = new SqlStringBuilder();
 
-		public DisjunctionFragment AddCondition( ConditionalFragment fragment )
+		public DisjunctionFragment AddCondition(ConditionalFragment fragment)
 		{
-			if( buffer.Count > 0 )
+			if (buffer.Count > 0)
 			{
-				buffer.Add( " or " );
+				buffer.Add(" or ");
 			}
 
-			buffer.Add( "(" )
-				.Add( fragment.ToSqlStringFragment() )
-				.Add( ")" );
+			buffer.Add("(")
+				.Add(fragment.ToSqlStringFragment())
+				.Add(")");
 
 			return this;
 		}

@@ -1,7 +1,5 @@
 using System;
-using NHibernate.Engine;
 using NHibernate.SqlTypes;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand

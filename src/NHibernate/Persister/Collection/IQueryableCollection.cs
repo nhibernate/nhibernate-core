@@ -1,4 +1,3 @@
-using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Persister.Collection
@@ -11,7 +10,7 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Generate a list of collection index and element columns
 		/// </summary>
-		string SelectFragment( string alias, string columnSuffix );
+		string SelectFragment(string alias, string columnSuffix);
 
 		/// <summary>
 		/// Get the names of the collection index columns if this is an indexed collection (optional operation)
@@ -28,21 +27,21 @@ namespace NHibernate.Persister.Collection
 		/// key columns in the case of a one-to-many association),
 		/// aliased by the given table alias
 		/// </summary>
-		string[] GetElementColumnNames( string alias );
+		string[] GetElementColumnNames(string alias);
 
 		/// <summary>
 		/// Get the extra where clause filter SQL
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		string GetSQLWhereString( string alias );
+		string GetSQLWhereString(string alias);
 
 		/// <summary>
 		/// Get the order by SQL
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		string GetSQLOrderByString( string alias );
+		string GetSQLOrderByString(string alias);
 
 		/// <summary>
 		/// Does this collection role have a where clause filter?
@@ -67,6 +66,6 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="alias">The alias for the many-to-many target table</param>
 		/// <returns>Appropriate order-by fragment or empty string.</returns>
-		string GetManyToManyOrderByString( string alias );
+		string GetManyToManyOrderByString(string alias);
 	}
 }

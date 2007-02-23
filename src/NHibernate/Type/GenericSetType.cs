@@ -2,20 +2,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-
 using Iesi.Collections.Generic;
-
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
-using NHibernate.Util;
 using NHibernate.Persister.Collection;
 
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// An <see cref="IType"/> that maps an <see cref="ISet&lt;T&gt;"/> collection
+	/// An <see cref="IType"/> that maps an <see cref="ISet{T}"/> collection
 	/// to the database.
 	/// </summary>
 	[Serializable]
@@ -29,8 +25,8 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
-		public GenericSetType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public GenericSetType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 
@@ -39,14 +35,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the set.</param>
 		/// <param name="persister">The current <see cref="ICollectionPersister" /> for the set.</param>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new PersistentGenericSet<T>( session );
+			return new PersistentGenericSet<T>(session);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( ISet<T> ); }
+			get { return typeof(ISet<T>); }
 		}
 
 		/// <summary>
@@ -57,9 +53,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="PersistentGenericSet&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList&lt;T&gt;"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericSet<T>( session, ( ISet<T> ) collection );
+			return new PersistentGenericSet<T>(session, (ISet<T>) collection);
 		}
 
 		public override object Instantiate()
@@ -68,4 +64,5 @@ namespace NHibernate.Type
 		}
 	}
 }
+
 #endif

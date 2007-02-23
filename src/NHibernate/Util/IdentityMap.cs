@@ -24,10 +24,10 @@ namespace NHibernate.Util
 	/// not get the same value for the same DateTime value. 
 	/// </para>
 	/// </remarks>
-	[ Serializable ]
+	[Serializable]
 	public sealed class IdentityMap : IDictionary
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( IdentityMap ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(IdentityMap));
 
 		// key = IdentityKey of the passed in Key
 		// value = object passed in
@@ -38,11 +38,11 @@ namespace NHibernate.Util
 		/// iteration order.
 		/// </summary>
 		/// <returns>A new IdentityMap based on a Hashtable.</returns>
-		public static IDictionary Instantiate( int size )
+		public static IDictionary Instantiate(int size)
 		{
-			IHashCodeProvider ihcp = new NHibernate.IdentityHashCodeProvider();
+			IHashCodeProvider ihcp = new IdentityHashCodeProvider();
 			IComparer comp = new IdentityComparer();
-			return new IdentityMap( new Hashtable( size, ihcp, comp ) );
+			return new IdentityMap(new Hashtable(size, ihcp, comp));
 		}
 
 		/// <summary>
@@ -51,11 +51,11 @@ namespace NHibernate.Util
 		/// to the Map.
 		/// </summary>
 		/// <returns>A new IdentityMap based on ListDictionary.</returns>
-		public static IDictionary InstantiateSequenced( int size )
+		public static IDictionary InstantiateSequenced(int size)
 		{
 			IHashCodeProvider ihcp = new IdentityHashCodeProvider();
 			IComparer comp = new IdentityComparer();
-			return new IdentityMap( new SequencedHashMap( size, ihcp, comp ) );
+			return new IdentityMap(new SequencedHashMap(size, ihcp, comp));
 		}
 
 		/// <summary>
@@ -65,14 +65,14 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
 		/// <returns>A Collection of DictionaryEntries</returns>
-		public static ICollection ConcurrentEntries( IDictionary map )
+		public static ICollection ConcurrentEntries(IDictionary map)
 		{
-			return ( ( IdentityMap ) map ).EntryList;
+			return ((IdentityMap) map).EntryList;
 		}
 
-		public static ICollection Entries( IDictionary map )
+		public static ICollection Entries(IDictionary map)
 		{
-			return ( ( IdentityMap ) map ).EntryList;
+			return ((IdentityMap) map).EntryList;
 		}
 
 		/// <summary>
@@ -81,7 +81,7 @@ namespace NHibernate.Util
 		/// Sorted = ListDictionary
 		/// </summary>
 		/// <param name="underlyingMap">A class that implements the IDictionary for storing the objects.</param>
-		private IdentityMap( IDictionary underlyingMap )
+		private IdentityMap(IDictionary underlyingMap)
 		{
 			this.map = underlyingMap;
 		}
@@ -113,9 +113,9 @@ namespace NHibernate.Util
 		/// <summary>
 		/// <see cref="IDictionary.Add"/>
 		/// </summary>
-		public void Add( object key, object val )
+		public void Add(object key, object val)
 		{
-			map.Add( VerifyValidKey( key ), val );
+			map.Add(VerifyValidKey(key), val);
 		}
 
 		/// <summary>
@@ -129,10 +129,10 @@ namespace NHibernate.Util
 		/// <summary>
 		/// <see cref="IDictionary.Contains"/>
 		/// </summary>
-		public bool Contains( object key )
+		public bool Contains(object key)
 		{
-			if( key == null ) return false;
-			return map.Contains( VerifyValidKey( key ) );
+			if (key == null) return false;
+			return map.Contains(VerifyValidKey(key));
 		}
 
 		/// <summary>
@@ -179,25 +179,25 @@ namespace NHibernate.Util
 		/// <summary>
 		/// <see cref="IDictionary.Remove"/>
 		/// </summary>
-		public void Remove( object key )
+		public void Remove(object key)
 		{
-			if( key == null ) return;
-			map.Remove( VerifyValidKey( key ) );
+			if (key == null) return;
+			map.Remove(VerifyValidKey(key));
 		}
 
 		/// <summary>
 		/// <see cref="IDictionary.this"/>
 		/// </summary>
-		public object this[ object key ]
+		public object this[object key]
 		{
 			get
 			{
-				if( key == null ) return null;
+				if (key == null) return null;
 				// Disable validation on get since it leads to better error messages
 				//return map[ VerifyValidKey( key ) ];
 				return map[key];
 			}
-			set { map[ VerifyValidKey( key ) ] = value; }
+			set { map[VerifyValidKey(key)] = value; }
 		}
 
 		/// <summary>
@@ -214,9 +214,9 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="array"></param>
 		/// <param name="i"></param>
-		public void CopyTo( Array array, int i )
+		public void CopyTo(Array array, int i)
 		{
-			map.CopyTo( array, i );
+			map.CopyTo(array, i);
 		}
 
 		/// <summary>
@@ -230,11 +230,11 @@ namespace NHibernate.Util
 		{
 			get
 			{
-				IList list = new ArrayList( map.Count );
-				foreach( DictionaryEntry de in map )
+				IList list = new ArrayList(map.Count);
+				foreach (DictionaryEntry de in map)
 				{
-					DictionaryEntry newEntry = new DictionaryEntry( de.Key, de.Value );
-					list.Add( newEntry );
+					DictionaryEntry newEntry = new DictionaryEntry(de.Key, de.Value);
+					list.Add(newEntry);
 				}
 
 				return list;
@@ -247,20 +247,19 @@ namespace NHibernate.Util
 		/// <param name="obj">The object that will be the key.</param>
 		/// <returns>An object that is safe to be a key.</returns>
 		/// <exception cref="ArgumentException">Thrown when the obj is a System.ValueType</exception>
-		private object VerifyValidKey( object obj )
+		private object VerifyValidKey(object obj)
 		{
-			if( obj is ValueType )
+			if (obj is ValueType)
 			{
 				throw new ArgumentException(
 					"There is a problem with your mappings.  You are probably trying to map a System.ValueType to " +
-						"a <class> which NHibernate does not allow or you are incorrectly using the " +
-						"IDictionary that is mapped to a <set>.  \n\n" +
-						"A ValueType (" + obj.GetType() + ") can not be used with IdentityKey.  " +
-						"The thread at google has a good description about what happens with boxing " +
-						"and unboxing ValueTypes and why they can not be used as an IdentityKey: " +
-						"http://groups.google.com/groups?hl=en&lr=&ie=UTF-8&oe=UTF-8&threadm=bds2rm%24ruc%241%40charly.heeg.de&rnum=1&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8%26oe%3DUTF-8%26q%3DSystem.Runtime.CompilerServices.RuntimeHelpers.GetHashCode%26sa%3DN%26tab%3Dwg"
-					, "key" );
-
+					"a <class> which NHibernate does not allow or you are incorrectly using the " +
+					"IDictionary that is mapped to a <set>.  \n\n" +
+					"A ValueType (" + obj.GetType() + ") can not be used with IdentityKey.  " +
+					"The thread at google has a good description about what happens with boxing " +
+					"and unboxing ValueTypes and why they can not be used as an IdentityKey: " +
+					"http://groups.google.com/groups?hl=en&lr=&ie=UTF-8&oe=UTF-8&threadm=bds2rm%24ruc%241%40charly.heeg.de&rnum=1&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8%26oe%3DUTF-8%26q%3DSystem.Runtime.CompilerServices.RuntimeHelpers.GetHashCode%26sa%3DN%26tab%3Dwg"
+					, "key");
 			}
 
 			return obj;
@@ -272,7 +271,7 @@ namespace NHibernate.Util
 		/// <remarks>
 		/// Only for use in IdentityMap.
 		/// </remarks>
-		[ Serializable ]
+		[Serializable]
 		private class IdentityComparer : IComparer
 		{
 			#region IComparer Members
@@ -294,19 +293,19 @@ namespace NHibernate.Util
 			/// to indicate which is Greater Than or Less Than.  It always returns <c>-1</c> to 
 			/// indicate the two are not Equal.
 			/// </returns>
-			public int Compare( object x, object y )
+			public int Compare(object x, object y)
 			{
-				if( x == null && y == null )
+				if (x == null && y == null)
 				{
 					return 0;
 				}
 
-				if( x == null || y == null )
+				if (x == null || y == null)
 				{
 					return -1;
 				}
 
-				if( x == y )
+				if (x == y)
 				{
 					return 0;
 				}
@@ -318,6 +317,5 @@ namespace NHibernate.Util
 
 			#endregion
 		}
-
 	}
 }

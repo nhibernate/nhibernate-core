@@ -57,9 +57,9 @@ namespace NHibernate.Cache
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
 				FilterKey key = new FilterKey(
-						filter.Name,
-						filter.Parameters,
-						filter.FilterDefinition.ParameterTypes
+					filter.Name,
+					filter.Parameters,
+					filter.FilterDefinition.ParameterTypes
 					);
 				result.Add(key);
 			}

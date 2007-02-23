@@ -51,7 +51,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class UUIDHexGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( UUIDHexGenerator ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(UUIDHexGenerator));
 
 		private string format = FormatWithDigitsOnly;
 		private string sep;
@@ -67,13 +67,13 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="String"/>.</returns>
-		public object Generate( ISessionImplementor session, object obj )
+		public object Generate(ISessionImplementor session, object obj)
 		{
-			string guidString = Guid.NewGuid().ToString( format );
+			string guidString = Guid.NewGuid().ToString(format);
 
-			if( format != FormatWithDigitsOnly && sep != null )
+			if (format != FormatWithDigitsOnly && sep != null)
 			{
-				return StringHelper.Replace( guidString, "-", sep );
+				return StringHelper.Replace(guidString, "-", sep);
 			}
 
 			return guidString;
@@ -90,15 +90,14 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
-		public void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
+		public void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
-			format = PropertiesHelper.GetString( "format", parms, FormatWithDigitsOnly );
+			format = PropertiesHelper.GetString("format", parms, FormatWithDigitsOnly);
 
-			if( format != FormatWithDigitsOnly )
+			if (format != FormatWithDigitsOnly)
 			{
-				sep = PropertiesHelper.GetString( "seperator", parms, null );
+				sep = PropertiesHelper.GetString("seperator", parms, null);
 			}
-
 		}
 
 		#endregion

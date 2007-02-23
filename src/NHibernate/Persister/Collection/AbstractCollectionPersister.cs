@@ -123,13 +123,14 @@ namespace NHibernate.Persister.Collection
 		private readonly string manyToManyOrderByString;
 		private readonly string manyToManyOrderByTemplate;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof (ICollectionPersister));
+		private static readonly ILog log = LogManager.GetLogger(typeof(ICollectionPersister));
 		private string queryLoaderName;
 		private bool subselectLoadable;
 		private IEntityPersister ownerPersister;
 		private bool isVersioned;
 
-		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
+		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache,
+		                                   ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 			dialect = factory.Dialect;
@@ -144,11 +145,15 @@ namespace NHibernate.Persister.Collection
 
 			sqlOrderByString = collection.OrderBy;
 			hasOrder = sqlOrderByString != null;
-			sqlOrderByStringTemplate = hasOrder ? Template.RenderOrderByStringTemplate(sqlOrderByString, dialect, factory.SQLFunctionRegistry) : null;
+			sqlOrderByStringTemplate = hasOrder
+			                           	? Template.RenderOrderByStringTemplate(sqlOrderByString, dialect,
+			                           	                                       factory.SQLFunctionRegistry) : null;
 
 			sqlWhereString = collection.Where;
 			hasWhere = sqlWhereString != null;
-			sqlWhereStringTemplate = hasWhere ? Template.RenderWhereStringTemplate(sqlWhereString, dialect, factory.SQLFunctionRegistry) : null;
+			sqlWhereStringTemplate = hasWhere
+			                         	? Template.RenderWhereStringTemplate(sqlWhereString, dialect, factory.SQLFunctionRegistry)
+			                         	: null;
 
 			hasOrphanDelete = collection.OrphanDelete;
 
@@ -389,11 +394,15 @@ namespace NHibernate.Persister.Collection
 			                          	?
 			                          null
 			                          	:
-			                          Template.RenderWhereStringTemplate(manyToManyWhereString, factory.Dialect, factory.SQLFunctionRegistry); // , factory.getSqlFunctionRegistry() );
+			                          Template.RenderWhereStringTemplate(manyToManyWhereString, factory.Dialect,
+			                                                             factory.SQLFunctionRegistry);
+				// , factory.getSqlFunctionRegistry() );
 			manyToManyOrderByString = collection.ManyToManyOrdering;
 			manyToManyOrderByTemplate = manyToManyOrderByString == null
 			                            	? null
-			                            	: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect, factory.SQLFunctionRegistry); // , factory.getSqlFunctionRegistry() );
+			                            	: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect,
+			                            	                                       factory.SQLFunctionRegistry);
+				// , factory.getSqlFunctionRegistry() );
 
 			InitCollectionPropertyMap();
 		}
@@ -471,7 +480,9 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		protected abstract ICollectionInitializer CreateSubselectInitializer(SubselectFetch subselect, ISessionImplementor session);
+		protected abstract ICollectionInitializer CreateSubselectInitializer(SubselectFetch subselect,
+		                                                                     ISessionImplementor session);
+
 		protected abstract ICollectionInitializer CreateCollectionInitializer(IDictionary enabledFilters);
 
 		public ICacheConcurrencyStrategy Cache
@@ -596,8 +607,8 @@ namespace NHibernate.Persister.Collection
 
 		protected int WriteElement(IDbCommand st, object elt, int i, ISessionImplementor session)
 		{
-			ElementType.NullSafeSet( st, elt, i, elementColumnIsSettable, session );
-			return i + ArrayHelper.CountTrue( elementColumnIsSettable );
+			ElementType.NullSafeSet(st, elt, i, elementColumnIsSettable, session);
+			return i + ArrayHelper.CountTrue(elementColumnIsSettable);
 		}
 
 		protected int WriteIndex(IDbCommand st, object idx, int i, ISessionImplementor session)
@@ -614,8 +625,8 @@ namespace NHibernate.Persister.Collection
 			//				throw new AssertionFailure( "cannot use a formula-based element in the where condition" );
 			//			}
 
-			ElementType.NullSafeSet( st, elt, i, elementColumnIsSettable, session );
-			return i + ArrayHelper.CountTrue( elementColumnIsSettable );
+			ElementType.NullSafeSet(st, elt, i, elementColumnIsSettable, session);
+			return i + ArrayHelper.CountTrue(elementColumnIsSettable);
 		}
 
 		protected int WriteIndexToWhere(IDbCommand st, object index, int i, ISessionImplementor session)
@@ -696,11 +707,11 @@ namespace NHibernate.Persister.Collection
 			{
 				if (elementColumnIsSettable[i])
 				{
-					frag.AddColumn( elemAlias, elementColumnNames[i], elementColumnAliases[i] );
+					frag.AddColumn(elemAlias, elementColumnNames[i], elementColumnAliases[i]);
 				}
 				else
 				{
-					frag.AddFormula( elemAlias, elementFormulaTemplates[i], elementColumnAliases[i] );
+					frag.AddFormula(elemAlias, elementFormulaTemplates[i], elementColumnAliases[i]);
 				}
 			}
 		}
@@ -778,7 +789,7 @@ namespace NHibernate.Persister.Collection
 				}
 
 				int offset = 0;
-				IExpectation expectation = Expectations.AppropriateExpectation( deleteAllCheckStyle );
+				IExpectation expectation = Expectations.AppropriateExpectation(deleteAllCheckStyle);
 				bool useBatch = expectation.CanBeBatched;
 
 				// Remove all the old entries
@@ -788,7 +799,7 @@ namespace NHibernate.Persister.Collection
 					                	? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
 					                	                                      SqlDeleteString.ParameterTypes)
 					                	: session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
-					                                               SqlDeleteString.ParameterTypes);
+					                	                                 SqlDeleteString.ParameterTypes);
 
 					try
 					{
@@ -1357,8 +1368,8 @@ namespace NHibernate.Persister.Collection
 
 			if (manyToManyWhereString != null)
 			{
-			    buffer.Append(" and ")
-			        .Append(StringHelper.Replace(manyToManyWhereTemplate, Template.Placeholder, alias));
+				buffer.Append(" and ")
+					.Append(StringHelper.Replace(manyToManyWhereTemplate, Template.Placeholder, alias));
 			}
 
 			return buffer.ToString();
@@ -1488,12 +1499,12 @@ namespace NHibernate.Persister.Collection
 		{
 			get { return deleteAllCheckStyle; }
 		}
-		
+
 		public bool IsSubselectLoadable
 		{
 			get { return subselectLoadable; }
 		}
-		
+
 		public IEntityPersister OwnerEntityPersister
 		{
 			get { return ownerPersister; }

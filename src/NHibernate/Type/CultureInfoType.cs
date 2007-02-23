@@ -17,7 +17,7 @@ namespace NHibernate.Type
 	public class CultureInfoType : ImmutableType, ILiteralType
 	{
 		/// <summary></summary>
-		internal CultureInfoType() : base( new StringSqlType( 5 ) )
+		internal CultureInfoType() : base(new StringSqlType(5))
 		{
 		}
 
@@ -27,16 +27,16 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			string str = ( string ) NHibernateUtil.String.Get( rs, index );
-			if( str == null )
+			string str = (string) NHibernateUtil.String.Get(rs, index);
+			if (str == null)
 			{
 				return null;
 			}
 			else
 			{
-				return new CultureInfo( str );
+				return new CultureInfo(str);
 			}
 		}
 
@@ -46,9 +46,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary>
@@ -57,9 +57,9 @@ namespace NHibernate.Type
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			NHibernateUtil.String.Set( cmd, ( ( CultureInfo ) value ).Name, index );
+			NHibernateUtil.String.Set(cmd, ((CultureInfo) value).Name, index);
 		}
 
 		/// <summary>
@@ -67,9 +67,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ToString( object value )
+		public override string ToString(object value)
 		{
-			return ( ( CultureInfo ) value ).Name;
+			return ((CultureInfo) value).Name;
 		}
 
 		/// <summary>
@@ -79,13 +79,13 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
-			return CultureInfo.CreateSpecificCulture( xml );
+			return CultureInfo.CreateSpecificCulture(xml);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( CultureInfo ); }
+			get { return typeof(CultureInfo); }
 		}
 
 		/// <summary>
@@ -94,9 +94,9 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			return ( x == y ); //???
+			return (x == y); //???
 		}
 
 		/// <summary></summary>
@@ -110,9 +110,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public string ObjectToSQLString( object value )
+		public string ObjectToSQLString(object value)
 		{
-			return ( ( ILiteralType ) NHibernateUtil.String ).ObjectToSQLString( value.ToString() );
+			return ((ILiteralType) NHibernateUtil.String).ObjectToSQLString(value.ToString());
 		}
 	}
 }

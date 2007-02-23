@@ -8,13 +8,13 @@ namespace NHibernate.Loader
 {
 	public abstract class BasicLoader : Loader
 	{
-		protected static readonly string[] NoSuffix = { string.Empty };
+		protected static readonly string[] NoSuffix = {string.Empty};
 
 		private IEntityAliases[] descriptors;
 		private ICollectionAliases[] collectionDescriptors;
 
-		public BasicLoader( ISessionFactoryImplementor factory )
-			: base( factory )
+		public BasicLoader(ISessionFactoryImplementor factory)
+			: base(factory)
 		{
 		}
 
@@ -35,26 +35,26 @@ namespace NHibernate.Loader
 		{
 			ILoadable[] persisters = EntityPersisters;
 			string[] suffixes = Suffixes;
-			descriptors = new IEntityAliases[ persisters.Length ];
-			for ( int i=0; i<descriptors.Length; i++ ) 
+			descriptors = new IEntityAliases[persisters.Length];
+			for (int i = 0; i < descriptors.Length; i++)
 			{
-				descriptors[i] = new DefaultEntityAliases( persisters[i], suffixes[i] );
+				descriptors[i] = new DefaultEntityAliases(persisters[i], suffixes[i]);
 			}
 
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
-			if ( collectionPersisters != null ) 
+			if (collectionPersisters != null)
 			{
 				String[] collectionSuffixes = CollectionSuffixes;
 				collectionDescriptors = new ICollectionAliases[collectionPersisters.Length];
-				for ( int i = 0; i < collectionPersisters.Length; i++ ) 
+				for (int i = 0; i < collectionPersisters.Length; i++)
 				{
-					collectionDescriptors[i] = new GeneratedCollectionAliases( 
-						collectionPersisters[i], 
+					collectionDescriptors[i] = new GeneratedCollectionAliases(
+						collectionPersisters[i],
 						collectionSuffixes[i]
 						);
 				}
 			}
-			else 
+			else
 			{
 				collectionDescriptors = null;
 			}
@@ -65,23 +65,23 @@ namespace NHibernate.Loader
 		/// necessarily need to use this algorithm, but it is intended that
 		/// they will in most cases.
 		/// </summary>
-		public static string[ ] GenerateSuffixes( int length )
+		public static string[] GenerateSuffixes(int length)
 		{
-			return GenerateSuffixes( 0, length );
+			return GenerateSuffixes(0, length);
 		}
-		
-		public static string[ ] GenerateSuffixes( int seed, int length )
+
+		public static string[] GenerateSuffixes(int seed, int length)
 		{
-			if( length == 0 )
+			if (length == 0)
 			{
 				return NoSuffix;
 			}
 
-			string[ ] suffixes = new string[length];
+			string[] suffixes = new string[length];
 
-			for( int i = 0; i < length; i++ )
+			for (int i = 0; i < length; i++)
 			{
-				suffixes[ i ] = ( i + seed ).ToString() + StringHelper.Underscore;
+				suffixes[i] = (i + seed).ToString() + StringHelper.Underscore;
 			}
 
 			return suffixes;

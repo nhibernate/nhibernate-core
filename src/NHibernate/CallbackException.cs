@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate
 {
 	/// <summary></summary>
-	[ Serializable ]
+	[Serializable]
 	public class CallbackException : HibernateException
 	{
 		/// <summary>
@@ -15,7 +15,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public CallbackException( Exception innerException ) : this( "An exception occured in a callback", innerException )
+		public CallbackException(Exception innerException) : this("An exception occured in a callback", innerException)
 		{
 		}
 
@@ -23,7 +23,7 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="CallbackException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public CallbackException( string message ) : base( message )
+		public CallbackException(string message) : base(message)
 		{
 		}
 
@@ -36,7 +36,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public CallbackException( string message, Exception innerException ) : base( message, innerException )
+		public CallbackException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
@@ -51,7 +51,7 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected CallbackException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected CallbackException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

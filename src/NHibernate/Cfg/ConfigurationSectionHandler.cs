@@ -1,8 +1,6 @@
 using System;
 using System.Configuration;
-using System.Collections;
 using System.Xml;
-using System.Xml.XPath;
 
 namespace NHibernate.Cfg
 {
@@ -15,7 +13,7 @@ namespace NHibernate.Cfg
 		{
 		}
 
-		public object Create (object parent, object configContext, XmlNode xmlNode)
+		public object Create(object parent, object configContext, XmlNode xmlNode)
 		{
 			return xmlNode;
 		}

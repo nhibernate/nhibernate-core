@@ -35,7 +35,7 @@ namespace NHibernate.Expression
 		/// Return typed values for all parameters in the rendered SQL fragment
 		/// </summary>
 		/// <returns>An array of TypedValues for the Expression.</returns>
-		public abstract TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery );
+		public abstract TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery);
 
 		#endregion
 
@@ -61,13 +61,13 @@ namespace NHibernate.Expression
 		{
 			return new OrExpression(lhs, rhs);
 		}
-		
-		
+
+
 		public static AbstractCriterion operator !(AbstractCriterion crit)
 		{
 			return new NotExpression(crit);
 		}
-		
+
 		/// <summary>
 		/// See here for details:
 		/// http://steve.emxsoftware.com/NET/Overloading+the++and++operators
@@ -85,8 +85,7 @@ namespace NHibernate.Expression
 		{
 			return false;
 		}
-		
-		#endregion
 
+		#endregion
 	}
 }

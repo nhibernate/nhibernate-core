@@ -33,8 +33,8 @@ namespace NHibernate.Loader
 
 		private IDictionary enabledFilters;
 
-		public OuterJoinLoader( ISessionFactoryImplementor factory, IDictionary enabledFilters )
-			: base( factory )
+		public OuterJoinLoader(ISessionFactoryImplementor factory, IDictionary enabledFilters)
+			: base(factory)
 		{
 			this.enabledFilters = enabledFilters;
 		}
@@ -57,7 +57,7 @@ namespace NHibernate.Loader
 			set { sql = value; }
 		}
 
-		protected internal override ILoadable[ ] EntityPersisters
+		protected internal override ILoadable[] EntityPersisters
 		{
 			get { return persisters; }
 			set { persisters = value; }
@@ -99,7 +99,7 @@ namespace NHibernate.Loader
 			get { return collectionOwners; }
 		}
 
-		protected void InitFromWalker(JoinWalker walker) 
+		protected void InitFromWalker(JoinWalker walker)
 		{
 			persisters = walker.Persisters;
 			collectionPersisters = walker.CollectionPersisters;

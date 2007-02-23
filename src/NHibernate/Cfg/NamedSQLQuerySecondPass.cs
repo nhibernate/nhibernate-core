@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-
-using log4net;
 using System.Xml;
-using NHibernate.Util;
+using log4net;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
@@ -57,40 +56,40 @@ namespace NHibernate.Cfg
 			if (StringHelper.IsNotEmpty(resultSetRef))
 			{
 				namedQuery = new NamedSQLQueryDefinition(
-						queryElem.InnerText,
-						resultSetRef,
-						synchronizedTables,
-						cacheable,
-						region,
-						timeout,
-						fetchSize,
-						HbmBinder.GetFlushMode(XmlHelper.GetAttributeValue(queryElem, "flush-mode")),
-						//HbmBinder.GetCacheMode(cacheMode),
-						readOnly,
-						comment,
-						HbmBinder.GetParameterTypes(queryElem),
-						callable
-				);
+					queryElem.InnerText,
+					resultSetRef,
+					synchronizedTables,
+					cacheable,
+					region,
+					timeout,
+					fetchSize,
+					HbmBinder.GetFlushMode(XmlHelper.GetAttributeValue(queryElem, "flush-mode")),
+					//HbmBinder.GetCacheMode(cacheMode),
+					readOnly,
+					comment,
+					HbmBinder.GetParameterTypes(queryElem),
+					callable
+					);
 				//TODO check there is no actual definition elemnents when a ref is defined
 			}
 			else
 			{
 				ResultSetMappingDefinition definition = BuildResultSetMappingDefinition(queryElem, path, mappings);
 				namedQuery = new NamedSQLQueryDefinition(
-						queryElem.InnerText,
-						definition.GetQueryReturns(),
-						synchronizedTables,
-						cacheable,
-						region,
-						timeout,
-						fetchSize,
-						HbmBinder.GetFlushMode(XmlHelper.GetAttributeValue(queryElem, "flush-mode")),
-						//HbmBinder.GetCacheMode(cacheMode),
-						readOnly,
-						comment,
-						HbmBinder.GetParameterTypes(queryElem),
-						callable
-				);
+					queryElem.InnerText,
+					definition.GetQueryReturns(),
+					synchronizedTables,
+					cacheable,
+					region,
+					timeout,
+					fetchSize,
+					HbmBinder.GetFlushMode(XmlHelper.GetAttributeValue(queryElem, "flush-mode")),
+					//HbmBinder.GetCacheMode(cacheMode),
+					readOnly,
+					comment,
+					HbmBinder.GetParameterTypes(queryElem),
+					callable
+					);
 			}
 
 			log.Debug("Named SQL query: " + queryName + " -> " + namedQuery.QueryString);

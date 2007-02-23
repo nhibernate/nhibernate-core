@@ -17,7 +17,7 @@ namespace NHibernate.Id
 		/// An array of <see cref="String"/> objects that contain the sql to create the 
 		/// necessary database objects.
 		/// </returns>
-		string[ ] SqlCreateStrings( Dialect.Dialect dialect );
+		string[] SqlCreateStrings(Dialect.Dialect dialect);
 
 		/// <summary>
 		/// The SQL required to remove the underlying database objects
@@ -26,7 +26,7 @@ namespace NHibernate.Id
 		/// <returns>
 		/// A <see cref="String"/> that will drop the database objects.
 		/// </returns>
-		string SqlDropString( Dialect.Dialect dialect );
+		string SqlDropString(Dialect.Dialect dialect);
 
 		/// <summary>
 		/// Return a key unique to the underlying database objects.

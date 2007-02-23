@@ -19,25 +19,25 @@ namespace NHibernate.Hql.Classic
 
 		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
-		public void Token( string token, QueryTranslator q )
+		public void Token(string token, QueryTranslator q)
 		{
-			if( q.IsName( StringHelper.Root( token ) ) )
+			if (q.IsName(StringHelper.Root(token)))
 			{
-				ParserHelper.Parse( pathExpressionParser, q.Unalias( token ), ParserHelper.PathSeparators, q );
-				q.AppendGroupByToken( pathExpressionParser.WhereColumn );
-				pathExpressionParser.AddAssociation( q );
+				ParserHelper.Parse(pathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
+				q.AppendGroupByToken(pathExpressionParser.WhereColumn);
+				pathExpressionParser.AddAssociation(q);
 			}
 			else
 			{
-				q.AppendGroupByToken( token );
+				q.AppendGroupByToken(token);
 			}
 		}
 
-		public void Start( QueryTranslator q )
+		public void Start(QueryTranslator q)
 		{
 		}
 
-		public void End( QueryTranslator q )
+		public void End(QueryTranslator q)
 		{
 		}
 

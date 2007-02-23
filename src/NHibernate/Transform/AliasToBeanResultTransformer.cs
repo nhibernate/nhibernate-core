@@ -36,12 +36,12 @@ namespace NHibernate.Transform
 				throw new ArgumentNullException("resultClass");
 			this.resultClass = resultClass;
 			propertyAccessor = new ChainedPropertyAccessor(
-					new IPropertyAccessor[]
-			    {
+				new IPropertyAccessor[]
+					{
 						// TODO H3:	PropertyAccessorFactory.GetPropertyAccessor(resultClass, null),
-		        PropertyAccessorFactory.GetPropertyAccessor(null),
-		        PropertyAccessorFactory.GetPropertyAccessor("field")
-			    });
+						PropertyAccessorFactory.GetPropertyAccessor(null),
+						PropertyAccessorFactory.GetPropertyAccessor("field")
+					});
 		}
 
 		public object TransformTuple(object[] tuple, String[] aliases)

@@ -14,7 +14,7 @@ namespace NHibernate.Driver
 		public FirebirdDriver() : base(
 			"FirebirdSql.Data.Firebird",
 			"FirebirdSql.Data.Firebird.FbConnection",
-			"FirebirdSql.Data.Firebird.FbCommand" )
+			"FirebirdSql.Data.Firebird.FbCommand")
 		{
 		}
 

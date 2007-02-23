@@ -40,7 +40,7 @@ namespace NHibernate.Persister.Entity
 	{
 		private readonly ISessionFactoryImplementor factory;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof (AbstractEntityPersister));
+		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractEntityPersister));
 
 		public const string EntityID = "id";
 		public const string EntityClass = "class";
@@ -655,13 +655,14 @@ namespace NHibernate.Persister.Entity
 			if (IsPolymorphic)
 			{
 				AddPropertyPath(EntityClass, DiscriminatorType,
-				                new string[] { DiscriminatorColumnName },
-				                new string[ ] { DiscriminatorFormulaTemplate }
+				                new string[] {DiscriminatorColumnName},
+				                new string[] {DiscriminatorFormulaTemplate}
 					);
 			}
 		}
 
-		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
+		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
+		                                  ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 			dialect = factory.Dialect;
@@ -727,7 +728,7 @@ namespace NHibernate.Persister.Entity
 			identifierColumnSpan = persistentClass.Identifier.ColumnSpan;
 			rootTableKeyColumnNames = new string[identifierColumnSpan];
 			identifierAliases = new string[identifierColumnSpan];
-			
+
 			loaderName = persistentClass.LoaderName;
 
 			int i = 0;
@@ -919,16 +920,16 @@ namespace NHibernate.Persister.Entity
 				cascades.Add(prop.CascadeStyle);
 			}
 
-			subclassColumnClosure = (string[]) columns.ToArray(typeof (string));
-			subclassFormulaClosure = (string[]) formulas.ToArray(typeof (string));
-			subclassFormulaTemplateClosure = (string[]) formulaTemplates.ToArray(typeof (string));
-			subclassPropertyTypeClosure = (IType[]) types.ToArray(typeof (IType));
-			subclassColumnAliasClosure = (string[]) aliases.ToArray(typeof (string));
-			subclassFormulaAliasClosure = (string[]) formulaAliases.ToArray(typeof (string));
-			subclassPropertyNameClosure = (string[]) names.ToArray(typeof (string));
-			subclassPropertyNullabilityClosure = (bool[]) propNullables.ToArray(typeof (bool));
+			subclassColumnClosure = (string[]) columns.ToArray(typeof(string));
+			subclassFormulaClosure = (string[]) formulas.ToArray(typeof(string));
+			subclassFormulaTemplateClosure = (string[]) formulaTemplates.ToArray(typeof(string));
+			subclassPropertyTypeClosure = (IType[]) types.ToArray(typeof(IType));
+			subclassColumnAliasClosure = (string[]) aliases.ToArray(typeof(string));
+			subclassFormulaAliasClosure = (string[]) formulaAliases.ToArray(typeof(string));
+			subclassPropertyNameClosure = (string[]) names.ToArray(typeof(string));
+			subclassPropertyNullabilityClosure = (bool[]) propNullables.ToArray(typeof(bool));
 			subclassPropertyFormulaTemplateClosure = ArrayHelper.To2DStringArray(subclassTemplates);
-			subclassPropertyColumnNameClosure = (string[][]) propColumns.ToArray(typeof (string[]));
+			subclassPropertyColumnNameClosure = (string[][]) propColumns.ToArray(typeof(string[]));
 
 			subclassPropertyCascadeStyleClosure = new Cascades.CascadeStyle[cascades.Count];
 			int m = 0;
@@ -952,8 +953,8 @@ namespace NHibernate.Persister.Entity
 			}
 
 			// CALLBACK INTERFACES
-			implementsLifecycle = typeof (ILifecycle).IsAssignableFrom(mappedClass);
-			implementsValidatable = typeof (IValidatable).IsAssignableFrom(mappedClass);
+			implementsLifecycle = typeof(ILifecycle).IsAssignableFrom(mappedClass);
+			implementsValidatable = typeof(IValidatable).IsAssignableFrom(mappedClass);
 
 			// PROXIES
 			concreteProxyClass = persistentClass.ProxyInterface;
@@ -962,7 +963,7 @@ namespace NHibernate.Persister.Entity
 			if (hasProxy)
 			{
 				HashedSet proxyInterfaces = new HashedSet();
-				proxyInterfaces.Add(typeof (INHibernateProxy));
+				proxyInterfaces.Add(typeof(INHibernateProxy));
 
 				if (!mappedClass.Equals(concreteProxyClass))
 				{
@@ -1143,7 +1144,7 @@ namespace NHibernate.Persister.Entity
 		{
 			get { return entityMetamodel.PropertyInsertability; }
 		}
-		
+
 		public virtual bool[] PropertyVersionability
 		{
 			get { return entityMetamodel.PropertyVersionability; }
@@ -1159,7 +1160,7 @@ namespace NHibernate.Persister.Entity
 			get { return this.propertyColumnUpdateable; }
 		}
 
-		public virtual object GetPropertyValue( object obj, string propertyName )
+		public virtual object GetPropertyValue(object obj, string propertyName)
 		{
 			IGetter getter = (IGetter) gettersByPropertyName[propertyName];
 			if (getter == null)
@@ -1617,8 +1618,8 @@ namespace NHibernate.Persister.Entity
 			}
 			if (IsVersioned)
 			{
-				propsToUpdate[VersionProperty] = 
-                    Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection, PropertyVersionability);
+				propsToUpdate[VersionProperty] =
+					Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection, PropertyVersionability);
 			}
 
 			return propsToUpdate;
@@ -1641,7 +1642,7 @@ namespace NHibernate.Persister.Entity
 		{
 			return propertyColumnSpans[i];
 		}
-		
+
 		protected string[] GetPropertyColumnFormulaTemplates(int i)
 		{
 			return propertyColumnFormulaTemplates[i];
@@ -1667,7 +1668,7 @@ namespace NHibernate.Persister.Entity
 		{
 			return ADOExceptionHelper.Convert( /* sqlExceptionConverter, */ sqlException, message);
 		}
-		
+
 		protected ADOException Convert(Exception sqlException, string message, SqlString sql)
 		{
 			return ADOExceptionHelper.Convert( /* sqlExceptionConverter, */ sqlException, message, sql);
@@ -1704,8 +1705,9 @@ namespace NHibernate.Persister.Entity
 				}
 				if (IsVersioned)
 				{
-					tableUpdateNeeded[0] = tableUpdateNeeded[ 0 ] ||
-                        Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection, PropertyVersionability);
+					tableUpdateNeeded[0] = tableUpdateNeeded[0] ||
+					                       Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
+					                                                             PropertyVersionability);
 				}
 				return tableUpdateNeeded;
 			}
@@ -1715,7 +1717,7 @@ namespace NHibernate.Persister.Entity
 			object id,
 			object[] fields,
 			int[] dirtyFields,
-            bool hasDirtyCollection,
+			bool hasDirtyCollection,
 			object[] oldFields,
 			object oldVersion,
 			object obj,
@@ -1767,8 +1769,9 @@ namespace NHibernate.Persister.Entity
 			ISessionImplementor session)
 		{
 			bool useVersion = j == 0 && IsVersioned;
-			IExpectation expectation = Expectations.AppropriateExpectation( updateResultCheckStyles[j] );
-			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable; //note: updates to joined tables can't be batched...
+			IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[j]);
+			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
+				//note: updates to joined tables can't be batched...
 
 			if (log.IsDebugEnabled)
 			{
@@ -1782,11 +1785,10 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				IDbCommand statement = useBatch
-            			? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-            			: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				                       	? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+				                       	: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
 				{
-
 					int index = 0;
 
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -1799,7 +1801,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else if (OptimisticLockMode.Version < OptimisticLockMode && null != oldFields)
 					{
-                        bool[] versionability = PropertyVersionability;
+						bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == OptimisticLockMode.All
 						                         	? PropertyUpdateability
 						                         	: includeProperty;
@@ -1808,7 +1810,7 @@ namespace NHibernate.Persister.Entity
 						{
 							bool include = includeOldField[i] &&
 							               IsPropertyOfTable(i, j) &&
-                                           versionability[i];
+							               versionability[i];
 							if (include)
 							{
 								if (!PropertyTypes[i].IsDatabaseNull(oldFields[i]))
@@ -1978,8 +1980,8 @@ namespace NHibernate.Persister.Entity
 			{
 				if (includeProperty[j] && IsPropertyOfTable(j, table))
 				{
-					PropertyTypes[ j ].NullSafeSet( statement, fields[ j ], index, includeColumns[j], session );
-					index += ArrayHelper.CountTrue( includeColumns[j] );
+					PropertyTypes[j].NullSafeSet(statement, fields[j], index, includeColumns[j], session);
+					index += ArrayHelper.CountTrue(includeColumns[j]);
 				}
 			}
 
@@ -2434,7 +2436,7 @@ namespace NHibernate.Persister.Entity
 		private IUniqueEntityLoader GetAppropriateLoader(LockMode lockMode, ISessionImplementor session)
 		{
 			IDictionary enabledFilters = session.EnabledFilters;
-			if( queryLoader != null )
+			if (queryLoader != null)
 			{
 				return queryLoader;
 			}
@@ -2595,14 +2597,14 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == Engine.OptimisticLockMode.Version)
+			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == OptimisticLockMode.Version)
 			{
 				updateBuilder.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
 				hasColumns = true;
 			}
-			else if (entityMetamodel.OptimisticLockMode > Engine.OptimisticLockMode.Version && oldFields != null)
+			else if (entityMetamodel.OptimisticLockMode > OptimisticLockMode.Version && oldFields != null)
 			{
-                bool[] versionability = PropertyVersionability;
+				bool[] versionability = PropertyVersionability;
 				bool[] includeInWhere =
 					OptimisticLockMode == OptimisticLockMode.All
 						? PropertyUpdateability
@@ -2612,7 +2614,7 @@ namespace NHibernate.Persister.Entity
 				{
 					bool include = includeInWhere[i] &&
 					               IsPropertyOfTable(i, j) &&
-                                   versionability[i];
+					               versionability[i];
 					if (include)
 					{
 						string[] propertyColumnNames = GetPropertyColumnNames(i);
@@ -2709,7 +2711,7 @@ namespace NHibernate.Persister.Entity
 					int index = 0;
 
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
-					
+
 					// Do the key. The key is immutable so we can use the _current_ object state
 					IdentifierType.NullSafeSet(statement, id, index, session);
 					index += IdentifierColumnSpan;
@@ -2724,7 +2726,7 @@ namespace NHibernate.Persister.Entity
 						bool[] versionability = PropertyVersionability;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-                            if (IsPropertyOfTable(i, j) && versionability[i] && !types[i].IsDatabaseNull(loadedState[i]))
+							if (IsPropertyOfTable(i, j) && versionability[i] && !types[i].IsDatabaseNull(loadedState[i]))
 							{
 								types[i].NullSafeSet(statement, loadedState[i], index, session);
 								index += GetPropertyColumnSpan(i);
@@ -2781,13 +2783,13 @@ namespace NHibernate.Persister.Entity
 
 				IType[] types = PropertyTypes;
 
-                bool[] versionability = PropertyVersionability;
-                //bool[] includeInWhere = PropertyUpdateability;
+				bool[] versionability = PropertyVersionability;
+				//bool[] includeInWhere = PropertyUpdateability;
 
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{
-                    bool include = versionability[i] && 
-                        IsPropertyOfTable(i, j);
+					bool include = versionability[i] &&
+					               IsPropertyOfTable(i, j);
 
 					if (include)
 					{
@@ -2840,15 +2842,15 @@ namespace NHibernate.Persister.Entity
 			}
 
 
-			IExpectation expectation = Expectations.AppropriateExpectation( insertResultCheckStyles[j] );
+			IExpectation expectation = Expectations.AppropriateExpectation(insertResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched;
 
 			try
 			{
 				// Render the SQL query
 				IDbCommand insertCmd = useBatch
-					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				                       	? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+				                       	: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
@@ -2928,15 +2930,15 @@ namespace NHibernate.Persister.Entity
 		}
 
 		protected abstract int[] PropertyTableNumbers { get; }
-		
+
 		protected void CreateQueryLoader()
 		{
-			if ( loaderName != null )
+			if (loaderName != null)
 			{
-				queryLoader = new NamedQueryLoader( loaderName, this );
+				queryLoader = new NamedQueryLoader(loaderName, this);
 			}
 		}
-		
+
 		public bool HasSubselectLoadableCollections
 		{
 			get { return hasSubselectLoadableCollections; }

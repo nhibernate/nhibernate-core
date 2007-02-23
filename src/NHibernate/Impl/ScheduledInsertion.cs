@@ -11,7 +11,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	internal class ScheduledInsertion : ScheduledEntityAction
 	{
-		private readonly object[ ] state;
+		private readonly object[] state;
 		private CacheEntry cacheEntry;
 		private readonly object version;
 
@@ -24,8 +24,9 @@ namespace NHibernate.Impl
 		/// <param name="version">The version of the object instance.</param>
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for the persisting the object.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledInsertion( object id, object[ ] state, object instance, object version, IEntityPersister persister, ISessionImplementor session )
-			: base( session, id, instance, persister )
+		public ScheduledInsertion(object id, object[] state, object instance, object version, IEntityPersister persister,
+		                          ISessionImplementor session)
+			: base(session, id, instance, persister)
 		{
 			this.state = state;
 			this.version = version;
@@ -36,34 +37,34 @@ namespace NHibernate.Impl
 		{
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
-			Persister.Insert( Id, state, Instance, Session );
-			Session.PostInsert( Instance );
+			Persister.Insert(Id, state, Instance, Session);
+			Session.PostInsert(Instance);
 
-			if ( Persister.HasCache && !Persister.IsCacheInvalidationRequired )
+			if (Persister.HasCache && !Persister.IsCacheInvalidationRequired)
 			{
-				cacheEntry = new CacheEntry( Instance, Persister, Session );
+				cacheEntry = new CacheEntry(Instance, Persister, Session);
 				CacheKey ck = new CacheKey(
 					Id,
 					Persister.IdentifierType,
-					(string)Persister.IdentifierSpace,
+					(string) Persister.IdentifierSpace,
 					Session.Factory
-				);
-				Persister.Cache.Insert( ck, cacheEntry );
+					);
+				Persister.Cache.Insert(ck, cacheEntry);
 			}
 		}
 
 		/// <summary></summary>
-		public override void AfterTransactionCompletion( bool success )
+		public override void AfterTransactionCompletion(bool success)
 		{
 			// Make 100% certain that this is called before any subsequent ScheduledUpdate.AfterTransactionCompletion()!!
-			if ( success && Persister.HasCache && !Persister.IsCacheInvalidationRequired )
+			if (success && Persister.HasCache && !Persister.IsCacheInvalidationRequired)
 			{
 				CacheKey ck = new CacheKey(
 					Id,
 					Persister.IdentifierType,
-					(string)Persister.IdentifierSpace,
+					(string) Persister.IdentifierSpace,
 					Session.Factory
-				);
+					);
 				Persister.Cache.AfterInsert(ck, cacheEntry, version);
 			}
 		}

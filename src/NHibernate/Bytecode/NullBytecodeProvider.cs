@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Property;
 
 namespace NHibernate.Bytecode
 {
@@ -8,7 +9,7 @@ namespace NHibernate.Bytecode
 	/// </summary>
 	public class NullBytecodeProvider : IBytecodeProvider
 	{
-		public IReflectionOptimizer GetReflectionOptimizer( System.Type clazz, NHibernate.Property.IGetter[] getters, NHibernate.Property.ISetter[] setters )
+		public IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters)
 		{
 			return null;
 		}

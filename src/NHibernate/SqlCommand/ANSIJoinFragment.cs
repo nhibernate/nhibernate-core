@@ -16,10 +16,11 @@ namespace NHibernate.SqlCommand
 			AddJoin(tableName, alias, fkColumns, pkColumns, joinType, null);
 		}
 
-		public override void AddJoin( string tableName, string alias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType, string on )
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
+		                             string on)
 		{
 			string joinString;
-			switch( joinType )
+			switch (joinType)
 			{
 				case JoinType.InnerJoin:
 					joinString = " inner join ";
@@ -34,21 +35,21 @@ namespace NHibernate.SqlCommand
 					joinString = " full outer join ";
 					break;
 				default:
-					throw new AssertionFailure( "undefined join type" );
+					throw new AssertionFailure("undefined join type");
 			}
 
-			buffer.Add( joinString + tableName + ' ' + alias + " on " );
+			buffer.Add(joinString + tableName + ' ' + alias + " on ");
 
-			for( int j = 0; j < fkColumns.Length; j++ )
+			for (int j = 0; j < fkColumns.Length; j++)
 			{
-				if( fkColumns[ j ].IndexOf( '.' ) < 1 )
+				if (fkColumns[j].IndexOf('.') < 1)
 				{
-					throw new AssertionFailure( "missing alias" );
+					throw new AssertionFailure("missing alias");
 				}
-				buffer.Add( fkColumns[ j ] + "=" + alias + StringHelper.Dot + pkColumns[ j ] );
-				if( j < fkColumns.Length - 1 )
+				buffer.Add(fkColumns[j] + "=" + alias + StringHelper.Dot + pkColumns[j]);
+				if (j < fkColumns.Length - 1)
 				{
-					buffer.Add( " and " );
+					buffer.Add(" and ");
 				}
 			}
 
@@ -65,37 +66,37 @@ namespace NHibernate.SqlCommand
 			get { return conditions.ToSqlString(); }
 		}
 
-		public override void AddJoins( SqlString fromFragment, SqlString whereFragment )
+		public override void AddJoins(SqlString fromFragment, SqlString whereFragment)
 		{
-			buffer.Add( fromFragment );
+			buffer.Add(fromFragment);
 			//where fragment must be empty!
 		}
 
 		public JoinFragment Copy()
 		{
 			ANSIJoinFragment copy = new ANSIJoinFragment();
-			copy.buffer = new SqlStringBuilder( buffer.ToSqlString() );
+			copy.buffer = new SqlStringBuilder(buffer.ToSqlString());
 			return copy;
 		}
 
-		public override void AddCrossJoin( string tableName, string alias )
+		public override void AddCrossJoin(string tableName, string alias)
 		{
-			buffer.Add( StringHelper.CommaSpace + tableName + " " + alias );
+			buffer.Add(StringHelper.CommaSpace + tableName + " " + alias);
 		}
 
-		public override bool AddCondition( string condition )
+		public override bool AddCondition(string condition)
 		{
 			throw new NotSupportedException();
 		}
 
-		public override bool AddCondition( SqlString condition )
+		public override bool AddCondition(SqlString condition)
 		{
 			throw new NotSupportedException();
 		}
 
-		public override void AddFromFragmentString( SqlString fromFragmentString )
+		public override void AddFromFragmentString(SqlString fromFragmentString)
 		{
-			buffer.Add( fromFragmentString );
+			buffer.Add(fromFragmentString);
 		}
 	}
 }

@@ -45,12 +45,12 @@ namespace NHibernate.Util
 		{
 			private static readonly EmptyEnumerator EmptyEnumerator = new EmptyEnumerator();
 
-			public bool Contains( object key )
+			public bool Contains(object key)
 			{
 				return false;
 			}
 
-			public void Add( object key, object value )
+			public void Add(object key, object value)
 			{
 				throw new NotSupportedException("EmptyMap.Add");
 			}
@@ -65,12 +65,12 @@ namespace NHibernate.Util
 				return EmptyEnumerator;
 			}
 
-			public void Remove( object key )
+			public void Remove(object key)
 			{
 				throw new NotSupportedException("EmptyMap.Remove");
 			}
 
-			public object this[ object key ]
+			public object this[object key]
 			{
 				get { return null; }
 				set { throw new NotSupportedException("EmptyMap.set_Item"); }
@@ -96,7 +96,7 @@ namespace NHibernate.Util
 				get { return true; }
 			}
 
-			public void CopyTo( Array array, int index )
+			public void CopyTo(Array array, int index)
 			{
 			}
 
@@ -124,14 +124,14 @@ namespace NHibernate.Util
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
 		public static readonly ICollection EmptyCollection = EmptyMap;
 
-		public static bool CollectionEquals( ICollection c1, ICollection c2 )
+		public static bool CollectionEquals(ICollection c1, ICollection c2)
 		{
-			if( c1 == c2 )
+			if (c1 == c2)
 			{
 				return true;
 			}
 
-			if( c1.Count != c2.Count )
+			if (c1.Count != c2.Count)
 			{
 				return false;
 			}
@@ -139,38 +139,10 @@ namespace NHibernate.Util
 			IEnumerator e1 = c1.GetEnumerator();
 			IEnumerator e2 = c2.GetEnumerator();
 
-			while( e1.MoveNext() )
+			while (e1.MoveNext())
 			{
 				e2.MoveNext();
-				if( !object.Equals( e1.Current, e2.Current ) )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-		
-		public static bool DictionaryEquals( IDictionary a, IDictionary b)
-		{
-			if (Equals(a, b))
-			{
-				return true;
-			}
-
-			if( a == null || b == null )
-			{
-				return false;
-			}
-
-			if( a.Count != b.Count )
-			{
-				return false;
-			}
-
-			foreach( object key in a.Keys )
-			{
-				if( !object.Equals( a[ key ], b[ key ] ) )
+				if (!Equals(e1.Current, e2.Current))
 				{
 					return false;
 				}
@@ -179,19 +151,47 @@ namespace NHibernate.Util
 			return true;
 		}
 
-		public static bool SetEquals( ISet a, ISet b )
+		public static bool DictionaryEquals(IDictionary a, IDictionary b)
 		{
 			if (Equals(a, b))
 			{
 				return true;
 			}
 
-			if( a == null || b == null )
+			if (a == null || b == null)
 			{
 				return false;
 			}
 
-			if( a.Count != b.Count )
+			if (a.Count != b.Count)
+			{
+				return false;
+			}
+
+			foreach (object key in a.Keys)
+			{
+				if (!Equals(a[key], b[key]))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public static bool SetEquals(ISet a, ISet b)
+		{
+			if (Equals(a, b))
+			{
+				return true;
+			}
+
+			if (a == null || b == null)
+			{
+				return false;
+			}
+
+			if (a.Count != b.Count)
 			{
 				return false;
 			}
@@ -219,7 +219,7 @@ namespace NHibernate.Util
 			unchecked
 			{
 				int result = 0;
-				
+
 				foreach (object obj in coll)
 				{
 					if (obj != null)
@@ -265,6 +265,8 @@ namespace NHibernate.Util
 				);
 		}
 
-		private CollectionHelper() { }
+		private CollectionHelper()
+		{
+		}
 	}
 }

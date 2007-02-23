@@ -11,6 +11,6 @@ namespace NHibernate.Property
 		/// <summary>
 		/// Emit IL to get the property value from the object on top of the stack.
 		/// </summary>
-		void Emit( ILGenerator il );
+		void Emit(ILGenerator il);
 	}
 }

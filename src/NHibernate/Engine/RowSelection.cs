@@ -13,9 +13,9 @@ namespace NHibernate.Engine
 
 		// framework defaults value to 0
 		private int firstRow;
-		private int maxRows = RowSelection.NoValue;
-		private int timeout = RowSelection.NoValue;
-		private int fetchSize = RowSelection.NoValue;
+		private int maxRows = NoValue;
+		private int timeout = NoValue;
+		private int fetchSize = NoValue;
 
 		/// <summary>
 		/// Gets or Sets the Index of the First Row to Select

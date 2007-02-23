@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Text;
-using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
@@ -35,7 +34,8 @@ namespace NHibernate.Exceptions
 		}
 
 
-		public static ADOException Convert(Exception sqle, string message, SqlString sql, object[] parameterValues, IDictionary namedParameters)
+		public static ADOException Convert(Exception sqle, string message, SqlString sql, object[] parameterValues,
+		                                   IDictionary namedParameters)
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append(message).Append(Environment.NewLine).

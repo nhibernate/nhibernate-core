@@ -15,68 +15,68 @@ namespace NHibernate.Util
 	/// </remarks>
 	public sealed class CollectionPrinter
 	{
-		private static void AppendNullOrValue( StringBuilder builder, object value )
+		private static void AppendNullOrValue(StringBuilder builder, object value)
 		{
-			if( value == null )
+			if (value == null)
 			{
-				builder.Append( "null" );
+				builder.Append("null");
 			}
 			else
 			{
-				builder.Append( value );
+				builder.Append(value);
 			}
 		}
 
 		public static string ToString(IDictionary dictionary)
 		{
 			StringBuilder result = new StringBuilder();
-			result.Append( "{" );
+			result.Append("{");
 
 			bool first = true;
-			foreach( DictionaryEntry de in dictionary )
+			foreach (DictionaryEntry de in dictionary)
 			{
-				if( !first )
+				if (!first)
 				{
-					result.Append( ", " );
+					result.Append(", ");
 				}
 				AppendNullOrValue(result, de.Key);
-				result.Append( "=" );
+				result.Append("=");
 				AppendNullOrValue(result, de.Value);
 				first = false;
 			}
 
-			result.Append( "}" );
+			result.Append("}");
 			return result.ToString();
 		}
 
-		private static string ICollectionToString( ICollection collection )
+		private static string ICollectionToString(ICollection collection)
 		{
 			StringBuilder result = new StringBuilder();
-			result.Append( "[" );
+			result.Append("[");
 
 			bool first = true;
-			foreach( object item in collection )
+			foreach (object item in collection)
 			{
-				if( !first )
+				if (!first)
 				{
-					result.Append( ", " );
+					result.Append(", ");
 				}
-				AppendNullOrValue( result, item );
+				AppendNullOrValue(result, item);
 				first = false;
 			}
 
-			result.Append( "]" );
+			result.Append("]");
 			return result.ToString();
 		}
 
-		public static string ToString( IList list )
+		public static string ToString(IList list)
 		{
-			return ICollectionToString( list );
+			return ICollectionToString(list);
 		}
 
-		public static string ToString( ISet set )
+		public static string ToString(ISet set)
 		{
-			return ICollectionToString( set );
+			return ICollectionToString(set);
 		}
 	}
 }

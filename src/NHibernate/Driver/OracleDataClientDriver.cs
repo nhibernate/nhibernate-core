@@ -1,11 +1,8 @@
 using System;
 using System.Data;
-
-using NHibernate.Dialect;
-using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
-namespace NHibernate.Driver 
+namespace NHibernate.Driver
 {
 	/// <summary>
 	/// A NHibernate Driver for using the Oracle.DataAccess DataProvider
@@ -26,7 +23,7 @@ namespace NHibernate.Driver
 		public OracleDataClientDriver() : base(
 			"Oracle.DataAccess",
 			"Oracle.DataAccess.Client.OracleConnection",
-			"Oracle.DataAccess.Client.OracleCommand" )
+			"Oracle.DataAccess.Client.OracleCommand")
 		{
 		}
 
@@ -56,7 +53,7 @@ namespace NHibernate.Driver
 		{
 			// if the parameter coming in contains a boolean then we need to convert it 
 			// to another type since ODP.NET doesn't support DbType.Boolean
-			if (sqlType.DbType == DbType.Boolean )
+			if (sqlType.DbType == DbType.Boolean)
 			{
 				sqlType = SqlTypeFactory.Int16;
 			}
@@ -64,4 +61,3 @@ namespace NHibernate.Driver
 		}
 	}
 }
-	

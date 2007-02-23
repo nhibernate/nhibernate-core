@@ -13,17 +13,17 @@ namespace NHibernate.Bytecode.CodeDom
 	/// </summary>
 	public class BytecodeProviderImpl : IBytecodeProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( BytecodeProviderImpl ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(BytecodeProviderImpl));
 
-		public IReflectionOptimizer GetReflectionOptimizer( System.Type clazz, IGetter[] getters, ISetter[] setters )
+		public IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters)
 		{
-			if( clazz.IsValueType )
+			if (clazz.IsValueType)
 			{
 				// Cannot create optimizer for value types - the setter method will not work.
-				log.Info( "Disabling reflection optimizer for value type " + clazz.FullName );
+				log.Info("Disabling reflection optimizer for value type " + clazz.FullName);
 				return null;
 			}
-			return new Generator( clazz, getters, setters ).CreateReflectionOptimizer();
+			return new Generator(clazz, getters, setters).CreateReflectionOptimizer();
 		}
 
 		public class Generator
@@ -39,7 +39,7 @@ namespace NHibernate.Bytecode.CodeDom
 			/// <param name="mappedClass">The target class</param>
 			/// <param name="setters">Array of setters</param>
 			/// <param name="getters">Array of getters</param>
-			public Generator( System.Type mappedClass, IGetter[] getters, ISetter[] setters )
+			public Generator(System.Type mappedClass, IGetter[] getters, ISetter[] setters)
 			{
 				this.mappedClass = mappedClass;
 				this.getters = getters;
@@ -51,12 +51,12 @@ namespace NHibernate.Bytecode.CodeDom
 				try
 				{
 					InitCompiler();
-					return Build( GenerateCode() );
+					return Build(GenerateCode());
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					log.Info( "Disabling reflection optimizer for class " + mappedClass.FullName );
-					log.Debug( "CodeDOM compilation failed", e );
+					log.Info("Disabling reflection optimizer for class " + mappedClass.FullName);
+					log.Debug("CodeDOM compilation failed", e);
 					return null;
 				}
 			}
@@ -66,9 +66,9 @@ namespace NHibernate.Bytecode.CodeDom
 			/// </summary>
 			private void InitCompiler()
 			{
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "Init compiler for class " + mappedClass.FullName );
+					log.Debug("Init compiler for class " + mappedClass.FullName);
 				}
 
 				cp.GenerateInMemory = true;
@@ -77,15 +77,15 @@ namespace NHibernate.Bytecode.CodeDom
 				cp.CompilerOptions = "/optimize";
 #endif
 
-				AddAssembly( Assembly.GetExecutingAssembly().Location );
+				AddAssembly(Assembly.GetExecutingAssembly().Location);
 
 				Assembly classAssembly = mappedClass.Assembly;
-				AddAssembly( classAssembly.Location );
+				AddAssembly(classAssembly.Location);
 
-				foreach( AssemblyName referencedName in classAssembly.GetReferencedAssemblies() )
+				foreach (AssemblyName referencedName in classAssembly.GetReferencedAssemblies())
 				{
-					Assembly referencedAssembly = Assembly.Load( referencedName );
-					AddAssembly( referencedAssembly.Location );
+					Assembly referencedAssembly = Assembly.Load(referencedName);
+					AddAssembly(referencedAssembly.Location);
 				}
 			}
 
@@ -94,17 +94,17 @@ namespace NHibernate.Bytecode.CodeDom
 			/// required to build the class
 			/// </summary>
 			/// <param name="name"></param>
-			private void AddAssembly( string name )
+			private void AddAssembly(string name)
 			{
-				if( name.StartsWith( "System." ) ) return;
+				if (name.StartsWith("System.")) return;
 
-				if( !cp.ReferencedAssemblies.Contains( name ) )
+				if (!cp.ReferencedAssemblies.Contains(name))
 				{
-					if( log.IsDebugEnabled )
+					if (log.IsDebugEnabled)
 					{
-						log.Debug( "Adding referenced assembly " + name );
+						log.Debug("Adding referenced assembly " + name);
 					}
-					cp.ReferencedAssemblies.Add( name );
+					cp.ReferencedAssemblies.Add(name);
 				}
 			}
 
@@ -113,49 +113,50 @@ namespace NHibernate.Bytecode.CodeDom
 			/// </summary>
 			/// <param name="code">Generated code</param>
 			/// <returns>An instance of the generated class</returns>
-			private IReflectionOptimizer Build( string code )
+			private IReflectionOptimizer Build(string code)
 			{
 				CodeDomProvider provider = new CSharpCodeProvider();
 #if NET_2_0
-				CompilerResults res = provider.CompileAssemblyFromSource( cp, new string[] { code } );
+				CompilerResults res = provider.CompileAssemblyFromSource(cp, new string[] {code});
 #else
 			ICodeCompiler compiler = provider.CreateCompiler();
 			CompilerResults res = compiler.CompileAssemblyFromSource( cp, code );
 #endif
 
-				if( res.Errors.HasErrors )
+				if (res.Errors.HasErrors)
 				{
-					log.Debug( "Compiled with error:\n" + code );
-					foreach( CompilerError e in res.Errors )
+					log.Debug("Compiled with error:\n" + code);
+					foreach (CompilerError e in res.Errors)
 					{
 						log.Debug(
-							String.Format( "Line:{0}, Column:{1} Message:{2}",
-										   e.Line, e.Column, e.ErrorText )
+							String.Format("Line:{0}, Column:{1} Message:{2}",
+							              e.Line, e.Column, e.ErrorText)
 							);
 					}
-					throw new InvalidOperationException( res.Errors[ 0 ].ErrorText );
+					throw new InvalidOperationException(res.Errors[0].ErrorText);
 				}
 				else
 				{
-					if( log.IsDebugEnabled )
+					if (log.IsDebugEnabled)
 					{
-						log.Debug( "Compiled ok:\n" + code );
+						log.Debug("Compiled ok:\n" + code);
 					}
 				}
 
 				Assembly assembly = res.CompiledAssembly;
 				System.Type[] types = assembly.GetTypes();
-				IReflectionOptimizer optimizer = ( IReflectionOptimizer ) assembly.CreateInstance( types[ 0 ].FullName, false,
-																				  BindingFlags.CreateInstance, null, new object[] { setters, getters },
-																				  null, null );
+				IReflectionOptimizer optimizer = (IReflectionOptimizer) assembly.CreateInstance(types[0].FullName, false,
+				                                                                                BindingFlags.CreateInstance, null,
+				                                                                                new object[] {setters, getters},
+				                                                                                null, null);
 
 				return optimizer;
 			}
 
 			private const string header =
 				"using System;\n" +
-					"using NHibernate.Property;\n" +
-					"namespace NHibernate.Bytecode.CodeDom {\n";
+				"using NHibernate.Property;\n" +
+				"namespace NHibernate.Bytecode.CodeDom {\n";
 
 			private const string classDef =
 				@"public class GetSetHelper_{0} : IReflectionOptimizer, IAccessOptimizer {{
@@ -185,8 +186,8 @@ namespace NHibernate.Bytecode.CodeDom
 
 			private const string startGetMethod =
 				"public object[] GetPropertyValues(object obj) {{\n" +
-					"  {0} t = ({0})obj;\n" +
-					"  object[] ret = new object[{1}];\n";
+				"  {0} t = ({0})obj;\n" +
+				"  object[] ret = new object[{1}];\n";
 
 			private const string closeGetMethod =
 				"  return ret;\n" +
@@ -201,9 +202,9 @@ namespace NHibernate.Bytecode.CodeDom
 			/// </remarks>
 			/// <param name="propertyName"></param>
 			/// <returns></returns>
-			private bool IsPublic( string propertyName )
+			private bool IsPublic(string propertyName)
 			{
-				return mappedClass.GetProperty( propertyName, BindingFlags.Instance | BindingFlags.Public ) != null;
+				return mappedClass.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public) != null;
 			}
 
 			/// <summary>
@@ -214,58 +215,58 @@ namespace NHibernate.Bytecode.CodeDom
 			{
 				StringBuilder sb = new StringBuilder();
 
-				sb.Append( header );
-				sb.AppendFormat( classDef, mappedClass.FullName.Replace( '.', '_' ).Replace( "+", "__" ) );
+				sb.Append(header);
+				sb.AppendFormat(classDef, mappedClass.FullName.Replace('.', '_').Replace("+", "__"));
 
-				sb.AppendFormat( startSetMethod, mappedClass.FullName.Replace( '+', '.' ) );
-				for( int i = 0; i < setters.Length; i++ )
+				sb.AppendFormat(startSetMethod, mappedClass.FullName.Replace('+', '.'));
+				for (int i = 0; i < setters.Length; i++)
 				{
-					ISetter setter = setters[ i ];
+					ISetter setter = setters[i];
 
-					if( setter is BasicSetter && IsPublic( setter.PropertyName ) )
+					if (setter is BasicSetter && IsPublic(setter.PropertyName))
 					{
-						System.Type type = getters[ i ].ReturnType;
+						System.Type type = getters[i].ReturnType;
 
-						if( type.IsValueType )
+						if (type.IsValueType)
 						{
 							sb.AppendFormat(
 								"  t.{0} = values[{2}] == null ? new {1}() : ({1})values[{2}];\n",
 								setter.PropertyName,
-								type.FullName.Replace( '+', '.' ),
-								i );
+								type.FullName.Replace('+', '.'),
+								i);
 						}
 						else
 						{
-							sb.AppendFormat( "  t.{0} = ({1})values[{2}];\n",
-											 setter.PropertyName,
-											 type.FullName.Replace( '+', '.' ),
-											 i );
+							sb.AppendFormat("  t.{0} = ({1})values[{2}];\n",
+							                setter.PropertyName,
+							                type.FullName.Replace('+', '.'),
+							                i);
 						}
 					}
 					else
 					{
-						sb.AppendFormat( "  setters[{0}].Set(obj, values[{0}]);\n", i );
+						sb.AppendFormat("  setters[{0}].Set(obj, values[{0}]);\n", i);
 					}
 				}
-				sb.Append( closeSetMethod ); // Close Set
+				sb.Append(closeSetMethod); // Close Set
 
-				sb.AppendFormat( startGetMethod, mappedClass.FullName.Replace( '+', '.' ), getters.Length );
-				for( int i = 0; i < getters.Length; i++ )
+				sb.AppendFormat(startGetMethod, mappedClass.FullName.Replace('+', '.'), getters.Length);
+				for (int i = 0; i < getters.Length; i++)
 				{
-					IGetter getter = getters[ i ];
-					if( getter is BasicGetter && IsPublic( getter.PropertyName ) )
+					IGetter getter = getters[i];
+					if (getter is BasicGetter && IsPublic(getter.PropertyName))
 					{
-						sb.AppendFormat( "  ret[{0}] = t.{1};\n", i, getter.PropertyName );
+						sb.AppendFormat("  ret[{0}] = t.{1};\n", i, getter.PropertyName);
 					}
 					else
 					{
-						sb.AppendFormat( "  ret[{0}] = getters[{0}].Get(obj);\n", i );
+						sb.AppendFormat("  ret[{0}] = getters[{0}].Get(obj);\n", i);
 					}
 				}
-				sb.Append( closeGetMethod );
+				sb.Append(closeGetMethod);
 
-				sb.Append( "}\n" ); // Close class
-				sb.Append( "}\n" ); // Close namespace
+				sb.Append("}\n"); // Close class
+				sb.Append("}\n"); // Close namespace
 
 				return sb.ToString();
 			}

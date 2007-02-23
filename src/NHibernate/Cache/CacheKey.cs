@@ -39,7 +39,7 @@ namespace NHibernate.Cache
 		public override bool Equals(Object other)
 		{
 			if (!(other is CacheKey)) return false;
-			CacheKey that = (CacheKey)other;
+			CacheKey that = (CacheKey) other;
 			return type.Equals(key, that.key) && entityOrRoleName.Equals(that.entityOrRoleName);
 		}
 

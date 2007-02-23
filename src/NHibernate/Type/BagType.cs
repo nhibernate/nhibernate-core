@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -22,8 +21,8 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
-		public BagType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public BagType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 
@@ -33,15 +32,15 @@ namespace NHibernate.Type
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister"></param>
 		/// <returns>A new <see cref="NHibernate.Collection.PersistentBag"/>.</returns>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new PersistentBag( session );
+			return new PersistentBag(session);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( ICollection ); }
+			get { return typeof(ICollection); }
 		}
 
 		/// <summary>
@@ -52,19 +51,19 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="PersistentBag"/> that wraps the non NHibernate <see cref="IList"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentBag( session, ( ICollection ) collection );
+			return new PersistentBag(session, (ICollection) collection);
 		}
 
-		protected override void Add( object collection, object element )
+		protected override void Add(object collection, object element)
 		{
-			( ( IList ) collection ).Add( element );
+			((IList) collection).Add(element);
 		}
 
-		protected override void Clear( object collection )
+		protected override void Clear(object collection)
 		{
-			( ( IList ) collection ).Clear();
+			((IList) collection).Clear();
 		}
 
 		public override object Instantiate()

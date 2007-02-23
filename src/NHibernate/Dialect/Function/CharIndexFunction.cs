@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -8,9 +9,11 @@ namespace NHibernate.Dialect.Function
 	/// <summary>
 	/// Emulation of locate() on Sybase
 	/// </summary>
-	public class CharIndexFunction: ISQLFunction
+	public class CharIndexFunction : ISQLFunction
 	{
-		public CharIndexFunction() { }
+		public CharIndexFunction()
+		{
+		}
 
 		#region ISQLFunction Members
 
@@ -29,7 +32,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(System.Collections.IList args, ISessionFactoryImplementor factory)
+		public string Render(IList args, ISessionFactoryImplementor factory)
 		{
 			// TODO: QueryException if args.Count<2 (not present in H3.2) 
 			bool threeArgs = args.Count > 2;
@@ -39,14 +42,14 @@ namespace NHibernate.Dialect.Function
 
 			StringBuilder buf = new StringBuilder();
 			buf.Append("charindex(")
-				.Append( pattern )
+				.Append(pattern)
 				.Append(", ");
-			if (threeArgs) 
+			if (threeArgs)
 			{
 				buf.Append("right(");
 			}
 			buf.Append(orgString);
-			if (threeArgs) 
+			if (threeArgs)
 			{
 				buf.Append(", char_length(")
 					.Append(orgString)

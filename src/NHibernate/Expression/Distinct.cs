@@ -1,14 +1,13 @@
 using System;
-
-using NHibernate.Type;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
 	[Serializable]
 	public class Distinct : IProjection
 	{
-		readonly IProjection projection;
+		private readonly IProjection projection;
 
 		public Distinct(IProjection proj)
 		{
@@ -17,8 +16,8 @@ namespace NHibernate.Expression
 
 		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-            return new SqlString("distinct ")
-                .Append(projection.ToSqlString(criteria, position, criteriaQuery));
+			return new SqlString("distinct ")
+				.Append(projection.ToSqlString(criteria, position, criteriaQuery));
 		}
 
 		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -60,6 +59,5 @@ namespace NHibernate.Expression
 		{
 			return "distinct " + projection.ToString();
 		}
-
 	}
 }

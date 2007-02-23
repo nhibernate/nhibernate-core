@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Type;
 
 namespace NHibernate
@@ -126,7 +125,7 @@ namespace NHibernate
 		/// </summary>
 		/// <remarks>This is used by applications which require long transactions</remarks>
 		/// <param name="connection">An ADO.NET connection</param>
-		void Reconnect( IDbConnection connection );
+		void Reconnect(IDbConnection connection);
 
 		/// <summary>
 		/// End the <c>ISession</c> by disconnecting from the ADO.NET connection and cleaning up.
@@ -173,14 +172,14 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">a persistent instance</param>
 		/// <returns>the identifier</returns>
-		object GetIdentifier( object obj );
+		object GetIdentifier(object obj);
 
 		/// <summary>
 		/// Is this instance associated with this Session?
 		/// </summary>
 		/// <param name="obj">an instance of a persistent class</param>
 		/// <returns>true if the given instance is associated with this Session</returns>
-		bool Contains( object obj );
+		bool Contains(object obj);
 
 		/// <summary>
 		/// Remove this instance from the session cache.
@@ -191,7 +190,7 @@ namespace NHibernate
 		/// with <c>cascade="all"</c> or <c>cascade="all-delete-orphan"</c>.
 		/// </remarks>
 		/// <param name="obj">a persistent instance</param>
-		void Evict( Object obj );
+		void Evict(Object obj);
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -201,7 +200,7 @@ namespace NHibernate
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		/// <param name="lockMode">The lock level</param>
 		/// <returns>the persistent instance</returns>
-		object Load( System.Type theType, object id, LockMode lockMode );
+		object Load(System.Type theType, object id, LockMode lockMode);
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -215,7 +214,7 @@ namespace NHibernate
 		/// <param name="theType">A persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		/// <returns>The persistent instance or proxy</returns>
-		object Load( System.Type theType, object id );
+		object Load(System.Type theType, object id);
 
 #if NET_2_0
 		/// <summary>
@@ -249,7 +248,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="obj">An "empty" instance of the persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
-		void Load( object obj, object id );
+		void Load(object obj, object id);
 
 		/// <summary>
 		/// Persist all reachable transient objects, reusing the current identifier 
@@ -257,7 +256,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <param name="replicationMode"></param>
-		void Replicate( object obj, ReplicationMode replicationMode );
+		void Replicate(object obj, ReplicationMode replicationMode);
 
 		/// <summary>
 		/// Persist the given transient instance, first assigning a generated identifier.
@@ -268,14 +267,14 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">A transient instance of a persistent class</param>
 		/// <returns>The generated identifier</returns>
-		object Save( object obj );
+		object Save(object obj);
 
 		/// <summary>
 		/// Persist the given transient instance, using the given identifier.
 		/// </summary>
 		/// <param name="obj">A transient instance of a persistent class</param>
 		/// <param name="id">An unused valid identifier</param>
-		void Save( object obj, object id );
+		void Save(object obj, object id);
 
 		/// <summary>
 		/// Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
@@ -286,7 +285,7 @@ namespace NHibernate
 		/// an <c>unsaved-value</c> attribute of the identifier property mapping
 		/// </remarks>
 		/// <param name="obj">A transient instance containing new or updated state</param>
-		void SaveOrUpdate( object obj );
+		void SaveOrUpdate(object obj);
 
 		/// <summary>
 		/// Update the persistent instance with the identifier of the given transient instance.
@@ -296,7 +295,7 @@ namespace NHibernate
 		/// the given transient instance has a <c>null</c> identifier, an exception will be thrown.
 		/// </remarks>
 		/// <param name="obj">A transient instance containing updated state</param>
-		void Update( object obj );
+		void Update(object obj);
 
 		/// <summary>
 		/// Update the persistent state associated with the given identifier.
@@ -307,7 +306,7 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">A transient instance containing updated state</param>
 		/// <param name="id">Identifier of persistent instance</param>
-		void Update( object obj, object id );
+		void Update(object obj, object id);
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
@@ -319,7 +318,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="obj">a transient instance with state to be copied</param>
 		/// <returns>an updated persistent instance</returns>
-		object SaveOrUpdateCopy( object obj );
+		object SaveOrUpdateCopy(object obj);
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the 
@@ -332,7 +331,7 @@ namespace NHibernate
 		/// <param name="obj">a persistent or transient instance with state to be copied</param>
 		/// <param name="id">the identifier of the instance to copy to</param>
 		/// <returns>an updated persistent instance</returns>
-		object SaveOrUpdateCopy( object obj, object id );
+		object SaveOrUpdateCopy(object obj, object id);
 
 		/// <summary>
 		/// Remove a persistent instance from the datastore.
@@ -342,7 +341,7 @@ namespace NHibernate
 		/// transient instance with an identifier associated with existing persistent state.
 		/// </remarks>
 		/// <param name="obj">The instance to be removed</param>
-		void Delete( object obj );
+		void Delete(object obj);
 
 		/// <summary>
 		/// Execute a query
@@ -350,8 +349,8 @@ namespace NHibernate
 		/// <param name="query">A query expressed in Hibernate's query language</param>
 		/// <returns>A distinct list of instances</returns>
 		/// <remarks>See <see cref="IQuery.List()"/> for implications of <c>cache</c> usage.</remarks>
-		[Obsolete( "Use ISession.CreateQuery().List()" )]
-		IList Find( string query );
+		[Obsolete("Use ISession.CreateQuery().List()")]
+		IList Find(string query);
 
 		/// <summary>
 		/// Execute a query, binding a value to a "?" parameter in the query string.
@@ -361,8 +360,8 @@ namespace NHibernate
 		/// <param name="type">The Hibernate type of the value</param>
 		/// <returns>A distinct list of instances</returns>
 		/// <remarks>See <see cref="IQuery.List()"/> for implications of <c>cache</c> usage.</remarks>
-		[Obsolete( "Use ISession.CreateQuery().SetXYZ().List()" )]
-		IList Find( string query, object value, IType type );
+		[Obsolete("Use ISession.CreateQuery().SetXYZ().List()")]
+		IList Find(string query, object value, IType type);
 
 		/// <summary>
 		/// Execute a query, binding an array of values to a "?" parameters in the query string.
@@ -372,8 +371,8 @@ namespace NHibernate
 		/// <param name="types">An array of Hibernate types of the values</param>
 		/// <returns>A distinct list of instances</returns>
 		/// <remarks>See <see cref="IQuery.List()"/> for implications of <c>cache</c> usage.</remarks>
-		[Obsolete( "Use ISession.CreateQuery().SetXYZ().List()" )]
-		IList Find( string query, object[] values, IType[] types );
+		[Obsolete("Use ISession.CreateQuery().SetXYZ().List()")]
+		IList Find(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator.
@@ -391,8 +390,8 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="query">The query string</param>
 		/// <returns>An enumerator</returns>
-		[Obsolete( "Use ISession.CreateQuery().Enumerable()" )]
-		IEnumerable Enumerable( string query );
+		[Obsolete("Use ISession.CreateQuery().Enumerable()")]
+		IEnumerable Enumerable(string query);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator, 
@@ -413,8 +412,8 @@ namespace NHibernate
 		/// <param name="value">A value to be written to a "?" placeholder in the query string</param>
 		/// <param name="type">The hibernate type of the value</param>
 		/// <returns>An enumerator</returns>
-		[Obsolete( "Use ISession.CreateQuery().SetXYZ().Enumerable()" )]
-		IEnumerable Enumerable( string query, object value, IType type );
+		[Obsolete("Use ISession.CreateQuery().SetXYZ().Enumerable()")]
+		IEnumerable Enumerable(string query, object value, IType type);
 
 		/// <summary>
 		/// Execute a query and return the results in an interator, 
@@ -435,8 +434,8 @@ namespace NHibernate
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of hibernate types of the values</param>
 		/// <returns>An enumerator</returns>
-		[Obsolete( "Use ISession.CreateQuery().SetXYZ().Enumerable()" )]
-		IEnumerable Enumerable( string query, object[] values, IType[] types );
+		[Obsolete("Use ISession.CreateQuery().SetXYZ().Enumerable()")]
+		IEnumerable Enumerable(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection.
@@ -449,8 +448,8 @@ namespace NHibernate
 		/// <param name="collection">A persistent collection to filter</param>
 		/// <param name="filter">A filter query string</param>
 		/// <returns>The resulting collection</returns>
-		[Obsolete( "Use ISession.CreateFilter().List()" )]
-		ICollection Filter( object collection, string filter );
+		[Obsolete("Use ISession.CreateFilter().List()")]
+		ICollection Filter(object collection, string filter);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection, binding the given parameter to a "?" placeholder
@@ -465,8 +464,8 @@ namespace NHibernate
 		/// <param name="value">A value to be written to a "?" placeholder in the query</param>
 		/// <param name="type">The hibernate type of value</param>
 		/// <returns>A collection</returns>
-		[Obsolete( "Use ISession.CreateFilter().SetXYZ().List()" )]
-		ICollection Filter( object collection, string filter, object value, IType type );
+		[Obsolete("Use ISession.CreateFilter().SetXYZ().List()")]
+		ICollection Filter(object collection, string filter, object value, IType type);
 
 		/// <summary>
 		/// Apply a filter to a persistent collection, binding the given parameters to "?" placeholders.
@@ -481,15 +480,15 @@ namespace NHibernate
 		/// <param name="values">The values to be written to "?" placeholders in the query</param>
 		/// <param name="types">The hibernate types of the values</param>
 		/// <returns>A collection</returns>
-		[Obsolete( "Use ISession.CreateFilter().SetXYZ().List()" )]
-		ICollection Filter( object collection, string filter, object[] values, IType[] types );
+		[Obsolete("Use ISession.CreateFilter().SetXYZ().List()")]
+		ICollection Filter(object collection, string filter, object[] values, IType[] types);
 
 		/// <summary>
 		/// Delete all objects returned by the query.
 		/// </summary>
 		/// <param name="query">The query string</param>
 		/// <returns>Returns the number of objects deleted.</returns>
-		int Delete( string query );
+		int Delete(string query);
 
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -498,7 +497,7 @@ namespace NHibernate
 		/// <param name="value">A value to be written to a "?" placeholer in the query</param>
 		/// <param name="type">The hibernate type of value.</param>
 		/// <returns>The number of instances deleted</returns>
-		int Delete( string query, object value, IType type );
+		int Delete(string query, object value, IType type);
 
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -507,14 +506,14 @@ namespace NHibernate
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of Hibernate types of the values</param>
 		/// <returns>The number of instances deleted</returns>
-		int Delete( string query, object[ ] values, IType[ ] types );
+		int Delete(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Obtain the specified lock level upon the given object.
 		/// </summary>
 		/// <param name="obj">A persistent instance</param>
 		/// <param name="lockMode">The lock level</param>
-		void Lock( object obj, LockMode lockMode );
+		void Lock(object obj, LockMode lockMode);
 
 		/// <summary>
 		/// Re-read the state of the given instance from the underlying database.
@@ -534,7 +533,7 @@ namespace NHibernate
 		/// </para>
 		/// </remarks>
 		/// <param name="obj">A persistent instance</param>
-		void Refresh( object obj );
+		void Refresh(object obj);
 
 		/// <summary>
 		/// Re-read the state of the given instance from the underlying database, with
@@ -546,14 +545,14 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">a persistent or transient instance</param>
 		/// <param name="lockMode">the lock mode to use</param>
-		void Refresh( object obj, LockMode lockMode );
+		void Refresh(object obj, LockMode lockMode);
 
 		/// <summary>
 		/// Determine the current lock mode of the given object
 		/// </summary>
 		/// <param name="obj">A persistent instance</param>
 		/// <returns>The current lock mode</returns>
-		LockMode GetCurrentLockMode( object obj );
+		LockMode GetCurrentLockMode(object obj);
 
 		/// <summary>
 		/// Begin a unit of work and return the associated <c>ITransaction</c> object.
@@ -572,7 +571,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="isolationLevel">Isolation level for the new transaction</param>
 		/// <returns>A transaction instance having the specified isolation level</returns>
-		ITransaction BeginTransaction( IsolationLevel isolationLevel );
+		ITransaction BeginTransaction(IsolationLevel isolationLevel);
 
 		/// <summary>
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
@@ -584,7 +583,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="persistentClass">The class to Query</param>
 		/// <returns>An ICriteria object</returns>
-		ICriteria CreateCriteria( System.Type persistentClass );
+		ICriteria CreateCriteria(System.Type persistentClass);
 
 		/// <summary>
 		/// Creates a new <c>Criteria</c> for the entity class with a specific alias
@@ -594,13 +593,13 @@ namespace NHibernate
 		/// <returns>An ICriteria object</returns>
 		ICriteria CreateCriteria(System.Type persistentClass, string alias);
 
-		
+
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query string
 		/// </summary>
 		/// <param name="queryString">A hibernate query string</param>
 		/// <returns>The query</returns>
-		IQuery CreateQuery( string queryString );
+		IQuery CreateQuery(string queryString);
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given collection and filter string
@@ -608,7 +607,7 @@ namespace NHibernate
 		/// <param name="collection">A persistent collection</param>
 		/// <param name="queryString">A hibernate query</param>
 		/// <returns>A query</returns>
-		IQuery CreateFilter( object collection, string queryString );
+		IQuery CreateFilter(object collection, string queryString);
 
 		/// <summary>
 		/// Obtain an instance of <see cref="IQuery" /> for a named query string defined in the
@@ -619,7 +618,7 @@ namespace NHibernate
 		/// <remarks>
 		/// The query can be either in <c>hql</c> or <c>sql</c> format.
 		/// </remarks>
-		IQuery GetNamedQuery( string queryName );
+		IQuery GetNamedQuery(string queryName);
 
 		/// <summary>
 		/// Create a new instance of <c>IQuery</c> for the given SQL string.
@@ -629,7 +628,7 @@ namespace NHibernate
 		/// <param name="returnClass">the returned persistent class</param>
 		/// <returns></returns>
 		[Obsolete("Use CreateSQLQuery().AddEntity()")]
-		IQuery CreateSQLQuery( string sql, string returnAlias, System.Type returnClass );
+		IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass);
 
 		/// <summary>
 		/// Create a new instance of <see cref="IQuery" /> for the given SQL string.
@@ -639,7 +638,7 @@ namespace NHibernate
 		/// <param name="returnClasses">the returned persistent classes</param>
 		/// <returns></returns>
 		[Obsolete("Use CreateSQLQuery().AddEntity()")]
-		IQuery CreateSQLQuery( string sql, string[ ] returnAliases, System.Type[ ] returnClasses );
+		IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses);
 
 		/// <summary>
 		/// Create a new instance of <see cref="ISQLQuery" /> for the given SQL query string.
@@ -663,7 +662,7 @@ namespace NHibernate
 		/// <param name="clazz">a persistent class</param>
 		/// <param name="id">an identifier</param>
 		/// <returns>a persistent instance or null</returns>
-		object Get( System.Type clazz, object id );
+		object Get(System.Type clazz, object id);
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier, or null
@@ -674,18 +673,18 @@ namespace NHibernate
 		/// <param name="id">an identifier</param>
 		/// <param name="lockMode">the lock mode</param>
 		/// <returns>a persistent instance or null</returns>
-		object Get( System.Type clazz, object id, LockMode lockMode );
+		object Get(System.Type clazz, object id, LockMode lockMode);
 
 #if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
 		/// </summary>
-		T Get<T>( object id );
+		T Get<T>(object id);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Get(System.Type, object, LockMode)" />
 		/// </summary>
-		T Get<T>( object id, LockMode lockMode );
+		T Get<T>(object id, LockMode lockMode);
 #endif
 
 		/// <summary>
@@ -693,20 +692,20 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="filterName">The name of the filter to be enabled.</param>
 		/// <returns>The Filter instance representing the enabled fiter.</returns>
-        IFilter EnableFilter(string filterName);
+		IFilter EnableFilter(string filterName);
 
-        /// <summary>
-        /// Retrieve a currently enabled filter by name.
-        /// </summary>
-        /// <param name="filterName">The name of the filter to be retrieved.</param>
-        /// <returns>The Filter instance representing the enabled fiter.</returns>
-        IFilter GetEnabledFilter(string filterName);
+		/// <summary>
+		/// Retrieve a currently enabled filter by name.
+		/// </summary>
+		/// <param name="filterName">The name of the filter to be retrieved.</param>
+		/// <returns>The Filter instance representing the enabled fiter.</returns>
+		IFilter GetEnabledFilter(string filterName);
 
-        /// <summary>
-        /// Disable the named filter for the current session.
-        /// </summary>
-        /// <param name="filterName">The name of the filter to be disabled.</param>
-        void DisableFilter(string filterName);
+		/// <summary>
+		/// Disable the named filter for the current session.
+		/// </summary>
+		/// <param name="filterName">The name of the filter to be disabled.</param>
+		void DisableFilter(string filterName);
 
 		/// <summary>
 		/// Create a multi query, a query that can send several

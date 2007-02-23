@@ -41,11 +41,11 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public string Value
 		{
-			get 
+			get
 			{
-				if ( values.Count != 1 )
+				if (values.Count != 1)
 				{
-					throw new ArgumentException( "No unique value" );
+					throw new ArgumentException("No unique value");
 				}
 				return (string) values[0];
 			}
@@ -63,9 +63,9 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="value"></param>
-		public void AddValue( string value )
+		public void AddValue(string value)
 		{
-			values.Add( value );
+			values.Add(value);
 		}
 	}
 }

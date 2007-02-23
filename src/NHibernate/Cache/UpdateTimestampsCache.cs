@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
-
 using Iesi.Collections;
-
 using log4net;
 using NHibernate.Cfg;
 
@@ -18,57 +16,57 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class UpdateTimestampsCache
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( UpdateTimestampsCache ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(UpdateTimestampsCache));
 		private ICache updateTimestamps;
 
-		private readonly string regionName = typeof( UpdateTimestampsCache ).Name;
+		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
 
 		public void Clear()
 		{
 			updateTimestamps.Clear();
 		}
 
-		public UpdateTimestampsCache( Settings settings, IDictionary props )
+		public UpdateTimestampsCache(Settings settings, IDictionary props)
 		{
 			string prefix = settings.CacheRegionPrefix;
 			regionName = prefix == null ? regionName : prefix + '.' + regionName;
-			log.Info( "starting update timestamps cache at region: " + regionName );
-			this.updateTimestamps = settings.CacheProvider.BuildCache( regionName, props );
+			log.Info("starting update timestamps cache at region: " + regionName);
+			this.updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
 		}
 
-		[MethodImpl( MethodImplOptions.Synchronized )]
-		public void PreInvalidate( object[ ] spaces )
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public void PreInvalidate(object[] spaces)
 		{
 			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
-			for( int i = 0; i < spaces.Length; i++ )
+			for (int i = 0; i < spaces.Length; i++)
 			{
-				updateTimestamps.Put( spaces[ i ], ts );
+				updateTimestamps.Put(spaces[i], ts);
 			}
 			//TODO: return new Lock(ts);
 		}
 
 		/// <summary></summary>
-		[MethodImpl( MethodImplOptions.Synchronized )]
-		public void Invalidate( object[ ] spaces )
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public void Invalidate(object[] spaces)
 		{
 			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			long ts = updateTimestamps.NextTimestamp();
 			//TODO: if lock.getTimestamp().equals(ts)
-			for( int i = 0; i < spaces.Length; i++ )
+			for (int i = 0; i < spaces.Length; i++)
 			{
-				log.Debug( string.Format( "Invalidating space [{0}]", spaces[ i ] ) );
-				updateTimestamps.Put( spaces[ i ], ts );
+				log.Debug(string.Format("Invalidating space [{0}]", spaces[i]));
+				updateTimestamps.Put(spaces[i], ts);
 			}
 		}
 
-		[MethodImpl( MethodImplOptions.Synchronized )]
-		public bool IsUpToDate( ISet spaces, long timestamp /* H2.1 has Long here */ )
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public bool IsUpToDate(ISet spaces, long timestamp /* H2.1 has Long here */)
 		{
-			foreach( object space in spaces )
+			foreach (object space in spaces)
 			{
-				object lastUpdate = updateTimestamps.Get( space );
-				if( lastUpdate == null )
+				object lastUpdate = updateTimestamps.Get(space);
+				if (lastUpdate == null)
 				{
 					//the last update timestamp was lost from the cache
 					//(or there were no updates since startup!)
@@ -89,7 +87,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					if( ( long ) lastUpdate >= timestamp )
+					if ((long) lastUpdate >= timestamp)
 					{
 						return false;
 					}
@@ -104,11 +102,10 @@ namespace NHibernate.Cache
 			{
 				updateTimestamps.Destroy();
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				log.Warn( "could not destroy UpdateTimestamps cache", e );
+				log.Warn("could not destroy UpdateTimestamps cache", e);
 			}
 		}
-
 	}
 }

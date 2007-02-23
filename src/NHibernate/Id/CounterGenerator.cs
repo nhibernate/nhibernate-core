@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-
 using NHibernate.Engine;
 
 namespace NHibernate.Id
@@ -19,7 +18,7 @@ namespace NHibernate.Id
 			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
-				if( counter < 0 )
+				if (counter < 0)
 				{
 					counter = 0;
 				}
@@ -27,10 +26,9 @@ namespace NHibernate.Id
 			}
 		}
 
-		public object Generate( ISessionImplementor cache, object obj )
+		public object Generate(ISessionImplementor cache, object obj)
 		{
-			return unchecked ( ( DateTime.Now.Ticks << 16 ) + Count );
+			return unchecked ((DateTime.Now.Ticks << 16) + Count);
 		}
-
 	}
 }

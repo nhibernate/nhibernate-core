@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.Text;
-using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Util
@@ -16,24 +15,32 @@ namespace NHibernate.Util
 		}
 
 		public const string WhiteSpace = " \n\r\f\t";
+
 		/// <summary></summary>
 		public const char Dot = '.';
+
 		/// <summary></summary>
 		public const char Underscore = '_';
+
 		/// <summary></summary>
 		public const string CommaSpace = ", ";
+
 		/// <summary></summary>
 		public const string Comma = ",";
+
 		/// <summary></summary>
 		public const string OpenParen = "(";
+
 		/// <summary></summary>
 		public const string ClosedParen = ")";
+
 		/// <summary></summary>
 		public const char SingleQuote = '\'';
 
 		// TODO: Semantically these belong elsewhere as they are NHibernate specific
 		/// <summary></summary>
 		public const string NamePrefix = ":";
+
 		/// <summary></summary>
 		public const string SqlParameter = "?";
 
@@ -128,10 +135,10 @@ namespace NHibernate.Util
 				return new StringBuilder(template.Substring(0, loc))
 					.Append(replacement)
 					.Append(Replace(
-								template.Substring(loc + placeholder.Length),
-								placeholder,
-								replacement
-								)).ToString();
+					        	template.Substring(loc + placeholder.Length),
+					        	placeholder,
+					        	replacement
+					        	)).ToString();
 			}
 		}
 
@@ -190,7 +197,7 @@ namespace NHibernate.Util
 			{
 				results.Add(token);
 			}
-			return (string[])results.ToArray(typeof(string));
+			return (string[]) results.ToArray(typeof(string));
 		}
 
 		/// <summary>
@@ -285,8 +292,8 @@ namespace NHibernate.Util
 		public static string Suffix(string name, string suffix)
 		{
 			return (suffix == null) ?
-				   name :
-				   name + suffix;
+			       name :
+			       name + suffix;
 		}
 
 		/// <summary>
@@ -318,8 +325,8 @@ namespace NHibernate.Util
 		{
 			int loc = qualifiedName.IndexOf(".");
 			return (loc < 0)
-					? qualifiedName
-					: qualifiedName.Substring(0, loc);
+			       	? qualifiedName
+			       	: qualifiedName.Substring(0, loc);
 		}
 
 		/// <summary>
@@ -373,7 +380,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string[] Multiply(string str, IEnumerator placeholders, IEnumerator replacements)
 		{
-			string[] result = new string[] { str };
+			string[] result = new string[] {str};
 			while (placeholders.MoveNext())
 			{
 				replacements.MoveNext();
@@ -520,7 +527,7 @@ namespace NHibernate.Util
 		{
 			for (int i = 0; i < str.Length; i++)
 			{
-				if (!char.IsLetter(str, i) /*&& !('_'==character)*/ )
+				if (!char.IsLetter(str, i) /*&& !('_'==character)*/)
 				{
 					return i - 1;
 				}
@@ -553,8 +560,8 @@ namespace NHibernate.Util
 		public static string GenerateAlias(string description, int unique)
 		{
 			return GenerateAliasRoot(description) +
-				unique.ToString() +
-				Underscore;
+			       unique.ToString() +
+			       Underscore;
 		}
 
 		private static string GenerateAliasRoot(string description)
@@ -615,17 +622,17 @@ namespace NHibernate.Util
 			return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, CompareOptions.IgnoreCase);
 		}
 
-        public static int IndexOfCaseInsensitive(string source, string value, int startIndex)
-        {
-            return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, CompareOptions.IgnoreCase);
-        }
+		public static int IndexOfCaseInsensitive(string source, string value, int startIndex)
+		{
+			return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, CompareOptions.IgnoreCase);
+		}
 
-        public static int IndexOfCaseInsensitive(string source, string value, int startIndex, int count)
-        {
-            return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, count, CompareOptions.IgnoreCase);
-        }
+		public static int IndexOfCaseInsensitive(string source, string value, int startIndex, int count)
+		{
+			return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, count, CompareOptions.IgnoreCase);
+		}
 
-	    public static int LastIndexOfCaseInsensitive(string source, string value)
+		public static int LastIndexOfCaseInsensitive(string source, string value)
 		{
 			return CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(source, value, CompareOptions.IgnoreCase);
 		}
@@ -647,7 +654,7 @@ namespace NHibernate.Util
 			{
 				return null;
 			}
-			
+
 			string interned = string.IsInterned(str);
 			if (interned != null)
 			{

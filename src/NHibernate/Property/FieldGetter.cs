@@ -19,7 +19,7 @@ namespace NHibernate.Property
 		/// <param name="clazz">The <see cref="System.Type"/> that contains the field to use for the Property <c>get</c>.</param>
 		/// <param name="field">The <see cref="FieldInfo"/> for reflection.</param>
 		/// <param name="name">The name of the Field.</param>
-		public FieldGetter( FieldInfo field, System.Type clazz, string name )
+		public FieldGetter(FieldInfo field, System.Type clazz, string name)
 		{
 			this.field = field;
 			this.clazz = clazz;
@@ -35,15 +35,15 @@ namespace NHibernate.Property
 		/// <returns>
 		/// The value of the Field for the target.
 		/// </returns>
-		public object Get( object target )
+		public object Get(object target)
 		{
 			try
 			{
-				return field.GetValue( target );
+				return field.GetValue(target);
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new PropertyAccessException( e, "could not get a field value by reflection", false, clazz, name );
+				throw new PropertyAccessException(e, "could not get a field value by reflection", false, clazz, name);
 			}
 		}
 
@@ -76,9 +76,9 @@ namespace NHibernate.Property
 
 		#endregion
 
-		public void Emit( ILGenerator il )
+		public void Emit(ILGenerator il)
 		{
-			il.Emit( OpCodes.Ldfld, field ); 
+			il.Emit(OpCodes.Ldfld, field);
 		}
 	}
 }

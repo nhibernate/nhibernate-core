@@ -12,7 +12,7 @@ namespace NHibernate.Util
 	/// </summary>
 	public sealed class ReflectHelper
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (ReflectHelper));
+		private static readonly ILog log = LogManager.GetLogger(typeof(ReflectHelper));
 
 		public static BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
 		                                                   BindingFlags.NonPublic;
@@ -34,7 +34,7 @@ namespace NHibernate.Util
 		{
 			try
 			{
-				MethodInfo equals = clazz.GetMethod("Equals", new System.Type[] {typeof (object)});
+				MethodInfo equals = clazz.GetMethod("Equals", new System.Type[] {typeof(object)});
 				if (equals == null)
 				{
 					return false;
@@ -43,7 +43,7 @@ namespace NHibernate.Util
 				{
 					// make sure that the DeclaringType is not System.Object - if that is the
 					// declaring type then there is no override.
-					return !equals.DeclaringType.Equals(typeof (object));
+					return !equals.DeclaringType.Equals(typeof(object));
 				}
 			}
 			catch (AmbiguousMatchException)
@@ -73,7 +73,7 @@ namespace NHibernate.Util
 				{
 					// make sure that the DeclaringType is not System.Object - if that is the
 					// declaring type then there is no override.
-					return !getHashCode.DeclaringType.Equals(typeof (object));
+					return !getHashCode.DeclaringType.Equals(typeof(object));
 				}
 			}
 			catch (AmbiguousMatchException)
@@ -121,7 +121,7 @@ namespace NHibernate.Util
 
 #if NET_2_0
 			if (propertyClass.IsGenericType
-			    && propertyClass.GetGenericTypeDefinition().Equals(typeof (Nullable<>)))
+			    && propertyClass.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
 			{
 				heuristicClass = propertyClass.GetGenericArguments()[0];
 			}

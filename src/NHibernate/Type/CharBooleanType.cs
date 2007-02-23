@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	{
 		/// <summary></summary>
 		protected abstract string TrueString { get; }
-		
+
 		/// <summary></summary>
 		protected abstract string FalseString { get; }
 
@@ -22,7 +22,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="sqlType"></param>
-		internal CharBooleanType( AnsiStringFixedLengthSqlType sqlType ) : base( sqlType )
+		internal CharBooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -32,10 +32,10 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			string code = Convert.ToString( rs[ index ] );
-			if( code == null )
+			string code = Convert.ToString(rs[index]);
+			if (code == null)
 			{
 				return null;
 			}
@@ -51,9 +51,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary>
@@ -62,9 +62,9 @@ namespace NHibernate.Type
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand cmd, Object value, int index )
+		public override void Set(IDbCommand cmd, Object value, int index)
 		{
-			( ( IDataParameter ) cmd.Parameters[ index ] ).Value = ( ( ( bool ) value ) ? TrueString : FalseString );
+			((IDataParameter) cmd.Parameters[index]).Value = (((bool) value) ? TrueString : FalseString);
 		}
 
 		/// <summary>
@@ -72,9 +72,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
-			return "'" + ( ( ( bool ) value ) ? TrueString : FalseString ) + "'";
+			return "'" + (((bool) value) ? TrueString : FalseString) + "'";
 		}
 
 		/// <summary>
@@ -82,19 +82,19 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public override object StringToObject( String xml )
+		public override object StringToObject(String xml)
 		{
-			if(StringHelper.EqualsCaseInsensitive(TrueString, xml))
+			if (StringHelper.EqualsCaseInsensitive(TrueString, xml))
 			{
 				return true;
 			}
-			else if(StringHelper.EqualsCaseInsensitive(FalseString, xml))
+			else if (StringHelper.EqualsCaseInsensitive(FalseString, xml))
 			{
 				return false;
 			}
 			else
 			{
-				throw new HibernateException( "Could not interpret: " + xml );
+				throw new HibernateException("Could not interpret: " + xml);
 			}
 		}
 	}

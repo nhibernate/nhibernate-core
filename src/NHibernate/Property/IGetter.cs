@@ -17,7 +17,7 @@ namespace NHibernate.Property
 		/// <exception cref="PropertyAccessException">
 		/// Thrown when there is a problem getting the value from the target.
 		/// </exception>
-		object Get( object target );
+		object Get(object target);
 
 		/// <summary>
 		/// When implemented by a class, gets the <see cref="System.Type"/> that the Property/Field returns.

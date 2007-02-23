@@ -40,7 +40,7 @@ namespace NHibernate.Mapping
 		/// Gets a <see cref="bool"/> indicating if this Value is unique.
 		/// </summary>
 		bool IsUnique { get; }
-		
+
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if this Value can have
 		/// null values.
@@ -59,7 +59,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		void CreateForeignKey( );
+		void CreateForeignKey();
 
 		/// <summary>
 		/// Determines if the Value is part of a valid mapping.
@@ -74,7 +74,7 @@ namespace NHibernate.Mapping
 		/// Mainly used to make sure that Value maps to the correct number
 		/// of columns.
 		/// </remarks>
-		bool IsValid( IMapping mapping );
+		bool IsValid(IMapping mapping);
 
 		FetchMode FetchMode { get; }
 	}

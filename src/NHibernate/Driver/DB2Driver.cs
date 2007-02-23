@@ -13,10 +13,10 @@ namespace NHibernate.Driver
 		/// <exception cref="HibernateException">
 		/// Thrown when the <c>IBM.Data.DB2</c> assembly can not be loaded.
 		/// </exception>
-		public DB2Driver() : base (
-				"IBM.Data.DB2",
-				"IBM.Data.DB2.DB2Connection",
-				"IBM.Data.DB2.DB2Command" )
+		public DB2Driver() : base(
+			"IBM.Data.DB2",
+			"IBM.Data.DB2.DB2Connection",
+			"IBM.Data.DB2.DB2Command")
 		{
 		}
 

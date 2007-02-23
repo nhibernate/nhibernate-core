@@ -13,8 +13,8 @@ namespace NHibernate.Expression
 	[Serializable]
 	public class LikeExpression : SimpleExpression
 	{
-		public LikeExpression( string propertyName, object value, bool ignoreCase )
-			: base( propertyName, value, ignoreCase )
+		public LikeExpression(string propertyName, object value, bool ignoreCase)
+			: base(propertyName, value, ignoreCase)
 		{
 		}
 
@@ -24,12 +24,12 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
-		public LikeExpression( string propertyName, object value ) : base( propertyName, value )
+		public LikeExpression(string propertyName, object value) : base(propertyName, value)
 		{
 		}
 
-		public LikeExpression( string propertyName, string value, MatchMode matchMode )
-			: this( propertyName, matchMode.ToMatchString( value ) )
+		public LikeExpression(string propertyName, string value, MatchMode matchMode)
+			: this(propertyName, matchMode.ToMatchString(value))
 		{
 		}
 

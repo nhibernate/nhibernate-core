@@ -16,7 +16,7 @@ namespace NHibernate.Impl
 		}
 
 		public ReattachVisitor(SessionImpl session, object key)
-			: base( session )
+			: base(session)
 		{
 			_key = key;
 		}
@@ -24,13 +24,13 @@ namespace NHibernate.Impl
 		protected override object ProcessComponent(object component, IAbstractComponentType componentType)
 		{
 			IType[] types = componentType.Subtypes;
-			if( component == null )
+			if (component == null)
 			{
-				ProcessValues( new object[types.Length], types );
+				ProcessValues(new object[types.Length], types);
 			}
 			else
 			{
-				base.ProcessComponent( component, componentType );
+				base.ProcessComponent(component, componentType);
 			}
 
 			return null;

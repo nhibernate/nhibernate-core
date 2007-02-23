@@ -16,38 +16,38 @@ namespace NHibernate.Impl
 	internal class OnLockVisitor : ReattachVisitor
 	{
 		public OnLockVisitor(SessionImpl session, object key)
-			: base( session, key )
+			: base(session, key)
 		{
 		}
 
 		protected override object ProcessCollection(object collection, CollectionType type)
 		{
-			ICollectionPersister persister = Session.GetCollectionPersister( type.Role );
+			ICollectionPersister persister = Session.GetCollectionPersister(type.Role);
 
-			if( collection == null )
+			if (collection == null)
 			{
 				// Do nothing
 			}
-			else if( collection is IPersistentCollection )
+			else if (collection is IPersistentCollection)
 			{
-				IPersistentCollection coll = (IPersistentCollection)collection;
+				IPersistentCollection coll = (IPersistentCollection) collection;
 
-				if( coll.SetCurrentSession( Session ) )
+				if (coll.SetCurrentSession(Session))
 				{
 					ICollectionSnapshot snapshot = coll.CollectionSnapshot;
-					if( SessionImpl.IsOwnerUnchanged( snapshot, persister, this.Key ) )
+					if (SessionImpl.IsOwnerUnchanged(snapshot, persister, this.Key))
 					{
 						// a "detached" collection that originally belonged to the same entity
-						if( coll.IsDirty )
+						if (coll.IsDirty)
 						{
-							throw new HibernateException( "reassociated object has dirty collection" );
+							throw new HibernateException("reassociated object has dirty collection");
 						}
-						Session.ReattachCollection( coll, snapshot );
+						Session.ReattachCollection(coll, snapshot);
 					}
 					else
 					{
 						// a "detached" collection that belonged to a different entity
-						throw new HibernateException( "reassociated object has dirty collection reference" );
+						throw new HibernateException("reassociated object has dirty collection reference");
 					}
 				}
 				else
@@ -55,18 +55,17 @@ namespace NHibernate.Impl
 					// a collection loaded in the current session
 					// can not possibly be the collection belonging
 					// to the entity passed to update()
-					throw new HibernateException( "reassociated object has dirty collection reference" );
+					throw new HibernateException("reassociated object has dirty collection reference");
 				}
 			}
 			else
 			{
 				// brand new collection
 				//TODO: or an array!! we can't lock objects with arrays now??
-				throw new HibernateException( "reassociated object has dirty collection reference" );
+				throw new HibernateException("reassociated object has dirty collection reference");
 			}
 
 			return null;
 		}
-
 	}
 }

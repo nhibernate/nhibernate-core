@@ -22,12 +22,12 @@ namespace NHibernate.Type
 		static NullableType()
 		{
 			//cache this, because it was a significant performance cost
-			IsDebugEnabled = LogManager.GetLogger( typeof( IType ).Namespace ).IsDebugEnabled;
+			IsDebugEnabled = LogManager.GetLogger(typeof(IType).Namespace).IsDebugEnabled;
 		}
 
 		private ILog Log
 		{
-			get { return LogManager.GetLogger( GetType() ); }
+			get { return LogManager.GetLogger(GetType()); }
 		}
 
 		private SqlType _sqlType;
@@ -38,7 +38,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
 		/// <remarks>This is used when the Property is mapped to a single column.</remarks>
-		protected NullableType( SqlType sqlType )
+		protected NullableType(SqlType sqlType)
 		{
 			_sqlType = sqlType;
 		}
@@ -55,7 +55,7 @@ namespace NHibernate.Type
 		/// only be called from <see cref="NullSafeSet(IDbCommand, object, int)"/> after 
 		/// it has checked for nulls.
 		/// </remarks>
-		public abstract void Set( IDbCommand cmd, object value, int index );
+		public abstract void Set(IDbCommand cmd, object value, int index);
 
 		/// <summary>
 		/// When implemented by a class, gets the object in the 
@@ -64,7 +64,7 @@ namespace NHibernate.Type
 		/// <param name="rs">The <see cref="IDataReader"/> that contains the value.</param>
 		/// <param name="index">The index of the field to get the value from.</param>
 		/// <returns>An object with the value from the database.</returns>
-		public abstract object Get( IDataReader rs, int index );
+		public abstract object Get(IDataReader rs, int index);
 
 		/// <summary>
 		/// When implemented by a class, gets the object in the 
@@ -77,7 +77,7 @@ namespace NHibernate.Type
 		/// Most implementors just call the <see cref="Get(IDataReader, int)"/> 
 		/// overload of this method.
 		/// </remarks>
-		public abstract object Get( IDataReader rs, string name );
+		public abstract object Get(IDataReader rs, string name);
 
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace NHibernate.Type
 		/// <param name="val">The object that contains the values.
 		/// </param>
 		/// <returns>An Xml formatted string.</returns>
-		public abstract string ToString( object val );
+		public abstract string ToString(object val);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
@@ -102,9 +102,9 @@ namespace NHibernate.Type
 		/// should be in <see cref="ToString(object)"/>.
 		/// </para>
 		/// </remarks>
-		public override sealed string ToLoggableString( object value, ISessionFactoryImplementor factory )
+		public override sealed string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return ( value == null ) ? null : ToString( value );
+			return (value == null) ? null : ToString(value);
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml">XML string to parse, guaranteed to be non-empty</param>
 		/// <returns></returns>
-		public abstract object FromStringValue( string xml );
+		public abstract object FromStringValue(string xml);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
@@ -128,14 +128,14 @@ namespace NHibernate.Type
 		/// should be in <see cref="FromStringValue"/>.
 		/// </para>
 		/// </remarks>
-		public override sealed object FromString( string xml )
+		public override sealed object FromString(string xml)
 		{
-			return ( xml == null || xml.Length == 0 ) ? null : FromStringValue( xml );
+			return (xml == null || xml.Length == 0) ? null : FromStringValue(xml);
 		}
 
-		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) NullSafeSet( st, value, index );
+			if (settable[0]) NullSafeSet(st, value, index);
 		}
 
 		/// <include file='IType.cs.xmldoc' 
@@ -151,9 +151,9 @@ namespace NHibernate.Type
 		/// should be in <see cref="NullSafeSet(IDbCommand, object, int)" />.
 		/// </para>
 		/// </remarks>
-		public override sealed void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session )
+		public override sealed void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 		{
-			NullSafeSet( st, value, index );
+			NullSafeSet(st, value, index);
 		}
 
 		/// <summary>
@@ -172,29 +172,29 @@ namespace NHibernate.Type
 		/// is called and that method is responsible for setting the value.
 		/// </para>
 		/// </remarks>
-		public void NullSafeSet( IDbCommand cmd, object value, int index )
+		public void NullSafeSet(IDbCommand cmd, object value, int index)
 		{
-			if( value == null )
+			if (value == null)
 			{
-				if( IsDebugEnabled )
+				if (IsDebugEnabled)
 				{
-					Log.Debug( "binding null to parameter: " + index.ToString() );
+					Log.Debug("binding null to parameter: " + index.ToString());
 				}
 
 				//Do we check IsNullable?
 				// TODO: find out why a certain Parameter would not take a null value...
 				// From reading the .NET SDK the default is to NOT accept a null value. 
 				// I definitely need to look into this more...
-				( ( IDataParameter ) cmd.Parameters[ index ] ).Value = DBNull.Value;
+				((IDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
 			}
 			else
 			{
-				if( IsDebugEnabled )
+				if (IsDebugEnabled)
 				{
-					Log.Debug( "binding '" + ToString( value ) + "' to parameter: " + index );
+					Log.Debug("binding '" + ToString(value) + "' to parameter: " + index);
 				}
 
-				Set( cmd, value, index );
+				Set(cmd, value, index);
 			}
 		}
 
@@ -207,9 +207,9 @@ namespace NHibernate.Type
 		/// It only takes the first name from the string[] names parameter - that is a 
 		/// safe thing to do because a Nullable Type only has one field.
 		/// </remarks>
-		public override sealed object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet( rs, names[ 0 ] );
+			return NullSafeGet(rs, names[0]);
 		}
 
 		/// <summary>
@@ -227,9 +227,9 @@ namespace NHibernate.Type
 		/// 
 		/// TODO: determine if this is needed
 		/// </remarks>
-		public virtual object NullSafeGet( IDataReader rs, string[ ] names )
+		public virtual object NullSafeGet(IDataReader rs, string[] names)
 		{
-			return NullSafeGet( rs, names[ 0 ] );
+			return NullSafeGet(rs, names[0]);
 		}
 
 		/// <summary>
@@ -248,15 +248,15 @@ namespace NHibernate.Type
 		/// is called and that method is responsible for retreiving the value.
 		/// </para>
 		/// </remarks>
-		public virtual object NullSafeGet( IDataReader rs, string name )
+		public virtual object NullSafeGet(IDataReader rs, string name)
 		{
-			int index = rs.GetOrdinal( name );
+			int index = rs.GetOrdinal(name);
 
-			if( rs.IsDBNull( index ) )
+			if (rs.IsDBNull(index))
 			{
-				if( IsDebugEnabled )
+				if (IsDebugEnabled)
 				{
-					Log.Debug( "returning null as column: " + name );
+					Log.Debug("returning null as column: " + name);
 				}
 				// TODO: add a method to NullableType.GetNullValue - if we want to
 				// use "MAGIC" numbers to indicate null values...
@@ -267,23 +267,24 @@ namespace NHibernate.Type
 				object val = null;
 				try
 				{
-					val = Get( rs, index );
+					val = Get(rs, index);
 				}
-				catch( InvalidCastException ice )
+				catch (InvalidCastException ice)
 				{
 					throw new ADOException(
-						"Could not cast the value in field " + name + " of type " + rs[index].GetType().Name + " to the Type " + this.GetType().Name +
-							".  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.", ice );
+						"Could not cast the value in field " + name + " of type " + rs[index].GetType().Name + " to the Type " +
+						this.GetType().Name +
+						".  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.",
+						ice);
 				}
 
-				if( IsDebugEnabled )
+				if (IsDebugEnabled)
 				{
-					Log.Debug( "returning '" + ToString( val ) + "' as column: " + name );
+					Log.Debug("returning '" + ToString(val) + "' as column: " + name);
 				}
 
 				return val;
 			}
-
 		}
 
 		/// <include file='IType.cs.xmldoc' 
@@ -299,9 +300,9 @@ namespace NHibernate.Type
 		/// should be in <see cref="NullSafeGet(IDataReader, String)" />.
 		/// </para>
 		/// </remarks>
-		public override sealed object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner )
+		public override sealed object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet( rs, name );
+			return NullSafeGet(rs, name);
 		}
 
 		/// <summary>
@@ -332,9 +333,9 @@ namespace NHibernate.Type
 		/// column.  All of their implementation should be in <see cref="NullableType.SqlType" />.
 		/// </para>
 		/// </remarks>
-		public override sealed SqlType[ ] SqlTypes( IMapping mapping )
+		public override sealed SqlType[] SqlTypes(IMapping mapping)
 		{
-			return new SqlType[ ] {SqlType};
+			return new SqlType[] {SqlType};
 		}
 
 		/// <summary>
@@ -345,13 +346,14 @@ namespace NHibernate.Type
 		/// This has the hard coding of 1 in there because, by definition of this class, 
 		/// a NullableType can only map to one column in a table.
 		/// </remarks>
-		public override sealed int GetColumnSpan( IMapping session )
+		public override sealed int GetColumnSpan(IMapping session)
 		{
 			return 1;
 		}
 
 
 		/* <see cref="NullableTypes"/> */
+
 		/// <summary>
 		/// When implemented by a class, returns a deep copy of the persistent state.
 		/// </summary>
@@ -361,7 +363,7 @@ namespace NHibernate.Type
 		/// Most of the built in NullableTypes will just return the same object
 		/// passed into it.
 		/// </remarks>
-		public abstract object DeepCopyNotNull( object val );
+		public abstract object DeepCopyNotNull(object val);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
@@ -377,14 +379,14 @@ namespace NHibernate.Type
 		/// should be in <see cref="DeepCopyNotNull(Object)"/>.
 		/// </para>
 		/// </remarks>
-		public override sealed object DeepCopy( object val )
+		public override sealed object DeepCopy(object val)
 		{
-			return ( val == null ) ? null : DeepCopyNotNull( val );
+			return (val == null) ? null : DeepCopyNotNull(val);
 		}
 
-		public override bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session )
+		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return checkable[ 0 ] && IsDirty( old, current, session );
+			return checkable[0] && IsDirty(old, current, session);
 		}
 
 		#region override of System.Object Members
@@ -395,7 +397,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="obj">The <see cref="Object"/> to compare with this NullableType.</param>
 		/// <returns>true if the SqlType and Name properties are the same.</returns>
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
 			/*
 			 *  Step 1: Perform an == test
@@ -406,20 +408,20 @@ namespace NHibernate.Type
 			 *  method is reflexive, symmetric, and transitive
 			 */
 
-			if( this == obj )
+			if (this == obj)
 			{
 				return true;
 			}
 
 			NullableType rhsType = obj as NullableType;
 
-			if( rhsType == null )
+			if (rhsType == null)
 			{
 				return false;
 			}
 
-			if( this.Name.Equals( rhsType.Name )
-				&& this.SqlType.Equals( rhsType.SqlType ) )
+			if (this.Name.Equals(rhsType.Name)
+			    && this.SqlType.Equals(rhsType.SqlType))
 			{
 				return true;
 			}
@@ -436,8 +438,7 @@ namespace NHibernate.Type
 		/// hash code and the <see cref="AbstractType.Name"/>'s hash code.</returns>
 		public override int GetHashCode()
 		{
-			return ( SqlType.GetHashCode()/2 ) + ( Name.GetHashCode()/2 );
-
+			return (SqlType.GetHashCode() / 2) + (Name.GetHashCode() / 2);
 		}
 
 		#endregion

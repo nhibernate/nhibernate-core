@@ -2,11 +2,7 @@
 
 using System;
 using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Reflection;
 using NHibernate.AdoNet;
-using NHibernate.Engine;
 
 namespace NHibernate.Impl
 {
@@ -17,7 +13,7 @@ namespace NHibernate.Impl
 	{
 		private int batchSize;
 		private int totalExpectedRowsAffected;
-		SqlClientSqlCommandSet currentBatch;
+		private SqlClientSqlCommandSet currentBatch;
 
 		public SqlClientBatchingBatcher(ConnectionManager connectionManager)
 			: base(connectionManager)
@@ -33,7 +29,7 @@ namespace NHibernate.Impl
 			IDbCommand batchUpdate = CurrentCommand;
 			LogCommand(batchUpdate);
 
-			currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
+			currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
 			if (currentBatch.CountOfCommands >= batchSize)
 			{
 				DoExecuteBatch(batchUpdate);
@@ -46,14 +42,14 @@ namespace NHibernate.Impl
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
 			int rowsAffected = currentBatch.ExecuteNonQuery();
-			
+
 			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 
 			currentBatch.Dispose();
 			totalExpectedRowsAffected = 0;
 			currentBatch = new SqlClientSqlCommandSet();
 		}
-
 	}
 }
+
 #endif

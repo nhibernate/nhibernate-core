@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-
 using Iesi.Collections;
-
 using log4net;
 
 namespace NHibernate.Transform
@@ -10,14 +8,14 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class DistinctRootEntityResultTransformer : IResultTransformer
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( DistinctRootEntityResultTransformer ) );
-		private static readonly IHashCodeProvider IdentityHashCodeProvider = new NHibernate.IdentityHashCodeProvider();
+		private static readonly ILog log = LogManager.GetLogger(typeof(DistinctRootEntityResultTransformer));
+		private static readonly IHashCodeProvider IdentityHashCodeProvider = new IdentityHashCodeProvider();
 
 		internal sealed class Identity
 		{
 			internal readonly object entity;
 
-			internal Identity( object entity )
+			internal Identity(object entity)
 			{
 				this.entity = entity;
 			}
@@ -30,13 +28,13 @@ namespace NHibernate.Transform
 
 			public override int GetHashCode()
 			{
-				return IdentityHashCodeProvider.GetHashCode( entity );
+				return IdentityHashCodeProvider.GetHashCode(entity);
 			}
 		}
 
 		public object TransformTuple(object[] tuple, string[] aliases)
 		{
-			return tuple[ tuple.Length - 1 ];
+			return tuple[tuple.Length - 1];
 		}
 
 		public IList TransformList(IList list)
@@ -44,19 +42,19 @@ namespace NHibernate.Transform
 			IList result = new ArrayList();
 			ISet distinct = new HashedSet();
 
-			for( int i = 0; i < list.Count; i++ )
+			for (int i = 0; i < list.Count; i++)
 			{
-				object entity = list[ i ];
-				if( distinct.Add( new Identity( entity ) ) )
+				object entity = list[i];
+				if (distinct.Add(new Identity(entity)))
 				{
-					result.Add( entity );
+					result.Add(entity);
 				}
 			}
 
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( string.Format( "transformed: {0} rows to: {1} distinct results",
-					list.Count, result.Count ) );
+				log.Debug(string.Format("transformed: {0} rows to: {1} distinct results",
+				                        list.Count, result.Count));
 			}
 			return result;
 		}

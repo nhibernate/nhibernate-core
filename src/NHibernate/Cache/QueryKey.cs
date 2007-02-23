@@ -16,8 +16,8 @@ namespace NHibernate.Cache
 	{
 		private readonly ISessionFactoryImplementor factory;
 		private readonly SqlString sqlQueryString;
-		private readonly IType[ ] types;
-		private readonly object[ ] values;
+		private readonly IType[] types;
+		private readonly object[] values;
 		private readonly int firstRow = RowSelection.NoValue;
 		private readonly int maxRows = RowSelection.NoValue;
 		private readonly IDictionary namedParameters;
@@ -26,7 +26,8 @@ namespace NHibernate.Cache
 		private readonly int hashCode;
 
 		/// <param name="factory">the sesion factory for this query key, required to get the identifiers of entities that are used as values.</param>
-		public QueryKey( ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters, ISet filters )
+		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
+		                ISet filters)
 		{
 			this.factory = factory;
 			sqlQueryString = queryString;
@@ -34,7 +35,7 @@ namespace NHibernate.Cache
 			values = queryParameters.PositionalParameterValues;
 
 			RowSelection selection = queryParameters.RowSelection;
-			if( selection != null )
+			if (selection != null)
 			{
 				firstRow = selection.FirstRow;
 				maxRows = selection.MaxRows;
@@ -50,60 +51,60 @@ namespace NHibernate.Cache
 			this.hashCode = ComputeHashCode();
 		}
 
-		public override bool Equals( object other )
+		public override bool Equals(object other)
 		{
-			QueryKey that = ( QueryKey ) other;
-			if( !sqlQueryString.Equals( that.sqlQueryString ) )
+			QueryKey that = (QueryKey) other;
+			if (!sqlQueryString.Equals(that.sqlQueryString))
 			{
 				return false;
 			}
-			if( firstRow != that.firstRow
-				|| maxRows != that.maxRows )
+			if (firstRow != that.firstRow
+			    || maxRows != that.maxRows)
 			{
 				return false;
 			}
-			
+
 			if (!Equals(customTransformer, that.customTransformer))
 			{
 				return false;
 			}
 
-			if( types == null )
+			if (types == null)
 			{
-				if( that.types != null )
+				if (that.types != null)
 				{
 					return false;
 				}
 			}
 			else
 			{
-				if( that.types == null )
+				if (that.types == null)
 				{
 					return false;
 				}
-				if( types.Length != that.types.Length )
+				if (types.Length != that.types.Length)
 				{
 					return false;
 				}
 
-				for( int i = 0; i < types.Length; i++ )
+				for (int i = 0; i < types.Length; i++)
 				{
-					if( !types[ i ].Equals( that.types[ i ] ) )
+					if (!types[i].Equals(that.types[i]))
 					{
 						return false;
 					}
-					if( !object.Equals( values[ i ], that.values[ i ] ) )
+					if (!Equals(values[i], that.values[i]))
 					{
 						return false;
 					}
 				}
 			}
 
-			if( !CollectionHelper.DictionaryEquals( namedParameters, that.namedParameters ) )
+			if (!CollectionHelper.DictionaryEquals(namedParameters, that.namedParameters))
 			{
 				return false;
 			}
-			
+
 			if (!CollectionHelper.SetEquals(filters, that.filters))
 			{
 				return false;
@@ -129,13 +130,13 @@ namespace NHibernate.Cache
 				//result = 37 * result
 				//	+ ( namedParameters == null ? 0 : namedParameters.GetHashCode() );
 
-				for( int i = 0; i < types.Length; i++ )
+				for (int i = 0; i < types.Length; i++)
 				{
-					result = 37 * result + ( types[ i ] == null ? 0 : types[ i ].GetHashCode() );
+					result = 37 * result + (types[i] == null ? 0 : types[i].GetHashCode());
 				}
-				for( int i = 0; i < values.Length; i++ )
+				for (int i = 0; i < values.Length; i++)
 				{
-					result = 37 * result + ( values[ i ] == null ? 0 : values[ i ].GetHashCode() );
+					result = 37 * result + (values[i] == null ? 0 : values[i].GetHashCode());
 				}
 
 				if (filters != null)
@@ -155,30 +156,30 @@ namespace NHibernate.Cache
 		public override string ToString()
 		{
 			StringBuilder buf = new StringBuilder()
-				.Append( "sql: " )
-				.Append( sqlQueryString );
+				.Append("sql: ")
+				.Append(sqlQueryString);
 
 			Printer print = new Printer(factory);
 
-			if( values != null )
+			if (values != null)
 			{
 				buf
 					.Append("; parameters: ")
 					.Append(print.ToString(types, values));
 			}
-			if( namedParameters != null )
+			if (namedParameters != null)
 			{
 				buf
 					.Append("; named parameters: ")
 					.Append(print.ToString(namedParameters));
 			}
-			if( firstRow != RowSelection.NoValue )
+			if (firstRow != RowSelection.NoValue)
 			{
-				buf.Append( "; first row: " ).Append( firstRow );
+				buf.Append("; first row: ").Append(firstRow);
 			}
-			if( maxRows != RowSelection.NoValue )
+			if (maxRows != RowSelection.NoValue)
 			{
-				buf.Append( "; max rows: " ).Append( maxRows );
+				buf.Append("; max rows: ").Append(maxRows);
 			}
 
 			return buf.ToString();

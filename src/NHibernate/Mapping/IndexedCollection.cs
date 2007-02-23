@@ -12,7 +12,7 @@ namespace NHibernate.Mapping
 
 		private SimpleValue index;
 
-		protected IndexedCollection( PersistentClass owner ) : base( owner )
+		protected IndexedCollection(PersistentClass owner) : base(owner)
 		{
 		}
 
@@ -29,31 +29,32 @@ namespace NHibernate.Mapping
 
 		public override void CreatePrimaryKey()
 		{
-			if ( !IsOneToMany )
+			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
 
-				foreach( Column col in Key.ColumnCollection )
+				foreach (Column col in Key.ColumnCollection)
 				{
-					pk.AddColumn( col );
+					pk.AddColumn(col);
 				}
 
 				// Index should be last column listed
-				foreach( Column col in Index.ColumnCollection )
+				foreach (Column col in Index.ColumnCollection)
 				{
-					pk.AddColumn( col );
+					pk.AddColumn(col);
 				}
 
 				CollectionTable.PrimaryKey = pk;
 			}
 		}
 
-		public override void Validate( IMapping mapping )
+		public override void Validate(IMapping mapping)
 		{
-			base.Validate( mapping );
-			if ( !Index.IsValid( mapping ) )
+			base.Validate(mapping);
+			if (!Index.IsValid(mapping))
 			{
-				throw new MappingException( string.Format( "collection index mapping has wrong number of columns: {0} type: {1}", Role, Index.Type.Name ) );
+				throw new MappingException(
+					string.Format("collection index mapping has wrong number of columns: {0} type: {1}", Role, Index.Type.Name));
 			}
 		}
 	}

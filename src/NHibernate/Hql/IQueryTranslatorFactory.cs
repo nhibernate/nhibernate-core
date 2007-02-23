@@ -1,6 +1,6 @@
 using System;
-using NHibernate.Engine;
 using System.Collections;
+using NHibernate.Engine;
 
 namespace NHibernate.Hql
 {
@@ -19,6 +19,7 @@ namespace NHibernate.Hql
 		/// <param name="factory">The session factory</param>
 		/// <returns>An appropriate translator.</returns>
 		IQueryTranslator CreateQueryTranslator(string queryString, IDictionary filters, ISessionFactoryImplementor factory);
+
 		// Not ported:
 		// <param name="queryIdentifier">
 		// The query-identifier (used in hibernate.stat.QueryStatistics collection). 

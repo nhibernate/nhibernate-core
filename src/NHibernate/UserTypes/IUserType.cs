@@ -44,7 +44,7 @@ namespace NHibernate.UserTypes
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		bool Equals( object x, object y );
+		bool Equals(object x, object y);
 
 		/// <summary>
 		/// Get a hashcode for the instance, consistent with persistence "equality"
@@ -61,7 +61,7 @@ namespace NHibernate.UserTypes
 		/// <returns></returns>
 		/// <exception cref="HibernateException">HibernateException</exception>
 //		/// <exception cref="SQLException">SQLException</exception>
-		object NullSafeGet( IDataReader rs, string[] names, object owner );
+		object NullSafeGet(IDataReader rs, string[] names, object owner);
 
 		/// <summary>
 		/// Write an instance of the mapped class to a prepared statement.
@@ -73,14 +73,14 @@ namespace NHibernate.UserTypes
 		/// <param name="index">command parameter index</param>
 		/// <exception cref="HibernateException">HibernateException</exception>
 //		/// <exception cref="SQLException">SQLException</exception>
-		void NullSafeSet( IDbCommand cmd, object value, int index );
+		void NullSafeSet(IDbCommand cmd, object value, int index);
 
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
 		/// </summary>
 		/// <param name="value">generally a collection element or entity field</param>
 		/// <returns>a copy</returns>
-		object DeepCopy( object value );
+		object DeepCopy(object value);
 
 		/// <summary>
 		/// Are objects of this type mutable?
@@ -100,7 +100,7 @@ namespace NHibernate.UserTypes
 		/// <param name="owner">the managed entity</param>
 		/// <returns>the value to be merged</returns>
 		object Replace(object original, object target, object owner);
-		
+
 		/// <summary>
 		/// Reconstruct an object from the cacheable representation. At the very least this
 		/// method should perform a deep copy if the type is mutable. (optional operation)
@@ -109,7 +109,7 @@ namespace NHibernate.UserTypes
 		/// <param name="owner">the owner of the cached object</param>
 		/// <returns>a reconstructed object from the cachable representation</returns>
 		object Assemble(object cached, object owner);
-		
+
 		/// <summary>
 		/// Transform the object into its cacheable representation. At the very least this
 		/// method should perform a deep copy if the type is mutable. That may not be enough

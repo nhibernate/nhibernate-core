@@ -13,36 +13,38 @@ namespace NHibernate.SqlCommand
 		private Dialect.Dialect dialect;
 		private bool useThetaStyleInnerJoins;
 
-		public QueryJoinFragment( Dialect.Dialect dialect, bool useThetaStyleInnerJoins )
+		public QueryJoinFragment(Dialect.Dialect dialect, bool useThetaStyleInnerJoins)
 		{
 			this.dialect = dialect;
 			this.useThetaStyleInnerJoins = useThetaStyleInnerJoins;
 		}
 
-		public override void AddJoin( string tableName, string alias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType )
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType)
 		{
-			AddJoin( tableName, alias, alias, fkColumns, pkColumns, joinType, null );
+			AddJoin(tableName, alias, alias, fkColumns, pkColumns, joinType, null);
 		}
 
-		private void AddJoin( string tableName, string alias, string concreteAlias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType, string on )
+		private void AddJoin(string tableName, string alias, string concreteAlias, string[] fkColumns, string[] pkColumns,
+		                     JoinType joinType, string on)
 		{
-			if( !useThetaStyleInnerJoins || joinType != JoinType.InnerJoin )
+			if (!useThetaStyleInnerJoins || joinType != JoinType.InnerJoin)
 			{
 				JoinFragment jf = dialect.CreateOuterJoinFragment();
-				jf.AddJoin( tableName, alias, fkColumns, pkColumns, joinType, on );
-				AddFragment( jf );
+				jf.AddJoin(tableName, alias, fkColumns, pkColumns, joinType, on);
+				AddFragment(jf);
 			}
 			else
 			{
-				AddCrossJoin( tableName, alias );
-				AddCondition( concreteAlias, fkColumns, pkColumns );
+				AddCrossJoin(tableName, alias);
+				AddCondition(concreteAlias, fkColumns, pkColumns);
 				AddCondition(on);
 			}
 		}
 
-		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, string on)
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
+		                             string on)
 		{
-			AddJoin( tableName, alias, alias, fkColumns, pkColumns, joinType, on );
+			AddJoin(tableName, alias, alias, fkColumns, pkColumns, joinType, on);
 		}
 
 		public override SqlString ToFromFragmentString
@@ -55,20 +57,20 @@ namespace NHibernate.SqlCommand
 			get { return afterWhere.ToSqlString(); }
 		}
 
-		public override void AddJoins( SqlString fromFragment, SqlString whereFragment )
+		public override void AddJoins(SqlString fromFragment, SqlString whereFragment)
 		{
-			afterFrom.Add( fromFragment );
-			afterWhere.Add( whereFragment );
+			afterFrom.Add(fromFragment);
+			afterWhere.Add(whereFragment);
 		}
 
-		public override void AddCrossJoin( string tableName, string alias )
+		public override void AddCrossJoin(string tableName, string alias)
 		{
-			afterFrom.Add( StringHelper.CommaSpace + tableName + ' ' + alias );
+			afterFrom.Add(StringHelper.CommaSpace + tableName + ' ' + alias);
 		}
 
-		private void AddCondition( string alias, string[ ] fkColumns, string[ ] pkColumns )
+		private void AddCondition(string alias, string[] fkColumns, string[] pkColumns)
 		{
-			for( int j = 0; j < fkColumns.Length; j++ )
+			for (int j = 0; j < fkColumns.Length; j++)
 			{
 				afterWhere
 					.Add(" and ")
@@ -80,18 +82,18 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		public override bool AddCondition( string condition )
+		public override bool AddCondition(string condition)
 		{
 			//TODO: this seems hackish
-			if(
-				afterFrom.ToSqlString().ToString().IndexOf( condition.Trim() ) < 0 &&
-					afterWhere.ToSqlString().ToString().IndexOf( condition.Trim() ) < 0 )
+			if (
+				afterFrom.ToSqlString().ToString().IndexOf(condition.Trim()) < 0 &&
+				afterWhere.ToSqlString().ToString().IndexOf(condition.Trim()) < 0)
 			{
-				if( !condition.StartsWith( " and " ) )
+				if (!condition.StartsWith(" and "))
 				{
-					afterWhere.Add( " and " );
+					afterWhere.Add(" and ");
 				}
-				afterWhere.Add( condition );
+				afterWhere.Add(condition);
 				return true;
 			}
 
@@ -99,28 +101,28 @@ namespace NHibernate.SqlCommand
 		}
 
 
-		public override bool AddCondition( SqlString condition )
+		public override bool AddCondition(SqlString condition)
 		{
 			//TODO: this seems hackish
-			if(
-				afterFrom.ToString().IndexOf( condition.Trim().ToString() ) < 0 &&
-					afterWhere.ToString().IndexOf( condition.Trim().ToString() ) < 0 )
+			if (
+				afterFrom.ToString().IndexOf(condition.Trim().ToString()) < 0 &&
+				afterWhere.ToString().IndexOf(condition.Trim().ToString()) < 0)
 			{
-				if( !condition.StartsWithCaseInsensitive( " and " ) )
+				if (!condition.StartsWithCaseInsensitive(" and "))
 				{
-					afterWhere.Add( " and " );
+					afterWhere.Add(" and ");
 				}
 
-				afterWhere.Add( condition );
+				afterWhere.Add(condition);
 				return true;
 			}
 
 			return false;
 		}
 
-		public override void AddFromFragmentString( SqlString fromFragmentString )
+		public override void AddFromFragmentString(SqlString fromFragmentString)
 		{
-			afterFrom.Add( fromFragmentString );
+			afterFrom.Add(fromFragmentString);
 		}
 
 		public void ClearWherePart()

@@ -18,19 +18,19 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary></summary>
-		public object Get( object key )
+		public object Get(object key)
 		{
-			return hashtable[ key.ToString() ];
+			return hashtable[key.ToString()];
 		}
 
 		/// <summary></summary>
-		public void Put( object key, object value )
+		public void Put(object key, object value)
 		{
 			hashtable[key.ToString()] = value;
 		}
 
 		/// <summary></summary>
-		public void Remove( object key )
+		public void Remove(object key)
 		{
 			hashtable.Remove(key.ToString());
 		}
@@ -47,13 +47,13 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary></summary>
-		public void Lock( object key )
+		public void Lock(object key)
 		{
 			// local cache, so we use synchronization
 		}
 
 		/// <summary></summary>
-		public void Unlock( object key )
+		public void Unlock(object key)
 		{
 			// local cache, so we use synchronization
 		}
@@ -67,9 +67,7 @@ namespace NHibernate.Cache
 		/// <summary></summary>
 		public int Timeout
 		{
-			get
-			{
-				return Timestamper.OneMs * 60000; // ie. 60 seconds
+			get { return Timestamper.OneMs * 60000; // ie. 60 seconds
 			}
 		}
 

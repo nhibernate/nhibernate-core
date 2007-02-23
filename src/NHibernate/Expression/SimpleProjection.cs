@@ -1,8 +1,6 @@
 using System;
-
-using NHibernate.Type;
 using NHibernate.SqlCommand;
-
+using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
@@ -10,7 +8,7 @@ namespace NHibernate.Expression
 	/// A single-column projection that may be aliased
 	/// </summary>
 	[Serializable]
-	abstract public class SimpleProjection : IProjection
+	public abstract class SimpleProjection : IProjection
 	{
 		public IProjection As(string alias)
 		{
@@ -29,7 +27,7 @@ namespace NHibernate.Expression
 
 		public virtual string[] GetColumnAliases(int loc)
 		{
-			return new string[] { "y" + loc + "_" };
+			return new string[] {"y" + loc + "_"};
 		}
 
 		public virtual string[] Aliases
@@ -42,10 +40,13 @@ namespace NHibernate.Expression
 			throw new InvalidOperationException("not a grouping projection");
 		}
 
-		public virtual bool IsGrouped { get { return false; } }
+		public virtual bool IsGrouped
+		{
+			get { return false; }
+		}
 
-		abstract public SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery cirteriaQuery);
+		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery cirteriaQuery);
 
-		abstract public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery);
+		public abstract IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery);
 	}
 }

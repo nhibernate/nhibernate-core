@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -12,10 +11,10 @@ namespace NHibernate.Tuple
 	/// Author: Steve Ebersole
 	/// </remarks>
 	[Serializable]
-	public class VersionProperty : StandardProperty 
+	public class VersionProperty : StandardProperty
 	{
 		private readonly Cascades.VersionValue unsavedValue;
-		
+
 		/// <summary>
 		/// Constructs VersionProperty instances.
 		/// </summary>
@@ -50,7 +49,9 @@ namespace NHibernate.Tuple
 			bool versionable,
 			Cascades.CascadeStyle cascadeStyle,
 			Cascades.VersionValue unsavedValue)
-			: base(name, node, type, lazy, insertable, updateable, insertGenerated, updateGenerated, nullable, checkable, versionable, cascadeStyle)
+			: base(
+				name, node, type, lazy, insertable, updateable, insertGenerated, updateGenerated, nullable, checkable, versionable,
+				cascadeStyle)
 		{
 			this.unsavedValue = unsavedValue;
 		}

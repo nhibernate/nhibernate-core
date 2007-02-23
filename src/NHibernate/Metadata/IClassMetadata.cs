@@ -17,7 +17,7 @@ namespace NHibernate.Metadata
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		object Instantiate( object id );
+		object Instantiate(object id);
 
 		/// <summary>
 		/// The name of the identifier property (or return null)
@@ -27,7 +27,7 @@ namespace NHibernate.Metadata
 		/// <summary>
 		/// The names of the class' persistent properties
 		/// </summary>
-		string[ ] PropertyNames { get; }
+		string[] PropertyNames { get; }
 
 		/// <summary>
 		/// The identifier Hibernate type
@@ -37,14 +37,14 @@ namespace NHibernate.Metadata
 		/// <summary>
 		/// The Hibernate types of the classes properties
 		/// </summary>
-		IType[ ] PropertyTypes { get; }
+		IType[] PropertyTypes { get; }
 
 		/// <summary>
 		/// Get the type of a particular (named) property
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		IType GetPropertyType( string propertyName );
+		IType GetPropertyType(string propertyName);
 
 		/// <summary>
 		/// Get the value of a particular (named) property 
@@ -52,7 +52,7 @@ namespace NHibernate.Metadata
 		/// <param name="obj"></param>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		object GetPropertyValue( object obj, string propertyName );
+		object GetPropertyValue(object obj, string propertyName);
 
 		/// <summary>
 		/// Set the value of a particular (named) property 
@@ -60,34 +60,34 @@ namespace NHibernate.Metadata
 		/// <param name="obj"></param>
 		/// <param name="propertyName"></param>
 		/// <param name="value"></param>
-		void SetPropertyValue( object obj, string propertyName, object value );
+		void SetPropertyValue(object obj, string propertyName, object value);
 
 		/// <summary>
 		/// Return the values of the mapped properties of the object
 		/// </summary>
 		/// <param name="entity"></param>
-		object[ ] GetPropertyValues( object entity );
+		object[] GetPropertyValues(object entity);
 
 		/// <summary>
 		/// Set the given values to the mapped properties of the given object
 		/// </summary>
 		/// <param name="entity"></param>
 		/// <param name="values"></param>
-		void SetPropertyValues( object entity, object[ ] values );
+		void SetPropertyValues(object entity, object[] values);
 
 		/// <summary>
 		/// Get the identifier of an instance (throw an exception if no identifier property)
 		/// </summary>
 		/// <param name="entity"></param>
 		/// <returns></returns>
-		object GetIdentifier( object entity );
+		object GetIdentifier(object entity);
 
 		/// <summary>
 		/// Set the identifier of an instance (or do nothing if no identifier property)
 		/// </summary>
 		/// <param name="entity"></param>
 		/// <param name="id"></param>
-		void SetIdentifier( object entity, object id );
+		void SetIdentifier(object entity, object id);
 
 		/// <summary>
 		/// Does the class implement the <c>ILifecycle</c> interface?
@@ -120,7 +120,7 @@ namespace NHibernate.Metadata
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		object GetVersion( object obj );
+		object GetVersion(object obj);
 
 		/// <summary>
 		/// Gets the index of the version property
@@ -130,7 +130,7 @@ namespace NHibernate.Metadata
 		/// <summary>
 		/// Get the nullability of the class' persistent properties
 		/// </summary>
-		bool[ ] PropertyNullability { get; }
+		bool[] PropertyNullability { get; }
 
 		/// <summary>
 		/// Does the class have an identifier property?

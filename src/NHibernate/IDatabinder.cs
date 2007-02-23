@@ -30,14 +30,14 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="obj">A transient or persistent instance</param>
 		/// <returns>Databinder</returns>
-		IDatabinder Bind( object obj );
+		IDatabinder Bind(object obj);
 
 		/// <summary>
 		/// Add a collection of objects to the output document
 		/// </summary>
 		/// <param name="objs">A collection of transient or persistent instance</param>
 		/// <returns>Databinder</returns>
-		IDatabinder BindAll( ICollection objs );
+		IDatabinder BindAll(ICollection objs);
 
 		/// <summary>
 		/// Output the generic XML representation of the bound objects

@@ -12,8 +12,8 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjectDeletedException"/> class.
 		/// </summary>
-		public ObjectDeletedException( string message, object identifier, System.Type clazz )
-			: base( message, identifier, clazz )
+		public ObjectDeletedException(string message, object identifier, System.Type clazz)
+			: base(message, identifier, clazz)
 		{
 		}
 
@@ -30,7 +30,7 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected ObjectDeletedException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected ObjectDeletedException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 

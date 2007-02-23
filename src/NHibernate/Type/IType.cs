@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -44,12 +43,12 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
 		/// /> 
-		SqlType[ ] SqlTypes( IMapping mapping );
+		SqlType[] SqlTypes(IMapping mapping);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.GetColumnSpan"]/*'
 		/// /> 
-		int GetColumnSpan( IMapping mapping );
+		int GetColumnSpan(IMapping mapping);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'
@@ -59,7 +58,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
 		/// /> 
-		bool Equals( object x, object y );
+		bool Equals(object x, object y);
 
 		/// <summary>
 		/// Get a hashcode, consistent with persistence "equality"
@@ -69,41 +68,41 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.IsDirty"]/*'
 		/// /> 
-		bool IsDirty( object old, object current, ISessionImplementor session );
+		bool IsDirty(object old, object current, ISessionImplementor session);
 
-		bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session );
+		bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session);
 
-		bool IsModified( object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session );
+		bool IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String[], ISessionImplementor, Object)"]/*'
 		/// /> 
-		object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner );
+		object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String, ISessionImplementor, Object)"]/*'
 		/// /> 
-		object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, object owner );
+		object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
-		void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session );
+		void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
-		void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session );
+		void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		/// /> 
-		string ToLoggableString( object value, ISessionFactoryImplementor factory );
+		string ToLoggableString(object value, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
 		/// /> 
-		object FromString( string xml );
+		object FromString(string xml);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'
@@ -113,7 +112,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
 		/// /> 
-		object DeepCopy( object val );
+		object DeepCopy(object val);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
@@ -128,23 +127,23 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
 		/// /> 
-		object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner );
+		object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ResolveIdentifier"]/*'
 		/// /> 
-		object ResolveIdentifier( object value, ISessionImplementor session, object owner );
+		object ResolveIdentifier(object value, ISessionImplementor session, object owner);
 
 		/// <summary>
 		/// Given a hydrated, but unresolved value, return a value that may be used to
 		/// reconstruct property-ref associations.
 		/// </summary>
-		object SemiResolve( object value, ISessionImplementor session, object owner );
+		object SemiResolve(object value, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Copy"]/*'
 		/// /> 
-		object Replace( object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready );
+		object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready);
 
 		/// <summary>
 		/// Determines whether the specified value is represented as <c>NULL</c> in the database.

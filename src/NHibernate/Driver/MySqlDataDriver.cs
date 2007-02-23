@@ -27,8 +27,8 @@ namespace NHibernate.Driver
 		/// </exception>
 		public MySqlDataDriver() : base(
 			"MySql.Data",
-            "MySql.Data.MySqlClient.MySqlConnection",
-			"MySql.Data.MySqlClient.MySqlCommand" )
+			"MySql.Data.MySqlClient.MySqlConnection",
+			"MySql.Data.MySqlClient.MySqlCommand")
 		{
 		}
 

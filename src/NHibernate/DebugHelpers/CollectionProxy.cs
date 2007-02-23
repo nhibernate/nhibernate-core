@@ -1,11 +1,10 @@
 #if NET_2_0
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Collections;
 
 namespace NHibernate.DebugHelpers
 {
-
 	public class CollectionProxy
 	{
 		private readonly ICollection set;
@@ -26,6 +25,7 @@ namespace NHibernate.DebugHelpers
 			}
 		}
 	}
+
 	public class CollectionProxy<T>
 	{
 		private readonly ICollection<T> set;
@@ -47,4 +47,5 @@ namespace NHibernate.DebugHelpers
 		}
 	}
 }
+
 #endif

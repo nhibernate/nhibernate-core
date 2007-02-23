@@ -19,7 +19,7 @@ namespace NHibernate.Expression
 			get { return " and "; }
 		}
 
-		protected override NHibernate.SqlCommand.SqlString EmptyExpression
+		protected override SqlString EmptyExpression
 		{
 			get { return new SqlString("1=1"); }
 		}

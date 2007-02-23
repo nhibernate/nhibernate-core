@@ -20,7 +20,7 @@ namespace NHibernate.Property
 		/// Thrown when a Property specified by the <c>propertyName</c> could not
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
-		IGetter GetGetter( System.Type theClass, string propertyName );
+		IGetter GetGetter(System.Type theClass, string propertyName);
 
 		/// <summary>
 		/// When implemented by a class, create a "setter" for the mapped property.
@@ -35,6 +35,6 @@ namespace NHibernate.Property
 		/// Thrown when a Property specified by the <c>propertyName</c> could not
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
-		ISetter GetSetter( System.Type theClass, string propertyName );
+		ISetter GetSetter(System.Type theClass, string propertyName);
 	}
 }

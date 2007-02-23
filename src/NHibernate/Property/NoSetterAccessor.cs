@@ -19,7 +19,7 @@ namespace NHibernate.Property
 		/// Initializes a new instance of <see cref="NoSetterAccessor"/>.
 		/// </summary>
 		/// <param name="namingStrategy">The <see cref="IFieldNamingStrategy"/> to use.</param>
-		public NoSetterAccessor( IFieldNamingStrategy namingStrategy )
+		public NoSetterAccessor(IFieldNamingStrategy namingStrategy)
 		{
 			this.namingStrategy = namingStrategy;
 		}
@@ -38,12 +38,12 @@ namespace NHibernate.Property
 		/// Thrown when a Property specified by the <c>propertyName</c> could not
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public IGetter GetGetter( System.Type type, string propertyName )
+		public IGetter GetGetter(System.Type type, string propertyName)
 		{
-			BasicGetter result = BasicPropertyAccessor.GetGetterOrNull( type, propertyName );
-			if( result == null )
+			BasicGetter result = BasicPropertyAccessor.GetGetterOrNull(type, propertyName);
+			if (result == null)
 			{
-				throw new PropertyNotFoundException( type, propertyName, "getter" );
+				throw new PropertyNotFoundException(type, propertyName, "getter");
 			}
 			return result;
 		}
@@ -62,10 +62,10 @@ namespace NHibernate.Property
 		/// Thrown when a Field for the Property specified by the <c>propertyName</c> using the
 		/// <see cref="IFieldNamingStrategy"/> could not be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public ISetter GetSetter( System.Type type, string propertyName )
+		public ISetter GetSetter(System.Type type, string propertyName)
 		{
-			string fieldName = namingStrategy.GetFieldName( propertyName );
-			return new FieldSetter( FieldAccessor.GetField( type, fieldName ), type, fieldName );
+			string fieldName = namingStrategy.GetFieldName(propertyName);
+			return new FieldSetter(FieldAccessor.GetField(type, fieldName), type, fieldName);
 		}
 
 		#endregion

@@ -17,27 +17,28 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="elementColumns"></param>
 		/// <param name="type"></param>
-		public ElementPropertyMapping( string[] elementColumns, IType type)
+		public ElementPropertyMapping(string[] elementColumns, IType type)
 		{
 			this.elementColumns = elementColumns;
 			this.type = type;
 		}
 
 		#region IPropertyMapping Members
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public IType ToType( string propertyName )
+		public IType ToType(string propertyName)
 		{
-			if ( propertyName == null || "id".Equals( propertyName ) ) 
+			if (propertyName == null || "id".Equals(propertyName))
 			{
 				return type;
 			}
 			else
 			{
-				throw new QueryException( string.Format( "cannot dereference scalar collection element: {0}", propertyName ) );
+				throw new QueryException(string.Format("cannot dereference scalar collection element: {0}", propertyName));
 			}
 		}
 
@@ -47,15 +48,15 @@ namespace NHibernate.Persister.Collection
 		/// <param name="alias"></param>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public string[] ToColumns( string alias, string propertyName )
+		public string[] ToColumns(string alias, string propertyName)
 		{
-			if ( propertyName == null || "id".Equals( propertyName ) ) 
+			if (propertyName == null || "id".Equals(propertyName))
 			{
-				return StringHelper.Qualify( alias, elementColumns );
+				return StringHelper.Qualify(alias, elementColumns);
 			}
 			else
 			{
-				throw new QueryException( string.Format( "cannot dereference scalar collection element: {0}", propertyName ) );
+				throw new QueryException(string.Format("cannot dereference scalar collection element: {0}", propertyName));
 			}
 		}
 
@@ -64,8 +65,9 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		public IType Type
 		{
-			get	{ return type; }
+			get { return type; }
 		}
+
 		#endregion
 	}
 }

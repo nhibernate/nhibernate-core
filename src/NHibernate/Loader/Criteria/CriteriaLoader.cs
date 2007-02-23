@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Data;
 using Iesi.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
@@ -32,14 +31,14 @@ namespace NHibernate.Loader.Criteria
 			ISessionFactoryImplementor factory,
 			CriteriaImpl rootCriteria,
 			System.Type rootEntityName, // TODO H3: change to string rootEntityName
-			IDictionary enabledFilters )
-			: base( factory, enabledFilters )
+			IDictionary enabledFilters)
+			: base(factory, enabledFilters)
 		{
 			translator = new CriteriaQueryTranslator(
 				factory,
 				rootCriteria,
 				rootEntityName,
-				CriteriaQueryTranslator.RootSqlAlias );
+				CriteriaQueryTranslator.RootSqlAlias);
 
 			querySpaces = translator.GetQuerySpaces();
 
@@ -49,9 +48,9 @@ namespace NHibernate.Loader.Criteria
 				factory,
 				rootCriteria,
 				rootEntityName,
-				enabledFilters );
+				enabledFilters);
 
-			InitFromWalker( walker );
+			InitFromWalker(walker);
 
 			userAliases = walker.UserAliases;
 			resultTypes = walker.ResultTypes;
@@ -61,34 +60,35 @@ namespace NHibernate.Loader.Criteria
 
 		// Not ported: scroll (not supported)
 
-		public IList List( ISessionImplementor session )
+		public IList List(ISessionImplementor session)
 		{
-			return List( session, translator.GetQueryParameters(), querySpaces, resultTypes );
+			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
 		}
 
-		protected override object GetResultColumnOrRow( object[ ] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session )
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		                                               ISessionImplementor session)
 		{
 			object[] result;
 			string[] aliases;
 
-            if (translator.HasProjection)
-            {
-                IType[] types = translator.ProjectedTypes;
-                result = new object[types.Length];
-                string[] columnAliases = translator.ProjectedColumnAliases;
+			if (translator.HasProjection)
+			{
+				IType[] types = translator.ProjectedTypes;
+				result = new object[types.Length];
+				string[] columnAliases = translator.ProjectedColumnAliases;
 
-                for (int i = 0; i < result.Length; i++)
-                {
-                    result[i] = types[i].NullSafeGet(rs, columnAliases[i], session, null);
-                }
-                aliases = translator.ProjectedAliases;
-            }
-            else
-            {
-                result = row;
-                aliases = userAliases;
-            }
-			return translator.RootCriteria.ResultTransformer.TransformTuple( result, aliases );
+				for (int i = 0; i < result.Length; i++)
+				{
+					result[i] = types[i].NullSafeGet(rs, columnAliases[i], session, null);
+				}
+				aliases = translator.ProjectedAliases;
+			}
+			else
+			{
+				result = row;
+				aliases = userAliases;
+			}
+			return translator.RootCriteria.ResultTransformer.TransformTuple(result, aliases);
 		}
 
 		public ISet QuerySpaces
@@ -96,9 +96,9 @@ namespace NHibernate.Loader.Criteria
 			get { return querySpaces; }
 		}
 
-		protected override SqlString ApplyLocks( SqlString sqlSelectString, IDictionary lockModes, Dialect.Dialect dialect )
+		protected override SqlString ApplyLocks(SqlString sqlSelectString, IDictionary lockModes, Dialect.Dialect dialect)
 		{
-			if ( lockModes == null || lockModes.Count == 0 )
+			if (lockModes == null || lockModes.Count == 0)
 			{
 				return sqlSelectString;
 			}
@@ -108,32 +108,32 @@ namespace NHibernate.Loader.Criteria
 				ILoadable[] persisters = EntityPersisters;
 				string[] entityAliases = Aliases;
 
-				if( dialect.ForUpdateOfColumns )
+				if (dialect.ForUpdateOfColumns)
 				{
 					keyColumnNames = new Hashtable();
-					for( int i = 0; i < entityAliases.Length; i++ )
+					for (int i = 0; i < entityAliases.Length; i++)
 					{
-						keyColumnNames[ entityAliases[ i ] ] = persisters[ i ].IdentifierColumnNames;
+						keyColumnNames[entityAliases[i]] = persisters[i].IdentifierColumnNames;
 					}
 				}
 
-				return sqlSelectString.Append( new ForUpdateFragment( dialect, lockModes, keyColumnNames ).ToSqlStringFragment() );
+				return sqlSelectString.Append(new ForUpdateFragment(dialect, lockModes, keyColumnNames).ToSqlStringFragment());
 			}
 		}
 
 		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
 		{
 			string[] entityAliases = Aliases;
-			if( entityAliases == null )
+			if (entityAliases == null)
 			{
 				return null;
 			}
 			int size = entityAliases.Length;
-			LockMode[] lockModesArray = new LockMode[ size ];
-			for( int i = 0; i < size; i++ )
+			LockMode[] lockModesArray = new LockMode[size];
+			for (int i = 0; i < size; i++)
 			{
-				LockMode lockMode = ( LockMode ) lockModes[ entityAliases[ i ] ];
-				lockModesArray[ i ] = lockMode == null ? LockMode.None : lockMode;
+				LockMode lockMode = (LockMode) lockModes[entityAliases[i]];
+				lockModesArray[i] = lockMode == null ? LockMode.None : lockMode;
 			}
 			return lockModesArray;
 		}
@@ -143,9 +143,9 @@ namespace NHibernate.Loader.Criteria
 			get { return HasSubselectLoadableCollections(); }
 		}
 
-		protected override IList GetResultList( IList results, IResultTransformer resultTransformer )
+		protected override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
-			return translator.RootCriteria.ResultTransformer.TransformList( results );
+			return translator.RootCriteria.ResultTransformer.TransformList(results);
 		}
 	}
 }

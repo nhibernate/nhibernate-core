@@ -13,28 +13,28 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="className">the fully-qualified class name</param>
 		/// <returns>a table name</returns>
-		string ClassToTableName( string className );
+		string ClassToTableName(string className);
 
 		/// <summary>
 		/// Return a column name for a property path expression 
 		/// </summary>
 		/// <param name="propertyName">a property path</param>
 		/// <returns>a column name</returns>
-		string PropertyToColumnName( string propertyName );
+		string PropertyToColumnName(string propertyName);
 
 		/// <summary>
 		/// Alter the table name given in the mapping document
 		/// </summary>
 		/// <param name="tableName">a table name</param>
 		/// <returns>a table name</returns>
-		string TableName( string tableName );
+		string TableName(string tableName);
 
 		/// <summary>
 		/// Alter the column name given in the mapping document
 		/// </summary>
 		/// <param name="columnName">a column name</param>
 		/// <returns>a column name</returns>
-		string ColumnName( string columnName );
+		string ColumnName(string columnName);
 
 		/// <summary>
 		/// Return a table name for a collection
@@ -42,6 +42,6 @@ namespace NHibernate.Cfg
 		/// <param name="className">the fully-qualified name of the owning entity class</param>
 		/// <param name="propertyName">a property path</param>
 		/// <returns>a table name</returns>
-		string PropertyToTableName( string className, string propertyName );
+		string PropertyToTableName(string className, string propertyName);
 	}
 }

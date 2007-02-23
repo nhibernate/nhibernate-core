@@ -1,14 +1,14 @@
 using System;
-using System.Text;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 
 namespace NHibernate.Util
 {
 	public class ParserException : ApplicationException
 	{
-		public ParserException( string message )
-			: base( message )
+		public ParserException(string message)
+			: base(message)
 		{
 		}
 	}
@@ -19,18 +19,18 @@ namespace NHibernate.Util
 
 		private void SkipSpaces()
 		{
-			while( input.Peek() == ' ' )
+			while (input.Peek() == ' ')
 			{
 				input.Read();
 			}
 		}
 
-		private char[] Characters( int count )
+		private char[] Characters(int count)
 		{
-			char[] chars = new char[ count ];
-			if( input.ReadBlock( chars, 0, count ) < count )
+			char[] chars = new char[count];
+			if (input.ReadBlock(chars, 0, count) < count)
 			{
-				throw new ParserException( count + " characters expected" );
+				throw new ParserException(count + " characters expected");
 			}
 
 			return chars;
@@ -38,13 +38,13 @@ namespace NHibernate.Util
 
 		private char[] PossiblyEscapedCharacter()
 		{
-			if( input.Peek() == '\\' )
+			if (input.Peek() == '\\')
 			{
-				return Characters( 2 );
+				return Characters(2);
 			}
 			else
 			{
-				return Characters( 1 );
+				return Characters(1);
 			}
 		}
 
@@ -54,16 +54,16 @@ namespace NHibernate.Util
 			SkipSpaces();
 
 			int code;
-			while( ( code = input.Peek() ) != -1 )
+			while ((code = input.Peek()) != -1)
 			{
-				char ch = ( char ) code;
+				char ch = (char) code;
 
-				if( ch == ']' )
+				if (ch == ']')
 				{
 					break;
 				}
 
-				result.Append( PossiblyEscapedCharacter() );
+				result.Append(PossiblyEscapedCharacter());
 			}
 
 			return result.ToString();
@@ -71,99 +71,98 @@ namespace NHibernate.Util
 
 		private string BracketedPart()
 		{
-			Debug.Assert( input.Peek() == '[' );
+			Debug.Assert(input.Peek() == '[');
 
 			StringBuilder result = new StringBuilder();
 
 			int depth = 0;
 			do
 			{
-				if( input.Peek() == '[' )
+				if (input.Peek() == '[')
 				{
 					depth++;
 				}
-				else if( input.Peek() == ']' )
+				else if (input.Peek() == ']')
 				{
 					depth--;
 				}
 
-				result.Append( PossiblyEscapedCharacter() );
-			}
-			while( depth > 0 && input.Peek() != -1 );
+				result.Append(PossiblyEscapedCharacter());
+			} while (depth > 0 && input.Peek() != -1);
 
-			if( depth > 0 && input.Peek() == -1 )
+			if (depth > 0 && input.Peek() == -1)
 			{
-				throw new ParserException( "Unmatched left bracket ('[')" );
+				throw new ParserException("Unmatched left bracket ('[')");
 			}
 
 			return result.ToString();
 		}
 
-		public AssemblyQualifiedTypeName ParseTypeName( string text, string defaultNamespace, string defaultAssembly )
+		public AssemblyQualifiedTypeName ParseTypeName(string text, string defaultNamespace, string defaultAssembly)
 		{
 			text = text.Trim();
 
-			StringBuilder type = new StringBuilder( text.Length );
+			StringBuilder type = new StringBuilder(text.Length);
 			string assembly = StringHelper.IsEmpty(defaultAssembly) ? null : defaultAssembly;
 
 			try
 			{
 				bool seenNamespace = false;
 
-				input = new StringReader( text );
-				
-				int code;
-				while( ( code = input.Peek() ) != -1 )
-				{
-					char ch = ( char ) code;
+				input = new StringReader(text);
 
-					if( ch == '.' )
+				int code;
+				while ((code = input.Peek()) != -1)
+				{
+					char ch = (char) code;
+
+					if (ch == '.')
 					{
 						seenNamespace = true;
 					}
 
-					if( ch == ',' )
+					if (ch == ',')
 					{
 						input.Read();
 						assembly = AssemblyName();
-						if( input.Peek() != -1 )
+						if (input.Peek() != -1)
 						{
-							throw new ParserException( "Extra characters found at the end of the type name" );
+							throw new ParserException("Extra characters found at the end of the type name");
 						}
 					}
-					else if( ch == '[' )
+					else if (ch == '[')
 					{
-						type.Append( BracketedPart() );
+						type.Append(BracketedPart());
 					}
 					else
 					{
-						type.Append( PossiblyEscapedCharacter() );
+						type.Append(PossiblyEscapedCharacter());
 					}
 				}
 
 				input.Close();
 
-				if( !seenNamespace && StringHelper.IsNotEmpty(defaultNamespace) )
+				if (!seenNamespace && StringHelper.IsNotEmpty(defaultNamespace))
 				{
-					type.Insert( 0, '.' )
-						.Insert( 0, defaultNamespace );
+					type.Insert(0, '.')
+						.Insert(0, defaultNamespace);
 				}
-				return new AssemblyQualifiedTypeName( type.ToString(), assembly );
+				return new AssemblyQualifiedTypeName(type.ToString(), assembly);
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new ArgumentException( "Invalid fully-qualified type name: " + text, "text", e );
+				throw new ArgumentException("Invalid fully-qualified type name: " + text, "text", e);
 			}
 		}
 
-		public static AssemblyQualifiedTypeName Parse( string text )
+		public static AssemblyQualifiedTypeName Parse(string text)
 		{
-			return Parse( text, null, null );
+			return Parse(text, null, null);
 		}
 
-		public static AssemblyQualifiedTypeName Parse( string text, string defaultNamespace, string defaultAssembly )
+		public static AssemblyQualifiedTypeName Parse(string text, string defaultNamespace, string defaultAssembly)
 		{
-			return new TypeNameParser().ParseTypeName( text, defaultNamespace, defaultAssembly );
+			return new TypeNameParser().ParseTypeName(text, defaultNamespace, defaultAssembly);
 		}
 	}
 }

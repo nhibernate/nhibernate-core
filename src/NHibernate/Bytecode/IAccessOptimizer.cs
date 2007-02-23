@@ -7,7 +7,7 @@ namespace NHibernate.Bytecode
 	/// </summary>
 	public interface IAccessOptimizer
 	{
-		object[] GetPropertyValues( object target );
-		void SetPropertyValues( object target, object[] values );
+		object[] GetPropertyValues(object target);
+		void SetPropertyValues(object target, object[] values);
 	}
 }

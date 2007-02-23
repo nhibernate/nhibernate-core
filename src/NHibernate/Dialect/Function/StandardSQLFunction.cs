@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -13,7 +14,7 @@ namespace NHibernate.Dialect.Function
 	/// for processing of the associated function.
 	/// </remarks>
 	public class StandardSQLFunction : ISQLFunction
-		{
+	{
 		private IType returnType = null;
 		private readonly string name;
 
@@ -54,7 +55,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public virtual string Render(System.Collections.IList args, ISessionFactoryImplementor factory)
+		public virtual string Render(IList args, ISessionFactoryImplementor factory)
 		{
 			StringBuilder buf = new StringBuilder();
 			buf.Append(name)

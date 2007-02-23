@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using Iesi.Collections.Generic;
 
 namespace NHibernate.Type
@@ -26,8 +25,8 @@ namespace NHibernate.Type
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer{T}" /> to use to compare
 		/// set elements.</param>
-		public GenericSortedSetType( string role, string propertyRef, IComparer<T> comparer )
-			: base( role, propertyRef )
+		public GenericSortedSetType(string role, string propertyRef, IComparer<T> comparer)
+			: base(role, propertyRef)
 		{
 			this.comparer = comparer;
 		}
@@ -39,8 +38,9 @@ namespace NHibernate.Type
 
 		public override object Instantiate()
 		{
-			return new SortedSet<T>( comparer );
+			return new SortedSet<T>(comparer);
 		}
 	}
 }
+
 #endif

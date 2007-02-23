@@ -20,7 +20,7 @@ namespace NHibernate.Dialect.Function
 		/// <param name="columnType">The type of the first argument</param>
 		/// <param name="mapping"></param>
 		/// <returns></returns>
-		IType ReturnType( IType columnType, IMapping mapping );
+		IType ReturnType(IType columnType, IMapping mapping);
 
 		/// <summary>
 		/// Does this function have any arguments?

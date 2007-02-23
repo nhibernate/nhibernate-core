@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Hql.Classic;
 using NHibernate.SqlCommand;
@@ -20,15 +19,15 @@ namespace NHibernate.Persister.Entity
 
 		public virtual string[] IdentifierColumnNames
 		{
-			get { throw new InvalidOperationException( "one-to-one is not supported here" ); }
+			get { throw new InvalidOperationException("one-to-one is not supported here"); }
 		}
 
 		public abstract string ClassName { get; }
 
-		protected void ThrowPropertyException( String propertyName )
+		protected void ThrowPropertyException(String propertyName)
 		{
 			throw new QueryException(
-				string.Format( "could not resolve property: {0} of: {1}", propertyName, ClassName ) );
+				string.Format("could not resolve property: {0} of: {1}", propertyName, ClassName));
 		}
 
 		#region IPropertyMapping Members
@@ -38,36 +37,36 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public IType ToType( string propertyName )
+		public IType ToType(string propertyName)
 		{
-			IType type = typesByPropertyPath[ propertyName ] as IType;
-			if( type == null )
+			IType type = typesByPropertyPath[propertyName] as IType;
+			if (type == null)
 			{
-				ThrowPropertyException( propertyName );
+				ThrowPropertyException(propertyName);
 			}
 			return type;
 		}
 
-		public virtual string[] ToColumns( string alias, string propertyName )
+		public virtual string[] ToColumns(string alias, string propertyName)
 		{
 			//TODO: *two* hashmap lookups here is one too many...
-			string[] columns = ( string[] ) columnsByPropertyPath[ propertyName ];
-			if( columns == null )
+			string[] columns = (string[]) columnsByPropertyPath[propertyName];
+			if (columns == null)
 			{
-				ThrowPropertyException( propertyName );
+				ThrowPropertyException(propertyName);
 			}
 
-			string[] templates = ( string[] ) formulaTemplatesByPropertyPath[ propertyName ];
+			string[] templates = (string[]) formulaTemplatesByPropertyPath[propertyName];
 			string[] result = new string[columns.Length];
-			for( int i = 0; i < columns.Length; i++ )
+			for (int i = 0; i < columns.Length; i++)
 			{
-				if( columns[ i ] == null )
+				if (columns[i] == null)
 				{
-					result[ i ] = StringHelper.Replace( templates[ i ], Template.Placeholder, alias );
+					result[i] = StringHelper.Replace(templates[i], Template.Placeholder, alias);
 				}
 				else
 				{
-					result[ i ] = StringHelper.Qualify( alias, columns[ i ] );
+					result[i] = StringHelper.Qualify(alias, columns[i]);
 				}
 			}
 			return result;
@@ -77,44 +76,45 @@ namespace NHibernate.Persister.Entity
 
 		#endregion
 
-		protected void AddPropertyPath( string path, IType type, string[] columns, string[] formulaTemplates )
+		protected void AddPropertyPath(string path, IType type, string[] columns, string[] formulaTemplates)
 		{
-			typesByPropertyPath[ path ] = type;
-			columnsByPropertyPath[ path ] = columns;
+			typesByPropertyPath[path] = type;
+			columnsByPropertyPath[path] = columns;
 
-			if( formulaTemplates != null )
+			if (formulaTemplates != null)
 			{
-				formulaTemplatesByPropertyPath[ path ] = formulaTemplates;
+				formulaTemplatesByPropertyPath[path] = formulaTemplates;
 			}
-			HandlePath( path, type );
+			HandlePath(path, type);
 		}
 
-		protected void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
+		protected void InitPropertyPaths(string path, IType type, string[] columns, string[] formulaTemplates,
+		                                 IMapping factory)
 		{
-			if( columns.Length != type.GetColumnSpan( factory ) )
+			if (columns.Length != type.GetColumnSpan(factory))
 			{
 				throw new MappingException(
-					string.Format( "broken column mapping for: {0} of: {1}, type {2} expects {3} columns, but {4} were mapped",
-					               path, ClassName, type.Name, type.GetColumnSpan( factory ), columns.Length ) );
+					string.Format("broken column mapping for: {0} of: {1}, type {2} expects {3} columns, but {4} were mapped",
+					              path, ClassName, type.Name, type.GetColumnSpan(factory), columns.Length));
 			}
 
-			if( type.IsAssociationType && ( ( IAssociationType ) type ).UseLHSPrimaryKey )
+			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
 			{
 				columns = IdentifierColumnNames;
 			}
 
-			if( path != null )
+			if (path != null)
 			{
-				AddPropertyPath( path, type, columns, formulaTemplates );
+				AddPropertyPath(path, type, columns, formulaTemplates);
 			}
 
-			if( type.IsComponentType )
+			if (type.IsComponentType)
 			{
-				InitComponentPropertyPaths( path, ( IAbstractComponentType ) type, columns, formulaTemplates, factory );
+				InitComponentPropertyPaths(path, (IAbstractComponentType) type, columns, formulaTemplates, factory);
 			}
-			else if( type.IsEntityType )
+			else if (type.IsEntityType)
 			{
-				InitIdentifierPropertyPaths( path, ( EntityType ) type, columns, factory );
+				InitIdentifierPropertyPaths(path, (EntityType) type, columns, factory);
 			}
 		}
 
@@ -125,60 +125,61 @@ namespace NHibernate.Persister.Entity
 		/// <param name="etype"></param>
 		/// <param name="columns"></param>
 		/// <param name="factory"></param>
-		protected void InitIdentifierPropertyPaths( string path, EntityType etype, string[] columns, IMapping factory )
+		protected void InitIdentifierPropertyPaths(string path, EntityType etype, string[] columns, IMapping factory)
 		{
-			IType idtype = etype.GetIdentifierOrUniqueKeyType( factory );
+			IType idtype = etype.GetIdentifierOrUniqueKeyType(factory);
 
-			if( !etype.IsUniqueKeyReference )
+			if (!etype.IsUniqueKeyReference)
 			{
-				string idpath1 = ExtendPath( path, PathExpressionParser.EntityID );
-				AddPropertyPath( idpath1, idtype, columns, null );
-				InitPropertyPaths( idpath1, idtype, columns, null, factory );
+				string idpath1 = ExtendPath(path, PathExpressionParser.EntityID);
+				AddPropertyPath(idpath1, idtype, columns, null);
+				InitPropertyPaths(idpath1, idtype, columns, null, factory);
 			}
 
-			string idPropName = etype.GetIdentifierOrUniqueKeyPropertyName( factory );
-			if( idPropName != null )
+			string idPropName = etype.GetIdentifierOrUniqueKeyPropertyName(factory);
+			if (idPropName != null)
 			{
-				string idpath2 = ExtendPath( path, idPropName );
-				AddPropertyPath( idpath2, idtype, columns, null );
-				InitPropertyPaths( idpath2, idtype, columns, null, factory );
+				string idpath2 = ExtendPath(path, idPropName);
+				AddPropertyPath(idpath2, idtype, columns, null);
+				InitPropertyPaths(idpath2, idtype, columns, null, factory);
 			}
 		}
 
-		protected void InitComponentPropertyPaths( string path, IAbstractComponentType type, string[] columns, string[] formulaTemplates, IMapping factory )
+		protected void InitComponentPropertyPaths(string path, IAbstractComponentType type, string[] columns,
+		                                          string[] formulaTemplates, IMapping factory)
 		{
 			IType[] types = type.Subtypes;
 			string[] properties = type.PropertyNames;
 			int begin = 0;
-			for( int i = 0; i < properties.Length; i++ )
+			for (int i = 0; i < properties.Length; i++)
 			{
-				string subpath = ExtendPath( path, properties[ i ] );
+				string subpath = ExtendPath(path, properties[i]);
 				try
 				{
-					int length = types[ i ].GetColumnSpan( factory );
-					string[] columnSlice = ArrayHelper.Slice( columns, begin, length );
+					int length = types[i].GetColumnSpan(factory);
+					string[] columnSlice = ArrayHelper.Slice(columns, begin, length);
 					string[] formulaSlice = formulaTemplates == null ?
-						null : ArrayHelper.Slice( formulaTemplates, begin, length );
+					                        null : ArrayHelper.Slice(formulaTemplates, begin, length);
 
-					InitPropertyPaths( subpath, types[ i ], columnSlice, formulaSlice, factory );
+					InitPropertyPaths(subpath, types[i], columnSlice, formulaSlice, factory);
 					begin += length;
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					throw new MappingException( "bug in InitComponentPropertyPaths", e );
+					throw new MappingException("bug in InitComponentPropertyPaths", e);
 				}
 			}
 		}
 
-		private static string ExtendPath( string path, string property )
+		private static string ExtendPath(string path, string property)
 		{
-			if( path == null )
+			if (path == null)
 			{
 				return property;
 			}
 			else
 			{
-				return StringHelper.Qualify( path, property );
+				return StringHelper.Qualify(path, property);
 			}
 		}
 
@@ -187,19 +188,18 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="type"></param>
-		protected virtual void HandlePath( string path, IType type )
+		protected virtual void HandlePath(string path, IType type)
 		{
 		}
 
-		public string[] GetColumnNames( string propertyName )
+		public string[] GetColumnNames(string propertyName)
 		{
-			string[] cols = ( string[] ) columnsByPropertyPath[ propertyName ];
-			if( cols == null )
+			string[] cols = (string[]) columnsByPropertyPath[propertyName];
+			if (cols == null)
 			{
-				throw new MappingException( "unknown property: " + propertyName );
+				throw new MappingException("unknown property: " + propertyName);
 			}
 			return cols;
 		}
-
 	}
 }

@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Data;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
-using Environment = NHibernate.Cfg.Environment;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -15,7 +16,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DriverBase));
+		private static readonly ILog log = LogManager.GetLogger(typeof(DriverBase));
 
 		private int commandTimeout;
 		private bool prepareSql;
@@ -28,7 +29,7 @@ namespace NHibernate.Driver
 			{
 				log.Info(string.Format("setting ADO.NET command timeout to {0} seconds", commandTimeout));
 			}
-			
+
 			// Prepare SQL
 			prepareSql = PropertiesHelper.GetBoolean(Environment.PrepareSql, settings, false);
 			if (prepareSql && SupportsPreparingCommands)
@@ -36,7 +37,7 @@ namespace NHibernate.Driver
 				log.Info("preparing SQL enabled");
 			}
 		}
-		
+
 		protected bool IsPrepareSqlEnabled
 		{
 			get { return prepareSql; }
@@ -136,7 +137,7 @@ namespace NHibernate.Driver
 
 			return cmd;
 		}
-		
+
 		private void SetCommandTimeout(IDbCommand cmd, object envTimeout)
 		{
 			if (commandTimeout >= 0)
@@ -154,7 +155,7 @@ namespace NHibernate.Driver
 				}
 			}
 		}
-		
+
 		private static string ToParameterName(int index)
 		{
 			return "p" + index;
@@ -171,7 +172,7 @@ namespace NHibernate.Driver
 			formatter.Format(sqlString);
 			cmd.CommandText = formatter.GetFormattedText();
 		}
-		
+
 		private void SetCommandParameters(IDbCommand cmd, SqlType[] sqlTypes)
 		{
 			for (int i = 0; i < sqlTypes.Length; i++)
@@ -221,7 +222,7 @@ namespace NHibernate.Driver
 
 			return dbParam;
 		}
-		
+
 		public void PrepareCommand(IDbCommand command)
 		{
 			if (SupportsPreparingCommands && prepareSql)
@@ -229,7 +230,7 @@ namespace NHibernate.Driver
 				command.Prepare();
 			}
 		}
-		
+
 		public IDbDataParameter GenerateOutputParameter(IDbCommand command)
 		{
 			IDbDataParameter param = GenerateParameter(command, "ReturnValue", SqlTypeFactory.Int32);

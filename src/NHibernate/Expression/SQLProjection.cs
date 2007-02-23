@@ -1,7 +1,7 @@
 using System;
-
-using NHibernate.Type;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Expression
 {
@@ -11,12 +11,12 @@ namespace NHibernate.Expression
 	[Serializable]
 	public sealed class SQLProjection : IProjection
 	{
-		readonly string sql;
-		readonly string groupBy;
-		readonly IType[] types;
-		string[] aliases;
-		string[] columnAliases;
-		bool grouped;
+		private readonly string sql;
+		private readonly string groupBy;
+		private readonly IType[] types;
+		private string[] aliases;
+		private string[] columnAliases;
+		private bool grouped;
 
 		internal SQLProjection(string sql, string[] columnAliases, IType[] types)
 			: this(sql, null, columnAliases, types)
@@ -35,15 +35,15 @@ namespace NHibernate.Expression
 
 		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
-            //SqlString result = new SqlString(criteriaQuery.GetSQLAlias(criteria));
-            //result.Replace(sql, "{alias}");
-            //return result;
-			return new SqlString(Util.StringHelper.Replace(sql, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			//SqlString result = new SqlString(criteriaQuery.GetSQLAlias(criteria));
+			//result.Replace(sql, "{alias}");
+			//return result;
+			return new SqlString(StringHelper.Replace(sql, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}
 
 		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new SqlString(Util.StringHelper.Replace(groupBy, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			return new SqlString(StringHelper.Replace(groupBy, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}
 
 		public override string ToString()

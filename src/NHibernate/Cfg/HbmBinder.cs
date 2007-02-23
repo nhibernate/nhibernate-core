@@ -15,11 +15,11 @@ namespace NHibernate.Cfg
 {
 	public class HbmBinder
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (HbmBinder));
+		private static readonly ILog log = LogManager.GetLogger(typeof(HbmBinder));
 
 		// Made internal to be accessible from Cfg.CollectionSecondPass
 		private static XmlNamespaceManager nsmgr;
-		
+
 		internal static XmlNamespaceManager NamespaceManager
 		{
 			get { return nsmgr; }
@@ -238,7 +238,7 @@ namespace NHibernate.Cfg
 
 			if (model.ClassPersisterClass == null)
 			{
-				model.RootClazz.ClassPersisterClass = typeof (SingleTableEntityPersister);
+				model.RootClazz.ClassPersisterClass = typeof(SingleTableEntityPersister);
 			}
 
 			model.Table = model.Superclass.Table;
@@ -269,7 +269,7 @@ namespace NHibernate.Cfg
 			// joined subclass
 			if (model.ClassPersisterClass == null)
 			{
-				model.RootClazz.ClassPersisterClass = typeof (JoinedSubclassEntityPersister);
+				model.RootClazz.ClassPersisterClass = typeof(JoinedSubclassEntityPersister);
 			}
 
 			//table + schema names
@@ -896,7 +896,7 @@ namespace NHibernate.Cfg
 			}
 			return GetClassName(att.Value, model);
 		}
-		
+
 		public static string GetClassNameWithoutAssembly(string unqualifiedName, Mappings model)
 		{
 			return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).Type;
@@ -1745,13 +1745,13 @@ namespace NHibernate.Cfg
 
 			foreach (XmlNode n in hmNode.SelectNodes(HbmConstants.nsFilterDef, nsmgr))
 			{
-				HbmBinder.ParseFilterDef(n, mappings);
+				ParseFilterDef(n, mappings);
 			}
 
 			foreach (XmlNode n in hmNode.SelectNodes(HbmConstants.nsClass, nsmgr))
 			{
 				RootClass rootclass = new RootClass();
-				HbmBinder.BindRootClass(n, rootclass, mappings);
+				BindRootClass(n, rootclass, mappings);
 				mappings.AddClass(rootclass);
 			}
 
@@ -1785,15 +1785,15 @@ namespace NHibernate.Cfg
 				log.Debug("Import: " + rename + " -> " + className);
 				mappings.AddImport(className, rename);
 			}
-			
+
 			foreach (XmlNode n in hmNode.SelectNodes(HbmConstants.nsDatabaseObject, nsmgr))
 			{
 				BindAuxiliaryDatabaseObject(n, mappings);
 			}
-			
+
 			foreach (XmlNode n in hmNode.SelectNodes(HbmConstants.nsResultset, nsmgr))
 			{
-				BindResultSetMappingDefinition( n, null, mappings );
+				BindResultSetMappingDefinition(n, null, mappings);
 			}
 		}
 
@@ -1950,7 +1950,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass(IDictionary persistentClasses)
 			{
-				HbmBinder.BindCollectionSecondPass(node, collection, persistentClasses, mappings);
+				BindCollectionSecondPass(node, collection, persistentClasses, mappings);
 			}
 		}
 
@@ -1963,7 +1963,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass(IDictionary persistentClasses)
 			{
-				HbmBinder.BindIdentifierCollectionSecondPass(node, (IdentifierCollection) collection, persistentClasses, mappings);
+				BindIdentifierCollectionSecondPass(node, (IdentifierCollection) collection, persistentClasses, mappings);
 			}
 		}
 
@@ -1976,7 +1976,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass(IDictionary persistentClasses)
 			{
-				HbmBinder.BindMapSecondPass(node, (Map) collection, persistentClasses, mappings);
+				BindMapSecondPass(node, (Map) collection, persistentClasses, mappings);
 			}
 		}
 
@@ -1989,7 +1989,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass(IDictionary persistentClasses)
 			{
-				HbmBinder.BindSetSecondPass(node, (Set) collection, persistentClasses, mappings);
+				BindSetSecondPass(node, (Set) collection, persistentClasses, mappings);
 			}
 		}
 
@@ -2002,7 +2002,7 @@ namespace NHibernate.Cfg
 
 			public override void SecondPass(IDictionary persistentClasses)
 			{
-				HbmBinder.BindListSecondPass(node, (List) collection, persistentClasses, mappings);
+				BindListSecondPass(node, (List) collection, persistentClasses, mappings);
 			}
 		}
 
@@ -2036,7 +2036,7 @@ namespace NHibernate.Cfg
 				                                          System.Type containingType, Mappings mappings)
 				{
 					Map map = new Map(owner);
-					HbmBinder.BindCollection(node, map, prefix, path, containingType, mappings);
+					BindCollection(node, map, prefix, path, containingType, mappings);
 					return map;
 				}
 			}
@@ -2054,7 +2054,7 @@ namespace NHibernate.Cfg
 				                                          System.Type containingType, Mappings mappings)
 				{
 					Set setCollection = new Set(owner);
-					HbmBinder.BindCollection(node, setCollection, prefix, path, containingType, mappings);
+					BindCollection(node, setCollection, prefix, path, containingType, mappings);
 					return setCollection;
 				}
 			}
@@ -2072,7 +2072,7 @@ namespace NHibernate.Cfg
 				                                          System.Type containingType, Mappings mappings)
 				{
 					List list = new List(owner);
-					HbmBinder.BindCollection(node, list, prefix, path, containingType, mappings);
+					BindCollection(node, list, prefix, path, containingType, mappings);
 					return list;
 				}
 			}
@@ -2090,7 +2090,7 @@ namespace NHibernate.Cfg
 				                                          System.Type containingType, Mappings mappings)
 				{
 					Bag bag = new Bag(owner);
-					HbmBinder.BindCollection(node, bag, prefix, path, containingType, mappings);
+					BindCollection(node, bag, prefix, path, containingType, mappings);
 					return bag;
 				}
 			}
@@ -2108,7 +2108,7 @@ namespace NHibernate.Cfg
 				                                          System.Type containingType, Mappings mappings)
 				{
 					IdentifierBag bag = new IdentifierBag(owner);
-					HbmBinder.BindCollection(node, bag, prefix, path, containingType, mappings);
+					BindCollection(node, bag, prefix, path, containingType, mappings);
 					return bag;
 				}
 			}
@@ -2126,7 +2126,7 @@ namespace NHibernate.Cfg
 				                                          System.Type containingType, Mappings mappings)
 				{
 					Array array = new Array(owner);
-					HbmBinder.BindArray(node, array, prefix, path, containingType, mappings);
+					BindArray(node, array, prefix, path, containingType, mappings);
 					return array;
 				}
 			}
@@ -2144,7 +2144,7 @@ namespace NHibernate.Cfg
 				                                          System.Type containingType, Mappings mappings)
 				{
 					PrimitiveArray array = new PrimitiveArray(owner);
-					HbmBinder.BindArray(node, array, prefix, path, containingType, mappings);
+					BindArray(node, array, prefix, path, containingType, mappings);
 					return array;
 				}
 			}
@@ -2444,8 +2444,8 @@ namespace NHibernate.Cfg
 		}
 
 		private static void BindManyToManySubelements(Mapping.Collection collection,
-			XmlNode manyToManyNode,
-			Mappings model)
+		                                              XmlNode manyToManyNode,
+		                                              Mappings model)
 		{
 			// Bind the where
 			XmlAttribute where = manyToManyNode.Attributes["where"];

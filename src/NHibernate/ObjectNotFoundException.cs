@@ -19,15 +19,15 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="identifier">The identifier of the object that was attempting to be loaded.</param>
 		/// <param name="type">The <see cref="System.Type"/> that NHibernate was trying to find a row for in the database.</param>
-		public ObjectNotFoundException( object identifier, System.Type type ) : base( identifier, type )
+		public ObjectNotFoundException(object identifier, System.Type type) : base(identifier, type)
 		{
 		}
 
-		public static new void ThrowIfNull( object o, object id, System.Type clazz )
+		public new static void ThrowIfNull(object o, object id, System.Type clazz)
 		{
-			if( o == null )
+			if (o == null)
 			{
-				throw new ObjectNotFoundException( id, clazz );
+				throw new ObjectNotFoundException(id, clazz);
 			}
 		}
 
@@ -44,7 +44,7 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected ObjectNotFoundException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected ObjectNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 

@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-
-using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -20,7 +18,7 @@ namespace NHibernate.Mapping
 	/// </remarks>
 	public abstract class Collection : IFetchable, IValue, IFilterable
 	{
-		private static readonly ICollection EmptyColumns = new object[ 0 ];
+		private static readonly ICollection EmptyColumns = new object[0];
 
 		public const string DefaultElementColumnName = "elt";
 		public const string DefaultKeyColumnName = "id";
@@ -67,14 +65,14 @@ namespace NHibernate.Mapping
 		private bool isGeneric;
 		private System.Type[] genericArguments;
 #endif
-       	private IDictionary filters = new Hashtable();
-        private IDictionary manyToManyFilters = new Hashtable();
+		private IDictionary filters = new Hashtable();
+		private IDictionary manyToManyFilters = new Hashtable();
 		private bool subselectLoadable;
 		private string manyToManyWhere;
 		private string manyToManyOrderBy;
 		private bool optimisticLocked;
 
-		protected Collection( PersistentClass owner )
+		protected Collection(PersistentClass owner)
 		{
 			this.owner = owner;
 		}
@@ -184,13 +182,13 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if( typeName == null )
+				if (typeName == null)
 				{
 					return DefaultCollectionType;
 				}
 				else
 				{
-					return TypeFactory.CustomCollection( typeName, Role, ReferencedPropertyName );
+					return TypeFactory.CustomCollection(typeName, Role, ReferencedPropertyName);
 				}
 			}
 		}
@@ -314,8 +312,9 @@ namespace NHibernate.Mapping
 			if (genericArguments.Length != expectedLength)
 			{
 				throw new MappingException(
-					string.Format("Error mapping generic collection {0}: expected {1} generic parameters, but the property type has {2}",
-					              Role, expectedLength, genericArguments.Length));
+					string.Format(
+						"Error mapping generic collection {0}: expected {1} generic parameters, but the property type has {2}",
+						Role, expectedLength, genericArguments.Length));
 			}
 		}
 #endif
@@ -327,10 +326,10 @@ namespace NHibernate.Mapping
 		private void CreateForeignKeys()
 		{
 			// for inverse collections, let the "other end" hanlde it
-			if( !IsInverse )
+			if (!IsInverse)
 			{
 				Element.CreateForeignKey();
-				Key.CreateForeignKeyOfClass( Owner.MappedClass );
+				Key.CreateForeignKeyOfClass(Owner.MappedClass);
 			}
 		}
 
@@ -339,7 +338,7 @@ namespace NHibernate.Mapping
 		public virtual void CreateAllKeys()
 		{
 			CreateForeignKeys();
-			if( !IsInverse )
+			if (!IsInverse)
 			{
 				CreatePrimaryKey();
 			}
@@ -350,7 +349,7 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
-		public bool IsValid( IMapping mapping )
+		public bool IsValid(IMapping mapping)
 		{
 			return true;
 		}
@@ -361,16 +360,18 @@ namespace NHibernate.Mapping
 			set { referencedPropertyName = StringHelper.InternedIfPossible(value); }
 		}
 
-		public virtual void Validate( IMapping mapping )
+		public virtual void Validate(IMapping mapping)
 		{
-			if( !Key.IsValid( mapping ) )
+			if (!Key.IsValid(mapping))
 			{
-				throw new MappingException( string.Format( "collection foreign key mapping has wrong number of columns: {0} type: {1}", Role, Key.Type.Name ) );
+				throw new MappingException(
+					string.Format("collection foreign key mapping has wrong number of columns: {0} type: {1}", Role, Key.Type.Name));
 			}
 
-			if( !Element.IsValid( mapping ) )
+			if (!Element.IsValid(mapping))
 			{
-				throw new MappingException( string.Format( "collection element key mapping has wrong number of columns: {0} type: {1}", Role, Element.Type.Name ) );
+				throw new MappingException(
+					string.Format("collection element key mapping has wrong number of columns: {0} type: {1}", Role, Element.Type.Name));
 			}
 		}
 
@@ -390,20 +391,65 @@ namespace NHibernate.Mapping
 			set { typeName = value; }
 		}
 
-		public SqlString CustomSQLInsert { get { return customSQLInsert; } }
-		public SqlString CustomSQLDelete { get { return customSQLDelete; } }
-		public SqlString CustomSQLUpdate { get { return customSQLUpdate; } }
-		public SqlString CustomSQLDeleteAll { get { return customSQLDeleteAll; } }
+		public SqlString CustomSQLInsert
+		{
+			get { return customSQLInsert; }
+		}
 
-		public bool IsCustomInsertCallable { get { return customInsertCallable; } }
-		public bool IsCustomDeleteCallable { get { return customDeleteCallable; } }
-		public bool IsCustomUpdateCallable { get { return customUpdateCallable; } }
-		public bool IsCustomDeleteAllCallable { get { return customDeleteAllCallable; } }
+		public SqlString CustomSQLDelete
+		{
+			get { return customSQLDelete; }
+		}
 
-		public ExecuteUpdateResultCheckStyle CustomSQLInsertCheckStyle { get { return insertCheckStyle; } }
-		public ExecuteUpdateResultCheckStyle CustomSQLDeleteCheckStyle { get { return deleteCheckStyle; } }
-		public ExecuteUpdateResultCheckStyle CustomSQLUpdateCheckStyle { get { return updateCheckStyle; } }
-		public ExecuteUpdateResultCheckStyle CustomSQLDeleteAllCheckStyle { get { return deleteAllCheckStyle; } }
+		public SqlString CustomSQLUpdate
+		{
+			get { return customSQLUpdate; }
+		}
+
+		public SqlString CustomSQLDeleteAll
+		{
+			get { return customSQLDeleteAll; }
+		}
+
+		public bool IsCustomInsertCallable
+		{
+			get { return customInsertCallable; }
+		}
+
+		public bool IsCustomDeleteCallable
+		{
+			get { return customDeleteCallable; }
+		}
+
+		public bool IsCustomUpdateCallable
+		{
+			get { return customUpdateCallable; }
+		}
+
+		public bool IsCustomDeleteAllCallable
+		{
+			get { return customDeleteAllCallable; }
+		}
+
+		public ExecuteUpdateResultCheckStyle CustomSQLInsertCheckStyle
+		{
+			get { return insertCheckStyle; }
+		}
+
+		public ExecuteUpdateResultCheckStyle CustomSQLDeleteCheckStyle
+		{
+			get { return deleteCheckStyle; }
+		}
+
+		public ExecuteUpdateResultCheckStyle CustomSQLUpdateCheckStyle
+		{
+			get { return updateCheckStyle; }
+		}
+
+		public ExecuteUpdateResultCheckStyle CustomSQLDeleteAllCheckStyle
+		{
+			get { return deleteAllCheckStyle; }
+		}
 
 		public void SetCustomSQLInsert(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
@@ -433,25 +479,25 @@ namespace NHibernate.Mapping
 			updateCheckStyle = checkStyle;
 		}
 
-        public void AddFilter(string name, string condition)
-        {
-            filters.Add(name, condition);
-        }
+		public void AddFilter(string name, string condition)
+		{
+			filters.Add(name, condition);
+		}
 
-        public IDictionary FilterMap
-        {
-            get { return filters; }
-        }
+		public IDictionary FilterMap
+		{
+			get { return filters; }
+		}
 
-        public void AddManyToManyFilter(string name, string condition)
-        {
-            manyToManyFilters.Add(name, condition);
-        }
+		public void AddManyToManyFilter(string name, string condition)
+		{
+			manyToManyFilters.Add(name, condition);
+		}
 
-        public IDictionary ManyToManyFilterMap
-        {
-            get { return manyToManyFilters; }
-        }
+		public IDictionary ManyToManyFilterMap
+		{
+			get { return manyToManyFilters; }
+		}
 
 		public string LoaderName
 		{
@@ -470,7 +516,7 @@ namespace NHibernate.Mapping
 			get { return manyToManyWhere; }
 			set { manyToManyWhere = value; }
 		}
-		
+
 		public string ManyToManyOrdering
 		{
 			get { return manyToManyOrderBy; }

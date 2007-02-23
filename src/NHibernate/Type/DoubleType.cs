@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class DoubleType : ValueTypeType
 	{
 		/// <summary></summary>
-		internal DoubleType() : base( SqlTypeFactory.Double )
+		internal DoubleType() : base(SqlTypeFactory.Double)
 		{
 		}
 
@@ -22,9 +22,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToDouble( rs[ index ] );
+			return Convert.ToDouble(rs[index]);
 		}
 
 		/// <summary>
@@ -33,15 +33,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Convert.ToDouble( rs[ name ] );
+			return Convert.ToDouble(rs[name]);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( double ); }
+			get { return typeof(double); }
 		}
 
 		/// <summary>
@@ -50,9 +50,9 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
 			parm.Value = value;
 		}
 
@@ -67,15 +67,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return value.ToString();
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return double.Parse( xml );
+			return double.Parse(xml);
 		}
-
 	}
 }

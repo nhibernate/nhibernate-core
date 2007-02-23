@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -14,15 +13,17 @@ namespace NHibernate.Loader
 		private readonly IOuterJoinLoadable persister;
 		private string alias;
 
-		public AbstractEntityJoinWalker(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, IDictionary enabledFilters )
-			: base( factory, enabledFilters )
+		public AbstractEntityJoinWalker(IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
+		                                IDictionary enabledFilters)
+			: base(factory, enabledFilters)
 		{
 			this.persister = persister;
 			alias = GenerateRootAlias(persister.MappedClass.FullName);
 		}
 
-		public AbstractEntityJoinWalker( string alias, IOuterJoinLoadable persister, ISessionFactoryImplementor factory, IDictionary enabledFilters )
-			: base( factory, enabledFilters )
+		public AbstractEntityJoinWalker(string alias, IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
+		                                IDictionary enabledFilters)
+			: base(factory, enabledFilters)
 		{
 			this.persister = persister;
 			this.alias = alias;
@@ -31,13 +32,13 @@ namespace NHibernate.Loader
 		protected void InitAll(
 			SqlString whereString,
 			string orderByString,
-			LockMode lockMode )
+			LockMode lockMode)
 		{
-			WalkEntityTree( persister, Alias );
+			WalkEntityTree(persister, Alias);
 			IList allAssociations = new ArrayList();
-			foreach( object obj in associations )
+			foreach (object obj in associations)
 			{
-				allAssociations.Add( obj );
+				allAssociations.Add(obj);
 			}
 			allAssociations.Add(
 				new OuterJoinableAssociation(
@@ -48,10 +49,10 @@ namespace NHibernate.Loader
 					JoinType.LeftOuterJoin,
 					Factory,
 					CollectionHelper.EmptyMap
-					) );
+					));
 
-			InitPersisters( allAssociations, lockMode );
-			InitStatementString( whereString, orderByString, lockMode );
+			InitPersisters(allAssociations, lockMode);
+			InitStatementString(whereString, orderByString, lockMode);
 		}
 
 		protected void InitProjection(
@@ -59,21 +60,21 @@ namespace NHibernate.Loader
 			SqlString whereString,
 			string orderByString,
 			string groupByString,
-			LockMode lockMode )
+			LockMode lockMode)
 
 		{
-			WalkEntityTree( persister, Alias );
+			WalkEntityTree(persister, Alias);
 			Persisters = new ILoadable[0];
-			InitStatementString( projectionString, whereString, orderByString, groupByString, lockMode );
+			InitStatementString(projectionString, whereString, orderByString, groupByString, lockMode);
 		}
 
 		private void InitStatementString(
 			SqlString condition,
 			string orderBy,
-			LockMode lockMode )
+			LockMode lockMode)
 
 		{
-			InitStatementString( null, condition, orderBy, "", lockMode );
+			InitStatementString(null, condition, orderBy, "", lockMode);
 		}
 
 		private void InitStatementString(
@@ -81,31 +82,31 @@ namespace NHibernate.Loader
 			SqlString condition,
 			string orderBy,
 			string groupBy,
-			LockMode lockMode )
+			LockMode lockMode)
 
 		{
-			int joins = CountEntityPersisters( associations );
-			Suffixes = BasicLoader.GenerateSuffixes( joins + 1 );
-			JoinFragment ojf = MergeOuterJoins( associations );
+			int joins = CountEntityPersisters(associations);
+			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
+			JoinFragment ojf = MergeOuterJoins(associations);
 
-			SqlSelectBuilder select = new SqlSelectBuilder( Factory )
-				.SetLockMode( lockMode )
+			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
+				.SetLockMode(lockMode)
 				.SetSelectClause(
-					projection == null ?
-					persister.SelectFragment( alias, Suffixes[ joins ] ) + SelectString( associations ) :
-					projection
+				projection == null ?
+				persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations) :
+				projection
 				)
 				.SetFromClause(
-					persister.FromTableFragment( alias ) +
-					persister.FromJoinFragment( alias, true, true )
+				persister.FromTableFragment(alias) +
+				persister.FromJoinFragment(alias, true, true)
 				)
-				.SetWhereClause( condition )
+				.SetWhereClause(condition)
 				.SetOuterJoins(
-					ojf.ToFromFragmentString,
-					ojf.ToWhereFragmentString + WhereFragment
+				ojf.ToFromFragmentString,
+				ojf.ToWhereFragmentString + WhereFragment
 				)
-				.SetOrderByClause( OrderBy( associations, orderBy ) )
-				.SetGroupByClause( groupBy );
+				.SetOrderByClause(OrderBy(associations, orderBy))
+				.SetGroupByClause(groupBy);
 
 			// TODO H3:
 //			if( Factory.IsCommentsEnabled )
@@ -121,18 +122,16 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected virtual SqlString WhereFragment
 		{
-			get
-			{
-				return persister.WhereJoinFragment( alias, true, true );
-			}
+			get { return persister.WhereJoinFragment(alias, true, true); }
 		}
 
 		/// <summary>
 		/// The superclass deliberately excludes collections
 		/// </summary>
-		protected override bool IsJoinedFetchEnabled( IAssociationType type, FetchMode config, Cascades.CascadeStyle cascadeStyle )
+		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
+		                                             Cascades.CascadeStyle cascadeStyle)
 		{
-			return IsJoinedFetchEnabledInMapping( config, type );
+			return IsJoinedFetchEnabledInMapping(config, type);
 		}
 
 		public abstract string Comment { get; }

@@ -4,11 +4,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Diagnostics;
+using NHibernate.DebugHelpers;
 using NHibernate.Engine;
-using NHibernate.Type;
-using NHibernate.Persister.Collection;
 using NHibernate.Loader;
+using NHibernate.Persister.Collection;
+using NHibernate.Type;
 
 namespace NHibernate.Collection.Generic
 {
@@ -20,9 +21,9 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
 #if NET_2_0
-	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.DictionaryProxy<,>))]
+	[DebuggerTypeProxy(typeof(DictionaryProxy<,>))]
 #endif
-	public class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, System.Collections.IDictionary
+	public class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, IDictionary
 	{
 		protected IDictionary<TKey, TValue> map;
 
@@ -31,7 +32,7 @@ namespace NHibernate.Collection.Generic
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the map is in.</param>
-		public PersistentGenericMap( ISessionImplementor session ) : base( session )
+		public PersistentGenericMap(ISessionImplementor session) : base(session)
 		{
 		}
 
@@ -42,8 +43,8 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
 		/// <param name="map">The <see cref="IDictionary&lt;TKey,TValue&gt;"/> to wrap.</param>
-		public PersistentGenericMap( ISessionImplementor session, IDictionary<TKey, TValue> map )
-			: base( session )
+		public PersistentGenericMap(ISessionImplementor session, IDictionary<TKey, TValue> map)
+			: base(session)
 		{
 			this.map = map;
 			SetInitialized();
@@ -57,37 +58,38 @@ namespace NHibernate.Collection.Generic
 			get { return map.Count == 0; }
 		}
 
-		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
+		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			BeforeInitialize( persister );
-			object[] array = ( object[] ) disassembled;
+			BeforeInitialize(persister);
+			object[] array = (object[]) disassembled;
 
-			for( int i = 0; i < array.Length; i += 2 )
+			for (int i = 0; i < array.Length; i += 2)
 			{
-				TKey index = ( TKey ) persister.IndexType.Assemble( array[ i ], Session, owner );
-				object element = persister.ElementType.Assemble( array[ i + 1 ], Session, owner );
-				map[ index ] = ( element == null ? default( TValue ) : ( TValue ) element );
+				TKey index = (TKey) persister.IndexType.Assemble(array[i], Session, owner);
+				object element = persister.ElementType.Assemble(array[i + 1], Session, owner);
+				map[index] = (element == null ? default(TValue) : (TValue) element);
 			}
 
 			SetInitialized();
 		}
 
-		public override System.Collections.IEnumerable Entries()
+		public override IEnumerable Entries()
 		{
 			return map;
 		}
 
-		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner )
+		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor,
+		                                object owner)
 		{
 			// this really negates the value of generics - need to get the IPersistentCollection and
 			// ICollectionPersister to be generic versions themselves to get the benefits of generics
-			object element = persister.ReadElement( reader, owner, descriptor.SuffixedElementAliases, Session );
-			object index = persister.ReadIndex( reader, descriptor.SuffixedIndexAliases, Session );
+			object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
+			object index = persister.ReadIndex(reader, descriptor.SuffixedIndexAliases, Session);
 
-			TValue typedElement = ( element != null ? ( TValue ) element : default( TValue ) );
-			TKey typedIndex = ( index != null ? ( TKey ) index : default( TKey ) );
+			TValue typedElement = (element != null ? (TValue) element : default(TValue));
+			TKey typedIndex = (index != null ? (TKey) index : default(TKey));
 
-			map[ typedIndex ] = typedElement;
+			map[typedIndex] = typedElement;
 			return typedElement;
 		}
 
@@ -98,26 +100,26 @@ namespace NHibernate.Collection.Generic
 		//			persister.WriteIndex(st, e.Key, writeOrder, this.Session);
 		//		}
 
-		public override object GetIndex( object entry, int i )
+		public override object GetIndex(object entry, int i)
 		{
-			return ( ( KeyValuePair<TKey, TValue> ) entry ).Key;
+			return ((KeyValuePair<TKey, TValue>) entry).Key;
 		}
 
-		public override void BeforeInitialize( ICollectionPersister persister )
+		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			this.map = ( IDictionary<TKey, TValue> ) persister.CollectionType.Instantiate();
+			this.map = (IDictionary<TKey, TValue>) persister.CollectionType.Instantiate();
 		}
 
-		public override bool EqualsSnapshot( IType elementType )
+		public override bool EqualsSnapshot(IType elementType)
 		{
-			IDictionary<TKey, TValue> xmap = ( IDictionary<TKey, TValue> ) GetSnapshot();
-			if( xmap.Count != this.map.Count )
+			IDictionary<TKey, TValue> xmap = (IDictionary<TKey, TValue>) GetSnapshot();
+			if (xmap.Count != this.map.Count)
 			{
 				return false;
 			}
-			foreach( KeyValuePair<TKey, TValue> entry in map )
+			foreach (KeyValuePair<TKey, TValue> entry in map)
 			{
-				if( elementType.IsDirty( entry.Value, xmap[ entry.Key ], Session ) )
+				if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
 				{
 					return false;
 				}
@@ -125,82 +127,82 @@ namespace NHibernate.Collection.Generic
 			return true;
 		}
 
-		protected override System.Collections.ICollection Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
-			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>( map.Count );
-			foreach( KeyValuePair<TKey, TValue> e in map )
+			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(map.Count);
+			foreach (KeyValuePair<TKey, TValue> e in map)
 			{
-				object copy = persister.ElementType.DeepCopy( e.Value );
-				clonedMap[ e.Key ] = ( copy == null ? default( TValue ) : ( TValue ) copy );
+				object copy = persister.ElementType.DeepCopy(e.Value);
+				clonedMap[e.Key] = (copy == null ? default(TValue) : (TValue) copy);
 			}
 			return clonedMap;
 		}
 
-		public override object Disassemble( ICollectionPersister persister )
+		public override object Disassemble(ICollectionPersister persister)
 		{
-			object[] result = new object[ map.Count * 2 ];
+			object[] result = new object[map.Count * 2];
 			int i = 0;
-			foreach( KeyValuePair<TKey, TValue> e in map )
+			foreach (KeyValuePair<TKey, TValue> e in map)
 			{
-				result[ i++ ] = persister.IndexType.Disassemble( e.Key, Session );
-				result[ i++ ] = persister.ElementType.Disassemble( e.Value, Session );
+				result[i++] = persister.IndexType.Disassemble(e.Key, Session);
+				result[i++] = persister.ElementType.Disassemble(e.Value, Session);
 			}
 
 			return result;
 		}
 
-		public override bool EntryExists( object entry, int i )
+		public override bool EntryExists(object entry, int i)
 		{
-			return ( ( KeyValuePair<TKey, TValue> ) entry ).Value != null;
+			return ((KeyValuePair<TKey, TValue>) entry).Value != null;
 		}
 
-		public override bool NeedsInserting( object entry, int i, IType elemType )
+		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			IDictionary<TKey, TValue> sn = ( IDictionary<TKey, TValue> ) GetSnapshot();
-			KeyValuePair<TKey, TValue> e = ( KeyValuePair<TKey, TValue> ) entry;
-			return ( e.Value != null && sn.ContainsKey( e.Key ) == false );
+			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>) GetSnapshot();
+			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>) entry;
+			return (e.Value != null && sn.ContainsKey(e.Key) == false);
 		}
 
-		public override bool NeedsUpdating( object entry, int i, IType elemType )
+		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
-			IDictionary<TKey, TValue> sn = ( IDictionary<TKey, TValue> ) GetSnapshot();
-			KeyValuePair<TKey, TValue> e = ( KeyValuePair<TKey, TValue> ) entry;
+			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>) GetSnapshot();
+			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>) entry;
 			TValue snValue;
-			bool existedBefore = sn.TryGetValue( e.Key, out snValue );
-			return ( e.Value != null && existedBefore && elemType.IsDirty( snValue, e.Value, Session ) );
+			bool existedBefore = sn.TryGetValue(e.Key, out snValue);
+			return (e.Value != null && existedBefore && elemType.IsDirty(snValue, e.Value, Session));
 		}
 
-		public override System.Collections.ICollection GetDeletes( IType elemType, bool indexIsFormula )
+		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
-			foreach( KeyValuePair<TKey, TValue> e in ( IDictionary<TKey, TValue> ) GetSnapshot() )
+			foreach (KeyValuePair<TKey, TValue> e in (IDictionary<TKey, TValue>) GetSnapshot())
 			{
 				TKey key = e.Key;
-				if( e.Value != null && !map.ContainsKey( key ) )
+				if (e.Value != null && !map.ContainsKey(key))
 				{
-					deletes.Add( indexIsFormula ? (object) e.Value : key );
+					deletes.Add(indexIsFormula ? (object) e.Value : key);
 				}
 			}
 			return deletes;
 		}
 
-		public override bool IsWrapper( object collection )
+		public override bool IsWrapper(object collection)
 		{
 			return map == collection;
 		}
 
-		public override System.Collections.ICollection GetOrphans( object snapshot, System.Type entityName )
+		public override ICollection GetOrphans(object snapshot, System.Type entityName)
 		{
-			IDictionary<TKey, TValue> sn = ( IDictionary<TKey, TValue> ) snapshot;
-			List<TValue> result = new List<TValue>( sn.Values.Count );
-			result.AddRange( sn.Values );
-			AbstractPersistentCollection.IdentityRemoveAll( result, ( System.Collections.ICollection ) map.Values, entityName, Session );
+			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>) snapshot;
+			List<TValue> result = new List<TValue>(sn.Values.Count);
+			result.AddRange(sn.Values);
+			IdentityRemoveAll(result, (ICollection) map.Values, entityName, Session);
 			return result;
 		}
 
-		public override object GetElement( object entry )
+		public override object GetElement(object entry)
 		{
-			return ( ( KeyValuePair<TKey, TValue> ) entry ).Value;
+			return ((KeyValuePair<TKey, TValue>) entry).Value;
 		}
 
 		public override object GetSnapshotElement(object entry, int i)
@@ -217,17 +219,17 @@ namespace NHibernate.Collection.Generic
 
 		#region IDictionary<TKey,TValue> Members
 
-		public void Add( TKey key, TValue value )
+		public void Add(TKey key, TValue value)
 		{
 			Initialize(true);
 			map.Add(key, value);
 			Dirty();
 		}
 
-		public bool ContainsKey( TKey key )
+		public bool ContainsKey(TKey key)
 		{
 			Read();
-			return map.ContainsKey( key );
+			return map.ContainsKey(key);
 		}
 
 		public ICollection<TKey> Keys
@@ -239,16 +241,16 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public bool Remove( TKey key )
+		public bool Remove(TKey key)
 		{
 			Initialize(true);
-			return MakeDirtyIfTrue(map.Remove( key ));
+			return MakeDirtyIfTrue(map.Remove(key));
 		}
 
-		public bool TryGetValue( TKey key, out TValue value )
+		public bool TryGetValue(TKey key, out TValue value)
 		{
 			Read();
-			return map.TryGetValue( key, out value );
+			return map.TryGetValue(key, out value);
 		}
 
 		public ICollection<TValue> Values
@@ -260,17 +262,17 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public TValue this[ TKey key ]
+		public TValue this[TKey key]
 		{
 			get
 			{
 				Read();
-				return map[ key ];
+				return map[key];
 			}
 			set
 			{
 				Write();
-				map[ key ] = value;
+				map[key] = value;
 			}
 		}
 
@@ -278,10 +280,10 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection<KeyValuePair<TKey,TValue>> Members
 
-		public void Add( KeyValuePair<TKey, TValue> item )
+		public void Add(KeyValuePair<TKey, TValue> item)
 		{
 			Initialize(true);
-			map.Add( item );
+			map.Add(item);
 			Dirty();
 		}
 
@@ -295,16 +297,16 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public bool Contains( KeyValuePair<TKey, TValue> item )
+		public bool Contains(KeyValuePair<TKey, TValue> item)
 		{
 			Read();
-			return map.Contains( item );
+			return map.Contains(item);
 		}
 
-		public void CopyTo( KeyValuePair<TKey, TValue>[] array, int arrayIndex )
+		public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
 		{
 			Read();
-			map.CopyTo( array, arrayIndex );
+			map.CopyTo(array, arrayIndex);
 		}
 
 		public int Count
@@ -321,10 +323,10 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		public bool Remove( KeyValuePair<TKey, TValue> item )
+		public bool Remove(KeyValuePair<TKey, TValue> item)
 		{
 			Initialize(true);
-			return MakeDirtyIfTrue(map.Remove( item ));
+			return MakeDirtyIfTrue(map.Remove(item));
 		}
 
 		#endregion
@@ -341,14 +343,14 @@ namespace NHibernate.Collection.Generic
 
 		#region IDictionary Members
 
-		void System.Collections.IDictionary.Add( object key, object value )
+		void IDictionary.Add(object key, object value)
 		{
 			Initialize(true);
-			( ( System.Collections.IDictionary ) map ).Add( key, value );
+			((IDictionary) map).Add(key, value);
 			Dirty();
 		}
 
-		void System.Collections.IDictionary.Clear()
+		void IDictionary.Clear()
 		{
 			Initialize(true);
 			if (map.Count > 0)
@@ -358,72 +360,72 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		bool System.Collections.IDictionary.Contains( object key )
+		bool IDictionary.Contains(object key)
 		{
 			Read();
-			return ( ( System.Collections.IDictionary ) map ).Contains( key );
+			return ((IDictionary) map).Contains(key);
 		}
 
-		System.Collections.IDictionaryEnumerator System.Collections.IDictionary.GetEnumerator()
+		IDictionaryEnumerator IDictionary.GetEnumerator()
 		{
 			Read();
-			return ( ( System.Collections.IDictionary ) map ).GetEnumerator();
+			return ((IDictionary) map).GetEnumerator();
 		}
 
-		bool System.Collections.IDictionary.IsFixedSize
+		bool IDictionary.IsFixedSize
 		{
 			get
 			{
 				Read();
-				return ( ( System.Collections.IDictionary ) map ).IsFixedSize;
+				return ((IDictionary) map).IsFixedSize;
 			}
 		}
 
-		bool System.Collections.IDictionary.IsReadOnly
+		bool IDictionary.IsReadOnly
 		{
 			get { return false; }
 		}
 
-		System.Collections.ICollection System.Collections.IDictionary.Keys
+		ICollection IDictionary.Keys
 		{
 			get
 			{
 				Read();
-				return ( ( System.Collections.IDictionary ) map ).Keys;
+				return ((IDictionary) map).Keys;
 			}
 		}
 
-		void System.Collections.IDictionary.Remove( object key )
+		void IDictionary.Remove(object key)
 		{
 			Initialize(true);
 			int oldCount = map.Count;
-			( ( System.Collections.IDictionary ) map ).Remove( key );
+			((IDictionary) map).Remove(key);
 			if (oldCount != map.Count)
 			{
 				Dirty();
 			}
 		}
 
-		System.Collections.ICollection System.Collections.IDictionary.Values
+		ICollection IDictionary.Values
 		{
 			get
 			{
 				Read();
-				return ( ( System.Collections.IDictionary ) map ).Values;
+				return ((IDictionary) map).Values;
 			}
 		}
 
-		object System.Collections.IDictionary.this[ object key ]
+		object IDictionary.this[object key]
 		{
 			get
 			{
 				Read();
-				return ( ( System.Collections.IDictionary ) map )[ key ];
+				return ((IDictionary) map)[key];
 			}
 			set
 			{
 				Write();
-				( ( System.Collections.IDictionary ) map )[ key ] = value;
+				((IDictionary) map)[key] = value;
 			}
 		}
 
@@ -431,13 +433,13 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection Members
 
-		void System.Collections.ICollection.CopyTo( Array array, int index )
+		void ICollection.CopyTo(Array array, int index)
 		{
 			Read();
-			( ( System.Collections.IDictionary ) map ).CopyTo( array, index );
+			((IDictionary) map).CopyTo(array, index);
 		}
 
-		int System.Collections.ICollection.Count
+		int ICollection.Count
 		{
 			get
 			{
@@ -446,12 +448,12 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		bool System.Collections.ICollection.IsSynchronized
+		bool ICollection.IsSynchronized
 		{
 			get { return false; }
 		}
 
-		object System.Collections.ICollection.SyncRoot
+		object ICollection.SyncRoot
 		{
 			get { return this; }
 		}
@@ -460,13 +462,14 @@ namespace NHibernate.Collection.Generic
 
 		#region IEnumerable Members
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
-			return ( ( System.Collections.IEnumerable ) map ).GetEnumerator();
+			return ((IEnumerable) map).GetEnumerator();
 		}
 
 		#endregion
 	}
 }
+
 #endif

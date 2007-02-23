@@ -1,15 +1,13 @@
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
-
 using NExpression = NHibernate.Expression;
 #if NET_2_0
-using System.Collections.Generic;
 #endif
 
 namespace NHibernate.Impl
@@ -123,7 +121,7 @@ namespace NHibernate.Impl
 
 			public T UniqueResult<T>()
 			{
-				return (T)UniqueResult();
+				return (T) UniqueResult();
 			}
 #endif
 
@@ -318,7 +316,7 @@ namespace NHibernate.Impl
 
 		public T UniqueResult<T>()
 		{
-			return (T)UniqueResult();
+			return (T) UniqueResult();
 		}
 
 #endif
@@ -352,7 +350,7 @@ namespace NHibernate.Impl
 		public FetchMode GetFetchMode(string path)
 		{
 			object result = fetchModes[path];
-			return result == null ? FetchMode.Default : (FetchMode)result;
+			return result == null ? FetchMode.Default : (FetchMode) result;
 		}
 
 		public ICriteria SetFetchMode(string associationPath, FetchMode mode)

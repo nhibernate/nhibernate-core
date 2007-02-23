@@ -5,13 +5,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using Iesi.Collections;
 using log4net;
-
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Context;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
+using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -22,9 +22,8 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;
 using NHibernate.Type;
 using NHibernate.Util;
-
+using Environment=NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
-using NHibernate.Hql;
 
 namespace NHibernate.Impl
 {
@@ -145,9 +144,9 @@ namespace NHibernate.Impl
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("instantiating session factory with properties: "
-					+ CollectionPrinter.ToString(properties));
+				          + CollectionPrinter.ToString(properties));
 			}
-			
+
 			settings.CacheProvider.Start(properties);
 
 			// Generators:
@@ -183,7 +182,8 @@ namespace NHibernate.Impl
 				ICacheConcurrencyStrategy cache = (ICacheConcurrencyStrategy) caches[cacheRegion];
 				if (cache == null)
 				{
-					cache = CacheFactory.CreateCache(model.CacheConcurrencyStrategy, cacheRegion, model.IsMutable, settings, properties);
+					cache =
+						CacheFactory.CreateCache(model.CacheConcurrencyStrategy, cacheRegion, model.IsMutable, settings, properties);
 					if (cache != null)
 					{
 						caches.Add(cacheRegion, cache);
@@ -211,7 +211,9 @@ namespace NHibernate.Impl
 			collectionPersisters = new Hashtable();
 			foreach (Mapping.Collection map in cfg.CollectionMappings)
 			{
-				ICacheConcurrencyStrategy cache = CacheFactory.CreateCache(map.CacheConcurrencyStrategy, map.CacheRegionName, map.Owner.IsMutable, settings, properties);
+				ICacheConcurrencyStrategy cache =
+					CacheFactory.CreateCache(map.CacheConcurrencyStrategy, map.CacheRegionName, map.Owner.IsMutable, settings,
+					                         properties);
 				if (cache != null)
 					allCacheRegions[cache.RegionName] = cache.Cache;
 
@@ -473,7 +475,8 @@ namespace NHibernate.Impl
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IQueryTranslator[] CreateQueryTranslators(string[] concreteQueryStrings, QueryCacheKey cacheKey, IDictionary enabledFilters)
+		private IQueryTranslator[] CreateQueryTranslators(string[] concreteQueryStrings, QueryCacheKey cacheKey,
+		                                                  IDictionary enabledFilters)
 		{
 			int length = concreteQueryStrings.Length;
 			IQueryTranslator[] queries = new IQueryTranslator[length];
@@ -525,7 +528,7 @@ namespace NHibernate.Impl
 		{
 			FilterCacheKey cacheKey = new FilterCacheKey(collectionRole, filterString, scalar);
 
-			IFilterTranslator filter = (IFilterTranslator)Get(cacheKey);
+			IFilterTranslator filter = (IFilterTranslator) Get(cacheKey);
 			if (filter == null)
 			{
 				filter = CreateFilterTranslator(filterString, cacheKey);
@@ -535,7 +538,8 @@ namespace NHibernate.Impl
 			return filter;
 		}
 
-		private ISession OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor interceptor, ConnectionReleaseMode connectionReleaseMode)
+		private ISession OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor interceptor,
+		                             ConnectionReleaseMode connectionReleaseMode)
 		{
 			return new SessionImpl(connection, this, autoClose, timestamp, interceptor, connectionReleaseMode);
 		}
@@ -641,7 +645,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public Dialect.Dialect Dialect
+		public HibernateDialect Dialect
 		{
 			get { return settings.Dialect; }
 		}
@@ -813,7 +817,7 @@ namespace NHibernate.Impl
 					{
 						if (isMappedClass)
 						{
-							return new string[] { className };
+							return new string[] {className};
 						}
 					}
 					else
@@ -824,7 +828,7 @@ namespace NHibernate.Impl
 						}
 						else if (
 							clazz.IsAssignableFrom(q.MappedClass) &&
-								(!q.IsInherited || !clazz.IsAssignableFrom(q.MappedSuperclass)))
+							(!q.IsInherited || !clazz.IsAssignableFrom(q.MappedSuperclass)))
 						{
 							results.Add(className);
 						}
@@ -853,7 +857,7 @@ namespace NHibernate.Impl
 					{
 						if (isMappedClass)
 						{
-							return new System.Type[] { q.MappedClass };
+							return new System.Type[] {q.MappedClass};
 						}
 					}
 					else
@@ -893,7 +897,7 @@ namespace NHibernate.Impl
 		}
 
 		private bool disposed;
-		
+
 		public void Dispose()
 		{
 			if (disposed)
@@ -1215,14 +1219,15 @@ namespace NHibernate.Impl
 		{
 			if (currentSessionContext == null)
 			{
-				throw new HibernateException("No CurrentSessionContext configured (set the property " + Cfg.Environment.CurrentSessionContextClass + ")!");
+				throw new HibernateException("No CurrentSessionContext configured (set the property " +
+				                             Environment.CurrentSessionContextClass + ")!");
 			}
 			return currentSessionContext.CurrentSession();
 		}
 
 		private ICurrentSessionContext BuildCurrentSessionContext()
 		{
-			string impl = properties[Cfg.Environment.CurrentSessionContextClass] as string;
+			string impl = properties[Environment.CurrentSessionContextClass] as string;
 
 			switch (impl)
 			{
@@ -1235,7 +1240,7 @@ namespace NHibernate.Impl
 			try
 			{
 				System.Type implClass = ReflectHelper.ClassForName(impl);
-				return (ICurrentSessionContext) Activator.CreateInstance(implClass, new object[]{this});
+				return (ICurrentSessionContext) Activator.CreateInstance(implClass, new object[] {this});
 			}
 			catch (Exception e)
 			{
@@ -1243,7 +1248,7 @@ namespace NHibernate.Impl
 				return null;
 			}
 		}
-		
+
 		public SQLFunctionRegistry SQLFunctionRegistry
 		{
 			get { return sqlFunctionRegistry; }

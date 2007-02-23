@@ -9,7 +9,7 @@ namespace NHibernate.Mapping
 	{
 		private System.Type elementClass;
 
-		public Array( PersistentClass owner ) : base( owner )
+		public Array(PersistentClass owner) : base(owner)
 		{
 		}
 
@@ -21,7 +21,7 @@ namespace NHibernate.Mapping
 
 		public override CollectionType DefaultCollectionType
 		{
-			get { return TypeFactory.Array( Role, ReferencedPropertyName, ElementClass ); }
+			get { return TypeFactory.Array(Role, ReferencedPropertyName, ElementClass); }
 		}
 
 		public override bool IsArray

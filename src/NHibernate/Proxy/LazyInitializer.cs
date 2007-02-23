@@ -20,7 +20,7 @@ namespace NHibernate.Proxy
 	public abstract class LazyInitializer
 	{
 		private static readonly IHashCodeProvider IdentityHashCodeProvider =
-			new NHibernate.IdentityHashCodeProvider();
+			new IdentityHashCodeProvider();
 
 		/// <summary>
 		/// If this is returned by Invoke then the subclass needs to Invoke the
@@ -49,17 +49,17 @@ namespace NHibernate.Proxy
 		/// <param name="getIdentifierMethod"></param>
 		/// <param name="setIdentifierMethod"></param>
 		/// <param name="session">The ISession this Proxy is in.</param>
-		protected LazyInitializer( System.Type persistentClass, object id,
-			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
-			ISessionImplementor session )
+		protected LazyInitializer(System.Type persistentClass, object id,
+		                          MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
+		                          ISessionImplementor session)
 		{
 			_id = id;
 			_session = session;
 			_persistentClass = persistentClass;
 			_getIdentifierMethod = getIdentifierMethod;
 			_setIdentifierMethod = setIdentifierMethod;
-			
-			_overridesEquals = ReflectHelper.OverridesEquals( _persistentClass );
+
+			_overridesEquals = ReflectHelper.OverridesEquals(_persistentClass);
 		}
 
 		/// <summary>
@@ -114,7 +114,7 @@ namespace NHibernate.Proxy
 		/// This will only be called if the Dynamic Proxy generator does not handle serialization
 		/// itself or delegates calls to the method GetObjectData to the LazyInitializer.
 		/// </remarks>
-		protected virtual void AddSerializationInfo( SerializationInfo info, StreamingContext context )
+		protected virtual void AddSerializationInfo(SerializationInfo info, StreamingContext context)
 		{
 		}
 
@@ -130,58 +130,58 @@ namespace NHibernate.Proxy
 		/// underlying proxied object is needed then it returns the result <see cref="InvokeImplementation"/>
 		/// which indicates that the Proxy will need to forward to the real implementation.
 		/// </returns>
-		public virtual object Invoke( MethodBase method, object[ ] args, object proxy )
+		public virtual object Invoke(MethodBase method, object[] args, object proxy)
 		{
 			string methodName = method.Name;
 			int paramCount = method.GetParameters().Length;
 
-			if( paramCount == 0 )
+			if (paramCount == 0)
 			{
-				if( !_overridesEquals && methodName == "GetHashCode" )
+				if (!_overridesEquals && methodName == "GetHashCode")
 				{
-					return IdentityHashCodeProvider.GetHashCode( proxy );
+					return IdentityHashCodeProvider.GetHashCode(proxy);
 				}
-				else if( method.Equals( _getIdentifierMethod ) )
+				else if (method.Equals(_getIdentifierMethod))
 				{
 					return _id;
 				}
-				else if( methodName == "Finalize" )
+				else if (methodName == "Finalize")
 				{
 					return null;
 				}
 			}
-			else if( paramCount == 1 )
+			else if (paramCount == 1)
 			{
-				if( !_overridesEquals && methodName == "Equals" )
+				if (!_overridesEquals && methodName == "Equals")
 				{
 					return args[0] == proxy;
 				}
-				else if( method.Equals( _setIdentifierMethod ) )
+				else if (method.Equals(_setIdentifierMethod))
 				{
 					Initialize();
-					_id = args[ 0 ];
+					_id = args[0];
 					return InvokeImplementation;
 				}
 			}
-			else if( paramCount == 2)
+			else if (paramCount == 2)
 			{
 				// if the Proxy Engine delegates the call of GetObjectData to the Initializer
 				// then we need to handle it.  Castle.DynamicProxy takes care of serializing
 				// proxies for us, but other providers might not.
-				if( methodName == "GetObjectData" )
+				if (methodName == "GetObjectData")
 				{
-					SerializationInfo info = ( SerializationInfo ) args[ 0 ];
-					StreamingContext context = ( StreamingContext ) args[ 1 ]; // not used !?!
+					SerializationInfo info = (SerializationInfo) args[0];
+					StreamingContext context = (StreamingContext) args[1]; // not used !?!
 
-					if( _target == null & _session != null )
+					if (_target == null & _session != null)
 					{
-						EntityKey key = new EntityKey( _id, _session.Factory.GetEntityPersister( _persistentClass ) );
-						_target = _session.GetEntity( key );
+						EntityKey key = new EntityKey(_id, _session.Factory.GetEntityPersister(_persistentClass));
+						_target = _session.GetEntity(key);
 					}
 
 					// let the specific LazyInitializer write its requirements for deserialization 
 					// into the stream.
-					AddSerializationInfo( info, context );
+					AddSerializationInfo(info, context);
 
 					// don't need a return value for proxy.
 					return null;
@@ -207,7 +207,7 @@ namespace NHibernate.Proxy
 		/// <summary></summary>
 		public bool IsUninitialized
 		{
-			get { return ( _target == null ); }
+			get { return (_target == null); }
 		}
 
 		/// <summary></summary>
@@ -216,12 +216,12 @@ namespace NHibernate.Proxy
 			get { return _session; }
 			set
 			{
-				if( value != _session )
+				if (value != _session)
 				{
-					if( _session != null && _session.IsOpen )
+					if (_session != null && _session.IsOpen)
 					{
 						//TODO: perhaps this should be some other RuntimeException...
-						throw new LazyInitializationException( "Illegally attempted to associate a proxy with two open Sessions" );
+						throw new LazyInitializationException("Illegally attempted to associate a proxy with two open Sessions");
 					}
 					else
 					{
@@ -246,17 +246,16 @@ namespace NHibernate.Proxy
 		/// </summary>
 		/// <param name="s">The Session to get the object from.</param>
 		/// <returns>The Persistent Object this proxy is Proxying, or <c>null</c>.</returns>
-		public object GetImplementation( ISessionImplementor s )
+		public object GetImplementation(ISessionImplementor s)
 		{
-			EntityKey key = new EntityKey( Identifier, s.Factory.GetEntityPersister( PersistentClass ) );
-			return s.GetEntity( key );
+			EntityKey key = new EntityKey(Identifier, s.Factory.GetEntityPersister(PersistentClass));
+			return s.GetEntity(key);
 		}
 
-		public void SetImplementation( object target )
+		public void SetImplementation(object target)
 		{
 			this._target = target;
 			initialized = true;
 		}
-
 	}
 }

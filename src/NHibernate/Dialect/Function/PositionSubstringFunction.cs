@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -8,9 +9,11 @@ namespace NHibernate.Dialect.Function
 	/// <summary>
 	/// Emulation of locate() on PostgreSQL
 	/// </summary>
-	public class PositionSubstringFunction: ISQLFunction
+	public class PositionSubstringFunction : ISQLFunction
 	{
-		public PositionSubstringFunction() { }
+		public PositionSubstringFunction()
+		{
+		}
 
 		#region ISQLFunction Members
 
@@ -29,7 +32,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(System.Collections.IList args, ISessionFactoryImplementor factory)
+		public string Render(IList args, ISessionFactoryImplementor factory)
 		{
 			// DONE: QueryException if args.Count<2 (not present in H3.2) 
 			if (args.Count < 2)
@@ -47,7 +50,7 @@ namespace NHibernate.Dialect.Function
 				buf.Append('(');
 			}
 			buf.Append("position(")
-				.Append( pattern )
+				.Append(pattern)
 				.Append(" in ");
 			if (threeArgs)
 			{

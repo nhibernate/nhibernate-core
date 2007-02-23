@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
 using log4net;
-
 using NHibernate.Util;
-
-using Environment = NHibernate.Cfg.Environment;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Connection
 {
@@ -13,12 +11,12 @@ namespace NHibernate.Connection
 	/// </summary>
 	public sealed class ConnectionProviderFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( ConnectionProviderFactory ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionProviderFactory));
 
 		// cannot be instantiated
 		private ConnectionProviderFactory()
 		{
-			throw new InvalidOperationException( "ConnectionProviderFactory can not be instantiated." );
+			throw new InvalidOperationException("ConnectionProviderFactory can not be instantiated.");
 		}
 
 		/// <summary>
@@ -26,24 +24,24 @@ namespace NHibernate.Connection
 		/// </summary>
 		/// <param name="settings"></param>
 		/// <returns></returns>
-		public static IConnectionProvider NewConnectionProvider( IDictionary settings )
+		public static IConnectionProvider NewConnectionProvider(IDictionary settings)
 		{
 			IConnectionProvider connections = null;
-			string providerClass = settings[ Environment.ConnectionProvider ] as string;
-			if( providerClass != null )
+			string providerClass = settings[Environment.ConnectionProvider] as string;
+			if (providerClass != null)
 			{
 				try
 				{
-					log.Info( "Initializing connection provider: " + providerClass );
-					connections = ( IConnectionProvider ) Activator.CreateInstance( ReflectHelper.ClassForName( providerClass ) );
+					log.Info("Initializing connection provider: " + providerClass);
+					connections = (IConnectionProvider) Activator.CreateInstance(ReflectHelper.ClassForName(providerClass));
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					log.Fatal( "Could not instantiate connection provider", e );
-					throw new HibernateException( "Could not instantiate connection provider: " + providerClass, e );
+					log.Fatal("Could not instantiate connection provider", e);
+					throw new HibernateException("Could not instantiate connection provider: " + providerClass, e);
 				}
 			}
-			else if (settings[ Environment.ConnectionString ] != null || settings[Environment.ConnectionStringName] != null)
+			else if (settings[Environment.ConnectionString] != null || settings[Environment.ConnectionStringName] != null)
 			{
 				connections = new DriverConnectionProvider();
 			}
@@ -52,9 +50,8 @@ namespace NHibernate.Connection
 				log.Info("No connection provider specified, UserSuppliedConnectionProvider will be used.");
 				connections = new UserSuppliedConnectionProvider();
 			}
-			connections.Configure( settings );
+			connections.Configure(settings);
 			return connections;
 		}
-
 	}
 }

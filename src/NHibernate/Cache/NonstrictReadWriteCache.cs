@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using log4net;
 
 namespace NHibernate.Cache
@@ -17,7 +16,7 @@ namespace NHibernate.Cache
 	{
 		private ICache cache;
 
-		private static readonly ILog log = LogManager.GetLogger( typeof( NonstrictReadWriteCache ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(NonstrictReadWriteCache));
 
 		/// <summary>
 		/// Gets the cache region name.
@@ -36,21 +35,21 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Get the most recent version, if available.
 		/// </summary>
-		public object Get( CacheKey key, long txTimestamp )
+		public object Get(CacheKey key, long txTimestamp)
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( "Cache lookup: " + key );
+				log.Debug("Cache lookup: " + key);
 			}
 
-			object result = cache.Get( key );
-			if( result != null )
+			object result = cache.Get(key);
+			if (result != null)
 			{
-				log.Debug( "Cache hit" );
+				log.Debug("Cache hit");
 			}
 			else
 			{
-				log.Debug( "Cache miss" );
+				log.Debug("Cache miss");
 			}
 			return result;
 		}
@@ -58,52 +57,53 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Add an item to the cache
 		/// </summary>
-		public bool Put( CacheKey key, object value, long txTimestamp, object version, IComparer versionComparator, bool minimalPut )
+		public bool Put(CacheKey key, object value, long txTimestamp, object version, IComparer versionComparator,
+		                bool minimalPut)
 		{
-			if( txTimestamp == long.MinValue )
+			if (txTimestamp == long.MinValue)
 			{
 				// MinValue means cache is disabled
 				return false;
 			}
 
-			if( minimalPut && cache.Get( key ) != null )
+			if (minimalPut && cache.Get(key) != null)
 			{
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "item already cached: " + key );
+					log.Debug("item already cached: " + key);
 				}
 				return false;
 			}
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( "Caching: " + key );
+				log.Debug("Caching: " + key);
 			}
-			cache.Put( key, value );
+			cache.Put(key, value);
 			return true;
 		}
 
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public ISoftLock Lock( CacheKey key, object version )
+		public ISoftLock Lock(CacheKey key, object version)
 		{
 			return null;
 		}
 
-		public void Remove( CacheKey key )
+		public void Remove(CacheKey key)
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( "Removing: " + key );
+				log.Debug("Removing: " + key);
 			}
-			cache.Remove( key );
+			cache.Remove(key);
 		}
 
 		public void Clear()
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( "Clearing" );
+				log.Debug("Clearing");
 			}
 			cache.Clear();
 		}
@@ -114,64 +114,64 @@ namespace NHibernate.Cache
 			{
 				cache.Destroy();
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				log.Warn( "Could not destroy cache", e );
+				log.Warn("Could not destroy cache", e);
 			}
 		}
 
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		public void Evict( CacheKey key )
+		public void Evict(CacheKey key)
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( "Invalidating: " + key );
+				log.Debug("Invalidating: " + key);
 			}
-			cache.Remove( key );
+			cache.Remove(key);
 		}
 
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		public void Update( CacheKey key, object value )
+		public void Update(CacheKey key, object value)
 		{
-			Evict( key );
+			Evict(key);
 		}
 
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public void Insert( CacheKey key, object value )
+		public void Insert(CacheKey key, object value)
 		{
 		}
 
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		public void Release( CacheKey key, ISoftLock @lock )
+		public void Release(CacheKey key, ISoftLock @lock)
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( "Invalidating (again): " + key );
+				log.Debug("Invalidating (again): " + key);
 			}
 
-			cache.Remove( key );
+			cache.Remove(key);
 		}
 
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		public void AfterUpdate( CacheKey key, object value, object version, ISoftLock @lock )
+		public void AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock)
 		{
-			Release( key, @lock );
+			Release(key, @lock);
 		}
 
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public void AfterInsert( CacheKey key, object value, object version )
+		public void AfterInsert(CacheKey key, object value, object version)
 		{
 		}
 	}

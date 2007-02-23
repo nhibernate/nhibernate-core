@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Classic
@@ -14,70 +15,70 @@ namespace NHibernate.Hql.Classic
 		private bool byExpected = false;
 		private int parenCount = 0;
 
-		public virtual void Token( string token, QueryTranslator q )
+		public virtual void Token(string token, QueryTranslator q)
 		{
-			string lcToken = token.ToLower( System.Globalization.CultureInfo.InvariantCulture );
+			string lcToken = token.ToLower(CultureInfo.InvariantCulture);
 
-			if( token.Equals( StringHelper.OpenParen ) )
+			if (token.Equals(StringHelper.OpenParen))
 			{
 				parenCount++;
 			}
-			else if( token.Equals( StringHelper.ClosedParen ) )
+			else if (token.Equals(StringHelper.ClosedParen))
 			{
 				parenCount--;
 			}
 
-			if( byExpected && !lcToken.Equals( "by" ) )
+			if (byExpected && !lcToken.Equals("by"))
 			{
-				throw new QueryException( "BY expected after GROUP or ORDER: " + token );
+				throw new QueryException("BY expected after GROUP or ORDER: " + token);
 			}
 
 			bool isClauseStart = parenCount == 0; //ignore subselect keywords
 
-			if( isClauseStart )
+			if (isClauseStart)
 			{
-				if( lcToken.Equals( "select" ) )
+				if (lcToken.Equals("select"))
 				{
 					selectTokens = new ArrayList();
 					cacheSelectTokens = true;
 				}
-				else if( lcToken.Equals( "from" ) )
+				else if (lcToken.Equals("from"))
 				{
 					child = new FromParser();
-					child.Start( q );
+					child.Start(q);
 					cacheSelectTokens = false;
 				}
-				else if( lcToken.Equals( "where" ) )
+				else if (lcToken.Equals("where"))
 				{
-					EndChild( q );
+					EndChild(q);
 					child = new WhereParser();
-					child.Start( q );
+					child.Start(q);
 				}
-				else if( lcToken.Equals( "order" ) )
+				else if (lcToken.Equals("order"))
 				{
-					EndChild( q );
+					EndChild(q);
 					child = new OrderByParser();
 					byExpected = true;
 				}
-				else if( lcToken.Equals( "having" ) )
+				else if (lcToken.Equals("having"))
 				{
-					EndChild( q );
+					EndChild(q);
 					child = new HavingParser();
-					child.Start( q );
+					child.Start(q);
 				}
-				else if( lcToken.Equals( "group" ) )
+				else if (lcToken.Equals("group"))
 				{
-					EndChild( q );
+					EndChild(q);
 					child = new GroupByParser();
 					byExpected = true;
 				}
-				else if( lcToken.Equals( "by" ) )
+				else if (lcToken.Equals("by"))
 				{
-					if( !byExpected )
+					if (!byExpected)
 					{
-						throw new QueryException( "GROUP or ORDER expected before BY" );
+						throw new QueryException("GROUP or ORDER expected before BY");
 					}
-					child.Start( q );
+					child.Start(q);
 					byExpected = false;
 				}
 				else
@@ -86,55 +87,55 @@ namespace NHibernate.Hql.Classic
 				}
 			}
 
-			if( !isClauseStart )
+			if (!isClauseStart)
 			{
-				if( cacheSelectTokens )
+				if (cacheSelectTokens)
 				{
-					selectTokens.Add( token );
+					selectTokens.Add(token);
 				}
 				else
 				{
-					if( child == null )
+					if (child == null)
 					{
-						throw new QueryException( "query must begin with SELECT or FROM: " + token );
+						throw new QueryException("query must begin with SELECT or FROM: " + token);
 					}
 					else
 					{
-						child.Token( token, q );
+						child.Token(token, q);
 					}
 				}
 			}
 		}
 
-		private void EndChild( QueryTranslator q )
+		private void EndChild(QueryTranslator q)
 		{
-			if( child == null )
+			if (child == null)
 			{
 				//null child could occur for no from clause in a filter
 				cacheSelectTokens = false;
 			}
 			else
 			{
-				child.End( q );
+				child.End(q);
 			}
 		}
 
-		public virtual void Start( QueryTranslator q )
+		public virtual void Start(QueryTranslator q)
 		{
 		}
 
-		public virtual void End( QueryTranslator q )
+		public virtual void End(QueryTranslator q)
 		{
-			EndChild( q );
-			if( selectTokens != null )
+			EndChild(q);
+			if (selectTokens != null)
 			{
 				child = new SelectParser();
-				child.Start( q );
-				foreach( string item in selectTokens )
+				child.Start(q);
+				foreach (string item in selectTokens)
 				{
-					Token( item, q );
+					Token(item, q);
 				}
-				child.End( q );
+				child.End(q);
 			}
 			byExpected = false;
 			parenCount = 0;

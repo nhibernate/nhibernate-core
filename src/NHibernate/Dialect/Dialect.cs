@@ -2,17 +2,14 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Text;
-
 using log4net;
-
+using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Dialect.Function;
-
-using Environment = NHibernate.Cfg.Environment;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -26,9 +23,9 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public abstract class Dialect
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( Dialect ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(Dialect));
 
-		private TypeNames typeNames = new TypeNames( "$1" );
+		private TypeNames typeNames = new TypeNames("$1");
 		private IDictionary properties = new Hashtable();
 		private IDictionary sqlFunctions;
 
@@ -36,6 +33,7 @@ namespace NHibernate.Dialect
 
 		/// <summary></summary>
 		protected const string DefaultBatchSize = "15";
+
 		/// <summary></summary>
 		protected const string NoBatch = "0";
 
@@ -64,8 +62,8 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		protected Dialect()
 		{
-			log.Info( "Using dialect: " + this );
-			sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable( standardAggregateFunctions );
+			log.Info("Using dialect: " + this);
+			sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(standardAggregateFunctions);
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
 			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
@@ -99,6 +97,7 @@ namespace NHibernate.Dialect
 		/// Characters used for quoting sql identifiers
 		/// </summary>
 		public const string PossibleQuoteChars = "`'\"[";
+
 		/// <summary></summary>
 		public const string PossibleClosedQuoteChars = "`'\"]";
 
@@ -108,18 +107,18 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="sqlType">The SqlType</param>
 		/// <returns>The database type name used by ddl.</returns>
-		public virtual string GetTypeName( SqlType sqlType )
+		public virtual string GetTypeName(SqlType sqlType)
 		{
-			if( sqlType.LengthDefined )
+			if (sqlType.LengthDefined)
 			{
-				string resultWithLength = typeNames.Get( sqlType.DbType, sqlType.Length );
-				if( resultWithLength != null ) return resultWithLength;
+				string resultWithLength = typeNames.Get(sqlType.DbType, sqlType.Length);
+				if (resultWithLength != null) return resultWithLength;
 			}
 
-			string result = typeNames.Get( sqlType.DbType );
-			if( result == null )
+			string result = typeNames.Get(sqlType.DbType);
+			if (result == null)
 			{
-				throw new HibernateException( "No default type mapping for SqlType " + sqlType.ToString() );
+				throw new HibernateException("No default type mapping for SqlType " + sqlType.ToString());
 			}
 
 			return result;
@@ -132,26 +131,27 @@ namespace NHibernate.Dialect
 		/// <param name="sqlType">The SqlType </param>
 		/// <param name="length">The length of the SqlType</param>
 		/// <returns>The database type name used by ddl.</returns>
-		public virtual string GetTypeName( SqlType sqlType, int length )
+		public virtual string GetTypeName(SqlType sqlType, int length)
 		{
-			string result = typeNames.Get( sqlType.DbType, length );
-			if( result == null )
+			string result = typeNames.Get(sqlType.DbType, length);
+			if (result == null)
 			{
-				throw new HibernateException( "No type mapping for SqlType " + sqlType.ToString() + " of length " + length );
+				throw new HibernateException("No type mapping for SqlType " + sqlType.ToString() + " of length " + length);
 			}
 			return result;
 		}
 
-		public virtual string GetCastTypeName( SqlType sqlType )
+		public virtual string GetCastTypeName(SqlType sqlType)
 		{
 			return GetTypeName(sqlType);
 		}
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="function"></param>
-		protected void RegisterFunction( string name, ISQLFunction function )
+		protected void RegisterFunction(string name, ISQLFunction function)
 		{
 			sqlFunctions[name] = function;
 		}
@@ -164,9 +164,9 @@ namespace NHibernate.Dialect
 		/// <param name="code">The typecode</param>
 		/// <param name="capacity">Maximum length of database type</param>
 		/// <param name="name">The database type name</param>
-		protected void RegisterColumnType( DbType code, int capacity, string name )
+		protected void RegisterColumnType(DbType code, int capacity, string name)
 		{
-			typeNames.Put( code, capacity, name );
+			typeNames.Put(code, capacity, name);
 		}
 
 		/// <summary>
@@ -175,9 +175,9 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="code">The typecode</param>
 		/// <param name="name">The database type name</param>
-		protected void RegisterColumnType( DbType code, string name )
+		protected void RegisterColumnType(DbType code, string name)
 		{
-			typeNames.Put( code, name );
+			typeNames.Put(code, name);
 		}
 
 
@@ -210,9 +210,9 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public virtual string MultipleQueriesSeparator
 		{
-			get { return ";";  }
+			get { return ";"; }
 		}
-		
+
 		/// <summary>
 		/// Retrieves the <c>FOR UPDATE</c> syntax specific to this dialect
 		/// </summary>
@@ -231,15 +231,15 @@ namespace NHibernate.Dialect
 			get { return ForUpdateString; }
 		}
 
-		public virtual string GetForUpdateString( LockMode lockMode )
+		public virtual string GetForUpdateString(LockMode lockMode)
 		{
-			if( lockMode == LockMode.Upgrade )
+			if (lockMode == LockMode.Upgrade)
 			{
 				return ForUpdateString;
 			}
-			else if( lockMode == LockMode.UpgradeNoWait )
+			else if (lockMode == LockMode.UpgradeNoWait)
 			{
-				return  ForUpdateNowaitString;
+				return ForUpdateNowaitString;
 			}
 			else
 			{
@@ -268,7 +268,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public virtual string AddColumnString
 		{
-			get { throw new NotSupportedException( "No add column syntax supported by Dialect" ); }
+			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
 		}
 
 		/// <summary>
@@ -279,62 +279,63 @@ namespace NHibernate.Dialect
 		/// <param name="referencedTable"></param>
 		/// <param name="primaryKey"></param>
 		/// <returns></returns>
-		public virtual string GetAddForeignKeyConstraintString( string constraintName, string[ ] foreignKey, string referencedTable, string[ ] primaryKey )
+		public virtual string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
+		                                                       string referencedTable, string[] primaryKey)
 		{
-			return new StringBuilder( 30 )
-				.Append( " add constraint " )
-				.Append( constraintName )
-				.Append( " foreign key (" )
-				.Append( string.Join( StringHelper.CommaSpace, foreignKey ) )
-				.Append( ") references " )
-				.Append( referencedTable )
+			return new StringBuilder(30)
+				.Append(" add constraint ")
+				.Append(constraintName)
+				.Append(" foreign key (")
+				.Append(string.Join(StringHelper.CommaSpace, foreignKey))
+				.Append(") references ")
+				.Append(referencedTable)
 				.ToString();
 		}
 
 		/// <summary>
 		/// The syntax used to drop a foreign key constraint from a table.
- 		/// </summary>
- 		/// <param name="constraintName">The name of the foreign key constraint to drop.</param>
- 		/// <returns>
- 		/// The SQL string to drop the foreign key constraint.
- 		/// </returns>
- 		public virtual string GetDropForeignKeyConstraintString( string constraintName )
- 		{
+		/// </summary>
+		/// <param name="constraintName">The name of the foreign key constraint to drop.</param>
+		/// <returns>
+		/// The SQL string to drop the foreign key constraint.
+		/// </returns>
+		public virtual string GetDropForeignKeyConstraintString(string constraintName)
+		{
 			return " drop constraint " + constraintName;
- 		}
-		
+		}
+
 		/// <summary>
 		/// The syntax used to add a primary key constraint to a table
 		/// </summary>
 		/// <param name="constraintName"></param>
-		public virtual string GetAddPrimaryKeyConstraintString( string constraintName )
+		public virtual string GetAddPrimaryKeyConstraintString(string constraintName)
 		{
 			return " add constraint " + constraintName + " primary key ";
 		}
 
 		/// <summary>
 		/// The syntax used to drop a primary key constraint from a table.
- 		/// </summary>
- 		/// <param name="constraintName">The name of the primary key constraint to drop.</param>
- 		/// <returns>
- 		/// The SQL string to drop the primary key constraint.
- 		/// </returns>
- 		public virtual string GetDropPrimaryKeyConstraintString( string constraintName )
+		/// </summary>
+		/// <param name="constraintName">The name of the primary key constraint to drop.</param>
+		/// <returns>
+		/// The SQL string to drop the primary key constraint.
+		/// </returns>
+		public virtual string GetDropPrimaryKeyConstraintString(string constraintName)
 		{
- 			return " drop constraint " + constraintName;
- 		}
+			return " drop constraint " + constraintName;
+		}
 
 		/// <summary>
- 		/// The syntax used to drop an index constraint from a table.
- 		/// </summary>
- 		/// <param name="constraintName">The name of the index constraint to drop.</param>
- 		/// <returns>
- 		/// The SQL string to drop the primary key constraint.
- 		/// </returns>
- 		public virtual string GetDropIndexConstraintString( string constraintName ) 		
+		/// The syntax used to drop an index constraint from a table.
+		/// </summary>
+		/// <param name="constraintName">The name of the index constraint to drop.</param>
+		/// <returns>
+		/// The SQL string to drop the primary key constraint.
+		/// </returns>
+		public virtual string GetDropIndexConstraintString(string constraintName)
 		{
- 			return " drop constraint " + constraintName;
- 		}
+			return " drop constraint " + constraintName;
+		}
 
 		/// <summary>
 		/// The keyword used to specify a nullable column
@@ -376,7 +377,7 @@ namespace NHibernate.Dialect
 		/// and also gets the identifier of the inserted row.
 		/// Return <c>null</c> if this dialect doesn't support this feature.
 		/// </returns>
-		public virtual SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
+		public virtual SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
 		{
 			return null;
 		}
@@ -385,9 +386,9 @@ namespace NHibernate.Dialect
 		/// The syntax that returns the identity value of the last insert, if native
 		/// key generation is supported
 		/// </summary>
-		public virtual string GetIdentitySelectString( string identityColumn, string tableName )
+		public virtual string GetIdentitySelectString(string identityColumn, string tableName)
 		{
-			throw new MappingException( "Dialect does not support identity key generation" );
+			throw new MappingException("Dialect does not support identity key generation");
 		}
 
 		/// <summary>
@@ -395,7 +396,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public virtual string IdentityColumnString
 		{
-			get { throw new MappingException( "Dialect does not support identity key generation" ); }
+			get { throw new MappingException("Dialect does not support identity key generation"); }
 		}
 
 		/// <summary>
@@ -419,9 +420,9 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="sequenceName">The name of the sequence</param>
 		/// <returns></returns>
-		public virtual string GetSequenceNextValString( string sequenceName )
+		public virtual string GetSequenceNextValString(string sequenceName)
 		{
-			throw new MappingException( "Dialect does not support sequences" );
+			throw new MappingException("Dialect does not support sequences");
 		}
 
 		/// <summary>
@@ -429,9 +430,9 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="sequenceName"></param>
 		/// <returns></returns>
-		public virtual string GetCreateSequenceString( string sequenceName )
+		public virtual string GetCreateSequenceString(string sequenceName)
 		{
-			throw new MappingException( "Dialect does not support sequences" );
+			throw new MappingException("Dialect does not support sequences");
 		}
 
 		/// <summary>
@@ -439,20 +440,20 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="sequenceName"></param>
 		/// <returns></returns>
-		public virtual string GetDropSequenceString( string sequenceName )
+		public virtual string GetDropSequenceString(string sequenceName)
 		{
-			throw new MappingException( "Dialect does not support sequences" );
+			throw new MappingException("Dialect does not support sequences");
 		}
 
-		private static Dialect InstantiateDialect( string dialectName )
+		private static Dialect InstantiateDialect(string dialectName)
 		{
 			try
 			{
-				return ( Dialect ) Activator.CreateInstance( ReflectHelper.ClassForName( dialectName ) );
+				return (Dialect) Activator.CreateInstance(ReflectHelper.ClassForName(dialectName));
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new HibernateException( "Could not instantiate dialect class " + dialectName, e );
+				throw new HibernateException("Could not instantiate dialect class " + dialectName, e);
 			}
 		}
 
@@ -462,13 +463,13 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public static Dialect GetDialect()
 		{
-			string dialectName = Environment.Properties[ Environment.Dialect ] as string;
-			if( dialectName == null )
+			string dialectName = Environment.Properties[Environment.Dialect] as string;
+			if (dialectName == null)
 			{
-				throw new HibernateException( "The dialect was not set. Set the property hibernate.dialect." );
+				throw new HibernateException("The dialect was not set. Set the property hibernate.dialect.");
 			}
 
-			return InstantiateDialect( dialectName );
+			return InstantiateDialect(dialectName);
 		}
 
 		/// <summary>
@@ -476,19 +477,19 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static Dialect GetDialect( IDictionary props )
+		public static Dialect GetDialect(IDictionary props)
 		{
-			if( props == null )
+			if (props == null)
 			{
 				return GetDialect();
 			}
-			string dialectName = ( string ) props[ Environment.Dialect ];
-			if( dialectName == null )
+			string dialectName = (string) props[Environment.Dialect];
+			if (dialectName == null)
 			{
 				return GetDialect();
 			}
 
-			return InstantiateDialect( dialectName );
+			return InstantiateDialect(dialectName);
 		}
 
 		/// <summary>
@@ -522,7 +523,7 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public virtual CaseFragment CreateCaseFragment()
 		{
-			return new ANSICaseFragment( this );
+			return new ANSICaseFragment(this);
 		}
 
 		/// <summary>
@@ -556,9 +557,9 @@ namespace NHibernate.Dialect
 		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
 		/// <param name="hasOffset">Offset of the first row is not zero</param>
 		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
-		public virtual SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
+		public virtual SqlString GetLimitString(SqlString querySqlString, bool hasOffset)
 		{
-			throw new NotSupportedException( "Paged Queries not supported" );
+			throw new NotSupportedException("Paged Queries not supported");
 		}
 
 		/// <summary>
@@ -568,9 +569,9 @@ namespace NHibernate.Dialect
 		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
 		/// <param name="limit">Maximum number of rows to be returned by the query</param>
 		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
-		public virtual SqlString GetLimitString( SqlString querySqlString, int offset, int limit )
+		public virtual SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
 		{
-			return GetLimitString( querySqlString, offset > 0 );
+			return GetLimitString(querySqlString, offset > 0);
 		}
 
 		/// <summary>
@@ -636,7 +637,7 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
-		 
+
 		/// <summary>
 		/// Aggregate SQL functions as defined in general. This is
 		/// a case-insensitive hashtable!
@@ -656,19 +657,19 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="tableName"></param>
 		/// <returns></returns>
-		public virtual string GetDropTableString( string tableName )
+		public virtual string GetDropTableString(string tableName)
 		{
-			StringBuilder buf = new StringBuilder( "drop table " );
-			if( SupportsIfExistsBeforeTableName )
+			StringBuilder buf = new StringBuilder("drop table ");
+			if (SupportsIfExistsBeforeTableName)
 			{
-				buf.Append( "if exists " );
+				buf.Append("if exists ");
 			}
-			
-			buf.Append( tableName ).Append( CascadeConstraintsString );
-			
-			if( SupportsIfExistsAfterTableName )
+
+			buf.Append(tableName).Append(CascadeConstraintsString);
+
+			if (SupportsIfExistsAfterTableName)
 			{
-				buf.Append( " if exists" );
+				buf.Append(" if exists");
 			}
 			return buf.ToString();
 		}
@@ -698,9 +699,9 @@ namespace NHibernate.Dialect
 		/// The default implementation is to compare the first character
 		/// to Dialect.OpenQuote and the last char to Dialect.CloseQuote
 		/// </remarks>
-		public virtual bool IsQuoted( string name )
+		public virtual bool IsQuoted(string name)
 		{
-			return ( name[ 0 ] == OpenQuote && name[ name.Length - 1 ] == CloseQuote );
+			return (name[0] == OpenQuote && name[name.Length - 1] == CloseQuote);
 		}
 
 		/// <summary>
@@ -730,24 +731,24 @@ namespace NHibernate.Dialect
 		/// MsSql2000Dialect is an example of where UnQuoting rules are different.
 		/// </p>
 		/// </remarks>
-		public virtual string UnQuote( string quoted )
+		public virtual string UnQuote(string quoted)
 		{
 			string unquoted;
 
-			if( IsQuoted( quoted ) )
+			if (IsQuoted(quoted))
 			{
-				unquoted = quoted.Substring( 1, quoted.Length - 2 );
+				unquoted = quoted.Substring(1, quoted.Length - 2);
 			}
 			else
 			{
 				unquoted = quoted;
 			}
 
-			unquoted = unquoted.Replace( new string( OpenQuote, 2 ), OpenQuote.ToString() );
+			unquoted = unquoted.Replace(new string(OpenQuote, 2), OpenQuote.ToString());
 
-			if( OpenQuote != CloseQuote )
+			if (OpenQuote != CloseQuote)
 			{
-				unquoted = unquoted.Replace( new string( CloseQuote, 2 ), CloseQuote.ToString() );
+				unquoted = unquoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
 			}
 
 			return unquoted;
@@ -763,13 +764,13 @@ namespace NHibernate.Dialect
 		/// it should not need to be overridden - only UnQuote(string) needs
 		/// to be overridden unless this implementation is not sufficient.
 		/// </remarks>
-		public virtual string[ ] UnQuote( string[ ] quoted )
+		public virtual string[] UnQuote(string[] quoted)
 		{
-			string[ ] unquoted = new string[quoted.Length];
+			string[] unquoted = new string[quoted.Length];
 
-			for( int i = 0; i < quoted.Length; i++ )
+			for (int i = 0; i < quoted.Length; i++)
 			{
-				unquoted[ i ] = UnQuote( quoted[ i ] );
+				unquoted[i] = UnQuote(quoted[i]);
 			}
 
 			return unquoted;
@@ -788,16 +789,16 @@ namespace NHibernate.Dialect
 		/// - the " with "" and encloses the escaped string with OpenQuote and CloseQuote. 
 		/// </p>
 		/// </remarks>
-		protected virtual string Quote( string name )
+		protected virtual string Quote(string name)
 		{
-			string quotedName = name.Replace( OpenQuote.ToString(), new string( OpenQuote, 2 ) );
+			string quotedName = name.Replace(OpenQuote.ToString(), new string(OpenQuote, 2));
 
 			// in some dbs the Open and Close Quote are the same chars - if they are 
 			// then we don't have to escape the Close Quote char because we already
 			// got it.
-			if( OpenQuote != CloseQuote )
+			if (OpenQuote != CloseQuote)
 			{
-				quotedName = name.Replace( CloseQuote.ToString(), new string( CloseQuote, 2 ) );
+				quotedName = name.Replace(CloseQuote.ToString(), new string(CloseQuote, 2));
 			}
 
 			return OpenQuote + quotedName + CloseQuote;
@@ -817,12 +818,11 @@ namespace NHibernate.Dialect
 		/// you have escaped all of the chars according to your DataBase's specifications.
 		/// </p>
 		/// </remarks>
-		public virtual string QuoteForAliasName( string aliasName )
+		public virtual string QuoteForAliasName(string aliasName)
 		{
-			return IsQuoted( aliasName ) ?
-				aliasName :
-				Quote( aliasName );
-
+			return IsQuoted(aliasName) ?
+			       aliasName :
+			       Quote(aliasName);
 		}
 
 		/// <summary>
@@ -839,12 +839,11 @@ namespace NHibernate.Dialect
 		/// you have escaped all of the chars according to your DataBase's specifications.
 		/// </p>
 		/// </remarks>
-		public virtual string QuoteForColumnName( string columnName )
+		public virtual string QuoteForColumnName(string columnName)
 		{
-			return IsQuoted( columnName ) ?
-				columnName :
-				Quote( columnName );
-
+			return IsQuoted(columnName) ?
+			       columnName :
+			       Quote(columnName);
 		}
 
 		/// <summary>
@@ -860,12 +859,11 @@ namespace NHibernate.Dialect
 		/// you have escaped all of the chars according to your DataBase's specifications.
 		/// </p>
 		/// </remarks>
-		public virtual string QuoteForTableName( string tableName )
+		public virtual string QuoteForTableName(string tableName)
 		{
-			return IsQuoted( tableName ) ?
-				tableName :
-				Quote( tableName );
-
+			return IsQuoted(tableName) ?
+			       tableName :
+			       Quote(tableName);
 		}
 
 		/// <summary>
@@ -881,11 +879,11 @@ namespace NHibernate.Dialect
 		/// you have escaped all of the chars according to your DataBase's specifications.
 		/// </p>
 		/// </remarks>
-		public virtual string QuoteForSchemaName( string schemaName )
+		public virtual string QuoteForSchemaName(string schemaName)
 		{
-			return IsQuoted( schemaName ) ?
-				schemaName :
-				Quote( schemaName );
+			return IsQuoted(schemaName) ?
+			       schemaName :
+			       Quote(schemaName);
 		}
 
 		public virtual int MaxAliasLength
@@ -918,12 +916,12 @@ namespace NHibernate.Dialect
 			get { return 1L; } // Maximum precision (one tick)
 		}
 
-		public virtual string GetForUpdateNowaitString( string aliases )
+		public virtual string GetForUpdateNowaitString(string aliases)
 		{
-			return GetForUpdateString( aliases );
+			return GetForUpdateString(aliases);
 		}
-		
-		public virtual string GetForUpdateString( string aliases )
+
+		public virtual string GetForUpdateString(string aliases)
 		{
 			return ForUpdateString;
 		}
@@ -932,7 +930,10 @@ namespace NHibernate.Dialect
 
 		protected class CountQueryFunctionInfo : StandardSQLFunction
 		{
-			public CountQueryFunctionInfo() : base("count") { }
+			public CountQueryFunctionInfo() : base("count")
+			{
+			}
+
 			public override IType ReturnType(IType columnType, IMapping mapping)
 			{
 				return NHibernateUtil.Int64;
@@ -941,7 +942,9 @@ namespace NHibernate.Dialect
 
 		protected class AvgQueryFunctionInfo : StandardSQLFunction
 		{
-			public AvgQueryFunctionInfo() : base("avg") { }
+			public AvgQueryFunctionInfo() : base("avg")
+			{
+			}
 
 			public override IType ReturnType(IType columnType, IMapping mapping)
 			{
@@ -965,7 +968,9 @@ namespace NHibernate.Dialect
 
 		protected class SumQueryFunctionInfo : StandardSQLFunction
 		{
-			public SumQueryFunctionInfo() : base("sum") { }
+			public SumQueryFunctionInfo() : base("sum")
+			{
+			}
 
 			//H3.2 behavior
 			public override IType ReturnType(IType columnType, IMapping mapping)
@@ -1013,6 +1018,7 @@ namespace NHibernate.Dialect
 				}
 			}
 		}
+
 		#endregion
 	}
 }

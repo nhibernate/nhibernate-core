@@ -16,10 +16,11 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="NonUniqueResultException"/> class.
 		/// </summary>
 		/// <param name="resultCount">The number of items in the result.</param>
-		public NonUniqueResultException( int resultCount ) 
-			: base( "query did not return a unique result: " + resultCount.ToString() )
+		public NonUniqueResultException(int resultCount)
+			: base("query did not return a unique result: " + resultCount.ToString())
 		{
-			LogManager.GetLogger( typeof( NonUniqueResultException ) ).Error( "query did not return a unique result: " + resultCount.ToString() );
+			LogManager.GetLogger(typeof(NonUniqueResultException)).Error("query did not return a unique result: " +
+			                                                             resultCount.ToString());
 		}
 
 		/// <summary>
@@ -33,8 +34,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected NonUniqueResultException( SerializationInfo info, StreamingContext context ) 
-			: base( info, context )
+		protected NonUniqueResultException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
 		{
 		}
 	}

@@ -16,13 +16,13 @@ namespace NHibernate.Loader.Collection
 		private readonly IDictionary namedParameterLocMap;
 
 		public SubselectCollectionLoader(
-				IQueryableCollection persister,
-				SqlString subquery,
-				ICollection entityKeys,
-				QueryParameters queryParameters,
-				IDictionary namedParameterLocMap,
-				ISessionFactoryImplementor factory,
-				IDictionary enabledFilters)
+			IQueryableCollection persister,
+			SqlString subquery,
+			ICollection entityKeys,
+			QueryParameters queryParameters,
+			IDictionary namedParameterLocMap,
+			ISessionFactoryImplementor factory,
+			IDictionary enabledFilters)
 			: base(persister, 1, subquery, factory, enabledFilters)
 		{
 			keys = new object[entityKeys.Count];
@@ -41,12 +41,12 @@ namespace NHibernate.Loader.Collection
 		public override void Initialize(object id, ISessionImplementor session)
 		{
 			LoadCollectionSubselect(
-					session,
-					keys,
-					values,
-					types,
-					namedParameters,
-					KeyType
+				session,
+				keys,
+				values,
+				types,
+				namedParameters,
+				KeyType
 				);
 		}
 

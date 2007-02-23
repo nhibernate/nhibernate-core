@@ -28,21 +28,21 @@ namespace NHibernate.Driver
 		public SQLiteDriver() : base(
 			"SQLite.NET",
 			"Finisar.SQLite.SQLiteConnection",
-			"Finisar.SQLite.SQLiteCommand" )
+			"Finisar.SQLite.SQLiteCommand")
 		{
 		}
 
-		public override bool UseNamedPrefixInSql 
-		{
-			get { return true; }
-		}
-
-		public override bool UseNamedPrefixInParameter 
+		public override bool UseNamedPrefixInSql
 		{
 			get { return true; }
 		}
 
-		public override string NamedPrefix 	
+		public override bool UseNamedPrefixInParameter
+		{
+			get { return true; }
+		}
+
+		public override string NamedPrefix
 		{
 			get { return "@"; }
 		}
@@ -51,6 +51,5 @@ namespace NHibernate.Driver
 		{
 			get { return false; }
 		}
-
 	}
 }

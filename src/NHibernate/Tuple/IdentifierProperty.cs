@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Type;
@@ -41,7 +40,7 @@ namespace NHibernate.Tuple
 			bool embedded,
 			Cascades.IdentifierValue unsavedValue,
 			IIdentifierGenerator identifierGenerator)
-			: base( name, node, type )
+			: base(name, node, type)
 		{
 			this.isVirtual = false;
 			this.embedded = embedded;
@@ -63,8 +62,8 @@ namespace NHibernate.Tuple
 			IType type,
 			bool embedded,
 			Cascades.IdentifierValue unsavedValue,
-			IIdentifierGenerator identifierGenerator) 
-			: base( null, null, type )
+			IIdentifierGenerator identifierGenerator)
+			: base(null, null, type)
 		{
 			this.isVirtual = true;
 			this.embedded = embedded;

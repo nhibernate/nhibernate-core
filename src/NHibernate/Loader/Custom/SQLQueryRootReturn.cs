@@ -12,13 +12,13 @@ namespace NHibernate.Loader.Custom
 	{
 		private string returnEntityName;
 
-		public SQLQueryRootReturn( string alias, string returnEntityName, LockMode lockMode )
-			: this( alias, returnEntityName, null, lockMode )
+		public SQLQueryRootReturn(string alias, string returnEntityName, LockMode lockMode)
+			: this(alias, returnEntityName, null, lockMode)
 		{
 		}
 
-		public SQLQueryRootReturn( string alias, string entityName, IDictionary propertyResults, LockMode lockMode )
-			: base( alias, propertyResults, lockMode )
+		public SQLQueryRootReturn(string alias, string entityName, IDictionary propertyResults, LockMode lockMode)
+			: base(alias, propertyResults, lockMode)
 		{
 			this.returnEntityName = entityName;
 		}

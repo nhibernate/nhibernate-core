@@ -17,6 +17,5 @@ namespace NHibernate.Expression
 		{
 			get { return false; }
 		}
-
 	}
 }

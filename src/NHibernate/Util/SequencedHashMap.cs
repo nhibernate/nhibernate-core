@@ -65,6 +65,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Text;
+using NHibernate.DebugHelpers;
 
 namespace NHibernate.Util
 {
@@ -76,12 +77,12 @@ namespace NHibernate.Util
 	/// This class is not thread safe.
 	/// </remarks>
 #if NET_2_0
-	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy<>))]
+	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 #endif
-	[ Serializable ]
+	[Serializable]
 	public class SequencedHashMap : IDictionary
 	{
-		[ Serializable ]
+		[Serializable]
 		private class Entry
 		{
 			private object _key;
@@ -90,7 +91,7 @@ namespace NHibernate.Util
 			private Entry _next = null;
 			private Entry _prev = null;
 
-			public Entry( object key, object value )
+			public Entry(object key, object value)
 			{
 				_key = key;
 				_value = value;
@@ -123,17 +124,17 @@ namespace NHibernate.Util
 
 			public override int GetHashCode()
 			{
-				return ( ( _key == null ? 0 : _key.GetHashCode() ) ^ ( _value == null ? 0 : _value.GetHashCode() ) );
+				return ((_key == null ? 0 : _key.GetHashCode()) ^ (_value == null ? 0 : _value.GetHashCode()));
 			}
 
-			public override bool Equals( object obj )
+			public override bool Equals(object obj)
 			{
 				Entry other = obj as Entry;
-				if( other == null ) return false;
-				if( other == this ) return true;
+				if (other == null) return false;
+				if (other == this) return true;
 
-				return ( ( _key == null ? other.Key == null : _key.Equals( other.Key ) ) &&
-					( _value == null ? other.Value == null : _value.Equals( other.Value ) ) );
+				return ((_key == null ? other.Key == null : _key.Equals(other.Key)) &&
+				        (_value == null ? other.Value == null : _value.Equals(other.Value)));
 			}
 
 			public override string ToString()
@@ -152,7 +153,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		private static Entry CreateSentinel()
 		{
-			Entry s = new Entry( null, null );
+			Entry s = new Entry(null, null);
 			s.Prev = s;
 			s.Next = s;
 			return s;
@@ -177,7 +178,7 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Construct a new sequenced hash map with default initial size and load factor
 		/// </summary>
-		public SequencedHashMap() : this( 0, 1.0F, null, null )
+		public SequencedHashMap() : this(0, 1.0F, null, null)
 		{
 		}
 
@@ -185,7 +186,7 @@ namespace NHibernate.Util
 		/// Construct a new sequenced hash map with the specified initial size and default load factor
 		/// </summary>
 		/// <param name="capacity">the initial size for the hash table</param>
-		public SequencedHashMap( int capacity ) : this( capacity, 1.0F, null, null )
+		public SequencedHashMap(int capacity) : this(capacity, 1.0F, null, null)
 		{
 		}
 
@@ -194,7 +195,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="capacity">the initial size for the hashtable</param>
 		/// <param name="loadFactor">the load factor for the hash table</param>
-		public SequencedHashMap( int capacity, float loadFactor ) : this( capacity, loadFactor, null, null )
+		public SequencedHashMap(int capacity, float loadFactor) : this(capacity, loadFactor, null, null)
 		{
 		}
 
@@ -205,7 +206,7 @@ namespace NHibernate.Util
 		/// <param name="capacity">the initial size for the hashtable</param>
 		/// <param name="hcp"></param>
 		/// <param name="comparer"></param>
-		public SequencedHashMap( int capacity, IHashCodeProvider hcp, IComparer comparer ) : this( capacity, 1.0F, hcp, comparer )
+		public SequencedHashMap(int capacity, IHashCodeProvider hcp, IComparer comparer) : this(capacity, 1.0F, hcp, comparer)
 		{
 		}
 
@@ -215,7 +216,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="hcp"></param>
 		/// <param name="comparer"></param>
-		public SequencedHashMap( IHashCodeProvider hcp, IComparer comparer ) : this( 0, 1.0F, hcp, comparer )
+		public SequencedHashMap(IHashCodeProvider hcp, IComparer comparer) : this(0, 1.0F, hcp, comparer)
 		{
 		}
 
@@ -227,10 +228,10 @@ namespace NHibernate.Util
 		/// <param name="loadFactor">the load factor for the hash table</param>
 		/// <param name="hcp"></param>
 		/// <param name="comparer"></param>
-		public SequencedHashMap( int capacity, float loadFactor, IHashCodeProvider hcp, IComparer comparer )
+		public SequencedHashMap(int capacity, float loadFactor, IHashCodeProvider hcp, IComparer comparer)
 		{
 			_sentinel = CreateSentinel();
-			_entries = new Hashtable( capacity, loadFactor, hcp, comparer );
+			_entries = new Hashtable(capacity, loadFactor, hcp, comparer);
 		}
 
 
@@ -239,7 +240,7 @@ namespace NHibernate.Util
 		/// map.
 		/// </summary>
 		/// <param name="entry"></param>
-		private void RemoveEntry( Entry entry )
+		private void RemoveEntry(Entry entry)
 		{
 			entry.Next.Prev = entry.Prev;
 			entry.Prev.Next = entry.Next;
@@ -250,7 +251,7 @@ namespace NHibernate.Util
 		/// entry to the underlying map.
 		/// </summary>
 		/// <param name="entry"></param>
-		private void InsertEntry( Entry entry )
+		private void InsertEntry(Entry entry)
 		{
 			entry.Next = _sentinel;
 			entry.Prev = _sentinel.Prev;
@@ -273,12 +274,12 @@ namespace NHibernate.Util
 		}
 
 		/// <summary></summary>
-		public virtual object this[ object o ]
+		public virtual object this[object o]
 		{
 			get
 			{
-				Entry entry = ( Entry ) _entries[ o ];
-				if( entry == null ) return null;
+				Entry entry = (Entry) _entries[o];
+				if (entry == null) return null;
 
 				return entry.Value;
 			}
@@ -286,32 +287,32 @@ namespace NHibernate.Util
 			{
 				_modCount++;
 
-				Entry e = ( Entry ) _entries[ o ];
-				if( e != null )
+				Entry e = (Entry) _entries[o];
+				if (e != null)
 				{
-					RemoveEntry( e );
+					RemoveEntry(e);
 					e.Value = value;
 				}
 				else
 				{
-					e = new Entry( o, value );
-					_entries[ o ] = e;
+					e = new Entry(o, value);
+					_entries[o] = e;
 				}
 
-				InsertEntry( e );
+				InsertEntry(e);
 			}
 		}
 
 		/// <summary></summary>
 		public virtual ICollection Keys
 		{
-			get { return new KeyCollection( this ); }
+			get { return new KeyCollection(this); }
 		}
 
 		/// <summary></summary>
 		public virtual ICollection Values
 		{
-			get { return new ValuesCollection( this ); }
+			get { return new ValuesCollection(this); }
 		}
 
 		/// <summary>
@@ -319,9 +320,9 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
-		public virtual void Add( object key, object value )
+		public virtual void Add(object key, object value)
 		{
-			this[ key ] = value;
+			this[key] = value;
 		}
 
 		/// <summary></summary>
@@ -340,24 +341,24 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		public virtual bool Contains( object key )
+		public virtual bool Contains(object key)
 		{
-			return ContainsKey( key );
+			return ContainsKey(key);
 		}
 
 		/// <summary></summary>
 		public virtual IDictionaryEnumerator GetEnumerator()
 		{
-			return new OrderedEnumerator( this, ReturnType.ReturnEntry );
+			return new OrderedEnumerator(this, ReturnType.ReturnEntry);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="key"></param>
-		public virtual void Remove( object key )
+		public virtual void Remove(object key)
 		{
-			RemoveImpl( key );
+			RemoveImpl(key);
 		}
 
 		#endregion
@@ -387,11 +388,11 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="array"></param>
 		/// <param name="index"></param>
-		public virtual void CopyTo( Array array, int index )
+		public virtual void CopyTo(Array array, int index)
 		{
-			foreach( DictionaryEntry de in this )
+			foreach (DictionaryEntry de in this)
 			{
-				array.SetValue( de, index++ );
+				array.SetValue(de, index++);
 			}
 		}
 
@@ -402,7 +403,7 @@ namespace NHibernate.Util
 		/// <summary></summary>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return new OrderedEnumerator( this, ReturnType.ReturnEntry );
+			return new OrderedEnumerator(this, ReturnType.ReturnEntry);
 		}
 
 		#endregion
@@ -417,9 +418,9 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		public virtual bool ContainsKey( object key )
+		public virtual bool ContainsKey(object key)
 		{
-			return _entries.ContainsKey( key );
+			return _entries.ContainsKey(key);
 		}
 
 		/// <summary>
@@ -427,20 +428,20 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public virtual bool ContainsValue( object value )
+		public virtual bool ContainsValue(object value)
 		{
-			if( value == null )
+			if (value == null)
 			{
-				for( Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next )
+				for (Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next)
 				{
-					if( pos.Value == null ) return true;
+					if (pos.Value == null) return true;
 				}
 			}
 			else
 			{
-				for( Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next )
+				for (Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next)
 				{
-					if( value.Equals( pos.Value ) ) return true;
+					if (value.Equals(pos.Value)) return true;
 				}
 			}
 			return false;
@@ -449,36 +450,36 @@ namespace NHibernate.Util
 
 		private Entry First
 		{
-			get { return ( IsEmpty ) ? null : _sentinel.Next; }
+			get { return (IsEmpty) ? null : _sentinel.Next; }
 		}
 
 		/// <summary></summary>
 		public virtual object FirstKey
 		{
-			get { return ( First == null ) ? null : First.Key; }
+			get { return (First == null) ? null : First.Key; }
 		}
 
 		/// <summary></summary>
 		public virtual object FirstValue
 		{
-			get { return ( First == null ) ? null : First.Value; }
+			get { return (First == null) ? null : First.Value; }
 		}
 
 		private Entry Last
 		{
-			get { return ( IsEmpty ) ? null : _sentinel.Prev; }
+			get { return (IsEmpty) ? null : _sentinel.Prev; }
 		}
 
 		/// <summary></summary>
 		public virtual object LastKey
 		{
-			get { return ( Last == null ) ? null : Last.Key; }
+			get { return (Last == null) ? null : Last.Key; }
 		}
 
 		/// <summary></summary>
 		public virtual object LastValue
 		{
-			get { return ( Last == null ) ? null : Last.Value; }
+			get { return (Last == null) ? null : Last.Value; }
 		}
 
 
@@ -486,16 +487,15 @@ namespace NHibernate.Util
 		/// Remove the Entry identified by the Key if it exists.
 		/// </summary>
 		/// <param name="key">The Key to remove.</param>
-		private void RemoveImpl( object key )
+		private void RemoveImpl(object key)
 		{
-			Entry e = ( Entry ) _entries[ key ];
-			if( e != null )
+			Entry e = (Entry) _entries[key];
+			if (e != null)
 			{
-				_entries.Remove( key );
+				_entries.Remove(key);
 				_modCount++;
-				RemoveEntry( e );
+				RemoveEntry(e);
 			}
-
 		}
 
 		#region System.Object Members
@@ -504,18 +504,18 @@ namespace NHibernate.Util
 		public override string ToString()
 		{
 			StringBuilder buf = new StringBuilder();
-			buf.Append( '[' );
-			for( Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next )
+			buf.Append('[');
+			for (Entry pos = _sentinel.Next; pos != _sentinel; pos = pos.Next)
 			{
-				buf.Append( pos.Key );
-				buf.Append( '=' );
-				buf.Append( pos.Value );
-				if( pos.Next != _sentinel )
+				buf.Append(pos.Key);
+				buf.Append('=');
+				buf.Append(pos.Value);
+				if (pos.Next != _sentinel)
 				{
-					buf.Append( ',' );
+					buf.Append(',');
 				}
 			}
-			buf.Append( ']' );
+			buf.Append(']');
 
 			return buf.ToString();
 		}
@@ -526,7 +526,7 @@ namespace NHibernate.Util
 		{
 			private SequencedHashMap _parent;
 
-			public KeyCollection( SequencedHashMap parent )
+			public KeyCollection(SequencedHashMap parent)
 			{
 				_parent = parent;
 			}
@@ -548,11 +548,11 @@ namespace NHibernate.Util
 				get { return this; }
 			}
 
-			public void CopyTo( Array array, int index )
+			public void CopyTo(Array array, int index)
 			{
-				foreach( object obj in this )
+				foreach (object obj in this)
 				{
-					array.SetValue( obj, index++ );
+					array.SetValue(obj, index++);
 				}
 			}
 
@@ -562,16 +562,15 @@ namespace NHibernate.Util
 
 			public IEnumerator GetEnumerator()
 			{
-				return new OrderedEnumerator( _parent, ReturnType.ReturnKey );
+				return new OrderedEnumerator(_parent, ReturnType.ReturnKey);
 			}
 
 			#endregion
 
-			public bool Contains( object o )
+			public bool Contains(object o)
 			{
-				return _parent.ContainsKey( o );
+				return _parent.ContainsKey(o);
 			}
-
 		}
 
 
@@ -579,7 +578,7 @@ namespace NHibernate.Util
 		{
 			private SequencedHashMap _parent;
 
-			public ValuesCollection( SequencedHashMap parent )
+			public ValuesCollection(SequencedHashMap parent)
 			{
 				_parent = parent;
 			}
@@ -601,11 +600,11 @@ namespace NHibernate.Util
 				get { return this; }
 			}
 
-			public void CopyTo( Array array, int index )
+			public void CopyTo(Array array, int index)
 			{
-				foreach( object obj in this )
+				foreach (object obj in this)
 				{
-					array.SetValue( obj, index++ );
+					array.SetValue(obj, index++);
 				}
 			}
 
@@ -615,14 +614,14 @@ namespace NHibernate.Util
 
 			public IEnumerator GetEnumerator()
 			{
-				return new OrderedEnumerator( _parent, ReturnType.ReturnValue );
+				return new OrderedEnumerator(_parent, ReturnType.ReturnValue);
 			}
 
 			#endregion
 
-			public bool Contains( object o )
+			public bool Contains(object o)
 			{
-				return _parent.ContainsValue( o );
+				return _parent.ContainsValue(o);
 			}
 		}
 
@@ -653,7 +652,7 @@ namespace NHibernate.Util
 			private Entry _pos;
 			private long _expectedModCount;
 
-			public OrderedEnumerator( SequencedHashMap parent, ReturnType returnType )
+			public OrderedEnumerator(SequencedHashMap parent, ReturnType returnType)
 			{
 				_parent = parent;
 				_returnType = returnType;
@@ -667,20 +666,20 @@ namespace NHibernate.Util
 			{
 				get
 				{
-					if( _parent._modCount != _expectedModCount )
+					if (_parent._modCount != _expectedModCount)
 					{
-						throw new InvalidOperationException( "Enumerator was modified" );
+						throw new InvalidOperationException("Enumerator was modified");
 					}
 
 
-					switch( _returnType )
+					switch (_returnType)
 					{
 						case ReturnType.ReturnKey:
 							return _pos.Key;
 						case ReturnType.ReturnValue:
 							return _pos.Value;
 						case ReturnType.ReturnEntry:
-							return new DictionaryEntry( _pos.Key, _pos.Value );
+							return new DictionaryEntry(_pos.Key, _pos.Value);
 					}
 					return null;
 				}
@@ -688,11 +687,11 @@ namespace NHibernate.Util
 
 			public bool MoveNext()
 			{
-				if( _parent._modCount != _expectedModCount )
+				if (_parent._modCount != _expectedModCount)
 				{
-					throw new InvalidOperationException( "Enumerator was modified" );
+					throw new InvalidOperationException("Enumerator was modified");
 				}
-				if( _pos.Next == _parent._sentinel )
+				if (_pos.Next == _parent._sentinel)
 				{
 					return false;
 				}
@@ -713,7 +712,7 @@ namespace NHibernate.Util
 
 			public DictionaryEntry Entry
 			{
-				get { return new DictionaryEntry( _pos.Key, _pos.Value ); }
+				get { return new DictionaryEntry(_pos.Key, _pos.Value); }
 			}
 
 			public object Key
@@ -726,7 +725,7 @@ namespace NHibernate.Util
 				get { return _pos.Value; }
 			}
 
-			#endregion			
+			#endregion
 		}
 	}
 }

@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using NHibernate;
+using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
-using Iesi.Collections;
 
 namespace NHibernate.Mapping
 {
@@ -15,10 +14,11 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public abstract class PersistentClass : IFilterable
 	{
-		private static readonly Alias PKAlias = new Alias( 15, "PK" );
+		private static readonly Alias PKAlias = new Alias(15, "PK");
 
 		/// <summary></summary>
 		public const string NullDiscriminatorMapping = "null";
+
 		/// <summary></summary>
 		public const string NotNullDiscriminatorMapping = "not null";
 
@@ -37,7 +37,7 @@ namespace NHibernate.Mapping
 		private bool selectBeforeUpdate;
 		private OptimisticLockMode optimisticLockMode;
 		private IDictionary metaAttributes;
-        private IDictionary filters = new Hashtable();
+		private IDictionary filters = new Hashtable();
 
 
 		private SqlString customSQLInsert;
@@ -104,19 +104,21 @@ namespace NHibernate.Mapping
 		/// Adds a <see cref="Subclass"/> to the class hierarchy.
 		/// </summary>
 		/// <param name="subclass">The <see cref="Subclass"/> to add to the hierarchy.</param>
-		public virtual void AddSubclass( Subclass subclass )
+		public virtual void AddSubclass(Subclass subclass)
 		{
 			// Inheritable cycle detection (paranoid check)
 			PersistentClass superclass = Superclass;
-			while( superclass != null )
+			while (superclass != null)
 			{
-				if( subclass.Name == superclass.Name )
+				if (subclass.Name == superclass.Name)
 				{
-					throw new MappingException( string.Format( "Circular inheritance mapping detected: {0} will have itself as superclass when extending {1}", subclass.Name, Name ) );
+					throw new MappingException(
+						string.Format("Circular inheritance mapping detected: {0} will have itself as superclass when extending {1}",
+						              subclass.Name, Name));
 				}
 				superclass = superclass.Superclass;
 			}
-			subclasses.Add( subclass );
+			subclasses.Add(subclass);
 		}
 
 		/// <summary>
@@ -137,7 +139,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				int n = subclasses.Count;
-				foreach( Subclass sc in subclasses )
+				foreach (Subclass sc in subclasses)
 				{
 					n += sc.SubclassSpan;
 				}
@@ -160,14 +162,14 @@ namespace NHibernate.Mapping
 
 				// check to see if there are any subclass in our subclasses 
 				// and add them into the collection
-				foreach( Subclass sc in subclasses )
+				foreach (Subclass sc in subclasses)
 				{
-					retVal.AddRange( sc.SubclassCollection );
+					retVal.AddRange(sc.SubclassCollection);
 				}
 
 				// finally add the subclasses from this PersistentClass into
 				// the collection to return
-				retVal.AddRange( subclasses );
+				retVal.AddRange(subclasses);
 
 				return retVal;
 			}
@@ -190,9 +192,9 @@ namespace NHibernate.Mapping
 		/// Change the property definition or add a new property definition
 		/// </summary>
 		/// <param name="p">The <see cref="Property"/> to add.</param>
-		public virtual void AddProperty( Property p )
+		public virtual void AddProperty(Property p)
 		{
-			properties.Add( p );
+			properties.Add(p);
 			p.PersistentClass = this;
 		}
 
@@ -383,18 +385,18 @@ namespace NHibernate.Mapping
 		/// Adds a <see cref="Property"/> that is implemented by a subclass.
 		/// </summary>
 		/// <param name="p">The <see cref="Property"/> implemented by a subclass.</param>
-		public virtual void AddSubclassProperty( Property p )
+		public virtual void AddSubclassProperty(Property p)
 		{
-			subclassProperties.Add( p );
+			subclassProperties.Add(p);
 		}
 
 		/// <summary>
 		/// Adds a <see cref="Table"/> that a subclass is stored in.
 		/// </summary>
 		/// <param name="table">The <see cref="Table"/> the subclass is stored in.</param>
-		public virtual void AddSubclassTable( Table table )
+		public virtual void AddSubclassTable(Table table)
 		{
-			subclassTables.Add( table );
+			subclassTables.Add(table);
 		}
 
 		/// <summary>
@@ -410,8 +412,8 @@ namespace NHibernate.Mapping
 			get
 			{
 				ArrayList retVal = new ArrayList();
-				retVal.AddRange( PropertyClosureCollection );
-				retVal.AddRange( subclassProperties );
+				retVal.AddRange(PropertyClosureCollection);
+				retVal.AddRange(subclassProperties);
 				return retVal;
 			}
 		}
@@ -427,8 +429,8 @@ namespace NHibernate.Mapping
 			get
 			{
 				ArrayList retVal = new ArrayList();
-				retVal.AddRange( TableClosureCollection );
-				retVal.AddRange( subclassTables );
+				retVal.AddRange(TableClosureCollection);
+				retVal.AddRange(subclassTables);
 				return retVal;
 			}
 		}
@@ -457,7 +459,7 @@ namespace NHibernate.Mapping
 		public virtual bool IsForceDiscriminator
 		{
 			get { return false; }
-			set { throw new NotImplementedException( "subclasses need to override this method" ); }
+			set { throw new NotImplementedException("subclasses need to override this method"); }
 		}
 
 		/// <summary>
@@ -465,7 +467,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public bool IsDiscriminatorValueNotNull
 		{
-			get { return NotNullDiscriminatorMapping.Equals( DiscriminatorValue ); }
+			get { return NotNullDiscriminatorMapping.Equals(DiscriminatorValue); }
 		}
 
 		/// <summary>
@@ -473,7 +475,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public bool IsDiscriminatorValueNull
 		{
-			get { return NullDiscriminatorMapping.Equals( DiscriminatorValue ); }
+			get { return NullDiscriminatorMapping.Equals(DiscriminatorValue); }
 		}
 
 		public IDictionary MetaAttributes
@@ -482,9 +484,9 @@ namespace NHibernate.Mapping
 			set { metaAttributes = value; }
 		}
 
-		public MetaAttribute GetMetaAttribute( string name )
+		public MetaAttribute GetMetaAttribute(string name)
 		{
-			return ( MetaAttribute ) metaAttributes[ name ];
+			return (MetaAttribute) metaAttributes[name];
 		}
 
 		public bool IsLazy
@@ -540,16 +542,16 @@ namespace NHibernate.Mapping
 		/// this type is persisted in.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that is used to Alias columns.</param>
-		public virtual void CreatePrimaryKey( Dialect.Dialect dialect )
+		public virtual void CreatePrimaryKey(Dialect.Dialect dialect)
 		{
 			PrimaryKey pk = new PrimaryKey();
 			pk.Table = table;
-			pk.Name = PKAlias.ToAliasString( table.Name, dialect );
+			pk.Name = PKAlias.ToAliasString(table.Name, dialect);
 			table.PrimaryKey = pk;
 
-			foreach( Column col in Key.ColumnCollection )
+			foreach (Column col in Key.ColumnCollection)
 			{
-				pk.AddColumn( col );
+				pk.AddColumn(col);
 			}
 		}
 
@@ -576,7 +578,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		public Property GetProperty( string propertyName )
+		public Property GetProperty(string propertyName)
 		{
 			return GetProperty(propertyName, PropertyClosureCollection);
 		}
@@ -630,13 +632,15 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="mapping"></param>
-		public virtual void Validate( IMapping mapping )
+		public virtual void Validate(IMapping mapping)
 		{
-			foreach( Property prop in PropertyCollection )
+			foreach (Property prop in PropertyCollection)
 			{
-				if( !prop.IsValid( mapping ) )
+				if (!prop.IsValid(mapping))
 				{
-					throw new MappingException( string.Format( "property mapping has wrong number of columns: {0} type: {1}", StringHelper.Qualify( MappedClass.Name, Name ), prop.Type.Name ) );
+					throw new MappingException(
+						string.Format("property mapping has wrong number of columns: {0} type: {1}",
+						              StringHelper.Qualify(MappedClass.Name, Name), prop.Type.Name));
 				}
 			}
 		}
@@ -655,7 +659,7 @@ namespace NHibernate.Mapping
 
 		public Property GetRecursiveProperty(string propertyPath)
 		{
-			return GetRecursiveProperty( propertyPath, PropertyCollection );
+			return GetRecursiveProperty(propertyPath, PropertyCollection);
 		}
 
 		private Property GetRecursiveProperty(string propertyPath, ICollection iter)
@@ -681,8 +685,8 @@ namespace NHibernate.Mapping
 			catch (MappingException e)
 			{
 				throw new MappingException(
-						"property not found: " + propertyPath +
-						" in entity: " + Name, e
+					"property not found: " + propertyPath +
+					" in entity: " + Name, e
 					);
 			}
 
@@ -695,17 +699,50 @@ namespace NHibernate.Mapping
 			set { loaderName = value; }
 		}
 
-		public SqlString CustomSQLInsert { get { return customSQLInsert; } }
-		public SqlString CustomSQLDelete { get { return customSQLDelete; } }
-		public SqlString CustomSQLUpdate { get { return customSQLUpdate; } }
+		public SqlString CustomSQLInsert
+		{
+			get { return customSQLInsert; }
+		}
 
-		public bool IsCustomInsertCallable { get { return customInsertCallable; } }
-		public bool IsCustomDeleteCallable { get { return customDeleteCallable; } }
-		public bool IsCustomUpdateCallable { get { return customUpdateCallable; } }
+		public SqlString CustomSQLDelete
+		{
+			get { return customSQLDelete; }
+		}
 
-		public ExecuteUpdateResultCheckStyle CustomSQLInsertCheckStyle { get { return insertCheckStyle; } }
-		public ExecuteUpdateResultCheckStyle CustomSQLDeleteCheckStyle { get { return deleteCheckStyle; } }
-		public ExecuteUpdateResultCheckStyle CustomSQLUpdateCheckStyle { get { return updateCheckStyle; } }
+		public SqlString CustomSQLUpdate
+		{
+			get { return customSQLUpdate; }
+		}
+
+		public bool IsCustomInsertCallable
+		{
+			get { return customInsertCallable; }
+		}
+
+		public bool IsCustomDeleteCallable
+		{
+			get { return customDeleteCallable; }
+		}
+
+		public bool IsCustomUpdateCallable
+		{
+			get { return customUpdateCallable; }
+		}
+
+		public ExecuteUpdateResultCheckStyle CustomSQLInsertCheckStyle
+		{
+			get { return insertCheckStyle; }
+		}
+
+		public ExecuteUpdateResultCheckStyle CustomSQLDeleteCheckStyle
+		{
+			get { return deleteCheckStyle; }
+		}
+
+		public ExecuteUpdateResultCheckStyle CustomSQLUpdateCheckStyle
+		{
+			get { return updateCheckStyle; }
+		}
 
 		public void SetCustomSQLInsert(string sql, bool callable, ExecuteUpdateResultCheckStyle checkStyle)
 		{
@@ -735,15 +772,15 @@ namespace NHibernate.Mapping
 			synchronizedTablesField.Add(table);
 		}
 
-        public void AddFilter(string name, string condition)
-        {
-            filters.Add(name, condition);
-        }
+		public void AddFilter(string name, string condition)
+		{
+			filters.Add(name, condition);
+		}
 
-        public virtual IDictionary FilterMap
-        {
-            get { return filters; }
-        }
+		public virtual IDictionary FilterMap
+		{
+			get { return filters; }
+		}
 
 		public virtual bool HasSubselectLoadableCollections
 		{
@@ -774,8 +811,8 @@ namespace NHibernate.Mapping
 			catch (MappingException e)
 			{
 				throw new MappingException(
-						"property-ref [" + propertyPath + "] not found on entity [" + MappedClass + "]", e
-				);
+					"property-ref [" + propertyPath + "] not found on entity [" + MappedClass + "]", e
+					);
 			}
 		}
 

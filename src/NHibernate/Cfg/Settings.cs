@@ -2,8 +2,8 @@ using System.Collections;
 using System.Data;
 using NHibernate.Cache;
 using NHibernate.Connection;
-using NHibernate.Transaction;
 using NHibernate.Hql;
+using NHibernate.Transaction;
 
 namespace NHibernate.Cfg
 {
@@ -40,7 +40,7 @@ namespace NHibernate.Cfg
 		// TODO: private bool _sqlExceptionConverter;
 		// TODO: private bool _wrapDataReadersEnabled;
 		private ConnectionReleaseMode connectionReleaseMode;
-		
+
 		// New in NH:
 		private IsolationLevel _isolationLevel;
 

@@ -12,7 +12,7 @@ namespace NHibernate.Mapping
 		/// Initializes a new instance of the <see cref="List"/> class.
 		/// </summary>
 		/// <param name="owner">The <see cref="PersistentClass"/> that contains this list mapping.</param>
-		public List( PersistentClass owner ) : base( owner )
+		public List(PersistentClass owner) : base(owner)
 		{
 		}
 
@@ -25,13 +25,13 @@ namespace NHibernate.Mapping
 			get
 			{
 #if NET_2_0
-				if( this.IsGeneric )
+				if (this.IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);
-					return TypeFactory.GenericList( Role, ReferencedPropertyName, this.GenericArguments[ 0 ] );
+					return TypeFactory.GenericList(Role, ReferencedPropertyName, this.GenericArguments[0]);
 				}
 #endif
-				return TypeFactory.List( Role, ReferencedPropertyName );
+				return TypeFactory.List(Role, ReferencedPropertyName);
 			}
 		}
 	}

@@ -16,7 +16,7 @@ namespace NHibernate.Cache
 		/// <param name="regionName"></param>
 		/// <param name="properties"></param>
 		/// <returns></returns>
-		public ICache BuildCache( string regionName, IDictionary properties )
+		public ICache BuildCache(string regionName, IDictionary properties)
 		{
 			return new HashtableCache(regionName);
 		}
@@ -34,7 +34,7 @@ namespace NHibernate.Cache
 		/// 
 		/// </summary>
 		/// <param name="properties"></param>
-		public void Start( IDictionary properties )
+		public void Start(IDictionary properties)
 		{
 		}
 

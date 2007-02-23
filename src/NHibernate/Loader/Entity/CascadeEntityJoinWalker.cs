@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -12,26 +11,28 @@ namespace NHibernate.Loader.Entity
 	{
 		private Cascades.CascadingAction cascadeAction;
 
-		public CascadeEntityJoinWalker( IOuterJoinLoadable persister, Cascades.CascadingAction action, ISessionFactoryImplementor factory )
-			: base( persister, factory, CollectionHelper.EmptyMap )
+		public CascadeEntityJoinWalker(IOuterJoinLoadable persister, Cascades.CascadingAction action,
+		                               ISessionFactoryImplementor factory)
+			: base(persister, factory, CollectionHelper.EmptyMap)
 		{
 			this.cascadeAction = action;
-			SqlStringBuilder whereCondition = WhereString( Alias, persister.IdentifierColumnNames, persister.IdentifierType, 1 )
+			SqlStringBuilder whereCondition = WhereString(Alias, persister.IdentifierColumnNames, persister.IdentifierType, 1)
 				//include the discriminator and class-level where, but not filters
-				.Add( persister.FilterFragment( Alias, CollectionHelper.EmptyMap ) );
+				.Add(persister.FilterFragment(Alias, CollectionHelper.EmptyMap));
 
-			InitAll( whereCondition.ToSqlString(), "", LockMode.Read );
+			InitAll(whereCondition.ToSqlString(), "", LockMode.Read);
 		}
 
-		protected override bool IsJoinedFetchEnabled( IAssociationType type, FetchMode config, Cascades.CascadeStyle cascadeStyle )
+		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
+		                                             Cascades.CascadeStyle cascadeStyle)
 		{
-			return ( type.IsEntityType || type.IsCollectionType ) &&
-			       ( cascadeStyle == null || cascadeStyle.DoCascade( cascadeAction ) );
+			return (type.IsEntityType || type.IsCollectionType) &&
+			       (cascadeStyle == null || cascadeStyle.DoCascade(cascadeAction));
 		}
 
 		protected override bool IsTooManyCollections()
 		{
-			return CountCollectionPersisters( associations ) > 1;
+			return CountCollectionPersisters(associations) > 1;
 		}
 
 		public override string Comment

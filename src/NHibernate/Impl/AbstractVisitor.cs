@@ -57,7 +57,7 @@ namespace NHibernate.Impl
 			if (component != null)
 			{
 				ProcessValues(componentType.GetPropertyValues(component, _session),
-							   componentType.Subtypes);
+				              componentType.Subtypes);
 			}
 
 			return null;

@@ -18,7 +18,7 @@ namespace NHibernate.Type
 	public class TicksType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
-		internal TicksType() : base( SqlTypeFactory.Int64 )
+		internal TicksType() : base(SqlTypeFactory.Int64)
 		{
 		}
 
@@ -28,9 +28,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new DateTime( Convert.ToInt64( rs[ index ] ) );
+			return new DateTime(Convert.ToInt64(rs[index]));
 		}
 
 		/// <summary>
@@ -39,15 +39,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( DateTime ); }
+			get { return typeof(DateTime); }
 		}
 
 		/// <summary>
@@ -56,10 +56,10 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
-			parm.Value = ( ( DateTime ) value ).Ticks;
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			parm.Value = ((DateTime) value).Ticks;
 		}
 
 		/// <summary></summary>
@@ -73,9 +73,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		public override string ToString( object val )
+		public override string ToString(object val)
 		{
-			return ( ( DateTime ) val ).Ticks.ToString();
+			return ((DateTime) val).Ticks.ToString();
 		}
 
 		/// <summary>
@@ -85,7 +85,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
-			return new DateTime( long.Parse( xml ) );
+			return new DateTime(long.Parse(xml));
 		}
 
 		/// <summary>
@@ -94,19 +94,19 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			if( x == y )
+			if (x == y)
 			{
 				return true;
 			}
-			if( x == null || y == null )
+			if (x == null || y == null)
 			{
 				return false;
 			}
 
-			long xTime = ( ( DateTime ) x ).Ticks;
-			long yTime = ( ( DateTime ) y ).Ticks;
+			long xTime = ((DateTime) x).Ticks;
+			long yTime = ((DateTime) y).Ticks;
 			return xTime == yTime;
 		}
 
@@ -139,9 +139,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
-			return long.Parse( xml );
+			return long.Parse(xml);
 		}
 
 		public IComparer Comparator
@@ -156,9 +156,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
-			return "'" + ( ( DateTime ) value ).Ticks.ToString() + "'";
+			return "'" + ((DateTime) value).Ticks.ToString() + "'";
 		}
 	}
 }

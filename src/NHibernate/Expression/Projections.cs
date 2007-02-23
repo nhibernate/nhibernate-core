@@ -1,11 +1,8 @@
 using System;
-
 using NHibernate.Type;
-
 
 namespace NHibernate.Expression
 {
-
 	/// <summary>
 	/// The <tt>criterion</tt> package may be used by applications as a framework for building
 	/// new kinds of <tt>Projection</tt>. However, it is intended that most applications will
@@ -16,7 +13,7 @@ namespace NHibernate.Expression
 	/// </summary>
 	public class Projections
 	{
-		Projections() 
+		private Projections()
 		{
 			// Private Constructor, never called.
 		}
@@ -173,6 +170,5 @@ namespace NHibernate.Expression
 		{
 			return new AliasedProjection(projection, alias);
 		}
-
 	}
 }

@@ -7,8 +7,10 @@ namespace NHibernate.Persister.Entity
 	/// </summary>
 	public sealed class LoadableConstants
 	{
-		private LoadableConstants() { }
-		
+		private LoadableConstants()
+		{
+		}
+
 		public const string RowIdAlias = "rowid_";
 	}
 }

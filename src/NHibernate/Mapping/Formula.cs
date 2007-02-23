@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -27,9 +26,9 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public string GetTemplate( Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry )
+		public string GetTemplate(Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
 		{
-			return Template.RenderWhereStringTemplate( formula, dialect, functionRegistry );
+			return Template.RenderWhereStringTemplate(formula, dialect, functionRegistry);
 		}
 
 		/// <summary></summary>
@@ -39,22 +38,22 @@ namespace NHibernate.Mapping
 			set { this.formula = value; }
 		}
 
-		public string GetText( Dialect.Dialect dialect )
+		public string GetText(Dialect.Dialect dialect)
 		{
 			return FormulaString;
 		}
-		
+
 		public string Text
 		{
 			get { return FormulaString; }
 		}
 
-		public string GetAlias( Dialect.Dialect dialect ) 
+		public string GetAlias(Dialect.Dialect dialect)
 		{
 			return "formula" + uniqueInteger.ToString() + '_';
 		}
 
-		public string GetAlias(Dialect.Dialect dialect, Table table) 
+		public string GetAlias(Dialect.Dialect dialect, Table table)
 		{
 			return GetAlias(dialect);
 		}
@@ -64,7 +63,7 @@ namespace NHibernate.Mapping
 			get { return true; }
 		}
 
-		public override string ToString() 
+		public override string ToString()
 		{
 			return GetType().FullName + "( " + formula + " )";
 		}

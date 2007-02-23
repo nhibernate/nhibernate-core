@@ -1,18 +1,18 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-
 using Iesi.Collections;
-
 using log4net;
-
 using NHibernate.Cache;
 using NHibernate.Classic;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Exceptions;
+using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
@@ -22,10 +22,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 #if NET_2_0
-using System.Collections.Generic;
 #endif
-using NHibernate.Engine.Query;
-using NHibernate.Hql;
 
 namespace NHibernate.Impl
 {
@@ -168,7 +165,7 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private IDictionary enabledFilters = new Hashtable();
-		
+
 		[NonSerialized]
 		private BatchFetchQueue batchFetchQueue;
 
@@ -235,8 +232,8 @@ namespace NHibernate.Impl
 		/// has complete control and what is serialized and those attributes are ignored.  However, 
 		/// this method should be in synch with the attributes for easy readability.
 		/// </remarks>
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-									 Flags = SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags = SecurityPermissionFlag.SerializationFormatter)]
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("writting session to serializer");
@@ -507,13 +504,13 @@ namespace NHibernate.Impl
 					log.Error("could not release a cache lock", ce);
 					// continue loop
 				}
-				catch (System.Exception e)
+				catch (Exception e)
 				{
 					throw new AssertionFailure("Exception releasing cache locks", e);
 				}
 			}
 			executions.Clear();
-			
+
 			if ( //rootSession == null &&
 				tx != null)
 			{
@@ -645,7 +642,8 @@ namespace NHibernate.Impl
 			IEntityPersister persister,
 			bool disableVersionIncrement)
 		{
-			EntityEntry e = new EntityEntry(status, loadedState, id, version, lockMode, existsInDatabase, persister, disableVersionIncrement);
+			EntityEntry e =
+				new EntityEntry(status, loadedState, id, version, lockMode, existsInDatabase, persister, disableVersionIncrement);
 			entityEntries[obj] = e;
 			return e;
 		}
@@ -808,7 +806,7 @@ namespace NHibernate.Impl
 					{
 						throw new PersistentObjectException(
 							"object passed to Save() was already persistent: " +
-								MessageHelper.InfoString(e.Persister, id)
+							MessageHelper.InfoString(e.Persister, id)
 							);
 					}
 					log.Debug("object already associated with session");
@@ -903,7 +901,8 @@ namespace NHibernate.Impl
 			// Put a placeholder in entries, so we don't recurse back to try and Save() the
 			// same object again. QUESTION: Should this be done before OnSave() is called?
 			// likewise, should it be done before OnUpdate()?
-			AddEntry(theObj, Status.Saving, null, id, null, LockMode.Write, useIdentityColumn, persister, false); // okay if id is null here
+			AddEntry(theObj, Status.Saving, null, id, null, LockMode.Write, useIdentityColumn, persister, false);
+				// okay if id is null here
 
 			// cascade-save to many-to-one BEFORE the parent is saved
 			cascading++;
@@ -929,8 +928,8 @@ namespace NHibernate.Impl
 				{
 					// IsUnsavedVersion bit below is NHibernate-specific
 					substitute = Versioning.SeedVersion(
-						values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(values), this
-						) || substitute;
+					             	values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(values), this
+					             	) || substitute;
 				}
 			}
 
@@ -1033,7 +1032,8 @@ namespace NHibernate.Impl
 				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 				if (li.IsUninitialized)
 				{
-					throw new PersistentObjectException(string.Format("object was an uninitialized proxy for: {0}", li.PersistentClass.Name));
+					throw new PersistentObjectException(
+						string.Format("object was an uninitialized proxy for: {0}", li.PersistentClass.Name));
 				}
 				return li.GetImplementation(); //unwrap the object 
 			}
@@ -1175,8 +1175,9 @@ namespace NHibernate.Impl
 			}
 
 			return e.Status == Status.Saving || (
-				earlyInsert ? !e.ExistsInDatabase : nullifiables.Contains(new EntityKey(e.Id, e.Persister))
-				);
+			                                    	earlyInsert
+			                                    		? !e.ExistsInDatabase : nullifiables.Contains(new EntityKey(e.Id, e.Persister))
+			                                    );
 		}
 
 		/// <summary>
@@ -1247,7 +1248,7 @@ namespace NHibernate.Impl
 			{
 				throw new HibernateException(
 					"attempted to delete an object of immutable class: " +
-						MessageHelper.InfoString(persister));
+					MessageHelper.InfoString(persister));
 			}
 
 			DoDelete(obj, entry, persister);
@@ -1331,7 +1332,8 @@ namespace NHibernate.Impl
 			try
 			{
 				// cascade-delete to collections "BEFORE" the collection owner is deleted
-				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeAfterInsertBeforeDelete, null);
+				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionDelete,
+				                 CascadePoint.CascadeAfterInsertBeforeDelete, null);
 			}
 			finally
 			{
@@ -1358,7 +1360,8 @@ namespace NHibernate.Impl
 			try
 			{
 				// cascade-delete to many-to-one AFTER the parent was deleted
-				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionDelete, CascadePoint.CascadeBeforeInsertAfterDelete);
+				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionDelete,
+				                 CascadePoint.CascadeBeforeInsertAfterDelete);
 			}
 			finally
 			{
@@ -1425,15 +1428,15 @@ namespace NHibernate.Impl
 		private static bool IsCollectionSnapshotValid(ICollectionSnapshot snapshot)
 		{
 			return snapshot != null &&
-				snapshot.Role != null &&
-				snapshot.Key != null;
+			       snapshot.Role != null &&
+			       snapshot.Key != null;
 		}
 
 		internal static bool IsOwnerUnchanged(ICollectionSnapshot snapshot, ICollectionPersister persister, object id)
 		{
 			return IsCollectionSnapshotValid(snapshot) &&
-				persister.Role.Equals(snapshot.Role) &&
-				id.Equals(snapshot.Key);
+			       persister.Role.Equals(snapshot.Role) &&
+			       id.Equals(snapshot.Key);
 		}
 
 		/// <summary>
@@ -1491,7 +1494,8 @@ namespace NHibernate.Impl
 				if (id == null)
 				{
 					// assume this is a newly instantiated transient object 
-					throw new HibernateException("The given object has a null identifier property " + MessageHelper.InfoString(persister));
+					throw new HibernateException("The given object has a null identifier property " +
+					                             MessageHelper.InfoString(persister));
 				}
 				else
 				{
@@ -1605,7 +1609,7 @@ namespace NHibernate.Impl
 				{
 					throw new PersistentObjectException(
 						"The instance passed to Update() was already persistent: " +
-							MessageHelper.InfoString(e.Persister, id)
+						MessageHelper.InfoString(e.Persister, id)
 						);
 				}
 			}
@@ -1655,7 +1659,8 @@ namespace NHibernate.Impl
 			cascading++;
 			try
 			{
-				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate, null); // do cascade
+				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate, null);
+					// do cascade
 			}
 			finally
 			{
@@ -1671,7 +1676,8 @@ namespace NHibernate.Impl
 		/// <param name="version"></param>
 		/// <param name="replicationMode"></param>
 		/// <param name="persister"></param>
-		private void DoReplicate(object obj, object id, object version, ReplicationMode replicationMode, IEntityPersister persister)
+		private void DoReplicate(object obj, object id, object version, ReplicationMode replicationMode,
+		                         IEntityPersister persister)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -1687,7 +1693,8 @@ namespace NHibernate.Impl
 			try
 			{
 				// do cascade
-				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionReplicate, CascadePoint.CascadeOnUpdate, replicationMode);
+				Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionReplicate, CascadePoint.CascadeOnUpdate,
+				                 replicationMode);
 			}
 			finally
 			{
@@ -1798,7 +1805,7 @@ namespace NHibernate.Impl
 
 		public IEnumerable Enumerable(string query, object value, IType type)
 		{
-			return Enumerable(query, new object[] { value }, new IType[] { type });
+			return Enumerable(query, new object[] {value}, new IType[] {type});
 		}
 
 		public IEnumerable Enumerable(string query, object[] values, IType[] types)
@@ -1920,7 +1927,7 @@ namespace NHibernate.Impl
 
 		public int Delete(string query, object value, IType type)
 		{
-			return Delete(query, new object[] { value }, new IType[] { type });
+			return Delete(query, new object[] {value}, new IType[] {type});
 		}
 
 		public int Delete(string query, object[] values, IType[] types)
@@ -2010,7 +2017,7 @@ namespace NHibernate.Impl
 				{
 					throw new TransientObjectException(
 						"cannot lock an unsaved transient instance: "
-							+ MessageHelper.InfoString(objPersister));
+						+ MessageHelper.InfoString(objPersister));
 				}
 
 				e = Reassociate(obj, id, objPersister);
@@ -2019,7 +2026,7 @@ namespace NHibernate.Impl
 				try
 				{
 					Cascades.Cascade(this, objPersister, obj, Cascades.CascadingAction.ActionLock,
-									  CascadePoint.CascadeOnLock, lockMode);
+					                 CascadePoint.CascadeOnLock, lockMode);
 				}
 				finally
 				{
@@ -2053,9 +2060,9 @@ namespace NHibernate.Impl
 					ck = new CacheKey(
 						entry.Id,
 						persister.IdentifierType,
-						(string)persister.IdentifierSpace,
+						(string) persister.IdentifierSpace,
 						Factory
-					);
+						);
 					myLock = persister.Cache.Lock(ck, entry.Version);
 				}
 				try
@@ -2123,11 +2130,11 @@ namespace NHibernate.Impl
 			{
 				string queryString = nqd.QueryString;
 				query = new QueryImpl(
-						queryString,
-						nqd.FlushMode,
-						this//,
+					queryString,
+					nqd.FlushMode,
+					this //,
 					//GetHQLQueryPlan(queryString, false).ParameterMetadata
-				);
+					);
 				//TODO: query.Comment = "named HQL query " + queryName;
 			}
 			else
@@ -2138,10 +2145,10 @@ namespace NHibernate.Impl
 					throw new MappingException("Named query not known: " + queryName);
 				}
 				query = new SqlQueryImpl(
-						nsqlqd,
-						this//,
+					nsqlqd,
+					this //,
 					//factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString)
-				);
+					);
 				//TODO: query.Comment = "named native SQL query " + queryName;
 				nqd = nsqlqd;
 			}
@@ -2159,7 +2166,7 @@ namespace NHibernate.Impl
 			}
 			IQuery query = new SqlQueryImpl(
 				nsqlqd,
-				this//,
+				this //,
 				//factory.QueryPlanCache.GetSQLParameterMetadata( nsqlqd.QueryString )
 				);
 			//query.setComment( "named native SQL query " + queryName );
@@ -2494,7 +2501,7 @@ namespace NHibernate.Impl
 			{
 				throw new PersistentObjectException(
 					"attempted to load into an instance that was already associated with the Session: " +
-						MessageHelper.InfoString(clazz, id)
+					MessageHelper.InfoString(clazz, id)
 					);
 			}
 			object result = DoLoad(clazz, id, obj, lockMode, true);
@@ -2609,9 +2616,9 @@ namespace NHibernate.Impl
 				ck = new CacheKey(
 					id,
 					persister.IdentifierType,
-					(string)persister.IdentifierSpace,
+					(string) persister.IdentifierSpace,
 					Factory
-				);
+					);
 				//increments the lock
 				myLock = persister.Cache.Lock(ck, null);
 			}
@@ -2749,7 +2756,6 @@ namespace NHibernate.Impl
 					log.Debug("resolved object in session cache " + MessageHelper.InfoString(persister, id));
 				}
 				return old;
-
 			}
 			else
 			{
@@ -2763,8 +2769,8 @@ namespace NHibernate.Impl
 				// LOOK IN CACHE
 				CacheKey ck = new CacheKey(id, persister.IdentifierType, (string) persister.IdentifierSpace, factory);
 				CacheEntry entry = persister.HasCache && lockMode.LessThan(LockMode.Read) ?
-					(CacheEntry) persister.Cache.Get(ck, Timestamp) :
-					null;
+				                   (CacheEntry) persister.Cache.Get(ck, Timestamp) :
+				                   null;
 
 				if (entry != null)
 				{
@@ -2800,7 +2806,8 @@ namespace NHibernate.Impl
 			AddEntity(new EntityKey(id, persister), result);
 
 			IType[] types = subclassPersister.PropertyTypes;
-			object[] values = entry.Assemble(result, id, subclassPersister, interceptor, this); // intializes result by side-effect
+			object[] values = entry.Assemble(result, id, subclassPersister, interceptor, this);
+				// intializes result by side-effect
 
 			TypeFactory.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values);
 			object version = Versioning.GetVersion(values, subclassPersister);
@@ -2886,9 +2893,9 @@ namespace NHibernate.Impl
 				CacheKey ck = new CacheKey(
 					id,
 					persister.IdentifierType,
-					(string)persister.IdentifierSpace,
+					(string) persister.IdentifierSpace,
 					Factory
-				);
+					);
 				persister.Cache.Remove(ck);
 			}
 
@@ -2938,16 +2945,16 @@ namespace NHibernate.Impl
 				CacheKey ck = new CacheKey(
 					id,
 					persister.IdentifierType,
-					(string)persister.IdentifierSpace,
+					(string) persister.IdentifierSpace,
 					factory
-				);
+					);
 				persister.Cache.Put(
 					ck,
 					new CacheEntry(obj, persister, this),
 					Timestamp,
 					Versioning.GetVersion(hydratedState, persister),
 					persister.IsVersioned ?
-						persister.VersionType.Comparator : null,
+					persister.VersionType.Comparator : null,
 					UseMinimalPuts(e));
 			}
 
@@ -3061,15 +3068,15 @@ namespace NHibernate.Impl
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Flushed: " +
-					insertions.Count + " insertions, " +
-					updates.Count + " updates, " +
-					deletions.Count + " deletions to " +
-					entityEntries.Count + " objects");
+				          insertions.Count + " insertions, " +
+				          updates.Count + " updates, " +
+				          deletions.Count + " deletions to " +
+				          entityEntries.Count + " objects");
 				log.Debug("Flushed: " +
-					collectionCreations.Count + " (re)creations, " +
-					collectionUpdates.Count + " updates, " +
-					collectionRemovals.Count + " removals to " +
-					collectionEntries.Count + " collections");
+				          collectionCreations.Count + " (re)creations, " +
+				          collectionUpdates.Count + " updates, " +
+				          collectionRemovals.Count + " removals to " +
+				          collectionEntries.Count + " collections");
 
 				new Printer(factory).ToString(entitiesByKey.Values.GetEnumerator());
 			}
@@ -3078,11 +3085,11 @@ namespace NHibernate.Impl
 		private bool AreTablesToBeUpdated(ISet tables)
 		{
 			return AreTablesToUpdated(updates, tables) ||
-				AreTablesToUpdated(insertions, tables) ||
-				AreTablesToUpdated(deletions, tables) ||
-				AreTablesToUpdated(collectionUpdates, tables) ||
-				AreTablesToUpdated(collectionCreations, tables) ||
-				AreTablesToUpdated(collectionRemovals, tables);
+			       AreTablesToUpdated(insertions, tables) ||
+			       AreTablesToUpdated(deletions, tables) ||
+			       AreTablesToUpdated(collectionUpdates, tables) ||
+			       AreTablesToUpdated(collectionCreations, tables) ||
+			       AreTablesToUpdated(collectionRemovals, tables);
 		}
 
 		private bool AreTablesToUpdated(ICollection executables, ISet theSet)
@@ -3128,11 +3135,11 @@ namespace NHibernate.Impl
 				{
 					FlushEverything();
 					bool result = updates.Count > 0 ||
-						insertions.Count > 0 ||
-						deletions.Count > 0 ||
-						collectionUpdates.Count > 0 ||
-						collectionRemovals.Count > 0 ||
-						collectionCreations.Count > 0;
+					              insertions.Count > 0 ||
+					              deletions.Count > 0 ||
+					              collectionUpdates.Count > 0 ||
+					              collectionRemovals.Count > 0 ||
+					              collectionCreations.Count > 0;
 					log.Debug(result ? "session dirty" : "session not dirty");
 					return result;
 				}
@@ -3358,7 +3365,8 @@ namespace NHibernate.Impl
 			bool dirtyCheckDoneBySelect = false;
 			object[] currentPersistentState = null;
 
-			int[] dirtyProperties = interceptor.FindDirty(obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types);
+			int[] dirtyProperties =
+				interceptor.FindDirty(obj, entry.Id, values, entry.LoadedState, persister.PropertyNames, types);
 
 			if (dirtyProperties == null)
 			{
@@ -3455,7 +3463,8 @@ namespace NHibernate.Impl
 
 				//note that we intentionally did _not_ pass in currentPersistentState!
 				updates.Add(
-                    new ScheduledUpdate(entry.Id, values, dirtyProperties, hasDirtyCollections, entry.LoadedState, entry.Version, nextVersion, obj, updatedState, persister, this)
+					new ScheduledUpdate(entry.Id, values, dirtyProperties, hasDirtyCollections, entry.LoadedState, entry.Version,
+					                    nextVersion, obj, updatedState, persister, this)
 					);
 			}
 
@@ -3516,7 +3525,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private bool IsVersionIncrementRequired(bool hasDirtyCollection, EntityEntry entry, IEntityPersister persister, int[] dirtyProperties)
+		private bool IsVersionIncrementRequired(bool hasDirtyCollection, EntityEntry entry, IEntityPersister persister,
+		                                        int[] dirtyProperties)
 		{
 			return entry.Status != Status.Deleted
 			       && (dirtyProperties == null ||
@@ -3528,7 +3538,8 @@ namespace NHibernate.Impl
 			          );
 		}
 
-		private object GetNextVersion(IEntityPersister persister, object[] values, EntityEntry entry, bool hasDirtyCollection, int[] dirtyProperties)
+		private object GetNextVersion(IEntityPersister persister, object[] values, EntityEntry entry, bool hasDirtyCollection,
+		                              int[] dirtyProperties)
 		{
 			if (persister.IsVersioned)
 			{
@@ -3541,8 +3552,8 @@ namespace NHibernate.Impl
 					bool isVersionIncrementRequired = IsVersionIncrementRequired(hasDirtyCollection, entry, persister, dirtyProperties);
 
 					object nextVersion = isVersionIncrementRequired
-						? Versioning.Increment(entry.Version, persister.VersionType, this)
-						: entry.Version;
+					                     	? Versioning.Increment(entry.Version, persister.VersionType, this)
+					                     	: entry.Version;
 					Versioning.SetVersion(values, nextVersion, persister);
 					return nextVersion;
 				}
@@ -3596,7 +3607,8 @@ namespace NHibernate.Impl
 					cascading++;
 					try
 					{
-						Cascades.Cascade(this, entry.Persister, obj, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate);
+						Cascades.Cascade(this, entry.Persister, obj, Cascades.CascadingAction.ActionSaveUpdate,
+						                 CascadePoint.CascadeOnUpdate);
 					}
 					finally
 					{
@@ -3750,7 +3762,6 @@ namespace NHibernate.Impl
 
 					return persister.GetIdentifier(obj);
 				}
-
 			}
 		}
 
@@ -3758,7 +3769,7 @@ namespace NHibernate.Impl
 		{
 			throw new TransientObjectException(
 				"object references an unsaved transient instance - save the transient instance before flushing: " +
-					obj.GetType().FullName
+				obj.GetType().FullName
 				);
 		}
 
@@ -3777,7 +3788,6 @@ namespace NHibernate.Impl
 				{
 					UpdateUnreachableCollection((IPersistentCollection) e.Key);
 				}
-
 			}
 			// schedule updates to collections:
 
@@ -3794,11 +3804,13 @@ namespace NHibernate.Impl
 				}
 				if (ce.IsDoremove)
 				{
-					collectionRemovals.Add(new ScheduledCollectionRemove(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), this));
+					collectionRemovals.Add(
+						new ScheduledCollectionRemove(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), this));
 				}
 				if (ce.IsDoupdate)
 				{
-					collectionUpdates.Add(new ScheduledCollectionUpdate(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), this));
+					collectionUpdates.Add(
+						new ScheduledCollectionUpdate(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), this));
 				}
 			}
 		}
@@ -3875,13 +3887,15 @@ namespace NHibernate.Impl
 			if (ce == null)
 			{
 				// refer to comment in AddCollection()
-				throw new HibernateException(string.Format("Found two representations of same collection: {0}", coll.CollectionSnapshot.Role));
+				throw new HibernateException(
+					string.Format("Found two representations of same collection: {0}", coll.CollectionSnapshot.Role));
 			}
 
 			if (ce.IsReached)
 			{
 				// we've been here before
-				throw new HibernateException(string.Format("Found shared references to a collection: {0}", coll.CollectionSnapshot.Role));
+				throw new HibernateException(
+					string.Format("Found shared references to a collection: {0}", coll.CollectionSnapshot.Role));
 			}
 			ce.IsReached = true;
 
@@ -3893,7 +3907,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug(
 					"Collection found: " + MessageHelper.InfoString(persister, ce.CurrentKey) +
-						", was: " + MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey)
+					", was: " + MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey)
 					);
 			}
 
@@ -3995,16 +4009,17 @@ namespace NHibernate.Impl
 			{
 				if (
 					entry.LoadedPersister != entry.CurrentPersister || //if either its role changed,
-						!entry.CurrentPersister.KeyType.Equals(entry.LoadedKey, entry.CurrentKey) // or its key changed
+					!entry.CurrentPersister.KeyType.Equals(entry.LoadedKey, entry.CurrentKey) // or its key changed
 					)
 				{
 					// do a check
 					if (
 						entry.LoadedPersister != null &&
-							entry.CurrentPersister != null &&
-							entry.LoadedPersister.HasOrphanDelete)
+						entry.CurrentPersister != null &&
+						entry.LoadedPersister.HasOrphanDelete)
 					{
-						throw new HibernateException("Don't dereference a collection with cascade=\"all-delete-orphan\": " + coll.CollectionSnapshot.Role);
+						throw new HibernateException("Don't dereference a collection with cascade=\"all-delete-orphan\": " +
+						                             coll.CollectionSnapshot.Role);
 					}
 
 					// do the work
@@ -4041,7 +4056,8 @@ namespace NHibernate.Impl
 			private readonly object resultSetId;
 			private readonly ICollectionPersister persister;
 
-			internal LoadingCollectionEntry(CollectionKey key, IPersistentCollection collection, object id, ICollectionPersister persister, object resultSetId)
+			internal LoadingCollectionEntry(CollectionKey key, IPersistentCollection collection, object id,
+			                                ICollectionPersister persister, object resultSetId)
 			{
 				this.key = key;
 				this.collection = collection;
@@ -4082,7 +4098,8 @@ namespace NHibernate.Impl
 			return (LoadingCollectionEntry) loadingCollections[collectionKey];
 		}
 
-		private void AddLoadingCollectionEntry(CollectionKey key, IPersistentCollection collection, ICollectionPersister persister, object resultSetId)
+		private void AddLoadingCollectionEntry(CollectionKey key, IPersistentCollection collection,
+		                                       ICollectionPersister persister, object resultSetId)
 		{
 			loadingCollections.Add(key, new LoadingCollectionEntry(key, collection, key.Key, persister, resultSetId));
 		}
@@ -4163,7 +4180,7 @@ namespace NHibernate.Impl
 					if (lce.Collection.Owner == null)
 					{
 						AddUnownedCollection(
-							new CollectionKey( persister, lce.Id ), 
+							new CollectionKey(persister, lce.Id),
 							lce.Collection);
 					}
 				}
@@ -4221,7 +4238,7 @@ namespace NHibernate.Impl
 				log.Debug(string.Format("{0} collections initialized", count));
 			}
 		}
-		
+
 		private void AddCollectionToCache(LoadingCollectionEntry lce, ICollectionPersister persister)
 		{
 			if (log.IsDebugEnabled)
@@ -4250,7 +4267,8 @@ namespace NHibernate.Impl
 				versionComparator = null;
 			}
 			CacheKey ck = new CacheKey(lce.Id, persister.KeyType, persister.Role, factory);
-			persister.Cache.Put(ck, lce.Collection.Disassemble(persister), Timestamp, version, versionComparator, factory.Settings.IsMinimalPutsEnabled /*&& cacheMode != CacheMode.REFRESH*/);
+			persister.Cache.Put(ck, lce.Collection.Disassemble(persister), Timestamp, version, versionComparator,
+			                    factory.Settings.IsMinimalPutsEnabled /*&& cacheMode != CacheMode.REFRESH*/);
 		}
 
 		private IPersistentCollection GetLoadingCollection(ICollectionPersister persister, object id)
@@ -4335,7 +4353,8 @@ namespace NHibernate.Impl
 			AddCollection(collection, ce, id);
 		}
 
-		private void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionPersister persister, object id)
+		private void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionPersister persister,
+		                                                object id)
 		{
 			CollectionEntry ce = new CollectionEntry(persister, id);
 			collection.CollectionSnapshot = ce;
@@ -4348,7 +4367,8 @@ namespace NHibernate.Impl
 		/// <param name="collection"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		public CollectionEntry AddInitializedCollection(IPersistentCollection collection, ICollectionPersister persister, object id)
+		public CollectionEntry AddInitializedCollection(IPersistentCollection collection, ICollectionPersister persister,
+		                                                object id)
 		{
 			CollectionEntry ce = new CollectionEntry(persister, id, flushing);
 			ce.PostInitialize(collection);
@@ -4379,7 +4399,6 @@ namespace NHibernate.Impl
 			{
 				ce.InitSnapshot(collection, persister);
 			}
-
 		}
 
 		/// <summary>
@@ -4466,7 +4485,8 @@ namespace NHibernate.Impl
 
 				log.Debug("checking second-level cache");
 
-				bool foundInCache = InitializeCollectionFromCache(ce.LoadedKey, GetCollectionOwner(ce), ce.LoadedPersister, collection);
+				bool foundInCache =
+					InitializeCollectionFromCache(ce.LoadedKey, GetCollectionOwner(ce), ce.LoadedPersister, collection);
 
 				if (foundInCache)
 				{
@@ -4612,7 +4632,7 @@ namespace NHibernate.Impl
 
 		public ICollection Filter(object collection, string filter, object value, IType type)
 		{
-			QueryParameters qp = new QueryParameters(new IType[] { null, type }, new object[] { null, value });
+			QueryParameters qp = new QueryParameters(new IType[] {null, type}, new object[] {null, value});
 			return Filter(collection, filter, qp);
 		}
 
@@ -4638,7 +4658,8 @@ namespace NHibernate.Impl
 		/// <param name="parameters"></param>
 		/// <param name="scalar"></param>
 		/// <returns></returns>
-		private IFilterTranslator GetFilterTranslator(object collection, string filter, QueryParameters parameters, bool scalar)
+		private IFilterTranslator GetFilterTranslator(object collection, string filter, QueryParameters parameters,
+		                                              bool scalar)
 		{
 			if (collection == null)
 			{
@@ -4696,7 +4717,6 @@ namespace NHibernate.Impl
 			parameters.PositionalParameterTypes[0] = entry.LoadedPersister.KeyType;
 
 			return filterTranslator;
-
 		}
 
 		/// <summary>
@@ -4746,7 +4766,6 @@ namespace NHibernate.Impl
 					concreteFilters[i],
 					parameters,
 					false);
-
 			}
 
 			bool success = false;
@@ -5087,7 +5106,6 @@ namespace NHibernate.Impl
 			{
 				EvictCollection(collection);
 			}
-
 		}
 
 		private void EvictCollection(IPersistentCollection collection)
@@ -5163,7 +5181,7 @@ namespace NHibernate.Impl
 		{
 			CheckIsOpen();
 
-			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, null);
+			return new SqlQueryImpl(sql, new string[] {returnAlias}, new System.Type[] {returnClass}, this, null);
 		}
 
 		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
@@ -5352,7 +5370,8 @@ namespace NHibernate.Impl
 			if (oldVersion != null)
 			{
 				// existing row - do an update if appropriate
-				if (replicationMode.ShouldOverwriteCurrentVersion(theObj, oldVersion, persister.GetVersion(obj), persister.VersionType))
+				if (
+					replicationMode.ShouldOverwriteCurrentVersion(theObj, oldVersion, persister.GetVersion(obj), persister.VersionType))
 				{
 					//will result in a SQL UPDATE:
 					DoReplicate(theObj, id, oldVersion, replicationMode, persister);
@@ -5440,7 +5459,8 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="collection"></param>
 		/// <returns><c>true</c> if the collection was initialized from the cache, otherwise <c>false</c>.</returns>
-		private bool InitializeCollectionFromCache(object id, object owner, ICollectionPersister persister, IPersistentCollection collection)
+		private bool InitializeCollectionFromCache(object id, object owner, ICollectionPersister persister,
+		                                           IPersistentCollection collection)
 		{
 			if (enabledFilters.Count > 0 && persister.IsAffectedByEnabledFilters(this))
 			{
@@ -5581,16 +5601,18 @@ namespace NHibernate.Impl
 					{
 						string errorMsg = string.Format("class of the given object did not match class of persistent copy but was [{0}]",
 						                                NHibernateUtil.GetClass(result).FullName);
-						throw new WrongClassException(errorMsg, 
+						throw new WrongClassException(errorMsg,
 						                              id, clazz);
 					}
-					else if (persister.IsVersioned && !persister.VersionType.Equals(persister.GetVersion(result), persister.GetVersion(obj)))
+					else if (persister.IsVersioned &&
+					         !persister.VersionType.Equals(persister.GetVersion(result), persister.GetVersion(obj)))
 					{
 						throw new StaleObjectStateException(clazz, id);
 					}
 
 					// cascade first, so that all unsaved objected get saved before we actually copy
-					Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionCopy, CascadePoint.CascadeOnCopy, copiedAlready);
+					Cascades.Cascade(this, persister, obj, Cascades.CascadingAction.ActionCopy, CascadePoint.CascadeOnCopy,
+					                 copiedAlready);
 				}
 			}
 
@@ -5625,7 +5647,6 @@ namespace NHibernate.Impl
 				throw new ObjectDisposedException("ISession", "Session was disposed of or closed");
 			}
 		}
-
 
 
 		public IFilter GetEnabledFilter(string filterName)
@@ -5703,7 +5724,7 @@ namespace NHibernate.Impl
 			}
 			string filterName = filterParameterName.Substring(0, dot);
 			string parameterName = filterParameterName.Substring(dot + 1);
-			return new string[] { filterName, parameterName };
+			return new string[] {filterName, parameterName};
 		}
 
 		public ISQLQuery CreateSQLQuery(string sql)
@@ -5711,12 +5732,12 @@ namespace NHibernate.Impl
 			SqlQueryImpl query = new SqlQueryImpl(sql, this);
 			return query;
 		}
-		
+
 		public IEnumerable CollectionEntries
 		{
 			get { return collectionEntries; }
 		}
-		
+
 		public BatchFetchQueue BatchFetchQueue
 		{
 			get
@@ -5738,17 +5759,17 @@ namespace NHibernate.Impl
 		{
 			return GetEntity(key) != null;
 		}
-		
+
 		private void AddUnownedCollection(CollectionKey key, IPersistentCollection collection)
 		{
 			if (unownedCollections == null)
 			{
 				unownedCollections = new Hashtable(8);
 			}
-			
+
 			unownedCollections[key] = collection;
 		}
-		
+
 		private IPersistentCollection UseUnownedCollection(CollectionKey key)
 		{
 			if (unownedCollections == null)

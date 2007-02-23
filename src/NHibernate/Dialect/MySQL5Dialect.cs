@@ -2,14 +2,11 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-	class MySQL5Dialect : MySQLDialect
+	internal class MySQL5Dialect : MySQLDialect
 	{
 		public override bool SupportsVariableLimit
 		{
-			get
-			{
-				return false;
-			}
+			get { return false; }
 		}
 
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
@@ -28,7 +25,6 @@ namespace NHibernate.Dialect
 
 
 			return pagingBuilder.ToSqlString();
-
 		}
 	}
 }

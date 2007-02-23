@@ -19,7 +19,7 @@ namespace NHibernate.Property
 		/// <param name="clazz">The <see cref="System.Type"/> that contains the Property <c>get</c>.</param>
 		/// <param name="property">The <see cref="PropertyInfo"/> for reflection.</param>
 		/// <param name="propertyName">The name of the Property.</param>
-		public BasicGetter( System.Type clazz, PropertyInfo property, string propertyName )
+		public BasicGetter(System.Type clazz, PropertyInfo property, string propertyName)
 		{
 			this.clazz = clazz;
 			this.property = property;
@@ -40,15 +40,15 @@ namespace NHibernate.Property
 		/// <returns>
 		/// The value of the Property for the target.
 		/// </returns>
-		public object Get( object target )
+		public object Get(object target)
 		{
 			try
 			{
-				return property.GetValue( target, new object[0] );
+				return property.GetValue(target, new object[0]);
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new PropertyAccessException( e, "Exception occurred", false, clazz, propertyName );
+				throw new PropertyAccessException(e, "Exception occurred", false, clazz, propertyName);
 			}
 		}
 
@@ -78,19 +78,19 @@ namespace NHibernate.Property
 		/// </value>
 		public MethodInfo Method
 		{
-			get { return property.GetGetMethod( true ); }
+			get { return property.GetGetMethod(true); }
 		}
 
 		#endregion
 
-		public void Emit( ILGenerator il )
+		public void Emit(ILGenerator il)
 		{
 			MethodInfo method = Method;
 			if (method == null)
 			{
 				throw new PropertyNotFoundException(clazz, property.Name, "getter");
 			}
-			il.EmitCall( OpCodes.Callvirt, method, null ); 
+			il.EmitCall(OpCodes.Callvirt, method, null);
 		}
 	}
 }

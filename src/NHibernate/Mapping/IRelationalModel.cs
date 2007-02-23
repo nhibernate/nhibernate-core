@@ -17,7 +17,7 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to create an object.
 		/// </returns>
-		string SqlCreateString( Dialect.Dialect dialect, IMapping p, string defaultSchema );
+		string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema);
 
 		/// <summary>
 		/// When implemented by a class, generates the SQL string to drop 
@@ -28,6 +28,6 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to drop an object.
 		/// </returns>
-		string SqlDropString( Dialect.Dialect dialect, string defaultSchema );
+		string SqlDropString(Dialect.Dialect dialect, string defaultSchema);
 	}
 }

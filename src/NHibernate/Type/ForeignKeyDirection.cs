@@ -14,7 +14,7 @@ namespace NHibernate.Type
 
 		private class ForeignKeyToParentClass : ForeignKeyDirection
 		{
-			public override bool CascadeNow( CascadePoint cascadePoint )
+			public override bool CascadeNow(CascadePoint cascadePoint)
 			{
 				return cascadePoint != CascadePoint.CascadeBeforeInsertAfterDelete;
 			}
@@ -22,7 +22,7 @@ namespace NHibernate.Type
 
 		private class ForeignKeyFromParentClass : ForeignKeyDirection
 		{
-			public override bool CascadeNow( CascadePoint cascadePoint )
+			public override bool CascadeNow(CascadePoint cascadePoint)
 			{
 				return cascadePoint != CascadePoint.CascadeAfterInsertBeforeDelete;
 			}
@@ -31,7 +31,7 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Should we cascade at this cascade point?
 		/// </summary>
-		public abstract bool CascadeNow( CascadePoint cascadePoint );
+		public abstract bool CascadeNow(CascadePoint cascadePoint);
 
 		/// <summary>
 		/// A foreign key from child to parent
@@ -42,6 +42,5 @@ namespace NHibernate.Type
 		/// A foreign key from parent to child
 		/// </summary>
 		public static ForeignKeyDirection ForeignKeyFromParent = new ForeignKeyFromParentClass();
-
 	}
 }

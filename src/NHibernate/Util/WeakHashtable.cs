@@ -1,88 +1,90 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
+using NHibernate.DebugHelpers;
 
 namespace NHibernate.Util
 {
 	// This class does not inherit from WeakReference but uses composition
 	// instead to avoid requiring UnmanagedCode permission.
 #if NET_2_0
-	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.DictionaryProxy))]
+	[DebuggerTypeProxy(typeof(DictionaryProxy))]
 #endif
 	public class WeakRefWrapper
 	{
 		private WeakReference reference;
 		private int hashCode;
 
-		public WeakRefWrapper( object target )
+		public WeakRefWrapper(object target)
 		{
-			reference = new WeakReference( target );
+			reference = new WeakReference(target);
 			hashCode = target.GetHashCode();
 		}
 
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
-			if( this == obj )
+			if (this == obj)
 			{
 				return true;
 			}
-			
+
 			WeakRefWrapper that = obj as WeakRefWrapper;
-			if( that == null )
+			if (that == null)
 			{
 				return false;
 			}
-			
+
 			object target = Target;
-			if( target == null )
+			if (target == null)
 			{
 				// If the reference is dead, we are only equal to ourselves,
 				// and this was checked above.
 				return false;
 			}
-			
+
 			return hashCode == that.hashCode &&
-			       Equals( target, that.Target );
+			       Equals(target, that.Target);
 		}
 
 		public override int GetHashCode()
 		{
 			return hashCode;
 		}
-		
+
 		public object Target
 		{
 			get { return reference.Target; }
 		}
-		
+
 		public bool IsAlive
 		{
 			get { return reference.IsAlive; }
 		}
 
-		public static WeakRefWrapper Wrap( object value )
+		public static WeakRefWrapper Wrap(object value)
 		{
-			return new WeakRefWrapper( value );
+			return new WeakRefWrapper(value);
 		}
-		
-		public static object Unwrap( object value )
+
+		public static object Unwrap(object value)
 		{
-			if( value == null )
+			if (value == null)
 			{
 				return null;
 			}
-			return ( ( WeakRefWrapper ) value ).Target;
+			return ((WeakRefWrapper) value).Target;
 		}
 	}
-	
+
 	public class WeakEnumerator : IDictionaryEnumerator
 	{
 		private IDictionaryEnumerator innerEnumerator;
-		
-		public WeakEnumerator( IDictionaryEnumerator innerEnumerator )
+
+		public WeakEnumerator(IDictionaryEnumerator innerEnumerator)
 		{
 			this.innerEnumerator = innerEnumerator;
 		}
-		
+
 		// Unwrapped key and value stored here so that they
 		// do not get collected between calls to MoveNext and Current.
 		private object currentKey, currentValue;
@@ -99,31 +101,31 @@ namespace NHibernate.Util
 
 		public DictionaryEntry Entry
 		{
-			get { return new DictionaryEntry( currentKey, currentValue ); }
+			get { return new DictionaryEntry(currentKey, currentValue); }
 		}
 
 		public bool MoveNext()
 		{
 			// Skip any garbage-collected key/value pairs
-			while( true )
+			while (true)
 			{
 				currentKey = null;
 				currentValue = null;
 
-				if( !innerEnumerator.MoveNext() )
+				if (!innerEnumerator.MoveNext())
 				{
 					return false;
 				}
-				
-				currentKey = WeakRefWrapper.Unwrap( innerEnumerator.Key );
-				currentValue = WeakRefWrapper.Unwrap( innerEnumerator.Value );
-				
-				if( currentKey != null && currentValue != null )
+
+				currentKey = WeakRefWrapper.Unwrap(innerEnumerator.Key);
+				currentValue = WeakRefWrapper.Unwrap(innerEnumerator.Value);
+
+				if (currentKey != null && currentValue != null)
 				{
 					break;
-				}	
+				}
 			}
-			
+
 			return true;
 		}
 
@@ -147,32 +149,32 @@ namespace NHibernate.Util
 		{
 			ArrayList deadKeys = new ArrayList();
 
-			foreach( DictionaryEntry de in innerHashtable )
+			foreach (DictionaryEntry de in innerHashtable)
 			{
-				WeakRefWrapper key = ( WeakRefWrapper ) de.Key;
-				WeakRefWrapper value = ( WeakRefWrapper ) de.Value;
-				
-				if( !key.IsAlive || !value.IsAlive )
+				WeakRefWrapper key = (WeakRefWrapper) de.Key;
+				WeakRefWrapper value = (WeakRefWrapper) de.Value;
+
+				if (!key.IsAlive || !value.IsAlive)
 				{
-					deadKeys.Add( key );
+					deadKeys.Add(key);
 				}
 			}
-			
-			foreach( object key in deadKeys )
+
+			foreach (object key in deadKeys)
 			{
-				innerHashtable.Remove( key );
+				innerHashtable.Remove(key);
 			}
 		}
 
-		public bool Contains( object key )
+		public bool Contains(object key)
 		{
-			return innerHashtable.Contains( WeakRefWrapper.Wrap( key ) );
+			return innerHashtable.Contains(WeakRefWrapper.Wrap(key));
 		}
 
-		public void Add( object key, object value )
+		public void Add(object key, object value)
 		{
 			Scavenge();
-			innerHashtable.Add( WeakRefWrapper.Wrap( key ), WeakRefWrapper.Wrap( value ) );
+			innerHashtable.Add(WeakRefWrapper.Wrap(key), WeakRefWrapper.Wrap(value));
 		}
 
 		public void Clear()
@@ -182,21 +184,21 @@ namespace NHibernate.Util
 
 		public IDictionaryEnumerator GetEnumerator()
 		{
-			return new WeakEnumerator( innerHashtable.GetEnumerator() );
+			return new WeakEnumerator(innerHashtable.GetEnumerator());
 		}
 
-		public void Remove( object key )
+		public void Remove(object key)
 		{
-			innerHashtable.Remove( WeakRefWrapper.Wrap( key ) );
+			innerHashtable.Remove(WeakRefWrapper.Wrap(key));
 		}
 
-		public object this[ object key ]
+		public object this[object key]
 		{
-			get { return WeakRefWrapper.Unwrap( innerHashtable[ WeakRefWrapper.Wrap( key ) ] ); }
+			get { return WeakRefWrapper.Unwrap(innerHashtable[WeakRefWrapper.Wrap(key)]); }
 			set
 			{
 				Scavenge();
-				innerHashtable[ WeakRefWrapper.Wrap( key ) ] = WeakRefWrapper.Wrap( value );
+				innerHashtable[WeakRefWrapper.Wrap(key)] = WeakRefWrapper.Wrap(value);
 			}
 		}
 
@@ -220,7 +222,7 @@ namespace NHibernate.Util
 			get { return innerHashtable.IsFixedSize; }
 		}
 
-		public void CopyTo( Array array, int index )
+		public void CopyTo(Array array, int index)
 		{
 			throw new NotImplementedException();
 		}

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -16,33 +15,34 @@ namespace NHibernate.Loader.Collection
 	/// </summary>
 	public abstract class CollectionJoinWalker : JoinWalker
 	{
-		public CollectionJoinWalker( ISessionFactoryImplementor factory, IDictionary enabledFilters )
-			: base( factory, enabledFilters )
+		public CollectionJoinWalker(ISessionFactoryImplementor factory, IDictionary enabledFilters)
+			: base(factory, enabledFilters)
 		{
 		}
 
-		protected SqlStringBuilder WhereString( string alias, string[ ] columnNames, IType type, SqlString subselect, int batchSize )
+		protected SqlStringBuilder WhereString(string alias, string[] columnNames, IType type, SqlString subselect,
+		                                       int batchSize)
 		{
-			if( subselect == null )
+			if (subselect == null)
 			{
-				return base.WhereString( alias, columnNames, type, batchSize );
+				return base.WhereString(alias, columnNames, type, batchSize);
 			}
 			else
 			{
 				SqlStringBuilder buf = new SqlStringBuilder();
-				if( columnNames.Length > 1 )
+				if (columnNames.Length > 1)
 				{
-					buf.Add( "(" );
+					buf.Add("(");
 				}
-				buf.Add( StringHelper.Join( ", ", StringHelper.Qualify( alias, columnNames ) ) );
-				if( columnNames.Length > 1 )
+				buf.Add(StringHelper.Join(", ", StringHelper.Qualify(alias, columnNames)));
+				if (columnNames.Length > 1)
 				{
-					buf.Add( ")" );
+					buf.Add(")");
 				}
-				buf.Add( " in " )
-					.Add( "(" )
-					.Add( subselect )
-					.Add( ")" );
+				buf.Add(" in ")
+					.Add("(")
+					.Add(subselect)
+					.Add(")");
 				return buf;
 			}
 		}

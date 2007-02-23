@@ -74,10 +74,10 @@ namespace NHibernate.Mapping
 			get { return name; }
 			set
 			{
-				if( value[ 0 ] == '`' )
+				if (value[0] == '`')
 				{
 					quoted = true;
-					name = value.Substring( 1, value.Length - 2 );
+					name = value.Substring(1, value.Length - 2);
 				}
 				else
 				{
@@ -97,11 +97,11 @@ namespace NHibernate.Mapping
 		/// The column name in a form that is safe to use inside of a SQL statement.
 		/// Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
-		public string GetQuotedName( Dialect.Dialect d )
+		public string GetQuotedName(Dialect.Dialect d)
 		{
 			return IsQuoted ?
-				d.QuoteForColumnName( name ) :
-				name;
+			       d.QuoteForColumnName(name) :
+			       name;
 		}
 
 		/**
@@ -109,38 +109,39 @@ namespace NHibernate.Mapping
 		 * to that column name, and also 10 characters or less
 		 * in length.
 		 */
-		public string GetAlias(Dialect.Dialect dialect) 
+
+		public string GetAlias(Dialect.Dialect dialect)
 		{
 			string alias = name;
 			string unique = uniqueInteger.ToString() + '_';
 			int lastLetter = StringHelper.LastIndexOfLetter(name);
-			if( lastLetter == -1 )
+			if (lastLetter == -1)
 			{
 				alias = "column";
 			}
-			else if( lastLetter < name.Length-1 ) 
+			else if (lastLetter < name.Length - 1)
 			{
-				alias = name.Substring(0, lastLetter+1);
+				alias = name.Substring(0, lastLetter + 1);
 			}
-			if ( alias.Length > dialect.MaxAliasLength ) 
+			if (alias.Length > dialect.MaxAliasLength)
 			{
-				alias = alias.Substring( 0, dialect.MaxAliasLength - unique.Length );
+				alias = alias.Substring(0, dialect.MaxAliasLength - unique.Length);
 			}
-			bool useRawName = name.Equals(alias) && 
-				!quoted &&
-				!StringHelper.EqualsCaseInsensitive(name, "rowid");
-			
-			if ( useRawName )
+			bool useRawName = name.Equals(alias) &&
+			                  !quoted &&
+			                  !StringHelper.EqualsCaseInsensitive(name, "rowid");
+
+			if (useRawName)
 			{
 				return alias;
 			}
-			else 
+			else
 			{
 				return alias + unique;
 			}
 		}
 
-		public string GetAlias( Dialect.Dialect dialect, Table table )
+		public string GetAlias(Dialect.Dialect dialect, Table table)
 		{
 			return GetAlias(dialect) + table.UniqueInteger + '_';
 		}
@@ -153,22 +154,21 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that can be used as the alias for this Column.
 		/// </returns>
-		public string GetAlias( Dialect.Dialect d, string suffix )
+		public string GetAlias(Dialect.Dialect d, string suffix)
 		{
-			if( quoted || name[0] == StringHelper.SingleQuote || char.IsDigit( name, 0 ) )
+			if (quoted || name[0] == StringHelper.SingleQuote || char.IsDigit(name, 0))
 			{
 				return "y" + uniqueInteger.ToString() + StringHelper.Underscore + suffix;
 			}
 
-			if( ( name.Length + suffix.Length ) < 11 )
+			if ((name.Length + suffix.Length) < 11)
 			{
 				return name + suffix;
 			}
 			else
 			{
-				return ( new Alias( 10, uniqueInteger.ToString() + StringHelper.Underscore + suffix ) ).ToAliasString( name, d );
+				return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore + suffix)).ToAliasString(name, d);
 			}
-
 		}
 
 		/// <summary>
@@ -186,7 +186,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="type">The NHibernate <see cref="IType"/> that reads from and writes to the column.</param>
 		/// <param name="typeIndex">The index of the column in the <see cref="IType"/>.</param>
-		public Column( IType type, int typeIndex )
+		public Column(IType type, int typeIndex)
 		{
 			this.type = type;
 			this.typeIndex = typeIndex;
@@ -211,21 +211,21 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// The <see cref="SqlType"/> of the column based on the <see cref="IType"/>.
 		/// </returns>
-		public SqlType GetAutoSqlType( IMapping mapping )
+		public SqlType GetAutoSqlType(IMapping mapping)
 		{
 			try
 			{
-				return Type.SqlTypes( mapping )[ TypeIndex ];
+				return Type.SqlTypes(mapping)[TypeIndex];
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
 				throw new MappingException(
 					"GetAutoSqlType - Could not determine type for column " +
-						name +
-						" of type " +
-						type.GetType().FullName +
-						": " +
-						e.GetType().FullName, e );
+					name +
+					" of type " +
+					type.GetType().FullName +
+					": " +
+					e.GetType().FullName, e);
 			}
 		}
 
@@ -252,18 +252,18 @@ namespace NHibernate.Mapping
 		/// return the string contained in that attribute.  Otherwise it will use the 
 		/// typename from the <see cref="Dialect.Dialect"/> of the <see cref="SqlType"/> object. 
 		/// </remarks>
-		public string GetSqlType( Dialect.Dialect dialect, IMapping mapping )
+		public string GetSqlType(Dialect.Dialect dialect, IMapping mapping)
 		{
-			if( sqlType == null )
+			if (sqlType == null)
 			{
-				SqlType sqlTypeObject = GetAutoSqlType( mapping );
-				if( Length != DefaultPropertyLength )
+				SqlType sqlTypeObject = GetAutoSqlType(mapping);
+				if (Length != DefaultPropertyLength)
 				{
-					return dialect.GetTypeName( sqlTypeObject, Length );
+					return dialect.GetTypeName(sqlTypeObject, Length);
 				}
 				else
 				{
-					return dialect.GetTypeName( sqlTypeObject );
+					return dialect.GetTypeName(sqlTypeObject);
 				}
 			}
 			else
@@ -283,10 +283,10 @@ namespace NHibernate.Mapping
 		/// <c>true</c> if the name of this Column and the other Column are the same, 
 		/// otherwise <c>false</c>.
 		/// </returns>
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
 			Column columnObj = obj as Column;
-			return columnObj!=null && Equals( columnObj );
+			return columnObj != null && Equals(columnObj);
 		}
 
 		/// <summary>
@@ -298,18 +298,18 @@ namespace NHibernate.Mapping
 		/// <c>true</c> if the name of this Column and the other Column are the same, 
 		/// otherwise <c>false</c>.
 		/// </returns>
-		public bool Equals( Column column )
+		public bool Equals(Column column)
 		{
-			if( null == column )
+			if (null == column)
 			{
 				return false;
 			}
-			if( this == column )
+			if (this == column)
 			{
 				return true;
 			}
 
-			return name.Equals( column.Name );
+			return name.Equals(column.Name);
 		}
 
 		/// <summary>
@@ -379,9 +379,9 @@ namespace NHibernate.Mapping
 			get { return Name; }
 		}
 
-		public string GetText( Dialect.Dialect dialect )
+		public string GetText(Dialect.Dialect dialect)
 		{
-			return GetQuotedName( dialect );
+			return GetQuotedName(dialect);
 		}
 
 		public bool IsFormula
@@ -389,12 +389,12 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
-		public string GetTemplate( Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry )
+		public string GetTemplate(Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
 		{
-			return GetQuotedName( dialect );
+			return GetQuotedName(dialect);
 		}
 
-		public override string ToString() 
+		public override string ToString()
 		{
 			return GetType().FullName + "( " + name + " )";
 		}

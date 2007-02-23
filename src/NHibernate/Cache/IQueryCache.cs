@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using Iesi.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Type;
 

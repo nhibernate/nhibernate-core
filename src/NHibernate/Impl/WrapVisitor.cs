@@ -12,7 +12,7 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal class WrapVisitor : ProxyVisitor
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( WrapVisitor ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(WrapVisitor));
 
 		// set to false by default by the framework
 		private bool _substitute;
@@ -22,55 +22,55 @@ namespace NHibernate.Impl
 			get { return _substitute; }
 		}
 
-		public WrapVisitor(SessionImpl session) : base( session )
+		public WrapVisitor(SessionImpl session) : base(session)
 		{
 		}
 
 		protected override object ProcessCollection(object collection, CollectionType collectionType)
 		{
-			if( collection != null && (collection is IPersistentCollection) )
+			if (collection != null && (collection is IPersistentCollection))
 			{
 				IPersistentCollection coll = collection as IPersistentCollection;
-				if( coll.SetCurrentSession( Session ) )
+				if (coll.SetCurrentSession(Session))
 				{
-					Session.ReattachCollection( coll, coll.CollectionSnapshot );
+					Session.ReattachCollection(coll, coll.CollectionSnapshot);
 				}
 				return null;
 			}
 			else
 			{
-				return ProcessArrayOrNewCollection( collection, collectionType );
+				return ProcessArrayOrNewCollection(collection, collectionType);
 			}
 		}
 
 		private object ProcessArrayOrNewCollection(object collection, CollectionType collectionType)
 		{
-			if( collection == null )
+			if (collection == null)
 			{
 				return null;
 			}
 
-			ICollectionPersister persister = Session.GetCollectionPersister( collectionType.Role );
+			ICollectionPersister persister = Session.GetCollectionPersister(collectionType.Role);
 
-			if( collectionType.IsArrayType )
+			if (collectionType.IsArrayType)
 			{
-				PersistentArrayHolder ah = Session.GetArrayHolder( collection );
-				if( ah == null )
+				PersistentArrayHolder ah = Session.GetArrayHolder(collection);
+				if (ah == null)
 				{
-					ah = new PersistentArrayHolder( Session, collection );
-					Session.AddNewCollection( ah, persister );
-					Session.AddArrayHolder( ah );
+					ah = new PersistentArrayHolder(Session, collection);
+					Session.AddNewCollection(ah, persister);
+					Session.AddArrayHolder(ah);
 				}
 				return null;
 			}
 			else
 			{
-				IPersistentCollection persistentCollection = collectionType.Wrap( Session, collection );
-				Session.AddNewCollection( persistentCollection, persister );
+				IPersistentCollection persistentCollection = collectionType.Wrap(Session, collection);
+				Session.AddNewCollection(persistentCollection, persister);
 
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( "Wrapped collection in role: " + collectionType.Role );
+					log.Debug("Wrapped collection in role: " + collectionType.Role);
 				}
 
 				return persistentCollection; //Force a substitution!
@@ -79,40 +79,40 @@ namespace NHibernate.Impl
 
 		public override void ProcessValues(object[] values, IType[] types)
 		{
-			for( int i = 0; i < types.Length; i++ )
+			for (int i = 0; i < types.Length; i++)
 			{
-				object result = ProcessValue( values[ i ], types[ i ] );
-				if( result != null )
+				object result = ProcessValue(values[i], types[i]);
+				if (result != null)
 				{
 					_substitute = true;
-					values[ i ] = result;
+					values[i] = result;
 				}
 			}
 		}
 
 		protected override object ProcessComponent(object component, IAbstractComponentType componentType)
 		{
-			if( component == null )
+			if (component == null)
 			{
 				return null;
 			}
 
-			object[] values = componentType.GetPropertyValues( component, Session );
+			object[] values = componentType.GetPropertyValues(component, Session);
 			IType[] types = componentType.Subtypes;
 			bool substituteComponent = false;
-			for( int i = 0; i < types.Length; i++ )
+			for (int i = 0; i < types.Length; i++)
 			{
-				object result = ProcessValue( values[ i ], types[ i ] );
-				if( result != null )
+				object result = ProcessValue(values[i], types[i]);
+				if (result != null)
 				{
 					substituteComponent = true;
-					values[ i ] = result;
+					values[i] = result;
 				}
 			}
 
-			if( substituteComponent )
+			if (substituteComponent)
 			{
-				componentType.SetPropertyValues( component, values );
+				componentType.SetPropertyValues(component, values);
 			}
 
 			return null;
@@ -120,14 +120,13 @@ namespace NHibernate.Impl
 
 		public override void Process(object obj, IEntityPersister persister)
 		{
-			object[] values = persister.GetPropertyValues( obj );
+			object[] values = persister.GetPropertyValues(obj);
 			IType[] types = persister.PropertyTypes;
-			ProcessValues( values, types );
-			if( IsSubstitutionRequired )
+			ProcessValues(values, types);
+			if (IsSubstitutionRequired)
 			{
-				persister.SetPropertyValues( obj, values );
+				persister.SetPropertyValues(obj, values);
 			}
 		}
-
 	}
 }

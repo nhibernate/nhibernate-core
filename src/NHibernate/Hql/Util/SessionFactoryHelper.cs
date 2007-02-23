@@ -12,12 +12,12 @@ namespace NHibernate.Hql.Util
 		public static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className)
 		{
 			string importedClassName = sfi.GetImportedClassName(className);
-			
+
 			if (importedClassName == null)
 			{
 				return null;
 			}
-			
+
 			return (IQueryable) sfi.GetEntityPersister(importedClassName, false);
 		}
 

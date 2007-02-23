@@ -15,8 +15,10 @@ namespace NHibernate.Impl
 	{
 		private readonly ISessionImplementor session;
 		private readonly object id;
+
 		[NonSerialized]
 		private IEntityPersister persister;
+
 		private readonly object instance;
 
 		/// <summary>
@@ -26,7 +28,7 @@ namespace NHibernate.Impl
 		/// <param name="id">The identifier of the object.</param>
 		/// <param name="instance">The actual object instance.</param>
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for the persisting the object.</param>
-		protected ScheduledEntityAction( ISessionImplementor session, object id, object instance, IEntityPersister persister )
+		protected ScheduledEntityAction(ISessionImplementor session, object id, object instance, IEntityPersister persister)
 		{
 			this.session = session;
 			this.id = id;
@@ -73,9 +75,9 @@ namespace NHibernate.Impl
 		/// 
 		/// </summary>
 		/// <remarks>Not supported for a non-collection entity</remarks>
-		public void BeforeExecutions( )
+		public void BeforeExecutions()
 		{
-			throw new NotSupportedException( "BeforeExecutions() called for non-collection method" );
+			throw new NotSupportedException("BeforeExecutions() called for non-collection method");
 		}
 
 		/// <summary>
@@ -90,7 +92,7 @@ namespace NHibernate.Impl
 		/// Called when the Transaction this action occurred in has completed.
 		/// </summary>
 		/// <param name="success"></param>
-		public abstract void AfterTransactionCompletion( bool success );
+		public abstract void AfterTransactionCompletion(bool success);
 
 		/// <summary>
 		/// Execute the action using the <see cref="IEntityPersister"/>.
@@ -98,7 +100,7 @@ namespace NHibernate.Impl
 		public abstract void Execute();
 
 		/// <summary></summary>
-		public object[ ] PropertySpaces
+		public object[] PropertySpaces
 		{
 			get { return persister.PropertySpaces; }
 		}

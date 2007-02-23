@@ -1,7 +1,6 @@
 using System;
-
-using NHibernate.Type;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
@@ -27,20 +26,20 @@ namespace NHibernate.Expression
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] { criteriaQuery.GetType(criteria, propertyName) };
+			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
 		}
 
-        public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
-        {
-            return new SqlString(new object[] 
-            {
-				aggregate,
-				"(",
-				criteriaQuery.GetColumn(criteria, propertyName),
-				") as y",
-				loc.ToString(),
-				"_"
-            });
-        }
+		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
+		{
+			return new SqlString(new object[]
+			                     	{
+			                     		aggregate,
+			                     		"(",
+			                     		criteriaQuery.GetColumn(criteria, propertyName),
+			                     		") as y",
+			                     		loc.ToString(),
+			                     		"_"
+			                     	});
+		}
 	}
 }

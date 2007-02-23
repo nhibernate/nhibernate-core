@@ -1,9 +1,6 @@
 using System;
 using System.Data;
-using System.Text;
-
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 
 namespace NHibernate.Dialect
 {
@@ -14,9 +11,9 @@ namespace NHibernate.Dialect
 	{
 		public MsSql2005Dialect()
 		{
-			RegisterColumnType( DbType.String, 1073741823, "NVARCHAR(MAX)" );
-			RegisterColumnType( DbType.AnsiString, 2147483647, "VARCHAR(MAX)" );
-			RegisterColumnType( DbType.Binary, 2147483647, "VARBINARY(MAX)" );
+			RegisterColumnType(DbType.String, 1073741823, "NVARCHAR(MAX)");
+			RegisterColumnType(DbType.AnsiString, 2147483647, "VARCHAR(MAX)");
+			RegisterColumnType(DbType.Binary, 2147483647, "VARBINARY(MAX)");
 		}
 
 		/// <summary>
@@ -37,7 +34,7 @@ namespace NHibernate.Dialect
 		///    ORDER BY __hibernate_row_nr__
 		/// </code>
 		/// </remarks>
-		public override SqlString GetLimitString( SqlString querySqlString, int offset, int last )
+		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
 		{
 			string distinctStr;
 

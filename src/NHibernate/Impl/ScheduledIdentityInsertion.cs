@@ -21,7 +21,8 @@ namespace NHibernate.Impl
 		/// <param name="instance"></param>
 		/// <param name="persister"></param>
 		/// <param name="session"></param>
-		public ScheduledIdentityInsertion( object[] state, object instance, IEntityPersister persister, ISessionImplementor session ) : base( session, null, instance, persister )
+		public ScheduledIdentityInsertion(object[] state, object instance, IEntityPersister persister,
+		                                  ISessionImplementor session) : base(session, null, instance, persister)
 		{
 			this.state = state;
 		}
@@ -35,7 +36,7 @@ namespace NHibernate.Impl
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail.
 
-			generatedId = persister.Insert( state, obj, session );
+			generatedId = persister.Insert(state, obj, session);
 
 			// TODO: This bit has to be called after all the cascades
 			/*
@@ -51,7 +52,7 @@ namespace NHibernate.Impl
 		/// 
 		/// </summary>
 		/// <param name="sucess"></param>
-		public override void AfterTransactionCompletion( bool sucess )
+		public override void AfterTransactionCompletion(bool sucess)
 		{
 			// TODO: renable
 			/*

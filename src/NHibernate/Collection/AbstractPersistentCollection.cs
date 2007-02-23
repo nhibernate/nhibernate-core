@@ -16,7 +16,7 @@ namespace NHibernate.Collection
 	[Serializable]
 	public abstract class AbstractPersistentCollection : IPersistentCollection //, ICollection
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( AbstractPersistentCollection ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractPersistentCollection));
 
 		[NonSerialized]
 		private ISessionImplementor session;
@@ -41,7 +41,7 @@ namespace NHibernate.Collection
 		private bool dirty;
 
 		//careful: these methods do not initialize the collection
-		
+
 		/// <summary>
 		/// Is the initialized collection empty?
 		/// </summary>
@@ -52,7 +52,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		public void Read()
 		{
-			Initialize( false );
+			Initialize(false);
 		}
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		protected void Write()
 		{
-			Initialize( true );
+			Initialize(true);
 			Dirty();
 		}
 
@@ -77,11 +77,11 @@ namespace NHibernate.Collection
 		/// </summary>
 		private bool IsQueueAdditionEnabled
 		{
-			get 
+			get
 			{
 				return !initialized &&
-					IsConnectedToSession &&
-					session.IsInverseCollection( this );
+				       IsConnectedToSession &&
+				       session.IsInverseCollection(this);
 			}
 		}
 
@@ -92,15 +92,15 @@ namespace NHibernate.Collection
 		/// <c>true</c> if the addition was queued up, <c>false</c> if the persistent collection
 		/// doesn't support Queued Addition.
 		/// </returns>
-		protected bool QueueAdd( object element )
+		protected bool QueueAdd(object element)
 		{
-			if( IsQueueAdditionEnabled )
+			if (IsQueueAdditionEnabled)
 			{
-				if( additions == null )
+				if (additions == null)
 				{
-					additions = new ArrayList( 10 );
+					additions = new ArrayList(10);
 				}
-				additions.Add( element );
+				additions.Add(element);
 				Dirty(); //needed so that we remove this collection from the second-level cache
 				return true;
 			}
@@ -113,15 +113,15 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Queue additions
 		/// </summary>
-		protected bool QueueAddAll( ICollection coll )
+		protected bool QueueAddAll(ICollection coll)
 		{
-			if( IsQueueAdditionEnabled )
+			if (IsQueueAdditionEnabled)
 			{
-				if( additions == null )
+				if (additions == null)
 				{
-					additions = new ArrayList( 20 );
+					additions = new ArrayList(20);
 				}
-				additions.AddRange( coll );
+				additions.AddRange(coll);
 				return true;
 			}
 			else
@@ -142,9 +142,9 @@ namespace NHibernate.Collection
 		/// because most collections do not support delayed addition.  If the collection
 		/// does then override this method.
 		/// </remarks>
-		public virtual void DelayedAddAll( ICollection coll, ICollectionPersister persister )
+		public virtual void DelayedAddAll(ICollection coll, ICollectionPersister persister)
 		{
-			throw new AssertionFailure( "Collection does not support delayed initialization." );
+			throw new AssertionFailure("Collection does not support delayed initialization.");
 		}
 
 		/// <summary>
@@ -172,7 +172,7 @@ namespace NHibernate.Collection
 		/// Not called by Hibernate, but used by non-NET serialization, eg. SOAP libraries.
 		/// </summary>
 		/// <param name="session"></param>
-		protected AbstractPersistentCollection( ISessionImplementor session )
+		protected AbstractPersistentCollection(ISessionImplementor session)
 		{
 			this.session = session;
 		}
@@ -217,13 +217,13 @@ namespace NHibernate.Collection
 		{
 			SetInitialized();
 			//do this bit after setting initialized to true or it will recurse
-			if ( additions != null ) 
+			if (additions != null)
 			{
-				DelayedAddAll( additions, persister );
+				DelayedAddAll(additions, persister);
 				additions = null;
 				return false;
 			}
-			else 
+			else
 			{
 				return true;
 			}
@@ -235,33 +235,33 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="writing">currently obsolete</param>
 		/// <exception cref="LazyInitializationException">if we cannot initialize</exception>
-		protected void Initialize( bool writing )
+		protected void Initialize(bool writing)
 		{
-			if( !initialized )
+			if (!initialized)
 			{
-				if( initializing ) throw new LazyInitializationException("cannot access loading collection");
-				if( IsConnectedToSession )
+				if (initializing) throw new LazyInitializationException("cannot access loading collection");
+				if (IsConnectedToSession)
 				{
-					if( session.IsConnected )
+					if (session.IsConnected)
 					{
 						try
 						{
-							session.InitializeCollection( this, writing );
+							session.InitializeCollection(this, writing);
 						}
-						catch( Exception e )
+						catch (Exception e)
 						{
-							log.Error( "Failed to lazily initialize a collection", e );
-							throw new LazyInitializationException( "Failed to lazily initialize a collection", e );
+							log.Error("Failed to lazily initialize a collection", e);
+							throw new LazyInitializationException("Failed to lazily initialize a collection", e);
 						}
 					}
 					else
 					{
-						throw new LazyInitializationException( "Failed to lazily initialize a collection - session is disconnected" );
+						throw new LazyInitializationException("Failed to lazily initialize a collection - session is disconnected");
 					}
 				}
 				else
 				{
-					throw new LazyInitializationException( "Failed to lazily initialize a collection - no session" );
+					throw new LazyInitializationException("Failed to lazily initialize a collection - no session");
 				}
 			}
 		}
@@ -300,9 +300,9 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <returns>true if this was currently associated with the given session</returns>
-		public bool UnsetSession( ISessionImplementor session )
+		public bool UnsetSession(ISessionImplementor session)
 		{
-			if( session == this.session )
+			if (session == this.session)
 			{
 				this.session = null;
 				return true;
@@ -318,10 +318,10 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <returns>false if the collection was already associated with the session</returns>
-		public bool SetCurrentSession( ISessionImplementor session )
+		public bool SetCurrentSession(ISessionImplementor session)
 		{
-			if( session == this.session
-				// NH: added to fix NH-704
+			if (session == this.session
+			    // NH: added to fix NH-704
 			    && session.GetCollectionEntry(this) != null
 				)
 			{
@@ -329,9 +329,9 @@ namespace NHibernate.Collection
 			}
 			else
 			{
-				if( IsConnectedToSession )
+				if (IsConnectedToSession)
 				{
-					throw new HibernateException( "Illegal attempt to associate a collection with two open sessions" );
+					throw new HibernateException("Illegal attempt to associate a collection with two open sessions");
 				}
 				else
 				{
@@ -347,7 +347,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
-		public abstract void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner );
+		public abstract void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner);
 
 		/// <summary>
 		/// Iterate all collection entries, during update of the database
@@ -355,15 +355,16 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public abstract IEnumerable Entries();
 
-        /// <summary>
-        /// Reads the row from the <see cref="IDataReader"/>.
-        /// </summary>
-        /// <param name="reader">The IDataReader that contains the value of the Identifier</param>
-        /// <param name="role">The persister for this Collection.</param>
+		/// <summary>
+		/// Reads the row from the <see cref="IDataReader"/>.
+		/// </summary>
+		/// <param name="reader">The IDataReader that contains the value of the Identifier</param>
+		/// <param name="role">The persister for this Collection.</param>
 		/// <param name="descriptor">The descriptor providing result set column names</param>
 		/// <param name="owner">The owner of this Collection.</param>
-        /// <returns>The object that was contained in the row.</returns>
-        public abstract object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
+		/// <returns>The object that was contained in the row.</returns>
+		public abstract object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
+		                                object owner);
 
 		/// <summary>
 		/// Get the index of the given collection entry
@@ -371,39 +372,39 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public abstract object GetIndex( object entry, int i );
+		public abstract object GetIndex(object entry, int i);
 
-		public abstract object GetElement( object entry );
-		
-		public abstract object GetSnapshotElement( object entry, int i );
+		public abstract object GetElement(object entry);
+
+		public abstract object GetSnapshotElement(object entry, int i);
 
 		/// <summary>
 		/// Called before any elements are read into the collection,
 		/// allowing appropriate initializations to occur.
 		/// </summary>
 		/// <param name="persister"></param>
-		public abstract void BeforeInitialize( ICollectionPersister persister );
+		public abstract void BeforeInitialize(ICollectionPersister persister);
 
 		/// <summary>
 		/// Does the current state exactly match the snapshot?
 		/// </summary>
 		/// <param name="elementType"></param>
 		/// <returns></returns>
-		public abstract bool EqualsSnapshot( IType elementType );
+		public abstract bool EqualsSnapshot(IType elementType);
 
 		/// <summary>
 		/// Return a new snapshot of the current state
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns></returns>
-		protected abstract ICollection Snapshot( ICollectionPersister persister );
+		protected abstract ICollection Snapshot(ICollectionPersister persister);
 
 		/// <summary>
 		/// Disassemble the collection, ready for the cache
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public abstract object Disassemble( ICollectionPersister persister );
+		public abstract object Disassemble(ICollectionPersister persister);
 
 		/// <summary>
 		/// Gets a <see cref="Boolean"/> indicating if the rows for this collection
@@ -415,7 +416,7 @@ namespace NHibernate.Collection
 		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
-		public virtual bool NeedsRecreate( ICollectionPersister persister )
+		public virtual bool NeedsRecreate(ICollectionPersister persister)
 		{
 			return false;
 		}
@@ -425,9 +426,9 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public ICollection GetSnapshot( ICollectionPersister persister )
+		public ICollection GetSnapshot(ICollectionPersister persister)
 		{
-			return ( persister == null ) ? null : Snapshot( persister );
+			return (persister == null) ? null : Snapshot(persister);
 		}
 
 		/// <summary>
@@ -441,10 +442,10 @@ namespace NHibernate.Collection
 		{
 			if (!initialized)
 			{
-				if( initializing ) throw new AssertionFailure("force initialize loading collection");
-				if( session == null ) throw new HibernateException("collection is not associated with any session");
-				if( !session.IsConnected ) throw new HibernateException("disconnected session");
-				session.InitializeCollection( this, false );
+				if (initializing) throw new AssertionFailure("force initialize loading collection");
+				if (session == null) throw new HibernateException("collection is not associated with any session");
+				if (!session.IsConnected) throw new HibernateException("disconnected session");
+				session.InitializeCollection(this, false);
 			}
 		}
 
@@ -454,8 +455,8 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public abstract bool EntryExists( object entry, int i );
-		
+		public abstract bool EntryExists(object entry, int i);
+
 		/// <summary>
 		/// Do we need to insert this element?
 		/// </summary>
@@ -463,7 +464,7 @@ namespace NHibernate.Collection
 		/// <param name="i"></param>
 		/// <param name="elemType"></param>
 		/// <returns></returns>
-		public abstract bool NeedsInserting( object entry, int i, IType elemType );
+		public abstract bool NeedsInserting(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Do we need to update this element?
@@ -472,27 +473,27 @@ namespace NHibernate.Collection
 		/// <param name="i"></param>
 		/// <param name="elemType"></param>
 		/// <returns></returns>
-		public abstract bool NeedsUpdating( object entry, int i, IType elemType );
+		public abstract bool NeedsUpdating(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		public abstract ICollection GetDeletes( IType elemType, bool indexIsFormula );
+		public abstract ICollection GetDeletes(IType elemType, bool indexIsFormula);
 
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		public abstract bool IsWrapper( object collection );
-		
+		public abstract bool IsWrapper(object collection);
+
 		/// <summary>
 		/// Gets the Snapshot from the current session the collection 
 		/// is in.
 		/// </summary>
 		protected object GetSnapshot()
 		{
-			return session.GetSnapshot( this );
+			return session.GetSnapshot(this);
 		}
 
 		/// <summary></summary>
@@ -510,11 +511,11 @@ namespace NHibernate.Collection
 		/// <summary></summary>
 		public ICollection QueuedAddsCollection
 		{
-			get 
-			{ 
-				if ( HasQueuedAdds )
-				{	
-					return additions; 
+			get
+			{
+				if (HasQueuedAdds)
+				{
+					return additions;
 				}
 				else
 				{
@@ -534,7 +535,7 @@ namespace NHibernate.Collection
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
-		public virtual void PreInsert( ICollectionPersister persister )
+		public virtual void PreInsert(ICollectionPersister persister)
 		{
 		}
 
@@ -544,33 +545,35 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
-		public virtual void AfterRowInsert( ICollectionPersister persister, object entry, int i )
+		public virtual void AfterRowInsert(ICollectionPersister persister, object entry, int i)
 		{
 		}
 
 		/// <summary>
 		/// Get all "orphaned" elements
 		/// </summary>
-		public abstract ICollection GetOrphans( object snapshot, System.Type entityName );
+		public abstract ICollection GetOrphans(object snapshot, System.Type entityName);
 
-		public static void IdentityRemoveAll( IList list, ICollection collection, System.Type entityName, ISessionImplementor session )
+		public static void IdentityRemoveAll(IList list, ICollection collection, System.Type entityName,
+		                                     ISessionImplementor session)
 		{
 			IEnumerator enumer = collection.GetEnumerator();
-			while( enumer.MoveNext() )
+			while (enumer.MoveNext())
 			{
-				IdentityRemove( list, enumer.Current, entityName, session );
+				IdentityRemove(list, enumer.Current, entityName, session);
 			}
 		}
 
-		protected static ICollection GetOrphans( ICollection oldElements, ICollection currentElements, ISessionImplementor session )
+		protected static ICollection GetOrphans(ICollection oldElements, ICollection currentElements,
+		                                        ISessionImplementor session)
 		{
 			// short-circuit(s)
-			if ( currentElements.Count == 0 )
+			if (currentElements.Count == 0)
 			{
 				// no new elements, the old list contains only Orphans
 				return oldElements;
 			}
-			if ( oldElements.Count == 0 )
+			if (oldElements.Count == 0)
 			{
 				// no old elements, so no Orphans neither
 				return oldElements;
@@ -581,45 +584,45 @@ namespace NHibernate.Collection
 
 			// collect EntityIdentifier(s) of the *current* elements - add them into a HashSet for fast access
 			ISet currentIds = new HashedSet();
-			foreach ( object current in currentElements )
+			foreach (object current in currentElements)
 			{
-				if ( session.IsSaved( current ) )
+				if (session.IsSaved(current))
 				{
-					currentIds.Add( session.GetEntityIdentifierIfNotUnsaved( current ) );
+					currentIds.Add(session.GetEntityIdentifierIfNotUnsaved(current));
 				}
 			}
 
 			// iterate over the *old* list
-			foreach ( object old in oldElements )
+			foreach (object old in oldElements)
 			{
-				object id = session.GetEntityIdentifierIfNotUnsaved( old );
-				if ( !currentIds.Contains( id ) )
+				object id = session.GetEntityIdentifierIfNotUnsaved(old);
+				if (!currentIds.Contains(id))
 				{
-					res.Add( old );
+					res.Add(old);
 				}
 			}
 
 			return res;
 		}
 
-		public virtual object GetIdentifier( object entry, int i )
+		public virtual object GetIdentifier(object entry, int i)
 		{
 			throw new NotSupportedException();
 		}
 
-		public static void IdentityRemove( IList list, object obj, System.Type entityName, ISessionImplementor session )
+		public static void IdentityRemove(IList list, object obj, System.Type entityName, ISessionImplementor session)
 		{
 			int indexOfEntityToRemove = -1;
-			
-			IType idType = session.Factory.GetEntityPersister( entityName ).IdentifierType;
 
-			if( session.IsSaved( obj ) )
+			IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
+
+			if (session.IsSaved(obj))
 			{
-				object idOfCurrent = session.GetEntityIdentifierIfNotUnsaved( obj );
-				for( int i = 0; i < list.Count; i++ )
+				object idOfCurrent = session.GetEntityIdentifierIfNotUnsaved(obj);
+				for (int i = 0; i < list.Count; i++)
 				{
-					object idOfOld = session.GetEntityIdentifierIfNotUnsaved( list[ i ] );
-					if( idType.Equals( idOfOld, idOfCurrent ) )
+					object idOfOld = session.GetEntityIdentifierIfNotUnsaved(list[i]);
+					if (idType.Equals(idOfOld, idOfCurrent))
 					{
 						// in hibernate this used the Iterator to remove the item - since in .NET
 						// the Enumerator is read only we have to change the implementation slightly. 
@@ -628,9 +631,9 @@ namespace NHibernate.Collection
 					}
 				}
 
-				if( indexOfEntityToRemove != -1 )
+				if (indexOfEntityToRemove != -1)
 				{
-					list.RemoveAt( indexOfEntityToRemove );
+					list.RemoveAt(indexOfEntityToRemove);
 				}
 			}
 		}
@@ -641,7 +644,7 @@ namespace NHibernate.Collection
 			get { return session; }
 		}
 
-		public virtual bool IsSnapshotEmpty( ICollection snapshot )
+		public virtual bool IsSnapshotEmpty(ICollection snapshot)
 		{
 			return snapshot.Count == 0;
 		}
@@ -687,8 +690,5 @@ namespace NHibernate.Collection
 		 */
 
 		#endregion
-
 	}
-
-
 }

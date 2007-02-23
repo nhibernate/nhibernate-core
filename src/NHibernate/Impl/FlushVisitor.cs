@@ -8,33 +8,33 @@ namespace NHibernate.Impl
 	internal class FlushVisitor : AbstractVisitor
 	{
 		private object _owner;
-		private static readonly ILog log = LogManager.GetLogger( typeof( AbstractVisitor ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractVisitor));
 
 		public FlushVisitor(SessionImpl session, object owner)
-			: base( session )
+			: base(session)
 		{
 			_owner = owner;
 		}
 
 		protected override object ProcessCollection(object collection, CollectionType type)
 		{
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( string.Format( "Processing collection for role {0}", type.Role ) );
+				log.Debug(string.Format("Processing collection for role {0}", type.Role));
 			}
 
-			if( collection != null )
+			if (collection != null)
 			{
 				IPersistentCollection coll;
-				if( type.IsArrayType )
+				if (type.IsArrayType)
 				{
-					coll = Session.GetArrayHolder( collection );
+					coll = Session.GetArrayHolder(collection);
 				}
 				else
 				{
-					coll = (IPersistentCollection)collection;
+					coll = (IPersistentCollection) collection;
 				}
-				Session.UpdateReachableCollection( coll, type, _owner );
+				Session.UpdateReachableCollection(coll, type, _owner);
 			}
 			return null;
 		}

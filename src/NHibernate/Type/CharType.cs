@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class CharType : BaseCharType
 	{
-		internal CharType() : base( new StringFixedLengthSqlType( 1 ) )
+		internal CharType() : base(new StringFixedLengthSqlType(1))
 		{
 		}
 

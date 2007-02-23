@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	public class TimeSpanType : ValueTypeType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
-		internal TimeSpanType() : base( SqlTypeFactory.Int64 )
+		internal TimeSpanType() : base(SqlTypeFactory.Int64)
 		{
 		}
 
@@ -23,9 +23,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new TimeSpan( Convert.ToInt64( rs[ index ] ) );
+			return new TimeSpan(Convert.ToInt64(rs[index]));
 		}
 
 		/// <summary>
@@ -34,15 +34,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( TimeSpan ); }
+			get { return typeof(TimeSpan); }
 		}
 
 		/// <summary>
@@ -51,10 +51,10 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
-			parm.Value = ( ( TimeSpan ) value ).Ticks;
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			parm.Value = ((TimeSpan) value).Ticks;
 		}
 
 		/// <summary></summary>
@@ -63,12 +63,12 @@ namespace NHibernate.Type
 			get { return "TimeSpan"; }
 		}
 
-		public override string ToString( object val )
+		public override string ToString(object val)
 		{
-			return ( ( TimeSpan ) val ).Ticks.ToString();
+			return ((TimeSpan) val).Ticks.ToString();
 		}
 
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
 			return object.Equals(x, y);
 		}
@@ -94,7 +94,7 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return new TimeSpan( DateTime.Now.Ticks );
+			return new TimeSpan(DateTime.Now.Ticks);
 		}
 
 		/// <summary>
@@ -102,9 +102,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
-			return TimeSpan.Parse( xml );
+			return TimeSpan.Parse(xml);
 		}
 
 		public IComparer Comparator
@@ -119,9 +119,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
-			return "'" + ( ( TimeSpan ) value ).Ticks.ToString() + "'";
+			return "'" + ((TimeSpan) value).Ticks.ToString() + "'";
 		}
 
 		/// <summary>
@@ -129,9 +129,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return TimeSpan.Parse( xml );
+			return TimeSpan.Parse(xml);
 		}
 	}
 }

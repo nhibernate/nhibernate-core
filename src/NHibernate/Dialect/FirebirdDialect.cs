@@ -1,8 +1,7 @@
 using System.Data;
-
 using NHibernate.Cfg;
-using NHibernate.SqlCommand;
 using NHibernate.Dialect.Function;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {

@@ -3,10 +3,10 @@ using System.Collections;
 using System.Data;
 using System.IO;
 using System.Text;
+using log4net;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Util;
-using log4net;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -101,7 +101,8 @@ namespace NHibernate.Tool.hbm2ddl
 			Execute(script, export, true, true);
 		}
 
-		private void Execute(bool script, bool export, bool format, bool throwOnError, TextWriter exportOutput, IDbCommand statement, string sql)
+		private void Execute(bool script, bool export, bool format, bool throwOnError, TextWriter exportOutput,
+		                     IDbCommand statement, string sql)
 		{
 			try
 			{
@@ -164,7 +165,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// It does NOT close the given connection!
 		/// </remarks>
 		public void Execute(bool script, bool export, bool justDrop, bool format,
-			IDbConnection connection, TextWriter exportOutput)
+		                    IDbConnection connection, TextWriter exportOutput)
 		{
 			IDbCommand statement = null;
 
@@ -282,7 +283,6 @@ namespace NHibernate.Tool.hbm2ddl
 					connectionProvider.Dispose();
 				}
 			}
-
 		}
 
 		/// <summary>

@@ -1,5 +1,4 @@
 using NHibernate.Cfg;
-using NHibernate.Dialect;
 
 namespace NHibernate.Dialect
 {
@@ -56,8 +55,8 @@ namespace NHibernate.Dialect
 			Types.CLOB, "TEXT" );
 			*/
 
-			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.ASAClientDriver";
-			DefaultProperties[ Environment.PrepareSql ] = "false";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.ASAClientDriver";
+			DefaultProperties[Environment.PrepareSql] = "false";
 		}
 
 		public override string AddColumnString
@@ -86,7 +85,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string GetIdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString(string identityColumn, string tableName)
 		{
 			return "select @@identity";
 		}

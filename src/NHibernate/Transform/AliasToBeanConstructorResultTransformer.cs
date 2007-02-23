@@ -23,9 +23,9 @@ namespace NHibernate.Transform
 			catch (Exception e)
 			{
 				throw new QueryException(
-						"could not instantiate: " +
-						constructor.DeclaringType.FullName,
-						e);
+					"could not instantiate: " +
+					constructor.DeclaringType.FullName,
+					e);
 			}
 		}
 

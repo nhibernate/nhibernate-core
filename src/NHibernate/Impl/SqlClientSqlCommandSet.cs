@@ -21,7 +21,7 @@ namespace NHibernate.Impl
 		private PropSetter<SqlConnection> connectionSetter;
 		private PropSetter<SqlTransaction> transactionSetter;
 		private PropGetter<SqlConnection> connectionGetter;
-		private PropGetter<System.Data.SqlClient.SqlCommand> commandGetter;
+		private SqlClientSqlCommandSet.PropGetter<System.Data.SqlClient.SqlCommand> commandGetter;
 		private AppendCommand doAppend;
 		private ExecuteNonQueryCommand doExecuteNonQuery;
 		private DisposeCommand doDispose;
@@ -47,13 +47,14 @@ namespace NHibernate.Impl
 			                   Delegate.CreateDelegate(typeof(PropGetter<SqlConnection>),
 			                                           instance, "get_Connection");
 			commandGetter =
-				(PropGetter<System.Data.SqlClient.SqlCommand>)Delegate.CreateDelegate(typeof(PropGetter<System.Data.SqlClient.SqlCommand>), instance, "get_BatchCommand");
-			doAppend = (AppendCommand)Delegate.CreateDelegate(typeof(AppendCommand), instance, "Append");
+				(SqlClientSqlCommandSet.PropGetter<System.Data.SqlClient.SqlCommand>)
+				Delegate.CreateDelegate(typeof(SqlClientSqlCommandSet.PropGetter<System.Data.SqlClient.SqlCommand>), instance,
+				                        "get_BatchCommand");
+			doAppend = (AppendCommand) Delegate.CreateDelegate(typeof(AppendCommand), instance, "Append");
 			doExecuteNonQuery = (ExecuteNonQueryCommand)
 			                    Delegate.CreateDelegate(typeof(ExecuteNonQueryCommand),
 			                                            instance, "ExecuteNonQuery");
-			doDispose = (DisposeCommand)Delegate.CreateDelegate(typeof(DisposeCommand), instance, "Dispose");
-
+			doDispose = (DisposeCommand) Delegate.CreateDelegate(typeof(DisposeCommand), instance, "Dispose");
 		}
 
 		/// <summary>
@@ -86,10 +87,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public System.Data.SqlClient.SqlCommand BatchCommand
 		{
-			get
-			{
-				return commandGetter();
-			}
+			get { return commandGetter(); }
 		}
 
 		/// <summary>
@@ -144,11 +142,17 @@ namespace NHibernate.Impl
 		}
 
 		#region Delegate Definations
+
 		private delegate void PropSetter<T>(T item);
+
 		private delegate T PropGetter<T>();
+
 		private delegate void AppendCommand(System.Data.SqlClient.SqlCommand command);
+
 		private delegate int ExecuteNonQueryCommand();
+
 		private delegate void DisposeCommand();
+
 		#endregion
 	}
 }

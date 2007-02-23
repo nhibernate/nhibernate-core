@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using NHibernate.Engine.Query;
 using NHibernate.Loader.Custom;
 
 namespace NHibernate.Engine
@@ -27,17 +26,17 @@ namespace NHibernate.Engine
 			IDictionary parameterTypes,
 			bool callable)
 			: base(
-					query.Trim(), /* trim done to workaround stupid oracle bug that cant handle whitespaces before a { in a sp */
-					cacheable,
-					cacheRegion,
-					timeout,
-					fetchSize,
-					flushMode,
-			//cacheMode,
-					readOnly,
-					comment,
-					parameterTypes
-			)
+				query.Trim(), /* trim done to workaround stupid oracle bug that cant handle whitespaces before a { in a sp */
+				cacheable,
+				cacheRegion,
+				timeout,
+				fetchSize,
+				flushMode,
+				//cacheMode,
+				readOnly,
+				comment,
+				parameterTypes
+				)
 		{
 			this.queryReturns = queryReturns;
 			this.querySpaces = querySpaces;
@@ -45,31 +44,31 @@ namespace NHibernate.Engine
 		}
 
 		public NamedSQLQueryDefinition(
-				string query,
-				string resultSetRef,
-				IList querySpaces,
-				bool cacheable,
-				string cacheRegion,
-				int timeout,
-				int fetchSize,
-				FlushMode flushMode,
+			string query,
+			string resultSetRef,
+			IList querySpaces,
+			bool cacheable,
+			string cacheRegion,
+			int timeout,
+			int fetchSize,
+			FlushMode flushMode,
 			//CacheMode cacheMode,
-				bool readOnly,
-				string comment,
-				IDictionary parameterTypes,
-				bool callable)
+			bool readOnly,
+			string comment,
+			IDictionary parameterTypes,
+			bool callable)
 			: base(
-					query.Trim(), /* trim done to workaround stupid oracle bug that cant handle whitespaces before a { in a sp */
-					cacheable,
-					cacheRegion,
-					timeout,
-					fetchSize,
-					flushMode,
-			//cacheMode,
-					readOnly,
-					comment,
-					parameterTypes
-			)
+				query.Trim(), /* trim done to workaround stupid oracle bug that cant handle whitespaces before a { in a sp */
+				cacheable,
+				cacheRegion,
+				timeout,
+				fetchSize,
+				flushMode,
+				//cacheMode,
+				readOnly,
+				comment,
+				parameterTypes
+				)
 		{
 			this.resultSetRef = resultSetRef;
 			this.querySpaces = querySpaces;

@@ -11,16 +11,16 @@ namespace NHibernate.Type
 	[Serializable]
 	public class OneToOneType : EntityType, IAssociationType
 	{
-		private static readonly SqlType[ ] NoSqlTypes = new SqlType[0];
+		private static readonly SqlType[] NoSqlTypes = new SqlType[0];
 
 		private readonly ForeignKeyDirection foreignKeyDirection;
 
-		public override int GetColumnSpan( IMapping session )
+		public override int GetColumnSpan(IMapping session)
 		{
 			return 0;
 		}
 
-		public override SqlType[ ] SqlTypes( IMapping session )
+		public override SqlType[] SqlTypes(IMapping session)
 		{
 			return NoSqlTypes;
 		}
@@ -29,21 +29,21 @@ namespace NHibernate.Type
 			System.Type persistentClass,
 			ForeignKeyDirection foreignKeyDirection,
 			string uniqueKeyPropertyName,
-			bool lazy )
+			bool lazy)
 			: base(
 				persistentClass,
 				uniqueKeyPropertyName,
-				!lazy )
+				!lazy)
 		{
 			this.foreignKeyDirection = foreignKeyDirection;
 		}
 
-		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			//nothing to do
 		}
 
-		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			//nothing to do
 		}
@@ -53,7 +53,7 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override bool IsDirty( object old, object current, ISessionImplementor session )
+		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
 			return false;
 		}
@@ -63,9 +63,9 @@ namespace NHibernate.Type
 			get { return foreignKeyDirection; }
 		}
 
-		public override object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return session.GetEntityIdentifier( owner );
+			return session.GetEntityIdentifier(owner);
 		}
 
 		public override bool IsNullable
@@ -78,14 +78,14 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override object Disassemble( object value, ISessionImplementor session )
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
 			return null;
 		}
 
-		public override object Assemble( object cached, ISessionImplementor session, object owner )
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			return ResolveIdentifier( session.GetEntityIdentifier( owner ), session, owner );
+			return ResolveIdentifier(session.GetEntityIdentifier(owner), session, owner);
 		}
 
 		/// <summary>
@@ -102,6 +102,5 @@ namespace NHibernate.Type
 		{
 			return false;
 		}
-
 	}
 }

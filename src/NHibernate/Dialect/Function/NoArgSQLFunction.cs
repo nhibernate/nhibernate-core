@@ -1,5 +1,5 @@
+using System.Collections;
 using NHibernate.Engine;
-using NHibernate.Hql;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -13,7 +13,9 @@ namespace NHibernate.Dialect.Function
 		private readonly string name;
 		private readonly bool hasParenthesesIfNoArguments;
 
-		public NoArgSQLFunction(string name, IType returnType) : this(name, returnType, true) { }
+		public NoArgSQLFunction(string name, IType returnType) : this(name, returnType, true)
+		{
+		}
 
 		public NoArgSQLFunction(string name, IType returnType, bool hasParenthesesIfNoArguments)
 		{
@@ -39,7 +41,7 @@ namespace NHibernate.Dialect.Function
 			get { return hasParenthesesIfNoArguments; }
 		}
 
-		public string Render(System.Collections.IList args, ISessionFactoryImplementor factory)
+		public string Render(IList args, ISessionFactoryImplementor factory)
 		{
 			if (args.Count > 0)
 			{

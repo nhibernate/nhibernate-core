@@ -22,7 +22,7 @@ namespace NHibernate.Expression
 		/// <param name="propertyName">The name of the Property of the Class.</param>
 		/// <param name="lo">The low value for the BetweenExpression.</param>
 		/// <param name="hi">The high value for the BetweenExpression.</param>
-		public BetweenExpression( string propertyName, object lo, object hi )
+		public BetweenExpression(string propertyName, object lo, object hi)
 		{
 			_propertyName = propertyName;
 			_lo = lo;
@@ -33,9 +33,9 @@ namespace NHibernate.Expression
 		{
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-			
+
 			//IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
-			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
+			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
 
 			if (columnNames.Length == 1)
 			{
@@ -75,12 +75,12 @@ namespace NHibernate.Expression
 			return sqlBuilder.ToSqlString();
 		}
 
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[ ]
+			return new TypedValue[]
 				{
-					criteriaQuery.GetTypedValue( criteria, _propertyName, _lo ),
-					criteriaQuery.GetTypedValue( criteria, _propertyName, _hi )
+					criteriaQuery.GetTypedValue(criteria, _propertyName, _lo),
+					criteriaQuery.GetTypedValue(criteria, _propertyName, _hi)
 				};
 		}
 

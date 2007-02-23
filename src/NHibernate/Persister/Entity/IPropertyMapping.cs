@@ -15,7 +15,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		IType ToType( string propertyName );
+		IType ToType(string propertyName);
 
 		/// <summary>
 		/// Given a query alias and a property path, return the qualified column name
@@ -23,7 +23,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="alias"></param>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
-		string[] ToColumns( string alias, string propertyName );
+		string[] ToColumns(string alias, string propertyName);
 
 		/// <summary>
 		/// Get the type of the thing containing the properties

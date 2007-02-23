@@ -31,11 +31,11 @@ namespace NHibernate.Impl
 		/// Thrown when there is an expected number of rows to be affected and the
 		/// actual number of rows is different.
 		/// </exception>
-		public override void AddToBatch( IExpectation expectation )
+		public override void AddToBatch(IExpectation expectation)
 		{
 			IDbCommand cmd = CurrentCommand;
-			int rowCount = ExecuteNonQuery( cmd );
-			expectation.VerifyOutcomeNonBatched(rowCount, cmd );
+			int rowCount = ExecuteNonQuery(cmd);
+			expectation.VerifyOutcomeNonBatched(rowCount, cmd);
 		}
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace NHibernate.Impl
 		/// method.
 		/// </summary>
 		/// <param name="ps"></param>
-		protected override void DoExecuteBatch( IDbCommand ps )
+		protected override void DoExecuteBatch(IDbCommand ps)
 		{
 		}
 	}

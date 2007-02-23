@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	public class StringClobType : StringType
 	{
 		/// <summary></summary>
-		internal StringClobType() : base( new StringClobSqlType() )
+		internal StringClobType() : base(new StringClobSqlType())
 		{
 		}
 
@@ -24,7 +24,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="sqlType"></param>
-		internal StringClobType( StringSqlType sqlType ) : base( sqlType )
+		internal StringClobType(StringSqlType sqlType) : base(sqlType)
 		{
 		}
 

@@ -14,7 +14,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// 
 		/// </summary>
 		/// <param name="column"></param>
-		public AdoColumn( DataColumn column )
+		public AdoColumn(DataColumn column)
 		{
 			name = column.ColumnName;
 			type = column.DataType;
@@ -63,11 +63,11 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
-			if( this == obj ) return true;
+			if (this == obj) return true;
 			AdoColumn c = obj as AdoColumn;
-			if( c == null || !c.Equals( this ) ) return false;
+			if (c == null || !c.Equals(this)) return false;
 			return c.Name == this.name;
 		}
 	}

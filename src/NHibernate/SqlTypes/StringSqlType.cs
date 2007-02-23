@@ -18,7 +18,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StringSqlType"/> class.
 		/// </summary>
-		public StringSqlType() : base( DbType.String )
+		public StringSqlType() : base(DbType.String)
 		{
 		}
 
@@ -26,7 +26,7 @@ namespace NHibernate.SqlTypes
 		/// Initializes a new instance of the <see cref="StringSqlType"/> class.
 		/// </summary>
 		/// <param name="length">The length of the string the <see cref="IDbDataParameter"/> should hold.</param>
-		public StringSqlType( int length ) : base( DbType.String, length )
+		public StringSqlType(int length) : base(DbType.String, length)
 		{
 		}
 	}

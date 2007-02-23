@@ -12,8 +12,9 @@ namespace NHibernate.Loader.Custom
 		private string ownerAlias;
 		private string ownerProperty;
 
-		public SQLQueryJoinReturn( string alias, string ownerAlias, string ownerProperty, IDictionary propertyResults, LockMode lockMode )
-			: base( alias, propertyResults, lockMode )
+		public SQLQueryJoinReturn(string alias, string ownerAlias, string ownerProperty, IDictionary propertyResults,
+		                          LockMode lockMode)
+			: base(alias, propertyResults, lockMode)
 		{
 			this.ownerAlias = ownerAlias;
 			this.ownerProperty = ownerProperty;

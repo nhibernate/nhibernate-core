@@ -9,7 +9,7 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="table"></param>
-		public IntegerValue( Table table ) : base( table )
+		public IntegerValue(Table table) : base(table)
 		{
 		}
 

@@ -1,7 +1,4 @@
 using System;
-using System.Data;
-using NHibernate.Driver;
-using NHibernate;
 
 namespace NHibernate.Driver
 {
@@ -16,7 +13,8 @@ namespace NHibernate.Driver
 		/// <exception cref="HibernateException">
 		/// Thrown when the ASA.Data.AseClient assembly is not and can not be loaded.
 		/// </exception>
-		public ASAClientDriver() : base( "iAnywhere.Data.AsaClient", "iAnywhere.Data.AsaClient.AsaConnection", "iAnywhere.Data.AsaClient.AsaCommand" )
+		public ASAClientDriver()
+			: base("iAnywhere.Data.AsaClient", "iAnywhere.Data.AsaClient.AsaConnection", "iAnywhere.Data.AsaClient.AsaCommand")
 		{
 		}
 

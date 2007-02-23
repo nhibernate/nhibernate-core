@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using Iesi.Collections;
+using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -21,7 +23,7 @@ namespace NHibernate.Collection
 	/// </remarks>
 	[Serializable]
 #if NET_2_0
-	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy))]
+	[DebuggerTypeProxy(typeof(CollectionProxy))]
 #endif
 	public class PersistentSet : AbstractPersistentCollection, ISet
 	{
@@ -48,18 +50,18 @@ namespace NHibernate.Collection
 		/// <see cref="AbstractPersistentCollection.Snapshot(ICollectionPersister)"/>
 		/// </summary>
 		/// <param name="persister"></param>
-		protected override ICollection Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
-			Hashtable clonedMap = new Hashtable( internalSet.Count );
-			foreach( object obj in internalSet )
+			Hashtable clonedMap = new Hashtable(internalSet.Count);
+			foreach (object obj in internalSet)
 			{
-				object copied = persister.ElementType.DeepCopy( obj );
-				clonedMap[ copied ] = copied;
+				object copied = persister.ElementType.DeepCopy(obj);
+				clonedMap[copied] = copied;
 			}
 			return clonedMap;
 		}
 
-		public override ICollection GetOrphans( object snapshot, System.Type entityName )
+		public override ICollection GetOrphans(object snapshot, System.Type entityName)
 		{
 			/*
 			IDictionary sn = ( IDictionary ) snapshot;
@@ -68,23 +70,23 @@ namespace NHibernate.Collection
 			AbstractPersistentCollection.IdentityRemoveAll( result, internalSet, Session );
 			return result;
 			*/
-			IDictionary sn = ( IDictionary ) snapshot;
-			return AbstractPersistentCollection.GetOrphans( sn.Keys, internalSet, Session );
+			IDictionary sn = (IDictionary) snapshot;
+			return GetOrphans(sn.Keys, internalSet, Session);
 		}
 
-		public override bool EqualsSnapshot( IType elementType )
+		public override bool EqualsSnapshot(IType elementType)
 		{
-			IDictionary snapshot = ( IDictionary ) GetSnapshot();
-			if( snapshot.Count != internalSet.Count )
+			IDictionary snapshot = (IDictionary) GetSnapshot();
+			if (snapshot.Count != internalSet.Count)
 			{
 				return false;
 			}
 			else
 			{
-				foreach( object obj in internalSet )
+				foreach (object obj in internalSet)
 				{
-					object oldValue = snapshot[ obj ];
-					if( oldValue == null || elementType.IsDirty( oldValue, obj, Session ) )
+					object oldValue = snapshot[obj];
+					if (oldValue == null || elementType.IsDirty(oldValue, obj, Session))
 					{
 						return false;
 					}
@@ -94,7 +96,7 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		public override bool IsWrapper( object collection )
+		public override bool IsWrapper(object collection)
 		{
 			return internalSet == collection;
 		}
@@ -102,8 +104,8 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// This constructor is NOT meant to be called from user code.
 		/// </summary>
-		public PersistentSet( ISessionImplementor session )
-			: base( session )
+		public PersistentSet(ISessionImplementor session)
+			: base(session)
 		{
 		}
 
@@ -114,8 +116,8 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
-		public PersistentSet( ISessionImplementor session, ISet collection )
-			: base( session )
+		public PersistentSet(ISessionImplementor session, ISet collection)
+			: base(session)
 		{
 			internalSet = collection;
 			SetInitialized();
@@ -128,20 +130,20 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentSet.</param>
 		/// <param name="disassembled">The disassembled PersistentSet.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
+		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			BeforeInitialize( persister );
-			object[] array = ( object[] ) disassembled;
-			for( int i = 0; i < array.Length; i++ )
+			BeforeInitialize(persister);
+			object[] array = (object[]) disassembled;
+			for (int i = 0; i < array.Length; i++)
 			{
-				internalSet.Add( persister.ElementType.Assemble( array[ i ], Session, owner ) );
+				internalSet.Add(persister.ElementType.Assemble(array[i], Session, owner));
 			}
 			SetInitialized();
 		}
 
-		public override void BeforeInitialize( ICollectionPersister persister )
+		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			internalSet = ( ISet ) persister.CollectionType.Instantiate();
+			internalSet = (ISet) persister.CollectionType.Instantiate();
 		}
 
 		#region System.Collections.ICollection Members
@@ -151,10 +153,10 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="array"></param>
 		/// <param name="index"></param>
-		public void CopyTo( Array array, int index )
+		public void CopyTo(Array array, int index)
 		{
 			Read();
-			internalSet.CopyTo( array, index );
+			internalSet.CopyTo(array, index);
 		}
 
 		/// <summary>
@@ -189,10 +191,10 @@ namespace NHibernate.Collection
 
 		#region Iesi.Collections.ISet Memebers
 
-		public bool Add( object value )
+		public bool Add(object value)
 		{
 			Initialize(true);
-			if (internalSet.Add( value ))
+			if (internalSet.Add(value))
 			{
 				Dirty();
 				return true;
@@ -203,15 +205,15 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public bool AddAll( ICollection coll )
+		public bool AddAll(ICollection coll)
 		{
-			if( coll.Count < 0 )
+			if (coll.Count < 0)
 			{
 				return false;
 			}
 
 			Initialize(true);
-			if (internalSet.AddAll( coll ))
+			if (internalSet.AddAll(coll))
 			{
 				Dirty();
 				return true;
@@ -232,28 +234,28 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public bool Contains( object key )
+		public bool Contains(object key)
 		{
 			Read();
-			return internalSet.Contains( key );
+			return internalSet.Contains(key);
 		}
 
-		public bool ContainsAll( ICollection c )
+		public bool ContainsAll(ICollection c)
 		{
 			Read();
-			return internalSet.ContainsAll( c );
+			return internalSet.ContainsAll(c);
 		}
 
-		public ISet ExclusiveOr( ISet a )
+		public ISet ExclusiveOr(ISet a)
 		{
 			Read();
-			return internalSet.ExclusiveOr( a );
+			return internalSet.ExclusiveOr(a);
 		}
 
-		public ISet Intersect( ISet a )
+		public ISet Intersect(ISet a)
 		{
 			Read();
-			return internalSet.Intersect( a );
+			return internalSet.Intersect(a);
 		}
 
 		public bool IsEmpty
@@ -265,16 +267,16 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public ISet Minus( ISet a )
+		public ISet Minus(ISet a)
 		{
 			Read();
-			return internalSet.Minus( a );
+			return internalSet.Minus(a);
 		}
 
-		public bool Remove( object key )
+		public bool Remove(object key)
 		{
 			Initialize(true);
-			if (internalSet.Remove( key ))
+			if (internalSet.Remove(key))
 			{
 				Dirty();
 				return true;
@@ -285,10 +287,10 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public bool RemoveAll( ICollection c )
+		public bool RemoveAll(ICollection c)
 		{
 			Initialize(true);
-			if (internalSet.RemoveAll( c ))
+			if (internalSet.RemoveAll(c))
 			{
 				Dirty();
 				return true;
@@ -299,10 +301,10 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public bool RetainAll( ICollection c )
+		public bool RetainAll(ICollection c)
 		{
 			Initialize(true);
-			if (internalSet.RetainAll( c ))
+			if (internalSet.RetainAll(c))
 			{
 				Dirty();
 				return true;
@@ -313,10 +315,10 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public ISet Union( ISet a )
+		public ISet Union(ISet a)
 		{
 			Read();
-			return internalSet.Union( a );
+			return internalSet.Union(a);
 		}
 
 		#endregion
@@ -355,9 +357,9 @@ namespace NHibernate.Collection
 			return internalSet.ToString();
 		}
 
-		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
+		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			object element = role.ReadElement( rs, owner, descriptor.SuffixedElementAliases, Session );
+			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			if (element != null)
 			{
 				tempList.Add(element);
@@ -382,7 +384,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)
 		{
-			internalSet.AddAll( tempList );
+			internalSet.AddAll(tempList);
 			tempList = null;
 			SetInitialized();
 			return true;
@@ -393,81 +395,78 @@ namespace NHibernate.Collection
 			return internalSet;
 		}
 
-		public override object Disassemble( ICollectionPersister persister )
+		public override object Disassemble(ICollectionPersister persister)
 		{
-			object[] result = new object[ internalSet.Count ];
+			object[] result = new object[internalSet.Count];
 			int i = 0;
 
-			foreach( object obj in internalSet )
+			foreach (object obj in internalSet)
 			{
-				result[ i++ ] = persister.ElementType.Disassemble( obj, Session );
+				result[i++] = persister.ElementType.Disassemble(obj, Session);
 			}
 			return result;
 		}
 
-		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
+		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
-			IDictionary snapshot = ( IDictionary ) GetSnapshot();
+			IDictionary snapshot = (IDictionary) GetSnapshot();
 
-			foreach( DictionaryEntry e in snapshot )
+			foreach (DictionaryEntry e in snapshot)
 			{
 				object test = e.Key;
 
-				if( internalSet.Contains( test ) == false )
+				if (internalSet.Contains(test) == false)
 				{
-					deletes.Add( test );
+					deletes.Add(test);
 				}
-
 			}
 
-			foreach( object obj in internalSet )
+			foreach (object obj in internalSet)
 			{
 				//object testKey = e.Key;
-				object oldKey = snapshot[ obj ];
+				object oldKey = snapshot[obj];
 
-				if( oldKey != null && elemType.IsDirty( obj, oldKey, Session ) )
+				if (oldKey != null && elemType.IsDirty(obj, oldKey, Session))
 				{
-					deletes.Add( obj );
+					deletes.Add(obj);
 				}
 			}
 
 			return deletes;
-
 		}
 
-		public override bool NeedsInserting( object entry, int i, IType elemType )
+		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			IDictionary sn = ( IDictionary ) GetSnapshot();
-			object oldKey = sn[ entry ];
+			IDictionary sn = (IDictionary) GetSnapshot();
+			object oldKey = sn[entry];
 			// note that it might be better to iterate the snapshot but this is safe,
 			// assuming the user implements equals() properly, as required by the PersistentSet
 			// contract!
-			return oldKey == null || elemType.IsDirty( oldKey, entry, Session );
-
+			return oldKey == null || elemType.IsDirty(oldKey, entry, Session);
 		}
 
-		public override bool NeedsUpdating( object entry, int i, IType elemType )
+		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
 			return false;
 		}
 
-		public override object GetIndex( object entry, int i )
+		public override object GetIndex(object entry, int i)
 		{
-			throw new NotImplementedException( "Sets don't have indexes" );
+			throw new NotImplementedException("Sets don't have indexes");
 		}
 
-		public override object GetElement( object entry )
+		public override object GetElement(object entry)
 		{
 			return entry;
 		}
 
-		public override object GetSnapshotElement( object entry, int i )
+		public override object GetSnapshotElement(object entry, int i)
 		{
-			throw new NotSupportedException( "Sets don't support updating by element" );
+			throw new NotSupportedException("Sets don't support updating by element");
 		}
 
-		public override bool EntryExists( object entry, int i )
+		public override bool EntryExists(object entry, int i)
 		{
 			return true;
 		}

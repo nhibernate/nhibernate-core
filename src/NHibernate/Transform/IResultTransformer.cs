@@ -16,13 +16,13 @@ namespace NHibernate.Transform
 		/// <param name="tuple"></param>
 		/// <param name="aliases"></param>
 		/// <returns></returns>
-		object TransformTuple( object[] tuple, string[] aliases );
+		object TransformTuple(object[] tuple, string[] aliases);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		IList TransformList( IList collection );
+		IList TransformList(IList collection);
 	}
 }

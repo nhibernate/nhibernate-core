@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
-using System.Text;
-using NHibernate.SqlCommand;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Util;
 
 namespace NHibernate.Expression
@@ -53,7 +52,7 @@ namespace NHibernate.Expression
 
 		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[] { criteriaQuery.GetTypedIdentifierValue(criteria, value) };
+			return new TypedValue[] {criteriaQuery.GetTypedIdentifierValue(criteria, value)};
 		}
 
 		#endregion

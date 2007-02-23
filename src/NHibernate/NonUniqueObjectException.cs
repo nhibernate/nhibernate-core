@@ -23,8 +23,8 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error. </param>
 		/// <param name="id">The identifier of the object that caused the exception.</param>
 		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
-		public NonUniqueObjectException( String message, object id, System.Type clazz )
-			: base( message )
+		public NonUniqueObjectException(String message, object id, System.Type clazz)
+			: base(message)
 		{
 			this.clazz = clazz;
 			this.identifier = id;
@@ -35,8 +35,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="id">The identifier of the object that caused the exception.</param>
 		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
-		public NonUniqueObjectException( object id, System.Type clazz )
-			: this( "a different object with the same identifier value was already associated with the session", id, clazz )
+		public NonUniqueObjectException(object id, System.Type clazz)
+			: this("a different object with the same identifier value was already associated with the session", id, clazz)
 		{
 		}
 
@@ -60,11 +60,11 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonUniqueObjectException"/> class.
 		/// </summary>
-		protected NonUniqueObjectException( SerializationInfo info, StreamingContext context ) 
-			: base( info, context )
+		protected NonUniqueObjectException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
 		{
-			identifier = info.GetValue( "identifier", typeof(System.Object) );
-			clazz = info.GetValue( "clazz", typeof(System.Type) ) as System.Type;
+			identifier = info.GetValue("identifier", typeof(Object));
+			clazz = info.GetValue("clazz", typeof(System.Type)) as System.Type;
 		}
 
 		/// <summary>
@@ -78,16 +78,15 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData( info, context );
-			info.AddValue( "identifier", identifier, typeof(System.Object) );
-			info.AddValue( "clazz", clazz, typeof(System.Type) );
+			base.GetObjectData(info, context);
+			info.AddValue("identifier", identifier, typeof(Object));
+			info.AddValue("clazz", clazz, typeof(System.Type));
 		}
 
 		#endregion
-
 	}
 }

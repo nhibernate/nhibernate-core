@@ -14,7 +14,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
-		public GeExpression( string propertyName, object value ) : base( propertyName, value )
+		public GeExpression(string propertyName, object value) : base(propertyName, value)
 		{
 		}
 

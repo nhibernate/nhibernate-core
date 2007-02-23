@@ -14,28 +14,28 @@ namespace NHibernate.Type
 	public class UInt64Type : ValueTypeType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
-		public UInt64Type() : base( SqlTypeFactory.UInt64 )
+		public UInt64Type() : base(SqlTypeFactory.UInt64)
 		{
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToUInt64( rs[ index ] );
+			return Convert.ToUInt64(rs[index]);
 		}
 
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Convert.ToUInt64( rs[ name ] );
+			return Convert.ToUInt64(rs[name]);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( UInt64 ); }
+			get { return typeof(UInt64); }
 		}
 
-		public override void Set( IDbCommand rs, object value, int index )
+		public override void Set(IDbCommand rs, object value, int index)
 		{
-			IDataParameter parm = rs.Parameters[ index ] as IDataParameter;
+			IDataParameter parm = rs.Parameters[index] as IDataParameter;
 			parm.Value = value;
 		}
 
@@ -44,19 +44,19 @@ namespace NHibernate.Type
 			get { return "UInt64"; }
 		}
 
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return value.ToString();
 		}
 
-		public virtual object StringToObject( string xml )
+		public virtual object StringToObject(string xml)
 		{
-			return FromStringValue( xml );
+			return FromStringValue(xml);
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return ulong.Parse( xml );
+			return ulong.Parse(xml);
 		}
 
 		#region IVersionType Members

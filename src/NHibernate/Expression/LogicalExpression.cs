@@ -21,7 +21,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="lhs">The <see cref="ICriterion"/> to use in the Left Hand Side.</param>
 		/// <param name="rhs">The <see cref="ICriterion"/> to use in the Right Hand Side.</param>
-		protected LogicalExpression( ICriterion lhs, ICriterion rhs )
+		protected LogicalExpression(ICriterion lhs, ICriterion rhs)
 		{
 			_lhs = lhs;
 			_rhs = rhs;
@@ -48,13 +48,13 @@ namespace NHibernate.Expression
 		/// Right Hand Side of the Expression into one array.
 		/// </summary>
 		/// <returns>An arry of <see cref="TypedValue"/>s.</returns>
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			TypedValue[ ] lhstv = _lhs.GetTypedValues( criteria, criteriaQuery );
-			TypedValue[ ] rhstv = _rhs.GetTypedValues( criteria, criteriaQuery );
-			TypedValue[ ] result = new TypedValue[lhstv.Length + rhstv.Length];
-			Array.Copy( lhstv, 0, result, 0, lhstv.Length );
-			Array.Copy( rhstv, 0, result, lhstv.Length, rhstv.Length );
+			TypedValue[] lhstv = _lhs.GetTypedValues(criteria, criteriaQuery);
+			TypedValue[] rhstv = _rhs.GetTypedValues(criteria, criteriaQuery);
+			TypedValue[] result = new TypedValue[lhstv.Length + rhstv.Length];
+			Array.Copy(lhstv, 0, result, 0, lhstv.Length);
+			Array.Copy(rhstv, 0, result, lhstv.Length, rhstv.Length);
 			return result;
 		}
 
@@ -68,15 +68,15 @@ namespace NHibernate.Expression
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			SqlString lhSqlString = _lhs.ToSqlString( criteria, criteriaQuery, enabledFilters);
-			SqlString rhSqlString = _rhs.ToSqlString( criteria, criteriaQuery, enabledFilters);
+			SqlString lhSqlString = _lhs.ToSqlString(criteria, criteriaQuery, enabledFilters);
+			SqlString rhSqlString = _rhs.ToSqlString(criteria, criteriaQuery, enabledFilters);
 
-			sqlBuilder.Add( new SqlString[ ] {lhSqlString, rhSqlString},
-			                "(",
-			                Op,
-			                ")",
-							false // not wrapping because the prefix and postfix params already take care of that	
-						);
+			sqlBuilder.Add(new SqlString[] {lhSqlString, rhSqlString},
+			               "(",
+			               Op,
+			               ")",
+			               false // not wrapping because the prefix and postfix params already take care of that	
+				);
 
 
 			return sqlBuilder.ToSqlString();

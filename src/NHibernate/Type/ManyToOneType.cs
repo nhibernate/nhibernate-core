@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -17,57 +16,57 @@ namespace NHibernate.Type
 
 		private IType GetReferencedType(IMapping mapping)
 		{
-			if( uniqueKeyPropertyName == null )
+			if (uniqueKeyPropertyName == null)
 			{
-				return mapping.GetIdentifierType( AssociatedClass );
+				return mapping.GetIdentifierType(AssociatedClass);
 			}
 			else
 			{
-				return mapping.GetPropertyType( AssociatedClass, uniqueKeyPropertyName );
+				return mapping.GetPropertyType(AssociatedClass, uniqueKeyPropertyName);
 			}
 		}
 
-		public override int GetColumnSpan( IMapping mapping )
+		public override int GetColumnSpan(IMapping mapping)
 		{
-			return GetReferencedType( mapping ).GetColumnSpan( mapping );
+			return GetReferencedType(mapping).GetColumnSpan(mapping);
 		}
 
-		public override SqlType[] SqlTypes( IMapping mapping )
+		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return GetReferencedType( mapping ).SqlTypes( mapping );
+			return GetReferencedType(mapping).SqlTypes(mapping);
 		}
 
 		public ManyToOneType(System.Type persistentClass)
-			: this( persistentClass, false )
+			: this(persistentClass, false)
 		{
 		}
 
-		public ManyToOneType( System.Type persistentClass, bool lazy )
-			: this( persistentClass, null, lazy, false )
+		public ManyToOneType(System.Type persistentClass, bool lazy)
+			: this(persistentClass, null, lazy, false)
 		{
 		}
-		
+
 		public ManyToOneType(
 			System.Type persistentClass,
 			string uniqueKeyPropertyName,
 			bool lazy,
 			bool ignoreNotFound)
-			: base( persistentClass, uniqueKeyPropertyName, !lazy )
+			: base(persistentClass, uniqueKeyPropertyName, !lazy)
 		{
 			_isIgnoreNotFound = ignoreNotFound;
 		}
 
 
-		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			GetIdentifierOrUniqueKeyType( session.Factory )
-				.NullSafeSet( st, GetIdentifier( value, session ), index, settable, session );
+			GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSet(st, GetIdentifier(value, session), index, settable, session);
 		}
 
-		public override void NullSafeSet( IDbCommand cmd, object value, int index, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			GetIdentifierOrUniqueKeyType( session.Factory )
-				.NullSafeSet( cmd, GetIdentifier( value, session ), index, session );
+			GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSet(cmd, GetIdentifier(value, session), index, session);
 		}
 
 		public override bool IsOneToOne
@@ -90,11 +89,11 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override object Hydrate( IDataReader rs, string[] names, ISessionImplementor session, object owner )
+		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			object id = GetIdentifierOrUniqueKeyType( session.Factory )
-				.NullSafeGet( rs, names, session, owner );
-			ScheduleBatchLoadIfNeeded( id, session );
+			object id = GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeGet(rs, names, session, owner);
+			ScheduleBatchLoadIfNeeded(id, session);
 			return id;
 		}
 
@@ -117,23 +116,23 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override bool IsModified( object old, object current, bool[] checkable, ISessionImplementor session )
+		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			if( current == null )
+			if (current == null)
 			{
 				return old != null;
 			}
-			if( old == null )
+			if (old == null)
 			{
 				return current != null;
 			}
 			//the ids are fully resolved, so compare them with isDirty(), not isModified()
-			return GetIdentifierOrUniqueKeyType( session.Factory ).IsDirty( old, GetIdentifier( current, session ), session );
+			return GetIdentifierOrUniqueKeyType(session.Factory).IsDirty(old, GetIdentifier(current, session), session);
 		}
 
-		public override object Disassemble( object value, ISessionImplementor session )
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
-			if( value == null )
+			if (value == null)
 			{
 				return null;
 			}
@@ -141,25 +140,25 @@ namespace NHibernate.Type
 			{
 				// cache the actual id of the object, not the value of the
 				// property-ref, which might not be initialized
-				object id = session.GetEntityIdentifierIfNotUnsaved( value );
-				if( id == null )
+				object id = session.GetEntityIdentifierIfNotUnsaved(value);
+				if (id == null)
 				{
-					throw new AssertionFailure( "cannot cache a reference to an object with a null id: " + AssociatedClass.Name );
+					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + AssociatedClass.Name);
 				}
-				return GetIdentifierType( session ).Disassemble( id, session );
+				return GetIdentifierType(session).Disassemble(id, session);
 			}
 		}
 
-		public override object Assemble( object oid, ISessionImplementor session, object owner )
+		public override object Assemble(object oid, ISessionImplementor session, object owner)
 		{
-			object id = GetIdentifierType( session ).Assemble( oid, session, owner );
-			if( id == null )
+			object id = GetIdentifierType(session).Assemble(oid, session, owner);
+			if (id == null)
 			{
 				return null;
 			}
 			else
 			{
-				return ResolveIdentifier( id, session );
+				return ResolveIdentifier(id, session);
 			}
 		}
 
@@ -169,39 +168,39 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override bool IsDirty( object old, object current, ISessionImplementor session )
+		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			if( IsSame( old, current ) )
+			if (IsSame(old, current))
 			{
 				return false;
 			}
 
-			object oldid = GetIdentifier( old, session );
-			object newid = GetIdentifier( current, session );
-			return GetIdentifierType( session ).IsDirty( oldid, newid, session );
+			object oldid = GetIdentifier(old, session);
+			object newid = GetIdentifier(current, session);
+			return GetIdentifierType(session).IsDirty(oldid, newid, session);
 		}
 
-		public bool IsSame( object x, object y )
+		public bool IsSame(object x, object y)
 		{
 			return x == y;
 		}
 
-		public override bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session )
+		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			if( IsAlwaysDirtyChecked )
+			if (IsAlwaysDirtyChecked)
 			{
-				return IsDirty( old, current, session );
+				return IsDirty(old, current, session);
 			}
 			else
 			{
-				if( IsSame( old, current ) )
+				if (IsSame(old, current))
 				{
 					return false;
 				}
 
-				object oldid = GetIdentifier( old, session );
-				object newid = GetIdentifier( current, session );
-				return GetIdentifierType( session ).IsDirty( oldid, newid, checkable, session );
+				object oldid = GetIdentifier(old, session);
+				object newid = GetIdentifier(current, session);
+				return GetIdentifierType(session).IsDirty(oldid, newid, checkable, session);
 			}
 		}
 

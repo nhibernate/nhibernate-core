@@ -32,12 +32,12 @@ namespace NHibernate.Impl
 	internal class DirtyCollectionSearchVisitor : AbstractVisitor
 	{
 		private bool _dirty;
-        private bool[] _propertyVersionability;
+		private bool[] _propertyVersionability;
 
 		public DirtyCollectionSearchVisitor(SessionImpl session, bool[] propertyVersionability)
-			: base( session )
+			: base(session)
 		{
-            _propertyVersionability = propertyVersionability;
+			_propertyVersionability = propertyVersionability;
 		}
 
 		/// <summary>
@@ -51,14 +51,14 @@ namespace NHibernate.Impl
 
 		protected override object ProcessCollection(object collection, CollectionType type)
 		{
-			if( collection != null )
+			if (collection != null)
 			{
 				SessionImpl session = Session;
 				IPersistentCollection coll;
 
-				if( type.IsArrayType )
+				if (type.IsArrayType)
 				{
-					coll = session.GetArrayHolder( collection );
+					coll = session.GetArrayHolder(collection);
 					// if no array holder we found an unwrappered array (this can't occur,
 					// because we now always call wrap() before getting to here)
 					// return (ah==null) ? true : searchForDirtyCollections(ah, type);
@@ -69,10 +69,10 @@ namespace NHibernate.Impl
 					// we now always call wrap() before getting to here) 
 					// return ( ! (obj is AbstractPersistentCollection) ) ?
 					//	true : SearchForDirtyCollections( (AbstractPersistentCollection) obj, type );
-					coll = (IPersistentCollection)collection;
+					coll = (IPersistentCollection) collection;
 				}
 
-				if( coll.IsDirty )
+				if (coll.IsDirty)
 				{
 					_dirty = true;
 					return null; // NOTE: early exit
@@ -81,9 +81,9 @@ namespace NHibernate.Impl
 			return null;
 		}
 
-        protected override bool IncludeEntityProperty(object[] values, int i)
-        {
-            return _propertyVersionability[i] && base.IncludeEntityProperty(values, i);
-        }
+		protected override bool IncludeEntityProperty(object[] values, int i)
+		{
+			return _propertyVersionability[i] && base.IncludeEntityProperty(values, i);
+		}
 	}
 }

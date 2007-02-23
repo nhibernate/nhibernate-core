@@ -9,13 +9,13 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class WhereBuilder : SqlBaseBuilder
 	{
-		public WhereBuilder( ISessionFactoryImplementor factory ) : base( factory )
+		public WhereBuilder(ISessionFactoryImplementor factory) : base(factory)
 		{
 		}
 
-		public SqlString WhereClause( string alias, string[ ] columnNames, IType whereType )
+		public SqlString WhereClause(string alias, string[] columnNames, IType whereType)
 		{
-			return ToWhereString( alias, columnNames );
+			return ToWhereString(alias, columnNames);
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class NDataReader : IDataReader
 	{
-		private NResult[ ] results;
+		private NResult[] results;
 
 		private bool isClosed = false;
 
@@ -26,8 +26,8 @@ namespace NHibernate.Driver
 		// a DataReader is positioned on the first Result
 		private int currentResultIndex = 0;
 
-		private byte[ ] cachedByteArray;
-		private char[ ] cachedCharArray;
+		private byte[] cachedByteArray;
+		private char[] cachedCharArray;
 		private int cachedColIndex = -1;
 
 		/// <summary>
@@ -41,39 +41,38 @@ namespace NHibernate.Driver
 		/// pick up the <see cref="IDataReader"/> midstream so that the underlying <see cref="IDataReader"/> can be closed 
 		/// so a new one can be opened.
 		/// </remarks>
-		public NDataReader( IDataReader reader, bool isMidstream )
+		public NDataReader(IDataReader reader, bool isMidstream)
 		{
-			ArrayList resultList = new ArrayList( 2 );
+			ArrayList resultList = new ArrayList(2);
 
 			try
 			{
 				// if we are in midstream of processing a DataReader then we are already
 				// positioned on the first row (index=0)
-				if( isMidstream )
+				if (isMidstream)
 				{
 					currentRowIndex = 0;
 				}
 
 				// there will be atleast one result 
-				resultList.Add( new NResult( reader, isMidstream ) );
+				resultList.Add(new NResult(reader, isMidstream));
 
-				while( reader.NextResult() )
+				while (reader.NextResult())
 				{
 					// the second, third, nth result is not processed midstream
-					resultList.Add( new NResult( reader, false ) );
+					resultList.Add(new NResult(reader, false));
 				}
 
-				results = ( NResult[ ] ) resultList.ToArray( typeof( NResult ) );
+				results = (NResult[]) resultList.ToArray(typeof(NResult));
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new ADOException( "There was a problem converting an IDataReader to NDataReader", e );
+				throw new ADOException("There was a problem converting an IDataReader to NDataReader", e);
 			}
 			finally
 			{
 				reader.Close();
 			}
-
 		}
 
 		/// <summary>
@@ -91,12 +90,12 @@ namespace NHibernate.Driver
 
 		private NResult GetCurrentResult()
 		{
-			return results[ currentResultIndex ];
+			return results[currentResultIndex];
 		}
 
-		private object GetValue( string name )
+		private object GetValue(string name)
 		{
-			return GetCurrentResult().GetValue( currentRowIndex, name );
+			return GetCurrentResult().GetValue(currentRowIndex, name);
 		}
 
 		#region IDataReader Members
@@ -104,10 +103,7 @@ namespace NHibernate.Driver
 		/// <summary></summary>
 		public int RecordsAffected
 		{
-			get
-			{
-				throw new NotImplementedException( "NDataReader should only be used for SELECT statements!" );
-			}
+			get { throw new NotImplementedException("NDataReader should only be used for SELECT statements!"); }
 		}
 
 		/// <summary></summary>
@@ -121,7 +117,7 @@ namespace NHibernate.Driver
 		{
 			currentResultIndex++;
 
-			if( currentResultIndex >= results.Length )
+			if (currentResultIndex >= results.Length)
 			{
 				// move it back to the last result
 				currentResultIndex--;
@@ -143,7 +139,7 @@ namespace NHibernate.Driver
 		{
 			currentRowIndex++;
 
-			if( currentRowIndex >= results[ currentResultIndex ].RowCount )
+			if (currentRowIndex >= results[currentResultIndex].RowCount)
 			{
 				// reset it back to the last row
 				currentRowIndex--;
@@ -179,7 +175,7 @@ namespace NHibernate.Driver
 		/// There are not any unmanaged resources or any disposable managed 
 		/// resources that this class is holding onto.  It is in here
 		/// to comply with the <see cref="IDataReader"/> interface.
- 		/// </remarks>
+		/// </remarks>
 		public void Dispose()
 		{
 			isClosed = true;
@@ -196,21 +192,21 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public int GetInt32( int i )
+		public int GetInt32(int i)
 		{
-			return Convert.ToInt32( GetValue( i ) );
+			return Convert.ToInt32(GetValue(i));
 		}
 
 		/// <summary></summary>
-		public object this[ string name ]
+		public object this[string name]
 		{
-			get { return GetValue( name ); }
+			get { return GetValue(name); }
 		}
 
 		/// <summary></summary>
-		public object this[ int i ]
+		public object this[int i]
 		{
-			get { return GetValue( i ); }
+			get { return GetValue(i); }
 		}
 
 		/// <summary>
@@ -218,9 +214,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public object GetValue( int i )
+		public object GetValue(int i)
 		{
-			return GetCurrentResult().GetValue( currentRowIndex, i );
+			return GetCurrentResult().GetValue(currentRowIndex, i);
 		}
 
 		/// <summary>
@@ -228,9 +224,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public bool IsDBNull( int i )
+		public bool IsDBNull(int i)
 		{
-			return GetValue( i ).Equals( DBNull.Value );
+			return GetValue(i).Equals(DBNull.Value);
 		}
 
 		/// <summary>
@@ -242,27 +238,27 @@ namespace NHibernate.Driver
 		/// <param name="bufferOffset"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public long GetBytes( int i, long fieldOffset, byte[ ] buffer, int bufferOffset, int length )
+		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
 		{
-			if( cachedByteArray == null || cachedColIndex != i )
+			if (cachedByteArray == null || cachedColIndex != i)
 			{
 				cachedColIndex = i;
-				cachedByteArray = ( byte[ ] ) GetValue( i );
+				cachedByteArray = (byte[]) GetValue(i);
 			}
 
 			long remainingLength = cachedByteArray.Length - fieldOffset;
 
-			if( buffer == null )
+			if (buffer == null)
 			{
 				return remainingLength;
 			}
 
-			if( remainingLength < length )
+			if (remainingLength < length)
 			{
-				length = ( int ) remainingLength;
+				length = (int) remainingLength;
 			}
 
-			Array.Copy( cachedByteArray, fieldOffset, buffer, bufferOffset, length );
+			Array.Copy(cachedByteArray, fieldOffset, buffer, bufferOffset, length);
 
 			return length;
 		}
@@ -272,9 +268,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public byte GetByte( int i )
+		public byte GetByte(int i)
 		{
-			return Convert.ToByte( GetValue( i ) );
+			return Convert.ToByte(GetValue(i));
 		}
 
 		/// <summary>
@@ -282,9 +278,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public System.Type GetFieldType( int i )
+		public System.Type GetFieldType(int i)
 		{
-			return GetCurrentResult().GetFieldType( i );
+			return GetCurrentResult().GetFieldType(i);
 		}
 
 		/// <summary>
@@ -292,9 +288,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public decimal GetDecimal( int i )
+		public decimal GetDecimal(int i)
 		{
-			return Convert.ToDecimal( GetValue( i ) );
+			return Convert.ToDecimal(GetValue(i));
 		}
 
 		/// <summary>
@@ -302,9 +298,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="values"></param>
 		/// <returns></returns>
-		public int GetValues( object[ ] values )
+		public int GetValues(object[] values)
 		{
-			return GetCurrentResult().GetValues( currentRowIndex, values );
+			return GetCurrentResult().GetValues(currentRowIndex, values);
 		}
 
 		/// <summary>
@@ -312,9 +308,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetName( int i )
+		public string GetName(int i)
 		{
-			return GetCurrentResult().GetName( i );
+			return GetCurrentResult().GetName(i);
 		}
 
 		/// <summary></summary>
@@ -328,9 +324,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public long GetInt64( int i )
+		public long GetInt64(int i)
 		{
-			return Convert.ToInt64( GetValue( i ) );
+			return Convert.ToInt64(GetValue(i));
 		}
 
 		/// <summary>
@@ -338,9 +334,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public double GetDouble( int i )
+		public double GetDouble(int i)
 		{
-			return Convert.ToDouble( GetValue( i ) );
+			return Convert.ToDouble(GetValue(i));
 		}
 
 		/// <summary>
@@ -348,9 +344,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public bool GetBoolean( int i )
+		public bool GetBoolean(int i)
 		{
-			return Convert.ToBoolean( GetValue( i ) );
+			return Convert.ToBoolean(GetValue(i));
 		}
 
 		/// <summary>
@@ -358,9 +354,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public Guid GetGuid( int i )
+		public Guid GetGuid(int i)
 		{
-			return ( Guid ) GetValue( i );
+			return (Guid) GetValue(i);
 		}
 
 		/// <summary>
@@ -368,9 +364,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public DateTime GetDateTime( int i )
+		public DateTime GetDateTime(int i)
 		{
-			return Convert.ToDateTime( GetValue( i ) );
+			return Convert.ToDateTime(GetValue(i));
 		}
 
 		/// <summary>
@@ -378,9 +374,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public int GetOrdinal( string name )
+		public int GetOrdinal(string name)
 		{
-			return GetCurrentResult().GetOrdinal( name );
+			return GetCurrentResult().GetOrdinal(name);
 		}
 
 		/// <summary>
@@ -388,9 +384,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetDataTypeName( int i )
+		public string GetDataTypeName(int i)
 		{
-			return GetCurrentResult().GetDataTypeName( i );
+			return GetCurrentResult().GetDataTypeName(i);
 		}
 
 		/// <summary>
@@ -398,9 +394,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public float GetFloat( int i )
+		public float GetFloat(int i)
 		{
-			return Convert.ToSingle( GetValue( i ) );
+			return Convert.ToSingle(GetValue(i));
 		}
 
 		/// <summary>
@@ -408,9 +404,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public IDataReader GetData( int i )
+		public IDataReader GetData(int i)
 		{
-			throw new NotImplementedException( "GetData(int) has not been implemented." );
+			throw new NotImplementedException("GetData(int) has not been implemented.");
 		}
 
 		/// <summary>
@@ -422,22 +418,22 @@ namespace NHibernate.Driver
 		/// <param name="bufferOffset"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public long GetChars( int i, long fieldOffset, char[ ] buffer, int bufferOffset, int length )
+		public long GetChars(int i, long fieldOffset, char[] buffer, int bufferOffset, int length)
 		{
-			if( cachedCharArray == null || cachedColIndex != i )
+			if (cachedCharArray == null || cachedColIndex != i)
 			{
 				cachedColIndex = i;
-				cachedCharArray = ( char[ ] ) GetValue( i );
+				cachedCharArray = (char[]) GetValue(i);
 			}
 
 			long remainingLength = cachedCharArray.Length - fieldOffset;
 
-			if( remainingLength < length )
+			if (remainingLength < length)
 			{
-				length = ( int ) remainingLength;
+				length = (int) remainingLength;
 			}
 
-			Array.Copy( cachedCharArray, fieldOffset, buffer, bufferOffset, length );
+			Array.Copy(cachedCharArray, fieldOffset, buffer, bufferOffset, length);
 
 			return length;
 		}
@@ -447,9 +443,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetString( int i )
+		public string GetString(int i)
 		{
-			return Convert.ToString( GetValue( i ) );
+			return Convert.ToString(GetValue(i));
 		}
 
 		/// <summary>
@@ -457,9 +453,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public char GetChar( int i )
+		public char GetChar(int i)
 		{
-			return Convert.ToChar( GetValue( i ) );
+			return Convert.ToChar(GetValue(i));
 		}
 
 		/// <summary>
@@ -467,9 +463,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public short GetInt16( int i )
+		public short GetInt16(int i)
 		{
-			return Convert.ToInt16( GetValue( i ) );
+			return Convert.ToInt16(GetValue(i));
 		}
 
 		#endregion
@@ -480,7 +476,7 @@ namespace NHibernate.Driver
 		private class NResult
 		{
 			// [row][column]
-			private readonly object[ ][ ] records;
+			private readonly object[][] records;
 			private int colCount = 0;
 
 			private DataTable schemaTable;
@@ -500,7 +496,7 @@ namespace NHibernate.Driver
 			/// <c>true</c> if the <see cref="IDataReader"/> is already positioned on the record
 			/// to start reading from.
 			/// </param>
-			internal NResult( IDataReader reader, bool isMidstream )
+			internal NResult(IDataReader reader, bool isMidstream)
 			{
 				schemaTable = reader.GetSchemaTable();
 
@@ -509,17 +505,17 @@ namespace NHibernate.Driver
 
 				// if we are in the middle of processing the reader then don't bother
 				// to move to the next record - just use the current one.
-				while( isMidstream || reader.Read() )
+				while (isMidstream || reader.Read())
 				{
-					if( rowIndex == 0 )
+					if (rowIndex == 0)
 					{
-						for( int i = 0; i < reader.FieldCount; i++ )
+						for (int i = 0; i < reader.FieldCount; i++)
 						{
-							string fieldName = reader.GetName( i );
-							fieldNameToIndex[ fieldName ] = i;
-							fieldIndexToName.Add( fieldName );
-							fieldTypes.Add( reader.GetFieldType( i ) );
-							fieldDataTypeNames.Add( reader.GetDataTypeName( i ) );
+							string fieldName = reader.GetName(i);
+							fieldNameToIndex[fieldName] = i;
+							fieldIndexToName.Add(fieldName);
+							fieldTypes.Add(reader.GetFieldType(i));
+							fieldDataTypeNames.Add(reader.GetDataTypeName(i));
 						}
 
 						colCount = reader.FieldCount;
@@ -527,9 +523,9 @@ namespace NHibernate.Driver
 
 					rowIndex++;
 
-					object[ ] colValues = new object[reader.FieldCount];
-					reader.GetValues( colValues );
-					recordsList.Add( colValues );
+					object[] colValues = new object[reader.FieldCount];
+					reader.GetValues(colValues);
+					recordsList.Add(colValues);
 
 					// we can go back to reading a reader like normal and don't need
 					// to consider where we started from.
@@ -537,8 +533,7 @@ namespace NHibernate.Driver
 				}
 
 
-				records = ( object[ ][ ] ) recordsList.ToArray( typeof( object[ ] ) );
-
+				records = (object[][]) recordsList.ToArray(typeof(object[]));
 			}
 
 			/// <summary>
@@ -546,9 +541,9 @@ namespace NHibernate.Driver
 			/// </summary>
 			/// <param name="colIndex"></param>
 			/// <returns></returns>
-			public string GetDataTypeName( int colIndex )
+			public string GetDataTypeName(int colIndex)
 			{
-				return ( string ) fieldDataTypeNames[ colIndex ];
+				return (string) fieldDataTypeNames[colIndex];
 			}
 
 			/// <summary>
@@ -565,9 +560,9 @@ namespace NHibernate.Driver
 			/// </summary>
 			/// <param name="colIndex"></param>
 			/// <returns></returns>
-			public System.Type GetFieldType( int colIndex )
+			public System.Type GetFieldType(int colIndex)
 			{
-				return ( System.Type ) fieldTypes[ colIndex ];
+				return (System.Type) fieldTypes[colIndex];
 			}
 
 			/// <summary>
@@ -575,9 +570,9 @@ namespace NHibernate.Driver
 			/// </summary>
 			/// <param name="colIndex"></param>
 			/// <returns></returns>
-			public string GetName( int colIndex )
+			public string GetName(int colIndex)
 			{
-				return ( string ) fieldIndexToName[ colIndex ];
+				return (string) fieldIndexToName[colIndex];
 			}
 
 			/// <summary></summary>
@@ -591,27 +586,27 @@ namespace NHibernate.Driver
 			/// </summary>
 			/// <param name="colName"></param>
 			/// <returns></returns>
-			public int GetOrdinal( string colName )
+			public int GetOrdinal(string colName)
 			{
 				// Martijn Boland, 20041106: perform a case-sensitive search first and if that returns
 				// null, perform a case-insensitive search (as being described in the IDataRecord 
 				// interface, see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfSystemDataIDataRecordClassItemTopic1.asp.
 				// This is necessary for databases that don't preserve the case of field names when
 				// they are created without quotes (e.g. DB2, PostgreSQL).
-				if( fieldNameToIndex[ colName ] != null )
+				if (fieldNameToIndex[colName] != null)
 				{
-					return ( int ) fieldNameToIndex[ colName ];
+					return (int) fieldNameToIndex[colName];
 				}
 				else
 				{
-					foreach( DictionaryEntry entry in fieldNameToIndex )
+					foreach (DictionaryEntry entry in fieldNameToIndex)
 					{
-						if( StringHelper.EqualsCaseInsensitive((string) entry.Key, colName))
+						if (StringHelper.EqualsCaseInsensitive((string) entry.Key, colName))
 						{
-							return ( int ) entry.Value;
+							return (int) entry.Value;
 						}
 					}
-					throw new IndexOutOfRangeException( String.Format( "No column with the specified name was found: {0}.", colName ) );
+					throw new IndexOutOfRangeException(String.Format("No column with the specified name was found: {0}.", colName));
 				}
 			}
 
@@ -621,9 +616,9 @@ namespace NHibernate.Driver
 			/// <param name="rowIndex"></param>
 			/// <param name="colIndex"></param>
 			/// <returns></returns>
-			public object GetValue( int rowIndex, int colIndex )
+			public object GetValue(int rowIndex, int colIndex)
 			{
-				return records[ rowIndex ][ colIndex ];
+				return records[rowIndex][colIndex];
 			}
 
 			/// <summary>
@@ -632,9 +627,9 @@ namespace NHibernate.Driver
 			/// <param name="rowIndex"></param>
 			/// <param name="colName"></param>
 			/// <returns></returns>
-			public object GetValue( int rowIndex, string colName )
+			public object GetValue(int rowIndex, string colName)
 			{
-				return GetValue( rowIndex, GetOrdinal( colName ) );
+				return GetValue(rowIndex, GetOrdinal(colName));
 			}
 
 			/// <summary>
@@ -643,9 +638,9 @@ namespace NHibernate.Driver
 			/// <param name="rowIndex"></param>
 			/// <param name="values"></param>
 			/// <returns></returns>
-			public int GetValues( int rowIndex, object[ ] values )
+			public int GetValues(int rowIndex, object[] values)
 			{
-				Array.Copy( records[ rowIndex ], 0, values, 0, colCount );
+				Array.Copy(records[rowIndex], 0, values, 0, colCount);
 				return colCount;
 			}
 

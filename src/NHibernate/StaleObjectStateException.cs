@@ -2,8 +2,6 @@ using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
-using log4net;
-
 namespace NHibernate
 {
 	/// <summary>
@@ -22,8 +20,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="persistentType">The <see cref="System.Type"/> that NHibernate was trying to update in the database.</param>
 		/// <param name="identifier">The identifier of the object that is stale.</param>
-		public StaleObjectStateException( System.Type persistentType, object identifier ) 
-			: base( "Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)" )
+		public StaleObjectStateException(System.Type persistentType, object identifier)
+			: base("Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)")
 		{
 			this.persistentType = persistentType;
 			this.identifier = identifier;
@@ -67,10 +65,10 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected StaleObjectStateException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected StaleObjectStateException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			persistentType = info.GetValue( "persistentType", typeof(System.Type) ) as System.Type;
-			identifier = info.GetValue( "identifier", typeof(object) );
+			persistentType = info.GetValue("persistentType", typeof(System.Type)) as System.Type;
+			identifier = info.GetValue("identifier", typeof(object));
 		}
 
 		/// <summary>
@@ -84,13 +82,13 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData( info, context );
-			info.AddValue( "persistentType", persistentType, typeof(System.Type) );
-			info.AddValue( "identifier", identifier, typeof(object) );
+			base.GetObjectData(info, context);
+			info.AddValue("persistentType", persistentType, typeof(System.Type));
+			info.AddValue("identifier", identifier, typeof(object));
 		}
 
 		#endregion

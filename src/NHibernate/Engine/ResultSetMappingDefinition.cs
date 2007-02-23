@@ -1,6 +1,6 @@
 using System;
-using NHibernate.Loader.Custom;
 using System.Collections;
+using NHibernate.Loader.Custom;
 
 namespace NHibernate.Engine
 {
@@ -18,7 +18,7 @@ namespace NHibernate.Engine
 		{
 			get { return name; }
 		}
-		
+
 		public void AddQueryReturn(ISQLQueryReturn queryReturn)
 		{
 			queryReturns.Add(queryReturn);

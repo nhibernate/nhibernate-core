@@ -12,6 +12,6 @@ namespace NHibernate.Loader.Collection
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
-		void Initialize( object id, ISessionImplementor session);
+		void Initialize(object id, ISessionImplementor session);
 	}
 }

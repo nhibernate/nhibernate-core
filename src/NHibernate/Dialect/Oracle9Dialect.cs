@@ -1,11 +1,8 @@
 using System;
 using System.Data;
-
-using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
-
-using Environment = NHibernate.Cfg.Environment;
 using NHibernate.Dialect.Function;
+using NHibernate.SqlCommand;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -35,44 +32,44 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public Oracle9Dialect() : base()
 		{
-			DefaultProperties[ Environment.PrepareSql ] = "false";
-			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.OracleClientDriver";
+			DefaultProperties[Environment.PrepareSql] = "false";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.OracleClientDriver";
 
-			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );
-			RegisterColumnType( DbType.AnsiStringFixedLength, 2000, "CHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, "VARCHAR2(255)" );
-			RegisterColumnType( DbType.AnsiString, 2000, "VARCHAR2($1)" );
-			RegisterColumnType( DbType.AnsiString, 2147483647, "CLOB" ); // should use the IType.ClobType
-			RegisterColumnType( DbType.Binary, "RAW(2000)" );
-			RegisterColumnType( DbType.Binary, 2000, "RAW($1)" );
-			RegisterColumnType( DbType.Binary, 2147483647, "BLOB" );
-			RegisterColumnType( DbType.Boolean, "NUMBER(1,0)" );
-			RegisterColumnType( DbType.Byte, "NUMBER(3,0)" );
-			RegisterColumnType( DbType.Currency, "NUMBER(19,1)" );
-			RegisterColumnType( DbType.Date, "DATE" );
-			RegisterColumnType( DbType.DateTime, "TIMESTAMP(4)" );
-			RegisterColumnType( DbType.Decimal, "NUMBER(19,5)" );
-			RegisterColumnType( DbType.Decimal, 19, "NUMBER(19, $1)" );
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 2000, "CHAR($1)");
+			RegisterColumnType(DbType.AnsiString, "VARCHAR2(255)");
+			RegisterColumnType(DbType.AnsiString, 2000, "VARCHAR2($1)");
+			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB"); // should use the IType.ClobType
+			RegisterColumnType(DbType.Binary, "RAW(2000)");
+			RegisterColumnType(DbType.Binary, 2000, "RAW($1)");
+			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
+			RegisterColumnType(DbType.Boolean, "NUMBER(1,0)");
+			RegisterColumnType(DbType.Byte, "NUMBER(3,0)");
+			RegisterColumnType(DbType.Currency, "NUMBER(19,1)");
+			RegisterColumnType(DbType.Date, "DATE");
+			RegisterColumnType(DbType.DateTime, "TIMESTAMP(4)");
+			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
+			RegisterColumnType(DbType.Decimal, 19, "NUMBER(19, $1)");
 			// having problems with both ODP and OracleClient from MS not being able
 			// to read values out of a field that is DOUBLE PRECISION
-			RegisterColumnType( DbType.Double, "DOUBLE PRECISION" ); //"FLOAT(53)" );
+			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //"FLOAT(53)" );
 			//Oracle does not have a guid datatype
 			//RegisterColumnType( DbType.Guid, "UNIQUEIDENTIFIER" );
-			RegisterColumnType( DbType.Int16, "NUMBER(5,0)" );
-			RegisterColumnType( DbType.Int32, "NUMBER(10,0)" );
-			RegisterColumnType( DbType.Int64, "NUMBER(20,0)" );
-			RegisterColumnType( DbType.Single, "FLOAT(24)" );
-			RegisterColumnType( DbType.StringFixedLength, "NCHAR(255)" );
-			RegisterColumnType( DbType.StringFixedLength, 2000, "NCHAR($1)" );
-			RegisterColumnType( DbType.String, "NVARCHAR2(255)" );
-			RegisterColumnType( DbType.String, 2000, "NVARCHAR2($1)" );
-			RegisterColumnType( DbType.String, 1073741823, "NCLOB" );
-			RegisterColumnType( DbType.Time, "DATE" );
+			RegisterColumnType(DbType.Int16, "NUMBER(5,0)");
+			RegisterColumnType(DbType.Int32, "NUMBER(10,0)");
+			RegisterColumnType(DbType.Int64, "NUMBER(20,0)");
+			RegisterColumnType(DbType.Single, "FLOAT(24)");
+			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
+			RegisterColumnType(DbType.StringFixedLength, 2000, "NCHAR($1)");
+			RegisterColumnType(DbType.String, "NVARCHAR2(255)");
+			RegisterColumnType(DbType.String, 2000, "NVARCHAR2($1)");
+			RegisterColumnType(DbType.String, 1073741823, "NCLOB");
+			RegisterColumnType(DbType.Time, "DATE");
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
-			RegisterFunction( "sign", new StandardSQLFunction("sign", NHibernateUtil.Int32 ) );
+			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 
-			RegisterFunction( "acos", new StandardSQLFunction("acos", NHibernateUtil.Double ) );
+			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
 			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
 			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
@@ -87,7 +84,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
-			RegisterFunction( "round", new StandardSQLFunction("round") );
+			RegisterFunction("round", new StandardSQLFunction("round"));
 			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
@@ -141,19 +138,21 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string GetSequenceNextValString( string sequenceName )
+		public override string GetSequenceNextValString(string sequenceName)
 		{
 			return "select " + sequenceName + ".nextval from dual";
 		}
 
 		/// <summary></summary>
-		public override string GetCreateSequenceString( string sequenceName )
+		public override string GetCreateSequenceString(string sequenceName)
 		{
-			return "create sequence " + sequenceName + " INCREMENT BY 1 START WITH 1 MAXVALUE 1.0E28 MINVALUE 1 NOCYCLE CACHE 20 NOORDER";
+			return
+				"create sequence " + sequenceName +
+				" INCREMENT BY 1 START WITH 1 MAXVALUE 1.0E28 MINVALUE 1 NOCYCLE CACHE 20 NOORDER";
 		}
 
 		/// <summary></summary>
-		public override string GetDropSequenceString( string sequenceName )
+		public override string GetDropSequenceString(string sequenceName)
 		{
 			return "drop sequence " + sequenceName;
 		}
@@ -181,30 +180,30 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		public override SqlString GetLimitString( SqlString querySqlString, bool hasOffset )
+		public override SqlString GetLimitString(SqlString querySqlString, bool hasOffset)
 		{
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			if ( hasOffset )
+			if (hasOffset)
 			{
-				pagingBuilder.Add( "select * from ( select row_.*, rownum rownum_ from ( " );
-			} 
-			else 
+				pagingBuilder.Add("select * from ( select row_.*, rownum rownum_ from ( ");
+			}
+			else
 			{
-				pagingBuilder.Add( "select * from ( " );
-			} 
-			pagingBuilder.Add( querySqlString );
-			if ( hasOffset )
+				pagingBuilder.Add("select * from ( ");
+			}
+			pagingBuilder.Add(querySqlString);
+			if (hasOffset)
 			{
-				pagingBuilder.Add( " ) row_ where rownum <= " );
-				pagingBuilder.Add( Parameter.Placeholder );
-				pagingBuilder.Add( " ) where rownum_ > " );
-				pagingBuilder.Add( Parameter.Placeholder );
-			} 
-			else 
+				pagingBuilder.Add(" ) row_ where rownum <= ");
+				pagingBuilder.Add(Parameter.Placeholder);
+				pagingBuilder.Add(" ) where rownum_ > ");
+				pagingBuilder.Add(Parameter.Placeholder);
+			}
+			else
 			{
-				pagingBuilder.Add( " ) where rownum <= " );
-				pagingBuilder.Add( Parameter.Placeholder );
-			} 
+				pagingBuilder.Add(" ) where rownum <= ");
+				pagingBuilder.Add(Parameter.Placeholder);
+			}
 
 			return pagingBuilder.ToSqlString();
 		}
@@ -226,12 +225,12 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		public override string GetForUpdateString( string aliases )
+		public override string GetForUpdateString(string aliases)
 		{
 			return ForUpdateString + " of " + aliases;
 		}
 
-		public override string GetForUpdateNowaitString( string aliases )
+		public override string GetForUpdateNowaitString(string aliases)
 		{
 			return ForUpdateString + " of " + aliases + " nowait";
 		}

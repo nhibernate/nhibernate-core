@@ -24,10 +24,10 @@ namespace NHibernate.Persister.Collection
 			if (log.IsDebugEnabled)
 			{
 				log.Debug(
-						"initializing collection: " +
-						persister.Role +
-						" using named query: " +
-						queryName
+					"initializing collection: " +
+					persister.Role +
+					" using named query: " +
+					queryName
 					);
 			}
 
@@ -36,9 +36,9 @@ namespace NHibernate.Persister.Collection
 			if (query.HasNamedParameters)
 			{
 				query.SetParameter(
-						query.NamedParameters[0],
-						key,
-						persister.KeyType
+					query.NamedParameters[0],
+					key,
+					persister.KeyType
 					);
 			}
 			else
@@ -46,8 +46,8 @@ namespace NHibernate.Persister.Collection
 				query.SetParameter(0, key, persister.KeyType);
 			}
 			query.SetCollectionKey(key)
-					.SetFlushMode(FlushMode.Never)
-					.List();
+				.SetFlushMode(FlushMode.Never)
+				.List();
 		}
 	}
 }

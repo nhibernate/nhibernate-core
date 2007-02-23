@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-
 using Iesi.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
@@ -39,45 +37,44 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		public CriteriaJoinWalker(
-			IOuterJoinLoadable persister, 
+			IOuterJoinLoadable persister,
 			CriteriaQueryTranslator translator,
-			ISessionFactoryImplementor factory, 
-			CriteriaImpl criteria, 
+			ISessionFactoryImplementor factory,
+			CriteriaImpl criteria,
 			System.Type rootEntityName,
-			IDictionary enabledFilters )
-			: base( translator.RootSQLAlias, persister, factory, enabledFilters )
+			IDictionary enabledFilters)
+			: base(translator.RootSQLAlias, persister, factory, enabledFilters)
 		{
 			this.translator = translator;
 
 			querySpaces = translator.GetQuerySpaces();
 
-			if ( translator.HasProjection ) 
+			if (translator.HasProjection)
 			{
 				resultTypes = translator.ProjectedTypes;
-			
-				InitProjection( 
-					translator.GetSelect().ToString(), 
-					translator.GetWhereCondition(enabledFilters), 
+
+				InitProjection(
+					translator.GetSelect().ToString(),
+					translator.GetWhereCondition(enabledFilters),
 					translator.GetOrderBy(),
 					translator.GetGroupBy().ToString(),
 					LockMode.None
 					);
 			}
-			else 
+			else
 			{
-				resultTypes = new IType[] { TypeFactory.ManyToOne( persister.MappedClass ) };
+				resultTypes = new IType[] {TypeFactory.ManyToOne(persister.MappedClass)};
 
-				InitAll( translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None );
+				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None);
 			}
-		
-			userAliasList.Add( criteria.Alias ); //root entity comes *last*
-			userAliases = ArrayHelper.ToStringArray(userAliasList);
 
+			userAliasList.Add(criteria.Alias); //root entity comes *last*
+			userAliases = ArrayHelper.ToStringArray(userAliasList);
 		}
 
 		protected override JoinType GetJoinType(
-			IAssociationType type, 
-			FetchMode config, 
+			IAssociationType type,
+			FetchMode config,
 			string path,
 			string lhsTable,
 			string[] lhsColumns,
@@ -85,41 +82,40 @@ namespace NHibernate.Loader.Criteria
 			int currentDepth,
 			Cascades.CascadeStyle cascadeStyle)
 		{
-
-			if ( translator.IsJoin( path ) ) 
+			if (translator.IsJoin(path))
 			{
-				return translator.GetJoinType( path );
+				return translator.GetJoinType(path);
 			}
-			else 
+			else
 			{
-				if ( translator.HasProjection ) 
+				if (translator.HasProjection)
 				{
 					return JoinType.None;
 				}
-				else 
+				else
 				{
 					FetchMode fetchMode = translator.RootCriteria
-						.GetFetchMode( path );
-					if ( IsDefaultFetchMode(fetchMode) ) 
+						.GetFetchMode(path);
+					if (IsDefaultFetchMode(fetchMode))
 					{
 						return base.GetJoinType(
-							type, 
-							config, 
-							path, 
-							lhsTable, 
-							lhsColumns, 
+							type,
+							config,
+							path,
+							lhsTable,
+							lhsColumns,
 							nullable,
 							currentDepth, cascadeStyle
 							);
 					}
-					else 
+					else
 					{
-						if ( fetchMode==FetchMode.Join ) 
+						if (fetchMode == FetchMode.Join)
 						{
 							IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!
 							return GetJoinType(nullable, currentDepth);
 						}
-						else 
+						else
 						{
 							return JoinType.None;
 						}
@@ -127,10 +123,10 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 		}
-	
-		private static bool IsDefaultFetchMode(FetchMode fetchMode) 
+
+		private static bool IsDefaultFetchMode(FetchMode fetchMode)
 		{
-			return fetchMode==FetchMode.Default;
+			return fetchMode == FetchMode.Default;
 		}
 
 		/// <summary>
@@ -141,39 +137,38 @@ namespace NHibernate.Loader.Criteria
 		{
 			get
 			{
-				return base.WhereFragment.Append( 
-					( (IQueryable) Persister ).FilterFragment( Alias, EnabledFilters ) );
+				return base.WhereFragment.Append(
+					((IQueryable) Persister).FilterFragment(Alias, EnabledFilters));
 			}
 		}
-	
-		protected override string GenerateTableAlias(int n, string path, IJoinable joinable) 
+
+		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{
-			if ( joinable.ConsumesEntityAlias() ) 
+			if (joinable.ConsumesEntityAlias())
 			{
-				ICriteria subcriteria = translator.GetCriteria( path );
-				String sqlAlias = subcriteria==null ? null : translator.GetSQLAlias( subcriteria );
-				if (sqlAlias!=null) 
+				ICriteria subcriteria = translator.GetCriteria(path);
+				String sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
+				if (sqlAlias != null)
 				{
-					userAliasList.Add( subcriteria.Alias ); //alias may be null
+					userAliasList.Add(subcriteria.Alias); //alias may be null
 					return sqlAlias; //EARLY EXIT
 				}
-				else 
+				else
 				{
 					userAliasList.Add(null);
 				}
 			}
-			return base.GenerateTableAlias( n + translator.SQLAliasCount, path, joinable );
+			return base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
 		}
 
-		public ISet QuerySpaces 
+		public ISet QuerySpaces
 		{
 			get { return querySpaces; }
 		}
-	
+
 		public override string Comment
 		{
 			get { return "criteria query"; }
 		}
-
 	}
 }

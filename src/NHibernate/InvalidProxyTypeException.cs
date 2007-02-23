@@ -3,7 +3,6 @@ using System.Collections;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
-using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -18,7 +17,7 @@ namespace NHibernate
 		private ICollection errors;
 
 		public InvalidProxyTypeException(ICollection errors)
-			: base (FormatMessage(errors))
+			: base(FormatMessage(errors))
 		{
 			this.errors = errors;
 		}
@@ -40,18 +39,18 @@ namespace NHibernate
 
 		#region Serialization
 
-		public InvalidProxyTypeException( SerializationInfo info, StreamingContext context )
-			: base( info, context )
+		public InvalidProxyTypeException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
 		{
-			this.errors = ( ICollection ) info.GetValue( "errors", typeof( ICollection ) );
+			this.errors = (ICollection) info.GetValue("errors", typeof(ICollection));
 		}
 
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
-		public override void GetObjectData( SerializationInfo info, StreamingContext context )
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData (info, context);
-			info.AddValue( "errors", errors, typeof(ICollection) );
+			base.GetObjectData(info, context);
+			info.AddValue("errors", errors, typeof(ICollection));
 		}
 
 		#endregion

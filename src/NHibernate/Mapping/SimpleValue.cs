@@ -22,20 +22,20 @@ namespace NHibernate.Mapping
 		private bool unique;
 		private IIdentifierGenerator uniqueIdentifierGenerator;
 
-		public SimpleValue( )
+		public SimpleValue()
 		{
 		}
 
-		public SimpleValue( Table table )
+		public SimpleValue(Table table)
 		{
 			this.table = table;
 		}
 
-		public virtual void AddColumn( Column column )
+		public virtual void AddColumn(Column column)
 		{
-			if( !columns.Contains( column ) )
+			if (!columns.Contains(column))
 			{
-				columns.Add( column );
+				columns.Add(column);
 			}
 
 			// TODO H3:			
@@ -43,9 +43,9 @@ namespace NHibernate.Mapping
 //			column.TypeIndex = columns.Count - 1;
 		}
 
-		public virtual void AddFormula( Formula formula )
+		public virtual void AddFormula(Formula formula)
 		{
-			columns.Add( formula );
+			columns.Add(formula);
 		}
 
 		public virtual int ColumnSpan
@@ -71,7 +71,7 @@ namespace NHibernate.Mapping
 				this.type = value;
 				int count = 0;
 
-				foreach( ISelectable sel in ColumnCollection )
+				foreach (ISelectable sel in ColumnCollection)
 				{
 					if (sel is Column)
 					{
@@ -99,38 +99,39 @@ namespace NHibernate.Mapping
 		{
 		}
 
-		public void CreateForeignKeyOfClass( System.Type persistentClass )
+		public void CreateForeignKeyOfClass(System.Type persistentClass)
 		{
-			table.CreateForeignKey( ForeignKeyName, ConstraintColumns, persistentClass );
+			table.CreateForeignKey(ForeignKeyName, ConstraintColumns, persistentClass);
 		}
 
-		public IIdentifierGenerator CreateIdentifierGenerator( Dialect.Dialect dialect )
+		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect)
 		{
-			if( uniqueIdentifierGenerator == null )
+			if (uniqueIdentifierGenerator == null)
 			{
-				uniqueIdentifierGenerator = IdentifierGeneratorFactory.Create( identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect );
+				uniqueIdentifierGenerator =
+					IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
 			}
 
 			return uniqueIdentifierGenerator;
 		}
 
-		public void SetTypeByReflection( System.Type propertyClass, string propertyName )
+		public void SetTypeByReflection(System.Type propertyClass, string propertyName)
 		{
-			SetTypeByReflection( propertyClass, propertyName, "property" );
+			SetTypeByReflection(propertyClass, propertyName, "property");
 		}
 
-		public virtual void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess )
+		public virtual void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
 		{
 			try
 			{
-				if( type == null )
+				if (type == null)
 				{
-					type = ReflectHelper.ReflectedPropertyType( propertyClass, propertyName, propertyAccess );
+					type = ReflectHelper.ReflectedPropertyType(propertyClass, propertyName, propertyAccess);
 					int count = 0;
-					foreach( ISelectable thing in ColumnCollection )
+					foreach (ISelectable thing in ColumnCollection)
 					{
 						Column col = thing as Column;
-						if( col != null )
+						if (col != null)
 						{
 							col.Type = type;
 							col.TypeIndex = count++;
@@ -138,9 +139,9 @@ namespace NHibernate.Mapping
 					}
 				}
 			}
-			catch( HibernateException he )
+			catch (HibernateException he)
 			{
-				throw new MappingException( "Problem trying to set property type by reflection", he );
+				throw new MappingException("Problem trying to set property type by reflection", he);
 			}
 		}
 
@@ -181,17 +182,17 @@ namespace NHibernate.Mapping
 
 		public virtual bool IsNullable
 		{
-			get 
+			get
 			{
-				if( HasFormula )
+				if (HasFormula)
 				{
 					return true;
 				}
 
 				bool nullable = true;
-				foreach( Column col in ColumnCollection )
+				foreach (Column col in ColumnCollection)
 				{
-					if ( !col.IsNullable )
+					if (!col.IsNullable)
 					{
 						nullable = false;
 					}
@@ -207,20 +208,20 @@ namespace NHibernate.Mapping
 			set { nullValue = value; }
 		}
 
-		public bool IsValid( IMapping mapping )
+		public bool IsValid(IMapping mapping)
 		{
-			return ColumnSpan == Type.GetColumnSpan( mapping );
+			return ColumnSpan == Type.GetColumnSpan(mapping);
 		}
 
 		public virtual bool[] ColumnInsertability
 		{
 			get
 			{
-				bool[] result = new bool[ ColumnSpan ];
+				bool[] result = new bool[ColumnSpan];
 				int i = 0;
-				foreach( ISelectable s in ColumnCollection )
+				foreach (ISelectable s in ColumnCollection)
 				{
-					result[ i++ ] = !s.IsFormula;
+					result[i++] = !s.IsFormula;
 				}
 				return result;
 			}
@@ -235,9 +236,9 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				foreach( ISelectable s in ColumnCollection )
+				foreach (ISelectable s in ColumnCollection)
 				{
-					if( s.IsFormula )
+					if (s.IsFormula)
 					{
 						return true;
 					}

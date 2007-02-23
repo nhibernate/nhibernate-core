@@ -1,5 +1,4 @@
 using System.Data;
-
 using NHibernate.Cfg;
 
 namespace NHibernate.Dialect
@@ -26,33 +25,33 @@ namespace NHibernate.Dialect
 		public InformixDialect() : base()
 		{
 //		registerFunction( "concat", new VarArgsSQLFunction( Hibernate.STRING, "(", "||", ")" ) );
-		
-			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, 255, "VARCHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, 32739, "LVARCHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, 2147483647, "CLOB" );
-			RegisterColumnType( DbType.AnsiString, "VARCHAR(255)" );
-			RegisterColumnType( DbType.Binary, 2147483647, "BLOB" );
-			RegisterColumnType( DbType.Binary, "BLOB" );
-			RegisterColumnType( DbType.Byte, "SMALLINT" );
-			RegisterColumnType( DbType.Date, "DATE" );
-			RegisterColumnType( DbType.DateTime, "datetime year to fraction(5)" );
-			RegisterColumnType( DbType.Decimal, "DECIMAL(19,5)" );
-			RegisterColumnType( DbType.Decimal, 19, "DECIMAL(19, $1)" );
-			RegisterColumnType( DbType.Double, "DOUBLE" );
-			RegisterColumnType( DbType.Int16, "SMALLINT" );
-			RegisterColumnType( DbType.Int32, "INTEGER" );
-			RegisterColumnType( DbType.Int64, "BIGINT" );
-			RegisterColumnType( DbType.Single, "SmallFloat" );
-			RegisterColumnType( DbType.Time, "datetime hour to second" );
-			RegisterColumnType( DbType.StringFixedLength, "CHAR($1)" );
-			RegisterColumnType( DbType.String, 255, "VARCHAR($1)" );
-			RegisterColumnType( DbType.String, 32739, "LVARCHAR($1)" );
-			RegisterColumnType( DbType.String, 2147483647, "CLOB" );
-			RegisterColumnType( DbType.String, "VARCHAR(255)" );
+
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR($1)");
+			RegisterColumnType(DbType.AnsiString, 255, "VARCHAR($1)");
+			RegisterColumnType(DbType.AnsiString, 32739, "LVARCHAR($1)");
+			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB");
+			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
+			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
+			RegisterColumnType(DbType.Binary, "BLOB");
+			RegisterColumnType(DbType.Byte, "SMALLINT");
+			RegisterColumnType(DbType.Date, "DATE");
+			RegisterColumnType(DbType.DateTime, "datetime year to fraction(5)");
+			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $1)");
+			RegisterColumnType(DbType.Double, "DOUBLE");
+			RegisterColumnType(DbType.Int16, "SMALLINT");
+			RegisterColumnType(DbType.Int32, "INTEGER");
+			RegisterColumnType(DbType.Int64, "BIGINT");
+			RegisterColumnType(DbType.Single, "SmallFloat");
+			RegisterColumnType(DbType.Time, "datetime hour to second");
+			RegisterColumnType(DbType.StringFixedLength, "CHAR($1)");
+			RegisterColumnType(DbType.String, 255, "VARCHAR($1)");
+			RegisterColumnType(DbType.String, 32739, "LVARCHAR($1)");
+			RegisterColumnType(DbType.String, 2147483647, "CLOB");
+			RegisterColumnType(DbType.String, "VARCHAR(255)");
 
 
-			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.OdbcDriver";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.OdbcDriver";
 		}
 
 		/// <summary></summary>
@@ -61,15 +60,16 @@ namespace NHibernate.Dialect
 			get { return "add"; }
 		}
 
-		public override bool SupportsIdentityColumns {
-			get {return true;}
+		public override bool SupportsIdentityColumns
+		{
+			get { return true; }
 		}
 
 		/// <summary>
 		/// The syntax that returns the identity value of the last insert, if native
 		/// key generation is supported
 		/// </summary>
-		public override string GetIdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString(string identityColumn, string tableName)
 		{
 //			return type==Types.BIGINT ?
 //				"select dbinfo('serial8') from systables where tabid=1" :
@@ -86,7 +86,7 @@ namespace NHibernate.Dialect
 //		return type==Types.BIGINT ?
 //			"serial8 not null" :
 //			"serial not null";
-			get {return "serial not null"; }
+			get { return "serial not null"; }
 		}
 
 		/// <summary>

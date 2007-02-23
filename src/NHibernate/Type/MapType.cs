@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -22,8 +21,8 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
-		public MapType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public MapType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 
@@ -33,15 +32,15 @@ namespace NHibernate.Type
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the map.</param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new PersistentMap( session );
+			return new PersistentMap(session);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( IDictionary ); }
+			get { return typeof(IDictionary); }
 		}
 
 		/// <summary>
@@ -49,9 +48,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		public override ICollection GetElementsCollection( object collection )
+		public override ICollection GetElementsCollection(object collection)
 		{
-			return ( ( IDictionary ) collection ).Values;
+			return ((IDictionary) collection).Values;
 		}
 
 		/// <summary>
@@ -62,28 +61,29 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="PersistentMap"/> that wraps the non NHibernate <see cref="IDictionary"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentMap( session, ( IDictionary ) collection );
+			return new PersistentMap(session, (IDictionary) collection);
 		}
 
-		protected override void Add( object collection, object element )
+		protected override void Add(object collection, object element)
 		{
-			DictionaryEntry de = ( DictionaryEntry ) element;
-			( ( IDictionary ) collection ).Add( de.Key, de.Value );
+			DictionaryEntry de = (DictionaryEntry) element;
+			((IDictionary) collection).Add(de.Key, de.Value);
 		}
 
-		protected override void Clear( object collection )
+		protected override void Clear(object collection)
 		{
-			( ( IDictionary ) collection ).Clear();
+			((IDictionary) collection).Clear();
 		}
 
-		protected override object CopyElement( ICollectionPersister persister, object element, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		protected override object CopyElement(ICollectionPersister persister, object element, ISessionImplementor session,
+		                                      object owner, IDictionary copiedAlready)
 		{
-			DictionaryEntry de = ( DictionaryEntry ) element;
+			DictionaryEntry de = (DictionaryEntry) element;
 			return new DictionaryEntry(
-				persister.IndexType.Replace( de.Key, null, session, owner, copiedAlready ),
-				persister.ElementType.Replace( de.Value, null, session, owner, copiedAlready ) );
+				persister.IndexType.Replace(de.Key, null, session, owner, copiedAlready),
+				persister.ElementType.Replace(de.Value, null, session, owner, copiedAlready));
 		}
 
 		public override object Instantiate()

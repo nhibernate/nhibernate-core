@@ -1,5 +1,4 @@
 using System;
-using NHibernate.Loader;
 using NHibernate.Util;
 
 namespace NHibernate.Mapping
@@ -17,7 +16,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		public ToOne( Table table ) : base( table )
+		public ToOne(Table table) : base(table)
 		{
 		}
 
@@ -50,14 +49,15 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		public abstract override void CreateForeignKey( );
-		
+		public abstract override void CreateForeignKey();
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="propertyClass"></param>
 		/// <param name="propertyName"></param>
 		/// <param name="propertyAccess"></param>
-		public abstract override void SetTypeByReflection( System.Type propertyClass, string propertyName, string propertyAccess );
+		public abstract override void SetTypeByReflection(System.Type propertyClass, string propertyName,
+		                                                  string propertyAccess);
 	}
 }

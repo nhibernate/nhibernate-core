@@ -8,22 +8,22 @@ namespace NHibernate.Type
 	public interface IAbstractComponentType : IType
 	{
 		/// <summary>Get the types of the component properties</summary>
-		IType[ ] Subtypes { get; }
+		IType[] Subtypes { get; }
 
 		/// <summary>Get the names of the component properties</summary>
-		string[ ] PropertyNames { get; }
-		
+		string[] PropertyNames { get; }
+
 		/// <summary>
 		/// Optional operation
 		/// </summary>
 		/// <value>nullability of component properties</value>
-		bool[ ] PropertyNullability { get; }
+		bool[] PropertyNullability { get; }
 
 		/// <summary>
 		/// Get the values of the component properties of 
 		/// a component instance
 		/// </summary>
-		object[ ] GetPropertyValues( object component, ISessionImplementor session );
+		object[] GetPropertyValues(object component, ISessionImplementor session);
 
 		/// <summary>
 		/// Optional Operation
@@ -33,12 +33,12 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Optional operation
 		/// </summary>
-		void SetPropertyValues( object component, object[ ] values );
+		void SetPropertyValues(object component, object[] values);
 
-		object GetPropertyValue( object component, int i, ISessionImplementor session );
+		object GetPropertyValue(object component, int i, ISessionImplementor session);
 
-		Cascades.CascadeStyle GetCascadeStyle( int i );
+		Cascades.CascadeStyle GetCascadeStyle(int i);
 
-		FetchMode GetFetchMode( int i );
+		FetchMode GetFetchMode(int i);
 	}
 }

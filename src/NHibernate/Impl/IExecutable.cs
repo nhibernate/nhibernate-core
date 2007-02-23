@@ -29,7 +29,7 @@ namespace NHibernate.Impl
 		/// Actions should make sure that the Cache is notified about
 		/// what just happened.
 		/// </remarks>
-		void AfterTransactionCompletion( bool success );
+		void AfterTransactionCompletion(bool success);
 
 		/// <summary>
 		/// The spaces (tables) that are affectd by this Executable action.
@@ -38,7 +38,6 @@ namespace NHibernate.Impl
 		/// This is used to determine if the ISession needs to be flushed before
 		/// a query is executed so stale data is not returned.
 		/// </remarks>
-		object[ ] PropertySpaces { get; }
+		object[] PropertySpaces { get; }
 	}
-
 }

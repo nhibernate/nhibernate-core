@@ -16,7 +16,7 @@ namespace NHibernate.Type
 		{
 		}
 
-		internal DecimalType( SqlType sqlType ) : base( sqlType )
+		internal DecimalType(SqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -26,9 +26,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToDecimal( rs[ index ] );
+			return Convert.ToDecimal(rs[index]);
 		}
 
 		/// <summary>
@@ -37,15 +37,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Convert.ToDecimal( rs[ name ] );
+			return Convert.ToDecimal(rs[name]);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( Decimal ); }
+			get { return typeof(Decimal); }
 		}
 
 		/// <summary>
@@ -54,9 +54,9 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
 			parm.Value = value;
 		}
 
@@ -71,9 +71,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
-			return FromString( xml );
+			return FromString(xml);
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
-			return Decimal.Parse( xml );
+			return Decimal.Parse(xml);
 		}
 
 		/// <summary>
@@ -91,7 +91,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return value.ToString();
 		}

@@ -22,10 +22,10 @@ namespace NHibernate.Type
 	[Serializable]
 	public class TimeType : ValueTypeType, IIdentifierType, ILiteralType
 	{
-		private static DateTime BaseDateValue = new DateTime( 1753, 01, 01 );
+		private static DateTime BaseDateValue = new DateTime(1753, 01, 01);
 
 		/// <summary></summary>
-		internal TimeType() : base( SqlTypeFactory.Time )
+		internal TimeType() : base(SqlTypeFactory.Time)
 		{
 		}
 
@@ -35,10 +35,10 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			DateTime dbValue = Convert.ToDateTime( rs[ index ] );
-			return new DateTime( 1753, 01, 01, dbValue.Hour, dbValue.Minute, dbValue.Second );
+			DateTime dbValue = Convert.ToDateTime(rs[index]);
+			return new DateTime(1753, 01, 01, dbValue.Hour, dbValue.Minute, dbValue.Second);
 		}
 
 		/// <summary>
@@ -47,15 +47,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( DateTime ); }
+			get { return typeof(DateTime); }
 		}
 
 		/// <summary>
@@ -64,10 +64,10 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
-			if( ( DateTime ) value < TimeType.BaseDateValue )
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
+			if ((DateTime) value < BaseDateValue)
 			{
 				parm.Value = DBNull.Value;
 			}
@@ -83,23 +83,23 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			if( x == y )
+			if (x == y)
 			{
 				return true;
 			}
-			if( x == null || y == null )
+			if (x == null || y == null)
 			{
 				return false;
 			}
 
-			DateTime date1 = ( DateTime ) x;
-			DateTime date2 = ( DateTime ) y;
+			DateTime date1 = (DateTime) x;
+			DateTime date2 = (DateTime) y;
 
 			return date1.Hour == date2.Hour
-				&& date1.Minute == date2.Minute
-				&& date1.Second == date2.Second;
+			       && date1.Minute == date2.Minute
+			       && date1.Second == date2.Second;
 		}
 
 		/// <summary></summary>
@@ -113,9 +113,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		public override string ToString( object val )
+		public override string ToString(object val)
 		{
-			return ( ( DateTime ) val ).ToShortTimeString();
+			return ((DateTime) val).ToShortTimeString();
 		}
 
 		/// <summary></summary>
@@ -129,14 +129,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
-			return FromString( xml );
+			return FromString(xml);
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return DateTime.Parse( xml );
+			return DateTime.Parse(xml);
 		}
 
 		/// <summary>
@@ -144,9 +144,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
-			return "'" + ( ( DateTime ) value ).ToShortTimeString() + "'";
+			return "'" + ((DateTime) value).ToShortTimeString() + "'";
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="returnColumnName"></param>
 		/// <returns></returns>
-		public abstract CaseFragment SetReturnColumnName( string returnColumnName );
+		public abstract CaseFragment SetReturnColumnName(string returnColumnName);
 
 		/// <summary>
 		/// 
@@ -18,7 +18,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="returnColumnName"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		public abstract CaseFragment SetReturnColumnName( string returnColumnName, string suffix );
+		public abstract CaseFragment SetReturnColumnName(string returnColumnName, string suffix);
 
 		/// <summary>
 		/// 
@@ -27,11 +27,9 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnName"></param>
 		/// <param name="columnValue"></param>
 		/// <returns></returns>
-		public abstract CaseFragment AddWhenColumnNotNull( string alias, string columnName, string columnValue );
-		
+		public abstract CaseFragment AddWhenColumnNotNull(string alias, string columnName, string columnValue);
+
 		/// <summary></summary>
 		public abstract SqlString ToSqlStringFragment();
 	}
-
-
 }

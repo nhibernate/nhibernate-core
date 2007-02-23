@@ -13,29 +13,30 @@ namespace NHibernate.SqlCommand
 		private SqlStringBuilder afterFrom = new SqlStringBuilder();
 		private SqlStringBuilder afterWhere = new SqlStringBuilder();
 
-		public override void AddJoin( string tableName, string alias, string[ ] fkColumns, string[ ] pkColumns, JoinType joinType )
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType)
 		{
-			AddCrossJoin( tableName, alias );
+			AddCrossJoin(tableName, alias);
 
-			for( int j = 0; j < fkColumns.Length; j++ )
+			for (int j = 0; j < fkColumns.Length; j++)
 			{
 				//HasThetaJoins = true;
-				afterWhere.Add( " and " + fkColumns[ j ] );
-				if( joinType == JoinType.RightOuterJoin || joinType == JoinType.FullJoin )
+				afterWhere.Add(" and " + fkColumns[j]);
+				if (joinType == JoinType.RightOuterJoin || joinType == JoinType.FullJoin)
 				{
-					afterWhere.Add( "(+)" );
+					afterWhere.Add("(+)");
 				}
 
-				afterWhere.Add( "=" + alias + StringHelper.Dot + pkColumns[ j ] );
+				afterWhere.Add("=" + alias + StringHelper.Dot + pkColumns[j]);
 
-				if( joinType == JoinType.LeftOuterJoin || joinType == JoinType.FullJoin )
+				if (joinType == JoinType.LeftOuterJoin || joinType == JoinType.FullJoin)
 				{
-					afterWhere.Add( "(+)" );
+					afterWhere.Add("(+)");
 				}
 			}
 		}
 
-		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, string on)
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
+		                             string on)
 		{
 			//arbitrary on clause ignored!!
 			AddJoin(tableName, alias, fkColumns, pkColumns, joinType);
@@ -52,7 +53,7 @@ namespace NHibernate.SqlCommand
 				throw new NotSupportedException("join type not supported by OracleJoinFragment (use Oracle9Dialect)");
 			}
 		}
-		
+
 		/// <summary>
 		/// This method is a bit of a hack, and assumes
 		/// that the column on the "right" side of the
@@ -97,13 +98,13 @@ namespace NHibernate.SqlCommand
 			get { return afterWhere.ToSqlString(); }
 		}
 
-		public override void AddJoins( SqlString fromFragment, SqlString whereFragment )
+		public override void AddJoins(SqlString fromFragment, SqlString whereFragment)
 		{
-			afterFrom.Add( fromFragment );
-			afterWhere.Add( whereFragment );
+			afterFrom.Add(fromFragment);
+			afterWhere.Add(whereFragment);
 		}
 
-		public override void AddCrossJoin( string tableName, string alias )
+		public override void AddCrossJoin(string tableName, string alias)
 		{
 			afterFrom
 				.Add(StringHelper.CommaSpace)
@@ -112,19 +113,19 @@ namespace NHibernate.SqlCommand
 				.Add(alias);
 		}
 
-		public override bool AddCondition( string condition )
+		public override bool AddCondition(string condition)
 		{
 			return AddCondition(afterWhere, condition);
 		}
 
-		public override bool AddCondition( SqlString condition )
+		public override bool AddCondition(SqlString condition)
 		{
 			return AddCondition(afterWhere, condition);
 		}
 
-		public override void AddFromFragmentString( SqlString fromFragmentString )
+		public override void AddFromFragmentString(SqlString fromFragmentString)
 		{
-			afterFrom.Add( fromFragmentString );
+			afterFrom.Add(fromFragmentString);
 		}
 	}
 }

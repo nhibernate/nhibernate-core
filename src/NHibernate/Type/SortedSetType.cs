@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using Iesi.Collections;
 
 namespace NHibernate.Type
@@ -22,8 +21,8 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> to use for the sorting.</param>
-		public SortedSetType( string role, string propertyRef, IComparer comparer )
-			: base( role, propertyRef )
+		public SortedSetType(string role, string propertyRef, IComparer comparer)
+			: base(role, propertyRef)
 		{
 			this.comparer = comparer;
 		}
@@ -35,7 +34,7 @@ namespace NHibernate.Type
 
 		public override object Instantiate()
 		{
-			return new SortedSet( comparer );
+			return new SortedSet(comparer);
 		}
 	}
 }

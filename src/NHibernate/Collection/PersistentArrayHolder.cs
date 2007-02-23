@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using log4net;
+using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -14,11 +16,11 @@ namespace NHibernate.Collection
 	/// </summary>
 	[Serializable]
 #if NET_2_0
-	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy))]
+	[DebuggerTypeProxy(typeof(CollectionProxy))]
 #endif
 	public class PersistentArrayHolder : AbstractPersistentCollection
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( PersistentArrayHolder ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(PersistentArrayHolder));
 
 		/// <summary>
 		/// The <see cref="Array"/> that NHibernate is wrapping.
@@ -36,7 +38,7 @@ namespace NHibernate.Collection
 		private ArrayList tempList;
 
 
-		public PersistentArrayHolder( ISessionImplementor session, object array ) : base( session )
+		public PersistentArrayHolder(ISessionImplementor session, object array) : base(session)
 		{
 			this.array = (Array) array;
 			SetInitialized();
@@ -47,45 +49,45 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		protected override ICollection Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
 			int length = /*(array==null) ? temp.Count :*/ array.Length;
-			Array result = System.Array.CreateInstance( persister.ElementClass, length );
-			for( int i = 0; i < length; i++ )
+			Array result = System.Array.CreateInstance(persister.ElementClass, length);
+			for (int i = 0; i < length; i++)
 			{
-				object elt = /*(array==null) ? temp[i] :*/ array.GetValue( i );
+				object elt = /*(array==null) ? temp[i] :*/ array.GetValue(i);
 				try
 				{
-					result.SetValue( persister.ElementType.DeepCopy( elt ), i );
+					result.SetValue(persister.ElementType.DeepCopy(elt), i);
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					log.Error( "Array element type error", e );
-					throw new HibernateException( "Array element type error", e );
+					log.Error("Array element type error", e);
+					throw new HibernateException("Array element type error", e);
 				}
 			}
 			return result;
 		}
 
-		public override ICollection GetOrphans( object snapshot, System.Type entityName )
+		public override ICollection GetOrphans(object snapshot, System.Type entityName)
 		{
-			object[ ] sn = ( object[ ] ) snapshot;
-			object[ ] arr = ( object[ ] ) array;
-			ArrayList result = new ArrayList( sn.Length );
-			for( int i = 0; i < sn.Length; i++ )
+			object[] sn = (object[]) snapshot;
+			object[] arr = (object[]) array;
+			ArrayList result = new ArrayList(sn.Length);
+			for (int i = 0; i < sn.Length; i++)
 			{
-				result.Add( sn[ i ] );
+				result.Add(sn[i]);
 			}
-			for( int i = 0; i < sn.Length; i++ )
+			for (int i = 0; i < sn.Length; i++)
 			{
-				AbstractPersistentCollection.IdentityRemove( result, arr[ i ], entityName, Session );
+				IdentityRemove(result, arr[i], entityName, Session);
 			}
 			return result;
 		}
 
 
-		public PersistentArrayHolder( ISessionImplementor session, ICollectionPersister persister )
-			: base( session )
+		public PersistentArrayHolder(ISessionImplementor session, ICollectionPersister persister)
+			: base(session)
 		{
 			elementClass = persister.ElementClass;
 		}
@@ -103,7 +105,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		public override bool IsWrapper( object collection )
+		public override bool IsWrapper(object collection)
 		{
 			return array == collection;
 		}
@@ -113,18 +115,18 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="elementType"></param>
 		/// <returns></returns>
-		public override bool EqualsSnapshot( IType elementType )
+		public override bool EqualsSnapshot(IType elementType)
 		{
 			Array snapshot = GetSnapshot() as Array;
-			
+
 			int xlen = snapshot.Length;
-			if( xlen != array.Length )
+			if (xlen != array.Length)
 			{
 				return false;
 			}
-			for( int i = 0; i < xlen; i++ )
+			for (int i = 0; i < xlen; i++)
 			{
-				if( elementType.IsDirty( snapshot.GetValue( i ), array.GetValue( i ), Session ) )
+				if (elementType.IsDirty(snapshot.GetValue(i), array.GetValue(i), Session))
 				{
 					return false;
 				}
@@ -140,10 +142,10 @@ namespace NHibernate.Collection
 		{
 			//if (array==null) return tempList;
 			int length = array.Length;
-			IList list = new ArrayList( length );
-			for( int i = 0; i < length; i++ )
+			IList list = new ArrayList(length);
+			for (int i = 0; i < length; i++)
 			{
-				list.Add( array.GetValue( i ) );
+				list.Add(array.GetValue(i));
 			}
 			return list;
 		}
@@ -156,13 +158,13 @@ namespace NHibernate.Collection
 			get { return false; }
 		}
 
-		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
+		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
-			int index = ( int ) role.ReadIndex( rs, descriptor.SuffixedIndexAliases, Session );
-			for( int i = tempList.Count; i <= index; i++ )
+			int index = (int) role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
+			for (int i = tempList.Count; i <= index; i++)
 			{
-				tempList.Insert( i, null );
+				tempList.Insert(i, null);
 			}
 			tempList[index] = element;
 			return element;
@@ -195,15 +197,15 @@ namespace NHibernate.Collection
 		public override bool EndRead(ICollectionPersister persister)
 		{
 			SetInitialized();
-			array = System.Array.CreateInstance( elementClass, tempList.Count );
+			array = System.Array.CreateInstance(elementClass, tempList.Count);
 			int index = 0;
-			foreach( object element in tempList )
+			foreach (object element in tempList)
 			{
-				array.SetValue( element, index );
+				array.SetValue(element, index);
 				index++;
 			}
 			tempList = null;
-			
+
 			return true;
 		}
 
@@ -211,7 +213,7 @@ namespace NHibernate.Collection
 		/// 
 		/// </summary>
 		/// <param name="persister"></param>
-		public override void BeforeInitialize( ICollectionPersister persister )
+		public override void BeforeInitialize(ICollectionPersister persister)
 		{
 		}
 
@@ -229,15 +231,15 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the Array.</param>
 		/// <param name="disassembled">The disassembled Array.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
+		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			object[] cached = ( object[] ) disassembled;
+			object[] cached = (object[]) disassembled;
 
-			array = System.Array.CreateInstance( persister.ElementClass, cached.Length );
+			array = System.Array.CreateInstance(persister.ElementClass, cached.Length);
 
-			for( int i = 0; i < cached.Length; i++ )
+			for (int i = 0; i < cached.Length; i++)
 			{
-				array.SetValue( persister.ElementType.Assemble( cached[ i ], Session, owner ), i );
+				array.SetValue(persister.ElementType.Assemble(cached[i], Session, owner), i);
 			}
 			SetInitialized();
 		}
@@ -247,13 +249,13 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override object Disassemble( ICollectionPersister persister )
+		public override object Disassemble(ICollectionPersister persister)
 		{
 			int length = array.Length;
-			object[ ] result = new object[length];
-			for( int i = 0; i < length; i++ )
+			object[] result = new object[length];
+			for (int i = 0; i < length; i++)
 			{
-				result[ i ] = persister.ElementType.Disassemble( array.GetValue( i ), Session );
+				result[i] = persister.ElementType.Disassemble(array.GetValue(i), Session);
 			}
 			return result;
 		}
@@ -269,18 +271,18 @@ namespace NHibernate.Collection
 			return array;
 		}
 
-		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
+		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
 			Array sn = GetSnapshot() as Array;
 			int snSize = sn.Length;
 			int arraySize = array.Length;
 			int end;
-			if( snSize > arraySize )
+			if (snSize > arraySize)
 			{
-				for( int i = arraySize; i < snSize; i++ )
+				for (int i = arraySize; i < snSize; i++)
 				{
-					deletes.Add( i );
+					deletes.Add(i);
 				}
 				end = arraySize;
 			}
@@ -288,11 +290,11 @@ namespace NHibernate.Collection
 			{
 				end = snSize;
 			}
-			for( int i = 0; i < end; i++ )
+			for (int i = 0; i < end; i++)
 			{
-				if( array.GetValue( i ) == null && sn.GetValue( i ) != null )
+				if (array.GetValue(i) == null && sn.GetValue(i) != null)
 				{
-					deletes.Add( i );
+					deletes.Add(i);
 				}
 			}
 			return deletes;
@@ -305,10 +307,10 @@ namespace NHibernate.Collection
 		/// <param name="i"></param>
 		/// <param name="elemType"></param>
 		/// <returns></returns>
-		public override bool NeedsInserting( object entry, int i, IType elemType )
+		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
 			Array sn = GetSnapshot() as Array;
-			return array.GetValue( i ) != null && ( i >= sn.Length || sn.GetValue( i ) == null );
+			return array.GetValue(i) != null && (i >= sn.Length || sn.GetValue(i) == null);
 		}
 
 		/// <summary>
@@ -318,13 +320,13 @@ namespace NHibernate.Collection
 		/// <param name="i"></param>
 		/// <param name="elemType"></param>
 		/// <returns></returns>
-		public override bool NeedsUpdating( object entry, int i, IType elemType )
+		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
 			Array sn = GetSnapshot() as Array;
 			return i < sn.Length &&
-				sn.GetValue( i ) != null &&
-				array.GetValue( i ) != null &&
-				elemType.IsDirty( array.GetValue( i ), sn.GetValue( i ), Session );
+			       sn.GetValue(i) != null &&
+			       array.GetValue(i) != null &&
+			       elemType.IsDirty(array.GetValue(i), sn.GetValue(i), Session);
 		}
 
 		/// <summary>
@@ -333,7 +335,7 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public override object GetIndex( object entry, int i )
+		public override object GetIndex(object entry, int i)
 		{
 			return i;
 		}
@@ -345,8 +347,8 @@ namespace NHibernate.Collection
 
 		public override object GetSnapshotElement(object entry, int i)
 		{
-			Array sn = ( Array ) GetSnapshot();
-			return sn.GetValue( i );
+			Array sn = (Array) GetSnapshot();
+			return sn.GetValue(i);
 		}
 
 		/// <summary>
@@ -355,7 +357,7 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public override bool EntryExists( object entry, int i )
+		public override bool EntryExists(object entry, int i)
 		{
 			return entry != null;
 		}
@@ -365,9 +367,9 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="array"></param>
 		/// <param name="index"></param>
-		public void CopyTo( Array array, int index )
+		public void CopyTo(Array array, int index)
 		{
-			this.array.CopyTo( array, index );
+			this.array.CopyTo(array, index);
 		}
 
 		/// <summary>
@@ -402,7 +404,5 @@ namespace NHibernate.Collection
 		{
 			get { return this; }
 		}
-
-
 	}
 }

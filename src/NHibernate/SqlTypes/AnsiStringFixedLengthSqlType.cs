@@ -18,7 +18,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AnsiStringFixedLengthSqlType"/> class.
 		/// </summary>
-		public AnsiStringFixedLengthSqlType() : base( DbType.AnsiStringFixedLength )
+		public AnsiStringFixedLengthSqlType() : base(DbType.AnsiStringFixedLength)
 		{
 		}
 
@@ -26,9 +26,8 @@ namespace NHibernate.SqlTypes
 		/// Initializes a new instance of the <see cref="AnsiStringFixedLengthSqlType"/> class.
 		/// </summary>
 		/// <param name="length">The length of the string the <see cref="IDbDataParameter"/> should hold.</param>
-		public AnsiStringFixedLengthSqlType( int length ) : base( DbType.AnsiStringFixedLength, length )
+		public AnsiStringFixedLengthSqlType(int length) : base(DbType.AnsiStringFixedLength, length)
 		{
 		}
-
 	}
 }

@@ -2,18 +2,18 @@ using System;
 using System.Collections;
 using log4net;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Loader.Custom
 {
 	public class SQLQueryReturnProcessor
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof(SQLQueryReturnProcessor) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(SQLQueryReturnProcessor));
 
 		private readonly ISQLQueryReturn[] queryReturns;
-		
+
 		private readonly IDictionary alias2Return = new Hashtable();
 		private readonly IDictionary alias2OwnerAlias = new Hashtable();
 
@@ -234,9 +234,9 @@ namespace NHibernate.Loader.Custom
 			// we are initializing an owned collection
 			string role = collectionReturn.OwnerEntityName + '.' + collectionReturn.OwnerProperty;
 			AddCollection(
-					role,
-					collectionReturn.Alias,
-					collectionReturn.PropertyResultsMap
+				role,
+				collectionReturn.Alias,
+				collectionReturn.PropertyResultsMap
 				);
 		}
 
@@ -255,9 +255,9 @@ namespace NHibernate.Loader.Custom
 			if (!alias2Return.Contains(ownerAlias))
 			{
 				throw new HibernateException(
-						"Owner alias [" + ownerAlias + "] is unknown for alias [" +
-						alias + "]"
-				);
+					"Owner alias [" + ownerAlias + "] is unknown for alias [" +
+					alias + "]"
+					);
 			}
 
 			// If this return's alias has not been processed yet, do so b4 further processing of this return
@@ -286,160 +286,179 @@ namespace NHibernate.Loader.Custom
 
 		public IList GenerateCustomReturns(bool queryHadAliases)
 		{
-		IList customReturns = new ArrayList();
-		IDictionary customReturnsByAlias = new Hashtable();
-		for ( int i = 0; i < queryReturns.Length; i++ ) {
-			if ( queryReturns[i] is SQLQueryScalarReturn ) {
-				SQLQueryScalarReturn rtn = ( SQLQueryScalarReturn ) queryReturns[i];
-				customReturns.Add( new ScalarReturn( rtn.Type, rtn.ColumnAlias ) );
-			}
-			else if ( queryReturns[i] is SQLQueryRootReturn ) {
-				SQLQueryRootReturn rtn = ( SQLQueryRootReturn ) queryReturns[i];
-				string alias = rtn.Alias;
-				IEntityAliases entityAliases;
-				if ( queryHadAliases || HasPropertyResultMap( alias ) ) {
-					entityAliases = new DefaultEntityAliases(
-							( IDictionary ) entityPropertyResultMaps[alias],
-							( ISqlLoadable ) alias2Persister[alias],
-							( string ) alias2Suffix[alias]
-					);
+			IList customReturns = new ArrayList();
+			IDictionary customReturnsByAlias = new Hashtable();
+			for (int i = 0; i < queryReturns.Length; i++)
+			{
+				if (queryReturns[i] is SQLQueryScalarReturn)
+				{
+					SQLQueryScalarReturn rtn = (SQLQueryScalarReturn) queryReturns[i];
+					customReturns.Add(new ScalarReturn(rtn.Type, rtn.ColumnAlias));
 				}
-				else {
-					entityAliases = new ColumnEntityAliases(
-							( IDictionary ) entityPropertyResultMaps[alias],
-							( ISqlLoadable ) alias2Persister[alias],
-							( string ) alias2Suffix[alias]
-					);
-				}
-				RootReturn customReturn = new RootReturn(
+				else if (queryReturns[i] is SQLQueryRootReturn)
+				{
+					SQLQueryRootReturn rtn = (SQLQueryRootReturn) queryReturns[i];
+					string alias = rtn.Alias;
+					IEntityAliases entityAliases;
+					if (queryHadAliases || HasPropertyResultMap(alias))
+					{
+						entityAliases = new DefaultEntityAliases(
+							(IDictionary) entityPropertyResultMaps[alias],
+							(ISqlLoadable) alias2Persister[alias],
+							(string) alias2Suffix[alias]
+							);
+					}
+					else
+					{
+						entityAliases = new ColumnEntityAliases(
+							(IDictionary) entityPropertyResultMaps[alias],
+							(ISqlLoadable) alias2Persister[alias],
+							(string) alias2Suffix[alias]
+							);
+					}
+					RootReturn customReturn = new RootReturn(
 						alias,
 						rtn.ReturnEntityName,
 						entityAliases,
 						rtn.LockMode
-				);
-				customReturns.Add( customReturn );
-				customReturnsByAlias[rtn.Alias] = customReturn;
-			}
-			else if ( queryReturns[i] is SQLQueryCollectionReturn ) {
-				SQLQueryCollectionReturn rtn = ( SQLQueryCollectionReturn ) queryReturns[i];
-				string alias = rtn.Alias;
-				ISqlLoadableCollection persister = ( ISqlLoadableCollection ) alias2CollectionPersister[alias];
-				bool isEntityElements = persister.ElementType.IsEntityType;
-				ICollectionAliases collectionAliases;
-				IEntityAliases elementEntityAliases = null;
-				if ( queryHadAliases || HasPropertyResultMap( alias ) ) {
-					collectionAliases = new GeneratedCollectionAliases(
-							( IDictionary ) collectionPropertyResultMaps[alias],
-							( ISqlLoadableCollection ) alias2CollectionPersister[alias],
-							( string ) alias2CollectionSuffix[alias]
-					);
-					if ( isEntityElements ) {
-						elementEntityAliases = new DefaultEntityAliases(
-								( IDictionary ) entityPropertyResultMaps[alias],
-								( ISqlLoadable ) alias2Persister[alias],
-								( string ) alias2Suffix[alias]
 						);
-					}
+					customReturns.Add(customReturn);
+					customReturnsByAlias[rtn.Alias] = customReturn;
 				}
-				else {
-					collectionAliases = new ColumnCollectionAliases(
-							( IDictionary ) collectionPropertyResultMaps[alias],
-							( ISqlLoadableCollection ) alias2CollectionPersister[alias]
-					);
-					if ( isEntityElements ) {
-						elementEntityAliases = new ColumnEntityAliases(
-								( IDictionary ) entityPropertyResultMaps[alias],
-								( ISqlLoadable ) alias2Persister[alias],
-								( string ) alias2Suffix[alias]
-						);
+				else if (queryReturns[i] is SQLQueryCollectionReturn)
+				{
+					SQLQueryCollectionReturn rtn = (SQLQueryCollectionReturn) queryReturns[i];
+					string alias = rtn.Alias;
+					ISqlLoadableCollection persister = (ISqlLoadableCollection) alias2CollectionPersister[alias];
+					bool isEntityElements = persister.ElementType.IsEntityType;
+					ICollectionAliases collectionAliases;
+					IEntityAliases elementEntityAliases = null;
+					if (queryHadAliases || HasPropertyResultMap(alias))
+					{
+						collectionAliases = new GeneratedCollectionAliases(
+							(IDictionary) collectionPropertyResultMaps[alias],
+							(ISqlLoadableCollection) alias2CollectionPersister[alias],
+							(string) alias2CollectionSuffix[alias]
+							);
+						if (isEntityElements)
+						{
+							elementEntityAliases = new DefaultEntityAliases(
+								(IDictionary) entityPropertyResultMaps[alias],
+								(ISqlLoadable) alias2Persister[alias],
+								(string) alias2Suffix[alias]
+								);
+						}
 					}
-				}
-				CollectionReturn customReturn = new CollectionReturn(
+					else
+					{
+						collectionAliases = new ColumnCollectionAliases(
+							(IDictionary) collectionPropertyResultMaps[alias],
+							(ISqlLoadableCollection) alias2CollectionPersister[alias]
+							);
+						if (isEntityElements)
+						{
+							elementEntityAliases = new ColumnEntityAliases(
+								(IDictionary) entityPropertyResultMaps[alias],
+								(ISqlLoadable) alias2Persister[alias],
+								(string) alias2Suffix[alias]
+								);
+						}
+					}
+					CollectionReturn customReturn = new CollectionReturn(
 						alias,
 						rtn.OwnerEntityName,
 						rtn.OwnerProperty,
 						collectionAliases,
-				        elementEntityAliases,
+						elementEntityAliases,
 						rtn.LockMode
-				);
-				customReturns.Add( customReturn );
-				customReturnsByAlias[rtn.Alias] = customReturn;
-			}
-			else if ( queryReturns[i] is SQLQueryJoinReturn ) {
-				SQLQueryJoinReturn rtn = ( SQLQueryJoinReturn ) queryReturns[i];
-				string alias = rtn.Alias;
-				FetchReturn customReturn;
-				NonScalarReturn ownerCustomReturn = ( NonScalarReturn ) customReturnsByAlias[rtn.OwnerAlias];
-				if ( alias2CollectionPersister.Contains( alias ) ) {
-					ISqlLoadableCollection persister = ( ISqlLoadableCollection ) alias2CollectionPersister[alias];
-					bool isEntityElements = persister.ElementType.IsEntityType;
-					ICollectionAliases collectionAliases;
-					IEntityAliases elementEntityAliases = null;
-					if ( queryHadAliases || HasPropertyResultMap( alias ) ) {
-						collectionAliases = new GeneratedCollectionAliases(
-								( IDictionary ) collectionPropertyResultMaps[alias],
+						);
+					customReturns.Add(customReturn);
+					customReturnsByAlias[rtn.Alias] = customReturn;
+				}
+				else if (queryReturns[i] is SQLQueryJoinReturn)
+				{
+					SQLQueryJoinReturn rtn = (SQLQueryJoinReturn) queryReturns[i];
+					string alias = rtn.Alias;
+					FetchReturn customReturn;
+					NonScalarReturn ownerCustomReturn = (NonScalarReturn) customReturnsByAlias[rtn.OwnerAlias];
+					if (alias2CollectionPersister.Contains(alias))
+					{
+						ISqlLoadableCollection persister = (ISqlLoadableCollection) alias2CollectionPersister[alias];
+						bool isEntityElements = persister.ElementType.IsEntityType;
+						ICollectionAliases collectionAliases;
+						IEntityAliases elementEntityAliases = null;
+						if (queryHadAliases || HasPropertyResultMap(alias))
+						{
+							collectionAliases = new GeneratedCollectionAliases(
+								(IDictionary) collectionPropertyResultMaps[alias],
 								persister,
-								( string ) alias2CollectionSuffix[alias]
-						);
-						if ( isEntityElements ) {
-							elementEntityAliases = new DefaultEntityAliases(
-									( IDictionary ) entityPropertyResultMaps[alias],
-									( ISqlLoadable ) alias2Persister[alias],
-									( string ) alias2Suffix[alias]
-							);
+								(string) alias2CollectionSuffix[alias]
+								);
+							if (isEntityElements)
+							{
+								elementEntityAliases = new DefaultEntityAliases(
+									(IDictionary) entityPropertyResultMaps[alias],
+									(ISqlLoadable) alias2Persister[alias],
+									(string) alias2Suffix[alias]
+									);
+							}
 						}
-					}
-					else {
-						collectionAliases = new ColumnCollectionAliases(
-								( IDictionary ) collectionPropertyResultMaps[alias],
+						else
+						{
+							collectionAliases = new ColumnCollectionAliases(
+								(IDictionary) collectionPropertyResultMaps[alias],
 								persister
-						);
-						if ( isEntityElements ) {
-							elementEntityAliases = new ColumnEntityAliases(
-									( IDictionary ) entityPropertyResultMaps[alias],
-									( ISqlLoadable ) alias2Persister[alias],
-									( string ) alias2Suffix[alias]
-							);
+								);
+							if (isEntityElements)
+							{
+								elementEntityAliases = new ColumnEntityAliases(
+									(IDictionary) entityPropertyResultMaps[alias],
+									(ISqlLoadable) alias2Persister[alias],
+									(string) alias2Suffix[alias]
+									);
+							}
 						}
-					}
-					customReturn = new CollectionFetchReturn(
+						customReturn = new CollectionFetchReturn(
 							alias,
 							ownerCustomReturn,
 							rtn.OwnerProperty,
 							collectionAliases,
-					        elementEntityAliases,
+							elementEntityAliases,
 							rtn.LockMode
-					);
-				}
-				else {
-					IEntityAliases entityAliases;
-					if ( queryHadAliases || HasPropertyResultMap( alias ) ) {
-						entityAliases = new DefaultEntityAliases(
-								( IDictionary ) entityPropertyResultMaps[alias],
-								( ISqlLoadable ) alias2Persister[alias],
-								( string ) alias2Suffix[alias]
-						);
+							);
 					}
-					else {
-						entityAliases = new ColumnEntityAliases(
-								( IDictionary ) entityPropertyResultMaps[alias],
-								( ISqlLoadable ) alias2Persister[alias],
-								( string ) alias2Suffix[alias]
-						);
-					}
-					customReturn = new EntityFetchReturn(
+					else
+					{
+						IEntityAliases entityAliases;
+						if (queryHadAliases || HasPropertyResultMap(alias))
+						{
+							entityAliases = new DefaultEntityAliases(
+								(IDictionary) entityPropertyResultMaps[alias],
+								(ISqlLoadable) alias2Persister[alias],
+								(string) alias2Suffix[alias]
+								);
+						}
+						else
+						{
+							entityAliases = new ColumnEntityAliases(
+								(IDictionary) entityPropertyResultMaps[alias],
+								(ISqlLoadable) alias2Persister[alias],
+								(string) alias2Suffix[alias]
+								);
+						}
+						customReturn = new EntityFetchReturn(
 							alias,
 							entityAliases,
 							ownerCustomReturn,
 							rtn.OwnerProperty,
 							rtn.LockMode
-					);
+							);
+					}
+					customReturns.Add(customReturn);
+					customReturnsByAlias[alias] = customReturn;
 				}
-				customReturns.Add( customReturn );
-				customReturnsByAlias[alias] = customReturn;
 			}
-		}
-		return customReturns;
+			return customReturns;
 		}
 	}
 }

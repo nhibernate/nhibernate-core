@@ -21,9 +21,9 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="length"></param>
 		/// <param name="suffix"></param>
-		public Alias( int length, string suffix )
+		public Alias(int length, string suffix)
 		{
-			this.length = ( suffix == null ) ? length : length - suffix.Length;
+			this.length = (suffix == null) ? length : length - suffix.Length;
 			this.suffix = suffix;
 		}
 
@@ -31,7 +31,7 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="suffix"></param>
-		public Alias( string suffix )
+		public Alias(string suffix)
 		{
 			this.length = int.MaxValue;
 			this.suffix = suffix;
@@ -43,14 +43,14 @@ namespace NHibernate.SqlCommand
 		/// <param name="sqlIdentifier"></param>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public string ToAliasString( string sqlIdentifier, Dialect.Dialect dialect )
+		public string ToAliasString(string sqlIdentifier, Dialect.Dialect dialect)
 		{
-			bool isQuoted = dialect.IsQuoted( sqlIdentifier );
+			bool isQuoted = dialect.IsQuoted(sqlIdentifier);
 			string unquoted;
 
-			if( isQuoted )
+			if (isQuoted)
 			{
-				unquoted = dialect.UnQuote( sqlIdentifier );
+				unquoted = dialect.UnQuote(sqlIdentifier);
 			}
 			else
 			{
@@ -60,27 +60,26 @@ namespace NHibernate.SqlCommand
 			// Oracle doesn't like underscores at the start of identifiers (NH-320).
 			// It should be safe to trim them here, because the aliases are postfixed
 			// with a unique number anyway, so they won't collide.
-			unquoted = unquoted.TrimStart( '_' );
+			unquoted = unquoted.TrimStart('_');
 
-			if( unquoted.Length > length )
+			if (unquoted.Length > length)
 			{
-				unquoted = unquoted.Substring( 0, length );
+				unquoted = unquoted.Substring(0, length);
 			}
 
-			if( suffix != null )
+			if (suffix != null)
 			{
 				unquoted += suffix;
 			}
 
-			if( isQuoted )
+			if (isQuoted)
 			{
-				return dialect.QuoteForAliasName( unquoted );
+				return dialect.QuoteForAliasName(unquoted);
 			}
 			else
 			{
 				return unquoted;
 			}
-
 		}
 
 		/// <summary>
@@ -89,19 +88,19 @@ namespace NHibernate.SqlCommand
 		/// <param name="sqlIdentifier"></param>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public string ToUnquotedAliasString( string sqlIdentifier, Dialect.Dialect dialect )
+		public string ToUnquotedAliasString(string sqlIdentifier, Dialect.Dialect dialect)
 		{
-			string unquoted = dialect.UnQuote( sqlIdentifier );
+			string unquoted = dialect.UnQuote(sqlIdentifier);
 
 			// See comment in ToAliasString above
-			unquoted = unquoted.TrimStart( '_' );
+			unquoted = unquoted.TrimStart('_');
 
-			if( unquoted.Length > length )
+			if (unquoted.Length > length)
 			{
-				unquoted = unquoted.Substring( 0, length );
+				unquoted = unquoted.Substring(0, length);
 			}
 
-			if( suffix != null )
+			if (suffix != null)
 			{
 				unquoted += suffix;
 			}
@@ -115,12 +114,12 @@ namespace NHibernate.SqlCommand
 		/// <param name="sqlIdentifiers"></param>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public string[ ] ToUnquotedAliasStrings( string[ ] sqlIdentifiers, Dialect.Dialect dialect )
+		public string[] ToUnquotedAliasStrings(string[] sqlIdentifiers, Dialect.Dialect dialect)
 		{
-			string[ ] aliases = new string[sqlIdentifiers.Length];
-			for( int i = 0; i < sqlIdentifiers.Length; i++ )
+			string[] aliases = new string[sqlIdentifiers.Length];
+			for (int i = 0; i < sqlIdentifiers.Length; i++)
 			{
-				aliases[ i ] = ToUnquotedAliasString( sqlIdentifiers[ i ], dialect );
+				aliases[i] = ToUnquotedAliasString(sqlIdentifiers[i], dialect);
 			}
 
 			return aliases;
@@ -133,13 +132,13 @@ namespace NHibernate.SqlCommand
 		/// <param name="sqlIdentifiers"></param>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public string[ ] ToAliasStrings( string[ ] sqlIdentifiers, Dialect.Dialect dialect )
+		public string[] ToAliasStrings(string[] sqlIdentifiers, Dialect.Dialect dialect)
 		{
-			string[ ] aliases = new string[sqlIdentifiers.Length];
+			string[] aliases = new string[sqlIdentifiers.Length];
 
-			for( int i = 0; i < sqlIdentifiers.Length; i++ )
+			for (int i = 0; i < sqlIdentifiers.Length; i++)
 			{
-				aliases[ i ] = ToAliasString( sqlIdentifiers[ i ], dialect );
+				aliases[i] = ToAliasString(sqlIdentifiers[i], dialect);
 			}
 			return aliases;
 		}

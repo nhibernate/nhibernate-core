@@ -14,10 +14,10 @@ namespace NHibernate.Expression
 
 		static MatchMode()
 		{
-			Instances.Add( MatchMode.Exact._intCode, MatchMode.Exact );
-			Instances.Add( MatchMode.Start._intCode, MatchMode.Start );
-			Instances.Add( MatchMode.End._intCode, MatchMode.End );
-			Instances.Add( MatchMode.Anywhere._intCode, MatchMode.Anywhere );
+			Instances.Add(Exact._intCode, Exact);
+			Instances.Add(Start._intCode, Start);
+			Instances.Add(End._intCode, End);
+			Instances.Add(Anywhere._intCode, Anywhere);
 		}
 
 		/// <summary>
@@ -94,7 +94,7 @@ namespace NHibernate.Expression
 			/// <summary>
 			/// Initialize a new instance of the <see cref="ExactMatchMode" /> class.
 			/// </summary>
-			public ExactMatchMode() : base( 0, "EXACT" )
+			public ExactMatchMode() : base(0, "EXACT")
 			{
 			}
 
@@ -117,7 +117,7 @@ namespace NHibernate.Expression
 			/// <summary>
 			/// Initialize a new instance of the <see cref="StartMatchMode" /> class.
 			/// </summary>
-			public StartMatchMode() : base( 1, "START" )
+			public StartMatchMode() : base(1, "START")
 			{
 			}
 
@@ -140,7 +140,7 @@ namespace NHibernate.Expression
 			/// <summary>
 			/// Initialize a new instance of the <see cref="EndMatchMode" /> class.
 			/// </summary>
-			public EndMatchMode() : base( 2, "END" )
+			public EndMatchMode() : base(2, "END")
 			{
 			}
 
@@ -153,7 +153,6 @@ namespace NHibernate.Expression
 			{
 				return '%' + pattern;
 			}
-
 		}
 
 		/// <summary>
@@ -165,7 +164,7 @@ namespace NHibernate.Expression
 			/// <summary>
 			/// Initialize a new instance of the <see cref="AnywhereMatchMode" /> class.
 			/// </summary>
-			public AnywhereMatchMode() : base( 3, "ANYWHERE" )
+			public AnywhereMatchMode() : base(3, "ANYWHERE")
 			{
 			}
 
@@ -178,8 +177,6 @@ namespace NHibernate.Expression
 			{
 				return '%' + pattern + '%';
 			}
-
 		}
-
 	}
 }

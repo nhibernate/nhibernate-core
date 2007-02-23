@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class StringType : ImmutableType, IDiscriminatorType
 	{
 		/// <summary></summary>
-		internal StringType() : base( new StringSqlType() )
+		internal StringType() : base(new StringSqlType())
 		{
 		}
 
@@ -20,7 +20,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="sqlType"></param>
-		internal StringType( StringSqlType sqlType ) : base( sqlType )
+		internal StringType(StringSqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -30,9 +30,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToString( rs[ index ] );
+			return Convert.ToString(rs[index]);
 		}
 
 		/// <summary>
@@ -41,15 +41,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Convert.ToString( rs[ name ] );
+			return Convert.ToString(rs[name]);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( string ); }
+			get { return typeof(string); }
 		}
 
 		/// <summary>
@@ -58,9 +58,9 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand st, object value, int index )
+		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[ index ] as IDataParameter;
+			IDataParameter parm = st.Parameters[index] as IDataParameter;
 			parm.Value = value;
 		}
 
@@ -75,9 +75,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public string ObjectToSQLString( object value )
+		public string ObjectToSQLString(object value)
 		{
-			return "'" + ( string ) value + "'";
+			return "'" + (string) value + "'";
 		}
 
 		/// <summary>
@@ -85,7 +85,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
 			return xml;
 		}
@@ -96,9 +96,9 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			return ObjectUtils.Equals( x, y );
+			return ObjectUtils.Equals(x, y);
 		}
 
 		/// <summary>
@@ -106,15 +106,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ToString( object value )
+		public override string ToString(object value)
 		{
-			return ( string ) value;
+			return (string) value;
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
 			return xml;
 		}
-
 	}
 }

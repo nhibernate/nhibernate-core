@@ -31,6 +31,6 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier</returns>
-		object Generate( ISessionImplementor session, object obj );
+		object Generate(ISessionImplementor session, object obj);
 	}
 }

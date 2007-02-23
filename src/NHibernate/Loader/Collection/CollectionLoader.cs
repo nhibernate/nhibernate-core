@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -16,8 +15,8 @@ namespace NHibernate.Loader.Collection
 	{
 		private readonly IQueryableCollection collectionPersister;
 
-		public CollectionLoader( IQueryableCollection persister, ISessionFactoryImplementor factory, IDictionary enabledFilters )
-			: base( factory, enabledFilters )
+		public CollectionLoader(IQueryableCollection persister, ISessionFactoryImplementor factory, IDictionary enabledFilters)
+			: base(factory, enabledFilters)
 		{
 			this.collectionPersister = persister;
 		}
@@ -27,9 +26,9 @@ namespace NHibernate.Loader.Collection
 			get { return HasSubselectLoadableCollections(); }
 		}
 
-		public virtual void Initialize( object id, ISessionImplementor session )
+		public virtual void Initialize(object id, ISessionImplementor session)
 		{
-			LoadCollection( session, id, KeyType );
+			LoadCollection(session, id, KeyType);
 		}
 
 		protected IType KeyType

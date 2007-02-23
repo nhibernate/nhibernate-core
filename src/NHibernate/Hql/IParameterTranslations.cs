@@ -1,14 +1,14 @@
 using System;
-using NHibernate.Type;
 using System.Collections;
+using NHibernate.Type;
 
 namespace NHibernate.Hql
 {
 	public interface IParameterTranslations
 	{
-		bool SupportsOrdinalParameterMetadata { get;}
+		bool SupportsOrdinalParameterMetadata { get; }
 
-		int OrdinalParameterCount { get;}
+		int OrdinalParameterCount { get; }
 
 		int GetOrdinalParameterSqlLocation(int ordinalPosition);
 

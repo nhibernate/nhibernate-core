@@ -3,10 +3,10 @@ using System.Collections;
 using System.Configuration;
 using System.Data;
 using log4net;
+using NHibernate.Cfg;
 using NHibernate.Driver;
 using NHibernate.Util;
-
-using Environment = NHibernate.Cfg.Environment;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Connection
 {
@@ -15,7 +15,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public abstract class ConnectionProvider : IConnectionProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( ConnectionProvider ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionProvider));
 		private string connString;
 		private IDriver driver;
 
@@ -23,16 +23,16 @@ namespace NHibernate.Connection
 		/// Closes the <see cref="IDbConnection"/>.
 		/// </summary>
 		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
-		public virtual void CloseConnection( IDbConnection conn )
+		public virtual void CloseConnection(IDbConnection conn)
 		{
-			log.Debug( "Closing connection" );
+			log.Debug("Closing connection");
 			try
 			{
 				conn.Close();
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				throw new ADOException( "Could not close " + conn.GetType().ToString() + " connection", e );
+				throw new ADOException("Could not close " + conn.GetType().ToString() + " connection", e);
 			}
 		}
 
@@ -41,14 +41,14 @@ namespace NHibernate.Connection
 		/// </summary>
 		/// <param name="settings">An <see cref="IDictionary"/> that contains the settings for this ConnectionProvider.</param>
 		/// <exception cref="HibernateException">
-		/// Thrown when a <see cref="Environment.ConnectionString"/> could not be found 
+		/// Thrown when a <see cref="Cfg.Environment.ConnectionString"/> could not be found 
 		/// in the <c>settings</c> parameter or the Driver Class could not be loaded.
 		/// </exception>
-		public virtual void Configure( IDictionary settings )
+		public virtual void Configure(IDictionary settings)
 		{
-			log.Info( "Configuring ConnectionProvider" );
-			
-			connString = settings[ Environment.ConnectionString ] as string;
+			log.Info("Configuring ConnectionProvider");
+
+			connString = settings[Environment.ConnectionString] as string;
 
 #if NET_2_0
 			// Connection string in the configuration overrides named connection string
@@ -57,19 +57,18 @@ namespace NHibernate.Connection
 				connString = GetNamedConnectionString(settings);
 			}
 #endif
-			if( connString == null )
+			if (connString == null)
 			{
-				throw new HibernateException( "Could not find connection string setting (set " +
-				                              Environment.ConnectionString +
-											  " or " +
-				                              Environment.ConnectionStringName +
-											  " property)");
+				throw new HibernateException("Could not find connection string setting (set " +
+				                             Environment.ConnectionString +
+				                             " or " +
+				                             Environment.ConnectionStringName +
+				                             " property)");
 			}
 
-			ConfigureDriver( settings );
-
+			ConfigureDriver(settings);
 		}
-		
+
 #if NET_2_0
 		/// <summary>
 		/// Get the .NET 2.0 named connection string 
@@ -80,8 +79,8 @@ namespace NHibernate.Connection
 		/// </exception>
 		protected virtual string GetNamedConnectionString(IDictionary settings)
 		{
-			string connStringName = settings[ Environment.ConnectionStringName ] as string;
-			if(connStringName ==null)
+			string connStringName = settings[Environment.ConnectionStringName] as string;
+			if (connStringName == null)
 				return null;
 			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
 			if (connectionStringSettings == null)
@@ -89,7 +88,7 @@ namespace NHibernate.Connection
 			return connectionStringSettings.ConnectionString;
 		}
 #endif
-		
+
 		/// <summary>
 		/// Configures the driver for the ConnectionProvider.
 		/// </summary>
@@ -99,25 +98,25 @@ namespace NHibernate.Connection
 		/// found in the <c>settings</c> parameter or there is a problem with creating
 		/// the <see cref="IDriver"/>.
 		/// </exception>
-		protected virtual void ConfigureDriver( IDictionary settings )
+		protected virtual void ConfigureDriver(IDictionary settings)
 		{
-			string driverClass = settings[ Environment.ConnectionDriver ] as string;
-			if( driverClass == null )
+			string driverClass = settings[Environment.ConnectionDriver] as string;
+			if (driverClass == null)
 			{
-				throw new HibernateException( "The " + Environment.ConnectionDriver + " must be specified in the NHibernate configuration section." );
+				throw new HibernateException("The " + Environment.ConnectionDriver +
+				                             " must be specified in the NHibernate configuration section.");
 			}
 			else
 			{
 				try
 				{
-					driver = ( IDriver ) Activator.CreateInstance( ReflectHelper.ClassForName( driverClass ) );
+					driver = (IDriver) Activator.CreateInstance(ReflectHelper.ClassForName(driverClass));
 					driver.Configure(settings);
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					throw new HibernateException( "Could not create the driver from " + driverClass + ".", e );
+					throw new HibernateException("Could not create the driver from " + driverClass + ".", e);
 				}
-
 			}
 		}
 
@@ -163,7 +162,7 @@ namespace NHibernate.Connection
 		/// </summary>
 		~ConnectionProvider()
 		{
-			Dispose( false );
+			Dispose(false);
 		}
 
 		/// <summary>
@@ -172,7 +171,7 @@ namespace NHibernate.Connection
 		/// </summary>
 		public void Dispose()
 		{
-			Dispose( true );
+			Dispose(true);
 		}
 
 		/// <summary>
@@ -193,7 +192,7 @@ namespace NHibernate.Connection
 		/// </remarks>
 		protected virtual void Dispose(bool isDisposing)
 		{
-			if( _isAlreadyDisposed )
+			if (_isAlreadyDisposed)
 			{
 				// don't dispose of multiple times.
 				return;
@@ -201,17 +200,18 @@ namespace NHibernate.Connection
 
 			// free managed resources that are being managed by the ConnectionProvider if we
 			// know this call came through Dispose()
-			if( isDisposing )
+			if (isDisposing)
 			{
-				log.Debug( "Disposing of ConnectionProvider." );
+				log.Debug("Disposing of ConnectionProvider.");
 			}
 
 			// free unmanaged resources here
-			
+
 			_isAlreadyDisposed = true;
 			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize( this );
+			GC.SuppressFinalize(this);
 		}
+
 		#endregion
 	}
 }

@@ -19,8 +19,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="identifier">The identifier of the object that caused the exception.</param>
 		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
-		public UnresolvableObjectException( object identifier, System.Type clazz ) :
-			this( "No row with the given identifier exists", identifier, clazz )
+		public UnresolvableObjectException(object identifier, System.Type clazz) :
+			this("No row with the given identifier exists", identifier, clazz)
 		{
 		}
 
@@ -30,8 +30,8 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error.</param>
 		/// <param name="identifier">The identifier of the object that caused the exception.</param>
 		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
-		public UnresolvableObjectException( string message, object identifier, System.Type clazz )
-			: base( message )
+		public UnresolvableObjectException(string message, object identifier, System.Type clazz)
+			: base(message)
 		{
 			this.identifier = identifier;
 			this.clazz = clazz;
@@ -52,30 +52,30 @@ namespace NHibernate
 			get { return clazz; }
 		}
 
-		public static void ThrowIfNull( object o, object id, System.Type clazz )
+		public static void ThrowIfNull(object o, object id, System.Type clazz)
 		{
-			if( o == null )
+			if (o == null)
 			{
-				throw new UnresolvableObjectException( id, clazz );
+				throw new UnresolvableObjectException(id, clazz);
 			}
 		}
 
 		#region ISerializable Members
 
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData (info, context);
-			info.AddValue( "identifier", identifier );
-			info.AddValue( "clazz", clazz );
+			base.GetObjectData(info, context);
+			info.AddValue("identifier", identifier);
+			info.AddValue("clazz", clazz);
 		}
 
 		protected UnresolvableObjectException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			identifier = info.GetValue( "identifier", typeof( object ) );
-			clazz = info.GetValue( "clazz", typeof( System.Type ) ) as System.Type;
+			identifier = info.GetValue("identifier", typeof(object));
+			clazz = info.GetValue("clazz", typeof(System.Type)) as System.Type;
 		}
 
 		#endregion

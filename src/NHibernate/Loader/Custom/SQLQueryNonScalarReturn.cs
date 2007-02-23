@@ -13,15 +13,15 @@ namespace NHibernate.Loader.Custom
 		private LockMode lockMode;
 		protected IDictionary propertyResults = new Hashtable();
 
-		protected SQLQueryNonScalarReturn( string alias, IDictionary propertyResults, LockMode lockMode )
+		protected SQLQueryNonScalarReturn(string alias, IDictionary propertyResults, LockMode lockMode)
 		{
 			this.alias = alias;
-			if( alias == null )
+			if (alias == null)
 			{
-				throw new HibernateException( "alias must be specified" );
+				throw new HibernateException("alias must be specified");
 			}
 			this.lockMode = lockMode;
-			if( propertyResults != null )
+			if (propertyResults != null)
 			{
 				this.propertyResults = propertyResults;
 			}

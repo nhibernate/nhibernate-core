@@ -24,7 +24,7 @@ namespace NHibernate.Cache
 		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
 		/// <returns>The cached object or <c>null</c></returns>
 		/// <exception cref="CacheException"></exception>
-		object Get( CacheKey key, long txTimestamp );
+		object Get(CacheKey key, long txTimestamp);
 
 		/// <summary>
 		/// Attempt to cache an object, after loading from the database
@@ -37,7 +37,7 @@ namespace NHibernate.Cache
 		/// <param name="minimalPut">indicates that the cache should avoid a put if the item is already cached</param>
 		/// <returns><c>true</c> if the object was successfully cached</returns>
 		/// <exception cref="CacheException"></exception>
-		bool Put( CacheKey key, object value, long txTimestamp, object version, IComparer versionComparer, bool minimalPut );
+		bool Put(CacheKey key, object value, long txTimestamp, object version, IComparer versionComparer, bool minimalPut);
 
 		/// <summary>
 		/// We are going to attempt to update/delete the keyed object
@@ -46,7 +46,7 @@ namespace NHibernate.Cache
 		/// <param name="version"></param>
 		/// <exception cref="CacheException"></exception>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		ISoftLock Lock( CacheKey key, object version );
+		ISoftLock Lock(CacheKey key, object version);
 
 		/// <summary>
 		/// Called after an item has become stale (before the transaction completes).
@@ -54,7 +54,7 @@ namespace NHibernate.Cache
 		/// <param name="key"></param>
 		/// <exception cref="CacheException"></exception>
 		/// <remarks>This method is used by "synchronous" concurrency strategies.</remarks>
-		void Evict( CacheKey key );
+		void Evict(CacheKey key);
 
 		/// <summary>
 		/// Called after an item has been updated (before the transaction completes),
@@ -63,7 +63,7 @@ namespace NHibernate.Cache
 		/// <param name="key"></param>
 		/// <param name="value"></param>
 		/// <remarks>This method is used by "synchronous" concurrency strategies.</remarks>
-		void Update( CacheKey key, object value );
+		void Update(CacheKey key, object value);
 
 		/// <summary>
 		/// Called after an item has been inserted (before the transaction completes), instead of calling Evict().
@@ -71,7 +71,7 @@ namespace NHibernate.Cache
 		/// <param name="key"></param>
 		/// <param name="value"></param>
 		/// <remarks>This method is used by "synchronous" concurrency strategies.</remarks>
-		void Insert( CacheKey key, object value );
+		void Insert(CacheKey key, object value);
 
 		/// <summary>
 		/// Called when we have finished the attempted update/delete (which may or
@@ -81,7 +81,7 @@ namespace NHibernate.Cache
 		/// <param name="lock">The soft lock</param>
 		/// <exception cref="CacheException"></exception>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		void Release( CacheKey key, ISoftLock @lock );
+		void Release(CacheKey key, ISoftLock @lock);
 
 		/// <summary>
 		/// Called after an item has been updated (after the transaction completes),
@@ -92,7 +92,7 @@ namespace NHibernate.Cache
 		/// <param name="version"></param>
 		/// <param name="lock"></param>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		void AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock );
+		void AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock);
 
 		/// <summary>
 		/// Called after an item has been inserted (after the transaction completes), instead of calling release().
@@ -101,14 +101,14 @@ namespace NHibernate.Cache
 		/// <param name="value"></param>
 		/// <param name="version"></param>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		void AfterInsert(CacheKey key, object value, object version );
+		void AfterInsert(CacheKey key, object value, object version);
 
 		/// <summary>
 		/// Evict an item from the cache immediately (without regard for transaction isolation).
 		/// </summary>
 		/// <param name="key"></param>
 		/// <exception cref="CacheException"></exception>
-		void Remove( CacheKey key );
+		void Remove(CacheKey key);
 
 		/// <summary>
 		/// Evict all items from the cache immediately.
@@ -126,7 +126,7 @@ namespace NHibernate.Cache
 		/// Gets the cache region name.
 		/// </summary>
 		string RegionName { get; }
-		
+
 		/// <summary>
 		/// Gets or sets the <see cref="ICache"/> for this strategy to use.
 		/// </summary>

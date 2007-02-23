@@ -1,5 +1,3 @@
-using NHibernate.Loader;
-
 namespace NHibernate.Mapping
 {
 	/// <summary>

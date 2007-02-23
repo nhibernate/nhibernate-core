@@ -20,9 +20,9 @@ namespace NHibernate.SqlCommand
 		/// a <see cref="Parameter" />, or one of special values
 		/// <see cref="Null" /> or <see cref="NotNull" />.
 		/// </summary>
-		public InFragment AddValue( object value )
+		public InFragment AddValue(object value)
 		{
-			values.Add( value );
+			values.Add(value);
 			return this;
 		}
 
@@ -31,7 +31,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="columnName"></param>
 		/// <returns></returns>
-		public InFragment SetColumn( string columnName )
+		public InFragment SetColumn(string columnName)
 		{
 			this.columnName = columnName;
 			return this;
@@ -43,25 +43,25 @@ namespace NHibernate.SqlCommand
 		/// <param name="alias"></param>
 		/// <param name="columnName"></param>
 		/// <returns></returns>
-		public InFragment SetColumn( string alias, string columnName )
+		public InFragment SetColumn(string alias, string columnName)
 		{
 			this.columnName = alias + StringHelper.Dot + columnName;
-			return SetColumn( this.columnName );
+			return SetColumn(this.columnName);
 		}
 
-		public InFragment SetFormula( string alias, string formulaTemplate )
+		public InFragment SetFormula(string alias, string formulaTemplate)
 		{
-			this.columnName = StringHelper.Replace( formulaTemplate, Template.Placeholder, alias );
-			return SetColumn( this.columnName );
+			this.columnName = StringHelper.Replace(formulaTemplate, Template.Placeholder, alias);
+			return SetColumn(this.columnName);
 		}
 
 		/// <summary></summary>
 		public SqlString ToFragmentString()
 		{
-			SqlStringBuilder buf = new SqlStringBuilder( values.Count * 5 );
-			buf.Add( columnName );
+			SqlStringBuilder buf = new SqlStringBuilder(values.Count * 5);
+			buf.Add(columnName);
 
-			if( values.Count > 1 )
+			if (values.Count > 1)
 			{
 				// is a comma needed before the value that's about to be added - it
 				// defaults to false because we don't need a comma right away.
@@ -71,32 +71,32 @@ namespace NHibernate.SqlCommand
 				// the SqlString a little bit more at the end.
 				bool allowNull = false;
 
-				buf.Add( " in (" );
-				for( int i = 0; i < values.Count; i++ )
+				buf.Add(" in (");
+				for (int i = 0; i < values.Count; i++)
 				{
-					object value = values[ i ];
-					if( Null.Equals( value ) )
+					object value = values[i];
+					if (Null.Equals(value))
 					{
 						allowNull = true;
 					}
-					else if ( NotNull.Equals( value ) )
+					else if (NotNull.Equals(value))
 					{
-						throw new ArgumentOutOfRangeException( "not null makes no sense for in expression" ) ;
+						throw new ArgumentOutOfRangeException("not null makes no sense for in expression");
 					}
 					else
 					{
-						if( commaNeeded )
+						if (commaNeeded)
 						{
-							buf.Add( StringHelper.CommaSpace );
+							buf.Add(StringHelper.CommaSpace);
 						}
 
-						if( value is Parameter )
+						if (value is Parameter)
 						{
-							buf.Add( ( Parameter ) value );
+							buf.Add((Parameter) value);
 						}
 						else
 						{
-							buf.Add( ( string ) value );
+							buf.Add((string) value);
 						}
 
 						// a value has been added into the IN clause so the next
@@ -105,32 +105,32 @@ namespace NHibernate.SqlCommand
 					}
 				}
 
-				buf.Add( StringHelper.ClosedParen );
+				buf.Add(StringHelper.ClosedParen);
 
 				// if "null" is in the list of values then add to the beginning of the
 				// SqlString "is null or [column] (" + [rest of sqlstring here] + ")"
-				if( allowNull )
+				if (allowNull)
 				{
-					buf.Insert( 0, " is null or " )
-						.Insert( 0, columnName )
-						.Insert( 0, StringHelper.OpenParen )
-						.Add( StringHelper.ClosedParen );
+					buf.Insert(0, " is null or ")
+						.Insert(0, columnName)
+						.Insert(0, StringHelper.OpenParen)
+						.Add(StringHelper.ClosedParen);
 				}
 			}
 			else
 			{
-				object value = values[ 0 ];
-				if( Null.Equals( value ) )
+				object value = values[0];
+				if (Null.Equals(value))
 				{
-					buf.Add( " is null" );
+					buf.Add(" is null");
 				}
-				else if ( NotNull.Equals( value ) )
+				else if (NotNull.Equals(value))
 				{
-					buf.Add( " is not null " );
+					buf.Add(" is not null ");
 				}
 				else
 				{
-					buf.Add( "=" ).AddObject( values[ 0 ] );
+					buf.Add("=").AddObject(values[0]);
 				}
 			}
 			return buf.ToSqlString();

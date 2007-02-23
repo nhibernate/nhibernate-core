@@ -8,7 +8,6 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Collection;
 using NHibernate.Persister.Entity;
-using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -23,8 +22,8 @@ namespace NHibernate.Persister.Collection
 		public BasicCollectionPersister(
 			Mapping.Collection collection,
 			ICacheConcurrencyStrategy cache,
-			ISessionFactoryImplementor factory )
-			: base( collection, cache, factory )
+			ISessionFactoryImplementor factory)
+			: base(collection, cache, factory)
 		{
 		}
 
@@ -34,12 +33,12 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateDeleteString()
 		{
-			SqlDeleteBuilder delete = new SqlDeleteBuilder( Factory )
-				.SetTableName( qualifiedTableName )
-				.SetIdentityColumn( KeyColumnNames, KeyType );
-			if( HasWhere )
+			SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory)
+				.SetTableName(qualifiedTableName)
+				.SetIdentityColumn(KeyColumnNames, KeyType);
+			if (HasWhere)
 			{
-				delete.AddWhereFragment( sqlWhereString );
+				delete.AddWhereFragment(sqlWhereString);
 			}
 			return delete.ToSqlCommandInfo();
 		}
@@ -50,18 +49,18 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateInsertRowString()
 		{
-			SqlInsertBuilder insert = new SqlInsertBuilder( Factory )
-				.SetTableName( qualifiedTableName )
-				.AddColumn( KeyColumnNames, KeyType );
-			if( HasIndex )
+			SqlInsertBuilder insert = new SqlInsertBuilder(Factory)
+				.SetTableName(qualifiedTableName)
+				.AddColumn(KeyColumnNames, KeyType);
+			if (HasIndex)
 			{
-				insert.AddColumn( IndexColumnNames, IndexType );
+				insert.AddColumn(IndexColumnNames, IndexType);
 			}
-			if( hasIdentifier )
+			if (hasIdentifier)
 			{
-				insert.AddColumn( new string[ ] {IdentifierColumnName}, IdentifierType );
+				insert.AddColumn(new string[] {IdentifierColumnName}, IdentifierType);
 			}
-			insert.AddColumns( ElementColumnNames, elementColumnIsSettable, ElementType );
+			insert.AddColumns(ElementColumnNames, elementColumnIsSettable, ElementType);
 
 			return insert.ToSqlCommandInfo();
 		}
@@ -72,22 +71,22 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateUpdateRowString()
 		{
-			SqlUpdateBuilder update = new SqlUpdateBuilder( Factory )
-				.SetTableName( qualifiedTableName )
-				.AddColumns( ElementColumnNames, elementColumnIsSettable, ElementType );
-			if( hasIdentifier )
+			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory)
+				.SetTableName(qualifiedTableName)
+				.AddColumns(ElementColumnNames, elementColumnIsSettable, ElementType);
+			if (hasIdentifier)
 			{
-				update.AddWhereFragment( new string[] { IdentifierColumnName }, IdentifierType, " = " );
+				update.AddWhereFragment(new string[] {IdentifierColumnName}, IdentifierType, " = ");
 			}
-			else if( HasIndex /* && !indexContainsFormula */ )
+			else if (HasIndex /* && !indexContainsFormula */)
 			{
-				update.AddWhereFragment( KeyColumnNames, KeyType, " = " )
-					.AddWhereFragment( IndexColumnNames, IndexType, " = " );
+				update.AddWhereFragment(KeyColumnNames, KeyType, " = ")
+					.AddWhereFragment(IndexColumnNames, IndexType, " = ");
 			}
 			else
 			{
-				update.AddWhereFragment( KeyColumnNames, KeyType, " = " )
-					.AddWhereFragment( ElementColumnNames, ElementType, " = " );
+				update.AddWhereFragment(KeyColumnNames, KeyType, " = ")
+					.AddWhereFragment(ElementColumnNames, ElementType, " = ");
 			}
 
 			return update.ToSqlCommandInfo();
@@ -99,23 +98,23 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateDeleteRowString()
 		{
-			SqlDeleteBuilder delete = new SqlDeleteBuilder( Factory );
-			delete.SetTableName( qualifiedTableName );
-			if( hasIdentifier )
+			SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory);
+			delete.SetTableName(qualifiedTableName);
+			if (hasIdentifier)
 			{
-				delete.AddWhereFragment( new string[] { IdentifierColumnName }, IdentifierType, " = " );
+				delete.AddWhereFragment(new string[] {IdentifierColumnName}, IdentifierType, " = ");
 			}
-			else if( HasIndex /*&& !indexContainsFormula*/ )
+			else if (HasIndex /*&& !indexContainsFormula*/)
 			{
 				delete
-					.AddWhereFragment( KeyColumnNames, KeyType, " = " )
-					.AddWhereFragment( IndexColumnNames, IndexType, " = " );
+					.AddWhereFragment(KeyColumnNames, KeyType, " = ")
+					.AddWhereFragment(IndexColumnNames, IndexType, " = ");
 			}
 			else
 			{
 				delete
-					.AddWhereFragment( KeyColumnNames, KeyType, " = " )
-					.AddWhereFragment( ElementColumnNames, ElementType, " = " );
+					.AddWhereFragment(KeyColumnNames, KeyType, " = ")
+					.AddWhereFragment(ElementColumnNames, ElementType, " = ");
 			}
 
 			return delete.ToSqlCommandInfo();
@@ -142,9 +141,9 @@ namespace NHibernate.Persister.Collection
 			get { return ElementType.IsEntityType; }
 		}
 
-		protected override int DoUpdateRows( object id, IPersistentCollection collection, ISessionImplementor session )
+		protected override int DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session)
 		{
-			if (ArrayHelper.IsAllFalse( elementColumnIsSettable )) return 0;
+			if (ArrayHelper.IsAllFalse(elementColumnIsSettable)) return 0;
 
 			try
 			{
@@ -156,10 +155,10 @@ namespace NHibernate.Persister.Collection
 				{
 					int i = 0;
 					int count = 0;
-					foreach( object entry in entries )
+					foreach (object entry in entries)
 					{
 						int offset = 0;
-						if( collection.NeedsUpdating( entry, i, ElementType ) )
+						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
 							if (useBatch)
 							{
@@ -180,22 +179,22 @@ namespace NHibernate.Persister.Collection
 							}
 
 							//offset += expectation.Prepare(st, Factory.ConnectionProvider.Driver);
-							
-							int loc = WriteElement( st, collection.GetElement( entry ), offset, session );
-							if( hasIdentifier )
+
+							int loc = WriteElement(st, collection.GetElement(entry), offset, session);
+							if (hasIdentifier)
 							{
-								loc = WriteIdentifier( st, collection.GetIdentifier( entry, i ), loc, session );
+								loc = WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session);
 							}
 							else
 							{
-								loc = WriteKey( st, id, loc, session );
-								if( HasIndex /* && !indexContainsFormula */)
+								loc = WriteKey(st, id, loc, session);
+								if (HasIndex /* && !indexContainsFormula */)
 								{
-									loc = WriteIndexToWhere( st, collection.GetIndex( entry, i ), loc, session );
+									loc = WriteIndexToWhere(st, collection.GetIndex(entry, i), loc, session);
 								}
 								else
 								{
-									loc = WriteElementToWhere( st, collection.GetSnapshotElement( entry, i ), loc, session );
+									loc = WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
 								}
 							}
 
@@ -213,7 +212,7 @@ namespace NHibernate.Persister.Collection
 					}
 					return count;
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
 					if (useBatch)
 					{
@@ -229,31 +228,31 @@ namespace NHibernate.Persister.Collection
 					}
 				}
 			}
-			catch( HibernateException )
+			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions
 				throw;
 			}
-			catch( Exception sqle )
+			catch (Exception sqle)
 			{
-				throw Convert( sqle, "could not update collection rows: " + MessageHelper.InfoString( this, id ) );
+				throw Convert(sqle, "could not update collection rows: " + MessageHelper.InfoString(this, id));
 			}
 		}
 
 		/// <summary>
 		/// Create the <see cref="CollectionLoader" />
 		/// </summary>
-		protected override ICollectionInitializer CreateCollectionInitializer( IDictionary enabledFilters )
+		protected override ICollectionInitializer CreateCollectionInitializer(IDictionary enabledFilters)
 		{
-			return BatchingCollectionInitializer.CreateBatchingCollectionInitializer( this, batchSize, Factory, enabledFilters );
+			return BatchingCollectionInitializer.CreateBatchingCollectionInitializer(this, batchSize, Factory, enabledFilters);
 		}
 
-		public override SqlString FromJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
+		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
 			return SqlString.Empty;
 		}
 
-		public override SqlString WhereJoinFragment( string alias, bool innerJoin, bool includeSubclasses )
+		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
 			return SqlString.Empty;
 		}
@@ -264,35 +263,35 @@ namespace NHibernate.Persister.Collection
 			string lhsAlias,
 			string entitySuffix,
 			string collectionSuffix,
-			bool includeCollectionColumns )
+			bool includeCollectionColumns)
 		{
 			// we need to determine the best way to know that two joinables
 			// represent a single many-to-many...
-			if ( rhs != null && IsManyToMany && !rhs.IsCollection ) 
+			if (rhs != null && IsManyToMany && !rhs.IsCollection)
 			{
-				IAssociationType elementType = ( IAssociationType ) ElementType;
-				if ( rhs.Equals( elementType.GetAssociatedJoinable( Factory ) ) ) 
+				IAssociationType elementType = (IAssociationType) ElementType;
+				if (rhs.Equals(elementType.GetAssociatedJoinable(Factory)))
 				{
-					return ManyToManySelectFragment( rhs, rhsAlias, lhsAlias, collectionSuffix );
+					return ManyToManySelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix);
 				}
 			}
-			return includeCollectionColumns ? SelectFragment( lhsAlias, collectionSuffix ) : string.Empty;
+			return includeCollectionColumns ? SelectFragment(lhsAlias, collectionSuffix) : string.Empty;
 		}
 
 		private string ManyToManySelectFragment(
 			IJoinable rhs,
 			string rhsAlias,
 			string lhsAlias,
-			string collectionSuffix )
+			string collectionSuffix)
 		{
-			SelectFragment frag = GenerateSelectFragment( lhsAlias, collectionSuffix );
+			SelectFragment frag = GenerateSelectFragment(lhsAlias, collectionSuffix);
 
 			string[] elementColumnNames = rhs.KeyColumnNames;
-			frag.AddColumns( rhsAlias, elementColumnNames, elementColumnAliases );
-			AppendIndexColumns( frag, lhsAlias );
-			AppendIdentifierColumns( frag, lhsAlias );
+			frag.AddColumns(rhsAlias, elementColumnNames, elementColumnAliases);
+			AppendIndexColumns(frag, lhsAlias);
+			AppendIdentifierColumns(frag, lhsAlias);
 
-			return frag.ToSqlStringFragment( false );
+			return frag.ToSqlStringFragment(false);
 		}
 
 		protected override ICollectionInitializer CreateSubselectInitializer(

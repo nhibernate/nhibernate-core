@@ -40,7 +40,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="innerJoin"></param>
 		/// <param name="includeSubclasses"></param>
 		/// <returns></returns>
-		SqlString QueryWhereFragment( string alias, bool innerJoin, bool includeSubclasses );
+		SqlString QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses);
 
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the intentifier select fragment.
@@ -48,7 +48,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="name"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		string IdentifierSelectFragment( string name, string suffix );
+		string IdentifierSelectFragment(string name, string suffix);
 
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the property select fragment.
@@ -56,8 +56,8 @@ namespace NHibernate.Persister.Entity
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		string PropertySelectFragment( string alias, string suffix );
+		string PropertySelectFragment(string alias, string suffix);
 
-        string GenerateFilterConditionAlias(string rootAlias);
-    }
+		string GenerateFilterConditionAlias(string rootAlias);
+	}
 }

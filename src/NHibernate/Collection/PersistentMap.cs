@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
+using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -14,41 +16,41 @@ namespace NHibernate.Collection
 	/// </summary>
 	[Serializable]
 #if NET_2_0
-	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.DictionaryProxy))]
+	[DebuggerTypeProxy(typeof(DictionaryProxy))]
 #endif
 	public class PersistentMap : AbstractPersistentCollection, IDictionary
 	{
 		protected IDictionary map;
 
-		protected override ICollection Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
-			Hashtable clonedMap = new Hashtable( map.Count );
-			foreach( DictionaryEntry e in map )
+			Hashtable clonedMap = new Hashtable(map.Count);
+			foreach (DictionaryEntry e in map)
 			{
-				clonedMap[ e.Key ] = persister.ElementType.DeepCopy( e.Value );
+				clonedMap[e.Key] = persister.ElementType.DeepCopy(e.Value);
 			}
 			return clonedMap;
 		}
 
-		public override ICollection GetOrphans( object snapshot, System.Type entityName )
+		public override ICollection GetOrphans(object snapshot, System.Type entityName)
 		{
-			IDictionary sn = ( IDictionary ) snapshot;
-			ArrayList result = new ArrayList( sn.Values.Count );
-			result.AddRange( sn.Values );
-			AbstractPersistentCollection.IdentityRemoveAll( result, map.Values, entityName, Session );
+			IDictionary sn = (IDictionary) snapshot;
+			ArrayList result = new ArrayList(sn.Values.Count);
+			result.AddRange(sn.Values);
+			IdentityRemoveAll(result, map.Values, entityName, Session);
 			return result;
 		}
 
-		public override bool EqualsSnapshot( IType elementType )
+		public override bool EqualsSnapshot(IType elementType)
 		{
-			IDictionary xmap = ( IDictionary ) GetSnapshot();
-			if( xmap.Count != this.map.Count )
+			IDictionary xmap = (IDictionary) GetSnapshot();
+			if (xmap.Count != this.map.Count)
 			{
 				return false;
 			}
-			foreach( DictionaryEntry entry in map )
+			foreach (DictionaryEntry entry in map)
 			{
-				if( elementType.IsDirty( entry.Value, xmap[ entry.Key ], Session ) )
+				if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
 				{
 					return false;
 				}
@@ -56,12 +58,12 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		public override bool IsWrapper( object collection )
+		public override bool IsWrapper(object collection)
 		{
 			return map == collection;
 		}
 
-		public PersistentMap( ) : base( )
+		public PersistentMap() : base()
 		{
 		}
 
@@ -69,7 +71,7 @@ namespace NHibernate.Collection
 		/// Construct an uninitialized PersistentMap.
 		/// </summary>
 		/// <param name="session">The ISession the PersistentMap should be a part of.</param>
-		public PersistentMap( ISessionImplementor session ) : base( session )
+		public PersistentMap(ISessionImplementor session) : base(session)
 		{
 		}
 
@@ -78,16 +80,16 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session">The ISession the PersistentMap should be a part of.</param>
 		/// <param name="map">The IDictionary that contains the initial values.</param>
-		public PersistentMap( ISessionImplementor session, IDictionary map ) : base( session )
+		public PersistentMap(ISessionImplementor session, IDictionary map) : base(session)
 		{
 			this.map = map;
 			SetInitialized();
 			IsDirectlyAccessible = true;
 		}
 
-		public override void BeforeInitialize( ICollectionPersister persister )
+		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			this.map = ( IDictionary ) persister.CollectionType.Instantiate();
+			this.map = (IDictionary) persister.CollectionType.Instantiate();
 		}
 
 		public int Count
@@ -135,21 +137,18 @@ namespace NHibernate.Collection
 				Read();
 				return map.Values;
 			}
-
 		}
 
 		public IEnumerator GetEnumerator()
 		{
 			Read();
 			return map.GetEnumerator();
-
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
 			return map.GetEnumerator();
-
 		}
 
 		IDictionaryEnumerator IDictionary.GetEnumerator()
@@ -158,44 +157,44 @@ namespace NHibernate.Collection
 			return map.GetEnumerator();
 		}
 
-		public void CopyTo( Array array, int index )
+		public void CopyTo(Array array, int index)
 		{
 			Read();
-			map.CopyTo( array, index );
+			map.CopyTo(array, index);
 		}
 
-		public void Add( object key, object value )
+		public void Add(object key, object value)
 		{
 			Initialize(true);
-			map.Add( key, value );
+			map.Add(key, value);
 			Dirty();
 		}
 
-		public bool Contains( object key )
+		public bool Contains(object key)
 		{
 			Read();
-			return map.Contains( key );
+			return map.Contains(key);
 		}
 
-		public object this[ object key ]
+		public object this[object key]
 		{
 			get
 			{
 				Read();
-				return map[ key ];
+				return map[key];
 			}
 			set
 			{
 				Write();
-				map[ key ] = value;
+				map[key] = value;
 			}
 		}
 
-		public void Remove( object key )
+		public void Remove(object key)
 		{
 			Initialize(true);
 			int oldCount = map.Count;
-			map.Remove( key );
+			map.Remove(key);
 			if (oldCount != map.Count)
 			{
 				Dirty();
@@ -223,12 +222,12 @@ namespace NHibernate.Collection
 			return map.ToString();
 		}
 
-		public override object ReadFrom( IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner )
+		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
-			object index = role.ReadIndex( rs, descriptor.SuffixedIndexAliases, Session );
+			object index = role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
 
-			map[ index ] = element;
+			map[index] = element;
 			return element;
 		}
 
@@ -247,78 +246,78 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentMap.</param>
 		/// <param name="disassembled">The disassembled PersistentMap.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
+		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			BeforeInitialize( persister );
-			object[ ] array = ( object[ ] ) disassembled;
-			for( int i = 0; i < array.Length; i += 2 )
+			BeforeInitialize(persister);
+			object[] array = (object[]) disassembled;
+			for (int i = 0; i < array.Length; i += 2)
 			{
-				map[ persister.IndexType.Assemble( array[ i ], Session, owner ) ] =
-					persister.ElementType.Assemble( array[ i + 1 ], Session, owner );
+				map[persister.IndexType.Assemble(array[i], Session, owner)] =
+					persister.ElementType.Assemble(array[i + 1], Session, owner);
 			}
 			SetInitialized();
 		}
 
-		public override object Disassemble( ICollectionPersister persister )
+		public override object Disassemble(ICollectionPersister persister)
 		{
-			object[ ] result = new object[map.Count*2];
+			object[] result = new object[map.Count * 2];
 			int i = 0;
-			foreach( DictionaryEntry e in map )
+			foreach (DictionaryEntry e in map)
 			{
-				result[ i++ ] = persister.IndexType.Disassemble( e.Key, Session );
-				result[ i++ ] = persister.ElementType.Disassemble( e.Value, Session );
+				result[i++] = persister.IndexType.Disassemble(e.Key, Session);
+				result[i++] = persister.ElementType.Disassemble(e.Value, Session);
 			}
 			return result;
 		}
 
-		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
+		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
-			foreach( DictionaryEntry e in ( ( IDictionary ) GetSnapshot() ) )
+			foreach (DictionaryEntry e in ((IDictionary) GetSnapshot()))
 			{
 				object key = e.Key;
-				if( e.Value != null && map[ key ] == null )
+				if (e.Value != null && map[key] == null)
 				{
-					deletes.Add( indexIsFormula ? e.Value : key );
+					deletes.Add(indexIsFormula ? e.Value : key);
 				}
 			}
 			return deletes;
 		}
 
-		public override bool NeedsInserting( object entry, int i, IType elemType )
+		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			IDictionary sn = ( IDictionary ) GetSnapshot();
-			DictionaryEntry e = ( DictionaryEntry ) entry;
-			return ( e.Value != null && sn[ e.Key ] == null );
+			IDictionary sn = (IDictionary) GetSnapshot();
+			DictionaryEntry e = (DictionaryEntry) entry;
+			return (e.Value != null && sn[e.Key] == null);
 		}
 
-		public override bool NeedsUpdating( object entry, int i, IType elemType )
+		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
-			IDictionary sn = ( IDictionary ) GetSnapshot();
-			DictionaryEntry e = ( DictionaryEntry ) entry;
-			object snValue = sn[ e.Key ];
-			return ( e.Value != null && snValue != null && elemType.IsDirty( snValue, e.Value, Session ) );
+			IDictionary sn = (IDictionary) GetSnapshot();
+			DictionaryEntry e = (DictionaryEntry) entry;
+			object snValue = sn[e.Key];
+			return (e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session));
 		}
 
-		public override object GetIndex( object entry, int i )
+		public override object GetIndex(object entry, int i)
 		{
-			return ( ( DictionaryEntry ) entry ).Key;
+			return ((DictionaryEntry) entry).Key;
 		}
 
 		public override object GetElement(object entry)
 		{
-			return ( ( DictionaryEntry ) entry ).Value;
+			return ((DictionaryEntry) entry).Value;
 		}
 
 		public override object GetSnapshotElement(object entry, int i)
 		{
-			IDictionary sn = ( IDictionary ) GetSnapshot();
-			return sn[ ( ( DictionaryEntry ) entry ).Key ];
+			IDictionary sn = (IDictionary) GetSnapshot();
+			return sn[((DictionaryEntry) entry).Key];
 		}
 
-		public override bool EntryExists( object entry, int i )
+		public override bool EntryExists(object entry, int i)
 		{
-			return ( ( DictionaryEntry ) entry ).Value != null;
+			return ((DictionaryEntry) entry).Value != null;
 		}
 	}
 }

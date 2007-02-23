@@ -26,26 +26,27 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// A string that contains the SQL to create the named Foreign Key Constraint.
 		/// </returns>
-		public override string SqlConstraintString( Dialect.Dialect d, string constraintName, string defaultSchema )
+		public override string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultSchema)
 		{
-			string[ ] cols = new string[ColumnSpan];
-			string[ ] refcols = new string[ColumnSpan];
+			string[] cols = new string[ColumnSpan];
+			string[] refcols = new string[ColumnSpan];
 			int i = 0;
 
-			foreach( Column col in referencedTable.PrimaryKey.ColumnCollection )
+			foreach (Column col in referencedTable.PrimaryKey.ColumnCollection)
 			{
-				refcols[ i ] = col.GetQuotedName( d );
+				refcols[i] = col.GetQuotedName(d);
 				i++;
 			}
 
 			i = 0;
-			foreach( Column col in ColumnCollection )
+			foreach (Column col in ColumnCollection)
 			{
-				cols[ i ] = col.GetQuotedName( d );
+				cols[i] = col.GetQuotedName(d);
 				i++;
 			}
 
-			return d.GetAddForeignKeyConstraintString( constraintName, cols, referencedTable.GetQualifiedName( d, defaultSchema ), refcols );
+			return
+				d.GetAddForeignKeyConstraintString(constraintName, cols, referencedTable.GetQualifiedName(d, defaultSchema), refcols);
 		}
 
 		/// <summary>
@@ -61,19 +62,19 @@ namespace NHibernate.Mapping
 			get { return referencedTable; }
 			set
 			{
-				if( value.PrimaryKey.ColumnSpan != ColumnSpan )
+				if (value.PrimaryKey.ColumnSpan != ColumnSpan)
 				{
 					string message = "Foreign key in table {0} must have same number of columns as referenced primary key in table {1}";
 
-					throw new MappingException( string.Format( message, this.Table.Name , value.Name ) );
+					throw new MappingException(string.Format(message, this.Table.Name, value.Name));
 				}
 
 				IEnumerator fkCols = ColumnCollection.GetEnumerator();
 				IEnumerator pkCols = value.PrimaryKey.ColumnCollection.GetEnumerator();
 
-				while( fkCols.MoveNext() && pkCols.MoveNext() )
+				while (fkCols.MoveNext() && pkCols.MoveNext())
 				{
-					( ( Column ) fkCols.Current ).Length = ( ( Column ) pkCols.Current ).Length;
+					((Column) fkCols.Current).Length = ((Column) pkCols.Current).Length;
 				}
 
 				this.referencedTable = value;
@@ -95,18 +96,20 @@ namespace NHibernate.Mapping
 		#region IRelationalModel Memebers
 
 		/// <summary>
- 		/// Get the SQL string to drop this Constraint in the database.
- 		/// </summary>
+		/// Get the SQL string to drop this Constraint in the database.
+		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
- 		/// A string that contains the SQL to drop this Constraint.
- 		/// </returns>
- 		public override string SqlDropString(NHibernate.Dialect.Dialect dialect, string defaultSchema )		
+		/// A string that contains the SQL to drop this Constraint.
+		/// </returns>
+		public override string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
 		{
 			// TODO: NH-421
- 			return string.Format( "alter table {0} {1}", Table.GetQualifiedName( dialect, defaultSchema ),  dialect.GetDropForeignKeyConstraintString( Name ) );
- 		}
+			return
+				string.Format("alter table {0} {1}", Table.GetQualifiedName(dialect, defaultSchema),
+				              dialect.GetDropForeignKeyConstraintString(Name));
+		}
 
 		#endregion
 	}

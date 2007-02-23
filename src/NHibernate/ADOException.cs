@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-
 using NHibernate.SqlCommand;
 
 namespace NHibernate
@@ -14,7 +13,7 @@ namespace NHibernate
 	/// a common base class (<c>SQLException</c> in Java), so <c>Exception</c>
 	/// is used instead in NHibernate.
 	/// </remarks>
-	[ Serializable ]
+	[Serializable]
 	public class ADOException : HibernateException
 	{
 		private SqlString sql;
@@ -28,12 +27,12 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public ADOException( string message, Exception innerException ) : base( message, innerException )
+		public ADOException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
-		public ADOException( string message, Exception innerException, SqlString sql )
-			: base( message + "[SQL: " + sql + "]", innerException )
+		public ADOException(string message, Exception innerException, SqlString sql)
+			: base(message + "[SQL: " + sql + "]", innerException)
 		{
 			this.sql = sql;
 		}
@@ -48,17 +47,17 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected ADOException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected ADOException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			this.sql = ( SqlString ) info.GetValue( "sql", typeof( SqlString ) );
+			this.sql = (SqlString) info.GetValue("sql", typeof(SqlString));
 		}
 
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData( info, context );
-			info.AddValue( "sql", sql );
+			base.GetObjectData(info, context);
+			info.AddValue("sql", sql);
 		}
 
 		public SqlString SqlString

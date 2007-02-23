@@ -13,19 +13,18 @@ namespace NHibernate.Impl
 	internal class EvictVisitor : AbstractVisitor
 	{
 		public EvictVisitor(SessionImpl session)
-			: base( session )
+			: base(session)
 		{
 		}
 
 		protected override object ProcessCollection(object collection, CollectionType type)
 		{
-			if( collection != null )
+			if (collection != null)
 			{
-				Session.EvictCollection( collection, type );
+				Session.EvictCollection(collection, type);
 			}
 
 			return null;
 		}
-
 	}
 }

@@ -24,9 +24,9 @@ namespace NHibernate.Mapping
 		}
 
 		public override string SqlCreateString(
-				Dialect.Dialect dialect,
-				IMapping p,
-				string defaultSchema)
+			Dialect.Dialect dialect,
+			IMapping p,
+			string defaultSchema)
 		{
 			return InjectCatalogAndSchema(sqlCreateString, defaultSchema);
 		}

@@ -19,13 +19,13 @@ namespace NHibernate.Connection
 		/// Initialize the connection provider from the given properties.
 		/// </summary>
 		/// <param name="settings">The connection provider settings</param>
-		void Configure( IDictionary settings );
+		void Configure(IDictionary settings);
 
 		/// <summary>
 		/// Dispose of a used <see cref="IDbConnection"/>
 		/// </summary>
 		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
-		void CloseConnection( IDbConnection conn );
+		void CloseConnection(IDbConnection conn);
 
 		/// <summary>
 		/// Gets the <see cref="IDriver"/> this ConnectionProvider should use to 
@@ -41,6 +41,5 @@ namespace NHibernate.Connection
 		/// </summary>
 		/// <returns>An open <see cref="IDbConnection"/>.</returns>
 		IDbConnection GetConnection();
-
 	}
 }

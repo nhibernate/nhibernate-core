@@ -18,7 +18,7 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AnsiStringSqlType"/> class.
 		/// </summary>
-		public AnsiStringSqlType() : base( DbType.AnsiString )
+		public AnsiStringSqlType() : base(DbType.AnsiString)
 		{
 		}
 
@@ -26,7 +26,7 @@ namespace NHibernate.SqlTypes
 		/// Initializes a new instance of the <see cref="AnsiStringSqlType"/> class.
 		/// </summary>
 		/// <param name="length">The length of the string the <see cref="IDbDataParameter"/> should hold.</param>
-		public AnsiStringSqlType( int length ) : base( DbType.AnsiString, length )
+		public AnsiStringSqlType(int length) : base(DbType.AnsiString, length)
 		{
 		}
 	}

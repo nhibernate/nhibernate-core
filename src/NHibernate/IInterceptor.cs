@@ -34,7 +34,7 @@ namespace NHibernate
 		/// object. Note that when this method is called, <c>entity</c> will be an empty
 		/// uninitialized instance of the class.</remarks>
 		/// <returns><c>true</c> if the user modified the <c>state</c> in any way</returns>
-		bool OnLoad( object entity, object id, object[] state, string[] propertyNames, IType[] types );
+		bool OnLoad(object entity, object id, object[] state, string[] propertyNames, IType[] types);
 
 		/// <summary>
 		/// Called when an object is detected to be dirty, during a flush.
@@ -53,7 +53,8 @@ namespace NHibernate
 		/// that the interceptor <b>not</b> modify the <c>previousState</c>.
 		/// </remarks>
 		/// <returns><c>true</c> if the user modified the <c>currentState</c> in any way</returns>
-		bool OnFlushDirty( object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types );
+		bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames,
+		                  IType[] types);
 
 		/// <summary>
 		/// Called before an object is saved
@@ -68,7 +69,7 @@ namespace NHibernate
 		/// and propagated to the persistent object
 		/// </remarks>
 		/// <returns><c>true</c> if the user modified the <c>state</c> in any way</returns>
-		bool OnSave( object entity, object id, object[] state, string[] propertyNames, IType[] types );
+		bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types);
 
 		/// <summary>
 		/// Called before an object is deleted
@@ -81,20 +82,20 @@ namespace NHibernate
 		/// <remarks>
 		/// It is not recommended that the interceptor modify the <c>state</c>.
 		/// </remarks>
-		void OnDelete( object entity, object id, object[] state, string[] propertyNames, IType[] types );
+		void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types);
 
 		/// <summary>
 		/// Called before a flush
 		/// </summary>
 		/// <param name="entities">The entities</param>
-		void PreFlush( ICollection entities );
+		void PreFlush(ICollection entities);
 
 		/// <summary>
 		/// Called after a flush that actually ends in execution of the SQL statements required to
 		/// synchronize in-memory state with the database.
 		/// </summary>
 		/// <param name="entities">The entitites</param>
-		void PostFlush( ICollection entities );
+		void PostFlush(ICollection entities);
 
 		/// <summary>
 		/// Called when a transient entity is passed to <c>SaveOrUpdate</c>.
@@ -109,7 +110,7 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="entity">A transient entity</param>
 		/// <returns></returns>
-		object IsUnsaved( object entity );
+		object IsUnsaved(object entity);
 
 		/// <summary>
 		/// Called from <c>Flush()</c>. The return value determines whether the entity is updated
@@ -128,7 +129,8 @@ namespace NHibernate
 		/// <param name="propertyNames"></param>
 		/// <param name="types"></param>
 		/// <returns>An array of dirty property indicies or <c>null</c> to choose default behavior</returns>
-		int[] FindDirty( object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types );
+		int[] FindDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames,
+		                IType[] types);
 
 		/// <summary>
 		/// Instantiate the entity class. Return <c>null</c> to indicate that Hibernate should use the default
@@ -137,7 +139,7 @@ namespace NHibernate
 		/// <param name="type">A mapped type</param>
 		/// <param name="id">The identifier of the new instance</param>
 		/// <returns>An instance of the class, or <c>null</c> to choose default behaviour</returns>
-		object Instantiate( System.Type type, object id );
+		object Instantiate(System.Type type, object id);
 
 		/// <summary>
 		/// Called when a NHibernate transaction is begun via the NHibernate <see cref="ITransaction" />

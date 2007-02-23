@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -11,7 +10,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// An <see cref="IType"/> that maps an <see cref="IList&lt;T&gt;"/> collection
+	/// An <see cref="IType"/> that maps an <see cref="IList{T}"/> collection
 	/// to the database using list semantics.
 	/// </summary>
 	[Serializable]
@@ -25,8 +24,8 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
-		public GenericListType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public GenericListType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 
@@ -35,14 +34,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the list.</param>
 		/// <param name="persister">The current <see cref="ICollectionPersister" /> for the list.</param>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new PersistentGenericList<T>( session );
+			return new PersistentGenericList<T>(session);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( IList<T> ); }
+			get { return typeof(IList<T>); }
 		}
 
 		/// <summary>
@@ -53,9 +52,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="PersistentGenericList{T}"/> that wraps the non NHibernate <see cref="IList{T}"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericList<T>( session, ( IList<T> ) collection );
+			return new PersistentGenericList<T>(session, (IList<T>) collection);
 		}
 
 		//TODO: Add() & Clear() methods - need to see if these should be refactored back into
@@ -71,4 +70,5 @@ namespace NHibernate.Type
 		}
 	}
 }
+
 #endif

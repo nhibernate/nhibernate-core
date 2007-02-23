@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Runtime.CompilerServices;
-
 using log4net;
-
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Type;
@@ -27,7 +25,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class IncrementGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( IncrementGenerator ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(IncrementGenerator));
 
 		/// <summary></summary>
 		public const string Column = "target_column";
@@ -49,13 +47,13 @@ namespace NHibernate.Id
 		/// <param name="type"></param>
 		/// <param name="parms"></param>
 		/// <param name="d"></param>
-		public void Configure( IType type, IDictionary parms, Dialect.Dialect d )
+		public void Configure(IType type, IDictionary parms, Dialect.Dialect d)
 		{
-			tableName = parms[ Table ] as string;
-			string columnName = ( ( Column ) parms[ Column ] ).Name;
+			tableName = parms[Table] as string;
+			string columnName = ((Column) parms[Column]).Name;
 
-			string schemaName = parms[ Schema ] as string;
-			if( schemaName != null && tableName.IndexOf( StringHelper.Dot ) < 0 )
+			string schemaName = parms[Schema] as string;
+			if (schemaName != null && tableName.IndexOf(StringHelper.Dot) < 0)
 			{
 				tableName = schemaName + "." + tableName;
 			}
@@ -70,19 +68,19 @@ namespace NHibernate.Id
 		/// <param name="session"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		[MethodImpl( MethodImplOptions.Synchronized )]
-		public object Generate( ISessionImplementor session, object obj )
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public object Generate(ISessionImplementor session, object obj)
 		{
-			if( sql != null )
+			if (sql != null)
 			{
-				getNext( session );
+				getNext(session);
 			}
-			return IdentifierGeneratorFactory.CreateNumber( next++, returnClass );
+			return IdentifierGeneratorFactory.CreateNumber(next++, returnClass);
 		}
 
-		private void getNext( ISessionImplementor session )
+		private void getNext(ISessionImplementor session)
 		{
-			log.Debug( "fetching initial value: " + sql );
+			log.Debug("fetching initial value: " + sql);
 
 			IDbConnection conn = session.Factory.OpenConnection();
 			IDbCommand qps = conn.CreateCommand();
@@ -91,11 +89,11 @@ namespace NHibernate.Id
 			try
 			{
 				IDataReader rs = qps.ExecuteReader();
-				if( rs.Read() )
+				if (rs.Read())
 				{
-					if( !rs.IsDBNull( 0 ) )
+					if (!rs.IsDBNull(0))
 					{
-						next = Convert.ToInt64( rs.GetValue( 0 ) ) + 1;
+						next = Convert.ToInt64(rs.GetValue(0)) + 1;
 					}
 					else
 					{
@@ -107,16 +105,16 @@ namespace NHibernate.Id
 					next = 1L;
 				}
 				sql = null;
-				log.Debug( "first free id: " + next );
+				log.Debug("first free id: " + next);
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				log.Error( "could not get increment value", e );
+				log.Error("could not get increment value", e);
 				throw;
 			}
 			finally
 			{
-				session.Factory.CloseConnection( conn );
+				session.Factory.CloseConnection(conn);
 			}
 		}
 
@@ -125,7 +123,7 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public string[] SqlCreateStrings( Dialect.Dialect dialect )
+		public string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
 			return new string[0];
 		}
@@ -135,7 +133,7 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		public string SqlDropString( Dialect.Dialect dialect )
+		public string SqlDropString(Dialect.Dialect dialect)
 		{
 			return null;
 		}

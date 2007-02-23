@@ -12,7 +12,7 @@ namespace NHibernate
 	/// For Hql queries, use the <c>FETCH</c> keyword instead.
 	/// </para>
 	/// </remarks>
-	[ Serializable ]
+	[Serializable]
 	public enum FetchMode
 	{
 		/// <summary>

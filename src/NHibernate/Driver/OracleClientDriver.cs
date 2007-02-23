@@ -7,8 +7,8 @@ namespace NHibernate.Driver
 	{
 		public OracleClientDriver() : base(
 			"System.Data.OracleClient, version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-            "System.Data.OracleClient.OracleConnection",
-			"System.Data.OracleClient.OracleCommand" )
+			"System.Data.OracleClient.OracleConnection",
+			"System.Data.OracleClient.OracleCommand")
 		{
 		}
 

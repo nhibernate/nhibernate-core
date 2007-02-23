@@ -119,7 +119,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (includeProperty[i])
 				{
-					builder.AddColumns( GetPropertyColumnNames( i ), PropertyColumnInsertable[i], PropertyTypes[i] );
+					builder.AddColumns(GetPropertyColumnNames(i), PropertyColumnInsertable[i], PropertyTypes[i]);
 				}
 			}
 
@@ -262,7 +262,8 @@ namespace NHibernate.Persister.Entity
 
 		//INITIALIZATION:
 
-		public SingleTableEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, IMapping mapping)
+		public SingleTableEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache,
+		                                  ISessionFactoryImplementor factory, IMapping mapping)
 			: base(model, cache, factory)
 		{
 			// CLASS + TABLE
@@ -320,7 +321,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (d.HasFormula)
 					{
-						Formula formula = (Formula)selectable;
+						Formula formula = (Formula) selectable;
 						discriminatorFormula = formula.FormulaString;
 						discriminatorFormulaTemplate = formula.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
 						discriminatorColumnName = null;
@@ -328,9 +329,9 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Column column = (Column)selectable;
-						discriminatorColumnName = column.GetQuotedName( Dialect );
-						discriminatorAlias = column.GetAlias( Dialect );
+						Column column = (Column) selectable;
+						discriminatorColumnName = column.GetQuotedName(Dialect);
+						discriminatorAlias = column.GetAlias(Dialect);
 						discriminatorFormula = null;
 						discriminatorFormulaTemplate = null;
 					}
@@ -489,11 +490,11 @@ namespace NHibernate.Persister.Entity
 
 			if (IsDiscriminatorFormula)
 			{
-				frag.SetFormula( alias, DiscriminatorFormulaTemplate );
+				frag.SetFormula(alias, DiscriminatorFormulaTemplate);
 			}
 			else
 			{
-				frag.SetColumn( alias, DiscriminatorColumnName );
+				frag.SetColumn(alias, DiscriminatorColumnName);
 			}
 
 			System.Type[] subclasses = SubclassClosure;
@@ -542,11 +543,11 @@ namespace NHibernate.Persister.Entity
 		{
 			if (IsDiscriminatorFormula)
 			{
-				select.AddFormula( name, DiscriminatorFormulaTemplate, DiscriminatorAlias );
+				select.AddFormula(name, DiscriminatorFormulaTemplate, DiscriminatorAlias);
 			}
 			else
 			{
-				select.AddColumn( name, DiscriminatorColumnName, DiscriminatorAlias );
+				select.AddColumn(name, DiscriminatorColumnName, DiscriminatorAlias);
 			}
 		}
 

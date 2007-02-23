@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace NHibernate.Property
 {
 	/// <summary>
@@ -15,9 +17,9 @@ namespace NHibernate.Property
 		/// </summary>
 		/// <param name="propertyName">The name of the mapped property.</param>
 		/// <returns>The name of the Field in PascalCase format prefixed with an 'm' and an underscore.</returns>
-		public string GetFieldName( string propertyName )
+		public string GetFieldName(string propertyName)
 		{
-			return "m_" + propertyName.Substring( 0, 1 ).ToUpper( System.Globalization.CultureInfo.InvariantCulture ) + propertyName.Substring( 1 );
+			return "m_" + propertyName.Substring(0, 1).ToUpper(CultureInfo.InvariantCulture) + propertyName.Substring(1);
 		}
 
 		#endregion

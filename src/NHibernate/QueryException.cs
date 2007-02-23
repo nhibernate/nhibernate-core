@@ -16,7 +16,7 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="QueryException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public QueryException( string message ) : base( message )
+		public QueryException(string message) : base(message)
 		{
 		}
 
@@ -29,7 +29,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public QueryException( string message, Exception innerException ) : base( message, innerException )
+		public QueryException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
@@ -38,7 +38,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
 		/// <param name="queryString">The query that contains the error.</param>
-		public QueryException( string message, string queryString ) : base( message )
+		public QueryException(string message, string queryString) : base(message)
 		{
 			this.queryString = queryString;
 		}
@@ -51,7 +51,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public QueryException( Exception innerException ) : base( innerException )
+		public QueryException(Exception innerException) : base(innerException)
 		{
 		}
 
@@ -73,7 +73,7 @@ namespace NHibernate
 			get
 			{
 				string msg = base.Message;
-				if( queryString != null )
+				if (queryString != null)
 				{
 					msg += " [" + queryString + "]";
 				}
@@ -82,7 +82,7 @@ namespace NHibernate
 		}
 
 		#region ISerializable Members
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QueryException"/> class
 		/// with serialized data.
@@ -94,9 +94,9 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected QueryException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected QueryException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			queryString = info.GetString( "queryString" );
+			queryString = info.GetString("queryString");
 		}
 
 		/// <summary>
@@ -110,12 +110,12 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData( info, context );
-			info.AddValue( "queryString", queryString, typeof(String) );
+			base.GetObjectData(info, context);
+			info.AddValue("queryString", queryString, typeof(String));
 		}
 
 		#endregion

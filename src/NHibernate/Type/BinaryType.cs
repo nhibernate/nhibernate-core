@@ -1,12 +1,10 @@
 using System;
 using System.Data;
-using System.IO;
+using System.Globalization;
 using System.Text;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
-using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Type
 {
@@ -17,7 +15,7 @@ namespace NHibernate.Type
 	public class BinaryType : MutableType
 	{
 		/// <summary></summary>
-		internal BinaryType() : this( new BinarySqlType() )
+		internal BinaryType() : this(new BinarySqlType())
 		{
 		}
 
@@ -25,7 +23,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="sqlType"></param>
-		internal BinaryType( BinarySqlType sqlType ) : base( sqlType )
+		internal BinaryType(BinarySqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -35,7 +33,7 @@ namespace NHibernate.Type
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
 			//TODO: research into byte streams
 			//if ( Cfg.Environment.UseStreamsForBinary ) {
@@ -46,7 +44,7 @@ namespace NHibernate.Type
 			//}
 			//else {
 			//Need to set DbType in parameter????
-			( ( IDataParameter ) cmd.Parameters[ index ] ).Value = ( byte[ ] ) value;
+			((IDataParameter) cmd.Parameters[index]).Value = (byte[]) value;
 			//}
 		}
 
@@ -56,22 +54,22 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			int length = ( int ) rs.GetBytes( index, 0, null, 0, 0 );
-			byte[ ] buffer = new byte[ length ];
+			int length = (int) rs.GetBytes(index, 0, null, 0, 0);
+			byte[] buffer = new byte[length];
 
 			int offset = 0;
 
-			while( length - offset > 0 )
+			while (length - offset > 0)
 			{
-				int countRead = ( int ) rs.GetBytes( index, offset, buffer, offset, length - offset );
+				int countRead = (int) rs.GetBytes(index, offset, buffer, offset, length - offset);
 				offset += countRead;
 
-				if( countRead == 0 )
+				if (countRead == 0)
 				{
 					// Should never happen
-					throw new AssertionFailure( "Error in BinaryType.Get, IDataRecord.GetBytes read zero bytes" );
+					throw new AssertionFailure("Error in BinaryType.Get, IDataRecord.GetBytes read zero bytes");
 				}
 			}
 
@@ -84,15 +82,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( byte[ ] ); }
+			get { return typeof(byte[]); }
 		}
 
 		/// <summary>
@@ -101,18 +99,18 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			if( x == y )
+			if (x == y)
 			{
 				return true;
 			}
-			if( x == null || y == null )
+			if (x == null || y == null)
 			{
 				return false;
 			}
 
-			return CollectionHelper.CollectionEquals( ( byte[ ] ) x, ( byte[ ] ) y );
+			return CollectionHelper.CollectionEquals((byte[]) x, (byte[]) y);
 		}
 
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
@@ -134,18 +132,18 @@ namespace NHibernate.Type
 			get { return "Byte[]"; }
 		}
 
-		public override string ToString( object val )
+		public override string ToString(object val)
 		{
-			byte[ ] bytes = ( byte[ ] ) val;
+			byte[] bytes = (byte[]) val;
 			StringBuilder buf = new StringBuilder();
-			for( int i = 0; i < bytes.Length; i++ )
+			for (int i = 0; i < bytes.Length; i++)
 			{
-				string hexStr = ( bytes[ i ] - byte.MinValue ).ToString( "x" ); //Why no ToBase64?
-				if( hexStr.Length == 1 )
+				string hexStr = (bytes[i] - byte.MinValue).ToString("x"); //Why no ToBase64?
+				if (hexStr.Length == 1)
 				{
-					buf.Append( '0' );
+					buf.Append('0');
 				}
-				buf.Append( hexStr );
+				buf.Append(hexStr);
 			}
 			return buf.ToString();
 		}
@@ -155,11 +153,11 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override object DeepCopyNotNull( Object value )
+		public override object DeepCopyNotNull(Object value)
 		{
-			byte[ ] bytes = ( byte[ ] ) value;
-			byte[ ] result = new byte[bytes.Length];
-			Array.Copy( bytes, 0, result, 0, bytes.Length );
+			byte[] bytes = (byte[]) value;
+			byte[] result = new byte[bytes.Length];
+			Array.Copy(bytes, 0, result, 0, bytes.Length);
 			return result;
 		}
 
@@ -168,27 +166,26 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			if( xml == null )
+			if (xml == null)
 			{
 				return null;
 			}
-			
-			if( xml.Length % 2 != 0 )
+
+			if (xml.Length % 2 != 0)
 			{
 				throw new ArgumentException(
 					"The string is not a valid xml representation of a binary content.",
 					"xml");
 			}
 
-			byte[ ] bytes = new byte[xml.Length / 2];
-			for( int i = 0; i < bytes.Length; i++ )
+			byte[] bytes = new byte[xml.Length / 2];
+			for (int i = 0; i < bytes.Length; i++)
 			{
-				string hexStr = xml.Substring( i * 2, (i + 1) * 2 );
-				bytes[ i ] = ( byte ) ( byte.MinValue
-					+ byte.Parse( hexStr, System.Globalization.NumberStyles.HexNumber ) );
-					
+				string hexStr = xml.Substring(i * 2, (i + 1) * 2);
+				bytes[i] = (byte) (byte.MinValue
+				                   + byte.Parse(hexStr, NumberStyles.HexNumber));
 			}
 
 			return bytes;

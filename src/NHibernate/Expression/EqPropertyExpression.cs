@@ -15,8 +15,8 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="lhsPropertyName">The name of the Property to use as the left hand side.</param>
 		/// <param name="rhsPropertyName">The name of the Property to use as the right hand side.</param>
-		public EqPropertyExpression( string lhsPropertyName, string rhsPropertyName )
-			: base( lhsPropertyName, rhsPropertyName )
+		public EqPropertyExpression(string lhsPropertyName, string rhsPropertyName)
+			: base(lhsPropertyName, rhsPropertyName)
 		{
 		}
 

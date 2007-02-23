@@ -1,5 +1,4 @@
 using System;
-using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Persister.Entity
@@ -15,12 +14,12 @@ namespace NHibernate.Persister.Entity
 		/// <param name="propertyName"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
-		string[] GetSubclassPropertyColumnAliases( string propertyName, string suffix );
+		string[] GetSubclassPropertyColumnAliases(string propertyName, string suffix);
 
 		/// <summary>
 		/// All columns to select, when loading.
 		/// </summary>
-		string SelectFragment( string alias, string suffix );
+		string SelectFragment(string alias, string suffix);
 
 		/// <summary>
 		/// Get the type

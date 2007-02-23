@@ -17,15 +17,15 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="enumClass"></param>
-		public PersistentEnumType( System.Type enumClass ) : base( GetUnderlyingSqlType( enumClass ) )
+		public PersistentEnumType(System.Type enumClass) : base(GetUnderlyingSqlType(enumClass))
 		{
-			if( enumClass.IsEnum )
+			if (enumClass.IsEnum)
 			{
 				this.enumClass = enumClass;
 			}
 			else
 			{
-				throw new MappingException( enumClass.Name + " did not inherit from System.Enum" );
+				throw new MappingException(enumClass.Name + " did not inherit from System.Enum");
 			}
 		}
 
@@ -35,9 +35,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="enumClass">The Enumeration class to get the values from.</param>
 		/// <returns>The SqlType for this EnumClass</returns>
-		public static SqlType GetUnderlyingSqlType( System.Type enumClass )
+		public static SqlType GetUnderlyingSqlType(System.Type enumClass)
 		{
-			switch( Enum.GetUnderlyingType( enumClass ).FullName )
+			switch (Enum.GetUnderlyingType(enumClass).FullName)
 			{
 				case "System.Byte":
 					return SqlTypeFactory.Byte; // DbType.Byte;
@@ -56,21 +56,20 @@ namespace NHibernate.Type
 				case "System.UInt64":
 					return SqlTypeFactory.UInt64; //DbType.UInt64;
 				default:
-					throw new HibernateException( "Unknown UnderlyingDbType for Enum" ); //Impossible exception
+					throw new HibernateException("Unknown UnderlyingDbType for Enum"); //Impossible exception
 			}
-
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			object code = rs[ index ];
-			if( code == DBNull.Value || code == null )
+			object code = rs[index];
+			if (code == DBNull.Value || code == null)
 			{
 				return null;
 			}
 			else
 			{
-				return GetInstance( code );
+				return GetInstance(code);
 			}
 		}
 
@@ -81,15 +80,15 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instance of the Enum set to the <c>code</c> value.
 		/// </returns>
-		public virtual object GetInstance( object code )
+		public virtual object GetInstance(object code)
 		{
 			try
 			{
-				return Enum.ToObject( enumClass, GetValue( code ) );
+				return Enum.ToObject(enumClass, GetValue(code));
 			}
-			catch( ArgumentException ae )
+			catch (ArgumentException ae)
 			{
-				throw new HibernateException( "ArgumentException occurred inside Enum.ToObject()", ae );
+				throw new HibernateException("ArgumentException occurred inside Enum.ToObject()", ae);
 			}
 		}
 
@@ -103,39 +102,39 @@ namespace NHibernate.Type
 		/// from the db in the wrong underlying type.  It uses <see cref="Convert"/> to 
 		/// convert it to the correct type.
 		/// </remarks>
-		public virtual object GetValue( object code )
+		public virtual object GetValue(object code)
 		{
 			// code is an enum instance.
 			// TODO: ORACLE - An convert is needed because right now everything that Oracle is 
 			// sending to NHibernate is a decimal - not the correct underlying
 			// type and I don't know why
 
-			switch( Enum.GetUnderlyingType( enumClass ).FullName )
+			switch (Enum.GetUnderlyingType(enumClass).FullName)
 			{
 				case "System.Byte":
-					return Convert.ToByte( code );
+					return Convert.ToByte(code);
 				case "System.Int16":
-					return Convert.ToInt16( code );
+					return Convert.ToInt16(code);
 				case "System.Int32":
-					return Convert.ToInt32( code );
+					return Convert.ToInt32(code);
 				case "System.Int64":
-					return Convert.ToInt64( code );
+					return Convert.ToInt64(code);
 				case "System.SByte":
-					return Convert.ToSByte( code );
+					return Convert.ToSByte(code);
 				case "System.UInt16":
-					return Convert.ToUInt16( code );
+					return Convert.ToUInt16(code);
 				case "System.UInt32":
-					return Convert.ToUInt32( code );
+					return Convert.ToUInt32(code);
 				case "System.UInt64":
-					return Convert.ToUInt64( code );
+					return Convert.ToUInt64(code);
 				default:
-					throw new AssertionFailure( "Unknown UnderlyingType for Enum" ); //Impossible exception
+					throw new AssertionFailure("Unknown UnderlyingType for Enum"); //Impossible exception
 			}
 		}
 
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			return ( x == y ) || ( x != null && y != null && x.Equals( y ) );
+			return (x == y) || (x != null && y != null && x.Equals(y));
 		}
 
 		public override System.Type ReturnedClass
@@ -143,10 +142,10 @@ namespace NHibernate.Type
 			get { return enumClass; }
 		}
 
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter par = ( IDataParameter ) cmd.Parameters[ index ];
-			if( value == null )
+			IDataParameter par = (IDataParameter) cmd.Parameters[index];
+			if (value == null)
 			{
 				par.Value = DBNull.Value;
 			}
@@ -156,9 +155,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Get( rs, rs.GetOrdinal( name ) );
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary></summary> 
@@ -167,52 +166,51 @@ namespace NHibernate.Type
 			get { return enumClass.FullName; }
 		}
 
-		public override string ToString( object value )
+		public override string ToString(object value)
 		{
-			return ( value == null ) ? null : GetValue( value ).ToString();
+			return (value == null) ? null : GetValue(value).ToString();
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return GetInstance( long.Parse( xml ) );
+			return GetInstance(long.Parse(xml));
 		}
 
-		public override object Assemble( object cached, ISessionImplementor session, object owner )
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			if( cached == null )
+			if (cached == null)
 			{
 				return null;
 			}
 			else
 			{
-				return GetInstance( cached );
+				return GetInstance(cached);
 			}
 		}
 
-		public override object Disassemble( object value, ISessionImplementor session )
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
-			return ( value == null ) ? null : GetValue( value );
+			return (value == null) ? null : GetValue(value);
 		}
 
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
-			return GetValue( value ).ToString();
+			return GetValue(value).ToString();
 		}
 
 		public override bool Equals(object obj)
 		{
-			if( !base.Equals (obj) )
+			if (!base.Equals(obj))
 			{
 				return false;
 			}
 
-			return ( ( PersistentEnumType ) obj ).enumClass == enumClass;
+			return ((PersistentEnumType) obj).enumClass == enumClass;
 		}
 
 		public override int GetHashCode()
 		{
 			return enumClass.GetHashCode();
 		}
-
 	}
 }

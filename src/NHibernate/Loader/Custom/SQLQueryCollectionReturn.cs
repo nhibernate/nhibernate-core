@@ -15,8 +15,9 @@ namespace NHibernate.Loader.Custom
 		private string ownerEntityName;
 		private string ownerProperty;
 
-		public SQLQueryCollectionReturn( string alias, string ownerClass, string ownerProperty, IDictionary propertyResults, LockMode lockMode )
-			: base( alias, propertyResults, lockMode )
+		public SQLQueryCollectionReturn(string alias, string ownerClass, string ownerProperty, IDictionary propertyResults,
+		                                LockMode lockMode)
+			: base(alias, propertyResults, lockMode)
 		{
 			this.ownerEntityName = ownerClass;
 			this.ownerProperty = ownerProperty;

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -59,15 +58,15 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual object Disassemble( object value, ISessionImplementor session )
+		public virtual object Disassemble(object value, ISessionImplementor session)
 		{
-			if( value == null )
+			if (value == null)
 			{
 				return null;
 			}
 			else
 			{
-				return DeepCopy( value );
+				return DeepCopy(value);
 			}
 		}
 
@@ -81,15 +80,15 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual object Assemble( object cached, ISessionImplementor session, object owner )
+		public virtual object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			if( cached == null )
+			if (cached == null)
 			{
 				return null;
 			}
 			else
 			{
-				return DeepCopy( cached );
+				return DeepCopy(cached);
 			}
 		}
 
@@ -102,9 +101,9 @@ namespace NHibernate.Type
 		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
 		/// <returns>true if the field is dirty</returns>
 		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
-		public virtual bool IsDirty( object old, object current, ISessionImplementor session )
+		public virtual bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			return !Equals( old, current );
+			return !Equals(old, current);
 		}
 
 		/// <summary>
@@ -123,9 +122,9 @@ namespace NHibernate.Type
 		/// This method uses the <c>IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)</c> method
 		/// to Hydrate this <see cref="AbstractType"/>.
 		/// </remarks>
-		public virtual object Hydrate( IDataReader rs, string[ ] names, ISessionImplementor session, object owner )
+		public virtual object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet( rs, names, session, owner );
+			return NullSafeGet(rs, names, session, owner);
 		}
 
 		/// <summary>
@@ -138,12 +137,12 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// There is nothing done in this method other than return the value parameter passed in.
 		/// </remarks>
-		public virtual object ResolveIdentifier( object value, ISessionImplementor session, object owner )
+		public virtual object ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
 			return value;
 		}
 
-		public virtual object SemiResolve( object value, ISessionImplementor session, object owner )
+		public virtual object SemiResolve(object value, ISessionImplementor session, object owner)
 		{
 			return value;
 		}
@@ -164,11 +163,10 @@ namespace NHibernate.Type
 			object old,
 			object current,
 			bool[] checkable,
-			ISessionImplementor session )
+			ISessionImplementor session)
 		{
-			return IsDirty( old, current, session );
+			return IsDirty(old, current, session);
 		}
-
 
 
 		/// <summary>
@@ -180,18 +178,19 @@ namespace NHibernate.Type
 		/// <param name="owner"></param>
 		/// <param name="copiedAlready"></param>
 		/// <returns></returns>
-		public virtual object Replace( object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready )
+		public virtual object Replace(object original, object current, ISessionImplementor session, object owner,
+		                              IDictionary copiedAlready)
 		{
-			if ( original == null )
+			if (original == null)
 			{
 				return null;
 			}
-			return Assemble( Disassemble( original, session ), session, owner );
+			return Assemble(Disassemble(original, session), session, owner);
 		}
 
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
-			return obj == this || ( obj != null && obj.GetType() == GetType() );
+			return obj == this || (obj != null && obj.GetType() == GetType());
 		}
 
 		public override int GetHashCode()
@@ -202,22 +201,24 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
 		/// /> 
-		public abstract object DeepCopy( object val );
+		public abstract object DeepCopy(object val);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
 		/// /> 
-		public abstract SqlType[ ] SqlTypes( IMapping mapping );
+		public abstract SqlType[] SqlTypes(IMapping mapping);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.GetColumnSpan"]/*'
 		/// /> 
-		public abstract int GetColumnSpan( IMapping mapping );
+		public abstract int GetColumnSpan(IMapping mapping);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
 		/// /> 
-		new public abstract bool Equals( object x, object y ); //We need "new" because object.Equal is not marked as virtual. Is it correct? Or because this is *abstract* so we're not really overriding it?
+		public new abstract bool Equals(object x, object y);
+
+		//We need "new" because object.Equal is not marked as virtual. Is it correct? Or because this is *abstract* so we're not really overriding it?
 
 		public virtual int GetHashCode(object x, ISessionFactoryImplementor factory)
 		{
@@ -254,22 +255,22 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet( IDataReader rs, string[ ] names, ISessionImplementor session, object owner );
+		public abstract object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string, ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet( IDataReader rs, string name, ISessionImplementor session, Object owner );
+		public abstract object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
-		public abstract void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session );
+		public abstract void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
-		public abstract void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session );
+		public abstract void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'
@@ -279,13 +280,13 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		/// /> 
-		public abstract string ToLoggableString( object value, ISessionFactoryImplementor factory );
+		public abstract string ToLoggableString(object value, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
 		/// /> 
-		public abstract object FromString( string xml );
+		public abstract object FromString(string xml);
 
-		public abstract bool IsDirty( object old, object current, bool[] checkable, ISessionImplementor session );
+		public abstract bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session);
 	}
 }

@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
-
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Loader.Custom;
 using NHibernate.Type;
 using NHibernate.Util;
+#if NET_2_0
+#endif
 
 namespace NHibernate.Impl
 {
@@ -56,7 +55,8 @@ namespace NHibernate.Impl
 			this.callable = false;
 		}
 
-		public SqlQueryImpl(string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session, ICollection querySpaces)
+		public SqlQueryImpl(string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session,
+		                    ICollection querySpaces)
 			: this(sql, returnAliases, returnClasses, null, session, querySpaces, FlushMode.Unspecified)
 		{
 		}
@@ -67,12 +67,12 @@ namespace NHibernate.Impl
 			if (queryDef.ResultSetRef != null)
 			{
 				ResultSetMappingDefinition definition = session.Factory
-						.GetResultSetMapping(queryDef.ResultSetRef);
+					.GetResultSetMapping(queryDef.ResultSetRef);
 				if (definition == null)
 				{
 					throw new MappingException(
-							"Unable to find resultset-ref definition: " +
-							queryDef.ResultSetRef
+						"Unable to find resultset-ref definition: " +
+						queryDef.ResultSetRef
 						);
 				}
 				this.queryReturns = definition.GetQueryReturns();
@@ -268,7 +268,7 @@ namespace NHibernate.Impl
 		protected override void VerifyParameters()
 		{
 			base.VerifyParameters();
-			bool noReturns = queryReturns==null || queryReturns.Count == 0;
+			bool noReturns = queryReturns == null || queryReturns.Count == 0;
 			bool autodiscovertypes = false;
 			if (noReturns)
 			{
@@ -289,7 +289,7 @@ namespace NHibernate.Impl
 					}
 				}
 			}
-			
+
 			if (autodiscovertypes)
 			{
 				throw new QueryException("Return types of SQL query were not specified", QueryString);

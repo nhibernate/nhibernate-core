@@ -15,9 +15,9 @@ namespace NHibernate.Impl
 		private readonly object[] oldFields;
 		private readonly object lastVersion;
 		private readonly object nextVersion;
-		private readonly int[ ] dirtyFields;
-		private readonly object[ ] updatedState;
-        private readonly bool hasDirtyCollection;
+		private readonly int[] dirtyFields;
+		private readonly object[] updatedState;
+		private readonly bool hasDirtyCollection;
 		private CacheEntry cacheEntry;
 		private ISoftLock _lock;
 
@@ -35,15 +35,17 @@ namespace NHibernate.Impl
 		/// <param name="updatedState">A deep copy of the <c>fields</c> object array.</param>
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for the persisting the object.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledUpdate( object id, object[ ] fields, int[ ] dirtyProperties, bool hasDirtyCollection, object[ ] oldFields, object lastVersion, object nextVersion, object instance, object[ ] updatedState, IEntityPersister persister, ISessionImplementor session )
-			: base( session, id, instance, persister )
+		public ScheduledUpdate(object id, object[] fields, int[] dirtyProperties, bool hasDirtyCollection, object[] oldFields,
+		                       object lastVersion, object nextVersion, object instance, object[] updatedState,
+		                       IEntityPersister persister, ISessionImplementor session)
+			: base(session, id, instance, persister)
 		{
 			this.fields = fields;
 			this.oldFields = oldFields;
 			this.lastVersion = lastVersion;
 			this.nextVersion = nextVersion;
 			this.dirtyFields = dirtyProperties;
-            this.hasDirtyCollection = hasDirtyCollection;
+			this.hasDirtyCollection = hasDirtyCollection;
 			this.updatedState = updatedState;
 		}
 
@@ -51,52 +53,52 @@ namespace NHibernate.Impl
 		public override void Execute()
 		{
 			CacheKey ck = null;
-			if( Persister.HasCache )
+			if (Persister.HasCache)
 			{
 				ck = new CacheKey(
 					Id,
 					Persister.IdentifierType,
-					(string)Persister.IdentifierSpace,
+					(string) Persister.IdentifierSpace,
 					Session.Factory
-				);
+					);
 				_lock = Persister.Cache.Lock(ck, lastVersion);
 			}
-			Persister.Update( Id, fields, dirtyFields, hasDirtyCollection, oldFields, lastVersion, Instance, Session );
-			Session.PostUpdate( Instance, updatedState, nextVersion );
+			Persister.Update(Id, fields, dirtyFields, hasDirtyCollection, oldFields, lastVersion, Instance, Session);
+			Session.PostUpdate(Instance, updatedState, nextVersion);
 
-			if ( Persister.HasCache )
+			if (Persister.HasCache)
 			{
-				if ( Persister.IsCacheInvalidationRequired )
+				if (Persister.IsCacheInvalidationRequired)
 				{
-					Persister.Cache.Evict( ck );
+					Persister.Cache.Evict(ck);
 				}
 				else
 				{
 					// TODO: Inefficient if that cache is just going to ignore the updated state!
-					cacheEntry = new CacheEntry( Instance, Persister, Session );
-					Persister.Cache.Update( ck, cacheEntry );
+					cacheEntry = new CacheEntry(Instance, Persister, Session);
+					Persister.Cache.Update(ck, cacheEntry);
 				}
 			}
 		}
 
 		/// <summary></summary>
-		public override void AfterTransactionCompletion( bool success )
+		public override void AfterTransactionCompletion(bool success)
 		{
-			if( Persister.HasCache )
+			if (Persister.HasCache)
 			{
 				CacheKey ck = new CacheKey(
 					Id,
 					Persister.IdentifierType,
-					(string)Persister.IdentifierSpace,
+					(string) Persister.IdentifierSpace,
 					Session.Factory
-				);
-				if ( success && !Persister.IsCacheInvalidationRequired )
+					);
+				if (success && !Persister.IsCacheInvalidationRequired)
 				{
-					Persister.Cache.AfterUpdate( ck, cacheEntry, nextVersion, _lock );
+					Persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, _lock);
 				}
 				else
 				{
-					Persister.Cache.Release( ck, _lock );
+					Persister.Cache.Release(ck, _lock);
 				}
 			}
 		}

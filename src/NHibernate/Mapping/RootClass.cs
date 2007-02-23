@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
+using Iesi.Collections;
 using log4net;
-using NHibernate.Cache;
 using NHibernate.Engine;
 
 namespace NHibernate.Mapping
@@ -13,7 +13,7 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class RootClass : PersistentClass
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( RootClass ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(RootClass));
 
 		/// <summary>
 		/// The default name of the column for the Identifier
@@ -161,7 +161,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				ArrayList retVal = new ArrayList();
-				retVal.Add( Table );
+				retVal.Add(Table);
 				return retVal;
 			}
 		}
@@ -174,9 +174,9 @@ namespace NHibernate.Mapping
 		/// When a <see cref="Subclass"/> is added this mapped class has the property <see cref="IsPolymorphic"/>
 		/// set to <c>true</c>.
 		/// </remarks>
-		public override void AddSubclass( Subclass subclass )
+		public override void AddSubclass(Subclass subclass)
 		{
-			base.AddSubclass( subclass );
+			base.AddSubclass(subclass);
 			polymorphic = true;
 		}
 
@@ -200,9 +200,10 @@ namespace NHibernate.Mapping
 		public override Property Version
 		{
 			get { return version; }
-			set { 
-				log.Debug( "Hello world" );
-				version = value; 
+			set
+			{
+				log.Debug("Hello world");
+				version = value;
 			}
 		}
 
@@ -297,7 +298,7 @@ namespace NHibernate.Mapping
 		public override PersistentClass Superclass
 		{
 			get { return null; }
-			set { throw new InvalidOperationException( "Can not set the Superclass on a RootClass." ); }
+			set { throw new InvalidOperationException("Can not set the Superclass on a RootClass."); }
 		}
 
 		/// <summary>
@@ -354,16 +355,18 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="mapping"></param>
-		public override void Validate( IMapping mapping )
+		public override void Validate(IMapping mapping)
 		{
-			base.Validate( mapping );
-			if ( !Identifier.IsValid( mapping ) )
+			base.Validate(mapping);
+			if (!Identifier.IsValid(mapping))
 			{
-				throw new MappingException( string.Format( "identifier mapping has wrong number of columns: {0} type: {1}", MappedClass.Name, Identifier.Type.Name ) );
+				throw new MappingException(
+					string.Format("identifier mapping has wrong number of columns: {0} type: {1}", MappedClass.Name,
+					              Identifier.Type.Name));
 			}
 		}
 
-		public override Iesi.Collections.ISet SynchronizedTables
+		public override ISet SynchronizedTables
 		{
 			get { return synchronizedTablesField; }
 		}

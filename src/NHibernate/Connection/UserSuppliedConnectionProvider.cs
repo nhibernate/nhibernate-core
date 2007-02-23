@@ -14,7 +14,7 @@ namespace NHibernate.Connection
 	/// </remarks>
 	public class UserSuppliedConnectionProvider : ConnectionProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( UserSuppliedConnectionProvider ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(UserSuppliedConnectionProvider));
 
 		/// <summary>
 		/// Throws an <see cref="InvalidOperationException"/> if this method is called
@@ -25,9 +25,9 @@ namespace NHibernate.Connection
 		/// Thrown when this method is called.  User is responsible for closing
 		/// <see cref="IDbConnection"/>s.
 		/// </exception>
-		public override void CloseConnection( IDbConnection conn )
+		public override void CloseConnection(IDbConnection conn)
 		{
-			throw new InvalidOperationException( "The User is responsible for closing ADO.NET connection - not NHibernate." );
+			throw new InvalidOperationException("The User is responsible for closing ADO.NET connection - not NHibernate.");
 		}
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace NHibernate.Connection
 		/// </exception>
 		public override IDbConnection GetConnection()
 		{
-			throw new InvalidOperationException( "The user must provide an ADO.NET connection - NHibernate is not creating it." );
+			throw new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it.");
 		}
 
 		/// <summary>
@@ -54,12 +54,11 @@ namespace NHibernate.Connection
 		/// All other settings of the Connection are the responsibility of the User since they configured
 		/// NHibernate to use a Connection supplied by the User.
 		/// </remarks>
-		public override void Configure( IDictionary settings )
+		public override void Configure(IDictionary settings)
 		{
-			log.Warn( "No connection properties specified - the user must supply an ADO.NET connection" );
+			log.Warn("No connection properties specified - the user must supply an ADO.NET connection");
 
-			ConfigureDriver( settings );
+			ConfigureDriver(settings);
 		}
-
 	}
 }

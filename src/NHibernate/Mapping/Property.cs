@@ -26,7 +26,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		public Property( )
+		public Property()
 		{
 		}
 
@@ -34,7 +34,7 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="propertyValue"></param>
-		public Property( IValue propertyValue )
+		public Property(IValue propertyValue)
 		{
 			this.propertyValue = propertyValue;
 		}
@@ -89,13 +89,13 @@ namespace NHibernate.Mapping
 			get
 			{
 				IType type = propertyValue.Type;
-				if( type.IsComponentType && !type.IsAnyType )
+				if (type.IsComponentType && !type.IsAnyType)
 				{
-					IAbstractComponentType actype = ( IAbstractComponentType ) propertyValue.Type;
+					IAbstractComponentType actype = (IAbstractComponentType) propertyValue.Type;
 					int length = actype.Subtypes.Length;
-					for( int i = 0; i < length; i++ )
+					for (int i = 0; i < length; i++)
 					{
-						if( actype.GetCascadeStyle( i ) != Cascades.CascadeStyle.StyleNone )
+						if (actype.GetCascadeStyle(i) != Cascades.CascadeStyle.StyleNone)
 						{
 							return Cascades.CascadeStyle.StyleAll;
 						}
@@ -105,33 +105,33 @@ namespace NHibernate.Mapping
 				}
 				else
 				{
-					if( cascade.Equals( "all" ) )
+					if (cascade.Equals("all"))
 					{
 						return Cascades.CascadeStyle.StyleAll;
 					}
-					else if( cascade.Equals( "all-delete-orphan" ) )
+					else if (cascade.Equals("all-delete-orphan"))
 					{
 						return Cascades.CascadeStyle.StyleAllDeleteOrphan;
 					}
-					else if( cascade.Equals( "none" ) )
+					else if (cascade.Equals("none"))
 					{
 						return Cascades.CascadeStyle.StyleNone;
 					}
-					else if( cascade.Equals( "save-update" ) )
+					else if (cascade.Equals("save-update"))
 					{
 						return Cascades.CascadeStyle.StyleSaveUpdate;
 					}
-					else if( cascade.Equals( "delete" ) )
+					else if (cascade.Equals("delete"))
 					{
 						return Cascades.CascadeStyle.StyleOnlyDelete;
 					}
-					else if( cascade.Equals( "delete-orphan" ) )
+					else if (cascade.Equals("delete-orphan"))
 					{
 						return Cascades.CascadeStyle.StyleDeleteOrphan;
 					}
 					else
 					{
-						throw new MappingException( "Unspported cascade style: " + cascade );
+						throw new MappingException("Unspported cascade style: " + cascade);
 					}
 				}
 			}
@@ -150,10 +150,10 @@ namespace NHibernate.Mapping
 			{
 				bool[] columnUpdateability = propertyValue.ColumnUpdateability;
 				return updateable &&
-					(
-						// columnUpdateability.Length == 0 ||
-						!ArrayHelper.IsAllFalse(columnUpdateability)
-					);
+				       (
+				       	// columnUpdateability.Length == 0 ||
+				       !ArrayHelper.IsAllFalse(columnUpdateability)
+				       );
 			}
 			set { updateable = value; }
 		}
@@ -164,10 +164,10 @@ namespace NHibernate.Mapping
 			{
 				bool[] columnInsertability = propertyValue.ColumnInsertability;
 				return insertable &&
-					(
-						columnInsertability.Length == 0 ||
-						!ArrayHelper.IsAllFalse( columnInsertability )
-					);
+				       (
+				       	columnInsertability.Length == 0 ||
+				       	!ArrayHelper.IsAllFalse(columnInsertability)
+				       );
 			}
 			set { insertable = value; }
 		}
@@ -195,9 +195,9 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="clazz"></param>
 		/// <returns></returns>
-		public IGetter GetGetter( System.Type clazz )
+		public IGetter GetGetter(System.Type clazz)
 		{
-			return PropertyAccessor.GetGetter( clazz, name );
+			return PropertyAccessor.GetGetter(clazz, name);
 		}
 
 		/// <summary>
@@ -205,21 +205,21 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="clazz"></param>
 		/// <returns></returns>
-		public ISetter GetSetter( System.Type clazz )
+		public ISetter GetSetter(System.Type clazz)
 		{
-			return PropertyAccessor.GetSetter( clazz, name );
+			return PropertyAccessor.GetSetter(clazz, name);
 		}
 
 		/// <summary></summary>
 		protected IPropertyAccessor PropertyAccessor
 		{
-			get { return PropertyAccessorFactory.GetPropertyAccessor( PropertyAccessorName ); }
+			get { return PropertyAccessorFactory.GetPropertyAccessor(PropertyAccessorName); }
 		}
 
 		/// <summary></summary>
 		public bool IsBasicPropertyAccessor
 		{
-			get { return propertyAccessorName == null || propertyAccessorName.Equals( "property" ); }
+			get { return propertyAccessorName == null || propertyAccessorName.Equals("property"); }
 		}
 
 		public IDictionary MetaAttributes
@@ -228,9 +228,9 @@ namespace NHibernate.Mapping
 			set { metaAttributes = value; }
 		}
 
-		public MetaAttribute GetMetaAttribute( string name )
+		public MetaAttribute GetMetaAttribute(string name)
 		{
-			return ( MetaAttribute ) metaAttributes[ name ];
+			return (MetaAttribute) metaAttributes[name];
 		}
 
 		/// <summary>
@@ -238,9 +238,9 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="mapping"></param>
 		/// <returns></returns>
-		public bool IsValid( IMapping mapping )
+		public bool IsValid(IMapping mapping)
 		{
-			return Value.IsValid( mapping );
+			return Value.IsValid(mapping);
 		}
 
 		/// <summary>
@@ -248,11 +248,11 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public string NullValue
 		{
-			get 
+			get
 			{
-				if ( propertyValue is SimpleValue )
+				if (propertyValue is SimpleValue)
 				{
-					return ( (SimpleValue) propertyValue).NullValue;
+					return ((SimpleValue) propertyValue).NullValue;
 				}
 				else
 					return null;

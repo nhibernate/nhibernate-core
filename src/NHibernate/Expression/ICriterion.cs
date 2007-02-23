@@ -25,6 +25,6 @@ namespace NHibernate.Expression
 		/// Return typed values for all parameters in the rendered SQL fragment
 		/// </summary>
 		/// <returns>An array of TypedValues for the Expression.</returns>
-		TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery );
+		TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery);
 	}
 }

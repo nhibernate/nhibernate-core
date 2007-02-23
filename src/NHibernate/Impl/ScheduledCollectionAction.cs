@@ -16,6 +16,7 @@ namespace NHibernate.Impl
 	{
 		[NonSerialized]
 		private ICollectionPersister persister;
+
 		private object id;
 		private ISessionImplementor session;
 		private ISoftLock lck = null;
@@ -27,7 +28,7 @@ namespace NHibernate.Impl
 		/// <param name="persister">The <see cref="ICollectionPersister"/> that is responsible for the persisting the Collection.</param>
 		/// <param name="id">The identifier of the Collection owner.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public ScheduledCollectionAction( ICollectionPersister persister, object id, ISessionImplementor session )
+		public ScheduledCollectionAction(ICollectionPersister persister, object id, ISessionImplementor session)
 		{
 			this.persister = persister;
 			this.session = session;
@@ -79,16 +80,16 @@ namespace NHibernate.Impl
 
 		/// <summary></summary>
 		/// <param name="success"></param>
-		public void AfterTransactionCompletion( bool success )
+		public void AfterTransactionCompletion(bool success)
 		{
-			if ( persister.HasCache )
+			if (persister.HasCache)
 			{
 				CacheKey ck = new CacheKey(
 					Id,
 					Persister.KeyType,
 					Persister.Role,
 					Session.Factory
-				);
+					);
 				persister.Cache.Release(ck, lck);
 			}
 		}
@@ -103,7 +104,7 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// 
 		/// </summary>
-		public void BeforeExecutions( )
+		public void BeforeExecutions()
 		{
 			// we need to obtain the lock before any actions are
 			// executed, since this may be an inverse="true"
@@ -111,42 +112,41 @@ namespace NHibernate.Impl
 			// earlier entity actions which actually updates
 			// the database (this action is resposible for
 			// second-level cache invalidation only)
-			if ( persister.HasCache ) 
+			if (persister.HasCache)
 			{
 				CacheKey ck = new CacheKey(
 					id,
 					persister.KeyType,
 					persister.Role,
 					session.Factory
-				);
-				lck = persister.Cache.Lock( ck, null ); //collections don't have version numbers :-(
+					);
+				lck = persister.Cache.Lock(ck, null); //collections don't have version numbers :-(
 			}
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		protected void Evict( )
+		protected void Evict()
 		{
-			if ( persister.HasCache )
+			if (persister.HasCache)
 			{
 				CacheKey ck = new CacheKey(
 					id,
 					persister.KeyType,
 					persister.Role,
 					session.Factory
-				);
+					);
 				persister.Cache.Evict(ck);
 			}
 		}
 
 		/// <summary></summary>
-		public object[ ] PropertySpaces
+		public object[] PropertySpaces
 		{
-			get { return new object[ ] { persister.CollectionSpace }; } //TODO: cache the array on the persister
+			get { return new object[] {persister.CollectionSpace}; } //TODO: cache the array on the persister
 		}
 
 		#endregion
-
 	}
 }

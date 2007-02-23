@@ -13,7 +13,7 @@ namespace NHibernate.Classic
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ValidationFailure"/> class.
 		/// </summary>
-		public ValidationFailure() : base( "A validation failure occured" )
+		public ValidationFailure() : base("A validation failure occured")
 		{
 		}
 
@@ -21,7 +21,7 @@ namespace NHibernate.Classic
 		/// Initializes a new instance of the <see cref="ValidationFailure"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public ValidationFailure( string message ) : base( message )
+		public ValidationFailure(string message) : base(message)
 		{
 		}
 
@@ -33,7 +33,7 @@ namespace NHibernate.Classic
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public ValidationFailure( Exception innerException ) : base( "A validation failure occured", innerException )
+		public ValidationFailure(Exception innerException) : base("A validation failure occured", innerException)
 		{
 		}
 
@@ -46,7 +46,7 @@ namespace NHibernate.Classic
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public ValidationFailure( string message, Exception innerException ) : base( message, innerException )
+		public ValidationFailure(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
@@ -61,7 +61,7 @@ namespace NHibernate.Classic
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected ValidationFailure( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected ValidationFailure(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

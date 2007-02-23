@@ -7,6 +7,8 @@ namespace NHibernate.Dialect.Function
 	/// </summary>
 	public class ClassicSumFunction : ClassicAggregateFunction
 	{
-		public ClassicSumFunction() : base("sum",false) { }
+		public ClassicSumFunction() : base("sum", false)
+		{
+		}
 	}
 }

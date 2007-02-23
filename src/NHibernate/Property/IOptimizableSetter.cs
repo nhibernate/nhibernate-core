@@ -13,6 +13,6 @@ namespace NHibernate.Property
 		/// is loaded onto the stack first, then the value, then this method
 		/// is called.
 		/// </summary>
-		void Emit( ILGenerator il );
+		void Emit(ILGenerator il);
 	}
 }

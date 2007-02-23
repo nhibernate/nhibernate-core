@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class GuidType : ValueTypeType, IDiscriminatorType
 	{
 		/// <summary></summary>
-		internal GuidType() : base( SqlTypeFactory.Guid )
+		internal GuidType() : base(SqlTypeFactory.Guid)
 		{
 		}
 
@@ -22,9 +22,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new Guid( Convert.ToString( rs[ index ] ) );
+			return new Guid(Convert.ToString(rs[index]));
 		}
 
 		/// <summary>
@@ -33,15 +33,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return new Guid( Convert.ToString( rs[ name ] ) );
+			return new Guid(Convert.ToString(rs[name]));
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( Guid ); }
+			get { return typeof(Guid); }
 		}
 
 		/// <summary>
@@ -50,9 +50,9 @@ namespace NHibernate.Type
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter parm = cmd.Parameters[ index ] as IDataParameter;
+			IDataParameter parm = cmd.Parameters[index] as IDataParameter;
 			parm.Value = value;
 		}
 
@@ -67,14 +67,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return "'" + value.ToString() + "'";
 		}
 
 		public override object FromStringValue(string xml)
 		{
-			return new Guid( xml );
+			return new Guid(xml);
 		}
 
 		/// <summary>
@@ -82,9 +82,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public object StringToObject( string xml )
+		public object StringToObject(string xml)
 		{
-			return FromString( xml );
+			return FromString(xml);
 		}
 	}
 }

@@ -13,8 +13,8 @@ namespace NHibernate.Cache
 		private readonly long freshTimestamp;
 		private readonly object value;
 		private readonly object version;
-	
-		public CachedItem(object value, long currentTimestamp, object version) 
+
+		public CachedItem(object value, long currentTimestamp, object version)
 		{
 			this.value = value;
 			freshTimestamp = currentTimestamp;
@@ -36,11 +36,11 @@ namespace NHibernate.Cache
 		{
 			get { return value; }
 		}
-		
+
 		/// <summary>
 		/// Lock the item
 		/// </summary>
-		public CacheLock Lock(long timeout, int id) 
+		public CacheLock Lock(long timeout, int id)
 		{
 			return new CacheLock(timeout, id, version);
 		}
@@ -58,7 +58,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="txTimestamp"></param>
 		/// <returns></returns>
-		public bool IsGettable(long txTimestamp) 
+		public bool IsGettable(long txTimestamp)
 		{
 			return freshTimestamp < txTimestamp;
 		}
@@ -70,19 +70,19 @@ namespace NHibernate.Cache
 		/// <param name="newVersion"></param>
 		/// <param name="comparator"></param>
 		/// <returns></returns>
-		public bool IsPuttable( long txTimestamp, object newVersion, IComparer comparator) 
+		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator)
 		{
 			// we really could refresh the item if it  
 			// is not a lock, but it might be slower
 			//return freshTimestamp < txTimestamp
-			return version!=null && comparator.Compare(version, newVersion) < 0;
+			return version != null && comparator.Compare(version, newVersion) < 0;
 		}
 
-		public override string ToString() 
+		public override string ToString()
 		{
 			return "Item{version=" + version +
-				",freshTimestamp=" + freshTimestamp +
-				"}";
+			       ",freshTimestamp=" + freshTimestamp +
+			       "}";
 		}
 	}
 }

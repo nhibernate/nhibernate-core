@@ -1,8 +1,6 @@
 using System;
 using System.Reflection;
-
 using Iesi.Collections;
-
 using NHibernate.Engine;
 
 namespace NHibernate.Proxy
@@ -20,8 +18,8 @@ namespace NHibernate.Proxy
 			System.Type persistentClass,
 			ISet interfaces,
 			MethodInfo getIdentifierMethod,
-			MethodInfo setIdentifierMethod );
-		
+			MethodInfo setIdentifierMethod);
+
 		/// <summary>
 		/// Create a new proxy
 		/// </summary>
@@ -31,6 +29,6 @@ namespace NHibernate.Proxy
 		/// <returns>The generated proxy.</returns>
 		/// <exception cref="HibernateException">Indicates problems generating
 		/// requested proxy.</exception>
-		INHibernateProxy GetProxy( object id, ISessionImplementor session );
+		INHibernateProxy GetProxy(object id, ISessionImplementor session);
 	}
 }

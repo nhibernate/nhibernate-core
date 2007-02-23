@@ -1,5 +1,4 @@
 using System.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -21,8 +20,8 @@ namespace NHibernate.Loader.Entity
 			IOuterJoinLoadable persister,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters )
-			: this( persister, 1, lockMode, factory, enabledFilters )
+			IDictionary enabledFilters)
+			: this(persister, 1, lockMode, factory, enabledFilters)
 		{
 		}
 
@@ -31,7 +30,7 @@ namespace NHibernate.Loader.Entity
 			int batchSize,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters )
+			IDictionary enabledFilters)
 			: this(
 				persister,
 				persister.IdentifierColumnNames,
@@ -39,19 +38,19 @@ namespace NHibernate.Loader.Entity
 				batchSize,
 				lockMode,
 				factory,
-				enabledFilters )
+				enabledFilters)
 		{
 		}
 
 		public EntityLoader(
 			IOuterJoinLoadable persister,
-			string[ ] uniqueKey,
+			string[] uniqueKey,
 			IType uniqueKeyType,
 			int batchSize,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters )
-			: base( persister, uniqueKeyType, factory, enabledFilters )
+			IDictionary enabledFilters)
+			: base(persister, uniqueKeyType, factory, enabledFilters)
 		{
 			JoinWalker walker = new EntityJoinWalker(
 				persister,
@@ -62,18 +61,18 @@ namespace NHibernate.Loader.Entity
 				factory,
 				enabledFilters
 				);
-			InitFromWalker( walker );
+			InitFromWalker(walker);
 
 			PostInstantiate();
 
 			batchLoader = batchSize > 1;
 
-			log.Debug( "Static select for entity " + entityName + ": " + SqlString );
+			log.Debug("Static select for entity " + entityName + ": " + SqlString);
 		}
 
-		public object LoadByUniqueKey( ISessionImplementor session, object key )
+		public object LoadByUniqueKey(ISessionImplementor session, object key)
 		{
-			return Load( session, key, null, null );
+			return Load(session, key, null, null);
 		}
 
 		protected override bool IsSingleRowLoader

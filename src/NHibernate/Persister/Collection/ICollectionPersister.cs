@@ -1,11 +1,9 @@
 using System.Collections;
 using System.Data;
-
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Id;
-using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Type;
 
@@ -35,7 +33,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void Initialize( object key, ISessionImplementor session );
+		void Initialize(object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Get the cache
@@ -75,7 +73,7 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Read the key from a row of the <see cref="IDataReader" />
 		/// </summary>
-		object ReadKey( IDataReader rs, string[] keyAliases, ISessionImplementor session );
+		object ReadKey(IDataReader rs, string[] keyAliases, ISessionImplementor session);
 
 		/// <summary>
 		/// Read the element from a row of the <see cref="IDataReader" />
@@ -85,19 +83,19 @@ namespace NHibernate.Persister.Collection
 			IDataReader rs,
 			object owner,
 			string[] columnAliases,
-			ISessionImplementor session );
+			ISessionImplementor session);
 
 		/// <summary>
 		/// Read the index from a row of the <see cref="IDataReader" />
 		/// </summary>
 		//TODO: the ReadIndex should really be a parameterized TIndex
-		object ReadIndex( IDataReader rs, string[] columnAliases, ISessionImplementor session );
+		object ReadIndex(IDataReader rs, string[] columnAliases, ISessionImplementor session);
 
 		/// <summary>
 		/// Read the identifier from a row of the <see cref="IDataReader" />
 		/// </summary>
 		//TODO: the ReadIdentifier should really be a parameterized TIdentifier
-		object ReadIdentifier( IDataReader rs, string columnAlias, ISessionImplementor session );
+		object ReadIdentifier(IDataReader rs, string columnAlias, ISessionImplementor session);
 
 		/// <summary>
 		/// Is this an array or primitive values?
@@ -114,7 +112,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		bool IsOneToMany { get; }
 
-		string GetManyToManyFilterFragment( string alias, IDictionary enabledFilters );
+		string GetManyToManyFilterFragment(string alias, IDictionary enabledFilters);
 
 		/// <summary>
 		/// Is this an "indexed" collection? (list or map)
@@ -136,7 +134,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
-		void Remove( object id, ISessionImplementor session );
+		void Remove(object id, ISessionImplementor session);
 
 		/// <summary>
 		/// (Re)create the collection's persistent state
@@ -144,7 +142,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void Recreate( IPersistentCollection collection, object key, ISessionImplementor session );
+		void Recreate(IPersistentCollection collection, object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Delete the persistent state of any elements that were removed from the collection
@@ -152,7 +150,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void DeleteRows( IPersistentCollection collection, object key, ISessionImplementor session );
+		void DeleteRows(IPersistentCollection collection, object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Update the persistent state of any elements that were modified
@@ -160,7 +158,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void UpdateRows( IPersistentCollection collection, object key, ISessionImplementor session );
+		void UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Insert the persistent state of any new collection elements
@@ -168,7 +166,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void InsertRows( IPersistentCollection collection, object key, ISessionImplementor session );
+		void InsertRows(IPersistentCollection collection, object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Get the name of this collection role (the fully qualified class name, extended by a "property path")
@@ -211,7 +209,7 @@ namespace NHibernate.Persister.Collection
 
 		ICollectionMetadata CollectionMetadata { get; }
 
-        void PostInstantiate();
+		void PostInstantiate();
 
 		/// <summary>
 		/// Generates the collection's key column aliases, based on the given
@@ -219,7 +217,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="suffix">The suffix to use in the key column alias generation.</param>
 		/// <returns>The key column aliases.</returns>
-		string[] GetKeyColumnAliases( string suffix );
+		string[] GetKeyColumnAliases(string suffix);
 
 		/// <summary>
 		/// Generates the collection's index column aliases, based on the given
@@ -227,7 +225,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="suffix">The suffix to use in the index column alias generation.</param>
 		/// <returns>The index column aliases, or null if not indexed.</returns>
-		string[] GetIndexColumnAliases( string suffix );
+		string[] GetIndexColumnAliases(string suffix);
 
 		/// <summary>
 		/// Generates the collection's element column aliases, based on the given
@@ -235,7 +233,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="suffix">The suffix to use in the element column alias generation.</param>
 		/// <returns>The element column aliases.</returns>
-		string[] GetElementColumnAliases( string suffix );
+		string[] GetElementColumnAliases(string suffix);
 
 		/// <summary>
 		/// Generates the collection's identifier column aliases, based on the given
@@ -243,7 +241,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="suffix">The suffix to use in the identifier column alias generation.</param>
 		/// <returns>The identifier column aliases.</returns>
-		string GetIdentifierColumnAlias( string suffix );
+		string GetIdentifierColumnAlias(string suffix);
 
 		ISessionFactoryImplementor Factory { get; }
 

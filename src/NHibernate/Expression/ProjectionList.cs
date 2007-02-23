@@ -1,13 +1,11 @@
 using System;
-#if NET_2_0
 using System.Collections.Generic;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
+#if NET_2_0
 #else
 using System.Collections;
 #endif
-
-using NHibernate.Type;
-using NHibernate.SqlCommand;
-
 
 namespace NHibernate.Expression
 {
@@ -15,12 +13,14 @@ namespace NHibernate.Expression
 	public class ProjectionList : IProjection
 	{
 #if NET_2_0
-		IList<IProjection> elements = new List<IProjection>();
+		private IList<IProjection> elements = new List<IProjection>();
 #else
 		IList elements = new ArrayList();
 #endif
 
-		protected internal ProjectionList() { }
+		protected internal ProjectionList()
+		{
+		}
 
 		public ProjectionList Create()
 		{
@@ -58,23 +58,23 @@ namespace NHibernate.Expression
 
 		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
-            SqlStringBuilder buf = new SqlStringBuilder();
+			SqlStringBuilder buf = new SqlStringBuilder();
 			for (int i = 0; i < Length; i++)
 			{
 				IProjection proj = this[i];
 				buf.Add(proj.ToSqlString(criteria, loc, criteriaQuery));
 				loc += proj.GetColumnAliases(loc).Length;
-                if (i < elements.Count - 1)
-                {
-                    buf.Add(", ");
-                }
+				if (i < elements.Count - 1)
+				{
+					buf.Add(", ");
+				}
 			}
-            return buf.ToSqlString();
+			return buf.ToSqlString();
 		}
 
 		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-            SqlStringBuilder buf = new SqlStringBuilder();
+			SqlStringBuilder buf = new SqlStringBuilder();
 			for (int i = 0; i < Length; i++)
 			{
 				IProjection proj = this[i];
@@ -84,10 +84,10 @@ namespace NHibernate.Expression
 						.Add(", ");
 				}
 			}
-            if (buf.Count >= 2)
-            {
-                buf.RemoveAt(buf.Count - 1);
-            }
+			if (buf.Count >= 2)
+			{
+				buf.RemoveAt(buf.Count - 1);
+			}
 			//if (buf.Length > 2) buf.Length = buf.Length - 2; //pull off the last ", "
 			return buf.ToSqlString();
 		}
@@ -95,7 +95,7 @@ namespace NHibernate.Expression
 		public String[] GetColumnAliases(int loc)
 		{
 #if NET_2_0
-			IList<string> aliases= new List<string>(Length);
+			IList<string> aliases = new List<string>(Length);
 #else
 			IList aliases = new ArrayList(Length);
 #endif
@@ -156,17 +156,20 @@ namespace NHibernate.Expression
 
 		public IProjection this[int index]
 		{
-			get 
+			get
 			{
 #if NET_2_0
 				return elements[index];
 #else
-				return (IProjection) elements[index]; 
+				return (IProjection) elements[index];
 #endif
 			}
 		}
 
-		public int Length { get { return elements.Count; } }
+		public int Length
+		{
+			get { return elements.Count; }
+		}
 
 		public override String ToString()
 		{

@@ -4,7 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Diagnostics;
+using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -19,7 +20,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
 #if NET_2_0
-	[System.Diagnostics.DebuggerTypeProxy(typeof(NHibernate.DebugHelpers.CollectionProxy<>))]
+	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 #endif
 	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
@@ -30,7 +31,7 @@ namespace NHibernate.Collection.Generic
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		public PersistentGenericList( ISessionImplementor session ) : base( session )
+		public PersistentGenericList(ISessionImplementor session) : base(session)
 		{
 		}
 
@@ -40,8 +41,8 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
 		/// <param name="coll">The <see cref="IList{T}"/> to wrap.</param>
-		public PersistentGenericList( ISessionImplementor session, IList<T> coll )
-			: base( session )
+		public PersistentGenericList(ISessionImplementor session, IList<T> coll)
+			: base(session)
 		{
 			list = coll;
 			SetInitialized();
@@ -50,37 +51,37 @@ namespace NHibernate.Collection.Generic
 
 		#region IList<T> Members
 
-		public int IndexOf( T item )
+		public int IndexOf(T item)
 		{
 			Read();
-			return list.IndexOf( item );
+			return list.IndexOf(item);
 		}
 
-		public void Insert( int index, T item )
+		public void Insert(int index, T item)
 		{
 			Initialize(true);
-			list.Insert( index, item );
+			list.Insert(index, item);
 			Dirty();
 		}
 
-		public void RemoveAt( int index )
+		public void RemoveAt(int index)
 		{
 			Initialize(true);
-			list.RemoveAt( index );
+			list.RemoveAt(index);
 			Dirty();
 		}
 
-		public T this[ int index ]
+		public T this[int index]
 		{
 			get
 			{
 				Read();
-				return list[ index ];
+				return list[index];
 			}
 			set
 			{
 				Write();
-				list[ index ] = value;
+				list[index] = value;
 			}
 		}
 
@@ -88,14 +89,14 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection<T> Members
 
-		public void Add( T item )
+		public void Add(T item)
 		{
 			// we could potentially do a QueueAdd here but essentially
 			// won't be <list> mappings don't support inverse collections
-			if( !QueueAdd( item ) )
+			if (!QueueAdd(item))
 			{
 				Write();
-				list.Add( item );
+				list.Add(item);
 			}
 		}
 
@@ -109,16 +110,16 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public bool Contains( T item )
+		public bool Contains(T item)
 		{
 			Read();
-			return list.Contains( item );
+			return list.Contains(item);
 		}
 
-		public void CopyTo( T[] array, int arrayIndex )
+		public void CopyTo(T[] array, int arrayIndex)
 		{
 			Read();
-			list.CopyTo( array, arrayIndex );
+			list.CopyTo(array, arrayIndex);
 		}
 
 		public int Count
@@ -135,7 +136,7 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		public bool Remove( T item )
+		public bool Remove(T item)
 		{
 			Initialize(true);
 			return MakeDirtyIfTrue(list.Remove(item));
@@ -158,18 +159,18 @@ namespace NHibernate.Collection.Generic
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
-			return ( IEnumerator ) list.GetEnumerator();
+			return (IEnumerator) list.GetEnumerator();
 		}
 
 		#endregion
 
 		#region AbstractPersistentCollection Members
 
-		public override void DelayedAddAll( ICollection coll, ICollectionPersister persister )
+		public override void DelayedAddAll(ICollection coll, ICollectionPersister persister)
 		{
-			foreach( object obj in coll )
+			foreach (object obj in coll)
 			{
-				list.Add( ( T ) obj );
+				list.Add((T) obj);
 			}
 		}
 
@@ -178,35 +179,35 @@ namespace NHibernate.Collection.Generic
 			get { return list.Count == 0; }
 		}
 
-		public override void InitializeFromCache( ICollectionPersister persister, object disassembled, object owner )
+		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			BeforeInitialize( persister );
-			object[] array = ( object[] ) disassembled;
-			for( int i = 0; i < array.Length; i++ )
+			BeforeInitialize(persister);
+			object[] array = (object[]) disassembled;
+			for (int i = 0; i < array.Length; i++)
 			{
-				object element = persister.ElementType.Assemble( array[ i ], this.Session, owner );
-				list.Add( ( element == null ? default( T ) : ( T ) element ) );
+				object element = persister.ElementType.Assemble(array[i], this.Session, owner);
+				list.Add((element == null ? default(T) : (T) element));
 			}
 			SetInitialized();
 		}
 
 		public override IEnumerable Entries()
 		{
-			return ( IEnumerable ) list;
+			return (IEnumerable) list;
 		}
 
-		public override object ReadFrom( IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor,
-		                                 object owner )
+		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor,
+		                                object owner)
 		{
-			object element = persister.ReadElement( reader, owner, descriptor.SuffixedElementAliases, this.Session );
-			int index = ( int ) persister.ReadIndex( reader, descriptor.SuffixedIndexAliases, this.Session );
+			object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, this.Session);
+			int index = (int) persister.ReadIndex(reader, descriptor.SuffixedIndexAliases, this.Session);
 
 			// pad with null from the current last element up to the new index
-			for( int i = list.Count; i <= index; i++ )
+			for (int i = list.Count; i <= index; i++)
 			{
-				list.Insert( i, default( T ) );
+				list.Insert(i, default(T));
 			}
-			list[ index ] = ( element == null ? default( T ) : ( T ) element );
+			list[index] = (element == null ? default(T) : (T) element);
 			return element;
 		}
 
@@ -216,25 +217,25 @@ namespace NHibernate.Collection.Generic
 //			persister.WriteIndex(st, i, writeOrder, this.Session);
 //		}
 
-		public override object GetElement( object entry )
+		public override object GetElement(object entry)
 		{
 			return entry;
 		}
 
-		public override object GetSnapshotElement( object entry, int i )
+		public override object GetSnapshotElement(object entry, int i)
 		{
-			IList<T> sn = ( IList<T> ) GetSnapshot();
-			return sn[ i ];
+			IList<T> sn = (IList<T>) GetSnapshot();
+			return sn[i];
 		}
 
-		public override object GetIndex( object entry, int i )
+		public override object GetIndex(object entry, int i)
 		{
 			return i;
 		}
 
-		public override void BeforeInitialize( ICollectionPersister persister )
+		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			list = ( IList<T> ) persister.CollectionType.Instantiate();
+			list = (IList<T>) persister.CollectionType.Instantiate();
 		}
 
 		/// <summary>
@@ -246,17 +247,17 @@ namespace NHibernate.Collection.Generic
 		/// of the list or if one of the elements in the collection is
 		/// dirty.
 		/// </returns>
-		public override bool EqualsSnapshot( IType elementType )
+		public override bool EqualsSnapshot(IType elementType)
 		{
-			IList<T> sn = ( IList<T> ) GetSnapshot();
-			if( sn.Count != list.Count )
+			IList<T> sn = (IList<T>) GetSnapshot();
+			if (sn.Count != list.Count)
 			{
 				return false;
 			}
 
-			for( int i = 0; i < list.Count; i++ )
+			for (int i = 0; i < list.Count; i++)
 			{
-				if( elementType.IsDirty( list[ i ], sn[ i ], this.Session ) )
+				if (elementType.IsDirty(list[i], sn[i], this.Session))
 				{
 					return false;
 				}
@@ -273,55 +274,55 @@ namespace NHibernate.Collection.Generic
 		/// A new <see cref="IList{T}"/> that contains Deep Copies of the 
 		/// Elements stored in this wrapped collection.
 		/// </returns>
-		protected override ICollection Snapshot( ICollectionPersister persister )
+		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
-			List<T> clonedList = new List<T>( list.Count );
-			foreach( T obj in list )
+			List<T> clonedList = new List<T>(list.Count);
+			foreach (T obj in list)
 			{
-				clonedList.Add( ( T ) persister.ElementType.DeepCopy( obj ) );
+				clonedList.Add((T) persister.ElementType.DeepCopy(obj));
 			}
 			return clonedList;
 		}
 
-		public override object Disassemble( ICollectionPersister persister )
+		public override object Disassemble(ICollectionPersister persister)
 		{
 			int length = list.Count;
 			object[] result = new object[length];
-			for( int i = 0; i < length; i++ )
+			for (int i = 0; i < length; i++)
 			{
-				result[ i ] = persister.ElementType.Disassemble( list[ i ], this.Session );
+				result[i] = persister.ElementType.Disassemble(list[i], this.Session);
 			}
 			return result;
 		}
 
-		public override bool EntryExists( object entry, int i )
+		public override bool EntryExists(object entry, int i)
 		{
 			return entry != null;
 		}
 
-		public override bool NeedsInserting( object entry, int i, IType elemType )
+		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			IList<T> sn = ( IList<T> ) GetSnapshot();
-			return list[ i ] != null && ( i >= sn.Count || sn[ i ] == null );
+			IList<T> sn = (IList<T>) GetSnapshot();
+			return list[i] != null && (i >= sn.Count || sn[i] == null);
 		}
 
-		public override bool NeedsUpdating( object entry, int i, IType elemType )
+		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
-			IList<T> sn = ( IList<T> ) GetSnapshot();
-			return i < sn.Count && sn[ i ] != null && list[ i ] != null && elemType.IsDirty( list[ i ], sn[ i ], this.Session );
+			IList<T> sn = (IList<T>) GetSnapshot();
+			return i < sn.Count && sn[i] != null && list[i] != null && elemType.IsDirty(list[i], sn[i], this.Session);
 		}
 
-		public override ICollection GetDeletes( IType elemType, bool indexIsFormula )
+		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
-			IList<T> sn = ( IList<T> ) GetSnapshot();
+			IList<T> sn = (IList<T>) GetSnapshot();
 			int end;
 
-			if( sn.Count > list.Count )
+			if (sn.Count > list.Count)
 			{
-				for( int i = list.Count; i < sn.Count; i++ )
+				for (int i = list.Count; i < sn.Count; i++)
 				{
-					deletes.Add( indexIsFormula ? (object) sn[i] : i );
+					deletes.Add(indexIsFormula ? (object) sn[i] : i);
 				}
 				end = list.Count;
 			}
@@ -330,17 +331,17 @@ namespace NHibernate.Collection.Generic
 				end = sn.Count;
 			}
 
-			for( int i = 0; i < end; i++ )
+			for (int i = 0; i < end; i++)
 			{
-				if( list[ i ] == null && sn[ i ] != null )
+				if (list[i] == null && sn[i] != null)
 				{
-					deletes.Add( indexIsFormula ? (object) sn[i] : i );
+					deletes.Add(indexIsFormula ? (object) sn[i] : i);
 				}
 			}
 			return deletes;
 		}
 
-		public override bool IsWrapper( object collection )
+		public override bool IsWrapper(object collection)
 		{
 			return list == collection;
 		}
@@ -355,12 +356,12 @@ namespace NHibernate.Collection.Generic
 		/// An <see cref="System.Collections.ICollection"/> that contains all of the elements
 		/// that have been orphaned.
 		/// </returns>
-		public override ICollection GetOrphans( object snapshot, System.Type entityName )
+		public override ICollection GetOrphans(object snapshot, System.Type entityName)
 		{
-			IList<T> sn = ( IList<T> ) snapshot;
-			List<T> result = new List<T>( sn.Count );
-			result.AddRange( sn );
-			IdentityRemoveAll( result, ( ICollection ) list, entityName, this.Session );
+			IList<T> sn = (IList<T>) snapshot;
+			List<T> result = new List<T>(sn.Count);
+			result.AddRange(sn);
+			IdentityRemoveAll(result, (ICollection) list, entityName, this.Session);
 			return result;
 		}
 
@@ -376,13 +377,13 @@ namespace NHibernate.Collection.Generic
 		// can just use "this" so we don't duplicate the Read/Write 
 		// logic.
 
-		int IList.Add( object value )
+		int IList.Add(object value)
 		{
 			// can't perform a Queued Addition because the non-generic
 			// IList interface requires the index the object was added
 			// at to be returned
 			Write();
-			return ( ( IList ) list ).Add( value );
+			return ((IList) list).Add(value);
 		}
 
 		void IList.Clear()
@@ -390,22 +391,22 @@ namespace NHibernate.Collection.Generic
 			this.Clear();
 		}
 
-		bool IList.Contains( object value )
+		bool IList.Contains(object value)
 		{
 			Read();
-			return ( ( IList ) list ).Contains( value );
+			return ((IList) list).Contains(value);
 		}
 
-		int IList.IndexOf( object value )
+		int IList.IndexOf(object value)
 		{
 			Read();
-			return ( ( IList ) list ).IndexOf( value );
+			return ((IList) list).IndexOf(value);
 		}
 
-		void IList.Insert( int index, object value )
+		void IList.Insert(int index, object value)
 		{
 			Initialize(true);
-			( ( IList ) list ).Insert( index, value );
+			((IList) list).Insert(index, value);
 			Dirty();
 		}
 
@@ -419,29 +420,29 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		void IList.Remove( object value )
+		void IList.Remove(object value)
 		{
 			Initialize(true);
 			int oldCount = list.Count;
-			( ( IList ) list ).Remove( value );
+			((IList) list).Remove(value);
 			if (oldCount != list.Count)
 			{
 				Dirty();
 			}
 		}
 
-		void IList.RemoveAt( int index )
+		void IList.RemoveAt(int index)
 		{
-			this.RemoveAt( index );
+			this.RemoveAt(index);
 		}
 
-		object IList.this[ int index ]
+		object IList.this[int index]
 		{
-			get { return this[ index ]; }
+			get { return this[index]; }
 			set
 			{
 				Write();
-				( ( IList ) list )[ index ] = value;
+				((IList) list)[index] = value;
 			}
 		}
 
@@ -449,10 +450,10 @@ namespace NHibernate.Collection.Generic
 
 		#region ICollection Members
 
-		void ICollection.CopyTo( Array array, int index )
+		void ICollection.CopyTo(Array array, int index)
 		{
 			Read();
-			( ( IList ) list ).CopyTo( array, index );
+			((IList) list).CopyTo(array, index);
 		}
 
 		int ICollection.Count

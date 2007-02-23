@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -24,7 +23,7 @@ namespace NHibernate.Engine
 			IMapping mapping
 			)
 		{
-			return GetAliasedLHSColumnNames( type, alias, property, 0, lhsPersister, mapping );
+			return GetAliasedLHSColumnNames(type, alias, property, 0, lhsPersister, mapping);
 		}
 
 		/// <summary>
@@ -38,7 +37,7 @@ namespace NHibernate.Engine
 			IMapping mapping
 			)
 		{
-			return GetLHSColumnNames( type, property, 0, lhsPersister, mapping );
+			return GetLHSColumnNames(type, property, 0, lhsPersister, mapping);
 		}
 
 		/// <summary>
@@ -54,24 +53,24 @@ namespace NHibernate.Engine
 			IMapping mapping
 			)
 		{
-			if( type.UseLHSPrimaryKey )
+			if (type.UseLHSPrimaryKey)
 			{
-				return StringHelper.Qualify( alias, lhsPersister.IdentifierColumnNames );
+				return StringHelper.Qualify(alias, lhsPersister.IdentifierColumnNames);
 			}
 			else
 			{
 				string propertyName = type.LHSPropertyName;
-				if( propertyName == null )
+				if (propertyName == null)
 				{
 					return ArrayHelper.Slice(
-						lhsPersister.ToColumns( alias, property ),
+						lhsPersister.ToColumns(alias, property),
 						begin,
-						type.GetColumnSpan( mapping )
+						type.GetColumnSpan(mapping)
 						);
 				}
 				else
 				{
-					return ( ( IPropertyMapping ) lhsPersister ).ToColumns( alias, propertyName ); //bad cast
+					return ((IPropertyMapping) lhsPersister).ToColumns(alias, propertyName); //bad cast
 				}
 			}
 		}
@@ -88,7 +87,7 @@ namespace NHibernate.Engine
 			IMapping mapping
 			)
 		{
-			if( type.UseLHSPrimaryKey )
+			if (type.UseLHSPrimaryKey)
 			{
 				//return lhsPersister.getSubclassPropertyColumnNames(property);
 				return lhsPersister.IdentifierColumnNames;
@@ -96,21 +95,21 @@ namespace NHibernate.Engine
 			else
 			{
 				string propertyName = type.LHSPropertyName;
-				if( propertyName == null )
+				if (propertyName == null)
 				{
 					//slice, to get the columns for this component
 					//property
 					return ArrayHelper.Slice(
-						lhsPersister.GetSubclassPropertyColumnNames( property ),
+						lhsPersister.GetSubclassPropertyColumnNames(property),
 						begin,
-						type.GetColumnSpan( mapping )
+						type.GetColumnSpan(mapping)
 						);
 				}
 				else
 				{
 					//property-refs for associations defined on a
 					//component are not supported, so no need to slice
-					return lhsPersister.GetPropertyColumnNames( propertyName );
+					return lhsPersister.GetPropertyColumnNames(propertyName);
 				}
 			}
 		}
@@ -121,25 +120,25 @@ namespace NHibernate.Engine
 			IOuterJoinLoadable lhsPersister
 			)
 		{
-			if( type.UseLHSPrimaryKey )
+			if (type.UseLHSPrimaryKey)
 			{
 				return lhsPersister.TableName;
 			}
 			else
 			{
 				string propertyName = type.LHSPropertyName;
-				if( propertyName == null )
+				if (propertyName == null)
 				{
 					//if there is no property-ref, assume the join
 					//is to the subclass table (ie. the table of the
 					//subclass that the association belongs to)
-					return lhsPersister.GetSubclassPropertyTableName( property );
+					return lhsPersister.GetSubclassPropertyTableName(property);
 				}
 				else
 				{
 					//handle a property-ref
-					string propertyRefTable = lhsPersister.GetPropertyTableName( propertyName );
-					if( propertyRefTable == null )
+					string propertyRefTable = lhsPersister.GetPropertyTableName(propertyName);
+					if (propertyRefTable == null)
 					{
 						//it is possible that the tree-walking in OuterJoinLoader can get to
 						//an association defined by a subclass, in which case the property-ref
@@ -148,7 +147,7 @@ namespace NHibernate.Engine
 						//assumes that the property-ref refers to a property of the subclass
 						//table that the association belongs to (a reasonable guess)
 						//TODO: fix this, add: IOuterJoinLoadable.getSubclassPropertyTableName(string propertyName)
-						propertyRefTable = lhsPersister.GetSubclassPropertyTableName( property );
+						propertyRefTable = lhsPersister.GetSubclassPropertyTableName(property);
 					}
 					return propertyRefTable;
 				}
@@ -159,17 +158,17 @@ namespace NHibernate.Engine
 		/// Get the columns of the associated table which are to 
 		/// be used in the join
 		/// </summary>
-		public static string[] GetRHSColumnNames( IAssociationType type, ISessionFactoryImplementor factory )
+		public static string[] GetRHSColumnNames(IAssociationType type, ISessionFactoryImplementor factory)
 		{
 			string uniqueKeyPropertyName = type.RHSUniqueKeyPropertyName;
-			IJoinable joinable = type.GetAssociatedJoinable( factory );
-			if( uniqueKeyPropertyName == null )
+			IJoinable joinable = type.GetAssociatedJoinable(factory);
+			if (uniqueKeyPropertyName == null)
 			{
 				return joinable.KeyColumnNames;
 			}
 			else
 			{
-				return ( ( IOuterJoinLoadable ) joinable ).GetPropertyColumnNames( uniqueKeyPropertyName );
+				return ((IOuterJoinLoadable) joinable).GetPropertyColumnNames(uniqueKeyPropertyName);
 			}
 		}
 	}

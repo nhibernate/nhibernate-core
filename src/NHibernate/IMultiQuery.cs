@@ -14,12 +14,12 @@ namespace NHibernate
 		/// Get all the 
 		/// </summary>
 		IList List();
-		
+
 		/// <summary>
 		/// Add the specified HQL query to the multi query
 		/// </summary>
 		IMultiQuery Add(IQuery query);
-		
+
 		/// <summary>
 		/// Add the specified HQL query to the multi query
 		/// </summary>
@@ -64,7 +64,7 @@ namespace NHibernate
 		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
 		IMultiQuery SetParameter(string name, object val, IType type);
 
-		
+
 		/// <summary>
 		/// Bind a value to a named query parameter, guessing the NHibernate <see cref="IType"/>
 		/// from the class of the given object.

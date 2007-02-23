@@ -7,14 +7,14 @@ namespace NHibernate.Driver
 	/// </summary>
 	/// <remarks>
 	/// </remarks>
-    public class IngresDriver : ReflectionBasedDriver
+	public class IngresDriver : ReflectionBasedDriver
 	{
 		/// <summary></summary>
-        public IngresDriver() : base(
-            "Ca.Ingres.Client",
-            "Ca.Ingres.Client.IngresConnection",
-            "Ca.Ingres.Client.IngresCommand")
-		{           
+		public IngresDriver() : base(
+			"Ca.Ingres.Client",
+			"Ca.Ingres.Client.IngresConnection",
+			"Ca.Ingres.Client.IngresCommand")
+		{
 		}
 
 		/// <summary></summary>

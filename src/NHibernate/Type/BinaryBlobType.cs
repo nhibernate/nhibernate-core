@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	public class BinaryBlobType : BinaryType
 	{
 		/// <summary></summary>
-		internal BinaryBlobType() : base( new BinaryBlobSqlType() )
+		internal BinaryBlobType() : base(new BinaryBlobSqlType())
 		{
 		}
 
@@ -23,7 +23,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="sqlType"></param>
-		internal BinaryBlobType( BinarySqlType sqlType ) : base( sqlType )
+		internal BinaryBlobType(BinarySqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -32,6 +32,5 @@ namespace NHibernate.Type
 		{
 			get { return "BinaryBlob"; }
 		}
-
 	}
 }

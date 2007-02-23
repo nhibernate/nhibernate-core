@@ -13,14 +13,14 @@ namespace NHibernate.Expression
 	{
 		private readonly string _propertyName;
 
-		private static readonly TypedValue[ ] NoValues = new TypedValue[0];
+		private static readonly TypedValue[] NoValues = new TypedValue[0];
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="NotNullExpression" /> class for a named
 		/// Property that should be null.
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
-		public NullExpression( string propertyName )
+		public NullExpression(string propertyName)
 		{
 			_propertyName = propertyName;
 		}
@@ -30,29 +30,29 @@ namespace NHibernate.Expression
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			string[ ] columnNames = criteriaQuery.GetColumnsUsingProjection( criteria, _propertyName );
+			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
 
-			for( int i = 0; i < columnNames.Length; i++ )
+			for (int i = 0; i < columnNames.Length; i++)
 			{
-				if( i > 0 )
+				if (i > 0)
 				{
-					sqlBuilder.Add( " and " );
+					sqlBuilder.Add(" and ");
 				}
 
-				sqlBuilder.Add( columnNames[ i ] )
-					.Add( " is null" );
+				sqlBuilder.Add(columnNames[i])
+					.Add(" is null");
 			}
 
-			if( columnNames.Length > 1 )
+			if (columnNames.Length > 1)
 			{
-				sqlBuilder.Insert( 0, "(" );
-				sqlBuilder.Add( ")" );
+				sqlBuilder.Insert(0, "(");
+				sqlBuilder.Add(")");
 			}
 
 			return sqlBuilder.ToSqlString();
 		}
 
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return NoValues;
 		}

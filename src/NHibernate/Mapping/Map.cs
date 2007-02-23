@@ -1,7 +1,6 @@
 using System;
-
-using NHibernate.Type;
 using System.Collections;
+using NHibernate.Type;
 
 namespace NHibernate.Mapping
 {
@@ -15,7 +14,7 @@ namespace NHibernate.Mapping
 		/// Initializes a new instance of the <see cref="Map" /> class.
 		/// </summary>
 		/// <param name="owner">The <see cref="PersistentClass"/> that contains this map mapping.</param>
-		public Map( PersistentClass owner ) : base( owner )
+		public Map(PersistentClass owner) : base(owner)
 		{
 		}
 
@@ -24,23 +23,23 @@ namespace NHibernate.Mapping
 			get
 			{
 #if NET_2_0
-				if( IsGeneric && IsSorted )
+				if (IsGeneric && IsSorted)
 				{
 					CheckGenericArgumentsLength(2);
-					if( TypeName == "sorted-list" )
+					if (TypeName == "sorted-list")
 					{
-						return TypeFactory.GenericSortedList( Role, ReferencedPropertyName, Comparer,
-							GenericArguments[ 0 ], GenericArguments[ 1 ] );
+						return TypeFactory.GenericSortedList(Role, ReferencedPropertyName, Comparer,
+						                                     GenericArguments[0], GenericArguments[1]);
 					}
-					else if( TypeName == "sorted-dictionary" )
+					else if (TypeName == "sorted-dictionary")
 					{
-						return TypeFactory.GenericSortedDictionary( Role, ReferencedPropertyName, Comparer,
-							GenericArguments[ 0 ], GenericArguments[ 1 ] );
+						return TypeFactory.GenericSortedDictionary(Role, ReferencedPropertyName, Comparer,
+						                                           GenericArguments[0], GenericArguments[1]);
 					}
 					else
 					{
 						throw new MappingException(
-							"Use collection-type='sorted-list/sorted-dictionary' to choose implementation for generic map" );
+							"Use collection-type='sorted-list/sorted-dictionary' to choose implementation for generic map");
 					}
 				}
 #endif
@@ -57,34 +56,35 @@ namespace NHibernate.Mapping
 			get
 			{
 #if NET_2_0
-				if( this.IsGeneric )
+				if (this.IsGeneric)
 				{
-					if( HasOrder )
+					if (HasOrder)
 					{
-						throw new MappingException( "Cannot use order-by with generic map, no appropriate collection implementation is available" );
+						throw new MappingException(
+							"Cannot use order-by with generic map, no appropriate collection implementation is available");
 					}
-					else if( IsSorted )
+					else if (IsSorted)
 					{
-						throw new AssertionFailure( "Error in NH: should not get here (Mapping.Map.DefaultCollectionType)" );
+						throw new AssertionFailure("Error in NH: should not get here (Mapping.Map.DefaultCollectionType)");
 					}
 					else
 					{
 						CheckGenericArgumentsLength(2);
-						return TypeFactory.GenericMap( Role, ReferencedPropertyName, GenericArguments[ 0 ], GenericArguments[ 1 ] );
+						return TypeFactory.GenericMap(Role, ReferencedPropertyName, GenericArguments[0], GenericArguments[1]);
 					}
 				}
 #endif
-				if( HasOrder )
+				if (HasOrder)
 				{
-					return TypeFactory.OrderedMap( Role, ReferencedPropertyName );
+					return TypeFactory.OrderedMap(Role, ReferencedPropertyName);
 				}
-				else if( IsSorted )
+				else if (IsSorted)
 				{
-					return TypeFactory.SortedMap( Role, ReferencedPropertyName, ( IComparer ) Comparer );
+					return TypeFactory.SortedMap(Role, ReferencedPropertyName, (IComparer) Comparer);
 				}
 				else
 				{
-					return TypeFactory.Map( Role, ReferencedPropertyName );
+					return TypeFactory.Map(Role, ReferencedPropertyName);
 				}
 			}
 		}
@@ -92,7 +92,7 @@ namespace NHibernate.Mapping
 		public override void CreateAllKeys()
 		{
 			base.CreateAllKeys();
-			if( !IsInverse )
+			if (!IsInverse)
 			{
 				Index.CreateForeignKey();
 			}

@@ -1,6 +1,6 @@
 using System;
-using System.Text;
 using System.Collections;
+using System.Text;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -14,47 +14,48 @@ namespace NHibernate.SqlCommand
 		private StringBuilder aliases = new StringBuilder();
 		private bool isNoWaitEnabled;
 
-		public ForUpdateFragment( Dialect.Dialect dialect )
+		public ForUpdateFragment(Dialect.Dialect dialect)
 		{
 			this.dialect = dialect;
 		}
 
-		public ForUpdateFragment( Dialect.Dialect dialect, IDictionary lockModes, IDictionary keyColumnNames )
-			: this( dialect )
+		public ForUpdateFragment(Dialect.Dialect dialect, IDictionary lockModes, IDictionary keyColumnNames)
+			: this(dialect)
 		{
 			LockMode upgradeType = null;
-			
-			foreach( DictionaryEntry me in lockModes )
+
+			foreach (DictionaryEntry me in lockModes)
 			{
-				LockMode lockMode = ( LockMode ) me.Value;
-				if ( LockMode.Read.LessThan(lockMode) )
+				LockMode lockMode = (LockMode) me.Value;
+				if (LockMode.Read.LessThan(lockMode))
 				{
-					string tableAlias = ( string ) me.Key;
-					if( dialect.ForUpdateOfColumns )
+					string tableAlias = (string) me.Key;
+					if (dialect.ForUpdateOfColumns)
 					{
-						string[] keyColumns = ( string[] ) keyColumnNames[ tableAlias ];
-						if( keyColumns == null )
+						string[] keyColumns = (string[]) keyColumnNames[tableAlias];
+						if (keyColumns == null)
 						{
-							throw new ArgumentException( "alias not found: " + tableAlias );
+							throw new ArgumentException("alias not found: " + tableAlias);
 						}
-						keyColumns = StringHelper.Qualify( tableAlias, keyColumns );
-						for( int i = 0; i < keyColumns.Length; i++ )
+						keyColumns = StringHelper.Qualify(tableAlias, keyColumns);
+						for (int i = 0; i < keyColumns.Length; i++)
 						{
-							AddTableAlias( keyColumns[ i ] );
+							AddTableAlias(keyColumns[i]);
 						}
 					}
 					else
 					{
-						AddTableAlias( tableAlias );
+						AddTableAlias(tableAlias);
 					}
-					if ( upgradeType != null && lockMode != upgradeType )
+					if (upgradeType != null && lockMode != upgradeType)
 					{
 						throw new QueryException("mixed LockModes");
 					}
 					upgradeType = lockMode;
 				}
-				
-				if ( upgradeType == LockMode.UpgradeNoWait ){
+
+				if (upgradeType == LockMode.UpgradeNoWait)
+				{
 					IsNoWaitEnabled = true;
 				}
 			}
@@ -66,26 +67,26 @@ namespace NHibernate.SqlCommand
 			set { isNoWaitEnabled = value; }
 		}
 
-		public ForUpdateFragment AddTableAlias( string alias )
+		public ForUpdateFragment AddTableAlias(string alias)
 		{
-			if( aliases.Length > 0 )
+			if (aliases.Length > 0)
 			{
-				aliases.Append( StringHelper.CommaSpace );
+				aliases.Append(StringHelper.CommaSpace);
 			}
-			aliases.Append( alias );
+			aliases.Append(alias);
 			return this;
 		}
 
 		public string ToSqlStringFragment()
 		{
-			if ( aliases.Length == 0 )
+			if (aliases.Length == 0)
 			{
 				return string.Empty;
 			}
-			
+
 			return isNoWaitEnabled
-			       	? dialect.GetForUpdateNowaitString( aliases.ToString() )
-			       	: dialect.GetForUpdateString( aliases.ToString() );
+			       	? dialect.GetForUpdateNowaitString(aliases.ToString())
+			       	: dialect.GetForUpdateString(aliases.ToString());
 		}
 	}
 }

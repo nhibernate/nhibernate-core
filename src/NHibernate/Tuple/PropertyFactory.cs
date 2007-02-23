@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Mapping;
@@ -25,20 +24,20 @@ namespace NHibernate.Tuple
 		/// <param name="mappedEntity">The mapping definition of the entity.</param>
 		/// <param name="generator">The identifier value generator to use for this identifier.</param>
 		/// <returns>The appropriate IdentifierProperty definition.</returns>
-		public static IdentifierProperty BuildIdentifierProperty(PersistentClass mappedEntity, IIdentifierGenerator generator) 
+		public static IdentifierProperty BuildIdentifierProperty(PersistentClass mappedEntity, IIdentifierGenerator generator)
 		{
 			string mappedUnsavedValue = mappedEntity.Identifier.NullValue;
 			IType type = mappedEntity.Identifier.Type;
 			Mapping.Property property = mappedEntity.IdentifierProperty;
-		
+
 			Cascades.IdentifierValue unsavedValue = UnsavedValueFactory.GetUnsavedIdentifierValue(
 				mappedUnsavedValue,
-				GetGetter( property ),
+				GetGetter(property),
 				type,
 				GetConstructor(mappedEntity)
 				);
 
-			if ( property == null ) 
+			if (property == null)
 			{
 				// this is a virtual id property...
 				return new IdentifierProperty(
@@ -48,7 +47,7 @@ namespace NHibernate.Tuple
 					generator
 					);
 			}
-			else 
+			else
 			{
 				return new IdentifierProperty(
 					property.Name,
@@ -68,15 +67,15 @@ namespace NHibernate.Tuple
 		/// <param name="property">The version mapping Property.</param>
 		/// <param name="lazyAvailable">Is property lazy loading currently available.</param>
 		/// <returns>The appropriate VersionProperty definition.</returns>
-		public static VersionProperty BuildVersionProperty(Mapping.Property property, bool lazyAvailable) 
+		public static VersionProperty BuildVersionProperty(Mapping.Property property, bool lazyAvailable)
 		{
-			String mappedUnsavedValue = ( ( IKeyValue ) property.Value ).NullValue;
-		
+			String mappedUnsavedValue = ((IKeyValue) property.Value).NullValue;
+
 			Cascades.VersionValue unsavedValue = UnsavedValueFactory.GetUnsavedVersionValue(
-				mappedUnsavedValue, 
-				GetGetter( property ),
+				mappedUnsavedValue,
+				GetGetter(property),
 				(IVersionType) property.Type,
-				GetConstructor( property.PersistentClass )
+				GetConstructor(property.PersistentClass)
 				);
 
 			// TODO H3:
@@ -90,7 +89,8 @@ namespace NHibernate.Tuple
 				lazy,
 				property.IsInsertable,
 				property.IsUpdateable,
-				false, // TODO H3: property.Generation == PropertyGeneration.Insert || property.Generation == PropertyGeneration.Always,
+				false,
+				// TODO H3: property.Generation == PropertyGeneration.Insert || property.Generation == PropertyGeneration.Always,
 				false, // TODO H3: property.Generation == PropertyGeneration.Always,
 				property.IsOptional,
 				property.IsUpdateable && !lazy,
@@ -107,19 +107,19 @@ namespace NHibernate.Tuple
 		/// <param name="property">The mapped property.</param>
 		/// <param name="lazyAvailable">Is property lazy loading currently available.</param>
 		/// <returns>The appropriate StandardProperty definition.</returns>
-		public static StandardProperty BuildStandardProperty(Mapping.Property property, bool lazyAvailable) 
+		public static StandardProperty BuildStandardProperty(Mapping.Property property, bool lazyAvailable)
 		{
 			IType type = property.Value.Type;
-		
+
 			// we need to dirty check collections, since they can cause an owner
 			// version number increment
-		
+
 			// we need to dirty check many-to-ones with not-found="ignore" in order 
 			// to update the cache (not the database), since in this case a null
 			// entity reference can lose information
-		
-			bool alwaysDirtyCheck = type.IsAssociationType && 
-				( (IAssociationType) type ).IsAlwaysDirtyChecked; 
+
+			bool alwaysDirtyCheck = type.IsAssociationType &&
+			                        ((IAssociationType) type).IsAlwaysDirtyChecked;
 
 			return new StandardProperty(
 				property.Name,
@@ -128,7 +128,8 @@ namespace NHibernate.Tuple
 				false, // TODO H3: lazyAvailable && property.IsLazy,
 				property.IsInsertable,
 				property.IsUpdateable,
-				false, // TODO H3: property.getGeneration() == PropertyGeneration.INSERT || property.getGeneration() == PropertyGeneration.ALWAYS,
+				false,
+				// TODO H3: property.getGeneration() == PropertyGeneration.INSERT || property.getGeneration() == PropertyGeneration.ALWAYS,
 				false, // TODO H3: property.getGeneration() == PropertyGeneration.ALWAYS,
 				property.IsOptional,
 				alwaysDirtyCheck || property.IsUpdateable,
@@ -137,28 +138,28 @@ namespace NHibernate.Tuple
 				);
 		}
 
-		private static ConstructorInfo GetConstructor(PersistentClass persistentClass) 
+		private static ConstructorInfo GetConstructor(PersistentClass persistentClass)
 		{
-			if( persistentClass == null
+			if (persistentClass == null
 				// TODO H3: || !persistentClass.hasPojoRepresentation()
 				)
 			{
 				return null;
 			}
 
-			try 
+			try
 			{
-				return ReflectHelper.GetDefaultConstructor( persistentClass.MappedClass );
+				return ReflectHelper.GetDefaultConstructor(persistentClass.MappedClass);
 			}
-			catch 
+			catch
 			{
 				return null;
 			}
 		}
 
-		private static IGetter GetGetter(Mapping.Property mappingProperty) 
+		private static IGetter GetGetter(Mapping.Property mappingProperty)
 		{
-			if ( mappingProperty == null
+			if (mappingProperty == null
 				// TODO H3: || !mappingProperty.PersistentClass.hasPojoRepresentation()
 				)
 			{
@@ -167,9 +168,8 @@ namespace NHibernate.Tuple
 
 			// TODO H3:
 			//IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor(mappingProperty, EntityMode.POJO);
-			IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor( mappingProperty.PropertyAccessorName );
-			return pa.GetGetter( mappingProperty.PersistentClass.MappedClass, mappingProperty.Name );
+			IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor(mappingProperty.PropertyAccessorName);
+			return pa.GetGetter(mappingProperty.PersistentClass.MappedClass, mappingProperty.Name);
 		}
-
 	}
 }

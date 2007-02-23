@@ -44,7 +44,7 @@ namespace NHibernate.Engine
 		/// does NOT cause the batch to execute...
 		/// </para>
 		/// </remarks>
-		IDbCommand PrepareQueryCommand( CommandType commandType, SqlString sql, SqlType[] parameterTypes );
+		IDbCommand PrepareQueryCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Get a non-batchable an <see cref="IDbCommand"/> to use for inserting / deleting / updating.
@@ -58,14 +58,14 @@ namespace NHibernate.Engine
 		/// An <see cref="IDbCommand"/> that is ready to have the parameter values set
 		/// and then executed.
 		/// </returns>
-		IDbCommand PrepareCommand( CommandType commandType, SqlString sql, SqlType[] parameterTypes );
+		IDbCommand PrepareCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Close a <see cref="IDbCommand"/> opened using <c>PrepareCommand()</c>
 		/// </summary>
 		/// <param name="cmd">The <see cref="IDbCommand"/> to ensure is closed.</param>
 		/// <param name="reader">The <see cref="IDataReader"/> to ensure is closed.</param>
-		void CloseCommand( IDbCommand cmd, IDataReader reader );
+		void CloseCommand(IDbCommand cmd, IDataReader reader);
 
 		/// <summary>
 		/// Get a batchable <see cref="IDbCommand"/> to use for inserting / deleting / updating
@@ -80,14 +80,14 @@ namespace NHibernate.Engine
 		/// <param name="parameterTypes">The <see cref="SqlType">SqlTypes</see> of parameters
 		/// in <paramref name="sql" />.</param>
 		/// <returns></returns>
-		IDbCommand PrepareBatchCommand( CommandType commandType, SqlString sql, SqlType[] parameterTypes );
+		IDbCommand PrepareBatchCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Add an insert / delete / update to the current batch (might be called multiple times
 		/// for a single <c>PrepareBatchStatement()</c>)
 		/// </summary>
 		/// <param name="expectation">Determines whether the number of rows affected by query is correct.</param>
-		void AddToBatch( IExpectation expectation );
+		void AddToBatch(IExpectation expectation);
 
 		/// <summary>
 		/// Execute the batch
@@ -129,7 +129,7 @@ namespace NHibernate.Engine
 		/// Must be called when an exception occurs.
 		/// </summary>
 		/// <param name="e"></param>
-		void AbortBatch( Exception e );
+		void AbortBatch(Exception e);
 
 		/// <summary>
 		/// Cancel the current query statement

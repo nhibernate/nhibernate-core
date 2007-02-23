@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -15,13 +16,15 @@ namespace NHibernate.Dialect.Function
 	/// Syntax:
 	///<![CDATA[
 	/// <character substring function> ::=
-  /// SUBSTRING <left paren> <character value expression> FROM < start position>
-  /// [ FOR <string length> ] <right paren>
+	/// SUBSTRING <left paren> <character value expression> FROM < start position>
+	/// [ FOR <string length> ] <right paren>
 	///]]>
 	/// </remarks>
-	public class AnsiSubstringFunction: ISQLFunction
+	public class AnsiSubstringFunction : ISQLFunction
 	{
-		public AnsiSubstringFunction() { }
+		public AnsiSubstringFunction()
+		{
+		}
 
 		#region ISQLFunction Members
 
@@ -40,9 +43,9 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(System.Collections.IList args, ISessionFactoryImplementor factory)
+		public string Render(IList args, ISessionFactoryImplementor factory)
 		{
-			if (args.Count < 2 || args.Count>3)
+			if (args.Count < 2 || args.Count > 3)
 			{
 				throw new QueryException("substring(): Not enough parameters (attended from 2 to 3).");
 			}

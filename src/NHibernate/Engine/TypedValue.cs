@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="type"></param>
 		/// <param name="value"></param>
-		public TypedValue( IType type, object value )
+		public TypedValue(IType type, object value)
 		{
 			this.type = type;
 			this.value = value;
@@ -43,7 +43,7 @@ namespace NHibernate.Engine
 			{
 				int result = 17;
 				result = 37 * result + type.GetHashCode();
-				result = 37 * result + ( value == null ? 0 : value.GetHashCode() );
+				result = 37 * result + (value == null ? 0 : value.GetHashCode());
 				return result;
 			}
 		}
@@ -51,7 +51,7 @@ namespace NHibernate.Engine
 		public override bool Equals(object obj)
 		{
 			TypedValue that = obj as TypedValue;
-			if( that == null )
+			if (that == null)
 			{
 				return false;
 			}
@@ -63,11 +63,11 @@ namespace NHibernate.Engine
 
 			if (value is ICollection && that.value is ICollection)
 			{
-			    return CollectionHelper.CollectionEquals((ICollection) value, (ICollection) that.value);
+				return CollectionHelper.CollectionEquals((ICollection) value, (ICollection) that.value);
 			}
 			else
 			{
-				return object.Equals(that.value, value);
+				return Equals(that.value, value);
 			}
 		}
 

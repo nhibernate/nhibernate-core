@@ -13,28 +13,28 @@ namespace NHibernate.Type
 	[Serializable]
 	public class ByteType : ValueTypeType, IDiscriminatorType, IVersionType
 	{
-		internal ByteType() : base( SqlTypeFactory.Byte )
+		internal ByteType() : base(SqlTypeFactory.Byte)
 		{
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToByte( rs[ index ] );
+			return Convert.ToByte(rs[index]);
 		}
 
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Convert.ToByte( rs[ name ] );
+			return Convert.ToByte(rs[name]);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( byte ); }
+			get { return typeof(byte); }
 		}
 
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			( ( IDataParameter ) cmd.Parameters[ index ] ).Value = ( byte ) value;
+			((IDataParameter) cmd.Parameters[index]).Value = (byte) value;
 		}
 
 		public override string Name
@@ -42,19 +42,19 @@ namespace NHibernate.Type
 			get { return "Byte"; }
 		}
 
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return value.ToString();
 		}
 
-		public virtual object StringToObject( string xml )
+		public virtual object StringToObject(string xml)
 		{
-			return FromString( xml );
+			return FromString(xml);
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return byte.Parse( xml );
+			return byte.Parse(xml);
 		}
 
 		public virtual object Next(object current, ISessionImplementor session)
@@ -64,7 +64,7 @@ namespace NHibernate.Type
 
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return ( byte ) 1;
+			return (byte) 1;
 		}
 
 		public IComparer Comparator

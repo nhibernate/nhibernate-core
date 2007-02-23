@@ -26,8 +26,9 @@ namespace NHibernate
 		/// <param name="wasSetter">A <see cref="Boolean"/> indicating if this was a "setter" operation.</param>
 		/// <param name="persistentType">The <see cref="System.Type"/> that NHibernate was trying find the Property or Field in.</param>
 		/// <param name="propertyName">The mapped property name that was trying to be accessed.</param>
-		public PropertyAccessException( Exception innerException, string message, bool wasSetter, System.Type persistentType, string propertyName ) 
-			: base( message, innerException )
+		public PropertyAccessException(Exception innerException, string message, bool wasSetter, System.Type persistentType,
+		                               string propertyName)
+			: base(message, innerException)
 		{
 			this.persistentType = persistentType;
 			this.wasSetter = wasSetter;
@@ -53,10 +54,10 @@ namespace NHibernate
 		{
 			get
 			{
-				return base.Message + ( wasSetter ? " setter of " : " getter of " ) +
-						( persistentType==null ? "UnknownType" : persistentType.FullName ) +
-						"." +
-						propertyName;
+				return base.Message + (wasSetter ? " setter of " : " getter of ") +
+				       (persistentType == null ? "UnknownType" : persistentType.FullName) +
+				       "." +
+				       propertyName;
 			}
 		}
 
@@ -73,11 +74,11 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected PropertyAccessException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected PropertyAccessException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			persistentType = info.GetValue( "persistentType", typeof(System.Type) ) as System.Type;
-			propertyName = info.GetString( "propertyName" );
-			wasSetter = info.GetBoolean( "wasSetter" );
+			persistentType = info.GetValue("persistentType", typeof(System.Type)) as System.Type;
+			propertyName = info.GetString("propertyName");
+			wasSetter = info.GetBoolean("wasSetter");
 		}
 
 		/// <summary>
@@ -91,14 +92,14 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData( info, context );
-			info.AddValue( "persistentType", persistentType, typeof(System.Type) );
-			info.AddValue( "propertyName", propertyName );
-			info.AddValue( "wasSetter", wasSetter );
+			base.GetObjectData(info, context);
+			info.AddValue("persistentType", persistentType, typeof(System.Type));
+			info.AddValue("propertyName", propertyName);
+			info.AddValue("wasSetter", wasSetter);
 		}
 
 		#endregion

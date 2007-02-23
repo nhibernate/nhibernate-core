@@ -67,21 +67,21 @@ namespace NHibernate.Expression
 
 		private class NotNullOrZeroPropertySelector : IPropertySelector
 		{
-			private static bool IsZero( object value )
+			private static bool IsZero(object value)
 			{
 				// Only try to check IConvertibles, to be able to handle various flavors
 				// of nullable numbers, etc. Skip strings.
-				if( value is IConvertible && !(value is string) )
+				if (value is IConvertible && !(value is string))
 				{
 					try
 					{
-						return Convert.ToInt64( value ) == 0L;
+						return Convert.ToInt64(value) == 0L;
 					}
-					catch( FormatException )
+					catch (FormatException)
 					{
 						// Ignore
 					}
-					catch( InvalidCastException )
+					catch (InvalidCastException)
 					{
 						// Ignore
 					}
@@ -92,7 +92,7 @@ namespace NHibernate.Expression
 
 			public bool Include(object propertyValue, String propertyName, IType type)
 			{
-				return propertyValue != null && !IsZero( propertyValue );
+				return propertyValue != null && !IsZero(propertyValue);
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace NHibernate.Expression
 		{
 			public bool Include(object propertyValue, String propertyName, IType type)
 			{
-				if( propertyValue != null )
+				if (propertyValue != null)
 				{
 					return propertyValue.ToString().Length > 0;
 				}
@@ -117,7 +117,6 @@ namespace NHibernate.Expression
 				{
 					return false;
 				}
-
 			}
 		}
 
@@ -144,7 +143,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		public Example ExcludeZeroes()
 		{
-			return SetPropertySelector( NotNullOrZero );
+			return SetPropertySelector(NotNullOrZero);
 		}
 
 		/// <summary>
@@ -153,13 +152,13 @@ namespace NHibernate.Expression
 		/// </summary>
 		public Example ExcludeNone()
 		{
-			SetPropertySelector( All );
+			SetPropertySelector(All);
 			return this;
 		}
 
 		public Example ExcludeNulls()
 		{
-			SetPropertySelector( NotNullOrEmptyString );
+			SetPropertySelector(NotNullOrEmptyString);
 			return this;
 		}
 
@@ -186,7 +185,7 @@ namespace NHibernate.Expression
 		/// </remarks>
 		public Example EnableLike()
 		{
-			return EnableLike( MatchMode.Exact );
+			return EnableLike(MatchMode.Exact);
 		}
 
 		public Example IgnoreCase()
@@ -201,7 +200,7 @@ namespace NHibernate.Expression
 		/// <param name="name">The name of the property to exclude.</param>
 		public Example ExcludeProperty(String name)
 		{
-			_excludedProperties.Add( name );
+			_excludedProperties.Add(name);
 			return this;
 		}
 
@@ -213,11 +212,11 @@ namespace NHibernate.Expression
 		/// <returns>A new instance of <see cref="Example" />.</returns>
 		public static Example Create(object entity)
 		{
-			if( entity == null )
+			if (entity == null)
 			{
-				throw new ArgumentNullException( "entity", "null example" );
+				throw new ArgumentNullException("entity", "null example");
 			}
-			return new Example( entity, NotNullOrEmptyString );
+			return new Example(entity, NotNullOrEmptyString);
 		}
 
 		/// <summary>
@@ -249,35 +248,35 @@ namespace NHibernate.Expression
 		/// </returns>
 		private bool IsPropertyIncluded(object value, String name, IType type)
 		{
-			return !_excludedProperties.Contains( name ) &&
-				!type.IsAssociationType &&
-				_selector.Include( value, name, type );
+			return !_excludedProperties.Contains(name) &&
+			       !type.IsAssociationType &&
+			       _selector.Include(value, name, type);
 		}
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
-			builder.Add( StringHelper.OpenParen );
+			builder.Add(StringHelper.OpenParen);
 
-			IClassMetadata meta = criteriaQuery.Factory.GetClassMetadata( criteriaQuery.GetEntityName( criteria ) );
+			IClassMetadata meta = criteriaQuery.Factory.GetClassMetadata(criteriaQuery.GetEntityName(criteria));
 			String[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
-			object[] propertyValues = meta.GetPropertyValues( _entity );
-			for( int i = 0; i < propertyNames.Length; i++ )
+			object[] propertyValues = meta.GetPropertyValues(_entity);
+			for (int i = 0; i < propertyNames.Length; i++)
 			{
-				object propertyValue = propertyValues[ i ];
-				String propertyName = propertyNames[ i ];
+				object propertyValue = propertyValues[i];
+				String propertyName = propertyNames[i];
 
 				bool isPropertyIncluded = i != meta.VersionProperty &&
-					IsPropertyIncluded( propertyValue, propertyName, propertyTypes[ i ] );
-				if( isPropertyIncluded )
+				                          IsPropertyIncluded(propertyValue, propertyName, propertyTypes[i]);
+				if (isPropertyIncluded)
 				{
-					if( propertyTypes[ i ].IsComponentType )
+					if (propertyTypes[i].IsComponentType)
 					{
 						AppendComponentCondition(
 							propertyName,
 							propertyValue,
-							(IAbstractComponentType)propertyTypes[ i ],
+							(IAbstractComponentType) propertyTypes[i],
 							criteria,
 							criteriaQuery,
 							enabledFilters,
@@ -297,45 +296,45 @@ namespace NHibernate.Expression
 					}
 				}
 			}
-			if( builder.Count == 1 )
+			if (builder.Count == 1)
 			{
-				builder.Add( "1=1" ); // yuck!
+				builder.Add("1=1"); // yuck!
 			}
 
-			builder.Add( StringHelper.ClosedParen );
+			builder.Add(StringHelper.ClosedParen);
 			return builder.ToSqlString();
 		}
 
-		public override TypedValue[] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			IClassMetadata meta = criteriaQuery.Factory.GetClassMetadata( criteriaQuery.GetEntityName( criteria ) );
+			IClassMetadata meta = criteriaQuery.Factory.GetClassMetadata(criteriaQuery.GetEntityName(criteria));
 			string[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
-			object[] values = meta.GetPropertyValues( _entity );
+			object[] values = meta.GetPropertyValues(_entity);
 
 			ArrayList list = new ArrayList();
-			for( int i = 0; i < propertyNames.Length; i++ )
+			for (int i = 0; i < propertyNames.Length; i++)
 			{
-				object value = values[ i ];
-				IType type = propertyTypes[ i ];
-				string name = propertyNames[ i ];
+				object value = values[i];
+				IType type = propertyTypes[i];
+				string name = propertyNames[i];
 
-				bool isPropertyIncluded = ( i != meta.VersionProperty && IsPropertyIncluded( value, name, type ) );
+				bool isPropertyIncluded = (i != meta.VersionProperty && IsPropertyIncluded(value, name, type));
 
-				if( isPropertyIncluded )
+				if (isPropertyIncluded)
 				{
-					if( propertyTypes[ i ].IsComponentType )
+					if (propertyTypes[i].IsComponentType)
 					{
-						AddComponentTypedValues( name, value, (IAbstractComponentType)type, list );
+						AddComponentTypedValues(name, value, (IAbstractComponentType) type, list);
 					}
 					else
 					{
-						AddPropertyTypedValue( value, type, list );
+						AddPropertyTypedValue(value, type, list);
 					}
 				}
 			}
 
-			return (TypedValue[])list.ToArray( typeof( TypedValue ) );
+			return (TypedValue[]) list.ToArray(typeof(TypedValue));
 		}
 
 		/// <summary>
@@ -354,49 +353,48 @@ namespace NHibernate.Expression
 			// TODO: I don't like this at all - why don't we have it return a TypedValue[]
 			// or an ICollection that can be added to the list instead of modifying the
 			// parameter passed in.
-			if( value != null )
+			if (value != null)
 			{
-				if( value is string )
+				if (value is string)
 				{
-					string stringValue = (string)value;
-					if( _isIgnoreCaseEnabled )
+					string stringValue = (string) value;
+					if (_isIgnoreCaseEnabled)
 					{
 						stringValue = stringValue.ToLower();
 					}
-					if( _isLikeEnabled )
+					if (_isLikeEnabled)
 					{
-						stringValue = _matchMode.ToMatchString( stringValue );
+						stringValue = _matchMode.ToMatchString(stringValue);
 					}
 					value = stringValue;
 				}
-				list.Add( new TypedValue( type, value ) );
+				list.Add(new TypedValue(type, value));
 			}
 		}
 
 		protected void AddComponentTypedValues(string path, object component, IAbstractComponentType type, IList list)
 		{
-			if( component != null )
+			if (component != null)
 			{
 				string[] propertyNames = type.PropertyNames;
 				IType[] subtypes = type.Subtypes;
-				object[] values = type.GetPropertyValues( component );
-				for( int i = 0; i < propertyNames.Length; i++ )
+				object[] values = type.GetPropertyValues(component);
+				for (int i = 0; i < propertyNames.Length; i++)
 				{
-					object value = values[ i ];
-					IType subtype = subtypes[ i ];
-					string subpath = StringHelper.Qualify( path, propertyNames[ i ] );
-					if( IsPropertyIncluded( value, subpath, subtype ) )
+					object value = values[i];
+					IType subtype = subtypes[i];
+					string subpath = StringHelper.Qualify(path, propertyNames[i]);
+					if (IsPropertyIncluded(value, subpath, subtype))
 					{
-						if( subtype.IsComponentType )
+						if (subtype.IsComponentType)
 						{
-							AddComponentTypedValues( subpath, value, (IAbstractComponentType)subtype, list );
+							AddComponentTypedValues(subpath, value, (IAbstractComponentType) subtype, list);
 						}
 						else
 						{
-							AddPropertyTypedValue( value, subtype, list );
+							AddPropertyTypedValue(value, subtype, list);
 						}
 					}
-
 				}
 			}
 		}
@@ -409,25 +407,24 @@ namespace NHibernate.Expression
 			IDictionary enabledFilters,
 			SqlStringBuilder builder)
 		{
-			if( builder.Count > 1 )
+			if (builder.Count > 1)
 			{
-				builder.Add( " and " );
+				builder.Add(" and ");
 			}
 
 			ICriterion crit;
-			if( propertyValue != null )
+			if (propertyValue != null)
 			{
 				bool isString = propertyValue is String;
-				crit = ( _isLikeEnabled && isString ) ?
-					(ICriterion) new LikeExpression( propertyName, propertyValue, _isIgnoreCaseEnabled ) :
-					new EqExpression( propertyName, propertyValue, _isIgnoreCaseEnabled && isString );
-
+				crit = (_isLikeEnabled && isString) ?
+				       (ICriterion) new LikeExpression(propertyName, propertyValue, _isIgnoreCaseEnabled) :
+				       new EqExpression(propertyName, propertyValue, _isIgnoreCaseEnabled && isString);
 			}
 			else
 			{
-				crit = new NullExpression( propertyName );
+				crit = new NullExpression(propertyName);
 			}
-			builder.Add( crit.ToSqlString( criteria, cq, enabledFilters) );
+			builder.Add(crit.ToSqlString(criteria, cq, enabledFilters));
 		}
 
 		protected void AppendComponentCondition(
@@ -439,28 +436,28 @@ namespace NHibernate.Expression
 			IDictionary enabledFilters,
 			SqlStringBuilder builder)
 		{
-			if( component != null )
+			if (component != null)
 			{
 				String[] propertyNames = type.PropertyNames;
-				object[] values = type.GetPropertyValues( component, null );
+				object[] values = type.GetPropertyValues(component, null);
 				IType[] subtypes = type.Subtypes;
-				for( int i = 0; i < propertyNames.Length; i++ )
+				for (int i = 0; i < propertyNames.Length; i++)
 				{
-					String subpath = StringHelper.Qualify( path, propertyNames[ i ] );
-					object value = values[ i ];
-					if( IsPropertyIncluded( value, subpath, subtypes[ i ] ) )
+					String subpath = StringHelper.Qualify(path, propertyNames[i]);
+					object value = values[i];
+					if (IsPropertyIncluded(value, subpath, subtypes[i]))
 					{
-						IType subtype = subtypes[ i ];
-						if( subtype.IsComponentType )
+						IType subtype = subtypes[i];
+						if (subtype.IsComponentType)
 						{
 							AppendComponentCondition(
 								subpath,
 								value,
-								(IAbstractComponentType)subtype,
+								(IAbstractComponentType) subtype,
 								criteria,
 								criteriaQuery,
 								enabledFilters,
-								builder );
+								builder);
 						}
 						else
 						{

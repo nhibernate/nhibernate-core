@@ -15,7 +15,7 @@ namespace NHibernate.Property
 		/// <exception cref="PropertyAccessException">
 		/// Thrown when there is a problem setting the value in the target.
 		/// </exception>
-		void Set( object target, object value );
+		void Set(object target, object value);
 
 		/// <summary>
 		/// When implemented by a class, gets the name of the Property.

@@ -14,7 +14,7 @@ namespace NHibernate.SqlCommand
 		private static readonly ISet Keywords = new HashedSet();
 		private static readonly ISet BeforeTableKeywords = new HashedSet();
 		private static readonly ISet FunctionKeywords = new HashedSet();
-		
+
 		static Template()
 		{
 			Keywords.Add("and");
@@ -63,14 +63,18 @@ namespace NHibernate.SqlCommand
 
 		public static readonly string Placeholder = "$PlaceHolder$";
 
-		private Template() { }
-		
-		public static string RenderWhereStringTemplate(string sqlWhereString, Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
+		private Template()
+		{
+		}
+
+		public static string RenderWhereStringTemplate(string sqlWhereString, Dialect.Dialect dialect,
+		                                               SQLFunctionRegistry functionRegistry)
 		{
 			return RenderWhereStringTemplate(sqlWhereString, Placeholder, dialect, functionRegistry);
 		}
 
-		public static string RenderWhereStringTemplate(string sqlWhereString, string placeholder, Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
+		public static string RenderWhereStringTemplate(string sqlWhereString, string placeholder, Dialect.Dialect dialect,
+		                                               SQLFunctionRegistry functionRegistry)
 		{
 			//TODO: make this a bit nicer
 			string symbols = new StringBuilder()
@@ -108,14 +112,13 @@ namespace NHibernate.SqlCommand
 
 				if (!quoted)
 				{
-
 					bool isOpenQuote;
 					if ("`".Equals(token))
 					{
 						isOpenQuote = !quotedIdentifier;
 						token = lcToken = isOpenQuote ?
-							dialect.OpenQuote.ToString() :
-							dialect.CloseQuote.ToString();
+						                  dialect.OpenQuote.ToString() :
+						                  dialect.CloseQuote.ToString();
 						quotedIdentifier = isOpenQuote;
 						isQuoteCharacter = true;
 					}
@@ -140,13 +143,12 @@ namespace NHibernate.SqlCommand
 					{
 						result.Append(placeholder).Append('.');
 					}
-
 				}
 
 				bool quotedOrWhitespace = quoted ||
-					quotedIdentifier ||
-					isQuoteCharacter ||
-					char.IsWhiteSpace(token[0]);
+				                          quotedIdentifier ||
+				                          isQuoteCharacter ||
+				                          char.IsWhiteSpace(token[0]);
 
 				if (quotedOrWhitespace)
 				{
@@ -171,7 +173,7 @@ namespace NHibernate.SqlCommand
 				else if (
 					IsIdentifier(token, dialect) &&
 					!IsFunctionOrKeyword(lcToken, nextToken, dialect, functionRegistry)
-				)
+					)
 				{
 					result.Append(placeholder)
 						.Append('.')
@@ -192,19 +194,19 @@ namespace NHibernate.SqlCommand
 				}
 
 				if ( //Yuck:
-						inFromClause &&
-						Keywords.Contains(lcToken) && //"as" is not in Keywords
-						!BeforeTableKeywords.Contains(lcToken)
-				)
+					inFromClause &&
+					Keywords.Contains(lcToken) && //"as" is not in Keywords
+					!BeforeTableKeywords.Contains(lcToken)
+					)
 				{
 					inFromClause = false;
 				}
-
 			}
 			return result.ToString();
 		}
 
-		public static string RenderOrderByStringTemplate(string sqlOrderByString, Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
+		public static string RenderOrderByStringTemplate(string sqlOrderByString, Dialect.Dialect dialect,
+		                                                 SQLFunctionRegistry functionRegistry)
 		{
 			//TODO: make this a bit nicer
 			string symbols = new StringBuilder()
@@ -239,14 +241,13 @@ namespace NHibernate.SqlCommand
 
 				if (!quoted)
 				{
-
 					bool isOpenQuote;
 					if ("`".Equals(token))
 					{
 						isOpenQuote = !quotedIdentifier;
 						token = lcToken = isOpenQuote ?
-							dialect.OpenQuote.ToString() :
-							dialect.CloseQuote.ToString();
+						                  dialect.OpenQuote.ToString() :
+						                  dialect.CloseQuote.ToString();
 						quotedIdentifier = isOpenQuote;
 						isQuoteCharacter = true;
 					}
@@ -271,13 +272,12 @@ namespace NHibernate.SqlCommand
 					{
 						result.Append(Placeholder).Append('.');
 					}
-
 				}
 
 				bool quotedOrWhitespace = quoted ||
-					quotedIdentifier ||
-					isQuoteCharacter ||
-					char.IsWhiteSpace(token[0]);
+				                          quotedIdentifier ||
+				                          isQuoteCharacter ||
+				                          char.IsWhiteSpace(token[0]);
 
 				if (quotedOrWhitespace)
 				{
@@ -286,7 +286,7 @@ namespace NHibernate.SqlCommand
 				else if (
 					IsIdentifier(token, dialect) &&
 					!IsFunctionOrKeyword(lcToken, nextToken, dialect, functionRegistry)
-				)
+					)
 				{
 					result.Append(Placeholder)
 						.Append('.')
@@ -305,21 +305,22 @@ namespace NHibernate.SqlCommand
 			return token.StartsWith(":");
 		}
 
-		private static bool IsFunctionOrKeyword(string lcToken, string nextToken, Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
+		private static bool IsFunctionOrKeyword(string lcToken, string nextToken, Dialect.Dialect dialect,
+		                                        SQLFunctionRegistry functionRegistry)
 		{
 			return "(".Equals(nextToken) ||
-				Keywords.Contains(lcToken) ||
-				functionRegistry.HasFunction(lcToken) ||
-				// TODO H3: dialect.Keywords.Contains(lcToken) ||
-				FunctionKeywords.Contains(lcToken);
+			       Keywords.Contains(lcToken) ||
+			       functionRegistry.HasFunction(lcToken) ||
+			       // TODO H3: dialect.Keywords.Contains(lcToken) ||
+			       FunctionKeywords.Contains(lcToken);
 		}
 
 		private static bool IsIdentifier(string token, Dialect.Dialect dialect)
 		{
 			return token[0] == '`' || ( //allow any identifier quoted with backtick
-				char.IsLetter(token[0]) && //only recognizes identifiers beginning with a letter
-				token.IndexOf('.') < 0
-			);
+			                          char.IsLetter(token[0]) && //only recognizes identifiers beginning with a letter
+			                          token.IndexOf('.') < 0
+			                          );
 		}
 	}
 }

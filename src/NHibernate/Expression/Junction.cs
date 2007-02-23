@@ -23,9 +23,9 @@ namespace NHibernate.Expression
 		/// <returns>
 		/// This <see cref="Junction"/> instance.
 		/// </returns>
-		public Junction Add( ICriterion criterion )
+		public Junction Add(ICriterion criterion)
 		{
-			_criteria.Add( criterion );
+			_criteria.Add(criterion);
 			return this;
 		}
 
@@ -34,18 +34,17 @@ namespace NHibernate.Expression
 		/// </summary>
 		protected abstract String Op { get; }
 
-		public override TypedValue[ ] GetTypedValues( ICriteria criteria, ICriteriaQuery criteriaQuery )
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			ArrayList typedValues = new ArrayList();
 
-			foreach( ICriterion criterion in _criteria )
+			foreach (ICriterion criterion in _criteria)
 			{
-				TypedValue[ ] subvalues = criterion.GetTypedValues( criteria, criteriaQuery );
-				ArrayHelper.AddAll( typedValues, subvalues );
+				TypedValue[] subvalues = criterion.GetTypedValues(criteria, criteriaQuery);
+				ArrayHelper.AddAll(typedValues, subvalues);
 			}
 
-			return ( TypedValue[ ] ) typedValues.ToArray( typeof( TypedValue ) );
-
+			return (TypedValue[]) typedValues.ToArray(typeof(TypedValue));
 		}
 
 		/// <summary>
@@ -56,7 +55,7 @@ namespace NHibernate.Expression
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
-			if( _criteria.Count == 0 )
+			if (_criteria.Count == 0)
 			{
 				return EmptyExpression;
 			}
@@ -64,27 +63,27 @@ namespace NHibernate.Expression
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			sqlBuilder.Add( "(" );
+			sqlBuilder.Add("(");
 
-			for( int i = 0; i < _criteria.Count - 1; i++ )
+			for (int i = 0; i < _criteria.Count - 1; i++)
 			{
 				sqlBuilder.Add(
-					( ( ICriterion ) _criteria[ i ] ).ToSqlString( criteria, criteriaQuery, enabledFilters) );
-				sqlBuilder.Add( Op );
+					((ICriterion) _criteria[i]).ToSqlString(criteria, criteriaQuery, enabledFilters));
+				sqlBuilder.Add(Op);
 			}
 
 			sqlBuilder.Add(
-				( ( ICriterion ) _criteria[ _criteria.Count - 1 ] ).ToSqlString( criteria, criteriaQuery, enabledFilters) );
+				((ICriterion) _criteria[_criteria.Count - 1]).ToSqlString(criteria, criteriaQuery, enabledFilters));
 
 
-			sqlBuilder.Add( ")" );
+			sqlBuilder.Add(")");
 
 			return sqlBuilder.ToSqlString();
 		}
 
 		public override string ToString()
 		{
-			return '(' + StringHelper.Join( Op, _criteria ) + ')';
+			return '(' + StringHelper.Join(Op, _criteria) + ')';
 		}
 	}
 }

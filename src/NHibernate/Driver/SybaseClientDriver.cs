@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 
 namespace NHibernate.Driver
 {
@@ -47,6 +46,5 @@ namespace NHibernate.Driver
 		{
 			get { return "@"; }
 		}
-
 	}
 }

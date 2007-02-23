@@ -20,7 +20,7 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error. </param>
 		/// <param name="identifier">The identifier of the object that was being loaded.</param>
 		/// <param name="type">The <see cref="System.Type"/> that NHibernate was told to load.</param>
-		public WrongClassException( string message, object identifier, System.Type type ) : base( message )
+		public WrongClassException(string message, object identifier, System.Type type) : base(message)
 		{
 			this.identifier = identifier;
 			this.type = type;
@@ -51,8 +51,8 @@ namespace NHibernate
 			get
 			{
 				return "Object with id: " + identifier
-					+ " was not of the specified sublcass: " + type.FullName
-					+ " (" + base.Message + ")";
+				       + " was not of the specified sublcass: " + type.FullName
+				       + " (" + base.Message + ")";
 			}
 		}
 
@@ -69,10 +69,10 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected WrongClassException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected WrongClassException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			type = info.GetValue( "type", typeof(System.Type) ) as System.Type;
-			identifier = info.GetValue( "identifier", typeof(object) ) ;
+			type = info.GetValue("type", typeof(System.Type)) as System.Type;
+			identifier = info.GetValue("identifier", typeof(object));
 		}
 
 		/// <summary>
@@ -86,13 +86,13 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData( info, context );
-			info.AddValue( "type", type, typeof(System.Type) );
-			info.AddValue( "identifier", identifier, typeof(object) );
+			base.GetObjectData(info, context);
+			info.AddValue("type", type, typeof(System.Type));
+			info.AddValue("identifier", identifier, typeof(object));
 		}
 
 		#endregion

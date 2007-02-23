@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Reflection;
-
 using log4net;
-using NHibernate.Util;
 using NHibernate.Bytecode;
+using NHibernate.Bytecode.CodeDom;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
@@ -42,15 +42,16 @@ namespace NHibernate.Cfg
 		{
 			get
 			{
-				if( cachedVersion == null )
+				if (cachedVersion == null)
 				{
 					Assembly thisAssembly = Assembly.GetExecutingAssembly();
-					AssemblyInformationalVersionAttribute[] attrs = ( AssemblyInformationalVersionAttribute[] )
-						thisAssembly.GetCustomAttributes( typeof( AssemblyInformationalVersionAttribute ), false );
+					AssemblyInformationalVersionAttribute[] attrs = (AssemblyInformationalVersionAttribute[])
+					                                                thisAssembly.GetCustomAttributes(
+					                                                	typeof(AssemblyInformationalVersionAttribute), false);
 
-					if( attrs != null && attrs.Length > 0 )
+					if (attrs != null && attrs.Length > 0)
 					{
-						cachedVersion = thisAssembly.GetName().Version.ToString() + " (" + attrs[ 0 ].InformationalVersion + ")";
+						cachedVersion = thisAssembly.GetName().Version.ToString() + " (" + attrs[0].InformationalVersion + ")";
 					}
 					else
 					{
@@ -71,29 +72,30 @@ namespace NHibernate.Cfg
 		/// Used to find the .Net 2.0 named connection string
 		/// </summary>
 		public const string ConnectionStringName = "hibernate.connection.connection_string_name";
+
 		// Unused, Java-specific
 		public const string SessionFactoryName = "hibernate.session_factory_name";
-		
+
 		public const string Dialect = "hibernate.dialect";
 		public const string DefaultSchema = "hibernate.default_schema";
 		public const string ShowSql = "hibernate.show_sql";
 		public const string MaxFetchDepth = "hibernate.max_fetch_depth";
 		public const string CurrentSessionContextClass = "hibernate.current_session_context_class";
-		
+
 		// Unused, Java-specific
 		public const string UseGetGeneratedKeys = "hibernate.jdbc.use_get_generated_keys";
-		
+
 		// Unused, not implemented
 		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
-		
+
 		public const string BatchVersionedData = "hibernate.jdbc.batch_versioned_data";
-		
+
 		// Unused, not implemented
 		public const string OutputStylesheet = "hibernate.xml.output_stylesheet";
-		
+
 		// Unused, not implemented (and somewhat Java-specific)
 		public const string TransactionStrategy = "hibernate.transaction.factory_class";
-		
+
 		// Unused, not implemented (and somewhat Java-specific)
 		public const string TransactionManagerStrategy = "hibernate.transaction.manager_lookup_class";
 
@@ -107,14 +109,14 @@ namespace NHibernate.Cfg
 		// The classname of the HQL query parser factory
 		public const string QueryTranslator = "hibernate.query.factory_class";
 
-		
+
 		// Unused, not implemented
 		public const string QueryImports = "hibernate.query.imports";
 		public const string Hbm2ddlAuto = "hibernate.hbm2ddl.auto";
-		
+
 		// Unused, not implemented
 		public const string SqlExceptionConverter = "hibernate.sql_exception_converter";
-		
+
 		// Unused, not implemented
 		public const string WrapResultSets = "hibernate.wrap_result_sets";
 
@@ -122,11 +124,11 @@ namespace NHibernate.Cfg
 		public const string PrepareSql = "hibernate.prepare_sql";
 		public const string CommandTimeout = "hibernate.command_timeout";
 		public const string BatchSize = "hibernate.adonet.batch_size";
-		
-		
+
+
 		public const string PropertyBytecodeProvider = "hibernate.bytecode.provider";
 		public const string PropertyUseReflectionOptimizer = "hibernate.use_reflection_optimizer";
-		
+
 		public const string UseProxyValidator = "hibernate.use_proxy_validator";
 
 		private static IDictionary GlobalProperties;
@@ -134,59 +136,59 @@ namespace NHibernate.Cfg
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly ILog log = LogManager.GetLogger( typeof( Environment ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static void VerifyProperties( IDictionary props )
+		public static void VerifyProperties(IDictionary props)
 		{
 		}
 
 		static Environment()
 		{
 			// Computing the version string is a bit expensive, so do it only if logging is enabled.
-			if( log.IsInfoEnabled )
+			if (log.IsInfoEnabled)
 			{
-				log.Info( "NHibernate " + Environment.Version );
+				log.Info("NHibernate " + Version);
 			}
 
 			GlobalProperties = new Hashtable();
-			GlobalProperties[ PropertyUseReflectionOptimizer ] = "true";
+			GlobalProperties[PropertyUseReflectionOptimizer] = "true";
 			LoadGlobalPropertiesFromAppConfig();
-			VerifyProperties( GlobalProperties );
+			VerifyProperties(GlobalProperties);
 
-			BytecodeProviderInstance = BuildBytecodeProvider( GlobalProperties );
-			EnableReflectionOptimizer = PropertiesHelper.GetBoolean( PropertyUseReflectionOptimizer, GlobalProperties );
+			BytecodeProviderInstance = BuildBytecodeProvider(GlobalProperties);
+			EnableReflectionOptimizer = PropertiesHelper.GetBoolean(PropertyUseReflectionOptimizer, GlobalProperties);
 
-			if( EnableReflectionOptimizer )
+			if (EnableReflectionOptimizer)
 			{
-				log.Info( "Using reflection optimizer" );
+				log.Info("Using reflection optimizer");
 			}
 		}
 
 		private static void LoadGlobalPropertiesFromAppConfig()
 		{
-			object config = ConfigurationSettings.GetConfig( "nhibernate" );
+			object config = ConfigurationSettings.GetConfig("nhibernate");
 
-			if( config == null )
+			if (config == null)
 			{
-				log.Info( "nhibernate section not found in application configuration file" );
+				log.Info("nhibernate section not found in application configuration file");
 				return;
 			}
 
 			NameValueCollection properties = config as NameValueCollection;
-			if( properties == null )
+			if (properties == null)
 			{
-				log.Info( "nhibernate section in application configuration file is not using NameValueSectionHandler, ignoring" );
+				log.Info("nhibernate section in application configuration file is not using NameValueSectionHandler, ignoring");
 				return;
 			}
 
-			foreach( string key in properties )
+			foreach (string key in properties)
 			{
-				GlobalProperties[ key ] = properties[ key ];
+				GlobalProperties[key] = properties[key];
 			}
 		}
 
@@ -204,7 +206,7 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public static IDictionary Properties
 		{
-			get { return new Hashtable( GlobalProperties ); }
+			get { return new Hashtable(GlobalProperties); }
 		}
 
 		[Obsolete]
@@ -247,31 +249,34 @@ namespace NHibernate.Cfg
 			set { EnableReflectionOptimizer = value; }
 		}
 
-		public static IBytecodeProvider BuildBytecodeProvider( IDictionary properties )
+		public static IBytecodeProvider BuildBytecodeProvider(IDictionary properties)
 		{
 #if NET_2_0
 			string defaultBytecodeProvider = "lcg";
 #else
 			string defaultBytecodeProvider = "codedom";
 #endif
-			string provider = PropertiesHelper.GetString( Environment.PropertyBytecodeProvider, properties,
-				defaultBytecodeProvider );
-			log.Info( "Bytecode provider name : " + provider );
-			return BuildBytecodeProvider( provider );
+			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties,
+			                                             defaultBytecodeProvider);
+			log.Info("Bytecode provider name : " + provider);
+			return BuildBytecodeProvider(provider);
 		}
 
-		private static IBytecodeProvider BuildBytecodeProvider( string providerName )
+		private static IBytecodeProvider BuildBytecodeProvider(string providerName)
 		{
-			switch( providerName )
+			switch (providerName)
 			{
-				case "codedom": return new Bytecode.CodeDom.BytecodeProviderImpl();
+				case "codedom":
+					return new BytecodeProviderImpl();
 #if NET_2_0
-				case "lcg": return new Bytecode.Lightweight.BytecodeProviderImpl();
+				case "lcg":
+					return new Bytecode.Lightweight.BytecodeProviderImpl();
 #endif
-				case "null": return new Bytecode.NullBytecodeProvider();
+				case "null":
+					return new NullBytecodeProvider();
 				default:
-					log.Warn( "unrecognized bytecode provider [" + providerName + "], using null by default" );
-					return new Bytecode.NullBytecodeProvider();
+					log.Warn("unrecognized bytecode provider [" + providerName + "], using null by default");
+					return new NullBytecodeProvider();
 			}
 		}
 	}

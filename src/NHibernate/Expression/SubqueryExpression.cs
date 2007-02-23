@@ -17,6 +17,7 @@ namespace NHibernate.Expression
 		private String op;
 		private QueryParameters parameters;
 		private IType[] types;
+
 		[NonSerialized]
 		private CriteriaQueryTranslator innerQuery;
 
@@ -100,11 +101,11 @@ namespace NHibernate.Expression
 
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 			innerQuery = new CriteriaQueryTranslator(factory,
-											this.criteriaImpl,
-				//implicit polymorphism not supported (would need a union) 
-											this.criteriaImpl.CriteriaClass,
-											criteriaQuery.GenerateSQLAlias(),
-											criteriaQuery);
+			                                         this.criteriaImpl,
+			                                         //implicit polymorphism not supported (would need a union) 
+			                                         this.criteriaImpl.CriteriaClass,
+			                                         criteriaQuery.GenerateSQLAlias(),
+			                                         criteriaQuery);
 
 			parameters = innerQuery.GetQueryParameters();
 		}

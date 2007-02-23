@@ -51,6 +51,7 @@ namespace NHibernate.Property
 			}
 			throw new PropertyNotFoundException(theClass, propertyName, "setter");
 		}
+
 		#endregion
 	}
 }

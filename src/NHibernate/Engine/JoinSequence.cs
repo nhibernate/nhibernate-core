@@ -28,9 +28,9 @@ namespace NHibernate.Engine
 			if (rootJoinable != null)
 			{
 				buf.Append(rootJoinable)
-						.Append('[')
-						.Append(rootAlias)
-						.Append(']');
+					.Append('[')
+					.Append(rootAlias)
+					.Append(']');
 			}
 			for (int i = 0; i < joins.Count; i++)
 			{
@@ -47,7 +47,8 @@ namespace NHibernate.Engine
 			private readonly string alias;
 			private readonly string[] lhsColumns;
 
-			public Join(ISessionFactoryImplementor factory, IAssociationType associationType, string alias, JoinType joinType, string[] lhsColumns)
+			public Join(ISessionFactoryImplementor factory, IAssociationType associationType, string alias, JoinType joinType,
+			            string[] lhsColumns)
 			{
 				this.associationType = associationType;
 				this.joinable = associationType.GetAssociatedJoinable(factory);
@@ -136,10 +137,10 @@ namespace NHibernate.Engine
 		}
 
 		public JoinFragment ToJoinFragment(
-				IDictionary enabledFilters,
-				bool includeExtraJoins,
-				string withClauseFragment,
-				string withClauseJoinAlias)
+			IDictionary enabledFilters,
+			bool includeExtraJoins,
+			string withClauseFragment,
+			string withClauseJoinAlias)
 		{
 			QueryJoinFragment joinFragment = new QueryJoinFragment(factory.Dialect, useThetaStyle);
 			if (rootJoinable != null)
@@ -151,7 +152,8 @@ namespace NHibernate.Engine
 				// of that fact.
 				joinFragment.HasFilterCondition = joinFragment.AddCondition(filterCondition);
 				if (includeExtraJoins)
-				{ //TODO: not quite sure about the full implications of this!
+				{
+					//TODO: not quite sure about the full implications of this!
 					AddExtraJoins(joinFragment, rootAlias, rootJoinable, true);
 				}
 			}
@@ -164,19 +166,19 @@ namespace NHibernate.Engine
 				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
 				string condition;
 				if (last != null &&
-						IsManyToManyRoot(last) &&
-						((IQueryableCollection) last).ElementType == join.AssociationType)
+				    IsManyToManyRoot(last) &&
+				    ((IQueryableCollection) last).ElementType == join.AssociationType)
 				{
 					// the current join represents the join between a many-to-many association table
 					// and its "target" table.  Here we need to apply any additional filters
 					// defined specifically on the many-to-many
 					string manyToManyFilter = ((IQueryableCollection) last)
-							.GetManyToManyFilterFragment(join.Alias, enabledFilters);
+						.GetManyToManyFilterFragment(join.Alias, enabledFilters);
 					condition = "".Equals(manyToManyFilter)
-							? on
-							: "".Equals(on)
-									? manyToManyFilter
-									: on + " and " + manyToManyFilter;
+					            	? on
+					            	: "".Equals(on)
+					            	  	? manyToManyFilter
+					            	  	: on + " and " + manyToManyFilter;
 				}
 				else
 				{
@@ -190,15 +192,16 @@ namespace NHibernate.Engine
 					}
 				}
 				joinFragment.AddJoin(
-						join.Joinable.TableName,
-						join.Alias,
-						join.LHSColumns,
-						JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
-						join.JoinType,
-						condition
-				);
+					join.Joinable.TableName,
+					join.Alias,
+					join.LHSColumns,
+					JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
+					join.JoinType,
+					condition
+					);
 				if (includeExtraJoins)
-				{ //TODO: not quite sure about the full implications of this!
+				{
+					//TODO: not quite sure about the full implications of this!
 					AddExtraJoins(joinFragment, join.Alias, join.Joinable, join.JoinType == JoinType.InnerJoin);
 				}
 				last = join.Joinable;
@@ -232,7 +235,7 @@ namespace NHibernate.Engine
 		{
 			bool include = IsIncluded(alias);
 			joinFragment.AddJoins(joinable.FromJoinFragment(alias, innerJoin, include),
-					joinable.WhereJoinFragment(alias, innerJoin, include));
+			                      joinable.WhereJoinFragment(alias, innerJoin, include));
 		}
 
 		public JoinSequence AddCondition(SqlString condition)

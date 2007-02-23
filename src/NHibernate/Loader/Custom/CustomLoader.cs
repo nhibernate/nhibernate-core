@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using Iesi.Collections;
-
 using NHibernate.Engine;
 using NHibernate.Hql;
-using NHibernate.Persister.Entity;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
@@ -266,7 +264,7 @@ namespace NHibernate.Loader.Custom
 		{
 			get { return entityOwners; }
 		}
-		
+
 		protected override int[] CollectionOwners
 		{
 			get { return collectionOwners; }
@@ -292,7 +290,8 @@ namespace NHibernate.Loader.Custom
 
 		// Not ported: scroll
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		                                               ISessionImplementor session)
 		{
 			return rowProcessor.BuildResultRow(row, rs, resultTransformer != null, session);
 		}
@@ -347,7 +346,7 @@ namespace NHibernate.Loader.Custom
 
 			if (loc is int)
 			{
-				return new int[] { (int) loc };
+				return new int[] {(int) loc};
 			}
 			else
 			{
@@ -363,10 +362,7 @@ namespace NHibernate.Loader.Custom
 		protected internal override SqlString SqlString
 		{
 			get { return sql; }
-			set
-			{
-				throw new NotSupportedException("CustomLoader.set_SqlString");
-			}
+			set { throw new NotSupportedException("CustomLoader.set_SqlString"); }
 		}
 
 		public class ResultRowProcessor
@@ -381,10 +377,10 @@ namespace NHibernate.Loader.Custom
 			}
 
 			public object BuildResultRow(
-					object[] data,
-					IDataReader resultSet,
-					bool hasTransformer,
-					ISessionImplementor session)
+				object[] data,
+				IDataReader resultSet,
+				bool hasTransformer,
+				ISessionImplementor session)
 			{
 				object[] resultRow;
 				if (!hasScalars)
@@ -404,10 +400,10 @@ namespace NHibernate.Loader.Custom
 				}
 
 				return (hasTransformer)
-						? resultRow
-						: (resultRow.Length == 1)
-							? resultRow[0]
-							: resultRow;
+				       	? resultRow
+				       	: (resultRow.Length == 1)
+				       	  	? resultRow[0]
+				       	  	: resultRow;
 			}
 		}
 
@@ -426,13 +422,12 @@ namespace NHibernate.Loader.Custom
 			}
 
 			public object Extract(
-					Object[] data,
-					IDataReader resultSet,
-					ISessionImplementor session)
+				Object[] data,
+				IDataReader resultSet,
+				ISessionImplementor session)
 			{
 				return data[position];
 			}
-
 		}
 
 		public class ScalarResultColumnProcessor : ResultColumnProcessor
@@ -453,9 +448,9 @@ namespace NHibernate.Loader.Custom
 			}
 
 			public object Extract(
-					object[] data,
-					IDataReader resultSet,
-					ISessionImplementor session)
+				object[] data,
+				IDataReader resultSet,
+				ISessionImplementor session)
 			{
 				return type.NullSafeGet(resultSet, alias, session, null);
 			}

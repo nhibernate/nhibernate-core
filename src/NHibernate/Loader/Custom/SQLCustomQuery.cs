@@ -3,10 +3,9 @@ using System.Collections;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Custom
@@ -34,17 +33,17 @@ namespace NHibernate.Loader.Custom
 		{
 			get { return querySpaces; }
 		}
-		
+
 		public IList CustomQueryReturns
 		{
 			get { return customQueryReturns; }
 		}
 
 		public SQLCustomQuery(
-				ISQLQueryReturn[] queryReturns,
-				string sqlQuery,
-				ICollection additionalQuerySpaces,
-				ISessionFactoryImplementor factory)
+			ISQLQueryReturn[] queryReturns,
+			string sqlQuery,
+			ICollection additionalQuerySpaces,
+			ISessionFactoryImplementor factory)
 		{
 			log.Debug("starting processing of sql query [" + sqlQuery + "]");
 			SQLQueryReturnProcessor processor = new SQLQueryReturnProcessor(queryReturns, factory);

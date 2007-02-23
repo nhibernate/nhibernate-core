@@ -15,7 +15,7 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public LazyInitializationException( string message ) : this( message, null )
+		public LazyInitializationException(string message) : this(message, null)
 		{
 		}
 
@@ -27,7 +27,8 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public LazyInitializationException( Exception innerException ) : this( "NHibernate lazy initialization problem", innerException )
+		public LazyInitializationException(Exception innerException)
+			: this("NHibernate lazy initialization problem", innerException)
 		{
 		}
 
@@ -40,9 +41,9 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public LazyInitializationException( string message, Exception innerException ) : base( message, innerException )
+		public LazyInitializationException(string message, Exception innerException) : base(message, innerException)
 		{
-			LogManager.GetLogger( typeof( LazyInitializationException ) ).Error( message, this );
+			LogManager.GetLogger(typeof(LazyInitializationException)).Error(message, this);
 		}
 
 		/// <summary>
@@ -56,9 +57,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected LazyInitializationException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected LazyInitializationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
-
 	}
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -39,15 +38,18 @@ namespace NHibernate.Type
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
 		{
 			IEntityPersister persister = factory.GetEntityPersister(associatedClass);
-			if ( !persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier ) {
+			if (!persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier)
+			{
 				return base.GetHashCode(x, factory);
 			}
-		
+
 			object id;
-			if (x is INHibernateProxy) {
+			if (x is INHibernateProxy)
+			{
 				id = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) x).Identifier;
 			}
-			else {
+			else
+			{
 				id = persister.GetIdentifier(x);
 			}
 			return persister.IdentifierType.GetHashCode(id, factory);
@@ -63,7 +65,7 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, new string[] { name }, session, owner);
+			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
 		// This returns the wrong class for an entity with a proxy. Theoretically
@@ -132,7 +134,8 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
+		public override object Replace(object original, object target, ISessionImplementor session, object owner,
+		                               IDictionary copyCache)
 		{
 			if (original == null)
 			{
@@ -328,7 +331,7 @@ namespace NHibernate.Type
 		}
 
 		public abstract bool IsAlwaysDirtyChecked { get; }
-		
+
 		public bool IsReferenceToPrimaryKey
 		{
 			get { return uniqueKeyPropertyName == null; }

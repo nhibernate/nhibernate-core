@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Util;
@@ -15,32 +16,32 @@ namespace NHibernate.Hql.Classic
 		static PreprocessingParser()
 		{
 			operators = new HashedSet();
-			operators.Add( "<=" );
-			operators.Add( ">=" );
-			operators.Add( "=>" );
-			operators.Add( "=<" );
-			operators.Add( "!=" );
-			operators.Add( "<>" );
-			operators.Add( "!#" );
-			operators.Add( "!~" );
-			operators.Add( "!<" );
-			operators.Add( "!>" );
-			operators.Add( "is not" );
-			operators.Add( "not like" );
-			operators.Add( "not in" );
-			operators.Add( "not between" );
-			operators.Add( "not exists" );
+			operators.Add("<=");
+			operators.Add(">=");
+			operators.Add("=>");
+			operators.Add("=<");
+			operators.Add("!=");
+			operators.Add("<>");
+			operators.Add("!#");
+			operators.Add("!~");
+			operators.Add("!<");
+			operators.Add("!>");
+			operators.Add("is not");
+			operators.Add("not like");
+			operators.Add("not in");
+			operators.Add("not between");
+			operators.Add("not exists");
 
 			collectionProps = new Hashtable();
-			collectionProps.Add( "elements", "elements" );
-			collectionProps.Add( "indices", "indices" );
-			collectionProps.Add( "size", "size" );
-			collectionProps.Add( "maxindex", "maxIndex" );
-			collectionProps.Add( "minindex", "minIndex" );
-			collectionProps.Add( "maxelement", "maxElement" );
-			collectionProps.Add( "minelement", "minElement" );
+			collectionProps.Add("elements", "elements");
+			collectionProps.Add("indices", "indices");
+			collectionProps.Add("size", "size");
+			collectionProps.Add("maxindex", "maxIndex");
+			collectionProps.Add("minindex", "minIndex");
+			collectionProps.Add("maxelement", "maxElement");
+			collectionProps.Add("minelement", "minElement");
 
-			collectionProps.Add( "index", "index" );
+			collectionProps.Add("index", "index");
 		}
 
 		private IDictionary replacements;
@@ -54,7 +55,7 @@ namespace NHibernate.Hql.Classic
 		/// 
 		/// </summary>
 		/// <param name="replacements"></param>
-		public PreprocessingParser( IDictionary replacements )
+		public PreprocessingParser(IDictionary replacements)
 		{
 			this.replacements = replacements;
 		}
@@ -64,48 +65,48 @@ namespace NHibernate.Hql.Classic
 		/// </summary>
 		/// <param name="token"></param>
 		/// <param name="q"></param>
-		public void Token( string token, QueryTranslator q )
+		public void Token(string token, QueryTranslator q)
 		{
 			//handle quoted strings
-			if( quoted )
+			if (quoted)
 			{
-				quotedString.Append( token );
+				quotedString.Append(token);
 			}
-			if( "'".Equals( token ) )
+			if ("'".Equals(token))
 			{
-				if( quoted )
+				if (quoted)
 				{
 					token = quotedString.ToString();
 				}
 				else
 				{
-					quotedString = new StringBuilder( 20 ).Append( token );
+					quotedString = new StringBuilder(20).Append(token);
 				}
 				quoted = !quoted;
 			}
-			if( quoted )
+			if (quoted)
 			{
 				return;
 			}
 
 			//ignore whitespace
-			if( ParserHelper.IsWhitespace( token ) )
+			if (ParserHelper.IsWhitespace(token))
 			{
 				return;
 			}
 
 			//do replacements
-			string substoken = ( string ) replacements[ token ];
-			token = ( substoken == null ) ? token : substoken;
+			string substoken = (string) replacements[token];
+			token = (substoken == null) ? token : substoken;
 
 			//handle HQL2 collection syntax
-			if( currentCollectionProp != null )
+			if (currentCollectionProp != null)
 			{
-				if( StringHelper.OpenParen.Equals( token ) )
+				if (StringHelper.OpenParen.Equals(token))
 				{
 					return;
 				}
-				else if( StringHelper.ClosedParen.Equals( token ) )
+				else if (StringHelper.ClosedParen.Equals(token))
 				{
 					currentCollectionProp = null;
 					return;
@@ -117,8 +118,8 @@ namespace NHibernate.Hql.Classic
 			}
 			else
 			{
-				string prop = ( string ) collectionProps[ token.ToLower( System.Globalization.CultureInfo.InvariantCulture ) ];
-				if( prop != null )
+				string prop = (string) collectionProps[token.ToLower(CultureInfo.InvariantCulture)];
+				if (prop != null)
 				{
 					currentCollectionProp = prop;
 					return;
@@ -127,50 +128,49 @@ namespace NHibernate.Hql.Classic
 
 
 			//handle <=, >=, !=, is not, not between, not in
-			if( lastToken == null )
+			if (lastToken == null)
 			{
 				lastToken = token;
 			}
 			else
 			{
-				string doubleToken = ( token.Length > 1 ) ?
-					lastToken + ' ' + token :
-					lastToken + token;
-				if( operators.Contains( doubleToken.ToLower( System.Globalization.CultureInfo.InvariantCulture ) ) )
+				string doubleToken = (token.Length > 1) ?
+				                     lastToken + ' ' + token :
+				                     lastToken + token;
+				if (operators.Contains(doubleToken.ToLower(CultureInfo.InvariantCulture)))
 				{
-					parser.Token( doubleToken, q );
+					parser.Token(doubleToken, q);
 					lastToken = null;
 				}
 				else
 				{
-					parser.Token( lastToken, q );
+					parser.Token(lastToken, q);
 					lastToken = token;
 				}
 			}
-
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="q"></param>
-		public virtual void Start( QueryTranslator q )
+		public virtual void Start(QueryTranslator q)
 		{
 			quoted = false;
-			parser.Start( q );
+			parser.Start(q);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="q"></param>
-		public virtual void End( QueryTranslator q )
+		public virtual void End(QueryTranslator q)
 		{
-			if( lastToken != null )
+			if (lastToken != null)
 			{
-				parser.Token( lastToken, q );
+				parser.Token(lastToken, q);
 			}
-			parser.End( q );
+			parser.End(q);
 			lastToken = null;
 			currentCollectionProp = null;
 		}

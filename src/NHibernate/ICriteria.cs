@@ -1,12 +1,10 @@
 using System.Collections;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
-
-using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
+#if NET_2_0
+#endif
 
 namespace NHibernate
 {
@@ -56,13 +54,13 @@ namespace NHibernate
 		/// Set a limit upon the number of objects to be retrieved
 		/// </summary>
 		/// <param name="maxResults"></param>
-		ICriteria SetMaxResults( int maxResults );
+		ICriteria SetMaxResults(int maxResults);
 
 		/// <summary>
 		/// Set the first result to be retrieved
 		/// </summary>
 		/// <param name="firstResult"></param>
-		ICriteria SetFirstResult( int firstResult );
+		ICriteria SetFirstResult(int firstResult);
 
 		// SetFetchSize - not ported from H2.1
 
@@ -71,20 +69,20 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="timeout"></param>
 		/// <returns></returns>
-		ICriteria SetTimeout( int timeout );
+		ICriteria SetTimeout(int timeout);
 
 		/// <summary>
 		/// Add an Expression to constrain the results to be retrieved.
 		/// </summary>
 		/// <param name="expression"></param>
 		/// <returns></returns>
-		ICriteria Add( Expression.ICriterion expression );
+		ICriteria Add(ICriterion expression);
 
 		/// <summary>
 		/// An an Order to the result set 
 		/// </summary>
 		/// <param name="order"></param>
-		ICriteria AddOrder( Order order );
+		ICriteria AddOrder(Order order);
 
 		/// <summary>
 		/// Get the results
@@ -96,7 +94,7 @@ namespace NHibernate
 		/// Get the results and fill the <see cref="IList"/>
 		/// </summary>
 		/// <param name="results">The list to fill with the results.</param>
-		void List( IList results );
+		void List(IList results);
 
 #if NET_2_0
 		/// <summary>
@@ -127,7 +125,7 @@ namespace NHibernate
 		/// <param name="associationPath">A dot seperated property path.</param>
 		/// <param name="mode">The Fetch mode.</param>
 		/// <returns></returns>
-		ICriteria SetFetchMode( string associationPath, FetchMode mode );
+		ICriteria SetFetchMode(string associationPath, FetchMode mode);
 
 		/// <summary>
 		/// Join an association, assigning an alias to the joined entity
@@ -135,7 +133,7 @@ namespace NHibernate
 		/// <param name="associationPath"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		ICriteria CreateAlias( string associationPath, string alias );
+		ICriteria CreateAlias(string associationPath, string alias);
 
 		/// <summary>
 		/// Join an association using the specified join-type, assigning an alias to the joined
@@ -145,14 +143,14 @@ namespace NHibernate
 		/// <param name="alias"></param>
 		/// <param name="joinType">The type of join to use.</param>
 		/// <returns>this (for method chaining)</returns>
-		ICriteria CreateAlias( string associationPath, string alias, JoinType joinType );
+		ICriteria CreateAlias(string associationPath, string alias, JoinType joinType);
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity
 		/// </summary>
 		/// <param name="associationPath"></param>
 		/// <returns></returns>
-		ICriteria CreateCriteria( string associationPath );
+		ICriteria CreateCriteria(string associationPath);
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
@@ -161,7 +159,7 @@ namespace NHibernate
 		/// <param name="associationPath"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		ICriteria CreateCriteria( string associationPath, string alias );
+		ICriteria CreateCriteria(string associationPath, string alias);
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
@@ -193,14 +191,14 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="resultTransformer"></param>
 		/// <returns></returns>
-		ICriteria SetResultTransformer( IResultTransformer resultTransformer );
+		ICriteria SetResultTransformer(IResultTransformer resultTransformer);
 
 		/// <summary>
 		/// Set the lock mode of the current entity
 		/// </summary>
 		/// <param name="lockMode">the lock mode</param>
 		/// <returns></returns>
-		ICriteria SetLockMode( LockMode lockMode );
+		ICriteria SetLockMode(LockMode lockMode);
 
 		/// <summary>
 		/// Set the lock mode of the aliased entity
@@ -208,14 +206,14 @@ namespace NHibernate
 		/// <param name="alias">an alias</param>
 		/// <param name="lockMode">the lock mode</param>
 		/// <returns></returns>
-		ICriteria SetLockMode( string alias, LockMode lockMode );
+		ICriteria SetLockMode(string alias, LockMode lockMode);
 
 		/// <summary>
 		/// Enable caching of this query result set
 		/// </summary>
 		/// <param name="cacheable"></param>
 		/// <returns></returns>
-		ICriteria SetCacheable( bool cacheable );
+		ICriteria SetCacheable(bool cacheable);
 
 		/// <summary>
 		/// Set the name of the cache region.
@@ -223,18 +221,18 @@ namespace NHibernate
 		/// <param name="cacheRegion">the name of a query cache region, or <c>null</c>
 		/// for the default query cache</param>
 		/// <returns></returns>
-		ICriteria SetCacheRegion( string cacheRegion );
+		ICriteria SetCacheRegion(string cacheRegion);
 
-        /// <summary>
-        /// Used to specify that the query results will be a projection (scalar in
-        /// nature).  Implicitly specifies the {@link #PROJECTION} result transformer.
-        /// <p/>
-        /// The individual components contained within the given
-        /// <see cref="IProjection"/> determines the overall "shape" of the query result.
-        /// <paramref name="projection">The projection representing the overall "shape" of the
-        /// query results.</paramref>
-        /// <returns>this (for method chaining)</returns>
-        /// </summary>
+		/// <summary>
+		/// Used to specify that the query results will be a projection (scalar in
+		/// nature).  Implicitly specifies the {@link #PROJECTION} result transformer.
+		/// <p/>
+		/// The individual components contained within the given
+		/// <see cref="IProjection"/> determines the overall "shape" of the query result.
+		/// <paramref name="projection">The projection representing the overall "shape" of the
+		/// query results.</paramref>
+		/// <returns>this (for method chaining)</returns>
+		/// </summary>
 		ICriteria SetProjection(IProjection projection);
 	}
 }

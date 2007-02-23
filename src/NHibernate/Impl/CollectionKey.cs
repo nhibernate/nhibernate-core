@@ -14,15 +14,15 @@ namespace NHibernate.Impl
 		private readonly ISessionFactoryImplementor factory;
 		private readonly int hashCode;
 
-		public CollectionKey( ICollectionPersister persister, object key )
-			: this( persister.Role, key, persister.KeyType, persister.Factory )
+		public CollectionKey(ICollectionPersister persister, object key)
+			: this(persister.Role, key, persister.KeyType, persister.Factory)
 		{
 		}
 
-		private CollectionKey( string role, object key, IType keyType, ISessionFactoryImplementor factory )
+		private CollectionKey(string role, object key, IType keyType, ISessionFactoryImplementor factory)
 		{
 			this.role = role;
-			this.key  = key;
+			this.key = key;
 			this.keyType = keyType;
 			this.factory = factory;
 			this.hashCode = GenerateHashCode();
@@ -31,19 +31,19 @@ namespace NHibernate.Impl
 		public override bool Equals(object obj)
 		{
 			CollectionKey that = (CollectionKey) obj;
-			return keyType.Equals (key, that.key)
-				&& Equals (role, that.role);
+			return keyType.Equals(key, that.key)
+			       && Equals(role, that.role);
 		}
 
 		public override int GetHashCode()
 		{
 			return hashCode;
 		}
-		
+
 		private int GenerateHashCode()
 		{
 			int result = 17;
-			unchecked 
+			unchecked
 			{
 				result = 37 * result + role.GetHashCode();
 				result = 37 * result + keyType.GetHashCode(key, factory);

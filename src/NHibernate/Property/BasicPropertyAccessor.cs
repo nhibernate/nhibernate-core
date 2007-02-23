@@ -11,7 +11,7 @@ namespace NHibernate.Property
 	[Serializable]
 	public class BasicPropertyAccessor : IPropertyAccessor
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( BasicPropertyAccessor ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(BasicPropertyAccessor));
 
 		#region IPropertyAccessor Members
 
@@ -27,12 +27,12 @@ namespace NHibernate.Property
 		/// Thrown when a Property specified by the <c>propertyName</c> could not
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public IGetter GetGetter( System.Type type, string propertyName )
+		public IGetter GetGetter(System.Type type, string propertyName)
 		{
-			BasicGetter result = GetGetterOrNull( type, propertyName );
-			if( result == null )
+			BasicGetter result = GetGetterOrNull(type, propertyName);
+			if (result == null)
 			{
-				throw new PropertyNotFoundException( type, propertyName, "getter" );
+				throw new PropertyNotFoundException(type, propertyName, "getter");
 			}
 			return result;
 		}
@@ -50,12 +50,12 @@ namespace NHibernate.Property
 		/// Thrown when a Property specified by the <c>propertyName</c> could not
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public ISetter GetSetter( System.Type type, string propertyName )
+		public ISetter GetSetter(System.Type type, string propertyName)
 		{
-			BasicSetter result = GetSetterOrNull( type, propertyName );
-			if( result == null )
+			BasicSetter result = GetSetterOrNull(type, propertyName);
+			if (result == null)
 			{
-				throw new PropertyNotFoundException( type, propertyName, "setter" );
+				throw new PropertyNotFoundException(type, propertyName, "setter");
 			}
 			return result;
 		}
@@ -71,42 +71,42 @@ namespace NHibernate.Property
 		/// The <see cref="BasicGetter"/> for the Property <c>get</c> or <c>null</c>
 		/// if the Property could not be found.
 		/// </returns>
-		internal static BasicGetter GetGetterOrNull( System.Type type, string propertyName )
+		internal static BasicGetter GetGetterOrNull(System.Type type, string propertyName)
 		{
-			
-			if( type==typeof( object ) || type==null )
+			if (type == typeof(object) || type == null)
 			{
 				// the full inheritance chain has been walked and we could
 				// not find the Property get
 				return null;
 			}
 
-			PropertyInfo property = type.GetProperty( propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
+			PropertyInfo property =
+				type.GetProperty(propertyName,
+				                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
-			if( property != null && property.CanRead)
+			if (property != null && property.CanRead)
 			{
 				return new BasicGetter(type, property, propertyName);
 			}
 			else
 			{
 				// recursively call this method for the base Type
-				BasicGetter getter = GetGetterOrNull( type.BaseType, propertyName );
-				
+				BasicGetter getter = GetGetterOrNull(type.BaseType, propertyName);
+
 				// didn't find anything in the base class - check to see if there is 
 				// an explicit interface implementation.
-				if( getter == null )
+				if (getter == null)
 				{
-					System.Type[ ] interfaces = type.GetInterfaces();
-					for( int i = 0; getter == null && i < interfaces.Length; i++ )
+					System.Type[] interfaces = type.GetInterfaces();
+					for (int i = 0; getter == null && i < interfaces.Length; i++)
 					{
-						getter = GetGetterOrNull( interfaces[ i ], propertyName );
+						getter = GetGetterOrNull(interfaces[i], propertyName);
 					}
 				}
 				return getter;
 			}
-
 		}
-		
+
 		/// <summary>
 		/// Helper method to find the Property <c>set</c>.
 		/// </summary>
@@ -116,34 +116,36 @@ namespace NHibernate.Property
 		/// The <see cref="BasicSetter"/> for the Property <c>set</c> or <c>null</c>
 		/// if the Property could not be found.
 		/// </returns>
-		internal static BasicSetter GetSetterOrNull( System.Type type, string propertyName )
+		internal static BasicSetter GetSetterOrNull(System.Type type, string propertyName)
 		{
-			if( type == typeof( object ) || type == null )
+			if (type == typeof(object) || type == null)
 			{
 				// the full inheritance chain has been walked and we could
 				// not find the Property get
 				return null;
 			}
 
-			PropertyInfo property = type.GetProperty( propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
+			PropertyInfo property =
+				type.GetProperty(propertyName,
+				                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
-			if( property != null && property.CanWrite)
+			if (property != null && property.CanWrite)
 			{
 				return new BasicSetter(type, property, propertyName);
 			}
 			else
 			{
 				// recursively call this method for the base Type
-				BasicSetter setter = GetSetterOrNull( type.BaseType, propertyName );
-				
+				BasicSetter setter = GetSetterOrNull(type.BaseType, propertyName);
+
 				// didn't find anything in the base class - check to see if there is 
 				// an explicit interface implementation.
-				if( setter == null )
+				if (setter == null)
 				{
-					System.Type[ ] interfaces = type.GetInterfaces();
-					for( int i = 0; setter == null && i < interfaces.Length; i++ )
+					System.Type[] interfaces = type.GetInterfaces();
+					for (int i = 0; setter == null && i < interfaces.Length; i++)
 					{
-						setter = GetSetterOrNull( interfaces[ i ], propertyName );
+						setter = GetSetterOrNull(interfaces[i], propertyName);
 					}
 				}
 				return setter;

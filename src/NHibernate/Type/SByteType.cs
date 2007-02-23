@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class SByteType : ValueTypeType, IDiscriminatorType
 	{
 		/// <summary></summary>
-		internal SByteType() : base( SqlTypeFactory.SByte )
+		internal SByteType() : base(SqlTypeFactory.SByte)
 		{
 		}
 
@@ -22,9 +22,9 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToSByte( rs[ index ] );
+			return Convert.ToSByte(rs[index]);
 		}
 
 		/// <summary>
@@ -33,15 +33,15 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get( IDataReader rs, string name )
+		public override object Get(IDataReader rs, string name)
 		{
-			return Convert.ToSByte( rs[ name ] );
+			return Convert.ToSByte(rs[name]);
 		}
 
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( SByte ); }
+			get { return typeof(SByte); }
 		}
 
 		/// <summary>
@@ -50,9 +50,9 @@ namespace NHibernate.Type
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			( ( IDataParameter ) cmd.Parameters[ index ] ).Value = ( SByte ) value;
+			((IDataParameter) cmd.Parameters[index]).Value = (SByte) value;
 		}
 
 		/// <summary></summary>
@@ -66,7 +66,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString( object value )
+		public override string ObjectToSQLString(object value)
 		{
 			return value.ToString();
 		}
@@ -76,9 +76,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public virtual object StringToObject( string xml )
+		public virtual object StringToObject(string xml)
 		{
-			return FromString( xml );
+			return FromString(xml);
 		}
 
 		/// <summary>
@@ -86,9 +86,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return sbyte.Parse( xml );
+			return sbyte.Parse(xml);
 		}
 	}
 }

@@ -27,7 +27,7 @@ namespace NHibernate.Property
 		/// Initializes a new instance of <see cref="FieldAccessor"/>.
 		/// </summary>
 		/// <param name="namingStrategy">The <see cref="IFieldNamingStrategy"/> to use.</param>
-		public FieldAccessor( IFieldNamingStrategy namingStrategy )
+		public FieldAccessor(IFieldNamingStrategy namingStrategy)
 		{
 			this.namingStrategy = namingStrategy;
 		}
@@ -57,10 +57,10 @@ namespace NHibernate.Property
 		/// Thrown when a Field specified by the <c>propertyName</c> could not
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public IGetter GetGetter( System.Type theClass, string propertyName )
+		public IGetter GetGetter(System.Type theClass, string propertyName)
 		{
-			string fieldName = GetFieldName( propertyName );
-			return new FieldGetter( GetField( theClass, fieldName ), theClass, fieldName );
+			string fieldName = GetFieldName(propertyName);
+			return new FieldGetter(GetField(theClass, fieldName), theClass, fieldName);
 		}
 
 		/// <summary>
@@ -77,32 +77,34 @@ namespace NHibernate.Property
 		/// Thrown when a Field for the Property specified by the <c>propertyName</c> using the
 		/// <see cref="IFieldNamingStrategy"/> could not be found in the <see cref="System.Type"/>.
 		/// </exception>
-		public ISetter GetSetter( System.Type theClass, string propertyName )
+		public ISetter GetSetter(System.Type theClass, string propertyName)
 		{
-			string fieldName = GetFieldName( propertyName );
-			return new FieldSetter( GetField( theClass, fieldName ), theClass, fieldName );
+			string fieldName = GetFieldName(propertyName);
+			return new FieldSetter(GetField(theClass, fieldName), theClass, fieldName);
 		}
 
 		#endregion
 
-        private static FieldInfo GetField( System.Type type, string fieldName, System.Type originalType )
-        {
-			if( type == null || type == typeof( object ) )
+		private static FieldInfo GetField(System.Type type, string fieldName, System.Type originalType)
+		{
+			if (type == null || type == typeof(object))
 			{
 				// the full inheritance chain has been walked and we could
 				// not find the Field
-				throw new PropertyNotFoundException( originalType, fieldName );
+				throw new PropertyNotFoundException(originalType, fieldName);
 			}
 
-			FieldInfo field = type.GetField( fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly );
-			if( field == null )
+			FieldInfo field =
+				type.GetField(fieldName,
+				              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+			if (field == null)
 			{
 				// recursively call this method for the base Type
-				field = GetField( type.BaseType, fieldName, originalType );
+				field = GetField(type.BaseType, fieldName, originalType);
 			}
 
 			return field;
-        }
+		}
 
 		/// <summary>
 		/// Helper method to find the Field.
@@ -115,9 +117,9 @@ namespace NHibernate.Property
 		/// <exception cref="PropertyNotFoundException">
 		/// Thrown when a field could not be found.
 		/// </exception>
-		internal static FieldInfo GetField( System.Type type, string fieldName )
+		internal static FieldInfo GetField(System.Type type, string fieldName)
 		{
-            return GetField( type, fieldName, type );
+			return GetField(type, fieldName, type);
 		}
 
 		/// <summary>
@@ -126,15 +128,15 @@ namespace NHibernate.Property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property.</param>
 		/// <returns>The name of the Field.</returns>
-		private string GetFieldName( string propertyName )
+		private string GetFieldName(string propertyName)
 		{
-			if( namingStrategy == null )
+			if (namingStrategy == null)
 			{
 				return propertyName;
 			}
 			else
 			{
-				return namingStrategy.GetFieldName( propertyName );
+				return namingStrategy.GetFieldName(propertyName);
 			}
 		}
 	}

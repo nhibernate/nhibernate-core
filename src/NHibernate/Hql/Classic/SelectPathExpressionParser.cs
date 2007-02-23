@@ -7,21 +7,21 @@ namespace NHibernate.Hql.Classic
 		/// 
 		/// </summary>
 		/// <param name="q"></param>
-		public override void End( QueryTranslator q )
+		public override void End(QueryTranslator q)
 		{
-			if( CurrentProperty != null && !q.IsShallowQuery )
+			if (CurrentProperty != null && !q.IsShallowQuery)
 			{
 				// "finish off" the join
-				Token( ".", q );
-				Token( null, q );
+				Token(".", q);
+				Token(null, q);
 			}
-			base.End( q );
+			base.End(q);
 		}
 
 		/// <summary></summary>
 		protected override void SetExpectingCollectionIndex()
 		{
-			throw new QueryException( "expecting .elements or .indices after collection path expression in select" );
+			throw new QueryException("expecting .elements or .indices after collection path expression in select");
 		}
 
 		/// <summary></summary>

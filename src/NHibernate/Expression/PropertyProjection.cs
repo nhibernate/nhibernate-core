@@ -1,7 +1,6 @@
 using System;
-
-using NHibernate.Type;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Expression
 {
@@ -11,8 +10,8 @@ namespace NHibernate.Expression
 	[Serializable]
 	public class PropertyProjection : SimpleProjection
 	{
-		string propertyName;
-		bool grouped;
+		private string propertyName;
+		private bool grouped;
 
 		protected internal PropertyProjection(string propertyName, bool grouped)
 		{
@@ -25,29 +24,35 @@ namespace NHibernate.Expression
 		{
 		}
 
-		public string PropertyName { get { return propertyName; } }
+		public string PropertyName
+		{
+			get { return propertyName; }
+		}
 
 		public override string ToString()
 		{
 			return propertyName;
 		}
 
-		public override bool IsGrouped { get { return grouped; } }
+		public override bool IsGrouped
+		{
+			get { return grouped; }
+		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] { criteriaQuery.GetType(criteria, propertyName) };
+			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
 		}
 
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
-            return new SqlString(new object[] 
-            {
-			    criteriaQuery.GetColumn(criteria, propertyName),
-			    " as y",
-			    loc.ToString(),
-			    "_"
-            });
+			return new SqlString(new object[]
+			                     	{
+			                     		criteriaQuery.GetColumn(criteria, propertyName),
+			                     		" as y",
+			                     		loc.ToString(),
+			                     		"_"
+			                     	});
 		}
 
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -58,7 +63,7 @@ namespace NHibernate.Expression
 			}
 			else
 			{
-                return new SqlString(criteriaQuery.GetColumn(criteria, propertyName));
+				return new SqlString(criteriaQuery.GetColumn(criteria, propertyName));
 			}
 		}
 	}

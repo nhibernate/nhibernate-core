@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-
 using log4net;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -16,7 +14,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public class CollectionEntry : ICollectionSnapshot
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( CollectionEntry ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(CollectionEntry));
 
 		/// <summary>
 		/// Indicates that the Collection can still be reached by an Entity
@@ -135,10 +133,10 @@ namespace NHibernate.Impl
 			//this.initialized = true;
 		}
 
-		public CollectionEntry( ICollectionPersister loadedPersister, object loadedID )
+		public CollectionEntry(ICollectionPersister loadedPersister, object loadedID)
 			// Detached collection wrappers that get found and reattached
 			// during flush shouldn't be ignored
-			: this( loadedPersister, loadedID, false )
+			: this(loadedPersister, loadedID, false)
 		{
 		}
 
@@ -148,12 +146,12 @@ namespace NHibernate.Impl
 		/// <param name="loadedPersister">The <see cref="ICollectionPersister"/> that persists this Collection type.</param>
 		/// <param name="loadedID">The identifier of the Entity that is the owner of this Collection.</param>
 		/// <param name="ignore">A boolean indicating whether to ignore the collection during current (or next) flush.</param>
-		public CollectionEntry( ICollectionPersister loadedPersister, object loadedID, bool ignore )
+		public CollectionEntry(ICollectionPersister loadedPersister, object loadedID, bool ignore)
 		{
 			//this.dirty = false;
 			//this.initialized = false;
 			this.loadedKey = loadedID;
-			SetLoadedPersister( loadedPersister );
+			SetLoadedPersister(loadedPersister);
 			this.ignore = ignore;
 		}
 
@@ -167,7 +165,7 @@ namespace NHibernate.Impl
 		/// creates an entry for it in this <see cref="ISession"/> by copying the values from the 
 		/// <c>cs</c> parameter.
 		/// </remarks>
-		public CollectionEntry( ICollectionSnapshot cs, ISessionFactoryImplementor factory )
+		public CollectionEntry(ICollectionSnapshot cs, ISessionFactoryImplementor factory)
 		{
 			//this.dirty = cs.Dirty;
 			this.snapshot = cs.Snapshot;
@@ -176,7 +174,7 @@ namespace NHibernate.Impl
 			// Detached collections that get found and reattached during flush
 			// shouldn't be ignored
 			this.ignore = false;
-			SetLoadedPersister( factory.GetCollectionPersister( cs.Role ) );
+			SetLoadedPersister(factory.GetCollectionPersister(cs.Role));
 		}
 
 		private void Dirty(IPersistentCollection collection)
@@ -200,13 +198,13 @@ namespace NHibernate.Impl
 		/// Prepares this CollectionEntry for the Flush process.
 		/// </summary>
 		/// <param name="collection">The <see cref="IPersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
-		public void PreFlush( IPersistentCollection collection )
+		public void PreFlush(IPersistentCollection collection)
 		{
 			Dirty(collection);
 
-			if( log.IsDebugEnabled && collection.IsDirty && loadedPersister != null )
+			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
 			{
-				log.Debug( "Collection dirty: " + MessageHelper.InfoString( loadedPersister, loadedKey ) );
+				log.Debug("Collection dirty: " + MessageHelper.InfoString(loadedPersister, loadedKey));
 			}
 
 			// reset all of these values so any previous flush status 
@@ -223,9 +221,9 @@ namespace NHibernate.Impl
 		/// has been initialized.
 		/// </summary>
 		/// <param name="collection">The initialized <see cref="AbstractPersistentCollection"/> that this Entry is for.</param>
-		public void PostInitialize( IPersistentCollection collection )
+		public void PostInitialize(IPersistentCollection collection)
 		{
-			snapshot = collection.GetSnapshot( loadedPersister );
+			snapshot = collection.GetSnapshot(loadedPersister);
 		}
 
 		/// <summary>
@@ -235,18 +233,18 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// Called after a <em>successful</em> flush.
 		/// </remarks>
-		public bool PostFlush( IPersistentCollection collection )
+		public bool PostFlush(IPersistentCollection collection)
 		{
-			if( ignore )
+			if (ignore)
 			{
 				ignore = false;
 			}
 			else
 			{
 				// the CollectionEntry should be processed if we are in the PostFlush()
-				if( !processed )
+				if (!processed)
 				{
-					throw new AssertionFailure( "collection was not processed by Flush()" );
+					throw new AssertionFailure("collection was not processed by Flush()");
 				}
 			}
 
@@ -255,9 +253,9 @@ namespace NHibernate.Impl
 
 		#region Engine.ICollectionSnapshot Members
 
-		public void InitSnapshot( IPersistentCollection collection, ICollectionPersister persister )
+		public void InitSnapshot(IPersistentCollection collection, ICollectionPersister persister)
 		{
-			snapshot = collection.GetSnapshot( persister );
+			snapshot = collection.GetSnapshot(persister);
 		}
 
 		/// <summary></summary>
@@ -293,16 +291,16 @@ namespace NHibernate.Impl
 		/// The <see cref="ICollectionPersister"/> that is 
 		/// responsible for the Collection.
 		/// </param>
-		internal void SetLoadedPersister( ICollectionPersister persister )
+		internal void SetLoadedPersister(ICollectionPersister persister)
 		{
 			loadedPersister = persister;
-			role = ( persister == null ) ? null : persister.Role;
+			role = (persister == null) ? null : persister.Role;
 		}
 
-		public bool IsSnapshotEmpty( IPersistentCollection collection )
+		public bool IsSnapshotEmpty(IPersistentCollection collection)
 		{
 			return collection.WasInitialized &&
-				collection.IsSnapshotEmpty( Snapshot );
+			       collection.IsSnapshotEmpty(Snapshot);
 		}
 
 		public bool IsReached
@@ -362,13 +360,13 @@ namespace NHibernate.Impl
 			set { processed = value; }
 		}
 
-		public ICollection GetOrphans( System.Type entityName, IPersistentCollection collection )
+		public ICollection GetOrphans(System.Type entityName, IPersistentCollection collection)
 		{
-			if( snapshot == null )
+			if (snapshot == null)
 			{
-				throw new AssertionFailure( "no collection snapshot for orphan delete" );
+				throw new AssertionFailure("no collection snapshot for orphan delete");
 			}
-			return collection.GetOrphans( snapshot, entityName );
+			return collection.GetOrphans(snapshot, entityName);
 		}
 
 		public void AfterAction(IPersistentCollection collection)

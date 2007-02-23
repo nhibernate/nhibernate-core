@@ -3,8 +3,8 @@ using System.Collections;
 using System.Data;
 using NHibernate.Cfg;
 using NHibernate.Connection;
-using NHibernate.Metadata;
 using NHibernate.Engine;
+using NHibernate.Metadata;
 
 namespace NHibernate
 {
@@ -35,14 +35,14 @@ namespace NHibernate
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
-		ISession OpenSession( IDbConnection conn );
+		ISession OpenSession(IDbConnection conn);
 
 		/// <summary>
 		/// Create database connection and open a <c>ISession</c> on it, specifying an interceptor
 		/// </summary>
 		/// <param name="interceptor">A session-scoped interceptor</param>
 		/// <returns>A session</returns>
-		ISession OpenSession( IInterceptor interceptor );
+		ISession OpenSession(IInterceptor interceptor);
 
 		/// <summary>
 		/// Open a <c>ISession</c> on the given connection, specifying an interceptor
@@ -56,7 +56,7 @@ namespace NHibernate
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
-		ISession OpenSession( IDbConnection conn, IInterceptor interceptor );
+		ISession OpenSession(IDbConnection conn, IInterceptor interceptor);
 
 		/// <summary>
 		/// Create a database connection and open a <c>ISession</c> on it
@@ -75,14 +75,14 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="persistentType"></param>
 		/// <returns></returns>
-		IClassMetadata GetClassMetadata( System.Type persistentType );
+		IClassMetadata GetClassMetadata(System.Type persistentType);
 
 		/// <summary>
 		/// Get the <c>CollectionMetadata</c> associated with the named collection role
 		/// </summary>
 		/// <param name="roleName"></param>
 		/// <returns></returns>
-		ICollectionMetadata GetCollectionMetadata( string roleName );
+		ICollectionMetadata GetCollectionMetadata(string roleName);
 
 		/// <summary>
 		/// Get all <c>ClassMetadata</c> as a <c>IDictionary</c> from <c>Type</c>
@@ -112,7 +112,7 @@ namespace NHibernate
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
 		/// </summary>
 		/// <param name="persistentClass"></param>
-		void Evict( System.Type persistentClass );
+		void Evict(System.Type persistentClass);
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
@@ -121,7 +121,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <param name="id"></param>
-		void Evict( System.Type persistentClass, object id );
+		void Evict(System.Type persistentClass, object id);
 
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside
@@ -129,7 +129,7 @@ namespace NHibernate
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
 		/// </summary>
 		/// <param name="roleName"></param>
-		void EvictCollection( string roleName );
+		void EvictCollection(string roleName);
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
@@ -138,18 +138,18 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="roleName"></param>
 		/// <param name="id"></param>
-		void EvictCollection( string roleName, object id );
+		void EvictCollection(string roleName, object id);
 
 		/// <summary>
 		/// Evict any query result sets cached in the default query cache region.
 		/// </summary>
-		void EvictQueries( );
+		void EvictQueries();
 
 		/// <summary>
 		/// Evict any query result sets cached in the named query cache region.
 		/// </summary>
 		/// <param name="cacheRegion"></param>
-		void EvictQueries( string cacheRegion );
+		void EvictQueries(string cacheRegion);
 
 		/// <summary>
 		/// Get the <see cref="IConnectionProvider" /> used.
@@ -161,18 +161,18 @@ namespace NHibernate
 		/// </summary>
 		Dialect.Dialect Dialect { get; }
 
-        /// <summary>
-        /// Obtain a set of the names of all filters defined on this SessionFactory.
-        /// </summary>
-        /// <return>The set of filter names.</return>
-        ICollection DefinedFilterNames { get; }
+		/// <summary>
+		/// Obtain a set of the names of all filters defined on this SessionFactory.
+		/// </summary>
+		/// <return>The set of filter names.</return>
+		ICollection DefinedFilterNames { get; }
 
-        /// <summary>
-        /// Obtain the definition of a filter by name.
-        /// </summary>
-        /// <param name="filterName">The name of the filter for which to obtain the definition.</param>
-        /// <return>The filter definition.</return>
-        FilterDefinition GetFilterDefinition(string filterName);
+		/// <summary>
+		/// Obtain the definition of a filter by name.
+		/// </summary>
+		/// <param name="filterName">The name of the filter for which to obtain the definition.</param>
+		/// <return>The filter definition.</return>
+		FilterDefinition GetFilterDefinition(string filterName);
 
 		Settings Settings { get; }
 
@@ -183,10 +183,10 @@ namespace NHibernate
 		/// <para>
 		/// The definition of what exactly "current" means is controlled by the <see cref="NHibernate.Context.ICurrentSessionContext" />
 		/// implementation configured for use.
-	 	/// </para>
+		/// </para>
 		/// </remarks>
 		/// <returns>The current session.</returns>
 		/// <exception cref="HibernateException">Indicates an issue locating a suitable current session.</exception>
 		ISession GetCurrentSession();
-    }
+	}
 }

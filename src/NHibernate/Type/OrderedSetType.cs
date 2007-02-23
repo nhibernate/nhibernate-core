@@ -1,5 +1,4 @@
 using System;
-
 using Iesi.Collections;
 
 namespace NHibernate.Type
@@ -16,8 +15,8 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
 		/// <param name="propertyRef"></param>
-		public OrderedSetType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public OrderedSetType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 

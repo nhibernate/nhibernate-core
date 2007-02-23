@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Text;
 using Iesi.Collections;
 using log4net;
 using NHibernate.AdoNet;
@@ -7,7 +8,6 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
-using System.Text;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Impl
@@ -518,8 +518,8 @@ namespace NHibernate.Impl
 			_isAlreadyDisposed = true;
 			// nothing for Finalizer to do - so tell the GC to ignore it
 			GC.SuppressFinalize(this);
-
 		}
+
 		#endregion
 	}
 }

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -25,8 +24,8 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <c>null</c> if it is
 		/// the primary key.</param>
-		public GenericBagType( string role, string propertyRef )
-			: base( role, propertyRef )
+		public GenericBagType(string role, string propertyRef)
+			: base(role, propertyRef)
 		{
 		}
 
@@ -35,14 +34,14 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister">The current <see cref="ICollectionPersister" /> for the bag.</param>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new PersistentGenericBag<T>( session );
+			return new PersistentGenericBag<T>(session);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( IList<T> ); }
+			get { return typeof(IList<T>); }
 		}
 
 		/// <summary>
@@ -53,11 +52,11 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="PersistentGenericBag&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList&lt;T&gt;"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object collection )
+		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericBag<T>( session, ( IList<T> ) collection );
+			return new PersistentGenericBag<T>(session, (IList<T>) collection);
 		}
-		
+
 		//TODO: Add() & Clear() methods - need to see if these should be refactored back into
 		// their own version of Copy or a DoCopy.  The Copy() method used to be spread out amongst
 		// the various collections, but since they all had common code Add() and Clear() were made
@@ -71,4 +70,5 @@ namespace NHibernate.Type
 		}
 	}
 }
+
 #endif

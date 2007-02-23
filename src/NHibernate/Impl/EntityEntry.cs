@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Impl
@@ -14,12 +13,14 @@ namespace NHibernate.Impl
 		private LockMode lockMode;
 		private Status status;
 		private object id;
-		private object[ ] loadedState;
-		private object[ ] deletedState;
+		private object[] loadedState;
+		private object[] deletedState;
 		private bool existsInDatabase;
 		private object version;
 		// for convenience to save some lookups
-		[NonSerialized] private IEntityPersister persister;
+		[NonSerialized]
+		private IEntityPersister persister;
+
 		private string className;
 		private bool isBeingReplicated;
 
@@ -34,7 +35,8 @@ namespace NHibernate.Impl
 		/// <param name="existsInDatabase">A boolean indicating if the Entity exists in the database.</param>
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for this Entity.</param>
 		/// <param name="disableVersionIncrement"></param>
-		public EntityEntry( Status status, object[ ] loadedState, object id, object version, LockMode lockMode, bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement )
+		public EntityEntry(Status status, object[] loadedState, object id, object version, LockMode lockMode,
+		                   bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement)
 		{
 			this.status = status;
 			this.loadedState = loadedState;
@@ -44,7 +46,7 @@ namespace NHibernate.Impl
 			this.lockMode = lockMode;
 			this.isBeingReplicated = disableVersionIncrement;
 			this.persister = persister;
-			if( persister != null )
+			if (persister != null)
 			{
 				className = persister.ClassName;
 			}
@@ -90,7 +92,7 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// There will only be a value when the Entity was loaded in the current Session.
 		/// </remarks>
-		public object[ ] LoadedState
+		public object[] LoadedState
 		{
 			get { return loadedState; }
 			set { loadedState = value; }
@@ -101,7 +103,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <value>The snapshot of the Entity.</value>
 		/// <remarks>This will be <c>null</c> if the Entity is not being deleted.</remarks>
-		public object[ ] DeletedState
+		public object[] DeletedState
 		{
 			get { return deletedState; }
 			set { deletedState = value; }
@@ -158,10 +160,10 @@ namespace NHibernate.Impl
 			get { return isBeingReplicated; }
 		}
 
-		public object GetLoadedValue( string propertyName )
+		public object GetLoadedValue(string propertyName)
 		{
-			int propertyIndex = ( ( IUniqueKeyLoadable ) persister ).GetPropertyIndex( propertyName );
-			return loadedState[ propertyIndex ];
+			int propertyIndex = ((IUniqueKeyLoadable) persister).GetPropertyIndex(propertyName);
+			return loadedState[propertyIndex];
 		}
 	}
 }

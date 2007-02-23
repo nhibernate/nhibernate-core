@@ -12,29 +12,29 @@ namespace NHibernate.Impl
 	/// </summary>
 	internal class OnReplicateVisitor : ReattachVisitor
 	{
-		public OnReplicateVisitor( SessionImpl session, object key ) : base( session, key )
+		public OnReplicateVisitor(SessionImpl session, object key) : base(session, key)
 		{
 		}
 
-		protected override object ProcessCollection( object collection, CollectionType type )
+		protected override object ProcessCollection(object collection, CollectionType type)
 		{
 			SessionImpl session = Session;
 			object key = Key;
-			ICollectionPersister persister = session.GetCollectionPersister( type.Role );
+			ICollectionPersister persister = session.GetCollectionPersister(type.Role);
 
-			session.RemoveCollection( persister, key );
+			session.RemoveCollection(persister, key);
 
-			if ( collection != null && ( collection is IPersistentCollection ) )
+			if (collection != null && (collection is IPersistentCollection))
 			{
 				IPersistentCollection wrapper = collection as IPersistentCollection;
-				wrapper.SetCurrentSession( session );
-				if ( wrapper.WasInitialized )
+				wrapper.SetCurrentSession(session);
+				if (wrapper.WasInitialized)
 				{
-					session.AddNewCollection( wrapper, persister );
+					session.AddNewCollection(wrapper, persister);
 				}
 				else
 				{
-					session.ReattachCollection( wrapper, wrapper.CollectionSnapshot ) ;
+					session.ReattachCollection(wrapper, wrapper.CollectionSnapshot);
 				}
 			}
 			else

@@ -11,7 +11,9 @@ namespace NHibernate.Hql
 		private IResultTransformer transformer;
 		private string[] queryReturnAliases;
 
-		public static HolderInstantiator GetHolderInstantiator(IResultTransformer selectNewTransformer, IResultTransformer customTransformer, string[] queryReturnAliases)
+		public static HolderInstantiator GetHolderInstantiator(IResultTransformer selectNewTransformer,
+		                                                       IResultTransformer customTransformer,
+		                                                       string[] queryReturnAliases)
 		{
 			if (selectNewTransformer != null)
 			{
@@ -22,7 +24,7 @@ namespace NHibernate.Hql
 				return new HolderInstantiator(customTransformer, queryReturnAliases);
 			}
 		}
-		
+
 		public static IResultTransformer CreateSelectNewTransformer(ConstructorInfo constructor, bool returnMaps)
 		{
 			if (constructor != null)
@@ -40,7 +42,7 @@ namespace NHibernate.Hql
 		}
 
 		public static HolderInstantiator CreateClassicHolderInstantiator(ConstructorInfo constructor,
-				IResultTransformer transformer)
+		                                                                 IResultTransformer transformer)
 		{
 			if (constructor != null)
 			{
@@ -53,9 +55,9 @@ namespace NHibernate.Hql
 		}
 
 		public HolderInstantiator(
-				IResultTransformer transformer,
-				string[] queryReturnAliases
-		)
+			IResultTransformer transformer,
+			string[] queryReturnAliases
+			)
 		{
 			this.transformer = transformer;
 			this.queryReturnAliases = queryReturnAliases;

@@ -31,7 +31,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( SequenceGenerator ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(SequenceGenerator));
 
 		/// <summary>
 		/// The name of the sequence parameter.
@@ -56,16 +56,16 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
-		public virtual void Configure( IType type, IDictionary parms, Dialect.Dialect dialect )
+		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
-			this.sequenceName = PropertiesHelper.GetString( Sequence, parms, "hibernate_sequence" );
-			string schemaName = ( string ) parms[ Schema ];
-			if( schemaName != null && sequenceName.IndexOf( StringHelper.Dot ) < 0 )
+			this.sequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
+			string schemaName = (string) parms[Schema];
+			if (schemaName != null && sequenceName.IndexOf(StringHelper.Dot) < 0)
 			{
 				sequenceName = schemaName + '.' + sequenceName;
 			}
 			this.type = type;
-			sql = new SqlString(dialect.GetSequenceNextValString( sequenceName ));
+			sql = new SqlString(dialect.GetSequenceNextValString(sequenceName));
 		}
 
 		#endregion
@@ -79,36 +79,36 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
-		public virtual object Generate( ISessionImplementor session, object obj )
+		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			IDbCommand cmd = session.Batcher.PrepareCommand( CommandType.Text, sql, SqlTypeFactory.NoTypes );
+			IDbCommand cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
 			IDataReader reader = null;
 			try
 			{
-				reader = session.Batcher.ExecuteReader( cmd );
+				reader = session.Batcher.ExecuteReader(cmd);
 				reader.Read();
-				object result = IdentifierGeneratorFactory.Get( reader, type, session );
+				object result = IdentifierGeneratorFactory.Get(reader, type, session);
 
-				log.Debug( "sequence ID generated: " + result );
+				log.Debug("sequence ID generated: " + result);
 				return result;
 			} 
 				// TODO: change to SQLException
-			catch( Exception e )
+			catch (Exception e)
 			{
 				// TODO: add code to log the sql exception
-				log.Error( "error generating sequence", e );
+				log.Error("error generating sequence", e);
 				throw;
 			}
 			finally
 			{
-				session.Batcher.CloseCommand( cmd, reader );
+				session.Batcher.CloseCommand(cmd, reader);
 			}
 		}
 
 		#endregion
 
 		#region IPersistentIdentifierGenerator Members
-		
+
 		/// <summary>
 		/// The SQL required to create the database objects for a SequenceGenerator.
 		/// </summary>
@@ -117,11 +117,11 @@ namespace NHibernate.Id
 		/// An array of <see cref="String"/> objects that contain the Dialect specific sql to 
 		/// create the necessary database objects for the SequenceGenerator.
 		/// </returns>
-		public string[ ] SqlCreateStrings( Dialect.Dialect dialect )
+		public string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
-			return new string[ ]
+			return new string[]
 				{
-					dialect.GetCreateSequenceString( sequenceName )
+					dialect.GetCreateSequenceString(sequenceName)
 				};
 		}
 
@@ -132,9 +132,9 @@ namespace NHibernate.Id
 		/// <returns>
 		/// A <see cref="String"/> that will drop the database objects for the SequenceGenerator.
 		/// </returns>
-		public string SqlDropString( Dialect.Dialect dialect )
+		public string SqlDropString(Dialect.Dialect dialect)
 		{
-			return dialect.GetDropSequenceString( sequenceName );
+			return dialect.GetDropSequenceString(sequenceName);
 		}
 
 		/// <summary>
@@ -149,6 +149,5 @@ namespace NHibernate.Id
 		}
 
 		#endregion
-
 	}
 }

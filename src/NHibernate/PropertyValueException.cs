@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-
 using NHibernate.Util;
 
 namespace NHibernate
@@ -18,8 +17,8 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error. </param>
 		/// <param name="persistentClass">The <see cref="System.Type"/> that NHibernate was trying to access.</param>
 		/// <param name="propertyName">The name of the Property that was being get/set.</param>
-		public PropertyValueException( string message, System.Type persistentClass, string propertyName )
-			: base( message )
+		public PropertyValueException(string message, System.Type persistentClass, string propertyName)
+			: base(message)
 		{
 			this.persistentClass = persistentClass;
 			this.propertyName = propertyName;
@@ -40,7 +39,7 @@ namespace NHibernate
 			get
 			{
 				return base.Message +
-					StringHelper.Qualify( persistentClass.FullName, propertyName );
+				       StringHelper.Qualify(persistentClass.FullName, propertyName);
 			}
 		}
 
@@ -57,11 +56,11 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected PropertyValueException( SerializationInfo info, StreamingContext context )
-			: base( info, context )
+		protected PropertyValueException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
 		{
-			persistentClass = info.GetValue( "persistentClass", typeof( System.Type ) ) as System.Type;
-			propertyName = info.GetString( "propertyName" );
+			persistentClass = info.GetValue("persistentClass", typeof(System.Type)) as System.Type;
+			propertyName = info.GetString("propertyName");
 		}
 
 		/// <summary>
@@ -75,13 +74,13 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermissionAttribute(SecurityAction.LinkDemand,
-		                             Flags=SecurityPermissionFlag.SerializationFormatter)]
-		public override void GetObjectData( SerializationInfo info, StreamingContext context )
+		[SecurityPermission(SecurityAction.LinkDemand,
+			Flags=SecurityPermissionFlag.SerializationFormatter)]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData( info, context );
-			info.AddValue( "persistentClass", persistentClass );
-			info.AddValue( "propertyName", propertyName );
+			base.GetObjectData(info, context);
+			info.AddValue("persistentClass", persistentClass);
+			info.AddValue("propertyName", propertyName);
 		}
 
 		#endregion

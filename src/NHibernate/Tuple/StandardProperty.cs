@@ -1,5 +1,4 @@
 using System;
-
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -11,9 +10,8 @@ namespace NHibernate.Tuple
 	/// <remarks>
 	/// Author: Steve Ebersole
 	/// </remarks>
-	public class StandardProperty : Property 
+	public class StandardProperty : Property
 	{
-
 		private bool lazy;
 		private bool insertable;
 		private bool updateable;
@@ -53,8 +51,8 @@ namespace NHibernate.Tuple
 			bool nullable,
 			bool checkable,
 			bool versionable,
-			Cascades.CascadeStyle cascadeStyle) 
-			: base( name, node, type )
+			Cascades.CascadeStyle cascadeStyle)
+			: base(name, node, type)
 		{
 			this.lazy = lazy;
 			this.insertable = insertable;
@@ -67,12 +65,12 @@ namespace NHibernate.Tuple
 			this.cascadeStyle = cascadeStyle;
 		}
 
-		public bool IsLazy 
+		public bool IsLazy
 		{
 			get { return lazy; }
 		}
 
-		public bool IsInsertable 
+		public bool IsInsertable
 		{
 			get { return insertable; }
 		}
@@ -97,9 +95,9 @@ namespace NHibernate.Tuple
 			get { return nullable; }
 		}
 
-		public bool IsDirtyCheckable( bool hasUninitializedProperties ) 
+		public bool IsDirtyCheckable(bool hasUninitializedProperties)
 		{
-			return IsDirtyCheckable() && ( !hasUninitializedProperties || !IsLazy );
+			return IsDirtyCheckable() && (!hasUninitializedProperties || !IsLazy);
 		}
 
 		public bool IsDirtyCheckable()

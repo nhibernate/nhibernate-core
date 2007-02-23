@@ -27,8 +27,8 @@ namespace NHibernate.AdoNet
 				if (expectedRowCount > rowCount)
 				{
 					throw new StaleStateException(
-							"Unexpected row count: " + rowCount + "; expected: " + expectedRowCount
-					);
+						"Unexpected row count: " + rowCount + "; expected: " + expectedRowCount
+						);
 				}
 				if (expectedRowCount < rowCount)
 				{
@@ -36,12 +36,12 @@ namespace NHibernate.AdoNet
 					throw new TooManyRowsAffectedException(msg, expectedRowCount, rowCount);
 				}
 			}
-			
+
 			public virtual bool CanBeBatched
 			{
 				get { return true; }
 			}
-			
+
 			public virtual int ExpectedRowCount
 			{
 				get { return expectedRowCount; }
@@ -66,12 +66,12 @@ namespace NHibernate.AdoNet
 				// can only check the total row count of a batch.
 				get { return false; }
 			}
-			
+
 			public int ExpectedRowCount
 			{
 				get { throw new InvalidOperationException("Cannot get ExpectedRowCount of a non-batchable expectation"); }
 			}
-		};
+		} ;
 
 		// Various Expectation instances ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -110,7 +110,7 @@ namespace NHibernate.AdoNet
 			if (expectedRowCount < rowCount)
 			{
 				string msg = "Batch update returned unexpected row count from update; actual row count: " + rowCount +
-							 "; expected: " + expectedRowCount;
+				             "; expected: " + expectedRowCount;
 				throw new TooManyRowsAffectedException(msg, expectedRowCount, rowCount);
 			}
 		}

@@ -22,30 +22,30 @@ namespace NHibernate.Hql.Classic
 		/// </summary>
 		/// <param name="token"></param>
 		/// <param name="q"></param>
-		public void Token( string token, QueryTranslator q )
+		public void Token(string token, QueryTranslator q)
 		{
-			if( q.IsName( StringHelper.Root( token ) ) )
+			if (q.IsName(StringHelper.Root(token)))
 			{
-				ParserHelper.Parse( pathExpressionParser, q.Unalias( token ), ParserHelper.PathSeparators, q );
-				q.AppendOrderByToken( pathExpressionParser.WhereColumn );
-				pathExpressionParser.AddAssociation( q );
+				ParserHelper.Parse(pathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
+				q.AppendOrderByToken(pathExpressionParser.WhereColumn);
+				pathExpressionParser.AddAssociation(q);
 			}
-			else if ( token.StartsWith( ParserHelper.HqlVariablePrefix ) )
+			else if (token.StartsWith(ParserHelper.HqlVariablePrefix))
 			{
-				q.AddNamedParameter( token.Substring( 1 ) );
+				q.AddNamedParameter(token.Substring(1));
 				q.AppendOrderByParameter();
 			}
 			else
 			{
-				q.AppendOrderByToken( token );
+				q.AppendOrderByToken(token);
 			}
 		}
 
-		public void Start( QueryTranslator q )
+		public void Start(QueryTranslator q)
 		{
 		}
 
-		public void End( QueryTranslator q )
+		public void End(QueryTranslator q)
 		{
 		}
 

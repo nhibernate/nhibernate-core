@@ -1,6 +1,6 @@
 using System;
-using NHibernate.Type;
 using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
 {
@@ -9,12 +9,13 @@ namespace NHibernate.Dialect.Function
 	/// </summary>
 	public class ClassicCountFunction : ClassicAggregateFunction
 	{
-		public ClassicCountFunction() : base("count",true) { }
+		public ClassicCountFunction() : base("count", true)
+		{
+		}
 
 		public override IType ReturnType(IType columnType, IMapping mapping)
 		{
 			return NHibernateUtil.Int32;
 		}
-
 	}
 }

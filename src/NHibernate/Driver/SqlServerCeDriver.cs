@@ -17,9 +17,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		public SqlServerCeDriver()
 			: base(
-			"System.Data.SqlServerCe",
-			"System.Data.SqlServerCe.SqlCeConnection",
-			"System.Data.SqlServerCe.SqlCeCommand")
+				"System.Data.SqlServerCe",
+				"System.Data.SqlServerCe.SqlCeConnection",
+				"System.Data.SqlServerCe.SqlCeCommand")
 		{
 		}
 

@@ -55,8 +55,8 @@ namespace NHibernate.Dialect
 			Types.CLOB, "TEXT" );
 			*/
 
-			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.SybaseClientDriver";
-			DefaultProperties[ Environment.PrepareSql ] = "false";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseClientDriver";
+			DefaultProperties[Environment.PrepareSql] = "false";
 		}
 
 		/// <summary></summary>
@@ -90,7 +90,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string GetIdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString(string identityColumn, string tableName)
 		{
 			return "select @@identity";
 		}
@@ -115,6 +115,5 @@ namespace NHibernate.Dialect
 		{
 			return aliasName;
 		}
-
 	}
 }

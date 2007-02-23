@@ -10,7 +10,7 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="owner"></param>
-		public PrimitiveArray( PersistentClass owner ) : base( owner )
+		public PrimitiveArray(PersistentClass owner) : base(owner)
 		{
 		}
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -30,11 +29,11 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This creates a bag that is non-generic.
 		/// </remarks>
-		public ArrayType( string role, string propertyRef, System.Type elementClass )
-			: base( role, propertyRef )
+		public ArrayType(string role, string propertyRef, System.Type elementClass)
+			: base(role, propertyRef)
 		{
 			this.elementClass = elementClass;
-			arrayClass = System.Array.CreateInstance( elementClass, 0 ).GetType();
+			arrayClass = Array.CreateInstance(elementClass, 0).GetType();
 		}
 
 		/// <summary>
@@ -51,9 +50,9 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override IPersistentCollection Instantiate( ISessionImplementor session, ICollectionPersister persister )
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
-			return new PersistentArrayHolder( session, persister );
+			return new PersistentArrayHolder(session, persister);
 		}
 
 		/// <summary>
@@ -63,9 +62,9 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="index"></param>
 		/// <param name="session"></param>
-		public override void NullSafeSet( IDbCommand st, object value, int index, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 		{
-			base.NullSafeSet( st, session.GetArrayHolder( value ), index, session );
+			base.NullSafeSet(st, session.GetArrayHolder(value), index, session);
 		}
 
 		/// <summary>
@@ -73,9 +72,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <returns></returns>
-		public override ICollection GetElementsCollection( object collection )
+		public override ICollection GetElementsCollection(object collection)
 		{
-			return ( Array ) collection;
+			return (Array) collection;
 		}
 
 		/// <summary>
@@ -84,13 +83,13 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public override object Disassemble( object value, ISessionImplementor session )
+		public override object Disassemble(object value, ISessionImplementor session)
 		{
-			if( value == null )
+			if (value == null)
 			{
 				return null;
 			}
-			return session.GetLoadedCollectionKey( session.GetArrayHolder( value ) );
+			return session.GetLoadedCollectionKey(session.GetArrayHolder(value));
 		}
 
 		/// <summary>
@@ -101,9 +100,9 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An <see cref="PersistentArrayHolder"/> that wraps the non NHibernate <see cref="System.Array"/>.
 		/// </returns>
-		public override IPersistentCollection Wrap( ISessionImplementor session, object array )
+		public override IPersistentCollection Wrap(ISessionImplementor session, object array)
 		{
-			return new PersistentArrayHolder( session, array );
+			return new PersistentArrayHolder(session, array);
 		}
 
 		/// <summary></summary>
@@ -115,38 +114,40 @@ namespace NHibernate.Type
 		// Not ported - ToString( object value, ISessionFactoryImplementor factory )
 		// - PesistentCollectionType implementation is able to handle arrays too in .NET
 
-		public override object ReplaceElements( object original, object target, object owner, IDictionary copyCache, ISessionImplementor session )
+		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
+		                                       ISessionImplementor session)
 		{
-			return base.ReplaceElements( original, target, owner, copyCache, session );
+			return base.ReplaceElements(original, target, owner, copyCache, session);
 		}
 
-		public override object Replace( object original, object target, ISessionImplementor session, object owner, IDictionary copyCache )
+		public override object Replace(object original, object target, ISessionImplementor session, object owner,
+		                               IDictionary copyCache)
 		{
-			System.Array originalArray = ( System.Array ) original;
-			System.Array targetArray = ( System.Array ) target;
+			Array originalArray = (Array) original;
+			Array targetArray = (Array) target;
 
 			int length = originalArray.Length;
-			if( length != targetArray.Length )
+			if (length != targetArray.Length)
 			{
 				//note: this affects the return value!
-				targetArray = ( System.Array ) InstantiateResult( original );
+				targetArray = (Array) InstantiateResult(original);
 			}
 
-			IType elemType = GetElementType( session.Factory );
-			
-			for( int i = 0; i < length; i++ )
+			IType elemType = GetElementType(session.Factory);
+
+			for (int i = 0; i < length; i++)
 			{
 				targetArray.SetValue(
-					elemType.Replace( originalArray.GetValue( i ), null, session, owner, copyCache ),
-					i );
+					elemType.Replace(originalArray.GetValue(i), null, session, owner, copyCache),
+					i);
 			}
 
 			return targetArray;
 		}
 
-		public override object InstantiateResult( object original )
+		public override object InstantiateResult(object original)
 		{
-			return System.Array.CreateInstance( elementClass, ( ( System.Array ) original ).Length );
+			return Array.CreateInstance(elementClass, ((Array) original).Length);
 		}
 
 		public override object Instantiate()

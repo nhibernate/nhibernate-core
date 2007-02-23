@@ -19,7 +19,7 @@ namespace NHibernate.Type
 		private readonly IUserType userType;
 		private readonly INullableUserType userTypeAsNullable;
 		private readonly string name;
-		private readonly SqlType[ ] sqlTypes;
+		private readonly SqlType[] sqlTypes;
 
 		/// <summary></summary>
 		protected IUserType UserType
@@ -27,44 +27,44 @@ namespace NHibernate.Type
 			get { return userType; }
 		}
 
-		public CustomType( System.Type userTypeClass, IDictionary parameters )
+		public CustomType(System.Type userTypeClass, IDictionary parameters)
 		{
 			name = userTypeClass.Name;
 
 			try
 			{
-				userType = ( IUserType ) Activator.CreateInstance( userTypeClass );
+				userType = (IUserType) Activator.CreateInstance(userTypeClass);
 				userTypeAsNullable = userType as INullableUserType;
 			}
-			catch( ArgumentNullException ane )
+			catch (ArgumentNullException ane)
 			{
-				throw new MappingException( "Argument is a null reference.", ane );
+				throw new MappingException("Argument is a null reference.", ane);
 			}
-			catch( ArgumentException ae )
+			catch (ArgumentException ae)
 			{
-				throw new MappingException( "Argument " + userTypeClass.Name + " is not a RuntimeType", ae );
+				throw new MappingException("Argument " + userTypeClass.Name + " is not a RuntimeType", ae);
 			}
-			catch( TargetInvocationException tie )
+			catch (TargetInvocationException tie)
 			{
-				throw new MappingException( "The constructor being called throws an exception.", tie );
+				throw new MappingException("The constructor being called throws an exception.", tie);
 			}
-			catch( MethodAccessException mae )
+			catch (MethodAccessException mae)
 			{
-				throw new MappingException( "The caller does not have permission to call this constructor.", mae );
+				throw new MappingException("The caller does not have permission to call this constructor.", mae);
 			}
-			catch( MissingMethodException mme )
+			catch (MissingMethodException mme)
 			{
-				throw new MappingException( "No matching constructor was found.", mme );
+				throw new MappingException("No matching constructor was found.", mme);
 			}
-			catch( InvalidCastException ice )
+			catch (InvalidCastException ice)
 			{
-				throw new MappingException( userTypeClass.Name + " must implement NHibernate.UserTypes.IUserType", ice );
+				throw new MappingException(userTypeClass.Name + " must implement NHibernate.UserTypes.IUserType", ice);
 			}
-		    TypeFactory.InjectParameters(userType,parameters);
+			TypeFactory.InjectParameters(userType, parameters);
 			sqlTypes = userType.SqlTypes;
-			if( !userType.ReturnedType.IsSerializable )
+			if (!userType.ReturnedType.IsSerializable)
 			{
-				LogManager.GetLogger( typeof( CustomType ) ).Warn( "custom type is not Serializable: " + userTypeClass );
+				LogManager.GetLogger(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
 			}
 		}
 
@@ -73,7 +73,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="mapping"></param>
 		/// <returns></returns>
-		public override SqlType[ ] SqlTypes( IMapping mapping )
+		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			return sqlTypes;
 		}
@@ -83,7 +83,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public override int GetColumnSpan( IMapping session )
+		public override int GetColumnSpan(IMapping session)
 		{
 			return sqlTypes.Length;
 		}
@@ -100,9 +100,9 @@ namespace NHibernate.Type
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public override bool Equals( object x, object y )
+		public override bool Equals(object x, object y)
 		{
-			return userType.Equals( x, y );
+			return userType.Equals(x, y);
 		}
 
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
@@ -120,12 +120,12 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object NullSafeGet(
 			IDataReader rs,
-			string[ ] names,
+			string[] names,
 			ISessionImplementor session,
 			object owner
 			)
 		{
-			return userType.NullSafeGet( rs, names, owner );
+			return userType.NullSafeGet(rs, names, owner);
 		}
 
 		/// <summary>
@@ -143,7 +143,7 @@ namespace NHibernate.Type
 			object owner
 			)
 		{
-			return NullSafeGet( rs, new string[ ] {name}, session, owner );
+			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
 		/// <summary>
@@ -154,9 +154,9 @@ namespace NHibernate.Type
 		/// <param name="index"></param>
 		/// <param name="settable"></param>
 		/// <param name="session"></param>
-		public override void NullSafeSet( IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session )
+		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) userType.NullSafeSet( st, value, index );
+			if (settable[0]) userType.NullSafeSet(st, value, index);
 		}
 
 		/// <summary>
@@ -173,7 +173,7 @@ namespace NHibernate.Type
 			ISessionImplementor session
 			)
 		{
-			userType.NullSafeSet( cmd, value, index );
+			userType.NullSafeSet(cmd, value, index);
 		}
 
 		/// <summary>
@@ -182,7 +182,7 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public override string ToLoggableString( object value, ISessionFactoryImplementor factory )
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
 			return value == null ? "null" : value.ToString();
 		}
@@ -192,9 +192,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public override object FromString( string xml )
+		public override object FromString(string xml)
 		{
-			throw new NotSupportedException( "not yet implemented!" ); //TODO: look for constructor
+			throw new NotSupportedException("not yet implemented!"); //TODO: look for constructor
 		}
 
 		/// <summary></summary>
@@ -208,9 +208,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override object DeepCopy( object value )
+		public override object DeepCopy(object value)
 		{
-			return userType.DeepCopy( value );
+			return userType.DeepCopy(value);
 		}
 
 		/// <summary></summary>
@@ -227,12 +227,12 @@ namespace NHibernate.Type
 
 		public override bool Equals(object obj)
 		{
-			if( !base.Equals( obj ) )
+			if (!base.Equals(obj))
 			{
 				return false;
 			}
 
-			return ( ( CustomType ) obj ).userType.GetType() == userType.GetType();
+			return ((CustomType) obj).userType.GetType() == userType.GetType();
 		}
 
 		public override int GetHashCode()
@@ -242,7 +242,7 @@ namespace NHibernate.Type
 
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return checkable[ 0 ] && IsDirty(old, current, session);
+			return checkable[0] && IsDirty(old, current, session);
 		}
 
 		public object StringToObject(string xml)
@@ -282,7 +282,8 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Replace(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready)
+		public override object Replace(object original, object current, ISessionImplementor session, object owner,
+		                               IDictionary copiedAlready)
 		{
 			return userType.Replace(original, current, owner);
 		}

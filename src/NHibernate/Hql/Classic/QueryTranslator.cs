@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -24,7 +25,7 @@ namespace NHibernate.Hql.Classic
 	/// </summary>
 	public class QueryTranslator : BasicLoader, IFilterTranslator
 	{
-		private static string[] NoReturnAliases = new string[] { };
+		private static string[] NoReturnAliases = new string[] {};
 
 		private readonly string queryString;
 
@@ -174,7 +175,8 @@ namespace NHibernate.Hql.Classic
 			compiled = true;
 		}
 
-		public new object LoadSingleRow(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
+		public new object LoadSingleRow(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters,
+		                                bool returnProxies)
 		{
 			return base.LoadSingleRow(resultSet, session, queryParameters, returnProxies);
 		}
@@ -190,7 +192,7 @@ namespace NHibernate.Hql.Classic
 		protected internal override ILoadable[] EntityPersisters
 		{
 			get { return persisters; }
-			set { persisters = (IQueryable[])value; }
+			set { persisters = (IQueryable[]) value; }
 		}
 
 		/// <summary>
@@ -206,7 +208,7 @@ namespace NHibernate.Hql.Classic
 		{
 			get { return actualReturnTypes; }
 		}
-		
+
 		public virtual string[][] ScalarColumnNames
 		{
 			get { return scalarColumnNames; }
@@ -228,7 +230,7 @@ namespace NHibernate.Hql.Classic
 
 		internal string GetAliasName(string alias)
 		{
-			string name = (string)aliasNames[alias];
+			string name = (string) aliasNames[alias];
 			if (name == null)
 			{
 				if (superQuery != null)
@@ -276,8 +278,9 @@ namespace NHibernate.Hql.Classic
 		}
 
 		/// <summary></summary>
-		[CLSCompliant(false)] // TODO: Work out why this causes an error in 1.1 - the variable sqlString is private so we're only exposing one name
-		protected internal override SqlString SqlString
+		[CLSCompliant(false)]
+		// TODO: Work out why this causes an error in 1.1 - the variable sqlString is private so we're only exposing one name
+			protected internal override SqlString SqlString
 		{
 			// this needs internal access because the WhereParser needs to be able to "get" it.
 			get { return sqlString; }
@@ -301,7 +304,7 @@ namespace NHibernate.Hql.Classic
 
 		internal System.Type GetType(string name)
 		{
-			System.Type type = (System.Type)typeMap[name];
+			System.Type type = (System.Type) typeMap[name];
 			if (type == null && superQuery != null)
 			{
 				type = superQuery.GetType(name);
@@ -311,7 +314,7 @@ namespace NHibernate.Hql.Classic
 
 		internal string GetRole(string name)
 		{
-			string role = (string)collections[name];
+			string role = (string) collections[name];
 			if (role == null && superQuery != null)
 			{
 				role = superQuery.GetRole(name);
@@ -322,9 +325,9 @@ namespace NHibernate.Hql.Classic
 		internal bool IsName(string name)
 		{
 			return aliasNames.Contains(name) ||
-				typeMap.Contains(name) ||
-				collections.Contains(name) ||
-				(superQuery != null && superQuery.IsName(name));
+			       typeMap.Contains(name) ||
+			       collections.Contains(name) ||
+			       (superQuery != null && superQuery.IsName(name));
 		}
 
 		public IPropertyMapping GetPropertyMapping(string name)
@@ -358,7 +361,7 @@ namespace NHibernate.Hql.Classic
 
 		public IPropertyMapping GetDecoratedPropertyMapping(string name)
 		{
-			return (IPropertyMapping)decoratedPropertyMappings[name];
+			return (IPropertyMapping) decoratedPropertyMappings[name];
 		}
 
 		public void DecoratePropertyMapping(string name, IPropertyMapping mapping)
@@ -387,7 +390,7 @@ namespace NHibernate.Hql.Classic
 		{
 			try
 			{
-				return (IQueryable)Factory.GetEntityPersister(clazz);
+				return (IQueryable) Factory.GetEntityPersister(clazz);
 			}
 			catch (Exception)
 			{
@@ -399,7 +402,7 @@ namespace NHibernate.Hql.Classic
 		{
 			try
 			{
-				return (IQueryableCollection)Factory.GetCollectionPersister(role);
+				return (IQueryableCollection) Factory.GetCollectionPersister(role);
 			}
 			catch (InvalidCastException)
 			{
@@ -524,7 +527,7 @@ namespace NHibernate.Hql.Classic
 			}
 			else
 			{
-				((ArrayList)o).Add(loc);
+				((ArrayList) o).Add(loc);
 			}
 		}
 
@@ -539,11 +542,11 @@ namespace NHibernate.Hql.Classic
 			}
 			if (o is int)
 			{
-				return new int[] { ((int)o) };
+				return new int[] {((int) o)};
 			}
 			else
 			{
-				return ArrayHelper.ToIntArray((ArrayList)o);
+				return ArrayHelper.ToIntArray((ArrayList) o);
 			}
 		}
 
@@ -585,7 +588,7 @@ namespace NHibernate.Hql.Classic
 			includeInSelect = new bool[size];
 			for (int i = 0; i < size; i++)
 			{
-				string name = (string)returnedTypes[i];
+				string name = (string) returnedTypes[i];
 				//if ( !IsName(name) ) throw new QueryException("unknown type: " + name);
 				persisters[i] = GetPersisterForName(name);
 				suffixes[i] = (size == 1) ? String.Empty : i.ToString() + StringHelper.Underscore;
@@ -599,9 +602,9 @@ namespace NHibernate.Hql.Classic
 				{
 					collectionOwnerColumn = i;
 				}
-				string oneToOneOwner = (string)oneToOneOwnerNames[name];
+				string oneToOneOwner = (string) oneToOneOwnerNames[name];
 				owners[i] = oneToOneOwner == null ? -1 : returnedTypes.IndexOf(oneToOneOwner);
-				ownerAssociationTypes[i] = (EntityType)uniqueKeyOwnerReferences[name];
+				ownerAssociationTypes[i] = (EntityType) uniqueKeyOwnerReferences[name];
 			}
 
 			if (ArrayHelper.IsAllNegative(owners))
@@ -617,7 +620,7 @@ namespace NHibernate.Hql.Classic
 			returnTypes = new IType[scalarSize];
 			for (int i = 0; i < scalarSize; i++)
 			{
-				returnTypes[i] = (IType)scalarTypes[i];
+				returnTypes[i] = (IType) scalarTypes[i];
 			}
 
 			QuerySelect sql = new QuerySelect(Factory.Dialect);
@@ -708,7 +711,7 @@ namespace NHibernate.Hql.Classic
 
 			for (int k = 0; k < size; k++)
 			{
-				string name = (string)returnedTypes[k];
+				string name = (string) returnedTypes[k];
 				string suffix = size == 1 ? String.Empty : k.ToString() + StringHelper.Underscore;
 				sql.AddSelectFragmentString(persisters[k].IdentifierSelectFragment(name, suffix));
 			}
@@ -720,7 +723,7 @@ namespace NHibernate.Hql.Classic
 			for (int k = 0; k < size; k++)
 			{
 				string suffix = (size == 1) ? String.Empty : k.ToString() + StringHelper.Underscore;
-				string name = (string)returnedTypes[k];
+				string name = (string) returnedTypes[k];
 				sql.AddSelectFragmentString(persisters[k].PropertySelectFragment(name, suffix));
 			}
 		}
@@ -762,13 +765,13 @@ namespace NHibernate.Hql.Classic
 				//there _was_ a select clause
 				int c = 0;
 				bool nolast = false; //real hacky...
-				int parenCount = 0;  // used to count the nesting of parentheses
+				int parenCount = 0; // used to count the nesting of parentheses
 				foreach (object next in scalarSelectTokens)
 				{
 					if (next is string)
 					{
-						string token = (string)next;
-						string lc = token.ToLower(System.Globalization.CultureInfo.InvariantCulture);
+						string token = (string) next;
+						string lc = token.ToLower(CultureInfo.InvariantCulture);
 
 						if (StringHelper.OpenParen.Equals(token))
 						{
@@ -802,7 +805,7 @@ namespace NHibernate.Hql.Classic
 					else
 					{
 						nolast = true;
-						string[] tokens = (string[])next;
+						string[] tokens = (string[]) next;
 						for (int i = 0; i < tokens.Length; i++)
 						{
 							buf.Append(tokens[i]);
@@ -847,8 +850,8 @@ namespace NHibernate.Hql.Classic
 		{
 			foreach (DictionaryEntry de in joins)
 			{
-				string name = (string)de.Key;
-				JoinSequence join = (JoinSequence)de.Value;
+				string name = (string) de.Key;
+				JoinSequence join = (JoinSequence) de.Value;
 				join.SetSelector(new Selector(this));
 
 				if (typeMap.Contains(name))
@@ -908,13 +911,13 @@ namespace NHibernate.Hql.Classic
 				{
 					return null;
 				}
-				return new ICollectionPersister[] { collectionPersister };
+				return new ICollectionPersister[] {collectionPersister};
 			}
 		}
 
 		protected override string[] CollectionSuffixes
 		{
-			get { return collectionPersister == null ? null : new string[] { "__" }; }
+			get { return collectionPersister == null ? null : new string[] {"__"}; }
 			set { throw new InvalidOperationException("QueryTranslator.CollectionSuffixes_set"); }
 		}
 
@@ -963,13 +966,13 @@ namespace NHibernate.Hql.Classic
 				//many-to-many
 				AddCollection(collectionName, collectionRole);
 
-				IQueryable p = (IQueryable)persister.ElementPersister;
+				IQueryable p = (IQueryable) persister.ElementPersister;
 				string[] idColumnNames = p.IdentifierColumnNames;
 				string[] eltColumnNames = persister.ElementColumnNames;
 				try
 				{
 					join.AddJoin(
-						(IAssociationType)persister.ElementType,
+						(IAssociationType) persister.ElementType,
 						elementName,
 						JoinType.InnerJoin,
 						persister.GetElementColumnNames(collectionName));
@@ -980,18 +983,18 @@ namespace NHibernate.Hql.Classic
 				}
 			}
 			join.AddCondition(collectionName, keyColumnNames, " = ", true);
-			EntityType elmType = (EntityType)collectionElementType;
+			EntityType elmType = (EntityType) collectionElementType;
 			AddFrom(elementName, elmType.AssociatedClass, join);
 		}
 
 		internal string GetPathAlias(string path)
 		{
-			return (string)pathAliases[path];
+			return (string) pathAliases[path];
 		}
 
 		internal JoinSequence GetPathJoin(string path)
 		{
-			return (JoinSequence)pathJoins[path];
+			return (JoinSequence) pathJoins[path];
 		}
 
 		internal void AddPathAliasAndJoin(string path, string alias, JoinSequence joinSequence)
@@ -1011,9 +1014,10 @@ namespace NHibernate.Hql.Classic
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
 			IDataReader rs = GetResultSet(cmd, parameters.RowSelection, session);
-			HolderInstantiator hi = HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
+			HolderInstantiator hi =
+				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
 			return new EnumerableImpl(rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection,
-				hi);
+			                          hi);
 		}
 
 		public static string[] ConcreteQueries(string query, ISessionFactoryImplementor factory)
@@ -1026,7 +1030,7 @@ namespace NHibernate.Hql.Classic
 			string[] tokens = StringHelper.Split(ParserHelper.Whitespace + "(),", query, true);
 			if (tokens.Length == 0)
 			{
-				return new String[] { query };
+				return new String[] {query};
 			} // just especially for the trivial collection filter 
 
 			ArrayList placeholders = new ArrayList();
@@ -1042,7 +1046,7 @@ namespace NHibernate.Hql.Classic
 				//update last non-whitespace token, if necessary
 				if (!ParserHelper.IsWhitespace(tokens[i - 1]))
 				{
-					last = tokens[i - 1].ToLower(System.Globalization.CultureInfo.InvariantCulture);
+					last = tokens[i - 1].ToLower(CultureInfo.InvariantCulture);
 				}
 
 				string token = tokens[i];
@@ -1053,7 +1057,7 @@ namespace NHibernate.Hql.Classic
 					{
 						for (nextIndex = i + 1; nextIndex < tokens.Length; nextIndex++)
 						{
-							next = tokens[nextIndex].ToLower(System.Globalization.CultureInfo.InvariantCulture);
+							next = tokens[nextIndex].ToLower(CultureInfo.InvariantCulture);
 							if (!ParserHelper.IsWhitespace(next))
 							{
 								break;
@@ -1066,7 +1070,7 @@ namespace NHibernate.Hql.Classic
 					// a null key in .net - it is valid for a null key to be in a java.util.Set
 					if (
 						((last != null && beforeClassTokens.Contains(last)) && (next == null || !notAfterClassTokens.Contains(next))) ||
-							PathExpressionParser.EntityClass.Equals(last))
+						PathExpressionParser.EntityClass.Equals(last))
 					{
 						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
 						if (clazz != null)
@@ -1084,9 +1088,9 @@ namespace NHibernate.Hql.Classic
 					}
 				}
 				templateQuery.Append(token);
-
 			}
-			string[] results = StringHelper.Multiply(templateQuery.ToString(), placeholders.GetEnumerator(), replacements.GetEnumerator());
+			string[] results =
+				StringHelper.Multiply(templateQuery.ToString(), placeholders.GetEnumerator(), replacements.GetEnumerator());
 			if (results.Length == 0)
 			{
 				log.Warn("no persistent classes found for query class: " + query);
@@ -1126,7 +1130,8 @@ namespace NHibernate.Hql.Classic
 			return names;
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		                                               ISessionImplementor session)
 		{
 			IType[] returnTypes = ReturnTypes;
 			row = ToResultRow(row);
@@ -1162,21 +1167,21 @@ namespace NHibernate.Hql.Classic
 		{
 			HolderInstantiator holderInstantiator =
 				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, resultTransformer);
-			
+
 			if (holderInstantiator.IsRequired)
 			{
 				for (int i = 0; i < results.Count; i++)
 				{
-					object[] row = (object[])results[i];
+					object[] row = (object[]) results[i];
 					results[i] = holderInstantiator.Instantiate(row);
 				}
-				
+
 				if (holderConstructor == null && resultTransformer != null)
 				{
 					return resultTransformer.TransformList(results);
 				}
 			}
-			
+
 			return results;
 		}
 
@@ -1224,7 +1229,7 @@ namespace NHibernate.Hql.Classic
 				{
 					DictionaryEntry me = it.Entry;
 					nameLockModes.Add(
-						GetAliasName((String)me.Key),
+						GetAliasName((String) me.Key),
 						me.Value
 						);
 				}
@@ -1232,7 +1237,7 @@ namespace NHibernate.Hql.Classic
 			LockMode[] lockModeArray = new LockMode[names.Length];
 			for (int i = 0; i < names.Length; i++)
 			{
-				LockMode lm = (LockMode)nameLockModes[names[i]];
+				LockMode lm = (LockMode) nameLockModes[names[i]];
 				if (lm == null)
 				{
 					lm = LockMode.None;
@@ -1254,7 +1259,7 @@ namespace NHibernate.Hql.Classic
 				IDictionary aliasedLockModes = new Hashtable();
 				foreach (DictionaryEntry de in lockModes)
 				{
-					aliasedLockModes[GetAliasName((string)de.Key)] = de.Value;
+					aliasedLockModes[GetAliasName((string) de.Key)] = de.Value;
 				}
 
 				IDictionary keyColumnNames = null;
@@ -1279,7 +1284,7 @@ namespace NHibernate.Hql.Classic
 
 		protected override int[] CollectionOwners
 		{
-			get { return new int[] { collectionOwnerColumn }; }
+			get { return new int[] {collectionOwnerColumn}; }
 		}
 
 		protected bool Compiled
@@ -1308,7 +1313,7 @@ namespace NHibernate.Hql.Classic
 		{
 			AddJoin(name, joinSequence.GetFromPart());
 		}
-		
+
 		protected internal override bool IsSubselectLoadingEnabled
 		{
 			get { return HasSubselectLoadableCollections(); }
@@ -1333,11 +1338,11 @@ namespace NHibernate.Hql.Classic
 
 		public IList CollectSqlStrings
 		{
-			get 
+			get
 			{
 				IList result = new ArrayList(1);
 				result.Add(sqlString.ToString());
-				return result; 
+				return result;
 			}
 		}
 
@@ -1368,7 +1373,7 @@ namespace NHibernate.Hql.Classic
 
 		public bool IsManipulationStatement
 		{
-			get 
+			get
 			{
 				// classic parser does not support bulk manipulation statements
 				return false;
@@ -1380,6 +1385,7 @@ namespace NHibernate.Hql.Classic
 		private class ParameterTranslations : IParameterTranslations
 		{
 			private readonly QueryTranslator queryTraslator;
+
 			public ParameterTranslations(QueryTranslator queryTraslator)
 			{
 				this.queryTraslator = queryTraslator;

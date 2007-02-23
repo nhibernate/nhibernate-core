@@ -15,7 +15,7 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HibernateException"/> class.
 		/// </summary>
-		public HibernateException() : base( "An exception occurred in the persistence layer." )
+		public HibernateException() : base("An exception occurred in the persistence layer.")
 		{
 		}
 
@@ -23,7 +23,7 @@ namespace NHibernate
 		/// Initializes a new instance of the <see cref="HibernateException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		public HibernateException( string message ) : base( message )
+		public HibernateException(string message) : base(message)
 		{
 		}
 
@@ -35,7 +35,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public HibernateException( Exception innerException ) : base( innerException.Message, innerException )
+		public HibernateException(Exception innerException) : base(innerException.Message, innerException)
 		{
 		}
 
@@ -48,7 +48,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public HibernateException( string message, Exception innerException ) : base( message, innerException )
+		public HibernateException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
@@ -63,7 +63,7 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected HibernateException( SerializationInfo info, StreamingContext context ) : base( info, context )
+		protected HibernateException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}
