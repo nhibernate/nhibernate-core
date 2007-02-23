@@ -9,37 +9,39 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 	/// <summary>
-	/// <p>
-	/// Criteria is a simplified API for retrieving entities
-	/// by composing Expression objects. This is a very
-	/// convenient approach for functionality like "search" screens
-	/// where there is a variable number of conditions to be placed
-	/// upon the result set.
-	/// </p>
-	/// <p>
-	/// The Session is a factory for ICriteria. 
-	/// Expression instances are usually obtained via 
-	/// the factory methods on Expression. eg:
+	/// Criteria is a simplified API for retrieving entities by composing
+	/// <see cref="Expression" /> objects.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// Using criteria is a very convenient approach for functionality like "search" screens
+	/// where there is a variable number of conditions to be placed upon the result set.
+	/// </para>
+	/// <para>
+	/// The Session is a factory for ICriteria. Expression instances are usually obtained via 
+	/// the factory methods on <see cref="Expression" />. eg:
+	/// </para>
 	/// <code>
 	/// IList cats = session.CreateCriteria(typeof(Cat)) 
 	///     .Add( Expression.Like("name", "Iz%") ) 
 	///     .Add( Expression.Gt( "weight", minWeight ) ) 
 	///     .AddOrder( Order.Asc("age") ) 
 	///     .List(); 
-	/// </code> 
-	/// You may navigate associations using <c>CreateAlias()</c> or
-	/// <c>CreateCriteria()</c>.
+	/// </code>
+	/// You may navigate associations using <see cref="CreateAlias" /> or <see cref="CreateCriteria" />.
 	/// <code>
 	/// IList cats = session.CreateCriteria(typeof(Cat))
 	///		.CreateCriteria("kittens")
 	///			.Add( Expression.like("name", "Iz%") )
 	///			.List();
 	///	</code>
-	/// Hibernate's query language is much more general
-	/// and should be used for non-simple cases.
-	/// </p>
-	/// This is an experimental API
-	/// </summary>
+	/// <para>
+	/// Hibernate's query language is much more general and should be used for non-simple cases.
+	/// </para>
+	/// <note>
+	/// This is an experimental API.
+	/// </note>
+	/// </remarks>
 	public interface ICriteria
 	{
 		// NH: Static declarations moved to CriteriaUtil class (CriteriaUtil.cs)
@@ -225,14 +227,16 @@ namespace NHibernate
 
 		/// <summary>
 		/// Used to specify that the query results will be a projection (scalar in
-		/// nature).  Implicitly specifies the {@link #PROJECTION} result transformer.
-		/// <p/>
-		/// The individual components contained within the given
-		/// <see cref="IProjection"/> determines the overall "shape" of the query result.
-		/// <paramref name="projection">The projection representing the overall "shape" of the
-		/// query results.</paramref>
-		/// <returns>this (for method chaining)</returns>
+		/// nature).  Implicitly specifies the projection result transformer.
 		/// </summary>
+		/// <param name="projection">The projection representing the overall "shape" of the
+		/// query results.</param>
+		/// <returns>This instance (for method chaining)</returns>
+		/// <remarks>
+		/// <para>
+		/// The individual components contained within the given <see cref="IProjection"/>
+		/// determines the overall "shape" of the query result.
+		/// </remarks>
 		ICriteria SetProjection(IProjection projection);
 	}
 }

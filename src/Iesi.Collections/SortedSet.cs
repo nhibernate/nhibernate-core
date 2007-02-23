@@ -5,10 +5,11 @@ using System.Collections;
 namespace Iesi.Collections
 {
 	/// <summary>
-	/// Implements a <c>Set</c> based on a sorted tree.  This gives good performance for operations on very
-	/// large data-sets, though not as good - asymptotically - as a <c>HashedSet</c>.  However, iteration
-	/// occurs in order.  Elements that you put into this type of collection must implement <c>IComparable</c>,
-	/// and they must actually be comparable.  You can't mix <c>string</c> and <c>int</c> values, for example.
+	/// Implements a set based on a sorted tree.  This gives good performance for operations on very
+	/// large data-sets, though not as good - asymptotically - as a <see cref="HashedSet" />.
+	/// However, iteration occurs in order.  Elements that you put into this type of collection must
+	/// implement <see cref="IComparable" />, and they must actually be comparable.  You can't mix
+	/// <see cref="string" /> and <see cref="int" /> values, for example.
 	/// </summary>
 	[Serializable]
 	public class SortedSet : DictionarySet

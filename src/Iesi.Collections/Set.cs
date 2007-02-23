@@ -4,15 +4,22 @@ using System.Collections;
 
 namespace Iesi.Collections
 {
-	/// <summary><p>A collection that contains no duplicate elements.  This class models the mathematical
-	/// <c>Set</c> abstraction, and is the base class for all other <c>Set</c> implementations.  
-	/// The order of elements in a set is dependant on (a)the data-structure implementation, and 
-	/// (b)the implementation of the various <c>Set</c> methods, and thus is not guaranteed.</p>
-	///  
-	/// <p>None of the <c>Set</c> implementations in this library are guranteed to be thread-safe
-	/// in any way unless wrapped in a <c>SynchronizedSet</c>.</p>
-	/// 
-	/// <p>The following table summarizes the binary operators that are supported by the <c>Set</c> class.</p>
+	/// <summary>A collection that contains no duplicate elements.</summary>
+	/// <remarks>
+	/// <para>
+	/// This class models the mathematical set abstraction, and is the base class for all
+	/// other set implementations. The order of elements in a set is dependant on
+	/// (a) the data-structure implementation, and (b) the implementation of the various
+	/// methods, and thus is not guaranteed.
+	/// </para>
+	/// <para>
+	/// None of the <see cref="ISet" /> implementations in this library are guranteed to be thread-safe
+	/// in any way unless wrapped in a <see cref="SynchronizedSet" />.
+	/// </para>
+	///  <para>
+	/// The following table summarizes the binary operators that are supported by the <see cref="ISet" />
+	/// type.
+	/// </para>
 	/// <list type="table">
 	///		<listheader>
 	///			<term>Operation</term>
@@ -46,7 +53,7 @@ namespace Iesi.Collections
 	///			<term><c>-</c></term>
 	///		</item>
 	/// </list>
-	/// </summary>
+	/// </remarks>
 	[Serializable]
 	public abstract class Set : ISet
 	{
@@ -54,10 +61,10 @@ namespace Iesi.Collections
 		/// Performs a "union" of the two sets, where all the elements
 		/// in both sets are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
 		/// Neither this set nor the input set are modified during the operation.  The return value
-		/// is a <c>Clone()</c> of this set with the extra elements added in.
+		/// is a clone of this set with the extra elements added in.
 		/// </summary>
 		/// <param name="a">A collection of elements.</param>
-		/// <returns>A new <c>Set</c> containing the union of this <c>Set</c> with the specified collection.
+		/// <returns>A new <see cref="ISet" /> instance containing the union of this instance with the specified collection.
 		/// Neither of the input objects is modified by the union.</returns>
 		public virtual ISet Union(ISet a)
 		{
@@ -70,7 +77,7 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Performs a "union" of two sets, where all the elements
 		/// in both are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
-		/// The return value is a <c>Clone()</c> of one of the sets (<c>a</c> if it is not <see langword="null" />) with elements of the other set
+		/// The return value is a clone of one of the sets (<c>a</c> if it is not <see langword="null" />) with elements of the other set
 		/// added in.  Neither of the input sets is modified by the operation.
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
@@ -91,7 +98,7 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Performs a "union" of two sets, where all the elements
 		/// in both are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
-		/// The return value is a <c>Clone()</c> of one of the sets (<c>a</c> if it is not <see langword="null" />) with elements of the other set
+		/// The return value is a clone of one of the sets (<c>a</c> if it is not <see langword="null" />) with elements of the other set
 		/// added in.  Neither of the input sets is modified by the operation.
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
@@ -208,7 +215,7 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Performs an "exclusive-or" of the two sets, keeping only the elements that
 		/// are in one of the sets, but not in both.  The original sets are not modified
-		/// during this operation.  The result set is a <c>Clone()</c> of this set containing
+		/// during this operation.  The result set is a clone of this set containing
 		/// the elements from the exclusive-or operation.
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
@@ -229,7 +236,7 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Performs an "exclusive-or" of the two sets, keeping only the elements that
 		/// are in one of the sets, but not in both.  The original sets are not modified
-		/// during this operation.  The result set is a <c>Clone()</c> of one of the sets
+		/// during this operation.  The result set is a clone of one of the sets
 		/// (<c>a</c> if it is not <see langword="null" />) containing
 		/// the elements from the exclusive-or operation.
 		/// </summary>
@@ -251,7 +258,7 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Performs an "exclusive-or" of the two sets, keeping only the elements that
 		/// are in one of the sets, but not in both.  The original sets are not modified
-		/// during this operation.  The result set is a <c>Clone()</c> of one of the sets
+		/// during this operation.  The result set is a clone of one of the sets
 		/// (<c>a</c> if it is not <see langword="null" />) containing
 		/// the elements from the exclusive-or operation.
 		/// </summary>
@@ -324,7 +331,7 @@ namespace Iesi.Collections
 		public abstract bool RetainAll(ICollection c);
 
 		/// <summary>
-		/// Returns a clone of the <c>Set</c> instance.  This will work for derived <c>Set</c>
+		/// Returns a clone of the set instance.  This will work for derived set
 		/// classes if the derived class implements a constructor that takes no arguments.
 		/// </summary>
 		/// <returns>A clone of this object.</returns>
@@ -337,8 +344,8 @@ namespace Iesi.Collections
 
 
 		/// <summary>
-		/// Copies the elements in the <c>Set</c> to an array.  The type of array needs
-		/// to be compatible with the objects in the <c>Set</c>, obviously.
+		/// Copies the elements in the set to an array.  The type of array needs
+		/// to be compatible with the objects in the set, obviously.
 		/// </summary>
 		/// <param name="array">An array that will be the target of the copy operation.</param>
 		/// <param name="index">The zero-based index where copying will start.</param>
@@ -350,23 +357,26 @@ namespace Iesi.Collections
 		public abstract int Count { get; }
 
 		/// <summary>
-		/// Returns <see langword="true" /> if the <c>Set</c> is synchronized across threads.  Note that
-		/// enumeration is inherently not thread-safe.  Use the <c>SyncRoot</c> to lock the
+		/// Returns <see langword="true" /> if the set is synchronized across threads.  Note that
+		/// enumeration is inherently not thread-safe.  Use the <see cref="SyncRoot" /> to lock the
 		/// object during enumeration.
 		/// </summary>
 		public abstract bool IsSynchronized { get; }
 
 		/// <summary>
 		/// An object that can be used to synchronize this collection to make it thread-safe.
-		/// When implementing this, if your object uses a base object, like an <c>IDictionary</c>,
-		/// or anything that has a <c>SyncRoot</c>, return that object instead of "<c>this</c>".
+		/// When implementing this, if your object uses a base object, like an <see cref="IDictionary" />,
+		/// or anything that has a <see cref="SyncRoot" />, return that object instead
+		/// of <see langword="this" />.
 		/// </summary>
 		public abstract object SyncRoot { get; }
 
 		/// <summary>
-		/// Gets an enumerator for the elements in the <c>Set</c>.
+		/// Returns an enumerator that iterates through the set.
 		/// </summary>
-		/// <returns>An <c>IEnumerator</c> over the elements in the <c>Set</c>.</returns>
+		/// <returns>
+		/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the set.
+		/// </returns>
 		public abstract IEnumerator GetEnumerator();
 	}
 }

@@ -5,11 +5,15 @@ using System.Collections;
 namespace Iesi.Collections
 {
 	/// <summary>
-	/// <p>Implements a thread-safe <c>Set</c> wrapper.  The implementation is extremely conservative, 
-	/// serializing critical sections to prevent possible deadlocks, and locking on everything.
-	/// The one exception is for enumeration, which is inherently not thread-safe.  For this, you
-	/// have to <c>lock</c> the <c>SyncRoot</c> object for the duration of the enumeration.</p>
+	/// Implements a thread-safe <see cref="ISet" /> wrapper.
 	/// </summary>
+	/// <remarks>
+	/// The implementation is extremely conservative, serializing critical sections
+	/// to prevent possible deadlocks, and locking on everything. The one exception
+	/// is for enumeration, which is inherently not thread-safe.  For this, you have
+	/// to <see langword="lock" /> the <see cref="SyncRoot" /> object for the duration
+	/// of the enumeration.
+	/// </remarks>
 	[Serializable]
 	public sealed class SynchronizedSet : Set
 	{
@@ -17,9 +21,9 @@ namespace Iesi.Collections
 		private object mSyncRoot;
 
 		/// <summary>
-		/// Constructs a thread-safe <c>Set</c> wrapper.
+		/// Constructs a thread-safe <see cref="ISet" /> wrapper.
 		/// </summary>
-		/// <param name="basisSet">The <c>Set</c> object that this object will wrap.</param>
+		/// <param name="basisSet">The <see cref="ISet" /> object that this object will wrap.</param>
 		public SynchronizedSet(ISet basisSet)
 		{
 			mBasisSet = basisSet;
@@ -167,8 +171,8 @@ namespace Iesi.Collections
 		}
 
 		/// <summary>
-		/// Copies the elements in the <c>Set</c> to an array.  The type of array needs
-		/// to be compatible with the objects in the <c>Set</c>, obviously.
+		/// Copies the elements in the set to an array.  The type of array needs
+		/// to be compatible with the objects in the set, obviously.
 		/// </summary>
 		/// <param name="array">An array that will be the target of the copy operation.</param>
 		/// <param name="index">The zero-based index where copying will start.</param>
@@ -196,7 +200,7 @@ namespace Iesi.Collections
 
 		/// <summary>
 		/// Returns <see langword="true" />, indicating that this object is thread-safe.  The exception to this
-		/// is enumeration, which is inherently not thread-safe.  Use the <c>SyncRoot</c> object to
+		/// is enumeration, which is inherently not thread-safe.  Use the <see cref="SyncRoot" /> object to
 		/// lock this object for the entire duration of the enumeration.
 		/// </summary>
 		public override sealed bool IsSynchronized
@@ -205,7 +209,7 @@ namespace Iesi.Collections
 		}
 
 		/// <summary>
-		/// Returns an object that can be used to synchronize the <c>Set</c> between threads.
+		/// Returns an object that can be used to synchronize the set between threads.
 		/// </summary>
 		public override sealed object SyncRoot
 		{
@@ -213,17 +217,22 @@ namespace Iesi.Collections
 		}
 
 		/// <summary>
-		/// Enumeration is, by definition, not thread-safe.  Use a <c>lock</c> on the <c>SyncRoot</c> 
-		/// to synchronize the entire enumeration process.
+		/// Returns an enumerator that iterates through the set.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>
+		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the set.
+		/// </returns>
+		/// <remarks>
+		/// Enumeration is, by definition, not thread-safe.  Use a <see langword="lock" /> on the <see cref="SyncRoot" /> 
+		/// to synchronize the entire enumeration process.
+		/// </remarks>
 		public override sealed IEnumerator GetEnumerator()
 		{
 			return mBasisSet.GetEnumerator();
 		}
 
 		/// <summary>
-		/// Returns a clone of the <c>Set</c> instance.  
+		/// Returns a clone of this instance.  
 		/// </summary>
 		/// <returns>A clone of this object.</returns>
 		public override object Clone()
