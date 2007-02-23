@@ -35,15 +35,15 @@ namespace NHibernate.DomainModel
 		/// <param name="other"></param>
 		/// <returns></returns>
 		/// <remarks>This is important, otherwise the Identifier and Instance don't match inside SessionImpl</remarks>
-		public override bool Equals( object other )
+		public override bool Equals(object other)
 		{
-			if ( !(other is Up) )
+			if (!(other is Up))
 			{
 				return false;
 			}
 			Up that = other as Up;
 
-			return this.id1.Equals( that.id1 ) && this.id2.Equals( that.id2 );
+			return this.id1.Equals(that.id1) && this.id2.Equals(that.id2);
 		}
 
 		public override int GetHashCode()

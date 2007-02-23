@@ -1,18 +1,20 @@
 using System;
-using System.Runtime.Serialization;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps a <see cref="Guid"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableGuidConverter)), Serializable()]
+	[TypeConverter(typeof(NullableGuidConverter)), Serializable()]
 	public struct NullableGuid : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableGuid Default = new NullableGuid();
 
-		Guid _value;
-		bool hasValue;
+		private Guid _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -39,21 +41,21 @@ namespace Nullables
 		/// </exception>
 		public NullableGuid(string g)
 		{
-			if( g==null || g.Trim().Length==0 )
+			if (g == null || g.Trim().Length == 0)
 			{
 				hasValue = false;
 				_value = Guid.Empty;
 			}
 			else
 			{
-				try 
+				try
 				{
-					_value = new Guid( g );
+					_value = new Guid(g);
 					hasValue = true;
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + g + "' to NullableGuid." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + g + "' to NullableGuid.", ex);
 				}
 			}
 		}
@@ -102,7 +104,7 @@ namespace Nullables
 
 		public static implicit operator NullableGuid(DBNull value)
 		{
-			return NullableGuid.Default;
+			return Default;
 		}
 
 		#endregion
@@ -120,9 +122,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableGuid)
-				return Equals((NullableGuid)obj);
+				return Equals((NullableGuid) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableGuid x)
@@ -170,7 +173,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -186,7 +189,7 @@ namespace Nullables
 		{
 			if (obj is NullableGuid) //chack and unbox
 			{
-				NullableGuid value = (NullableGuid)obj;
+				NullableGuid value = (NullableGuid) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -205,7 +208,7 @@ namespace Nullables
 			}
 			else if (obj is Guid)
 			{
-				Guid value = (Guid)obj;
+				Guid value = (Guid) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);

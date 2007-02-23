@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
+using System.Globalization;
 using System.Reflection;
 
 namespace Nullables.TypeConverters
@@ -20,7 +22,7 @@ namespace Nullables.TypeConverters
 			else if (sourceType == typeof(DBNull))
 				return true;
 			else
-				return base.CanConvertFrom (context, sourceType);
+				return base.CanConvertFrom(context, sourceType);
 		}
 
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
@@ -30,10 +32,10 @@ namespace Nullables.TypeConverters
 			else if (destinationType == typeof(DateTime))
 				return true;
 			else
-				return base.CanConvertTo (context, destinationType);
+				return base.CanConvertTo(context, destinationType);
 		}
 
-		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			if (value == null)
 			{
@@ -41,7 +43,7 @@ namespace Nullables.TypeConverters
 			}
 			if (value is DateTime)
 			{
-				return new NullableDateTime((DateTime)value);
+				return new NullableDateTime((DateTime) value);
 			}
 			if (value is DBNull)
 			{
@@ -49,15 +51,15 @@ namespace Nullables.TypeConverters
 			}
 			if (value is string)
 			{
-				string stringValue = ((string)value).Trim();
+				string stringValue = ((string) value).Trim();
 
 				if (stringValue == string.Empty)
 					return NullableDateTime.Default;
 
 				//get underlying types converter
 				TypeConverter converter = TypeDescriptor.GetConverter(typeof(DateTime));
-				
-				DateTime newValue = (DateTime)converter.ConvertFromString(context, culture, stringValue);
+
+				DateTime newValue = (DateTime) converter.ConvertFromString(context, culture, stringValue);
 
 				return new NullableDateTime(newValue);
 			}
@@ -67,37 +69,38 @@ namespace Nullables.TypeConverters
 			}
 		}
 
-		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+		                                 Type destinationType)
 		{
 			if (destinationType == typeof(InstanceDescriptor) && value is NullableDateTime)
 			{
-				NullableDateTime nullable = (NullableDateTime)value;
-				
-				Type[] constructorArgTypes = new Type[1] { typeof(DateTime) } ;
+				NullableDateTime nullable = (NullableDateTime) value;
+
+				Type[] constructorArgTypes = new Type[1] {typeof(DateTime)};
 				ConstructorInfo constructor = typeof(NullableDateTime).GetConstructor(constructorArgTypes);
 
 				if (constructor != null)
 				{
-					object[] constructorArgValues = new object[1] { nullable.Value } ;
+					object[] constructorArgValues = new object[1] {nullable.Value};
 					return new InstanceDescriptor(constructor, constructorArgValues);
 				}
 			}
 			else if (destinationType == typeof(DateTime))
 			{
-				NullableDateTime ndt = (NullableDateTime)value;
-				
+				NullableDateTime ndt = (NullableDateTime) value;
+
 				if (ndt.HasValue)
 					return ndt.Value;
 				else
 					return DBNull.Value;
 			}
 
-			return base.ConvertTo (context, culture, value, destinationType);
+			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
-		public override object CreateInstance(ITypeDescriptorContext context, System.Collections.IDictionary propertyValues)
+		public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
 		{
-			return new NullableDateTime((DateTime)propertyValues["Value"]);
+			return new NullableDateTime((DateTime) propertyValues["Value"]);
 		}
 
 		public override bool GetCreateInstanceSupported(ITypeDescriptorContext context)
@@ -105,7 +108,8 @@ namespace Nullables.TypeConverters
 			return true;
 		}
 
-		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value,
+		                                                           Attribute[] attributes)
 		{
 			return TypeDescriptor.GetProperties(typeof(NullableDateTime), attributes);
 		}

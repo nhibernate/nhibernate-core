@@ -1,7 +1,9 @@
 using System;
+
 using Iesi.Collections;
 
-namespace NHibernate.DomainModel.NHSpecific {
+namespace NHibernate.DomainModel.NHSpecific
+{
 	/// <summary>
 	/// Summary description for LLParent.
 	/// </summary>
@@ -12,10 +14,10 @@ namespace NHibernate.DomainModel.NHSpecific {
 
 		public ISet Children
 		{
-			get 
+			get
 			{
-				if( _children == null )
-					_children = new HashedSet( );
+				if (_children == null)
+					_children = new HashedSet();
 				return _children;
 			}
 			set { _children = value; }
@@ -23,10 +25,10 @@ namespace NHibernate.DomainModel.NHSpecific {
 
 		public ISet ChildrenNoAdd
 		{
-			get 
+			get
 			{
-				if( _childrenNoAdd == null )
-					_childrenNoAdd = new HashedSet( );
+				if (_childrenNoAdd == null)
+					_childrenNoAdd = new HashedSet();
 				return _childrenNoAdd;
 			}
 			set { _childrenNoAdd = value; }
@@ -43,13 +45,13 @@ namespace NHibernate.DomainModel.NHSpecific {
 		public LLParent Parent
 		{
 			get { return _parent; }
-			set 
+			set
 			{
 				_parent = value;
 				// this is the source of the "bug" - more accurately described as user error
 				// but it raised a Null Pointer Exception instead of a LazyInitializationException
 				// like it should have.  
-				_parent.Children.Add( this );
+				_parent.Children.Add(this);
 			}
 		}
 	}

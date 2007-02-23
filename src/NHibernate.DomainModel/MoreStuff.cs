@@ -1,21 +1,21 @@
 using System;
 using System.Collections;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for MoreStuff.
 	/// </summary>
 	[Serializable]
-	public class MoreStuff 
+	public class MoreStuff
 	{
 		private string _stringId;
 		private int _intId;
 		// <bag> mapping
 		private IList _stuffs;
 		private string _name;
-		
-		
+
+
 		public string StringId
 		{
 			get { return _stringId; }
@@ -41,15 +41,15 @@ namespace NHibernate.DomainModel
 		}
 
 		#region System.Object Members
-		
+
 		public override bool Equals(object obj)
 		{
-			if(this==obj) return true;
+			if (this == obj) return true;
 
 			MoreStuff rhs = obj as MoreStuff;
-			if(rhs==null) return false;
+			if (rhs == null) return false;
 
-			return ( rhs.IntId==this.IntId && rhs.StringId.Equals(this.StringId) );
+			return (rhs.IntId == this.IntId && rhs.StringId.Equals(this.StringId));
 		}
 
 

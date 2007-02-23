@@ -3,9 +3,9 @@ using System;
 namespace NHibernate.DomainModel
 {
 	[Serializable]
-	public enum FooStatus 
+	public enum FooStatus
 	{
-		OFF, 
+		OFF,
 		ON
 	}
 }

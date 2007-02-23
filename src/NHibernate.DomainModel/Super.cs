@@ -3,9 +3,10 @@ using System;
 namespace NHibernate.DomainModel
 {
 	[Serializable]
-	public class Super 
+	public class Super
 	{
 		protected string _name;
+
 		public string Name
 		{
 			get { return _name; }

@@ -1,12 +1,11 @@
 using System;
 using System.Data;
 
-using NHibernate;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 
-namespace NHibernate.DomainModel.NHSpecific 
+namespace NHibernate.DomainModel.NHSpecific
 {
 	/// <summary>
 	/// Converts a value of 0 to a DbNull
@@ -15,23 +14,20 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private static NullableType _int32Type = NHibernateUtil.Int32;
 
-		public NullInt32UserType() 
+		public NullInt32UserType()
 		{
-			
 		}
 
 		#region IUserType Members
 
 		public new bool Equals(object x, object y)
 		{
-			
-			if(x==y) return true;
+			if (x == y) return true;
 
-			int lhs = (x==null) ? 0 : (int)x;
-			int rhs = (y==null) ? 0 : (int)y;
+			int lhs = (x == null) ? 0 : (int) x;
+			int rhs = (y == null) ? 0 : (int) y;
 
 			return _int32Type.Equals(lhs, rhs);
-
 		}
 
 		public int GetHashCode(object x)
@@ -41,10 +37,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public SqlType[] SqlTypes
 		{
-			get
-			{
-				return new SqlType[] { _int32Type.SqlType };
-			}
+			get { return new SqlType[] {_int32Type.SqlType}; }
 		}
 
 		public object DeepCopy(object value)
@@ -52,13 +45,13 @@ namespace NHibernate.DomainModel.NHSpecific
 			return value;
 		}
 
-		public void NullSafeSet(System.Data.IDbCommand cmd, object value, int index)
+		public void NullSafeSet(IDbCommand cmd, object value, int index)
 		{
-			if(value.Equals(0)) 
+			if (value.Equals(0))
 			{
-				( (IDbDataParameter)cmd.Parameters[index]).Value = DBNull.Value;
+				((IDbDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
 			}
-			else 
+			else
 			{
 				_int32Type.Set(cmd, value, index);
 			}
@@ -66,10 +59,10 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public System.Type ReturnedType
 		{
-			get { return typeof(System.Int32); }
+			get { return typeof(Int32); }
 		}
 
-		public object NullSafeGet(System.Data.IDataReader rs, string[] names, object owner)
+		public object NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
 			return _int32Type.NullSafeGet(rs, names);
 		}

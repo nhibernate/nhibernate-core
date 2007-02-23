@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableDateTimeType : NullableTypesType
 	{
-		public NullableDateTimeType() : base( SqlTypeFactory.DateTime )
+		public NullableDateTimeType() : base(SqlTypeFactory.DateTime)
 		{
 		}
 
@@ -23,20 +23,20 @@ namespace Nullables.NHibernate
 
 		public override Type ReturnedClass
 		{
-			get { return typeof( NullableDateTime ); }
+			get { return typeof(NullableDateTime); }
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new NullableDateTime( Convert.ToDateTime( rs[ index ] ) );
+			return new NullableDateTime(Convert.ToDateTime(rs[index]));
 		}
 
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter parameter = ( IDataParameter ) cmd.Parameters[ index ];
-			NullableDateTime nullableValue = ( NullableDateTime ) value;
+			IDataParameter parameter = (IDataParameter) cmd.Parameters[index];
+			NullableDateTime nullableValue = (NullableDateTime) value;
 
-			if( nullableValue.HasValue )
+			if (nullableValue.HasValue)
 			{
 				parameter.Value = nullableValue.Value;
 			}
@@ -46,9 +46,9 @@ namespace Nullables.NHibernate
 			}
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return NullableDateTime.Parse( xml );
+			return NullableDateTime.Parse(xml);
 		}
 	}
 }

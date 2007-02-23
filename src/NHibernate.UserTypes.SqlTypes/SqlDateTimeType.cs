@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlTypes;
+
 using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
@@ -8,28 +9,28 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlDateTimeType : SqlTypesType
 	{
-		public SqlDateTimeType() : base( SqlTypeFactory.DateTime )
+		public SqlDateTimeType() : base(SqlTypeFactory.DateTime)
 		{
-		}
-		
-		public override object Get( IDataReader rs, int index )
-		{
-			return new SqlDateTime( Convert.ToDateTime( rs[ index ] ) );
 		}
 
-		protected override object GetValue( INullable value )
+		public override object Get(IDataReader rs, int index)
 		{
-			return ( ( SqlDateTime ) value ).Value;
+			return new SqlDateTime(Convert.ToDateTime(rs[index]));
 		}
 
-		public override object FromStringValue( string xml )
+		protected override object GetValue(INullable value)
 		{
-			return SqlDateTime.Parse( xml );
+			return ((SqlDateTime) value).Value;
+		}
+
+		public override object FromStringValue(string xml)
+		{
+			return SqlDateTime.Parse(xml);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( SqlDateTime ); }
+			get { return typeof(SqlDateTime); }
 		}
 	}
 }

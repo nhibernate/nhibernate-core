@@ -18,19 +18,18 @@ namespace NHibernate.UserTypes.Tests
 		private SqlInt32 _int32Prop;
 		private SqlInt64 _int64Prop;
 		private SqlSingle _singleProp;
-		
+
 		public SqlTypesClass()
 		{
-			
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		public int Version 
+		public int Version
 		{
 			get { return _version; }
 			set { _version = value; }

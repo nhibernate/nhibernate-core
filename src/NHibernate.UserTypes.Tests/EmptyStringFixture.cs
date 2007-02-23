@@ -10,14 +10,10 @@ namespace NHibernate.UserTypes.Tests
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "EmptyStringClass.hbm.xml" };
-			}
+			get { return new string[] {"EmptyStringClass.hbm.xml"}; }
 		}
 
 		// no need to write different test than in the ansi string version
 		// of the fixture
-
 	}
 }

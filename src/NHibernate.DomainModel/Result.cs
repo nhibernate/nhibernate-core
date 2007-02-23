@@ -1,19 +1,19 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Result.
 	/// </summary>
-	public class Result 
+	public class Result
 	{
 		private string _name;
 		private long _amount;
-		private long _count;// changed from int to long (H3.2)
+		private long _count; // changed from int to long (H3.2)
 
 		private FooStatus _status;
 
-		public Result(string name, long amount, int count) 
+		public Result(string name, long amount, int count)
 		{
 			_name = name;
 			_amount = amount;
@@ -34,7 +34,7 @@ namespace NHibernate.DomainModel
 		{
 			_status = status;
 		}
-		
+
 		public string Name
 		{
 			get { return _name; }
@@ -58,8 +58,5 @@ namespace NHibernate.DomainModel
 			get { return _status; }
 			set { _status = value; }
 		}
-
-		
-
 	}
 }

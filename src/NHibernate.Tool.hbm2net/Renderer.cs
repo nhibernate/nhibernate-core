@@ -7,10 +7,9 @@ namespace NHibernate.Tool.hbm2net
 {
 	public interface Renderer
 	{
-			
 		/// <summary>Called with the optional list of properties from config.xml </summary>
 		void configure(DirectoryInfo workingDirectory, NameValueCollection properties);
-			
+
 		/// <summary> </summary>
 		/// <param name="savedToPackage">what package is this class placed in
 		/// </param>
@@ -23,8 +22,9 @@ namespace NHibernate.Tool.hbm2net
 		/// <param name="writer">where we want the output
 		/// @throws Exception
 		/// </param>
-		void  render(string savedToPackage, string savedToClass, ClassMapping classMapping, IDictionary class2classmap, StreamWriter writer);
-			
+		void render(string savedToPackage, string savedToClass, ClassMapping classMapping, IDictionary class2classmap,
+		            StreamWriter writer);
+
 		/// <summary> Called by the generator to determine the package name of the rendered class.
 		/// 
 		/// </summary>
@@ -33,7 +33,7 @@ namespace NHibernate.Tool.hbm2net
 		/// <returns> the package name the class should be saved to
 		/// </returns>
 		string getSaveToPackage(ClassMapping classMapping);
-			
+
 		/// <summary> Called by the generator to determine the class name of the rendered class.
 		/// 
 		/// </summary>
@@ -53,6 +53,5 @@ namespace NHibernate.Tool.hbm2net
 		///  file paths are provide they will be evaluated realtive to the working directory.</para>
 		/// </remarks>
 		DirectoryInfo WorkingDirectory { get; }
-					
 	}
 }

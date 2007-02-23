@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableDecimalType : NullableTypesType
 	{
-		public NullableDecimalType() : base( SqlTypeFactory.Decimal )
+		public NullableDecimalType() : base(SqlTypeFactory.Decimal)
 		{
 		}
 
@@ -23,20 +23,20 @@ namespace Nullables.NHibernate
 
 		public override Type ReturnedClass
 		{
-			get { return typeof( NullableDecimal ); }
+			get { return typeof(NullableDecimal); }
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new NullableDecimal( Convert.ToDecimal( rs[ index ] ) );
+			return new NullableDecimal(Convert.ToDecimal(rs[index]));
 		}
 
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter parameter = ( IDataParameter ) cmd.Parameters[ index ];
-			NullableDecimal nullableValue = ( NullableDecimal ) value;
+			IDataParameter parameter = (IDataParameter) cmd.Parameters[index];
+			NullableDecimal nullableValue = (NullableDecimal) value;
 
-			if( nullableValue.HasValue )
+			if (nullableValue.HasValue)
 			{
 				parameter.Value = nullableValue.Value;
 			}
@@ -46,9 +46,9 @@ namespace Nullables.NHibernate
 			}
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return NullableDecimal.Parse( xml );
+			return NullableDecimal.Parse(xml);
 		}
 	}
 }

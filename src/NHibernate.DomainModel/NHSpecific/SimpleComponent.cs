@@ -12,48 +12,47 @@ namespace NHibernate.DomainModel.NHSpecific
 		private string _address;
 		private int _count;
 		private DateTime _date;
-		
+
 		private AuditComponent _audit;
-		
-		public SimpleComponent() 
+
+		public SimpleComponent()
 		{
 			_audit = new AuditComponent();
 		}
 
-		public long Key 
+		public long Key
 		{
-			get {return m_Key;}
+			get { return m_Key; }
 		}
 
-		public string Name 
+		public string Name
 		{
 			get { return _name; }
 			set { _name = value; }
 		}
 
-		public string Address 
+		public string Address
 		{
 			get { return _address; }
 			set { _address = value; }
 		}
 
-		public int Count 
+		public int Count
 		{
 			get { return _count; }
 			set { _count = value; }
 		}
 
-		public DateTime Date 
+		public DateTime Date
 		{
 			get { return _date; }
 			set { _date = value; }
 		}
 
-		public AuditComponent Audit 
+		public AuditComponent Audit
 		{
-			get {return _audit;}
-			set {_audit = value;}
+			get { return _audit; }
+			set { _audit = value; }
 		}
-
 	}
 }

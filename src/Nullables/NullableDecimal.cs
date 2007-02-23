@@ -1,17 +1,20 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps a <see cref="Decimal"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableDecimalConverter)), Serializable()]
+	[TypeConverter(typeof(NullableDecimalConverter)), Serializable()]
 	public struct NullableDecimal : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableDecimal Default = new NullableDecimal();
 
-		Decimal _value;
-		bool hasValue;
+		private Decimal _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -65,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableDecimal(DBNull value)
 		{
-			return NullableDecimal.Default;
+			return Default;
 		}
 
 		#endregion
@@ -83,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableDecimal)
-				return Equals((NullableDecimal)obj);
+				return Equals((NullableDecimal) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableDecimal x)
@@ -126,7 +130,7 @@ namespace Nullables
 		public static NullableDecimal operator +(NullableDecimal x, NullableDecimal y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableDecimal.Default;
+				return Default;
 
 			return new NullableDecimal(x.Value + y.Value);
 		}
@@ -134,7 +138,7 @@ namespace Nullables
 		public static NullableDecimal operator -(NullableDecimal x, NullableDecimal y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableDecimal.Default;
+				return Default;
 
 			return new NullableDecimal(x.Value - y.Value);
 		}
@@ -142,7 +146,7 @@ namespace Nullables
 		public static NullableDecimal operator *(NullableDecimal x, NullableDecimal y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableDecimal.Default;
+				return Default;
 
 			return new NullableDecimal(x.Value * y.Value);
 		}
@@ -150,11 +154,11 @@ namespace Nullables
 		public static NullableDecimal operator /(NullableDecimal x, NullableDecimal y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableDecimal.Default;
+				return Default;
 
 			return new NullableDecimal(x.Value / y.Value);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -165,7 +169,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -181,7 +185,7 @@ namespace Nullables
 		{
 			if (obj is NullableDecimal) //chack and unbox
 			{
-				NullableDecimal value = (NullableDecimal)obj;
+				NullableDecimal value = (NullableDecimal) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -200,7 +204,7 @@ namespace Nullables
 			}
 			else if (obj is Decimal)
 			{
-				Decimal value = (Decimal)obj;
+				Decimal value = (Decimal) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -217,24 +221,25 @@ namespace Nullables
 
 		public static NullableDecimal Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0)) 
-			{		
+			if ((s == null) || (s.Trim().Length == 0))
+			{
 				return new NullableDecimal();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableDecimal(Decimal.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableDecimal." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableDecimal.", ex);
 				}
 			}
 		}
 
 		// TODO: implement the rest of the Parse overloads found in Decimal
+
 		#endregion
 	}
 }

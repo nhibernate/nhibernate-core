@@ -1,15 +1,15 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for X.
 	/// </summary>
-	public class X 
+	public class X
 	{
 		private long _id;
 		private Y _y;
-		
+
 		public long Id
 		{
 			get { return _id; }
@@ -21,6 +21,5 @@ namespace NHibernate.DomainModel
 			get { return _y; }
 			set { _y = value; }
 		}
-		
 	}
 }

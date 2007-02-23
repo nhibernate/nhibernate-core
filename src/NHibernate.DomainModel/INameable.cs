@@ -1,11 +1,11 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for INameable.
 	/// </summary>
-	public interface INameable 
+	public interface INameable
 	{
 		string Name { get; set; }
 		long Key { get; set; }

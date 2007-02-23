@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableInt32Type : NullableTypesType
 	{
-		public NullableInt32Type() : base( SqlTypeFactory.Int32 )
+		public NullableInt32Type() : base(SqlTypeFactory.Int32)
 		{
 		}
 
@@ -23,20 +23,20 @@ namespace Nullables.NHibernate
 
 		public override Type ReturnedClass
 		{
-			get { return typeof( NullableInt32 ); }
+			get { return typeof(NullableInt32); }
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new NullableInt32( Convert.ToInt32( rs[ index ] ) );
+			return new NullableInt32(Convert.ToInt32(rs[index]));
 		}
 
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter parameter = ( IDataParameter ) cmd.Parameters[ index ];
-			NullableInt32 nullableValue = ( NullableInt32 ) value;
+			IDataParameter parameter = (IDataParameter) cmd.Parameters[index];
+			NullableInt32 nullableValue = (NullableInt32) value;
 
-			if( nullableValue.HasValue )
+			if (nullableValue.HasValue)
 			{
 				parameter.Value = nullableValue.Value;
 			}
@@ -46,9 +46,9 @@ namespace Nullables.NHibernate
 			}
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return NullableInt32.Parse( xml );
+			return NullableInt32.Parse(xml);
 		}
 	}
 }

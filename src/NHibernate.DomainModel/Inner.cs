@@ -24,18 +24,19 @@ namespace NHibernate.DomainModel
 		}
 
 		#region object members
+
 		public override bool Equals(object obj)
 		{
-			if(this==obj) return true;
+			if (this == obj) return true;
 
 			Inner cidSuper = obj as Inner;
-			if(cidSuper==null) return false;
+			if (cidSuper == null) return false;
 
-			if(_id==null) 
+			if (_id == null)
 			{
-				return cidSuper._id==null;
+				return cidSuper._id == null;
 			}
-			else 
+			else
 			{
 				return _id.Equals(cidSuper._id);
 			}
@@ -43,17 +44,16 @@ namespace NHibernate.DomainModel
 
 		public override int GetHashCode()
 		{
-			if(_id==null) 
+			if (_id == null)
 			{
 				return 0;
 			}
-			else 
+			else
 			{
 				return _id.GetHashCode();
 			}
 		}
 
 		#endregion
-
 	}
 }

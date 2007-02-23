@@ -1,12 +1,12 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Stuff.
 	/// </summary>
 	[Serializable]
-	public class Stuff 
+	public class Stuff
 	{
 		private long _id;
 		private FooProxy _foo;
@@ -15,7 +15,7 @@ namespace NHibernate.DomainModel
 		// yes, but it does not have a ctor (or static method) to get anything but the current TimeZone
 		// so I'm not sure how if we persist something diff than the current TimeZone we could retreive
 		// it...
-		
+
 		public long Id
 		{
 			get { return _id; }
@@ -38,13 +38,12 @@ namespace NHibernate.DomainModel
 
 		public override bool Equals(object obj)
 		{
-			if(this==obj) return true;
+			if (this == obj) return true;
 
 			Stuff rhs = obj as Stuff;
-			if(rhs==null) return false;
+			if (rhs == null) return false;
 
-			return rhs.Id.Equals(this.Id) && rhs.Foo.Key.Equals(_foo.Key) && rhs.MoreStuff.Equals(_moreStuff) ;
-					
+			return rhs.Id.Equals(this.Id) && rhs.Foo.Key.Equals(_foo.Key) && rhs.MoreStuff.Equals(_moreStuff);
 		}
 
 		public override int GetHashCode()

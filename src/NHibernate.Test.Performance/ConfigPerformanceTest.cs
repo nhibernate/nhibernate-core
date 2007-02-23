@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Reflection;
 
-using NUnit.Framework;
-
 using NHibernate.Cfg;
+
+using NUnit.Framework;
 
 namespace NHibernate.Test.Performance
 {
@@ -18,38 +18,40 @@ namespace NHibernate.Test.Performance
 		private ISessionFactory sessions;
 		private ISession session;
 
-		private IList files = new string[] {   
-												  "FooBar.hbm.xml",
-												  "Baz.hbm.xml",
-												  "Qux.hbm.xml",
-												  "Glarch.hbm.xml",
-												  "Fum.hbm.xml",
-												  "Fumm.hbm.xml",
-												  "Fo.hbm.xml",
-												  "One.hbm.xml",
-												  "Many.hbm.xml",
-												  "Immutable.hbm.xml" ,
-												  "Fee.hbm.xml",
-												  "Vetoer.hbm.xml",
-												  "Holder.hbm.xml",
-												  "Location.hbm.xml",
-												  "Stuff.hbm.xml",
-												  "Container.hbm.xml",
-												  "Simple.hbm.xml",
-												  "XY.hbm.xml"
-											  };
+		private IList files = new string[]
+			{
+				"FooBar.hbm.xml",
+				"Baz.hbm.xml",
+				"Qux.hbm.xml",
+				"Glarch.hbm.xml",
+				"Fum.hbm.xml",
+				"Fumm.hbm.xml",
+				"Fo.hbm.xml",
+				"One.hbm.xml",
+				"Many.hbm.xml",
+				"Immutable.hbm.xml",
+				"Fee.hbm.xml",
+				"Vetoer.hbm.xml",
+				"Holder.hbm.xml",
+				"Location.hbm.xml",
+				"Stuff.hbm.xml",
+				"Container.hbm.xml",
+				"Simple.hbm.xml",
+				"XY.hbm.xml"
+			};
+
 		private string assemblyName = "NHibernate.DomainModel";
 
 		[TearDown]
 		public void TearDown()
 		{
-			if( session != null )
+			if (session != null)
 			{
 				session.Close();
 				session = null;
 			}
 
-			if( sessions != null )
+			if (sessions != null)
 			{
 				sessions.Close();
 				sessions = null;
@@ -60,11 +62,11 @@ namespace NHibernate.Test.Performance
 		{
 			cfg = new Configuration();
 
-			for (int i=0; i<files.Count; i++) 
+			for (int i = 0; i < files.Count; i++)
 			{
-				cfg.AddResource( assemblyName + "." + files[i].ToString(), Assembly.Load( assemblyName ) );
+				cfg.AddResource(assemblyName + "." + files[i].ToString(), Assembly.Load(assemblyName));
 			}
-			sessions = cfg.BuildSessionFactory( );
+			sessions = cfg.BuildSessionFactory();
 		}
 
 		private void CreateSession()
@@ -75,7 +77,7 @@ namespace NHibernate.Test.Performance
 		[Test]
 		public void CreateConfig100()
 		{
-			for ( int i = 0; i < 100; i++ )
+			for (int i = 0; i < 100; i++)
 			{
 				CreateConfig();
 				CreateSession();
@@ -86,7 +88,7 @@ namespace NHibernate.Test.Performance
 		public void CreateSession100()
 		{
 			CreateConfig();
-			for ( int i = 0; i < 100; i++ )
+			for (int i = 0; i < 100; i++)
 			{
 				CreateSession();
 			}

@@ -1,4 +1,5 @@
 using System;
+
 using Iesi.Collections;
 
 namespace NHibernate.DomainModel

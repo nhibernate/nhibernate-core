@@ -21,47 +21,41 @@ namespace Nullables.NHibernate
 	/// </remarks>
 	public class EmptyStringType : IUserType
 	{
-		StringType stringType;
+		private StringType stringType;
 
 		public EmptyStringType()
 		{
-			stringType = (StringType)NHibernateUtil.String;
+			stringType = (StringType) NHibernateUtil.String;
 		}
 
 		#region IUserType Members
 
 		bool IUserType.Equals(object x, object y)
 		{
-			if( x==y )
+			if (x == y)
 			{
 				return true;
 			}
-			if( ( x==null ) || ( y==null ) )
+			if ((x == null) || (y == null))
 			{
 				return false;
 			}
-			return x.Equals( y );
+			return x.Equals(y);
 		}
 
 		public int GetHashCode(object x)
 		{
 			return (x == null) ? 0 : x.GetHashCode();
 		}
-		
+
 		public SqlType[] SqlTypes
 		{
-			get
-			{
-				return new SqlType[] { stringType.SqlType };
-			}
+			get { return new SqlType[] {stringType.SqlType}; }
 		}
 
 		public DbType[] DbTypes
 		{
-			get
-			{
-				return new DbType[] { stringType.SqlType.DbType };
-			}
+			get { return new DbType[] {stringType.SqlType.DbType}; }
 		}
 
 		public object DeepCopy(object value)
@@ -71,11 +65,11 @@ namespace Nullables.NHibernate
 
 		public void NullSafeSet(IDbCommand cmd, object value, int index)
 		{
-			if( value==null || value.Equals(string.Empty) ) 
+			if (value == null || value.Equals(string.Empty))
 			{
-				((IDbDataParameter)cmd.Parameters[index]).Value = DBNull.Value;
+				((IDbDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
 			}
-			else 
+			else
 			{
 				stringType.Set(cmd, value, index);
 			}
@@ -83,21 +77,18 @@ namespace Nullables.NHibernate
 
 		public Type ReturnedType
 		{
-			get
-			{
-				return typeof(string);
-			}
+			get { return typeof(string); }
 		}
 
-		public object NullSafeGet(System.Data.IDataReader rs, string[] names, object owner)
+		public object NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
 			int index = rs.GetOrdinal(names[0]);
 
-			if (rs.IsDBNull(index)) 
+			if (rs.IsDBNull(index))
 			{
 				return string.Empty;
 			}
-			else 
+			else
 			{
 				return rs[index];
 			}
@@ -105,10 +96,7 @@ namespace Nullables.NHibernate
 
 		public bool IsMutable
 		{
-			get
-			{
-				return false;
-			}
+			get { return false; }
 		}
 
 		public object Replace(object original, object target, object owner)

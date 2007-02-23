@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 
-using Iesi.Collections.Generic;
-
 using NUnit.Framework;
 
 namespace Iesi.Collections.Generic.Test
@@ -15,7 +13,6 @@ namespace Iesi.Collections.Generic.Test
 	[TestFixture]
 	public class ImmutableSetFixture : GenericSetFixture
 	{
-		
 		protected override ISet<string> CreateInstance()
 		{
 			return new ImmutableSet<string>(new HashedSet<string>());
@@ -29,7 +26,8 @@ namespace Iesi.Collections.Generic.Test
 		protected override Type ExpectedType
 		{
 			get { return typeof(ImmutableSet<string>); }
-		}		
+		}
 	}
 }
+
 #endif

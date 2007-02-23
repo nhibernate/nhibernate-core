@@ -1,4 +1,7 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 //Contributed by Sergey Koshcheyev
 
@@ -7,13 +10,13 @@ namespace Nullables
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps a <see cref="SByte"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableSByteConverter)), Serializable(), CLSCompliant(false)]
+	[TypeConverter(typeof(NullableSByteConverter)), Serializable(), CLSCompliant(false)]
 	public struct NullableSByte : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableSByte Default = new NullableSByte();
 
-		SByte _value;
-		bool hasValue;
+		private SByte _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -67,7 +70,7 @@ namespace Nullables
 
 		public static implicit operator NullableSByte(DBNull value)
 		{
-			return NullableSByte.Default;
+			return Default;
 		}
 
 		#endregion
@@ -85,9 +88,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableSByte)
-				return Equals((NullableSByte)obj);
+				return Equals((NullableSByte) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableSByte x)
@@ -156,7 +160,7 @@ namespace Nullables
 
 			return new NullableInt32(x.Value / y.Value);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -167,7 +171,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -183,7 +187,7 @@ namespace Nullables
 		{
 			if (obj is NullableSByte) //chack and unbox
 			{
-				NullableSByte value = (NullableSByte)obj;
+				NullableSByte value = (NullableSByte) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -202,7 +206,7 @@ namespace Nullables
 			}
 			else if (obj is DateTime)
 			{
-				SByte value = (SByte)obj;
+				SByte value = (SByte) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -219,22 +223,23 @@ namespace Nullables
 
 		public static NullableSByte Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0)) 
-			{		
+			if ((s == null) || (s.Trim().Length == 0))
+			{
 				return new NullableSByte();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableSByte(SByte.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableSByte." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableSByte.", ex);
 				}
 			}
 		}
+
 		// TODO: implement the rest of the Parse overloads found in SByte
 
 		#endregion

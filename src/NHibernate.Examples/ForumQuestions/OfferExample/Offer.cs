@@ -15,23 +15,22 @@ namespace NHibernate.Examples.ForumQuestions.OfferExample
 		{
 		}
 
-		public int Key 
+		public int Key
 		{
 			get { return key; }
 			set { key = value; }
 		}
 
-		public string MadeBy 
+		public string MadeBy
 		{
 			get { return madeBy; }
 			set { madeBy = value; }
 		}
 
-		public OfferType TypeOfOffer 
+		public OfferType TypeOfOffer
 		{
 			get { return typeOfOffer; }
 			set { typeOfOffer = value; }
 		}
-
 	}
 }

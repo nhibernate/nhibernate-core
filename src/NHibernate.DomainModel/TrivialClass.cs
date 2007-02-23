@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	public class TrivialClass : Top
 	{

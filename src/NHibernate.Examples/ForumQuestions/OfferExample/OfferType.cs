@@ -11,16 +11,16 @@ namespace NHibernate.Examples.ForumQuestions.OfferExample
 		private string description;
 
 		public OfferType()
-		{	
+		{
 		}
 
-		public int Key 
+		public int Key
 		{
 			get { return key; }
 			set { key = value; }
 		}
 
-		public string Description 
+		public string Description
 		{
 			get { return description; }
 			set { description = value; }

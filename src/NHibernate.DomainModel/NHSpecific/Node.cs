@@ -1,5 +1,6 @@
 using System;
-using System.Collections;
+
+using Iesi.Collections;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -10,21 +11,21 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private string _id;
 
-		private Iesi.Collections.ISet _previousNodes;
-		private Iesi.Collections.ISet _destinationNodes;
+		private ISet _previousNodes;
+		private ISet _destinationNodes;
 
 		private Node()
 		{
 		}
 
-		public Node(string id) 
+		public Node(string id)
 		{
-			_destinationNodes = new Iesi.Collections.HashedSet();
-			_previousNodes = new Iesi.Collections.HashedSet();
+			_destinationNodes = new HashedSet();
+			_previousNodes = new HashedSet();
 			_id = id;
 		}
 
-		public string Id 
+		public string Id
 		{
 			get { return _id; }
 			set { _id = value; }
@@ -41,18 +42,18 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// Any modifications to the "inverse" side should not be persisted - unless
 		/// the modifications are also made to the non-inverse side.
 		/// </remarks>
-		public Iesi.Collections.ISet PreviousNodes 
+		public ISet PreviousNodes
 		{
 			get { return _previousNodes; }
 			set { _previousNodes = value; }
 		}
 
-		private void AddPreviousNode(Node previousNode) 
+		private void AddPreviousNode(Node previousNode)
 		{
-			PreviousNodes.Add( previousNode );
+			PreviousNodes.Add(previousNode);
 		}
 
-		private void RemovePreviousNode(Node previousNode) 
+		private void RemovePreviousNode(Node previousNode)
 		{
 			PreviousNodes.Remove(previousNode);
 		}
@@ -66,7 +67,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// testing.  The DestinationNodes is the Property that controls which 
 		/// modifications get persisted.
 		/// </remarks>
-		public Iesi.Collections.ISet DestinationNodes
+		public ISet DestinationNodes
 		{
 			get { return _destinationNodes; }
 			set { _destinationNodes = value; }
@@ -76,16 +77,16 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// This is the only way to hook nodes together right now.
 		/// </summary>
 		/// <param name="node">A Node this Node can go to.</param>
-		public void AddDestinationNode(Node destinationNode) 
+		public void AddDestinationNode(Node destinationNode)
 		{
-			DestinationNodes.Add( destinationNode );
+			DestinationNodes.Add(destinationNode);
 
 			// let the destinationNode know that it can be one of the
 			// previous Nodes was this Node
 			destinationNode.AddPreviousNode(this);
 		}
 
-		public void RemoveDestinationNode(Node destinationNode) 
+		public void RemoveDestinationNode(Node destinationNode)
 		{
 			DestinationNodes.Remove(destinationNode);
 			destinationNode.RemovePreviousNode(this);
@@ -99,10 +100,9 @@ namespace NHibernate.DomainModel.NHSpecific
 		public override bool Equals(object obj)
 		{
 			Node rhs = obj as Node;
-			if(rhs==null) return false;
+			if (rhs == null) return false;
 
 			return _id.Equals(rhs.Id);
 		}
-
 	}
 }

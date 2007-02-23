@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
+using System.Globalization;
 using System.Reflection;
 
 namespace Nullables.TypeConverters
@@ -16,7 +18,7 @@ namespace Nullables.TypeConverters
 			if (sourceType == typeof(string))
 				return true;
 			else
-				return base.CanConvertFrom (context, sourceType);
+				return base.CanConvertFrom(context, sourceType);
 		}
 
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
@@ -24,10 +26,10 @@ namespace Nullables.TypeConverters
 			if (destinationType == typeof(InstanceDescriptor))
 				return true;
 			else
-				return base.CanConvertTo (context, destinationType);
+				return base.CanConvertTo(context, destinationType);
 		}
 
-		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			if (value == null)
 			{
@@ -35,46 +37,47 @@ namespace Nullables.TypeConverters
 			}
 			if (value is string)
 			{
-				string stringValue = ((string)value).Trim();
+				string stringValue = ((string) value).Trim();
 
 				if (stringValue == string.Empty)
 					return NullableInt32.Default;
 
 				//get underlying types converter
 				TypeConverter converter = TypeDescriptor.GetConverter(typeof(Int32));
-				
-				Int32 newValue = (Int32)converter.ConvertFromString(context, culture, stringValue);
+
+				Int32 newValue = (Int32) converter.ConvertFromString(context, culture, stringValue);
 
 				return new NullableInt32(newValue);
 			}
 			else
 			{
-				return base.ConvertFrom (context, culture, value);
+				return base.ConvertFrom(context, culture, value);
 			}
 		}
 
-		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+		                                 Type destinationType)
 		{
 			if (destinationType == typeof(InstanceDescriptor) && value is NullableInt32)
 			{
-				NullableInt32 nullable = (NullableInt32)value;
-				
-				Type[] constructorArgTypes = new Type[1] { typeof(Int32) } ;
+				NullableInt32 nullable = (NullableInt32) value;
+
+				Type[] constructorArgTypes = new Type[1] {typeof(Int32)};
 				ConstructorInfo constructor = typeof(NullableInt32).GetConstructor(constructorArgTypes);
 
 				if (constructor != null)
 				{
-					object[] constructorArgValues = new object[1] { nullable.Value } ;
+					object[] constructorArgValues = new object[1] {nullable.Value};
 					return new InstanceDescriptor(constructor, constructorArgValues);
 				}
 			}
 
-			return base.ConvertTo (context, culture, value, destinationType);
+			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
-		public override object CreateInstance(ITypeDescriptorContext context, System.Collections.IDictionary propertyValues)
+		public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
 		{
-			return new NullableInt32((Int32)propertyValues["Value"]);
+			return new NullableInt32((Int32) propertyValues["Value"]);
 		}
 
 		public override bool GetCreateInstanceSupported(ITypeDescriptorContext context)
@@ -82,7 +85,8 @@ namespace Nullables.TypeConverters
 			return true;
 		}
 
-		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value,
+		                                                           Attribute[] attributes)
 		{
 			return TypeDescriptor.GetProperties(typeof(NullableInt32), attributes);
 		}

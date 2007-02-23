@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlTypes;
+
 using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.SqlTypes
@@ -8,28 +9,28 @@ namespace NHibernate.UserTypes.SqlTypes
 	[Serializable]
 	public class SqlStringType : SqlTypesType
 	{
-		public SqlStringType() : base( new StringSqlType() )
-		{			
+		public SqlStringType() : base(new StringSqlType())
+		{
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new SqlString( Convert.ToString( rs[ index ] ) );
+			return new SqlString(Convert.ToString(rs[index]));
 		}
 
-		protected override object GetValue( INullable value )
+		protected override object GetValue(INullable value)
 		{
-			return ( ( SqlString ) value ).Value;
+			return ((SqlString) value).Value;
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return new SqlString( xml );
+			return new SqlString(xml);
 		}
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof( SqlString ); }
+			get { return typeof(SqlString); }
 		}
 	}
 }

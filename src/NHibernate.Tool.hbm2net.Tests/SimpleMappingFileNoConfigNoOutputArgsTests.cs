@@ -1,18 +1,21 @@
 using System;
 using System.IO;
+
 using NUnit.Framework;
 
 namespace NHibernate.Tool.hbm2net.Tests
 {
 	[TestFixture, Category("Functional Tests")]
-	public class SimpleMappingFileNoConfigNoOutputArgsTests 
+	public class SimpleMappingFileNoConfigNoOutputArgsTests
 	{
-		FileInfo mappingFile;
-		const string MappingFileResourceName = "Simple.hbm.xml";
-		const string ExpectedFileResourceName = "Simple.csharp";
+		private FileInfo mappingFile;
+		private const string MappingFileResourceName = "Simple.hbm.xml";
+		private const string ExpectedFileResourceName = "Simple.csharp";
 
 		[SetUp]
-		public void Init() {}
+		public void Init()
+		{
+		}
 
 		[TearDown]
 		public void Destroy()
@@ -24,9 +27,10 @@ namespace NHibernate.Tool.hbm2net.Tests
 
 		private static void AssertFile()
 		{
-			string expectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"NHibernate\DomainModel\Simple.cs");
+			string expectedFileName =
+				Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"NHibernate\DomainModel\Simple.cs");
 			Assert.IsTrue(File.Exists(expectedFileName));
-			using(StreamReader sr = File.OpenText(expectedFileName))
+			using (StreamReader sr = File.OpenText(expectedFileName))
 			{
 				Assert.AreEqual(ResourceHelper.GetResource(ExpectedFileResourceName), sr.ReadToEnd());
 			}
@@ -39,7 +43,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 		public void MappingFileNoPathSameFolderAsCurrentDirectory()
 		{
 			Environment.CurrentDirectory = Path.GetTempPath();
-			mappingFile = new FileInfo(Path.Combine(Environment.CurrentDirectory,"Simple.hbm.xml"));	
+			mappingFile = new FileInfo(Path.Combine(Environment.CurrentDirectory, "Simple.hbm.xml"));
 			ResourceHelper.WriteToFileFromResource(mappingFile, MappingFileResourceName);
 			string[] args = new string[] {mappingFile.Name};
 			CodeGenerator.Main(args);
@@ -56,15 +60,15 @@ namespace NHibernate.Tool.hbm2net.Tests
 			Assert.AreEqual(Environment.CurrentDirectory, mappingFile.DirectoryName);
 			ResourceHelper.WriteToFileFromResource(mappingFile, MappingFileResourceName);
 			string[] args = new string[] {mappingFile.FullName};
-			CodeGenerator.Main(args);	
+			CodeGenerator.Main(args);
 			AssertFile();
 		}
-		
+
 		[Test, ExpectedException(typeof(FileNotFoundException))]
 		public void MappingFileDoesNotExist()
 		{
 			string[] args = new string[] {"non-existant-file.hbm.xml"};
-			CodeGenerator.Main(args);			
+			CodeGenerator.Main(args);
 		}
 
 		/// <summary>
@@ -72,10 +76,10 @@ namespace NHibernate.Tool.hbm2net.Tests
 		/// </summary>
 		[Test]
 		public void MappingFileInDifferentFolderThanCurrentDirectory()
-		{ 
+		{
 			mappingFile = ResourceHelper.CreateFileFromResource(MappingFileResourceName);
 			string[] args = new string[] {mappingFile.FullName};
-			CodeGenerator.Main(args);	
+			CodeGenerator.Main(args);
 			AssertFile();
 		}
 	}

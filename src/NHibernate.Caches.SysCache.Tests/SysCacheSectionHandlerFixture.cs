@@ -1,4 +1,5 @@
 #region License
+
 //
 //  SysCache - A cache provider for NHibernate using System.Web.Caching.Cache.
 //
@@ -18,9 +19,11 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System.Xml;
+
 using NUnit.Framework;
 
 namespace NHibernate.Caches.SysCache.Tests
@@ -37,7 +40,7 @@ namespace NHibernate.Caches.SysCache.Tests
 		{
 			handler = new SysCacheSectionHandler();
 			XmlDocument doc = new XmlDocument();
-			doc.LoadXml( xml );
+			doc.LoadXml(xml);
 			section = doc.DocumentElement;
 		}
 
@@ -45,21 +48,21 @@ namespace NHibernate.Caches.SysCache.Tests
 		public void TestGetConfigNullSection()
 		{
 			section = new XmlDocument();
-			object result = handler.Create( null, null, section );
-			Assert.IsNotNull( result );
-			Assert.IsTrue( result is CacheConfig[] );
+			object result = handler.Create(null, null, section);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is CacheConfig[]);
 			CacheConfig[] caches = result as CacheConfig[];
-			Assert.AreEqual( 0, caches.Length );
+			Assert.AreEqual(0, caches.Length);
 		}
 
 		[Test]
 		public void TestGetConfigFromFile()
 		{
-			object result = handler.Create( null, null, section );
-			Assert.IsNotNull( result );
-			Assert.IsTrue( result is CacheConfig[] );
+			object result = handler.Create(null, null, section);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is CacheConfig[]);
 			CacheConfig[] caches = result as CacheConfig[];
-			Assert.AreEqual( 1, caches.Length );
+			Assert.AreEqual(1, caches.Length);
 		}
 	}
 }

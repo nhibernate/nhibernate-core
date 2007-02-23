@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using Iesi.Collections;
+
 using NHibernate.Classic;
 
 namespace NHibernate.DomainModel
@@ -15,7 +16,7 @@ namespace NHibernate.DomainModel
 		private IList _strings;
 		private ISet _stringSets;
 		private IList _fooComponents;
-		private GlarchProxy[ ] _proxyArray;
+		private GlarchProxy[] _proxyArray;
 		private ISet _proxySet;
 
 		[NonSerialized]
@@ -94,7 +95,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _proxyArray
 		/// </summary> 
-		public GlarchProxy[ ] ProxyArray
+		public GlarchProxy[] ProxyArray
 		{
 			get { return _proxyArray; }
 			set { _proxyArray = value; }
@@ -112,29 +113,29 @@ namespace NHibernate.DomainModel
 
 		#region NHibernate.Classic.ILifecycle Members
 
-		public LifecycleVeto OnDelete( ISession s )
+		public LifecycleVeto OnDelete(ISession s)
 		{
 			return LifecycleVeto.NoVeto;
 		}
 
-		public void OnLoad( ISession s, object id )
+		public void OnLoad(ISession s, object id)
 		{
-			if( ! ( ( ( String ) id ).Length == 32 ) )
+			if (! (((String) id).Length == 32))
 			{
-				throw new ArgumentException( "id problem" );
+				throw new ArgumentException("id problem");
 			}
 		}
 
-		public LifecycleVeto OnSave( ISession s )
+		public LifecycleVeto OnSave(ISession s)
 		{
 			_dynaBean = new Hashtable();
-			_dynaBean[ "foo" ] = "foo";
-			_dynaBean[ "bar" ] = 66;
+			_dynaBean["foo"] = "foo";
+			_dynaBean["bar"] = 66;
 			_immutable = "never changes!";
 			return LifecycleVeto.NoVeto;
 		}
 
-		public LifecycleVeto OnUpdate( ISession s )
+		public LifecycleVeto OnUpdate(ISession s)
 		{
 			return LifecycleVeto.NoVeto;
 		}
@@ -188,6 +189,5 @@ namespace NHibernate.DomainModel
 			get { return base._name; }
 			set { _name = value; }
 		}
-
 	}
 }

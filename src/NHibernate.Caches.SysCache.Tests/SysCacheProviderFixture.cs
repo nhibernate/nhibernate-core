@@ -1,4 +1,5 @@
 #region License
+
 //
 //  SysCache - A cache provider for NHibernate using System.Web.Caching.Cache.
 //
@@ -18,11 +19,16 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System;
 using System.Collections;
+
+using log4net.Config;
+
 using NHibernate.Cache;
+
 using NUnit.Framework;
 
 namespace NHibernate.Caches.SysCache.Tests
@@ -36,10 +42,10 @@ namespace NHibernate.Caches.SysCache.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			log4net.Config.XmlConfigurator.Configure();
+			XmlConfigurator.Configure();
 			props = new Hashtable();
-			props.Add( "expiration", 120 );
-			props.Add( "priority", 2 );
+			props.Add("expiration", 120);
+			props.Add("priority", 2);
 		}
 
 		[SetUp]
@@ -51,36 +57,36 @@ namespace NHibernate.Caches.SysCache.Tests
 		[Test]
 		public void TestBuildCacheFromConfig()
 		{
-			ICache cache = provider.BuildCache( "foo", null );
-			Assert.IsNotNull( cache, "pre-configured cache not found" );
+			ICache cache = provider.BuildCache("foo", null);
+			Assert.IsNotNull(cache, "pre-configured cache not found");
 		}
 
 		[Test]
 		public void TestBuildCacheNullNull()
 		{
-			ICache cache = provider.BuildCache( null, null );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache(null, null);
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestBuildCacheStringNull()
 		{
-			ICache cache = provider.BuildCache( "a_region", null );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("a_region", null);
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestBuildCacheStringICollection()
 		{
-			ICache cache = provider.BuildCache( "another_region", props );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("another_region", props);
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestNextTimestamp()
 		{
 			long ts = provider.NextTimestamp();
-			Assert.IsNotNull( ts, "no timestamp returned" );
+			Assert.IsNotNull(ts, "no timestamp returned");
 		}
 	}
 }

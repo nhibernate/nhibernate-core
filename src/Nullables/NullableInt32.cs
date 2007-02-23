@@ -1,18 +1,20 @@
 using System;
-using System.Runtime.Serialization;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps an <see cref="Int32"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableInt32Converter)), Serializable()]
+	[TypeConverter(typeof(NullableInt32Converter)), Serializable()]
 	public struct NullableInt32 : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableInt32 Default = new NullableInt32();
 
-		Int32 _value;
-		bool hasValue;
+		private Int32 _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -66,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableInt32(DBNull value)
 		{
-			return NullableInt32.Default;
+			return Default;
 		}
 
 		#endregion
@@ -84,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableInt32)
-				return Equals((NullableInt32)obj);
+				return Equals((NullableInt32) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableInt32 x)
@@ -127,7 +130,7 @@ namespace Nullables
 		public static NullableInt32 operator +(NullableInt32 x, NullableInt32 y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableInt32.Default;
+				return Default;
 
 			return new NullableInt32(x.Value + y.Value);
 		}
@@ -135,7 +138,7 @@ namespace Nullables
 		public static NullableInt32 operator -(NullableInt32 x, NullableInt32 y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableInt32.Default;
+				return Default;
 
 			return new NullableInt32(x.Value - y.Value);
 		}
@@ -143,7 +146,7 @@ namespace Nullables
 		public static NullableInt32 operator *(NullableInt32 x, NullableInt32 y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableInt32.Default;
+				return Default;
 
 			return new NullableInt32(x.Value * y.Value);
 		}
@@ -151,7 +154,7 @@ namespace Nullables
 		public static NullableInt32 operator /(NullableInt32 x, NullableInt32 y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableInt32.Default;
+				return Default;
 
 			return new NullableInt32(x.Value / y.Value);
 		}
@@ -182,7 +185,7 @@ namespace Nullables
 		{
 			if (obj is NullableInt32) //chack and unbox
 			{
-				NullableInt32 value = (NullableInt32)obj;
+				NullableInt32 value = (NullableInt32) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -201,7 +204,7 @@ namespace Nullables
 			}
 			else if (obj is DateTime)
 			{
-				Int32 value = (Int32)obj;
+				Int32 value = (Int32) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -218,22 +221,23 @@ namespace Nullables
 
 		public static NullableInt32 Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0) )
+			if ((s == null) || (s.Trim().Length == 0))
 			{
 				return new NullableInt32();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableInt32(Int32.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableInt32." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableInt32.", ex);
 				}
 			}
 		}
+
 		// TODO: implement the rest of the Parse overloads found in Int32
 
 		#endregion

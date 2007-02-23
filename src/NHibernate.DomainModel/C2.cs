@@ -12,8 +12,8 @@ namespace NHibernate.DomainModel
 	[Serializable]
 	public class C2 : B
 	{
-
 		#region Fields
+
 		/// <summary>
 		/// Holder for address
 		/// </summary>
@@ -32,6 +32,7 @@ namespace NHibernate.DomainModel
 		#endregion
 
 		#region Constructors
+
 		/// <summary>
 		/// Default constructor for class C2
 		/// </summary>
@@ -56,13 +57,15 @@ namespace NHibernate.DomainModel
 		/// Minimal constructor for class C2
 		/// </summary>
 		/// <param name="map">Initial map value</param>
-		public C2(System.Collections.IDictionary map)
+		public C2(IDictionary map)
 			: base(map)
 		{
 		}
+
 		#endregion
 
 		#region Properties
+
 		/// <summary>
 		/// Get/set for address
 		/// </summary>
@@ -83,6 +86,7 @@ namespace NHibernate.DomainModel
 			get { return _c1s; }
 			set { _c1s = value; }
 		}
+
 		#endregion
 	}
 }

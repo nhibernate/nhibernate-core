@@ -31,7 +31,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 				output = sr.ReadToEnd();
 				sr.Close();
 			}
-			return output;			
+			return output;
 		}
 
 		public static FileInfo WriteToFileFromResource(FileInfo file, string resource)
@@ -47,7 +47,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 
 		public static FileInfo WriteToFileFromResource(FileInfo file, string resource, string ns)
 		{
-			using(FileStream fs = File.OpenWrite(file.FullName))
+			using (FileStream fs = File.OpenWrite(file.FullName))
 			{
 				StreamWriter s = new StreamWriter(fs);
 				s.Write(GetResource(resource, ns));

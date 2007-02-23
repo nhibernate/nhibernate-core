@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+
 using Iesi.Collections;
 
 namespace NHibernate.DomainModel

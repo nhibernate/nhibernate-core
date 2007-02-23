@@ -1,4 +1,5 @@
 #region License
+
 //
 //  MemCache - A cache provider for NHibernate using the .NET client
 //  (http://sourceforge.net/projects/memcacheddotnet) for memcached,
@@ -20,12 +21,17 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System;
 using System.Collections;
 using System.Threading;
+
+using log4net.Config;
+
 using NHibernate.Cache;
+
 using NUnit.Framework;
 
 namespace NHibernate.Caches.MemCache.Tests
@@ -39,14 +45,14 @@ namespace NHibernate.Caches.MemCache.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			log4net.Config.XmlConfigurator.Configure();
+			XmlConfigurator.Configure();
 			props = new Hashtable();
-			props.Add( "compression_enabled", false );
-			props.Add( "expiration", 20 );
+			props.Add("compression_enabled", false);
+			props.Add("expiration", 20);
 			provider = new MemCacheProvider();
-			provider.Start( props );
+			provider.Start(props);
 		}
-		
+
 		[TestFixtureTearDown]
 		public void FixtureStop()
 		{
@@ -59,16 +65,16 @@ namespace NHibernate.Caches.MemCache.Tests
 			string key = "key1";
 			string value = "value";
 
-			ICache cache = provider.BuildCache( "nunit", props );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("nunit", props);
+			Assert.IsNotNull(cache, "no cache returned");
 
-			Assert.IsNull( cache.Get( key ), "cache returned an item we didn't add !?!" );
+			Assert.IsNull(cache.Get(key), "cache returned an item we didn't add !?!");
 
-			cache.Put( key, value );
-			Thread.Sleep( 1000 );
-			object item = cache.Get( key );
-			Assert.IsNotNull( item );
-			Assert.AreEqual( value, item, "didn't return the item we added" );
+			cache.Put(key, value);
+			Thread.Sleep(1000);
+			object item = cache.Get(key);
+			Assert.IsNotNull(item);
+			Assert.AreEqual(value, item, "didn't return the item we added");
 		}
 
 		[Test]
@@ -77,23 +83,23 @@ namespace NHibernate.Caches.MemCache.Tests
 			string key = "key1";
 			string value = "value";
 
-			ICache cache = provider.BuildCache( "nunit", props );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("nunit", props);
+			Assert.IsNotNull(cache, "no cache returned");
 
 			// add the item
-			cache.Put( key, value );
-			Thread.Sleep( 1000 );
+			cache.Put(key, value);
+			Thread.Sleep(1000);
 
 			// make sure it's there
-			object item = cache.Get( key );
-			Assert.IsNotNull( item, "item just added is not there" );
+			object item = cache.Get(key);
+			Assert.IsNotNull(item, "item just added is not there");
 
 			// remove it
-			cache.Remove( key );
+			cache.Remove(key);
 
 			// make sure it's not there
-			item = cache.Get( key );
-			Assert.IsNull( item, "item still exists in cache" );
+			item = cache.Get(key);
+			Assert.IsNull(item, "item still exists in cache");
 		}
 
 		[Test]
@@ -102,94 +108,94 @@ namespace NHibernate.Caches.MemCache.Tests
 			string key = "key1";
 			string value = "value";
 
-			ICache cache = provider.BuildCache( "nunit", props );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("nunit", props);
+			Assert.IsNotNull(cache, "no cache returned");
 
 			// add the item
-			cache.Put( key, value );
-			Thread.Sleep( 1000 );
+			cache.Put(key, value);
+			Thread.Sleep(1000);
 
 			// make sure it's there
-			object item = cache.Get( key );
-			Assert.IsNotNull( item, "couldn't find item in cache" );
+			object item = cache.Get(key);
+			Assert.IsNotNull(item, "couldn't find item in cache");
 
 			// clear the cache
 			cache.Clear();
 
 			// make sure we don't get an item
-			item = cache.Get( key );
-			Assert.IsNull( item, "item still exists in cache" );
+			item = cache.Get(key);
+			Assert.IsNull(item, "item still exists in cache");
 		}
 
 		[Test]
 		public void TestDefaultConstructor()
 		{
 			ICache cache = new MemCacheClient();
-			Assert.IsNotNull( cache );
+			Assert.IsNotNull(cache);
 		}
 
 		[Test]
 		public void TestNoPropertiesConstructor()
 		{
-			ICache cache = new MemCacheClient( "nunit" );
-			Assert.IsNotNull( cache );
+			ICache cache = new MemCacheClient("nunit");
+			Assert.IsNotNull(cache);
 		}
 
 		[Test]
 		public void TestEmptyProperties()
 		{
-			ICache cache = new MemCacheClient( "nunit", new Hashtable() );
-			Assert.IsNotNull( cache );
+			ICache cache = new MemCacheClient("nunit", new Hashtable());
+			Assert.IsNotNull(cache);
 		}
 
 		[Test]
-		[ExpectedException( typeof( ArgumentNullException ) )]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullKeyPut()
 		{
 			ICache cache = new MemCacheClient();
-			cache.Put( null, null );
+			cache.Put(null, null);
 		}
 
 		[Test]
-		[ExpectedException( typeof( ArgumentNullException ) )]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullValuePut()
 		{
 			ICache cache = new MemCacheClient();
-			cache.Put( "nunit", null );
+			cache.Put("nunit", null);
 		}
 
 		[Test]
 		public void TestNullKeyGet()
 		{
 			ICache cache = new MemCacheClient();
-			cache.Put( "nunit", "value" );
-			Thread.Sleep( 1000 );
-			object item = cache.Get( null );
-			Assert.IsNull( item );
+			cache.Put("nunit", "value");
+			Thread.Sleep(1000);
+			object item = cache.Get(null);
+			Assert.IsNull(item);
 		}
 
 		[Test]
-		[ExpectedException( typeof( ArgumentNullException ) )]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullKeyRemove()
 		{
 			ICache cache = new MemCacheClient();
-			cache.Remove( null );
+			cache.Remove(null);
 		}
 
 		[Test]
 		public void TestRegions()
 		{
 			string key = "key";
-			ICache cache1 = provider.BuildCache( "nunit1", props );
-			ICache cache2 = provider.BuildCache( "nunit2", props );
+			ICache cache1 = provider.BuildCache("nunit1", props);
+			ICache cache2 = provider.BuildCache("nunit2", props);
 			string s1 = "test1";
 			string s2 = "test2";
-			cache1.Put( key, s1 );
-			cache2.Put( key, s2 );
-			Thread.Sleep( 1000 );
-			object get1 = cache1.Get( key );
-			object get2 = cache2.Get( key );
-			Assert.IsFalse( get1 == get2 );
+			cache1.Put(key, s1);
+			cache2.Put(key, s2);
+			Thread.Sleep(1000);
+			object get1 = cache1.Get(key);
+			object get2 = cache2.Get(key);
+			Assert.IsFalse(get1 == get2);
 		}
 	}
 }

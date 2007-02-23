@@ -1,14 +1,12 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific 
+namespace NHibernate.DomainModel.NHSpecific
 {
-
 	/// <summary>
 	/// Summary description for ClassWithNullColumns.
 	/// </summary>
-	public class ClassWithNullColumns 
+	public class ClassWithNullColumns
 	{
-		
 		private int _id;
 		private int _firstInt32;
 		private int _secondInt32;
@@ -30,6 +28,5 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return _secondInt32; }
 			set { _secondInt32 = value; }
 		}
-
 	}
 }

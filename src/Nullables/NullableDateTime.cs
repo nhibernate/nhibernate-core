@@ -1,4 +1,7 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
@@ -10,13 +13,13 @@ namespace Nullables
 	/// <a href="http://msdn.microsoft.com/netframework/programming/bcl/faq/DateAndTimeFAQ.aspx">DateTime FAQ</a>
 	/// on MSDN. 
 	/// </remarks>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableDateTimeConverter)), Serializable()]
+	[TypeConverter(typeof(NullableDateTimeConverter)), Serializable()]
 	public struct NullableDateTime : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableDateTime Default = new NullableDateTime();
 
-		DateTime _value;
-		bool hasValue;
+		private DateTime _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -70,7 +73,7 @@ namespace Nullables
 
 		public static implicit operator NullableDateTime(DBNull value)
 		{
-			return NullableDateTime.Default;
+			return Default;
 		}
 
 		#endregion
@@ -88,9 +91,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableDateTime)
-				return Equals((NullableDateTime)obj);
+				return Equals((NullableDateTime) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableDateTime x)
@@ -127,7 +131,7 @@ namespace Nullables
 		{
 			return !x.Equals(y);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -140,7 +144,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -156,7 +160,7 @@ namespace Nullables
 		{
 			if (obj is NullableDateTime) //chack and unbox
 			{
-				NullableDateTime value = (NullableDateTime)obj;
+				NullableDateTime value = (NullableDateTime) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -175,7 +179,7 @@ namespace Nullables
 			}
 			else if (obj is DateTime)
 			{
-				DateTime value = (DateTime)obj;
+				DateTime value = (DateTime) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -192,24 +196,25 @@ namespace Nullables
 
 		public static NullableDateTime Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0)) 
-			{	
+			if ((s == null) || (s.Trim().Length == 0))
+			{
 				return new NullableDateTime();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableDateTime(DateTime.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableDateTime." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableDateTime.", ex);
 				}
 			}
 		}
 
 		// TODO: implement the rest of the Parse overloads found in DateTime
+
 		#endregion
 	}
 }

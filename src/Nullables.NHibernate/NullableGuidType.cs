@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableGuidType : NullableTypesType
 	{
-		public NullableGuidType() : base( SqlTypeFactory.Guid )
+		public NullableGuidType() : base(SqlTypeFactory.Guid)
 		{
 		}
 
@@ -23,28 +23,28 @@ namespace Nullables.NHibernate
 
 		public override Type ReturnedClass
 		{
-			get { return typeof( NullableGuid ); }
+			get { return typeof(NullableGuid); }
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			object value = rs[ index ];
-			if( value is Guid )
+			object value = rs[index];
+			if (value is Guid)
 			{
-				return new NullableGuid( ( Guid ) value );
+				return new NullableGuid((Guid) value);
 			}
 			else
 			{
-				return new NullableGuid( new Guid( value.ToString() ) ); //certain DB's that have no Guid (MySQL) will return strings.
+				return new NullableGuid(new Guid(value.ToString())); //certain DB's that have no Guid (MySQL) will return strings.
 			}
 		}
 
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter parameter = ( IDataParameter ) cmd.Parameters[ index ];
-			NullableGuid nullableValue = ( NullableGuid ) value;
+			IDataParameter parameter = (IDataParameter) cmd.Parameters[index];
+			NullableGuid nullableValue = (NullableGuid) value;
 
-			if( nullableValue.HasValue )
+			if (nullableValue.HasValue)
 			{
 				parameter.Value = nullableValue.Value;
 			}
@@ -54,9 +54,9 @@ namespace Nullables.NHibernate
 			}
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return new NullableGuid( xml );
+			return new NullableGuid(xml);
 		}
 	}
 }

@@ -10,18 +10,18 @@ namespace NHibernate.DomainModel
 
 		public int Compare(object x, object y)
 		{
-			if(x==null && y==null) 
+			if (x == null && y == null)
 			{
 				return 0;
 			}
-			
-			if(x==null) 
+
+			if (x == null)
 			{
 				return -1;
 			}
 
 
-			return ( (String) x ).ToLower().CompareTo( ( (String) y ).ToLower() );
+			return ((String) x).ToLower().CompareTo(((String) y).ToLower());
 		}
 
 		#endregion

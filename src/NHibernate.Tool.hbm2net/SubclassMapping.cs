@@ -1,10 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Specialized;
-using System.IO;
-using System.Reflection;
-using log4net;
-using NHibernate.Util;
+
 using Element = System.Xml.XmlElement;
 using MultiMap = System.Collections.Hashtable;
 
@@ -22,7 +17,8 @@ namespace NHibernate.Tool.hbm2net
 		private MultiMap multiMap;
 		private bool orphaned;
 
-		public SubclassMapping(string classPackage, MappingElement mappingElement, string superClass, Element clazz, MultiMap multiMap)
+		public SubclassMapping(string classPackage, MappingElement mappingElement, string superClass, Element clazz,
+		                       MultiMap multiMap)
 		{
 			this.classPackage = classPackage;
 			this.mappingElement = mappingElement;
@@ -42,7 +38,7 @@ namespace NHibernate.Tool.hbm2net
 
 		public string Name
 		{
-			get { return clazz.Attributes["name"].Value ; }
+			get { return clazz.Attributes["name"].Value; }
 		}
 
 		/// <summary>

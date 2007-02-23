@@ -1,4 +1,5 @@
 #region License
+
 //
 //  MemCache - A cache provider for NHibernate using the .NET client
 //  (http://sourceforge.net/projects/memcacheddotnet) for memcached,
@@ -20,11 +21,15 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System.Collections;
+
+using log4net.Config;
+
 using NHibernate.Cache;
-using NHibernate.Caches.MemCache;
+
 using NUnit.Framework;
 
 namespace NHibernate.Caches.MemCache.Tests
@@ -38,7 +43,7 @@ namespace NHibernate.Caches.MemCache.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			log4net.Config.XmlConfigurator.Configure();
+			XmlConfigurator.Configure();
 			props = new Hashtable();
 //			props.Add( "failover", true );
 //			props.Add( "initial_connections", 3 );
@@ -51,9 +56,9 @@ namespace NHibernate.Caches.MemCache.Tests
 //			props.Add( "socket_timeout", 1000*10 );
 //			props.Add( "socket_connect_timeout", 50 );
 			provider = new MemCacheProvider();
-			provider.Start( props );
+			provider.Start(props);
 		}
-		
+
 		[TestFixtureTearDown]
 		public void Stop()
 		{
@@ -63,36 +68,36 @@ namespace NHibernate.Caches.MemCache.Tests
 		[Test]
 		public void TestBuildCacheFromConfig()
 		{
-			ICache cache = provider.BuildCache( "foo", null );
-			Assert.IsNotNull( cache, "pre-configured cache not found" );
+			ICache cache = provider.BuildCache("foo", null);
+			Assert.IsNotNull(cache, "pre-configured cache not found");
 		}
 
 		[Test]
 		public void TestBuildCacheNullNull()
 		{
-			ICache cache = provider.BuildCache( null, null );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache(null, null);
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestBuildCacheStringNull()
 		{
-			ICache cache = provider.BuildCache( "a_region", null );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("a_region", null);
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestBuildCacheStringICollection()
 		{
-			ICache cache = provider.BuildCache( "another_region", props );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("another_region", props);
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestNextTimestamp()
 		{
 			long ts = provider.NextTimestamp();
-			Assert.IsNotNull( ts, "no timestamp returned" );
+			Assert.IsNotNull(ts, "no timestamp returned");
 		}
 	}
 }

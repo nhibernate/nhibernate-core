@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 
-using NHibernate;
-
 using NUnit.Framework;
 
 namespace NHibernate.Examples.ForumQuestions.T1104613
@@ -16,28 +14,28 @@ namespace NHibernate.Examples.ForumQuestions.T1104613
 	public class OuterJoinFixture : TestCase
 	{
 		[SetUp]
-		public void SetUp() 
+		public void SetUp()
 		{
-			ExportSchema( new string[] { "T1104613.A.hbm.xml"}, true );
+			ExportSchema(new string[] {"T1104613.A.hbm.xml"}, true);
 		}
 
 		[Test]
-		public void LoadWithOuterJoin() 
+		public void LoadWithOuterJoin()
 		{
 			ISession s = sessions.OpenSession();
-			
+
 			const int numOfOjs = 5;
 
 			A theA = new A();
 			AManyToOne mto = new AManyToOne();
 			IList ojList = new ArrayList(numOfOjs);
-			
-			theA.Name =  "the A";
+
+			theA.Name = "the A";
 			mto.Name = "many-to-one";
-		
+
 			theA.ManyToOne = mto;
 
-			for( int i=0; i<numOfOjs; i++) 
+			for (int i = 0; i < numOfOjs; i++)
 			{
 				AOuterJoin aoj = new AOuterJoin();
 				aoj.Name = "the oj list " + i;
@@ -46,19 +44,19 @@ namespace NHibernate.Examples.ForumQuestions.T1104613
 
 			theA.OuterJoins = ojList;
 
-			for( int i=0; i<numOfOjs; i++) 
+			for (int i = 0; i < numOfOjs; i++)
 			{
 				s.Save(ojList[i]);
 			}
 			s.Save(mto);
 			s.Save(theA);
-		
+
 			s.Flush();
 			s.Close();
-		
+
 			s = sessions.OpenSession();
-			theA = (A)s.Load( typeof(A), theA.Key );
-			
+			theA = (A) s.Load(typeof(A), theA.Key);
+
 			s.Close();
 		}
 	}

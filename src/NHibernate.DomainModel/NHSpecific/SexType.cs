@@ -15,32 +15,29 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
-			get {return id;}
+			get { return id; }
 		}
 
-		public string TypeName 
+		public string TypeName
 		{
-			get {return _typeName;}
-			set {_typeName = value;}
+			get { return _typeName; }
+			set { _typeName = value; }
 		}
 
-		private string NonpublicString 
+		private string NonpublicString
 		{
-			get 
+			get
 			{
-				if(_typeName.Equals("Male"))
+				if (_typeName.Equals("Male"))
 					return "MALE";
-				else if(_typeName.Equals("Female"))
+				else if (_typeName.Equals("Female"))
 					return "FEMALE";
 				else
 					return "UNKNOWN";
 			}
-			set {_nonpublicString = value;}
+			set { _nonpublicString = value; }
 		}
-
-
-
 	}
 }

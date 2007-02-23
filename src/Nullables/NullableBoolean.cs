@@ -1,17 +1,20 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps a <see cref="Boolean"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableBooleanConverter)), Serializable()]
+	[TypeConverter(typeof(NullableBooleanConverter)), Serializable()]
 	public struct NullableBoolean : INullableType, IComparable
 	{
 		public static readonly NullableBoolean Default = new NullableBoolean();
 
-		Boolean _value;
-		bool hasValue;
+		private Boolean _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -65,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableBoolean(DBNull value)
 		{
-			return NullableBoolean.Default;
+			return Default;
 		}
 
 		#endregion
@@ -83,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableBoolean)
-				return Equals((NullableBoolean)obj);
+				return Equals((NullableBoolean) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableBoolean x)
@@ -122,7 +126,7 @@ namespace Nullables
 		{
 			return !x.Equals(y);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -139,7 +143,7 @@ namespace Nullables
 		{
 			if (obj is NullableBoolean) //chack and unbox
 			{
-				NullableBoolean value = (NullableBoolean)obj;
+				NullableBoolean value = (NullableBoolean) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -158,7 +162,7 @@ namespace Nullables
 			}
 			else if (obj is Boolean)
 			{
-				Boolean value = (Boolean)obj;
+				Boolean value = (Boolean) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -175,19 +179,19 @@ namespace Nullables
 
 		public static NullableBoolean Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0)) 
-			{		
+			if ((s == null) || (s.Trim().Length == 0))
+			{
 				return new NullableBoolean();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableBoolean(Boolean.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableBoolean." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableBoolean.", ex);
 				}
 			}
 		}

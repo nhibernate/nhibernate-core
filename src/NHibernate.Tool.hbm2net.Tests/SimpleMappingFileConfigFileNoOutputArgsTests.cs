@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+
 using NUnit.Framework;
 
 namespace NHibernate.Tool.hbm2net.Tests
@@ -9,25 +10,24 @@ namespace NHibernate.Tool.hbm2net.Tests
 	///  arguments specified.</para>
 	/// </summary>
 	[TestFixture, Category("Functional Tests")]
-	public class SimpleMappingFileConfigFileNoOutputArgsTests 
+	public class SimpleMappingFileConfigFileNoOutputArgsTests
 	{
 		private const string VelocityRenderer = "NHibernate.Tool.hbm2net.VelocityRenderer";
 
-		FileInfo mappingFile;
-		FileInfo configFile;
-		FileInfo templateFile;
-		const string MappingFileResourceName = "Simple.hbm.xml";
-		const string ExpectedFileResourceName = "Simple.csharp";
-		const string TemplateFileResourceName = "convert.vm";
+		private FileInfo mappingFile;
+		private FileInfo configFile;
+		private FileInfo templateFile;
+		private const string MappingFileResourceName = "Simple.hbm.xml";
+		private const string ExpectedFileResourceName = "Simple.csharp";
+		private const string TemplateFileResourceName = "convert.vm";
 
 // TODO: Need to move this into method as it will depend on the supplied options in the config file e.g. the
 // supplied package and renderer.
-		static string ExpectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"Simple.cs");
+		private static string ExpectedFileName = Path.Combine(TestHelper.DefaultOutputDirectory.FullName, @"Simple.cs");
 
 		[SetUp]
-		public void Init() 
+		public void Init()
 		{
-		
 		}
 
 		[TearDown]
@@ -36,13 +36,13 @@ namespace NHibernate.Tool.hbm2net.Tests
 			if (TestHelper.DefaultOutputDirectory.Exists) TestHelper.DefaultOutputDirectory.Delete(true);
 			if (mappingFile != null && mappingFile.Exists) mappingFile.Delete();
 			if (templateFile != null && templateFile.Exists) templateFile.Delete();
-			if (configFile != null &&  configFile.Exists) configFile.Delete();
+			if (configFile != null && configFile.Exists) configFile.Delete();
 		}
 
 		private static void AssertFile()
 		{
 			Assert.IsTrue(File.Exists(ExpectedFileName), "File not found: {0}", ExpectedFileName);
-			using(StreamReader sr = File.OpenText(ExpectedFileName))
+			using (StreamReader sr = File.OpenText(ExpectedFileName))
 			{
 				Assert.AreEqual(ResourceHelper.GetResource(ExpectedFileResourceName), sr.ReadToEnd());
 			}
@@ -57,18 +57,18 @@ namespace NHibernate.Tool.hbm2net.Tests
 		/// </remarks>
 		[Test]
 		public void TemplateFileRelativeToConfig()
-		{			
+		{
 			configFile = new FileInfo(Path.GetTempFileName());
 
 			// the template file needs to be written to the same 
 			// directory as the config file.	
-			templateFile = new FileInfo(Path.Combine(configFile.DirectoryName, "convert.vm")); 
+			templateFile = new FileInfo(Path.Combine(configFile.DirectoryName, "convert.vm"));
 			ResourceHelper.WriteToFileFromResource(templateFile, TemplateFileResourceName);
-			
+
 			mappingFile = new FileInfo(Path.Combine(configFile.DirectoryName, MappingFileResourceName));
 			ResourceHelper.WriteToFileFromResource(mappingFile, MappingFileResourceName);
-			
-			TestHelper.CreateConfigFile(configFile, templateFile.Name, VelocityRenderer, "");	
+
+			TestHelper.CreateConfigFile(configFile, templateFile.Name, VelocityRenderer, "");
 
 			// ensure that test is setup correctly
 			Assert.IsTrue(configFile.Exists && configFile.Length != 0);
@@ -83,16 +83,16 @@ namespace NHibernate.Tool.hbm2net.Tests
 		}
 
 		public void TemplateFileAbsolutePath()
-		{			
+		{
 			configFile = new FileInfo(Path.GetTempFileName());
 
-			templateFile = new FileInfo(Path.GetTempFileName()); 
+			templateFile = new FileInfo(Path.GetTempFileName());
 			ResourceHelper.WriteToFileFromResource(templateFile, TemplateFileResourceName);
-			
+
 			mappingFile = new FileInfo(Path.Combine(configFile.DirectoryName, MappingFileResourceName));
 			ResourceHelper.WriteToFileFromResource(mappingFile, MappingFileResourceName);
-			
-			TestHelper.CreateConfigFile(configFile, templateFile.FullName, VelocityRenderer, "");	
+
+			TestHelper.CreateConfigFile(configFile, templateFile.FullName, VelocityRenderer, "");
 
 			// ensure that test is setup correctly
 			Assert.IsTrue(configFile.Exists && configFile.Length != 0);
@@ -118,11 +118,11 @@ namespace NHibernate.Tool.hbm2net.Tests
 
 			// the mapping file needs to be written to the same 
 			// directory as the config file for this test			
-			
+
 			mappingFile = new FileInfo(Path.Combine(configFile.DirectoryName, MappingFileResourceName));
 			ResourceHelper.WriteToFileFromResource(mappingFile, MappingFileResourceName);
-			
-			TestHelper.CreateConfigFile(configFile, null, VelocityRenderer, "");	
+
+			TestHelper.CreateConfigFile(configFile, null, VelocityRenderer, "");
 
 			// ensure that test is setup correctly
 			Assert.IsTrue(configFile.Exists && configFile.Length != 0);
@@ -131,7 +131,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 
 			string[] args = new string[] {"--config=" + configFile.FullName, mappingFile.FullName};
 			CodeGenerator.Main(args);
-			AssertFile();			
+			AssertFile();
 		}
 
 		/// <summary>
@@ -143,12 +143,12 @@ namespace NHibernate.Tool.hbm2net.Tests
 		{
 			configFile = new FileInfo(Path.GetTempFileName());
 
-			templateFile = new FileInfo("non-existant-file.vm"); 
-			
+			templateFile = new FileInfo("non-existant-file.vm");
+
 			mappingFile = new FileInfo(Path.Combine(configFile.DirectoryName, MappingFileResourceName));
 			ResourceHelper.WriteToFileFromResource(mappingFile, MappingFileResourceName);
-			
-			TestHelper.CreateConfigFile(configFile, templateFile.Name, VelocityRenderer, "");	
+
+			TestHelper.CreateConfigFile(configFile, templateFile.Name, VelocityRenderer, "");
 
 			// ensure that test is setup correctly
 			Assert.IsTrue(configFile.Exists && configFile.Length != 0);
@@ -158,8 +158,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 
 			string[] args = new string[] {"--config=" + configFile.FullName, mappingFile.FullName};
 			CodeGenerator.Main(args);
-			AssertFile();			
+			AssertFile();
 		}
-
 	}
 }

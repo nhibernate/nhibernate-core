@@ -1,4 +1,5 @@
 using System;
+
 using Iesi.Collections;
 
 namespace NHibernate.DomainModel
@@ -28,17 +29,17 @@ namespace NHibernate.DomainModel
 			set { children = value; }
 		}
 
-		public void AddChildren( N pChildren )
+		public void AddChildren(N pChildren)
 		{
 			pChildren.Parent = this;
-			children.Add( pChildren );
+			children.Add(pChildren);
 		}
 
-		public void RemoveChildren( N pChildren )
+		public void RemoveChildren(N pChildren)
 		{
-			if ( children.Contains( pChildren ) )
+			if (children.Contains(pChildren))
 			{
-				children.Remove( pChildren );
+				children.Remove(pChildren);
 			}
 		}
 	}

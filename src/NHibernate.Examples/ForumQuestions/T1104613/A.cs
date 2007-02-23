@@ -19,14 +19,14 @@ namespace NHibernate.Examples.ForumQuestions.T1104613
 			set { _key = value; }
 		}
 
-		
+
 		public string Name
 		{
 			get { return _name; }
 			set { _name = value; }
 		}
 
-		
+
 		public AManyToOne ManyToOne
 		{
 			get { return _manyToOne; }
@@ -38,6 +38,5 @@ namespace NHibernate.Examples.ForumQuestions.T1104613
 			get { return _outerJoins; }
 			set { _outerJoins = value; }
 		}
-
 	}
 }

@@ -1,7 +1,6 @@
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */ 
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 
 namespace Iesi.Collections
 {
@@ -14,7 +13,7 @@ namespace Iesi.Collections
 	[Serializable]
 	public sealed class SynchronizedSet : Set
 	{
-		private ISet   mBasisSet;
+		private ISet mBasisSet;
 		private object mSyncRoot;
 
 		/// <summary>
@@ -25,7 +24,7 @@ namespace Iesi.Collections
 		{
 			mBasisSet = basisSet;
 			mSyncRoot = basisSet.SyncRoot;
-			if(mSyncRoot == null)
+			if (mSyncRoot == null)
 				throw new NullReferenceException("The Set you specified returned a null SyncRoot.");
 		}
 
@@ -34,9 +33,9 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="o">The object to add to the set.</param>
 		/// <returns><c>true</c> is the object was added, <c>false</c> if it was already present.</returns>
-		public sealed override bool Add(object o)
+		public override sealed bool Add(object o)
 		{
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				return mBasisSet.Add(o);
 			}
@@ -47,15 +46,15 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="c">A collection of objects to add to the set.</param>
 		/// <returns><c>true</c> is the set changed as a result of this operation, <c>false</c> if not.</returns>
-		public sealed override bool AddAll(ICollection c)
+		public override sealed bool AddAll(ICollection c)
 		{
 			Set temp;
-			lock(c.SyncRoot)
+			lock (c.SyncRoot)
 			{
 				temp = new HybridSet(c);
 			}
 
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				return mBasisSet.AddAll(temp);
 			}
@@ -64,9 +63,9 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Removes all objects from the set.
 		/// </summary>
-		public sealed override void Clear()
+		public override sealed void Clear()
 		{
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				mBasisSet.Clear();
 			}
@@ -77,9 +76,9 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="o">The element to look for.</param>
 		/// <returns><c>true</c> if this set contains the specified element, <c>false</c> otherwise.</returns>
-		public sealed override bool Contains(object o)
+		public override sealed bool Contains(object o)
 		{
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				return mBasisSet.Contains(o);
 			}
@@ -90,14 +89,14 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="c">A collection of objects.</param>
 		/// <returns><c>true</c> if the set contains all the elements in the specified collection, <c>false</c> otherwise.</returns>
-		public sealed override bool ContainsAll(ICollection c)
+		public override sealed bool ContainsAll(ICollection c)
 		{
 			Set temp;
-			lock(c.SyncRoot)
+			lock (c.SyncRoot)
 			{
 				temp = new HybridSet(c);
 			}
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				return mBasisSet.ContainsAll(temp);
 			}
@@ -106,11 +105,11 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Returns <c>true</c> if this set contains no elements.
 		/// </summary>
-		public sealed override bool IsEmpty
+		public override sealed bool IsEmpty
 		{
 			get
 			{
-				lock(mSyncRoot)
+				lock (mSyncRoot)
 				{
 					return mBasisSet.IsEmpty;
 				}
@@ -123,9 +122,9 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="o">The element to be removed.</param>
 		/// <returns><c>true</c> if the set contained the specified element, <c>false</c> otherwise.</returns>
-		public sealed override bool Remove(object o)
+		public override sealed bool Remove(object o)
 		{
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				return mBasisSet.Remove(o);
 			}
@@ -136,14 +135,14 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="c">A collection of elements to remove.</param>
 		/// <returns><c>true</c> if the set was modified as a result of this operation.</returns>
-		public sealed override bool RemoveAll(ICollection c)
+		public override sealed bool RemoveAll(ICollection c)
 		{
 			Set temp;
-			lock(c.SyncRoot)
+			lock (c.SyncRoot)
 			{
 				temp = new HybridSet(c);
 			}
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				return mBasisSet.RemoveAll(temp);
 			}
@@ -154,14 +153,14 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="c">Collection that defines the set of elements to be retained.</param>
 		/// <returns><c>true</c> if this set changed as a result of this operation.</returns>
-		public sealed override bool RetainAll(ICollection c)
+		public override sealed bool RetainAll(ICollection c)
 		{
 			Set temp;
-			lock(c.SyncRoot)
+			lock (c.SyncRoot)
 			{
 				temp = new HybridSet(c);
 			}
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				return mBasisSet.RetainAll(temp);
 			}
@@ -173,9 +172,9 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="array">An array that will be the target of the copy operation.</param>
 		/// <param name="index">The zero-based index where copying will start.</param>
-		public sealed override void CopyTo(Array array, int index)
+		public override sealed void CopyTo(Array array, int index)
 		{
-			lock(mSyncRoot)
+			lock (mSyncRoot)
 			{
 				mBasisSet.CopyTo(array, index);
 			}
@@ -184,11 +183,11 @@ namespace Iesi.Collections
 		/// <summary>
 		/// The number of elements contained in this collection.
 		/// </summary>
-		public sealed override int Count
+		public override sealed int Count
 		{
 			get
 			{
-				lock(mSyncRoot)
+				lock (mSyncRoot)
 				{
 					return mBasisSet.Count;
 				}
@@ -200,17 +199,17 @@ namespace Iesi.Collections
 		/// is enumeration, which is inherently not thread-safe.  Use the <c>SyncRoot</c> object to
 		/// lock this object for the entire duration of the enumeration.
 		/// </summary>
-		public sealed override bool IsSynchronized
+		public override sealed bool IsSynchronized
 		{
-			get{return true;}
+			get { return true; }
 		}
 
 		/// <summary>
 		/// Returns an object that can be used to synchronize the <c>Set</c> between threads.
 		/// </summary>
-		public sealed override object SyncRoot
+		public override sealed object SyncRoot
 		{
-			get{return mSyncRoot;}
+			get { return mSyncRoot; }
 		}
 
 		/// <summary>
@@ -218,7 +217,7 @@ namespace Iesi.Collections
 		/// to synchronize the entire enumeration process.
 		/// </summary>
 		/// <returns></returns>
-		public sealed override IEnumerator GetEnumerator()
+		public override sealed IEnumerator GetEnumerator()
 		{
 			return mBasisSet.GetEnumerator();
 		}
@@ -229,8 +228,7 @@ namespace Iesi.Collections
 		/// <returns>A clone of this object.</returns>
 		public override object Clone()
 		{
-			return new SynchronizedSet((ISet)mBasisSet.Clone());
+			return new SynchronizedSet((ISet) mBasisSet.Clone());
 		}
-
 	}
 }

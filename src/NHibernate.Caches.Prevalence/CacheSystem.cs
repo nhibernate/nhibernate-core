@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+
 using Bamboo.Prevalence;
 
 namespace NHibernate.Caches.Prevalence
@@ -25,13 +26,13 @@ namespace NHibernate.Caches.Prevalence
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		public object Get( object key )
+		public object Get(object key)
 		{
-			if( key == null ) return null;
+			if (key == null) return null;
 
 			CacheEntry entry = _items[key] as CacheEntry;
-			if( entry == null )	return null;
-			
+			if (entry == null) return null;
+
 			return entry.Value;
 		}
 
@@ -40,18 +41,18 @@ namespace NHibernate.Caches.Prevalence
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
-		public void Add( object key, object value )
+		public void Add(object key, object value)
 		{
-			if( key == null ) return;
+			if (key == null) return;
 
 			CacheEntry entry = _items[key] as CacheEntry;
-			if( entry == null )
+			if (entry == null)
 			{
 				entry = new CacheEntry();
 				entry.Key = key;
 				entry.Value = value;
 				entry.DateCreated = PrevalenceEngine.Now;
-				_items.Add( key, entry );
+				_items.Add(key, entry);
 			}
 			else
 			{
@@ -64,9 +65,9 @@ namespace NHibernate.Caches.Prevalence
 		/// remove an item from the cache
 		/// </summary>
 		/// <param name="key"></param>
-		public void Remove( object key )
+		public void Remove(object key)
 		{
-			_items.Remove( key );
+			_items.Remove(key);
 		}
 
 		/// <summary>

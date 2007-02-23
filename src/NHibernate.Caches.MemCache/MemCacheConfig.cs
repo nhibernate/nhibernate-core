@@ -1,4 +1,5 @@
 #region License
+
 //
 //  MemCache - A cache provider for NHibernate using the .NET client
 //  (http://sourceforge.net/projects/memcacheddotnet) for memcached,
@@ -20,6 +21,7 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System;
@@ -32,14 +34,14 @@ namespace NHibernate.Caches.MemCache
 		private int _port;
 		private int _weight;
 
-		public MemCacheConfig( string host, int port ) : this( host, port, 1 )
+		public MemCacheConfig(string host, int port) : this(host, port, 1)
 		{
 		}
 
-		public MemCacheConfig( string host, int port, int weight )
+		public MemCacheConfig(string host, int port, int weight)
 		{
-			if ( host == null || host.Length < 1 ) throw new ArgumentNullException( "host" );
-			if ( port <= 0 ) throw new ArgumentOutOfRangeException( "port", "port must be greater than 0." );
+			if (host == null || host.Length < 1) throw new ArgumentNullException("host");
+			if (port <= 0) throw new ArgumentOutOfRangeException("port", "port must be greater than 0.");
 			_host = host;
 			_port = port;
 			_weight = weight;

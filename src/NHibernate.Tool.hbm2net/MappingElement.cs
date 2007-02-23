@@ -5,6 +5,7 @@
 * Java - Code Generation - Code and Comments
 */
 using System;
+
 using MultiMap = System.Collections.Hashtable;
 using Element = System.Xml.XmlElement;
 
@@ -17,48 +18,32 @@ namespace NHibernate.Tool.hbm2net
 	/// </author>
 	public class MappingElement
 	{
-		virtual public MappingElement ParentElement
+		public virtual MappingElement ParentElement
 		{
-			get
-			{
-				return parentElement;
-			}
-			
+			get { return parentElement; }
 		}
-		virtual public Element XMLElement
+
+		public virtual Element XMLElement
 		{
-			get
-			{
-				return element;
-			}
-			
+			get { return element; }
 		}
-		virtual public Element Element
+
+		public virtual Element Element
 		{
-			set
-			{
-				this.element = value;
-			}
-			
+			set { this.element = value; }
 		}
-		virtual protected internal MultiMap MetaAttribs
+
+		protected internal virtual MultiMap MetaAttribs
 		{
-			get
-			{
-				return metaattribs;
-			}
-			
-			set
-			{
-				this.metaattribs = value;
-			}
-			
+			get { return metaattribs; }
+
+			set { this.metaattribs = value; }
 		}
-		
+
 		private Element element;
 		private MappingElement parentElement;
 		private MultiMap metaattribs;
-		
+
 		public MappingElement(Element element, MappingElement parentElement)
 		{
 			this.element = element;
@@ -68,19 +53,20 @@ namespace NHibernate.Tool.hbm2net
 			* parentModel.getMetaMap(); }
 			*/
 		}
-		
+
 		/// <summary>Returns true if this element has the meta attribute </summary>
 		public virtual bool hasMeta(string attribute)
 		{
 			return metaattribs.ContainsKey(attribute);
 		}
-		
+
 		/* Given a key, return the list of metaattribs. Can return null! */
+
 		public virtual SupportClass.ListCollectionSupport getMeta(string attribute)
 		{
 			return (SupportClass.ListCollectionSupport) metaattribs[attribute];
 		}
-		
+
 		/// <summary> Returns all meta items as one large string.
 		/// 
 		/// </summary>
@@ -89,24 +75,24 @@ namespace NHibernate.Tool.hbm2net
 		public virtual string getMetaAsString(string attribute)
 		{
 			SupportClass.ListCollectionSupport c = getMeta(attribute);
-			
+
 			return MetaAttributeHelper.getMetaAsString(c);
 		}
-		
+
 		public virtual string getMetaAsString(string attribute, string seperator)
 		{
 			return MetaAttributeHelper.getMetaAsString(getMeta(attribute), seperator);
 		}
-		
+
 		public virtual bool getMetaAsBool(string attribute)
 		{
 			return getMetaAsBool(attribute, false);
 		}
-		
+
 		public virtual bool getMetaAsBool(string attribute, bool defaultValue)
 		{
 			SupportClass.ListCollectionSupport c = getMeta(attribute);
-			
+
 			return MetaAttributeHelper.getMetaAsBool(c, defaultValue);
 		}
 	}

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.DomainModel
 {
@@ -20,7 +19,7 @@ namespace NHibernate.DomainModel
 		public override int X
 		{
 			get { return _x; }
-			set  { _x = value; }
+			set { _x = value; }
 		}
 
 		/// <summary>
@@ -28,11 +27,11 @@ namespace NHibernate.DomainModel
 		/// </summary> 
 		public string BarString
 		{
-			get { return _barString;  }
+			get { return _barString; }
 			set { _barString = value; }
 		}
-		
-		
+
+
 		/// <summary>
 		/// Gets or sets the _barComponent
 		/// </summary> 
@@ -42,33 +41,33 @@ namespace NHibernate.DomainModel
 			set { _barComponent = value; }
 		}
 
-		
+
 		/// <summary>
 		/// Gets or sets the _baz
 		/// </summary> 
 		public Baz Baz
 		{
-			get { return _baz;  }
+			get { return _baz; }
 			set { _baz = value; }
 		}
-	
-		
+
+
 		/// <summary>
 		/// Gets or sets the _name
 		/// </summary> 
 		public string Name
 		{
-			get { return _name;  }
+			get { return _name; }
 			set { _name = value; }
 		}
 
-	
+
 		/// <summary>
 		/// Gets or sets the _object
 		/// </summary> 
 		public object Object
 		{
-			get { return _object;  }
+			get { return _object; }
 			set { _object = value; }
 		}
 	}

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 
+using Iesi.Collections;
+
 namespace NHibernate.Examples.Cascades
 {
 	/// <summary>
@@ -8,12 +10,12 @@ namespace NHibernate.Examples.Cascades
 	/// </summary>
 	public class Parent
 	{
-		int id;
-		string name;
-		Iesi.Collections.ISet children;
-		IDictionary	aliases;
+		private int id;
+		private string name;
+		private ISet children;
+		private IDictionary aliases;
 
-		public int Id 
+		public int Id
 		{
 			get { return id; }
 			set { id = value; }
@@ -25,34 +27,33 @@ namespace NHibernate.Examples.Cascades
 			set { name = value; }
 		}
 
-		public Iesi.Collections.ISet Children
+		public ISet Children
 		{
-			get 
-			{ 
-				if (children==null) 
+			get
+			{
+				if (children == null)
 				{
-					children = new Iesi.Collections.HashedSet();
+					children = new HashedSet();
 				}
-				return children; 
+				return children;
 			}
 			set { children = value; }
 		}
 
-		public void AddChild(Child child) 
+		public void AddChild(Child child)
 		{
-			Children.Add( child );
+			Children.Add(child);
 			child.SingleParent = this;
 		}
 
-		public IDictionary Aliases 
+		public IDictionary Aliases
 		{
-			get 
-			{ 
-				if(aliases==null) aliases = new Hashtable();
-				return aliases; 
+			get
+			{
+				if (aliases == null) aliases = new Hashtable();
+				return aliases;
 			}
 			set { aliases = value; }
 		}
-
 	}
 }

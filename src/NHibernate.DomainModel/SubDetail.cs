@@ -1,13 +1,12 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for SubDetail.
 	/// </summary>
-	public class SubDetail 
+	public class SubDetail
 	{
-
 		private string _name;
 		private long _id;
 
@@ -22,6 +21,5 @@ namespace NHibernate.DomainModel
 			get { return _name; }
 			set { _name = value; }
 		}
-
 	}
 }

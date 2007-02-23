@@ -1,8 +1,7 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific 
+namespace NHibernate.DomainModel.NHSpecific
 {
-
 	/// <summary>
 	/// Used to test how NHibernate handles mappings for type="Object"
 	/// and type="Any"
@@ -10,13 +9,13 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// <remarks>
 	/// This class is used in two hbm.xml files.
 	/// </remarks>
-	public class BasicObject 
+	public class BasicObject
 	{
 		private int _id;
 		private string _name;
 		private object _any;
 		private object _anyProxy;
-		
+
 		public int Id
 		{
 			get { return _id; }
@@ -35,19 +34,18 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _any = value; }
 		}
 
-		public object AnyWithProxy 
+		public object AnyWithProxy
 		{
 			get { return _anyProxy; }
 			set { _anyProxy = value; }
 		}
-
 	}
 
 	/// <summary>
 	/// Summary description for BasicObject.
 	/// </summary>
 	[Serializable]
-	public class BasicObjectRef 
+	public class BasicObjectRef
 	{
 		private int _id;
 		private string _name;
@@ -63,10 +61,9 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return _name; }
 			set { _name = value; }
 		}
-
 	}
 
-	public interface IBasicObjectProxy 
+	public interface IBasicObjectProxy
 	{
 		int Id { get; set; }
 		string Name { get; set; }
@@ -93,7 +90,5 @@ namespace NHibernate.DomainModel.NHSpecific
 		}
 
 		#endregion
-
 	}
-
 }

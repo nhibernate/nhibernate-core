@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.Globalization;
+
+using Iesi.Collections;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -13,7 +16,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		private char _characterProperty;
 		private System.Type _classProperty;
-		private System.Globalization.CultureInfo _cultureInfoProperty;
+		private CultureInfo _cultureInfoProperty;
 		private DateTime _dateTimeProperty = DateTime.Today;
 		private short _int16Property;
 		private int _int32Property;
@@ -23,7 +26,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		private DateTime _ticksProperty;
 		private bool _trueFalseProperty;
 		private bool _yesNoProperty;
-		
+
 		private int _privateField;
 
 		private string[] _stringArray;
@@ -31,89 +34,88 @@ namespace NHibernate.DomainModel.NHSpecific
 		private IList _stringBag;
 		private IList _stringList;
 		private IDictionary _stringMap;
-		private Iesi.Collections.ISet _stringSet;
+		private ISet _stringSet;
 
 		public BasicClass()
 		{
-			
 		}
 
-		public int Id 
+		public int Id
 		{
-			get { return _id;}
-			set { _id = value;}
+			get { return _id; }
+			set { _id = value; }
 		}
 
-		public char CharacterProperty 
+		public char CharacterProperty
 		{
-			get {return _characterProperty ;}
-			set {_characterProperty = value;}
+			get { return _characterProperty; }
+			set { _characterProperty = value; }
 		}
 
-		public System.Type ClassProperty 
+		public System.Type ClassProperty
 		{
-			get {return _classProperty;}
-			set {_classProperty = value;}
+			get { return _classProperty; }
+			set { _classProperty = value; }
 		}
 
-		public System.Globalization.CultureInfo CultureInfoProperty 
+		public CultureInfo CultureInfoProperty
 		{
-			get {return _cultureInfoProperty;}
-			set {_cultureInfoProperty = value;}
+			get { return _cultureInfoProperty; }
+			set { _cultureInfoProperty = value; }
 		}
 
-		public DateTime DateTimeProperty 
+		public DateTime DateTimeProperty
 		{
-			get {return _dateTimeProperty;}
-			set {_dateTimeProperty = value;}
+			get { return _dateTimeProperty; }
+			set { _dateTimeProperty = value; }
 		}
 
-		public short Int16Property 
+		public short Int16Property
 		{
-			get {return _int16Property;}
-			set {_int16Property = value;}
+			get { return _int16Property; }
+			set { _int16Property = value; }
 		}
 
-		public int Int32Property 
+		public int Int32Property
 		{
-			get {return _int32Property;}
-			set {_int32Property = value;}
+			get { return _int32Property; }
+			set { _int32Property = value; }
 		}
 
-		public long Int64Property 
+		public long Int64Property
 		{
-			get {return _int64Property;}
-			set {_int64Property = value;}
+			get { return _int64Property; }
+			set { _int64Property = value; }
 		}
 
-		public float SingleProperty 
+		public float SingleProperty
 		{
-			get {return _singleProperty;}
-			set {_singleProperty = value;}
+			get { return _singleProperty; }
+			set { _singleProperty = value; }
 		}
 
-		public string StringProperty 
+		public string StringProperty
 		{
-			get {return _stringProperty;}
-			set {_stringProperty = value;}
+			get { return _stringProperty; }
+			set { _stringProperty = value; }
 		}
 
-		public DateTime TicksProperty 
+		public DateTime TicksProperty
 		{
-			get {return _ticksProperty;}
-			set {_ticksProperty = value;}
+			get { return _ticksProperty; }
+			set { _ticksProperty = value; }
 		}
 
-		public bool TrueFalseProperty 
+		public bool TrueFalseProperty
 		{
-			get {return _trueFalseProperty;}
-			set {_trueFalseProperty = value;}
+			get { return _trueFalseProperty; }
+			set { _trueFalseProperty = value; }
 		}
 
-		public bool YesNoProperty 
+		public bool YesNoProperty
 		{
-			get {return _yesNoProperty;}
-			set {_yesNoProperty = value;}
+			get { return _yesNoProperty; }
+			set { _yesNoProperty = value; }
 		}
 
 		/// <summary>
@@ -131,19 +133,19 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _privateField = value; }
 		}
 
-		public string[] StringArray 
+		public string[] StringArray
 		{
 			get { return _stringArray; }
 			set { _stringArray = value; }
 		}
 
-		public int[] Int32Array 
+		public int[] Int32Array
 		{
 			get { return _int32Array; }
 			set { _int32Array = value; }
 		}
 
-		public IList StringBag 
+		public IList StringBag
 		{
 			get { return _stringBag; }
 			set { _stringBag = value; }
@@ -155,26 +157,25 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _stringList = value; }
 		}
 
-		public IDictionary StringMap 
+		public IDictionary StringMap
 		{
 			get { return _stringMap; }
 			set { _stringMap = value; }
 		}
 
-		public Iesi.Collections.ISet StringSet 
+		public ISet StringSet
 		{
 			get { return _stringSet; }
 			set { _stringSet = value; }
 		}
-		
-		public void AddToStringSet(string stringValue) 
-		{
-			if(StringSet==null)
-			{
-				StringSet = new Iesi.Collections.HashedSet();
-			}
-			StringSet.Add( stringValue );
-		}
 
+		public void AddToStringSet(string stringValue)
+		{
+			if (StringSet == null)
+			{
+				StringSet = new HashedSet();
+			}
+			StringSet.Add(stringValue);
+		}
 	}
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 
+using Iesi.Collections;
+
 namespace NHibernate.DomainModel
 {
 	/// <summary>
@@ -11,7 +13,7 @@ namespace NHibernate.DomainModel
 		private string _id;
 		private IList _ones;
 		private Foo[] _fooArray;
-		private Iesi.Collections.ISet _foos;// <set> mapping
+		private ISet _foos; // <set> mapping
 		private string _name;
 		private Holder _otherHolder;
 
@@ -19,11 +21,11 @@ namespace NHibernate.DomainModel
 		{
 		}
 
-		public Holder( string name )
+		public Holder(string name)
 		{
 			_name = name;
 		}
-		
+
 		public string Id
 		{
 			get { return _id; }
@@ -42,12 +44,12 @@ namespace NHibernate.DomainModel
 			set { _fooArray = value; }
 		}
 
-		public Iesi.Collections.ISet Foos
+		public ISet Foos
 		{
 			get { return _foos; }
 			set { _foos = value; }
 		}
-		
+
 		public Holder OtherHolder
 		{
 			get { return _otherHolder; }

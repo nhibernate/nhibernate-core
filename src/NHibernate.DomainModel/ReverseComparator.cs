@@ -10,16 +10,9 @@ namespace NHibernate.DomainModel
 
 		public int Compare(object x, object y)
 		{
-			return - ((IComparable)x).CompareTo(y);
+			return - ((IComparable) x).CompareTo(y);
 		}
 
 		#endregion
 	}
 }
-
-
-
-
-
-
-

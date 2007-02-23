@@ -1,13 +1,13 @@
 using System;
 using System.Globalization;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Location.
 	/// </summary>
 	[Serializable]
-	public class Location 
+	public class Location
 	{
 		private int _streetNumber;
 		private string _city;
@@ -15,7 +15,7 @@ namespace NHibernate.DomainModel
 		private string _countryCode;
 		private CultureInfo _locale;
 		private string _description;
-		
+
 		public int StreetNumber
 		{
 			get { return _streetNumber; }
@@ -40,7 +40,7 @@ namespace NHibernate.DomainModel
 			set { _countryCode = value; }
 		}
 
-			
+
 		public string Description
 		{
 			get { return _description; }
@@ -57,16 +57,16 @@ namespace NHibernate.DomainModel
 
 		public override bool Equals(object obj)
 		{
-			if(this==obj) return true;
+			if (this == obj) return true;
 
 			Location rhs = obj as Location;
-			if(rhs==null) return false;
+			if (rhs == null) return false;
 
-			return ( rhs.City.Equals(this.City) 
-				&& rhs.StreetName.Equals(this.StreetName) 
-				&& rhs.CountryCode.Equals(this.CountryCode)
-				&& rhs.StreetNumber.Equals(this.StreetNumber)
-				);
+			return (rhs.City.Equals(this.City)
+			        && rhs.StreetName.Equals(this.StreetName)
+			        && rhs.CountryCode.Equals(this.CountryCode)
+			        && rhs.StreetNumber.Equals(this.StreetNumber)
+			       );
 		}
 
 		public override int GetHashCode()

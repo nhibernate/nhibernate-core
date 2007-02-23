@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Examples.Blogger
 {
@@ -13,60 +12,32 @@ namespace NHibernate.Examples.Blogger
 
 		public Blog ParentBlog
 		{
-			get
-			{
-				return blog;
-			}
-			set
-			{
-				blog = value;
-			}
+			get { return blog; }
+			set { blog = value; }
 		}
 
 		public DateTime ItemDate
 		{
-			get
-			{
-				return dateTime;
-			}
-			set
-			{
-				dateTime = value;
-			}
+			get { return dateTime; }
+			set { dateTime = value; }
 		}
 
 		public long Id
 		{
-			get
-			{
-				return id;
-			}
-			set
-			{
-				id=value;
-			}
+			get { return id; }
+			set { id = value; }
 		}
+
 		public string Text
 		{
-			get
-			{
-				return text;
-			}
-			set
-			{
-				text=value;
-			}
+			get { return text; }
+			set { text = value; }
 		}
+
 		public string Title
 		{
-			get
-			{
-				return title;
-			}
-			set
-			{
-				title=value;
-			}
+			get { return title; }
+			set { title = value; }
 		}
 	}
 }

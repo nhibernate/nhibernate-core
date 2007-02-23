@@ -23,7 +23,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return _string; }
 			set { _string = value; }
 		}
-		
+
 		public IList Bag
 		{
 			get { return _bag; }

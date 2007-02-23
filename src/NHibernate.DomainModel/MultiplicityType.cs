@@ -1,58 +1,67 @@
 using System;
 using System.Data;
+
 using NHibernate.Engine;
+using NHibernate.Type;
 using NHibernate.UserTypes;
 
 namespace NHibernate.DomainModel
 {
-	public class MultiplicityType : ICompositeUserType 
+	public class MultiplicityType : ICompositeUserType
 	{
-		private static readonly string[] PROP_NAMES = new String[] { 
-															  "count", "glarch" 
-														  };
-		private static readonly Type.IType[] TYPES = new Type.IType[] { 
-			NHibernateUtil.Int32, NHibernateUtil.Entity(typeof(Glarch))
-													   };
+		private static readonly string[] PROP_NAMES = new String[]
+			{
+				"count", "glarch"
+			};
+
+		private static readonly IType[] TYPES = new IType[]
+			{
+				NHibernateUtil.Int32, NHibernateUtil.Entity(typeof(Glarch))
+			};
+
 		public String[] PropertyNames
 		{
 			get { return PROP_NAMES; }
 		}
-		public Type.IType[] PropertyTypes
+
+		public IType[] PropertyTypes
 		{
 			get { return TYPES; }
 		}
 
-		public object GetPropertyValue(object component, int property) 
+		public object GetPropertyValue(object component, int property)
 		{
 			Multiplicity o = (Multiplicity) component;
-			return property==0 ? 
-				(object)o.count : 
-				(object)o.glarch;
+			return property == 0 ?
+			       (object) o.count :
+			       (object) o.glarch;
 		}
 
-		public void SetPropertyValue(object component, int property, object value) 
+		public void SetPropertyValue(object component, int property, object value)
 		{
 			Multiplicity o = (Multiplicity) component;
-			if (property==0) 
+			if (property == 0)
 			{
-				o.count = (int)value;
+				o.count = (int) value;
 			}
-			else 
+			else
 			{
 				o.glarch = (Glarch) value;
 			}
 		}
+
 		public System.Type ReturnedClass
 		{
 			get { return typeof(Multiplicity); }
 		}
-		public new bool Equals(object x, object y) 
+
+		public new bool Equals(object x, object y)
 		{
 			Multiplicity mx = (Multiplicity) x;
 			Multiplicity my = (Multiplicity) y;
-			if (mx==my) return true;
-			if (mx==null || my==null) return false;
-			return mx.count==my.count && mx.glarch==my.glarch;
+			if (mx == my) return true;
+			if (mx == null || my == null) return false;
+			return mx.count == my.count && mx.glarch == my.glarch;
 		}
 
 		public int GetHashCode(object x)
@@ -64,56 +73,56 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public object NullSafeGet(IDataReader rs, String[] names, Engine.ISessionImplementor session, Object owner)
+		public object NullSafeGet(IDataReader rs, String[] names, ISessionImplementor session, Object owner)
 		{
-			int c = (int) NHibernateUtil.Int32.NullSafeGet( rs, names[0], session, owner);
+			int c = (int) NHibernateUtil.Int32.NullSafeGet(rs, names[0], session, owner);
 			GlarchProxy g = (GlarchProxy) NHibernateUtil.Entity(typeof(Glarch)).NullSafeGet(rs, names[1], session, owner);
 			Multiplicity m = new Multiplicity();
-			m.count = ( c==0 ? 0 : c );
+			m.count = (c == 0 ? 0 : c);
 			m.glarch = g;
 			return m;
 		}
 
-		public void NullSafeSet(IDbCommand st, Object value, int index, Engine.ISessionImplementor session)
+		public void NullSafeSet(IDbCommand st, Object value, int index, ISessionImplementor session)
 		{
 			Multiplicity o = (Multiplicity) value;
 			GlarchProxy g;
 			int c;
-			if (o==null) 
+			if (o == null)
 			{
-				g=null;
-				c=0;
+				g = null;
+				c = 0;
 			}
-			else 
+			else
 			{
 				g = o.glarch;
 				c = o.count;
 			}
 			NHibernateUtil.Int32.NullSafeSet(st, c, index, session);
-			NHibernateUtil.Entity(typeof(Glarch)).NullSafeSet(st, g, index+1, session);
-
+			NHibernateUtil.Entity(typeof(Glarch)).NullSafeSet(st, g, index + 1, session);
 		}
 
-		public object DeepCopy(object value) 
+		public object DeepCopy(object value)
 		{
-			if (value==null) return null;
+			if (value == null) return null;
 			Multiplicity v = (Multiplicity) value;
 			Multiplicity m = new Multiplicity();
 			m.count = v.count;
 			m.glarch = v.glarch;
 			return m;
 		}
+
 		public bool IsMutable
 		{
 			get { return true; }
 		}
 
-		public object Assemble(object cached, Engine.ISessionImplementor session, Object owner) 
+		public object Assemble(object cached, ISessionImplementor session, Object owner)
 		{
 			throw new InvalidOperationException();
 		}
-		
-		public object Disassemble(Object value, Engine.ISessionImplementor session) 
+
+		public object Disassemble(Object value, ISessionImplementor session)
 		{
 			throw new InvalidOperationException();
 		}

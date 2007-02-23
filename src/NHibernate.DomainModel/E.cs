@@ -9,14 +9,15 @@ namespace NHibernate.DomainModel
 	public class E
 	{
 		#region Fields
-	
+
 		private Int64 _id;
 		private Double _amount;
 		private A _reverse;
-	
+
 		#endregion
 
 		#region Properties
+
 		/// <summary>
 		/// Get/set for id
 		/// </summary>
@@ -25,7 +26,7 @@ namespace NHibernate.DomainModel
 			get { return _id; }
 			set { _id = value; }
 		}
-	
+
 		/// <summary>
 		/// Get/set for Amount
 		/// </summary>

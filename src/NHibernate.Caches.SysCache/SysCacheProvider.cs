@@ -1,4 +1,5 @@
 #region License
+
 //
 //  SysCache - A cache provider for NHibernate using System.Web.Caching.Cache.
 //
@@ -16,13 +17,16 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
+
 #endregion
 
 using System;
 using System.Collections;
 using System.Configuration;
 using System.Text;
+
 using log4net;
+
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.SysCache
@@ -34,18 +38,18 @@ namespace NHibernate.Caches.SysCache
 	{
 		private static readonly ILog log;
 		private static Hashtable caches;
-		
+
 		static SysCacheProvider()
 		{
-			log = LogManager.GetLogger( typeof( SysCacheProvider ) );
+			log = LogManager.GetLogger(typeof(SysCacheProvider));
 			caches = new Hashtable();
-			
-			CacheConfig[] list = ConfigurationSettings.GetConfig( "syscache" ) as CacheConfig[];
-			if( list != null )
+
+			CacheConfig[] list = ConfigurationSettings.GetConfig("syscache") as CacheConfig[];
+			if (list != null)
 			{
-				foreach( CacheConfig cache in list )
+				foreach (CacheConfig cache in list)
 				{
-					caches.Add( cache.Region, new SysCache( cache.Region, cache.Properties ) );
+					caches.Add(cache.Region, new SysCache(cache.Region, cache.Properties));
 				}
 			}
 		}
@@ -57,35 +61,35 @@ namespace NHibernate.Caches.SysCache
 		/// <param name="properties"></param>
 		/// <returns></returns>
 		[CLSCompliant(false)]
-		public ICache BuildCache( string regionName, IDictionary properties )
+		public ICache BuildCache(string regionName, IDictionary properties)
 		{
-			if( regionName != null && caches[ regionName ] != null )
+			if (regionName != null && caches[regionName] != null)
 			{
-				return caches[ regionName ] as ICache;
+				return caches[regionName] as ICache;
 			}
-			
-			if( regionName == null )
+
+			if (regionName == null)
 			{
 				regionName = "";
 			}
-			if( properties == null )
+			if (properties == null)
 			{
 				properties = new Hashtable();
 			}
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
 				StringBuilder sb = new StringBuilder();
-				foreach( DictionaryEntry de in properties )
+				foreach (DictionaryEntry de in properties)
 				{
-					sb.Append( "name=" );
-					sb.Append( de.Key.ToString() );
-					sb.Append( "&value=" );
-					sb.Append( de.Value.ToString() );
-					sb.Append( ";" );
+					sb.Append("name=");
+					sb.Append(de.Key.ToString());
+					sb.Append("&value=");
+					sb.Append(de.Value.ToString());
+					sb.Append(";");
 				}
-				log.Debug( "building cache with region: " + regionName + ", properties: " + sb.ToString() );
+				log.Debug("building cache with region: " + regionName + ", properties: " + sb.ToString());
 			}
-			return new SysCache( regionName, properties );
+			return new SysCache(regionName, properties);
 		}
 
 		/// <summary></summary>
@@ -97,7 +101,7 @@ namespace NHibernate.Caches.SysCache
 
 		/// <summary></summary>
 		/// <param name="properties"></param>
-		public void Start( IDictionary properties )
+		public void Start(IDictionary properties)
 		{
 		}
 

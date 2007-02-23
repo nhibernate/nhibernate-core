@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
+using System.Reflection;
 
 using NHibernate.Cache;
-using NHibernate.Metadata;
 using NHibernate.Engine;
 using NHibernate.Id;
-using NHibernate.Impl;
 using NHibernate.Mapping;
+using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
@@ -20,14 +20,15 @@ namespace NHibernate.DomainModel
 		private static readonly Hashtable Instances = new Hashtable();
 		private static readonly IIdentifierGenerator Generator = new CounterGenerator();
 
-		private static readonly IType[] Types = new IType[] { NHibernateUtil.String };
-		private static readonly string[] Names = new string[] { "name" };
-		private static readonly bool[] Mutability = new bool[] { true };
-		private static readonly bool[] Nullability = new bool[] { true };
+		private static readonly IType[] Types = new IType[] {NHibernateUtil.String};
+		private static readonly string[] Names = new string[] {"name"};
+		private static readonly bool[] Mutability = new bool[] {true};
+		private static readonly bool[] Nullability = new bool[] {true};
 
 		private ISessionFactoryImplementor factory;
 
-		public CustomPersister( PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactory factory, IMapping mapping )
+		public CustomPersister(PersistentClass model, ICacheConcurrencyStrategy cache, ISessionFactory factory,
+		                       IMapping mapping)
 		{
 			this.factory = (ISessionFactoryImplementor) factory;
 		}
@@ -51,11 +52,11 @@ namespace NHibernate.DomainModel
 
 		public int[] FindDirty(object[] x, object[] y, object owner, ISessionImplementor session)
 		{
-			if( x[0].Equals(y[0])==false) 
+			if (x[0].Equals(y[0]) == false)
 			{
 				return new int[] {0};
 			}
-			else 
+			else
 			{
 				return null;
 			}
@@ -63,7 +64,7 @@ namespace NHibernate.DomainModel
 
 		public int[] FindModified(object[] x, object[] y, object owner, ISessionImplementor session)
 		{
-			return FindDirty( x, y, owner, session );
+			return FindDirty(x, y, owner, session);
 		}
 
 		public bool[] PropertyUpdateability
@@ -99,7 +100,7 @@ namespace NHibernate.DomainModel
 		public object Instantiate(object id)
 		{
 			Custom c = new Custom();
-			c.Id = (long)id;
+			c.Id = (long) id;
 			return c;
 		}
 
@@ -110,13 +111,13 @@ namespace NHibernate.DomainModel
 
 		public bool[] PropertyInsertability
 		{
-			get  { return Mutability; }
+			get { return Mutability; }
 		}
 
-        public bool[] PropertyVersionability
-        {
-            get { return Mutability; }
-        }
+		public bool[] PropertyVersionability
+		{
+			get { return Mutability; }
+		}
 
 		public System.Type MappedClass
 		{
@@ -130,22 +131,22 @@ namespace NHibernate.DomainModel
 
 		public void Insert(object id, object[] fields, object obj, ISessionImplementor session)
 		{
-			Instances[id] = ((Custom)obj).Clone();
+			Instances[id] = ((Custom) obj).Clone();
 		}
 
 		public bool IsUnsaved(object id)
 		{
-			return (long)id==0;
+			return (long) id == 0;
 		}
 
 		public bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier
 		{
-			get { return true;}
+			get { return true; }
 		}
 
 		public object GetVersion(object obj)
 		{
-			 return null;
+			return null;
 		}
 
 		public Cascades.CascadeStyle[] PropertyCascadeStyles
@@ -155,13 +156,13 @@ namespace NHibernate.DomainModel
 
 		public object[] PropertySpaces
 		{
-			get { return new string[] { "CUSTOMS" };  }
+			get { return new string[] {"CUSTOMS"}; }
 		}
 
 		public void SetPropertyValues(object obj, object[] values)
 		{
-			Custom c = (Custom)obj;
-			c.Name = (string)values[0];
+			Custom c = (Custom) obj;
+			c.Name = (string) values[0];
 		}
 
 		public IType[] PropertyTypes
@@ -181,17 +182,17 @@ namespace NHibernate.DomainModel
 
 		public object GetIdentifier(object obj)
 		{
-			return (long)( (Custom)obj).Id;
+			return (long) ((Custom) obj).Id;
 		}
 
 		public object GetPropertyValue(object obj, int i)
 		{
-			return ( (Custom)obj).Name;
+			return ((Custom) obj).Name;
 		}
 
 		public object GetPropertyValue(object obj, string name)
 		{
-			return ( (Custom)obj).Name;
+			return ((Custom) obj).Name;
 		}
 
 		public bool IsVersioned
@@ -199,7 +200,7 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
-		public bool IsUnsavedVersion( object[ ] values )
+		public bool IsUnsavedVersion(object[] values)
 		{
 			return false;
 		}
@@ -211,7 +212,7 @@ namespace NHibernate.DomainModel
 
 		public void SetIdentifier(object obj, object id)
 		{
-			( (Custom)obj).Id = (long)id;
+			((Custom) obj).Id = (long) id;
 		}
 
 		public bool ImplementsLifecycle
@@ -221,7 +222,7 @@ namespace NHibernate.DomainModel
 
 		public object[] GetPropertyValues(object obj)
 		{
-			Custom c = (Custom)obj;
+			Custom c = (Custom) obj;
 			return new object[] {c.Name};
 		}
 
@@ -245,7 +246,7 @@ namespace NHibernate.DomainModel
 			get { return NHibernateUtil.Int64; }
 		}
 
-		public System.Reflection.PropertyInfo ProxyIdentifierProperty
+		public PropertyInfo ProxyIdentifierProperty
 		{
 			get { return null; }
 		}
@@ -260,9 +261,10 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
-		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields, object oldVersion, object obj, ISessionImplementor session)
+		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
+		                   object oldVersion, object obj, ISessionImplementor session)
 		{
-			Instances[id] = ( (Custom)obj).Clone();
+			Instances[id] = ((Custom) obj).Clone();
 		}
 
 		public void Delete(object id, object version, object obj, ISessionImplementor session)
@@ -277,15 +279,15 @@ namespace NHibernate.DomainModel
 
 		public void SetPropertyValue(object obj, int i, object value)
 		{
-			( (Custom)obj).Name = (string)value;
+			((Custom) obj).Name = (string) value;
 		}
 
 		public void SetPropertyValue(object obj, string name, object value)
 		{
-			( (Custom)obj).Name = (string)value;
+			((Custom) obj).Name = (string) value;
 		}
 
-		public IType GetPropertyType( string propertyName )
+		public IType GetPropertyType(string propertyName)
 		{
 			// TODO: Implement this
 			return null;
@@ -295,11 +297,11 @@ namespace NHibernate.DomainModel
 		{
 			Custom clone = null;
 			Custom obj = (Custom) Instances[id];
-			if(obj!=null) 
+			if (obj != null)
 			{
-				clone = (Custom)obj.Clone();
-				session.AddUninitializedEntity( new EntityKey(id, this), clone, LockMode.None );
-				session.PostHydrate( this, id, new string[] {obj.Name}, clone, LockMode.None );
+				clone = (Custom) obj.Clone();
+				session.AddUninitializedEntity(new EntityKey(id, this), clone, LockMode.None);
+				session.PostHydrate(this, id, new string[] {obj.Name}, clone, LockMode.None);
 				session.InitializeEntity(clone);
 			}
 			return clone;
@@ -354,7 +356,7 @@ namespace NHibernate.DomainModel
 		/// <param name="version"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object[] GetDatabaseSnapshot( object id, object version, ISessionImplementor session )
+		public object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session)
 		{
 			return null;
 		}
@@ -365,16 +367,16 @@ namespace NHibernate.DomainModel
 		/// <param name="id"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object GetCurrentVersion( object id, ISessionImplementor session )
+		public object GetCurrentVersion(object id, ISessionImplementor session)
 		{
 			return this;
 		}
 
-		public object CreateProxy( object id, ISessionImplementor session )
+		public object CreateProxy(object id, ISessionImplementor session)
 		{
 			throw new NotSupportedException("CustomPersister.CreateProxy is not implemented");
 		}
-		
+
 		public object[] QuerySpaces
 		{
 			get { return null; }

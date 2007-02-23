@@ -43,7 +43,8 @@ namespace Iesi.Collections
 	/// </list>
 	/// </summary>
 	public interface ISet : ICollection, ICloneable
-	{	/// <summary>
+	{
+		/// <summary>
 		/// Performs a "union" of the two sets, where all the elements
 		/// in both sets are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
 		/// Neither this set nor the input set are modified during the operation.  The return value
@@ -101,7 +102,7 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Returns <c>true</c> if this set contains no elements.
 		/// </summary>
-		bool IsEmpty{get;}
+		bool IsEmpty { get; }
 
 		/// <summary>
 		/// Adds the specified element to this set if it is not already present.
@@ -143,6 +144,5 @@ namespace Iesi.Collections
 		/// Removes all objects from the set.
 		/// </summary>
 		void Clear();
-
 	}
 }

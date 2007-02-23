@@ -16,12 +16,12 @@ namespace NHibernate.Caches.SysCache
 		/// <param name="region"></param>
 		/// <param name="expiration"></param>
 		/// <param name="priority"></param>
-		public CacheConfig( string region, string expiration, string priority )
+		public CacheConfig(string region, string expiration, string priority)
 		{
 			regionName = region;
 			properties = new Hashtable();
-			properties.Add( "expiration", expiration );
-			properties.Add( "priority", priority );
+			properties.Add("expiration", expiration);
+			properties.Add("priority", priority);
 		}
 
 		/// <summary></summary>

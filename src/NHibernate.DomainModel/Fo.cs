@@ -4,12 +4,14 @@ namespace NHibernate.DomainModel
 {
 	public class Fo
 	{
-		public static Fo NewFo() 
+		public static Fo NewFo()
 		{
 			return new Fo();
 		}
 
-		private Fo() {}
+		private Fo()
+		{
+		}
 
 		private long _version;
 		private int _x;

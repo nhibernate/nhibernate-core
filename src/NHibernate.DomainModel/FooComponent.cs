@@ -2,7 +2,6 @@ using System;
 
 namespace NHibernate.DomainModel
 {
-
 	/// <summary>
 	/// POJO for FooComponent
 	/// </summary>
@@ -12,36 +11,37 @@ namespace NHibernate.DomainModel
 	[Serializable]
 	public class FooComponent
 	{
-
 		#region Fields
+
 		/// <summary>
 		/// Holder for name
 		/// </summary>
 		private String _name;
-	
+
 		/// <summary>
 		/// Holder for count
 		/// </summary>
 		private Int32 _count;
 
 		private DateTime[] _importantDates;
-	
+
 		private FooComponent _subcomponent;
 		private Fee _fee = new Fee();
 		private GlarchProxy _glarch;
 		private FooProxy _parent;
 		private Baz _baz;
-	
+
 		#endregion
 
 		#region Constructors
+
 		/// <summary>
 		/// Default constructor for class FooComponent
 		/// </summary>
 		public FooComponent()
 		{
 		}
-	
+
 		/// <summary>
 		/// Constructor for class FooComponent
 		/// </summary>
@@ -52,15 +52,16 @@ namespace NHibernate.DomainModel
 			_name = name;
 			_count = count;
 		}
-		public FooComponent(String name, int count, DateTime[] dates, FooComponent subcomponent) 
+
+		public FooComponent(String name, int count, DateTime[] dates, FooComponent subcomponent)
 		{
 			_name = name;
 			_count = count;
 			_importantDates = dates;
 			_subcomponent = subcomponent;
 		}
-	
-		public FooComponent(String name, int count, DateTime[] dates, FooComponent subcomponent, Fee fee) 
+
+		public FooComponent(String name, int count, DateTime[] dates, FooComponent subcomponent, Fee fee)
 		{
 			_name = name;
 			_count = count;
@@ -68,11 +69,11 @@ namespace NHibernate.DomainModel
 			_subcomponent = subcomponent;
 			_fee = fee;
 		}
-	
+
 		#endregion
-	
+
 		#region Properties
-		
+
 		/// <summary>
 		/// Get/set for name
 		/// </summary>
@@ -81,7 +82,7 @@ namespace NHibernate.DomainModel
 			get { return _name; }
 			set { _name = value; }
 		}
-	
+
 		/// <summary>
 		/// Get/set for count
 		/// </summary>
@@ -106,9 +107,9 @@ namespace NHibernate.DomainModel
 		private String NullString
 		{
 			get { return null; }
-			set 
+			set
 			{
-				if (value!=null)
+				if (value != null)
 					throw new Exception("null component property");
 			}
 		}
@@ -118,64 +119,64 @@ namespace NHibernate.DomainModel
 			get { return _fee; }
 			set { this._fee = value; }
 		}
-	
+
 		public GlarchProxy Glarch
 		{
 			get { return _glarch; }
 			set { _glarch = value; }
 		}
-	
+
 		public FooProxy Parent
 		{
 			get { return _parent; }
 			set
 			{
-				if (_parent != null && value==null)
+				if (_parent != null && value == null)
 					throw new ArgumentNullException("null parent set");
 				_parent = value;
 			}
 		}
-	
+
 		public Baz Baz
 		{
 			get { return _baz; }
 			set { _baz = value; }
 		}
-	
+
 		#endregion
- 
+
 		#region System.Object Members
 
 		public override bool Equals(object obj)
 		{
 			FooComponent fc = (FooComponent) obj;
-			return Count==fc.Count;
+			return Count == fc.Count;
 		}
- 
+
 		public override int GetHashCode()
 		{
 			return Count;
 		}
- 
+
 		public override string ToString()
 		{
 			String result = "FooComponent: " + Name + "=" + Count;
-			result+="; dates=[";
-			if ( _importantDates!=null) 
+			result += "; dates=[";
+			if (_importantDates != null)
 			{
-				for ( int i=0; i<_importantDates.Length; i++ ) 
+				for (int i = 0; i < _importantDates.Length; i++)
 				{
-					result+=(i==0 ?"":", ") + _importantDates[i];
+					result += (i == 0 ? "" : ", ") + _importantDates[i];
 				}
 			}
-			result+="]";
-			if ( Subcomponent!=null ) 
+			result += "]";
+			if (Subcomponent != null)
 			{
-				result+= " (" + Subcomponent + ")";
+				result += " (" + Subcomponent + ")";
 			}
 			return result;
 		}
-		#endregion
 
+		#endregion
 	}
 }

@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Data;
+
 using NHibernate.Connection;
 using NHibernate.DomainModel;
 
 using NUnit.Framework;
+
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Performance
 {
@@ -14,31 +17,27 @@ namespace NHibernate.Test.Performance
 	[TestFixture]
 	public class NewerPerformanceTest : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "Simple.hbm.xml"};
-			}
+			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
 		[Test]
-		public void Many() 
+		public void Many()
 		{
-			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
-		
-			long hiber=0;
-			long adonet=0;
+			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(Environment.Properties);
+
+			long hiber = 0;
+			long adonet = 0;
 			ISession s;
-			for ( int n=0; n<20; n++ ) 
+			for (int n = 0; n < 20; n++)
 			{
-			
 				s = OpenSession();
 				s.Delete("from Simple");
 				s.Flush();
 				Simple[] simples = new Simple[n];
 				object[] ids = new object[n];
-				for ( int i=0; i<n; i++ ) 
+				for (int i = 0; i < n; i++)
 				{
 					simples[i] = new Simple();
 					simples[i].Init();
@@ -48,110 +47,107 @@ namespace NHibernate.Test.Performance
 				}
 				s.Flush();
 				s.Close();
-			
+
 				//allow cache to settle
-			
+
 				s = OpenSession();
 				NHibernate(s, simples, ids, n, "h0");
 				s.Close();
-			
+
 				IDbConnection c = cp.GetConnection();
-				DirectAdoNet( c, simples, ids, n, "j0" );
+				DirectAdoNet(c, simples, ids, n, "j0");
 				cp.CloseConnection(c);
-			
+
 				s = OpenSession();
 				NHibernate(s, simples, ids, n, "h0");
 				s.Close();
-			
+
 				c = cp.GetConnection();
-				DirectAdoNet( c, simples, ids, n, "j0" );
+				DirectAdoNet(c, simples, ids, n, "j0");
 				cp.CloseConnection(c);
-			
+
 				//Now do timings
-			
-				int N=30;
-			
+
+				int N = 30;
+
 				long time = DateTime.Now.Ticks;
-				for (int i=0; i<N; i++) 
+				for (int i = 0; i < N; i++)
 				{
 					s = OpenSession();
 					NHibernate(s, simples, ids, n, "h1");
 					s.Close();
 				}
 				hiber += DateTime.Now.Ticks - time;
-			
+
 				time = DateTime.Now.Ticks;
-				for (int i=0; i<N; i++) 
+				for (int i = 0; i < N; i++)
 				{
 					c = cp.GetConnection();
-					DirectAdoNet( c, simples, ids, n, "j1" );
+					DirectAdoNet(c, simples, ids, n, "j1");
 					cp.CloseConnection(c);
 				}
 				adonet += DateTime.Now.Ticks - time;
-			
+
 				time = DateTime.Now.Ticks;
-				for (int i=0; i<N; i++) 
+				for (int i = 0; i < N; i++)
 				{
 					s = OpenSession();
 					NHibernate(s, simples, ids, n, "h2");
 					s.Close();
 				}
 				hiber += DateTime.Now.Ticks - time;
-			
+
 				time = DateTime.Now.Ticks;
-				for (int i=0; i<N; i++) 
+				for (int i = 0; i < N; i++)
 				{
 					c = cp.GetConnection();
-					DirectAdoNet( c, simples, ids, n, "j2" );
+					DirectAdoNet(c, simples, ids, n, "j2");
 					cp.CloseConnection(c);
 				}
 				adonet += DateTime.Now.Ticks - time;
-			
+
 				time = DateTime.Now.Ticks;
-				for (int i=0; i<N; i++) 
+				for (int i = 0; i < N; i++)
 				{
 					s = OpenSession();
 					NHibernate(s, simples, ids, n, "h1");
 					s.Close();
 				}
 				hiber += DateTime.Now.Ticks - time;
-			
+
 				time = DateTime.Now.Ticks;
-				for (int i=0; i<N; i++) 
+				for (int i = 0; i < N; i++)
 				{
 					c = cp.GetConnection();
-					DirectAdoNet( c, simples, ids, n, "j1" );
+					DirectAdoNet(c, simples, ids, n, "j1");
 					cp.CloseConnection(c);
 				}
-				adonet += DateTime.Now.Ticks - time;			
-			
+				adonet += DateTime.Now.Ticks - time;
 			}
 
-			System.Console.Out.Write( "Hibernate: " + hiber + "ms / Direct JDBC: " + adonet + "ms = Ratio: " + ( (float) hiber )/adonet );
+			Console.Out.Write("Hibernate: " + hiber + "ms / Direct JDBC: " + adonet + "ms = Ratio: " + ((float) hiber) / adonet);
 			s = OpenSession();
 			s.Delete("from Simple");
 			s.Flush();
 			s.Close();
 			cp.Dispose();
-			System.GC.Collect();
-
+			GC.Collect();
 		}
 
 		[Test]
 		public void Simultaneous()
 		{
-			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
-		
+			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(Environment.Properties);
+
 			ISession s;
-			for ( int n=2; n<4000; n*=2 ) 
+			for (int n = 2; n < 4000; n *= 2)
 			{
-			
 				s = OpenSession();
 				s.Delete("from Simple");
 				s.Flush();
 				Simple[] simples = new Simple[n];
 				object[] ids = new object[n];
-				for ( int i=0; i<n; i++ ) 
+				for (int i = 0; i < n; i++)
 				{
 					simples[i] = new Simple();
 					simples[i].Init();
@@ -161,141 +157,87 @@ namespace NHibernate.Test.Performance
 				}
 				s.Flush();
 				s.Close();
-			
+
 				//allow cache to settle
-			
+
 				s = OpenSession();
 				NHibernate(s, simples, ids, n, "h0");
 				s.Close();
-			
+
 				IDbConnection c = cp.GetConnection();
-				DirectAdoNet( c, simples, ids, n, "j0" );
+				DirectAdoNet(c, simples, ids, n, "j0");
 				cp.CloseConnection(c);
-			
+
 				s = OpenSession();
 				NHibernate(s, simples, ids, n, "h0");
 				s.Close();
-			
+
 				c = cp.GetConnection();
-				DirectAdoNet( c, simples, ids, n, "j0" );
+				DirectAdoNet(c, simples, ids, n, "j0");
 				cp.CloseConnection(c);
-			
+
 				//Now do timings
-			
+
 				s = OpenSession();
 				long time = DateTime.Now.Ticks;
 				NHibernate(s, simples, ids, n, "h1");
 				long hiber = DateTime.Now.Ticks - time;
 				s.Close();
-			
+
 				c = cp.GetConnection();
 				time = DateTime.Now.Ticks;
-				DirectAdoNet( c, simples, ids, n, "j1" );
+				DirectAdoNet(c, simples, ids, n, "j1");
 				long adonet = DateTime.Now.Ticks - time;
 				cp.CloseConnection(c);
-			
+
 				s = OpenSession();
 				time = DateTime.Now.Ticks;
 				NHibernate(s, simples, ids, n, "h2");
 				hiber += DateTime.Now.Ticks - time;
 				s.Close();
-			
+
 				c = cp.GetConnection();
 				time = DateTime.Now.Ticks;
-				DirectAdoNet( c, simples, ids, n, "j2" );
+				DirectAdoNet(c, simples, ids, n, "j2");
 				adonet += DateTime.Now.Ticks - time;
 				cp.CloseConnection(c);
-			
+
 				s = OpenSession();
 				time = DateTime.Now.Ticks;
 				NHibernate(s, simples, ids, n, "h2");
 				hiber += DateTime.Now.Ticks - time;
 				s.Close();
-			
+
 				c = cp.GetConnection();
 				time = DateTime.Now.Ticks;
-				DirectAdoNet( c, simples, ids, n, "j2" );
+				DirectAdoNet(c, simples, ids, n, "j2");
 				adonet += DateTime.Now.Ticks - time;
 				cp.CloseConnection(c);
-			
-				System.Console.Out.WriteLine( "Objects: " + n + " - NHibernate: " + hiber + "ms / Direct AdoNet: " + adonet + "ms = Ratio: " + ( (float) hiber )/adonet );
-			
+
+				Console.Out.WriteLine("Objects: " + n + " - NHibernate: " + hiber + "ms / Direct AdoNet: " + adonet + "ms = Ratio: " +
+				                      ((float) hiber) / adonet);
 			}
-		
+
 			cp.Dispose();
 			s = OpenSession();
 			s.Delete("from Simple");
 			s.Flush();
 			s.Close();
-			System.GC.Collect();
+			GC.Collect();
 		}
 
 		[Test]
 		public void NHibernateOnly()
 		{
 			ISession s;
-			for ( int n=2; n<4000; n*=2 ) {
-			
-				s = OpenSession();
-				s.Delete("from Simple");
-				s.Flush();
-				Simple[] simples = new Simple[n];
-				object[] ids = new object[n];
-				for ( int i=0; i<n; i++ ) 
-				{
-					simples[i] = new Simple();
-					simples[i].Init();
-					simples[i].Count = i;
-					ids[i] = (long) i;
-					s.Save(simples[i], ids[i]);
-				}
-				s.Flush();
-				s.Close();
-			
-				//Now do timings
-			
-				s = OpenSession();
-				long time = DateTime.Now.Ticks;
-				NHibernate(s, simples, ids, n, "h1");
-				long hiber = DateTime.Now.Ticks - time;
-				s.Close();
-			
-				s = OpenSession();
-				time = DateTime.Now.Ticks;
-				NHibernate(s, simples, ids, n, "h2");
-				hiber += DateTime.Now.Ticks - time;
-				s.Close();
-			
-				s = OpenSession();
-				time = DateTime.Now.Ticks;
-				NHibernate(s, simples, ids, n, "h2");
-				hiber += DateTime.Now.Ticks - time;
-				s.Close();
-			
-				System.Console.Out.WriteLine( "Objects: " + n + "\t - Hibernate: \t" + hiber );
-			
-			}
-			s = OpenSession();
-			s.Delete("from Simple");
-			s.Flush();
-			s.Close();
-			System.GC.Collect();
-		}
-
-		[Test]
-		public void AdoNetOnly()
-		{
-			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider( Cfg.Environment.Properties );
-		
-			ISession s;
-			for ( int n=2; n<4000; n*=2 ) 
+			for (int n = 2; n < 4000; n *= 2)
 			{
 				s = OpenSession();
 				s.Delete("from Simple");
 				s.Flush();
 				Simple[] simples = new Simple[n];
 				object[] ids = new object[n];
-				for	( int i=0; i<n; i++ ) 
+				for (int i = 0; i < n; i++)
 				{
 					simples[i] = new Simple();
 					simples[i].Init();
@@ -305,36 +247,88 @@ namespace NHibernate.Test.Performance
 				}
 				s.Flush();
 				s.Close();
-		
-		
+
 				//Now do timings
-		
+
+				s = OpenSession();
+				long time = DateTime.Now.Ticks;
+				NHibernate(s, simples, ids, n, "h1");
+				long hiber = DateTime.Now.Ticks - time;
+				s.Close();
+
+				s = OpenSession();
+				time = DateTime.Now.Ticks;
+				NHibernate(s, simples, ids, n, "h2");
+				hiber += DateTime.Now.Ticks - time;
+				s.Close();
+
+				s = OpenSession();
+				time = DateTime.Now.Ticks;
+				NHibernate(s, simples, ids, n, "h2");
+				hiber += DateTime.Now.Ticks - time;
+				s.Close();
+
+				Console.Out.WriteLine("Objects: " + n + "\t - Hibernate: \t" + hiber);
+			}
+			s = OpenSession();
+			s.Delete("from Simple");
+			s.Flush();
+			s.Close();
+			GC.Collect();
+		}
+
+		[Test]
+		public void AdoNetOnly()
+		{
+			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(Environment.Properties);
+
+			ISession s;
+			for (int n = 2; n < 4000; n *= 2)
+			{
+				s = OpenSession();
+				s.Delete("from Simple");
+				s.Flush();
+				Simple[] simples = new Simple[n];
+				object[] ids = new object[n];
+				for (int i = 0; i < n; i++)
+				{
+					simples[i] = new Simple();
+					simples[i].Init();
+					simples[i].Count = i;
+					ids[i] = (long) i;
+					s.Save(simples[i], ids[i]);
+				}
+				s.Flush();
+				s.Close();
+
+
+				//Now do timings
+
 				IDbConnection c = cp.GetConnection();
 				long time = DateTime.Now.Ticks;
-				DirectAdoNet( c, simples, ids, n, "j1" );
+				DirectAdoNet(c, simples, ids, n, "j1");
 				long adonet = DateTime.Now.Ticks - time;
 				cp.CloseConnection(c);
-		
-				c = cp.GetConnection();
-				time = DateTime.Now.Ticks;	
-				DirectAdoNet( c, simples, ids, n, "j2" );
-				adonet += DateTime.Now.Ticks - time;
-				cp.CloseConnection(c);
-					
+
 				c = cp.GetConnection();
 				time = DateTime.Now.Ticks;
-				DirectAdoNet( c, simples, ids, n, "j2" );
+				DirectAdoNet(c, simples, ids, n, "j2");
 				adonet += DateTime.Now.Ticks - time;
 				cp.CloseConnection(c);
-				System.Console.Out.WriteLine( "Objects: " + n + "\t Direct AdoNet: " + adonet );
-		
+
+				c = cp.GetConnection();
+				time = DateTime.Now.Ticks;
+				DirectAdoNet(c, simples, ids, n, "j2");
+				adonet += DateTime.Now.Ticks - time;
+				cp.CloseConnection(c);
+				Console.Out.WriteLine("Objects: " + n + "\t Direct AdoNet: " + adonet);
 			}
 			cp.Dispose();
 			s = OpenSession();
 			s.Delete("from Simple");
 			s.Flush();
 			s.Close();
-			System.GC.Collect();
+			GC.Collect();
 		}
 
 		private void NHibernate(ISession s, Simple[] simples, object[] ids, int N, string runname)
@@ -352,7 +346,7 @@ namespace NHibernate.Test.Performance
 			select.CommandText = "SELECT id_, name, address, count_, date_, pay, other FROM Simple";
 			select.Transaction = trans;
 			IDataReader reader = select.ExecuteReader();
-			while ( reader.Read() ) 
+			while (reader.Read())
 			{
 				/*new Long( rs.getLong(1) );
 				rs.getString(2);
@@ -362,34 +356,34 @@ namespace NHibernate.Test.Performance
 				rs.getFloat(6);
 				rs.getLong(7);*/
 				Simple s = new Simple();
-				if ( ! reader.IsDBNull(0) )
+				if (! reader.IsDBNull(0))
 				{
 					reader.GetInt64(0);
 				}
-				if ( ! reader.IsDBNull(1) )
+				if (! reader.IsDBNull(1))
 				{
-					s.Name = reader.GetString(1); 
+					s.Name = reader.GetString(1);
 				}
-				if ( ! reader.IsDBNull(2) )
+				if (! reader.IsDBNull(2))
 				{
-					s.Address = reader.GetString(2); 
+					s.Address = reader.GetString(2);
 				}
-				if ( ! reader.IsDBNull(3) )
+				if (! reader.IsDBNull(3))
 				{
-					s.Count = reader.GetInt32(3); 
+					s.Count = reader.GetInt32(3);
 				}
-				if ( ! reader.IsDBNull(4) )
+				if (! reader.IsDBNull(4))
 				{
-					s.Date = reader.GetDateTime(4); 
+					s.Date = reader.GetDateTime(4);
 				}
-				if ( ! reader.IsDBNull(5) )
+				if (! reader.IsDBNull(5))
 				{
-					s.Pay =  reader.GetFloat(5); 
+					s.Pay = reader.GetFloat(5);
 				}
-				if ( ! reader.IsDBNull(6) )
+				if (! reader.IsDBNull(6))
 				{
-					reader.GetInt64(6); 
-				} 
+					reader.GetInt64(6);
+				}
 				s.Other = null;
 				result.Add(s);
 			}

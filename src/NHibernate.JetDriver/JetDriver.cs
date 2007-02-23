@@ -2,7 +2,9 @@ using System.Collections;
 using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using log4net;
+
 using NHibernate.Driver;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -33,7 +35,7 @@ namespace NHibernate.JetDriver
 			{
 				final = FinalizeJoins(sqlString);
 			}
-			//else if(IsCreateOrAlterStatement(sqlString)) final = FinalizeDDL(sqlString);
+				//else if(IsCreateOrAlterStatement(sqlString)) final = FinalizeDDL(sqlString);
 			else
 			{
 				final = sqlString;
@@ -112,7 +114,7 @@ namespace NHibernate.JetDriver
 			}
 
 			string fromClause = sqlString.Substring(beginOfFrom, endOfFrom - beginOfFrom).ToString();
-			
+
 			string transformedFrom = TransformFromClause(fromClause);
 
 			//put it all together again
@@ -126,7 +128,7 @@ namespace NHibernate.JetDriver
 
 			return ret;
 		}
-		
+
 		private string TransformFromClause(string fromClause)
 		{
 			string transformed;

@@ -107,7 +107,7 @@ namespace Iesi.Collections.Generic
 		/// <summary>
 		/// Returns <c>true</c> if this set contains no elements.
 		/// </summary>
-		bool IsEmpty{get;}
+		bool IsEmpty { get; }
 
 		/// <summary>
 		/// Adds the specified element to this set if it is not already present.
@@ -139,4 +139,5 @@ namespace Iesi.Collections.Generic
 		bool RetainAll(ICollection<T> c);
 	}
 }
+
 #endif

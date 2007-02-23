@@ -14,9 +14,9 @@ namespace NHibernate.DomainModel
 		{
 		}
 
-		public Jay( Eye eye )
+		public Jay(Eye eye)
 		{
-			eye.Jays.Add( this );
+			eye.Jays.Add(this);
 			this.eye = eye;
 		}
 

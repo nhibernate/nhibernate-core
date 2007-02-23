@@ -12,28 +12,28 @@ namespace NHibernate.Examples.Cascades
 		private string type;
 
 		public Alias()
-		{	
+		{
 		}
 
-		public Alias(string name, string type) 
+		public Alias(string name, string type)
 		{
 			this.name = name;
 			this.type = type;
 		}
 
-		public int Id 
+		public int Id
 		{
-			get { return id;}
+			get { return id; }
 			set { id = value; }
 		}
 
-		public string Name 
+		public string Name
 		{
 			get { return name; }
 			set { name = value; }
 		}
 
-		public string Type 
+		public string Type
 		{
 			get { return type; }
 			set { type = value; }

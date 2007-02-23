@@ -1,44 +1,43 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific {
-
+namespace NHibernate.DomainModel.NHSpecific
+{
 	/// <summary>
 	/// Summary description for AuditComponent.
 	/// </summary>
-	public class AuditComponent{
-
+	public class AuditComponent
+	{
 		private string _createdUserId;
-		private System.DateTime _createdDate;
+		private DateTime _createdDate;
 		private string _updatedUserId;
-		private System.DateTime _updatedDate;
+		private DateTime _updatedDate;
 
 		public AuditComponent()
 		{
 		}
 
-		public string CreatedUserId 
+		public string CreatedUserId
 		{
-			get {return _createdUserId;}
-			set {_createdUserId = value;}
+			get { return _createdUserId; }
+			set { _createdUserId = value; }
 		}
 
-		public System.DateTime CreatedDate 
+		public DateTime CreatedDate
 		{
-			get {return _createdDate;}
-			set {_createdDate = value;}
+			get { return _createdDate; }
+			set { _createdDate = value; }
 		}
 
-		public string UpdatedUserId 
+		public string UpdatedUserId
 		{
-			get {return _updatedUserId;}
-			set {_updatedUserId = value;}
+			get { return _updatedUserId; }
+			set { _updatedUserId = value; }
 		}
 
-		public System.DateTime UpdatedDate 
+		public DateTime UpdatedDate
 		{
-			get {return _updatedDate;}
-			set {_updatedDate = value;}
+			get { return _updatedDate; }
+			set { _updatedDate = value; }
 		}
-
 	}
 }

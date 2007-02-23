@@ -6,8 +6,8 @@ namespace NHibernate.UserTypes.Tests
 	// difference is the column in the db.
 	public class EmptyStringClass
 	{
-		int _id;
-		string _notNullString;
+		private int _id;
+		private string _notNullString;
 
 		public int Id
 		{

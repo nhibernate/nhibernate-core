@@ -15,13 +15,13 @@ namespace NHibernate.DomainModel
 		private IList _subcategories = new ArrayList();
 		private Assignable _assignable;
 
-		public long Id 
+		public long Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		public string Name 
+		public string Name
 		{
 			get { return _name; }
 			set { _name = value; }
@@ -33,11 +33,10 @@ namespace NHibernate.DomainModel
 			set { _subcategories = value; }
 		}
 
-		public Assignable Assignable 
+		public Assignable Assignable
 		{
 			get { return _assignable; }
 			set { _assignable = value; }
 		}
-
 	}
 }

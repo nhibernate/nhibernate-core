@@ -1,9 +1,9 @@
 using System;
+
 using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2net
 {
-	
 	/*
 	* Represents a type/classname - both primitive and Class types.
 	*  
@@ -12,77 +12,65 @@ namespace NHibernate.Tool.hbm2net
 	* To change the template for this generated type comment go to
 	* Window - Preferences - Java - Code Generation - Code and Comments
 	*/
+
 	public class ClassName
 	{
-		virtual public string FullyQualifiedName
+		public virtual string FullyQualifiedName
 		{
-			get
-			{
-				return this.fullyQualifiedName;
-			}
-			
+			get { return this.fullyQualifiedName; }
 		}
+
 		/// <summary>returns the atomar name for a class. 
 		/// 
 		/// java.util.Set -> "Set" 
 		/// </summary>
-		virtual public string Name
+		public virtual string Name
 		{
-			get
-			{
-				return this.name;
-			}
-			
+			get { return this.name; }
 		}
+
 		/// <summary>returns the package name for a class/type. 
 		/// 
 		/// java.util.Set -> "java.util" and Foo -> ""
 		/// </summary>
 		/// <returns>
 		/// </returns>
-		virtual public string PackageName
+		public virtual string PackageName
 		{
-			get
-			{
-				return this.packageName;
-			}
-			
+			get { return this.packageName; }
 		}
+
 		/// <summary>return true if this type is an array. Check is done by checking if the type ends with []. </summary>
-		virtual public bool Array
+		public virtual bool Array
 		{
-			get
-			{
-				return fullyQualifiedName.EndsWith("[]");
-			}
-			
+			get { return fullyQualifiedName.EndsWith("[]"); }
 		}
+
 		/// <summary> Type is primitive if the basename (fqn without []) is in the PRIMITIVE set.</summary>
 		/// <returns> boolean
 		/// </returns>
-		virtual public bool Primitive
+		public virtual bool Primitive
 		{
 			get
 			{
 				string baseTypeName = StringHelper.Replace(fullyQualifiedName, "[]", "");
 				return PRIMITIVES.Contains(baseTypeName);
 			}
-			
 		}
-		
+
 		internal static readonly SupportClass.SetSupport PRIMITIVES = new SupportClass.HashSetSupport();
-		
+
 		public ClassName(string fqn)
 		{
 			initFullyQualifiedName(fqn);
 		}
-		
+
 		private string fullyQualifiedName = null;
 		private string name = null;
 		private string packageName = null;
-		
+
 		/// <summary>Two ClassName are equals if their fullyQualifiedName are the same/equals! </summary>
-		public  override bool Equals(object other)
+		public override bool Equals(object other)
 		{
 			ClassName otherClassName = (ClassName) other;
 			return otherClassName.fullyQualifiedName.Equals(fullyQualifiedName);
@@ -90,26 +78,29 @@ namespace NHibernate.Tool.hbm2net
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			return base.GetHashCode();
 		}
-		
+
 		public virtual bool inJavaLang()
 		{
 			return "System".Equals(packageName);
 		}
-		
+
 		public virtual bool inSamePackage(ClassName other)
 		{
-			return (object) other.packageName == (Object) this.packageName || ((Object) other.packageName != null && other.packageName.Equals(this.packageName));
+			return
+				(object) other.packageName == (Object) this.packageName ||
+				((Object) other.packageName != null && other.packageName.Equals(this.packageName));
 		}
-		
-		
+
+
 		/*
 		* Initialize the class fields with info from a fully qualified name.
 		*/
-		private void  initFullyQualifiedName(string fqn)
+
+		private void initFullyQualifiedName(string fqn)
 		{
-			AssemblyQualifiedTypeName tn = TypeNameParser.Parse( fqn );
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse(fqn);
 
 			this.fullyQualifiedName = tn.Type;
 
@@ -123,7 +114,7 @@ namespace NHibernate.Tool.hbm2net
 				}
 				else
 				{
-					name = fullyQualifiedName.Substring( lastDot + 1 );
+					name = fullyQualifiedName.Substring(lastDot + 1);
 					packageName = fullyQualifiedName.Substring(0, lastDot);
 				}
 			}
@@ -133,11 +124,12 @@ namespace NHibernate.Tool.hbm2net
 				packageName = null;
 			}
 		}
-		
+
 		public override string ToString()
 		{
 			return FullyQualifiedName;
 		}
+
 		static ClassName()
 		{
 			{

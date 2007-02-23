@@ -1,20 +1,21 @@
 using System;
-using System.Collections;
 
-namespace NHibernate.DomainModel 
+using Iesi.Collections;
+
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for One.
 	/// </summary>
-	public class One 
+	public class One
 	{
 		private long _key;
 		private string _value;
 		// <set> mapping
-		private Iesi.Collections.ISet _manies;
+		private ISet _manies;
 		private int _x;
 		private int _v;
-		
+
 		public long Key
 		{
 			get { return _key; }
@@ -27,7 +28,7 @@ namespace NHibernate.DomainModel
 			set { _value = value; }
 		}
 
-		public Iesi.Collections.ISet Manies
+		public ISet Manies
 		{
 			get { return _manies; }
 			set { _manies = value; }

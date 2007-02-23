@@ -1,5 +1,5 @@
 using System;
-using Nullables;
+
 using NUnit.Framework;
 
 namespace Nullables.Tests
@@ -18,21 +18,21 @@ namespace Nullables.Tests
 
 			//one null, one not
 			x = NullableBoolean.Default;
-			y = new NullableBoolean( true );
-			Assert.IsTrue( x.CompareTo( y ) < 0 );
-			Assert.IsTrue( y.CompareTo( x ) > 0 );
+			y = new NullableBoolean(true);
+			Assert.IsTrue(x.CompareTo(y) < 0);
+			Assert.IsTrue(y.CompareTo(x) > 0);
 
 			//now both null
 			x = NullableBoolean.Default;
 			y = NullableBoolean.Default;
-			Assert.IsTrue( x.CompareTo( y ) == 0 );
-			Assert.IsTrue( y.CompareTo( x ) == 0 );
+			Assert.IsTrue(x.CompareTo(y) == 0);
+			Assert.IsTrue(y.CompareTo(x) == 0);
 
 			//now both with a value
-			x = new NullableBoolean( false );
-			y = new NullableBoolean( true );
-			Assert.IsTrue( x.CompareTo( y ) < 0 );
-			Assert.IsTrue( y.CompareTo( x ) > 0 );
+			x = new NullableBoolean(false);
+			y = new NullableBoolean(true);
+			Assert.IsTrue(x.CompareTo(y) < 0);
+			Assert.IsTrue(y.CompareTo(x) > 0);
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
@@ -60,7 +60,7 @@ namespace Nullables.Tests
 		{
 			NullableBoolean.Parse("invalidvalue");
 		}
-		
+
 		#endregion
 	}
 }

@@ -1,7 +1,9 @@
 using System;
 using System.Data;
+
 using NHibernate.SqlCommand;
-using Environment = NHibernate.Cfg.Environment;
+
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.JetDriver
 {
@@ -40,20 +42,20 @@ namespace NHibernate.JetDriver
 			//Although it is clearly stated in MS Access documentation, that Jet engine supports TINYINT, it is actually not true.
 			//Byte size number datatype is called BYTE.
 
-			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(255)" );
-			RegisterColumnType( DbType.AnsiStringFixedLength, 255, "CHAR($1)" );
-			RegisterColumnType( DbType.AnsiString, "TEXT(255)" );
-			RegisterColumnType( DbType.AnsiString, 255, "TEXT($1)" );
-			RegisterColumnType( DbType.AnsiString, 1073741823, "TEXT($1)" );
-			RegisterColumnType( DbType.AnsiString, 1073741823, "TEXT" );
-			RegisterColumnType( DbType.Binary, "IMAGE" );
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($1)");
+			RegisterColumnType(DbType.AnsiString, "TEXT(255)");
+			RegisterColumnType(DbType.AnsiString, 255, "TEXT($1)");
+			RegisterColumnType(DbType.AnsiString, 1073741823, "TEXT($1)");
+			RegisterColumnType(DbType.AnsiString, 1073741823, "TEXT");
+			RegisterColumnType(DbType.Binary, "IMAGE");
 			//RegisterColumnType( DbType.Binary, 8000, "VARBINARY($1)" );
-			RegisterColumnType( DbType.Binary, 2147483647, "IMAGE" );
-			RegisterColumnType( DbType.Boolean, "BIT" );
-			RegisterColumnType( DbType.Byte, "BYTE" );
-			RegisterColumnType( DbType.Currency, "MONEY" );
-			RegisterColumnType( DbType.Date, "DATETIME" );
-			RegisterColumnType( DbType.DateTime, "DATETIME" );
+			RegisterColumnType(DbType.Binary, 2147483647, "IMAGE");
+			RegisterColumnType(DbType.Boolean, "BIT");
+			RegisterColumnType(DbType.Byte, "BYTE");
+			RegisterColumnType(DbType.Currency, "MONEY");
+			RegisterColumnType(DbType.Date, "DATETIME");
+			RegisterColumnType(DbType.DateTime, "DATETIME");
 			// TODO: figure out if this is the good way to fix the problem
 			// with exporting a DECIMAL column
 			// NUMERIC(precision, scale) has a hardcoded precision of 19, even though it can range from 1 to 38
@@ -61,21 +63,21 @@ namespace NHibernate.JetDriver
 			// I think how I might handle it is keep the type="Decimal(29,5)" and make them specify a 
 			// sql-type="decimal(20,5)" if they need to do that.  The Decimal parameter and ddl will get generated
 			// correctly with minimal work.
-			RegisterColumnType( DbType.Decimal, "DECIMAL(19,5)" );
-			RegisterColumnType( DbType.Decimal, 19, "DECIMAL(19, $1)" );
-			RegisterColumnType( DbType.Double, "FLOAT" );
-			RegisterColumnType( DbType.Guid, "UNIQUEIDENTIFIER" );
-			RegisterColumnType( DbType.Int16, "SMALLINT" );
-			RegisterColumnType( DbType.Int32, "INT" );
-			RegisterColumnType( DbType.Int64, "INT" ); //this is dangerous, I know
-			RegisterColumnType( DbType.Single, "REAL" );
-			RegisterColumnType( DbType.StringFixedLength, "CHAR(255)" );
-			RegisterColumnType( DbType.StringFixedLength, 1073741823, "TEXT($1)" );
-			RegisterColumnType( DbType.String, "TEXT(255)" );
-			RegisterColumnType( DbType.String, 255, "TEXT($1)" );
-			RegisterColumnType( DbType.String, 1073741823, "TEXT($1)" );
-			RegisterColumnType( DbType.String, 1073741823, "TEXT" );
-			RegisterColumnType( DbType.Time, "DATETIME" );
+			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $1)");
+			RegisterColumnType(DbType.Double, "FLOAT");
+			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+			RegisterColumnType(DbType.Int16, "SMALLINT");
+			RegisterColumnType(DbType.Int32, "INT");
+			RegisterColumnType(DbType.Int64, "INT"); //this is dangerous, I know
+			RegisterColumnType(DbType.Single, "REAL");
+			RegisterColumnType(DbType.StringFixedLength, "CHAR(255)");
+			RegisterColumnType(DbType.StringFixedLength, 1073741823, "TEXT($1)");
+			RegisterColumnType(DbType.String, "TEXT(255)");
+			RegisterColumnType(DbType.String, 255, "TEXT($1)");
+			RegisterColumnType(DbType.String, 1073741823, "TEXT($1)");
+			RegisterColumnType(DbType.String, 1073741823, "TEXT");
+			RegisterColumnType(DbType.Time, "DATETIME");
 
 /*
 			RegisterFunction("abs", new StandardSQLFunction() );
@@ -152,10 +154,10 @@ namespace NHibernate.JetDriver
 */
 			//although theoretically Access should support outer joins, it has some severe 
 			//limitations on complexity of the SQL statements, so we better switch it off.
-			DefaultProperties[ Environment.MaxFetchDepth ] = "0";
-			DefaultProperties[ Environment.PrepareSql ] = "false";
+			DefaultProperties[Environment.MaxFetchDepth] = "0";
+			DefaultProperties[Environment.PrepareSql] = "false";
 
-			DefaultProperties[ Environment.ConnectionDriver ] = "NHibernate.Driver.JetDriver";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.JetDriver";
 		}
 
 		/// <summary>
@@ -192,7 +194,7 @@ namespace NHibernate.JetDriver
 		/// </summary>
 		/// <param name="insertSql">The SqlString that contains the INSERT sql.</param>
 		/// <returns>null.</returns>
-        public override SqlString AddIdentitySelectToInsert( SqlString insertSql, string identityColumn, string tableName )
+		public override SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
 		{
 			return null;
 		}
@@ -204,7 +206,7 @@ namespace NHibernate.JetDriver
 		}
 
 		/// <summary></summary>
-		public override string GetIdentitySelectString( string identityColumn, string tableName )
+		public override string GetIdentitySelectString(string identityColumn, string tableName)
 		{
 			return "select @@identity";
 		}
@@ -263,9 +265,9 @@ namespace NHibernate.JetDriver
 			get { return false; }
 		}
 
-		public override SqlString GetLimitString( SqlString querySqlString, int offset, int limit )
+		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
 		{
-			throw new NotSupportedException( "SQL Server does not support an offset" );
+			throw new NotSupportedException("SQL Server does not support an offset");
 		}
 
 		/// <summary>
@@ -277,9 +279,9 @@ namespace NHibernate.JetDriver
 		/// MsSql does not require the OpenQuote to be escaped as long as the first char
 		/// is an OpenQuote.
 		/// </remarks>
-		protected override string Quote( string name )
+		protected override string Quote(string name)
 		{
-			return OpenQuote + name.Replace( CloseQuote.ToString(), new string( CloseQuote, 2 ) ) + CloseQuote;
+			return OpenQuote + name.Replace(CloseQuote.ToString(), new string(CloseQuote, 2)) + CloseQuote;
 		}
 
 		/// <summary>
@@ -287,14 +289,14 @@ namespace NHibernate.JetDriver
 		/// </summary>
 		/// <param name="quoted"></param>
 		/// <returns></returns>
-		public override string UnQuote( string quoted )
+		public override string UnQuote(string quoted)
 		{
-			if( IsQuoted( quoted ) )
+			if (IsQuoted(quoted))
 			{
-				quoted = quoted.Substring( 1, quoted.Length - 2 );
+				quoted = quoted.Substring(1, quoted.Length - 2);
 			}
 
-			return quoted.Replace( new string( CloseQuote, 2 ), CloseQuote.ToString() );
+			return quoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
 		}
 
 		public override JoinFragment CreateOuterJoinFragment()
@@ -308,7 +310,7 @@ namespace NHibernate.JetDriver
 		/// <returns></returns>
 		public override CaseFragment CreateCaseFragment()
 		{
-			return new JetCaseFragment( this );
+			return new JetCaseFragment(this);
 		}
 	}
 }

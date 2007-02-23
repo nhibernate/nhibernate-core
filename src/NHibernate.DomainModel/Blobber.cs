@@ -28,7 +28,5 @@ namespace NHibernate.DomainModel
 			get { return _clob; }
 			set { _clob = value; }
 		}
-
-
 	}
 }

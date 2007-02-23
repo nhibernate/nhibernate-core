@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+
 using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes.Oracle
@@ -28,7 +29,7 @@ namespace NHibernate.UserTypes.Oracle
 		{
 		}
 
-		public BFileType( string dirName, string fileName, byte[] binary )
+		public BFileType(string dirName, string fileName, byte[] binary)
 		{
 			DirName = dirName;
 			FileName = fileName;
@@ -42,23 +43,23 @@ namespace NHibernate.UserTypes.Oracle
 
 		public System.Type ReturnedType
 		{
-			get { return typeof( BFileType ); }
+			get { return typeof(BFileType); }
 		}
 
-		public new bool Equals( object x, object y )
+		public new bool Equals(object x, object y)
 		{
 			return x == y;
 		}
 
 		public int GetHashCode(object x)
 		{
-			return NHibernateUtil.BinaryBlob.GetHashCode(((BFileType)x).Binary, null);
+			return NHibernateUtil.BinaryBlob.GetHashCode(((BFileType) x).Binary, null);
 		}
 
-		public object NullSafeGet( IDataReader rs, string[] names, object owner )
+		public object NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
-			byte[] bin = ( byte[] ) NHibernateUtil.BinaryBlob.NullSafeGet( rs, names[ 0 ] );
-			if( bin != null )
+			byte[] bin = (byte[]) NHibernateUtil.BinaryBlob.NullSafeGet(rs, names[0]);
+			if (bin != null)
 			{
 				BFileType bf = new BFileType();
 				bf.Binary = bin;
@@ -67,42 +68,42 @@ namespace NHibernate.UserTypes.Oracle
 			return null;
 		}
 
-		public void NullSafeSet( IDbCommand cmd, object value, int index )
+		public void NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			string cmdText = cmd.CommandText;
-			int s = cmdText.IndexOf( DbFunc + '(' );
-			if( s < 0 )
+			int s = cmdText.IndexOf(DbFunc + '(');
+			if (s < 0)
 			{
-				if( cmdText.StartsWith( "INSERT" ) )
+				if (cmdText.StartsWith("INSERT"))
 				{
-					cmdText = cmdText.Replace( ", ROWID", "" );
+					cmdText = cmdText.Replace(", ROWID", "");
 					cmdText = cmdText.Replace(
-						string.Format( ":p{0}, :p{1}", index, index + 1 ),
-						string.Format( "{0}(:p{1}, :p{2})", DbFunc, index, index + 1 ) );
+						string.Format(":p{0}, :p{1}", index, index + 1),
+						string.Format("{0}(:p{1}, :p{2})", DbFunc, index, index + 1));
 				}
 				else //update
 				{
 					cmdText = cmdText.Replace(
-						string.Format( ":p{0}, ROWID = :p{1}", index, index + 1 ),
-						string.Format( "{0}(:p{1}, :p{2})", DbFunc, index, index + 1 ) );
+						string.Format(":p{0}, ROWID = :p{1}", index, index + 1),
+						string.Format("{0}(:p{1}, :p{2})", DbFunc, index, index + 1));
 				}
 				cmd.CommandText = cmdText;
 			}
 
-			if( value == null )
+			if (value == null)
 			{
-				( ( IDataParameter ) cmd.Parameters[ index ] ).Value = DBNull.Value;
-				( ( IDataParameter ) cmd.Parameters[ index + 1 ] ).Value = DBNull.Value;
+				((IDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
+				((IDataParameter) cmd.Parameters[index + 1]).Value = DBNull.Value;
 			}
 			else
 			{
 				BFileType bf = value as BFileType;
-				( ( IDataParameter ) cmd.Parameters[ index ] ).Value = bf.DirName;
-				( ( IDataParameter ) cmd.Parameters[ index + 1 ] ).Value = bf.FileName;
+				((IDataParameter) cmd.Parameters[index]).Value = bf.DirName;
+				((IDataParameter) cmd.Parameters[index + 1]).Value = bf.FileName;
 			}
 		}
 
-		public object DeepCopy( object value )
+		public object DeepCopy(object value)
 		{
 			if (value == null)
 			{

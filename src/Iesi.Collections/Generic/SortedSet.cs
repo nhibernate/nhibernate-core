@@ -1,7 +1,8 @@
 #if NET_2_0
 
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */ 
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Iesi.Collections.Generic
@@ -27,7 +28,7 @@ namespace Iesi.Collections.Generic
 		/// Creates a new set instance based on a sorted tree.
 		/// </summary>
 		/// <param name="comparer">The <see cref="IComparer&lt;T&gt;"/> to use for sorting.</param>
-		public SortedSet(IComparer<T> comparer) 
+		public SortedSet(IComparer<T> comparer)
 		{
 			InternalDictionary = new SortedList<T, object>(comparer);
 		}
@@ -49,10 +50,10 @@ namespace Iesi.Collections.Generic
 		/// initializes it based on a collection of elements.
 		/// </summary>
 		/// <param name="initialValues">A collection of elements that defines the initial set contents.</param>
-		public SortedSet(System.Collections.ICollection initialValues)
+		public SortedSet(ICollection initialValues)
 			: this()
 		{
-			((ISet)this).AddAll(initialValues);
+			((ISet) this).AddAll(initialValues);
 		}
 
 		/// <summary>
@@ -68,4 +69,5 @@ namespace Iesi.Collections.Generic
 		}
 	}
 }
+
 #endif

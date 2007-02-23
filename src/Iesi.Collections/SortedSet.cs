@@ -1,7 +1,6 @@
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */ 
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 
 namespace Iesi.Collections
 {
@@ -26,9 +25,9 @@ namespace Iesi.Collections
 		/// Creates a new set instance based on a sorted tree.
 		/// </summary>
 		/// <param name="comparer">The <see cref="IComparer"/> to use for sorting.</param>
-		public SortedSet(IComparer comparer) 
+		public SortedSet(IComparer comparer)
 		{
-			InternalDictionary = new SortedList( comparer );
+			InternalDictionary = new SortedList(comparer);
 		}
 
 		/// <summary>
@@ -47,7 +46,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="initialValues">A collection of elements that defines the initial set contents.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> to use for sorting.</param>
-		public SortedSet(ICollection initialValues, IComparer comparer) : this( comparer )
+		public SortedSet(ICollection initialValues, IComparer comparer) : this(comparer)
 		{
 			this.AddAll(initialValues);
 		}

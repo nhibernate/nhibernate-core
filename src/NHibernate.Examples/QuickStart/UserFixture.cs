@@ -14,7 +14,7 @@ namespace NHibernate.Examples.QuickStart
 	public class UserFixture
 	{
 		[Test]
-		public void ValidateQuickStart() 
+		public void ValidateQuickStart()
 		{
 			Configuration cfg = new Configuration();
 			cfg.AddAssembly("NHibernate.Examples");
@@ -29,7 +29,7 @@ namespace NHibernate.Examples.QuickStart
 			newUser.Password = "abc123";
 			newUser.EmailAddress = "joe@cool.com";
 			newUser.LastLogon = DateTime.Now;
-			
+
 			// Tell NHibernate that this object should be saved
 			session.Save(newUser);
 
@@ -40,7 +40,7 @@ namespace NHibernate.Examples.QuickStart
 			// open another session to retrieve the just inserted user
 			session = factory.OpenSession();
 
-			User joeCool = (User)session.Load(typeof(User), "joe_cool");
+			User joeCool = (User) session.Load(typeof(User), "joe_cool");
 
 			// set Joe Cool's Last Login property
 			joeCool.LastLogon = DateTime.Now;
@@ -52,14 +52,12 @@ namespace NHibernate.Examples.QuickStart
 				.Add(Expression.Expression.Gt("LastLogon", new DateTime(2004, 03, 14, 20, 0, 0)))
 				.List();
 
-			foreach(User user in recentUsers)
+			foreach (User user in recentUsers)
 			{
-				Assert.IsTrue(user.LastLogon > (new DateTime(2004, 03, 14, 20, 0, 0)) ); 
+				Assert.IsTrue(user.LastLogon > (new DateTime(2004, 03, 14, 20, 0, 0)));
 			}
 
 			session.Close();
-
-
 		}
 	}
 }

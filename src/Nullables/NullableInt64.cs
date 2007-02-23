@@ -1,17 +1,20 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps an <see cref="Int64"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableInt64Converter)), Serializable()]
+	[TypeConverter(typeof(NullableInt64Converter)), Serializable()]
 	public struct NullableInt64 : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableInt64 Default = new NullableInt64();
 
-		Int64 _value;
-		bool hasValue;
+		private Int64 _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -65,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableInt64(DBNull value)
 		{
-			return NullableInt64.Default;
+			return Default;
 		}
 
 		#endregion
@@ -83,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableInt64)
-				return Equals((NullableInt64)obj);
+				return Equals((NullableInt64) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableInt64 x)
@@ -126,7 +130,7 @@ namespace Nullables
 		public static NullableInt64 operator +(NullableInt64 x, NullableInt64 y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableInt64.Default;
+				return Default;
 
 			return new NullableInt64(x.Value + y.Value);
 		}
@@ -134,7 +138,7 @@ namespace Nullables
 		public static NullableInt64 operator -(NullableInt64 x, NullableInt64 y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableInt64.Default;
+				return Default;
 
 			return new NullableInt64(x.Value - y.Value);
 		}
@@ -142,7 +146,7 @@ namespace Nullables
 		public static NullableInt64 operator *(NullableInt64 x, NullableInt64 y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableInt64.Default;
+				return Default;
 
 			return new NullableInt64(x.Value * y.Value);
 		}
@@ -150,11 +154,11 @@ namespace Nullables
 		public static NullableInt64 operator /(NullableInt64 x, NullableInt64 y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableInt64.Default;
+				return Default;
 
 			return new NullableInt64(x.Value / y.Value);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -165,7 +169,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -181,7 +185,7 @@ namespace Nullables
 		{
 			if (obj is NullableInt64) //chack and unbox
 			{
-				NullableInt64 value = (NullableInt64)obj;
+				NullableInt64 value = (NullableInt64) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -200,7 +204,7 @@ namespace Nullables
 			}
 			else if (obj is DateTime)
 			{
-				Int64 value = (Int64)obj;
+				Int64 value = (Int64) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -217,24 +221,25 @@ namespace Nullables
 
 		public static NullableInt64 Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0))	
+			if ((s == null) || (s.Trim().Length == 0))
 			{
 				return new NullableInt64();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableInt64(Int64.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableInt64." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableInt64.", ex);
 				}
 			}
 		}
 
 		// TODO: implement the rest of the Parse overloads found in Int64
+
 		#endregion
 	}
 }

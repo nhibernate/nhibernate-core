@@ -1,17 +1,20 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps a <see cref="Double"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableDoubleConverter)), Serializable()]
+	[TypeConverter(typeof(NullableDoubleConverter)), Serializable()]
 	public struct NullableDouble : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableDouble Default = new NullableDouble();
 
-		Double _value;
-		bool hasValue;
+		private Double _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -65,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableDouble(DBNull value)
 		{
-			return NullableDouble.Default;
+			return Default;
 		}
 
 		#endregion
@@ -83,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableDouble)
-				return Equals((NullableDouble)obj);
+				return Equals((NullableDouble) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableDouble x)
@@ -126,7 +130,7 @@ namespace Nullables
 		public static NullableDouble operator +(NullableDouble x, NullableDouble y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableDouble.Default;
+				return Default;
 
 			return new NullableDouble(x.Value + y.Value);
 		}
@@ -134,7 +138,7 @@ namespace Nullables
 		public static NullableDouble operator -(NullableDouble x, NullableDouble y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableDouble.Default;
+				return Default;
 
 			return new NullableDouble(x.Value - y.Value);
 		}
@@ -142,7 +146,7 @@ namespace Nullables
 		public static NullableDouble operator *(NullableDouble x, NullableDouble y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableDouble.Default;
+				return Default;
 
 			return new NullableDouble(x.Value * y.Value);
 		}
@@ -150,11 +154,11 @@ namespace Nullables
 		public static NullableDouble operator /(NullableDouble x, NullableDouble y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableDouble.Default;
+				return Default;
 
 			return new NullableDouble(x.Value / y.Value);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -165,7 +169,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -181,7 +185,7 @@ namespace Nullables
 		{
 			if (obj is NullableDouble) //chack and unbox
 			{
-				NullableDouble value = (NullableDouble)obj;
+				NullableDouble value = (NullableDouble) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -200,7 +204,7 @@ namespace Nullables
 			}
 			else if (obj is Double)
 			{
-				Double value = (Double)obj;
+				Double value = (Double) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -217,19 +221,19 @@ namespace Nullables
 
 		public static NullableDouble Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0)) 
-			{		
+			if ((s == null) || (s.Trim().Length == 0))
+			{
 				return new NullableDouble();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableDouble(Double.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableDouble." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableDouble.", ex);
 				}
 			}
 		}

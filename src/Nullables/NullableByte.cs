@@ -1,17 +1,20 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps a <see cref="Byte"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableByteConverter)), Serializable()]
+	[TypeConverter(typeof(NullableByteConverter)), Serializable()]
 	public struct NullableByte : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableByte Default = new NullableByte();
 
-		Byte _value;
-		bool hasValue;
+		private Byte _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -65,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableByte(DBNull value)
 		{
-			return NullableByte.Default;
+			return Default;
 		}
 
 		#endregion
@@ -83,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableByte)
-				return Equals((NullableByte)obj);
+				return Equals((NullableByte) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableByte x)
@@ -154,7 +158,7 @@ namespace Nullables
 
 			return new NullableInt32(x.Value / y.Value);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -165,7 +169,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -181,7 +185,7 @@ namespace Nullables
 		{
 			if (obj is NullableByte) //chack and unbox
 			{
-				NullableByte value = (NullableByte)obj;
+				NullableByte value = (NullableByte) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -200,7 +204,7 @@ namespace Nullables
 			}
 			else if (obj is Byte)
 			{
-				Byte value = (Byte)obj;
+				Byte value = (Byte) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -217,24 +221,25 @@ namespace Nullables
 
 		public static NullableByte Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0)) 
-			{		
+			if ((s == null) || (s.Trim().Length == 0))
+			{
 				return new NullableByte();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableByte(Byte.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableByte." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableByte.", ex);
 				}
 			}
 		}
 
 		// TODO: implement the rest of the Parse overloads found in Byte
+
 		#endregion
 	}
 }

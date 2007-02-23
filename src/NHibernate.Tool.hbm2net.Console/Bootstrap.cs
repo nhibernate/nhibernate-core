@@ -8,7 +8,7 @@ namespace NHibernate.Tool.hbm2net
 	public class Bootstrap
 	{
 		[STAThread]
-		public static void  Main(String[] args)
+		public static void Main(String[] args)
 		{
 			CodeGenerator.Main(args);
 		}

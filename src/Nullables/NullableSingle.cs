@@ -1,17 +1,20 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps a <see cref="Single"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableSingleConverter)), Serializable()]
+	[TypeConverter(typeof(NullableSingleConverter)), Serializable()]
 	public struct NullableSingle : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableSingle Default = new NullableSingle();
 
-		Single _value;
-		bool hasValue;
+		private Single _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -65,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableSingle(DBNull value)
 		{
-			return NullableSingle.Default;
+			return Default;
 		}
 
 		#endregion
@@ -83,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableSingle)
-				return Equals((NullableSingle)obj);
+				return Equals((NullableSingle) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableSingle x)
@@ -126,7 +130,7 @@ namespace Nullables
 		public static NullableSingle operator +(NullableSingle x, NullableSingle y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableSingle.Default;
+				return Default;
 
 			return new NullableSingle(x.Value + y.Value);
 		}
@@ -134,7 +138,7 @@ namespace Nullables
 		public static NullableSingle operator -(NullableSingle x, NullableSingle y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableSingle.Default;
+				return Default;
 
 			return new NullableSingle(x.Value - y.Value);
 		}
@@ -142,7 +146,7 @@ namespace Nullables
 		public static NullableSingle operator *(NullableSingle x, NullableSingle y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableSingle.Default;
+				return Default;
 
 			return new NullableSingle(x.Value * y.Value);
 		}
@@ -150,11 +154,11 @@ namespace Nullables
 		public static NullableSingle operator /(NullableSingle x, NullableSingle y)
 		{
 			if (!x.HasValue || !y.HasValue) //one or both are null
-				return NullableSingle.Default;
+				return Default;
 
 			return new NullableSingle(x.Value / y.Value);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -165,7 +169,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -181,7 +185,7 @@ namespace Nullables
 		{
 			if (obj is NullableSingle) //chack and unbox
 			{
-				NullableSingle value = (NullableSingle)obj;
+				NullableSingle value = (NullableSingle) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -200,7 +204,7 @@ namespace Nullables
 			}
 			else if (obj is Single)
 			{
-				Single value = (Single)obj;
+				Single value = (Single) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -217,22 +221,23 @@ namespace Nullables
 
 		public static NullableSingle Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0))
-			{		
+			if ((s == null) || (s.Trim().Length == 0))
+			{
 				return new NullableSingle();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableSingle(Single.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableSingle." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableSingle.", ex);
 				}
 			}
 		}
+
 		// TODO: implement the rest of the Parse overloads found in Single
 
 		#endregion

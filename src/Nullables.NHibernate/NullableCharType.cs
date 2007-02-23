@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableCharType : NullableTypesType
 	{
-		public NullableCharType() : base( new StringFixedLengthSqlType( 1 ) )
+		public NullableCharType() : base(new StringFixedLengthSqlType(1))
 		{
 		}
 
@@ -23,20 +23,20 @@ namespace Nullables.NHibernate
 
 		public override Type ReturnedClass
 		{
-			get { return typeof( NullableChar ); }
+			get { return typeof(NullableChar); }
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new NullableChar( Convert.ToChar( rs[ index ] ) );
+			return new NullableChar(Convert.ToChar(rs[index]));
 		}
 
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter parameter = ( IDataParameter ) cmd.Parameters[ index ];
-			NullableChar nullableValue = ( NullableChar ) value;
+			IDataParameter parameter = (IDataParameter) cmd.Parameters[index];
+			NullableChar nullableValue = (NullableChar) value;
 
-			if( nullableValue.HasValue )
+			if (nullableValue.HasValue)
 			{
 				parameter.Value = nullableValue.Value;
 			}
@@ -46,9 +46,9 @@ namespace Nullables.NHibernate
 			}
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return new NullableChar( xml[ 0 ] );
+			return new NullableChar(xml[0]);
 		}
 	}
 }

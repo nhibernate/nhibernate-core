@@ -1,7 +1,6 @@
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */  
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 
 namespace Iesi.Collections
 {
@@ -21,10 +20,7 @@ namespace Iesi.Collections
 
 		internal ISet BasisSet
 		{
-			get
-			{
-				return mBasisSet;
-			}
+			get { return mBasisSet; }
 		}
 
 		/// <summary>
@@ -41,7 +37,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="o">The object to add to the set.</param>
 		/// <returns><c>true</c> is the object was added, <c>false</c> if it was already present.</returns>
-		public sealed override bool Add(object o)
+		public override sealed bool Add(object o)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -51,7 +47,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="c">A collection of objects to add to the set.</param>
 		/// <returns><c>true</c> is the set changed as a result of this operation, <c>false</c> if not.</returns>
-		public sealed override bool AddAll(ICollection c)
+		public override sealed bool AddAll(ICollection c)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -59,7 +55,7 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Removes all objects from the set.
 		/// </summary>
-		public sealed override void Clear()
+		public override sealed void Clear()
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -69,7 +65,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="o">The element to look for.</param>
 		/// <returns><c>true</c> if this set contains the specified element, <c>false</c> otherwise.</returns>
-		public sealed override bool Contains(object o)
+		public override sealed bool Contains(object o)
 		{
 			return mBasisSet.Contains(o);
 		}
@@ -79,7 +75,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="c">A collection of objects.</param>
 		/// <returns><c>true</c> if the set contains all the elements in the specified collection, <c>false</c> otherwise.</returns>
-		public sealed override bool ContainsAll(ICollection c)
+		public override sealed bool ContainsAll(ICollection c)
 		{
 			return mBasisSet.ContainsAll(c);
 		}
@@ -87,9 +83,9 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Returns <c>true</c> if this set contains no elements.
 		/// </summary>
-		public sealed override bool IsEmpty
+		public override sealed bool IsEmpty
 		{
-			get{return mBasisSet.IsEmpty;}
+			get { return mBasisSet.IsEmpty; }
 		}
 
 
@@ -98,7 +94,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="o">The element to be removed.</param>
 		/// <returns><c>true</c> if the set contained the specified element, <c>false</c> otherwise.</returns>
-		public sealed override bool Remove(object o)
+		public override sealed bool Remove(object o)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -108,7 +104,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="c">A collection of elements to remove.</param>
 		/// <returns><c>true</c> if the set was modified as a result of this operation.</returns>
-		public sealed override bool RemoveAll(ICollection c)
+		public override sealed bool RemoveAll(ICollection c)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -118,7 +114,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="c">Collection that defines the set of elements to be retained.</param>
 		/// <returns><c>true</c> if this set changed as a result of this operation.</returns>
-		public sealed override bool RetainAll(ICollection c)
+		public override sealed bool RetainAll(ICollection c)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -129,7 +125,7 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="array">An array that will be the target of the copy operation.</param>
 		/// <param name="index">The zero-based index where copying will start.</param>
-		public sealed override void CopyTo(Array array, int index)
+		public override sealed void CopyTo(Array array, int index)
 		{
 			mBasisSet.CopyTo(array, index);
 		}
@@ -137,32 +133,32 @@ namespace Iesi.Collections
 		/// <summary>
 		/// The number of elements contained in this collection.
 		/// </summary>
-		public sealed override int Count
+		public override sealed int Count
 		{
-			get{return mBasisSet.Count;}
+			get { return mBasisSet.Count; }
 		}
 
 		/// <summary>
 		/// Returns an object that can be used to synchronize use of the <c>Set</c> across threads.
 		/// </summary>
-		public sealed override bool IsSynchronized
+		public override sealed bool IsSynchronized
 		{
-			get{return mBasisSet.IsSynchronized;}
+			get { return mBasisSet.IsSynchronized; }
 		}
 
 		/// <summary>
 		/// Returns an object that can be used to synchronize the <c>Set</c> between threads.
 		/// </summary>
-		public sealed override object SyncRoot
+		public override sealed object SyncRoot
 		{
-			get{return mBasisSet.SyncRoot;}
+			get { return mBasisSet.SyncRoot; }
 		}
 
 		/// <summary>
 		/// Gets an enumerator for the elements in the <c>Set</c>.
 		/// </summary>
 		/// <returns>An <c>IEnumerator</c> over the elements in the <c>Set</c>.</returns>
-		public sealed override IEnumerator GetEnumerator()
+		public override sealed IEnumerator GetEnumerator()
 		{
 			return mBasisSet.GetEnumerator();
 		}
@@ -171,7 +167,7 @@ namespace Iesi.Collections
 		/// Returns a clone of the <c>Set</c> instance.  
 		/// </summary>
 		/// <returns>A clone of this object.</returns>
-		public sealed override object Clone()
+		public override sealed object Clone()
 		{
 			return new ImmutableSet(mBasisSet);
 		}
@@ -185,11 +181,11 @@ namespace Iesi.Collections
 		/// <param name="a">A collection of elements.</param>
 		/// <returns>A new <c>Set</c> containing the union of this <c>Set</c> with the specified collection.
 		/// Neither of the input objects is modified by the union.</returns>
-		public sealed override ISet Union(ISet a)
+		public override sealed ISet Union(ISet a)
 		{
 			ISet m = this;
-			while(m is ImmutableSet)
-				m = ((ImmutableSet)m).BasisSet;
+			while (m is ImmutableSet)
+				m = ((ImmutableSet) m).BasisSet;
 			return new ImmutableSet(m.Union(a));
 		}
 
@@ -201,11 +197,11 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
 		/// <returns>The intersection of this set with <c>a</c>.</returns>
-		public sealed override ISet Intersect(ISet a)
+		public override sealed ISet Intersect(ISet a)
 		{
 			ISet m = this;
-			while(m is ImmutableSet)
-				m = ((ImmutableSet)m).BasisSet;
+			while (m is ImmutableSet)
+				m = ((ImmutableSet) m).BasisSet;
 			return new ImmutableSet(m.Intersect(a));
 		}
 
@@ -217,11 +213,11 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
 		/// <returns>A set containing the elements from this set with the elements in <c>a</c> removed.</returns>
-		public sealed override ISet Minus(ISet a)
+		public override sealed ISet Minus(ISet a)
 		{
 			ISet m = this;
-			while(m is ImmutableSet)
-				m = ((ImmutableSet)m).BasisSet;
+			while (m is ImmutableSet)
+				m = ((ImmutableSet) m).BasisSet;
 			return new ImmutableSet(m.Minus(a));
 		}
 
@@ -233,11 +229,11 @@ namespace Iesi.Collections
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
 		/// <returns>A set containing the result of <c>a ^ b</c>.</returns>
-		public sealed override ISet ExclusiveOr(ISet a)
+		public override sealed ISet ExclusiveOr(ISet a)
 		{
 			ISet m = this;
-			while(m is ImmutableSet)
-				m = ((ImmutableSet)m).BasisSet;
+			while (m is ImmutableSet)
+				m = ((ImmutableSet) m).BasisSet;
 			return new ImmutableSet(m.ExclusiveOr(a));
 		}
 	}

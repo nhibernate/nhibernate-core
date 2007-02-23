@@ -9,14 +9,14 @@ namespace NHibernate.Examples.ForumQuestions.T1104613
 	{
 		private string _key;
 		private string _name;
-		
+
 		public string Key
 		{
 			get { return _key; }
 			set { _key = value; }
 		}
 
-		
+
 		public string Name
 		{
 			get { return _name; }
@@ -24,8 +24,7 @@ namespace NHibernate.Examples.ForumQuestions.T1104613
 		}
 	}
 
-	public class AManyToOne : AOuterJoin 
+	public class AManyToOne : AOuterJoin
 	{
 	}
-
 }

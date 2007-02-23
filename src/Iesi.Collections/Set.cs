@@ -1,8 +1,6 @@
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */ 
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
 using System.Collections;
-using System.Collections.Specialized;
-using System.Reflection;
 
 namespace Iesi.Collections
 {
@@ -63,12 +61,12 @@ namespace Iesi.Collections
 		/// Neither of the input objects is modified by the union.</returns>
 		public virtual ISet Union(ISet a)
 		{
-			ISet resultSet = (ISet)this.Clone();
-			if(a != null)
+			ISet resultSet = (ISet) this.Clone();
+			if (a != null)
 				resultSet.AddAll(a);
 			return resultSet;
 		}
-		
+
 		/// <summary>
 		/// Performs a "union" of two sets, where all the elements
 		/// in both are present.  That is, the element is included if it is in either <c>a</c> or <c>b</c>.
@@ -82,10 +80,10 @@ namespace Iesi.Collections
 		{
 			if (a == null && b == null)
 				return null;
-			else if(a == null)
-				return (ISet)b.Clone();
-			else if(b == null)
-				return (ISet)a.Clone();
+			else if (a == null)
+				return (ISet) b.Clone();
+			else if (b == null)
+				return (ISet) a.Clone();
 			else
 				return a.Union(b);
 		}
@@ -99,9 +97,9 @@ namespace Iesi.Collections
 		/// <param name="a">A set of elements.</param>
 		/// <param name="b">A set of elements.</param>
 		/// <returns>A set containing the union of the input sets.  <c>null</c> if both sets are <c>null</c>.</returns>
-		public static Set operator | (Set a, Set b)
+		public static Set operator |(Set a, Set b)
 		{
-			return (Set)Union(a, b);
+			return (Set) Union(a, b);
 		}
 
 		/// <summary>
@@ -114,8 +112,8 @@ namespace Iesi.Collections
 		/// <returns>The intersection of this set with <c>a</c>.</returns>
 		public virtual ISet Intersect(ISet a)
 		{
-			ISet resultSet = (ISet)this.Clone();
-			if(a != null)
+			ISet resultSet = (ISet) this.Clone();
+			if (a != null)
 				resultSet.RetainAll(a);
 			else
 				resultSet.Clear();
@@ -134,9 +132,9 @@ namespace Iesi.Collections
 		/// <returns>The intersection of the two input sets.  <c>null</c> if both sets are <c>null</c>.</returns>
 		public static ISet Intersect(ISet a, ISet b)
 		{
-			if(a == null && b == null)
+			if (a == null && b == null)
 				return null;
-			else if(a == null)
+			else if (a == null)
 			{
 				return b.Intersect(a);
 			}
@@ -154,9 +152,9 @@ namespace Iesi.Collections
 		/// <param name="a">A set of elements.</param>
 		/// <param name="b">A set of elements.</param>
 		/// <returns>The intersection of the two input sets.  <c>null</c> if both sets are <c>null</c>.</returns>
-		public static Set operator & (Set a, Set b)
+		public static Set operator &(Set a, Set b)
 		{
-			return (Set)Intersect(a, b);
+			return (Set) Intersect(a, b);
 		}
 
 		/// <summary>
@@ -169,8 +167,8 @@ namespace Iesi.Collections
 		/// <returns>A set containing the elements from this set with the elements in <c>a</c> removed.</returns>
 		public virtual ISet Minus(ISet a)
 		{
-			ISet resultSet = (ISet)this.Clone();
-			if(a != null)
+			ISet resultSet = (ISet) this.Clone();
+			if (a != null)
 				resultSet.RemoveAll(a);
 			return resultSet;
 		}
@@ -186,7 +184,7 @@ namespace Iesi.Collections
 		/// <returns>A set containing <c>A - B</c> elements.  <c>null</c> if <c>a</c> is <c>null</c>.</returns>
 		public static ISet Minus(ISet a, ISet b)
 		{
-			if(a == null)
+			if (a == null)
 				return null;
 			else
 				return a.Minus(b);
@@ -201,9 +199,9 @@ namespace Iesi.Collections
 		/// <param name="a">A set of elements.</param>
 		/// <param name="b">A set of elements.</param>
 		/// <returns>A set containing <c>A - B</c> elements.  <c>null</c> if <c>a</c> is <c>null</c>.</returns>
-		public static Set operator - (Set a, Set b)
+		public static Set operator -(Set a, Set b)
 		{
-			return (Set)Minus(a, b);
+			return (Set) Minus(a, b);
 		}
 
 
@@ -217,10 +215,10 @@ namespace Iesi.Collections
 		/// <returns>A set containing the result of <c>a ^ b</c>.</returns>
 		public virtual ISet ExclusiveOr(ISet a)
 		{
-			ISet resultSet = (ISet)this.Clone();
-			foreach(object element in a)
+			ISet resultSet = (ISet) this.Clone();
+			foreach (object element in a)
 			{
-				if(resultSet.Contains(element))
+				if (resultSet.Contains(element))
 					resultSet.Remove(element);
 				else
 					resultSet.Add(element);
@@ -240,12 +238,12 @@ namespace Iesi.Collections
 		/// <returns>A set containing the result of <c>a ^ b</c>.  <c>null</c> if both sets are <c>null</c>.</returns>
 		public static ISet ExclusiveOr(ISet a, ISet b)
 		{
-			if(a == null && b == null)
+			if (a == null && b == null)
 				return null;
-			else if(a == null)
-				return (ISet)b.Clone();
-			else if(b == null)
-				return (ISet)a.Clone();
+			else if (a == null)
+				return (ISet) b.Clone();
+			else if (b == null)
+				return (ISet) a.Clone();
 			else
 				return a.ExclusiveOr(b);
 		}
@@ -260,9 +258,9 @@ namespace Iesi.Collections
 		/// <param name="a">A set of elements.</param>
 		/// <param name="b">A set of elements.</param>
 		/// <returns>A set containing the result of <c>a ^ b</c>.  <c>null</c> if both sets are <c>null</c>.</returns>
-		public static Set operator ^ (Set a, Set b)
+		public static Set operator ^(Set a, Set b)
 		{
-			return (Set)ExclusiveOr(a, b);
+			return (Set) ExclusiveOr(a, b);
 		}
 
 		/// <summary>
@@ -301,7 +299,7 @@ namespace Iesi.Collections
 		/// <summary>
 		/// Returns <c>true</c> if this set contains no elements.
 		/// </summary>
-		public abstract bool IsEmpty{get;}
+		public abstract bool IsEmpty { get; }
 
 		/// <summary>
 		/// Removes the specified element from the set.
@@ -332,7 +330,7 @@ namespace Iesi.Collections
 		/// <returns>A clone of this object.</returns>
 		public virtual object Clone()
 		{
-			Set newSet = (Set)Activator.CreateInstance(this.GetType());
+			Set newSet = (Set) Activator.CreateInstance(this.GetType());
 			newSet.AddAll(this);
 			return newSet;
 		}
@@ -349,22 +347,22 @@ namespace Iesi.Collections
 		/// <summary>
 		/// The number of elements currently contained in this collection.
 		/// </summary>
-		public abstract int Count{get;}
+		public abstract int Count { get; }
 
 		/// <summary>
 		/// Returns <c>true</c> if the <c>Set</c> is synchronized across threads.  Note that
 		/// enumeration is inherently not thread-safe.  Use the <c>SyncRoot</c> to lock the
 		/// object during enumeration.
 		/// </summary>
-		public abstract bool IsSynchronized{get;}
+		public abstract bool IsSynchronized { get; }
 
 		/// <summary>
 		/// An object that can be used to synchronize this collection to make it thread-safe.
 		/// When implementing this, if your object uses a base object, like an <c>IDictionary</c>,
 		/// or anything that has a <c>SyncRoot</c>, return that object instead of "<c>this</c>".
 		/// </summary>
-		public abstract object SyncRoot{get;}
-		
+		public abstract object SyncRoot { get; }
+
 		/// <summary>
 		/// Gets an enumerator for the elements in the <c>Set</c>.
 		/// </summary>

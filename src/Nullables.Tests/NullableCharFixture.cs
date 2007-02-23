@@ -1,5 +1,5 @@
 using System;
-using Nullables;
+
 using NUnit.Framework;
 
 namespace Nullables.Tests
@@ -15,30 +15,30 @@ namespace Nullables.Tests
 		{
 			NullableChar v1 = 'd'; //chould take a char literal
 
-			Assert.IsTrue( v1.HasValue ); //should have a value;
-			Assert.IsTrue( v1.Equals( 'd' ) ); //implicit casting should make this result in true.
-			Assert.IsTrue( v1.Value == 'd' );
-			Assert.IsFalse( v1.Equals( NullableChar.Default ) );
-			Assert.IsTrue( v1.Equals( new NullableChar( 'd' ) ) ); //should == a new instance with the same inner value.
+			Assert.IsTrue(v1.HasValue); //should have a value;
+			Assert.IsTrue(v1.Equals('d')); //implicit casting should make this result in true.
+			Assert.IsTrue(v1.Value == 'd');
+			Assert.IsFalse(v1.Equals(NullableChar.Default));
+			Assert.IsTrue(v1.Equals(new NullableChar('d'))); //should == a new instance with the same inner value.
 
 			//same thing, but with == instead of .Equals()
-			Assert.IsTrue( v1 == 'd' );
-			Assert.IsFalse( v1 == 'g' );
-			Assert.IsFalse( v1 == NullableChar.Default );
-			Assert.IsTrue( v1 == new NullableChar( 'd' ) );
+			Assert.IsTrue(v1 == 'd');
+			Assert.IsFalse(v1 == 'g');
+			Assert.IsFalse(v1 == NullableChar.Default);
+			Assert.IsTrue(v1 == new NullableChar('d'));
 
 			//now null v1.
 			v1 = DBNull.Value;
-			Assert.IsTrue( v1 == NullableChar.Default );
+			Assert.IsTrue(v1 == NullableChar.Default);
 			v1 = NullableChar.Default;
-			Assert.IsTrue( v1 == NullableChar.Default );
+			Assert.IsTrue(v1 == NullableChar.Default);
 
 			NullableChar v2 = NullableChar.Default; //should start as "null"
 
-			Assert.IsFalse( v2.HasValue );
-			Assert.IsFalse( v2.Equals( '2' ) );
-			Assert.IsTrue( v2.Equals( NullableChar.Default ) );
-			Assert.IsTrue( v2.Equals( DBNull.Value ) );
+			Assert.IsFalse(v2.HasValue);
+			Assert.IsFalse(v2.Equals('2'));
+			Assert.IsTrue(v2.Equals(NullableChar.Default));
+			Assert.IsTrue(v2.Equals(DBNull.Value));
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
@@ -57,27 +57,26 @@ namespace Nullables.Tests
 
 			//one null, one not
 			x = NullableChar.Default;
-			y = new NullableChar( 'y' );
-			Assert.IsTrue( x.CompareTo( y ) < 0 );
-			Assert.IsTrue( y.CompareTo( x ) > 0 );
+			y = new NullableChar('y');
+			Assert.IsTrue(x.CompareTo(y) < 0);
+			Assert.IsTrue(y.CompareTo(x) > 0);
 
 			//now both null
 			x = NullableChar.Default;
 			y = NullableChar.Default;
-			Assert.IsTrue( x.CompareTo( y ) == 0 );
-			Assert.IsTrue( y.CompareTo( x ) == 0 );
+			Assert.IsTrue(x.CompareTo(y) == 0);
+			Assert.IsTrue(y.CompareTo(x) == 0);
 
 			//now both with a value
-			x = new NullableChar( 'a' );
-			y = new NullableChar( 'u' );
-			Assert.IsTrue( x.CompareTo( y ) < 0 );
-			Assert.IsTrue( y.CompareTo( x ) > 0 );
+			x = new NullableChar('a');
+			y = new NullableChar('u');
+			Assert.IsTrue(x.CompareTo(y) < 0);
+			Assert.IsTrue(y.CompareTo(x) > 0);
 		}
 
 		#region Parse test cases 
 
-
-		private bool ParseToStringValue(char c) 
+		private bool ParseToStringValue(char c)
 		{
 			return c == NullableChar.Parse(c.ToString()).Value;
 		}
@@ -97,7 +96,7 @@ namespace Nullables.Tests
 		{
 			NullableChar.Parse("invalidvalue");
 		}
-		
+
 		#endregion
 	}
 }

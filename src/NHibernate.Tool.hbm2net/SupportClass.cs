@@ -638,7 +638,7 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="objectToAdd">The object to be added.</param>
 			/// <returns>True if the object was added, false otherwise.</returns>
-			new public virtual bool Add(object objectToAdd)
+			public new virtual bool Add(object objectToAdd)
 			{
 				if (this.Contains(objectToAdd))
 					return false;
@@ -718,7 +718,7 @@ namespace NHibernate.Tool.hbm2net
 			/// </summary>
 			/// <param name="elementToRemove">The element to be removed.</param>
 			/// <returns>True if the element was removed.</returns>
-			new public virtual bool Remove(object elementToRemove)
+			public new virtual bool Remove(object elementToRemove)
 			{
 				bool result = false;
 				if (this.Contains(elementToRemove))
@@ -788,7 +788,7 @@ namespace NHibernate.Tool.hbm2net
 			/// Obtains an array containing all the elements of the collection.
 			/// </summary>
 			/// <returns>The array containing all the elements of the collection.</returns>
-			new public virtual object[] ToArray()
+			public new virtual object[] ToArray()
 			{
 				int index = 0;
 				object[] tempObject = new object[this.Count];
@@ -937,7 +937,8 @@ namespace NHibernate.Tool.hbm2net
 			{
 				SortedSetSupport tempSortedSet = new SortedSetSupport();
 				IEnumerator tempEnumerator = this.GetEnumerator();
-				while ((tempEnumerator.MoveNext() && ((!((Int32) tempEnumerator.Current >= (Int32) fromElement))) && (!((Int32) tempEnumerator.Current < (Int32) toElement))))
+				while ((tempEnumerator.MoveNext() && ((!((Int32) tempEnumerator.Current >= (Int32) fromElement))) &&
+				        (!((Int32) tempEnumerator.Current < (Int32) toElement))))
 					tempSortedSet.Add(tempEnumerator.Current);
 				return tempSortedSet;
 			}
@@ -1090,8 +1091,8 @@ namespace NHibernate.Tool.hbm2net
 			ICollection tempCollection1 = source.Keys;
 			ICollection tempCollection2 = source.Values;
 
-			Array tempArray1 = Array.CreateInstance(typeof (Object), tempCollection1.Count);
-			Array tempArray2 = Array.CreateInstance(typeof (Object), tempCollection2.Count);
+			Array tempArray1 = Array.CreateInstance(typeof(Object), tempCollection1.Count);
+			Array tempArray2 = Array.CreateInstance(typeof(Object), tempCollection2.Count);
 
 			Int32 tempInt1 = new Int32();
 			Int32 tempInt2 = new Int32();
@@ -1102,6 +1103,5 @@ namespace NHibernate.Tool.hbm2net
 			for (long index = 0; index < tempCollection1.Count; index++)
 				target[tempArray1.GetValue(index)] = tempArray2.GetValue(index);
 		}
-
 	}
 }

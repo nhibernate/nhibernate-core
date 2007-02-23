@@ -2,8 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-
-using Iesi.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 using NUnit.Framework;
 
@@ -15,7 +16,6 @@ namespace Iesi.Collections.Generic.Test
 	[TestFixture]
 	public class HashedSetFixture : GenericSetFixture
 	{
-
 		protected override ISet<string> CreateInstance()
 		{
 			return new HashedSet<string>();
@@ -32,24 +32,23 @@ namespace Iesi.Collections.Generic.Test
 		}
 
 		[Test]
-		public void Serialization() 
+		public void Serialization()
 		{
 			// serialize and then deserialize the ISet.
-			System.IO.Stream stream = new System.IO.MemoryStream();
-			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-			formatter.Serialize( stream, _set );
+			Stream stream = new MemoryStream();
+			IFormatter formatter = new BinaryFormatter();
+			formatter.Serialize(stream, _set);
 			stream.Position = 0;
 
-			ISet<string> desSet = (ISet<string>)formatter.Deserialize(stream);
+			ISet<string> desSet = (ISet<string>) formatter.Deserialize(stream);
 			stream.Close();
 
-			Assert.AreEqual( 3, desSet.Count, "should have des 3 items" );
-			Assert.IsTrue( desSet.Contains( one ), "should contain one" );
-			Assert.IsTrue( desSet.Contains( two ), "should contain two" );
-			Assert.IsTrue( desSet.Contains( three ), "should contain three" );
+			Assert.AreEqual(3, desSet.Count, "should have des 3 items");
+			Assert.IsTrue(desSet.Contains(one), "should contain one");
+			Assert.IsTrue(desSet.Contains(two), "should contain two");
+			Assert.IsTrue(desSet.Contains(three), "should contain three");
 		}
-
-		
 	}
 }
+
 #endif

@@ -1,22 +1,21 @@
 using System;
 
-using NHibernate;
 using NHibernate.Classic;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Vetoer.
 	/// </summary>
 	public class Vetoer : ILifecycle
 	{
-		bool _onSaveCalled;
-		bool _onUpdateCalled;
-		bool _onDeleteCalled;
+		private bool _onSaveCalled;
+		private bool _onUpdateCalled;
+		private bool _onDeleteCalled;
 
 		private string _name;
 		private string[] _strings;
-		
+
 		public string Name
 		{
 			get { return _name; }
@@ -35,7 +34,7 @@ namespace NHibernate.DomainModel
 		{
 			bool result = !_onUpdateCalled;
 			_onUpdateCalled = true;
-			return ( result ? LifecycleVeto.Veto : LifecycleVeto.NoVeto );
+			return (result ? LifecycleVeto.Veto : LifecycleVeto.NoVeto);
 		}
 
 		public void OnLoad(ISession s, object id)
@@ -46,14 +45,14 @@ namespace NHibernate.DomainModel
 		{
 			bool result = !_onSaveCalled;
 			_onSaveCalled = true;
-			return ( result ? LifecycleVeto.Veto : LifecycleVeto.NoVeto );
+			return (result ? LifecycleVeto.Veto : LifecycleVeto.NoVeto);
 		}
 
 		public LifecycleVeto OnDelete(ISession s)
 		{
 			bool result = !_onDeleteCalled;
 			_onDeleteCalled = true;
-			return ( result ? LifecycleVeto.Veto : LifecycleVeto.NoVeto );
+			return (result ? LifecycleVeto.Veto : LifecycleVeto.NoVeto);
 		}
 
 		#endregion

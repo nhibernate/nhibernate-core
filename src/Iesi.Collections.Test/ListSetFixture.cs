@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 
-using Iesi.Collections;
-
 using NUnit.Framework;
 
 namespace Iesi.Collections.Test
@@ -20,7 +18,7 @@ namespace Iesi.Collections.Test
 
 		protected override ISet CreateInstance(ICollection init)
 		{
-			return new ListSet( init );
+			return new ListSet(init);
 		}
 
 		protected override Type ExpectedType

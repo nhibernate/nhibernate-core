@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 
-using Iesi.Collections.Generic;
-
 using NUnit.Framework;
 
 namespace Iesi.Collections.Generic.Test
@@ -36,7 +34,7 @@ namespace Iesi.Collections.Generic.Test
 			_bInitValues.Add("three");
 			_bInitValues.Add("four");
 
-			_set = CreateInstance(new string[] { one, two, three });
+			_set = CreateInstance(new string[] {one, two, three});
 		}
 
 		#region System.IClonable Member Tests
@@ -44,7 +42,7 @@ namespace Iesi.Collections.Generic.Test
 		[Test]
 		public void Clone()
 		{
-			ISet<string> clonedSet = (ISet<string>)_set.Clone();
+			ISet<string> clonedSet = (ISet<string>) _set.Clone();
 
 			Assert.AreEqual(ExpectedType, clonedSet.GetType(), "cloned set should be the same type");
 			Assert.AreEqual(_set.Count, clonedSet.Count, "set and cloned version should be same");
@@ -54,7 +52,7 @@ namespace Iesi.Collections.Generic.Test
 				clonedSet.Add("not in original");
 				Assert.IsFalse(_set.Count == clonedSet.Count, "adding to clone should not add to original.");
 				if (clonedSet.IsReadOnly)
-				Assert.Fail("Read-only set can be modified");
+					Assert.Fail("Read-only set can be modified");
 			}
 			catch (NotSupportedException)
 			{
@@ -77,7 +75,7 @@ namespace Iesi.Collections.Generic.Test
 		{
 			string[] dest = new string[3];
 			_set.CopyTo(dest, 0);
-		
+
 			int count = 0;
 
 			foreach (string obj in dest)
@@ -164,7 +162,7 @@ namespace Iesi.Collections.Generic.Test
 			catch (NotSupportedException)
 			{
 				if (!_set.IsReadOnly)
-				throw;
+					throw;
 			}
 		}
 
@@ -177,12 +175,12 @@ namespace Iesi.Collections.Generic.Test
 				Assert.AreEqual(0, _set.Count, "should have no items in ISet.");
 
 				if (_set.IsReadOnly)
-				Assert.Fail("Read-only set can be modified");
+					Assert.Fail("Read-only set can be modified");
 			}
 			catch (NotSupportedException)
 			{
 				if (!_set.IsReadOnly)
-				throw;
+					throw;
 			}
 		}
 
@@ -234,7 +232,7 @@ namespace Iesi.Collections.Generic.Test
 			Assert.AreEqual(null, bothNull, "two null sets return null set");
 		}
 
-			[Test]
+		[Test]
 		public void Intersect()
 		{
 			ISet<string> a = CreateInstance(_aInitValues);
@@ -303,12 +301,12 @@ namespace Iesi.Collections.Generic.Test
 
 				Assert.IsFalse(_set.Remove(one), "was already removed.");
 				if (_set.IsReadOnly)
-				Assert.Fail("Read-only set can be modified");
+					Assert.Fail("Read-only set can be modified");
 			}
 			catch (NotSupportedException)
 			{
 				if (!_set.IsReadOnly)
-				throw;
+					throw;
 			}
 		}
 
@@ -327,10 +325,10 @@ namespace Iesi.Collections.Generic.Test
 				if (_set.IsReadOnly)
 					Assert.Fail("Read-only set can be modified");
 			}
-				catch (NotSupportedException)
+			catch (NotSupportedException)
 			{
 				if (!_set.IsReadOnly)
-				throw;
+					throw;
 			}
 		}
 
@@ -387,16 +385,17 @@ namespace Iesi.Collections.Generic.Test
 			Assert.AreEqual(null, bothNull, "two nulls intersect as null");
 		}
 
-		 #endregion
+		#endregion
 
 		#region Iesi.Collection.ISet<string> Operator Tests
+
 		[Test]
 		public void ExclusiveOrOperator()
 		{
 			ISet<string> a = CreateInstance(_aInitValues);
 			ISet<string> b = CreateInstance(_bInitValues);
 
-			ISet<string> ab = (Set<string>)a ^ (Set<string>)b;
+			ISet<string> ab = (Set<string>) a ^ (Set<string>) b;
 
 			Assert.AreEqual(3, ab.Count, "contains 3 elements - 'zero', 'one', and 'four'");
 			Assert.IsTrue(ab.Contains("zero"), "should contain 'zero'");
@@ -413,7 +412,7 @@ namespace Iesi.Collections.Generic.Test
 			ISet<string> a = CreateInstance(_aInitValues);
 			ISet<string> b = CreateInstance(_bInitValues);
 
-			ISet<string> ab = (Set<string>)a & (Set<string>)b;
+			ISet<string> ab = (Set<string>) a & (Set<string>) b;
 
 			Assert.AreEqual(2, ab.Count, "contains 2 elements - 'two', and 'three'");
 			Assert.IsTrue(ab.Contains("two"), "should contain 'two'");
@@ -426,7 +425,7 @@ namespace Iesi.Collections.Generic.Test
 			ISet<string> a = CreateInstance(_aInitValues);
 			ISet<string> b = CreateInstance(_bInitValues);
 
-			ISet<string> ab = (Set<string>)a - (Set<string>)b;
+			ISet<string> ab = (Set<string>) a - (Set<string>) b;
 
 			Assert.AreEqual(2, ab.Count, "contains 2 elements - 'zero', and 'one'");
 			Assert.IsTrue(ab.Contains("zero"), "should contain 'zero'");
@@ -434,7 +433,6 @@ namespace Iesi.Collections.Generic.Test
 
 			Assert.IsTrue(a.ContainsAll(_aInitValues), "should not have modified a");
 			Assert.IsTrue(b.ContainsAll(_bInitValues), "should not have modified b");
-
 		}
 
 		[Test]
@@ -443,7 +441,7 @@ namespace Iesi.Collections.Generic.Test
 			ISet<string> a = CreateInstance(_aInitValues);
 			ISet<string> b = CreateInstance(_bInitValues);
 
-			ISet<string> ab = (Set<string>)a | (Set<string>)b;
+			ISet<string> ab = (Set<string>) a | (Set<string>) b;
 
 			Assert.AreEqual(5, ab.Count, "contains 5 elements - 'zero' through 'four'");
 			Assert.IsTrue(ab.Contains("zero"), "should contain 'zero'");
@@ -454,9 +452,7 @@ namespace Iesi.Collections.Generic.Test
 
 			Assert.IsTrue(a.ContainsAll(_aInitValues), "should not have modified a");
 			Assert.IsTrue(b.ContainsAll(_bInitValues), "should not have modified b");
-
 		}
-
 
 		#endregion
 
@@ -464,7 +460,8 @@ namespace Iesi.Collections.Generic.Test
 
 		protected abstract ISet<string> CreateInstance(ICollection<string> init);
 
-		protected abstract System.Type ExpectedType { get; }
+		protected abstract Type ExpectedType { get; }
 	}
 }
+
 #endif

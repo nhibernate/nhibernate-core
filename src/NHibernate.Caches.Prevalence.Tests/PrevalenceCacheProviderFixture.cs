@@ -1,4 +1,5 @@
 #region License
+
 //
 //  PrevalenceCache - A cache provider for NHibernate using Bamboo.Prevalence.
 //
@@ -18,11 +19,16 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System.Collections;
 using System.IO;
+
+using log4net.Config;
+
 using NHibernate.Cache;
+
 using NUnit.Framework;
 
 namespace NHibernate.Caches.Prevalence.Tests
@@ -37,10 +43,10 @@ namespace NHibernate.Caches.Prevalence.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			log4net.Config.XmlConfigurator.Configure();
+			XmlConfigurator.Configure();
 			props = new Hashtable();
 			testDir = @"C:\temp\prevalence";
-			props.Add( "prevalenceBase", testDir );
+			props.Add("prevalenceBase", testDir);
 		}
 
 		[SetUp]
@@ -52,40 +58,40 @@ namespace NHibernate.Caches.Prevalence.Tests
 		[TearDown]
 		public void Teardown()
 		{
-			if( Directory.Exists( testDir ) )
+			if (Directory.Exists(testDir))
 			{
-				Directory.Delete( testDir );
+				Directory.Delete(testDir);
 			}
 		}
 
 		[Test]
 		public void TestBuildCacheNullNull()
 		{
-			ICache cache = provider.BuildCache( null, null );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache(null, null);
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestBuildCacheStringNull()
 		{
-			ICache cache = provider.BuildCache( "a_region", null );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("a_region", null);
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestBuildCacheStringICollection()
 		{
-			Assert.IsFalse( Directory.Exists( testDir ) );
-			ICache cache = provider.BuildCache( "another_region", props );
-			Assert.IsTrue( Directory.Exists( testDir ) );
-			Assert.IsNotNull( cache, "no cache returned" );
+			Assert.IsFalse(Directory.Exists(testDir));
+			ICache cache = provider.BuildCache("another_region", props);
+			Assert.IsTrue(Directory.Exists(testDir));
+			Assert.IsNotNull(cache, "no cache returned");
 		}
 
 		[Test]
 		public void TestNextTimestamp()
 		{
 			long ts = provider.NextTimestamp();
-			Assert.IsNotNull( ts, "no timestamp returned" );
+			Assert.IsNotNull(ts, "no timestamp returned");
 		}
 	}
 }

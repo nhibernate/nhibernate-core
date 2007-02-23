@@ -1,4 +1,5 @@
 using System;
+
 using NHibernate.SqlCommand;
 
 namespace NHibernate.JetDriver
@@ -20,11 +21,12 @@ namespace NHibernate.JetDriver
 		/// <param name="fkColumns"></param>
 		/// <param name="pkColumns"></param>
 		/// <param name="joinType"></param>
-		public override void AddJoin( string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType )
+		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType)
 		{
-			if( joinType == JoinType.FullJoin ) throw new NotSupportedException( "The FULL JOIN is not supported by Jet database engine." );
+			if (joinType == JoinType.FullJoin)
+				throw new NotSupportedException("The FULL JOIN is not supported by Jet database engine.");
 
-			base.AddJoin( tableName, alias, fkColumns, pkColumns, joinType );
+			base.AddJoin(tableName, alias, fkColumns, pkColumns, joinType);
 		}
 	}
 }

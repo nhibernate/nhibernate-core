@@ -1,17 +1,16 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Middle.
 	/// </summary>
 	[Serializable]
-	public class Middle 
+	public class Middle
 	{
-		
 		private MiddleKey _id;
 		private string _bla;
-		
+
 		public MiddleKey Id
 		{
 			get { return _id; }
@@ -28,19 +27,19 @@ namespace NHibernate.DomainModel
 
 		public override bool Equals(object obj)
 		{
-			if(this==obj) return true;
+			if (this == obj) return true;
 
 			Middle cidMaster = obj as Middle;
-			if(cidMaster==null) return false;
+			if (cidMaster == null) return false;
 
-			if(_id!=null ? !_id.Equals(cidMaster.Id) : cidMaster.Id!=null) return false;
+			if (_id != null ? !_id.Equals(cidMaster.Id) : cidMaster.Id != null) return false;
 
 			return true;
 		}
 
 		public override int GetHashCode()
 		{
-			return ( _id!=null ? _id.GetHashCode() : 0 );
+			return (_id != null ? _id.GetHashCode() : 0);
 		}
 
 		#endregion

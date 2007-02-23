@@ -6,33 +6,32 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// <summary>
 	/// Summary description for Team.
 	/// </summary>
-	public class Team	
+	public class Team
 	{
 		private int _id;
 		private string _name;
 		private IList _players;
 
-		public Team() 
+		public Team()
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
-			get {return _id;}
-			set {_id = value;}
+			get { return _id; }
+			set { _id = value; }
 		}
 
-		public string Name 
+		public string Name
 		{
-			get {return _name;}
-			set {_name = value;}
+			get { return _name; }
+			set { _name = value; }
 		}
 
-		public IList Players 
+		public IList Players
 		{
-			get {return _players;}
-			set {_players = value;}
+			get { return _players; }
+			set { _players = value; }
 		}
-
 	}
 }

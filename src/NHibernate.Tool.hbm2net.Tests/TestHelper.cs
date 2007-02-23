@@ -10,17 +10,14 @@ namespace NHibernate.Tool.hbm2net.Tests
 	{
 		public static DirectoryInfo DefaultOutputDirectory
 		{
-			get
-			{
-				return new DirectoryInfo("generated");
-			}
+			get { return new DirectoryInfo("generated"); }
 		}
 
 		public static FileInfo CreateConfigFile(FileInfo configFile, string templateFile, string renderer, string package)
 		{
 			XmlDocument xmlDoc = CreateConfigXml(templateFile, renderer, package);
 			xmlDoc.Save(configFile.FullName);
-			return  configFile;			
+			return configFile;
 		}
 
 		public static FileInfo CreateConfigFile(string templateFile, string renderer, string package)
@@ -41,14 +38,13 @@ namespace NHibernate.Tool.hbm2net.Tests
 			if (package != null)
 			{
 				xmlDoc.SelectSingleNode("/codegen/generate").Attributes["package"].InnerText = "";
-
 			}
 			if (renderer != null)
 			{
 				xmlDoc.SelectSingleNode("/codegen/generate").Attributes["renderer"].Value = renderer;
 			}
 
-			if(templateFile != null)
+			if (templateFile != null)
 			{
 				//<param name="template"></param>
 				XmlElement param = xmlDoc.CreateElement("param");
@@ -59,8 +55,7 @@ namespace NHibernate.Tool.hbm2net.Tests
 				xmlDoc.SelectSingleNode("/codegen/generate").AppendChild(param);
 				//xmlDoc.SelectSingleNode("/codegen/generate/param[@name='template']").InnerText = templateFile;
 			}
-			return xmlDoc;	
+			return xmlDoc;
 		}
-
 	}
 }

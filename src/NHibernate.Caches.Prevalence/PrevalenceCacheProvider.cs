@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text;
+
 using Bamboo.Prevalence;
 using Bamboo.Prevalence.Util;
+
 using log4net;
+
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.Prevalence
@@ -15,7 +18,7 @@ namespace NHibernate.Caches.Prevalence
 	/// </summary>
 	public class PrevalenceCacheProvider : ICacheProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger( typeof( PrevalenceCacheProvider ) );
+		private static readonly ILog log = LogManager.GetLogger(typeof(PrevalenceCacheProvider));
 		private PrevalenceEngine _engine;
 		private CacheSystem _system;
 		private SnapshotTaker _taker;
@@ -32,88 +35,87 @@ namespace NHibernate.Caches.Prevalence
 		/// doesn't exist, it will be created.</remarks>
 		/// <returns></returns>
 		[CLSCompliant(false)]
-		public ICache BuildCache( string regionName, IDictionary properties )
+		public ICache BuildCache(string regionName, IDictionary properties)
 		{
-			if( regionName == null )
+			if (regionName == null)
 			{
 				regionName = "";
 			}
-			if( properties == null )
+			if (properties == null)
 			{
 				properties = new Hashtable();
 			}
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
 				StringBuilder sb = new StringBuilder();
-				foreach( DictionaryEntry de in properties )
+				foreach (DictionaryEntry de in properties)
 				{
-					sb.Append( "name=" );
-					sb.Append( de.Key.ToString() );
-					sb.Append( "&value=" );
-					sb.Append( de.Value.ToString() );
-					sb.Append( ";" );
+					sb.Append("name=");
+					sb.Append(de.Key.ToString());
+					sb.Append("&value=");
+					sb.Append(de.Value.ToString());
+					sb.Append(";");
 				}
-				log.Debug( "building cache with region: " + regionName + ", properties: " + sb.ToString() );
+				log.Debug("building cache with region: " + regionName + ", properties: " + sb.ToString());
 			}
-			_dataDir = GetDataDirFromConfig( regionName, properties );
-			if( _system == null )
+			_dataDir = GetDataDirFromConfig(regionName, properties);
+			if (_system == null)
 			{
 				SetupEngine();
 			}
-			
-			return new PrevalenceCache( regionName, _system );
+
+			return new PrevalenceCache(regionName, _system);
 		}
 
 		private void SetupEngine()
 		{
-			_engine = PrevalenceActivator.CreateTransparentEngine( typeof( CacheSystem ), _dataDir );
+			_engine = PrevalenceActivator.CreateTransparentEngine(typeof(CacheSystem), _dataDir);
 			_system = _engine.PrevalentSystem as CacheSystem;
-			_taker = new SnapshotTaker( _engine, TimeSpan.FromMinutes( 5 ), CleanUpAllFilesPolicy.Default );
+			_taker = new SnapshotTaker(_engine, TimeSpan.FromMinutes(5), CleanUpAllFilesPolicy.Default);
 		}
 
-		private string GetDataDirFromConfig( string region, IDictionary properties )
+		private string GetDataDirFromConfig(string region, IDictionary properties)
 		{
-			string dataDir = Path.Combine( Environment.CurrentDirectory, region );
+			string dataDir = Path.Combine(Environment.CurrentDirectory, region);
 
-			if( properties != null )
+			if (properties != null)
 			{
-				if( properties["prevalenceBase"] != null )
+				if (properties["prevalenceBase"] != null)
 				{
 					string prevalenceBase = properties["prevalenceBase"].ToString();
-					if( Path.IsPathRooted( prevalenceBase ) )
+					if (Path.IsPathRooted(prevalenceBase))
 					{
 						dataDir = prevalenceBase;
 					}
 					else
 					{
-						dataDir = Path.Combine( Environment.CurrentDirectory, prevalenceBase );
+						dataDir = Path.Combine(Environment.CurrentDirectory, prevalenceBase);
 					}
 
-                    if (properties["regionPrefix"] != null)
-                    {
-                        string regionPrefix = properties["regionPrefix"].ToString();
+					if (properties["regionPrefix"] != null)
+					{
+						string regionPrefix = properties["regionPrefix"].ToString();
 
-                        if (log.IsDebugEnabled)
-                        {
-                            log.DebugFormat("new regionPrefix :{0}", regionPrefix);
-                        }
+						if (log.IsDebugEnabled)
+						{
+							log.DebugFormat("new regionPrefix :{0}", regionPrefix);
+						}
 
-                        dataDir = Path.Combine(dataDir, regionPrefix);
-                    }
+						dataDir = Path.Combine(dataDir, regionPrefix);
+					}
 				}
-			    
 			}
-			if( Directory.Exists( dataDir ) == false )
+			if (Directory.Exists(dataDir) == false)
 			{
-				if( log.IsDebugEnabled )
+				if (log.IsDebugEnabled)
 				{
-					log.Debug( String.Format( "Data directory {0} doesn't exist: creating it.", dataDir ) );
+					log.Debug(String.Format("Data directory {0} doesn't exist: creating it.", dataDir));
 				}
-				Directory.CreateDirectory( dataDir );
+				Directory.CreateDirectory(dataDir);
 			}
-			if( log.IsDebugEnabled )
+			if (log.IsDebugEnabled)
 			{
-				log.Debug( String.Format( "configuring cache in {0}.", dataDir ) );
+				log.Debug(String.Format("configuring cache in {0}.", dataDir));
 			}
 			return dataDir;
 		}
@@ -127,13 +129,13 @@ namespace NHibernate.Caches.Prevalence
 
 		/// <summary></summary>
 		/// <param name="properties"></param>
-		public void Start( IDictionary properties )
+		public void Start(IDictionary properties)
 		{
-			if( _dataDir == null || _dataDir.Length < 1 )
+			if (_dataDir == null || _dataDir.Length < 1)
 			{
-				_dataDir = GetDataDirFromConfig( "", properties );
+				_dataDir = GetDataDirFromConfig("", properties);
 			}
-			if( _system == null )
+			if (_system == null)
 			{
 				SetupEngine();
 			}
@@ -146,7 +148,7 @@ namespace NHibernate.Caches.Prevalence
 			{
 				_engine.HandsOffOutputLog();
 				_taker.Dispose();
-				if( Directory.Exists( _dataDir ) ) Directory.Delete( _dataDir, true );
+				if (Directory.Exists(_dataDir)) Directory.Delete(_dataDir, true);
 			}
 			catch
 			{

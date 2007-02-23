@@ -12,7 +12,7 @@ namespace NHibernate.DomainModel
 		private Child _child;
 		private object _any;
 		private int _x;
-		
+
 		public long Id
 		{
 			get { return _id; }
@@ -42,6 +42,5 @@ namespace NHibernate.DomainModel
 			get { return _x; }
 			set { _x = value; }
 		}
-
 	}
 }

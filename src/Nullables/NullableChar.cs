@@ -1,17 +1,20 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps a <see cref="Char"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableCharConverter)), Serializable()]
+	[TypeConverter(typeof(NullableCharConverter)), Serializable()]
 	public struct NullableChar : INullableType, IComparable
 	{
 		public static readonly NullableChar Default = new NullableChar();
 
-		Char _value;
-		bool hasValue;
+		private Char _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -65,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableChar(DBNull value)
 		{
-			return NullableChar.Default;
+			return Default;
 		}
 
 		#endregion
@@ -83,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableChar)
-				return Equals((NullableChar)obj);
+				return Equals((NullableChar) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableChar x)
@@ -154,7 +158,7 @@ namespace Nullables
 
 			return new NullableInt32(x.Value / y.Value);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -169,7 +173,7 @@ namespace Nullables
 		{
 			if (obj is NullableChar) //chack and unbox
 			{
-				NullableChar value = (NullableChar)obj;
+				NullableChar value = (NullableChar) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -188,7 +192,7 @@ namespace Nullables
 			}
 			else if (obj is Char)
 			{
-				Char value = (Char)obj;
+				Char value = (Char) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -205,19 +209,19 @@ namespace Nullables
 
 		public static NullableChar Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0)) 
-			{		
+			if ((s == null) || (s.Trim().Length == 0))
+			{
 				return new NullableChar();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableChar(Char.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableChar." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableChar.", ex);
 				}
 			}
 		}

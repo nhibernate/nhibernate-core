@@ -1,14 +1,13 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.DomainModel
 {
 	public class S
 	{
-		private int    _count;
+		private int _count;
 		private string _address;
 
-		public S( int count, string address )
+		public S(int count, string address)
 		{
 			_count = count;
 			_address = address;
@@ -25,6 +24,5 @@ namespace NHibernate.DomainModel
 			get { return _address; }
 			set { _address = value; }
 		}
-
 	}
 }

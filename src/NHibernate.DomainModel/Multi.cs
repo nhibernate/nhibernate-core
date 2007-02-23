@@ -1,16 +1,18 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	public class Multi : Top
 	{
 		private string _extraProp;
 		private string _derived;
-		private Multi.Component _comp;
+		private Component _comp;
 		private Po _po;
 		private Po _otherPo;
 
-		public Multi() : base() {} 
+		public Multi() : base()
+		{
+		}
 
 		public string ExtraProp
 		{
@@ -36,18 +38,18 @@ namespace NHibernate.DomainModel
 			set { _otherPo = value; }
 		}
 
-		public Multi.Component Comp
+		public Component Comp
 		{
 			get { return _comp; }
 			set { _comp = value; }
 		}
-	
-		public sealed class Component 
+
+		public sealed class Component
 		{
 			//TODO: is java Calendar -> .net DateTime an appropriate conversion
 			private DateTime _cal;
 			private float _floaty;
-			
+
 			public DateTime Cal
 			{
 				get { return _cal; }
@@ -59,8 +61,6 @@ namespace NHibernate.DomainModel
 				get { return _floaty; }
 				set { _floaty = value; }
 			}
-
 		}
-
 	}
 }

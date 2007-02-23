@@ -1,5 +1,6 @@
 using System;
-using System.Collections;
+
+using Iesi.Collections;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -10,43 +11,42 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private int _id;
 		private string _adultName;
-		private Iesi.Collections.ISet _children;
-		private Iesi.Collections.ISet _adultFriends;
+		private ISet _children;
+		private ISet _adultFriends;
 
 
 		public Parent()
 		{
-			_adultFriends = new Iesi.Collections.SortedSet( new ParentComparer() );
+			_adultFriends = new SortedSet(new ParentComparer());
 		}
 
-		public int Id 
+		public int Id
 		{
-			get {return _id;}
-			set {_id = value;}
+			get { return _id; }
+			set { _id = value; }
 		}
 
-		public string AdultName 
+		public string AdultName
 		{
-			get {return _adultName;}
-			set {_adultName = value;}
+			get { return _adultName; }
+			set { _adultName = value; }
 		}
 
-		public Iesi.Collections.ISet Children 
+		public ISet Children
 		{
-			get {return _children;}
-			set {_children = value;}
+			get { return _children; }
+			set { _children = value; }
 		}
 
-		public Iesi.Collections.ISet AdultFriends 
+		public ISet AdultFriends
 		{
-			get {return _adultFriends;}
-			set {_adultFriends = value;}
+			get { return _adultFriends; }
+			set { _adultFriends = value; }
 		}
 
-		public void AddFriend(Parent friend) 
+		public void AddFriend(Parent friend)
 		{
-			_adultFriends.Add( friend );
+			_adultFriends.Add(friend);
 		}
-
 	}
 }

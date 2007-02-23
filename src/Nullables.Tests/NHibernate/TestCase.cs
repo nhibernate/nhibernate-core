@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
-using System.Data;
 using System.Reflection;
 
+using log4net;
+
 using NHibernate;
-using NHibernate.Connection;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
@@ -18,8 +18,8 @@ namespace Nullables.Tests.NHibernate
 		protected Configuration cfg;
 		protected ISessionFactory sessions;
 
-		private static readonly log4net.ILog log =
-			log4net.LogManager.GetLogger( typeof( TestCase ) );
+		private static readonly ILog log =
+			LogManager.GetLogger(typeof(TestCase));
 
 		private ISession lastOpenedSession;
 
@@ -46,10 +46,10 @@ namespace Nullables.Tests.NHibernate
 			{
 				ExportSchema();
 			}
-			catch( Exception e )
+			catch (Exception e)
 			{
-				log.Error( "Error while setting up the database schema, ignoring the fixture", e );
-				Assert.Ignore( "Error while setting up the database schema: " + e.Message );
+				log.Error("Error while setting up the database schema, ignoring the fixture", e);
+				Assert.Ignore("Error while setting up the database schema: " + e.Message);
 			}
 		}
 
@@ -91,15 +91,15 @@ namespace Nullables.Tests.NHibernate
 		/// is not overridable, but it calls <see cref="OnTearDown" /> which is.
 		/// </summary>
 		[TearDown]
-		public void TearDown() 
+		public void TearDown()
 		{
 			OnTearDown();
 
-			bool wasClosed  = CheckSessionWasClosed();
+			bool wasClosed = CheckSessionWasClosed();
 			bool wasCleaned = CheckDatabaseWasCleaned();
 			bool fail = !wasClosed || !wasCleaned;
 
-			if( fail )
+			if (fail)
 			{
 				Assert.Fail("Test didn't clean up after itself");
 			}
@@ -107,9 +107,9 @@ namespace Nullables.Tests.NHibernate
 
 		private bool CheckSessionWasClosed()
 		{
-			if( lastOpenedSession != null && lastOpenedSession.IsOpen )
+			if (lastOpenedSession != null && lastOpenedSession.IsOpen)
 			{
-				log.Error( "Test case didn't close a session, closing" );
+				log.Error("Test case didn't close a session, closing");
 				lastOpenedSession.Close();
 				return false;
 			}
@@ -120,14 +120,14 @@ namespace Nullables.Tests.NHibernate
 		private bool CheckDatabaseWasCleaned()
 		{
 			int objectCount;
-			using( ISession s = sessions.OpenSession() )
+			using (ISession s = sessions.OpenSession())
 			{
-				objectCount = s.CreateQuery( "from System.Object o" ).List().Count;
+				objectCount = s.CreateQuery("from System.Object o").List().Count;
 			}
 
-			if( objectCount > 0 )
+			if (objectCount > 0)
 			{
-				log.Error( "Test case didn't clean up the database after itself, re-creating the schema" );
+				log.Error("Test case didn't clean up the database after itself, re-creating the schema");
 				DropSchema();
 				ExportSchema();
 				return false;
@@ -138,27 +138,27 @@ namespace Nullables.Tests.NHibernate
 
 		private void ExportSchema()
 		{
-			ExportSchema( Mappings, MappingsAssembly );
+			ExportSchema(Mappings, MappingsAssembly);
 		}
 
-		private void ExportSchema( IList files, string assemblyName )
+		private void ExportSchema(IList files, string assemblyName)
 		{
 			cfg = new Configuration();
 
-			for (int i=0; i<files.Count; i++) 
+			for (int i = 0; i < files.Count; i++)
 			{
-				cfg.AddResource( assemblyName + "." + files[i].ToString(), Assembly.Load( assemblyName ) );
+				cfg.AddResource(assemblyName + "." + files[i].ToString(), Assembly.Load(assemblyName));
 			}
 
-			new SchemaExport( cfg ).Create( OUTPUT_DDL, true );
-			
+			new SchemaExport(cfg).Create(OUTPUT_DDL, true);
+
 			sessions = cfg.BuildSessionFactory();
 		}
 
 		/// <summary>
 		/// Drops the schema that was built with the TestCase's Configuration.
 		/// </summary>
-		public void DropSchema() 
+		public void DropSchema()
 		{
 			new SchemaExport(cfg).Drop(OUTPUT_DDL, true);
 		}

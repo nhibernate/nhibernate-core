@@ -1,6 +1,5 @@
 using System;
 
-
 namespace NHibernate.DomainModel.NHSpecific
 {
 	/// <summary>
@@ -15,16 +14,16 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 		}
 
-		public int Id 
+		public int Id
 		{
-			get {return _id;}
-			set {_id = value;}
+			get { return _id; }
+			set { _id = value; }
 		}
 
-		public string TypeName 
+		public string TypeName
 		{
-			get {return _typeName;}
-			set {_typeName = value;}
+			get { return _typeName; }
+			set { _typeName = value; }
 		}
 	}
 }

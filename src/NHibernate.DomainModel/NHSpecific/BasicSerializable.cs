@@ -1,37 +1,36 @@
 using System;
 
-namespace NHibernate.DomainModel.NHSpecific 
+namespace NHibernate.DomainModel.NHSpecific
 {
-
 	/// <summary>
 	/// Summary description for BasicSerializable.
 	/// </summary>
-	public class BasicSerializable 
+	public class BasicSerializable
 	{
 		private int _id;
 		private SerializableClass _serializableProperty;
 		private object _serial;
 
-		public BasicSerializable() 
+		public BasicSerializable()
 		{
 			_serializableProperty = new SerializableClass();
 			_serializableProperty._classId = 5;
 			_serializableProperty._classString = "serialize me";
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
-		
-		public SerializableClass SerializableProperty 
+
+		public SerializableClass SerializableProperty
 		{
-			get {return _serializableProperty;}
-			set {_serializableProperty = value;}
+			get { return _serializableProperty; }
+			set { _serializableProperty = value; }
 		}
 
-		public object Serial 
+		public object Serial
 		{
 			get { return _serial; }
 			set { _serial = value; }
@@ -39,7 +38,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	}
 
 	[Serializable]
-	public class SerializableClass 
+	public class SerializableClass
 	{
 		public int _classId;
 		public string _classString;
@@ -54,16 +53,14 @@ namespace NHibernate.DomainModel.NHSpecific
 		public override bool Equals(object obj)
 		{
 			SerializableClass lhs = obj as SerializableClass;
-			if(lhs==null) return false;
+			if (lhs == null) return false;
 
-			if(this==lhs) return true;
+			if (this == lhs) return true;
 
-			if(this._classId.Equals(lhs._classId) 
-				&& this._classString.Equals(this._classString)) return true;
+			if (this._classId.Equals(lhs._classId)
+			    && this._classString.Equals(this._classString)) return true;
 
 			return false;
 		}
-
 	}
-
 }

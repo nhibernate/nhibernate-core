@@ -12,7 +12,7 @@ namespace Nullables.NHibernate
 	[Serializable]
 	public class NullableSingleType : NullableTypesType
 	{
-		public NullableSingleType() : base( SqlTypeFactory.Single )
+		public NullableSingleType() : base(SqlTypeFactory.Single)
 		{
 		}
 
@@ -23,20 +23,20 @@ namespace Nullables.NHibernate
 
 		public override Type ReturnedClass
 		{
-			get { return typeof( NullableSingle ); }
+			get { return typeof(NullableSingle); }
 		}
 
-		public override object Get( IDataReader rs, int index )
+		public override object Get(IDataReader rs, int index)
 		{
-			return new NullableSingle( Convert.ToSingle( rs[ index ] ) );
+			return new NullableSingle(Convert.ToSingle(rs[index]));
 		}
 
-		public override void Set( IDbCommand cmd, object value, int index )
+		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter parameter = ( IDataParameter ) cmd.Parameters[ index ];
-			NullableSingle nullableValue = ( NullableSingle ) value;
+			IDataParameter parameter = (IDataParameter) cmd.Parameters[index];
+			NullableSingle nullableValue = (NullableSingle) value;
 
-			if( nullableValue.HasValue )
+			if (nullableValue.HasValue)
 			{
 				parameter.Value = nullableValue.Value;
 			}
@@ -46,9 +46,9 @@ namespace Nullables.NHibernate
 			}
 		}
 
-		public override object FromStringValue( string xml )
+		public override object FromStringValue(string xml)
 		{
-			return NullableSingle.Parse( xml );
+			return NullableSingle.Parse(xml);
 		}
 	}
 }

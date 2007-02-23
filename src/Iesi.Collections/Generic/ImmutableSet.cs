@@ -1,9 +1,9 @@
 #if NET_2_0
 
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */  
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
+using System.Collections;
 using System.Collections.Generic;
-
 
 namespace Iesi.Collections.Generic
 {
@@ -23,10 +23,7 @@ namespace Iesi.Collections.Generic
 
 		internal ISet<T> BasisSet
 		{
-			get
-			{
-				return mBasisSet;
-			}
+			get { return mBasisSet; }
 		}
 
 		/// <summary>
@@ -44,7 +41,7 @@ namespace Iesi.Collections.Generic
 		/// <param name="o">The object to add to the set.</param>
 		/// <returns>nothing</returns>
 		/// <exception cref="NotSupportedException"> is always thrown</exception>
-		public sealed override bool Add(T o)
+		public override sealed bool Add(T o)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -55,7 +52,7 @@ namespace Iesi.Collections.Generic
 		/// <param name="c">A collection of objects to add to the set.</param>
 		/// <returns>nothing</returns>
 		/// <exception cref="NotSupportedException"> is always thrown</exception>
-		public sealed override bool AddAll(ICollection<T> c)
+		public override sealed bool AddAll(ICollection<T> c)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -64,7 +61,7 @@ namespace Iesi.Collections.Generic
 		/// Removes all objects from the set.
 		/// </summary>
 		/// <exception cref="NotSupportedException"> is always thrown</exception>
-		public sealed override void Clear()
+		public override sealed void Clear()
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -74,7 +71,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="o">The element to look for.</param>
 		/// <returns><c>true</c> if this set contains the specified element, <c>false</c> otherwise.</returns>
-		public sealed override bool Contains(T o)
+		public override sealed bool Contains(T o)
 		{
 			return mBasisSet.Contains(o);
 		}
@@ -84,7 +81,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="c">A collection of objects.</param>
 		/// <returns><c>true</c> if the set contains all the elements in the specified collection, <c>false</c> otherwise.</returns>
-		public sealed override bool ContainsAll(ICollection<T> c)
+		public override sealed bool ContainsAll(ICollection<T> c)
 		{
 			return mBasisSet.ContainsAll(c);
 		}
@@ -92,9 +89,9 @@ namespace Iesi.Collections.Generic
 		/// <summary>
 		/// Returns <c>true</c> if this set contains no elements.
 		/// </summary>
-		public sealed override bool IsEmpty
+		public override sealed bool IsEmpty
 		{
-			get{return mBasisSet.IsEmpty;}
+			get { return mBasisSet.IsEmpty; }
 		}
 
 		/// <summary>
@@ -103,7 +100,7 @@ namespace Iesi.Collections.Generic
 		/// <param name="o">The element to be removed.</param>
 		/// <returns>nothing</returns>
 		/// <exception cref="NotSupportedException"> is always thrown</exception>
-		public sealed override bool Remove(T o)
+		public override sealed bool Remove(T o)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -114,7 +111,7 @@ namespace Iesi.Collections.Generic
 		/// <param name="c">A collection of elements to remove.</param>
 		/// <returns>nothing</returns>
 		/// <exception cref="NotSupportedException"> is always thrown</exception>
-		public sealed override bool RemoveAll(ICollection<T> c)
+		public override sealed bool RemoveAll(ICollection<T> c)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -125,7 +122,7 @@ namespace Iesi.Collections.Generic
 		/// <param name="c">Collection that defines the set of elements to be retained.</param>
 		/// <returns>nothing</returns>
 		/// <exception cref="NotSupportedException"> is always thrown</exception>
-		public sealed override bool RetainAll(ICollection<T> c)
+		public override sealed bool RetainAll(ICollection<T> c)
 		{
 			throw new NotSupportedException(ERROR_MESSAGE);
 		}
@@ -136,7 +133,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="array">An array that will be the target of the copy operation.</param>
 		/// <param name="index">The zero-based index where copying will start.</param>
-		public sealed override void CopyTo(T[] array, int index)
+		public override sealed void CopyTo(T[] array, int index)
 		{
 			mBasisSet.CopyTo(array, index);
 		}
@@ -144,38 +141,32 @@ namespace Iesi.Collections.Generic
 		/// <summary>
 		/// The number of elements contained in this collection.
 		/// </summary>
-		public sealed override int Count
+		public override sealed int Count
 		{
-			get{return mBasisSet.Count;}
+			get { return mBasisSet.Count; }
 		}
 
 		/// <summary>
 		/// Returns an object that can be used to synchronize use of the <c>Set</c> across threads.
 		/// </summary>
-		public sealed override bool IsSynchronized
+		public override sealed bool IsSynchronized
 		{
-			get
-			{
-				return ((System.Collections.ICollection)mBasisSet).IsSynchronized;
-			}
+			get { return ((ICollection) mBasisSet).IsSynchronized; }
 		}
 
 		/// <summary>
-			/// Returns an object that can be used to synchronize the <c>Set</c> between threads.
+		/// Returns an object that can be used to synchronize the <c>Set</c> between threads.
 		/// </summary>
-		public sealed override object SyncRoot
+		public override sealed object SyncRoot
 		{
-			get
-			{
-				return ((System.Collections.ICollection)mBasisSet).SyncRoot;
-			}
+			get { return ((ICollection) mBasisSet).SyncRoot; }
 		}
 
 		/// <summary>
 		/// Gets an enumerator for the elements in the <c>Set</c>.
 		/// </summary>
 		/// <returns>An <c>IEnumerator</c> over the elements in the <c>Set</c>.</returns>
-		public sealed override IEnumerator<T> GetEnumerator()
+		public override sealed IEnumerator<T> GetEnumerator()
 		{
 			return mBasisSet.GetEnumerator();
 		}
@@ -184,7 +175,7 @@ namespace Iesi.Collections.Generic
 		/// Returns a clone of the <c>Set</c> instance.  
 		/// </summary>
 		/// <returns>A clone of this object.</returns>
-		public sealed override object Clone()
+		public override sealed object Clone()
 		{
 			return new ImmutableSet<T>(mBasisSet);
 		}
@@ -198,7 +189,7 @@ namespace Iesi.Collections.Generic
 		/// <param name="a">A collection of elements.</param>
 		/// <returns>A new <c>Set</c> containing the union of this <c>Set</c> with the specified collection.
 		/// Neither of the input objects is modified by the union.</returns>
-		public sealed override ISet<T> Union(ISet<T> a)
+		public override sealed ISet<T> Union(ISet<T> a)
 		{
 			ISet<T> m = GetUltimateBasisSet();
 			return new ImmutableSet<T>(m.Union(a));
@@ -212,7 +203,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
 		/// <returns>The intersection of this set with <c>a</c>.</returns>
-		public sealed override ISet<T> Intersect(ISet<T> a)
+		public override sealed ISet<T> Intersect(ISet<T> a)
 		{
 			ISet<T> m = GetUltimateBasisSet();
 			return new ImmutableSet<T>(m.Intersect(a));
@@ -226,7 +217,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
 		/// <returns>A set containing the elements from this set with the elements in <c>a</c> removed.</returns>
-		public sealed override ISet<T> Minus(ISet<T> a)
+		public override sealed ISet<T> Minus(ISet<T> a)
 		{
 			ISet<T> m = GetUltimateBasisSet();
 			return new ImmutableSet<T>(m.Minus(a));
@@ -240,7 +231,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="a">A set of elements.</param>
 		/// <returns>A set containing the result of <c>a ^ b</c>.</returns>
-		public sealed override ISet<T> ExclusiveOr(ISet<T> a)
+		public override sealed ISet<T> ExclusiveOr(ISet<T> a)
 		{
 			ISet<T> m = GetUltimateBasisSet();
 			return new ImmutableSet<T>(m.ExclusiveOr(a));
@@ -249,7 +240,7 @@ namespace Iesi.Collections.Generic
 		/// <summary>
 		/// Indicates that the given instance is read-only
 		/// </summary>
-		public sealed override bool IsReadOnly
+		public override sealed bool IsReadOnly
 		{
 			get { return true; }
 		}
@@ -261,7 +252,7 @@ namespace Iesi.Collections.Generic
 		/// <param name="index"></param>
 		protected override void NonGenericCopyTo(Array array, int index)
 		{
-			((System.Collections.ICollection)this.BasisSet).CopyTo(array, index);
+			((ICollection) this.BasisSet).CopyTo(array, index);
 		}
 
 		/// <summary>
@@ -269,10 +260,10 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="a"></param>
 		/// <returns></returns>
-		protected sealed override ISet NonGenericUnion(ISet a)
+		protected override sealed ISet NonGenericUnion(ISet a)
 		{
 			ISet<T> m = GetUltimateBasisSet();
-			return new ImmutableSet(((ISet)m).Union(a));
+			return new ImmutableSet(((ISet) m).Union(a));
 		}
 
 		/// <summary>
@@ -280,10 +271,10 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="a"></param>
 		/// <returns></returns>
-		protected sealed override ISet NonGenericMinus(ISet a)
+		protected override sealed ISet NonGenericMinus(ISet a)
 		{
 			ISet<T> m = GetUltimateBasisSet();
-			return new ImmutableSet(((ISet)m).Minus(a));
+			return new ImmutableSet(((ISet) m).Minus(a));
 		}
 
 		/// <summary>
@@ -291,10 +282,10 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="a"></param>
 		/// <returns></returns>
-		protected sealed override ISet NonGenericIntersect(ISet a)
+		protected override sealed ISet NonGenericIntersect(ISet a)
 		{
 			ISet<T> m = GetUltimateBasisSet();
-			return new ImmutableSet(((ISet)m).Intersect(a));
+			return new ImmutableSet(((ISet) m).Intersect(a));
 		}
 
 		/// <summary>
@@ -302,19 +293,20 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		/// <param name="a"></param>
 		/// <returns></returns>
-		protected sealed override ISet NonGenericExclusiveOr(ISet a)
+		protected override sealed ISet NonGenericExclusiveOr(ISet a)
 		{
 			ISet<T> m = GetUltimateBasisSet();
-			return new ImmutableSet(((ISet)m).ExclusiveOr(a));
+			return new ImmutableSet(((ISet) m).ExclusiveOr(a));
 		}
 
 		private ISet<T> GetUltimateBasisSet()
 		{
 			ISet<T> m = this.mBasisSet;
 			while (m is ImmutableSet<T>)
-				m = ((ImmutableSet<T>)m).mBasisSet;
+				m = ((ImmutableSet<T>) m).mBasisSet;
 			return m;
 		}
 	}
 }
+
 #endif

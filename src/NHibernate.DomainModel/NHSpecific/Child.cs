@@ -18,94 +18,107 @@ namespace NHibernate.DomainModel.NHSpecific
 		private Child[] _friends;
 
 		// default it to today - ms sql has problems with null datetimes
-		private System.DateTime _favoriteDate = DateTime.Today;
+		private DateTime _favoriteDate = DateTime.Today;
 
 		public Child()
 		{
 			_friends = new Child[3];
 		}
-		
-		public int Id {
-			get {return _id;}
-			set {_id = value;}
+
+		public int Id
+		{
+			get { return _id; }
+			set { _id = value; }
 		}
 
-		public string FullName {
-			get {return _fullName;}
-			set {_fullName = value;}
+		public string FullName
+		{
+			get { return _fullName; }
+			set { _fullName = value; }
 		}
 
-		public IList Siblings {
-			get {
-				if(_siblings==null) _siblings = new ArrayList();
+		public IList Siblings
+		{
+			get
+			{
+				if (_siblings == null) _siblings = new ArrayList();
 				return _siblings;
 			}
-			set {_siblings = value;}
+			set { _siblings = value; }
 		}
 
-		public Child FirstSibling {
-			get{
-				return (Child)Siblings[0];
-			}
-			set {Siblings.Insert(0, value);}
+		public Child FirstSibling
+		{
+			get { return (Child) Siblings[0]; }
+			set { Siblings.Insert(0, value); }
 		}
 
 
-		public Child SecondSibling {
-			get{
-				return (Child)Siblings[1];
-			}
-			set {Siblings.Insert(1, value);}
+		public Child SecondSibling
+		{
+			get { return (Child) Siblings[1]; }
+			set { Siblings.Insert(1, value); }
 		}
 
-		public IDictionary Parents {
-			get {
-				if(_parents==null)  _parents = new Hashtable();
+		public IDictionary Parents
+		{
+			get
+			{
+				if (_parents == null) _parents = new Hashtable();
 				return _parents;
 			}
-			set {_parents = value;}
+			set { _parents = value; }
 		}
 
-		public Parent Mom {
-			get { return (Parent)Parents["mom"];}
-			set {
-				if(Parents.Contains("mom")==false) {
-					 Parents.Add("mom", value);
-				 }
-				 else {
-					 Parents["mom"] = value;
-				 }
+		public Parent Mom
+		{
+			get { return (Parent) Parents["mom"]; }
+			set
+			{
+				if (Parents.Contains("mom") == false)
+				{
+					Parents.Add("mom", value);
+				}
+				else
+				{
+					Parents["mom"] = value;
+				}
 			}
 		}
 
-		public Parent Dad {
-			get { return (Parent)Parents["dad"];}
-			set {
-				if(Parents.Contains("dad")==false) {
+		public Parent Dad
+		{
+			get { return (Parent) Parents["dad"]; }
+			set
+			{
+				if (Parents.Contains("dad") == false)
+				{
 					Parents.Add("dad", value);
 				}
-				else {
+				else
+				{
 					Parents["dad"] = value;
 				}
-			
 			}
 		}
 
-		public SexType Sex {
-			get { return _sex;}
-			set { _sex = value;}
+		public SexType Sex
+		{
+			get { return _sex; }
+			set { _sex = value; }
 		}
 
-		public Child[] Friends {
-			get { return _friends;}
-			set { _friends = value;}
+		public Child[] Friends
+		{
+			get { return _friends; }
+			set { _friends = value; }
 		}
 
 
-		public System.DateTime FavoriteDate{
-			get {return _favoriteDate;}
-			set {_favoriteDate = value;}
+		public DateTime FavoriteDate
+		{
+			get { return _favoriteDate; }
+			set { _favoriteDate = value; }
 		}
-
 	}
 }

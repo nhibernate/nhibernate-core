@@ -16,36 +16,36 @@ namespace NHibernate.Caches.SysCache
 		/// <param name="configContext"></param>
 		/// <param name="section"></param>
 		/// <returns>an array of CacheConfig objects</returns>
-		public object Create( object parent, object configContext, XmlNode section )
+		public object Create(object parent, object configContext, XmlNode section)
 		{
 			ArrayList caches = new ArrayList();
-			XmlNodeList nodes = section.SelectNodes( "cache" );
-			foreach (XmlNode node in nodes )
+			XmlNodeList nodes = section.SelectNodes("cache");
+			foreach (XmlNode node in nodes)
 			{
 				string region = null;
 				string expiration = null;
 				string priority = "3";
-				XmlAttribute r = node.Attributes[ "region" ];
-				XmlAttribute e = node.Attributes[ "expiration" ];
-				XmlAttribute p = node.Attributes[ "priority" ];
-				if( r != null )
+				XmlAttribute r = node.Attributes["region"];
+				XmlAttribute e = node.Attributes["expiration"];
+				XmlAttribute p = node.Attributes["priority"];
+				if (r != null)
 				{
 					region = r.Value;
 				}
-				if( e != null )
+				if (e != null)
 				{
 					expiration = e.Value;
 				}
-				if( p != null )
+				if (p != null)
 				{
 					priority = p.Value;
 				}
-				if( region != null && expiration != null )
+				if (region != null && expiration != null)
 				{
-					caches.Add( new CacheConfig( region, expiration, priority ) );
+					caches.Add(new CacheConfig(region, expiration, priority));
 				}
 			}
-			return ( CacheConfig[] ) caches.ToArray( typeof( CacheConfig ) );
+			return (CacheConfig[]) caches.ToArray(typeof(CacheConfig));
 		}
 	}
 }

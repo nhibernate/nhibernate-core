@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
 
-namespace NHibernate.DomainModel 
+using Iesi.Collections;
+
+namespace NHibernate.DomainModel
 {
 	public class Lower : Top
 	{
 		private int _intprop;
 		private string _foo;
-		private Iesi.Collections.ISet _set; 
+		private ISet _set;
 		private IList _bag;
 		private Lower _other;
 		private Top _another;
@@ -26,7 +28,7 @@ namespace NHibernate.DomainModel
 			set { _foo = value; }
 		}
 
-		public Iesi.Collections.ISet Set
+		public ISet Set
 		{
 			get { return _set; }
 			set { _set = value; }
@@ -61,6 +63,5 @@ namespace NHibernate.DomainModel
 			get { return _myPo; }
 			set { _myPo = value; }
 		}
-
 	}
 }

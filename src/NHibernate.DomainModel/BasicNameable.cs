@@ -11,14 +11,14 @@ namespace NHibernate.DomainModel
 		private long _id;
 
 		#region INameable Members
-		
-		public string Name 
+
+		public string Name
 		{
 			get { return _name; }
 			set { _name = value; }
 		}
 
-		public long Key 
+		public long Key
 		{
 			get { return _id; }
 			set { _id = value; }

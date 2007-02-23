@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Single.
 	/// </summary>
 	[Serializable]
-	public class Single 
+	public class Single
 	{
 		private string _id;
 		private string _prop;
@@ -40,15 +40,15 @@ namespace NHibernate.DomainModel
 		}
 
 		#region System.Object members
-		
+
 		public override bool Equals(object obj)
 		{
-			if(this==obj) return true;
+			if (this == obj) return true;
 
 			Single rhs = obj as Single;
-			if(rhs==null) return false;
+			if (rhs == null) return false;
 
-			return ( rhs.Id.Equals(this.Id) && rhs.String.Equals(this.String) );
+			return (rhs.Id.Equals(this.Id) && rhs.String.Equals(this.String));
 		}
 
 		public override int GetHashCode()

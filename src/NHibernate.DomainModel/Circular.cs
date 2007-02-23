@@ -19,19 +19,19 @@ namespace NHibernate.DomainModel
 		}
 
 
-		public System.Type Clazz 
+		public System.Type Clazz
 		{
 			get { return _clazz; }
 			set { _clazz = value; }
 		}
 
-		public Circular Other 
+		public Circular Other
 		{
 			get { return _other; }
 			set { _other = value; }
 		}
 
-		public object AnyEntity 
+		public object AnyEntity
 		{
 			get { return _anyEntity; }
 			set { _anyEntity = value; }

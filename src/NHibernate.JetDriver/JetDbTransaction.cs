@@ -21,7 +21,7 @@ namespace NHibernate.JetDriver
 			get { return _transaction; }
 		}
 
-		internal JetDbTransaction( JetDbConnection connection, OleDbTransaction transaction )
+		internal JetDbTransaction(JetDbConnection connection, OleDbTransaction transaction)
 		{
 			_connection = connection;
 			_transaction = transaction;
@@ -55,7 +55,7 @@ namespace NHibernate.JetDriver
 
 		public void Dispose()
 		{
-			( _transaction as IDisposable ).Dispose();
+			(_transaction as IDisposable).Dispose();
 		}
 
 		#endregion

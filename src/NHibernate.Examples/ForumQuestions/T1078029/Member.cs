@@ -12,13 +12,13 @@ namespace NHibernate.Examples.ForumQuestions.T1078029
 		{
 		}
 
-		public string Id 
+		public string Id
 		{
 			get { return id; }
 			set { id = value; }
 		}
-		
-		public string Name 
+
+		public string Name
 		{
 			get { return name; }
 			set { name = value; }

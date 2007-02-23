@@ -24,31 +24,31 @@ namespace NHibernate.JetDriver
 			_connection = new OleDbConnection();
 		}
 
-		public JetDbConnection( string connectionString )
+		public JetDbConnection(string connectionString)
 		{
-			_connection = new OleDbConnection( connectionString );
+			_connection = new OleDbConnection(connectionString);
 		}
 
-		public JetDbConnection( OleDbConnection connection )
+		public JetDbConnection(OleDbConnection connection)
 		{
 			_connection = connection;
 		}
 
 		#region IDbConnection Members
 
-		public void ChangeDatabase( string databaseName )
+		public void ChangeDatabase(string databaseName)
 		{
-			Connection.ChangeDatabase( databaseName );
+			Connection.ChangeDatabase(databaseName);
 		}
 
-		public IDbTransaction BeginTransaction( IsolationLevel il )
+		public IDbTransaction BeginTransaction(IsolationLevel il)
 		{
-			return new JetDbTransaction( this, Connection.BeginTransaction( il ) );
+			return new JetDbTransaction(this, Connection.BeginTransaction(il));
 		}
 
 		IDbTransaction IDbConnection.BeginTransaction()
 		{
-			return new JetDbTransaction( this, Connection.BeginTransaction() );
+			return new JetDbTransaction(this, Connection.BeginTransaction());
 		}
 
 		public ConnectionState State
@@ -64,7 +64,7 @@ namespace NHibernate.JetDriver
 
 		public IDbCommand CreateCommand()
 		{
-			return new JetDbCommand( Connection.CreateCommand() );
+			return new JetDbCommand(Connection.CreateCommand());
 		}
 
 		public void Open()

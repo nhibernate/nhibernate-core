@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Reflection;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Types;
+
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
@@ -36,7 +38,7 @@ namespace NHibernate.Tasks
 	/// Contributed by James Geurts
 	/// </p>
 	/// </remarks>
-	[TaskName( "hbm2ddl" )]
+	[TaskName("hbm2ddl")]
 	public class Hbm2DdlTask : Task
 	{
 		private string _connectionProvider = "NHibernate.Connection.DriverConnectionProvider";
@@ -55,7 +57,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets the connection provider.  NHibernate.Connection.DriverConnectionProvider is the default
 		/// </summary>
 		/// <value>The connection provider.</value>
-		[TaskAttribute( "connectionprovider" )]
+		[TaskAttribute("connectionprovider")]
 		public string ConnectionProvider
 		{
 			get { return this._connectionProvider; }
@@ -65,7 +67,7 @@ namespace NHibernate.Tasks
 		/// <summary>
 		/// Gets or sets the dialect.  NHibernate.Dialect.MsSql2000Dialect is the default
 		/// </summary>
-		[TaskAttribute( "dialect" )]
+		[TaskAttribute("dialect")]
 		public string Dialect
 		{
 			get { return this._dialect; }
@@ -76,7 +78,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets the connection driver class. NHibernate.Driver.SqlClientDriver is the default.
 		/// </summary>
 		/// <value>The connection driver class.</value>
-		[TaskAttribute( "connectiondriverclass" )]
+		[TaskAttribute("connectiondriverclass")]
 		public string ConnectionDriverClass
 		{
 			get { return this._connectionDriverClass; }
@@ -87,7 +89,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets the connection string used to access the ddl.
 		/// </summary>
 		/// <value>The connection string.</value>
-		[TaskAttribute( "connectionstring", Required=true )]
+		[TaskAttribute("connectionstring", Required=true)]
 		public string ConnectionString
 		{
 			get { return this._connectionString; }
@@ -97,7 +99,7 @@ namespace NHibernate.Tasks
 		/// <summary>
 		/// Gets or sets the delimiter.  GO is the default.
 		/// </summary>
-		[TaskAttribute( "delimiter" )]
+		[TaskAttribute("delimiter")]
 		public string Delimiter
 		{
 			get { return this._delimiter; }
@@ -108,7 +110,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets a value indicating whether the schema should be outputted to the console
 		/// </summary>
 		/// <value><c>true</c> to output to the console; otherwise, <c>false</c>.</value>
-		[TaskAttribute( "outputtoconsole" )]
+		[TaskAttribute("outputtoconsole")]
 		public bool OutputToConsole
 		{
 			get { return this._outputToConsole; }
@@ -120,7 +122,7 @@ namespace NHibernate.Tasks
 		/// or if it should be executed on the database server.
 		/// </summary>
 		/// <value><c>true</c> if only output the script; otherwise, <c>false</c> - Execute the script on the db server.</value>
-		[TaskAttribute( "exportonly" )]
+		[TaskAttribute("exportonly")]
 		public bool ExportOnly
 		{
 			get { return this._exportOnly; }
@@ -131,7 +133,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets a value indicating whether only the drop script should be executed
 		/// </summary>
 		/// <value><c>true</c> if only drop objects; otherwise, <c>false</c> - Drop and Create objects.</value>
-		[TaskAttribute( "droponly" )]
+		[TaskAttribute("droponly")]
 		public bool DropOnly
 		{
 			get { return this._dropOnly; }
@@ -142,7 +144,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets a value indicating whether the ddl script should be formatted nicely
 		/// </summary>
 		/// <value><c>true</c> for nice format; otherwise, <c>false</c> - One statement per line.</value>
-		[TaskAttribute( "formatnice" )]
+		[TaskAttribute("formatnice")]
 		public bool FormatNice
 		{
 			get { return this._formatNice; }
@@ -153,7 +155,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets the filename to write the ddl schema script to.
 		/// </summary>
 		/// <value>The output filename.</value>
-		[TaskAttribute( "outputfilename" )]
+		[TaskAttribute("outputfilename")]
 		public string OutputFilename
 		{
 			get { return this._outputFilename; }
@@ -164,7 +166,7 @@ namespace NHibernate.Tasks
 		/// Gets or sets the assemblies load with embedded *.hbm.xml resources.
 		/// </summary>
 		/// <value>The assemblies.</value>
-		[BuildElement( "assemblies", Required=true )]
+		[BuildElement("assemblies", Required=true)]
 		public FileSet Assemblies
 		{
 			get { return _assemblies; }
@@ -179,45 +181,45 @@ namespace NHibernate.Tasks
 			Configuration config = new Configuration();
 			IDictionary properties = new Hashtable();
 
-			properties[ "hibernate.connection.provider" ] = ConnectionProvider;
-			properties[ "hibernate.dialect" ] = Dialect;
-			properties[ "hibernate.connection.driver_class" ] = ConnectionDriverClass;
-			properties[ "hibernate.connection.connection_string" ] = ConnectionString;
+			properties["hibernate.connection.provider"] = ConnectionProvider;
+			properties["hibernate.dialect"] = Dialect;
+			properties["hibernate.connection.driver_class"] = ConnectionDriverClass;
+			properties["hibernate.connection.connection_string"] = ConnectionString;
 
-			config.AddProperties( properties );
+			config.AddProperties(properties);
 
-			foreach( string filename in Assemblies.FileNames )
+			foreach (string filename in Assemblies.FileNames)
 			{
-				Log( Level.Info, "Adding assembly file {0}", filename );
+				Log(Level.Info, "Adding assembly file {0}", filename);
 				try
 				{
-					Assembly asm = Assembly.LoadFile( filename );
-					config.AddAssembly( asm );
+					Assembly asm = Assembly.LoadFile(filename);
+					config.AddAssembly(asm);
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					Log( Level.Error, "Error loading assembly {0}: {1}", filename, e );
+					Log(Level.Error, "Error loading assembly {0}: {1}", filename, e);
 				}
 			}
 
-			SchemaExport se = new SchemaExport( config );
-			if( !IsStringNullOrEmpty( OutputFilename ) )
+			SchemaExport se = new SchemaExport(config);
+			if (!IsStringNullOrEmpty(OutputFilename))
 			{
-				se.SetOutputFile( OutputFilename );
+				se.SetOutputFile(OutputFilename);
 			}
-			se.SetDelimiter( Delimiter );
-			Log( Level.Debug, "Exporting ddl schema." );
-			se.Execute( OutputToConsole, ExportOnly, DropOnly, FormatNice );
+			se.SetDelimiter(Delimiter);
+			Log(Level.Debug, "Exporting ddl schema.");
+			se.Execute(OutputToConsole, ExportOnly, DropOnly, FormatNice);
 
-			if( !IsStringNullOrEmpty( OutputFilename ) )
+			if (!IsStringNullOrEmpty(OutputFilename))
 			{
-				Log( Level.Info, "Successful DDL schema output: {0}", OutputFilename );
+				Log(Level.Info, "Successful DDL schema output: {0}", OutputFilename);
 			}
 		}
 
-		private static bool IsStringNullOrEmpty( string input )
+		private static bool IsStringNullOrEmpty(string input)
 		{
-			return ( input == null || input.Length == 0 );
+			return (input == null || input.Length == 0);
 		}
 	}
 }

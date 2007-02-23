@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Text;
+
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
@@ -15,7 +16,7 @@ namespace NHibernate.JetDriver
 	{
 		private Dialect.Dialect dialect;
 
-		public JetCaseFragment( Dialect.Dialect dialect )
+		public JetCaseFragment(Dialect.Dialect dialect)
 		{
 			this.dialect = dialect;
 		}
@@ -24,47 +25,47 @@ namespace NHibernate.JetDriver
 
 		private IList cases = new ArrayList();
 
-		public override CaseFragment SetReturnColumnName( string returnColumnName )
+		public override CaseFragment SetReturnColumnName(string returnColumnName)
 		{
 			this.returnColumnName = returnColumnName;
 			return this;
 		}
 
-		public override CaseFragment SetReturnColumnName( string returnColumnName, string suffix )
+		public override CaseFragment SetReturnColumnName(string returnColumnName, string suffix)
 		{
-			return SetReturnColumnName( new Alias( suffix ).ToAliasString( returnColumnName, dialect ) );
+			return SetReturnColumnName(new Alias(suffix).ToAliasString(returnColumnName, dialect));
 		}
 
-		public override CaseFragment AddWhenColumnNotNull( string alias, string columnName, string columnValue )
+		public override CaseFragment AddWhenColumnNotNull(string alias, string columnName, string columnValue)
 		{
 			string key = alias + StringHelper.Dot + columnName + " is not null";
 
-			cases.Add( key + ", " + columnValue );
+			cases.Add(key + ", " + columnValue);
 			return this;
 		}
 
 		public override SqlString ToSqlStringFragment()
 		{
-			StringBuilder buf = new StringBuilder( cases.Count * 15 + 10 );
+			StringBuilder buf = new StringBuilder(cases.Count * 15 + 10);
 
-			buf.Append( "Switch(" );
+			buf.Append("Switch(");
 
-			for( int i = 0; i < cases.Count - 1; i++ )
+			for (int i = 0; i < cases.Count - 1; i++)
 			{
-				buf.Append( cases[ i ] );
-				buf.Append( ", " );
+				buf.Append(cases[i]);
+				buf.Append(", ");
 			}
-			buf.Append( cases[ cases.Count - 1 ] );
+			buf.Append(cases[cases.Count - 1]);
 
-			buf.Append( " )" );
+			buf.Append(" )");
 
-			if( returnColumnName != null )
+			if (returnColumnName != null)
 			{
-				buf.Append( " as " )
-					.Append( returnColumnName );
+				buf.Append(" as ")
+					.Append(returnColumnName);
 			}
 
-			return new SqlString( buf.ToString() );
+			return new SqlString(buf.ToString());
 		}
 	}
 }

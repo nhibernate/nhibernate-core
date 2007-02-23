@@ -1,14 +1,11 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
-
-
-[assembly: AssemblyTitleAttribute("NHibernate.Examples")]
+[assembly: AssemblyTitle("NHibernate.Examples")]
 [assembly: AssemblyDescriptionAttribute("Simple Examples for NHibernate.")]
 [assembly: AssemblyCompanyAttribute("nhibernate.sf.net")]
 [assembly: AssemblyProductAttribute("NHibernate")]
 [assembly: AssemblyCopyright("Licensed under LGPL.")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]		
+[assembly: AssemblyCulture("")]
 
 //
 // Version information for an assembly consists of the following four values:
@@ -23,5 +20,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersionAttribute("0.0.5000.6")]
 [assembly: AssemblyInformationalVersionAttribute("0.0")]
 [assembly: AssemblyFileVersionAttribute("0.0000.6")]
-
 [assembly: AssemblyDelaySignAttribute(false)]

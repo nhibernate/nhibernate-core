@@ -43,22 +43,22 @@ namespace NHibernate.JetDriver
 			_command = new OleDbCommand();
 		}
 
-		public JetDbCommand( string cmdText, OleDbConnection connection, OleDbTransaction transaction )
+		public JetDbCommand(string cmdText, OleDbConnection connection, OleDbTransaction transaction)
 		{
-			_command = new OleDbCommand( cmdText, connection, transaction );
+			_command = new OleDbCommand(cmdText, connection, transaction);
 		}
 
-		public JetDbCommand( string cmdText, OleDbConnection connection )
+		public JetDbCommand(string cmdText, OleDbConnection connection)
 		{
-			_command = new OleDbCommand( cmdText, connection );
+			_command = new OleDbCommand(cmdText, connection);
 		}
 
-		public JetDbCommand( string cmdText )
+		public JetDbCommand(string cmdText)
 		{
-			_command = new OleDbCommand( cmdText );
+			_command = new OleDbCommand(cmdText);
 		}
 
-		internal JetDbCommand( OleDbCommand command )
+		internal JetDbCommand(OleDbCommand command)
 		{
 			_command = command;
 		}
@@ -69,29 +69,29 @@ namespace NHibernate.JetDriver
 		/// </summary>
 		private void CheckParameters()
 		{
-			if( Command.Parameters == null || Command.Parameters.Count == 0 ) return;
+			if (Command.Parameters == null || Command.Parameters.Count == 0) return;
 
-			foreach( IDataParameter p in Command.Parameters )
+			foreach (IDataParameter p in Command.Parameters)
 			{
 				object newVal;
-				switch( p.DbType )
+				switch (p.DbType)
 				{
 					case DbType.DateTime:
 					case DbType.Time:
 					case DbType.Date:
 						p.DbType = DbType.String;
 
-						if( p.Value != DBNull.Value )
+						if (p.Value != DBNull.Value)
 						{
-							newVal = ( ( DateTime ) p.Value ).ToString( "dd-MMM-yyyy HH:mm:ss" );
+							newVal = ((DateTime) p.Value).ToString("dd-MMM-yyyy HH:mm:ss");
 							p.Value = newVal;
 						}
 						break;
 					case DbType.Int64:
 						p.DbType = DbType.Int32;
-						if( p.Value != DBNull.Value )
+						if (p.Value != DBNull.Value)
 						{
-							newVal = Convert.ToInt32( ( long ) p.Value );
+							newVal = Convert.ToInt32((long) p.Value);
 							p.Value = newVal;
 						}
 						break;
@@ -117,10 +117,10 @@ namespace NHibernate.JetDriver
 			set { Command.CommandType = value; }
 		}
 
-		public IDataReader ExecuteReader( CommandBehavior behavior )
+		public IDataReader ExecuteReader(CommandBehavior behavior)
 		{
 			CheckParameters();
-			return Command.ExecuteReader( behavior );
+			return Command.ExecuteReader(behavior);
 		}
 
 		IDataReader IDbCommand.ExecuteReader()
@@ -138,7 +138,7 @@ namespace NHibernate.JetDriver
 		public int ExecuteNonQuery()
 		{
 			CheckParameters();
-			Command.CommandText = Command.CommandText.Replace( "INT " + IdentitySpecPlaceHolder, "COUNTER" );
+			Command.CommandText = Command.CommandText.Replace("INT " + IdentitySpecPlaceHolder, "COUNTER");
 			return Command.ExecuteNonQuery();
 		}
 
@@ -158,7 +158,7 @@ namespace NHibernate.JetDriver
 			get { return _connection; }
 			set
 			{
-				_connection = ( JetDbConnection ) value;
+				_connection = (JetDbConnection) value;
 				Command.Connection = _connection.Connection;
 			}
 		}
@@ -192,7 +192,7 @@ namespace NHibernate.JetDriver
 				}
 				else
 				{
-					_transaction = ( JetDbTransaction ) value;
+					_transaction = (JetDbTransaction) value;
 					Command.Transaction = _transaction.Transaction;
 				}
 			}

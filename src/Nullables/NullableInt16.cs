@@ -1,17 +1,20 @@
 using System;
+using System.ComponentModel;
+
+using Nullables.TypeConverters;
 
 namespace Nullables
 {
 	/// <summary>
 	/// An <see cref="INullableType"/> that wraps an <see cref="Int16"/> value.
 	/// </summary>
-	[System.ComponentModel.TypeConverter(typeof(Nullables.TypeConverters.NullableInt16Converter)), Serializable()]
+	[TypeConverter(typeof(NullableInt16Converter)), Serializable()]
 	public struct NullableInt16 : INullableType, IFormattable, IComparable
 	{
 		public static readonly NullableInt16 Default = new NullableInt16();
 
-		Int16 _value;
-		bool hasValue;
+		private Int16 _value;
+		private bool hasValue;
 
 		#region Constructors
 
@@ -65,7 +68,7 @@ namespace Nullables
 
 		public static implicit operator NullableInt16(DBNull value)
 		{
-			return NullableInt16.Default;
+			return Default;
 		}
 
 		#endregion
@@ -83,9 +86,10 @@ namespace Nullables
 			if (obj is DBNull && !HasValue)
 				return true;
 			else if (obj is NullableInt16)
-				return Equals((NullableInt16)obj);
+				return Equals((NullableInt16) obj);
 			else
-				return false; //if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+				return false;
+					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableInt16 x)
@@ -154,7 +158,7 @@ namespace Nullables
 
 			return new NullableInt32(x.Value / y.Value);
 		}
-		
+
 		public override int GetHashCode()
 		{
 			if (HasValue)
@@ -165,7 +169,7 @@ namespace Nullables
 
 		#region IFormattable Members
 
-		string System.IFormattable.ToString(string format, IFormatProvider formatProvider)
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
 		{
 			if (HasValue)
 				return Value.ToString(format, formatProvider);
@@ -181,7 +185,7 @@ namespace Nullables
 		{
 			if (obj is NullableInt16) //chack and unbox
 			{
-				NullableInt16 value = (NullableInt16)obj;
+				NullableInt16 value = (NullableInt16) obj;
 
 				if (value.HasValue == this.HasValue) //both null or not null
 				{
@@ -200,7 +204,7 @@ namespace Nullables
 			}
 			else if (obj is Int16)
 			{
-				Int16 value = (Int16)obj;
+				Int16 value = (Int16) obj;
 
 				if (HasValue) //not null, so compare the real values.
 					return Value.CompareTo(value);
@@ -217,25 +221,26 @@ namespace Nullables
 
 		public static NullableInt16 Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length==0))
+			if ((s == null) || (s.Trim().Length == 0))
 			{
 				return new NullableInt16();
 			}
 			else
 			{
-				try 
+				try
 				{
 					return new NullableInt16(Int16.Parse(s));
 				}
-				catch (System.Exception ex) 
-				{ 
-					throw new FormatException("Error parsing '" + s + "' to NullableInt16." , ex);
+				catch (Exception ex)
+				{
+					throw new FormatException("Error parsing '" + s + "' to NullableInt16.", ex);
 				}
 			}
 		}
 
 
 		// TODO: implement the rest of the Parse overloads found in Int16
+
 		#endregion
 	}
 }

@@ -1,10 +1,9 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.DomainModel
 {
 	[Serializable]
-	public class NestingComponent 
+	public class NestingComponent
 	{
 		/// <summary>
 		/// Holds the _nested

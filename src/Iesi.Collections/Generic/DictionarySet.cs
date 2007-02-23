@@ -1,10 +1,10 @@
 #if NET_2_0
 
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */ 
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-
 
 namespace Iesi.Collections.Generic
 {
@@ -26,7 +26,7 @@ namespace Iesi.Collections.Generic
 	/// an <c>ISet</c> as an argument.</p>
 	/// </summary>
 	[Serializable]
-  public abstract class DictionarySet<T> : Set<T>
+	public abstract class DictionarySet<T> : Set<T>
 	{
 		/// <summary>
 		/// Provides the storage for elements in the <c>Set</c>, stored as the key-set
@@ -34,7 +34,8 @@ namespace Iesi.Collections.Generic
 		/// if you create your own <c>Set</c> class.  
 		/// </summary>
 		protected IDictionary<T, object> InternalDictionary = null;
-		private readonly static object PlaceholderObject = new object();
+
+		private static readonly object PlaceholderObject = new object();
 
 		/// <summary>
 		/// The placeholder object used as the value for the <c>IDictionary</c> instance.
@@ -44,7 +45,7 @@ namespace Iesi.Collections.Generic
 		/// </remarks>
 		protected object Placeholder
 		{
-			get	{return PlaceholderObject;}
+			get { return PlaceholderObject; }
 		}
 
 
@@ -108,7 +109,7 @@ namespace Iesi.Collections.Generic
 		/// <returns><c>true</c> if the set contains all the elements in the specified collection, <c>false</c> otherwise.</returns>
 		public override bool ContainsAll(ICollection<T> c)
 		{
-			foreach(T o in c)
+			foreach (T o in c)
 			{
 				if (!this.Contains(o))
 				{
@@ -123,7 +124,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		public override bool IsEmpty
 		{
-			get{return InternalDictionary.Count == 0;}
+			get { return InternalDictionary.Count == 0; }
 		}
 
 		/// <summary>
@@ -134,7 +135,7 @@ namespace Iesi.Collections.Generic
 		public override bool Remove(T o)
 		{
 			bool contained = this.Contains(o);
-			if(contained)
+			if (contained)
 			{
 				InternalDictionary.Remove(o);
 			}
@@ -168,13 +169,13 @@ namespace Iesi.Collections.Generic
 
 			//We are going to build a set of elements to remove.
 			Set<T> removeSet = new HashedSet<T>();
-			
-			foreach(T o in this)
+
+			foreach (T o in this)
 			{
 				//If C does not contain O, then we need to remove O from our
 				//set.  We can't do this while iterating through our set, so
 				//we put it into RemoveSet for later.
-				if(!cSet.Contains(o))
+				if (!cSet.Contains(o))
 					removeSet.Add(o);
 			}
 
@@ -198,7 +199,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		public override int Count
 		{
-			get{return InternalDictionary.Count;}
+			get { return InternalDictionary.Count; }
 		}
 
 		/// <summary>
@@ -207,15 +208,15 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		public override bool IsSynchronized
 		{
-			get{return false;}
+			get { return false; }
 		}
-		
+
 		/// <summary>
 		/// Returns an object that can be used to synchronize the <c>Set</c> between threads.
 		/// </summary>
 		public override object SyncRoot
 		{
-			get{return ((System.Collections.ICollection)InternalDictionary).SyncRoot;}
+			get { return ((ICollection) InternalDictionary).SyncRoot; }
 		}
 
 		/// <summary>
@@ -232,10 +233,7 @@ namespace Iesi.Collections.Generic
 		/// </summary>
 		public override bool IsReadOnly
 		{
-			get
-			{
-				return InternalDictionary.IsReadOnly;
-			}
+			get { return InternalDictionary.IsReadOnly; }
 		}
 
 		/// <summary>
@@ -247,8 +245,9 @@ namespace Iesi.Collections.Generic
 		/// <param name="index">The zero-based index where copying will start.</param>
 		protected override void NonGenericCopyTo(Array array, int index)
 		{
-		  ((System.Collections.ICollection)InternalDictionary.Keys).CopyTo(array, index);
+			((ICollection) InternalDictionary.Keys).CopyTo(array, index);
 		}
 	}
 }
+
 #endif

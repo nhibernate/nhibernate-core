@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	[Serializable]
 	public class Top
@@ -11,49 +11,52 @@ namespace NHibernate.DomainModel
 		private int count;
 		// initializing to a value that is ms independent because of MsSql millisecond
 		// accurracy issues
-		private DateTime date = new DateTime( 2004, 01, 01, 12, 00, 00, 00 );
+		private DateTime date = new DateTime(2004, 01, 01, 12, 00, 00, 00);
 		private Top other;
 		private Top top;
 
-		public Top(int c) 
+		public Top(int c)
 		{
-			count=c;
+			count = c;
 		}
-		public Top() {}
 
-		public void Init() 
+		public Top()
 		{
-			name="Someone with along name";
-			address="1234 some street, some city, victoria, 3000, austaya";
-			count=69;
+		}
+
+		public void Init()
+		{
+			name = "Someone with along name";
+			address = "1234 some street, some city, victoria, 3000, austaya";
+			count = 69;
 			date = DateTime.Now;
 		}
 
-		public string Name 
+		public string Name
 		{
 			get { return name; }
 			set { name = value; }
 		}
 
-		public string Address 
+		public string Address
 		{
 			get { return address; }
 			set { address = value; }
 		}
 
-		public int Count 
+		public int Count
 		{
 			get { return count; }
 			set { count = value; }
 		}
 
-		public DateTime Date 
+		public DateTime Date
 		{
 			get { return date; }
 			set { date = value; }
 		}
 
-		public Top Other 
+		public Top Other
 		{
 			get { return other; }
 			set { other = value; }

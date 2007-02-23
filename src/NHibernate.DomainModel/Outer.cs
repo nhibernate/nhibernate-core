@@ -1,12 +1,12 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Outer.
 	/// </summary>
 	[Serializable]
-	public class Outer 
+	public class Outer
 	{
 		private OuterKey _id;
 		private string _bubu;
@@ -27,22 +27,21 @@ namespace NHibernate.DomainModel
 
 		public override bool Equals(object obj)
 		{
-			if(this==obj) return true;
-			
-			Outer rhs = obj as Outer;
-			if(rhs==null) return false;
+			if (this == obj) return true;
 
-			if( _id!=null ? !_id.Equals(rhs.Id) : rhs.Id!=null ) return false;
+			Outer rhs = obj as Outer;
+			if (rhs == null) return false;
+
+			if (_id != null ? !_id.Equals(rhs.Id) : rhs.Id != null) return false;
 
 			return true;
 		}
 
 		public override int GetHashCode()
 		{
-			return ( _id!=null ? _id.GetHashCode() : 0 );
+			return (_id != null ? _id.GetHashCode() : 0);
 		}
 
 		#endregion
-
 	}
 }

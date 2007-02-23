@@ -1,4 +1,5 @@
 #region License
+
 //
 //  MemCache - A cache provider for NHibernate using the .NET client
 //  (http://sourceforge.net/projects/memcacheddotnet) for memcached,
@@ -20,12 +21,14 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System;
 using System.Collections;
 using System.Configuration;
 using System.Xml;
+
 using log4net;
 
 namespace NHibernate.Caches.MemCache
@@ -35,7 +38,8 @@ namespace NHibernate.Caches.MemCache
 	/// </summary>
 	public class MemCacheSectionHandler : IConfigurationSectionHandler
 	{
-		private static readonly ILog _log = LogManager.GetLogger( typeof( MemCacheSectionHandler ) );
+		private static readonly ILog _log = LogManager.GetLogger(typeof(MemCacheSectionHandler));
+
 		/// <summary>
 		/// parse the config section
 		/// </summary>
@@ -43,32 +47,32 @@ namespace NHibernate.Caches.MemCache
 		/// <param name="configContext"></param>
 		/// <param name="section"></param>
 		/// <returns>an array of <see cref="MemCacheConfig"/> objects</returns>
-		public object Create( object parent, object configContext, XmlNode section )
+		public object Create(object parent, object configContext, XmlNode section)
 		{
 			ArrayList configs = new ArrayList();
-			if( section != null )
+			if (section != null)
 			{
-				XmlNodeList nodes = section.SelectNodes( "memcached" );
-				foreach( XmlNode node in nodes )
+				XmlNodeList nodes = section.SelectNodes("memcached");
+				foreach (XmlNode node in nodes)
 				{
-					XmlAttribute h = node.Attributes[ "host" ];
-					XmlAttribute p = node.Attributes[ "port" ];
-					XmlAttribute w = node.Attributes[ "weight" ];
-					if( h == null || p == null )
+					XmlAttribute h = node.Attributes["host"];
+					XmlAttribute p = node.Attributes["port"];
+					XmlAttribute w = node.Attributes["weight"];
+					if (h == null || p == null)
 					{
-						if( _log.IsWarnEnabled )
+						if (_log.IsWarnEnabled)
 						{
-							_log.Warn( "incomplete node found - each memcached element must have a 'host' and a 'port' attribute." );
+							_log.Warn("incomplete node found - each memcached element must have a 'host' and a 'port' attribute.");
 						}
 						continue;
 					}
 					string host = h.Value;
-					int port = ( ( p.Value == null || p.Value.Length < 1 ) ? 0 : Convert.ToInt32( p.Value ) );
-					int weight = ( ( w == null || w.Value == null || w.Value.Length < 1 ) ? 0 : Convert.ToInt32( w.Value ) );
-					configs.Add( new MemCacheConfig( host, port, weight ) );
+					int port = ((p.Value == null || p.Value.Length < 1) ? 0 : Convert.ToInt32(p.Value));
+					int weight = ((w == null || w.Value == null || w.Value.Length < 1) ? 0 : Convert.ToInt32(w.Value));
+					configs.Add(new MemCacheConfig(host, port, weight));
 				}
 			}
-			return configs.ToArray( typeof( MemCacheConfig ) );
+			return configs.ToArray(typeof(MemCacheConfig));
 		}
 	}
 }

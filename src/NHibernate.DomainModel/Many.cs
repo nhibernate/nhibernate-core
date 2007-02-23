@@ -1,17 +1,17 @@
 using System;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Many.
 	/// </summary>
-	public class Many 
+	public class Many
 	{
 		private long _key;
 		private One _one;
 		private int _x;
 		private int _v;
-		
+
 		public long Key
 		{
 			get { return _key; }

@@ -21,19 +21,18 @@ namespace Nullables.Tests.NHibernate
 		private NullableInt64 _int64Prop;
 		private NullableSByte _sbyteProp;
 		private NullableSingle _singleProp;
-		
+
 		public NullablesClass()
 		{
-			
 		}
 
-		public int Id 
+		public int Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		public int Version 
+		public int Version
 		{
 			get { return _version; }
 			set { _version = value; }
@@ -93,7 +92,7 @@ namespace Nullables.Tests.NHibernate
 			set { _int64Prop = value; }
 		}
 
-		public NullableSByte SByteProp 
+		public NullableSByte SByteProp
 		{
 			get { return _sbyteProp; }
 			set { _sbyteProp = value; }
@@ -104,8 +103,5 @@ namespace Nullables.Tests.NHibernate
 			get { return _singleProp; }
 			set { _singleProp = value; }
 		}
-
-		
-
 	}
 }

@@ -3,7 +3,8 @@ using System.Collections;
 
 using NHibernate;
 
-using Nullables;
+using Nullables.NHibernate;
+
 using NUnit.Framework;
 
 namespace Nullables.Tests.NHibernate
@@ -16,49 +17,46 @@ namespace Nullables.Tests.NHibernate
 	{
 		protected override IList Mappings
 		{
-			get
-			{
-				return new string[] { "NHibernate.NullablesClass.hbm.xml" };
-			}
+			get { return new string[] {"NHibernate.NullablesClass.hbm.xml"}; }
 		}
 
 		[Test]
-		public void CRUD() 
+		public void CRUD()
 		{
-			NullablesClass nullNC = InitAllNull( 1 );
-			NullablesClass notnullNC = InitAllValues( 2 );
+			NullablesClass nullNC = InitAllNull(1);
+			NullablesClass notnullNC = InitAllValues(2);
 
 			ISession s = sessions.OpenSession();
-			s.Save( nullNC );
-			s.Save( notnullNC );
+			s.Save(nullNC);
+			s.Save(notnullNC);
 			s.Flush();
 			s.Close();
 
 			s = sessions.OpenSession();
 
-			Assert.AreEqual( 2, s.Find( "from NullablesClass" ).Count, "should be 2 in the db" );
+			Assert.AreEqual(2, s.Find("from NullablesClass").Count, "should be 2 in the db");
 
-			IQuery q = s.CreateQuery( "from NullablesClass as nc where nc.Int32Prop is null" );
+			IQuery q = s.CreateQuery("from NullablesClass as nc where nc.Int32Prop is null");
 			IList results = q.List();
-			Assert.AreEqual( 1, results.Count, "only one null int32 in the db" );
-			
-			nullNC = (NullablesClass)results[0];
+			Assert.AreEqual(1, results.Count, "only one null int32 in the db");
+
+			nullNC = (NullablesClass) results[0];
 
 			// verify NH did store this fields as null and retrieved them as 
 			// the nullable version type.
-			Assert.AreEqual( NullableBoolean.Default, nullNC.BooleanProp );
-			Assert.AreEqual( NullableByte.Default, nullNC.ByteProp );
-			Assert.AreEqual( NullableDateTime.Default, nullNC.DateTimeProp );
-			Assert.AreEqual( NullableDecimal.Default, nullNC.DecimalProp );
-			Assert.AreEqual( NullableDouble.Default, nullNC.DoubleProp );
-			Assert.AreEqual( NullableGuid.Default, nullNC.GuidProp );
-			Assert.AreEqual( NullableInt16.Default, nullNC.Int16Prop);
-			Assert.AreEqual( NullableInt32.Default, nullNC.Int32Prop );
-			Assert.AreEqual( NullableInt64.Default, nullNC.Int64Prop );
-			Assert.AreEqual( NullableSByte.Default, nullNC.SByteProp );
-			Assert.AreEqual( NullableSingle.Default, nullNC.SingleProp );
+			Assert.AreEqual(NullableBoolean.Default, nullNC.BooleanProp);
+			Assert.AreEqual(NullableByte.Default, nullNC.ByteProp);
+			Assert.AreEqual(NullableDateTime.Default, nullNC.DateTimeProp);
+			Assert.AreEqual(NullableDecimal.Default, nullNC.DecimalProp);
+			Assert.AreEqual(NullableDouble.Default, nullNC.DoubleProp);
+			Assert.AreEqual(NullableGuid.Default, nullNC.GuidProp);
+			Assert.AreEqual(NullableInt16.Default, nullNC.Int16Prop);
+			Assert.AreEqual(NullableInt32.Default, nullNC.Int32Prop);
+			Assert.AreEqual(NullableInt64.Default, nullNC.Int64Prop);
+			Assert.AreEqual(NullableSByte.Default, nullNC.SByteProp);
+			Assert.AreEqual(NullableSingle.Default, nullNC.SingleProp);
 
-			Assert.AreEqual( 1, nullNC.Version );
+			Assert.AreEqual(1, nullNC.Version);
 
 			// don't change anything but flush it - should not increment
 			// the version because there were no changes
@@ -66,15 +64,15 @@ namespace Nullables.Tests.NHibernate
 			s.Close();
 
 			s = sessions.OpenSession();
-			nullNC = (NullablesClass)s.Find( "from NullablesClass" )[0];
-			Assert.AreEqual( 1, nullNC.Version, "no changes to write at last flush - version should not have changed" );
+			nullNC = (NullablesClass) s.Find("from NullablesClass")[0];
+			Assert.AreEqual(1, nullNC.Version, "no changes to write at last flush - version should not have changed");
 
-			q = s.CreateQuery( "from NullablesClass as nc where nc.Int32Prop = :int32Prop" );
-			q.SetParameter( "int32Prop", new NullableInt32( Int32.MaxValue) , Nullables.NHibernate.NullablesTypes.NullableInt32 );
+			q = s.CreateQuery("from NullablesClass as nc where nc.Int32Prop = :int32Prop");
+			q.SetParameter("int32Prop", new NullableInt32(Int32.MaxValue), NullablesTypes.NullableInt32);
 			results = q.List();
 
-			Assert.AreEqual( 1, results.Count );
-			notnullNC = (NullablesClass)results[0];
+			Assert.AreEqual(1, results.Count);
+			notnullNC = (NullablesClass) results[0];
 
 			// change the Int32 properties
 			nullNC.Int32Prop = 5;
@@ -84,22 +82,21 @@ namespace Nullables.Tests.NHibernate
 			s.Close();
 
 			s = sessions.OpenSession();
-			nullNC = (NullablesClass)s.Load( typeof(NullablesClass), 1 );
-			notnullNC = (NullablesClass)s.Load( typeof(NullablesClass), 2 );
+			nullNC = (NullablesClass) s.Load(typeof(NullablesClass), 1);
+			notnullNC = (NullablesClass) s.Load(typeof(NullablesClass), 2);
 
-			Assert.IsTrue( 5==nullNC.Int32Prop, "should have actual value" );
-			Assert.AreEqual( NullableInt32.Default, notnullNC.Int32Prop, "should have 'null' value" );
+			Assert.IsTrue(5 == nullNC.Int32Prop, "should have actual value");
+			Assert.AreEqual(NullableInt32.Default, notnullNC.Int32Prop, "should have 'null' value");
 
 
 			// clear the table
-			s.Delete( "from NullablesClass" );
+			s.Delete("from NullablesClass");
 			s.Flush();
 			s.Close();
 		}
 
-		public NullablesClass InitAllNull(int id) 
+		public NullablesClass InitAllNull(int id)
 		{
-
 			NullablesClass nc = new NullablesClass();
 			nc.Id = id;
 
@@ -118,14 +115,14 @@ namespace Nullables.Tests.NHibernate
 			return nc;
 		}
 
-		public NullablesClass InitAllValues(int id) 
+		public NullablesClass InitAllValues(int id)
 		{
 			NullablesClass nc = new NullablesClass();
 			nc.Id = id;
 
 			nc.BooleanProp = true;
-			nc.ByteProp = (byte)5;
-			nc.DateTimeProp = DateTime.Parse( "2004-01-01" );
+			nc.ByteProp = (byte) 5;
+			nc.DateTimeProp = DateTime.Parse("2004-01-01");
 			nc.DecimalProp = 2.45M;
 			nc.DoubleProp = 1.7E+3;
 			nc.GuidProp = Guid.NewGuid();
@@ -137,6 +134,5 @@ namespace Nullables.Tests.NHibernate
 
 			return nc;
 		}
-
 	}
 }

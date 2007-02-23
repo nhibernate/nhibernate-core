@@ -17,6 +17,8 @@ namespace NHibernate.DomainModel
 			set { _description = value; }
 		}
 
-		public class SpecialPart : Part { }
+		public class SpecialPart : Part
+		{
+		}
 	}
 }

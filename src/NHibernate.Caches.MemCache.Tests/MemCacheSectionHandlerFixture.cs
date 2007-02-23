@@ -1,4 +1,5 @@
 #region License
+
 //
 //  MemCache - A cache provider for NHibernate using the .NET client
 //  (http://sourceforge.net/projects/memcacheddotnet) for memcached,
@@ -20,9 +21,11 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System.Xml;
+
 using NUnit.Framework;
 
 namespace NHibernate.Caches.MemCache.Tests
@@ -39,7 +42,7 @@ namespace NHibernate.Caches.MemCache.Tests
 		{
 			handler = new MemCacheSectionHandler();
 			XmlDocument doc = new XmlDocument();
-			doc.LoadXml( xml );
+			doc.LoadXml(xml);
 			section = doc.DocumentElement;
 		}
 
@@ -47,21 +50,21 @@ namespace NHibernate.Caches.MemCache.Tests
 		public void TestGetConfigNullSection()
 		{
 			section = new XmlDocument();
-			object result = handler.Create( null, null, section );
-			Assert.IsNotNull( result );
-			Assert.IsTrue( result is MemCacheConfig[] );
+			object result = handler.Create(null, null, section);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemCacheConfig[]);
 			MemCacheConfig[] caches = result as MemCacheConfig[];
-			Assert.AreEqual( 0, caches.Length );
+			Assert.AreEqual(0, caches.Length);
 		}
 
 		[Test]
 		public void TestGetConfigFromFile()
 		{
-			object result = handler.Create( null, null, section );
-			Assert.IsNotNull( result );
-			Assert.IsTrue( result is MemCacheConfig[] );
+			object result = handler.Create(null, null, section);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemCacheConfig[]);
 			MemCacheConfig[] caches = result as MemCacheConfig[];
-			Assert.AreEqual( 1, caches.Length );
+			Assert.AreEqual(1, caches.Length);
 		}
 	}
 }

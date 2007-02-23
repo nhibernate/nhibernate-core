@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace NHibernate.Examples.Cascades
 {
@@ -8,11 +7,11 @@ namespace NHibernate.Examples.Cascades
 	/// </summary>
 	public class Child
 	{
-		int id;
-		string name;
-		Parent singleParent;
+		private int id;
+		private string name;
+		private Parent singleParent;
 
-		public int Id 
+		public int Id
 		{
 			get { return id; }
 			set { id = value; }
@@ -24,11 +23,10 @@ namespace NHibernate.Examples.Cascades
 			set { name = value; }
 		}
 
-		public Parent SingleParent 
+		public Parent SingleParent
 		{
 			get { return singleParent; }
 			set { singleParent = value; }
 		}
-
 	}
 }

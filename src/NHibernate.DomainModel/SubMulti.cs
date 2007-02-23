@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	public class SubMulti : Multi
 	{
@@ -9,7 +9,7 @@ namespace NHibernate.DomainModel
 		private SubMulti _parent;
 		private IList _children;
 		private IList _moreChildren;
-		
+
 		public float Amount
 		{
 			get { return _amount; }
@@ -33,6 +33,5 @@ namespace NHibernate.DomainModel
 			get { return _moreChildren; }
 			set { _moreChildren = value; }
 		}
-
 	}
 }

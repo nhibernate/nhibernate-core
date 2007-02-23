@@ -5,14 +5,22 @@
 * Java - Code Generation - Code and Comments
 */
 using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.IO;
-using VelocityContext = NVelocity.VelocityContext;
-using VelocityEngine = NVelocity.App.VelocityEngine;
+using System.Reflection;
+
+using Commons.Collections;
+
+using log4net;
+
+using NVelocity;
+using NVelocity.App;
+
 using RuntimeConstants = NVelocity.Runtime.RuntimeConstants_Fields;
 
 namespace NHibernate.Tool.hbm2net
 {
-	
 	/// <author>  MAX
 	/// 
 	/// To change the template for this generated type comment go to Window -
@@ -20,11 +28,11 @@ namespace NHibernate.Tool.hbm2net
 	/// </author>
 	public class VelocityRenderer : AbstractRenderer
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-		
+		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private VelocityEngine ve;
-		private NVelocity.Template template;
-		
+		private Template template;
+
 		/*
 		* (non-Javadoc)
 		* 
@@ -32,34 +40,36 @@ namespace NHibernate.Tool.hbm2net
 		*      java.lang.String, NHibernate.Tool.hbm2net.ClassMapping,
 		*      java.util.Map, java.io.PrintWriter)
 		*/
-		public override void render(string savedToPackage, string savedToClass, ClassMapping classMapping, System.Collections.IDictionary class2classmap, System.IO.StreamWriter writer)
+
+		public override void render(string savedToPackage, string savedToClass, ClassMapping classMapping,
+		                            IDictionary class2classmap, StreamWriter writer)
 		{
 			VelocityContext context = new VelocityContext();
-			
+
 			context.Put("savedToPackage", savedToPackage);
 			context.Put("savedToClass", savedToClass);
 			context.Put("clazz", classMapping);
-			
+
 			context.Put("class2classmap", class2classmap);
-			
+
 			context.Put("languageTool", new LanguageTool());
 
 			context.Put("runtimeversion", Guid.Empty.GetType().Assembly.ImageRuntimeVersion);
-			
-			System.IO.StringWriter sw = new System.IO.StringWriter();
-			
+
+			StringWriter sw = new StringWriter();
+
 			context.Put("classimports", "$classimports");
 
 			// First run - writes to in-memory string
 			template.Merge(context, sw);
-			
+
 			context.Put("classimports", new LanguageTool().genImports(classMapping));
-			
+
 			// Second run - writes to file (allows for placing imports correctly and optimized ;)
 			ve.Evaluate(context, writer, "hbm2net", sw.ToString());
 		}
-	
-		public override void configure(DirectoryInfo workingDirectory, System.Collections.Specialized.NameValueCollection props)
+
+		public override void configure(DirectoryInfo workingDirectory, NameValueCollection props)
 		{
 			try
 			{
@@ -74,16 +84,18 @@ namespace NHibernate.Tool.hbm2net
 				// investigate further.
 				;
 			}
-			base.configure (workingDirectory, props);
-			Commons.Collections.ExtendedProperties p = new Commons.Collections.ExtendedProperties();
+			base.configure(workingDirectory, props);
+			ExtendedProperties p = new ExtendedProperties();
 			string templateName = props["template"];
 			string templateSrc;
 			if (templateName == null)
 			{
-				log.Info("No template file was specified, using default");	
+				log.Info("No template file was specified, using default");
 				p.SetProperty("resource.loader", "class");
 				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;NHibernate.Tool.hbm2net");
-				templateSrc = new System.IO.StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Tool.hbm2net.convert.vm")).ReadToEnd();
+				templateSrc =
+					new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Tool.hbm2net.convert.vm")).
+						ReadToEnd();
 			}
 			else
 			{
@@ -93,15 +105,17 @@ namespace NHibernate.Tool.hbm2net
 				{
 					templateName = Path.Combine(this.WorkingDirectory.FullName, templateName);
 				}
-				if(!File.Exists(templateName))
+				if (!File.Exists(templateName))
 				{
-					string msg = string.Format("Cannot find template file using absolute path or relative to '{0}'.", this.WorkingDirectory.FullName);
+					string msg =
+						string.Format("Cannot find template file using absolute path or relative to '{0}'.",
+						              this.WorkingDirectory.FullName);
 					throw new IOException(msg);
 				}
 
 				p.SetProperty("resource.loader", "class");
 				p.SetProperty("class.resource.loader.class", "NHibernate.Tool.hbm2net.StringResourceLoader;NHibernate.Tool.hbm2net");
-				using(System.IO.StreamReader sr = new StreamReader(System.IO.File.OpenRead(templateName)))
+				using (StreamReader sr = new StreamReader(File.OpenRead(templateName)))
 				{
 					templateSrc = sr.ReadToEnd();
 					sr.Close();

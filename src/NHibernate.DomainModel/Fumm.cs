@@ -1,21 +1,21 @@
 using System;
 using System.Globalization;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
 	/// <summary>
 	/// Summary description for Fumm.
 	/// </summary>
-	public class Fumm 
+	public class Fumm
 	{
 		private CultureInfo locale;
 		private Fum fum;
 
-		public Fumm() 
+		public Fumm()
 		{
 		}
 
-		public FumCompositeID Id 
+		public FumCompositeID Id
 		{
 			get { return fum.Id; }
 			set { }
@@ -23,11 +23,11 @@ namespace NHibernate.DomainModel
 
 		public Fum Fum
 		{
-			get { return fum;}
+			get { return fum; }
 			set { fum = value; }
 		}
 
-		public CultureInfo Locale 
+		public CultureInfo Locale
 		{
 			get { return locale; }
 			set { locale = value; }

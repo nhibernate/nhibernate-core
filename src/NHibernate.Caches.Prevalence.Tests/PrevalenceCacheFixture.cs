@@ -1,4 +1,5 @@
 #region License
+
 //
 //  PrevalenceCache - A cache provider for NHibernate using Bamboo.Prevalence.
 //
@@ -18,11 +19,16 @@
 //
 // CLOVER:OFF
 //
+
 #endregion
 
 using System;
 using System.Collections;
+
+using log4net.Config;
+
 using NHibernate.Cache;
+
 using NUnit.Framework;
 
 namespace NHibernate.Caches.Prevalence.Tests
@@ -36,10 +42,10 @@ namespace NHibernate.Caches.Prevalence.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			log4net.Config.XmlConfigurator.Configure();
+			XmlConfigurator.Configure();
 			props = new Hashtable();
 			provider = new PrevalenceCacheProvider();
-			provider.Start( props );
+			provider.Start(props);
 		}
 
 		[TestFixtureTearDown]
@@ -54,15 +60,15 @@ namespace NHibernate.Caches.Prevalence.Tests
 			string key = "key1";
 			string value = "value";
 
-			ICache cache = provider.BuildCache( "nunit", props );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("nunit", props);
+			Assert.IsNotNull(cache, "no cache returned");
 
-			Assert.IsNull( cache.Get( key ), "cache returned an item we didn't add !?!" );
+			Assert.IsNull(cache.Get(key), "cache returned an item we didn't add !?!");
 
-			cache.Put( key, value );
-			object item = cache.Get( key );
-			Assert.IsNotNull( item );
-			Assert.AreEqual( value, item, "didn't return the item we added" );
+			cache.Put(key, value);
+			object item = cache.Get(key);
+			Assert.IsNotNull(item);
+			Assert.AreEqual(value, item, "didn't return the item we added");
 		}
 
 		[Test]
@@ -71,22 +77,22 @@ namespace NHibernate.Caches.Prevalence.Tests
 			string key = "key1";
 			string value = "value";
 
-			ICache cache = provider.BuildCache( "nunit", props );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("nunit", props);
+			Assert.IsNotNull(cache, "no cache returned");
 
 			// add the item
-			cache.Put( key, value );
+			cache.Put(key, value);
 
 			// make sure it's there
-			object item = cache.Get( key );
-			Assert.IsNotNull( item, "item just added is not there" );
+			object item = cache.Get(key);
+			Assert.IsNotNull(item, "item just added is not there");
 
 			// remove it
-			cache.Remove( key );
+			cache.Remove(key);
 
 			// make sure it's not there
-			item = cache.Get( key );
-			Assert.IsNull( item, "item still exists in cache" );
+			item = cache.Get(key);
+			Assert.IsNull(item, "item still exists in cache");
 		}
 
 		[Test]
@@ -95,91 +101,91 @@ namespace NHibernate.Caches.Prevalence.Tests
 			string key = "key1";
 			string value = "value";
 
-			ICache cache = provider.BuildCache( "nunit", props );
-			Assert.IsNotNull( cache, "no cache returned" );
+			ICache cache = provider.BuildCache("nunit", props);
+			Assert.IsNotNull(cache, "no cache returned");
 
 			// add the item
-			cache.Put( key, value );
+			cache.Put(key, value);
 
 			// make sure it's there
-			object item = cache.Get( key );
-			Assert.IsNotNull( item, "couldn't find item in cache" );
+			object item = cache.Get(key);
+			Assert.IsNotNull(item, "couldn't find item in cache");
 
 			// clear the cache
 			cache.Clear();
 
 			// make sure we don't get an item
-			item = cache.Get( key );
-			Assert.IsNull( item, "item still exists in cache" );
+			item = cache.Get(key);
+			Assert.IsNull(item, "item still exists in cache");
 		}
 
 		[Test]
 		public void TestDefaultConstructor()
 		{
 			ICache cache = new PrevalenceCache();
-			Assert.IsNotNull( cache );
+			Assert.IsNotNull(cache);
 		}
 
 		[Test]
 		public void TestNoPropertiesConstructor()
 		{
-			ICache cache = new PrevalenceCache( "nunit" );
-			Assert.IsNotNull( cache );
+			ICache cache = new PrevalenceCache("nunit");
+			Assert.IsNotNull(cache);
 		}
 
 		[Test]
 		public void TestEmptyProperties()
 		{
-			ICache cache = new PrevalenceCache( "nunit", null );
-			Assert.IsNotNull( cache );
+			ICache cache = new PrevalenceCache("nunit", null);
+			Assert.IsNotNull(cache);
 		}
 
 		[Test]
-		[ExpectedException( typeof( ArgumentNullException ) )]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullKeyPut()
 		{
 			ICache cache = new PrevalenceCache();
-			cache.Put( null, null );
+			cache.Put(null, null);
 		}
 
 		[Test]
-		[ExpectedException( typeof( ArgumentNullException ) )]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullValuePut()
 		{
 			ICache cache = new PrevalenceCache();
-			cache.Put( "nunit", null );
+			cache.Put("nunit", null);
 		}
 
 		[Test]
 		public void TestNullKeyGet()
 		{
-			ICache cache = provider.BuildCache( "nunit", props );
-			cache.Put( "nunit", "value" );
-			object item = cache.Get( null );
-			Assert.IsNull( item );
+			ICache cache = provider.BuildCache("nunit", props);
+			cache.Put("nunit", "value");
+			object item = cache.Get(null);
+			Assert.IsNull(item);
 		}
 
 		[Test]
-		[ExpectedException( typeof( ArgumentNullException ) )]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullKeyRemove()
 		{
 			ICache cache = new PrevalenceCache();
-			cache.Remove( null );
+			cache.Remove(null);
 		}
 
 		[Test]
 		public void TestRegions()
 		{
 			string key = "key";
-			ICache cache1 = provider.BuildCache( "nunit1", props );
-			ICache cache2 = provider.BuildCache( "nunit2", props );
+			ICache cache1 = provider.BuildCache("nunit1", props);
+			ICache cache2 = provider.BuildCache("nunit2", props);
 			string s1 = "test1";
 			string s2 = "test2";
-			cache1.Put( key, s1 );
-			cache2.Put( key, s2 );
-			object get1 = cache1.Get( key );
-			object get2 = cache2.Get( key );
-			Assert.IsFalse( get1 == get2 );
+			cache1.Put(key, s1);
+			cache2.Put(key, s2);
+			object get1 = cache1.Get(key);
+			object get2 = cache2.Get(key);
+			Assert.IsFalse(get1 == get2);
 		}
 
 		[Serializable]
@@ -208,8 +214,8 @@ namespace NHibernate.Caches.Prevalence.Tests
 
 				return other.Id == Id;
 			}
-
 		}
+
 		[Test]
 		public void TestNonEqualObjectsWithEqualHashCodeAndToString()
 		{
@@ -219,12 +225,12 @@ namespace NHibernate.Caches.Prevalence.Tests
 			obj1.Id = 1;
 			obj2.Id = 2;
 
-			ICache cache = provider.BuildCache( "nunit", props );
+			ICache cache = provider.BuildCache("nunit", props);
 
-			Assert.IsNull( cache.Get( obj2 ) );
-			cache.Put( obj1, obj1 );
-			Assert.AreEqual( obj1, cache.Get( obj1 ) );
-			Assert.IsNull( cache.Get( obj2 ) );
+			Assert.IsNull(cache.Get(obj2));
+			cache.Put(obj1, obj1);
+			Assert.AreEqual(obj1, cache.Get(obj1));
+			Assert.IsNull(cache.Get(obj2));
 		}
 	}
 }

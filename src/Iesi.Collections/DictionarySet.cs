@@ -1,7 +1,6 @@
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */ 
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 
 namespace Iesi.Collections
 {
@@ -31,7 +30,8 @@ namespace Iesi.Collections
 		/// if you create your own <c>Set</c> class.  
 		/// </summary>
 		protected IDictionary InternalDictionary = null;
-		private readonly static object PlaceholderObject = new object();
+
+		private static readonly object PlaceholderObject = new object();
 
 		/// <summary>
 		/// The placeholder object used as the value for the <c>IDictionary</c> instance.
@@ -41,7 +41,7 @@ namespace Iesi.Collections
 		/// </remarks>
 		protected object Placeholder
 		{
-			get	{return PlaceholderObject;}
+			get { return PlaceholderObject; }
 		}
 
 
@@ -52,7 +52,7 @@ namespace Iesi.Collections
 		/// <returns><c>true</c> is the object was added, <c>false</c> if it was already present.</returns>
 		public override bool Add(object o)
 		{
-			if(InternalDictionary[o] != null)
+			if (InternalDictionary[o] != null)
 				return false;
 			else
 			{
@@ -71,7 +71,7 @@ namespace Iesi.Collections
 		public override bool AddAll(ICollection c)
 		{
 			bool changed = false;
-			foreach(object o in c)
+			foreach (object o in c)
 				changed |= this.Add(o);
 			return changed;
 		}
@@ -101,9 +101,9 @@ namespace Iesi.Collections
 		/// <returns><c>true</c> if the set contains all the elements in the specified collection, <c>false</c> otherwise.</returns>
 		public override bool ContainsAll(ICollection c)
 		{
-			foreach(object o in c)
+			foreach (object o in c)
 			{
-				if(!this.Contains(o))
+				if (!this.Contains(o))
 					return false;
 			}
 			return true;
@@ -114,7 +114,7 @@ namespace Iesi.Collections
 		/// </summary>
 		public override bool IsEmpty
 		{
-			get{return InternalDictionary.Count == 0;}
+			get { return InternalDictionary.Count == 0; }
 		}
 
 		/// <summary>
@@ -125,7 +125,7 @@ namespace Iesi.Collections
 		public override bool Remove(object o)
 		{
 			bool contained = this.Contains(o);
-			if(contained)
+			if (contained)
 			{
 				InternalDictionary.Remove(o);
 			}
@@ -140,7 +140,7 @@ namespace Iesi.Collections
 		public override bool RemoveAll(ICollection c)
 		{
 			bool changed = false;
-			foreach(object o in c)
+			foreach (object o in c)
 				changed |= this.Remove(o);
 			return changed;
 		}
@@ -157,13 +157,13 @@ namespace Iesi.Collections
 
 			//We are going to build a set of elements to remove.
 			Set removeSet = new HybridSet();
-			
-			foreach(object o in this)
+
+			foreach (object o in this)
 			{
 				//If C does not contain O, then we need to remove O from our
 				//set.  We can't do this while iterating through our set, so
 				//we put it into RemoveSet for later.
-				if(!cSet.Contains(o))
+				if (!cSet.Contains(o))
 					removeSet.Add(o);
 			}
 
@@ -187,7 +187,7 @@ namespace Iesi.Collections
 		/// </summary>
 		public override int Count
 		{
-			get{return InternalDictionary.Count;}		
+			get { return InternalDictionary.Count; }
 		}
 
 		/// <summary>
@@ -196,15 +196,15 @@ namespace Iesi.Collections
 		/// </summary>
 		public override bool IsSynchronized
 		{
-			get{return false;}
+			get { return false; }
 		}
-		
+
 		/// <summary>
 		/// Returns an object that can be used to synchronize the <c>Set</c> between threads.
 		/// </summary>
 		public override object SyncRoot
 		{
-			get{return InternalDictionary.SyncRoot;}
+			get { return InternalDictionary.SyncRoot; }
 		}
 
 		/// <summary>

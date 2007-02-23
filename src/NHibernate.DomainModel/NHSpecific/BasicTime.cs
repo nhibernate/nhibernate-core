@@ -32,6 +32,5 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return _timeArray; }
 			set { _timeArray = value; }
 		}
-
 	}
 }

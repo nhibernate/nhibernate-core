@@ -1,10 +1,9 @@
 #if NET_2_0
 
-/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */ 
+/* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using System.Reflection;
+using System.Collections.Generic;
 
 namespace Iesi.Collections.Generic
 {
@@ -53,7 +52,7 @@ namespace Iesi.Collections.Generic
 	/// </summary>
 	[Serializable]
 	public abstract class Set<T> : ISet<T>, ICollection<T>, IEnumerable<T>,
-		ISet, ICollection, IEnumerable, ICloneable
+	                               ISet, ICollection, IEnumerable, ICloneable
 	{
 		/// <summary>
 		/// Performs a "union" of the two sets, where all the elements
@@ -66,7 +65,7 @@ namespace Iesi.Collections.Generic
 		/// Neither of the input objects is modified by the union.</returns>
 		public virtual ISet<T> Union(ISet<T> a)
 		{
-			ISet<T> resultSet = (ISet<T>)this.Clone();
+			ISet<T> resultSet = (ISet<T>) this.Clone();
 			if (a != null)
 			{
 				resultSet.AddAll(a);
@@ -88,9 +87,9 @@ namespace Iesi.Collections.Generic
 			if (a == null && b == null)
 				return null;
 			else if (a == null)
-				return (ISet<T>)b.Clone();
+				return (ISet<T>) b.Clone();
 			else if (b == null)
-				return (ISet<T>)a.Clone();
+				return (ISet<T>) a.Clone();
 			else
 				return a.Union(b);
 		}
@@ -106,7 +105,7 @@ namespace Iesi.Collections.Generic
 		/// <returns>A set containing the union of the input sets.  <c>null</c> if both sets are <c>null</c>.</returns>
 		public static Set<T> operator |(Set<T> a, Set<T> b)
 		{
-			return (Set<T>)Union(a, b);
+			return (Set<T>) Union(a, b);
 		}
 
 		/// <summary>
@@ -119,7 +118,7 @@ namespace Iesi.Collections.Generic
 		/// <returns>The intersection of this set with <c>a</c>.</returns>
 		public virtual ISet<T> Intersect(ISet<T> a)
 		{
-			ISet<T> resultSet = (ISet<T>)this.Clone();
+			ISet<T> resultSet = (ISet<T>) this.Clone();
 			if (a != null)
 				resultSet.RetainAll(a);
 			else
@@ -161,7 +160,7 @@ namespace Iesi.Collections.Generic
 		/// <returns>The intersection of the two input sets.  <c>null</c> if both sets are <c>null</c>.</returns>
 		public static Set<T> operator &(Set<T> a, Set<T> b)
 		{
-			return (Set<T>)Intersect(a, b);
+			return (Set<T>) Intersect(a, b);
 		}
 
 		/// <summary>
@@ -174,7 +173,7 @@ namespace Iesi.Collections.Generic
 		/// <returns>A set containing the elements from this set with the elements in <c>a</c> removed.</returns>
 		public virtual ISet<T> Minus(ISet<T> a)
 		{
-			ISet<T> resultSet = (ISet<T>)this.Clone();
+			ISet<T> resultSet = (ISet<T>) this.Clone();
 			if (a != null)
 				resultSet.RemoveAll(a);
 			return resultSet;
@@ -208,7 +207,7 @@ namespace Iesi.Collections.Generic
 		/// <returns>A set containing <c>A - B</c> elements.  <c>null</c> if <c>a</c> is <c>null</c>.</returns>
 		public static Set<T> operator -(Set<T> a, Set<T> b)
 		{
-			return (Set<T>)Minus(a, b);
+			return (Set<T>) Minus(a, b);
 		}
 
 
@@ -222,7 +221,7 @@ namespace Iesi.Collections.Generic
 		/// <returns>A set containing the result of <c>a ^ b</c>.</returns>
 		public virtual ISet<T> ExclusiveOr(ISet<T> a)
 		{
-			ISet<T> resultSet = (ISet<T>)this.Clone();
+			ISet<T> resultSet = (ISet<T>) this.Clone();
 			foreach (T element in a)
 			{
 				if (resultSet.Contains(element))
@@ -248,9 +247,9 @@ namespace Iesi.Collections.Generic
 			if (a == null && b == null)
 				return null;
 			else if (a == null)
-				return (ISet<T>)b.Clone();
+				return (ISet<T>) b.Clone();
 			else if (b == null)
-				return (ISet<T>)a.Clone();
+				return (ISet<T>) a.Clone();
 			else
 				return a.ExclusiveOr(b);
 		}
@@ -267,7 +266,7 @@ namespace Iesi.Collections.Generic
 		/// <returns>A set containing the result of <c>a ^ b</c>.  <c>null</c> if both sets are <c>null</c>.</returns>
 		public static Set<T> operator ^(Set<T> a, Set<T> b)
 		{
-			return (Set<T>)ExclusiveOr(a, b);
+			return (Set<T>) ExclusiveOr(a, b);
 		}
 
 		/// <summary>
@@ -306,7 +305,7 @@ namespace Iesi.Collections.Generic
 		/// <summary>
 		/// Returns <c>true</c> if this set contains no elements.
 		/// </summary>
-		public abstract bool IsEmpty { get;}
+		public abstract bool IsEmpty { get; }
 
 		/// <summary>
 		/// Removes the specified element from the set.
@@ -337,7 +336,7 @@ namespace Iesi.Collections.Generic
 		/// <returns>A clone of this object.</returns>
 		public virtual object Clone()
 		{
-			Set<T> newSet = (Set<T>)Activator.CreateInstance(this.GetType());
+			Set<T> newSet = (Set<T>) Activator.CreateInstance(this.GetType());
 			newSet.AddAll(this);
 			return newSet;
 		}
@@ -354,21 +353,21 @@ namespace Iesi.Collections.Generic
 		/// <summary>
 		/// The number of elements currently contained in this collection.
 		/// </summary>
-		public abstract int Count { get;}
+		public abstract int Count { get; }
 
 		/// <summary>
 		/// Returns <c>true</c> if the <c>Set</c> is synchronized across threads.  Note that
 		/// enumeration is inherently not thread-safe.  Use the <c>SyncRoot</c> to lock the
 		/// object during enumeration.
 		/// </summary>
-		public abstract bool IsSynchronized { get;}
+		public abstract bool IsSynchronized { get; }
 
 		/// <summary>
 		/// An object that can be used to synchronize this collection to make it thread-safe.
 		/// When implementing this, if your object uses a base object, like an <c>IDictionary</c>,
 		/// or anything that has a <c>SyncRoot</c>, return that object instead of "<c>this</c>".
 		/// </summary>
-		public abstract object SyncRoot { get;}
+		public abstract object SyncRoot { get; }
 
 		/// <summary>
 		/// Gets an enumerator for the elements in the <c>Set</c>.
@@ -388,7 +387,7 @@ namespace Iesi.Collections.Generic
 			get { return false; }
 		}
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
 		}
@@ -414,7 +413,7 @@ namespace Iesi.Collections.Generic
 		/// <returns></returns>
 		protected virtual ISet NonGenericUnion(ISet a)
 		{
-			ISet resultSet = (ISet)this.Clone();
+			ISet resultSet = (ISet) this.Clone();
 			if (a != null)
 				resultSet.AddAll(a);
 			return resultSet;
@@ -427,7 +426,7 @@ namespace Iesi.Collections.Generic
 		/// <returns></returns>
 		protected virtual ISet NonGenericMinus(ISet a)
 		{
-			ISet resultSet = (ISet)this.Clone();
+			ISet resultSet = (ISet) this.Clone();
 			if (a != null)
 				resultSet.RemoveAll(a);
 			return resultSet;
@@ -440,7 +439,7 @@ namespace Iesi.Collections.Generic
 		/// <returns></returns>
 		protected virtual ISet NonGenericIntersect(ISet a)
 		{
-			ISet resultSet = (ISet)this.Clone();
+			ISet resultSet = (ISet) this.Clone();
 			if (a != null)
 				resultSet.RetainAll(a);
 			else
@@ -455,7 +454,7 @@ namespace Iesi.Collections.Generic
 		/// <returns></returns>
 		protected virtual ISet NonGenericExclusiveOr(ISet a)
 		{
-			ISet resultSet = (ISet)this.Clone();
+			ISet resultSet = (ISet) this.Clone();
 			foreach (object element in a)
 			{
 				if (resultSet.Contains(element))
@@ -465,6 +464,7 @@ namespace Iesi.Collections.Generic
 			}
 			return resultSet;
 		}
+
 		#endregion Protected helpers
 
 		#region ISet implementation
@@ -497,7 +497,7 @@ namespace Iesi.Collections.Generic
 		bool ISet.Contains(object o)
 		{
 			if (o is T)
-				return this.Contains((T)o);
+				return this.Contains((T) o);
 			else
 				return false;
 		}
@@ -508,16 +508,16 @@ namespace Iesi.Collections.Generic
 			foreach (object o in c)
 			{
 				if (o is T)
-					col.Add((T)o);
+					col.Add((T) o);
 				else
-				return false;
+					return false;
 			}
 			return this.ContainsAll(col);
 		}
 
 		bool ISet.Add(object o)
 		{
-			return this.Add((T)o);
+			return this.Add((T) o);
 		}
 
 		bool ISet.AddAll(ICollection c)
@@ -531,7 +531,7 @@ namespace Iesi.Collections.Generic
 		bool ISet.Remove(object o)
 		{
 			if (o is T)
-				return this.Remove((T)o);
+				return this.Remove((T) o);
 			else
 				return false;
 		}
@@ -542,7 +542,7 @@ namespace Iesi.Collections.Generic
 			foreach (object o in c)
 			{
 				if (o is T)
-				col.Add((T)o);
+					col.Add((T) o);
 			}
 			return this.RemoveAll(col);
 		}
@@ -552,12 +552,14 @@ namespace Iesi.Collections.Generic
 			ICollection<T> col = new List<T>(c.Count);
 			foreach (object o in c)
 			{
-			if (o is T)
-				col.Add((T)o);
+				if (o is T)
+					col.Add((T) o);
 			}
 			return this.RetainAll(col);
 		}
+
 		#endregion ISet implementation
 	}
 }
+
 #endif

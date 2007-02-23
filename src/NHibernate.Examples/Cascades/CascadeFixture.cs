@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
@@ -14,11 +13,11 @@ namespace NHibernate.Examples.Cascades
 	[TestFixture]
 	public class CascadeFixture
 	{
-		ISessionFactory factory = null;
-		Configuration cfg = null;
-		
+		private ISessionFactory factory = null;
+		private Configuration cfg = null;
+
 		[SetUp]
-		public void SetUp() 
+		public void SetUp()
 		{
 			cfg = new Configuration();
 			cfg.AddAssembly("NHibernate.Examples");
@@ -28,19 +27,19 @@ namespace NHibernate.Examples.Cascades
 		}
 
 		[TearDown]
-		public void TearDown() 
+		public void TearDown()
 		{
 			//new SchemaExport(cfg).Drop(true, true);	
 		}
 
 		[Test]
-		public void Insert() 
+		public void Insert()
 		{
 			ISession session = factory.OpenSession();
-			
+
 			Parent dad = new Parent();
 			dad.Name = "the dad";
-			
+
 			Child boy = new Child();
 			boy.Name = "the boy";
 			boy.SingleParent = dad;
@@ -54,9 +53,9 @@ namespace NHibernate.Examples.Cascades
 
 			session.SaveOrUpdate(dad);
 
-			dad.Aliases.Add("a1", new Alias("Daddy", "u") );
-			dad.Aliases.Add("a2", new Alias("Father", "f") );
-			
+			dad.Aliases.Add("a1", new Alias("Daddy", "u"));
+			dad.Aliases.Add("a2", new Alias("Father", "f"));
+
 			session.Flush();
 			session.Close();
 
@@ -66,20 +65,19 @@ namespace NHibernate.Examples.Cascades
 
 			session = factory.OpenSession();
 
-			dad = (Parent) session.Load( typeof(Parent), dadId );
+			dad = (Parent) session.Load(typeof(Parent), dadId);
 
-			foreach (Child child in dad.Children) 
+			foreach (Child child in dad.Children)
 			{
-				if (child.Name=="the girl") 
+				if (child.Name == "the girl")
 				{
 					Assert.AreEqual(girlId, child.Id);
 				}
-				else 
+				else
 				{
 					Assert.AreEqual(boyId, child.Id);
 				}
 			}
-
 		}
 	}
 }

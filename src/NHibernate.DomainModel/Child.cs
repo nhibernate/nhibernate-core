@@ -10,7 +10,7 @@ namespace NHibernate.DomainModel
 		private Parent _parent;
 		private int _count;
 		private int _x;
-		
+
 		public Parent Parent
 		{
 			get { return _parent; }
@@ -29,11 +29,10 @@ namespace NHibernate.DomainModel
 			set { _x = value; }
 		}
 
-		public long Id 
+		public long Id
 		{
 			get { return _parent.Id; }
 			set { }
 		}
-
 	}
 }

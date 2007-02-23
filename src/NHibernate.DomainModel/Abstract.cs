@@ -1,5 +1,6 @@
 using System;
-using System.Collections;
+
+using Iesi.Collections;
 
 namespace NHibernate.DomainModel
 {
@@ -8,8 +9,8 @@ namespace NHibernate.DomainModel
 	{
 		// added an initialization because MsSql errors out when inserting
 		// dates outside of the range - TODO: fix this to be a DATE type
-		private DateTime _time = new DateTime( 2001, 12, 1, 1, 1, 1 );
-		private Iesi.Collections.ISet _abstracts;
+		private DateTime _time = new DateTime(2001, 12, 1, 1, 1, 1);
+		private ISet _abstracts;
 
 		/// <summary>
 		/// Gets or sets the _time
@@ -19,11 +20,11 @@ namespace NHibernate.DomainModel
 			get { return _time; }
 			set { _time = value; }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the _abstract
 		/// </summary> 
-		public Iesi.Collections.ISet Abstracts
+		public ISet Abstracts
 		{
 			get { return _abstracts; }
 			set { _abstracts = value; }

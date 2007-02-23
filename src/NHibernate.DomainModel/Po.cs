@@ -3,14 +3,14 @@ using System.Collections;
 
 using Iesi.Collections;
 
-namespace NHibernate.DomainModel 
+namespace NHibernate.DomainModel
 {
-	public class Po 
+	public class Po
 	{
 		private long _id;
 		private string _value;
-		private Iesi.Collections.ISet _set;
-		private Iesi.Collections.ISet _eagerSet;
+		private ISet _set;
+		private ISet _eagerSet;
 		private IList _list;
 		private Top _top;
 		private Lower _lower;
@@ -18,20 +18,20 @@ namespace NHibernate.DomainModel
 
 		public long Id
 		{
-			get {return _id;}
-			set {_id = value;}
+			get { return _id; }
+			set { _id = value; }
 		}
 
 		public string Value
 		{
-			get {return _value;}
-			set {_value = value;}
+			get { return _value; }
+			set { _value = value; }
 		}
 
-		public Iesi.Collections.ISet Set
+		public ISet Set
 		{
-			get {return _set;}
-			set {_set = value;}
+			get { return _set; }
+			set { _set = value; }
 		}
 
 		public IList List
@@ -57,6 +57,5 @@ namespace NHibernate.DomainModel
 			get { return _lower; }
 			set { _lower = value; }
 		}
-
 	}
 }

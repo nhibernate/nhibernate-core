@@ -1,24 +1,26 @@
 using System;
 using System.Collections;
 
+using Iesi.Collections;
+
 namespace NHibernate.DomainModel
 {
 	public class Container
 	{
-		public sealed class ContainerInnerClass 
+		public sealed class ContainerInnerClass
 		{
 			private Simple _simple;
 			private string _name;
 			private One _one;
 			private Many _many;
 			private int _count;
-			
+
 			public Simple Simple
 			{
 				get { return _simple; }
 				set { _simple = value; }
 			}
-	
+
 			public string Name
 			{
 				get { return _name; }
@@ -44,18 +46,18 @@ namespace NHibernate.DomainModel
 			}
 
 			#region System.Object Members
-			
+
 			public override string ToString()
 			{
 				return _name + " = " + _simple.Count
-					+ "/" + ( _one==null ? "nil" : _one.Key.ToString() )
-					+ "/" + ( _many==null ? "nii" : _many.Key.ToString() );
+				       + "/" + (_one == null ? "nil" : _one.Key.ToString())
+				       + "/" + (_many == null ? "nii" : _many.Key.ToString());
 			}
 
 			#endregion
 		}
-	
-		public sealed class Ternary 
+
+		public sealed class Ternary
 		{
 			private string _name;
 			private Foo _foo;
@@ -78,24 +80,23 @@ namespace NHibernate.DomainModel
 				get { return _glarch; }
 				set { _glarch = value; }
 			}
-
 		}
-			
-	
+
+
 		private IList _oneToMany;
 		private IList _components;
 		private IList _manyToMany;
 		// <set> mapping
-		private Iesi.Collections.ISet _composites;
+		private ISet _composites;
 		private IList _cascades;
 		private long _id;
 		private IList _bag;
 		private IList _lazyBag = new ArrayList();
 		private IDictionary _ternaryMap;
 		//<set> mapping
-		private Iesi.Collections.ISet _ternarySet;
+		private ISet _ternarySet;
 
-		
+
 		public virtual IList OneToMany
 		{
 			get { return _oneToMany; }
@@ -114,7 +115,7 @@ namespace NHibernate.DomainModel
 			set { _components = value; }
 		}
 
-		public virtual Iesi.Collections.ISet Composites
+		public virtual ISet Composites
 		{
 			get { return _composites; }
 			set { _composites = value; }
@@ -150,11 +151,10 @@ namespace NHibernate.DomainModel
 			set { _ternaryMap = value; }
 		}
 
-		public virtual Iesi.Collections.ISet TernarySet
+		public virtual ISet TernarySet
 		{
 			get { return _ternarySet; }
 			set { _ternarySet = value; }
 		}
-
 	}
 }
