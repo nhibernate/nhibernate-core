@@ -28,9 +28,11 @@ namespace NHibernate.Mapping.Attributes
 		
 		private bool _uniquespecified;
 		
-		private string _foreignkey = null;
+		private string _access = null;
 		
 		private bool _insertspecified;
+		
+		private string _foreignkey = null;
 		
 		private bool _insert = true;
 		
@@ -46,8 +48,6 @@ namespace NHibernate.Mapping.Attributes
 		
 		private bool _unique = false;
 		
-		private string _access = null;
-		
 		private bool _update = true;
 		
 		private string _name = null;
@@ -56,7 +56,11 @@ namespace NHibernate.Mapping.Attributes
 		
 		private bool _updatespecified;
 		
+		private string _index = null;
+		
 		private Laziness _lazy = Laziness.Unspecified;
+		
+		private string _uniquekey = null;
 		
 		private OuterJoinStrategy _outerjoin = OuterJoinStrategy.Unspecified;
 		
@@ -203,6 +207,32 @@ namespace NHibernate.Mapping.Attributes
 			get
 			{
 				return this._uniquespecified;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual string UniqueKey
+		{
+			get
+			{
+				return this._uniquekey;
+			}
+			set
+			{
+				this._uniquekey = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual string Index
+		{
+			get
+			{
+				return this._index;
+			}
+			set
+			{
+				this._index = value;
 			}
 		}
 		

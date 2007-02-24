@@ -58,6 +58,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _index = null;
 		
+		private string _uniquekey = null;
+		
 		private bool _notnullspecified;
 		
 		/// <summary> Default constructor (position=0) </summary>
@@ -294,6 +296,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._formula = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual string UniqueKey
+		{
+			get
+			{
+				return this._uniquekey;
+			}
+			set
+			{
+				this._uniquekey = value;
 			}
 		}
 		

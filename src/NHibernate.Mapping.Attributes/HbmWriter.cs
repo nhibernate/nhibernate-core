@@ -3367,6 +3367,9 @@ writer.WriteAttributeString("optimistic-lock", attribute.OptimisticLock ? "true"
 			// Attribute: <formula>
 if(attribute.Formula != null)
 writer.WriteAttributeString("formula", GetAttributeValue(attribute.Formula, mappedClass));
+			// Attribute: <unique-key>
+if(attribute.UniqueKey != null)
+writer.WriteAttributeString("unique-key", GetAttributeValue(attribute.UniqueKey, mappedClass));
 			// Attribute: <index>
 if(attribute.Index != null)
 writer.WriteAttributeString("index", GetAttributeValue(attribute.Index, mappedClass));
@@ -3473,6 +3476,9 @@ writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), att
 			// Attribute: <index>
 if(attribute.Index != null)
 writer.WriteAttributeString("index", GetAttributeValue(attribute.Index, mappedClass));
+			// Attribute: <unique-key>
+if(attribute.UniqueKey != null)
+writer.WriteAttributeString("unique-key", GetAttributeValue(attribute.UniqueKey, mappedClass));
 
 			WriteUserDefinedContent(writer, member, null, attribute);
 
@@ -5248,6 +5254,12 @@ writer.WriteAttributeString("not-null", attribute.NotNull ? "true" : "false");
 			// Attribute: <unique>
 if( attribute.UniqueSpecified )
 writer.WriteAttributeString("unique", attribute.Unique ? "true" : "false");
+			// Attribute: <unique-key>
+if(attribute.UniqueKey != null)
+writer.WriteAttributeString("unique-key", GetAttributeValue(attribute.UniqueKey, mappedClass));
+			// Attribute: <index>
+if(attribute.Index != null)
+writer.WriteAttributeString("index", GetAttributeValue(attribute.Index, mappedClass));
 			// Attribute: <cascade>
 if(attribute.Cascade != CascadeStyle.Unspecified)
 writer.WriteAttributeString("cascade", GetXmlEnumValue(typeof(CascadeStyle), attribute.Cascade));

@@ -28,6 +28,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _name = null;
 		
+		private string _uniquekey = null;
+		
 		private bool _update = true;
 		
 		private string _metatype = null;
@@ -227,6 +229,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._index = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual string UniqueKey
+		{
+			get
+			{
+				return this._uniquekey;
+			}
+			set
+			{
+				this._uniquekey = value;
 			}
 		}
 	}
