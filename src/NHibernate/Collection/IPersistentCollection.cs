@@ -100,9 +100,9 @@ namespace NHibernate.Collection
 		/// </value>
 		/// <remarks>
 		/// This is typically <see langword="false" /> whenever a transient object that contains a collection is being
-		/// associated with an ISession through <c>Save</c> or <c>SaveOrUpdate</c>.  NHibernate can't guarantee
-		/// that it will know about all operations that would call cause NHibernate's collections to call
-		/// <c>Read()</c> or <c>Write()</c>.
+		/// associated with an <see cref="ISession" /> through <see cref="ISession.Save" /> or <see cref="ISession.SaveOrUpdate" />.
+		/// NHibernate can't guarantee that it will know about all operations that would cause NHibernate's collections
+		/// to call <see cref="AbstractPersistentCollection.Read" /> or <see cref="AbstractPersistentCollection.Write" />.
 		/// </remarks>
 		bool IsDirectlyAccessible { get; set; }
 

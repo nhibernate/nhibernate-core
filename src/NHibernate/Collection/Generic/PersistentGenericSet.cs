@@ -42,8 +42,8 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <remarks>
 		/// This is necessary to ensure that the object being added to the set doesn't
-		/// have its <c>GetHashCode()</c> and <c>Equals()</c> methods called during the load
-		/// process.
+		/// have its <see cref="Object.GetHashCode()" /> and <see cref="Object.Equals(object)" />
+		/// methods called during the load process.
 		/// </remarks>
 		[NonSerialized]
 		protected IList<T> tempList;
@@ -348,8 +348,8 @@ namespace NHibernate.Collection.Generic
 		}
 
 		/// <summary>
-		/// Takes the contents stored in the temporary list created during <c>BeginRead()</c>
-		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
+		/// Takes the contents stored in the temporary list created during <see cref="BeginRead" />
+		/// that was populated during <see cref="ReadFrom" /> and writes it to the underlying 
 		/// set.
 		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)

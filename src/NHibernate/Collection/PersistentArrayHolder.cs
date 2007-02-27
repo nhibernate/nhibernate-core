@@ -180,7 +180,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Before the <c>ReadFrom()</c> is called the PersistentArrayHolder needs to setup 
+		/// Before <see cref="ReadFrom" /> is called the PersistentArrayHolder needs to setup 
 		/// a temporary list to hold the objects.
 		/// </summary>
 		public override void BeginRead()
@@ -190,8 +190,8 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Takes the contents stored in the temporary list created during <c>BeginRead()</c>
-		/// that was populated during <c>ReadFrom()</c> and write it to the underlying 
+		/// Takes the contents stored in the temporary list created during <see cref="BeginRead" />
+		/// that was populated during <see cref="ReadFrom" /> and write it to the underlying 
 		/// array.
 		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)
@@ -209,17 +209,10 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool IsDirectlyAccessible
 		{
 			get { return true; }
@@ -244,11 +237,6 @@ namespace NHibernate.Collection
 			SetInitialized();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
 		public override object Disassemble(ICollectionPersister persister)
 		{
 			int length = array.Length;
@@ -300,26 +288,12 @@ namespace NHibernate.Collection
 			return deletes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
 			Array sn = GetSnapshot() as Array;
 			return array.GetValue(i) != null && (i >= sn.Length || sn.GetValue(i) == null);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <param name="elemType"></param>
-		/// <returns></returns>
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
 			Array sn = GetSnapshot() as Array;
@@ -329,12 +303,6 @@ namespace NHibernate.Collection
 			       elemType.IsDirty(array.GetValue(i), sn.GetValue(i), Session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override object GetIndex(object entry, int i)
 		{
 			return i;
@@ -351,55 +319,31 @@ namespace NHibernate.Collection
 			return sn.GetValue(i);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public override bool EntryExists(object entry, int i)
 		{
 			return entry != null;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="index"></param>
 		public void CopyTo(Array array, int index)
 		{
 			this.array.CopyTo(array, index);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public int Count
 		{
 			get { return array.Length; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public IEnumerator GetEnumerator()
 		{
 			return array.GetEnumerator();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public bool IsSynchronized
 		{
 			get { return false; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public object SyncRoot
 		{
 			get { return this; }

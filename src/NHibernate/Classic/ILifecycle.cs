@@ -62,7 +62,7 @@ namespace NHibernate.Classic
 		/// Called after an entity is loaded. 
 		/// </summary>
 		/// <remarks>
-		/// <em>It is illegal to access the <c>ISession</c> from inside this method.</em>. 
+		/// <note>It is illegal to access the <see cref="ISession" /> from inside this method.</note>. 
 		/// However, the object may keep a reference to the session for later use
 		/// </remarks>
 		/// <param name="s">The session</param>

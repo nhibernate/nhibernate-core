@@ -17,7 +17,7 @@ namespace NHibernate.Collection.Generic
 	/// An unordered, unkeyed collection that can contain the same element
 	/// multiple times. The .NET collections API, has no <c>Bag</c>.
 	/// The <see cref="ICollection{T}" /> interface closely resembles bag semantics,
-	/// however NHibernate for net-1.1 used <see cref="System.Collections.IList"/> so 
+	/// however NHibernate for .NET 1.1 used <see cref="System.Collections.IList"/> so 
 	/// <see cref="IList{T}"/> is used to ensure the easiest transition
 	/// to generics.
 	/// </summary>
@@ -202,8 +202,8 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
-		/// <see langword="false" /> if this is a <c>one-to-many</c> Bag, <see langword="true" /> if this is not
-		/// a <c>one-to-many</c> Bag.  Since a Bag is an unordered, unindexed collection 
+		/// <see langword="false" /> if this is a <c>one-to-many</c> bag, <see langword="true" /> if this is not
+		/// a <c>one-to-many</c> bag.  Since a bag is an unordered, unindexed collection 
 		/// that permits duplicates it is not possible to determine what has changed in a
 		/// <c>many-to-many</c> so it is just recreated.
 		/// </returns>

@@ -7,7 +7,7 @@ using NHibernate.Util;
 namespace NHibernate.SqlCommand
 {
 	/// <summary>
-	/// A class that builds an <c>INSERT</c> sql statement.
+	/// Builds a <c>SELECT</c> SQL statement.
 	/// </summary>
 	public class SqlSelectBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{

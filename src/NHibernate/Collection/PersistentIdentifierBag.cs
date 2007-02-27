@@ -11,9 +11,8 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	/// <summary>
-	/// An <c>IdentifierBag</c> implements "bag" semantics more efficiently than
-	/// a regular <see cref="PersistentBag" /> by adding a synthetic identifier column to the
-	/// table.
+	/// Implements "bag" semantics more efficiently than a regular <see cref="PersistentBag" />
+	/// by adding a synthetic identifier column to the table.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -22,7 +21,7 @@ namespace NHibernate.Collection
 	/// application. 
 	/// </para>
 	/// <para>
-	/// <c>PersistentIdentifierBag</c>s may not be used for a many-to-one association.  Furthermore,
+	/// PersistentIdentifierBags may not be used for a many-to-one association.  Furthermore,
 	/// there is no reason to use <c>inverse="true"</c>.
 	/// </para>
 	/// </remarks>

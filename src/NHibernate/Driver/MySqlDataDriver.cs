@@ -3,19 +3,18 @@ using System;
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// The MySqlDataDriver Driver provides a database driver for MySql.
+	/// Provides a database driver for MySQL.
 	/// </summary>
 	/// <remarks>
-	/// <p>
-	/// In order to use this Driver you must have the assembly <c>MySql.Data.dll</c> available for 
-	/// NHibernate to load it.  The assembly <c>ICSharpCode.SharpZipLib.dll</c> is also required by
-	/// the assembly <c>MySql.Data.dll</c>.
-	/// </p>
-	/// <p>
-	/// Please check the products website 
-	/// <a href="http://www.mysql.com/products/connector/net/">http://www.mysql.com/products/connector/net/</a>
-	/// for any updates and or documentation.
-	/// </p>
+	/// <para>
+	/// In order to use this driver you must have the assembly <c>MySql.Data.dll</c> available for 
+	/// NHibernate to load, including its dependencies (<c>ICSharpCode.SharpZipLib.dll</c> is required by
+	/// the assembly <c>MySql.Data.dll</c> as of the time of this writing).
+	/// </para>
+	/// <para>
+	/// Please check the product's <see href="http://www.mysql.com/products/connector/net/">website</see>
+	/// for any updates and/or documentation regarding MySQL.
+	/// </para>
 	/// </remarks>
 	public class MySqlDataDriver : ReflectionBasedDriver
 	{
@@ -23,7 +22,7 @@ namespace NHibernate.Driver
 		/// Initializes a new instance of the <see cref="MySqlDataDriver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the <c>MySql.Data assembly</c> can not be loaded.
+		/// Thrown when the <c>MySql.Data</c> assembly can not be loaded.
 		/// </exception>
 		public MySqlDataDriver() : base(
 			"MySql.Data",

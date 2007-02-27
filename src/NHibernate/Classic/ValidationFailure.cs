@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate.Classic
 {
 	/// <summary>
-	/// Thrown from <c>IValidatable.Validate()</c> when an invariant was violated. Some applications
+	/// Thrown from <see cref="IValidatable.Validate" /> when an invariant was violated. Some applications
 	/// might subclass this exception in order to provide more information about the violation
 	/// </summary>
 	[Serializable]

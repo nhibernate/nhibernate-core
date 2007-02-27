@@ -8,7 +8,7 @@ namespace NHibernate.Classic
 	{
 		/// <summary>
 		/// Validate the state of the object before persisting it. If a violation occurs,
-		/// throw a <c>ValidationFailure</c>. This method must not change the state of the object
+		/// throw a <see cref="ValidationFailure" />. This method must not change the state of the object
 		/// by side-effect.
 		/// </summary>
 		void Validate();
