@@ -1,7 +1,12 @@
 using System;
+using System.Collections;
 using System.Data;
+using System.Text.RegularExpressions;
+
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
+
 using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -33,7 +38,7 @@ namespace NHibernate.Dialect
 	public class MsSql2000Dialect : Dialect
 	{
 		/// <summary></summary>
-		public MsSql2000Dialect() : base()
+		public MsSql2000Dialect()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($1)");
@@ -324,6 +329,83 @@ namespace NHibernate.Dialect
 				return 6;
 			}
 			return 0;
+		}
+
+		private bool NeedsLockHint(LockMode lockMode)
+		{
+			return lockMode.GreaterThan(LockMode.Read);
+		}
+
+		public override string AppendLockHint(LockMode lockMode, string tableName)
+		{
+			if (NeedsLockHint(lockMode))
+			{
+				return tableName + " with (updlock, rowlock)";
+			}
+
+			return tableName;
+		}
+
+		private struct LockHintAppender
+		{
+			private MsSql2000Dialect dialect;
+			private IDictionary aliasedLockModes;
+
+			public LockHintAppender(MsSql2000Dialect dialect, IDictionary aliasedLockModes)
+			{
+				this.dialect = dialect;
+				this.aliasedLockModes = aliasedLockModes;
+			}
+
+			public string ReplaceMatch(Match match)
+			{
+				string alias = match.Groups[1].Value;
+				string lockHint = dialect.AppendLockHint((LockMode) aliasedLockModes[alias], alias);
+				return string.Concat(" ", lockHint, match.Groups[2].Value);
+			}
+		}
+
+		public override SqlString ApplyLocksToSql(SqlString sql, IDictionary aliasedLockModes, IDictionary keyColumnNames)
+		{
+			bool doWork = false;
+
+			foreach (DictionaryEntry de in aliasedLockModes)
+			{
+				if (NeedsLockHint((LockMode) de.Value))
+				{
+					doWork = true;
+					break;
+				}
+			}
+
+			if (!doWork)
+			{
+				return sql;
+			}
+
+			// Regex matching any alias out of those given. Aliases should contain
+			// no dangerous characters (they are identifiers) so they are not escaped.
+			string aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
+			
+			// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
+			// in various kinds of "FROM table1 alias1, table2 alias2".
+			Regex matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
+
+			SqlStringBuilder result = new SqlStringBuilder();
+			MatchEvaluator evaluator = new MatchEvaluator(new LockHintAppender(this, aliasedLockModes).ReplaceMatch);
+			
+			foreach (object part in sql.Parts)
+			{
+				if (part == Parameter.Placeholder)
+				{
+					result.AddParameter();
+					continue;
+				}
+
+				result.Add(matchRegex.Replace((string) part, evaluator));
+			}
+
+			return result.ToSqlString();
 		}
 
 		public override long TimestampResolutionInTicks

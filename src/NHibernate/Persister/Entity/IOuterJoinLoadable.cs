@@ -89,7 +89,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		SqlString FromTableFragment(string alias);
+		string FromTableFragment(string alias);
 
 		/// <summary>
 		/// Generate a list of collection index and element columns

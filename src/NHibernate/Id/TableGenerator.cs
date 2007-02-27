@@ -79,7 +79,12 @@ namespace NHibernate.Id
 				tableName = schemaName + "." + tableName;
 			}
 
-			query = "select " + columnName + " from " + tableName + dialect.ForUpdateString;
+			query =
+				"select " +
+				columnName +
+				" from " +
+				dialect.AppendLockHint(LockMode.Upgrade, tableName) +
+				dialect.ForUpdateString;
 
 			columnType = type as ValueTypeType;
 			if (columnType == null)

@@ -926,6 +926,16 @@ namespace NHibernate.Dialect
 			return ForUpdateString;
 		}
 
+		public virtual SqlString ApplyLocksToSql(SqlString sql, IDictionary aliasedLockModes, IDictionary keyColumnNames)
+		{
+			return sql.Append(new ForUpdateFragment(this, aliasedLockModes, keyColumnNames).ToSqlStringFragment());
+		}
+
+		public virtual string AppendLockHint(LockMode lockMode, string tableName)
+		{
+			return tableName;
+		}
+
 		#region Agregate function redefinition
 
 		protected class CountQueryFunctionInfo : StandardSQLFunction

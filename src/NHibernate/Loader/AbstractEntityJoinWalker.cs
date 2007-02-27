@@ -97,7 +97,7 @@ namespace NHibernate.Loader
 				projection
 				)
 				.SetFromClause(
-				persister.FromTableFragment(alias) +
+				Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +
 				persister.FromJoinFragment(alias, true, true)
 				)
 				.SetWhereClause(condition)

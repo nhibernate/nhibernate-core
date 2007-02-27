@@ -14,11 +14,13 @@ namespace NHibernate.SqlCommand
 
 		private IList columnNames = new ArrayList(); // name of the column
 		private IDictionary aliases = new Hashtable(); //key=column Name, value=column Alias
+		private LockMode lockMode = LockMode.Read;
 
 		private int versionFragmentIndex = -1; // not used !?!
 		private int identityFragmentIndex = -1; // not used !?!
 
 		private IList whereStrings = new ArrayList();
+		private Dialect.Dialect dialect;
 
 		//these can be plain strings because a forUpdate and orderBy will have
 		// no parameters so using a SqlString will only complicate matters - or 
@@ -32,6 +34,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="factory"></param>
 		public SqlSimpleSelectBuilder(ISessionFactoryImplementor factory) : base(factory)
 		{
+			this.dialect = factory.Dialect;
 		}
 
 		/// <summary>
@@ -203,7 +206,7 @@ namespace NHibernate.SqlCommand
 
 
 			sqlBuilder.Add(" FROM ")
-				.Add(tableName);
+				.Add(dialect.AppendLockHint(lockMode, tableName));
 
 			sqlBuilder.Add(" WHERE ");
 

@@ -1271,7 +1271,7 @@ namespace NHibernate.Hql.Classic
 						keyColumnNames[names[i]] = persisters[i].IdentifierColumnNames;
 					}
 				}
-				result = sql.Append(new ForUpdateFragment(dialect, aliasedLockModes, keyColumnNames).ToSqlStringFragment());
+				result = dialect.ApplyLocksToSql(sql, aliasedLockModes, keyColumnNames);
 			}
 			LogQuery(queryString, result.ToString());
 			return result;

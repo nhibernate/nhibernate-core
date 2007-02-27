@@ -1864,9 +1864,9 @@ namespace NHibernate.Persister.Entity
 
 		public abstract SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
-		public virtual SqlString FromTableFragment(string alias)
+		public virtual string FromTableFragment(string alias)
 		{
-			return new SqlString(TableName + ' ' + alias);
+			return TableName + ' ' + alias;
 		}
 
 		public abstract System.Type GetSubclassForDiscriminatorValue(object value);
@@ -2300,7 +2300,7 @@ namespace NHibernate.Persister.Entity
 			string selectClause = StringHelper.Join(", ", aliasedIdColumns) +
 			                      ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
 
-			SqlString fromClause = FromTableFragment(RootAlias) +
+			SqlString fromClause = new SqlString(FromTableFragment(RootAlias)) +
 			                       FromJoinFragment(RootAlias, true, false);
 
 			SqlString joiner = new SqlString("=", Parameter.Placeholder, " and ");

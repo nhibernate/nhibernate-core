@@ -102,23 +102,21 @@ namespace NHibernate.Loader.Criteria
 			{
 				return sqlSelectString;
 			}
-			else
+
+			IDictionary keyColumnNames = null;
+			ILoadable[] persisters = EntityPersisters;
+			string[] entityAliases = Aliases;
+
+			if (dialect.ForUpdateOfColumns)
 			{
-				IDictionary keyColumnNames = null;
-				ILoadable[] persisters = EntityPersisters;
-				string[] entityAliases = Aliases;
-
-				if (dialect.ForUpdateOfColumns)
+				keyColumnNames = new Hashtable();
+				for (int i = 0; i < entityAliases.Length; i++)
 				{
-					keyColumnNames = new Hashtable();
-					for (int i = 0; i < entityAliases.Length; i++)
-					{
-						keyColumnNames[entityAliases[i]] = persisters[i].IdentifierColumnNames;
-					}
+					keyColumnNames[entityAliases[i]] = persisters[i].IdentifierColumnNames;
 				}
-
-				return sqlSelectString.Append(new ForUpdateFragment(dialect, lockModes, keyColumnNames).ToSqlStringFragment());
 			}
+
+			return dialect.ApplyLocksToSql(sqlSelectString, lockModes, keyColumnNames);
 		}
 
 		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
