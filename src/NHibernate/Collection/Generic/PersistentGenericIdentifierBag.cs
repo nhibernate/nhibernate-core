@@ -10,7 +10,7 @@ using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
-namespace NHibernate.Collection
+namespace NHibernate.Collection.Generic
 {
 	/// <summary>
 	/// Implements "bag" semantics more efficiently than <see cref="PersistentBag" /> by adding

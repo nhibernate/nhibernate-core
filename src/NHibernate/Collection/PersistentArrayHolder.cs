@@ -164,7 +164,7 @@ namespace NHibernate.Collection
 			int index = (int) role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
 			for (int i = tempList.Count; i <= index; i++)
 			{
-				tempList.Insert(i, null);
+				tempList.Add(null);
 			}
 			tempList[index] = element;
 			return element;

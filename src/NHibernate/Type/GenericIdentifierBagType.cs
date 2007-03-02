@@ -2,7 +2,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using NHibernate.Collection;
+using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 

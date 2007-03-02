@@ -660,7 +660,7 @@ namespace NHibernate.Hql.Classic
 		{
 			if (IsCollectionValued)
 			{
-				q.SetCollectionToFetch(CollectionRole, CollectionName, CollectionOwnerName, entityName);
+				q.AddCollectionToFetch(CollectionRole, CollectionName, CollectionOwnerName, entityName);
 			}
 			else
 			{

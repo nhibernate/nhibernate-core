@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Iesi.Collections;
 using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
@@ -73,10 +74,145 @@ namespace NHibernate.Hql.Classic
 		private bool shallowQuery;
 		private QueryTranslator superQuery;
 
-		private IQueryableCollection collectionPersister;
-		private int collectionOwnerColumn = -1;
-		private string collectionOwnerName;
-		private string fetchName;
+		private class FetchedCollections
+		{
+			private int count = 0;
+			private ArrayList persisters; // IQueryableCollection
+			private ArrayList names; // string
+			private ArrayList ownerNames; // string
+			private ArrayList suffixes; // string
+
+			// True if one of persisters represents a collection that is not safe to use in multiple join scenario.
+			// Currently every collection except bag is safe.
+			private bool hasUnsafeCollection = false;
+
+			private ArrayList ownerColumns; // int
+
+			private static string GenerateSuffix(int count)
+			{
+				return count + "__";
+			}
+
+			private static bool IsUnsafe(IQueryableCollection collectionPersister)
+			{
+				return collectionPersister.CollectionType is BagType
+				       || collectionPersister.CollectionType is IdentifierBagType;
+			}
+
+			public void Add(string name, IQueryableCollection collectionPersister, string ownerName)
+			{
+				if (persisters == null)
+				{
+					persisters = new ArrayList(2);
+					names = new ArrayList(2);
+					ownerNames = new ArrayList(2);
+					suffixes = new ArrayList(2);
+				}
+
+				count++;
+
+				hasUnsafeCollection = hasUnsafeCollection || IsUnsafe(collectionPersister);
+
+				if (count > 1 && hasUnsafeCollection)
+				{
+					// The comment only mentions a bag since I don't want to confuse users.
+					throw new QueryException("Cannot fetch multiple collections in a single query if one of them is a bag");
+				}
+
+				names.Add(name);
+				persisters.Add(collectionPersister);
+				ownerNames.Add(ownerName);
+				suffixes.Add(GenerateSuffix(count - 1));
+			}
+
+			public int[] CollectionOwners
+			{
+				get
+				{
+					if (ownerColumns == null)
+					{
+						return null;
+					}
+					return (int[]) ownerColumns.ToArray(typeof(int));
+				}
+			}
+
+			public ICollectionPersister[] CollectionPersisters
+			{
+				get
+				{
+					if (persisters == null)
+					{
+						return null;
+					}
+					return (ICollectionPersister[]) persisters.ToArray(typeof(ICollectionPersister));
+				}
+			}
+
+			public string[] CollectionSuffixes
+			{
+				get
+				{
+					if (suffixes == null)
+					{
+						return null;
+					}
+					return (string[]) suffixes.ToArray(typeof(string));
+				}
+			}
+
+			public void AddSelectFragmentString(QuerySelect sql)
+			{
+				if (persisters == null)
+				{
+					return;
+				}
+
+				for (int i = 0; i < count; i++)
+				{
+					sql.AddSelectFragmentString(
+						((IQueryableCollection) persisters[i]).SelectFragment(
+							(string) names[i], (string) suffixes[i]));
+				}
+			}
+
+			public void AddOrderBy(QuerySelect sql)
+			{
+				if (persisters == null)
+				{
+					return;
+				}
+
+				for (int i = 0; i < count; i++)
+				{
+					IQueryableCollection persister = (IQueryableCollection) persisters[i];
+					if (persister.HasOrdering)
+					{
+						sql.AddOrderBy(persister.GetSQLOrderByString((string) names[i]));
+					}
+				}
+			}
+
+			public void InitializeCollectionOwnerColumns(IList returnedTypes)
+			{
+				if (count == 0)
+				{
+					return;
+				}
+
+				ownerColumns = new ArrayList(count);
+				for (int i = 0; i < count; i++)
+				{
+					string ownerName = (string) ownerNames[i];
+					// This is quite slow in theory but there should only be a few collections
+					// so it shouldn't be a problem in practice.
+					int ownerIndex = returnedTypes.IndexOf(ownerName);
+					ownerColumns.Add(ownerIndex);
+				}
+			}
+		}
+
+		private FetchedCollections fetchedCollections = new FetchedCollections();
 
 		private string[] suffixes;
 
@@ -598,14 +734,12 @@ namespace NHibernate.Hql.Classic
 				{
 					selectLength++;
 				}
-				if (name.Equals(collectionOwnerName))
-				{
-					collectionOwnerColumn = i;
-				}
 				string oneToOneOwner = (string) oneToOneOwnerNames[name];
 				owners[i] = oneToOneOwner == null ? -1 : returnedTypes.IndexOf(oneToOneOwner);
 				ownerAssociationTypes[i] = (EntityType) uniqueKeyOwnerReferences[name];
 			}
+
+			fetchedCollections.InitializeCollectionOwnerColumns(returnedTypes);
 
 			if (ArrayHelper.IsAllNegative(owners))
 			{
@@ -632,10 +766,8 @@ namespace NHibernate.Hql.Classic
 				RenderPropertiesSelect(sql);
 			}
 
-			if (collectionPersister != null)
-			{
-				sql.AddSelectFragmentString(collectionPersister.SelectFragment(fetchName, "__"));
-			}
+			fetchedCollections.AddSelectFragmentString(sql);
+
 			if (hasScalars || shallowQuery)
 			{
 				sql.AddSelectFragmentString(scalarSelect);
@@ -650,10 +782,7 @@ namespace NHibernate.Hql.Classic
 			sql.SetHavingTokens(havingTokens);
 			sql.SetOrderByTokens(orderByTokens);
 
-			if (collectionPersister != null && collectionPersister.HasOrdering)
-			{
-				sql.AddOrderBy(collectionPersister.GetSQLOrderByString(fetchName));
-			}
+			fetchedCollections.AddOrderBy(sql);
 
 			scalarColumnNames = GenerateColumnNames(returnTypes, Factory);
 
@@ -905,33 +1034,20 @@ namespace NHibernate.Hql.Classic
 
 		protected override ICollectionPersister[] CollectionPersisters
 		{
-			get
-			{
-				if (collectionPersister == null)
-				{
-					return null;
-				}
-				return new ICollectionPersister[] {collectionPersister};
-			}
+			get { return fetchedCollections.CollectionPersisters; }
 		}
 
 		protected override string[] CollectionSuffixes
 		{
-			get { return collectionPersister == null ? null : new string[] {"__"}; }
+			get { return fetchedCollections.CollectionSuffixes; }
 			set { throw new InvalidOperationException("QueryTranslator.CollectionSuffixes_set"); }
 		}
 
-		public void SetCollectionToFetch(string role, string name, string ownerName, string entityName)
+		public void AddCollectionToFetch(string role, string name, string ownerName, string entityName)
 		{
-			if (fetchName != null)
-			{
-				throw new QueryException("cannot fetch multiple collections in one query");
-			}
-
-			fetchName = name;
-			collectionPersister = GetCollectionPersister(role);
-			collectionOwnerName = ownerName;
-			if (collectionPersister.ElementType.IsEntityType)
+			IQueryableCollection persister = GetCollectionPersister(role);
+			fetchedCollections.Add(name, persister, ownerName);
+			if (persister.ElementType.IsEntityType)
 			{
 				AddEntityToFetch(entityName);
 			}
@@ -1284,7 +1400,7 @@ namespace NHibernate.Hql.Classic
 
 		protected override int[] CollectionOwners
 		{
-			get { return new int[] {collectionOwnerColumn}; }
+			get { return fetchedCollections.CollectionOwners; }
 		}
 
 		protected bool Compiled

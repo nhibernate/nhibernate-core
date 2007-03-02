@@ -1255,44 +1255,6 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException))]
-		public void TwoLeftJoinFetches()
-		{
-			Master m = new Master();
-			Detail d = new Detail();
-			m.Details = new HashedSet();
-			m.AddDetail(d);
-			d.Master = m;
-
-			using (ISession s = OpenSession())
-			{
-				s.Save(m);
-				s.Save(d);
-				s.Flush();
-			}
-
-			try
-			{
-				using (ISession s = OpenSession())
-				{
-					// Throws QueryException (cannot fetch multiple collections in one query)
-					s.CreateQuery(
-						"select m from Master m left join fetch m.Details d left join fetch d.SubDetails")
-						.List();
-				}
-			}
-			finally
-			{
-				using (ISession s = OpenSession())
-				{
-					s.Delete("from Detail");
-					s.Delete("from Master");
-					s.Flush();
-				}
-			}
-		}
-
-		[Test]
 		public void NH741()
 		{
 			using (ISession s = OpenSession())
