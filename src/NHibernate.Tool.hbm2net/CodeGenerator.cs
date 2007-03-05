@@ -205,6 +205,14 @@ namespace NHibernate.Tool.hbm2net
 						throw new MappingException("Missing extends attribute on <" + clazz.LocalName + " name=" +
 						                           clazz.Attributes["name"].Value + ">");
 					}
+
+					int commaIndex = ex.IndexOf(',');
+					if (commaIndex > -1)
+					{
+						//suppress the leading AssemblyName
+						ex = ex.Substring(0, commaIndex).Trim();
+					}
+
 					ClassMapping superclass = (ClassMapping) allMaps[ex];
 					if (superclass == null)
 					{
