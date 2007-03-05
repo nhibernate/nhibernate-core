@@ -531,22 +531,31 @@ namespace NHibernate.Loader
 				ILoadable[] loadables = EntityPersisters;
 				string[] aliases = Aliases;
 
+				int rowKeysLength = ((EntityKey[]) keys[0]).Length;
+
+				SubselectFetch[] subselectFetches = new SubselectFetch[rowKeysLength];
+				for (int i = 0; i < rowKeysLength; i++)
+				{
+					if (loadables[i].HasSubselectLoadableCollections)
+					{
+						subselectFetches[i] = new SubselectFetch(
+							//getSQLString(), 
+							aliases[i],
+							loadables[i],
+							queryParameters,
+							keySets[i],
+							namedParameterLocMap
+							);
+					}
+				}
+
 				foreach (EntityKey[] rowKeys in keys)
 				{
 					for (int i = 0; i < rowKeys.Length; i++)
 					{
-						if (rowKeys[i] != null && loadables[i].HasSubselectLoadableCollections)
+						if (rowKeys[i] != null && subselectFetches[i] != null)
 						{
-							SubselectFetch subselectFetch = new SubselectFetch(
-								//getSQLString(), 
-								aliases[i],
-								loadables[i],
-								queryParameters,
-								keySets[i],
-								namedParameterLocMap
-								);
-
-							session.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetch);
+							session.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetches[i]);
 						}
 					}
 				}

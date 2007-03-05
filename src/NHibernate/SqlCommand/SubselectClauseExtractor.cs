@@ -55,7 +55,7 @@ namespace NHibernate.SqlCommand
 			int fromStart = FindFromClauseInPart(partString);
 			if (fromStart >= 0)
 			{
-				AppendFromClause(partString, fromStart);
+				AddPart(partString.Substring(fromStart));
 				return true;
 			}
 
@@ -130,12 +130,6 @@ namespace NHibernate.SqlCommand
 			}
 
 			return fromIndex;
-		}
-
-		private void AppendFromClause(string part, int fromIndex)
-		{
-			string substringPart = part.Substring(fromIndex);
-			AddPart(substringPart);
 		}
 
 		private void AddPart(object part)
