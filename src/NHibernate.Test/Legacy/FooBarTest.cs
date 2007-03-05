@@ -5495,6 +5495,19 @@ namespace NHibernate.Test.Legacy
 			}
 		}
 
+		// It's possible that this test only works on MS SQL Server. If somebody complains about
+		// the test not working on their DB, I'll put an if around the code to only run on MS SQL.
+		[Test]
+		public void ParameterInOrderByClause()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.CreateQuery("from Foo as foo order by case ? when 0 then foo.id else foo.id end")
+					.SetInt32(0, 0)
+					.List();
+			}
+		}
+
 		#endregion
 	}
 }
