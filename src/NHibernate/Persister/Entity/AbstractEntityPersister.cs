@@ -2043,24 +2043,29 @@ namespace NHibernate.Persister.Entity
 						// Well, it's always the first table to dehydrate, so pass 0 as the position
 						Dehydrate(null, fields, notNull, propertyColumnInsertable, 0, statement, session, 0);
 						session.Batcher.ExecuteNonQuery(statement);
+
+						// Fetch the generated id in a separate query. This is done inside the first try/finally block
+						// to keep the insert command open, so that the batcher does not close the connection.
+						//
+						// It's possible that some ADO.NET provider will not allow two open IDbCommands for the same connection,
+						// in that case we'll have to rewrite the code to use some sort of lock on IBatcher.
+						SqlString idselectSql = new SqlString(SqlIdentitySelect(IdentifierColumnNames[0], GetTableName(0)));
+						IDbCommand idselect = session.Batcher.PrepareCommand(CommandType.Text, idselectSql, SqlTypeFactory.NoTypes);
+						IDataReader rs = null;
+
+						try
+						{
+							rs = session.Batcher.ExecuteReader(idselect);
+							return GetGeneratedIdentity(obj, session, rs);
+						}
+						finally
+						{
+							session.Batcher.CloseCommand(idselect, rs);
+						}
 					}
 					finally
 					{
 						session.Batcher.CloseCommand(statement, null);
-					}
-
-					// Fetch the generated id in a separate query
-					SqlString idselectSql = new SqlString(SqlIdentitySelect(IdentifierColumnNames[0], GetTableName(0)));
-					IDbCommand idselect = session.Batcher.PrepareCommand(CommandType.Text, idselectSql, SqlTypeFactory.NoTypes);
-					IDataReader rs = null;
-					try
-					{
-						rs = session.Batcher.ExecuteReader(idselect);
-						return GetGeneratedIdentity(obj, session, rs);
-					}
-					finally
-					{
-						session.Batcher.CloseCommand(idselect, rs);
 					}
 				}
 			}
