@@ -1717,17 +1717,6 @@ namespace NHibernate.Cfg
 					model.CacheRegionName = (regionNode != null) ? regionNode.Value : null;
 				}
 			}
-
-			// Code below is not present in H2.1, why was it added?
-			if (!model.IsInverse)
-			{
-				if (!model.IsOneToMany) // no foreign key for a one-to-many
-				{
-					model.Element.CreateForeignKey();
-				}
-
-				model.Key.CreateForeignKeyOfClass(model.Owner.MappedClass);
-			}
 		}
 
 		public static void BindRoot(XmlDocument doc, Mappings mappings)
