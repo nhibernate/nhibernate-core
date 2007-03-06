@@ -151,6 +151,27 @@ namespace NHibernate.Expression
 			return new InExpression(propertyName, ary);
 		}
 
+#if NET_2_0
+		/// <summary>
+		/// Apply an "in" constraint to the named property
+		/// </summary>
+		/// <param name="propertyName">The name of the Property in the class.</param>
+		/// <param name="values">An <see cref="System.Collections.Generic.ICollection{T}" />
+		/// of values.</param>
+		/// <returns>An <see cref="InExpression" />.</returns>
+		public static AbstractCriterion In<T>(string propertyName, System.Collections.Generic.ICollection<T> values)
+		{
+			object[] array = new object[values.Count];
+			int i = 0;
+			foreach (T item in values)
+			{
+				array[i] = item;
+				i++;
+			}
+			return new InExpression(propertyName, array);
+		}
+#endif
+
 		/// <summary>
 		/// Apply an "is null" constraint to the named property
 		/// </summary>
