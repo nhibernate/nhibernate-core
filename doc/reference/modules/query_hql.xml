@@ -142,15 +142,15 @@ from Formula form full join form.Parameter param]]></programlisting>
             the associated objects are not returned directly in the query results. Instead, they may 
             be accessed via the parent object.
         </para>
-        
+
         <para>
-            Note that, in the current implementation, only one collection role may be fetched
-            in a query (everything else would be non-performant). Note also that the
-            <literal>fetch</literal> construct may not be used in queries called using
-            <literal>Enumerable()</literal>. Finally, note that
+            It is possible to create a cartesian product by join fetching more than one collection in
+            a query, so take care in this case. Join fetching multiple collection roles is also
+            disabled for bag mappings. Note also that the <literal>fetch</literal> construct may not
+            be used in queries called using <literal>Enumerable()</literal>. Finally, note that
             <literal>full join fetch</literal> and <literal>right join fetch</literal> are not meaningful.
         </para>
-            
+
     </sect1>
 
     <sect1 id="queryhql-select">
