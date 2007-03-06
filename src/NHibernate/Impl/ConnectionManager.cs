@@ -38,14 +38,13 @@ namespace NHibernate.Impl
 		public ConnectionManager(
 			ISessionImplementor session,
 			IDbConnection connection,
-			ConnectionReleaseMode connectionReleaseMode,
-			bool autoClose)
+			ConnectionReleaseMode connectionReleaseMode)
 		{
 			this.session = session;
 			this.connection = connection;
 			this.connectForNextOperation = connection == null;
 			this.connectionReleaseMode = connectionReleaseMode;
-			this.autoClose = autoClose;
+			this.autoClose = connection == null;
 		}
 
 		public void Connect()

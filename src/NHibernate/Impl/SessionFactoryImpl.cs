@@ -538,10 +538,10 @@ namespace NHibernate.Impl
 			return filter;
 		}
 
-		private ISession OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor interceptor,
-		                             ConnectionReleaseMode connectionReleaseMode)
+		private ISession OpenSession(IDbConnection connection, long timestamp, IInterceptor interceptor,
+									 ConnectionReleaseMode connectionReleaseMode)
 		{
-			return new SessionImpl(connection, this, autoClose, timestamp, interceptor, connectionReleaseMode);
+			return new SessionImpl(connection, this, timestamp, interceptor, connectionReleaseMode);
 		}
 
 		public ISession OpenSession()
@@ -558,7 +558,7 @@ namespace NHibernate.Impl
 		{
 			// specify false for autoClose because the user has passed in an IDbConnection
 			// and they assume responsibility for it.
-			return OpenSession(connection, false, long.MinValue, interceptor, settings.ConnectionReleaseMode);
+			return OpenSession(connection, long.MinValue, interceptor, settings.ConnectionReleaseMode);
 		}
 
 		public ISession OpenSession(IInterceptor interceptor)
@@ -566,12 +566,12 @@ namespace NHibernate.Impl
 			long timestamp = settings.CacheProvider.NextTimestamp();
 			// specify true for autoClose because NHibernate has responsibility for
 			// the IDbConnection.
-			return OpenSession(null, true, timestamp, interceptor, settings.ConnectionReleaseMode);
+			return OpenSession(null, timestamp, interceptor, settings.ConnectionReleaseMode);
 		}
 
 		public ISession OpenSession(IDbConnection connection, ConnectionReleaseMode connectionReleaseMode)
 		{
-			return OpenSession(connection, connection != null, Timestamper.Next(), interceptor, connectionReleaseMode);
+			return OpenSession(connection, Timestamper.Next(), interceptor, connectionReleaseMode);
 		}
 
 		public IEntityPersister GetEntityPersister(string className)

@@ -398,7 +398,6 @@ namespace NHibernate.Impl
 		internal SessionImpl(
 			IDbConnection connection,
 			SessionFactoryImpl factory,
-			bool autoClose,
 			long timestamp,
 			IInterceptor interceptor,
 			ConnectionReleaseMode connectionReleaseMode)
@@ -406,7 +405,7 @@ namespace NHibernate.Impl
 			if (interceptor == null)
 				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
 
-			this.connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, autoClose);
+			this.connectionManager = new ConnectionManager(this, connection, connectionReleaseMode);
 			this.interceptor = interceptor;
 			this.timestamp = timestamp;
 			this.factory = factory;
