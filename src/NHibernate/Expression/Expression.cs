@@ -153,13 +153,14 @@ namespace NHibernate.Expression
 
 #if NET_2_0
 		/// <summary>
-		/// Apply an "in" constraint to the named property
+		/// Apply an "in" constraint to the named property. This is the generic equivalent
+		/// of <see cref="In(string, ICollection)" />, renamed to avoid ambiguity.
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="values">An <see cref="System.Collections.Generic.ICollection{T}" />
 		/// of values.</param>
 		/// <returns>An <see cref="InExpression" />.</returns>
-		public static AbstractCriterion In<T>(string propertyName, System.Collections.Generic.ICollection<T> values)
+		public static AbstractCriterion InG<T>(string propertyName, System.Collections.Generic.ICollection<T> values)
 		{
 			object[] array = new object[values.Count];
 			int i = 0;
