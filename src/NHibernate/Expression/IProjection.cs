@@ -11,9 +11,9 @@ namespace NHibernate.Expression
 		/// </summary>
 		/// <param name="criteria"></param>
 		/// <param name="position"></param>
-		/// <param name="cirteriaQuery"></param>
+		/// <param name="criteriaQuery"></param>
 		/// <returns></returns>
-		SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery cirteriaQuery);
+		SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery);
 
 		/// <summary>
 		/// Render the SQL Fragment to be used in the Group By Clause.

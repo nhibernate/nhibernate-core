@@ -234,9 +234,9 @@ namespace NHibernate
 		IQuery SetParameterList(string name, IEnumerable vals);
 
 		/// <summary>
-		/// Bind the property values of the given object to named paramters of the query,
+		/// Bind the property values of the given object to named parameters of the query,
 		/// matching property names with parameter names and mapping property types to
-		/// Hibernate types using hueristics.
+		/// Hibernate types using heuristics.
 		/// </summary>
 		/// <param name="obj">Any PONO</param>
 		IQuery SetProperties(object obj);

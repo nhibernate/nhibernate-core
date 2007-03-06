@@ -47,7 +47,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Construct a unique identifier for an entity class instace
+		/// Construct a unique identifier for an entity class instance
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="p"></param>
