@@ -20,16 +20,14 @@ namespace NHibernate.Impl
 		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionManager));
 
 		[NonSerialized]
-		private bool connectForNextOperation;
-
-		[NonSerialized]
 		private IDbConnection connection;
+		// Whether we own the connection, i.e. connect and disconnect automatically.
+		private bool ownConnection;
 
 		[NonSerialized]
 		private ITransaction transaction;
 
 		private readonly ISessionImplementor session;
-		private bool autoClose;
 		private readonly ConnectionReleaseMode connectionReleaseMode;
 
 		[NonSerialized]
@@ -37,20 +35,13 @@ namespace NHibernate.Impl
 
 		public ConnectionManager(
 			ISessionImplementor session,
-			IDbConnection connection,
+			IDbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode)
 		{
 			this.session = session;
-			this.connection = connection;
-			this.connectForNextOperation = connection == null;
+			this.connection = suppliedConnection;
 			this.connectionReleaseMode = connectionReleaseMode;
-			this.autoClose = connection == null;
-		}
-
-		public void Connect()
-		{
-			connection = session.Factory.OpenConnection();
-			connectForNextOperation = false;
+			this.ownConnection = suppliedConnection == null;
 		}
 
 		public bool IsInActiveTransaction
@@ -60,7 +51,7 @@ namespace NHibernate.Impl
 
 		public bool IsConnected
 		{
-			get { return connection != null || connectForNextOperation; }
+			get { return connection != null || ownConnection; }
 		}
 
 		public void Reconnect()
@@ -70,11 +61,10 @@ namespace NHibernate.Impl
 				throw new HibernateException("session already connected");
 			}
 
-			connectForNextOperation = true;
-			autoClose = true;
+			ownConnection = true;
 		}
 
-		public void Reconnect(IDbConnection conn)
+		public void Reconnect(IDbConnection suppliedConnection)
 		{
 			if (IsConnected)
 			{
@@ -82,8 +72,8 @@ namespace NHibernate.Impl
 			}
 
 			log.Debug("reconnecting session");
-			connection = conn;
-			autoClose = false;
+			connection = suppliedConnection;
+			ownConnection = false;
 		}
 
 		public IDbConnection Close()
@@ -93,7 +83,7 @@ namespace NHibernate.Impl
 			// need to ensure it gets called.
 			if (connection == null)
 			{
-				connectForNextOperation = false;
+				ownConnection = false;
 				return null;
 			}
 			else
@@ -102,45 +92,47 @@ namespace NHibernate.Impl
 			}
 		}
 
+		private IDbConnection DisconnectSuppliedConnection()
+		{
+			if (connection == null)
+			{
+				throw new HibernateException("Session already disconnected");
+			}
+
+			IDbConnection c = connection;
+			connection = null;
+			return c;
+		}
+
+		private void DisconnectOwnConnection()
+		{
+			if (connection == null)
+			{
+				// No active connection
+				return;
+			}
+
+			if (session.Batcher != null)
+			{
+				session.Batcher.CloseCommands();
+			}
+
+			CloseConnection();
+		}
+
 		public IDbConnection Disconnect()
 		{
 			try
 			{
-				if (connectForNextOperation)
+				if (!ownConnection)
 				{
-					connectForNextOperation = false;
-					return null;
-				}
-				else if (connection == null)
-				{
-					throw new HibernateException("Session already disconnected");
+					return DisconnectSuppliedConnection();
 				}
 				else
 				{
-					if (session.Batcher != null)
-					{
-						session.Batcher.CloseCommands();
-					}
-
-					// Get a new reference to the the connection before closing
-					// it - and set the existing connection to null but don't
-					// close it yet.
-					IDbConnection c = connection;
-
-					if (autoClose)
-					{
-						// Let the SessionFactory close it and return null
-						// because the connection is internal to the Session
-						CloseConnection();
-						return null;
-					}
-					else
-					{
-						// Return the connection the user provided - at this point
-						// it has been dissociated from the NHibernate session.
-						connection = null;
-						return c;
-					}
+					DisconnectOwnConnection();
+					ownConnection = false;
+					return null;
 				}
 			}
 			finally
@@ -177,7 +169,7 @@ namespace NHibernate.Impl
 				{
 					// if the Session is responsible for managing the connection then make sure
 					// the connection is disposed of.
-					if (autoClose)
+					if (ownConnection)
 					{
 						CloseConnection();
 					}
@@ -189,16 +181,15 @@ namespace NHibernate.Impl
 		{
 			session.Factory.CloseConnection(connection);
 			connection = null;
-			connectForNextOperation = true;
 		}
 
 		public IDbConnection GetConnection()
 		{
 			if (connection == null)
 			{
-				if (connectForNextOperation)
+				if (ownConnection)
 				{
-					Connect();
+					connection = session.Factory.OpenConnection();
 				}
 				else if (session.IsOpen)
 				{
@@ -259,7 +250,7 @@ namespace NHibernate.Impl
 
 		private void AggressiveRelease()
 		{
-			if (autoClose)
+			if (ownConnection)
 			{
 				log.Debug("aggressively releasing database connection");
 				if (connection != null)
@@ -286,8 +277,7 @@ namespace NHibernate.Impl
 
 		private ConnectionManager(SerializationInfo info, StreamingContext context)
 		{
-			this.connectForNextOperation = false;
-			this.autoClose = info.GetBoolean("autoClose");
+			this.ownConnection = info.GetBoolean("ownConnection");
 			this.session = (ISessionImplementor) info.GetValue("session", typeof(ISessionImplementor));
 			this.connectionReleaseMode =
 				(ConnectionReleaseMode) info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
@@ -297,7 +287,7 @@ namespace NHibernate.Impl
 			Flags = SecurityPermissionFlag.SerializationFormatter)]
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			info.AddValue("autoClose", autoClose);
+			info.AddValue("ownConnection", ownConnection);
 			info.AddValue("session", session, typeof(ISessionImplementor));
 			info.AddValue("connectionReleaseMode", connectionReleaseMode, typeof(ConnectionReleaseMode));
 		}
@@ -365,7 +355,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				if (autoClose)
+				if (ownConnection)
 				{
 					return connection == null && !session.Batcher.HasOpenResources;
 				}
