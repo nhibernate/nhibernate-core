@@ -131,7 +131,7 @@ namespace NHibernate
 		/// End the <c>ISession</c> by disconnecting from the ADO.NET connection and cleaning up.
 		/// </summary>
 		/// <remarks>
-		/// It is not strickly necessary to <c>Close()</c> the <c>ISession</c> but you must
+		/// It is not strictly necessary to <c>Close()</c> the <c>ISession</c> but you must
 		/// at least <c>Disconnect()</c> it.
 		/// </remarks>
 		/// <returns>The connection provided by the application or <see langword="null" /></returns>
@@ -337,7 +337,7 @@ namespace NHibernate
 		/// Remove a persistent instance from the datastore.
 		/// </summary>
 		/// <remarks>
-		/// The argument may be an instance associated wit hthe receiving <c>ISession</c> or a
+		/// The argument may be an instance associated with the receiving <c>ISession</c> or a
 		/// transient instance with an identifier associated with existing persistent state.
 		/// </remarks>
 		/// <param name="obj">The instance to be removed</param>
@@ -560,8 +560,8 @@ namespace NHibernate
 		/// <remarks>
 		/// If a new underlying transaction is required, begin the transaction. Otherwise
 		/// continue the new work in the context of the existing underlying transaction.
-		/// The class of the returned <c>Trasnsaction</c> object is determined by the property
-		/// <c>hibernate.transaction_factory</c>
+		/// The class of the returned <see cref="ITransaction" /> object is determined by
+		/// the property <c>hibernate.transaction_factory</c>
 		/// </remarks>
 		/// <returns>A transaction instance</returns>
 		ITransaction BeginTransaction();
@@ -614,9 +614,9 @@ namespace NHibernate
 		/// mapping file.
 		/// </summary>
 		/// <param name="queryName">The name of a query defined externally.</param>
-		/// <returns>An <see cref="IQuery"/> fro a named query string.</returns>
+		/// <returns>An <see cref="IQuery"/> from a named query string.</returns>
 		/// <remarks>
-		/// The query can be either in <c>hql</c> or <c>sql</c> format.
+		/// The query can be either in <c>HQL</c> or <c>SQL</c> format.
 		/// </remarks>
 		IQuery GetNamedQuery(string queryName);
 
@@ -626,7 +626,7 @@ namespace NHibernate
 		/// <param name="sql">a query expressed in SQL</param>
 		/// <param name="returnAlias">a table alias that appears inside <c>{}</c> in the SQL string</param>
 		/// <param name="returnClass">the returned persistent class</param>
-		/// <returns></returns>
+		/// <returns>An <see cref="IQuery"/> from the SQL string</returns>
 		[Obsolete("Use CreateSQLQuery().AddEntity()")]
 		IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass);
 
@@ -636,7 +636,7 @@ namespace NHibernate
 		/// <param name="sql">a query expressed in SQL</param>
 		/// <param name="returnAliases">an array of table aliases that appear inside <c>{}</c> in the SQL string</param>
 		/// <param name="returnClasses">the returned persistent classes</param>
-		/// <returns></returns>
+		/// <returns>An <see cref="IQuery"/> from the SQL string</returns>
 		[Obsolete("Use CreateSQLQuery().AddEntity()")]
 		IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses);
 
@@ -713,7 +713,8 @@ namespace NHibernate
 		/// call.
 		/// </summary>
 		/// <returns>
-		/// A list of all the results of all the queries.
+		/// An <see cref="IMultiQuery"/> that can return
+		/// a list of all the results of all the queries.
 		/// Note that each query result is itself usually a list.
 		/// </returns>
 		IMultiQuery CreateMultiQuery();

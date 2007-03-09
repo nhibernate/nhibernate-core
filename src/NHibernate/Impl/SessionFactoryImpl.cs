@@ -556,16 +556,12 @@ namespace NHibernate.Impl
 
 		public ISession OpenSession(IDbConnection connection, IInterceptor interceptor)
 		{
-			// specify false for autoClose because the user has passed in an IDbConnection
-			// and they assume responsibility for it.
 			return OpenSession(connection, long.MinValue, interceptor, settings.ConnectionReleaseMode);
 		}
 
 		public ISession OpenSession(IInterceptor interceptor)
 		{
 			long timestamp = settings.CacheProvider.NextTimestamp();
-			// specify true for autoClose because NHibernate has responsibility for
-			// the IDbConnection.
 			return OpenSession(null, timestamp, interceptor, settings.ConnectionReleaseMode);
 		}
 
