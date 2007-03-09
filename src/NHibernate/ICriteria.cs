@@ -236,6 +236,7 @@ namespace NHibernate
 		/// <para>
 		/// The individual components contained within the given <see cref="IProjection"/>
 		/// determines the overall "shape" of the query result.
+		/// </para>
 		/// </remarks>
 		ICriteria SetProjection(IProjection projection);
 	}
