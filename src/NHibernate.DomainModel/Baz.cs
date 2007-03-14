@@ -433,7 +433,6 @@ namespace NHibernate.DomainModel
 			Bag.Add("duplicate");
 			Bag.Add("unique");
 
-			//TODO: SET - verify right implementation
 			Cached = new ListSet();
 
 			CompositeElement ce = new CompositeElement();
