@@ -25,7 +25,7 @@ namespace NHibernate.Impl
 		public override void AddToBatch(IExpectation expectation)
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			log.Info("Adding to batch");
+			log.Debug("Adding to batch:");
 			IDbCommand batchUpdate = CurrentCommand;
 			LogCommand(batchUpdate);
 
@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 
 		protected override void DoExecuteBatch(IDbCommand ps)
 		{
-			log.Info("Executing batch");
+			log.Debug("Executing batch");
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
 			int rowsAffected = currentBatch.ExecuteNonQuery();
