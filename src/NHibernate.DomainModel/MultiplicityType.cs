@@ -119,17 +119,38 @@ namespace NHibernate.DomainModel
 
 		public object Assemble(object cached, ISessionImplementor session, Object owner)
 		{
-			throw new InvalidOperationException();
+			if (cached == null)
+			{
+				return null;
+			}
+
+			object[] o = (object[]) cached;
+			Multiplicity m = new Multiplicity();
+			m.count = (int) o[0];
+			m.glarch = o[1] == null ?
+			           null :
+			           (GlarchProxy) session.InternalLoad(typeof(Glarch), o[1], false, false);
+			return m;
 		}
 
 		public object Disassemble(Object value, ISessionImplementor session)
 		{
-			throw new InvalidOperationException();
+			if (value == null)
+			{
+				return null;
+			}
+
+			Multiplicity m = (Multiplicity) value;
+			return new object[]
+				{
+					m.count,
+					session.GetEntityIdentifierIfNotUnsaved(m.glarch)
+				};
 		}
 
 		public object Replace(object original, object target, ISessionImplementor session, object owner)
 		{
-			return DeepCopy(original);
+			return Assemble(Disassemble(original, session), session, owner);
 		}
 	}
 }
