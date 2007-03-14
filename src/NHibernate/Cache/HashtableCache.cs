@@ -20,19 +20,19 @@ namespace NHibernate.Cache
 		/// <summary></summary>
 		public object Get(object key)
 		{
-			return hashtable[key.ToString()];
+			return hashtable[key];
 		}
 
 		/// <summary></summary>
 		public void Put(object key, object value)
 		{
-			hashtable[key.ToString()] = value;
+			hashtable[key] = value;
 		}
 
 		/// <summary></summary>
 		public void Remove(object key)
 		{
-			hashtable.Remove(key.ToString());
+			hashtable.Remove(key);
 		}
 
 		/// <summary></summary>
