@@ -473,6 +473,11 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return null; }
 		}
 
+		public bool IsInstance(object entity)
+		{
+			return true;
+		}
+
 		#endregion
 	}
 

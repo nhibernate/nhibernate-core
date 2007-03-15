@@ -20,7 +20,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void HigherLevelIndexDefinitionInColumnTag()
 		{
-			string[] commands = cfg.GenerateSchemaCreationScript(dialect);
+			string[] commands = cfg.GenerateSchemaCreationScript(Dialect);
 
 			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_name"),
 			              "Unable to locate indx_a_name index creation");
@@ -29,7 +29,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void HigherLevelIndexDefinitionInPropertyTag()
 		{
-			string[] commands = cfg.GenerateSchemaCreationScript(dialect);
+			string[] commands = cfg.GenerateSchemaCreationScript(Dialect);
 
 			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_anothername"),
 			              "Unable to locate indx_a_anothername index creation");
@@ -57,7 +57,7 @@ namespace NHibernate.Test.Legacy
 				t.Commit();
 			}
 
-			if (dialect is FirebirdDialect)
+			if (Dialect is FirebirdDialect)
 			{
 				// Firebird has problems deleting the map contents
 				ExecuteStatement("delete from Map");

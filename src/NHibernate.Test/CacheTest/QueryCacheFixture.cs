@@ -44,7 +44,7 @@ namespace NHibernate.Test.CacheTest
 				// Run a second time, just to test the query cache
 				object result = s
 					.CreateQuery("from Simple s where s = :s or s.Name = :name or s.Address = :address")
-					.SetEntity("s", simple)
+					.SetEntity("s", s.Load(typeof(Simple), 1L))
 					.SetString("name", null)
 					.SetString("address", null)
 					.SetCacheable(true)

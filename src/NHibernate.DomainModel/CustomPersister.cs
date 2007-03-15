@@ -387,6 +387,11 @@ namespace NHibernate.DomainModel
 			get { return factory; }
 		}
 
+		public bool IsInstance(object entity)
+		{
+			return entity is Custom;
+		}
+
 		#endregion
 	}
 }

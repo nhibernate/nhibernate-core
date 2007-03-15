@@ -170,14 +170,10 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Generates the string to drop the table using the MsSql syntax
-		/// <code>
-		/// if exists (select * from dbo.sysobjects where id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-		/// drop table {0}
-		/// </code>
+		/// Generates the string to drop the table using SQL Server syntax.
 		/// </summary>
 		/// <param name="tableName">The name of the table to drop.</param>
-		/// <returns>The SQL with the <c>tableName</c> inserted.</returns>
+		/// <returns>The SQL with the <paramref name="tableName" /> inserted.</returns>
 		public override string GetDropTableString(string tableName)
 		{
 			string dropTable =

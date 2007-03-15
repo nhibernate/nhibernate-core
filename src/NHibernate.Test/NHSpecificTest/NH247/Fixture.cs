@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 
 		private void AssertDialect()
 		{
-			if (!(dialect is FirebirdDialect))
+			if (!(Dialect is FirebirdDialect))
 				Assert.Ignore("This test is specific for FirebirdDialect");
 		}
 

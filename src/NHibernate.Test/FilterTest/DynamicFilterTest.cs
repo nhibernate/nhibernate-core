@@ -489,27 +489,6 @@ namespace NHibernate.Test.FilterTest
 			}
 		}
 
-		protected override void Configure(Configuration cfg)
-		{
-			cfg.SetProperty(Environment.MaxFetchDepth, "1");
-			//		cfg.setProperty( Environment.MAX_FETCH_DEPTH, "2" );
-			//cfg.SetProperty(Environment.GenerateStatistics, "true");
-			cfg.SetProperty(Environment.UseQueryCache, "true");
-
-			foreach (PersistentClass clazz in cfg.ClassMappings)
-			{
-				if (!clazz.IsInherited)
-				{
-					cfg.SetCacheConcurrencyStrategy(clazz.MappedClass, "nonstrict-read-write");
-				}
-			}
-
-			foreach (Mapping.Collection coll in cfg.CollectionMappings)
-			{
-				cfg.SetCacheConcurrencyStrategy(coll.Role, "nonstrict-read-write");
-			}
-		}
-
 		private class TestData
 		{
 			public long steveId;

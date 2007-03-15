@@ -155,7 +155,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			long id = 1L;
 
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				id = (long) s.Save(new TrivialClass());
 			}
@@ -191,7 +191,7 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				s.Save(sm);
 			}
@@ -222,7 +222,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 			object sid;
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				mid = s.Save(multi);
 				sid = s.Save(simp);
@@ -237,7 +237,7 @@ namespace NHibernate.Test.Legacy
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
 			object smid;
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				smid = s.Save(sm);
 			}
@@ -453,7 +453,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void MultiTableCollections()
 		{
-			if (dialect is MySQLDialect)
+			if (Dialect is MySQLDialect)
 			{
 				return;
 			}
@@ -469,7 +469,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 			object sid;
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				mid = s.Save(multi);
 				sid = s.Save(simp);
@@ -491,7 +491,7 @@ namespace NHibernate.Test.Legacy
 			dict.Add(multi);
 			dict.Add(simp);
 			object id;
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				id = s.Save(ls);
 			}
@@ -532,7 +532,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void MultiTableManyToOne()
 		{
-			if (dialect is MySQLDialect)
+			if (Dialect is MySQLDialect)
 			{
 				return;
 			}
@@ -548,7 +548,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				mid = s.Save(multi);
 			}
@@ -563,7 +563,7 @@ namespace NHibernate.Test.Legacy
 			ls.YetAnother = ls;
 			ls.Name = "Less Simple";
 			object id;
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				id = s.Save(ls);
 			}

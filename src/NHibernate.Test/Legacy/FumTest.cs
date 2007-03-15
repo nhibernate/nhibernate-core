@@ -605,7 +605,7 @@ namespace NHibernate.Test.Legacy
 			{
 				s.CreateQuery("select fum1.Fo from fum1 in class Fum where fum1.Fo.FumString is not null").List();
 				s.CreateQuery("from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString").List();
-				if (dialect.SupportsSubSelects)
+				if (Dialect.SupportsSubSelects)
 				{
 					s.CreateQuery("from fum1 in class Fum where exists elements(fum1.Friends)").List();
 					s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").List();

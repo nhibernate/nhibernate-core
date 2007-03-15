@@ -31,10 +31,10 @@ namespace NHibernate.Test.Legacy
 			IEnumerator iter = s.CreateQuery("select max(s.Count) from s in class Simple").Enumerable()
 				.GetEnumerator();
 
-			if (dialect is MySQLDialect
+			if (Dialect is MySQLDialect
 			    // Added two dialects below for NH
-			    || dialect is MsSql2000Dialect
-			    || dialect is PostgreSQLDialect)
+				|| Dialect is MsSql2000Dialect
+				|| Dialect is PostgreSQLDialect)
 			{
 				Assert.IsTrue(iter.MoveNext());
 				Assert.IsNull(iter.Current);
@@ -58,7 +58,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(1,
 			                s.CreateQuery("select count(*) from s in class Simple").List().Count);
 
-			if (dialect is Oracle9Dialect)
+			if (Dialect is Oracle9Dialect)
 			{
 				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
 				IList rset = s.CreateQuery("select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple").List();
@@ -120,7 +120,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Broken()
 		{
-			if (dialect is Oracle9Dialect) return;
+			if (Dialect is Oracle9Dialect)
+				return;
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -246,7 +247,7 @@ namespace NHibernate.Test.Legacy
 
 		private string LocateAppropriateDialectFunctionNameForAliasTest()
 		{
-			foreach (DictionaryEntry de in dialect.Functions)
+			foreach (DictionaryEntry de in Dialect.Functions)
 			{
 				ISQLFunction function = (ISQLFunction) de.Value;
 				if (!function.HasArguments && !function.HasParenthesesIfNoArguments)
@@ -411,7 +412,7 @@ namespace NHibernate.Test.Legacy
 				simple.Name = "Simple 1";
 				s.Save(simple, (long) 10);
 
-				if (dialect is DB2Dialect)
+				if (Dialect is DB2Dialect)
 				{
 					s.CreateQuery("from s in class Simple where repeat('foo', 3) = 'foofoofoo'").List();
 					s.CreateQuery("from s in class Simple where repeat(s.Name, 3) = 'foofoofoo'").List();
@@ -424,7 +425,7 @@ namespace NHibernate.Test.Legacy
 				                	"from s in class Simple where not( upper(s.Name)='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar')")
 				                	.List().Count);
 
-				if (!(dialect is MySQLDialect) && !(dialect is SybaseDialect) && !(dialect is MsSql2000Dialect))
+				if (!(Dialect is MySQLDialect) && !(Dialect is SybaseDialect) && !(Dialect is MsSql2000Dialect))
 				{
 					// Dialect.MckoiDialect and Dialect.InterbaseDialect also included
 					// My Sql has a funny concatenation operator
@@ -432,14 +433,14 @@ namespace NHibernate.Test.Legacy
 					                s.CreateQuery("from s in class Simple where lower(s.Name || ' foo')='simple 1 foo'").List().Count);
 				}
 
-				if ((dialect is SybaseDialect))
+				if ((Dialect is SybaseDialect))
 				{
 					Assert.AreEqual(1,
 					                s.CreateQuery("from s in class Simple where lower( concat(s.Name, ' foo') ) = 'simple 1 foo'").List
 					                	().Count);
 				}
 
-				if ((dialect is MsSql2000Dialect))
+				if ((Dialect is MsSql2000Dialect))
 				{
 					Assert.AreEqual(1,
 					                s.CreateQuery("from s in class Simple where lower( s.Name + ' foo' ) = 'simple 1 foo'").List().
@@ -475,7 +476,7 @@ namespace NHibernate.Test.Legacy
 
 				s.Save(min, (long) 30);
 
-				if (dialect.SupportsSubSelects)
+				if (Dialect.SupportsSubSelects)
 				{
 					Assert.AreEqual(2,
 					                s.CreateQuery(
@@ -500,7 +501,7 @@ namespace NHibernate.Test.Legacy
 				Assert.AreEqual(12, (Int64) enumer.Current); // changed cast from Int32 to Int64 (H3.2)
 				Assert.IsFalse(enumer.MoveNext());
 
-				if (dialect.SupportsSubSelects)
+				if (Dialect.SupportsSubSelects)
 				{
 					enumer =
 						s.CreateQuery("select s.Count from s in class Simple group by s.Count having s.Count = 12").Enumerable().

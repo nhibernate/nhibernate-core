@@ -22,8 +22,8 @@ namespace NHibernate.Test.SqlTest
 
 		private void CheckDialect()
 		{
-			if (!GetDialect().IsInstanceOfType(Dialect.Dialect.GetDialect()))
-				Assert.Ignore("This test is specific for " + GetDialect().ToString());
+			if (!GetDialect().IsInstanceOfType(Dialect))
+				Assert.Ignore("This test is specific for " + GetDialect());
 		}
 
 		protected override void Configure(Configuration cfg)

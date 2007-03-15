@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH345
 		[Test]
 		public void OrderByCompositeProperty()
 		{
-			if (dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect)
 			{
 				Assert.Ignore("This test fails on MS SQL 2000 because of SQL Server bug");
 			}

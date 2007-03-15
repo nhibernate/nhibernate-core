@@ -50,11 +50,13 @@ namespace NHibernate.Test.TypesTest
 			bcBinary.WithSize = null;
 
 			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
 			s.Save(bcBinary);
-			s.Flush();
+			t.Commit();
 			s.Close();
 
 			s = OpenSession();
+			t = s.BeginTransaction();
 			BinaryClass bcBinaryLoaded = (BinaryClass) s.Load(typeof(BinaryClass), 1);
 
 			Assert.IsNotNull(bcBinaryLoaded);
@@ -64,7 +66,7 @@ namespace NHibernate.Test.TypesTest
 			                "A property mapped as type=\"Byte[](length)\" with null byte[] value was not saved & loaded as null");
 
 			s.Delete(bcBinaryLoaded);
-			s.Flush();
+			t.Commit();
 			s.Close();
 		}
 
@@ -75,7 +77,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void InsertZeroLength()
 		{
-			if (typeof(Oracle9Dialect).IsInstanceOfType(dialect))
+			if (typeof(Oracle9Dialect).IsInstanceOfType(Dialect))
 			{
 				return;
 			}
@@ -86,11 +88,13 @@ namespace NHibernate.Test.TypesTest
 			bcBinary.WithSize = new byte[0];
 
 			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
 			s.Save(bcBinary);
-			s.Flush();
+			t.Commit();
 			s.Close();
 
 			s = OpenSession();
+			t = s.BeginTransaction();
 			BinaryClass bcBinaryLoaded = (BinaryClass) s.Load(typeof(BinaryClass), 1);
 
 			Assert.IsNotNull(bcBinaryLoaded);
@@ -100,7 +104,7 @@ namespace NHibernate.Test.TypesTest
 			                "A property mapped as type=\"Byte[](length)\" with a byte[0] value was not saved & loaded as byte[0]");
 
 			s.Delete(bcBinaryLoaded);
-			s.Flush();
+			t.Commit();
 			s.Close();
 		}
 
@@ -115,11 +119,13 @@ namespace NHibernate.Test.TypesTest
 			BinaryClass expected = Create(1);
 
 			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
 			s.Save(bcBinary);
-			s.Flush();
+			t.Commit();
 			s.Close();
 
 			s = OpenSession();
+			t = s.BeginTransaction();
 			bcBinary = (BinaryClass) s.Load(typeof(BinaryClass), 1);
 
 			// make sure what was saved was expected
@@ -127,7 +133,7 @@ namespace NHibernate.Test.TypesTest
 			ObjectAssert.AreEqual(expected.WithSize, bcBinary.WithSize);
 
 			s.Delete(bcBinary);
-			s.Flush();
+			t.Commit();
 			s.Close();
 		}
 

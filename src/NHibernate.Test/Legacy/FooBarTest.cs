@@ -345,8 +345,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsFalse(NHibernateUtil.IsInitialized(baz.FooSet));
 				Assert.AreEqual(0, baz.FooSet.Count);
 
-				// TODO: batching doesn't work in NH yet
-				//Assert.IsTrue( NHibernateUtil.IsInitialized( baz2.FooSet ) ); //fooSet has batching enabled
+				Assert.IsTrue( NHibernateUtil.IsInitialized( baz2.FooSet ) ); //FooSet has batching enabled
 
 				Assert.AreEqual(1, baz2.FooSet.Count);
 
@@ -460,7 +459,7 @@ namespace NHibernate.Test.Legacy
 
 			s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooArray)").List();
 
-			if (dialect is DB2Dialect)
+			if (Dialect is DB2Dialect)
 			{
 				s.CreateQuery("from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'").List();
 				s.CreateQuery("from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'").List();
@@ -473,7 +472,7 @@ namespace NHibernate.Test.Legacy
 					.List();
 			}
 
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				s.CreateQuery("select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)").Enumerable();
 			}
@@ -510,9 +509,9 @@ namespace NHibernate.Test.Legacy
 			foo.TheFoo.TheFoo = foo;
 			foo.String = "fizard";
 
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
-				if (!(dialect is FirebirdDialect))
+				if (!(Dialect is FirebirdDialect))
 				{
 					list =
 						s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements")
@@ -615,7 +614,7 @@ namespace NHibernate.Test.Legacy
 				"select foo.TheFoo.TheFoo.TheFoo from foo in class Foo, foo2 in class Foo where"
 				+ " foo = foo2.TheFoo and not not ( not foo.String='fizard' )"
 				+ " and foo2.String between 'a' and (foo.TheFoo.String)"
-				+ (dialect is SQLiteDialect
+				+ (Dialect is SQLiteDialect
 				   	? " and ( foo2.String in ( 'fiz', 'blah') or 1=1 )"
 				   	: " and ( foo2.String in ( 'fiz', 'blah', foo.TheFoo.String, foo.String, foo2.String ) )")
 				).List();
@@ -802,7 +801,7 @@ namespace NHibernate.Test.Legacy
 				.List();
 
 			s.CreateQuery("from Baz baz inner join baz.CollectionComponent.Nested.Foos foo where foo.String is null").List();
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
 				s.CreateQuery("from Baz baz inner join baz.FooSet where '1' in (from baz.FooSet foo where foo.String is not null)").
 					List();
@@ -1090,7 +1089,7 @@ namespace NHibernate.Test.Legacy
 				Glarch g = new Glarch();
 				gid = s.Save(g);
 
-				if (dialect.SupportsSubSelects)
+				if (Dialect.SupportsSubSelects)
 				{
 					s.CreateFilter(baz.FooArray, "where size(this.Bytes) > 0").List();
 					s.CreateFilter(baz.FooArray, "where 0 in elements(this.Bytes)").List();
@@ -2103,8 +2102,6 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 
-			//TODO: some HSQLDialect specific code here
-
 			s = OpenSession();
 			list = s.CreateCriteria(typeof(Foo))
 				.Add(Expression.Expression.Eq("Integer", f.Integer))
@@ -2264,8 +2261,6 @@ namespace NHibernate.Test.Legacy
 					stuf.Foo = bar;
 					stuf.Id = 1234;
 
-					//TODO: http://jira.nhibernate.org:8080/browse/NH-88
-					//stuf.setProperty(TimeZone.getDefault() );
 					s.Save(more);
 					t.Commit();
 				}
@@ -2348,9 +2343,6 @@ namespace NHibernate.Test.Legacy
 					stuff.MoreStuff = more;
 					s.Load(stuff, stuff);
 
-					// TODO: figure out what to do with TimeZone
-					// http://jira.nhibernate.org:8080/browse/NH-88
-					//Assert.IsTrue( stuff.getProperty().equals( TimeZone.getDefault() ) );
 					Assert.AreEqual("More Stuff", stuff.MoreStuff.Name);
 					s.Delete("from ms in class MoreStuff");
 					s.Delete("from foo in class Foo");
@@ -2399,7 +2391,7 @@ namespace NHibernate.Test.Legacy
 			hql = "from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString";
 			s.CreateQuery(hql).List();
 
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
 				hql = "from fum1 in class Fum where size(fum1.Friends) = 0";
 				s.CreateQuery(hql).List();
@@ -2465,15 +2457,9 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(baz.Name, r.Name);
 			Assert.AreEqual(1, r.Count);
 
-			// TODO: figure out a better way
-			// in hibernate this is hard coded as 696969696969696938l which is very dependant upon 
-			// how the test are run because it is calculated on a global static variable...
-			// maybe a better way to test this would be to assume that the first 
-			//Assert.AreEqual( 696969696969696969L, r.Amount );
-
 			s.CreateQuery("select max( elements(bar.Baz.FooArray) ) from Bar as bar").List();
 			// the following test is disable for databases with no subselects... also for Interbase (not sure why) - comment from h2.0.3
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
 				s.CreateQuery("select count(*) from Baz as baz where 1 in indices(baz.FooArray)").List();
 				s.CreateQuery("select count(*) from Bar as bar where 'abc' in elements(bar.Baz.FooArray)").List();
@@ -2491,7 +2477,7 @@ namespace NHibernate.Test.Legacy
 					.List();
 
 				// TODO: figure out why this is throwing an ORA-1722 error
-				if (!(dialect is Oracle9Dialect))
+				if (!(Dialect is Oracle9Dialect))
 				{
 					s.CreateQuery(
 						"select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where 1 in (from g in bar.Component.Glarch.ProxyArray)")
@@ -2615,7 +2601,9 @@ namespace NHibernate.Test.Legacy
 			IList newList = new ArrayList();
 			newList.Add("value");
 			baz.StringList = newList;
-			enumer = s.CreateQuery("from foo in class Foo").Enumerable().GetEnumerator(); //no flush
+			
+			s.CreateQuery("from foo in class Foo").Enumerable().GetEnumerator(); //no flush
+			
 			baz.StringList = null;
 			enumer = s.CreateQuery("select baz.StringList.elements from baz in class Baz").Enumerable().GetEnumerator();
 			Assert.IsFalse(enumer.MoveNext());
@@ -2669,7 +2657,7 @@ namespace NHibernate.Test.Legacy
 			IList list;
 
 			// disable this for dbs with no subselects
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
 				list =
 					s.CreateQuery(
@@ -2832,10 +2820,10 @@ namespace NHibernate.Test.Legacy
 			s.Delete(baz.TopGlarchez['H']);
 
 			IDbCommand cmd = s.Connection.CreateCommand();
-			cmd.CommandText = "update " + dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
+			cmd.CommandText = "update " + Dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
 			int rows = cmd.ExecuteNonQuery();
 			Assert.AreEqual(1, rows);
-			Assert.AreEqual(1, s.Delete("from bar in class NHibernate.DomainModel.Bar"));
+			Assert.AreEqual(2, s.Delete("from bar in class NHibernate.DomainModel.Bar"));
 			FooProxy[] arr = baz.FooArray;
 			Assert.AreEqual(4, arr.Length);
 			Assert.AreEqual(foo.Key, arr[1].Key);
@@ -3154,7 +3142,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(bar.Abstracts.Contains(bar), "collection contains self");
 			Assert.AreSame(bar, bar.TheFoo, "association to self");
 
-			if (dialect is MySQLDialect)
+			if (Dialect is MySQLDialect)
 			{
 				// Break the self-reference cycle to avoid error when deleting the row
 				bar.TheFoo = null;
@@ -3866,7 +3854,7 @@ namespace NHibernate.Test.Legacy
 
 		private bool DialectSupportsCountDistinct
 		{
-			get { return !(dialect is SQLiteDialect); }
+			get { return !(Dialect is SQLiteDialect); }
 		}
 
 		[Test]
@@ -4746,7 +4734,7 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 
 			IDbCommand cmd = s.Connection.CreateCommand();
-			cmd.CommandText = "update " + dialect.QuoteForTableName("foos") + " set long_ = -3";
+			cmd.CommandText = "update " + Dialect.QuoteForTableName("foos") + " set long_ = -3";
 			cmd.ExecuteNonQuery();
 
 			s.Refresh(foo);
@@ -4770,10 +4758,10 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			IDbCommand cmd = s.Connection.CreateCommand();
-			cmd.CommandText = "update " + dialect.QuoteForTableName("foos") + " set long_ = -3";
+			cmd.CommandText = "update " + Dialect.QuoteForTableName("foos") + " set long_ = -3";
 			cmd.ExecuteNonQuery();
 			s.Refresh(foo);
-			Assert.AreEqual((long) -3, foo.Long);
+			Assert.AreEqual(-3L, foo.Long);
 			s.Delete(foo);
 			s.Flush();
 			s.Close();
@@ -4795,7 +4783,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			foo = (FooProxy) s.Load(typeof(Foo), foo.Key);
 
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
 				foo.Bytes = GetBytes("osama");
 				Assert.AreEqual(1,
@@ -4919,7 +4907,7 @@ namespace NHibernate.Test.Legacy
 					GetEnumerator();
 			Assert.IsTrue(e.MoveNext());
 
-			if (dialect.SupportsSubSelects && !(dialect is FirebirdDialect))
+			if (Dialect.SupportsSubSelects && !(Dialect is FirebirdDialect))
 			{
 				baz.FooArray[0] = null;
 				e = s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in baz.FooArray.elements")

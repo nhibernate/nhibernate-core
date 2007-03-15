@@ -164,8 +164,7 @@ namespace NHibernate.Type
 
 		public override bool IsAlwaysDirtyChecked
 		{
-			// TODO H3: get { return ignoreNotFound; }
-			get { return false; }
+			get { return _isIgnoreNotFound; }
 		}
 
 		public override bool IsDirty(object old, object current, ISessionImplementor session)

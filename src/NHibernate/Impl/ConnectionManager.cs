@@ -78,6 +78,16 @@ namespace NHibernate.Impl
 
 		public IDbConnection Close()
 		{
+			if (session.Batcher != null)
+			{
+				session.Batcher.Dispose();
+			}
+
+			if (transaction != null)
+			{
+				transaction.Dispose();
+			}
+
 			// When the connection is null nothing needs to be done - if there
 			// is a value for connection then Disconnect() was not called - so we
 			// need to ensure it gets called.
@@ -143,36 +153,6 @@ namespace NHibernate.Impl
 				{
 					// We don't know the state of the transaction
 					session.AfterTransactionCompletion(false, null);
-				}
-			}
-		}
-
-		// This method does not implement IDisposable.Dispose entirely correctly
-		// so the class is not declared to implement IDisposable.
-		public void Dispose()
-		{
-			if (transaction != null)
-			{
-				transaction.Dispose();
-			}
-
-			// we are not reusing the Close() method because that sets the connection==null
-			// during the Close() - if the connection is null we can't get to it to Dispose
-			// of it.
-			if (connection != null)
-			{
-				if (connection.State == ConnectionState.Closed)
-				{
-					log.Warn("finalizing unclosed session with closed connection");
-				}
-				else
-				{
-					// if the Session is responsible for managing the connection then make sure
-					// the connection is disposed of.
-					if (ownConnection)
-					{
-						CloseConnection();
-					}
 				}
 			}
 		}

@@ -314,7 +314,7 @@ namespace NHibernate.Transaction
 					trans.Dispose();
 				}
 
-				if (!committed && !rolledBack && session != null)
+				if (IsActive && session != null)
 				{
 					// Assume we are rolled back
 					AfterTransactionCompletion(false);

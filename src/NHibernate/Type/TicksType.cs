@@ -111,12 +111,6 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
-		/// <summary></summary>
 		public override bool HasNiceEquals
 		{
 			get { return true; }

@@ -229,7 +229,7 @@ namespace NHibernate.Test.Legacy
 			m = (Master) enumer.Current;
 			Assert.AreSame(m, m.OtherMaster);
 
-			if (dialect is MySQLDialect)
+			if (Dialect is MySQLDialect)
 			{
 				m.OtherMaster = null;
 				s.Flush();
@@ -283,7 +283,7 @@ namespace NHibernate.Test.Legacy
 			              	.UniqueResult();
 			Assert.IsNull(m2);
 
-			if (dialect is MySQLDialect)
+			if (Dialect is MySQLDialect)
 			{
 				m1.OtherMaster = null;
 				s.Flush();
@@ -355,7 +355,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
 				s.CreateQuery("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM d in m.Details.elements WHERE NOT d.I=5 )").Enumerable
 					();
@@ -390,7 +390,7 @@ namespace NHibernate.Test.Legacy
 			master.AddDetail(d1);
 			master.AddDetail(d2);
 
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
 				string hql = "from d in class NHibernate.DomainModel.Detail, m in class NHibernate.DomainModel.Master " +
 				             "where m = d.Master and m.Outgoing.size = 0 and m.Incoming.size = 0";
@@ -640,7 +640,7 @@ namespace NHibernate.Test.Legacy
 			d2.Master = (m);
 			m.AddDetail(d1);
 			m.AddDetail(d2);
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				s.Save(d1);
 			}
@@ -732,7 +732,7 @@ namespace NHibernate.Test.Legacy
 			d2.Master = m;
 			m.AddDetail(d1);
 			m.AddDetail(d2);
-			if ((dialect is SybaseDialect) || (dialect is MsSql2000Dialect))
+			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
 			{
 				s.Save(d1);
 				s.Save(d2);

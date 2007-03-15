@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Reflection;
 using NHibernate.Cache;
-using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
@@ -27,7 +26,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanGetMultiQueryFromSecondLevelCache()
 		{
-			SetSecondLevelCacheAndCreateItems();
+			CreateItems();
 			//set the query in the cache
 			DoMutiQueryAndAssert();
 
@@ -65,7 +64,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParameters()
 		{
-			SetSecondLevelCacheAndCreateItems();
+			CreateItems();
 
 			DoMutiQueryAndAssert();
 
@@ -95,12 +94,10 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		private void SetSecondLevelCacheAndCreateItems()
+		private void CreateItems()
 		{
-			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
-			cfg.Properties[Environment.UseQueryCache] = "true";
-			sessions = cfg.BuildSessionFactory();
 			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				for (int i = 0; i < 150; i++)
 				{
@@ -108,7 +105,7 @@ namespace NHibernate.Test.QueryTest
 					item.Id = i;
 					s.Save(item);
 				}
-				s.Flush();
+				t.Commit();
 			}
 		}
 

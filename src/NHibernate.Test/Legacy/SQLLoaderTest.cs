@@ -34,7 +34,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void TS()
 		{
-			if (dialect is Oracle9Dialect)
+			if (Dialect is Oracle9Dialect)
 			{
 				return;
 			}
@@ -55,7 +55,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void TSNamed()
 		{
-			if (dialect is Oracle9Dialect)
+			if (Dialect is Oracle9Dialect)
 			{
 				return;
 			}
@@ -194,7 +194,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 
-			if (!(dialect is MySQLDialect))
+			if (!(Dialect is MySQLDialect))
 			{
 				IList list =
 					s.CreateSQLQuery("select {category.*}, {assignable.*} from Category {category}, \"assign able\" {assignable}",
@@ -285,7 +285,7 @@ namespace NHibernate.Test.Legacy
 		[Ignore("Escaping not implemented. Need to test with ODBC/OLEDB when implemented.")]
 		public void EscapedODBC()
 		{
-			if (dialect is MySQLDialect || dialect is PostgreSQLDialect) return;
+			if (Dialect is MySQLDialect || Dialect is PostgreSQLDialect) return;
 
 			ISession session = OpenSession();
 
@@ -335,8 +335,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void DoubleAliasing()
 		{
-			if (dialect is MySQLDialect) return;
-			if (dialect is FirebirdDialect) return; // See comment below
+			if (Dialect is MySQLDialect) return;
+			if (Dialect is FirebirdDialect) return; // See comment below
 
 			ISession session = OpenSession();
 
@@ -478,7 +478,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void FindSimpleBySQL()
 		{
-			if (dialect is MySQLDialect) return;
+			if (Dialect is MySQLDialect) return;
 			ISession session = OpenSession();
 			Category s = new Category();
 
@@ -505,7 +505,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void FindBySQLSimpleByDiffSessions()
 		{
-			if (dialect is MySQLDialect) return;
+			if (Dialect is MySQLDialect) return;
 
 			ISession session = OpenSession();
 			Category s = new Category();
@@ -537,7 +537,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void FindBySQLDiscriminatorSameSession()
 		{
-			if (dialect is MySQLDialect) return;
+			if (Dialect is MySQLDialect) return;
 
 			ISession session = OpenSession();
 			A savedA = new A();
@@ -581,7 +581,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void FindBySQLDiscriminatedDiffSessions()
 		{
-			if (dialect is MySQLDialect) return;
+			if (Dialect is MySQLDialect) return;
 
 			ISession session = OpenSession();
 			A savedA = new A();
@@ -612,7 +612,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void NamedSQLQuery()
 		{
-			if (dialect is MySQLDialect)
+			if (Dialect is MySQLDialect)
 			{
 				return;
 			}

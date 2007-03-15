@@ -25,21 +25,73 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void TestPrivateFieldAccess()
 		{
-			ISession s = OpenSession();
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				BasicClass bc = new BasicClass();
+				bc.Id = 1;
+				bc.ValueOfPrivateField = 5;
+				s.Save(bc);
+				tx.Commit();
+			}
 
-			BasicClass bc = new BasicClass();
-			bc.Id = 1;
-			bc.ValueOfPrivateField = 5;
-			s.Save(bc);
-			s.Flush();
-			s.Close();
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				BasicClass bc = (BasicClass) s.Load(typeof(BasicClass), 1);
+				Assert.AreEqual(5, bc.ValueOfPrivateField, "private field accessor");
+				s.Delete(bc);
+				tx.Commit();
+			}
+		}
 
-			s = OpenSession();
-			bc = (BasicClass) s.Load(typeof(BasicClass), 1);
-			Assert.AreEqual(5, bc.ValueOfPrivateField, "private field accessor");
-			s.Delete(bc);
-			s.Flush();
-			s.Close();
+		[Test]
+		public void Caching()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				BasicClass bc = new BasicClass();
+				bc.Id = 1;
+				s.Save(bc);
+				tx.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				BasicClass bc = (BasicClass) s.Load(typeof(BasicClass), 1);
+				s.Delete(bc);
+				tx.Commit();
+			}
+
+			{
+				int maxIndex = 2;
+				ISession[] s = new ISession[maxIndex];
+				ITransaction[] t = new ITransaction[maxIndex];
+				BasicClass[] bc = new BasicClass[maxIndex];
+
+				int index = 0;
+				int id = 1;
+
+				bc[index] = InsertBasicClass(id);
+				index++;
+
+				// make sure the previous insert went through
+				s[index] = OpenSession();
+				t[index] = s[index].BeginTransaction();
+
+				bc[index] = (BasicClass) s[index].Load(typeof(BasicClass), id);
+
+				Assert.IsNotNull(bc[index]);
+				AssertPropertiesEqual(bc[index - 1], bc[index]);
+
+				// VERIFY DELETE
+				s[index].Delete(bc[index]);
+				t[index].Commit();
+				s[index].Close();
+				AssertDelete(id);
+			}
 		}
 
 		[Test]
@@ -649,20 +701,23 @@ namespace NHibernate.Test.NHSpecificTest
 			originalCount = basicClass.StringBag.Count;
 
 			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			
 			ISession s2 = OpenSession();
+			ITransaction t2 = s2.BeginTransaction();
 
 			BasicClass bc = (BasicClass) s.Load(typeof(BasicClass), id);
 			BasicClass bc2 = (BasicClass) s2.Load(typeof(BasicClass), id);
 
 			bc2.StringBag.Add("refresh value");
-			s2.Flush();
+			t2.Commit();
 			s2.Close();
 
 			s.Refresh(bc);
 			Assert.AreEqual(originalCount + 1, bc.StringBag.Count, "was refreshed correctly");
 
 			s.Delete(bc);
-			s.Flush();
+			t.Commit();
 			s.Close();
 		}
 
@@ -755,6 +810,7 @@ namespace NHibernate.Test.NHSpecificTest
 		public void TestWrapArrayInListProperty()
 		{
 			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
 			BasicClass bc = new BasicClass();
 
 			int id = 1;
@@ -762,10 +818,11 @@ namespace NHibernate.Test.NHSpecificTest
 			bc.StringList = new string[] {"one", "two"};
 
 			s.Save(bc, id);
-			s.Flush();
+			t.Commit();
 			s.Close();
 
 			s = OpenSession();
+			t = s.BeginTransaction();
 			bc = (BasicClass) s.Load(typeof(BasicClass), id);
 
 			Assert.AreEqual(2, bc.StringList.Count, "should have saved to StringList from an array");
@@ -773,7 +830,7 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.IsTrue(bc.StringList.Contains("two"), "'two' should be in there");
 
 			s.Delete(bc);
-			s.Flush();
+			t.Commit();
 			s.Close();
 		}
 

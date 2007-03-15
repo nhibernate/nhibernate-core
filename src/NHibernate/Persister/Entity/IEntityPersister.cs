@@ -410,5 +410,16 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		/// <remarks>NHibernate-specific feature, not present in H2.1</remarks>
 		bool IsUnsavedVersion(object[] values);
+
+
+		/// <summary>
+		/// Determines whether the specified entity is an instance of the class
+		/// managed by this persister.
+		/// </summary>
+		/// <param name="entity">The entity.</param>
+		/// <returns>
+		/// 	<see langword="true"/> if the specified entity is an instance; otherwise, <see langword="false"/>.
+		/// </returns>
+		bool IsInstance(object entity);
 	}
 }

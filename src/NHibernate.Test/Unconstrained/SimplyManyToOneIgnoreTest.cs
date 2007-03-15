@@ -22,25 +22,35 @@ namespace NHibernate.Test.Unconstrained
 		public void Unconstrained()
 		{
 			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				SimplyB sb = new SimplyB(100);
 				SimplyA sa = new SimplyA("ralph");
 				sa.B = sb;
 				s.Save(sb);
 				s.Save(sa);
-				s.Flush();
+				t.Commit();
 			}
 
 			using (ISession s = OpenSession())
 			{
-				SimplyB sb = (SimplyB) s.Get(typeof(SimplyB), 100);
-				Assert.IsNotNull(sb);
-				s.Delete(sb);
-				s.Flush();
-				SimplyA sa = (SimplyA) s.Get(typeof(SimplyA), "ralph");
-				Assert.IsNull(sa.B);
-				s.Delete(sa);
-				s.Flush();
+				using (ITransaction t = s.BeginTransaction())
+				{
+					SimplyB sb = (SimplyB) s.Get(typeof(SimplyB), 100);
+					Assert.IsNotNull(sb);
+					s.Delete(sb);
+					t.Commit();
+				}
+
+				// Have to do this in a separate transaction, otherwise ISession.Get retrieves
+				// the cached version of SimplyA with its B being not null.
+				using (ITransaction t = s.BeginTransaction())
+				{
+					SimplyA sa = (SimplyA) s.Get(typeof(SimplyA), "ralph");
+					Assert.IsNull(sa.B);
+					s.Delete(sa);
+					t.Commit();
+				}
 			}
 		}
 	}

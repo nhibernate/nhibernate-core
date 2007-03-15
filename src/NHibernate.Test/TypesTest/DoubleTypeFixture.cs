@@ -21,7 +21,7 @@ namespace NHibernate.Test.TypesTest
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			if (dialect is Oracle9Dialect)
+			if (Dialect is Oracle9Dialect)
 			{
 				_values[0] = 1.5e20;
 				_values[1] = 1.2e-20;

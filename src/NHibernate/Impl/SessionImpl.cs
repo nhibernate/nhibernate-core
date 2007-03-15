@@ -109,9 +109,9 @@ namespace NHibernate.Impl
 
 		private readonly ISet nonExists;
 
-		private IInterceptor interceptor;
+		private readonly IInterceptor interceptor;
 
-		private ConnectionManager connectionManager;
+		private readonly ConnectionManager connectionManager;
 
 		// We keep scheduled insertions, deletions and updates in collections
 		// and actually execute them as part of the flush() process. Actually,
@@ -120,7 +120,7 @@ namespace NHibernate.Impl
 
 		// Object insertions and deletions have list semantics because they
 		// must happen in the right order so as to respect referential integrity
-		private ArrayList insertions;
+		private readonly ArrayList insertions;
 		private ArrayList deletions;
 
 		// updates are kept in a Map because successive flushes might need to add
@@ -128,15 +128,15 @@ namespace NHibernate.Impl
 		// Note: we *could* treat updates the same way we treat collection actions
 		// (discarding them at the end of a "shortcircuited" auto-flush) and then
 		// we would keep them in a list
-		private ArrayList updates;
+		private readonly ArrayList updates;
 
 		// Actually the semantics of the next three are really "Bag"
 		// Note that, unlike objects, collection insertions, updates,
 		// deletions are not really remembered between flushes. We
 		// just re-use the same Lists for convenience.
-		private ArrayList collectionCreations;
-		private ArrayList collectionUpdates;
-		private ArrayList collectionRemovals;
+		private readonly ArrayList collectionCreations;
+		private readonly ArrayList collectionUpdates;
+		private readonly ArrayList collectionRemovals;
 
 		[NonSerialized]
 		private ArrayList executions;
@@ -2749,11 +2749,22 @@ namespace NHibernate.Impl
 				{
 					throw new ObjectDeletedException("The object with that id was deleted", id, theClass);
 				}
+				if (!persister.IsInstance(old))
+				{
+					if (log.IsDebugEnabled)
+					{
+						log.DebugFormat(
+							"load request for {0} found matching entity in context, but the matched entity was of an inconsistent return type ({1}); returning null",
+							MessageHelper.InfoString(persister, id), old.GetType());
+					}
+					return null;
+				}
 				UpgradeLock(old, oldEntry, lockMode);
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("resolved object in session cache " + MessageHelper.InfoString(persister, id));
 				}
+
 				return old;
 			}
 			else
@@ -2773,7 +2784,21 @@ namespace NHibernate.Impl
 
 				if (entry != null)
 				{
-					return AssembleCacheEntry(entry, id, persister, optionalObject);
+					// TODO: This should really use persister.IsInstance or something like that
+					if (persister.MappedClass.IsAssignableFrom(entry.Subclass))
+					{
+						return AssembleCacheEntry(entry, id, persister, optionalObject);
+					}
+					else
+					{
+						if (log.IsDebugEnabled)
+						{
+							log.DebugFormat(
+								"load request for {0} found matching entity in context, but the matched entity was of an inconsistent return type ({1}); returning null",
+								MessageHelper.InfoString(persister, id), entry.Subclass);
+						}
+						return null;
+					}
 				}
 				else
 				{
@@ -4599,19 +4624,7 @@ namespace NHibernate.Impl
 			// know this call came through Dispose()
 			if (isDisposing)
 			{
-				if (batcher != null)
-				{
-					batcher.Dispose();
-				}
-
-				connectionManager.Dispose();
-
-				// it is important to call Cleanup because that marks the Session as being
-				// closed - the Session could still be associated with a Proxy that is attempting
-				// to be reassociated with another Session.  If the Proxy sees ISession.IsOpen==true
-				// then an exception will be thrown for trying to associate it with 2 open sessions.
-
-				Cleanup();
+				Close();
 			}
 
 			// free unmanaged resources here

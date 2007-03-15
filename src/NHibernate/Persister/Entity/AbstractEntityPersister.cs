@@ -2953,5 +2953,18 @@ namespace NHibernate.Persister.Entity
 		{
 			get { return null; }
 		}
+
+		/// <summary>
+		/// Determines whether the specified entity is an instance of the class
+		/// managed by this persister.
+		/// </summary>
+		/// <param name="entity">The entity.</param>
+		/// <returns>
+		/// 	<see langword="true"/> if the specified entity is an instance; otherwise, <see langword="false"/>.
+		/// </returns>
+		public bool IsInstance(object entity)
+		{
+			return mappedClass.IsInstanceOfType(entity);
+		}
 	}
 }

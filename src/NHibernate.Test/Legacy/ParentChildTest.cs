@@ -195,7 +195,7 @@ namespace NHibernate.Test.Legacy
 			baz.FooSet.Add(foo2);
 			baz.FooArray = new FooProxy[] {foo1};
 
-			LockMode lockMode = (dialect is DB2Dialect) ? LockMode.Read : LockMode.Upgrade;
+			LockMode lockMode = (Dialect is DB2Dialect) ? LockMode.Read : LockMode.Upgrade;
 
 			ICriteria crit = s.CreateCriteria(typeof(Baz));
 			crit.CreateCriteria("TopGlarchez")
@@ -290,7 +290,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void ClassWhere()
 		{
-			if (dialect is PostgreSQLDialect) return;
+			if (Dialect is PostgreSQLDialect)
+				return;
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -374,7 +375,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(1,
 			                s.CreateQuery("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").List().
 			                	Count);
-			if (dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects)
 			{
 				Assert.AreEqual(1,
 				                s.CreateQuery(

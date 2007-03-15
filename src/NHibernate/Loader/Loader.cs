@@ -944,7 +944,7 @@ namespace NHibernate.Loader
 			LockMode lockMode,
 			ISessionImplementor session)
 		{
-			if (!persister.MappedClass.IsAssignableFrom(obj.GetType()))
+			if (!persister.IsInstance(obj))
 			{
 				string errorMsg = string.Format("loading object was of wrong class [{0}]", obj.GetType().FullName);
 				throw new WrongClassException(errorMsg, key.Identifier, persister.MappedClass);

@@ -43,7 +43,7 @@ namespace NHibernate.Test
 		/// <param name="indexMatters">A boolean indicating if the List are compared at Index or by Contains.</param>
 		internal static void AreEqual(IList expected, IList actual, bool indexMatters)
 		{
-			Assert.AreEqual(expected.Count, actual.Count);
+			Assert.AreEqual(expected.Count, actual.Count, "list lengths differ");
 			for (int i = 0; i < expected.Count; i++)
 			{
 				if (indexMatters)

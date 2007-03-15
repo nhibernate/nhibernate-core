@@ -6,7 +6,12 @@ using log4net;
 using log4net.Config;
 using NHibernate.Cfg;
 using NHibernate.Connection;
+using NHibernate.Engine;
+using NHibernate.Impl;
+using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
+using NHibernate.Type;
+
 using NUnit.Framework;
 
 namespace NHibernate.Test
@@ -15,10 +20,10 @@ namespace NHibernate.Test
 	{
 		private const bool OutputDdl = false;
 		protected Configuration cfg;
-		protected Dialect.Dialect dialect;
 		protected ISessionFactory sessions;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
+		protected static readonly Dialect.Dialect Dialect = NHibernate.Dialect.Dialect.GetDialect();
 
 		private ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
@@ -50,12 +55,19 @@ namespace NHibernate.Test
 		{
 			try
 			{
-				ExportSchema();
+				Configure();
+				if (!AppliesTo(Dialect))
+				{
+					Assert.Ignore(GetType() + " does not apply to " + Dialect);
+				}
+
+				CreateSchema();
+				BuildSessionFactory();
 			}
 			catch (Exception e)
 			{
-				log.Error("Error while setting up the database schema, ignoring the fixture", e);
-				Assert.Ignore("Error while setting up the database schema: " + e);
+				log.Error("Error while setting up the test fixture", e);
+				throw;
 			}
 		}
 
@@ -72,6 +84,7 @@ namespace NHibernate.Test
 		public void TestFixtureTearDown()
 		{
 			DropSchema();
+			Cleanup();
 		}
 
 		protected virtual void OnSetUp()
@@ -133,21 +146,21 @@ namespace NHibernate.Test
 				return true;
 			}
 
-			int objectCount;
+			bool empty;
 			using (ISession s = sessions.OpenSession())
 			{
-				objectCount = s.CreateQuery("from System.Object o").List().Count;
+				IList objects = s.CreateQuery("from System.Object o").List();
+				empty = objects.Count == 0;
 			}
 
-			if (objectCount > 0)
+			if (!empty)
 			{
 				log.Error("Test case didn't clean up the database after itself, re-creating the schema");
 				DropSchema();
-				ExportSchema();
-				return false;
+				CreateSchema();
 			}
 
-			return true;
+			return empty;
 		}
 
 		private bool CheckConnectionsWereClosed()
@@ -162,89 +175,73 @@ namespace NHibernate.Test
 			return false;
 		}
 
-		private void ExportSchema()
-		{
-			ExportSchema(Mappings, MappingsAssembly);
-		}
-
-		protected virtual void Configure(Configuration cfg)
-		{
-		}
-
-		private void ExportSchema(IList files, string assemblyName)
+		private void Configure()
 		{
 			cfg = new Configuration();
+			Assembly assembly = Assembly.Load(MappingsAssembly);
 
-			for (int i = 0; i < files.Count; i++)
+			foreach (string file in Mappings)
 			{
-				cfg.AddResource(assemblyName + "." + files[i].ToString(), Assembly.Load(assemblyName));
+				cfg.AddResource(MappingsAssembly + "." + file, assembly);
 			}
 
 			Configure(cfg);
 
-			new SchemaExport(cfg).Create(OutputDdl, true);
+			ApplyCacheSettings(cfg);
+		}
 
+		private void CreateSchema()
+		{
+			new SchemaExport(cfg).Create(OutputDdl, true);
+		}
+
+		private void DropSchema()
+		{
+			new SchemaExport(cfg).Drop(OutputDdl, true);
+		}
+
+		private void BuildSessionFactory()
+		{
 			sessions = cfg.BuildSessionFactory();
-			dialect = Dialect.Dialect.GetDialect();
 			connectionProvider = sessions.ConnectionProvider as DebugConnectionProvider;
 		}
 
-		/// <summary>
-		/// Drops the schema that was built with the TestCase's Configuration.
-		/// </summary>
-		private void DropSchema()
+		private void Cleanup()
 		{
 			sessions.Close();
 			sessions = null;
-			dialect = null;
 			connectionProvider = null;
 			lastOpenedSession = null;
-
-			new SchemaExport(cfg).Drop(OutputDdl, true);
 			cfg = null;
 		}
 
-		public void ExecuteStatement(string sql)
+		public int ExecuteStatement(string sql)
 		{
-			ExecuteStatement(sql, true);
-		}
+			if (cfg == null)
+			{
+				cfg = new Configuration();
+			}
 
-		public void ExecuteStatement(string sql, bool error)
-		{
-			IDbConnection conn = null;
-			IDbTransaction tran = null;
-			try
+			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				if (cfg == null)
+				IDbConnection conn = prov.GetConnection();
+
+				try
 				{
-					cfg = new Configuration();
+					using (IDbTransaction tran = conn.BeginTransaction())
+					using (IDbCommand comm = conn.CreateCommand())
+					{
+						comm.CommandText = sql;
+						comm.Transaction = tran;
+						comm.CommandType = CommandType.Text;
+						int result = comm.ExecuteNonQuery();
+						tran.Commit();
+						return result;
+					}
 				}
-				IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-				conn = prov.GetConnection();
-				tran = conn.BeginTransaction();
-				IDbCommand comm = conn.CreateCommand();
-				comm.CommandText = sql;
-				comm.Transaction = tran;
-				comm.CommandType = CommandType.Text;
-				comm.ExecuteNonQuery();
-				tran.Commit();
-			}
-			catch (Exception)
-			{
-				if (tran != null)
+				finally
 				{
-					tran.Rollback();
-				}
-				if (error)
-				{
-					throw;
-				}
-			}
-			finally
-			{
-				if (conn != null)
-				{
-					conn.Close();
+					prov.CloseConnection(conn);
 				}
 			}
 		}
@@ -254,5 +251,57 @@ namespace NHibernate.Test
 			lastOpenedSession = sessions.OpenSession();
 			return lastOpenedSession;
 		}
+
+		protected void ApplyCacheSettings(Configuration configuration)
+		{
+			if (CacheConcurrencyStrategy == null)
+			{
+				return;
+			}
+
+			foreach (PersistentClass clazz in configuration.ClassMappings)
+			{
+				bool hasLob = false;
+				foreach (Mapping.Property prop in clazz.PropertyClosureCollection)
+				{
+					if (prop.Value.IsSimpleValue)
+					{
+						IType type = ((SimpleValue) prop.Value).Type;
+						if (type == NHibernateUtil.BinaryBlob)
+						{
+							hasLob = true;
+						}
+					}
+				}
+				if (!hasLob && !clazz.IsInherited)
+				{
+					configuration.SetCacheConcurrencyStrategy(clazz.MappedClass, CacheConcurrencyStrategy);
+				}
+			}
+
+			foreach (Mapping.Collection coll in configuration.CollectionMappings)
+			{
+				configuration.SetCacheConcurrencyStrategy(coll.Role, CacheConcurrencyStrategy);
+			}
+		}
+
+		#region Properties overridable by subclasses
+
+		protected virtual bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return true;
+		}
+
+		protected virtual void Configure(Configuration configuration)
+		{
+		}
+
+		protected virtual string CacheConcurrencyStrategy
+		{
+			get { return "nonstrict-read-write"; }
+			//get { return null; }
+		}
+
+		#endregion
 	}
 }

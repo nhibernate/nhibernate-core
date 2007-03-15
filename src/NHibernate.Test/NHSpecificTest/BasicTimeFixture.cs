@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		private void IgnoreOnMySQL()
 		{
-			if (dialect is MySQLDialect)
+			if (Dialect is MySQLDialect)
 			{
 				Assert.Ignore("MySQL requires TimeSpan for type='time'");
 			}

@@ -200,11 +200,7 @@ namespace NHibernate.Mapping
 		public override Property Version
 		{
 			get { return version; }
-			set
-			{
-				log.Debug("Hello world");
-				version = value;
-			}
+			set { version = value; }
 		}
 
 		/// <summary>
