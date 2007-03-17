@@ -4,6 +4,7 @@ using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Hql;
 using NHibernate.Transaction;
+using System;
 
 namespace NHibernate.Cfg
 {
@@ -44,6 +45,45 @@ namespace NHibernate.Cfg
 		// New in NH:
 		private IsolationLevel _isolationLevel;
 
+#if NET_2_0
+		/// <summary>
+		/// This is used to temporarily change the local (thread) batch size.
+		/// Useful in cases where temporary bulk data manipulation is about to occur.
+		/// </summary>
+		[ThreadStatic]
+		private static int? localBatchSize;
+
+		/// <summary>
+		/// Sets the size of the batch - locally.
+		/// This means that new session created from 
+		/// </summary>
+		/// <example>
+		/// using(Settings.SetLocalBatchSize(100))
+		/// {
+		///    using(ISession session = factory.OpenSession())
+		///    {
+		///			for(int i =0;i!=100;i++)
+		///			{
+		///				session.Save(new Entity());
+		///			}
+		///			session.Flush();
+		///	   }
+		/// }
+		/// </example>
+		public static IDisposable SetLocalBatchSize(int batchSize)
+		{
+			localBatchSize = batchSize;
+			return new ResetLocalBatchSizeToNull();
+		}
+
+		private class ResetLocalBatchSizeToNull : IDisposable
+		{
+			public void Dispose()
+			{
+				localBatchSize = null;
+			}
+		}
+#endif
 		public bool IsShowSqlEnabled
 		{
 			get { return _showSql; }
@@ -76,7 +116,14 @@ namespace NHibernate.Cfg
 
 		public int BatchSize
 		{
-			get { return batchSize; }
+			get
+			{
+#if NET_2_0
+				if (localBatchSize.HasValue)
+					return localBatchSize.Value;
+#endif
+				return batchSize;
+			}
 			set { batchSize = value; }
 		}
 
