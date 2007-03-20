@@ -478,6 +478,31 @@ namespace NHibernate.Test.NHSpecificTest
 			return true;
 		}
 
+		public bool IsVersionPropertyGenerated
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool HasInsertGeneratedProperties
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool HasUpdateGeneratedProperties
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public void ProcessInsertGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ProcessUpdateGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
 		#endregion
 	}
 

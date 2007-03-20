@@ -160,6 +160,10 @@ namespace NHibernate.Persister.Entity
 		private SqlCommandInfo[] sqlUpdateStrings;
 		private SqlString sqlSnapshotSelectString;
 		private SqlString sqlVersionSelectString;
+
+		private SqlString sqlInsertGeneratedValuesSelectString;
+		private SqlString sqlUpdateGeneratedValuesSelectString;
+
 		private bool[] tableHasColumns;
 
 		protected SqlString[] customSQLInsert;
@@ -2290,6 +2294,33 @@ namespace NHibernate.Persister.Entity
 			return frag.ToSqlStringFragment();
 		}
 
+		// TODO NH: should remove duplication between this and the other overload,
+		// probably using H3 approach (adding indirection through IInclusionChecker interface).
+		protected string ConcretePropertySelectFragment(string alias, ValueInclusion[] inclusions)
+		{
+			int propertyCount = entityMetamodel.PropertySpan;
+			int[] propertyTableNumbers = PropertyTableNumbersInSelect;
+			SelectFragment frag = new SelectFragment(Factory.Dialect);
+			for (int i = 0; i < propertyCount; i++)
+			{
+				if (inclusions[i] != ValueInclusion.None)
+				{
+					//ie. updateable, not a formula
+					frag.AddColumns(
+						GenerateTableAlias(alias, propertyTableNumbers[i]),
+						propertyColumnNames[i],
+						propertyColumnAliases[i]
+						);
+					frag.AddFormulas(
+						GenerateTableAlias(alias, propertyTableNumbers[i]),
+						propertyColumnFormulaTemplates[i],
+						propertyColumnAliases[i]
+						);
+				}
+			}
+			return frag.ToSqlStringFragment();
+		}
+
 		protected virtual SqlString GenerateSnapshotSelectString()
 		{
 			//TODO: should we use SELECT .. FOR UPDATE?
@@ -2361,6 +2392,14 @@ namespace NHibernate.Persister.Entity
 
 			sqlSnapshotSelectString = GenerateSnapshotSelectString();
 			sqlVersionSelectString = GenerateSelectVersionString();
+			if (HasInsertGeneratedProperties)
+			{
+				sqlInsertGeneratedValuesSelectString = GenerateInsertGeneratedValuesSelectString();
+			}
+			if (HasUpdateGeneratedProperties)
+			{
+				sqlUpdateGeneratedValuesSelectString = GenerateUpdateGeneratedValuesSelectString();
+			}
 
 			// This is used to determine updates for objects that came in via update()
 			tableHasColumns = new bool[sqlUpdateStrings.Length];
@@ -2965,6 +3004,144 @@ namespace NHibernate.Persister.Entity
 		public bool IsInstance(object entity)
 		{
 			return mappedClass.IsInstanceOfType(entity);
+		}
+
+		public ValueInclusion[] PropertyInsertGenerationInclusions
+		{
+			get { return entityMetamodel.PropertyInsertGenerationInclusions; }
+		}
+
+		public ValueInclusion[] PropertyUpdateGenerationInclusions
+		{
+			get { return entityMetamodel.PropertyUpdateGenerationInclusions; }
+		}
+
+		public bool IsVersionPropertyGenerated
+		{
+			get { return IsVersioned && PropertyUpdateGenerationInclusions[VersionProperty] != ValueInclusion.None; }
+		}
+
+		public bool HasInsertGeneratedProperties
+		{
+			get { return entityMetamodel.HasInsertGeneratedValues; }
+		}
+
+		public bool HasUpdateGeneratedProperties
+		{
+			get { return entityMetamodel.HasUpdateGeneratedValues; }
+		}
+
+		public void ProcessInsertGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
+		{
+			if (!HasInsertGeneratedProperties)
+			{
+				throw new AssertionFailure("no insert-generated properties");
+			}
+			ProcessGeneratedProperties(id, entity, state, session, sqlInsertGeneratedValuesSelectString, PropertyInsertGenerationInclusions);
+		}
+
+		public void ProcessUpdateGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
+		{
+			if (!HasUpdateGeneratedProperties)
+			{
+				throw new AssertionFailure("no update-generated properties");
+			}
+			ProcessGeneratedProperties(id, entity, state, session, sqlUpdateGeneratedValuesSelectString, PropertyUpdateGenerationInclusions);
+		}
+
+		private void ProcessGeneratedProperties(
+				object id,
+				object entity,
+				object[] state,
+				ISessionImplementor session,
+				SqlString selectionSQL,
+				ValueInclusion[] includeds)
+		{
+			session.Batcher.ExecuteBatch(); //force immediate execution of the insert
+
+			try
+			{
+				IDbCommand cmd =
+					session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
+				IDataReader rs = null;
+				try
+				{
+					IdentifierType.NullSafeSet(cmd, id, 0, session);
+					rs = session.Batcher.ExecuteReader(cmd);
+					if (!rs.Read())
+					{
+						throw new HibernateException(
+							"Unable to locate row for retrieval of generated properties: " +
+							MessageHelper.InfoString(this, id, Factory)
+							);
+					}
+					for (int i = 0; i < entityMetamodel.PropertySpan; i++)
+					{
+						if (includeds[i] != ValueInclusion.None)
+						{
+							object hydratedState = PropertyTypes[i].Hydrate(rs, GetPropertyAliases("", i), session, entity);
+							state[i] = PropertyTypes[i].ResolveIdentifier(hydratedState, session, entity);
+							SetPropertyValue(entity, i, state[i]);
+						}
+					}
+				}
+				finally
+				{
+					session.Batcher.CloseCommand(cmd, rs);
+				}
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateException
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(sqle, "unable to select generated column values", selectionSQL);
+			}
+		}
+
+		protected SqlString GenerateInsertGeneratedValuesSelectString()
+		{
+			return GenerateGeneratedValuesSelectString(PropertyInsertGenerationInclusions);
+		}
+
+		protected SqlString GenerateUpdateGeneratedValuesSelectString()
+		{
+			return GenerateGeneratedValuesSelectString(PropertyUpdateGenerationInclusions);
+		}
+
+		private SqlString GenerateGeneratedValuesSelectString(ValueInclusion[] inclusions)
+		{
+			SqlSelectBuilder select = new SqlSelectBuilder(Factory);
+
+			//if (getFactory().getSettings().isCommentsEnabled())
+			//{
+			//    select.setComment("get generated state " + getEntityName());
+			//}
+
+			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
+
+			// Here we render the select column list based on the properties defined as being generated.
+			// For partial component generation, we currently just re-select the whole component
+			// rather than trying to handle the individual generated portions.
+			string selectClause = ConcretePropertySelectFragment(RootAlias, inclusions);
+			selectClause = selectClause.Substring(2);
+
+			string fromClause = FromTableFragment(RootAlias) +
+			                    FromJoinFragment(RootAlias, true, false);
+
+			SqlString whereClause = new SqlStringBuilder()
+				.Add(StringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns))
+				.Add("=").AddParameter()
+				.Add(WhereJoinFragment(RootAlias, true, false))
+				.ToSqlString();
+
+			return select.SetSelectClause(selectClause)
+				.SetFromClause(fromClause)
+				.SetOuterJoins(SqlString.Empty, SqlString.Empty)
+				.SetWhereClause(whereClause)
+				.ToSqlString();
 		}
 	}
 }

@@ -22,24 +22,17 @@ namespace NHibernate.Mapping
 		private IDictionary metaAttributes;
 		private PersistentClass persistentClass;
 		private bool isOptimisticLocked;
+		private PropertyGeneration generation = PropertyGeneration.Never;
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public Property()
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyValue"></param>
 		public Property(IValue propertyValue)
 		{
 			this.propertyValue = propertyValue;
 		}
 
-		/// <summary></summary>
 		public IType Type
 		{
 			get { return propertyValue.Type; }
@@ -70,20 +63,17 @@ namespace NHibernate.Mapping
 			set { name = value; }
 		}
 
-		/// <summary></summary>
 		public bool IsComposite
 		{
 			get { return propertyValue is Component; }
 		}
 
-		/// <summary></summary>
 		public IValue Value
 		{
 			get { return propertyValue; }
 			set { this.propertyValue = value; }
 		}
 
-		/// <summary></summary>
 		public Cascades.CascadeStyle CascadeStyle
 		{
 			get
@@ -137,7 +127,6 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary></summary>
 		public string Cascade
 		{
 			get { return cascade; }
@@ -183,40 +172,27 @@ namespace NHibernate.Mapping
 			get { return IsNullable; }
 		}
 
-		/// <summary></summary>
 		public string PropertyAccessorName
 		{
 			get { return propertyAccessorName; }
 			set { propertyAccessorName = value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <returns></returns>
 		public IGetter GetGetter(System.Type clazz)
 		{
 			return PropertyAccessor.GetGetter(clazz, name);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <returns></returns>
 		public ISetter GetSetter(System.Type clazz)
 		{
 			return PropertyAccessor.GetSetter(clazz, name);
 		}
 
-		/// <summary></summary>
 		protected IPropertyAccessor PropertyAccessor
 		{
 			get { return PropertyAccessorFactory.GetPropertyAccessor(PropertyAccessorName); }
 		}
 
-		/// <summary></summary>
 		public bool IsBasicPropertyAccessor
 		{
 			get { return propertyAccessorName == null || propertyAccessorName.Equals("property"); }
@@ -233,19 +209,11 @@ namespace NHibernate.Mapping
 			return (MetaAttribute) metaAttributes[name];
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
 		public bool IsValid(IMapping mapping)
 		{
 			return Value.IsValid(mapping);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public string NullValue
 		{
 			get
@@ -269,6 +237,12 @@ namespace NHibernate.Mapping
 		{
 			get { return isOptimisticLocked; }
 			set { isOptimisticLocked = value; }
+		}
+
+		public PropertyGeneration Generation
+		{
+			get { return generation; }
+			set { generation = value; }
 		}
 	}
 }

@@ -12,7 +12,8 @@ namespace NHibernate.Impl
 	public enum Status
 	{
 		/// <summary>
-		/// The Entity is snapshotted in the Session with the same state as the database.
+		/// The Entity is snapshotted in the Session with the same state as the database
+		/// (called Managed in H3).
 		/// </summary>
 		Loaded,
 

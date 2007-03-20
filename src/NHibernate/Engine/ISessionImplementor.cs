@@ -145,26 +145,11 @@ namespace NHibernate.Engine
 		IBatcher Batcher { get; }
 
 		/// <summary>
-		/// After actually inserting a row, record the fact that the instance exists on the database
-		/// (needed for identity-column key generation)
-		/// </summary>
-		/// <param name="obj"></param>
-		void PostInsert(object obj);
-
-		/// <summary>
 		/// After actually deleting a row, record the fact that the instance no longer exists on the
 		/// database (needed for identity-column key generation)
 		/// </summary>
 		/// <param name="obj"></param>
 		void PostDelete(object obj);
-
-		/// <summary>
-		/// After actually updating a row, record the fact that the database state has been updated.
-		/// </summary>
-		/// <param name="obj">The <see cref="object"/> instance that was saved.</param>
-		/// <param name="updatedState">A updated snapshot of the values in the object.</param>
-		/// <param name="nextVersion">The new version to assign to the <c>obj</c>.</param>
-		void PostUpdate(object obj, object[] updatedState, object nextVersion);
 
 		/// <summary>
 		/// Execute a <c>Find()</c> query

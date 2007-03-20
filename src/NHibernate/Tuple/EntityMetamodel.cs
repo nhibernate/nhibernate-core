@@ -42,8 +42,8 @@ namespace NHibernate.Tuple
 		private bool[] nonlazyPropertyUpdateability;
 		private bool[] propertyCheckability;
 		private bool[] propertyInsertability;
-		private bool[] propertyInsertGeneration;
-		private bool[] propertyUpdateGeneration;
+		private ValueInclusion[] insertInclusions;
+		private ValueInclusion[] updateInclusions;
 		private bool[] propertyNullability;
 		private bool[] propertyVersionability;
 		private Cascades.CascadeStyle[] cascadeStyles;
@@ -77,6 +77,8 @@ namespace NHibernate.Tuple
 		// TODO H3: These are stored as System.Types currently
 		//private ISet subclassEntityNames = new HashedSet();
 		private ISet subclassTypes = new HashedSet();
+		private bool hasInsertGeneratedValues;
+		private bool hasUpdateGeneratedValues;
 
 		public EntityMetamodel(PersistentClass persistentClass, ISessionFactoryImplementor sessionFactory)
 		{
@@ -114,8 +116,8 @@ namespace NHibernate.Tuple
 			propertyTypes = new IType[propertySpan];
 			propertyUpdateability = new bool[propertySpan];
 			propertyInsertability = new bool[propertySpan];
-			propertyInsertGeneration = new bool[propertySpan];
-			propertyUpdateGeneration = new bool[propertySpan];
+			insertInclusions = new ValueInclusion[propertySpan];
+			updateInclusions = new ValueInclusion[propertySpan];
 			nonlazyPropertyUpdateability = new bool[propertySpan];
 			propertyCheckability = new bool[propertySpan];
 			propertyNullability = new bool[propertySpan];
@@ -130,6 +132,8 @@ namespace NHibernate.Tuple
 			bool foundCascade = false;
 			bool foundCollection = false;
 			bool foundMutable = false;
+			bool foundInsertGeneratedValue = false;
+			bool foundUpdateGeneratedValue = false;
 
 			foreach (Mapping.Property prop in persistentClass.PropertyClosureCollection)
 			{
@@ -160,8 +164,8 @@ namespace NHibernate.Tuple
 				propertyNullability[i] = properties[i].IsNullable;
 				propertyUpdateability[i] = properties[i].IsUpdateable;
 				propertyInsertability[i] = properties[i].IsInsertable;
-				propertyInsertGeneration[i] = properties[i].IsInsertGenerated;
-				propertyUpdateGeneration[i] = properties[i].IsUpdateGenerated;
+				insertInclusions[i] = DetermineInsertValueGenerationType(prop, properties[i]);
+				updateInclusions[i] = DetermineUpdateValueGenerationType(prop, properties[i]);
 				propertyVersionability[i] = properties[i].IsVersionable;
 				nonlazyPropertyUpdateability[i] = properties[i].IsUpdateable && !lazyProperty;
 				propertyCheckability[i] = propertyUpdateability[i] ||
@@ -191,6 +195,16 @@ namespace NHibernate.Tuple
 					foundMutable = true;
 				}
 
+				if (insertInclusions[i] != ValueInclusion.None)
+				{
+					foundInsertGeneratedValue = true;
+				}
+
+				if (updateInclusions[i] != ValueInclusion.None)
+				{
+					foundUpdateGeneratedValue = true;
+				}
+
 				MapPropertyToIndex(prop, i);
 				i++;
 			}
@@ -206,6 +220,8 @@ namespace NHibernate.Tuple
 //			}
 
 			hasCascades = foundCascade;
+			hasInsertGeneratedValues = foundInsertGeneratedValue;
+			hasUpdateGeneratedValues = foundUpdateGeneratedValue;
 			versionPropertyIndex = tempVersionProperty;
 			hasLazyProperties = hasLazy;
 			if (hasLazyProperties) log.Info("lazy property fetching available for: " + type.FullName);
@@ -265,6 +281,76 @@ namespace NHibernate.Tuple
 			}
 			// TODO H3: subclassEntityNames.Add( name );
 			subclassTypes.Add(type);
+		}
+
+		private ValueInclusion DetermineInsertValueGenerationType(Mapping.Property mappingProperty, StandardProperty runtimeProperty)
+		{
+			if (runtimeProperty.IsInsertGenerated)
+			{
+				return ValueInclusion.Full;
+			}
+			else if (mappingProperty.Value is Component)
+			{
+				if (HasPartialInsertComponentGeneration((Component) mappingProperty.Value))
+				{
+					return ValueInclusion.Partial;
+				}
+			}
+			return ValueInclusion.None;
+		}
+
+		private bool HasPartialInsertComponentGeneration(Component component)
+		{
+			foreach (Mapping.Property prop in component.PropertyCollection)
+			{
+				if (prop.Generation == PropertyGeneration.Always || prop.Generation == PropertyGeneration.Insert)
+				{
+					return true;
+				}
+				else if (prop.Value is Component)
+				{
+					if (HasPartialInsertComponentGeneration((Component) prop.Value))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		private ValueInclusion DetermineUpdateValueGenerationType(Mapping.Property mappingProperty, StandardProperty runtimeProperty)
+		{
+			if (runtimeProperty.IsUpdateGenerated)
+			{
+				return ValueInclusion.Full;
+			}
+			else if (mappingProperty.Value is Component)
+			{
+				if (HasPartialUpdateComponentGeneration((Component) mappingProperty.Value))
+				{
+					return ValueInclusion.Partial;
+				}
+			}
+			return ValueInclusion.None;
+		}
+
+		private bool HasPartialUpdateComponentGeneration(Component component)
+		{
+			foreach (Mapping.Property prop in component.PropertyCollection)
+			{
+				if (prop.Generation == PropertyGeneration.Always)
+				{
+					return true;
+				}
+				else if (prop.Value is Component)
+				{
+					if (HasPartialUpdateComponentGeneration((Component) prop.Value))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		private void MapPropertyToIndex(Mapping.Property prop, int i)
@@ -539,16 +625,6 @@ namespace NHibernate.Tuple
 			get { return propertyInsertability; }
 		}
 
-		public bool[] PropertyInsertGeneration
-		{
-			get { return propertyInsertGeneration; }
-		}
-
-		public bool[] PropertyUpdateGeneration
-		{
-			get { return propertyUpdateGeneration; }
-		}
-
 		public bool[] PropertyNullability
 		{
 			get { return propertyNullability; }
@@ -562,6 +638,26 @@ namespace NHibernate.Tuple
 		public Cascades.CascadeStyle[] CascadeStyles
 		{
 			get { return cascadeStyles; }
+		}
+
+		public ValueInclusion[] PropertyInsertGenerationInclusions
+		{
+			get { return insertInclusions; }
+		}
+
+		public ValueInclusion[] PropertyUpdateGenerationInclusions
+		{
+			get { return updateInclusions; }
+		}
+
+		public bool HasInsertGeneratedValues
+		{
+			get { return hasInsertGeneratedValues; }
+		}
+
+		public bool HasUpdateGeneratedValues
+		{
+			get { return hasUpdateGeneratedValues; }
 		}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

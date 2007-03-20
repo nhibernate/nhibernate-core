@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.GeneratedTest">
+
+	<class name="GeneratedPropertyEntity" table="gen_prop">
+
+		<id name="Id">
+			<generator class="native"/>
+    	</id>
+        <property name="Name"/>
+        <property name="LastModified" generated="always" type="binary" insert="false">
+            <column name="LastModified" length="8" sql-type="TIMESTAMP"/>
+        </property>
+
+	</class>
+
+</hibernate-mapping>

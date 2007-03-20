@@ -3230,16 +3230,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void PostInsert(object obj)
-		{
-			EntityEntry entry = GetEntry(obj);
-			if (entry == null)
-			{
-				throw new AssertionFailure("possible nonthreadsafe access to session");
-			}
-			entry.ExistsInDatabase = true;
-		}
-
 		public void PostDelete(object obj)
 		{
 			EntityEntry entry = RemoveEntry(obj);
@@ -3262,22 +3252,6 @@ namespace NHibernate.Impl
 				batchFetchQueue.RemoveBatchLoadableEntityKey(key);
 			}
 			proxiesByKey.Remove(key);
-		}
-
-		public void PostUpdate(object obj, object[] updatedState, object nextVersion)
-		{
-			EntityEntry entry = GetEntry(obj);
-			if (entry == null)
-			{
-				throw new AssertionFailure("possible nonthreadsafe access to session");
-			}
-			entry.LoadedState = updatedState;
-			entry.LockMode = LockMode.Write;
-			if (entry.Persister.IsVersioned)
-			{
-				entry.Version = nextVersion;
-				entry.Persister.SetPropertyValue(obj, entry.Persister.VersionProperty, nextVersion);
-			}
 		}
 
 		private void ExecuteAll(IList list)
@@ -3488,7 +3462,7 @@ namespace NHibernate.Impl
 				//note that we intentionally did _not_ pass in currentPersistentState!
 				updates.Add(
 					new ScheduledUpdate(entry.Id, values, dirtyProperties, hasDirtyCollections, entry.LoadedState, entry.Version,
-					                    nextVersion, obj, updatedState, persister, this)
+					                    nextVersion, obj, persister, this)
 					);
 			}
 

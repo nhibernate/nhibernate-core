@@ -13,7 +13,7 @@ namespace NHibernate.Impl
 	{
 		private readonly object[] state;
 		private CacheEntry cacheEntry;
-		private readonly object version;
+		private object version;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ScheduledInsertion"/>.
@@ -38,7 +38,24 @@ namespace NHibernate.Impl
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			Persister.Insert(Id, state, Instance, Session);
-			Session.PostInsert(Instance);
+
+			EntityEntry entry = Session.GetEntry(Instance);
+			if (entry == null)
+			{
+				throw new AssertionFailure("possible nonthreadsafe access to session");
+			}
+			entry.PostInsert();
+
+			if (Persister.HasInsertGeneratedProperties)
+			{
+				Persister.ProcessInsertGeneratedProperties(Id, Instance, state, Session);
+				if (Persister.IsVersionPropertyGenerated)
+				{
+					version = Versioning.GetVersion(state, Persister);
+				}
+				entry.PostUpdate(Instance, state, version);
+			}
+
 
 			if (Persister.HasCache && !Persister.IsCacheInvalidationRequired)
 			{

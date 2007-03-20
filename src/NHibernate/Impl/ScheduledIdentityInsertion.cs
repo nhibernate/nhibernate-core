@@ -37,6 +37,10 @@ namespace NHibernate.Impl
 			// else inserted the same pk first, the insert would fail.
 
 			generatedId = persister.Insert(state, obj, session);
+			if (persister.HasInsertGeneratedProperties)
+			{
+				persister.ProcessInsertGeneratedProperties(generatedId, obj, state, session);
+			}
 
 			// TODO: This bit has to be called after all the cascades
 			/*

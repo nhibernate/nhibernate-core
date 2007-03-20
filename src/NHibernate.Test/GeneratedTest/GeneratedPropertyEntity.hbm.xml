@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.GeneratedTest">
+
+	<class name="GeneratedPropertyEntity" table="gen_prop">
+
+		<id name="Id">
+			<generator class="native"/>
+    	</id>
+        <property name="Name"/>
+        <property name="LastModified" generated="always" type="binary" insert="false">
+            <column name="LastModified" length="8"/>
+        </property>
+
+	</class>
+
+    <database-object>
+        <create>
+            <![CDATA[CREATE OR REPLACE TRIGGER t_iu_gen_prop
+            BEFORE INSERT OR UPDATE ON gen_prop
+            FOR EACH ROW
+            BEGIN
+                IF INSERTING THEN
+                    :new.LastModified := HEXTORAW( '1' );
+                ELSE
+                    :new.LastModified := HEXTORAW(
+                        TO_NUMBER( RAWTOHEX( :old.LastModified ) ) + 1
+                    );
+                END IF;
+            END;]]>
+        </create>
+        <drop>
+            <![CDATA[DROP TRIGGER t_iu_gen_prop]]>
+        </drop>
+        <dialect-scope name="NHibernate.Dialect.Oracle9Dialect"/>
+        <dialect-scope name="NHibernate.Dialect.OracleDialect"/>
+    </database-object>
+
+	<database-object>
+		<create>
+			<![CDATA[CREATE TRIGGER t_iu_gen_prop ON gen_prop
+				AFTER INSERT, UPDATE
+				AS
+					SET NOCOUNT ON;
+					UPDATE gen_prop
+					SET
+						LastModified = CAST(ISNULL(CAST(ins.LastModified AS bigint), 0) + 1 AS binary(8))
+					FROM
+						gen_prop AS gp INNER JOIN inserted ins ON ins.Id = gp.Id]]>
+			</create>
+		<drop>
+			<![CDATA[IF EXISTS(SELECT name FROM sysobjects
+				WHERE name = 't_iu_gen_prop' AND type = 'TR')
+				DROP TRIGGER t_iu_gen_prop]]>
+		</drop>
+		<dialect-scope name="NHibernate.Dialect.MsSql2000Dialect"/>
+		<dialect-scope name="NHibernate.Dialect.MsSql2005Dialect"/>
+	</database-object>
+
+</hibernate-mapping>

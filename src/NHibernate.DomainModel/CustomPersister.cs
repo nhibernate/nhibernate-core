@@ -392,6 +392,31 @@ namespace NHibernate.DomainModel
 			return entity is Custom;
 		}
 
+		public bool IsVersionPropertyGenerated
+		{
+			get { return false; }
+		}
+
+		public bool HasInsertGeneratedProperties
+		{
+			get { return false; }
+		}
+
+		public bool HasUpdateGeneratedProperties
+		{
+			get { return false; }
+		}
+
+		public void ProcessInsertGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ProcessUpdateGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
 		#endregion
 	}
 }

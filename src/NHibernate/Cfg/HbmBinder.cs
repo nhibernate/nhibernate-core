@@ -416,18 +416,8 @@ namespace NHibernate.Cfg
 
 					case "version":
 					case "timestamp":
-						//VERSION
-						SimpleValue val = new SimpleValue(table);
-						BindSimpleValue(subnode, val, false, propertyName, mappings);
-						if (val.Type == null)
-						{
-							val.Type = (("version".Equals(name)) ? NHibernateUtil.Int32 : NHibernateUtil.Timestamp);
-						}
-						Mapping.Property timestampProp = new Mapping.Property(val);
-						BindProperty(subnode, timestampProp, mappings);
-						MakeVersion(subnode, val);
-						model.Version = timestampProp;
-						model.AddProperty(timestampProp);
+						//VERSION / TIMESTAMP
+						BindVersioningProperty(table, subnode, mappings, name, model);
 						break;
 
 					case "discriminator":
@@ -469,6 +459,29 @@ namespace NHibernate.Cfg
 			model.CreatePrimaryKey(dialect);
 
 			PropertiesFromXML(node, model, mappings);
+		}
+
+		private static void BindVersioningProperty(Table table, XmlNode subnode, Mappings mappings, string name, RootClass entity)
+		{
+			string propertyName = subnode.Attributes["name"].Value;
+			SimpleValue val = new SimpleValue(table);
+			BindSimpleValue(subnode, val, false, propertyName, mappings);
+			if (val.Type == null)
+			{
+				val.Type = (("version".Equals(name)) ? NHibernateUtil.Int32 : NHibernateUtil.Timestamp);
+			}
+			Mapping.Property prop = new Mapping.Property(val);
+			BindProperty(subnode, prop, mappings);
+			// for version properties marked as being generated, make sure they are "always"
+			// generated; "insert" is invalid. This is dis-allowed by the schema, but just to make
+			// sure...
+			if (prop.Generation == PropertyGeneration.Insert)
+			{
+				throw new MappingException("'generated' attribute cannot be 'insert' for versioning property");
+			}
+			MakeVersion(subnode, val);
+			entity.Version = prop;
+			entity.AddProperty(prop);
 		}
 
 		public static void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn, string propertyPath,
@@ -586,51 +599,106 @@ namespace NHibernate.Cfg
 			return accessNode != null ? accessNode.Value : mappings.DefaultAccess;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="node"></param>
-		/// <param name="model"></param>
-		/// <param name="mappings"></param>
-		public static void BindProperty(XmlNode node, Mapping.Property model, Mappings mappings)
+		public static PropertyGeneration ParsePropertyGeneration(string name)
 		{
-			model.Name = GetPropertyName(node);
-			IType type = model.Value.Type;
+			switch (name)
+			{
+				case "insert":
+					return PropertyGeneration.Insert;
+				case "always":
+					return PropertyGeneration.Always;
+				default:
+					return PropertyGeneration.Never;
+			}
+		}
+
+		public static void BindProperty(XmlNode node, Mapping.Property property, Mappings mappings)
+		{
+			string propName = XmlHelper.GetAttributeValue(node, "name");
+			property.Name = propName;
+			IType type = property.Value.Type;
 			if (type == null)
 			{
-				throw new MappingException("could not determine a property type for: " + model.Name);
+				throw new MappingException("could not determine a property type for: " + property.Name);
 			}
 
-			model.PropertyAccessorName = PropertyAccess(node, mappings);
+			property.PropertyAccessorName = PropertyAccess(node, mappings);
 
 			XmlAttribute cascadeNode = node.Attributes["cascade"];
-			model.Cascade = (cascadeNode == null) ? mappings.DefaultCascade : cascadeNode.Value;
+			property.Cascade = (cascadeNode == null) ? mappings.DefaultCascade : cascadeNode.Value;
 
 			XmlAttribute updateNode = node.Attributes["update"];
-			model.IsUpdateable = (updateNode == null) ? true : "true".Equals(updateNode.Value);
+			property.IsUpdateable = (updateNode == null) ? true : "true".Equals(updateNode.Value);
 
 			XmlAttribute insertNode = node.Attributes["insert"];
-			model.IsInsertable = (insertNode == null) ? true : "true".Equals(insertNode.Value);
+			property.IsInsertable = (insertNode == null) ? true : "true".Equals(insertNode.Value);
 
 			XmlAttribute optimisticLockNode = node.Attributes["optimistic-lock"];
-			model.IsOptimisticLocked = (optimisticLockNode == null) ? true : "true".Equals(optimisticLockNode.Value);
+			property.IsOptimisticLocked = (optimisticLockNode == null) ? true : "true".Equals(optimisticLockNode.Value);
+
+			XmlAttribute generatedNode = node.Attributes["generated"];
+			string generationName = generatedNode == null ? null : generatedNode.Value;
+			PropertyGeneration generation = ParsePropertyGeneration(generationName);
+			property.Generation = generation;
+
+			if (generation == PropertyGeneration.Always || generation == PropertyGeneration.Insert)
+			{
+				// generated properties can *never* be insertable...
+				if (property.IsInsertable)
+				{
+					if (insertNode == null)
+					{
+						// insertable simply because that is the user did not specify
+						// anything; just override it
+						property.IsInsertable = false;
+					}
+					else
+					{
+						// the user specifically supplied insert="true",
+						// which constitutes an illegal combo
+						throw new MappingException(
+								"cannot specify both insert=\"true\" and generated=\"" + generationName +
+								"\" for property: " + propName);
+					}
+				}
+
+				// properties generated on update can never be updateable...
+				if (property.IsUpdateable && generation == PropertyGeneration.Always)
+				{
+					if (updateNode == null)
+					{
+						// updateable only because the user did not specify 
+						// anything; just override it
+						property.IsUpdateable = false;
+					}
+					else
+					{
+						// the user specifically supplied update="true",
+						// which constitutes an illegal combo
+						throw new MappingException(
+								"cannot specify both update=\"true\" and generated=\"" + generationName +
+								"\" for property: " + propName);
+					}
+				}
+			}
+
 
 			if (log.IsDebugEnabled)
 			{
-				string msg = "Mapped property: " + model.Name;
-				string columns = Columns(model.Value);
+				string msg = "Mapped property: " + property.Name;
+				string columns = Columns(property.Value);
 				if (columns.Length > 0)
 				{
 					msg += " -> " + columns;
 				}
-				if (model.Type != null)
+				if (property.Type != null)
 				{
-					msg += ", type: " + model.Type.Name;
+					msg += ", type: " + property.Type.Name;
 				}
 				log.Debug(msg);
 			}
 
-			model.MetaAttributes = GetMetas(node);
+			property.MetaAttributes = GetMetas(node);
 		}
 
 		public static string Columns(IValue val)

@@ -137,6 +137,14 @@
     <Compile Include="FilterTest\Product.cs" />
     <Compile Include="FilterTest\Salesperson.cs" />
     <Compile Include="FilterTest\TestClass.cs" />
+    <Compile Include="GeneratedTest\AbstractGeneratedPropertyTest.cs" />
+    <Compile Include="GeneratedTest\Component.cs" />
+    <Compile Include="GeneratedTest\ComponentOwner.cs" />
+    <Compile Include="GeneratedTest\GeneratedPropertyEntity.cs" />
+    <Compile Include="GeneratedTest\PartiallyGeneratedComponentTest.cs" />
+    <Compile Include="GeneratedTest\TimestampGeneratedValuesWithCachingTest.cs" />
+    <Compile Include="GeneratedTest\TriggerGeneratedValuesWithCachingTest.cs" />
+    <Compile Include="GeneratedTest\TriggerGeneratedValuesWithoutCachingTest.cs" />
     <Compile Include="GenericTest\BagGeneric\A.cs" />
     <Compile Include="GenericTest\BagGeneric\B.cs" />
     <Compile Include="GenericTest\BagGeneric\BagGenericFixture.cs" />
@@ -832,6 +840,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH930\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GeneratedTest\ComponentOwner.hbm.xml" />
+    <EmbeddedResource Include="GeneratedTest\GeneratedPropertyEntity.hbm.xml" />
+    <EmbeddedResource Include="GeneratedTest\MSSQLGeneratedPropertyEntity.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

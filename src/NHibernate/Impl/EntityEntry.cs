@@ -165,5 +165,29 @@ namespace NHibernate.Impl
 			int propertyIndex = ((IUniqueKeyLoadable) persister).GetPropertyIndex(propertyName);
 			return loadedState[propertyIndex];
 		}
+
+		public void PostInsert()
+		{
+			existsInDatabase = true;
+		}
+
+		/// <summary>After actually updating the database, update the snapshot information,
+		/// and escalate the lock mode.
+		/// </summary>
+		public void PostUpdate(object entity, object[] updatedState, object nextVersion)
+		{
+			this.loadedState = updatedState;
+
+			LockMode = LockMode.Write;
+
+			if (Persister.IsVersioned)
+			{
+				this.version = nextVersion;
+				Persister.SetPropertyValue(
+						entity,
+						Persister.VersionProperty,
+						nextVersion);
+			}
+		}
 	}
 }
