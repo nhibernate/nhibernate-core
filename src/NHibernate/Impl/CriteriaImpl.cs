@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
@@ -338,7 +339,26 @@ namespace NHibernate.Impl
 
 		public override string ToString()
 		{
-			return criteria.ToString();
+			bool first = true;
+			StringBuilder builder = new StringBuilder();
+			foreach (CriterionEntry criterionEntry in criteria)
+			{
+				if (!first)
+					builder.Append(" and ");
+				builder.Append(criterionEntry.ToString());
+				first = false;
+			}
+			if(orderEntries.Count!=0)
+				builder.AppendLine();
+			first = true;
+			foreach (OrderEntry orderEntry in orderEntries)
+			{
+				if (!first)
+					builder.Append(" and ");
+				builder.Append(orderEntry.ToString());
+				first = false;
+			}
+			return builder.ToString();
 		}
 
 		public ICriteria AddOrder(Order ordering)
