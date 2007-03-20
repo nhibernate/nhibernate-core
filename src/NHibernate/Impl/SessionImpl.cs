@@ -5831,5 +5831,11 @@ namespace NHibernate.Impl
 			}
 			//}
 		}
+
+
+		public IInterceptor Interceptor
+		{
+			get { return interceptor; }
+		}
 	}
 }

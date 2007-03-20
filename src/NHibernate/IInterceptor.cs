@@ -156,5 +156,11 @@ namespace NHibernate
 		/// Called after a transaction is committed or rolled back.
 		/// </summary>
 		void AfterTransactionCompletion(ITransaction tx);
+
+		/// <summary>
+		/// Called when a session-scoped (and <b>only</b> session scoped) interceptor is attached
+		/// to a session
+		/// </summary>
+		void SetSession(ISession session);
 	}
 }

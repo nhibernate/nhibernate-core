@@ -608,7 +608,7 @@ namespace NHibernate.Impl
 			get { return lockModes; }
 		}
 
-		internal ISessionImplementor Session
+		internal protected ISessionImplementor Session
 		{
 			get { return session; }
 		}

@@ -541,7 +541,11 @@ namespace NHibernate.Impl
 		private ISession OpenSession(IDbConnection connection, long timestamp, IInterceptor interceptor,
 									 ConnectionReleaseMode connectionReleaseMode)
 		{
-			return new SessionImpl(connection, this, timestamp, interceptor, connectionReleaseMode);
+			SessionImpl sessionImpl = new SessionImpl(connection, this, timestamp, interceptor, connectionReleaseMode);
+			bool isSessionScopedInterceptor = this.interceptor!=interceptor;
+			if(isSessionScopedInterceptor)
+				interceptor.SetSession(sessionImpl);
+			return sessionImpl;
 		}
 
 		public ISession OpenSession()

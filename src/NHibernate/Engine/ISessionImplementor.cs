@@ -394,5 +394,7 @@ namespace NHibernate.Engine
 		IQueryTranslator[] GetQueries(string query, bool scalar);
 
 		bool ContainsEntity(EntityKey key);
+
+		IInterceptor Interceptor { get; }
 	}
 }

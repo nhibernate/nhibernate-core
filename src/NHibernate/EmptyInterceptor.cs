@@ -62,5 +62,9 @@ namespace NHibernate
 		public virtual void AfterTransactionCompletion(ITransaction tx)
 		{
 		}
+
+		public virtual void SetSession(ISession session)
+		{
+		}
 	}
 }
