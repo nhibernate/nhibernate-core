@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Provides connection strings

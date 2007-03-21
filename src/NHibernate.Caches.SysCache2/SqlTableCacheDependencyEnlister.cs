@@ -1,7 +1,7 @@
 using System;
 using System.Web.Caching;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Creates SqlCacheDependency objects dependent on data changes in a table and registers the dependency for 

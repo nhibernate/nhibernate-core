@@ -1,7 +1,7 @@
 using System;
 using System.Configuration;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Configures a sql command notification cache dependency for am NHibernate cache region 
@@ -43,7 +43,7 @@ namespace NHibernateExtensions.Caches.SysCache
 			_properties.Add(isSprocProperty);
 
 			ConfigurationProperty providerTypeProperty = new ConfigurationProperty("connectionStringProviderType",
-			                                                                       typeof(Type), null, new TypeNameConverter(),
+			                                                                       typeof(System.Type), null, new TypeNameConverter(),
 			                                                                       new SubclassTypeValidator(
 			                                                                       	typeof(IConnectionStringProvider)),
 			                                                                       ConfigurationPropertyOptions.None);
@@ -85,16 +85,16 @@ namespace NHibernateExtensions.Caches.SysCache
 		}
 
 		/// <summary>
-		/// Gets the type of <see cref="NHibernateExtensions.Caches.SysCache.IConnectionStringProvider"/> to use when 
+		/// Gets the type of <see cref="IConnectionStringProvider"/> to use when 
 		/// retreiving the connection string. 
 		/// </summary>
 		/// <remarks>
 		///		<para>If no value is supplied, the <see cref="ConfigurationManager"/>
 		///		will be used to retrieve the connection string</para>
 		/// </remarks>
-		public Type ConnectionStringProviderType
+		public System.Type ConnectionStringProviderType
 		{
-			get { return (Type) base["connectionStringProviderType"]; }
+			get { return (System.Type) base["connectionStringProviderType"]; }
 		}
 
 		/// <summary>

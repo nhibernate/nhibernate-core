@@ -1,7 +1,7 @@
 using System;
 using System.Configuration;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Timespan validator that can accept a null value as valid input
@@ -48,7 +48,7 @@ namespace NHibernateExtensions.Caches.SysCache
 		/// <returns>
 		/// true if the type parameter matches a nullable <see cref="T:System.TimeSpan"></see> value; otherwise, false.
 		/// </returns>
-		public override bool CanValidate(Type type)
+		public override bool CanValidate(System.Type type)
 		{
 			return (type == typeof(TimeSpan?));
 		}

@@ -1,7 +1,7 @@
 using System;
 using System.Configuration;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Defines the cache dependencies for an NHibernate cache region

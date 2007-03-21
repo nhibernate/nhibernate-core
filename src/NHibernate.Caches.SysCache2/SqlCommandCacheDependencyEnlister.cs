@@ -3,7 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Web.Caching;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Creates SqlCacheDependency objects and hooks them up to a query notification based on the command
@@ -90,7 +90,7 @@ namespace NHibernateExtensions.Caches.SysCache
 			//setup and execute the command that will register the cache dependency for
 			//change notifications
 			using (SqlConnection connection = new SqlConnection(_connectionString))
-			using (SqlCommand command = new SqlCommand(_command, connection))
+			using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(_command, connection))
 			{
 				//is the command a sproc
 				if (_isStoredProcedure)

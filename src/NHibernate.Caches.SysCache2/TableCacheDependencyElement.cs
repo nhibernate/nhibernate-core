@@ -1,7 +1,7 @@
 using System;
 using System.Configuration;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Configures a table monitor cache dependency for an Nhibernate cache region.

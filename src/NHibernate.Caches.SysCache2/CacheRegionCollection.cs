@@ -2,7 +2,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// 
@@ -13,7 +13,7 @@ namespace NHibernateExtensions.Caches.SysCache
 	public class CacheRegionCollection : ConfigurationElementCollection
 	{
 		/// <summary>
-		/// Gets or sets the <see cref="NHibernateExtensions.Caches.SysCache.CacheRegionElement"/> at the specified index.
+		/// Gets or sets the <see cref="CacheRegionElement"/> at the specified index.
 		/// </summary>
 		public CacheRegionElement this[int index]
 		{
@@ -29,7 +29,7 @@ namespace NHibernateExtensions.Caches.SysCache
 		}
 
 		/// <summary>
-		/// Gets the <see cref="NHibernateExtensions.Caches.SysCache.CacheRegionElement"/> with the specified name.
+		/// Gets the <see cref="CacheRegionElement"/> with the specified name.
 		/// </summary>
 		public new CacheRegionElement this[string name]
 		{

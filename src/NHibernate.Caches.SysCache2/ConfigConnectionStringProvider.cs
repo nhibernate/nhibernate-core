@@ -1,9 +1,11 @@
 using System;
 using System.Configuration;
 
-using NHibernateExtensions.Caches.SysCache.Properties;
+using NHibernate.Caches.SysCache2.Properties;
 
-namespace NHibernateExtensions.Caches.SysCache
+using NHibernate.Caches.SysCache2.Properties;
+
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Connection string provider that uses the ConfigurationManager to retrieve conenction strings

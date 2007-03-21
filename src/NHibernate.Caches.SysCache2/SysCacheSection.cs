@@ -2,7 +2,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Provides Configuration system support for the SysCache configuration section

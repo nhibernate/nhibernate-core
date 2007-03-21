@@ -1,7 +1,7 @@
 using System;
 using System.Web.Caching;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Enlists a <see cref="CacheDependency"/> for change notifications

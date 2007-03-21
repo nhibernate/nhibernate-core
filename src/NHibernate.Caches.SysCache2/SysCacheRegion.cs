@@ -11,7 +11,7 @@ using NHibernate.Cache;
 
 using Environment=NHibernate.Cfg.Environment;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Pluggable cache implementation using the System.Web.Caching classes
@@ -29,7 +29,7 @@ namespace NHibernateExtensions.Caches.SysCache
 		private static readonly TimeSpan _defaultRelativeExpiration = TimeSpan.FromSeconds(300);
 
 		/// <summary>The cache for the web application</summary>
-		private Cache _webCache;
+		private System.Web.Caching.Cache _webCache;
 
 		/// <summary>the name of the cache region</summary>
 		private string _name;
@@ -227,7 +227,7 @@ namespace NHibernateExtensions.Caches.SysCache
 
 			if (_log.IsDebugEnabled)
 			{
-				if (expiration.Equals(Cache.NoAbsoluteExpiration) == false)
+				if (expiration.Equals(System.Web.Caching.Cache.NoAbsoluteExpiration) == false)
 				{
 					_log.DebugFormat("item will expire at: {0}", expiration);
 				}
@@ -235,7 +235,7 @@ namespace NHibernateExtensions.Caches.SysCache
 
 			_webCache.Insert(cacheKey, new DictionaryEntry(key, value),
 			                 new CacheDependency(null, new string[] {_rootCacheKey}),
-			                 expiration, Cache.NoSlidingExpiration, _priority, null);
+			                 expiration, System.Web.Caching.Cache.NoSlidingExpiration, _priority, null);
 		}
 
 		/// <summary>
@@ -534,7 +534,7 @@ namespace NHibernateExtensions.Caches.SysCache
 			}
 
 			_webCache.Add(_rootCacheKey, _rootCacheKey,
-			              rootCacheDependency, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration,
+			              rootCacheDependency, System.Web.Caching.Cache.NoAbsoluteExpiration, System.Web.Caching.Cache.NoSlidingExpiration,
 			              _priority, new CacheItemRemovedCallback(RootCacheItemRemovedCallback));
 
 			//flag the root cache item as beeing cached
@@ -570,7 +570,7 @@ namespace NHibernateExtensions.Caches.SysCache
 		/// <returns></returns>
 		private DateTime GetCacheItemExpiration()
 		{
-			DateTime expiration = Cache.NoAbsoluteExpiration;
+			DateTime expiration = System.Web.Caching.Cache.NoAbsoluteExpiration;
 
 			//use the relative expiration if one is specified, otherwise use the 
 			//time of day expiration if that is specified

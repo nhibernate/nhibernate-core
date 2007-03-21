@@ -7,8 +7,8 @@
     <ProjectGuid>{2AE716DC-D909-4100-8ED5-09B701EF2E14}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHibernateExtensions.Caches.SysCache</RootNamespace>
-    <AssemblyName>NHibernateExtensions.Caches.SysCache</AssemblyName>
+    <RootNamespace>NHibernate.Caches.SysCache2</RootNamespace>
+    <AssemblyName>NHibernate.Caches.SysCache2</AssemblyName>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>

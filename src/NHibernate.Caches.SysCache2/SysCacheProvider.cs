@@ -6,7 +6,7 @@ using log4net;
 
 using NHibernate.Cache;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Cache provider using the System.Web.Caching classes 

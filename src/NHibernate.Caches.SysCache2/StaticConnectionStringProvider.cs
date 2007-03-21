@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernateExtensions.Caches.SysCache
+namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
 	/// Connection string provider that returns a specified connection string
