@@ -79,6 +79,10 @@ namespace NHibernate.Caches.SysCache
 			if (log.IsDebugEnabled)
 			{
 				StringBuilder sb = new StringBuilder();
+				sb.Append("building cache with region: ")
+					.Append(regionName)
+					.Append(", properties: ");
+				
 				foreach (DictionaryEntry de in properties)
 				{
 					sb.Append("name=");
@@ -87,7 +91,7 @@ namespace NHibernate.Caches.SysCache
 					sb.Append(de.Value.ToString());
 					sb.Append(";");
 				}
-				log.Debug("building cache with region: " + regionName + ", properties: " + sb.ToString());
+				log.Debug(sb.ToString());
 			}
 			return new SysCache(regionName, properties);
 		}
