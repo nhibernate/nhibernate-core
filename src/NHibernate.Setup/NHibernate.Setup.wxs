@@ -232,6 +232,12 @@
 							<Component Id="NHibernate.Caches.SysCache.xml_net20" Guid="{C588F1C6-55AC-49DC-81CC-9EE69066BE7D}">
 								<File Id="NHibernate.Caches.SysCache.xml_net20" Name="NHibernate.Caches.SysCache.xml" KeyPath="yes" />
 							</Component>
+							<Component Id="NHibernate.Caches.SysCache2.dll_net20" Guid="{2788CDB6-BF50-45E9-A5CD-AB4CEAA002FB}">
+								<File Id="NHibernate.Caches.SysCache2.dll_net20" name="NHibernate.Caches.SysCache2.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="NHibernate.Caches.SysCache2.xml_net20" Guid="{E41CC882-BAF4-4DA9-B0D9-387F74785FCB}">
+								<File Id="NHibernate.Caches.SysCache2.xml_net20" name="NHibernate.Caches.SysCache2.xml" KeyPath="yes" />
+							</Component>
 							<Component Id="NHibernate.dll_net20" Guid="{B713EC9D-B2EE-4103-BDD2-A92D12115396}">
 								<File Id="NHibernate.dll_net20" Name="NHibernate.dll" KeyPath="yes" />
 							</Component>
@@ -456,6 +462,13 @@
 							<ComponentRef Id="NHibernate.Caches.SysCache.dll_net11" />
 							<ComponentRef Id="NHibernate.Caches.SysCache.xml_net11" />
 						</Feature>
+
+						<Feature Id="SysCache2" Title="SysCache2 Cache Provider" Level="1" AllowAdvertise="no"
+							Description="Cache provider using ASP.NET cache, with support for SQL dependencies. Only works on .NET 2.0">
+							<ComponentRef Id="NHibernate.Caches.SysCache2.dll_net20" />
+							<ComponentRef Id="NHibernate.Caches.SysCache2.xml_net20" />
+						</Feature>
+
 					</Feature>
 
 					<Feature Id="Attributes" Title="Mapping Attributes" Level="1" AllowAdvertise="no">

@@ -7,6 +7,7 @@
         <assembly location="${bin.dir}/NHibernate.Caches.MemCache.dll" documentation="${bin.dir}/NHibernate.Caches.MemCache.xml" />
         <assembly location="${bin.dir}/NHibernate.Caches.Prevalence.dll" documentation="${bin.dir}/NHibernate.Caches.Prevalence.xml" />
         <assembly location="${bin.dir}/NHibernate.Caches.SysCache.dll" documentation="${bin.dir}/NHibernate.Caches.SysCache.xml" />
+        <assembly location="${bin.dir}/NHibernate.Caches.SysCache2.dll" documentation="${bin.dir}/NHibernate.Caches.SysCache2.xml" />
         <assembly location="${bin.dir}/NHibernate.JetDriver.dll" documentation="${bin.dir}/NHibernate.JetDriver.xml" />
         <assembly location="${bin.dir}/NHibernate.Mapping.Attributes.dll" documentation="${bin.dir}/NHibernate.Mapping.Attributes.xml" />
         <assembly location="${bin.dir}/NHibernate.UserTypes.Oracle.dll" documentation="${bin.dir}/NHibernate.UserTypes.Oracle.xml" />
