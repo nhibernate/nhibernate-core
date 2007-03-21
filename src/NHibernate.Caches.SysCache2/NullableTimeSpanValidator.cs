@@ -13,7 +13,7 @@ namespace NHibernate.Caches.SysCache2
 		/// </summary>
 		/// <param name="minValue">A <see cref="T:System.TimeSpan"></see> object specifying the minimum time allowed to pass validation.</param>
 		/// <param name="maxValue">A <see cref="T:System.TimeSpan"></see> object specifying the maximum time allowed to pass validation.</param>
-		public NullableTimeSpanValidator(TimeSpan minValue, TimeSpan maxValue) : this(minValue, maxValue, false, (long) 0)
+		public NullableTimeSpanValidator(TimeSpan minValue, TimeSpan maxValue) : this(minValue, maxValue, false, 0L)
 		{
 		}
 
@@ -24,7 +24,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <param name="maxValue">A <see cref="T:System.TimeSpan"></see> object specifying the maximum time allowed to pass validation.</param>
 		/// <param name="rangeIsExclusive">A <see cref="T:System.Boolean"></see> value specifying whether the validation range is exclusive.</param>
 		public NullableTimeSpanValidator(TimeSpan minValue, TimeSpan maxValue, bool rangeIsExclusive)
-			: this(minValue, maxValue, rangeIsExclusive, (long) 0)
+			: this(minValue, maxValue, rangeIsExclusive, 0L)
 		{
 		}
 

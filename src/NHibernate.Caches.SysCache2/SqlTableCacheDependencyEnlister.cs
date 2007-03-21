@@ -10,10 +10,10 @@ namespace NHibernate.Caches.SysCache2
 	public class SqlTableCacheDependencyEnlister : ICacheDependencyEnlister
 	{
 		/// <summary>the name of the table to monitor</summary>
-		private string _tableName;
+		private readonly string _tableName;
 
 		/// <summary>the name of the database entry to use for connection info</summary>
-		private string _databaseEntryName;
+		private readonly string _databaseEntryName;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlTableCacheDependencyEnlister"/> class.

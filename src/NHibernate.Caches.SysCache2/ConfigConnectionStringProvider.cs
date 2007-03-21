@@ -3,8 +3,6 @@ using System.Configuration;
 
 using NHibernate.Caches.SysCache2.Properties;
 
-using NHibernate.Caches.SysCache2.Properties;
-
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
@@ -13,7 +11,7 @@ namespace NHibernate.Caches.SysCache2
 	public class ConfigConnectionStringProvider : IConnectionStringProvider
 	{
 		/// <summary>the default connection settings</summary>
-		private ConnectionStringSettings _defaultConnectionSettings;
+		private readonly ConnectionStringSettings _defaultConnectionSettings;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConfigConnectionStringProvider"/> class.

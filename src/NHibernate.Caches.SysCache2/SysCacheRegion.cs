@@ -29,10 +29,10 @@ namespace NHibernate.Caches.SysCache2
 		private static readonly TimeSpan _defaultRelativeExpiration = TimeSpan.FromSeconds(300);
 
 		/// <summary>The cache for the web application</summary>
-		private System.Web.Caching.Cache _webCache;
+		private readonly System.Web.Caching.Cache _webCache;
 
 		/// <summary>the name of the cache region</summary>
-		private string _name;
+		private readonly string _name;
 
 		/// <summary>The priority of the cache item</summary>
 		private CacheItemPriority _priority;
@@ -44,7 +44,7 @@ namespace NHibernate.Caches.SysCache2
 		private TimeSpan? _timeOfDayExpiration;
 
 		/// <summary>The name of the cache key for the region</summary>
-		private string _rootCacheKey;
+		private readonly string _rootCacheKey;
 
 		/// <summary>Indicates if the root cache item has been stored or not</summary>
 		private bool _isRootItemCached;
@@ -52,7 +52,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <summary>
 		/// List of dependencies that need to be enlisted before being hooked to a cache item
 		/// </summary>
-		private List<ICacheDependencyEnlister> _dependencyEnlisters = new List<ICacheDependencyEnlister>();
+		private readonly List<ICacheDependencyEnlister> _dependencyEnlisters = new List<ICacheDependencyEnlister>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SysCacheRegion"/> class with
@@ -535,7 +535,7 @@ namespace NHibernate.Caches.SysCache2
 
 			_webCache.Add(_rootCacheKey, _rootCacheKey,
 			              rootCacheDependency, System.Web.Caching.Cache.NoAbsoluteExpiration, System.Web.Caching.Cache.NoSlidingExpiration,
-			              _priority, new CacheItemRemovedCallback(RootCacheItemRemovedCallback));
+			              _priority, RootCacheItemRemovedCallback);
 
 			//flag the root cache item as beeing cached
 			_isRootItemCached = true;

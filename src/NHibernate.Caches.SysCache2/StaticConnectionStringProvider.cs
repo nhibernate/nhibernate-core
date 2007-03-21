@@ -8,7 +8,7 @@ namespace NHibernate.Caches.SysCache2
 	public class StaticConnectionStringProvider : IConnectionStringProvider
 	{
 		/// <summary>specified connection string</summary>
-		private string _connectionString;
+		private readonly string _connectionString;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StaticConnectionStringProvider"/> class.

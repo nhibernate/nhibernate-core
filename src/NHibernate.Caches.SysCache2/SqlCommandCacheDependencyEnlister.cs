@@ -11,16 +11,16 @@ namespace NHibernate.Caches.SysCache2
 	public class SqlCommandCacheDependencyEnlister : ICacheDependencyEnlister
 	{
 		/// <summary>sql command to use for creating notifications</summary>
-		private string _command;
+		private readonly string _command;
 
 		/// <summary>indicates if the command is a stored procedure or not</summary>
-		private bool _isStoredProcedure;
+		private readonly bool _isStoredProcedure;
 
 		/// <summary>The name of the connection string</summary>
-		private string _connectionName;
+		private readonly string _connectionName;
 
 		/// <summary>The connection string to use for connection to the date source</summary>
-		private string _connectionString;
+		private readonly string _connectionString;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlCommandCacheDependencyEnlister"/> class.

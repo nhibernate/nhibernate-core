@@ -75,7 +75,7 @@ namespace NHibernate.Caches.SysCache2
 
 				if (regionSettings != null)
 				{
-					SysCacheRegion cacheRegion = null;
+					SysCacheRegion cacheRegion;
 
 					lock (_regionsSyncRoot)
 					{
