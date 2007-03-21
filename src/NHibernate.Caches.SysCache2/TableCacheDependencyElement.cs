@@ -1,86 +1,75 @@
-#region Using Statements
 using System;
 using System.Configuration;
-#endregion
 
-namespace NHibernateExtensions.Caches.SysCache {
+namespace NHibernateExtensions.Caches.SysCache
+{
 	/// <summary>
 	/// Configures a table monitor cache dependency for an Nhibernate cache region.
 	/// </summary>
-	public class TableCacheDependencyElement : ConfigurationElement {
-	
-		#region Private Fields
+	public class TableCacheDependencyElement : ConfigurationElement
+	{
 		/// <summary>Holds the configuration property definitions</summary>
 		private static readonly ConfigurationPropertyCollection _properties;
-		#endregion
-		
-		#region Constructors
+
 		/// <summary>
 		/// Initializes the <see cref="CacheRegionElement"/> class.
 		/// </summary>
-		static TableCacheDependencyElement() {
+		static TableCacheDependencyElement()
+		{
 			//building the properties collection and overriding the properties property apparently
 			//increases performace considerably
 			_properties = new ConfigurationPropertyCollection();
-			
-			ConfigurationProperty nameProperty = new ConfigurationProperty("name", typeof(string), String.Empty, 
-				ConfigurationPropertyOptions.IsKey );
-				
+
+			ConfigurationProperty nameProperty = new ConfigurationProperty("name", typeof(string), String.Empty,
+			                                                               ConfigurationPropertyOptions.IsKey);
+
 			_properties.Add(nameProperty);
-				
+
 			ConfigurationProperty entryProperty = new ConfigurationProperty("databaseEntryName",
-				typeof(string), null,
-				ConfigurationPropertyOptions.IsRequired);
-				
+			                                                                typeof(string), null,
+			                                                                ConfigurationPropertyOptions.IsRequired);
+
 			_properties.Add(entryProperty);
 
 			ConfigurationProperty tableNameProperty = new ConfigurationProperty("tableName",
-				typeof(string), null, 
-				ConfigurationPropertyOptions.IsRequired);
-			
+			                                                                    typeof(string), null,
+			                                                                    ConfigurationPropertyOptions.IsRequired);
+
 			_properties.Add(tableNameProperty);
-			
 		}
-		#endregion
-		
-		#region Public Properties
+
 		/// <summary>
 		/// The unique name of the dependency 
 		/// </summary>
-		public string Name {
-			get {
-				return (string)base["name"];
-			}
+		public string Name
+		{
+			get { return (string) base["name"]; }
 		}
 
 		/// <summary>
 		/// The name of the <see cref="System.Web.Configuration.SqlCacheDependencyDatabase"/> that
 		/// contains the connection information for the table monitor
 		/// </summary>
-		public string DatabaseEntryName{
-			get {
-				return (string)base["databaseEntryName"];
-			}
+		public string DatabaseEntryName
+		{
+			get { return (string) base["databaseEntryName"]; }
 		}
 
 		/// <summary>
 		/// The table in the database to monitor
 		/// </summary>
-		public string TableName{
-			get {
-				return (string)base["tableName"];
-			}
+		public string TableName
+		{
+			get { return (string) base["tableName"]; }
 		}
 
 		/// <summary>
 		/// Gets the collection of properties.
 		/// </summary>
 		/// <returns>The <see cref="T:System.Configuration.ConfigurationPropertyCollection"></see> collection of properties for the element.</returns>
-		protected override ConfigurationPropertyCollection Properties {
-			get {
-				return _properties;
-			}
-		}		
-		#endregion
+		protected override ConfigurationPropertyCollection Properties
+		{
+			get { return _properties; }
+		}
 	}
 }
