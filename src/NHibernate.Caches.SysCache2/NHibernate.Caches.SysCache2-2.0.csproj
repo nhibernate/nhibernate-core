@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CacheDependenciesElement.cs" />
     <Compile Include="CacheRegionCollection.cs" />
     <Compile Include="CacheRegionElement.cs" />
@@ -60,7 +61,6 @@
     <Compile Include="ICacheDependencyEnlister.cs" />
     <Compile Include="IConnectionStringProvider.cs" />
     <Compile Include="NullableTimeSpanValidator.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
