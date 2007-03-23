@@ -6,61 +6,85 @@
 	<abstract id="NHibernate.Caches-abstract">
 		<title>What is NHibernate.Caches?</title>
 		<formalpara>
-			<title>NHibernate.Caches are add-ins for <ulink url="http://www.nhibernate.org">NHibernate</ulink>
-			contributed by Kevin Williams (aka <emphasis>k-dub</emphasis>)</title>
+			<title>NHibernate.Caches namespace contains several second-level cache providers for NHibernate.</title>
 			
 			<para>
-				A cache is place where entities are kept (at their first loading); once in cache, they can be retrieved
-				without having to query them (again) in the back-end storage. This means that they are faster to
-				(re)load.
+				A cache is place where entities are kept after being loaded from the database; once cached, they can be
+				retrieved without going to the database. This means that they are faster to (re)load.
 			</para>
 		
 		</formalpara>
 		
 		<para>
 			An NHibernate session has an internal (first-level) cache where it keeps its entities. There is no sharing
-			between these caches; so a session is destroyed with its cache. NHibernate provides a
-			<emphasis>second-level cache</emphasis> system; it works at the SessionFactory level. So it is shared by
-			all sessions created by the same SessionFactory.
+			between these caches - a first-level cache belongs to a given session and is destroyed with it. NHibernate
+			provides a <emphasis>second-level cache</emphasis> system; it works at the session factory level.
+			A second-level cache is shared by all sessions created by the same session factory.
 		</para>
-		
+
 		<para>
-			An important point is that the second-level cache <emphasis role="strong">does not</emphasis> cache
-			instances of the object type being cached; instead it caches the individual values of the properties of
-			that object. This provides two benefits. One, NHibernate doesn't have to worry that your client code will
-			manipulate the objects in a way that will disrupt the cache. Two, the relationships and associations do not
-			become stale, and are easy to keep up-to-date because they are simply identifiers. The cache is not a tree
-			of objects but rather a map of arrays.
+			An important point is that the second-level cache <emphasis>does not</emphasis> cache instances of the object
+			type being cached; instead it caches the individual values of the properties of that object. This provides two
+			benefits. One, NHibernate doesn't have to worry that your client code will manipulate the objects in a way that
+			will disrupt the cache. Two, the relationships and associations do not become stale, and are easy to keep
+			up-to-date because they are simply identifiers. The cache is not a tree of objects but rather a map of arrays.
 		</para>
+
 		<para>
-			With the <emphasis>session-per-request</emphasis> model, a high number of Session can concurrently access
-			to the same entity without hitting the database each time; hence the performance gain.
+			With the <emphasis>session-per-request</emphasis> model, a high number of sessions can concurrently access
+			the same entity without hitting the database each time; hence the performance gain.
 		</para>
+
 		<para>
-			These contributions make it possible to use different cache providers for NHibernate:
-			<itemizedlist>
-				<listitem>
-					<para>
-						<emphasis role="strong">NHibernate.Caches.Prevalence</emphasis> makes it possible to use the
-						underlying <classname>Bamboo.Prevalence</classname> implementation as cache provider. Open the
-						file <filename>Bamboo.Prevalence.license.txt</filename> for more information about its license;
-						you can also visit its <ulink url="http://bbooprevalence.sourceforge.net/">website</ulink>.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="strong">NHibernate.Caches.SysCache</emphasis> makes it possible to use the
-						underlying <classname>System.Web.Caching.Cache</classname> implementation as cache provider.
-						This means that you can rely on ASP.NET caching feature to understand how it works. For more
-						information, read (on the MSDN):
-						<ulink url="http://msdn.microsoft.com/library/en-us/cpguide/html/cpconcacheapis.asp">Caching Application Data</ulink>.
-					</para>
-					<para>
-						Note that SysCache should only be used in ASP.NET applications. For more details, see
-						<ulink url="http://support.microsoft.com/kb/917411">this knowledge base article</ulink>.
-					</para>
-				</listitem>
-			</itemizedlist>
+			Several cache providers have been contributed by NHibernate users:
+			<variablelist>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.Prevalence</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>Bamboo.Prevalence</classname> as the cache provider. Open the
+							file <filename>Bamboo.Prevalence.license.txt</filename> for more information about its license;
+							you can also visit its <ulink url="http://bbooprevalence.sourceforge.net/">website</ulink>.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.SysCache</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>System.Web.Caching.Cache</classname> as the cache provider. This means that you can
+							rely on ASP.NET caching feature to understand how it works. For more information, read (on the MSDN):
+							<ulink url="http://msdn.microsoft.com/library/en-us/cpguide/html/cpconcacheapis.asp">Caching Application Data</ulink>.
+						</para>
+						<para>
+							Note that SysCache should only be used in ASP.NET applications. Microsoft knowledge base
+							<ulink url="http://support.microsoft.com/kb/917411">article 917411</ulink> has more details.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.SysCache2</classname></term>
+					<listitem>
+						<para>
+							Similar to <classname>NHibernate.Caches.SysCache</classname>, uses ASP.NET cache. This provider also supports
+							SQL dependency-based expiration, meaning that it is possible to configure certain cache regions to automatically
+							expire when the relevant data in the database changes.
+						</para>
+						<para>
+							SysCache2 requires Microsoft SQL Server 2000 or higher and .NET Framework version 2.0 or higher.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.MemCache</classname></term>
+					<listitem>
+						<para>
+							Uses <literal>memcached</literal>. See <ulink url="http://www.danga.com/memcached/">memcached homepage</ulink>
+							for more information.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
 		</para>
 	</abstract>
 
@@ -81,7 +105,8 @@
 					<para>
 						To tell NHibernate which cache provider to use, add in your NHibernate configuration file
 						(can be <filename>YourAssembly.exe.config</filename> or <filename>web.config</filename> or a
-						<filename>.cfg.xml</filename> file):
+						<filename>.cfg.xml</filename> file, in the latter case the syntax will be different from what
+						is shown below):
 						<programlisting>
 &lt;add key="hibernate.cache.provider_class" value="<literal>XXX</literal>" /&gt;<co id="hibernate.cache.provider_class-co" linkends="hibernate.cache.provider_class"/>
 &lt;add key="expiration" value="<literal>120</literal>" /&gt;<co id="nhcaches-expiration-co" linkends="nhcaches-expiration"/>
@@ -89,9 +114,10 @@
 						<calloutlist>
 							<callout arearefs="hibernate.cache.provider_class-co" id="hibernate.cache.provider_class">
 								<para>
-									"<literal>XXX</literal>" can be either
-									"<classname>NHibernate.Caches.Prevalence.PrevalenceCacheProvider, NHibernate.Caches.Prevalence</classname>"
-									or "<classname>NHibernate.Caches.SysCache.SysCacheProvider, NHibernate.Caches.SysCache</classname>".
+									"<literal>XXX</literal>" is the assembly-qualified class name of a class
+									implementing <classname>ICacheProvider</classname>, eg.
+									"<classname>NHibernate.Caches.SysCache.SysCacheProvider,
+									NHibernate.Caches.SysCache</classname>".
 								</para>
 							</callout>
 							<callout arearefs="nhcaches-expiration-co" id="nhcaches-expiration">
@@ -105,9 +131,9 @@
 				</listitem>
 				<listitem>
 					<para>
-						Add <emphasis role="strong">&lt;cache usage="read-write|nonstrict-read-write|read-only"/&gt;</emphasis>
-						(just after <emphasis>&lt;class&gt;</emphasis>) in the mapping of the entities you want to
-						cache. It also works for collections (bag, list, map, set, ...).
+						Add <literal>&lt;cache usage="read-write|nonstrict-read-write|read-only"/&gt;</literal> (just
+						after <literal>&lt;class&gt;</literal>) in the mapping of the entities you want to cache. It
+						also works for collections (bag, list, map, set, ...).
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -116,7 +142,7 @@
 			<title>Be careful</title>
 			<para>
 				Caches are never aware of changes made to the persistent store by another process (though they may be
-				configured to regularly expire cached data). As the caches are created at the SessionFactory level,
+				configured to regularly expire cached data). As the caches are created at the session factory level,
 				they are destroyed with the SessionFactory instance; so you must keep them alive as long as you need
 				them.
 			</para>
@@ -126,9 +152,9 @@
 	<section id="NHibernate.Caches.Prevalence">
 		<title>Prevalence Cache Configuration</title>
 		<para>
-			There is only one configurable parameter: prevalenceBase. This is the directory on the file system where
-			the Prevalence engine will save data. It can be relative to the current directory or a full path. If the
-			directory doesn't exist, it will be created.
+			There is only one configurable parameter: <literal>prevalenceBase</literal>. This is the directory on the
+			file system where the Prevalence engine will save data. It can be relative to the current directory or a
+			full path. If the directory doesn't exist, it will be created.
 		</para>
 	</section>
 
@@ -136,19 +162,32 @@
 		<title>SysCache Configuration</title>
 		<para>
 			As SysCache relies on <classname>System.Web.Caching.Cache</classname> for the underlying implementation,
-			the configuration is based on the available options that make sense for NHibernate to utilize.</para>
-		<para>
-			<itemizedlist>
-				<listitem>
-					<para>expiration = number of seconds to wait before expiring each item</para>
-				</listitem>
-				<listitem>
-					<para>priority = a numeric cost of expiring each item, where 1 is a low cost, 5 is the highest, and 3 is normal. Only values 1 through 5 are valid.</para>
-				</listitem>
-			</itemizedlist>
+			the configuration is based on the available options that make sense for NHibernate to utilize.
 		</para>
-		<para>SysCache has a config file section handler to allow configuring different expirations and priorities for different regions. Here's an example:</para>
-		<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+
+		<variablelist>
+			<varlistentry>
+				<term><literal>expiration</literal></term>
+				<listitem>
+					Number of seconds to wait before expiring each item.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>priority</literal></term>
+				<listitem>
+					A numeric cost of expiring each item, where 1 is a low cost, 5 is the highest, and 3 is normal.
+					Only values 1 through 5 are valid.
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>
+			SysCache has a config file section handler to allow configuring different expirations and priorities for
+			different regions. Here's an example:
+		</para>
+
+		<example>
+			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
 	<configSections>
 		<section name="syscache" type="NHibernate.Caches.SysCache.SysCacheSectionHandler,NHibernate.Caches.SysCache" />
@@ -158,34 +197,293 @@
 		<cache region="foo" expiration="500" priority="4" />
 		<cache region="bar" expiration="300" priority="3" />
 	</syscache>
-</configuration>]]>
-		</programlisting>
+</configuration>]]></programlisting>
+		</example>
 	</section>
 
+	<section id="NHibernate.Caches.SysCache2">
+		<title>SysCache2 Configuration</title>
 
-	<!--
+		<para>
+			SysCache2 can use SqlCacheDependencies to invalidate cache regions when data in an underlying SQL Server
+			table or query changes. Query dependencies are only available for SQL Server 2005. To use the cache
+			provider, the application must be setup and configured to support SQL notifications as described in the
+			MSDN documentation.
+		</para>
 
-	<section id="NHibernate.Caches-tips">
-		<title>Tips</title>
-		<itemizedlist>
-			<listitem><para>!</para></listitem>
-		</itemizedlist>
+		<para>
+			To configure cache regions with SqlCacheDependencies a <literal>syscache2</literal> config section must be
+			defined in the application's configuration file. See the sample below.
+		</para>
+
+		<example>
+			<programlisting><![CDATA[
+<configSections>
+	<section name="syscache2" type="NHibernate.Caches.SysCache2.SysCacheSection, NHibernate.Caches.SysCache2"/>
+</configSections>]]></programlisting>
+		</example>
+
+		<section>
+			<title>Table-based Dependency</title>
+
+			<para>
+				A table-based dependency will monitor the data in a database table for changes. Table-based
+				dependencies are generally used for a SQL Server 2000 database but will work with SQL Server 2005 as
+				well. Before you can use SQL Server cache invalidation with table based dependencies, you need to
+				enable notifications for the database. This task is performed with the <command>aspnet_regsql</command>
+				command. With table-based notifications, the application will poll the database for changes at a
+				predefined interval. A cache region will not be invalidated immediately when data in the table changes.
+				The cache will be invalidated the next time the application polls the database for changes.
+			</para>
+			
+			<para>
+				To configure the data in a cache region to be invalidated when data in an underlying table is changed,
+				a cache region must be configured in the application's configuration file. See the sample below.
+			</para>
+
+			<example>
+				<programlisting><![CDATA[<syscache2>
+	<cacheRegion name="Product">
+		<dependencies>
+			<tables>
+				<add name="price"
+					databaseEntryName="Default"
+					tableName="VideoTitle" />
+			</tables>
+		</dependencies>
+	</cacheRegion>	
+</syscache2>]]></programlisting>
+			</example>
+
+		</section>
+
+		<variablelist>
+			<title>Table-based Dependency Configuration Properties</title>
+			<varlistentry>
+				<term><literal>name</literal></term>
+				<listitem>Unique name for the dependency</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>tableName</literal></term>
+				<listitem>
+					The name of the database table that the dependency is associated with. The table must be enabled
+					for notification support with the <literal>AspNet_SqlCacheRegisterTableStoredProcedure</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>databaseEntryName</literal></term>
+				<listitem>
+					The name of a database defined in the <literal>databases</literal> element for
+					<literal>sqlCacheDependency</literal> for caching (ASP.NET Settings Schema) element of the
+					application's <literal>Web.config</literal> file.
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<section>
+			<title>Command-Based Dependencies</title>
+
+			<para>
+				A command-based dependency will use a SQL command to identify records to monitor for data changes.
+				Command-based dependencies work only with SQL Server 2005.
+			</para>
+
+			<para>
+				Before you can use SQL Server cache invalidation with command-based dependencies, you need to enable
+				the Service Broker for query notifications. The application must also start the listener for receiving
+				change notifications from SQL Server. With command based notifications, SQL Server will notify the
+				application when the data of a record returned in the results of a SQL query has changed. Note that a
+				change will be indicated if the data in any of the columns of a record change, not just the columns
+				returned by a query. The query is a way to limit the number of records monitored for changes, not the
+				columns.  As soon as data in one of the records is modified, the data in the cache region will be
+				invalidated immediately.
+			</para>
+			
+			<para>
+				To configure the data in a cache region to be invalidated based on a SQL command, a cache region must
+				be configured in the application's configuration file. See the samples below.
+			</para>
+
+			<example>
+				<title>Stored Procedure</title>
+
+				<programlisting><![CDATA[<cacheRegion name="Product" priority="High" >
+	<dependencies>
+		<commands>
+			<add name="price"
+				command="ActiveProductsStoredProcedure" 
+				isStoredProcedure="true"/>
+		</commands>
+	</dependencies>
+</cacheRegion>]]></programlisting>
+			</example>
+
+			<example>
+				<title>SELECT Statement</title>
+
+				<programlisting><![CDATA[<cacheRegion name="Product" priority="High">
+	<dependencies>
+		<commands>
+			<add name="price"
+				command="Select VideoTitleId from dbo.VideoTitle where Active = 1"
+				connectionName="default"
+				connectionStringProviderType="NHibernate.Caches.SysCache2.ConfigConnectionStringProvider, NHibernate.Caches.SysCache2"/>
+		</commands>
+	</dependencies>
+</cacheRegion>]]></programlisting>
+			</example>
+
+			<variablelist>
+				<title>Command Configuration Properties</title>
+				
+				<varlistentry>
+					<term><literal>name</literal></term>
+					<listitem>Unique name for the dependency</listitem>
+				</varlistentry>
+				
+				<varlistentry>
+					<term><literal>command</literal> (required)</term>
+					<listitem>SQL command that returns results which should be monitored for data changes</listitem>
+				</varlistentry>
+				
+				<varlistentry>
+					<term><literal>isStoredProcedure</literal> (optional)</term>
+					<listitem>
+						Indicates if command is a stored procedure. The default is <literal>false</literal>.
+					</listitem>
+				</varlistentry>
+				
+				<varlistentry>
+					<term><literal>connectionName</literal> (optional)</term>
+					<listitem>
+						The name of the connection in the applications configuration file to use for registering the
+						cache dependency for change notifications. If no value is supplied for <literal>connectionName
+						</literal> or <literal>connectionStringProviderType</literal>, the connection properties from
+						the NHibernate configruation will be used.
+					</listitem>
+				</varlistentry>
+
+				<varlistentry>
+					<term><literal>connectionStringProviderType</literal> (optional)</term>
+					<listitem>
+						<classname>IConnectionStringProvider</classname> to use for retrieving the connection string to
+						use for registering the cache dependency for change notifications.  If no value is supplied for
+						<literal>connectionName</literal>, the unnamed connection supplied by the provider will be
+						used.
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
+
+		<section>
+			<title>Aggregate Dependencies</title>
+
+			<para>
+				Multiple cache dependencies can be specified.  If any of the dependencies triggers a change
+				notification, the data in the cache region will be invalidated.  See the samples below.
+			</para>
+
+			<example>
+				<title>Multiple commands</title>
+
+				<programlisting><![CDATA[<cacheRegion name="Product">
+	<dependencies>
+		<commands>
+			<add name="price"
+				command="ActiveProductsStoredProcedure" 
+				isStoredProcedure="true"/>
+			<add name="quantity"
+				command="Select quantityAvailable from dbo.VideoAvailability"/>
+		</commands>
+	</dependencies>
+</cacheRegion>
+]]>
+				</programlisting>
+			</example>
+
+			<example>
+				<title>Mixed</title>
+				
+				<programlisting><![CDATA[<cacheRegion name="Product">
+	<dependencies>
+		<commands>
+			<add name="price"
+				command="ActiveProductsStoredProcedure" 
+				isStoredProcedure="true"/>
+		</commands>
+		<tables>
+			<add name="quantity"
+				databaseEntryName="Default"
+				tableName=" VideoAvailability" />
+		</tables>
+	</dependencies>
+</cacheRegion>]]></programlisting>
+			</example>
+		</section>
+
+		<section>
+			<title>Additional Settings</title>
+			<para>
+				In addition to data dependencies for the cache regions, time based expiration policies can be specified
+				for each item added to the cache.  Time based expiration policies will not invalidate the data
+				dependencies for the whole cache region, but serve as a way to remove items from the cache after they
+				have been in the cache for a specified amount of time.  See the samples below.
+			</para>
+
+			<example>
+				<title>Relative Expiration</title>
+
+				<programlisting><![CDATA[<cacheRegion name="Product" relativeExpiration="300" priority="High" />]]></programlisting>
+			</example>
+
+			<example>
+				<title>Time of Day Expiration</title>
+
+				<programlisting><![CDATA[<cacheRegion name="Product" timeOfDayExpiration="2:00:00" priority="High" />]]></programlisting>
+			</example>
+
+			<variablelist>
+				<title>Additional Configuration Properties</title>
+				<varlistentry>
+					<term><literal>relativeExpiration</literal></term>
+					<listitem>
+						<para>
+							Number of seconds that an individual item will exist in the cache before being removed.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>timeOfDayExpiration</literal></term>
+					<listitem>
+						<para>
+							24 hour based time of day that an item will exist in the cache until. 12am is specified as
+							00:00:00; 10pm is specified as 22:00:00. Only valid if relativeExpiration is not specified.
+							Time of Day Expiration is useful for scenarios where items should be expired from the cache
+							after a daily process completes. 
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>priority</literal></term>
+					<listitem>
+						<classname>System.Web.Caching.CacheItemPriority</classname> that identifies the relative
+						priority of items stored in the cache.
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
+
+		<section>
+			<title>Patches</title>
+
+			<para>
+				There is a known issue where some SQL Server 2005 notifications might not be received when an
+				application subscribes to query notifications by using ADO.NET 2.0. To fix this problem install
+				<ulink url="http://support.microsoft.com/Default.aspx?kbid=913364">SQL hotfix for kb 913364</ulink>.
+			</para>
+
+		</section>
+
 	</section>
-
-
-	<section id="NHibernate.Caches-todo">
-		<title>Know issues and TODOs</title>
-		<para>Read TODOs in the source code ;)</para>
-		<para>!</para>
-	</section>
-
-
-	<section id="NHibernate.Caches-devnotes">
-		<title>Developer Notes</title>
-		<para>!</para>
-	</section>
-
--->
-
 
 </chapter>
