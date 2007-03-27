@@ -2,6 +2,9 @@ using System.Data;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
+using System.Collections;
+using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Dialect
 {
@@ -53,25 +56,28 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 1073741823, "BLOB SUB_TYPE 1"); // should use the IType.ClobType
 			RegisterColumnType(DbType.Time, "TIME");
 
+			// Override standard HQL function
+			RegisterFunction("current_timestamp", new CurrentTimeStamp());
+			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
+			RegisterFunction("substring", new AnsiSubstringFunction());
+			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
+			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
+			RegisterFunction("upper", new StandardSafeSQLFunction("upper",NHibernateUtil.String, 1)); ;
+			RegisterFunction("mod", new StandardSafeSQLFunction("mod", NHibernateUtil.Double, 2));
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
+			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
+
 			// Firebird server embedded functions
-			RegisterFunction("upper", new StandardSQLFunction("upper"));
-			RegisterFunction("substring", new StandardSQLFunction("substring"));
-			RegisterFunction("today", new NoArgSQLFunction("today", NHibernateUtil.Date, false));
-			RegisterFunction("yesterday", new NoArgSQLFunction("yesterday", NHibernateUtil.Date, false));
-			RegisterFunction("tomorrow", new NoArgSQLFunction("tomorrow", NHibernateUtil.Date, false));
-			RegisterFunction("now", new NoArgSQLFunction("now", NHibernateUtil.DateTime, false));
-			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
+			RegisterFunction("today", new CastedFunction("today", NHibernateUtil.Date));
+			RegisterFunction("yesterday", new CastedFunction("yesterday", NHibernateUtil.Date));
+			RegisterFunction("tomorrow", new CastedFunction("tomorrow", NHibernateUtil.Date));
+			RegisterFunction("now", new CastedFunction("now", NHibernateUtil.DateTime));
 			// New embedded functions in FB 2.0 (http://www.firebirdsql.org/rlsnotes20/rnfbtwo-str.html#str-string-func)
-			RegisterFunction("lower", new StandardSQLFunction("lower"));
-			RegisterFunction("trim", new StandardSQLFunction("trim"));
-			RegisterFunction("char_length", new StandardSQLFunction("char_length"));
-			RegisterFunction("bit_length", new StandardSQLFunction("bit_length"));
-			RegisterFunction("octet_length", new StandardSQLFunction("octet_length"));
+			RegisterFunction("char_length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
+			RegisterFunction("bit_length", new StandardSafeSQLFunction("bit_length", NHibernateUtil.Int64, 1));
+			RegisterFunction("octet_length", new StandardSafeSQLFunction("octet_length", NHibernateUtil.Int64, 1));
 
 			// External Firebird and Interbase standard UDFs
-			//Conditional Logic Functions
-			RegisterFunction("invl", new StandardSQLFunction("invl"));
-			RegisterFunction("snvl", new StandardSQLFunction("snvl"));
 			//Mathematical Functions
 			RegisterFunction("abs", new StandardSQLFunction("abs", NHibernateUtil.Double));
 			RegisterFunction("bin_and", new StandardSQLFunction("bin_and", NHibernateUtil.Int32));
@@ -80,17 +86,16 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double));
 			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
 			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));
-			RegisterFunction("floor", new StandardSQLFunction("floor", NHibernateUtil.Double));
 			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
-			RegisterFunction("modulo", new StandardSQLFunction("modulo", NHibernateUtil.Double));
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
-			RegisterFunction("round", new StandardSQLFunction("round"));
 			RegisterFunction("sing", new StandardSQLFunction("sing", NHibernateUtil.Double));
 			RegisterFunction("sqtr", new StandardSQLFunction("sqtr", NHibernateUtil.Double));
 			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
+			RegisterFunction("floor", new StandardSafeSQLFunction("floor", NHibernateUtil.Double, 1));
+			RegisterFunction("round", new StandardSQLFunction("round"));
 			//Date and Time Functions
 			RegisterFunction("dow", new StandardSQLFunction("dow", NHibernateUtil.String));
 			RegisterFunction("sdow", new StandardSQLFunction("sdow", NHibernateUtil.String));
@@ -206,5 +211,34 @@ namespace NHibernate.Dialect
 
 			return -1;
 		}
+
+		private class CastedFunction : NoArgSQLFunction
+		{
+			public CastedFunction(string name, IType returnType)
+				: base(name, returnType, false)
+			{
+			}
+
+			public override string Render(IList args, ISessionFactoryImplementor factory)
+			{
+				base.Render(args, factory);
+				return string.Format("cast('{0}' as {1})", name, returnType.SqlTypes(factory)[0]);
+			}
+		}
+
+		private class CurrentTimeStamp: NoArgSQLFunction
+		{
+			public CurrentTimeStamp()
+				: base("current_timestamp", NHibernateUtil.DateTime, true)
+			{ }
+
+			public override string Render(IList args, ISessionFactoryImplementor factory)
+			{
+				return name;
+			}
+		}
 	}
+
+
+
 }

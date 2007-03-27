@@ -9,8 +9,8 @@ namespace NHibernate.Dialect.Function
 	/// </summary>
 	public class NoArgSQLFunction : ISQLFunction
 	{
-		private IType returnType = null;
-		private readonly string name;
+		protected readonly IType returnType = null;
+		protected readonly string name;
 		private readonly bool hasParenthesesIfNoArguments;
 
 		public NoArgSQLFunction(string name, IType returnType) : this(name, returnType, true)
@@ -41,7 +41,7 @@ namespace NHibernate.Dialect.Function
 			get { return hasParenthesesIfNoArguments; }
 		}
 
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public virtual string Render(IList args, ISessionFactoryImplementor factory)
 		{
 			if (args.Count > 0)
 			{

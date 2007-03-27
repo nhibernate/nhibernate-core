@@ -4,10 +4,11 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Globalization;
 
 namespace NHibernate.Dialect.Function
 {
-	public class ClassicAggregateFunction : ISQLFunction
+	public class ClassicAggregateFunction : ISQLFunction, IFunctionGrammar
 	{
 		private IType returnType = null;
 		private readonly string name;
@@ -93,5 +94,21 @@ namespace NHibernate.Dialect.Function
 		{
 			return name;
 		}
+
+
+		#region IFunctionGrammar Members
+
+		bool IFunctionGrammar.IsSeparator(string token)
+		{
+			return false;
+		}
+
+		bool IFunctionGrammar.IsKnownArgument(string token)
+		{
+			return "distinct".Equals(token.ToLower(CultureInfo.InvariantCulture)) ||
+				"all".Equals(token.ToLower(CultureInfo.InvariantCulture));
+		}
+
+		#endregion
 	}
 }

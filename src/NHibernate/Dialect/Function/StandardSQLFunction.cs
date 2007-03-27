@@ -16,7 +16,7 @@ namespace NHibernate.Dialect.Function
 	public class StandardSQLFunction : ISQLFunction
 	{
 		private IType returnType = null;
-		private readonly string name;
+		protected readonly string name;
 
 		/// <summary>
 		/// Initializes a new instance of the StandardSQLFunction class.

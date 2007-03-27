@@ -3,6 +3,7 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Text.RegularExpressions;
 
 namespace NHibernate.Dialect.Function
 {
@@ -13,7 +14,7 @@ namespace NHibernate.Dialect.Function
 	/// which it uses in various combinations to emulate the desired ANSI trim()
 	/// functionality.
 	/// </summary>
-	public class AnsiTrimEmulationFunction : ISQLFunction
+	public class AnsiTrimEmulationFunction : ISQLFunction, IFunctionGrammar
 	{
 		private static readonly ISQLFunction LeadingSpaceTrim = new SQLFunctionTemplate(NHibernateUtil.String, "ltrim( ?1 )");
 		private static readonly ISQLFunction TrailingSpaceTrim = new SQLFunctionTemplate(NHibernateUtil.String, "rtrim( ?1 )");
@@ -188,6 +189,21 @@ namespace NHibernate.Dialect.Function
 					}
 				}
 			}
+		}
+
+		#endregion
+
+		#region IFunctionGrammar Members
+
+		bool IFunctionGrammar.IsSeparator(string token)
+		{
+			return false;
+		}
+
+		bool IFunctionGrammar.IsKnownArgument(string token)
+		{
+			return Regex.IsMatch(token, "LEADING|TRAILING|BOTH|FROM",
+				RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 		}
 
 		#endregion

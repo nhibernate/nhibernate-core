@@ -115,6 +115,10 @@ namespace NHibernate.Hql.Classic
 			negations.Add("not in", "in");
 			negations.Add("not between", "between");
 			negations.Add("not exists", "exists");
+
+			specialFunctions.Add("trim");
+			specialFunctions.Add("extract");
+
 		}
 
 		// Handles things like:
@@ -142,6 +146,11 @@ namespace NHibernate.Hql.Classic
 		private bool inSubselect = false;
 		private int bracketsSinceSelect = 0;
 		private StringBuilder subselect;
+
+		// To parse correctly the functions TRIM and EXTRACT (Note subselect inside TRIM is not supported)
+		private static ISet specialFunctions = new HashedSet();
+		private bool isInSpecialFunctionClause = false;
+		private int specialFunctionParenCount = 0;
 
 		private bool expectingPathContinuation = false;
 		private int expectingIndex = 0;
@@ -221,7 +230,7 @@ namespace NHibernate.Hql.Classic
 			}
 
 			//Cope with a subselect
-			if (!inSubselect && (lcToken.Equals("select") || lcToken.Equals("from")))
+			if (!inSubselect && (lcToken.Equals("select") || (lcToken.Equals("from") && !isInSpecialFunctionClause)))
 			{
 				inSubselect = true;
 				subselect = new StringBuilder(20);
@@ -281,6 +290,19 @@ namespace NHibernate.Hql.Classic
 				return; //NOTE: early return
 			}
 
+			if (!isInSpecialFunctionClause && specialFunctions.Contains(lcToken))
+			{
+				isInSpecialFunctionClause = true;
+			}
+			if (isInSpecialFunctionClause && token.Equals(StringHelper.OpenParen))
+			{
+				specialFunctionParenCount++;
+			}
+			if (isInSpecialFunctionClause && token.Equals(StringHelper.ClosedParen))
+			{
+				specialFunctionParenCount--;
+				isInSpecialFunctionClause = specialFunctionParenCount > 0;
+			}
 			//process a token, mapping OO path expressions to SQL expressions
 			DoToken(token, q);
 

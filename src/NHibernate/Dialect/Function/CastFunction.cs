@@ -9,7 +9,7 @@ namespace NHibernate.Dialect.Function
 	/// <summary>
 	/// ANSI-SQL style cast(foo as type) where the type is a NHibernate type
 	/// </summary>
-	public class CastFunction : ISQLFunction
+	public class CastFunction : ISQLFunction, IFunctionGrammar
 	{
 		public CastFunction()
 		{
@@ -19,7 +19,9 @@ namespace NHibernate.Dialect.Function
 
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
-			return columnType; //note there is a wierd implementation in the client side
+			//note there is a wierd implementation in the client side
+			//TODO: cast that use only costant are not supported in SELECT. Ex: cast(5 as string)  
+			return columnType; 
 		}
 
 		public bool HasArguments
@@ -68,7 +70,21 @@ namespace NHibernate.Dialect.Function
 			{
 				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 			}
-			return "cast(" + args[0] + " as " + sqlType + ')';
+			return String.Format("cast({0} as {1})", args[0], sqlType);
+		}
+
+		#endregion
+
+		#region IFunctionGrammar Members
+
+		bool IFunctionGrammar.IsSeparator(string token)
+		{
+			return "as".Equals(token);
+		}
+
+		bool IFunctionGrammar.IsKnownArgument(string token)
+		{
+			return false;
 		}
 
 		#endregion

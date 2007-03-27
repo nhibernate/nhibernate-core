@@ -11,5 +11,15 @@
 		</id>
 		<property name="Description"/>
 		<property name="BodyWeight" type="float"/>
+		<joined-subclass name="Human">
+			<key column="animalId"/>
+			<component name="Name">
+				<property name="First" column="name_first"/>
+				<property name="Initial" column="name_initial"/>
+				<property name="Last" column="name_last"/>
+			</component>
+			<property name="NickName"/>
+			<property name="Birthdate" type="Date"/>
+		</joined-subclass>
 	</class>
 </hibernate-mapping>

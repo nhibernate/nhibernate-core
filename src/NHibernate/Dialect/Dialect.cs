@@ -42,8 +42,8 @@ namespace NHibernate.Dialect
 		{
 			standardAggregateFunctions["count"] = new CountQueryFunctionInfo();
 			standardAggregateFunctions["avg"] = new AvgQueryFunctionInfo();
-			standardAggregateFunctions["max"] = new StandardSQLFunction("max");
-			standardAggregateFunctions["min"] = new StandardSQLFunction("min");
+			standardAggregateFunctions["max"] = new ClassicAggregateFunction("max",false);
+			standardAggregateFunctions["min"] = new ClassicAggregateFunction("min",false);
 			standardAggregateFunctions["sum"] = new SumQueryFunctionInfo();
 		}
 
@@ -67,7 +67,7 @@ namespace NHibernate.Dialect
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
 			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
-			RegisterFunction("trim", new SQLFunctionTemplate(NHibernateUtil.String, "trim(?1 ?2 ?3 ?4)"));
+			RegisterFunction("trim", new AnsiTrimFunction());
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("bit_length", new StandardSQLFunction("bit_length", NHibernateUtil.Int32));
 			RegisterFunction("coalesce", new StandardSQLFunction("coalesce"));
@@ -78,8 +78,14 @@ namespace NHibernate.Dialect
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("cast", new CastFunction());
-			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(?1 ?2 ?3)"));
+			RegisterFunction("extract", new AnsiExtractFunction());
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
+
+			// the syntax of current_timestamp is extracted from H3.2 tests 
+			// - test\hql\ASTParserLoadingTest.java
+			// - test\org\hibernate\test\hql\HQLTest.java
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, true));
+			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.DateTime, false));
 
 			//map second/minute/hour/day/month/year to ANSI extract(), override on subclasses
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(second from ?1)"));
@@ -938,9 +944,9 @@ namespace NHibernate.Dialect
 
 		#region Agregate function redefinition
 
-		protected class CountQueryFunctionInfo : StandardSQLFunction
+		protected class CountQueryFunctionInfo : ClassicAggregateFunction
 		{
-			public CountQueryFunctionInfo() : base("count")
+			public CountQueryFunctionInfo() : base("count",true)
 			{
 			}
 
@@ -950,9 +956,9 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		protected class AvgQueryFunctionInfo : StandardSQLFunction
+		protected class AvgQueryFunctionInfo : ClassicAggregateFunction
 		{
-			public AvgQueryFunctionInfo() : base("avg")
+			public AvgQueryFunctionInfo() : base("avg",false)
 			{
 			}
 
@@ -976,9 +982,9 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		protected class SumQueryFunctionInfo : StandardSQLFunction
+		protected class SumQueryFunctionInfo : ClassicAggregateFunction
 		{
-			public SumQueryFunctionInfo() : base("sum")
+			public SumQueryFunctionInfo() : base("sum",false)
 			{
 			}
 

@@ -6,6 +6,7 @@ using NHibernate.Dialect.Function;
 using NHibernate.Hql.Util;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Text.RegularExpressions;
 
 namespace NHibernate.Hql.Classic
 {
@@ -15,16 +16,9 @@ namespace NHibernate.Hql.Classic
 	/// </summary>
 	public class SelectParser : IParser
 	{
-		private ArrayList aggregateFuncTokenList = new ArrayList();
-		private static IDictionary aggregateFunctions = new Hashtable();
-		private static ISet countArguments = new HashedSet();
-
 		/// <summary></summary>
 		static SelectParser()
 		{
-			countArguments.Add("distinct");
-			countArguments.Add("all");
-			countArguments.Add("*");
 		}
 
 		/// <summary></summary>
@@ -33,20 +27,18 @@ namespace NHibernate.Hql.Classic
 			//TODO: would be nice to use false, but issues with MS SQL
 			//TODO: H2.0.3 why not getting info from Dialect?
 			pathExpressionParser.UseThetaStyleJoin = true;
-			aggregatePathExpressionParser.UseThetaStyleJoin = true;
 		}
 
 		private bool ready;
-		private bool aggregate;
 		private bool first;
 		private bool afterNew;
 		private bool insideNew;
-		private bool aggregateAddSelectScalar;
-		private bool afterAggregatePath;
 		private System.Type holderClass;
 
 		private SelectPathExpressionParser pathExpressionParser = new SelectPathExpressionParser();
-		private PathExpressionParser aggregatePathExpressionParser = new PathExpressionParser();
+
+		private FunctionStack funcStack;
+		private int parenCount = 0;
 
 		/// <summary>
 		/// 
@@ -99,103 +91,92 @@ namespace NHibernate.Hql.Classic
 			}
 			else if (StringHelper.OpenParen.Equals(token))
 			{
-				if (!aggregate && holderClass != null && !ready)
+				parenCount++;
+				if (!funcStack.HasFuctions && holderClass != null && !ready)
 				{
 					//opening paren in new Foo ( ... )
 					ready = true;
 				}
-				else if (aggregate)
+				else if (funcStack.HasFuctions)
 				{
 					q.AppendScalarSelectToken(token);
 				}
 				else
 				{
-					throw new QueryException("aggregate function expected before ( in SELECT");
+					throw new QueryException("HQL function expected before '(' in SELECT clause.");
 				}
 				ready = true;
 			}
 			else if (StringHelper.ClosedParen.Equals(token))
 			{
-				if (insideNew && !aggregate && !ready)
+				parenCount--;
+				if (parenCount < 0)
+				{
+					throw new QueryException("'(' expected before ')' in SELECT clause.");
+				}
+
+				if (insideNew && !funcStack.HasFuctions && !ready)
 				{
 					//if we are inside a new Result(), but not inside a nested function
 					insideNew = false;
 				}
-				else if (aggregate && ready)
+				else if (funcStack.HasFuctions)
 				{
 					q.AppendScalarSelectToken(token);
-					aggregateFuncTokenList.RemoveAt(0);
-					if (aggregateFuncTokenList.Count < 1)
-					{
-						aggregate = false;
-						ready = false;
-					}
+					IType scalarType = funcStack.GetReturnType();
+					funcStack.Pop();
+					ready = funcStack.HasFuctions;
+					// if all function was parsed add de type of the first function in stack
+					if(!funcStack.HasFuctions)
+						q.AddSelectScalar(scalarType);
+				}
+			}
+			else if (IsHQLFunction(lctoken, q) && token == q.Unalias(token))
+			{
+				if (!ready && !funcStack.HasFuctions)
+				{
+					// The syntax control inside a functions is delegated to the render
+					throw new QueryException("',' expected before function in SELECT: " + token);
+				}
+				if (funcStack.HasFuctions && funcStack.FunctionGrammar.IsKnownArgument(lctoken))
+				{
+					// Some function, like extract, may have KnownArgument with the same name of another function
+					q.AppendScalarSelectToken(token);
 				}
 				else
 				{
-					throw new QueryException("( expected before ) in select");
-				}
-			}
-			else if (countArguments.Contains(lctoken))
-			{
-				if (!ready || !aggregate)
-				{
-					throw new QueryException(token + " only allowed inside aggregate function in SELECT");
-				}
-				q.AppendScalarSelectToken(token);
-				if ("*".Equals(token) && !afterAggregatePath)
-				{
-					q.AddSelectScalar(GetFunction("count", q).ReturnType(NHibernateUtil.Int64, q.Factory));
-				} //special case
-				afterAggregatePath = false;
-			}
-			else if (GetFunction(lctoken, q) != null && token == q.Unalias(token))
-			{
-				// the name of an SQL function
-				if (!ready)
-				{
-					throw new QueryException(", expected before aggregate function in SELECT: " + token);
-				}
-				aggregate = true;
-				afterAggregatePath = false;
-				aggregateAddSelectScalar = true;
-				aggregateFuncTokenList.Insert(0, lctoken);
-				ready = false;
-				q.AppendScalarSelectToken(token);
-				if (!AggregateHasArgs(lctoken, q))
-				{
-					q.AddSelectScalar(AggregateType(aggregateFuncTokenList, null, q));
-					if (!AggregateFuncNoArgsHasParenthesis(lctoken, q))
+					// Is a nested function
+					funcStack.Push(GetFunction(lctoken, q));
+					q.AppendScalarSelectToken(token);
+					if (!funcStack.SqlFunction.HasArguments)
 					{
-						aggregateFuncTokenList.RemoveAt(0);
-						if (aggregateFuncTokenList.Count < 1)
+						q.AddSelectScalar(funcStack.GetReturnType());
+						if (!funcStack.SqlFunction.HasParenthesesIfNoArguments)
 						{
-							aggregate = false;
-							ready = false;
-						}
-						else
-						{
-							ready = true;
+							funcStack.Pop();
+							ready = funcStack.HasFuctions;
 						}
 					}
 				}
 			}
-			else if (aggregate)
+			else if (funcStack.HasFuctions)
 			{
 				bool constantToken = false;
-				if (!ready)
+				if (!ready && parenCount != funcStack.NestedFunctionCount)
 				{
-					throw new QueryException("( expected after aggregate function in SELECT");
+					throw new QueryException("'(' expected after HQL function in SELECT");
 				}
 				try
 				{
-					ParserHelper.Parse(aggregatePathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
+					ParserHelper.Parse(funcStack.PathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
 				}
 				catch (QueryException)
 				{
+					if (IsPathExpression(token))
+						throw;
+					// If isn't a path the token is added like part of function arguments
 					constantToken = true;
 				}
-				afterAggregatePath = true;
 
 				if (constantToken)
 				{
@@ -203,87 +184,116 @@ namespace NHibernate.Hql.Classic
 				}
 				else
 				{
-					if (aggregatePathExpressionParser.IsCollectionValued)
+					if (funcStack.PathExpressionParser.IsCollectionValued)
 					{
 						q.AddCollection(
-							aggregatePathExpressionParser.CollectionName,
-							aggregatePathExpressionParser.CollectionRole);
+							funcStack.PathExpressionParser.CollectionName,
+							funcStack.PathExpressionParser.CollectionRole);
 					}
-					q.AppendScalarSelectToken(aggregatePathExpressionParser.WhereColumn);
-					if (aggregateAddSelectScalar)
-					{
-						q.AddSelectScalar(AggregateType(aggregateFuncTokenList, aggregatePathExpressionParser.WhereColumnType, q));
-						aggregateAddSelectScalar = false;
-					}
-					aggregatePathExpressionParser.AddAssociation(q);
+					q.AppendScalarSelectToken(funcStack.PathExpressionParser.WhereColumn);
+					funcStack.PathExpressionParser.AddAssociation(q);
 				}
+				// after a function argument
+				ready = false;
 			}
 			else
 			{
 				if (!ready)
 				{
-					throw new QueryException(", expected in SELECT");
+					throw new QueryException("',' expected in SELECT before:" + token);
 				}
 
-				ParserHelper.Parse(pathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
-				if (pathExpressionParser.IsCollectionValued)
+				try
 				{
-					q.AddCollection(
-						pathExpressionParser.CollectionName,
-						pathExpressionParser.CollectionRole);
+					//High probablly to find a valid pathExpression
+					ParserHelper.Parse(pathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
+					if (pathExpressionParser.IsCollectionValued)
+					{
+						q.AddCollection(
+							pathExpressionParser.CollectionName,
+							pathExpressionParser.CollectionRole);
+					}
+					else if (pathExpressionParser.WhereColumnType.IsEntityType)
+					{
+						q.AddSelectClass(pathExpressionParser.SelectName);
+					}
+					q.AppendScalarSelectTokens(pathExpressionParser.WhereColumns);
+					q.AddSelectScalar(pathExpressionParser.WhereColumnType);
+					pathExpressionParser.AddAssociation(q);				
 				}
-				else if (pathExpressionParser.WhereColumnType.IsEntityType)
+				catch (QueryException)
 				{
-					q.AddSelectClass(pathExpressionParser.SelectName);
+					// Accept costants in SELECT: NH-280
+					// TODO: Parse a costant expression like 5+3+8 (now is not supported in SELECT)
+					if (IsStringCostant(token))
+					{
+						q.AppendScalarSelectToken(token);
+						q.AddSelectScalar(NHibernateUtil.String);
+					}
+					else if (IsIntegerConstant(token))
+					{
+						q.AppendScalarSelectToken(token);
+						q.AddSelectScalar(GetIntegerConstantType(token));
+					}
+					else if (IsFloatingPointConstant(token))
+					{
+						q.AppendScalarSelectToken(token);
+						q.AddSelectScalar(GetFloatingPointConstantType(token));
+					}
+					else if (IsParameter(token))
+					{
+						//q.AddNamedParameter(token.Substring(1));
+						//q.AppendScalarSelectToken(token);
+						throw new QueryException("parameters are not supported in SELECT.", new NotSupportedException());
+					}
+					else
+						throw;
 				}
-				q.AppendScalarSelectTokens(pathExpressionParser.WhereColumns);
-				q.AddSelectScalar(pathExpressionParser.WhereColumnType);
-				pathExpressionParser.AddAssociation(q);
-
 				ready = false;
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="funcToken"></param>
-		/// <param name="q"></param>
-		/// <returns></returns>
-		public bool AggregateHasArgs(String funcToken, QueryTranslator q)
+		private bool IsPathExpression(string token)
 		{
-			return GetFunction(funcToken, q).HasArguments;
+			return Regex.IsMatch(token, @"\A[A-Za-z_][A-Za-z_0-9]*[.][A-Za-z_][A-Za-z_0-9]*\z", RegexOptions.Singleline);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="funcToken"></param>
-		/// <param name="q"></param>
-		/// <returns></returns>
-		public bool AggregateFuncNoArgsHasParenthesis(string funcToken, QueryTranslator q)
+		private bool IsStringCostant(string token)
 		{
-			return GetFunction(funcToken, q).HasParenthesesIfNoArguments;
+			return Regex.IsMatch(token,@"\A'('{2})*([^'\r\n]*)('{2})*([^'\r\n]*)('{2})*'\z",RegexOptions.Singleline);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="funcTokenList"></param>
-		/// <param name="type"></param>
-		/// <param name="q"></param>
-		/// <returns></returns>
-		public IType AggregateType(ArrayList funcTokenList, IType type, QueryTranslator q)
+		private bool IsIntegerConstant(string token)
 		{
-			IType argType = type;
-			IType retType = type;
-			for (int i = 0; i < funcTokenList.Count; i++)
-			{
-				argType = retType;
-				string funcToken = (string) funcTokenList[i];
-				retType = GetFunction(funcToken, q).ReturnType(argType, q.Factory);
-			}
-			return retType;
+			// The tokenizer make difficult parse a signed numerical constant
+			return Regex.IsMatch(token,@"\A[+-]?\d\d*\z",RegexOptions.Singleline);
+		}
+
+		private bool IsFloatingPointConstant(string token)
+		{
+			// The tokenizer make difficult parse a signed numerical constant
+			return Regex.IsMatch(token, @"\A(?:[-+]?(\d+\.\d+)|(\.\d+))\z", RegexOptions.Singleline);
+		}
+
+		private static string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", StringHelper.NamePrefix, StringHelper.SqlParameter);
+		private bool IsParameter(string token)
+		{
+			return Regex.IsMatch(token, paramMatcher, RegexOptions.Singleline);
+		}
+
+		private IType GetIntegerConstantType(string token)
+		{
+			return NHibernateUtil.Int32;
+		}
+
+		private IType GetFloatingPointConstantType(string token)
+		{
+			return NHibernateUtil.Double;
+		}
+
+		private bool IsHQLFunction(string funcName, QueryTranslator q)
+		{
+			return q.Factory.SQLFunctionRegistry.HasFunction(funcName);
 		}
 
 		private ISQLFunction GetFunction(string name, QueryTranslator q)
@@ -299,10 +309,10 @@ namespace NHibernate.Hql.Classic
 		{
 			ready = true;
 			first = true;
-			aggregate = false;
 			afterNew = false;
 			holderClass = null;
-			aggregateFuncTokenList.Clear();
+			parenCount = 0;
+			funcStack = new FunctionStack(q.Factory);
 		}
 
 		/// <summary>
@@ -311,6 +321,10 @@ namespace NHibernate.Hql.Classic
 		/// <param name="q"></param>
 		public void End(QueryTranslator q)
 		{
+			if (parenCount > 0 || funcStack.HasFuctions)
+			{
+				throw new QueryException("close paren missed in SELECT");
+			}
 		}
 	}
 }

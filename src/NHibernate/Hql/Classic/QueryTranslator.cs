@@ -18,6 +18,9 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Dialect.Function;
+using System.Collections.Specialized;
+using System.Text.RegularExpressions;
 
 namespace NHibernate.Hql.Classic
 {
@@ -776,10 +779,17 @@ namespace NHibernate.Hql.Classic
 			// TODO: for some dialects it would be appropriate to add the renderOrderByPropertiesSelect() to other select strings
 			MergeJoins(sql.JoinFragment);
 
+			// HQL functions in whereTokens, groupByTokens, havingTokens and orderByTokens aren't rendered
+			RenderFunctions(whereTokens);
 			sql.SetWhereTokens(whereTokens);
 
+			RenderFunctions(groupByTokens);
 			sql.SetGroupByTokens(groupByTokens);
+
+			RenderFunctions(havingTokens);
 			sql.SetHavingTokens(havingTokens);
+
+			RenderFunctions(orderByTokens);
 			sql.SetOrderByTokens(orderByTokens);
 
 			fetchedCollections.AddOrderBy(sql);
@@ -895,46 +905,56 @@ namespace NHibernate.Hql.Classic
 				int c = 0;
 				bool nolast = false; //real hacky...
 				int parenCount = 0; // used to count the nesting of parentheses
-				foreach (object next in scalarSelectTokens)
+				for (int tokenIdx = 0; tokenIdx < scalarSelectTokens.Count; tokenIdx++)
 				{
+					object next = scalarSelectTokens[tokenIdx];
 					if (next is string)
 					{
-						string token = (string) next;
+						string token = (string)next;
 						string lc = token.ToLower(CultureInfo.InvariantCulture);
-
-						if (StringHelper.OpenParen.Equals(token))
+						ISQLFunction func = Factory.SQLFunctionRegistry.FindSQLFunction(lc);
+						if (func != null)
 						{
-							parenCount++;
+							// Render the HQL function
+							string renderedFunction = RenderFunctionClause(func, scalarSelectTokens, ref tokenIdx);
+							buf.Append(renderedFunction);
 						}
-						else if (StringHelper.ClosedParen.Equals(token))
+						else
 						{
-							parenCount--;
-						}
-						else if (lc.Equals(StringHelper.CommaSpace))
-						{
-							if (nolast)
+							if (StringHelper.OpenParen.Equals(token))
 							{
-								nolast = false;
+								parenCount++;
 							}
-							else
+							else if (StringHelper.ClosedParen.Equals(token))
 							{
-								if (!isSubselect && parenCount == 0)
+								parenCount--;
+							}
+							else if (lc.Equals(StringHelper.CommaSpace))
+							{
+								if (nolast)
 								{
-									buf.Append(" as ").Append(ScalarName(c++, 0));
+									nolast = false;
+								}
+								else
+								{
+									if (!isSubselect && parenCount == 0)
+									{
+										buf.Append(" as ").Append(ScalarName(c++, 0));
+									}
 								}
 							}
-						}
 
-						buf.Append(token);
-						if (lc.Equals("distinct") || lc.Equals("all"))
-						{
-							buf.Append(' ');
+							buf.Append(token);
+							if (lc.Equals("distinct") || lc.Equals("all"))
+							{
+								buf.Append(' ');
+							}
 						}
 					}
 					else
 					{
 						nolast = true;
-						string[] tokens = (string[]) next;
+						string[] tokens = (string[])next;
 						for (int i = 0; i < tokens.Length; i++)
 						{
 							buf.Append(tokens[i]);
@@ -957,6 +977,164 @@ namespace NHibernate.Hql.Classic
 			}
 
 			return buf.ToString();
+		}
+
+		private class FunctionPlaceHolder
+		{
+			public readonly int startToken;
+			public readonly int tokensCount;
+			public readonly string renderedFunction;
+			public FunctionPlaceHolder(int startToken, int tokensCount, string renderedFunction)
+			{
+				this.startToken = startToken;
+				this.tokensCount = tokensCount;
+				this.renderedFunction = renderedFunction;
+			}
+		}
+
+		// Parameters inside function are not supported
+		private void RenderFunctions(IList tokens)
+		{
+			for (int tokenIdx = 0; tokenIdx < tokens.Count; tokenIdx++)
+			{
+				string token = tokens[tokenIdx].ToString().ToLower(CultureInfo.InvariantCulture);
+				ISQLFunction func = Factory.SQLFunctionRegistry.FindSQLFunction(token);
+				if (func != null)
+				{
+					int flTokenIdx = tokenIdx;
+					string renderedFunction = RenderFunctionClause(func, tokens, ref flTokenIdx);
+					// At this point we have the trunk that represent the function with it's parameters enclosed
+					// in paren. Now all token in the tokens list can be removed from original list because they must
+					// be replased with the rendered function.
+					for (int i = 1; i <= (flTokenIdx - tokenIdx); i++)
+						tokens.RemoveAt(tokenIdx+1);
+					tokens[tokenIdx] = renderedFunction;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Extract the complete clause of function.
+		/// </summary>
+		/// <param name="tokens">The list of tokens</param>
+		/// <param name="tokenIdx">The index of the list that represent the founded function.</param>
+		/// <returns>String trepresentation of each token.</returns>
+		/// <remarks>Each token can be string or SqlString </remarks>
+		private StringCollection ExtractFunctionClause(IList tokens, ref int tokenIdx)
+		{
+			string funcName = tokens[tokenIdx].ToString();
+			StringCollection functionTokens = new StringCollection();
+			functionTokens.Add(funcName);
+			tokenIdx++;
+			if (tokenIdx >= tokens.Count ||
+				!StringHelper.OpenParen.Equals(tokens[tokenIdx].ToString()))
+			{
+				// All function with parameters have the syntax
+				// <function name> <left paren> <parameters> <right paren>
+				throw new QueryException("'(' expected after function " + funcName);
+			}
+			functionTokens.Add(StringHelper.OpenParen);
+			tokenIdx++;
+			int parenCount = 1;
+			for (; tokenIdx < tokens.Count && parenCount > 0; tokenIdx++)
+			{
+				if (!(tokens[tokenIdx] is string) && !(tokens[tokenIdx] is SqlString))
+				{
+					// Only to protect this method from unmanaged types
+					throw new QueryException(string.Format("The function {0} have not supported parameters list. The parameter is {1}"
+						, funcName, tokens[tokenIdx].GetType().AssemblyQualifiedName), new NotSupportedException());
+				}
+				if (tokens[tokenIdx].ToString().StartsWith(StringHelper.NamePrefix) || tokens[tokenIdx].ToString().Equals(StringHelper.SqlParameter))
+				{
+					throw new QueryException(string.Format("Parameters inside function are not supported (function '{0}').", funcName),
+						new NotSupportedException());
+				}
+				functionTokens.Add(tokens[tokenIdx].ToString());
+				if (StringHelper.OpenParen.Equals(tokens[tokenIdx].ToString()))
+				{
+					parenCount++;
+				}
+				else if (StringHelper.ClosedParen.Equals(tokens[tokenIdx].ToString()))
+				{
+					parenCount--;
+				}
+			}
+			tokenIdx--; // position of the last managed token
+			if (parenCount > 0)
+			{
+				throw new QueryException("')' expected for function " + funcName);
+			}
+			return functionTokens;
+		}
+
+		private string RenderFunctionClause(ISQLFunction func, IList tokens, ref int tokenIdx)
+		{
+			StringCollection functionTokens;
+			if (!func.HasArguments)
+			{
+				// The function don't work with arguments.
+				if (func.HasParenthesesIfNoArguments)
+					functionTokens = ExtractFunctionClause(tokens, ref tokenIdx);
+
+				// The function render simply translate is't name for a specific dialect.
+				return func.Render(null, Factory);
+			}
+			functionTokens = ExtractFunctionClause(tokens, ref tokenIdx);
+
+			IFunctionGrammar fg = func as IFunctionGrammar;
+			if (fg == null)
+				fg = new CommonGrammar();
+
+			StringCollection args = new StringCollection();
+			StringBuilder argBuf = new StringBuilder(20);
+			// Extract args spliting first 2 token because are: FuncName(
+			// last token is ')'
+			// To allow expressions like arg (ex:5+5) all tokens between 'argument separator' or
+			// a 'know argument' are compacted in a string, 
+			// because many HQL function expect IList<string> like args in Render method.
+			// This solution give us the ability to use math expression in common function. 
+			// Ex: sum(a.Prop+10), cast(yesterday-1 as date)
+			for (int argIdx = 2; argIdx < functionTokens.Count - 1; argIdx++)
+			{
+				string token = functionTokens[argIdx];
+				if(fg.IsKnownArgument(token))
+				{
+					if (argBuf.Length > 0)
+					{
+						// end of the previous argument
+						args.Add(argBuf.ToString());
+						argBuf = new StringBuilder(20);
+					}
+					args.Add(token);
+				}
+				else if (fg.IsSeparator(token))
+				{
+					// argument end
+					if (argBuf.Length > 0)
+					{
+						args.Add(argBuf.ToString());
+						argBuf = new StringBuilder(20);
+					}
+				}
+				else
+				{
+					ISQLFunction nfunc = Factory.SQLFunctionRegistry.FindSQLFunction(token.ToLower(CultureInfo.InvariantCulture));
+					if (nfunc != null)
+					{
+						// the token is a nested function call
+						argBuf.Append(RenderFunctionClause(nfunc, functionTokens, ref argIdx));
+					}
+					else
+					{
+						// the token is a part of an argument (every thing else)
+						argBuf.Append(token);
+					}
+				}
+			}
+			// Add the last arg
+			if (argBuf.Length > 0)
+				args.Add(argBuf.ToString());
+			return func.Render(args, Factory);
 		}
 
 		private class Selector : JoinSequence.ISelector

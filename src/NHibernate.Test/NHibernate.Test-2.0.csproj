@@ -165,6 +165,8 @@
     <Compile Include="HQLFunctionTest\Animal.cs" />
     <Compile Include="HQLFunctionTest\BaseFunctionFixture.cs" />
     <Compile Include="HQLFunctionTest\HQLFunctions.cs" />
+    <Compile Include="HQLFunctionTest\Human.cs" />
+    <Compile Include="HQLFunctionTest\Name.cs" />
     <Compile Include="HQLFunctionTest\SimpleFunctionsTest.cs" />
     <Compile Include="HQLFunctionTest\SQLFunctionTemplateTest.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
@@ -221,6 +223,8 @@
     <Compile Include="NHSpecificTest\BasicTimeFixture.cs" />
     <Compile Include="NHSpecificTest\BugTestCase.cs" />
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
+    <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH883\Cat.cs" />
     <Compile Include="NHSpecificTest\NH883\Fixture.cs" />
     <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Address.cs" />
@@ -856,6 +860,9 @@
     <EmbeddedResource Include="NHSpecificTest\NH898\ClassB.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH898\ClassBParent.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH898\ClassC.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH280\Foo.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
