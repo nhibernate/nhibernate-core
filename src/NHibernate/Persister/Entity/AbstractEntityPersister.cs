@@ -1631,7 +1631,7 @@ namespace NHibernate.Persister.Entity
 
 		public override string ToString()
 		{
-			return StringHelper.Root(GetType().FullName) + '(' + ClassName + ')';
+			return GetType().Name + '(' + ClassName + ')';
 		}
 
 		/// <summary>
