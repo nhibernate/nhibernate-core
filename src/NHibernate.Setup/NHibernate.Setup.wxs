@@ -16,6 +16,9 @@
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFilesFolder">
 				<Directory Id="INSTALLLOCATION" Name="NHibernate" FileSource="$(var.BuildDir)">
+					<Component Id="releasenotes.txt" Guid="EEEF904A-A56C-4288-ADB7-C4FA3906B88C">
+						<File Id="releasenotes.txt" Name="releasenotes.txt" KeyPath="yes" />
+					</Component>
 					<Directory Id="bin" Name="bin">
 						<Directory Id="bin_net1.1" Name="net-1.1">
 							<Component Id="Bamboo.Prevalence.dll_net11" Guid="{8C14845B-F483-4C3D-B975-19C953F380D6}">
@@ -346,6 +349,7 @@
 				Absent="disallow"
 				AllowAdvertise="no"
 				Level="1">
+			<ComponentRef Id="releasenotes.txt" />
 			<Feature Id="Binaries" Title="Binaries" Level="1">
 				<Feature Id="Core" Title="NHibernate Core" Level="1" Absent="disallow" InstallDefault="followParent" AllowAdvertise="no">
 					<ComponentRef Id="NHibernate.dll_net20" />
