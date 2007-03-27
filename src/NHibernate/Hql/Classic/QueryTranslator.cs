@@ -1440,6 +1440,11 @@ namespace NHibernate.Hql.Classic
 			get { return names; }
 		}
 
+		protected override EntityType[] OwnerAssociationTypes
+		{
+			get { return ownerAssociationTypes; }
+		}
+
 		#region IQueryTranslator Members
 
 		public int ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
