@@ -20,7 +20,6 @@ using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Dialect.Function;
 using System.Collections.Specialized;
-using System.Text.RegularExpressions;
 
 namespace NHibernate.Hql.Classic
 {
@@ -29,7 +28,7 @@ namespace NHibernate.Hql.Classic
 	/// </summary>
 	public class QueryTranslator : BasicLoader, IFilterTranslator
 	{
-		private static string[] NoReturnAliases = new string[] {};
+		private static readonly string[] NoReturnAliases = new string[] {};
 
 		private readonly string queryString;
 
@@ -96,13 +95,13 @@ namespace NHibernate.Hql.Classic
 				return count + "__";
 			}
 
-			private static bool IsUnsafe(IQueryableCollection collectionPersister)
+			private static bool IsUnsafe(ICollectionPersister collectionPersister)
 			{
 				return collectionPersister.CollectionType is BagType
 				       || collectionPersister.CollectionType is IdentifierBagType;
 			}
 
-			public void Add(string name, IQueryableCollection collectionPersister, string ownerName)
+			public void Add(string name, ICollectionPersister collectionPersister, string ownerName)
 			{
 				if (persisters == null)
 				{
@@ -215,7 +214,7 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
-		private FetchedCollections fetchedCollections = new FetchedCollections();
+		private readonly FetchedCollections fetchedCollections = new FetchedCollections();
 
 		private string[] suffixes;
 
@@ -314,12 +313,6 @@ namespace NHibernate.Hql.Classic
 			compiled = true;
 		}
 
-		public new object LoadSingleRow(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters,
-		                                bool returnProxies)
-		{
-			return base.LoadSingleRow(resultSet, session, queryParameters, returnProxies);
-		}
-
 		/// <summary>
 		/// Persisters for the return values of a <c>Find</c> style query
 		/// </summary>
@@ -353,7 +346,7 @@ namespace NHibernate.Hql.Classic
 			get { return scalarColumnNames; }
 		}
 
-		private void LogQuery(string hql, string sql)
+		private static void LogQuery(string hql, string sql)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -1006,8 +999,10 @@ namespace NHibernate.Hql.Classic
 					// At this point we have the trunk that represent the function with it's parameters enclosed
 					// in paren. Now all token in the tokens list can be removed from original list because they must
 					// be replased with the rendered function.
-					for (int i = 1; i <= (flTokenIdx - tokenIdx); i++)
-						tokens.RemoveAt(tokenIdx+1);
+					for (int i = 0; i < flTokenIdx - tokenIdx; i++)
+					{
+						tokens.RemoveAt(tokenIdx + 1);
+					}
 					tokens[tokenIdx] = renderedFunction;
 				}
 			}
