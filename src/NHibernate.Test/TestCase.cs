@@ -25,7 +25,7 @@ namespace NHibernate.Test
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 		protected static readonly Dialect.Dialect Dialect = NHibernate.Dialect.Dialect.GetDialect();
 
-		private ISession lastOpenedSession;
+		protected ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
 
 		/// <summary>
@@ -200,7 +200,7 @@ namespace NHibernate.Test
 			new SchemaExport(cfg).Drop(OutputDdl, true);
 		}
 
-		private void BuildSessionFactory()
+		protected virtual void BuildSessionFactory()
 		{
 			sessions = cfg.BuildSessionFactory();
 			connectionProvider = sessions.ConnectionProvider as DebugConnectionProvider;
@@ -246,7 +246,7 @@ namespace NHibernate.Test
 			}
 		}
 
-		protected ISession OpenSession()
+		protected virtual ISession OpenSession()
 		{
 			lastOpenedSession = sessions.OpenSession();
 			return lastOpenedSession;
