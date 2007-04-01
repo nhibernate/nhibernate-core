@@ -325,6 +325,17 @@ namespace NHibernate.Impl
 		protected abstract void DoExecuteBatch(IDbCommand ps);
 
 		/// <summary>
+		/// Gets or sets the size of the batch, this can change dynamically by
+		/// calling the session's SetBatchSize.
+		/// </summary>
+		/// <value>The size of the batch.</value>
+		public abstract int BatchSize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Adds the expected row count into the batch.
 		/// </summary>
 		/// <param name="expectation">The number of rows expected to be affected by the query.</param>

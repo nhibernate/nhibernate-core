@@ -718,5 +718,12 @@ namespace NHibernate
 		/// Note that each query result is itself usually a list.
 		/// </returns>
 		IMultiQuery CreateMultiQuery();
+
+		/// <summary>
+		/// Sets the batch size of the session
+		/// </summary>
+		/// <param name="batchSize"></param>
+		/// <returns></returns>
+		ISession SetBatchSize(int batchSize);
 	}
 }

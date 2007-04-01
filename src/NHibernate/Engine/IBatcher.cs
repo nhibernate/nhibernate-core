@@ -141,5 +141,12 @@ namespace NHibernate.Engine
 		/// managed by this batcher (IDbCommands or IDataReaders).
 		/// </summary>
 		bool HasOpenResources { get; }
+
+		/// <summary>
+		/// Gets or sets the size of the batch, this can change dynamically by
+		/// calling the session's SetBatchSize.
+		/// </summary>
+		/// <value>The size of the batch.</value>
+		int BatchSize { get; set; }
 	}
 }

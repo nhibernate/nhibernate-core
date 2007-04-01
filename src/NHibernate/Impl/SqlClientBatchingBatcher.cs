@@ -22,6 +22,12 @@ namespace NHibernate.Impl
 			currentBatch = new SqlClientSqlCommandSet();
 		}
 
+		public override int BatchSize
+		{
+			get { return batchSize; }
+			set { batchSize = value; }
+		}
+
 		public override void AddToBatch(IExpectation expectation)
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;

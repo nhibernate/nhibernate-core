@@ -5807,6 +5807,12 @@ namespace NHibernate.Impl
 		}
 
 
+		public ISession SetBatchSize(int batchSize)
+		{
+			Batcher.BatchSize = batchSize;
+			return this;
+		}
+
 		public IInterceptor Interceptor
 		{
 			get { return interceptor; }

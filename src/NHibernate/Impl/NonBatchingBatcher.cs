@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
@@ -46,6 +47,13 @@ namespace NHibernate.Impl
 		/// <param name="ps"></param>
 		protected override void DoExecuteBatch(IDbCommand ps)
 		{
+		}
+
+
+		public override int BatchSize
+		{
+			get { return 1; }
+			set { throw new NotSupportedException("No batch size was defined for the session factory, batching is disabled. Set hibernate.adonet.batch_size = 1 to enable batching."); }
 		}
 	}
 }
