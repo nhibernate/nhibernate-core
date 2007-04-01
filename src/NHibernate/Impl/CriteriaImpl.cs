@@ -466,7 +466,7 @@ namespace NHibernate.Impl
 			get { return cacheable; }
 		}
 
-		internal SessionImpl Session
+		public SessionImpl Session
 		{
 			get { return session; }
 			set { session = value; }

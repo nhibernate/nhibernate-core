@@ -18,7 +18,7 @@ namespace NHibernate.Expression
 	public class InExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;
-		private readonly object[] _values;
+		protected object[] _values;
 
 		/// <summary>
 		/// 
