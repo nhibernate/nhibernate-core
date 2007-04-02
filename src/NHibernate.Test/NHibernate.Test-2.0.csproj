@@ -403,6 +403,11 @@
     <Compile Include="NHSpecificTest\NH898\NH898Fixture.cs" />
     <Compile Include="NHSpecificTest\NH930\NH930Fixture.cs" />
     <Compile Include="NHSpecificTest\NH930\Model.cs" />
+    <Compile Include="NHSpecificTest\NH958\Female.cs" />
+    <Compile Include="NHSpecificTest\NH958\Hobby.cs" />
+    <Compile Include="NHSpecificTest\NH958\Male.cs" />
+    <Compile Include="NHSpecificTest\NH958\Person.cs" />
+    <Compile Include="NHSpecificTest\NH958\NH958Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -863,6 +868,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH280\Foo.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH958\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
