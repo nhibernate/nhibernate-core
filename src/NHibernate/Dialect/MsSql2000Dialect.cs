@@ -96,6 +96,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
+			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "(?1 % ?2)"));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
@@ -105,18 +106,22 @@ namespace NHibernate.Dialect
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(hour, ?1)"));
+			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(day, ?1)"));
+			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(month, ?1)"));
+			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
+
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 			/*
 			RegisterFunction("julian_day", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction("microsecond", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction("midnight_seconds", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("minute", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("month", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction("monthname", new StandardSQLFunction( NHibernateUtil.String ) );
 			RegisterFunction("quarter", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("hour", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("second", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction("date", new StandardSQLFunction(Hibernate.DATE) );
-			RegisterFunction("day", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction("dayname", new StandardSQLFunction( NHibernateUtil.String ) );
 			RegisterFunction("dayofweek", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction("dayofweek_iso", new StandardSQLFunction( NHibernateUtil.Int32 ) );
@@ -127,7 +132,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("timestamp_iso", new StandardSQLFunction( NHibernateUtil.Timestamp ) );
 			RegisterFunction("week", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 			RegisterFunction("week_iso", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("year", new StandardSQLFunction( NHibernateUtil.Int32 ) );
 
 			RegisterFunction("double", new StandardSQLFunction( NHibernateUtil.Double ) );
 			RegisterFunction("varchar", new StandardSQLFunction( NHibernateUtil.String ) );
@@ -144,8 +148,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("ucase", new StandardSQLFunction("ucase"));
 			RegisterFunction("lcase", new StandardSQLFunction("lcase"));
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
-			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
+			RegisterFunction("length", new StandardSQLFunction("len", NHibernateUtil.Int32));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
+
+			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";

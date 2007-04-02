@@ -11,6 +11,10 @@ namespace NHibernate.Hql.Classic
 		private class FunctionHolder
 		{
 			private readonly PathExpressionParser pathExpressionParser = new PathExpressionParser();
+			private readonly ISQLFunction sqlFunction;
+			private readonly IFunctionGrammar functionGrammar;
+			private IType firstValidColumnReturnType = null;
+
 			public PathExpressionParser PathExpressionParser
 			{
 				get
@@ -20,13 +24,11 @@ namespace NHibernate.Hql.Classic
 				}
 			}
 
-			private readonly ISQLFunction sqlFunction;
 			public ISQLFunction SqlFunction
 			{
 				get { return sqlFunction; }
 			}
 
-			private readonly IFunctionGrammar functionGrammar;
 			public IFunctionGrammar FunctionGrammar
 			{
 				get { return functionGrammar; }
@@ -41,7 +43,6 @@ namespace NHibernate.Hql.Classic
 					functionGrammar = new CommonGrammar();
 			}
 
-			private IType firstValidColumnReturnType = null;
 			/// <summary>
 			/// Used to hold column type in nested functions.
 			/// </summary>
@@ -58,30 +59,40 @@ namespace NHibernate.Hql.Classic
 
 		private Stack stack = new Stack(5);
 		private readonly IMapping mapping;
+		
 		public FunctionStack(IMapping mapping)
 		{
 			if (mapping == null)
+			{
 				throw new ArgumentNullException("mapping");
+			}
 			this.mapping = mapping;
 		}
 
 		public void Push(ISQLFunction sqlFunction)
 		{
 			if (sqlFunction == null)
+			{
 				throw new ArgumentNullException("sqlFunction");
+			}
 			stack.Push(new FunctionHolder(sqlFunction));
+		}
+
+		private FunctionHolder Peek()
+		{
+			return (FunctionHolder) stack.Peek();
 		}
 
 		public void Pop()
 		{
-			IType firstReturnType = null;
+			IType firstReturnType;
 			try
 			{
 				// Example in nested functions
 				// abs(max(a.BodyWeight))
 				// To know the ReturnType of "abs" we must know the ReturnType of "max" and the ReturnType of "max"
 				// depend on the type of property "a.BodyWeight"
-				FunctionHolder fh = (stack.Peek() as FunctionHolder);
+				FunctionHolder fh = Peek();
 				firstReturnType = fh.SqlFunction.ReturnType(fh.FirstValidColumnType, mapping);
 				stack.Pop();
 			}
@@ -90,10 +101,12 @@ namespace NHibernate.Hql.Classic
 				throw new QueryException("Parsing HQL: Pop on empty functions stack.", ex);
 			}
 			if (stack.Count > 0)
-				(stack.Peek() as FunctionHolder).FirstValidColumnType = firstReturnType;
+			{
+				Peek().FirstValidColumnType = firstReturnType;
+			}
 		}
 
-		public bool HasFuctions
+		public bool HasFunctions
 		{
 			get { return stack.Count > 0; }
 		}
@@ -105,22 +118,22 @@ namespace NHibernate.Hql.Classic
 
 		public PathExpressionParser PathExpressionParser
 		{
-			get { return (stack.Peek() as FunctionHolder).PathExpressionParser; }
+			get { return Peek().PathExpressionParser; }
 		}
 
 		public ISQLFunction SqlFunction
 		{
-			get { return (stack.Peek() as FunctionHolder).SqlFunction; }
+			get { return Peek().SqlFunction; }
 		}
 
 		public IFunctionGrammar FunctionGrammar
 		{
-			get { return (stack.Peek() as FunctionHolder).FunctionGrammar; }
+			get { return Peek().FunctionGrammar; }
 		}
 
 		public IType GetReturnType()
 		{
-			FunctionHolder fh = (stack.Peek() as FunctionHolder);
+			FunctionHolder fh = Peek();
 			return fh.SqlFunction.ReturnType(fh.FirstValidColumnType, mapping);
 		}
 	}

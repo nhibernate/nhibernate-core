@@ -27,7 +27,6 @@ namespace NHibernate.Dialect
 	public class FirebirdDialect : Dialect
 	{
 		public FirebirdDialect()
-			: base()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($1)");

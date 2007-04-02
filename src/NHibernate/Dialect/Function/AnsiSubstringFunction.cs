@@ -22,10 +22,6 @@ namespace NHibernate.Dialect.Function
 	/// </remarks>
 	public class AnsiSubstringFunction : ISQLFunction
 	{
-		public AnsiSubstringFunction()
-		{
-		}
-
 		#region ISQLFunction Members
 
 		public IType ReturnType(IType columnType, IMapping mapping)
@@ -47,7 +43,7 @@ namespace NHibernate.Dialect.Function
 		{
 			if (args.Count < 2 || args.Count > 3)
 			{
-				throw new QueryException("substring(): Not enough parameters (attended from 2 to 3).");
+				throw new QueryException("substring(): Incorrect number of parameters (expected 2 or 3, got " + args.Count + ")");
 			}
 			StringBuilder cmd = new StringBuilder();
 			cmd.Append("substring(")

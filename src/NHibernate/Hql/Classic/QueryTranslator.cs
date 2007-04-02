@@ -1072,7 +1072,7 @@ namespace NHibernate.Hql.Classic
 					functionTokens = ExtractFunctionClause(tokens, ref tokenIdx);
 
 				// The function render simply translate is't name for a specific dialect.
-				return func.Render(null, Factory);
+				return func.Render(CollectionHelper.EmptyList, Factory);
 			}
 			functionTokens = ExtractFunctionClause(tokens, ref tokenIdx);
 

@@ -121,8 +121,87 @@ namespace NHibernate.Util
 			}
 		}
 
+		private class EmptyListClass : IList
+		{
+			public int Add(object value)
+			{
+				throw new NotImplementedException();
+			}
+
+			public bool Contains(object value)
+			{
+				return false;
+			}
+
+			public void Clear()
+			{
+				throw new NotImplementedException();
+			}
+
+			public int IndexOf(object value)
+			{
+				return -1;
+			}
+
+			public void Insert(int index, object value)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void Remove(object value)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void RemoveAt(int index)
+			{
+				throw new NotImplementedException();
+			}
+
+			public object this[int index]
+			{
+				get { throw new IndexOutOfRangeException(); }
+				set { throw new IndexOutOfRangeException(); }
+			}
+
+			public bool IsReadOnly
+			{
+				get { return true; }
+			}
+
+			public bool IsFixedSize
+			{
+				get { return true; }
+			}
+
+			public void CopyTo(Array array, int index)
+			{
+			}
+
+			public int Count
+			{
+				get { return 0; }
+			}
+
+			public object SyncRoot
+			{
+				get { return this; }
+			}
+
+			public bool IsSynchronized
+			{
+				get { return false; }
+			}
+
+			public IEnumerator GetEnumerator()
+			{
+				return new EmptyEnumerator();
+			}
+		}
+
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
 		public static readonly ICollection EmptyCollection = EmptyMap;
+		public static readonly IList EmptyList = new EmptyListClass();
 
 		public static bool CollectionEquals(ICollection c1, ICollection c2)
 		{

@@ -1,5 +1,9 @@
 using System;
 using System.Collections;
+
+using NHibernate.Dialect;
+using NHibernate.Dialect.Function;
+
 using NUnit.Framework;
 
 namespace NHibernate.Test.HQLFunctionTest
@@ -166,24 +170,40 @@ namespace NHibernate.Test.HQLFunctionTest
 			}
 			using (ISession s = OpenSession())
 			{
-				string hql = "select substring(a.Description, 3) from Animal a";
-				IList lresult = s.CreateQuery(hql).List();
-				Assert.AreEqual(1, lresult.Count);
-				Assert.AreEqual("cdef", lresult[0]);
+				string hql;
+
+				bool twoArgSubstringSupported = Dialect.Functions["substring"] is AnsiSubstringFunction;
+
+				if (twoArgSubstringSupported)
+				{
+					hql = "select substring(a.Description, 3) from Animal a";
+					IList lresult = s.CreateQuery(hql).List();
+					Assert.AreEqual(1, lresult.Count);
+					Assert.AreEqual("cdef", lresult[0]);
+				}
 
 				hql = "from Animal a where substring(a.Description, 2, 3) = 'bcd'";
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
-				hql = "from Animal a where substring(a.Description, 4) = 'def'";
-				result = (Animal) s.CreateQuery(hql).UniqueResult();
-				Assert.AreEqual("abcdef", result.Description);
+				if (twoArgSubstringSupported)
+				{
+					hql = "from Animal a where substring(a.Description, 4) = 'def'";
+					result = (Animal) s.CreateQuery(hql).UniqueResult();
+					Assert.AreEqual("abcdef", result.Description);
+				}
 			}
 		}
 
 		[Test]
 		public void Locate()
 		{
+			bool hasNoLocateFunction = Dialect is MsSql2000Dialect;
+
+			if (hasNoLocateFunction)
+			{
+				Assert.Ignore(Dialect + " doesn't support locate function");
+			}
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -284,6 +304,11 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Bit_length()
 		{
+			if (Dialect is MsSql2000Dialect)
+			{
+				Assert.Ignore(Dialect + " does not support bit_length function");
+			}
+
 			// test only the parser
 			using (ISession s = OpenSession())
 			{
@@ -359,7 +384,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			}
 			using (ISession s = OpenSession())
 			{
-				string hql = "select mod(a.BodyWeight, 3) from Animal a";
+				string hql = "select mod(cast(a.BodyWeight as int), 3) from Animal a";
 				IList lresult = s.CreateQuery(hql).List();
 				Assert.AreEqual(2, lresult[0]);
 
@@ -367,7 +392,7 @@ namespace NHibernate.Test.HQLFunctionTest
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
-				hql = "from Animal a where mod(a.BodyWeight, 4)=0";
+				hql = "from Animal a where mod(cast(a.BodyWeight as int), 4)=0";
 				result = (Animal)s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 			}
@@ -511,7 +536,7 @@ namespace NHibernate.Test.HQLFunctionTest
 				}
 
 				// Rendered in WHERE using a property and nested functions
-				hql = "from Animal a where cast(cast(a.BodyWeight as string) as int) = 1";
+				hql = "from Animal a where cast(cast(cast(a.BodyWeight as string) as double) as int) = 1";
 				result = (Animal)s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
@@ -540,7 +565,7 @@ namespace NHibernate.Test.HQLFunctionTest
 				Assert.AreEqual(1.3D, l[0]);
 
 				// Rendered in HAVING using a property in an operation with costants
-				hql = "select cast(7+123-1*a.BodyWeight as int) from Animal a group by cast(7+123-1*a.BodyWeight as int) having cast(7+123-1*a.BodyWeight as int)>0";
+				hql = "select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
 				Assert.AreEqual(129, l[0]);
@@ -559,7 +584,8 @@ namespace NHibernate.Test.HQLFunctionTest
 				}
 
 				// Rendered in HAVING using a property and nested functions
-				hql = "select cast(cast(a.BodyWeight as string) as int) from Animal a group by cast(cast(a.BodyWeight as string) as int) having cast(cast(a.BodyWeight as string) as int) = 1";
+				string castExpr = "cast(cast(cast(a.BodyWeight as string) as double) as int)";
+				hql = string.Format("select {0} from Animal a group by {0} having {0} = 1", castExpr);
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
 				Assert.AreEqual(1, l[0]);
@@ -580,6 +606,11 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Extract()
 		{
+			if (Dialect is MsSql2000Dialect)
+			{
+				Assert.Ignore(Dialect + " does not support extract function");
+			}
+
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -606,9 +637,13 @@ namespace NHibernate.Test.HQLFunctionTest
 				IList lresult = s.CreateQuery(hql).List();
 				Assert.AreEqual("abcdefzzz", lresult[0]);
 
-				hql = "from Animal a where a.Description = concat('a', concat('b','c'), 'd'||'e')||'f'";
-				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
-				Assert.AreEqual("abcdef", result.Description);
+				// MS SQL doesn't support || operator
+				if (!(Dialect is MsSql2000Dialect))
+				{
+					hql = "from Animal a where a.Description = concat('a', concat('b','c'), 'd'||'e')||'f'";
+					Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
+					Assert.AreEqual("abcdef", result.Description);
+				}
 			}
 		}
 

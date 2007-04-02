@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Globalization;
-using Iesi.Collections;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Util;
 using NHibernate.Type;
@@ -17,11 +15,6 @@ namespace NHibernate.Hql.Classic
 	public class SelectParser : IParser
 	{
 		/// <summary></summary>
-		static SelectParser()
-		{
-		}
-
-		/// <summary></summary>
 		public SelectParser()
 		{
 			//TODO: would be nice to use false, but issues with MS SQL
@@ -29,22 +22,17 @@ namespace NHibernate.Hql.Classic
 			pathExpressionParser.UseThetaStyleJoin = true;
 		}
 
-		private bool ready;
+		private bool readyForAliasOrExpression;
 		private bool first;
 		private bool afterNew;
 		private bool insideNew;
 		private System.Type holderClass;
 
-		private SelectPathExpressionParser pathExpressionParser = new SelectPathExpressionParser();
+		private readonly SelectPathExpressionParser pathExpressionParser = new SelectPathExpressionParser();
 
 		private FunctionStack funcStack;
 		private int parenCount = 0;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token"></param>
-		/// <param name="q"></param>
 		public void Token(string token, QueryTranslator q)
 		{
 			string lctoken = token.ToLower(CultureInfo.InvariantCulture);
@@ -77,27 +65,27 @@ namespace NHibernate.Hql.Classic
 			}
 			else if (token.Equals(StringHelper.Comma))
 			{
-				if (ready)
+				if (readyForAliasOrExpression)
 				{
 					throw new QueryException("alias or expression expected in SELECT");
 				}
 				q.AppendScalarSelectToken(StringHelper.CommaSpace);
-				ready = true;
+				readyForAliasOrExpression = true;
 			}
 			else if ("new".Equals(lctoken))
 			{
 				afterNew = true;
-				ready = false;
+				readyForAliasOrExpression = false;
 			}
 			else if (StringHelper.OpenParen.Equals(token))
 			{
 				parenCount++;
-				if (!funcStack.HasFuctions && holderClass != null && !ready)
+				if (!funcStack.HasFunctions && holderClass != null && !readyForAliasOrExpression)
 				{
 					//opening paren in new Foo ( ... )
-					ready = true;
+					readyForAliasOrExpression = true;
 				}
-				else if (funcStack.HasFuctions)
+				else if (funcStack.HasFunctions)
 				{
 					q.AppendScalarSelectToken(token);
 				}
@@ -105,7 +93,7 @@ namespace NHibernate.Hql.Classic
 				{
 					throw new QueryException("HQL function expected before '(' in SELECT clause.");
 				}
-				ready = true;
+				readyForAliasOrExpression = true;
 			}
 			else if (StringHelper.ClosedParen.Equals(token))
 			{
@@ -115,30 +103,33 @@ namespace NHibernate.Hql.Classic
 					throw new QueryException("'(' expected before ')' in SELECT clause.");
 				}
 
-				if (insideNew && !funcStack.HasFuctions && !ready)
+				if (insideNew && !funcStack.HasFunctions && !readyForAliasOrExpression)
 				{
 					//if we are inside a new Result(), but not inside a nested function
 					insideNew = false;
 				}
-				else if (funcStack.HasFuctions)
+				else if (funcStack.HasFunctions)
 				{
 					q.AppendScalarSelectToken(token);
 					IType scalarType = funcStack.GetReturnType();
 					funcStack.Pop();
-					ready = funcStack.HasFuctions;
-					// if all function was parsed add de type of the first function in stack
-					if(!funcStack.HasFuctions)
+
+					// Can't have an alias or expression right after the closing parenthesis of a function call.
+					readyForAliasOrExpression = false;
+
+					// if all functions were parsed add the type of the first function in stack
+					if(!funcStack.HasFunctions)
 						q.AddSelectScalar(scalarType);
 				}
 			}
 			else if (IsHQLFunction(lctoken, q) && token == q.Unalias(token))
 			{
-				if (!ready && !funcStack.HasFuctions)
+				if (!readyForAliasOrExpression && !funcStack.HasFunctions)
 				{
 					// The syntax control inside a functions is delegated to the render
 					throw new QueryException("',' expected before function in SELECT: " + token);
 				}
-				if (funcStack.HasFuctions && funcStack.FunctionGrammar.IsKnownArgument(lctoken))
+				if (funcStack.HasFunctions && funcStack.FunctionGrammar.IsKnownArgument(lctoken))
 				{
 					// Some function, like extract, may have KnownArgument with the same name of another function
 					q.AppendScalarSelectToken(token);
@@ -154,15 +145,15 @@ namespace NHibernate.Hql.Classic
 						if (!funcStack.SqlFunction.HasParenthesesIfNoArguments)
 						{
 							funcStack.Pop();
-							ready = funcStack.HasFuctions;
+							readyForAliasOrExpression = funcStack.HasFunctions;
 						}
 					}
 				}
 			}
-			else if (funcStack.HasFuctions)
+			else if (funcStack.HasFunctions)
 			{
 				bool constantToken = false;
-				if (!ready && parenCount != funcStack.NestedFunctionCount)
+				if (!readyForAliasOrExpression && parenCount != funcStack.NestedFunctionCount)
 				{
 					throw new QueryException("'(' expected after HQL function in SELECT");
 				}
@@ -194,11 +185,11 @@ namespace NHibernate.Hql.Classic
 					funcStack.PathExpressionParser.AddAssociation(q);
 				}
 				// after a function argument
-				ready = false;
+				readyForAliasOrExpression = false;
 			}
 			else
 			{
-				if (!ready)
+				if (!readyForAliasOrExpression)
 				{
 					throw new QueryException("',' expected in SELECT before:" + token);
 				}
@@ -249,65 +240,61 @@ namespace NHibernate.Hql.Classic
 					else
 						throw;
 				}
-				ready = false;
+				readyForAliasOrExpression = false;
 			}
 		}
 
-		private bool IsPathExpression(string token)
+		private static bool IsPathExpression(string token)
 		{
 			return Regex.IsMatch(token, @"\A[A-Za-z_][A-Za-z_0-9]*[.][A-Za-z_][A-Za-z_0-9]*\z", RegexOptions.Singleline);
 		}
 
-		private bool IsStringCostant(string token)
+		private static bool IsStringCostant(string token)
 		{
 			return Regex.IsMatch(token,@"\A'('{2})*([^'\r\n]*)('{2})*([^'\r\n]*)('{2})*'\z",RegexOptions.Singleline);
 		}
 
-		private bool IsIntegerConstant(string token)
+		private static bool IsIntegerConstant(string token)
 		{
 			// The tokenizer make difficult parse a signed numerical constant
 			return Regex.IsMatch(token,@"\A[+-]?\d\d*\z",RegexOptions.Singleline);
 		}
 
-		private bool IsFloatingPointConstant(string token)
+		private static bool IsFloatingPointConstant(string token)
 		{
 			// The tokenizer make difficult parse a signed numerical constant
 			return Regex.IsMatch(token, @"\A(?:[-+]?(\d+\.\d+)|(\.\d+))\z", RegexOptions.Singleline);
 		}
 
-		private static string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", StringHelper.NamePrefix, StringHelper.SqlParameter);
-		private bool IsParameter(string token)
+		private static readonly string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", StringHelper.NamePrefix, StringHelper.SqlParameter);
+		private static bool IsParameter(string token)
 		{
 			return Regex.IsMatch(token, paramMatcher, RegexOptions.Singleline);
 		}
 
-		private IType GetIntegerConstantType(string token)
+		private static IType GetIntegerConstantType(string token)
 		{
 			return NHibernateUtil.Int32;
 		}
 
-		private IType GetFloatingPointConstantType(string token)
+		private static IType GetFloatingPointConstantType(string token)
 		{
 			return NHibernateUtil.Double;
 		}
 
-		private bool IsHQLFunction(string funcName, QueryTranslator q)
+		private static bool IsHQLFunction(string funcName, QueryTranslator q)
 		{
 			return q.Factory.SQLFunctionRegistry.HasFunction(funcName);
 		}
 
-		private ISQLFunction GetFunction(string name, QueryTranslator q)
+		private static ISQLFunction GetFunction(string name, QueryTranslator q)
 		{
 			return q.Factory.SQLFunctionRegistry.FindSQLFunction(name);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public void Start(QueryTranslator q)
 		{
-			ready = true;
+			readyForAliasOrExpression = true;
 			first = true;
 			afterNew = false;
 			holderClass = null;
@@ -315,13 +302,9 @@ namespace NHibernate.Hql.Classic
 			funcStack = new FunctionStack(q.Factory);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public void End(QueryTranslator q)
 		{
-			if (parenCount > 0 || funcStack.HasFuctions)
+			if (parenCount > 0 || funcStack.HasFunctions)
 			{
 				throw new QueryException("close paren missed in SELECT");
 			}

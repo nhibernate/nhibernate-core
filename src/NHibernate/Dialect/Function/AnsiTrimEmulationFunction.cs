@@ -131,7 +131,7 @@ namespace NHibernate.Dialect.Function
 				}
 
 				string potentialTrimCharacter = (string) args[potentialTrimCharacterArgIndex];
-				if (StringHelper.EqualsCaseInsensitive("from", firstArg))
+				if (StringHelper.EqualsCaseInsensitive("from", potentialTrimCharacter))
 				{
 					trimCharacter = "' '";
 					trimSource = (string) args[potentialTrimCharacterArgIndex + 1];
