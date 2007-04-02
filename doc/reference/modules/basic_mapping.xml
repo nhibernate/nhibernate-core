@@ -73,7 +73,9 @@
             <para><emphasis>
                 Tip: to enable IntelliSense for mapping and configuration files, copy the appropriate
                 <literal>.xsd</literal> files to
-                <literal>&lt;VS.NET installation directory&gt;\Common7\Packages\schemas\xml</literal>.
+                <literal>&lt;VS.NET installation directory&gt;\Common7\Packages\schemas\xml</literal>
+                if you are using Visual Studio .NET 2003, or to
+                <literal>&lt;VS 2005 installation directory&gt;\Xml\Schemas</literal> for Visual Studio 2005.
             </emphasis></para>
             
         </sect2>
