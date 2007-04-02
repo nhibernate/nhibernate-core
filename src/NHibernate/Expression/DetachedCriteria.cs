@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Impl;
+using NHibernate.SqlCommand;
 using NHibernate.Transform;
 
 namespace NHibernate.Expression
@@ -25,7 +26,7 @@ namespace NHibernate.Expression
 			criteria = impl;
 		}
 
-		protected DetachedCriteria(System.Type entityType, String alias)
+		protected DetachedCriteria(System.Type entityType, string alias)
 		{
 			impl = new CriteriaImpl(entityType, alias, null);
 			criteria = impl;
@@ -58,7 +59,7 @@ namespace NHibernate.Expression
 		}
 #endif
 
-		public static DetachedCriteria For(System.Type entityType, String alias)
+		public static DetachedCriteria For(System.Type entityType, string alias)
 		{
 			return new DetachedCriteria(entityType, alias);
 		}
@@ -76,28 +77,44 @@ namespace NHibernate.Expression
 			return this;
 		}
 
-		public DetachedCriteria CreateAlias(String associationPath, String alias)
+		public DetachedCriteria CreateAlias(string associationPath, string alias)
 		{
 			criteria.CreateAlias(associationPath, alias);
 			return this;
 		}
 
-		public DetachedCriteria CreateCriteria(String associationPath, String alias)
+		public DetachedCriteria CreateAlias(string associationPath, string alias, JoinType joinType)
+		{
+			criteria.CreateAlias(associationPath, Alias, joinType);
+			return this;
+		}
+
+		public DetachedCriteria CreateCriteria(string associationPath, string alias)
 		{
 			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath, alias));
 		}
 
-		public DetachedCriteria CreateCriteria(String associationPath)
+		public DetachedCriteria CreateCriteria(string associationPath)
 		{
 			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath));
 		}
 
-		public String Alias
+		public DetachedCriteria CreateCriteria(string associationPath, JoinType joinType)
+		{
+			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath, joinType));
+		}
+
+		public DetachedCriteria CreateCriteria(string associationPath, string alias, JoinType joinType)
+		{
+			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath, alias, joinType));
+		}
+
+		public string Alias
 		{
 			get { return criteria.Alias; }
 		}
 
-		public DetachedCriteria SetFetchMode(String associationPath, FetchMode mode)
+		public DetachedCriteria SetFetchMode(string associationPath, FetchMode mode)
 		{
 			criteria.SetFetchMode(associationPath, mode);
 			return this;
@@ -115,7 +132,7 @@ namespace NHibernate.Expression
 			return this;
 		}
 
-		public override String ToString()
+		public override string ToString()
 		{
 			return "DetachableCriteria(" + criteria.ToString() + ')';
 		}
