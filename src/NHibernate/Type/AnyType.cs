@@ -241,6 +241,26 @@ namespace NHibernate.Type
 			       	session.GetEntityIdentifier(value));
 		}
 
+		public override object Replace(object original, object current, ISessionImplementor session, object owner,
+		                               IDictionary copiedAlready)
+		{
+			if (original == null)
+			{
+				return null;
+			}
+			else
+			{
+				System.Type entityClass = NHibernateProxyHelper.GuessClass(original);
+				object id = session.GetEntityIdentifierIfNotUnsaved(original);
+				return session.InternalLoad(
+						entityClass,
+						id,
+						false,
+						false
+					);
+			}
+		}
+
 		public override bool IsAnyType
 		{
 			get { return true; }
@@ -369,9 +389,38 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
+		public override bool IsDirty(object old, object current, ISessionImplementor session)
+		{
+			if (current == null)
+			{
+				return old != null;
+			}
+
+			if (old == null)
+			{
+				return true;
+			}
+
+			return (NHibernateProxyHelper.GetClass(old) != NHibernateProxyHelper.GuessClass(current)) ||
+				   identifierType.IsDirty(Id(old, session), Id(current, session), session);
+		}
+
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return IsDirty(old, current, session);
+			if (current == null)
+			{
+				return old != null;
+			}
+			
+			if (old == null)
+			{
+				return true;
+			}
+
+			bool[] idcheckable = new bool[checkable.Length - 1];
+			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
+			return (checkable[0] && NHibernateProxyHelper.GetClass(old) != NHibernateProxyHelper.GuessClass(current)) ||
+				   identifierType.IsDirty(Id(old, session), Id(current, session), idcheckable, session);
 		}
 
 		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
@@ -382,7 +431,7 @@ namespace NHibernate.Type
 			}
 			if (old == null)
 			{
-				return current != null;
+				return true;
 			}
 			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
 			bool[] idcheckable = new bool[checkable.Length - 1];

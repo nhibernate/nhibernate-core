@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH958">
+
+	<class name="Person">
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+		
+		<discriminator column="Gender" type="String" />
+	
+		<property name="Name" />
+		<bag name="Hobbies" inverse="true" lazy="true" cascade="all-delete-orphan">
+			<key column="PersonId" />
+			<one-to-many class="Hobby" />
+		</bag>
+
+		<subclass name="Female" discriminator-value="Female">
+		</subclass>
+
+		<subclass name="Male" discriminator-value="Male">
+		</subclass>
+	</class>
+	
+	<class name="Hobby">
+		<id name="Id" column="HobbyId" type="Guid">
+			<generator class="guid"  />
+		</id>
+		
+		<property name="Name" />
+		
+		<!-- using a many-to-one rather than an any allows SaveOrUpdateCopy to work correctly-->
+		<!-- 
+		    <many-to-one name="Person" column="PersonId" class="Person" />
+		-->
+		<any name="Person" meta-type="String" id-type="Guid" >
+			<meta-value value="Male" class="Male" />
+			<meta-value value="Female" class="Female" />
+			<column name="Gender" />
+			<column name="PersonId" />
+		</any>
+	</class>
+</hibernate-mapping>
