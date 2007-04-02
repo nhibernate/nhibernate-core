@@ -24,6 +24,8 @@ namespace NHibernate.JetDriver
 	/// </summary>
 	public sealed class JetDbCommand : IDbCommand
 	{
+		private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(JetDbCommand));
+
 		private OleDbCommand _command;
 		private JetDbConnection _connection;
 		private JetDbTransaction _transaction;
@@ -73,26 +75,28 @@ namespace NHibernate.JetDriver
 
 			foreach (IDataParameter p in Command.Parameters)
 			{
-				object newVal;
+				if (p.Direction == ParameterDirection.Output || p.Direction == ParameterDirection.ReturnValue)
+					continue;
 				switch (p.DbType)
 				{
 					case DbType.DateTime:
 					case DbType.Time:
 					case DbType.Date:
-						p.DbType = DbType.String;
-
 						if (p.Value != DBNull.Value)
 						{
-							newVal = ((DateTime) p.Value).ToString("dd-MMM-yyyy HH:mm:ss");
-							p.Value = newVal;
+							p.DbType = DbType.String;
+							string normalizedDateValue = ((DateTime)p.Value).ToString("yyyy/MM/dd HH:mm:ss");
+							Log.DebugFormat("Changing datetime parameter value to [{0}] as string, to avoid DB confusion", normalizedDateValue);
+							p.Value = normalizedDateValue;
 						}
 						break;
 					case DbType.Int64:
-						p.DbType = DbType.Int32;
 						if (p.Value != DBNull.Value)
 						{
-							newVal = Convert.ToInt32((long) p.Value);
-							p.Value = newVal;
+							p.DbType = DbType.Int32;
+							int normalizedLongValue = Convert.ToInt32((long)p.Value);
+							Log.DebugFormat("Changing Int64 parameter value to [{0}] as Int32, to avoid DB confusion", normalizedLongValue);
+							p.Value = normalizedLongValue;
 						}
 						break;
 				}
