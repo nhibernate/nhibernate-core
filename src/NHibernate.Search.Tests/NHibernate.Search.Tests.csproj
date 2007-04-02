@@ -1,0 +1,133 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{71560152-A693-4F66-99CF-570685A33169}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHibernate.Search.Tests</RootNamespace>
+    <AssemblyName>NHibernate.Search.Tests</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\OSS\NHibernate\nhibernate\lib\net\2.0\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net, Version=2.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SharedLibs\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bridge\BridgeTestCase.cs" />
+    <Compile Include="Bridge\Cloud.cs" />
+    <Compile Include="Bridge\CloudType.cs" />
+    <Compile Include="Bridge\TruncateFieldBridge.cs" />
+    <Compile Include="DirectoryProvider\FSSlaveAndMasterDPTest.cs" />
+    <Compile Include="DirectoryProvider\MultiplySessionFactoriesTestCase.cs" />
+    <Compile Include="DirectoryProvider\SnowStorm.cs" />
+    <Compile Include="FieldAccess\Document.cs" />
+    <Compile Include="FieldAccess\FieldAccessTest.cs" />
+    <Compile Include="FileHleperTestCase.cs" />
+    <Compile Include="Inheritance\Animal.cs" />
+    <Compile Include="Inheritance\InheritanceTest.cs" />
+    <Compile Include="Inheritance\Mammal.cs" />
+    <Compile Include="Queries\AlternateBook.cs" />
+    <Compile Include="Queries\Book.cs" />
+    <Compile Include="Queries\Clock.cs" />
+    <Compile Include="Queries\LuceneQueryTest.cs" />
+    <Compile Include="SearchTestCase.cs" />
+    <Compile Include="Sessions\Email.cs" />
+    <Compile Include="Sessions\MassIndexTest.cs" />
+    <Compile Include="Workers\Employee.cs" />
+    <Compile Include="Workers\Employer.cs" />
+    <Compile Include="Workers\WorkerTestCase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test-2.0.csproj">
+      <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
+      <Name>NHibernate.Test-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate.Search\NHibernate.Search.csproj">
+      <Project>{CC25D767-990D-4CE0-9F64-3426E244403B}</Project>
+      <Name>NHibernate.Search</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Bridge\Cloud.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DirectoryProvider\SnowStorm.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FieldAccess\Document.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Inheritance\Animal.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Inheritance\Mammal.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Queries\AlternateBook.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Queries\Book.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Queries\Clock.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sessions\Email.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Workers\Employee.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Workers\Employer.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

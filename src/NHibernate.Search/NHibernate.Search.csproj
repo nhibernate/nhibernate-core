@@ -1,0 +1,120 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CC25D767-990D-4CE0-9F64-3426E244403B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHibernate.Search</RootNamespace>
+    <AssemblyName>NHibernate.Search</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\OSS\NHibernate\nhibernate\build\NHibernate-1.2.0.CR1-debug\bin\net-2.0\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>SharedLibs\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attributes\BoostAttribute.cs" />
+    <Compile Include="Attributes\DateBridgeAttribute.cs" />
+    <Compile Include="Attributes\DocumentIdAttribute.cs" />
+    <Compile Include="Attributes\FieldAttribute.cs" />
+    <Compile Include="Attributes\FieldBridgeAttribute.cs" />
+    <Compile Include="Attributes\Indexed.cs" />
+    <Compile Include="Attributes\Resolution.cs" />
+    <Compile Include="AttributeUtil.cs" />
+    <Compile Include="Impl\FullTextSearchHelper.cs" />
+    <Compile Include="LuceneQueryExpression.cs" />
+    <Compile Include="Impl\LuceneWorker.cs" />
+    <Compile Include="Storage\DirectoryProviderFactory.cs" />
+    <Compile Include="DirectoryProviderHelper.cs" />
+    <Compile Include="Storage\FileHelper.cs" />
+    <Compile Include="Storage\FSDirectoryProvider.cs" />
+    <Compile Include="Storage\FSMasterDirectoryProvider.cs" />
+    <Compile Include="Storage\FSSlaveDirectoryProvider.cs" />
+    <Compile Include="Storage\IDirectoryProvider.cs" />
+    <Compile Include="IFieldBridge.cs" />
+    <Compile Include="IFullTextSession.cs" />
+    <Compile Include="Impl\AddLuceneWork.cs" />
+    <Compile Include="Impl\BatchedQueueingProcessor.cs" />
+    <Compile Include="Impl\BridgeFactory.cs" />
+    <Compile Include="Impl\DateBridge.cs" />
+    <Compile Include="Impl\DeleteLuceneWork.cs" />
+    <Compile Include="Impl\DocumentBuilder.cs" />
+    <Compile Include="Impl\EnumBridge.cs" />
+    <Compile Include="Impl\FullTextQueryImpl.cs" />
+    <Compile Include="Impl\IBackendQueueProcessorFactory.cs" />
+    <Compile Include="Impl\IParameterizedBridge.cs" />
+    <Compile Include="Impl\IQueueingProcessor.cs" />
+    <Compile Include="Impl\LuceneBackendQueueProcessor.cs" />
+    <Compile Include="Impl\LuceneBackendQueueProcessorFactory.cs" />
+    <Compile Include="Impl\StringBridge.cs" />
+    <Compile Include="Impl\Environment.cs" />
+    <Compile Include="Impl\FullTextSessionImpl.cs" />
+    <Compile Include="Impl\Index.cs" />
+    <Compile Include="Impl\LuceneWork.cs" />
+    <Compile Include="Impl\SearchException.cs" />
+    <Compile Include="Impl\SearchFactory.cs" />
+    <Compile Include="Impl\SearchInterceptor.cs" />
+    <Compile Include="Impl\SimpleBridge.cs" />
+    <Compile Include="Impl\Store.cs" />
+    <Compile Include="Impl\TwoWayString2FieldBridgeAdaptor.cs" />
+    <Compile Include="Impl\ValueTypeBridge.cs" />
+    <Compile Include="Impl\Work.cs" />
+    <Compile Include="Impl\LuceneWorkspace.cs" />
+    <Compile Include="Impl\WorkType.cs" />
+    <Compile Include="IStringBridge.cs" />
+    <Compile Include="ITwoWayFieldBridge.cs" />
+    <Compile Include="ITwoWayStringBridge.cs" />
+    <Compile Include="Storage\RAMDirectoryProvider.cs" />
+    <Compile Include="Search.cs" />
+    <Compile Include="String2FieldBridgeAdaptor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate-2.0</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

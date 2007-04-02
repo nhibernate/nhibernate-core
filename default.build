@@ -21,6 +21,8 @@
 		<include name="NHibernate/NHibernate.build" />
 		<include name="NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
+		<include name="NHibernate.Search/NHibernate.Search.build" />
+		<include name="NHibernate.Search.Tests/NHibernate.Search.Tests.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
 		<include name="NHibernate.Examples/NHibernate.Examples.build" />
 		<include name="NHibernate.Caches.SysCache/NHibernate.Caches.SysCache.build" />
@@ -48,6 +50,7 @@
 	<fileset id="buildfiles.tests" basedir="src">
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
+		<include name="NHibernate.Search.Tests/NHibernate.Search.Tests.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
 			if="${run.performance.tests}" />
 		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />
