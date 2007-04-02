@@ -20,7 +20,8 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 						"NHSpecificTest.NH898.ClassC.hbm.xml",
 					};
 			}
-		}
+		}
+
 		[Test]
 		public void Bug()
 		{
