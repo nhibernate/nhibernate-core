@@ -46,28 +46,37 @@ namespace NHibernate.Proxy
 		/// <returns>The result just like the actual object was called.</returns>
 		public object Intercept(IInvocation invocation, params object[] args)
 		{
-			if (_constructed)
+			try
 			{
-				// let the generic LazyInitializer figure out if this can be handled
-				// with the proxy or if the real class needs to be initialized
-				object result = base.Invoke(invocation.Method, args, invocation.Proxy);
-
-				// the base LazyInitializer could not handle it so we need to Invoke
-				// the method/property against the real class
-				if (result == InvokeImplementation)
+				if (_constructed)
 				{
-					invocation.InvocationTarget = GetImplementation();
-					return invocation.Proceed(args);
+					// let the generic LazyInitializer figure out if this can be handled
+					// with the proxy or if the real class needs to be initialized
+					object result = base.Invoke(invocation.Method, args, invocation.Proxy);
+
+					// the base LazyInitializer could not handle it so we need to Invoke
+					// the method/property against the real class
+					if (result == InvokeImplementation)
+					{
+						invocation.InvocationTarget = GetImplementation();
+						return invocation.Proceed(args);
+					}
+					else
+					{
+						return result;
+					}
 				}
 				else
 				{
-					return result;
+					// TODO: Find out equivalent to CGLIB's 'method.invokeSuper'.
+					return invocation.Proceed(args);
 				}
 			}
-			else
+			catch (TargetInvocationException tie)
 			{
-				// TODO: Find out equivalent to CGLIB's 'method.invokeSuper'.
-				return invocation.Proceed(args);
+				// Propagate the inner exception so that the proxy throws the same exception as
+				// the real object would (though of course the stack trace will be probably lost).
+				throw tie.InnerException;
 			}
 		}
 

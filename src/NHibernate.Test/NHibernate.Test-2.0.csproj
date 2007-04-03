@@ -403,6 +403,10 @@
     <Compile Include="NHSpecificTest\NH898\NH898Fixture.cs" />
     <Compile Include="NHSpecificTest\NH930\NH930Fixture.cs" />
     <Compile Include="NHSpecificTest\NH930\Model.cs" />
+    <Compile Include="NHSpecificTest\NH940\A.cs" />
+    <Compile Include="NHSpecificTest\NH940\B.cs" />
+    <Compile Include="NHSpecificTest\NH940\MyException.cs" />
+    <Compile Include="NHSpecificTest\NH940\NH940Fixture.cs" />
     <Compile Include="NHSpecificTest\NH958\Female.cs" />
     <Compile Include="NHSpecificTest\NH958\Hobby.cs" />
     <Compile Include="NHSpecificTest\NH958\Male.cs" />
@@ -871,6 +875,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH958\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH940\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
