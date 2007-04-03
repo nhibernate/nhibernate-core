@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+              namespace="NHibernate.Test.NHSpecificTest.NH940" assembly="NHibernate.Test">
+  <class name="A">
+    <id name="Id" column="uid" type="Int64">
+      <generator class="increment"/>
+    </id>
+
+    <many-to-one cascade="all" name="B" class="B"/>
+  </class>
+
+  <class name="B">
+    <id name="Id" column="uid" type="Int64">
+      <generator class="increment"/>
+    </id>
+  </class>
+</hibernate-mapping>
