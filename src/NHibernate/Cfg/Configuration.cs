@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -603,6 +604,21 @@ namespace NHibernate.Cfg
 			return AddAssembly(assembly, false);
 		}
 
+		private static StringCollection GetAllHbmXmlResourceNames(Assembly assembly)
+		{
+			StringCollection result = new StringCollection();
+
+			foreach (string resource in assembly.GetManifestResourceNames())
+			{
+				if (resource.EndsWith(".hbm.xml"))
+				{
+					result.Add(resource);
+				}
+			}
+
+			return result;
+		}
+
 		/// <summary>
 		/// Adds all of the assembly's embedded resources whose names end with <c>.hbm.xml</c>.
 		/// </summary>
@@ -622,24 +638,24 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration AddAssembly(Assembly assembly, bool skipOrdering)
 		{
-			IList resources = null;
-			if (skipOrdering)
+			IList resources = GetAllHbmXmlResourceNames(assembly);
+			return AddResources(assembly, resources, skipOrdering);
+		}
+
+		public Configuration AddResources(Assembly assembly, IList resources, bool skipOrdering)
+		{
+			if (!skipOrdering)
 			{
-				resources = assembly.GetManifestResourceNames();
-			}
-			else
-			{
-				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithAllResourcesIn(assembly);
+				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(
+					assembly,
+					resources);
 				resources = orderer.GetHbmFiles();
 			}
 
 			foreach (string fileName in resources)
 			{
-				if (fileName.EndsWith(".hbm.xml"))
-				{
-					log.Info("Found mapping document in assembly: " + fileName);
-					AddResource(fileName, assembly);
-				}
+				log.Info("Adding embedded mapping document: " + fileName);
+				AddResource(fileName, assembly);
 			}
 
 			return this;

@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+
+using Iesi.Collections;
+
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -13,8 +16,6 @@ namespace NHibernate.Cfg
 	/// <remarks>Represents a single <c>&lt;hibernate-mapping&gt;</c> element.</remarks>
 	public class Mappings
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(Mappings));
-
 		private readonly IDictionary classes;
 		private readonly IDictionary collections;
 		private readonly IDictionary tables;
