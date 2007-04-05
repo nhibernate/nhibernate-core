@@ -16,6 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH845
 			Assembly domain = typeof(Master).Assembly;
 			AssemblyHbmOrderer orderer = new AssemblyHbmOrderer(domain);
 			orderer.AddResource("NHibernate.DomainModel.MultiExtends.hbm.xml");
+			orderer.AddResource("NHibernate.DomainModel.Multi.hbm.xml");
 			orderer.AddResource("NHibernate.DomainModel.Query.hbm.xml");
 
 			IList files = orderer.GetHbmFiles();

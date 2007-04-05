@@ -407,6 +407,11 @@
     <Compile Include="NHSpecificTest\NH940\B.cs" />
     <Compile Include="NHSpecificTest\NH940\MyException.cs" />
     <Compile Include="NHSpecificTest\NH940\NH940Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH952\Asset.cs" />
+    <Compile Include="NHSpecificTest\NH952\Item.cs" />
+    <Compile Include="NHSpecificTest\NH952\NH952Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH952\PhysicalItem.cs" />
+    <Compile Include="NHSpecificTest\NH952\SellableItem.cs" />
     <Compile Include="NHSpecificTest\NH958\Female.cs" />
     <Compile Include="NHSpecificTest\NH958\Hobby.cs" />
     <Compile Include="NHSpecificTest\NH958\Male.cs" />
@@ -878,6 +883,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH940\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH952\Asset.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH952\Item.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH952\PhysicalItem.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH952\SellableItem.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
