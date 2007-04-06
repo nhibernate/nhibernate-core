@@ -65,7 +65,9 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Text;
+#if NET_2_0
 using NHibernate.DebugHelpers;
+#endif
 
 namespace NHibernate.Util
 {

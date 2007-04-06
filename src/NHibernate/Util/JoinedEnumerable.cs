@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using log4net;
 #if NET_2_0
+using System.Collections.Generic;
 #endif
 
 namespace NHibernate.Util

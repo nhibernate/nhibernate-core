@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
@@ -9,6 +8,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 #if NET_2_0
+using System.Collections.Generic;
 #endif
 
 namespace NHibernate.Engine

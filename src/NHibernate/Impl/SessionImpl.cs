@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -22,6 +21,7 @@ using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 #if NET_2_0
+using System.Collections.Generic;
 #endif
 
 namespace NHibernate.Impl

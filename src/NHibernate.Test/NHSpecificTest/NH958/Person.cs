@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 {
     public class Person
     {
-        private Guid? _id;
+        private Guid _id;
         private string _name = null;
         private IList _hobbies = new ArrayList();
 
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
             _name = name;
         }
 
-        public virtual Guid? Id
+        public virtual Guid Id
         {
             get { return _id; }
             set { _id = value; }

@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 #if NET_2_0
+using System.Collections.Generic;
 #else
 using System.Collections;
 #endif

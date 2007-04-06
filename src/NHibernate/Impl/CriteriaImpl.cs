@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Expression;
@@ -9,6 +8,7 @@ using NHibernate.Transform;
 using NHibernate.Util;
 using NExpression = NHibernate.Expression;
 #if NET_2_0
+using System.Collections.Generic;
 #endif
 
 namespace NHibernate.Impl
@@ -348,8 +348,10 @@ namespace NHibernate.Impl
 				builder.Append(criterionEntry.ToString());
 				first = false;
 			}
-			if(orderEntries.Count!=0)
-				builder.AppendLine();
+			if (orderEntries.Count != 0)
+			{
+				builder.Append(Environment.NewLine);
+			}
 			first = true;
 			foreach (OrderEntry orderEntry in orderEntries)
 			{
