@@ -28,17 +28,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\OSS\NHibernate\nhibernate\build\NHibernate-1.2.0.CR1-debug\bin\net-2.0\Iesi.Collections.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Lucene.Net, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Lucene.Net, Version=2.0.0.4, Culture=neutral, PublicKeyToken=255f08c3cb6b422d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>SharedLibs\Lucene.Net.dll</HintPath>
+      <HintPath>..\..\lib\net\2.0\Lucene.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -101,6 +97,10 @@
     <Compile Include="String2FieldBridgeAdaptor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Iesi.Collections\Iesi.Collections-2.0.csproj">
+      <Project>{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}</Project>
+      <Name>Iesi.Collections-2.0</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-2.0</Name>
