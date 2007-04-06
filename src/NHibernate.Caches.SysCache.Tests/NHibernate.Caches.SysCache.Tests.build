@@ -5,7 +5,7 @@
 		description="Unit tests for NHibernate pluggable cache provider using ASP.NET Cache object"
 		xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 
-	<property name="root.dir" value="..\.." />
+	<property name="root.dir" value="../.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
@@ -14,7 +14,7 @@
 			<include name="System.dll" />
 			<include name="System.Data.dll" />
 			<include name="System.XML.dll" />
-			<include name="System.web.dll" />
+			<include name="System.Web.dll" />
 			<include name="NHibernate.Caches.SysCache.dll" />
 			<include name="NHibernate.dll" />
 			<include name="nunit.framework.dll" />

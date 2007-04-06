@@ -7,7 +7,7 @@
 		in CVS.
 	-->
 	<property name="sign" value="true" overwrite="false" />
-	<property name="key.file" value="${root.dir}\src\NHibernate.snk" />
+	<property name="key.file" value="${root.dir}/src/NHibernate.snk" />
 
 	<!-- Generating AssemblyInfo files for Visual Studio -->
 	<property name="visual-studio" value="false" overwrite="false" />
@@ -39,6 +39,7 @@
 
 	<property name="clover.framework" value=".NET 1.1" if="${nant.settings.currentframework == 'net-1.1'}" />
 	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-2.0'}" />
+	<property name="clover.framework" value=".NET 1.1" if="${nant.settings.currentframework == 'mono-1.0'}" />
 
 	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET 2.0 for ${clover.framework}" />
 	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />

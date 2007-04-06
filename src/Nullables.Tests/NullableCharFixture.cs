@@ -88,7 +88,7 @@ namespace Nullables.Tests
 			Assert.IsFalse(NullableChar.Parse("").HasValue);
 			Assert.IsFalse(NullableChar.Parse("    ").HasValue);
 			Assert.IsTrue(ParseToStringValue('A'));
-			Assert.IsTrue(ParseToStringValue('Ç'));
+			Assert.IsTrue(ParseToStringValue('\xC7'));
 		}
 
 		[Test, ExpectedException(typeof(FormatException))]
