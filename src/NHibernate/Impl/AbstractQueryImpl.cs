@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
@@ -11,6 +10,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 #if NET_2_0
+using System.Collections.Generic;
 #endif
 
 namespace NHibernate.Impl

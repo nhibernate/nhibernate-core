@@ -3,7 +3,9 @@ using System.Collections;
 using System.Data;
 using System.Diagnostics;
 using Iesi.Collections;
+#if NET_2_0
 using NHibernate.DebugHelpers;
+#endif
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;

@@ -1,8 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
 #if NET_2_0
+using System.Collections.Generic;
 #endif
 
 namespace NHibernate.Impl

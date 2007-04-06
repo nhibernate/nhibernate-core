@@ -1,9 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 #if NET_2_0
+using System.Collections.Generic;
 #endif
 
 namespace NHibernate
