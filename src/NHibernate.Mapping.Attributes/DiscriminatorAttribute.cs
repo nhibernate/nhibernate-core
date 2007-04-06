@@ -40,7 +40,7 @@ namespace NHibernate.Mapping.Attributes
 		
 		private bool _notnull = true;
 		
-		private bool _insert = true;
+		private bool _insert = false;
 		
 		private string _column = null;
 		

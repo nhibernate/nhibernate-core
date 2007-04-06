@@ -274,6 +274,7 @@
     <Compile Include="PropertyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PropertyGeneration.cs" />
     <Compile Include="QueryAttribute.cs" />
     <Compile Include="RawXmlAttribute.cs">
       <SubType>Code</SubType>
@@ -310,6 +311,7 @@
     <Compile Include="VersionAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="VersionGeneration.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="nhibernate-mapping.xsd">

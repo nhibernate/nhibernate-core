@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Generated from NHibernate.Mapping.Attributes on 2007-02-24 15:38:17Z.-->
+<!--Generated from NHibernate.Mapping.Attributes on 2007-04-06 20:29:53Z.-->
 <hibernate-mapping auto-import="true" default-lazy="true" xmlns="urn:nhibernate-mapping-2.2">
   <class name="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" proxy="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" discriminator-value="base" mutable="false" polymorphism="explicit" persister="NHibernate.Mapping.Attributes.Test.DomainModel.Baz, NHibernate.Mapping.Attributes.Test" where="1" batch-size="9" check="0">
     <id name="Code" access="Int32" column="Id" type="String" length="8" unsaved-value="null">
@@ -10,8 +10,8 @@
       </generator>
     </id>
     <discriminator column="clazz_discriminator" type="String" not-null="true" length="256" force="true" insert="false" formula="1==2" />
-    <version name="Count" access="Int32" column="count_count" type="Int32" unsaved-value="0" />
-    <property name="Name" column="name_b" />
+    <version name="Count" access="Int32" column="count_count" type="Int32" unsaved-value="0" generated="never" />
+    <property name="Name" column="name_b" generated="always" />
     <many-to-one name="CollectionComponent" access="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" class="Int32" not-null="true" unique-key="uk" index="i" outer-join="true" fetch="select" not-found="ignore" lazy="false" />
     <many-to-one name="Foo" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="F" outer-join="true" fetch="join" update="false" insert="true" property-ref="0" lazy="proxy" />
     <component name="BazComponent" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Baz+NestingComponent, NHibernate.Mapping.Attributes.Test" update="false" insert="false" />
@@ -187,7 +187,7 @@
       </component>
       <dynamic-component name="List" access="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test">
         <dynamic-component name="NestedDynComponent" access="Int32" update="false" insert="false">
-          <property name="List" />
+          <property name="List" generated="insert" />
         </dynamic-component>
       </dynamic-component>
       <array name="_list" access="Int32" table="bazcomponents" optimistic-lock="true">
@@ -225,8 +225,8 @@
       <key-many-to-one name="Foo" access="Int32" class="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test" column="-" foreign-key="x" lazy="false" />
       <key-many-to-one name="Bar" access="NHibernate.Mapping.Attributes.Test.DomainModel.Bar, NHibernate.Mapping.Attributes.Test" class="Int32" lazy="proxy" />
     </composite-id>
-    <timestamp name="Timestamp" access="Boolean" column="`timestamp`" unsaved-value="True" />
-    <property name="Foo" optimistic-lock="true">
+    <timestamp name="Timestamp" access="Boolean" column="`timestamp`" unsaved-value="True" generated="always" />
+    <property name="Foo" optimistic-lock="true" generated="never">
       <type name="NHibernate.Mapping.Attributes.Test.DomainModel.Foo, NHibernate.Mapping.Attributes.Test">
         <param name="Property.Type">Param</param>
       </type>

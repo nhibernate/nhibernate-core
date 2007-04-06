@@ -34,7 +34,7 @@ namespace NHibernate.Mapping.Attributes
 		
 		private int _length = -1;
 		
-		private bool _insert = true;
+		private bool _insert = false;
 		
 		private bool _optimisticlockspecified;
 		
@@ -48,7 +48,7 @@ namespace NHibernate.Mapping.Attributes
 		
 		private bool _unique = false;
 		
-		private bool _update = true;
+		private bool _update = false;
 		
 		private string _name = null;
 		
@@ -61,6 +61,8 @@ namespace NHibernate.Mapping.Attributes
 		private string _uniquekey = null;
 		
 		private bool _notnullspecified;
+		
+		private PropertyGeneration _generated = PropertyGeneration.Unspecified;
 		
 		/// <summary> Default constructor (position=0) </summary>
 		public PropertyAttribute() : 
@@ -322,6 +324,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this._index = value;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual PropertyGeneration Generated
+		{
+			get
+			{
+				return this._generated;
+			}
+			set
+			{
+				this._generated = value;
 			}
 		}
 	}

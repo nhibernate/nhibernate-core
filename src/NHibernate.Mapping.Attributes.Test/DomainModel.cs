@@ -71,7 +71,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 		[NHMA.DynamicComponent(AccessType=typeof(Foo))]
 // TODO: No longer supported:			[NHMA.ComponentProperty(1, ComponentType=typeof(CompAddress), PropertyName="CompPropAddress")]
 			[NHMA.DynamicComponent(7, Name="NestedDynComponent", Update=false, Insert=false, AccessType=typeof(int))]
-				[NHMA.Property(8)]
+				[NHMA.Property(8, Generated=PropertyGeneration.Insert)]
 // When ComponentProperty was a BaseAttribute: TODO: Not supported: (will be used by both [DynComp])
 //			[NHMA.ComponentProperty(9, ComponentType=typeof(CompAddress), PropertyName="LastAddress")]
 		public System.Collections.IList List
@@ -187,7 +187,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for count
 	/// </summary>
-	[NHMA.Version(Column="count_count", Name="Count", UnsavedValueObject=0, AccessType=typeof(int), TypeType=typeof(int))]
+	[NHMA.Version(Generated=VersionGeneration.Never, Column="count_count", Name="Count", UnsavedValueObject=0, AccessType=typeof(int), TypeType=typeof(int))]
 	public Int32 Count
 	{
 		get
@@ -203,7 +203,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	/// <summary>
 	/// Get/set for name
 	/// </summary>
-	[NHMA.Property(Column="name_b")]
+	[NHMA.Property(Column="name_b", Generated=PropertyGeneration.Always)]
 	public String Name
 	{
 		get
@@ -913,7 +913,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set { _id = value; }
 		}
 
-		[NHMA.Property(-1, OptimisticLock=true)]
+		[NHMA.Property(-1, OptimisticLock=true, Generated=PropertyGeneration.Never)]
 			[NHMA.Type(NameType=typeof(Foo))]
 				[NHMA.Param(1, Name="Property.Type", Content="Param")]
 		public Foo Foo
@@ -922,7 +922,7 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set { _foo = value; }
 		}
 
-		[NHMA.Timestamp(0, Column="`timestamp`", UnsavedValueObject=true, AccessType=typeof(bool))]
+		[NHMA.Timestamp(0, Generated = VersionGeneration.Always, Column = "`timestamp`", UnsavedValueObject = true, AccessType = typeof(bool))]
 		public DateTime Timestamp
 		{
 			get { return _timestamp; }

@@ -2741,6 +2741,9 @@ writer.WriteAttributeString("type", GetAttributeValue(attribute.Type, mappedClas
 			// Attribute: <unsaved-value>
 if(attribute.UnsavedValue != null)
 writer.WriteAttributeString("unsaved-value", GetAttributeValue(attribute.UnsavedValue, mappedClass));
+			// Attribute: <generated>
+if(attribute.Generated != VersionGeneration.Unspecified)
+writer.WriteAttributeString("generated", GetXmlEnumValue(typeof(VersionGeneration), attribute.Generated));
 
 			WriteUserDefinedContent(writer, member, null, attribute);
 
@@ -2762,6 +2765,9 @@ writer.WriteAttributeString("column", GetAttributeValue(attribute.Column, mapped
 			// Attribute: <unsaved-value>
 if(attribute.UnsavedValue != null)
 writer.WriteAttributeString("unsaved-value", GetAttributeValue(attribute.UnsavedValue, mappedClass));
+			// Attribute: <generated>
+if(attribute.Generated != VersionGeneration.Unspecified)
+writer.WriteAttributeString("generated", GetXmlEnumValue(typeof(VersionGeneration), attribute.Generated));
 
 			WriteUserDefinedContent(writer, member, null, attribute);
 
@@ -3373,6 +3379,9 @@ writer.WriteAttributeString("unique-key", GetAttributeValue(attribute.UniqueKey,
 			// Attribute: <index>
 if(attribute.Index != null)
 writer.WriteAttributeString("index", GetAttributeValue(attribute.Index, mappedClass));
+			// Attribute: <generated>
+if(attribute.Generated != PropertyGeneration.Unspecified)
+writer.WriteAttributeString("generated", GetXmlEnumValue(typeof(PropertyGeneration), attribute.Generated));
 
 			WriteUserDefinedContent(writer, member, null, attribute);
 

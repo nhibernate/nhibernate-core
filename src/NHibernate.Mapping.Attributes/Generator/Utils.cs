@@ -35,8 +35,10 @@ namespace NHibernate.Mapping.Attributes.Generator
 					_knowEnums.Add("optimisticLockMode");
 					_knowEnums.Add("outerJoinStrategy");
 					_knowEnums.Add("polymorphismType");
+					_knowEnums.Add("propertyGeneration");
 					_knowEnums.Add("restrictedLaziness");
 					_knowEnums.Add("unsavedValueType");
+					_knowEnums.Add("versionGeneration");
 				}
 				return _knowEnums;
 			}

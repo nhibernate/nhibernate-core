@@ -28,11 +28,11 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _name = null;
 		
-		private bool _insert = true;
+		private bool _insert = false;
 		
 		private string _access = null;
 		
-		private bool _update = true;
+		private bool _update = false;
 		
 		private bool _updatespecified;
 		
