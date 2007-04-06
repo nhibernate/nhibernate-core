@@ -1194,8 +1194,14 @@ namespace NHibernate.Persister.Collection
 
 		private void CheckColumnDuplication(ISet distinctColumns, ICollection columns)
 		{
-			foreach (Column col in columns)
+			foreach (ISelectable sel in columns)
 			{
+				Column col = sel as Column;
+				if (col == null)
+				{
+					// Ignore formulas
+					continue;
+				}
 				if (distinctColumns.Contains(col.Name))
 				{
 					throw new MappingException(
