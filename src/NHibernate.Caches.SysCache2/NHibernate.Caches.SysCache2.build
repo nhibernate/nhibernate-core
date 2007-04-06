@@ -5,7 +5,7 @@
 		description="NHibernate cache provider using ASP.NET Cache, with support for SQL dependencies"
 		xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 
-	<property name="root.dir" value="..\.." />
+	<property name="root.dir" value="../.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">

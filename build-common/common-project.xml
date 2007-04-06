@@ -88,8 +88,8 @@
 			target="library" 
 			define="${current.build.defines}" 
 			debug="${build.debug}" 
-			output="${bin.dir}\${project::get-name()}.dll" 
-			doc="${bin.dir}\${project::get-name()}.xml"
+			output="${bin.dir}/${project::get-name()}.dll" 
+			doc="${bin.dir}/${project::get-name()}.xml"
 		>
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
@@ -108,7 +108,7 @@
 			target="exe"
 			define="${current.build.defines}" 
 			debug="${build.debug}"
-			output="${bin.dir}\${project::get-name()}.exe" 
+			output="${bin.dir}/${project::get-name()}.exe" 
 		>
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
