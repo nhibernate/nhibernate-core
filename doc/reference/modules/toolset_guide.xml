@@ -371,7 +371,7 @@ new SchemaExport(cfg).create(false, true);]]></programlisting>
             </para>
 
         </sect2>
-
+<!--
         <sect2 id="toolsetguide-s1-6">
             <title>Incremental schema updates</title>
 
@@ -441,7 +441,7 @@ new SchemaUpdate(cfg).execute(false);]]></programlisting>
 </target>]]></programlisting>
 
         </sect2>
-
+-->
     </sect1>
 
     <sect1 id="toolsetguide-s2">
