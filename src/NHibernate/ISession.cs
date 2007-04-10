@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.Type;
 
 namespace NHibernate
@@ -718,5 +719,17 @@ namespace NHibernate
 		/// Note that each query result is itself usually a list.
 		/// </returns>
 		IMultiQuery CreateMultiQuery();
+
+		/// <summary>
+		/// Gets the session implementation.
+		/// </summary>
+		/// <remarks>
+		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementions.
+		/// Implementors of the <seealso cref="ISession"/> interface should return the NHibernate implementation of this method.
+		/// </remarks>
+		/// <returns>
+		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface 
+		/// </returns>
+		ISessionImplementor GetSessionImplementation();
 	}
 }

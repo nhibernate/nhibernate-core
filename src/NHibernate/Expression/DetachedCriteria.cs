@@ -43,7 +43,7 @@ namespace NHibernate.Expression
 		/// to actually run the query.</summary>
 		public ICriteria GetExecutableCriteria(ISession session)
 		{
-			impl.Session = (SessionImpl) session;
+			impl.Session = session.GetSessionImplementation();
 			return impl;
 		}
 
