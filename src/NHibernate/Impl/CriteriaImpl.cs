@@ -31,7 +31,7 @@ namespace NHibernate.Impl
 		private int timeout = RowSelection.NoValue;
 		private int fetchSize = RowSelection.NoValue;
 		private System.Type persistentClass;
-		private SessionImpl session;
+		private ISessionImplementor session;
 		private IResultTransformer resultTransformer = new RootEntityResultTransformer();
 		private bool cacheable;
 		private string cacheRegion;
@@ -468,7 +468,7 @@ namespace NHibernate.Impl
 			get { return cacheable; }
 		}
 
-		public SessionImpl Session
+		public ISessionImplementor Session
 		{
 			get { return session; }
 			set { session = value; }

@@ -387,6 +387,12 @@ namespace NHibernate.Search.Impl
 			return session.SetBatchSize(batchSize);
 		}
 
+		public ISessionImplementor GetSessionImplementation()
+		{
+			return session.GetSessionImplementation();
+		}
+
+
 		#endregion
 	}
 }

@@ -5813,6 +5813,12 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+
+		public ISessionImplementor GetSessionImplementation()
+		{
+			return this;
+		}
+
 		public IInterceptor Interceptor
 		{
 			get { return interceptor; }

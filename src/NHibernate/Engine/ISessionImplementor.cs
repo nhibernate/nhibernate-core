@@ -166,7 +166,16 @@ namespace NHibernate.Engine
 		/// Strongly-typed version of <see cref="Find(string, QueryParameters)" />
 		/// </summary>
 		IList<T> Find<T>(string query, QueryParameters queryParameters);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Find(CriteriaImpl)" />
+		/// </summary>
+		IList<T> Find<T>(CriteriaImpl criteria);
 #endif
+
+		void Find(CriteriaImpl criteria, IList results);
+
+		IList Find(CriteriaImpl criteria);
 
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
