@@ -418,5 +418,23 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerMillisecond * 10L;
 			}
 		}
+
+		public override string GetIfExistsDropConstraint(NHibernate.Mapping.Table table, string name)
+		{
+			return
+				string.Format(
+@"if exists (select 1 from INFORMATION_SCHEMA.CONSTRAINT_TABLE_USAGE 
+where TABLE_NAME = N'{0}' and TABLE_SCHEMA = N'{1}' and CONSTRAINT_NAME = N'{2}')",
+					table.Name, table.Schema, name);
+		}
+
+		public override string GetIfNotExistsCreateConstraint(NHibernate.Mapping.Table table, string name)
+		{
+					return
+				string.Format(
+@"if NOT exists (select 1 from INFORMATION_SCHEMA.CONSTRAINT_TABLE_USAGE 
+where TABLE_NAME = N'{0}' and TABLE_SCHEMA = N'{1}' and CONSTRAINT_NAME = N'{2}')",
+					table.Name, table.Schema, name);
+		}
 	}
 }

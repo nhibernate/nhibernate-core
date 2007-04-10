@@ -46,7 +46,7 @@ namespace NHibernate.Mapping
 			}
 
 			return
-				d.GetAddForeignKeyConstraintString(constraintName, cols, referencedTable.GetQualifiedName(d, defaultSchema), refcols);
+				d.GetAddForeignKeyConstraintString(this.Table.GetQualifiedName(d, defaultSchema), constraintName, cols, referencedTable.GetQualifiedName(d, defaultSchema), refcols);
 		}
 
 		/// <summary>
@@ -105,10 +105,11 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public override string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
 		{
-			// TODO: NH-421
-			return
-				string.Format("alter table {0} {1}", Table.GetQualifiedName(dialect, defaultSchema),
-				              dialect.GetDropForeignKeyConstraintString(Name));
+			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
+			string drop = string.Format("alter table {0} {1}", Table.GetQualifiedName(dialect, defaultSchema),
+			                            dialect.GetDropForeignKeyConstraintString(Name));
+			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
+			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
 		}
 
 		#endregion

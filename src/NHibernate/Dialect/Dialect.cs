@@ -5,6 +5,7 @@ using System.Text;
 using log4net;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
+using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -285,8 +286,8 @@ namespace NHibernate.Dialect
 		/// <param name="referencedTable"></param>
 		/// <param name="primaryKey"></param>
 		/// <returns></returns>
-		public virtual string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
-		                                                       string referencedTable, string[] primaryKey)
+		public virtual string GetAddForeignKeyConstraintString(string parentTable, string constraintName, string[] foreignKey,
+			                                                       string referencedTable, string[] primaryKey)
 		{
 			return new StringBuilder(30)
 				.Append(" add constraint ")
@@ -308,6 +309,54 @@ namespace NHibernate.Dialect
 		public virtual string GetDropForeignKeyConstraintString(string constraintName)
 		{
 			return " drop constraint " + constraintName;
+		}
+
+		/// <summary>
+		/// The syntax that is used to check if a constraint does not exists before creating it
+		/// </summary>
+		/// <param name="table">The table.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public virtual string GetIfNotExistsCreateConstraint(Table table, string name)
+		{
+			return "";
+		}
+
+		/// <summary>
+		/// The syntax that is used to close the if for a constraint exists check, used
+		/// for dialects that requires begin/end for ifs
+		/// </summary>
+		/// <param name="table">The table.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public virtual string GetIfNotExistsCreateConstraintEnd(Table table, string name)
+		{
+			return "";
+		}
+
+
+
+		/// <summary>
+		/// The syntax that is used to check if a constraint exists before dropping it
+		/// </summary>
+		/// <param name="table">The table.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public virtual string GetIfExistsDropConstraint(Table table, string name)
+		{
+			return "";
+		}
+
+		/// <summary>
+		/// The syntax that is used to close the if for a constraint exists check, used
+		/// for dialects that requires begin/end for ifs
+		/// </summary>
+		/// <param name="table">The table.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public virtual string GetIfExistsDropConstraintEnd(Table table, string name)
+		{
+			return "";
 		}
 
 		/// <summary>

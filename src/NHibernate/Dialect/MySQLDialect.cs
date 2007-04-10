@@ -146,14 +146,14 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		/// <param name="parentTable"></param>
 		/// <param name="constraintName"></param>
 		/// <param name="foreignKey"></param>
 		/// <param name="referencedTable"></param>
 		/// <param name="primaryKey"></param>
 		/// <returns></returns>
-		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
+		public override string GetAddForeignKeyConstraintString(string parentTable, string constraintName, string[] foreignKey,
 		                                                        string referencedTable, string[] primaryKey)
 		{
 			string cols = String.Join(StringHelper.CommaSpace, foreignKey);

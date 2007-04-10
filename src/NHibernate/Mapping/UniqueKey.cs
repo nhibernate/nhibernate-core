@@ -37,16 +37,16 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Generates the SQL string to create the Unique Key Constraint in the database.
 		/// </summary>
-		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="constraintName"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the Unique Key Constraint.
 		/// </returns>
-		public override string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultSchema)
+		public override string SqlConstraintString(Dialect.Dialect dialect, string constraintName, string defaultSchema)
 		{
 			StringBuilder buf = new StringBuilder(
-				d.GetAddPrimaryKeyConstraintString(constraintName))
+				dialect.GetAddPrimaryKeyConstraintString(constraintName))
 				.Append('(');
 
 			bool commaNeeded = false;
@@ -59,10 +59,14 @@ namespace NHibernate.Mapping
 				}
 				commaNeeded = true;
 
-				buf.Append(col.GetQuotedName(d));
+				buf.Append(col.GetQuotedName(dialect));
 			}
 
-			return StringHelper.Replace(buf.Append(StringHelper.ClosedParen).ToString(), "primary key", "unique");
+			string ifExists = dialect.GetIfNotExistsCreateConstraint(Table, Name);
+			string create = StringHelper.Replace(buf.Append(StringHelper.ClosedParen).ToString(), "primary key", "unique");
+			string end = dialect.GetIfNotExistsCreateConstraintEnd(Table, Name);
+
+			return ifExists + System.Environment.NewLine + create + System.Environment.NewLine + end;
 		}
 
 		#region IRelationalModel Members
@@ -77,8 +81,11 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public override string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
 		{
-			// TODO: NH-421
-			return "alter table " + Table.GetQualifiedName(dialect, defaultSchema) + dialect.GetDropIndexConstraintString(Name);
+			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
+			string drop = "alter table " + Table.GetQualifiedName(dialect, defaultSchema) + dialect.GetDropIndexConstraintString(Name);
+			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
+
+			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
 		}
 
 		#endregion

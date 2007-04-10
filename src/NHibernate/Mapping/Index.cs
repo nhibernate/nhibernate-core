@@ -25,7 +25,6 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
 		{
-			// TODO: NH-421
 			StringBuilder buf = new StringBuilder("create index ")
 				.Append(dialect.QualifyIndexName ? name : StringHelper.Unqualify(name))
 				.Append(" on ")
@@ -45,7 +44,12 @@ namespace NHibernate.Mapping
 			}
 
 			buf.Append(StringHelper.ClosedParen);
-			return buf.ToString();
+
+			string ifExists = dialect.GetIfNotExistsCreateConstraint(Table, Name);
+			string create = buf.ToString();
+			string end = dialect.GetIfNotExistsCreateConstraintEnd(Table, Name);
+
+			return ifExists + System.Environment.NewLine + create + System.Environment.NewLine + end;
 		}
 
 		/// <summary>
@@ -58,8 +62,10 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
 		{
-			// TODO: NH-421
-			return string.Format("drop index {0}.{1}", table.GetQualifiedName(dialect, defaultSchema), name);
+			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
+			string drop = string.Format("drop index {0}.{1}", table.GetQualifiedName(dialect, defaultSchema), name);
+			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
+			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
 		}
 
 		/// <summary>

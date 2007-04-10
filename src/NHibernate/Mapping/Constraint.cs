@@ -81,8 +81,11 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public virtual string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
 		{
-			// TODO: NH-421
-			return string.Format("alter table {0} drop constraint {1}", Table.GetQualifiedName(dialect, defaultSchema), Name);
+			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
+			string drop = string.Format("alter table {0} drop constraint {1}", Table.GetQualifiedName(dialect, defaultSchema), Name);
+			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
+
+			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
 		}
 
 		/// <summary>
@@ -96,10 +99,12 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
 		{
-			// TODO: NH-421
-			return
-				string.Format("alter table {0} {1} ", Table.GetQualifiedName(dialect, defaultSchema),
+			string ifExists = dialect.GetIfNotExistsCreateConstraint(Table, Name);
+			string create =string.Format("alter table {0} {1} ", Table.GetQualifiedName(dialect, defaultSchema),
 				              SqlConstraintString(dialect, Name, defaultSchema));
+			string end = dialect.GetIfNotExistsCreateConstraintEnd(Table, Name);
+
+			return ifExists + System.Environment.NewLine + create + System.Environment.NewLine + end;
 		}
 
 		#endregion
