@@ -904,7 +904,7 @@ namespace NHibernate.Cfg
 		private void Validate()
 		{
 			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
-			ArrayList allProxyErrors = null;
+			HashedSet allProxyErrors = null;
 
 			foreach (PersistentClass clazz in classes.Values)
 			{
@@ -916,11 +916,11 @@ namespace NHibernate.Cfg
 					{
 						if (allProxyErrors == null)
 						{
-							allProxyErrors = new ArrayList(errors);
+							allProxyErrors = new HashedSet(errors);
 						}
 						else
 						{
-							allProxyErrors.AddRange(errors);
+							allProxyErrors.AddAll(errors);
 						}
 					}
 				}
