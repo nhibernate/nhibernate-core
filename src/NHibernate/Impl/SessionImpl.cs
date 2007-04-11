@@ -886,16 +886,7 @@ namespace NHibernate.Impl
 				((IValidatable) theObj).Validate();
 			}
 
-			object id;
-			if (useIdentityColumn)
-			{
-				id = null;
-				ExecuteInserts();
-			}
-			else
-			{
-				id = key.Identifier;
-			}
+			object id = useIdentityColumn ? null : key.Identifier;
 
 			// Put a placeholder in entries, so we don't recurse back to try and Save() the
 			// same object again. QUESTION: Should this be done before OnSave() is called?
@@ -912,6 +903,13 @@ namespace NHibernate.Impl
 			finally
 			{
 				cascading--;
+			}
+
+			// NH-962: This was originally done before many-to-one cascades.
+			// Execute all delayed inserts (including those for entities saved due to cascading above)
+			if (useIdentityColumn)
+			{
+				ExecuteInserts();
 			}
 
 			object[] values = persister.GetPropertyValues(theObj);
