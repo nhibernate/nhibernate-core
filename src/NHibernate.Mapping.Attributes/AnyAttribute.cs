@@ -30,7 +30,7 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _uniquekey = null;
 		
-		private bool _update = true;
+		private bool _update = false;
 		
 		private string _metatype = null;
 		
@@ -38,7 +38,7 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _access = null;
 		
-		private bool _insert = true;
+		private bool _insert = false;
 		
 		private bool _insertspecified;
 		

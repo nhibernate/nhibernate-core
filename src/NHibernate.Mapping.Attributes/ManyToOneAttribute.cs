@@ -34,7 +34,7 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _foreignkey = null;
 		
-		private bool _insert = true;
+		private bool _insert = false;
 		
 		private string _class = null;
 		
@@ -48,7 +48,7 @@ namespace NHibernate.Mapping.Attributes
 		
 		private bool _unique = false;
 		
-		private bool _update = true;
+		private bool _update = false;
 		
 		private string _name = null;
 		

@@ -34,6 +34,8 @@ namespace NHibernate.Mapping.Attributes
 		
 		private string _access = null;
 		
+		private VersionGeneration _generated = VersionGeneration.Unspecified;
+		
 		/// <summary> Default constructor (position=0) </summary>
 		public TimestampAttribute() : 
 				base(0)
@@ -124,6 +126,19 @@ namespace NHibernate.Mapping.Attributes
 			set
 			{
 				this.UnsavedValue = value==null ? "null" : value.ToString();
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual VersionGeneration Generated
+		{
+			get
+			{
+				return this._generated;
+			}
+			set
+			{
+				this._generated = value;
 			}
 		}
 	}
