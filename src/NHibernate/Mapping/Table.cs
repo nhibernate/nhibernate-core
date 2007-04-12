@@ -125,7 +125,7 @@ namespace NHibernate.Mapping
 		/// The schema name for this table in a form that is safe to use inside
 		/// of a SQL statement. Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
-		private string GetQuotedSchemaName(Dialect.Dialect dialect)
+		public string GetQuotedSchemaName(Dialect.Dialect dialect)
 		{
 			if (schema == null)
 			{

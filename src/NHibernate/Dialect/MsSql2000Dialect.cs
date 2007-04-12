@@ -4,10 +4,11 @@ using System.Data;
 using System.Text.RegularExpressions;
 
 using NHibernate.Dialect.Function;
+using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -362,7 +363,7 @@ namespace NHibernate.Dialect
 			public string ReplaceMatch(Match match)
 			{
 				string alias = match.Groups[1].Value;
-				string lockHint = dialect.AppendLockHint((LockMode) aliasedLockModes[alias], alias);
+				string lockHint = dialect.AppendLockHint((LockMode)aliasedLockModes[alias], alias);
 				return string.Concat(" ", lockHint, match.Groups[2].Value);
 			}
 		}
@@ -373,7 +374,7 @@ namespace NHibernate.Dialect
 
 			foreach (DictionaryEntry de in aliasedLockModes)
 			{
-				if (NeedsLockHint((LockMode) de.Value))
+				if (NeedsLockHint((LockMode)de.Value))
 				{
 					doWork = true;
 					break;
@@ -388,14 +389,14 @@ namespace NHibernate.Dialect
 			// Regex matching any alias out of those given. Aliases should contain
 			// no dangerous characters (they are identifiers) so they are not escaped.
 			string aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
-			
+
 			// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
 			// in various kinds of "FROM table1 alias1, table2 alias2".
 			Regex matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
 
 			SqlStringBuilder result = new SqlStringBuilder();
 			MatchEvaluator evaluator = new MatchEvaluator(new LockHintAppender(this, aliasedLockModes).ReplaceMatch);
-			
+
 			foreach (object part in sql.Parts)
 			{
 				if (part == Parameter.Placeholder)
@@ -404,7 +405,7 @@ namespace NHibernate.Dialect
 					continue;
 				}
 
-				result.Add(matchRegex.Replace((string) part, evaluator));
+				result.Add(matchRegex.Replace((string)part, evaluator));
 			}
 
 			return result.ToSqlString();
@@ -421,20 +422,21 @@ namespace NHibernate.Dialect
 
 		public override string GetIfExistsDropConstraint(NHibernate.Mapping.Table table, string name)
 		{
-			return
-				string.Format(
-@"if exists (select 1 from INFORMATION_SCHEMA.CONSTRAINT_TABLE_USAGE 
-where TABLE_NAME = N'{0}' and TABLE_SCHEMA = N'{1}' and CONSTRAINT_NAME = N'{2}')",
-					table.Name, table.Schema, name);
+			string selectExistingObject = GetSelectExistingObject(name, table);
+			return string.Format(@"if exists ({0})", selectExistingObject);
+		}
+
+		private string GetSelectExistingObject(string name, Table table)
+		{
+			string objName = table.GetQuotedSchemaName(this) + this.Quote(name);
+			return string.Format("select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')",
+								 objName, table.GetQuotedName(this));
 		}
 
 		public override string GetIfNotExistsCreateConstraint(NHibernate.Mapping.Table table, string name)
 		{
-					return
-				string.Format(
-@"if NOT exists (select 1 from INFORMATION_SCHEMA.CONSTRAINT_TABLE_USAGE 
-where TABLE_NAME = N'{0}' and TABLE_SCHEMA = N'{1}' and CONSTRAINT_NAME = N'{2}')",
-					table.Name, table.Schema, name);
+			string selectExistingObject = GetSelectExistingObject(name, table);
+			return string.Format(@"if not exists ({0})", selectExistingObject);
 		}
 	}
 }
