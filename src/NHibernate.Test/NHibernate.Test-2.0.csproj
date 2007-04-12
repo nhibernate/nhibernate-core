@@ -166,6 +166,7 @@
     <Compile Include="HQLFunctionTest\BaseFunctionFixture.cs" />
     <Compile Include="HQLFunctionTest\HQLFunctions.cs" />
     <Compile Include="HQLFunctionTest\Human.cs" />
+    <Compile Include="HQLFunctionTest\MaterialResource.cs" />
     <Compile Include="HQLFunctionTest\Name.cs" />
     <Compile Include="HQLFunctionTest\SimpleFunctionsTest.cs" />
     <Compile Include="HQLFunctionTest\SQLFunctionTemplateTest.cs" />
@@ -901,6 +902,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH962\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HQLFunctionTest\MaterialResource.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

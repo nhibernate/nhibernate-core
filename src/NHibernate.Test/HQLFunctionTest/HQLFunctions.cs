@@ -16,6 +16,27 @@ namespace NHibernate.Test.HQLFunctionTest
 	//, Ignore("HQLFunctions not yet completely implemented (HQL parser don't parse HQLFunction)")]
 	public class HQLFunctions : TestCase
 	{
+		static Hashtable notSupportedStandardFunction = new Hashtable();
+		static HQLFunctions()
+		{
+			notSupportedStandardFunction.Add("locate",
+				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(FirebirdDialect) });
+			notSupportedStandardFunction.Add("bit_length",
+				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect) });
+			notSupportedStandardFunction.Add("extract",
+				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect) });
+		}
+
+		private void IgnoreIfNotSupported(string functionName)
+		{
+			if (notSupportedStandardFunction.ContainsKey(functionName))
+			{
+				IList dialects = (IList)notSupportedStandardFunction[functionName];
+				if(dialects.Contains(Dialect.GetType()))
+					Assert.Ignore(Dialect + " doesn't support "+functionName+" function.");
+			}
+		}
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -23,7 +44,7 @@ namespace NHibernate.Test.HQLFunctionTest
 
 		protected override IList Mappings
 		{
-			get { return new string[] {"HQLFunctionTest.Animal.hbm.xml"}; }
+			get { return new string[] { "HQLFunctionTest.Animal.hbm.xml", "HQLFunctionTest.MaterialResource.hbm.xml" }; }
 		}
 
 		protected override void OnTearDown()
@@ -162,6 +183,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void SubString()
 		{
+			IgnoreIfNotSupported("substring");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -198,12 +220,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Locate()
 		{
-			bool hasNoLocateFunction = Dialect is MsSql2000Dialect;
-
-			if (hasNoLocateFunction)
-			{
-				Assert.Ignore(Dialect + " doesn't support locate function");
-			}
+			IgnoreIfNotSupported("locate");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -225,6 +242,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Trim()
 		{
+			IgnoreIfNotSupported("trim");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abc   ", 1);
@@ -281,6 +299,8 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Length()
 		{
+			IgnoreIfNotSupported("length");
+
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("12345", 20);
@@ -304,10 +324,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Bit_length()
 		{
-			if (Dialect is MsSql2000Dialect)
-			{
-				Assert.Ignore(Dialect + " does not support bit_length function");
-			}
+			IgnoreIfNotSupported("bit_length");
 
 			// test only the parser
 			using (ISession s = OpenSession())
@@ -323,6 +340,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Coalesce()
 		{
+			IgnoreIfNotSupported("coalesce");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -337,6 +355,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Nullif()
 		{
+			IgnoreIfNotSupported("nullif");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -351,6 +370,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Abs()
 		{
+			IgnoreIfNotSupported("abs");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("Dog", 9);
@@ -376,6 +396,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Mod()
 		{
+			IgnoreIfNotSupported("mod");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -401,6 +422,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Sqrt()
 		{
+			IgnoreIfNotSupported("sqrt");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 65536f);
@@ -422,6 +444,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Upper()
 		{
+			IgnoreIfNotSupported("upper");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1f);
@@ -447,6 +470,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Lower()
 		{
+			IgnoreIfNotSupported("lower");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("ABCDEF", 1f);
@@ -472,6 +496,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Cast()
 		{
+			IgnoreIfNotSupported("cast");
 			// The cast is used to test various cases of a function render
 			// Cast was selected because represent a special case for:
 			// 1) Has more then 1 argument
@@ -595,6 +620,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Current_TimeStamp()
 		{
+			IgnoreIfNotSupported("current_timestamp");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -606,10 +632,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Extract()
 		{
-			if (Dialect is MsSql2000Dialect)
-			{
-				Assert.Ignore(Dialect + " does not support extract function");
-			}
+			IgnoreIfNotSupported("extract");
 
 			// test only the parser and render
 			using (ISession s = OpenSession())
@@ -625,6 +648,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Concat()
 		{
+			IgnoreIfNotSupported("concat");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1f);
@@ -650,6 +674,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void HourMinuteSecond()
 		{
+			IgnoreIfNotSupported("second");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -661,6 +686,9 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void DayMonthYear()
 		{
+			IgnoreIfNotSupported("day");
+			IgnoreIfNotSupported("month");
+			IgnoreIfNotSupported("year");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -672,6 +700,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Str()
 		{
+			IgnoreIfNotSupported("str");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -687,6 +716,50 @@ namespace NHibernate.Test.HQLFunctionTest
 				hql = "from Animal a where str(123) = '123'";
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
+			}
+		}
+
+		[Test]
+		public void Iif()
+		{
+			if (!Dialect.Functions.Contains("iif"))
+				Assert.Ignore(Dialect + "doesn't support iif function.");
+			using (ISession s = OpenSession())
+			{
+				s.Save(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available));
+				s.Save(new MaterialResource("Flash card 512MB", "A002/07", MaterialResource.MaterialState.Available));
+				s.Save(new MaterialResource("Flash card 512MB", "A003/07", MaterialResource.MaterialState.Reserved));
+				s.Save(new MaterialResource("Flash card 512MB", "A004/07", MaterialResource.MaterialState.Reserved));
+				s.Save(new MaterialResource("Flash card 512MB", "A005/07", MaterialResource.MaterialState.Discarded));
+				s.Flush();
+			}
+
+			// Statistic
+			using (ISession s = OpenSession())
+			{
+				string hql = 
+@"select mr.Description, 
+sum(iif(mr.State= 0,1,0)), 
+sum(iif(mr.State= 1,1,0)), 
+sum(iif(mr.State= 2,1,0)) 
+from MaterialResource mr
+group by mr.Description";
+
+				IList lresult = s.CreateQuery(hql).List();
+				Assert.AreEqual("Flash card 512MB", ((IList)lresult[0])[0]);
+				Assert.AreEqual(2, ((IList)lresult[0])[1]);
+				Assert.AreEqual(2, ((IList)lresult[0])[2]);
+				Assert.AreEqual(1, ((IList)lresult[0])[3]);
+
+				hql = "from MaterialResource mr where iif(mr.State=2,true,false)=true";
+				MaterialResource result = (MaterialResource)s.CreateQuery(hql).UniqueResult();
+				Assert.AreEqual("A005/07", result.SerialNumber);
+			}
+			// clean up
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from MaterialResource");
+				s.Flush();
 			}
 		}
 	}

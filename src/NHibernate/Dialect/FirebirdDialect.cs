@@ -71,6 +71,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("yesterday", new CastedFunction("yesterday", NHibernateUtil.Date));
 			RegisterFunction("tomorrow", new CastedFunction("tomorrow", NHibernateUtil.Date));
 			RegisterFunction("now", new CastedFunction("now", NHibernateUtil.DateTime));
+			RegisterFunction("iif", new StandardSafeSQLFunction("iif", 3));
 			// New embedded functions in FB 2.0 (http://www.firebirdsql.org/rlsnotes20/rnfbtwo-str.html#str-string-func)
 			RegisterFunction("char_length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("bit_length", new StandardSafeSQLFunction("bit_length", NHibernateUtil.Int64, 1));
