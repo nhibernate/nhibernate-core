@@ -272,7 +272,11 @@
 		<delete dir="${source.tmpdir}" />
 	</target>
 
-	<target name="installer" depends="init binaries doc sources">
+	<target name="prepare-installer-files" depends="init sources">
+		<copy file="releasenotes.txt" todir="${build.dir}" />
+	</target>
+
+	<target name="installer" depends="init binaries doc prepare-installer-files">
 		<nant buildfile="src/NHibernate.Setup/NHibernate.Setup.build" target="msi" />
 	</target>
 

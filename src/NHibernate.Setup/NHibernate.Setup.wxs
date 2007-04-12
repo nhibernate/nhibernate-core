@@ -236,10 +236,10 @@
 								<File Id="NHibernate.Caches.SysCache.xml_net20" Name="NHibernate.Caches.SysCache.xml" KeyPath="yes" />
 							</Component>
 							<Component Id="NHibernate.Caches.SysCache2.dll_net20" Guid="{2788CDB6-BF50-45E9-A5CD-AB4CEAA002FB}">
-								<File Id="NHibernate.Caches.SysCache2.dll_net20" name="NHibernate.Caches.SysCache2.dll" KeyPath="yes" />
+								<File Id="NHibernate.Caches.SysCache2.dll_net20" Name="NHibernate.Caches.SysCache2.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="NHibernate.Caches.SysCache2.xml_net20" Guid="{E41CC882-BAF4-4DA9-B0D9-387F74785FCB}">
-								<File Id="NHibernate.Caches.SysCache2.xml_net20" name="NHibernate.Caches.SysCache2.xml" KeyPath="yes" />
+								<File Id="NHibernate.Caches.SysCache2.xml_net20" Name="NHibernate.Caches.SysCache2.xml" KeyPath="yes" />
 							</Component>
 							<Component Id="NHibernate.dll_net20" Guid="{B713EC9D-B2EE-4103-BDD2-A92D12115396}">
 								<File Id="NHibernate.dll_net20" Name="NHibernate.dll" KeyPath="yes" />
