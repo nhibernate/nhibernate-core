@@ -1,3 +1,43 @@
+Build 1.2.0.CR2
+========================
+
+Patches Applied:
+
+    * [NH-859] - Improve SubselectFetch performance
+    * [NH-931] - Error Message Improvement for SingleTableEntityPersister.cs
+    * [NH-934] - Fix Spelling in comments and parameter lists
+    * [NH-937] - Improve comments and parameter lists
+    * [NH-954] - Fix build for mono-1.0 on Linux
+    * [NH-955] - JetDriver breaks on non-standard cultures, on the DateTime fix
+    * [NH-962] - Parent-Child relationships not properly persisted in certain cases
+
+Bugs Fixed:
+
+    * [NH-898] - ArgumentException from EntityKey constructor when running a HQL query
+    * [NH-926] - Identity insert fails with SQL Ce dialect and aggresive connection release mode.
+    * [NH-929] - session.Save(object) sets bogus ID fields using MySQL with default hibernate.connection.release_mode
+    * [NH-930] - Schema Export generates duplicate constraints
+    * [NH-932] - hbm2net: Troubles using "classname, AssemblyName" in Extends attribute of joined-subclass
+    * [NH-933] - Expression.In does not support Generic lists
+    * [NH-940] - domain model exception badly handled by proxy NHibernate
+    * [NH-952] - AddAssembly doesn't seem to order joined-subclass correctly
+    * [NH-958] - ISession.SaveOrUpdateCopy throws exception when class has <any> mapping
+    * [NH-965] - Error with computed property (property ... formula="... ) inside <compsite-element> block
+    * [NH-966] - Unsafe type cast code in DetachedCriteria.GetExecutableCriteria
+
+New Features:
+
+    * [NH-305] - Generated properties
+    * [NH-428] - Support Multiple Collections join fetch
+    * [NH-915] - Add pessimistic locking for SQL Server 2000/2005
+    * [NH-936] - Sys Cache with SqlCacheDependencies
+
+Improvements:
+
+    * [NH-944] - Provide API for specifying JoinType in subqueries
+    * [NH-947] - Add IInterceptor.SetSession
+    * [NH-948] - Documentation needs update: "Copy the xsd files to ... directory for enabling IntelliSense"
+
 Build 1.2.0.CR1
 ========================
 
