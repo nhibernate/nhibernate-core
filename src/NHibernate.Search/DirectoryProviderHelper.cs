@@ -69,11 +69,18 @@ namespace NHibernate.Search
 		public static DirectoryInfo DetermineIndexDir(String directoryProviderName, IDictionary properties)
 		{
 			String indexBase = (string) properties["indexBase"] ?? ".";
+			bool createIfMissing;
+			string shouldCreate = (string)properties["indexBase.create"] ?? "false";
+			bool.TryParse(shouldCreate, out createIfMissing);
+			//We need this to allow using the search from the web, where the "." directory is 
+			//somewhere in the system root.
+			indexBase = indexBase.Replace("~", AppDomain.CurrentDomain.BaseDirectory);
 			DirectoryInfo indexDir = new DirectoryInfo(indexBase);
 			if (!(indexDir.Exists))
 			{
-				//TODO create the directory?
-				throw new HibernateException(String.Format("Index directory does not exists: {0}", indexBase));
+				if(!createIfMissing)
+					throw new HibernateException(String.Format("Index directory does not exists: {0}", indexBase));
+				indexDir.Create();
 			}
 
 			if (!HasWriteAccess(indexDir))
