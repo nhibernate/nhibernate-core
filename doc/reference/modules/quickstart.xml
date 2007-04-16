@@ -107,9 +107,7 @@
             shielding the internal representation from the publicly visible interface:
         </para>
 
-        <programlisting><![CDATA[using System;
-
-namespace QuickStart
+        <programlisting><![CDATA[namespace QuickStart
 {
     public class Cat
     {
@@ -122,25 +120,25 @@ namespace QuickStart
         {
         }
 
-        public string Id
+        public virtual string Id
         {
             get { return id; }
             set { id = value; }
         }
 
-        public string Name
+        public virtual string Name
         {
             get { return name; }
             set { name = value; }
         }
 
-        public char Sex
+        public virtual char Sex
         {
             get { return sex; }
             set { sex = value; }
         }
 
-        public float Weight
+        public virtual float Weight
         {
             get { return weight; }
             set { weight = value; }
@@ -168,6 +166,11 @@ namespace QuickStart
             .NET reflection and runtime class enhancement (through Castle.DynamicProxy library).
             So, without any dependency in the POCO class on NHibernate, we can map it to
             a database table.
+        </para>
+
+        <para>
+            For the above mentioned runtime class enhancement to work, NHibernate requires that all
+            public properties of an entity class are declared as <literal>virtual</literal>.
         </para>
 
     </sect1>
