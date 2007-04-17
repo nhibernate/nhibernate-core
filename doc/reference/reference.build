@@ -10,7 +10,6 @@
 
 	<target name="init" depends="common.init">
 		<property name="lang" value="en" />
-		<tstamp property="build.date" pattern="u" verbose="true" />
 
 		<property name="output.dir" value="${build.dir}/doc" />
 		<property name="output.html.basename" value="NHibernate.Documentation" />
@@ -43,8 +42,13 @@
 		<delete dir="${build.html.dir}" failonerror="false" />
 	</target>
 
-	<target name="build" depends="init build-html build-chm build-help2 build-pdf"
-		description="Generates the documentation in multiple formats from the Docbook files." />
+	<target name="build" depends="init"
+		description="Generates the documentation in multiple formats from the Docbook files.">
+		<call target="build-html" />
+		<call target="build-chm" />
+		<call target="build-help2" />
+		<call target="build-pdf" />
+	</target>
 
 	<target name="build-html.make-directories" depends="init">
 		<mkdir dir="${build.single.dir}" failonerror="false" />
