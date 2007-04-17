@@ -125,8 +125,7 @@
 		<property overwrite="false" name="assembly.description" value="" />
 		<property overwrite="false" name="assembly.product" value="${project::get-name()}" />
 		<property overwrite="false" name="assembly.company" value="${project.company}" />
-		<property overwrite="false" name="assembly.title"
-			value="${project::get-name()} for ${framework::get-description(framework::get-target-framework())}" />
+		<property overwrite="false" name="assembly.title" value="${project::get-name()}" />
 		<property overwrite="false" name="assembly.version" value="${project.version.numeric}" />
 		<property overwrite="false" name="assembly.version.informational" value="${project.version.numeric}" />
 		<property overwrite="false" name="assembly.version.file" value="${project.version.numeric}" />
@@ -145,7 +144,6 @@
 		depends="common.init common.set-assembly-attribute-values"
 		description="Generate AssemblyInfo.cs using assembly.* properties."
 	>
-		<attrib file="AssemblyInfo.cs" readonly="false" />
 		<asminfo output="AssemblyInfo.cs" language="CSharp">
 			<imports>
 				<import namespace="System" />

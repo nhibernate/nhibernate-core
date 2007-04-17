@@ -10,6 +10,9 @@
 
 	<include buildfile="${root.dir}/build-common/common.xml" />
 
+	<!-- Pass -D:skip.tests=true to NAnt to skip running tests when building -->
+	<property name="skip.tests" value="false" overwrite="false" />
+
 	<!-- Disable performance tests by default. They take too much time. -->
 	<property name="run.performance.tests" value="false" overwrite="false" />
 
@@ -64,12 +67,7 @@
 	<target name="init" depends="common.init"
 		description="Initializes build properties" />
 
-	<target name="recreate-build-directory">
-		<echo message="Current Directory is ${project::get-base-directory()}" />
-		<echo message="Build Directory is ${build.dir}" />
-
-		<!-- Prepare build directory -->
-		<delete dir="${bin.dir}" failonerror="false" />
+	<target name="prepare-build-directory" depends="init">
 		<mkdir dir="${bin.dir}" />
 		<call target="copy-referenced-assemblies" />
 	</target>
@@ -117,7 +115,7 @@
 	</target>
 
 	<target name="build"
-		depends="init recreate-build-directory"
+		depends="init prepare-build-directory"
 		description="Builds NHibernate in the current configuration">
 
 		<nant target="build">
@@ -135,7 +133,7 @@
 		</nunit2report>
 	</target>
 
-	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework">
+	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework" unless="${skip.tests}">
 		<!--
 		<nant target="test">
 			<buildfiles refid="buildfiles.tests" />
@@ -175,7 +173,7 @@
 
 	</target>
 
-	<target name="doc" depends="init"
+	<target name="doc" depends="init binaries"
 		description="Builds the Help Documentation and the API documentation">
 		<nant buildfile="doc/documentation.build" target="api manual" />
 	</target>
@@ -223,7 +221,7 @@
 		<call target="coverage-report" />
 	</target>
 
-	<target name="sources" depends="init">
+	<target name="sources">
 		<property name="source.tmpdir" value="${build.dir}/tmp-src" />
 		<copy todir="${source.tmpdir}">
 			<fileset>
@@ -262,32 +260,49 @@
 		<!-- Generate AssemblyInfo.cs files for Visual Studio -->
 		<nant buildfile="${source.tmpdir}/default.build" target="visual-studio" />
 
+	</target>
+
+	<target name="sources-zip" depends="init sources">
 		<mkdir dir="${build.dir}/src" />
 		<zip zipfile="${build.dir}/src/NHibernate-${project.version}-src.zip">
 			<fileset basedir="${source.tmpdir}">
 				<include name="**/*" />
 			</fileset>
 		</zip>
-
-		<delete dir="${source.tmpdir}" />
 	</target>
 
-	<target name="prepare-installer-files" depends="init sources">
+	<target name="copy-release-notes" depends="init">
 		<copy file="releasenotes.txt" todir="${build.dir}" />
 	</target>
+
+	<target name="binaries-zip" depends="init binaries copy-release-notes">
+		<zip zipfile="${build.dir}/bin/NHibernate-${project.version}-bin.zip">
+			<fileset basedir="${build.dir}">
+				<include name="releasenotes.txt" />
+				<include name="bin/**" />
+
+				<exclude name="**/*.hbm.xml" />
+				<exclude name="**/*.commandlog" />
+				<exclude name="**/MyTest*" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="prepare-installer-files" depends="init sources-zip copy-release-notes" />
 
 	<target name="installer" depends="init binaries doc prepare-installer-files">
 		<nant buildfile="src/NHibernate.Setup/NHibernate.Setup.build" target="msi" />
 	</target>
 
-	<target name="package" depends="init test-all-frameworks binaries doc sources installer"
+	<target name="package" depends="init test-all-frameworks binaries doc sources-zip binaries-zip installer"
 		description="Creates files for the File Release System on SourceForge">
 
 		<property name="dist.output.dir" value="${project::get-base-directory()}/build/" />
-		<move todir="${dist.output.dir}" flatten="true">
+		<move todir="${dist.output.dir}" flatten="true" overwrite="true">
 			<fileset basedir="${build.dir}">
 				<include name="*.msi" />
 				<include name="src/NHibernate-${project.version}-src.zip" />
+				<include name="bin/NHibernate-${project.version}-bin.zip" />
 			</fileset>
 		</move>
 
