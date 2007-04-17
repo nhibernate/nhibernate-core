@@ -287,6 +287,14 @@ namespace NHibernate.Cfg
 
 			model.Key.Type = model.Identifier.Type;
 			model.CreatePrimaryKey(dialect);
+
+			if (!model.IsJoinedSubclass)
+			{
+				throw new MappingException(
+					"Cannot map joined-subclass " + model.Name + " to table " + 
+					model.Table.Name + ", the same table as its base class.");
+			}
+
 			model.CreateForeignKey();
 
 			// CHECK
