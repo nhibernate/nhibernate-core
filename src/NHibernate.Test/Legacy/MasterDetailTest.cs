@@ -1260,7 +1260,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				s.CreateQuery(
-					"select m from Master m order by m.id + cast(:param as integer)")
+					"select m from Master m order by m.id + :param")
 					.SetParameter("param", 10, NHibernateUtil.Int32)
 					.List();
 			}
