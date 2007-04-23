@@ -1457,10 +1457,10 @@ namespace NHibernate.Cfg
 
 				if (mappings.SchemaName != null)
 				{
-					parms.Add("schema", mappings.SchemaName);
+					parms.Add("schema", dialect.QuoteForSchemaName(mappings.SchemaName));
 				}
 
-				parms.Add("target_table", model.Table.Name);
+				parms.Add("target_table", model.Table.GetQuotedName(dialect));
 
 				foreach (Column col in model.ColumnCollection)
 				{
