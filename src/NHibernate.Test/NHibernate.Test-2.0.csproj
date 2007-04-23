@@ -419,6 +419,8 @@
     <Compile Include="NHSpecificTest\NH965\CompositeElement.cs" />
     <Compile Include="NHSpecificTest\NH965\Container.cs" />
     <Compile Include="NHSpecificTest\NH965\NH965Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH980\IdOnly.cs" />
+    <Compile Include="NHSpecificTest\NH980\NH980Fixture.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
@@ -894,6 +896,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH962\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH980\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

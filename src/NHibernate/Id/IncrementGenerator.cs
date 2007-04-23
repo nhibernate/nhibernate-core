@@ -50,7 +50,7 @@ namespace NHibernate.Id
 		public void Configure(IType type, IDictionary parms, Dialect.Dialect d)
 		{
 			tableName = parms[Table] as string;
-			string columnName = ((Column) parms[Column]).Name;
+			string columnName = ((Column) parms[Column]).GetQuotedName(d);
 
 			string schemaName = parms[Schema] as string;
 			if (schemaName != null && tableName.IndexOf(StringHelper.Dot) < 0)
