@@ -275,10 +275,24 @@
 		<copy file="releasenotes.txt" todir="${build.dir}" />
 	</target>
 
-	<target name="binaries-zip" depends="init binaries copy-release-notes">
+	<target name="copy-xml-schemas" depends="init">
+		<!--
+			TODO: Probably need to think of a better place for the XML schemas since
+			they are used by NHibernate, NHMA, and this build file.
+		-->
+		<copy todir="${build.dir}">
+			<fileset basedir="src/NHibernate">
+				<include name="nhibernate-mapping.xsd" />
+				<include name="nhibernate-configuration.xsd" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="binaries-zip" depends="init binaries copy-release-notes copy-xml-schemas">
 		<zip zipfile="${build.dir}/bin/NHibernate-${project.version}-bin.zip">
 			<fileset basedir="${build.dir}">
 				<include name="releasenotes.txt" />
+				<include name="*.xsd" />
 				<include name="bin/**" />
 
 				<exclude name="**/*.hbm.xml" />
