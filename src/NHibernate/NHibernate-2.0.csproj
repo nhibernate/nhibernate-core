@@ -666,11 +666,16 @@
     <Compile Include="Loader\JoinWalker.cs" />
     <Compile Include="Loader\OuterJoinableAssociation.cs" />
     <Compile Include="Mapping\AbstractAuxiliaryDatabaseObject.cs" />
+    <Compile Include="Mapping\DependentValue.cs" />
     <Compile Include="Mapping\IAuxiliaryDatabaseObject.cs" />
     <Compile Include="Mapping\IFilterable.cs" />
     <Compile Include="Mapping\IKeyValue.cs" />
     <Compile Include="Mapping\ISelectable.cs" />
+    <Compile Include="Mapping\ITableOwner.cs" />
+    <Compile Include="Mapping\Join.cs" />
+    <Compile Include="Mapping\JoinedSubclass.cs" />
     <Compile Include="Mapping\SimpleAuxiliaryDatabaseObject.cs" />
+    <Compile Include="Mapping\SingleTableSubclass.cs" />
     <Compile Include="Persister\Collection\AbstractCollectionPersister.cs" />
     <Compile Include="Persister\Collection\BasicCollectionPersister.cs" />
     <Compile Include="Persister\Collection\CollectionPropertyMapping.cs" />
@@ -684,6 +689,7 @@
     <Compile Include="Persister\Collection\OneToManyPersister.cs" />
     <Compile Include="Persister\Entity\AbstractEntityPersister.cs" />
     <Compile Include="Persister\Entity\AbstractPropertyMapping.cs" />
+    <Compile Include="Persister\Entity\BasicEntityPropertyMapping.cs" />
     <Compile Include="Persister\Entity\IEntityPersister.cs" />
     <Compile Include="Persister\Entity\IJoinable.cs" />
     <Compile Include="Persister\Entity\ILoadable.cs" />

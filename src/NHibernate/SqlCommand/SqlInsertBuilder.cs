@@ -49,6 +49,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnNames">An array of the column names for the Property</param>
 		/// <param name="propertyType">The IType of the property.</param>
 		/// <returns>The SqlInsertBuilder.</returns>
+		[Obsolete("Renamed this overload to AddColumns (with an \"s\")")]
 		public SqlInsertBuilder AddColumn(string[] columnNames, IType propertyType)
 		{
 			AddColumns(columnNames, null, propertyType);

@@ -26,7 +26,6 @@ namespace NHibernate.Mapping
 		private string discriminatorValue;
 		private bool lazy;
 		private ArrayList properties = new ArrayList();
-		private Table table;
 		private System.Type proxyInterface;
 		private readonly ArrayList subclasses = new ArrayList();
 		private readonly ArrayList subclassProperties = new ArrayList();
@@ -37,6 +36,8 @@ namespace NHibernate.Mapping
 		private bool selectBeforeUpdate;
 		private OptimisticLockMode optimisticLockMode;
 		private IDictionary metaAttributes;
+		private readonly ArrayList joins = new ArrayList();
+		private readonly ArrayList subclassJoins = new ArrayList();
 		private IDictionary filters = new Hashtable();
 
 
@@ -205,16 +206,31 @@ namespace NHibernate.Mapping
 		/// <remarks>
 		/// The value of this is set by the <c>table</c> attribute. 
 		/// </remarks>
-		public virtual Table Table
-		{
-			get { return table; }
-			set { table = value; }
-		}
+		public abstract Table Table { get; }
 
 		public virtual int PropertyClosureSpan
 		{
-			get { return properties.Count; }
-			// TODO H3: add properties of <join>s.
+			get
+			{
+				int span = properties.Count;
+				foreach (Join join in joins)
+				{
+					span += join.PropertySpan;
+				}
+				return span;
+			}
+		}
+
+		public virtual int GetJoinNumber(Property prop)
+		{
+			int result = 1;
+			foreach (Join join in SubclassJoinClosureCollection)
+			{
+				if (join.ContainsProperty(prop))
+					return result;
+				result++;
+			}
+			return 0;
 		}
 
 		/// <summary>
@@ -225,7 +241,16 @@ namespace NHibernate.Mapping
 		/// </value>
 		public virtual ICollection PropertyCollection
 		{
-			get { return properties; }
+			get
+			{
+				ArrayList result = new ArrayList();
+				result.AddRange(properties);
+				foreach (Join join in joins)
+				{
+					result.AddRange(join.PropertyCollection);
+				}
+				return result;
+			}
 		}
 
 		/// <summary>
@@ -390,6 +415,11 @@ namespace NHibernate.Mapping
 			subclassProperties.Add(p);
 		}
 
+		public virtual void AddSubclassJoin(Join join)
+		{
+			subclassJoins.Add(join);
+		}
+
 		/// <summary>
 		/// Adds a <see cref="Table"/> that a subclass is stored in.
 		/// </summary>
@@ -414,6 +444,21 @@ namespace NHibernate.Mapping
 				ArrayList retVal = new ArrayList();
 				retVal.AddRange(PropertyClosureCollection);
 				retVal.AddRange(subclassProperties);
+				foreach (Join join in subclassJoins)
+				{
+					retVal.AddRange(join.PropertyCollection);
+				}
+				return retVal;
+			}
+		}
+
+		public virtual ICollection SubclassJoinClosureCollection
+		{
+			get
+			{
+				ArrayList retVal = new ArrayList();
+				retVal.AddRange(JoinClosureCollection);
+				retVal.AddRange(subclassJoins);
 				return retVal;
 			}
 		}
@@ -433,6 +478,16 @@ namespace NHibernate.Mapping
 				retVal.AddRange(subclassTables);
 				return retVal;
 			}
+		}
+
+		public virtual bool IsClassOrSuperclassJoin(Join join)
+		{
+			return joins.Contains(join);
+		}
+
+		public virtual bool IsClassOrSuperclassTable(Table closureTable)
+		{
+			return Table == closureTable;
 		}
 
 		/// <summary>
@@ -487,6 +542,27 @@ namespace NHibernate.Mapping
 		public MetaAttribute GetMetaAttribute(string name)
 		{
 			return (MetaAttribute) metaAttributes[name];
+		}
+
+		public virtual ICollection JoinCollection
+		{
+			get { return joins; }
+		}
+
+		public virtual ICollection JoinClosureCollection
+		{
+			get { return joins; }
+		}
+
+		public virtual void AddJoin(Join join)
+		{
+			joins.Add(join);
+			join.PersistentClass = this;
+		}
+
+		public virtual int JoinClosureSpan
+		{
+			get { return joins.Count; }
 		}
 
 		public bool IsLazy
@@ -545,6 +621,7 @@ namespace NHibernate.Mapping
 		public virtual void CreatePrimaryKey(Dialect.Dialect dialect)
 		{
 			PrimaryKey pk = new PrimaryKey();
+			Table table = Table;
 			pk.Table = table;
 			pk.Name = PKAlias.ToAliasString(table.Name, dialect);
 			table.PrimaryKey = pk;

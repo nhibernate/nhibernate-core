@@ -352,7 +352,10 @@
 					<xs:element ref="primitive-array" />
 				</xs:choice>
 				<xs:choice>
-					<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded" />
+					<xs:sequence>
+						<xs:element ref="join" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
 					<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded" />
 				</xs:choice>
 				<xs:group ref="classCustomSQL" />
@@ -502,6 +505,7 @@
 					<xs:element ref="array" />
 					<xs:element ref="primitive-array" />
 				</xs:choice>
+				<xs:element ref="join" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded" />
 				<xs:group ref="classCustomSQL" />
 			</xs:sequence>
@@ -557,6 +561,26 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="check" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="join">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="key" />
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property" />
+					<xs:element ref="many-to-one" />
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="table" type="xs:string"></xs:attribute>
+			<xs:attribute name="schema" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>default: no value</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="fetch" type="fetchMode" use="optional" />
+			<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false" />
+			<xs:attribute name="optional" type="xs:boolean" use="optional" default="false" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="property">

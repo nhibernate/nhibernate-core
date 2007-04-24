@@ -56,8 +56,11 @@ namespace NHibernate.Persister.Entity
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
+		string PropertySelectFragment(string alias, string suffix, bool allProperties);
+
+		// Obsolete. Use the above overload instead
 		string PropertySelectFragment(string alias, string suffix);
 
-		string GenerateFilterConditionAlias(string rootAlias);
-	}
+        string GenerateFilterConditionAlias(string rootAlias);
+    }
 }

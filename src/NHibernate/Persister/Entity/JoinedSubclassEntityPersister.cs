@@ -596,7 +596,8 @@ namespace NHibernate.Persister.Entity
 			return 0;
 		}
 
-		protected override void HandlePath(string path, IType type)
+		// TODO: override
+		protected void HandlePath(string path, IType type)
 		{
 			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
 			{
@@ -656,6 +657,7 @@ namespace NHibernate.Persister.Entity
 			throw new AssertionFailure(string.Format("table [{0}] not found", tableName));
 		}
 
+		// TODO: override
 		public override string[] ToColumns(string alias, string property)
 		{
 			if (PathExpressionParser.EntityClass.Equals(property))
@@ -780,6 +782,31 @@ namespace NHibernate.Persister.Entity
 		protected override int TableSpan
 		{
 			get { return tableSpan; }
+		}
+
+		public override bool IsMultiTable
+		{
+			get { return true; }
+		}
+
+		protected override string[] GetSubclassTableKeyColumns(int j)
+		{
+			return subclassTableKeyColumns[j];
+		}
+
+		public override string GetSubclassTableName(int j)
+		{
+			return subclassTableNameClosure[j];
+		}
+
+		protected override int SubclassTableSpan
+		{
+			get { return subclassTableNameClosure.Length; }
+		}
+
+		protected override bool IsClassOrSuperclassTable(int j)
+		{
+			return isClassOrSuperclassTable[j];
 		}
 
 		protected override string[] GetKeyColumns(int table)

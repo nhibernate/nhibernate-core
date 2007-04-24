@@ -152,6 +152,15 @@ namespace NHibernate.SqlCommand
 
 		#region ISqlStringBuilder Members
 
+		/// <summary>
+		/// ToSqlString() is named ToStatementString() in H3
+		/// </summary>
+		/// <returns></returns>
+		public SqlString ToStatementString()
+		{
+			return ToSqlString();
+		}
+
 		/// <summary></summary>
 		public SqlString ToSqlString()
 		{

@@ -75,6 +75,11 @@ namespace NHibernate.Util
 			return (int[]) ToArray(coll, typeof(int));
 		}
 
+		public static bool[] ToBooleanArray(ICollection col)
+		{
+			return (bool[])ToArray(col, typeof(bool));
+		}
+
 		public static string[] Slice(string[] strings, int begin, int length)
 		{
 			string[] result = new string[length];
@@ -128,8 +133,27 @@ namespace NHibernate.Util
 
 		public static string[][] To2DStringArray(ICollection coll)
 		{
-			string[][] result = new string[coll.Count][];
-			coll.CopyTo(result, 0);
+			string[][] result = new string[ coll.Count ][];
+			int i = 0;
+			foreach (object row in coll)
+			{
+				if (row is ICollection)
+				{
+					result[i] = new string[((ICollection)row).Count];
+					int j = 0;
+					foreach (object cell in (ICollection)row)
+					{
+						result[i][j++] = cell == null ? null : (string)cell;
+					}
+				}
+				else
+				{
+					result[i] = new string[1];
+					result[i][0] = row == null ? null : (string)row;
+				}
+				i++;
+			}
+
 			return result;
 		}
 

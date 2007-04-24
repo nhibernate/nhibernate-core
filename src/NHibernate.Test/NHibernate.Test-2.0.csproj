@@ -184,6 +184,11 @@
     <Compile Include="JoinedSubclass\JoinedSubclassExtendsFixture.cs" />
     <Compile Include="JoinedSubclass\JoinedSubclassFixture.cs" />
     <Compile Include="JoinedSubclass\Person.cs" />
+    <Compile Include="Join\Customer.cs" />
+    <Compile Include="Join\Employee.cs" />
+    <Compile Include="Join\JoinTest.cs" />
+    <Compile Include="Join\Person.cs" />
+    <Compile Include="Join\User.cs" />
     <Compile Include="Legacy\ABCProxyTest.cs" />
     <Compile Include="Legacy\ABCTest.cs" />
     <Compile Include="Legacy\CriteriaTest.cs" />
@@ -839,6 +844,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH864\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Join\Person.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="VersionTest\PersonThing.hbm.xml" />

@@ -1035,13 +1035,13 @@ namespace NHibernate.Loader
 			                  EntityAliases[i].SuffixedPropertyAliases :
 			                  EntityAliases[i].GetSuffixedPropertyAliases(persister);
 
-			object[] values = Hydrate(
+			object[] values = persister.Hydrate(
 				rs,
 				id,
 				obj,
-				persister,
-				session,
-				cols);
+				rootPersister,
+				cols,
+				session);
 
 			// TODO H3:
 //			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;

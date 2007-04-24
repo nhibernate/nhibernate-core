@@ -186,6 +186,12 @@ namespace NHibernate.Mapping
 			Superclass.AddSubclassProperty(p);
 		}
 
+		public override void AddJoin(Join join)
+		{
+			base.AddJoin(join);
+			Superclass.AddSubclassJoin(join);
+		}
+
 		/// <summary>
 		/// Gets or Sets the <see cref="Table"/> that this class is stored in.
 		/// </summary>
@@ -196,12 +202,7 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public override Table Table
 		{
-			get { return base.Table; }
-			set
-			{
-				base.Table = value;
-				Superclass.AddSubclassTable(value);
-			}
+			get { return Superclass.Table; }
 		}
 
 		/// <summary>
@@ -261,6 +262,12 @@ namespace NHibernate.Mapping
 		{
 			base.AddSubclassProperty(p);
 			Superclass.AddSubclassProperty(p);
+		}
+
+		public override void AddSubclassJoin(Join join)
+		{
+			base.AddSubclassJoin(join);
+			Superclass.AddSubclassJoin(join);
 		}
 
 		/// <summary>
@@ -420,9 +427,35 @@ namespace NHibernate.Mapping
 			Key.CreateForeignKeyOfClass(Superclass.MappedClass);
 		}
 
+		public override int JoinClosureSpan
+		{
+			get { return Superclass.JoinClosureSpan + base.JoinClosureSpan; }
+		}
+
 		public override int PropertyClosureSpan
 		{
 			get { return Superclass.PropertyClosureSpan + base.PropertyClosureSpan; }
+		}
+
+		public override ICollection JoinClosureCollection
+		{
+			get
+			{
+				ArrayList result = new ArrayList();
+				result.AddRange(Superclass.JoinClosureCollection);
+				result.AddRange(base.JoinClosureCollection);
+				return result;
+			}
+		}
+
+		public override bool IsClassOrSuperclassJoin(Join join)
+		{
+			return base.IsClassOrSuperclassJoin(join) || Superclass.IsClassOrSuperclassJoin(join);
+		}
+
+		public override bool IsClassOrSuperclassTable(Table closureTable)
+		{
+			return base.IsClassOrSuperclassTable(closureTable) || Superclass.IsClassOrSuperclassTable(closureTable);
 		}
 
 		public override ISet SynchronizedTables

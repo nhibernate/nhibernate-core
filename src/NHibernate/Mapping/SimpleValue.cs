@@ -75,7 +75,7 @@ namespace NHibernate.Mapping
 				{
 					if (sel is Column)
 					{
-						Column col = (Column) sel;
+						Column col = (Column)sel;
 						col.Type = type;
 						col.TypeIndex = count++;
 					}

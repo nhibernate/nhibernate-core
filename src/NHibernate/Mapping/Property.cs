@@ -18,7 +18,9 @@ namespace NHibernate.Mapping
 		private string cascade;
 		private bool updateable = true;
 		private bool insertable = true;
+		private bool selectable = true;
 		private string propertyAccessorName;
+		private bool optional;
 		private IDictionary metaAttributes;
 		private PersistentClass persistentClass;
 		private bool isOptimisticLocked;
@@ -169,7 +171,8 @@ namespace NHibernate.Mapping
 
 		public bool IsOptional
 		{
-			get { return IsNullable; }
+			get { return this.optional || IsNullable; }
+			set { this.optional = value; }
 		}
 
 		public string PropertyAccessorName
@@ -231,6 +234,12 @@ namespace NHibernate.Mapping
 		{
 			get { return persistentClass; }
 			set { persistentClass = value; }
+		}
+
+		public bool IsSelectable
+		{
+			get { return selectable; }
+			set { selectable = value; }
 		}
 
 		public bool IsOptimisticLocked

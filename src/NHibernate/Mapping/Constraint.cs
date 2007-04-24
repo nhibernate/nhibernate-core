@@ -46,6 +46,18 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		public void AddColumns(IEnumerator columnIterator)
+		{
+			while (columnIterator.MoveNext())
+			{
+				ISelectable col = (ISelectable)columnIterator.Current;
+				if (!col.IsFormula)
+				{
+					AddColumn((Column)col);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Gets the number of columns that this Constraint contains.
 		/// </summary>

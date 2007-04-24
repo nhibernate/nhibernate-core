@@ -241,8 +241,6 @@ namespace NHibernate.Cfg
 				model.RootClazz.ClassPersisterClass = typeof(SingleTableEntityPersister);
 			}
 
-			model.Table = model.Superclass.Table;
-
 			log.Info("Mapping subclass: " + model.Name + " -> " + model.Table.Name);
 
 			// properties
@@ -262,7 +260,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindJoinedSubclass(XmlNode node, Subclass model, Mappings mappings)
+		public static void BindJoinedSubclass(XmlNode node, JoinedSubclass model, Mappings mappings)
 		{
 			BindClass(node, model, mappings);
 
@@ -276,16 +274,16 @@ namespace NHibernate.Cfg
 			XmlAttribute schemaNode = node.Attributes["schema"];
 			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
 			Table mytable = mappings.AddTable(schema, GetClassTableName(model, node, mappings));
-			model.Table = mytable;
+			((ITableOwner)model).Table = mytable;
 
 			log.Info("Mapping joined-subclass: " + model.Name + " -> " + model.Table.Name);
 
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, nsmgr);
-			SimpleValue key = new SimpleValue(mytable);
+			SimpleValue key = new DependentValue(mytable, model.Identifier);
 			model.Key = key;
 			BindSimpleValue(keyNode, key, false, model.Name, mappings);
-
 			model.Key.Type = model.Identifier.Type;
+
 			model.CreatePrimaryKey(dialect);
 
 			if (!model.IsJoinedSubclass)
@@ -316,7 +314,7 @@ namespace NHibernate.Cfg
 			XmlAttribute schemaNode = node.Attributes["schema"];
 			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
 			Table table = mappings.AddTable(schema, GetClassTableName(model, node, mappings));
-			model.Table = table;
+			((ITableOwner)model).Table = table;
 
 			log.Info("Mapping class: " + model.Name + " -> " + model.Table.Name);
 
@@ -492,6 +490,109 @@ namespace NHibernate.Cfg
 			entity.AddProperty(prop);
 		}
 
+		public static void BindJoin(XmlNode node, Join join, Mappings mappings)
+		{
+			PersistentClass persistentClass = join.PersistentClass;
+			String path = persistentClass.Name;
+
+			// TABLENAME
+
+			XmlAttribute schemaNode = node.Attributes["schema"];
+			string schema = schemaNode == null ?
+				mappings.SchemaName : schemaNode.Value;
+
+			Table primaryTable = persistentClass.Table;
+			Table table = mappings.AddTable(
+				schema,
+				GetClassTableName(persistentClass, node, mappings));
+			join.Table = table;
+
+			XmlAttribute fetchNode = node.Attributes["fetch"];
+			if (fetchNode != null)
+			{
+				join.IsSequentialSelect = "select".Equals(fetchNode.Value);
+			}
+
+			XmlAttribute invNode = node.Attributes["inverse"];
+			if (invNode != null)
+			{
+				join.IsInverse = "true".Equals(invNode.Value);
+			}
+
+			XmlAttribute nullNode = node.Attributes["optional"];
+			if (nullNode != null)
+			{
+				join.IsOptional = "true".Equals(nullNode.Value);
+			}
+
+			log.Info(
+				"Mapping class join: " + persistentClass.Name + 
+				" -> " + join.Table.Name
+				);
+
+			// KEY
+			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, nsmgr);
+			SimpleValue key = new DependentValue(table, persistentClass.Identifier);
+			join.Key = key;
+			// key.SetCascadeDeleteEnabled("cascade".Equals(keyNode.Attributes["on-delete"].Value));
+			BindSimpleValue(keyNode, key, false, persistentClass.Name, mappings);
+			// TODO: not sure if the following if-block is correct
+			if (key.Type == null) 
+				key.Type = persistentClass.Identifier.Type;
+
+			join.CreatePrimaryKey(dialect);
+			join.CreateForeignKey();
+
+			// PROPERTIES
+			//PropertiesFromXML(node, persistentClass, mappings);
+			foreach (XmlNode subnode in node.ChildNodes)
+			{
+				string name = subnode.Name;
+				XmlAttribute nameAttribute = subnode.Attributes["name"];
+				string propertyName = nameAttribute == null ? null : nameAttribute.Value;
+
+				IValue value = null;
+				switch (name)
+				{
+					case "many-to-one":
+						value = new ManyToOne(table);
+						BindManyToOne(subnode, (ManyToOne)value, propertyName, true, mappings);
+						break;
+					case "any":
+						value = new Any(table);
+						BindAny(subnode, (Any)value, true, mappings);
+						break;
+					case "property":
+						value = new SimpleValue(table);
+						BindSimpleValue(subnode, (SimpleValue)value, true, propertyName, mappings);
+						break;
+					case "component":
+					case "dynamic-component":
+						string subpath = StringHelper.Qualify(path, propertyName);
+						value = new Component(join);
+						BindComponent(
+							subnode,
+							(Component)value,
+							join.PersistentClass.MappedClass,
+							propertyName,
+							subpath,
+							true,
+							mappings);
+						break;
+				}
+
+				if (value != null)
+				{
+					NHibernate.Mapping.Property prop = CreateProperty(value, propertyName, persistentClass.MappedClass, subnode, mappings);
+					prop.IsOptional = join.IsOptional;
+					join.AddProperty(prop);
+				}
+			}
+
+			// CUSTOM SQL
+			HandleCustomSQL(node, join);
+		}
+
 		public static void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn, string propertyPath,
 		                               Mappings mappings)
 		{
@@ -581,24 +682,42 @@ namespace NHibernate.Cfg
 		public static void BindSimpleValue(XmlNode node, SimpleValue model, bool isNullable, string path, Mappings mappings)
 		{
 			model.Type = GetTypeFromXML(node);
+			//BindSimpleValueType(node, model, mappings);
 
-			XmlAttribute formulaNode = node.Attributes["formula"];
-			if (formulaNode != null)
-			{
-				Formula f = new Formula();
-				f.FormulaString = formulaNode.InnerText;
-				model.AddFormula(f);
-			}
-			else
-			{
-				BindColumns(node, model, isNullable, true, path, mappings);
-			}
+			BindColumnsOrFormula(node, model, path, isNullable, mappings);
 
 			XmlAttribute fkNode = node.Attributes["foreign-key"];
 			if (fkNode != null)
 			{
 				model.ForeignKeyName = fkNode.Value;
 			}
+		}
+
+		private static void BindSimpleValueType(XmlNode node, SimpleValue simpleValue, Mappings mappings)
+		{
+			string typeName = null;
+
+			System.Collections.Specialized.StringDictionary parameters = new System.Collections.Specialized.StringDictionary();
+
+			XmlAttribute typeNode = node.Attributes["type"];
+			if (typeNode == null) typeNode = node.Attributes["id-type"]; // for an any
+			if (typeNode != null) typeName = typeNode.Value;
+
+			//XmlNode typeChild = node.SelectSingleNode("type");
+			//if (typeName == null && typeChild != null)
+			//{
+			//    typeName = typeChild.Attributes["name"].Value;
+			//    foreach (XmlNode paramElement in typeChild.SelectNodes("param"))
+			//    {
+			//        parameters[paramElement.Attributes["name"].Value] = paramElement.InnerText.Trim();
+			//    }
+			//}
+
+			// TODO: Add handling of TypeDefs here when TypeDef is implemented
+
+			//if (parameters.Count == 0) simpleValue
+
+			//if (typeName != null) simpleValue.
 		}
 
 		private static string PropertyAccess(XmlNode node, Mappings mappings)
@@ -984,6 +1103,21 @@ namespace NHibernate.Cfg
 			//return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).ToString();
 		}
 
+		private static void BindColumnsOrFormula(XmlNode node, SimpleValue simpleValue, string path, bool isNullable, Mappings mappings)
+		{
+			XmlAttribute formulaNode = node.Attributes["formula"];
+			if (formulaNode != null)
+			{
+				Formula f = new Formula();
+				f.FormulaString = formulaNode.InnerText;
+				simpleValue.AddFormula(f);
+			}
+			else
+			{
+				BindColumns(node, simpleValue, isNullable, true, path, mappings);
+			}
+		}
+
 		public static void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable,
 		                                 Mappings mappings)
 		{
@@ -1340,14 +1474,15 @@ namespace NHibernate.Cfg
 		internal static IType GetTypeFromXML(XmlNode node)
 		{
 			IType type;
-			XmlAttribute typeAttribute = node.Attributes["type"];
 
+			IDictionary parameters = null;
+			
+			XmlAttribute typeAttribute = node.Attributes["type"];
 			if (typeAttribute == null)
 			{
 				typeAttribute = node.Attributes["id-type"]; //for an any
 			}
 			string typeName = null;
-			IDictionary parameters = null;
 			if (typeAttribute != null)
 			{
 				typeName = typeAttribute.Value;
@@ -1568,6 +1703,13 @@ namespace NHibernate.Cfg
 					value = new Component(model);
 					BindComponent(subnode, (Component) value, reflectedClass, model.Name, propertyName, true, mappings);
 				}
+				else if ("join".Equals(name))
+				{
+					Join join = new Join();
+					join.PersistentClass = model;
+					BindJoin(subnode, join, mappings);
+					model.AddJoin(join);
+				}
 				else if ("subclass".Equals(name))
 				{
 					HandleSubclass(model, mappings, subnode);
@@ -1616,7 +1758,7 @@ namespace NHibernate.Cfg
 
 		private static void HandleJoinedSubclass(PersistentClass model, Mappings mappings, XmlNode subnode)
 		{
-			Subclass subclass = new Subclass(model);
+			JoinedSubclass subclass = new JoinedSubclass(model);
 			BindJoinedSubclass(subnode, subclass, mappings);
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);
@@ -1624,7 +1766,7 @@ namespace NHibernate.Cfg
 
 		private static void HandleSubclass(PersistentClass model, Mappings mappings, XmlNode subnode)
 		{
-			Subclass subclass = new Subclass(model);
+			Subclass subclass = new SingleTableSubclass(model);
 			BindSubclass(subnode, subclass, mappings);
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);
@@ -2369,30 +2511,29 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		// TODO: uncomment when Join implemented
-		//private static void handleCustomSQL(Element node, Join model)
-		//{
-		//    Element element = node.element("sql-insert");
-		//    if (element != null)
-		//    {
-		//        boolean callable = isCallable(element);
-		//        model.setCustomSQLInsert(element.getTextTrim(), callable, getResultCheckStyle(element, callable));
-		//    }
+		private static void HandleCustomSQL(XmlNode node, Join model)
+		{
+			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, nsmgr);
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLInsert(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
 
-		//    element = node.element("sql-delete");
-		//    if (element != null)
-		//    {
-		//        boolean callable = isCallable(element);
-		//        model.setCustomSQLDelete(element.getTextTrim(), callable, getResultCheckStyle(element, callable));
-		//    }
+			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, nsmgr);
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLDelete(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
 
-		//    element = node.element("sql-update");
-		//    if (element != null)
-		//    {
-		//        boolean callable = isCallable(element);
-		//        model.setCustomSQLUpdate(element.getTextTrim(), callable, getResultCheckStyle(element, callable));
-		//    }
-		//}
+			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, nsmgr);
+			if (element != null)
+			{
+				bool callable = IsCallable(element);
+				model.SetCustomSQLUpdate(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+			}
+		}
 
 		private static void HandleCustomSQL(XmlNode node, Mapping.Collection model)
 		{

@@ -94,6 +94,12 @@ namespace NHibernate.Mapping
 			this.owner = null;
 		}
 
+		public Component(Join join)
+			: base(join.Table)
+		{
+			this.owner = join.PersistentClass;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

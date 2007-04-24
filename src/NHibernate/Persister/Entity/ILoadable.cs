@@ -1,4 +1,6 @@
 using NHibernate.Type;
+using NHibernate.Engine;
+using System.Data;
 
 namespace NHibernate.Persister.Entity
 {
@@ -57,5 +59,25 @@ namespace NHibernate.Persister.Entity
 		/// Does this entity own any collections which are fetchable by subselect?
 		/// </summary>
 		bool HasSubselectLoadableCollections { get; }
+
+		/// <summary>
+		/// Retrieve property values from one row of a result set
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="id"></param>
+		/// <param name="obj"></param>
+		/// <param name="rootLoadable"></param>
+		/// <param name="suffixedPropertyColumns"></param>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		object[] Hydrate(
+			IDataReader rs,
+			object id,
+			object obj,
+			ILoadable rootLoadable,
+			string[][] suffixedPropertyColumns,
+			ISessionImplementor session);
+
+		bool IsAbstract { get; }
 	}
 }

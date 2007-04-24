@@ -108,6 +108,19 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		/// <summary>
+		/// Equivalent to ToSqlStringFragment.
+		/// </summary>
+		/// <returns></returns>
+		/// <remarks>
+		/// In H3, it is called ToFragmentString(). It appears to be 
+		/// functionally equivalent as ToSqlStringFragment() here.
+		/// </remarks>
+		public string ToFragmentString()
+		{
+			return ToSqlStringFragment();
+		}
+
 		public string ToSqlStringFragment()
 		{
 			// this preserves the way this existing method works now.

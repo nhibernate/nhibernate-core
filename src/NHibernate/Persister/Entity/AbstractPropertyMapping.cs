@@ -88,8 +88,7 @@ namespace NHibernate.Persister.Entity
 			HandlePath(path, type);
 		}
 
-		protected void InitPropertyPaths(string path, IType type, string[] columns, string[] formulaTemplates,
-		                                 IMapping factory)
+		protected internal void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
 		{
 			if (columns.Length != type.GetColumnSpan(factory))
 			{

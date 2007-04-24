@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// is the root class of a table-per-sublcass, or table-per-concrete-class 
 	/// inheritance heirarchy.
 	/// </summary>
-	public class RootClass : PersistentClass
+	public class RootClass : PersistentClass, ITableOwner
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(RootClass));
 
@@ -40,6 +40,7 @@ namespace NHibernate.Mapping
 		private System.Type classPersisterClass;
 		private bool forceDiscriminator;
 		private string where;
+		private Table table;
 		private bool discriminatorInsertable = true;
 		private int nextSubclassId = 0;
 
@@ -51,6 +52,16 @@ namespace NHibernate.Mapping
 		public override int SubclassId
 		{
 			get { return 0; }
+		}
+
+		public override Table Table
+		{
+			get { return table; }
+		}
+
+		Table ITableOwner.Table
+		{
+			set { table = value; }
 		}
 
 		/// <summary>

@@ -35,7 +35,7 @@ namespace NHibernate.Persister.Entity
 	/// <remarks>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
-	public abstract class AbstractEntityPersister : AbstractPropertyMapping, IOuterJoinLoadable, IQueryable, IClassMetadata,
+	public abstract class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 	                                                IUniqueKeyLoadable, ISqlLoadable
 	{
 		private readonly ISessionFactoryImplementor factory;
@@ -123,25 +123,29 @@ namespace NHibernate.Persister.Entity
 		private readonly bool[][] propertyColumnInsertable;
 		private readonly bool[][] propertyColumnUpdateable;
 		private readonly bool[] propertyUniqueness;
+		private readonly System.Type[] propertySubclassNames;
 
 		private readonly bool hasFormulaProperties;
 
 		// the closure of all columns used by the entire hierarchy including
 		// subclasses and superclasses of this class
 		private readonly string[] subclassColumnClosure;
+		private readonly string[] subclassColumnLazyClosure;
+		private readonly string[] subclassColumnAliasClosure;
+		private readonly bool[] subclassColumnSelectableClosure;
 		private readonly string[] subclassFormulaTemplateClosure;
 		private readonly string[] subclassFormulaClosure;
-		private readonly string[] subclassColumnAliasClosure;
 		private readonly string[] subclassFormulaAliasClosure;
 
 		// the closure of all properties in the entire hierarchy including
 		// subclasses and superclasses of this class
+		private readonly string[] subclassPropertyNameClosure;
+		private readonly System.Type[] subclassPropertySubclassNameClosure;
+		private readonly IType[] subclassPropertyTypeClosure;
 		private readonly string[][] subclassPropertyFormulaTemplateClosure;
 		private readonly string[][] subclassPropertyColumnNameClosure;
-		private readonly bool[] subclassPropertyNullabilityClosure;
-		private readonly string[] subclassPropertyNameClosure;
-		private readonly IType[] subclassPropertyTypeClosure;
 		private readonly FetchMode[] subclassPropertyFetchModeClosure;
+		private readonly bool[] subclassPropertyNullabilityClosure;
 
 		private readonly FilterHelper filterHelper;
 
@@ -180,6 +184,12 @@ namespace NHibernate.Persister.Entity
 		private IUniqueEntityLoader queryLoader;
 		private bool hasSubselectLoadableCollections;
 
+		protected readonly BasicEntityPropertyMapping propertyMapping;
+		
+		public abstract string GetSubclassTableName(int j);
+
+		protected abstract string[] GetSubclassTableKeyColumns(int j);
+
 		protected SqlString GetLockString(LockMode lockMode)
 		{
 			return (SqlString) lockers[lockMode];
@@ -190,7 +200,8 @@ namespace NHibernate.Persister.Entity
 			get { return mappedClass; }
 		}
 
-		public override string ClassName
+		// TODO: override
+		public string ClassName
 		{
 			get { return entityMetamodel.Type.FullName; }
 		}
@@ -449,7 +460,7 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.IdentifierProperty.Type; }
 		}
 
-		public override string[] IdentifierColumnNames
+		public virtual string[] IdentifierColumnNames
 		{
 			get { return rootTableKeyColumnNames; }
 		}
@@ -583,6 +594,11 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.IsMutable; }
 		}
 
+		public virtual bool IsAbstract
+		{
+			get { return entityMetamodel.IsAbstract; }
+		}
+
 		/// <summary></summary>
 		public virtual bool HasCache
 		{
@@ -621,8 +637,10 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (StaleStateException)
 			{
-				// TODO H3: if (!IsNullableTable(tableNumber))
-				throw new StaleObjectStateException(MappedClass, id);
+				if (!IsNullableTable(tableNumber))
+				{
+					throw new StaleObjectStateException(MappedClass, id);
+				}
 			}
 			catch (TooManyRowsAffectedException ex)
 			{
@@ -633,35 +651,51 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private void InitPropertyPaths(IMapping factory)
+		private void InitOrdinaryPropertyPaths(IMapping mapping)
 		{
 			for (int i = 0; i < SubclassPropertyNameClosure.Length; i++)
 			{
-				InitPropertyPaths(
+				propertyMapping.InitPropertyPaths(
 					SubclassPropertyNameClosure[i],
 					SubclassPropertyTypeClosure[i],
 					SubclassPropertyColumnNameClosure[i],
 					SubclassPropertyFormulaTemplateClosure[i],
-					factory);
+					mapping);
 			}
+		}
 
+		private void InitIdentifierPropertyPaths(IMapping mapping)
+		{
 			string idProp = IdentifierPropertyName;
 			if (idProp != null)
 			{
-				InitPropertyPaths(idProp, IdentifierType, IdentifierColumnNames, null, factory);
+				propertyMapping.InitPropertyPaths(idProp, IdentifierType, IdentifierColumnNames, null, mapping);
 			}
-			if (HasEmbeddedIdentifier)
+			if (entityMetamodel.IdentifierProperty.IsEmbedded)
 			{
-				InitPropertyPaths(null, IdentifierType, IdentifierColumnNames, null, factory);
+				propertyMapping.InitPropertyPaths(null, IdentifierType, IdentifierColumnNames, null, mapping);
 			}
-			InitPropertyPaths(EntityID, IdentifierType, IdentifierColumnNames, null, factory);
+			propertyMapping.InitPropertyPaths(EntityID, IdentifierType, IdentifierColumnNames, null, mapping);
+		}
 
-			if (IsPolymorphic)
+		private void InitDiscriminatorPropertyPath(IMapping mapping)
+		{
+			propertyMapping.InitPropertyPaths(EntityClass,
+				DiscriminatorType,
+				new string[] { DiscriminatorColumnName },
+				new string[] { DiscriminatorFormulaTemplate }, 
+				Factory);
+		}
+
+		private void InitPropertyPaths(IMapping mapping)
+		{
+			InitOrdinaryPropertyPaths(mapping);
+			// TODO: is calling InitOrdinaryPropertyPaths() twice needed here?
+			InitOrdinaryPropertyPaths(mapping); // do two passes, for collection property-ref
+			InitIdentifierPropertyPaths(mapping);
+			if (entityMetamodel.IsPolymorphic)
 			{
-				AddPropertyPath(EntityClass, DiscriminatorType,
-				                new string[] {DiscriminatorColumnName},
-				                new string[] {DiscriminatorFormulaTemplate}
-					);
+				InitDiscriminatorPropertyPath(mapping);
 			}
 		}
 
@@ -696,6 +730,8 @@ namespace NHibernate.Persister.Entity
 				throw new MappingException("The mapped class " + mappedClass.FullName +
 				                           " must declare a default (no-arg) constructor.");
 			}
+
+			propertyMapping = new BasicEntityPropertyMapping(this);
 
 			// IDENTIFIER
 			hasEmbeddedIdentifier = persistentClass.HasEmbeddedIdentifier;
@@ -775,7 +811,6 @@ namespace NHibernate.Persister.Entity
 			setters = new ISetter[hydrateSpan];
 			string[] setterNames = new string[hydrateSpan];
 			string[] getterNames = new string[hydrateSpan];
-			System.Type[] classes = new System.Type[hydrateSpan];
 
 			i = 0;
 
@@ -793,7 +828,6 @@ namespace NHibernate.Persister.Entity
 				setters[i] = prop.GetSetter(mappedClass);
 				getterNames[i] = getters[i].PropertyName;
 				setterNames[i] = setters[i].PropertyName;
-				classes[i] = getters[i].ReturnType;
 
 				string propertyName = prop.Name;
 				gettersByPropertyName[propertyName] = getters[i];
@@ -810,6 +844,7 @@ namespace NHibernate.Persister.Entity
 			propertyColumnUpdateable = new bool[HydrateSpan][];
 			propertyColumnInsertable = new bool[HydrateSpan][];
 			propertyUniqueness = new bool[HydrateSpan];
+			propertySubclassNames = new System.Type[HydrateSpan];
 
 			HashedSet thisClassProperties = new HashedSet();
 			i = 0;
@@ -821,6 +856,7 @@ namespace NHibernate.Persister.Entity
 
 				int span = prop.ColumnSpan;
 				propertyColumnSpans[i] = span;
+				propertySubclassNames[i] = prop.PersistentClass.MappedClass;
 				string[] colNames = new string[span];
 				string[] colAliases = new string[span];
 				string[] templates = new string[span];
@@ -861,22 +897,26 @@ namespace NHibernate.Persister.Entity
 			// SUBCLASS PROPERTY CLOSURE
 
 			ArrayList columns = new ArrayList(); //this.subclassColumnClosure
+			ArrayList columnsLazy = new ArrayList(); //this.subclassColumnClosure
 			ArrayList aliases = new ArrayList();
 			ArrayList formulaAliases = new ArrayList();
 			ArrayList formulaTemplates = new ArrayList();
 			ArrayList types = new ArrayList(); //this.subclassPropertyTypeClosure
 			ArrayList names = new ArrayList(); //this.subclassPropertyNameClosure
+			ArrayList classes = new ArrayList();
 			ArrayList subclassTemplates = new ArrayList();
 			ArrayList propColumns = new ArrayList(); //this.subclassPropertyColumnNameClosure
 			ArrayList joinedFetchesList = new ArrayList(); //this.subclassPropertyEnableJoinedFetch
 			ArrayList cascades = new ArrayList();
 			ArrayList definedBySubclass = new ArrayList(); // this.propertyDefinedOnSubclass
 			ArrayList formulas = new ArrayList();
+			ArrayList columnSelectables = new ArrayList();
 			ArrayList propNullables = new ArrayList();
 
 			foreach (Mapping.Property prop in persistentClass.SubclassPropertyClosureCollection)
 			{
 				names.Add(prop.Name);
+				classes.Add(prop.PersistentClass.MappedClass);
 				bool isDefinedBySubclass = !thisClassProperties.Contains(prop);
 				definedBySubclass.Add(isDefinedBySubclass);
 				propNullables.Add(prop.IsOptional || isDefinedBySubclass); //TODO: is this completely correct?
@@ -887,6 +927,7 @@ namespace NHibernate.Persister.Entity
 				int[] colnos = new int[prop.ColumnSpan];
 				int[] formnos = new int[prop.ColumnSpan];
 				int l = 0;
+				// TODO H3: bool lazy = prop.IsLazy;
 
 				foreach (ISelectable thing in prop.ColumnCollection)
 				{
@@ -910,7 +951,7 @@ namespace NHibernate.Persister.Entity
 						cols[l] = colName;
 						aliases.Add(thing.GetAlias(factory.Dialect, prop.Value.Table));
 						// TODO H3: columnsLazy.add( lazy );
-						// TODO H3: columnSelectables.add( new Boolean( prop.isSelectable() ) );
+						columnSelectables.Add( prop.IsSelectable );
 					}
 					l++;
 				}
@@ -924,16 +965,24 @@ namespace NHibernate.Persister.Entity
 				cascades.Add(prop.CascadeStyle);
 			}
 
-			subclassColumnClosure = (string[]) columns.ToArray(typeof(string));
-			subclassFormulaClosure = (string[]) formulas.ToArray(typeof(string));
-			subclassFormulaTemplateClosure = (string[]) formulaTemplates.ToArray(typeof(string));
-			subclassPropertyTypeClosure = (IType[]) types.ToArray(typeof(IType));
-			subclassColumnAliasClosure = (string[]) aliases.ToArray(typeof(string));
-			subclassFormulaAliasClosure = (string[]) formulaAliases.ToArray(typeof(string));
-			subclassPropertyNameClosure = (string[]) names.ToArray(typeof(string));
-			subclassPropertyNullabilityClosure = (bool[]) propNullables.ToArray(typeof(bool));
+			subclassColumnClosure = (string[]) columns.ToArray(typeof (string));
+			subclassColumnAliasClosure = (string[])aliases.ToArray(typeof(string));
+			// TODO H3: subclassColumnLazyClosure = ArrayHelper.ToBooleanArray(columnsLazy);
+			subclassColumnSelectableClosure = ArrayHelper.ToBooleanArray(columnSelectables);
+
+			subclassFormulaClosure = (string[])formulas.ToArray(typeof(string));
+			subclassFormulaTemplateClosure = (string[])formulaTemplates.ToArray(typeof(string));
+			subclassFormulaAliasClosure = (string[])formulaAliases.ToArray(typeof(string));
+			//subclassFormulaLazyClosure = ArrayHelper.ToBooleanArray(formulasLazy);
+
+			subclassPropertyNameClosure = (string[])names.ToArray(typeof(string));
+			subclassPropertySubclassNameClosure = (System.Type[])classes.ToArray(typeof(System.Type));
+			subclassPropertyTypeClosure = (IType[])types.ToArray(typeof(IType));
+			subclassPropertyNullabilityClosure = (bool[]) propNullables.ToArray(typeof (bool));
 			subclassPropertyFormulaTemplateClosure = ArrayHelper.To2DStringArray(subclassTemplates);
 			subclassPropertyColumnNameClosure = (string[][]) propColumns.ToArray(typeof(string[]));
+			//subclassPropertyColumnNumberClosure = ArrayHelper.To2DIntArray(propColumnNumbers);
+			//subclassPropertyFormulaNumberClosure = ArrayHelper.To2DIntArray(propFormulaNumbers);
 
 			subclassPropertyCascadeStyleClosure = new Cascades.CascadeStyle[cascades.Count];
 			int m = 0;
@@ -1280,7 +1329,7 @@ namespace NHibernate.Persister.Entity
 			return new EntityLoader(this, columns, uniqueKeyType, 1, LockMode.None, Factory, enabledFilters);
 		}
 
-		public override IType Type
+		public IType Type
 		{
 			get { return entityMetamodel.EntityType; }
 		}
@@ -1378,7 +1427,7 @@ namespace NHibernate.Persister.Entity
 
 		public virtual IType GetPropertyType(string path)
 		{
-			return ToType(path);
+			return propertyMapping.ToType(path);
 		}
 
 		protected bool HasSelectBeforeUpdate
@@ -1634,6 +1683,11 @@ namespace NHibernate.Persister.Entity
 			return GetType().Name + '(' + ClassName + ')';
 		}
 
+		public System.Type[] PropertySubclassNames
+		{
+			get { return propertySubclassNames; }
+		}
+
 		/// <summary>
 		/// Get the column names for the numbered property of <em>this</em> class
 		/// </summary>
@@ -1772,6 +1826,11 @@ namespace NHibernate.Persister.Entity
 			SqlCommandInfo sql,
 			ISessionImplementor session)
 		{
+			if (IsInverseTable(j))
+			{
+				return;
+			}
+
 			bool useVersion = j == 0 && IsVersioned;
 			IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
@@ -1866,7 +1925,12 @@ namespace NHibernate.Persister.Entity
 
 		public abstract IType DiscriminatorType { get; }
 
-		public abstract SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
+		public virtual SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
+		{
+			return TableSpan == 1
+				? new SqlString(string.Empty) // just a performance opt!
+				: CreateJoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
+		}
 
 		public virtual string FromTableFragment(string alias)
 		{
@@ -1880,7 +1944,13 @@ namespace NHibernate.Persister.Entity
 			return propertyDefinedOnSubclass[i];
 		}
 
+		[Obsolete("Added parameter allProperties to follow H3's API")]
 		public string PropertySelectFragment(string name, string suffix)
+		{
+			return PropertySelectFragment(name, suffix, true);
+		}
+
+		public string PropertySelectFragment(string name, string suffix, bool allProperties)
 		{
 			SelectFragment select = new SelectFragment(Factory.Dialect)
 				.SetSuffix(suffix)
@@ -1892,8 +1962,14 @@ namespace NHibernate.Persister.Entity
 
 			for (int i = 0; i < columns.Length; i++)
 			{
-				string subalias = Alias(name, columnTableNumbers[i]);
-				select.AddColumn(subalias, columns[i], columnAliases[i]);
+				bool selectable = (allProperties) &&
+					!IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
+					subclassColumnSelectableClosure[i];
+				if (selectable)
+				{
+					string subalias = Alias(name, columnTableNumbers[i]);
+					select.AddColumn(subalias, columns[i], columnAliases[i]);
+				}
 			}
 
 			int[] formulaTableNumbers = SubclassFormulaTableNumberClosure;
@@ -1902,8 +1978,13 @@ namespace NHibernate.Persister.Entity
 
 			for (int i = 0; i < formulaTemplates.Length; i++)
 			{
-				string subalias = Alias(name, formulaTableNumbers[i]);
-				select.AddFormula(subalias, formulaTemplates[i], formulaAliases[i]);
+				bool selectable = (allProperties) &&
+					!IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
+				if (selectable)
+				{
+					string subalias = Alias(name, formulaTableNumbers[i]);
+					select.AddFormula(subalias, formulaTemplates[i], formulaAliases[i]);
+				}
 			}
 
 			if (HasSubclasses)
@@ -1945,6 +2026,11 @@ namespace NHibernate.Persister.Entity
 		protected string[] SubclassPropertyNameClosure
 		{
 			get { return subclassPropertyNameClosure; }
+		}
+
+		protected System.Type[] SubclassPropertySubclassNameClosure
+		{
+			get { return this.subclassPropertySubclassNameClosure; }
 		}
 
 		protected IType[] SubclassPropertyTypeClosure
@@ -1996,6 +2082,114 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return index;
+		}
+
+		/// <summary>
+		/// Unmarshall the fields of a persistent instance from a result set,
+		/// without resolving associations or collections
+		/// </summary>
+		/// <param name="rs"></param>
+		/// <param name="id"></param>
+		/// <param name="obj"></param>
+		/// <param name="persister"></param>
+		/// <param name="session"></param>
+		/// <param name="suffixedPropertyColumns"></param>
+		/// <returns></returns>
+		public object[] Hydrate(
+			IDataReader rs,
+			object id,
+			object obj,
+			ILoadable rootLoadable,
+			string[][] suffixedPropertyColumns,
+			ISessionImplementor session)
+		{
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("Hydrating entity: " + rootLoadable.ClassName + '#' + id);
+			}
+
+			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
+
+			bool hasDeferred = rootPersister.HasSequentialSelect;
+			IDbCommand sequentialSelect = null;
+			IDataReader sequentialResultSet = null;
+			bool sequentialSelectEmpty = false;
+			try
+			{
+				if (hasDeferred)
+				{
+					SqlString sql = rootPersister.GetSequentialSelect(MappedClass);
+					if (sql != null)
+					{
+						//TODO: I am not so sure about the exception handling in this bit!
+						sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sql, idSqlTypes);
+						rootPersister.IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
+						sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect);
+						if (!sequentialResultSet.Read())
+						{
+							// TODO: Deal with the "optional" attribute in the <join> mapping;
+							// this code assumes that optional defaults to "true" because it
+							// doesn't actually seem to work in the fetch="join" code
+							//
+							// Note that actual proper handling of optional-ality here is actually
+							// more involved than this patch assumes.  Remember that we might have
+							// multiple <join/> mappings associated with a single entity.  Really
+							// a couple of things need to happen to properly handle optional here:
+							//  1) First and foremost, when handling multiple <join/>s, we really
+							//      should be using the entity root table as the driving table;
+							//      another option here would be to choose some non-optional joined
+							//      table to use as the driving table.  In all likelihood, just using
+							//      the root table is much simplier
+							//  2) Need to add the FK columns corresponding to each joined table
+							//      to the generated select list; these would then be used when
+							//      iterating the result set to determine whether all non-optional
+							//      data is present
+							// My initial thoughts on the best way to deal with this would be
+							// to introduce a new SequentialSelect abstraction that actually gets
+							// generated in the persisters (ok, SingleTable...) and utilized here.
+							// It would encapsulated all this required optional-ality checking...
+							sequentialSelectEmpty = true;
+						}
+					}
+				}
+
+				string[] propNames = PropertyNames;
+				IType[] types = PropertyTypes;
+				object[] values = new object[types.Length];
+				// TODO: H3 - Property Laziness
+				// bool[] laziness = PropertyLaziness();
+				System.Type[] propSubclassNames = SubclassPropertySubclassNameClosure;
+
+				for (int i = 0; i < types.Length; i++)
+				{
+					bool propertyIsDeferred = hasDeferred
+						&& rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
+
+					IDataReader propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
+					string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
+					values[i] = types[i].Hydrate(propertyResultSet, cols, session, obj);
+				}
+
+				if (sequentialResultSet != null)
+				{
+					sequentialResultSet.Close();
+				}
+
+				return values;
+			}
+			finally
+			{
+				if (sequentialSelect != null)
+				{
+					session.Batcher.CloseCommand(sequentialSelect, sequentialResultSet);
+				}
+			}
+
+		}
+
+		protected virtual SqlString GetSequentialSelect(System.Type entityName)
+		{
+			throw new NotSupportedException("no sequential selects");
 		}
 
 		/// <summary>
@@ -2118,7 +2312,7 @@ namespace NHibernate.Persister.Entity
 		public int GetSubclassPropertyTableNumber(string propertyPath)
 		{
 			string rootPropertyName = StringHelper.Root(propertyPath);
-			IType type = ToType(rootPropertyName);
+			IType type = propertyMapping.ToType(rootPropertyName);
 			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
 			{
 				return 0;
@@ -2135,9 +2329,15 @@ namespace NHibernate.Persister.Entity
 			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index);
 		}
 
-		public override string[] ToColumns(string alias, string propertyName)
+		// TODO: override
+		public virtual string[] ToColumns(string alias, string propertyName)
 		{
-			return base.ToColumns(Alias(alias, GetSubclassPropertyTableNumber(propertyName)), propertyName);
+			return propertyMapping.ToColumns(alias, propertyName);
+		}
+
+		public IType ToType(string propertyName)
+		{
+			return propertyMapping.ToType(propertyName);
 		}
 
 		public abstract SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
@@ -2231,13 +2431,13 @@ namespace NHibernate.Persister.Entity
 			//	+ StringHelper.Underscore );
 		}
 
-		protected virtual void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
-		{
-		}
+		protected virtual void AddDiscriminatorToInsert(SqlInsertBuilder insert) { }
+
+		protected virtual void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix) { }
 
 		public string[] GetPropertyColumnNames(string propertyName)
 		{
-			return GetColumnNames(propertyName);
+			return propertyMapping.GetColumnNames(propertyName);
 		}
 
 		public int GetPropertyIndex(string propertyName)
@@ -2250,6 +2450,134 @@ namespace NHibernate.Persister.Entity
 		protected EntityMetamodel EntityMetamodel
 		{
 			get { return entityMetamodel; }
+		}
+
+		private JoinFragment CreateJoin(string name, bool innerjoin, bool includeSubclasses)
+		{
+			string[] idCols = StringHelper.Qualify(name, IdentifierColumnNames); //all joins join to the pk of the driving table
+			JoinFragment join = Factory.Dialect.CreateOuterJoinFragment();
+			int tableSpan = SubclassTableSpan;
+			for (int j = 1; j < tableSpan; j++) //notice that we skip the first table; it is the driving table!
+			{
+				bool joinIsIncluded = IsClassOrSuperclassTable(j) ||
+					(includeSubclasses && !IsSubclassTableSequentialSelect(j));
+				if (joinIsIncluded)
+				{
+					join.AddJoin(GetSubclassTableName(j),
+						GenerateTableAlias(name, j),
+						idCols,
+						GetSubclassTableKeyColumns(j),
+						innerjoin && IsClassOrSuperclassTable(j) && !IsInverseTable(j) && !IsNullableTable(j)
+							? JoinType.InnerJoin //we can inner join to superclass tables (the row MUST be there)
+							: JoinType.LeftOuterJoin //we can never inner join to subclass tables
+					);
+				}
+			}
+			return join;
+		}
+
+		private JoinFragment CreateJoin(int[] tableNumbers, string drivingAlias)
+		{
+			string[] keyCols = StringHelper.Qualify( drivingAlias, GetSubclassTableKeyColumns( tableNumbers[0] ) );
+			JoinFragment jf = Factory.Dialect.CreateOuterJoinFragment();
+			for ( int i = 1; i < tableNumbers.Length; i++ ) { //skip the driving table
+				int j = tableNumbers[i];
+				jf.AddJoin( GetSubclassTableName( j ),
+						GenerateTableAlias( RootAlias, j ),
+						keyCols,
+						GetSubclassTableKeyColumns( j ),
+						IsInverseSubclassTable( j ) || IsNullableSubclassTable( j ) 
+							? JoinType.LeftOuterJoin
+							: JoinType.InnerJoin );
+			}
+			return jf;
+		}
+
+		protected SelectFragment CreateSelect(int[] subclassColumnNumbers, int[] subclassFormulaNumbers)
+		{
+			SelectFragment selectFragment = new SelectFragment(Factory.Dialect);
+
+			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
+			string[] columnAliases = SubclassColumnAliasClosure;
+			string[] columns = SubclassColumnClosure;
+			for (int i = 0; i < subclassColumnNumbers.Length; i++)
+			{
+				if (subclassColumnSelectableClosure[i])
+				{
+					int columnNumber = subclassColumnNumbers[i];
+					String subalias = GenerateTableAlias(RootAlias, columnTableNumbers[columnNumber]);
+					selectFragment.AddColumn(subalias, columns[columnNumber], columnAliases[columnNumber]);
+				}
+			}
+
+			int[] formulaTableNumbers = SubclassFormulaTableNumberClosure;
+			String[] formulaTemplates = SubclassFormulaTemplateClosure;
+			String[] formulaAliases = SubclassFormulaAliasClosure;
+			for (int i = 0; i < subclassFormulaNumbers.Length; i++)
+			{
+				int formulaNumber = subclassFormulaNumbers[i];
+				String subalias = GenerateTableAlias(RootAlias, formulaTableNumbers[formulaNumber]);
+				selectFragment.AddFormula(subalias, formulaTemplates[formulaNumber], formulaAliases[formulaNumber]);
+			}
+
+			return selectFragment;
+		}
+
+		protected string CreateFrom(int tableNumber, String alias)
+		{
+			return GetSubclassTableName(tableNumber) + ' ' + alias;
+		}
+
+		protected SqlString CreateWhereByKey(int tableNumber, string alias)
+		{
+			//TODO: move to .sql package, and refactor with similar things!
+			//return new SqlString(StringHelper.Join("= ? and ",
+			//        StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber))) + "= ?");
+			SqlStringBuilder builder = new SqlStringBuilder();
+			string[] subclauses = StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber));
+			for (int i = 0; i < subclauses.Length; i++ )
+			{
+				string subclause = subclauses[i];
+				if (i > 0)
+				{
+					builder.Add(" and ");
+				}
+				builder.Add(subclause + "=").AddParameter();
+			}
+			return builder.ToSqlString();
+		}
+
+		protected SqlString RenderSelect(			
+			int[] tableNumbers,
+	        int[] columnNumbers,
+	        int[] formulaNumbers) 
+		{
+			Array.Sort(tableNumbers); //get 'em in the right order (not that it really matters)
+
+			//render the where and from parts
+			int drivingTable = tableNumbers[0];
+			string drivingAlias = GenerateTableAlias( RootAlias, drivingTable ); //we *could* regerate this inside each called method!
+			SqlString where = CreateWhereByKey( drivingTable, drivingAlias );
+			string from = CreateFrom( drivingTable, drivingAlias );
+
+			//now render the joins
+			JoinFragment jf = CreateJoin(tableNumbers, drivingAlias);
+
+			//now render the select clause
+			SelectFragment selectFragment = CreateSelect(columnNumbers, formulaNumbers);
+
+			//now tie it all together
+			SqlSelectBuilder select = new SqlSelectBuilder(Factory);
+			select.SetSelectClause(selectFragment.ToFragmentString().Substring(2));
+			select.SetFromClause(from);
+			select.SetWhereClause(where);
+			select.SetOuterJoins(jf.ToFromFragmentString, jf.ToWhereFragmentString);
+			// TODO: H3
+			//if (Factory.Settings.IsCommentsEnabled)
+			//{
+			//    select.SetComment("sequential select " + MappedClass.Name);
+			//}
+			return select.ToSqlString();
 		}
 
 		private string RootAlias
@@ -2340,25 +2668,25 @@ namespace NHibernate.Persister.Entity
 			                       FromJoinFragment(RootAlias, true, false);
 
 			SqlString joiner = new SqlString("=", Parameter.Placeholder, " and ");
-			SqlString whereClause = new SqlStringBuilder()
+			SqlStringBuilder whereClauseBuilder = new SqlStringBuilder()
 				.Add(StringHelper.Join(joiner, aliasedIdColumns))
 				.Add("=")
 				.AddParameter()
-				.Add(WhereJoinFragment(RootAlias, true, false))
-				.ToSqlString();
+				.Add(WhereJoinFragment(RootAlias, true, false));
 
 			// TODO H3: this is commented out in H3.2
 			if (IsVersioned)
 			{
-				whereClause.Append(" and ")
-					.Append(VersionColumnName)
-					.Append("=?");
+				whereClauseBuilder.Add(" and ")
+					.Add(VersionColumnName)
+					.Add("=")
+					.AddParameter();
 			}
 
 			return select.SetSelectClause(selectClause)
 				.SetFromClause(fromClause)
 				.SetOuterJoins(SqlString.Empty, SqlString.Empty)
-				.SetWhereClause(whereClause)
+				.SetWhereClause(whereClauseBuilder.ToSqlString())
 				.ToSqlString();
 		}
 
@@ -2419,6 +2747,18 @@ namespace NHibernate.Persister.Entity
 			return subclassPropertyCascadeStyleClosure[i];
 		}
 
+		private bool IsAllNull(object[] array, int tableNumber)
+		{
+			for (int i = 0; i < array.Length; i++)
+			{
+				if (IsPropertyOfTable(i, tableNumber) && array[i] != null)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		public bool IsSubclassPropertyNullable(int i)
 		{
 			return subclassPropertyNullabilityClosure[i];
@@ -2439,7 +2779,7 @@ namespace NHibernate.Persister.Entity
 			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
 		}
 
-		protected string GenerateTableAlias(string rootAlias, int tableNumber)
+		public string GenerateTableAlias(string rootAlias, int tableNumber)
 		{
 			if (tableNumber == 0)
 			{
@@ -2519,6 +2859,10 @@ namespace NHibernate.Persister.Entity
 			return string.Empty;
 		}
 
+		protected abstract bool IsClassOrSuperclassTable(int j);
+
+		protected abstract int SubclassTableSpan { get; }
+
 		protected abstract int TableSpan { get; }
 
 		protected SqlCommandInfo GenerateInsertString(bool[] includeProperty, int j)
@@ -2536,7 +2880,44 @@ namespace NHibernate.Persister.Entity
 			return GenerateInsertString(true, includeProperty);
 		}
 
-		protected abstract SqlCommandInfo GenerateInsertString(bool identityInsert, bool[] notNull, int j);
+		protected virtual SqlCommandInfo GenerateInsertString(bool identityInsert, bool[] includeProperty, int j)
+		{
+			SqlInsertBuilder builder = new SqlInsertBuilder(Factory)
+				.SetTableName(GetTableName(j));
+
+			// add normal properties
+			for (int i = 0; i < HydrateSpan; i++)
+			{
+				if (includeProperty[i] && IsPropertyOfTable(i, j))
+				{
+					builder.AddColumns(GetPropertyColumnNames(i), PropertyColumnInsertable[i], PropertyTypes[i]);
+				}
+			}
+
+			// add the discriminator
+			if (j == 0)
+			{
+				AddDiscriminatorToInsert(builder);
+			}
+
+			// add the primary key
+			if (j == 0 && identityInsert)
+			{
+				// make sure the Dialect has an identity insert string because we don't want
+				// to add the column when there is no value to supply the SqlBuilder
+				if (Dialect.IdentityInsertString != null)
+				{
+					// only 1 column if there is IdentityInsert enabled.
+					builder.AddColumn(IdentifierColumnNames[0], Dialect.IdentityInsertString);
+				}
+			}
+			else
+			{
+				builder.AddColumns(GetKeyColumns(j), null, IdentifierType);
+			}
+
+			return builder.ToSqlCommandInfo();
+		}
 
 		public object Insert(object[] fields, object obj, ISessionImplementor session)
 		{
@@ -2619,6 +3000,21 @@ namespace NHibernate.Persister.Entity
 		protected SqlCommandInfo[] SqlUpdateStrings
 		{
 			get { return sqlUpdateStrings; }
+		}
+
+		protected virtual bool IsSubclassPropertyDeferred(string propertyName, System.Type entityName)
+		{
+			return false;
+		}
+
+		protected virtual bool IsSubclassTableSequentialSelect(int table)
+		{
+			return false;
+		}
+
+		public virtual bool HasSequentialSelect
+		{
+			get { return false; }
 		}
 
 		protected abstract string GetTableName(int table);
@@ -2725,6 +3121,11 @@ namespace NHibernate.Persister.Entity
 		public void Delete(object id, object version, int j, object obj, SqlCommandInfo sql, ISessionImplementor session,
 		                   object[] loadedState)
 		{
+			if (IsInverseTable(j))
+			{
+				return;
+			}
+
 			bool useVersion = j == 0 && IsVersioned;
 			IExpectation expectation = Expectations.AppropriateExpectation(deleteResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
@@ -2876,6 +3277,18 @@ namespace NHibernate.Persister.Entity
 			object obj,
 			ISessionImplementor session)
 		{
+			if (IsInverseTable(j))
+			{
+				return;
+			}
+
+			//note: it is conceptually possible that a UserType could map null to
+			//	  a non-null value, so the following is arguable:
+			if (IsNullableTable(j) && IsAllNull(fields, j))
+			{
+				return;
+			}
+
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Inserting entity: " + MessageHelper.InfoString(this, id));
@@ -3142,6 +3555,36 @@ namespace NHibernate.Persister.Entity
 				.SetOuterJoins(SqlString.Empty, SqlString.Empty)
 				.SetWhereClause(whereClause)
 				.ToSqlString();
+		}
+
+		public virtual bool IsMultiTable
+		{
+			get { return false; }
+		}
+
+		protected int PropertySpan
+		{
+			get { return EntityMetamodel.PropertySpan; }
+		}
+
+		protected virtual bool IsInverseTable(int j)
+		{
+			return false;
+		}
+
+		protected virtual bool IsNullableTable(int j)
+		{
+			return false;
+		}
+
+		protected virtual bool IsNullableSubclassTable(int j)
+		{
+			return false;
+		}
+
+		protected virtual bool IsInverseSubclassTable(int j)
+		{
+			return false;
 		}
 	}
 }
