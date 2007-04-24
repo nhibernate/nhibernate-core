@@ -141,5 +141,18 @@ namespace NHibernate.Expression
 		{
 			return impl;
 		}
+
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <returns></returns>
+		public DetachedCriteria Clone()
+		{
+			ICriteria clonedCriteria = this.impl.Clone();
+			DetachedCriteria detachedCriteria = new DetachedCriteria(impl.CriteriaClass, impl.Alias);
+			detachedCriteria.criteria = clonedCriteria;
+			detachedCriteria.impl = (CriteriaImpl) clonedCriteria;
+			return detachedCriteria;
+		}
 	}
 }

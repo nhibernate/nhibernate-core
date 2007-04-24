@@ -122,7 +122,7 @@ namespace NHibernate.Impl
 
 			public T UniqueResult<T>()
 			{
-				return (T) UniqueResult();
+				return (T)UniqueResult();
 			}
 #endif
 
@@ -234,6 +234,11 @@ namespace NHibernate.Impl
 				root.SetProjection(projection);
 				return this;
 			}
+
+			public ICriteria Clone()
+			{
+				return root.Clone();
+			}
 		}
 
 		public ICriteria SetMaxResults(int maxResults)
@@ -286,12 +291,12 @@ namespace NHibernate.Impl
 			get { return fetchSize; }
 		}
 
-		public CriteriaImpl(System.Type persistentClass, SessionImpl session)
+		public CriteriaImpl(System.Type persistentClass, ISessionImplementor session)
 			: this(persistentClass, CriteriaUtil.RootAlias, session)
 		{
 		}
 
-		public CriteriaImpl(System.Type persistentClass, string alias, SessionImpl session)
+		public CriteriaImpl(System.Type persistentClass, string alias, ISessionImplementor session)
 		{
 			this.persistentClass = persistentClass;
 			this.session = session;
@@ -317,7 +322,7 @@ namespace NHibernate.Impl
 
 		public T UniqueResult<T>()
 		{
-			return (T) UniqueResult();
+			return (T)UniqueResult();
 		}
 
 #endif
@@ -372,7 +377,7 @@ namespace NHibernate.Impl
 		public FetchMode GetFetchMode(string path)
 		{
 			object result = fetchModes[path];
-			return result == null ? FetchMode.Default : (FetchMode) result;
+			return result == null ? FetchMode.Default : (FetchMode)result;
 		}
 
 		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
@@ -523,6 +528,72 @@ namespace NHibernate.Impl
 			projectionCriteria = this;
 			SetResultTransformer(ProjectionTransformer);
 			return this;
+		}
+
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <returns></returns>
+		public ICriteria Clone()
+		{
+			CriteriaImpl clone = new CriteriaImpl(persistentClass, Alias, session);
+			foreach (CriterionEntry criterionEntry in this.criteria)
+			{
+				clone.Add(criterionEntry.Criterion);
+			}
+			CloneSubcriteriaAndOrders(clone);
+			clone.fetchModes = new Hashtable(this.fetchModes);
+			clone.lockModes = new Hashtable(this.lockModes);
+			clone.maxResults = this.maxResults;
+			clone.firstResult = this.firstResult;
+			clone.timeout = this.timeout;
+			clone.fetchSize = this.fetchSize;
+			clone.resultTransformer = this.resultTransformer;
+			clone.cacheable = this.cacheable;
+			clone.cacheRegion = this.cacheRegion;
+			clone.rootAlias = this.rootAlias;
+			clone.projection = this.projection;
+			CloneProjectCrtieria(clone);
+			return clone;
+		}
+
+		private void CloneProjectCrtieria(CriteriaImpl clone)
+		{
+			if(this.projectionCriteria != null)
+			{
+				if(this.projectionCriteria == this)
+				{
+					clone.projectionCriteria = clone;
+				}
+				else
+				{
+					clone.projectionCriteria = this.projectionCriteria.Clone();
+				}
+			}
+		}
+
+		private void CloneSubcriteriaAndOrders(CriteriaImpl clone)
+		{
+			//we need to preserve the parent criteria, we rely on the orderring when creating the 
+			//subcriterias initially here, so we don't need to make more than a single pass
+			Hashtable newParents = new Hashtable();
+			newParents[this] = clone;
+			foreach (Subcriteria subcriteria in subcriteriaList)
+			{
+				ICriteria currentParent = (ICriteria)newParents[subcriteria.Parent];
+				if (currentParent == null)
+					throw new InvalidOperationException("Could not find parent for subcriteria in the previous subcriteria. If you see this error, it is a bug");
+				Subcriteria clonedSubCriteria = new Subcriteria(clone, currentParent,subcriteria.Path,subcriteria.Alias,subcriteria.JoinType);
+				clonedSubCriteria.SetLockMode(subcriteria.LockMode);
+				newParents[subcriteria] = clonedSubCriteria;
+			}
+			foreach (OrderEntry orderEntry in orderEntries)
+			{
+				ICriteria currentParent = (ICriteria)newParents[orderEntry.Criteria];
+				if (currentParent == null)
+					throw new InvalidOperationException("Could not find parent for order in the previous criteria. If you see this error, it is a bug");
+				clone.orderEntries.Add(new OrderEntry(orderEntry.Order, currentParent));
+			}
 		}
 
 		public ICriteria ProjectionCriteria

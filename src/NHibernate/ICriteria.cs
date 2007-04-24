@@ -239,5 +239,11 @@ namespace NHibernate
 		/// </para>
 		/// </remarks>
 		ICriteria SetProjection(IProjection projection);
+
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <returns></returns>
+		ICriteria Clone();
 	}
 }
