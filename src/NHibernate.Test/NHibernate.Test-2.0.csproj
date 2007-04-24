@@ -34,6 +34,10 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.DynamicProxy, Version=1.1.5.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Castle.DynamicProxy.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
@@ -461,6 +465,7 @@
     <Compile Include="ProxyInterface\CastleProxy.cs" />
     <Compile Include="ProxyInterface\CastleProxyFixture.cs" />
     <Compile Include="ProxyInterface\CastleProxyImpl.cs" />
+    <Compile Include="ProxyInterface\CustomProxyFixture.cs" />
     <Compile Include="ProxyTest\AProxy.cs" />
     <Compile Include="ProxyTest\NHibernateProxyHelperFixture.cs" />
     <Compile Include="QueryTest\Aggregated.cs" />

@@ -22,6 +22,7 @@
 			<include name="log4net.dll" />
 			<include name="NHibernate.DomainModel.dll" />
 			<include name="NHibernate.dll" />
+			<include name="Castle.DynamicProxy.dll" />
 			<include name="nunit.framework.dll"/>
 		</assemblyfileset>
 

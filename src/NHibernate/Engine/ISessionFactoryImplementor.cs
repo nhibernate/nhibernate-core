@@ -4,6 +4,7 @@ using NHibernate.Dialect.Function;
 using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Transaction;
 using NHibernate.Type;
 
@@ -178,5 +179,11 @@ namespace NHibernate.Engine
 		ISession OpenSession(
 			IDbConnection connection,
 			ConnectionReleaseMode connectionReleaseMode);
+
+		/// <summary>
+		/// Creates the proxy factory.
+		/// </summary>
+		/// <returns></returns>
+		IProxyFactory CreateProxyFactory();
 	}
 }

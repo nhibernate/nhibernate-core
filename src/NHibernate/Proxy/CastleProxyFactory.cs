@@ -9,15 +9,15 @@ namespace NHibernate.Proxy
 {
 	public class CastleProxyFactory : IProxyFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(CastleProxyFactory));
-		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
+		protected static readonly ILog log = LogManager.GetLogger(typeof(CastleProxyFactory));
+		protected static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
 
-		private System.Type _persistentClass;
-		private System.Type[] _interfaces;
-		private MethodInfo _getIdentifierMethod;
-		private MethodInfo _setIdentifierMethod;
+		protected System.Type _persistentClass;
+		protected System.Type[] _interfaces;
+		protected MethodInfo _getIdentifierMethod;
+		protected MethodInfo _setIdentifierMethod;
 
-		public void PostInstantiate(System.Type persistentClass, ISet interfaces,
+		public virtual void PostInstantiate(System.Type persistentClass, ISet interfaces,
 		                            MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod)
 		{
 			_persistentClass = persistentClass;
@@ -27,7 +27,7 @@ namespace NHibernate.Proxy
 			_setIdentifierMethod = setIdentifierMethod;
 		}
 
-		private bool IsClassProxy
+		protected bool IsClassProxy
 		{
 			get { return _interfaces.Length == 1; }
 		}
@@ -38,7 +38,7 @@ namespace NHibernate.Proxy
 		/// <param name="id">The value for the Id.</param>
 		/// <param name="session">The Session the proxy is in.</param>
 		/// <returns>A fully built <c>INHibernateProxy</c>.</returns>
-		public INHibernateProxy GetProxy(object id, ISessionImplementor session)
+		public virtual INHibernateProxy GetProxy(object id, ISessionImplementor session)
 		{
 			try
 			{

@@ -17,7 +17,7 @@ namespace NHibernate.Proxy
 
 		#region Instance
 
-		internal bool _constructed = false;
+		public bool _constructed = false;
 
 		/// <summary>
 		/// Initializes a new <see cref="CastleLazyInitializer"/> object.
@@ -27,7 +27,7 @@ namespace NHibernate.Proxy
 		/// <param name="getIdentifierMethod"></param>
 		/// <param name="setIdentifierMethod"></param>
 		/// <param name="session">The ISession this Proxy is in.</param>
-		internal CastleLazyInitializer(
+		public CastleLazyInitializer(
 			System.Type persistentClass,
 			object id,
 			MethodInfo getIdentifierMethod,
@@ -44,7 +44,7 @@ namespace NHibernate.Proxy
 		/// <param name="invocation">The <see cref="IInvocation"/> from the generated Castle.DynamicProxy.</param>
 		/// <param name="args">The parameters for the Method/Property</param>
 		/// <returns>The result just like the actual object was called.</returns>
-		public object Intercept(IInvocation invocation, params object[] args)
+		public virtual object Intercept(IInvocation invocation, params object[] args)
 		{
 			try
 			{

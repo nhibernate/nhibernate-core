@@ -1074,7 +1074,7 @@ namespace NHibernate.Persister.Entity
 
 		protected virtual IProxyFactory CreateProxyFactory()
 		{
-			return new CastleProxyFactory();
+			return factory.CreateProxyFactory();
 		}
 
 		/// <summary>

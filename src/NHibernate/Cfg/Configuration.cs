@@ -111,7 +111,7 @@ namespace NHibernate.Cfg
 		private IDictionary sqlFunctions;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
-
+		private System.Type proxyFactoryClass = typeof (CastleProxyFactory);
 		private static readonly ILog log = LogManager.GetLogger(typeof(Configuration));
 
 		/// <summary>
@@ -1540,6 +1540,24 @@ namespace NHibernate.Cfg
 		public INamingStrategy NamingStrategy
 		{
 			get { return namingStrategy; }
+		}
+
+
+		public System.Type ProxyFactoryClass
+		{
+			get { return proxyFactoryClass; }
+		}
+
+		public Configuration SetProxyFactoryClass(System.Type proxyFactoryClass)
+		{
+			if(typeof(IProxyFactory).IsAssignableFrom(proxyFactoryClass)==false)
+			{
+				HibernateException he = new HibernateException(proxyFactoryClass.FullName+" does not implement "+typeof(IProxyFactory).FullName);
+				log.Error(he);
+				throw he;
+			}
+			this.proxyFactoryClass = proxyFactoryClass;
+			return this;
 		}
 
 		/// <summary>

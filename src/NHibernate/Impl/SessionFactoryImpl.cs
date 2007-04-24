@@ -18,6 +18,7 @@ using NHibernate.Metadata;
 using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -138,6 +139,7 @@ namespace NHibernate.Impl
 
 			this.properties = cfg.Properties;
 			this.interceptor = cfg.Interceptor;
+			this.proxyFactoryClass = cfg.ProxyFactoryClass;
 			this.settings = settings;
 			this.sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 
@@ -309,6 +311,9 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private int strongRefIndex = 0;
+
+		[NonSerialized]
+		private System.Type proxyFactoryClass;
 
 		// both keys and values may be soft since value keeps a hard ref to the key (and there is a hard ref to MRU values)
 		[NonSerialized]
@@ -572,6 +577,21 @@ namespace NHibernate.Impl
 		public ISession OpenSession(IDbConnection connection, ConnectionReleaseMode connectionReleaseMode)
 		{
 			return OpenSession(connection, Timestamper.Next(), interceptor, connectionReleaseMode);
+		}
+
+
+		public IProxyFactory CreateProxyFactory()
+		{
+			if(proxyFactoryClass==typeof(CastleProxyFactory))
+				return new CastleProxyFactory();
+			try
+			{
+				return (IProxyFactory)Activator.CreateInstance(proxyFactoryClass);
+			}
+			catch(Exception e)
+			{
+				throw new HibernateException("Failed to create an instance of '" + proxyFactoryClass.FullName + "'!", e);
+			}
 		}
 
 		public IEntityPersister GetEntityPersister(string className)
