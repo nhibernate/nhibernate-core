@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -98,5 +99,13 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		protected override string GetSelectExistingObject(string name, Table table)
+		{
+			string objName = table.GetQuotedSchemaName(this) + this.Quote(name);
+			return string.Format("select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')",
+								 objName, table.GetQuotedName(this));
+		}
+
 	}
 }

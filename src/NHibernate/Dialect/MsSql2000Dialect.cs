@@ -426,10 +426,10 @@ namespace NHibernate.Dialect
 			return string.Format(@"if exists ({0})", selectExistingObject);
 		}
 
-		private string GetSelectExistingObject(string name, Table table)
+		protected virtual string GetSelectExistingObject(string name, Table table)
 		{
 			string objName = table.GetQuotedSchemaName(this) + this.Quote(name);
-			return string.Format("select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')",
+			return string.Format("select 1 from sysobjects where id = OBJECT_ID(N'{0}') AND parent_obj = OBJECT_ID('{1}')",
 								 objName, table.GetQuotedName(this));
 		}
 
