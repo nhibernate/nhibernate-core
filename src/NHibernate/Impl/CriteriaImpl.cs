@@ -257,9 +257,9 @@ namespace NHibernate.Impl
 				return root.GetCriteiraByPath(path);
 			}
 
-			public ICriteria GetCriteriaByAlias(string alias)
+			public ICriteria GetCriteriaByPath(string alias)
 			{
-				return root.GetCriteriaByAlias(alias);
+				return root.GetCriteriaByPath(alias);
 			}
 		}
 
@@ -584,7 +584,7 @@ namespace NHibernate.Impl
 			return (ICriteria) subcriteriaByPath[path];
 		}
 
-		public ICriteria GetCriteriaByAlias(string alias)
+		public ICriteria GetCriteriaByPath(string alias)
 		{
 			return (ICriteria) subcriteriaByAlias[alias];
 		}

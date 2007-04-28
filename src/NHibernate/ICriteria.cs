@@ -259,6 +259,6 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="alias">The alias.</param>
 		/// <returns></returns>
-		ICriteria GetCriteriaByAlias(string alias);
+		ICriteria GetCriteriaByPath(string alias);
 	}
 }

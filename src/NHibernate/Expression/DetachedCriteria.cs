@@ -160,9 +160,9 @@ namespace NHibernate.Expression
 			return new DetachedCriteria(impl, impl.GetCriteiraByPath(path));
 		}
 
-		public DetachedCriteria GetCriteriaByAlias(string alias)
+		public DetachedCriteria GetCriteriaByPath(string alias)
 		{
-			return new DetachedCriteria(impl, impl.GetCriteriaByAlias(alias));
+			return new DetachedCriteria(impl, impl.GetCriteriaByPath(alias));
 		}
 	}
 }

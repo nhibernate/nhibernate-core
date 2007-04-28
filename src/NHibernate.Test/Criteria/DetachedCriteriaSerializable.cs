@@ -426,8 +426,8 @@ namespace NHibernate.Test.Criteria
 		{
 			DetachedCriteria criteria = DetachedCriteria.For(typeof(Student))
 				.CreateAlias("mu.Material", "ma");
-			Assert.IsNotNull(criteria.GetCriteriaByAlias("ma"));
-			Assert.AreEqual("ma", criteria.GetCriteriaByAlias("ma").Alias);
+			Assert.IsNotNull(criteria.GetCriteriaByPath("ma"));
+			Assert.AreEqual("ma", criteria.GetCriteriaByPath("ma").Alias);
 
 			Assert.IsNotNull(criteria.GetCriteiraByPath("fooBar"));
 		}
