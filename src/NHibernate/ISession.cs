@@ -738,5 +738,12 @@ namespace NHibernate
 		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface 
 		/// </returns>
 		ISessionImplementor GetSessionImplementation();
+
+		/// <summary>
+		/// An <see cref="IMultiCriteria"/> that can return a list of all the results
+		/// of all the criterias.
+		/// </summary>
+		/// <returns></returns>
+		IMultiCriteria CreateMultiCriteria();
 	}
 }

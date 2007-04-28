@@ -578,66 +578,6 @@ namespace NHibernate.Impl
 			return "Multi Query: [" + SqlString + "]";
 		}
 
-		private class MultipleQueriesCacheAssembler : ICacheAssembler
-		{
-			private IList assemblersList;
-
-			public MultipleQueriesCacheAssembler(IList assemblers)
-			{
-				assemblersList = assemblers;
-			}
-
-			public object Disassemble(object value, ISessionImplementor session)
-			{
-				IList srcList = (IList) value;
-				ArrayList cacheable = new ArrayList();
-				for (int i = 0; i < srcList.Count; i++)
-				{
-					ICacheAssembler[] assemblers = (ICacheAssembler[]) assemblersList[i];
-					IList itemList = (IList) srcList[i];
-					ArrayList singleQueryCached = new ArrayList();
-					foreach (object objToCache in itemList)
-					{
-						if (assemblers.Length == 1)
-						{
-							singleQueryCached.Add(assemblers[0].Disassemble(objToCache, session));
-						}
-						else
-						{
-							singleQueryCached.Add(TypeFactory.Disassemble((object[]) objToCache, assemblers, session));
-						}
-					}
-					cacheable.Add(singleQueryCached);
-				}
-				return cacheable;
-			}
-
-			public object Assemble(object cached, ISessionImplementor session, object owner)
-			{
-				IList srcList = (IList) cached;
-				ArrayList result = new ArrayList();
-				for (int i = 0; i < assemblersList.Count; i++)
-				{
-					ICacheAssembler[] assemblers = (ICacheAssembler[]) assemblersList[i];
-					IList queryFromCache = (IList) srcList[i];
-					ArrayList queryResults = new ArrayList();
-					foreach (object fromCache in queryFromCache)
-					{
-						if (assemblers.Length == 1)
-						{
-							queryResults.Add(assemblers[0].Assemble(fromCache, session, owner));
-						}
-						else
-						{
-							queryResults.Add(TypeFactory.Assemble((object[]) fromCache, assemblers, session, owner));
-						}
-					}
-					result.Add(queryResults);
-				}
-				return result;
-			}
-		}
-
 		#region Implementation
 
 		private IList ListIgnoreQueryCache()
@@ -659,15 +599,25 @@ namespace NHibernate.Impl
 				querySpaces.AddAll(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ActualReturnTypes);
 			}
+			int[]firstRows = new int[Parameters.Count];
+			int[]maxRows = new int[Parameters.Count];
+			for (int i = 0; i < Parameters.Count; i++)
+			{
+				RowSelection rowSelection = ((QueryParameters)Parameters[i]).RowSelection;
+				firstRows[i] = rowSelection.FirstRow;
+				maxRows[i] = rowSelection.MaxRows;
+			}
+
 			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
 
-			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys);
+			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys)
+				.SetFirstRows(firstRows)
+				.SetMaxRows(maxRows);
 
 			IList result =
-				GetResultFromQueryCache(session,
+				assembler.GetResultFromQueryCache(session,
 				                        combinedParameters,
 				                        querySpaces,
-				                        new ICacheAssembler[] {assembler},
 				                        queryCache,
 				                        key);
 
@@ -749,26 +699,6 @@ namespace NHibernate.Impl
 				return namedParametersThatAreSafeToDuplicate.Contains(originalName);
 			}
 			return false;
-		}
-
-		private static IList GetResultFromQueryCache(
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			ISet querySpaces,
-			ICacheAssembler[] resultTypes,
-			IQueryCache queryCache,
-			QueryKey key)
-		{
-			if (!queryParameters.ForceCacheRefresh)
-			{
-				IList list = queryCache.Get(key, resultTypes, querySpaces, session);
-				//we had to wrap the query results in another list in order to save all
-				//the queries in the same bucket, now we need to do it the other way around.
-				if (list != null)
-					list = (IList) list[0];
-				return list;
-			}
-			return null;
 		}
 
 		#endregion

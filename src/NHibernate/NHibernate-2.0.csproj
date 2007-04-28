@@ -539,6 +539,9 @@
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
     <Compile Include="Hql\Classic\FunctionStack.cs" />
+    <Compile Include="Impl\MultiCriteriaImpl.cs" />
+    <Compile Include="Impl\MultipleQueriesCacheAssembler.cs" />
+    <Compile Include="IMultiCriteria.cs" />
     <Compile Include="Mapping\PropertyGeneration.cs" />
     <Compile Include="SqlCommand\SubselectClauseExtractor.cs" />
     <Compile Include="Engine\SubselectFetch.cs" />

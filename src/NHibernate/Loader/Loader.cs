@@ -1231,7 +1231,7 @@ namespace NHibernate.Loader
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
 		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
-		protected virtual IDbCommand PrepareQueryCommand(
+		protected internal virtual IDbCommand PrepareQueryCommand(
 			QueryParameters parameters,
 			bool scroll,
 			ISessionImplementor session)

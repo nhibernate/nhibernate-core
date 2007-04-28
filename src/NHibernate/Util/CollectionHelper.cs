@@ -210,6 +210,11 @@ namespace NHibernate.Util
 				return true;
 			}
 
+			if(c1==null || c2==null)
+			{
+				return false;
+			}
+
 			if (c1.Count != c2.Count)
 			{
 				return false;

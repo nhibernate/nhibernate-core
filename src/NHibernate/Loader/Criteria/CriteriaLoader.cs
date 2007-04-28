@@ -65,6 +65,12 @@ namespace NHibernate.Loader.Criteria
 			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
 		}
 
+
+		public IType[] ResultTypes
+		{
+			get { return resultTypes; }
+		}
+
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
 		                                               ISessionImplementor session)
 		{
@@ -94,6 +100,12 @@ namespace NHibernate.Loader.Criteria
 		public ISet QuerySpaces
 		{
 			get { return querySpaces; }
+		}
+
+
+		public CriteriaQueryTranslator Translator
+		{
+			get { return translator; }
 		}
 
 		protected override SqlString ApplyLocks(SqlString sqlSelectString, IDictionary lockModes, Dialect.Dialect dialect)

@@ -349,6 +349,11 @@ namespace NHibernate.Search.Impl
 		{
 			return session.CreateMultiQuery();
 		}
+		
+		public IMultiCriteria CreateMultiCriteria()
+		{
+			return session.CreateMultiCriteria();
+		}
 
 		public FlushMode FlushMode
 		{
