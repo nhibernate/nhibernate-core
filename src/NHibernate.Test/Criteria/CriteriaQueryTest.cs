@@ -1338,5 +1338,20 @@ namespace NHibernate.Test.Criteria
 				s.Flush();
 			}
 		}
+
+		[Test]
+		public void CriteriaInspection()
+		{
+			using (ISession session = OpenSession())
+			{
+				ICriteria criteria = session.CreateCriteria(typeof (MaterialUnit), "mu")
+					.CreateAlias("mu.Material", "ma");
+				Assert.IsNotNull(criteria.GetCriteriaByAlias("ma"));
+				Assert.AreEqual("ma",criteria.GetCriteriaByAlias("ma").Alias);
+				Assert.AreEqual(criteria,criteria.GetCriteriaByAlias("mu") );
+				Assert.AreEqual(criteria.CreateCriteria("fooBar"), criteria.GetCriteiraByPath("fooBar") );
+				
+			}
+		}
 	}
 }

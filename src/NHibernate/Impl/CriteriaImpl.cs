@@ -39,6 +39,9 @@ namespace NHibernate.Impl
 		private IList subcriteriaList = new ArrayList();
 		private string rootAlias;
 
+		private IDictionary subcriteriaByPath = new Hashtable();
+		private IDictionary subcriteriaByAlias = new Hashtable();
+
 		// Projection Fields
 		private IProjection projection;
 		private ICriteria projectionCriteria;
@@ -64,6 +67,10 @@ namespace NHibernate.Impl
 				this.joinType = joinType;
 
 				root.subcriteriaList.Add(this);
+
+				root.subcriteriaByPath[path] = this;
+				if(alias!=null)
+					root.subcriteriaByAlias[alias] = this;
 			}
 
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, JoinType joinType)
@@ -198,7 +205,12 @@ namespace NHibernate.Impl
 			public string Alias
 			{
 				get { return alias; }
-				set { alias = value; }
+				set
+				{
+					root.subcriteriaByAlias.Remove(alias);
+					alias = value;
+					root.subcriteriaByAlias[alias] = this;
+				}
 			}
 
 			public ICriteria Parent
@@ -238,6 +250,16 @@ namespace NHibernate.Impl
 			public ICriteria Clone()
 			{
 				return root.Clone();
+			}
+
+			public ICriteria GetCriteiraByPath(string path)
+			{
+				return root.GetCriteiraByPath(path);
+			}
+
+			public ICriteria GetCriteriaByAlias(string alias)
+			{
+				return root.GetCriteriaByAlias(alias);
 			}
 		}
 
@@ -302,6 +324,7 @@ namespace NHibernate.Impl
 			this.session = session;
 			this.cacheable = false;
 			this.rootAlias = alias;
+			subcriteriaByAlias[alias] = this;
 		}
 
 		public IList List()
@@ -551,10 +574,19 @@ namespace NHibernate.Impl
 			clone.resultTransformer = this.resultTransformer;
 			clone.cacheable = this.cacheable;
 			clone.cacheRegion = this.cacheRegion;
-			clone.rootAlias = this.rootAlias;
 			clone.projection = this.projection;
 			CloneProjectCrtieria(clone);
 			return clone;
+		}
+
+		public ICriteria GetCriteiraByPath(string path)
+		{
+			return (ICriteria) subcriteriaByPath[path];
+		}
+
+		public ICriteria GetCriteriaByAlias(string alias)
+		{
+			return (ICriteria) subcriteriaByAlias[alias];
 		}
 
 		private void CloneProjectCrtieria(CriteriaImpl clone)

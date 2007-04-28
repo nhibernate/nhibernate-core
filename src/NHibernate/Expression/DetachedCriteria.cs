@@ -154,5 +154,15 @@ namespace NHibernate.Expression
 			detachedCriteria.impl = (CriteriaImpl) clonedCriteria;
 			return detachedCriteria;
 		}
+
+		public DetachedCriteria GetCriteiraByPath(string path)
+		{
+			return new DetachedCriteria(impl, impl.GetCriteiraByPath(path));
+		}
+
+		public DetachedCriteria GetCriteriaByAlias(string alias)
+		{
+			return new DetachedCriteria(impl, impl.GetCriteriaByAlias(alias));
+		}
 	}
 }

@@ -245,5 +245,20 @@ namespace NHibernate
 		/// </summary>
 		/// <returns></returns>
 		ICriteria Clone();
+
+		/// <summary>
+		/// Allows to get a sub criteria by path.
+		/// Will return null if the criteria does not exists.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		ICriteria GetCriteiraByPath(string path);
+
+		/// <summary>
+		/// Alows to get a sub criteria by alias.
+		/// Will return null if the criteria does not exists
+		/// </summary>
+		/// <param name="alias">The alias.</param>
+		/// <returns></returns>
+		ICriteria GetCriteriaByAlias(string alias);
 	}
 }
