@@ -76,11 +76,11 @@ namespace NHibernate.Test.ProxyInterface
 				System.Type[] interfaces = (System.Type[])list.ToArray(typeof(System.Type));
 				if (IsClassProxy)
 				{
-					generatedProxy = _proxyGenerator.CreateClassProxy(_persistentClass, interfaces, initializer, false);
+					generatedProxy = _proxyGenerator.CreateClassProxy(_persistentClass, interfaces, ProxyGenerationOptions.Default, initializer);
 				}
 				else
 				{
-					generatedProxy = _proxyGenerator.CreateProxy(interfaces, initializer, new object());
+					generatedProxy = _proxyGenerator.CreateInterfaceProxyWithoutTarget(interfaces[0], interfaces, initializer);
 				}
 
 				initializer._constructed = true;
@@ -103,11 +103,12 @@ namespace NHibernate.Test.ProxyInterface
 		{
 		}
 
-		public override object Intercept(IInvocation invocation, params object[] args)
+		public override void Intercept(Castle.Core.Interceptor.IInvocation invocation)
 		{
+			object result = null;
 			if (invocation.Method.DeclaringType == typeof(INotifyPropertyChanged))
 			{
-				PropertyChangedEventHandler propertyChangedEventHandler = (PropertyChangedEventHandler)args[0];
+				PropertyChangedEventHandler propertyChangedEventHandler = (PropertyChangedEventHandler)invocation.GetArgumentValue(0);
 				if (invocation.Method.Name.StartsWith("add_"))
 				{
 					subscribers += propertyChangedEventHandler;
@@ -116,14 +117,15 @@ namespace NHibernate.Test.ProxyInterface
 				{
 					subscribers -= propertyChangedEventHandler;
 				}
-				return null;
+				return;
 			}
-			object result = base.Intercept(invocation, args);
+			base.Intercept(invocation);
+			result = invocation.ReturnValue;
 			if (invocation.Method.Name.StartsWith("set_"))
 			{
 				subscribers(this, new PropertyChangedEventArgs(invocation.Method.Name.Substring(4)));
 			}
-			return result;
+			invocation.ReturnValue = result;
 		}
 	}
 }

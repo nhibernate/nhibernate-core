@@ -1,3 +1,4 @@
+using Castle.Core.Interceptor;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Proxy
@@ -24,11 +25,7 @@ namespace NHibernate.Proxy
 		/// </returns>
 		public static LazyInitializer GetLazyInitializer(INHibernateProxy proxy)
 		{
-			// have to hard code in "__interceptor" - very dependant on them not changing their
-			// implementation - TODO: email Hammet about this - or at least to provide a static
-			// field 
-			object fieldValue = proxy.GetType().GetField("__interceptor").GetValue(proxy);
-			return (LazyInitializer) fieldValue;
+			return (LazyInitializer) ((IProxyTargetAccessor)proxy).GetInterceptors()[0];
 		}
 
 		/// <summary>

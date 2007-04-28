@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Castle.Core.Interceptor;
 using Castle.DynamicProxy;
 using log4net;
 using NHibernate.Engine;
@@ -11,7 +12,7 @@ namespace NHibernate.Proxy
 	/// </summary>
 	[Serializable]
 	[CLSCompliant(false)]
-	public class CastleLazyInitializer : LazyInitializer, Castle.DynamicProxy.IInterceptor
+	public class CastleLazyInitializer : LazyInitializer, Castle.Core.Interceptor.IInterceptor
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(CastleLazyInitializer));
 
@@ -42,9 +43,7 @@ namespace NHibernate.Proxy
 		/// object and use it when the Proxy can't handle the method. 
 		/// </summary>
 		/// <param name="invocation">The <see cref="IInvocation"/> from the generated Castle.DynamicProxy.</param>
-		/// <param name="args">The parameters for the Method/Property</param>
-		/// <returns>The result just like the actual object was called.</returns>
-		public virtual object Intercept(IInvocation invocation, params object[] args)
+		public virtual void Intercept(IInvocation invocation)
 		{
 			try
 			{
@@ -52,24 +51,24 @@ namespace NHibernate.Proxy
 				{
 					// let the generic LazyInitializer figure out if this can be handled
 					// with the proxy or if the real class needs to be initialized
-					object result = base.Invoke(invocation.Method, args, invocation.Proxy);
+					invocation.ReturnValue = base.Invoke(invocation.Method, invocation.Arguments, invocation.Proxy);
 
 					// the base LazyInitializer could not handle it so we need to Invoke
 					// the method/property against the real class
-					if (result == InvokeImplementation)
+					if (invocation.ReturnValue == InvokeImplementation)
 					{
-						invocation.InvocationTarget = GetImplementation();
-						return invocation.Proceed(args);
+						invocation.ReturnValue = invocation.Method.Invoke(GetImplementation(), invocation.Arguments);
+						return;
 					}
 					else
 					{
-						return result;
+						return;
 					}
 				}
 				else
 				{
 					// TODO: Find out equivalent to CGLIB's 'method.invokeSuper'.
-					return invocation.Proceed(args);
+					return;
 				}
 			}
 			catch (TargetInvocationException tie)

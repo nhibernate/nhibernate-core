@@ -49,11 +49,13 @@ namespace NHibernate.Proxy
 
 				if (IsClassProxy)
 				{
-					generatedProxy = _proxyGenerator.CreateClassProxy(_persistentClass, _interfaces, initializer, false);
+					generatedProxy = _proxyGenerator.CreateClassProxy(_persistentClass, _interfaces, initializer);
+					//generatedProxy = _proxyGenerator.CreateClassProxy(_persistentClass, _interfaces, initializer, false);
 				}
 				else
 				{
-					generatedProxy = _proxyGenerator.CreateProxy(_interfaces, initializer, new object());
+					generatedProxy = _proxyGenerator.CreateInterfaceProxyWithoutTarget(_interfaces[0], _interfaces, initializer);
+					//generatedProxy = _proxyGenerator.CreateProxy(_interfaces, initializer, new object());
 				}
 
 				initializer._constructed = true;

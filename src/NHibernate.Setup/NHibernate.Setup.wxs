@@ -181,14 +181,17 @@
 							<Component Id="Bamboo.Prevalence.Util.dll_net20" Guid="{D5856CA2-0CC7-48FF-AF54-409E53A17F0D}">
 								<File Id="Bamboo.Prevalence.Util.dll_net20" Name="Bamboo.Prevalence.Util.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="Castle.DynamicProxy.dll_net20" Guid="{07128F6E-C7F1-4ABE-99D0-421E9B7C9CF0}">
-								<File Id="Castle.DynamicProxy.dll_net20" Name="Castle.DynamicProxy.dll" KeyPath="yes" />
+							<Component Id="Castle.DynamicProxy2.dll_net20" Guid="{07128F6E-C7F1-4ABE-99D0-421E9B7C9CF0}">
+								<File Id="Castle.DynamicProxy.dll_net20" Name="Castle.DynamicProxy2.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="Castle.Core.dll_net20" Guid="{07128F6E-C7A1-4ABE-99D0-421E9B7C9A32}">
+								<File Id="Castle.Core.dll_net20" Name="Castle.Core.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="Castle.DynamicProxy.license.txt_net20" Guid="{FECC452E-CCF9-466A-963D-BF64DF542F5F}">
 								<File Id="Castle.DynamicProxy.license.txt_net20" Name="Castle.DynamicProxy.license.txt" KeyPath="yes" />
 							</Component>
-							<Component Id="Castle.DynamicProxy.xml_net20" Guid="{BF0C413C-B951-4015-A497-CC93E2F38588}">
-								<File Id="Castle.DynamicProxy.xml_net20" Name="Castle.DynamicProxy.xml" KeyPath="yes" />
+							<Component Id="Castle.DynamicProxy2.xml_net20" Guid="{BF0C413C-B951-4015-A497-CC93E2F38588}">
+								<File Id="Castle.DynamicProxy2.xml_net20" Name="Castle.DynamicProxy2.xml" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCode.SharpZipLib.dll_net20" Guid="{8F3082B0-B780-43A8-93E1-EB27ACA42818}">
 								<File Id="ICSharpCode.SharpZipLib.dll_net20" Name="ICSharpCode.SharpZipLib.dll" KeyPath="yes" />
@@ -364,8 +367,9 @@
 					<ComponentRef Id="Iesi.Collections.xml_net20" />
 					<ComponentRef Id="Iesi.Collections.license.txt_net20" />
 
-					<ComponentRef Id="Castle.DynamicProxy.dll_net20" />
-					<ComponentRef Id="Castle.DynamicProxy.xml_net20" />
+					<ComponentRef Id="Castle.DynamicProxy2.dll_net20" />
+					<ComponentRef Id="Castle.Core.dll_net20" />
+					<ComponentRef Id="Castle.DynamicProxy2.xml_net20" />
 					<ComponentRef Id="Castle.DynamicProxy.license.txt_net20" />
 
 					<ComponentRef Id="NHibernate.dll_net11" />
