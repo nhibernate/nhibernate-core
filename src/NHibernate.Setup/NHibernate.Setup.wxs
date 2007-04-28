@@ -181,16 +181,16 @@
 							<Component Id="Bamboo.Prevalence.Util.dll_net20" Guid="{D5856CA2-0CC7-48FF-AF54-409E53A17F0D}">
 								<File Id="Bamboo.Prevalence.Util.dll_net20" Name="Bamboo.Prevalence.Util.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="Castle.DynamicProxy2.dll_net20" Guid="{07128F6E-C7F1-4ABE-99D0-421E9B7C9CF0}">
+							<Component Id="Castle.DynamicProxy2.dll_net20" Guid="{CFBC195A-088A-4C98-9A0C-7C0BE605259E}">
 								<File Id="Castle.DynamicProxy.dll_net20" Name="Castle.DynamicProxy2.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="Castle.Core.dll_net20" Guid="{07128F6E-C7A1-4ABE-99D0-421E9B7C9A32}">
+							<Component Id="Castle.Core.dll_net20" Guid="{2799C3B9-3D29-4C52-A50C-6DF8249DEB04}">
 								<File Id="Castle.Core.dll_net20" Name="Castle.Core.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="Castle.DynamicProxy.license.txt_net20" Guid="{FECC452E-CCF9-466A-963D-BF64DF542F5F}">
 								<File Id="Castle.DynamicProxy.license.txt_net20" Name="Castle.DynamicProxy.license.txt" KeyPath="yes" />
 							</Component>
-							<Component Id="Castle.DynamicProxy2.xml_net20" Guid="{BF0C413C-B951-4015-A497-CC93E2F38588}">
+							<Component Id="Castle.DynamicProxy2.xml_net20" Guid="{3441D578-F688-4BF0-98E9-4AFF881BACF0}">
 								<File Id="Castle.DynamicProxy2.xml_net20" Name="Castle.DynamicProxy2.xml" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCode.SharpZipLib.dll_net20" Guid="{8F3082B0-B780-43A8-93E1-EB27ACA42818}">
