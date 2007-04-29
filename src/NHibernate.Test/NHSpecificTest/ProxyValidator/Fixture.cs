@@ -134,5 +134,53 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 				Assert.IsTrue(e.Errors.Count > 1);
 			}
 		}
+
+		public class InvalidNonVirtualInternalProperty : ValidClass
+		{
+			internal int NonVirtualProperty
+			{
+				get { return 1; }
+				set { }
+			}
+		}
+
+		[Test]
+		[ExpectedException(typeof(InvalidProxyTypeException))]
+		public void NonVirtualInternal()
+		{
+			Validate(typeof(InvalidNonVirtualInternalProperty));
+		}
+
+		public class InvalidNonVirtualProtectedProperty : ValidClass
+		{
+			protected int NonVirtualProperty
+			{
+				get { return 1; }
+				set { }
+			}
+		}
+
+		[Test]
+		public void NonVirtualProtected()
+		{
+			Validate(typeof(InvalidNonVirtualProtectedProperty));
+			Assert.IsTrue(true, "Always should pass, protected members do not need to be virtual.");
+		}
+
+		public class InvalidNonVirtualProtectedInternalProperty : ValidClass
+		{
+			protected internal int NonVirtualProperty
+			{
+				get { return 1; }
+				set { }
+			}
+		}
+
+		[Test]
+		[ExpectedException(typeof(InvalidProxyTypeException))]
+		public void NonVirtualProtectedInternal()
+		{
+			Validate(typeof(InvalidNonVirtualProtectedInternalProperty));
+		}
 	}
 }

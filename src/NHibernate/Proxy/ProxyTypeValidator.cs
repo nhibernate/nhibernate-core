@@ -30,7 +30,7 @@ namespace NHibernate.Proxy
 				return null;
 			}
 			CheckHasVisibleDefaultConstructor(type, errors);
-			CheckEveryPublicMemberIsVirtual(type, errors);
+			CheckAccessibleMembersAreVirtual(type, errors);
 			CheckNotSealed(type, errors);
 			if (errors.Count > 0)
 			{
@@ -52,9 +52,9 @@ namespace NHibernate.Proxy
 			}
 		}
 
-		private static void CheckEveryPublicMemberIsVirtual(System.Type type, IList errors)
+		private static void CheckAccessibleMembersAreVirtual(System.Type type, IList errors)
 		{
-			MemberInfo[] members = type.GetMembers(BindingFlags.Instance | BindingFlags.Public);
+			MemberInfo[] members = type.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 			foreach (MemberInfo member in members)
 			{
@@ -78,7 +78,7 @@ namespace NHibernate.Proxy
 					}
 					CheckMethodIsVirtual(type, (MethodInfo) member, errors);
 				}
-				else if (member is FieldInfo)
+				else if (member is FieldInfo && ((FieldInfo)member).IsPublic)
 				{
 					Error(errors, type, "field " + member.Name + " should not be public");
 				}
@@ -87,9 +87,13 @@ namespace NHibernate.Proxy
 
 		private static void CheckMethodIsVirtual(System.Type type, MethodInfo method, IList errors)
 		{
-			if (!method.IsVirtual)
+			if (method.DeclaringType != typeof(object) && 
+				(method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly))
 			{
-				Error(errors, type, "method " + method.Name + " should be virtual");
+				if (!method.IsVirtual)
+				{
+					Error(errors, type, "method " + method.Name + " should be virtual");
+				}
 			}
 		}
 
