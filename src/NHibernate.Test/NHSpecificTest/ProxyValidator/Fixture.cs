@@ -33,6 +33,30 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			}
 
 			public virtual event EventHandler VirtualEvent;
+
+			protected void NonVirtualProtectedMethod()
+			{
+			}
+
+			protected int NonVirtualProtectedProperty
+			{
+				get { return 0; }
+				set { }
+			}
+
+			protected event EventHandler NonVirtualProtectedEvent;
+
+			protected void NonVirtualPrivateMethod()
+			{
+			}
+
+			protected int NonVirtualPrivateProperty
+			{
+				get { return 0; }
+				set { }
+			}
+
+			protected event EventHandler NonVirtualPrivateEvent;
 		}
 
 		[Test]
@@ -144,11 +168,23 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			}
 		}
 
+		public class InvalidInternalField : ValidClass
+		{
+			internal int internalField;
+		}
+
 		[Test]
 		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void NonVirtualInternal()
 		{
 			Validate(typeof(InvalidNonVirtualInternalProperty));
+		}
+
+		[Test]
+		[ExpectedException(typeof(InvalidProxyTypeException))]
+		public void InternalField()
+		{
+			Validate(typeof(InvalidInternalField));
 		}
 
 		public class InvalidNonVirtualProtectedProperty : ValidClass

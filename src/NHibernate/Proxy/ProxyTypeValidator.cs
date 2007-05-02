@@ -80,7 +80,11 @@ namespace NHibernate.Proxy
 				}
 				else if (member is FieldInfo && ((FieldInfo)member).IsPublic)
 				{
-					Error(errors, type, "field " + member.Name + " should not be public");
+					FieldInfo memberField = (FieldInfo) member;
+					if (memberField.IsPublic || memberField.IsAssembly || memberField.IsFamilyOrAssembly)
+					{
+						Error(errors, type, "field " + member.Name + " should not be public nor internal");
+					}
 				}
 			}
 		}
