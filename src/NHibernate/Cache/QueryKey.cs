@@ -25,7 +25,17 @@ namespace NHibernate.Cache
 		private readonly IResultTransformer customTransformer;
 		private readonly int hashCode;
 
+		private int[] multiQueriesFirstRows;
+		private int[] multiQueriesMaxRows;
+
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="QueryKey"/> class.
+		/// </summary>
 		/// <param name="factory">the sesion factory for this query key, required to get the identifiers of entities that are used as values.</param>
+		/// <param name="queryString">The query string.</param>
+		/// <param name="queryParameters">The query parameters.</param>
+		/// <param name="filters">The filters.</param>
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
 		                ISet filters)
 		{
@@ -49,6 +59,18 @@ namespace NHibernate.Cache
 			this.filters = filters;
 			this.customTransformer = queryParameters.ResultTransformer;
 			this.hashCode = ComputeHashCode();
+		}
+
+		public QueryKey SetFirstRows(int[] firstRows)
+		{
+			this.multiQueriesFirstRows = firstRows;
+			return this;
+		}
+
+		public QueryKey SetMaxRows(int[] maxRows)
+		{
+			this.multiQueriesMaxRows = maxRows;
+			return this;
 		}
 
 		public override bool Equals(object other)
@@ -110,6 +132,14 @@ namespace NHibernate.Cache
 				return false;
 			}
 
+			if(!CollectionHelper.CollectionEquals(this.multiQueriesFirstRows, that.multiQueriesFirstRows))
+			{
+				return false;
+			}
+			if(!CollectionHelper.CollectionEquals(this.multiQueriesMaxRows, that.multiQueriesMaxRows))
+			{
+				return false;
+			}
 			return true;
 		}
 
@@ -137,6 +167,22 @@ namespace NHibernate.Cache
 				for (int i = 0; i < values.Length; i++)
 				{
 					result = 37 * result + (values[i] == null ? 0 : values[i].GetHashCode());
+				}
+
+				if(multiQueriesFirstRows!=null)
+				{
+					foreach (int multiQueriesFirstRow in multiQueriesFirstRows)
+					{
+						result = 37*result + multiQueriesFirstRow;
+					}
+				}
+
+				if(multiQueriesMaxRows!=null)
+				{
+					foreach (int multiQueriesMaxRow in multiQueriesMaxRows)
+					{
+						result = 37*result + multiQueriesMaxRow;
+					}
 				}
 
 				if (filters != null)
@@ -181,6 +227,31 @@ namespace NHibernate.Cache
 			{
 				buf.Append("; max rows: ").Append(maxRows);
 			}
+
+			if(multiQueriesFirstRows!=null)
+			{
+				buf.Append("; multi queries - first rows: ");
+				for (int i = 0; i < multiQueriesFirstRows.Length; i++)
+				{
+					buf.Append("#").Append(i)
+						.Append("=")
+						.Append(multiQueriesFirstRows[i]);
+				}
+				buf.Append("; ");
+			}
+
+			if(multiQueriesMaxRows!=null)
+			{
+				buf.Append("; multi queries - max rows: ");
+				for (int i = 0; i < multiQueriesMaxRows.Length; i++)
+				{
+					buf.Append("#").Append(i)
+						.Append("=")
+						.Append(multiQueriesMaxRows[i]);
+				}
+				buf.Append("; ");
+			}
+
 
 			return buf.ToString();
 		}

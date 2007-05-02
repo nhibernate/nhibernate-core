@@ -7,9 +7,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.QueryTest
 {
-	/// <summary>
-	/// Tests functionality for named parameter queries.
-	/// </summary>
 	[TestFixture]
 	public class MultipleQueriesFixture : TestCase
 	{
@@ -20,7 +17,7 @@ namespace NHibernate.Test.QueryTest
 
 		protected override IList Mappings
 		{
-			get { return new string[] {"SecondLevelCacheTest.Item.hbm.xml"}; }
+			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
 
 		[Test]
@@ -31,31 +28,70 @@ namespace NHibernate.Test.QueryTest
 			DoMutiQueryAndAssert();
 
 			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
-			IList cachedListEntry = (IList) new ArrayList(cacheHashtable.Values)[0];
-			IList cachedQuery = (IList) cachedListEntry[1];
+			IList cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
+			IList cachedQuery = (IList)cachedListEntry[1];
 
-			IList firstQueryResults = (IList) cachedQuery[0];
+			IList firstQueryResults = (IList)cachedQuery[0];
 			firstQueryResults.Clear();
 			firstQueryResults.Add(3);
 			firstQueryResults.Add(4);
 
-			IList secondQueryResults = (IList) cachedQuery[1];
+			IList secondQueryResults = (IList)cachedQuery[1];
 			secondQueryResults[0] = 2L;
 
 			using (ISession s = sessions.OpenSession())
 			{
 				IMultiQuery MultiQuery = s.CreateMultiQuery()
 					.Add(s.CreateQuery("from Item i where i.Id > ?")
-					     	.SetInt32(0, 50)
-					     	.SetFirstResult(10))
+							.SetInt32(0, 50)
+							.SetFirstResult(10))
 					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
-					     	.SetInt32(0, 50));
+							.SetInt32(0, 50));
 				MultiQuery.SetCacheable(true);
 				IList results = MultiQuery.List();
-				IList items = (IList) results[0];
+				IList items = (IList)results[0];
 				Assert.AreEqual(2, items.Count);
-				long count = (long) ((IList) results[1])[0];
+				long count = (long)((IList)results[1])[0];
 				Assert.AreEqual(2L, count);
+			}
+
+			RemoveAllItems();
+		}
+
+		[Test]
+		public void TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries()
+		{
+			CreateItems();
+			using (ISession s = OpenSession())
+			{
+				IMultiQuery MultiQuery = s.CreateMultiQuery()
+					.Add(s.CreateQuery("from Item i where i.Id > ?")
+							.SetInt32(0, 50)
+							.SetFirstResult(10))
+					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
+							.SetInt32(0, 50));
+				MultiQuery.SetCacheable(true);
+				IList results = MultiQuery.List();
+				IList items = (IList)results[0];
+				Assert.AreEqual(89, items.Count);
+				long count = (long)((IList)results[1])[0];
+				Assert.AreEqual(99L, count);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				IMultiQuery MultiQuery = s.CreateMultiQuery()
+						.Add(s.CreateQuery("from Item i where i.Id > ?")
+								.SetInt32(0, 50)
+								.SetFirstResult(20))
+						.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
+								.SetInt32(0, 50));
+				MultiQuery.SetCacheable(true);
+				IList results = MultiQuery.List();
+				IList items = (IList)results[0];
+				Assert.AreEqual(79, items.Count, "Should have gotten different result here, because the paging is different");
+				long count = (long)((IList)results[1])[0];
+				Assert.AreEqual(99L, count);
 			}
 
 			RemoveAllItems();
@@ -64,11 +100,12 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParameters()
 		{
+			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
+			cacheHashtable.Clear();
+
 			CreateItems();
 
 			DoMutiQueryAndAssert();
-
-			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
 
 			Assert.AreEqual(1, cacheHashtable.Count);
 
@@ -81,15 +118,15 @@ namespace NHibernate.Test.QueryTest
 			{
 				IMultiQuery MultiQuery = s.CreateMultiQuery()
 					.Add(s.CreateQuery("from Item i where i.Id > ?")
-					     	.SetInt32(0, 50)
-					     	.SetFirstResult(10))
+							.SetInt32(0, 50)
+							.SetFirstResult(10))
 					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
-					     	.SetInt32(0, 50));
+							.SetInt32(0, 50));
 				MultiQuery.SetCacheable(true);
 				IList results = MultiQuery.List();
-				IList items = (IList) results[0];
+				IList items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
-				long count = (long) ((IList) results[1])[0];
+				long count = (long)((IList)results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
@@ -111,16 +148,16 @@ namespace NHibernate.Test.QueryTest
 
 		private Hashtable GetHashTableUsedAsQueryCache()
 		{
-			ISessionFactoryImplementor factory = (ISessionFactoryImplementor) sessions;
+			ISessionFactoryImplementor factory = (ISessionFactoryImplementor)sessions;
 			//need the inner hashtable in the cache
 			HashtableCache cache = (HashtableCache)
-			                       typeof(StandardQueryCache)
-			                       	.GetField("queryCache", BindingFlags.Instance | BindingFlags.NonPublic)
-			                       	.GetValue(factory.GetQueryCache(null));
+								   typeof(StandardQueryCache)
+									.GetField("queryCache", BindingFlags.Instance | BindingFlags.NonPublic)
+									.GetValue(factory.GetQueryCache(null));
 
-			return (Hashtable) typeof(HashtableCache)
-			                   	.GetField("hashtable", BindingFlags.Instance | BindingFlags.NonPublic)
-			                   	.GetValue(cache);
+			return (Hashtable)typeof(HashtableCache)
+								.GetField("hashtable", BindingFlags.Instance | BindingFlags.NonPublic)
+								.GetValue(cache);
 		}
 
 		[Test]
@@ -148,9 +185,9 @@ namespace NHibernate.Test.QueryTest
 					.Add(countItems)
 					.SetInt32("id", 50)
 					.List();
-				IList items = (IList) results[0];
+				IList items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
-				long count = (long) ((IList) results[1])[0];
+				long count = (long)((IList)results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 
@@ -182,15 +219,15 @@ namespace NHibernate.Test.QueryTest
 				IList results = s.CreateMultiQuery()
 					.Add("from Item i where i.id in (:items)")
 					.Add("select count(*) from Item i where i.id in (:items)")
-					.SetParameterList("items", new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16})
+					.SetParameterList("items", new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 })
 					.List();
 
-				IList items = (IList) results[0];
-				Item fromDb = (Item) items[0];
+				IList items = (IList)results[0];
+				Item fromDb = (Item)items[0];
 				Assert.AreEqual(1, fromDb.Id);
 
-				IList counts = (IList) results[1];
-				long count = (long) counts[0];
+				IList counts = (IList)results[1];
+				long count = (long)counts[0];
 				Assert.AreEqual(1L, count);
 			}
 
@@ -221,12 +258,12 @@ namespace NHibernate.Test.QueryTest
 					.Add(getItems)
 					.Add(countItems)
 					.List();
-				IList items = (IList) results[0];
-				Item fromDb = (Item) items[0];
+				IList items = (IList)results[0];
+				Item fromDb = (Item)items[0];
 				Assert.AreEqual(1, fromDb.Id);
 
-				IList counts = (IList) results[1];
-				long count = (long) counts[0];
+				IList counts = (IList)results[1];
+				long count = (long)counts[0];
 				Assert.AreEqual(1L, count);
 			}
 
