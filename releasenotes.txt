@@ -1,3 +1,21 @@
+Build 1.2.0.GA
+========================
+
+Patches Applied:
+
+    * [NH-992] - AuxiliaryDatabaseObject enhancement
+
+Bugs Fixed:
+
+    * [NH-980] - Table name not quoted with increment generator
+
+Improvements:
+
+    * [NH-974] - Build and distribute a binary zip file along with the installer
+    * [NH-976] - Better error description when subclass table name is wrong
+    * [NH-985] - Map DbType.Guid to CHAR(38) for Oracle
+    * [NH-988] - Proxy validator should complain on non-virtual internal members
+
 Build 1.2.0.CR2
 ========================
 
