@@ -298,11 +298,26 @@
 			<xs:attribute name="name" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="definition">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="class" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="database-object">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="create" />
-				<xs:element ref="drop" />
+				<xs:choice>
+					<xs:sequence>
+						<xs:element ref="create" />
+						<xs:element ref="drop" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element ref="definition" />
+					</xs:sequence>
+				</xs:choice>
 				<xs:element ref="dialect-scope" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>

@@ -2491,6 +2491,21 @@
     </database-object>
 </hibernate-mapping>]]></programlisting>
         <para>
+            You may also specify parameters to be passed to the database object:
+        </para>
+        <programlisting><![CDATA[<hibernate-mapping>
+    ...
+    <database-object>
+        <definition class="MyTriggerDefinition, MyAssembly">
+            <param name="parameterName">parameterValue</param>
+        </definition>
+    </database-object>
+</hibernate-mapping>]]></programlisting>
+        <para>
+            NHibernate will call <literal>IAuxiliaryDatabaseObject.SetParameterValues</literal>
+            passing it a dictionary of parameter names and values.
+        </para>
+        <para>
             Additionally, these database objects can be optionally scoped such that they only
             apply when certain dialects are used.
         </para>
