@@ -91,6 +91,12 @@ namespace NHibernate.Cfg
 				try
 				{
 					auxDbObject = (IAuxiliaryDatabaseObject) Activator.CreateInstance(ReflectHelper.ClassForName(className));
+					Hashtable parameters = new Hashtable();
+					foreach (XmlNode childNode in definitionNode.ChildNodes)
+					{
+						parameters.Add(childNode.Attributes["name"].Value, childNode.InnerText.Trim());
+					}
+					auxDbObject.SetParameterValues(parameters);
 				}
 				catch (TypeLoadException e)
 				{
