@@ -77,5 +77,10 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+		
+		protected override bool SupportsIfExistsBeforeTableName
+		{
+			get { return true; }
+		}
 	}
 }
