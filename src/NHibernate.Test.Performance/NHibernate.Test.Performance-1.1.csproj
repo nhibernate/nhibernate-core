@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{C0854E20-0743-424C-8BC9-F2560718678E}"
     >
@@ -80,21 +80,6 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "NHibernate.Test-1.1"
-                    Project = "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
-                    Name = "NHibernate-1.1"
-                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
-                    Name = "NHibernate.DomainModel-1.1"
-                    Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "Iesi.Collections"
                     AssemblyName = "Iesi.Collections"
                     HintPath = "..\..\lib\net\1.1\Iesi.Collections.dll"
@@ -108,6 +93,21 @@
                     Name = "nunit.core"
                     AssemblyName = "nunit.core"
                     HintPath = "..\..\lib\net\1.1\nunit.core.dll"
+                />
+                <Reference
+                    Name = "NHibernate-1.1"
+                    Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "NHibernate.DomainModel-1.1"
+                    Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "NHibernate.Test-1.1"
+                    Project = "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>

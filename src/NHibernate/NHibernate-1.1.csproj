@@ -129,12 +129,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ConnectionReleaseMode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "CriteriaUtil.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "DuplicateMappingException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "EmptyInterceptor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -150,11 +160,6 @@
                 />
                 <File
                     RelPath = "HibernateException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ICompositeUserType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -175,11 +180,6 @@
                 />
                 <File
                     RelPath = "IInterceptor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ILifecycle.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -220,16 +220,6 @@
                 />
                 <File
                     RelPath = "ITransaction.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "IUserType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "IValidatable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -355,11 +345,6 @@
                 />
                 <File
                     RelPath = "UnresolvableObjectException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ValidationFailure.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -494,6 +479,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cache\NoCacheProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cache\NoCachingEnabledException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cache\NonstrictReadWriteCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -559,11 +554,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Cfg\EmptyInterceptor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Cfg\Environment.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -625,6 +615,21 @@
                 />
                 <File
                     RelPath = "Cfg\SettingsFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Classic\ILifecycle.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Classic\IValidatable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Classic\ValidationFailure.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -780,6 +785,11 @@
                 />
                 <File
                     RelPath = "Dialect\PostgreSQL81Dialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\PostgreSQL82Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1110,6 +1120,11 @@
                 />
                 <File
                     RelPath = "Engine\UnsavedValueFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Engine\ValueInclusion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1664,6 +1679,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Impl\ConnectionManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Impl\CriteriaImpl.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1705,6 +1725,11 @@
                 />
                 <File
                     RelPath = "Impl\MessageHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\MultipleQueriesCacheAssembler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1816,6 +1841,14 @@
                 <File
                     RelPath = "Impl\SessionImpl.cs"
                     SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SqlClientBatchingBatcher.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Impl\SqlClientSqlCommandSet.cs"
                     BuildAction = "Compile"
                 />
                 <File
@@ -2241,6 +2274,11 @@
                 />
                 <File
                     RelPath = "Mapping\Property.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Mapping\PropertyGeneration.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2696,6 +2734,11 @@
                 />
                 <File
                     RelPath = "SqlCommand\SqlUpdateBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlCommand\SubselectClauseExtractor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -3259,7 +3302,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "UserTypes\ICompositeUserType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UserTypes\IEnhancedUserType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserTypes\INullableUserType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -3270,6 +3323,11 @@
                 />
                 <File
                     RelPath = "UserTypes\IUserCollectionType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UserTypes\IUserType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
