@@ -121,7 +121,7 @@ namespace NHibernate.Tool.hbm2net
 				if (rootElement == null)
 					continue;
 
-				XmlAttribute a = rootElement.Attributes["package"];
+				XmlAttribute a = rootElement.Attributes["namespace"];
 				string pkg = null;
 				if (a != null)
 				{
