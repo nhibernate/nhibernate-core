@@ -644,8 +644,8 @@ namespace NHibernate
 		/// <summary>
 		/// Create a new instance of <see cref="ISQLQuery" /> for the given SQL query string.
 		/// </summary>
-		/// <param name="queryString"></param>
-		/// <returns></returns>
+		/// <param name="queryString">a query expressed in SQL</param>
+		/// <returns>An <see cref="ISQLQuery"/> from the SQL string</returns>
 		ISQLQuery CreateSQLQuery(string queryString);
 
 		/// <summary>

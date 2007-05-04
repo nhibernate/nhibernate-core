@@ -157,12 +157,12 @@ namespace NHibernate.Expression
 
 		public DetachedCriteria GetCriteiraByPath(string path)
 		{
-			return new DetachedCriteria(impl, impl.GetCriteiraByPath(path));
+			return new DetachedCriteria(impl, impl.GetCriteriaByPath(path));
 		}
 
 		public DetachedCriteria GetCriteriaByPath(string alias)
 		{
-			return new DetachedCriteria(impl, impl.GetCriteriaByPath(alias));
+			return new DetachedCriteria(impl, impl.GetCriteriaByAlias(alias));
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace NHibernate.SqlCommand
 
 
 		/// <summary>
-		/// Add a column with a specific value to the INSERT sql
+		/// Add a column with a specific value to the UPDATE sql
 		/// </summary>
 		/// <param name="columnName">The name of the Column to add.</param>
 		/// <param name="val">The value to set for the column.</param>
@@ -54,7 +54,7 @@ namespace NHibernate.SqlCommand
 
 
 		/// <summary>
-		/// Add a column with a specific value to the INSERT sql
+		/// Add a column with a specific value to the UPDATE sql
 		/// </summary>
 		/// <param name="columnName">The name of the Column to add.</param>
 		/// <param name="val">A valid sql string to set as the value of the column.</param>
@@ -68,10 +68,10 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Adds columns with a specific value to the INSERT sql
+		/// Adds columns with a specific value to the UPDATE sql
 		/// </summary>
-		/// <param name="columnName">The names of the Column sto add.</param>
-		/// <param name="val">A valid sql string to set as the value of the column.</param>
+		/// <param name="columnName">The names of the Columns to add.</param>
+		/// <param name="val">A valid sql string to set as the value of the column.  This value is assigned to each column.</param>
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder AddColumns(string[] columnName, string val)
 		{
@@ -95,6 +95,13 @@ namespace NHibernate.SqlCommand
 			return AddColumns(columnNames, null, propertyType);
 		}
 
+		/// <summary>
+		/// Adds the Property's updatable columns to the UPDATE sql
+		/// </summary>
+		/// <param name="columnNames">An array of the column names for the Property</param>
+		/// <param name="updateable">An array of updatable column flags.  If this array is <c>null</c>, all supplied columns are considered updatable.</param>
+		/// <param name="propertyType">The IType of the property.</param>
+		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder AddColumns(string[] columnNames, bool[] updateable, IType propertyType)
 		{
 			SqlType[] sqlTypes = propertyType.SqlTypes(Mapping);

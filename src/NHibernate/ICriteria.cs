@@ -251,7 +251,7 @@ namespace NHibernate
 		/// Will return null if the criteria does not exists.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		ICriteria GetCriteiraByPath(string path);
+		ICriteria GetCriteriaByPath(string path);
 
 		/// <summary>
 		/// Alows to get a sub criteria by alias.
@@ -259,6 +259,6 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="alias">The alias.</param>
 		/// <returns></returns>
-		ICriteria GetCriteriaByPath(string alias);
+		ICriteria GetCriteriaByAlias(string alias);
 	}
 }

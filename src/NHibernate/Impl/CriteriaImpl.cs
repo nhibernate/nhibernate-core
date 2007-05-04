@@ -252,14 +252,14 @@ namespace NHibernate.Impl
 				return root.Clone();
 			}
 
-			public ICriteria GetCriteiraByPath(string path)
+			public ICriteria GetCriteriaByPath(string path)
 			{
-				return root.GetCriteiraByPath(path);
+				return root.GetCriteriaByPath(path);
 			}
 
-			public ICriteria GetCriteriaByPath(string alias)
+			public ICriteria GetCriteriaByAlias(string alias)
 			{
-				return root.GetCriteriaByPath(alias);
+				return root.GetCriteriaByAlias(alias);
 			}
 		}
 
@@ -579,12 +579,12 @@ namespace NHibernate.Impl
 			return clone;
 		}
 
-		public ICriteria GetCriteiraByPath(string path)
+		public ICriteria GetCriteriaByPath(string path)
 		{
 			return (ICriteria) subcriteriaByPath[path];
 		}
 
-		public ICriteria GetCriteriaByPath(string alias)
+		public ICriteria GetCriteriaByAlias(string alias)
 		{
 			return (ICriteria) subcriteriaByAlias[alias];
 		}
