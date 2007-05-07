@@ -507,8 +507,13 @@
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="Collection\PersistentSet.cs" />
     <Compile Include="ConnectionReleaseMode.cs" />
+    <Compile Include="Context\CallSessionContext.cs" />
+    <Compile Include="Context\CurrentSessionContext.cs" />
     <Compile Include="Context\ICurrentSessionContext.cs" />
     <Compile Include="Context\ManagedWebSessionContext.cs" />
+    <Compile Include="Context\MapBasedSessionContext.cs" />
+    <Compile Include="Context\ThreadStaticSessionContext.cs" />
+    <Compile Include="Context\WebSessionContext.cs" />
     <Compile Include="DebugHelpers\DictionaryProxy.cs" />
     <Compile Include="DebugHelpers\CollectionProxy.cs" />
     <Compile Include="Dialect\Function\AnsiExtractFunction.cs" />

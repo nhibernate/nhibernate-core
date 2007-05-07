@@ -1,5 +1,6 @@
 using System.Data;
 using NHibernate.Cache;
+using NHibernate.Context;
 using NHibernate.Dialect.Function;
 using NHibernate.Id;
 using NHibernate.Persister.Collection;
@@ -167,6 +168,11 @@ namespace NHibernate.Engine
 		ITransactionFactory TransactionFactory { get; }
 
 		SQLFunctionRegistry SQLFunctionRegistry { get; }
+
+		/// <summary>
+		/// Gets the ICurrentSessionContext instance attached to this session factory.
+		/// </summary>
+		ICurrentSessionContext CurrentSessionContext { get; }
 
 		/// <summary>
 		/// Open a session conforming to the given parameters. For use mainly by

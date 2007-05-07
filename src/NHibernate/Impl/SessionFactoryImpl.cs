@@ -60,7 +60,7 @@ namespace NHibernate.Impl
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	internal class SessionFactoryImpl : ISessionFactory, ISessionFactoryImplementor, IObjectReference
+	internal class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
 	{
 		private readonly string name;
 		private readonly string uuid;
@@ -1245,6 +1245,14 @@ namespace NHibernate.Impl
 			return currentSessionContext.CurrentSession();
 		}
 
+		/// <summary>
+		/// Gets the ICurrentSessionContext instance attached to this session factory.
+		/// </summary>
+		public ICurrentSessionContext CurrentSessionContext
+		{
+			get { return currentSessionContext; }
+		}
+
 		private ICurrentSessionContext BuildCurrentSessionContext()
 		{
 			string impl = properties[Environment.CurrentSessionContextClass] as string;
@@ -1253,6 +1261,12 @@ namespace NHibernate.Impl
 			{
 				case null:
 					return null;
+				case "call":
+					return new CallSessionContext(this);
+				case "thread_static":
+					return new ThreadStaticSessionContext(this);
+				case "web":
+					return new WebSessionContext(this);
 				case "managed_web":
 					return new ManagedWebSessionContext(this);
 			}

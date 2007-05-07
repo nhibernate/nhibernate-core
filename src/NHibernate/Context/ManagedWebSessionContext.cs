@@ -5,6 +5,12 @@ using NHibernate.Engine;
 
 namespace NHibernate.Context
 {
+	/// <summary>
+	/// Provides a <see cref="ISessionFactory.GetCurrentSession()">current session</see>
+	/// for each <see cref="System.Web.HttpContext"/>.
+	/// Works only with Web Applications.
+	/// </summary>
+	[Serializable]
 	public class ManagedWebSessionContext : ICurrentSessionContext
 	{
 		private const string SessionFactoryMapKey = "NHibernate.Context.ManagedWebSessionContext.SessionFactoryMapKey";

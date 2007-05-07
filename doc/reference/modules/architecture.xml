@@ -234,8 +234,8 @@
             See the API documentation for the <literal>NHibernate.Context.ICurrentSessionContext</literal>
             interface for a detailed discussion of its contract.  It defines a single method,
             <literal>CurrentSession()</literal>, by which the implementation is responsible for
-            tracking the current contextual session.  Out-of-the-box, NHibernate comes with one
-            implementation of this interface:
+            tracking the current contextual session.  Out-of-the-box, NHibernate 1.2.1 comes with several
+            implementations of this interface:
         </para>
 
         <itemizedlist>
@@ -247,16 +247,39 @@
                     on this class, it never opens, flushes, or closes an <literal>ISession</literal> itself.
                 </para>
             </listitem>
+            <listitem>
+                <para>
+                    <literal>NHibernate.Context.CallSessionContext</literal> - current sessions are tracked
+                    by <literal>CallContext</literal>. You are responsible to bind and unbind an <literal>
+                    ISession</literal> instance with static methods of class <literal>CurrentSessionContext
+                    </literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>NHibernate.Context.ThreadStaticSessionContext</literal> - current session is
+                    stored in a thread-static variable. This context only supports one session factory.
+                    You are responsible to bind and unbind an <literal>ISession</literal> instance with
+                    static methods of class <literal>CurrentSessionContext</literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>NHibernate.Context.WebSessionContext</literal> - analogous to <literal>
+                    ManagedWebSessionContext</literal> above, stores the current session in <literal>
+                    HttpContext</literal>. You are responsible to bind and unbind an <literal>ISession
+                    </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
+                </para>
         </itemizedlist>
 
         <para>
             The <literal>hibernate.current_session_context_class</literal> configuration parameter
             defines which <literal>NHibernate.Context.ICurrentSessionContext</literal> implementation
             should be used. Typically, the value of this parameter would just name the implementation
-            class to use (including the assembly name); for the out-of-the-box implementation, however,
-            there is a corresponding short name, "managed_web".
+            class to use (including the assembly name); for the out-of-the-box implementations, however,
+            there are corresponding short names: "managed_web", "call", "thread_static", and "web",
+            respectively.
         </para>
-        
     </sect1>
     
 </chapter>
