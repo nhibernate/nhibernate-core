@@ -25,6 +25,11 @@ namespace NHibernate.Context
 	/// Note that there will be exactly one instance of the configured
 	/// ICurrentSessionContext implementation per <see cref="ISessionFactory" />.
 	/// </para>
+	/// <para>
+	/// It is recommended to inherit from the class <see cref="CurrentSessionContext" />
+	/// whenever possible as it simplifies the implementation and provides
+	/// single entry point with session binding support.
+	/// </para>
 	/// </remarks>
 	public interface ICurrentSessionContext
 	{
