@@ -49,4 +49,23 @@
 		<dialect-scope name="NHibernate.Dialect.MsSql2005Dialect"/>
 	</database-object>
 
+	<database-object>
+		<create>
+			<![CDATA[CREATE OR ALTER TRIGGER t_iu_part_gen_comp 
+			FOR part_gen_comp
+            ACTIVE BEFORE INSERT OR UPDATE
+			POSITION 0
+			AS BEGIN
+                IF (INSERTING) THEN
+                    NEW.GENED = 1;
+                ELSE
+                    NEW.GENED = OLD.GENED + 1;
+            END;]]>
+		</create>
+		<drop>
+			<![CDATA[DROP TRIGGER t_iu_part_gen_comp]]>
+		</drop>
+		<dialect-scope name="NHibernate.Dialect.FirebirdDialect"/>
+	</database-object>
+
 </hibernate-mapping>
