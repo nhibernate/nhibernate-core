@@ -429,7 +429,7 @@ namespace NHibernate.Test.Criteria
 			Assert.IsNotNull(criteria.GetCriteriaByPath("ma"));
 			Assert.AreEqual("ma", criteria.GetCriteriaByPath("ma").Alias);
 
-			Assert.IsNotNull(criteria.GetCriteiraByPath("fooBar"));
+			Assert.IsNotNull(criteria.GetCriteriaByPath("fooBar"));
 		}
 	}
 }
