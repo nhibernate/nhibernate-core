@@ -420,16 +420,5 @@ namespace NHibernate.Test.Criteria
 				.SetResultTransformer(Transformers.AliasToBean(typeof(StudentDTO)));
 			SerializeAndList(dc);
 		}
-
-		[Test]
-		public void CriteriaInspection()
-		{
-			DetachedCriteria criteria = DetachedCriteria.For(typeof(Student))
-				.CreateAlias("mu.Material", "ma");
-			Assert.IsNotNull(criteria.GetCriteriaByPath("ma"));
-			Assert.AreEqual("ma", criteria.GetCriteriaByPath("ma").Alias);
-
-			Assert.IsNotNull(criteria.GetCriteriaByPath("fooBar"));
-		}
 	}
 }
