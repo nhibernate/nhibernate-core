@@ -32,7 +32,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($1)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($1)");
-			RegisterColumnType(DbType.AnsiString, 2147483647, "BLOB"); // should use the IType.ClobType
+			RegisterColumnType(DbType.AnsiString, 2147483647, "BLOB SUB_TYPE 1"); // should use the IType.ClobType
 			RegisterColumnType(DbType.Binary, "BLOB SUB_TYPE 0");
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB SUB_TYPE 0"); // should use the IType.BlobType
 			RegisterColumnType(DbType.Boolean, "SMALLINT");
