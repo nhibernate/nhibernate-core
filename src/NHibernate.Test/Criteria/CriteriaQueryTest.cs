@@ -1346,9 +1346,9 @@ namespace NHibernate.Test.Criteria
 			{
 				ICriteria criteria = session.CreateCriteria(typeof (MaterialUnit), "mu")
 					.CreateAlias("mu.Material", "ma");
-				Assert.IsNotNull(criteria.GetCriteriaByPath("ma"));
-				Assert.AreEqual("ma",criteria.GetCriteriaByPath("ma").Alias);
-				Assert.AreEqual(criteria,criteria.GetCriteriaByPath("mu") );
+				Assert.IsNotNull(criteria.GetCriteriaByAlias("ma"));
+				Assert.AreEqual("ma", criteria.GetCriteriaByPath("mu.Material").Alias);
+				Assert.AreEqual(criteria, criteria.GetCriteriaByAlias("mu"));
 				Assert.AreEqual(criteria.CreateCriteria("fooBar"), criteria.GetCriteriaByPath("fooBar") );
 				
 			}
@@ -1360,8 +1360,8 @@ namespace NHibernate.Test.Criteria
 		{
 			DetachedCriteria criteria = DetachedCriteria.For(typeof(Student))
 				.CreateAlias("mu.Material", "ma");
-			Assert.IsNotNull(criteria.GetCriteriaByPath("ma"));
-			Assert.AreEqual("ma", criteria.GetCriteriaByPath("ma").Alias);
+			Assert.IsNotNull(criteria.GetCriteriaByAlias("ma"));
+			Assert.AreEqual("ma", criteria.GetCriteriaByPath("mu.Material").Alias);
 
 			Assert.IsNotNull(criteria.GetCriteriaByPath("fooBar"));
 		}
