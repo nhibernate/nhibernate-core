@@ -206,7 +206,7 @@ namespace NHibernate.Test.Criteria
 				.AddOrder(Order.Asc("a.bodyWeight"));
 			ICriteria cloned = c.Clone()
 				.SetProjection(Projections.RowCount())
-				.RemoveOrderring();
+				.ClearSortOrder();
 				
 			cloned.List();
 			t.Rollback();

@@ -263,9 +263,9 @@ namespace NHibernate.Impl
 			}
 
 
-			public ICriteria RemoveOrderring()
+			public ICriteria ClearSortOrder()
 			{
-				root.RemoveOrderring();
+				root.ClearSortOrder();
 				return this;
 			}
 		}
@@ -612,7 +612,7 @@ namespace NHibernate.Impl
 		}
 
 
-		public ICriteria RemoveOrderring()
+		public ICriteria ClearSortOrder()
 		{
 			this.orderEntries.Clear();
 			return this;
