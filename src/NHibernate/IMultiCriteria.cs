@@ -32,5 +32,19 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="cachable">if set to <c>true</c> [cachable].</param>
 		IMultiCriteria SetCacheable(bool cachable);
+
+		///<summary>
+		/// Set the cache region for thie criteria
+		///</summary>
+		///<param name="region">The region</param>
+		///<returns></returns>
+		IMultiCriteria SetCacheRegion(string region);
+
+		///<summary>
+		/// Force a cache refresh
+		///</summary>
+		///<param name="forceRefresh"></param>
+		///<returns></returns>
+		IMultiCriteria ForceCacheRefresh(bool forceRefresh);
 	}
 }
