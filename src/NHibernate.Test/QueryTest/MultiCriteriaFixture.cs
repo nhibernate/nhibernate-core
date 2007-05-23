@@ -24,6 +24,46 @@ namespace NHibernate.Test.QueryTest
 			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
 
+			[Test]
+		public void CanExecuteMultiplyQueriesInSingleRoundTrip_InTransaction()
+		{
+			using (ISession s = OpenSession())
+			{
+				Item item = new Item();
+				item.Id = 1;
+				s.Save(item);
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				ITransaction transaction = s.BeginTransaction();
+				ICriteria getItems = s.CreateCriteria(typeof(Item));
+				ICriteria countItems = s.CreateCriteria(typeof(Item))
+					.SetProjection(Projections.RowCount());
+
+				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
+					.Add(getItems)
+					.Add(countItems);
+				IList results = multiCriteria.List();
+				IList items = (IList)results[0];
+				Item fromDb = (Item)items[0];
+				Assert.AreEqual(1, fromDb.Id);
+
+				IList counts = (IList)results[1];
+				int count = (int)counts[0];
+				Assert.AreEqual(1, count);
+
+				transaction.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from Item");
+				s.Flush();
+			}
+		}
+
 
 		[Test]
 		public void CanExecuteMultiplyQueriesInSingleRoundTrip()
