@@ -260,5 +260,13 @@ namespace NHibernate
 		/// <param name="alias">The alias.</param>
 		/// <returns></returns>
 		ICriteria GetCriteriaByAlias(string alias);
+
+		///<summary>
+		/// Remove all orderring on this criteria, useful when you clone a criteria
+		/// with orderring and you want to turn it into a projection 
+		/// (where orderring would break the query).
+		///</summary>
+		///<returns></returns>
+		ICriteria ClearSortOrder();
 	}
 }

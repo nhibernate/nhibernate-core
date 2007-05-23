@@ -261,6 +261,13 @@ namespace NHibernate.Impl
 			{
 				return root.GetCriteriaByAlias(alias);
 			}
+
+
+			public ICriteria RemoveOrderring()
+			{
+				root.RemoveOrderring();
+				return this;
+			}
 		}
 
 		public ICriteria SetMaxResults(int maxResults)
@@ -602,6 +609,13 @@ namespace NHibernate.Impl
 					clone.projectionCriteria = this.projectionCriteria.Clone();
 				}
 			}
+		}
+
+
+		public ICriteria RemoveOrderring()
+		{
+			this.orderEntries.Clear();
+			return this;
 		}
 
 		private void CloneSubcriteriaAndOrders(CriteriaImpl clone)

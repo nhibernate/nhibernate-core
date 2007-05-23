@@ -194,6 +194,26 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
+		public void CloningCriteria_AddCount_RemoveOrderring()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			// HQL: from Animal a where a.mother.class = Reptile
+			ICriteria c = s.CreateCriteria(typeof (Animal), "a")
+				.CreateAlias("mother", "m")
+				.Add(Expression.Property.ForName("m.class").Eq(typeof (Reptile)))
+				.AddOrder(Order.Asc("a.bodyWeight"));
+			ICriteria cloned = c.Clone()
+				.SetProjection(Projections.RowCount())
+				.RemoveOrderring();
+				
+			cloned.List();
+			t.Rollback();
+			s.Close();
+		}
+
+		[Test]
 		public void DetachedCriteriaTest()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
