@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -142,27 +143,100 @@ namespace NHibernate.Expression
 			return impl;
 		}
 
-		/// <summary>
-		/// Clones this instance.
-		/// </summary>
-		/// <returns></returns>
-		public DetachedCriteria Clone()
+		protected internal void SetCriteriaImpl(CriteriaImpl impl)
 		{
-			ICriteria clonedCriteria = this.impl.Clone();
-			DetachedCriteria detachedCriteria = new DetachedCriteria(impl.CriteriaClass, impl.Alias);
-			detachedCriteria.criteria = clonedCriteria;
-			detachedCriteria.impl = (CriteriaImpl) clonedCriteria;
-			return detachedCriteria;
+			this.impl = impl;
+			this.criteria = impl;
 		}
 
-		public DetachedCriteria GetCriteriaByPath(string path)
+		public ICriteria GetCriteriaByPath(string path)
 		{
-			return new DetachedCriteria(impl, impl.GetCriteriaByPath(path));
+			return impl.GetCriteriaByPath(path);
 		}
 
-		public DetachedCriteria GetCriteriaByAlias(string alias)
+		public ICriteria GetCriteriaByAlias(string alias)
 		{
-			return new DetachedCriteria(impl, impl.GetCriteriaByAlias(alias));
+			return impl.GetCriteriaByAlias(alias);
+		}
+
+		public int MaxResults
+		{
+			get { return impl.MaxResults; }
+		}
+
+		public int FirstResult
+		{
+			get { return impl.FirstResult; }
+		}
+
+		public int Timeout
+		{
+			get { return impl.Timeout; }
+		}
+
+		public int FetchSize
+		{
+			get { return impl.FetchSize; }
+		}
+
+		public System.Type CriteriaClass
+		{
+			get { return impl.CriteriaClass; }
+		}
+
+		public IDictionary LockModes
+		{
+			get { return impl.LockModes; }
+		}
+
+		public IResultTransformer ResultTransformer
+		{
+			get { return impl.ResultTransformer; }
+		}
+
+		public bool Cacheable
+		{
+			get { return impl.Cacheable; }
+		}
+
+		public string CacheRegion
+		{
+			get { return impl.CacheRegion; }
+		}
+
+		public IProjection Projection
+		{
+			get { return impl.Projection; }
+		}
+
+		public ICriteria ProjectionCriteria
+		{
+			get { return impl.ProjectionCriteria; }
+		}
+
+		public IList Restrictions
+		{
+			get { return impl.Restrictions; }
+		}
+
+		public IList Orders
+		{
+			get { return impl.Orders; }
+		}
+
+		public IDictionary FetchModes
+		{
+			get { return impl.FetchModes; }
+		}
+
+		public IList SubcriteriaList
+		{
+			get { return impl.SubcriteriaList; }
+		}
+
+		public string RootAlias
+		{
+			get { return impl.RootAlias; }
 		}
 	}
 }

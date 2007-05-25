@@ -19,7 +19,9 @@ namespace NHibernate.Impl
 	[Serializable]
 	public class CriteriaImpl : ICriteria
 	{
-		// This result transformer is selected implicitly by calling <tt>setProjection()</tt>
+		/// <summary>
+		/// This result transformer is selected implicitly by calling <c>SetProjection()</c>
+		/// </summary>
 		private static IResultTransformer ProjectionTransformer = new PassThroughResultTransformer();
 
 		private IList criteria = new ArrayList();
@@ -69,7 +71,7 @@ namespace NHibernate.Impl
 				root.subcriteriaList.Add(this);
 
 				root.subcriteriaByPath[path] = this;
-				if(alias!=null)
+				if (alias != null)
 					root.subcriteriaByAlias[alias] = this;
 			}
 
@@ -129,7 +131,7 @@ namespace NHibernate.Impl
 
 			public T UniqueResult<T>()
 			{
-				return (T)UniqueResult();
+				return (T) UniqueResult();
 			}
 #endif
 
@@ -247,9 +249,9 @@ namespace NHibernate.Impl
 				return this;
 			}
 
-			public ICriteria Clone()
+			public ISessionImplementor Session
 			{
-				return root.Clone();
+				get { return root.Session;}
 			}
 
 			public ICriteria GetCriteriaByPath(string path)
@@ -262,11 +264,84 @@ namespace NHibernate.Impl
 				return root.GetCriteriaByAlias(alias);
 			}
 
-
-			public ICriteria ClearSortOrder()
+			public int MaxResults
 			{
-				root.ClearSortOrder();
-				return this;
+				get { return root.MaxResults; }
+			}
+
+			public int FirstResult
+			{
+				get { return root.FirstResult; }
+			}
+
+			public int Timeout
+			{
+				get { return root.Timeout; }
+			}
+
+			public int FetchSize
+			{
+				get { return root.FetchSize; }
+			}
+
+			public System.Type CriteriaClass
+			{
+				get { return root.CriteriaClass; }
+			}
+
+			public IDictionary LockModes
+			{
+				get { return root.LockModes; }
+			}
+
+			public IResultTransformer ResultTransformer
+			{
+				get { return root.ResultTransformer; }
+			}
+
+			public bool Cacheable
+			{
+				get { return root.Cacheable; }
+			}
+
+			public string CacheRegion
+			{
+				get { return root.CacheRegion; }
+			}
+
+			public IProjection Projection
+			{
+				get { return root.Projection; }
+			}
+
+			public ICriteria ProjectionCriteria
+			{
+				get { return root.ProjectionCriteria; }
+			}
+
+			public IList Restrictions
+			{
+				get { return root.Restrictions; }
+			}
+
+			public IList Orders
+			{
+				get { return root.Orders; }
+			}
+
+			public IDictionary FetchModes
+			{
+				get { return root.FetchModes; }
+			}
+
+			public IList SubcriteriaList
+			{
+				get { return root.SubcriteriaList; }
+			}
+
+			public string RootAlias
+			{
+				get { return root.RootAlias; }
 			}
 		}
 
@@ -352,7 +427,7 @@ namespace NHibernate.Impl
 
 		public T UniqueResult<T>()
 		{
-			return (T)UniqueResult();
+			return (T) UniqueResult();
 		}
 
 #endif
@@ -407,7 +482,7 @@ namespace NHibernate.Impl
 		public FetchMode GetFetchMode(string path)
 		{
 			object result = fetchModes[path];
-			return result == null ? FetchMode.Default : (FetchMode)result;
+			return result == null ? FetchMode.Default : (FetchMode) result;
 		}
 
 		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
@@ -560,30 +635,9 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		/// <summary>
-		/// Clones this instance.
-		/// </summary>
-		/// <returns></returns>
-		public ICriteria Clone()
+		internal void SetProjectionCriteria(ICriteria projectionCriteria)
 		{
-			CriteriaImpl clone = new CriteriaImpl(persistentClass, Alias, session);
-			foreach (CriterionEntry criterionEntry in this.criteria)
-			{
-				clone.Add(criterionEntry.Criterion);
-			}
-			CloneSubcriteriaAndOrders(clone);
-			clone.fetchModes = new Hashtable(this.fetchModes);
-			clone.lockModes = new Hashtable(this.lockModes);
-			clone.maxResults = this.maxResults;
-			clone.firstResult = this.firstResult;
-			clone.timeout = this.timeout;
-			clone.fetchSize = this.fetchSize;
-			clone.resultTransformer = this.resultTransformer;
-			clone.cacheable = this.cacheable;
-			clone.cacheRegion = this.cacheRegion;
-			clone.projection = this.projection;
-			CloneProjectCrtieria(clone);
-			return clone;
+			this.projectionCriteria = projectionCriteria;
 		}
 
 		public ICriteria GetCriteriaByPath(string path)
@@ -594,52 +648,6 @@ namespace NHibernate.Impl
 		public ICriteria GetCriteriaByAlias(string alias)
 		{
 			return (ICriteria) subcriteriaByAlias[alias];
-		}
-
-		private void CloneProjectCrtieria(CriteriaImpl clone)
-		{
-			if(this.projectionCriteria != null)
-			{
-				if(this.projectionCriteria == this)
-				{
-					clone.projectionCriteria = clone;
-				}
-				else
-				{
-					clone.projectionCriteria = this.projectionCriteria.Clone();
-				}
-			}
-		}
-
-
-		public ICriteria ClearSortOrder()
-		{
-			this.orderEntries.Clear();
-			return this;
-		}
-
-		private void CloneSubcriteriaAndOrders(CriteriaImpl clone)
-		{
-			//we need to preserve the parent criteria, we rely on the orderring when creating the 
-			//subcriterias initially here, so we don't need to make more than a single pass
-			Hashtable newParents = new Hashtable();
-			newParents[this] = clone;
-			foreach (Subcriteria subcriteria in subcriteriaList)
-			{
-				ICriteria currentParent = (ICriteria)newParents[subcriteria.Parent];
-				if (currentParent == null)
-					throw new InvalidOperationException("Could not find parent for subcriteria in the previous subcriteria. If you see this error, it is a bug");
-				Subcriteria clonedSubCriteria = new Subcriteria(clone, currentParent,subcriteria.Path,subcriteria.Alias,subcriteria.JoinType);
-				clonedSubCriteria.SetLockMode(subcriteria.LockMode);
-				newParents[subcriteria] = clonedSubCriteria;
-			}
-			foreach (OrderEntry orderEntry in orderEntries)
-			{
-				ICriteria currentParent = (ICriteria)newParents[orderEntry.Criteria];
-				if (currentParent == null)
-					throw new InvalidOperationException("Could not find parent for order in the previous criteria. If you see this error, it is a bug");
-				clone.orderEntries.Add(new OrderEntry(orderEntry.Order, currentParent));
-			}
 		}
 
 		public ICriteria ProjectionCriteria
@@ -701,6 +709,31 @@ namespace NHibernate.Impl
 			{
 				return order.ToString();
 			}
+		}
+
+		public IList Restrictions
+		{
+			get { return criteria; }
+		}
+
+		public IList Orders
+		{
+			get { return orderEntries; }
+		}
+
+		public IDictionary FetchModes
+		{
+			get { return fetchModes; }
+		}
+
+		public string RootAlias
+		{
+			get { return rootAlias; }
+		}
+
+		public IList SubcriteriaList
+		{
+			get { return subcriteriaList; }
 		}
 	}
 }

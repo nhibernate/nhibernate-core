@@ -240,11 +240,37 @@ namespace NHibernate
 		/// </remarks>
 		ICriteria SetProjection(IProjection projection);
 
-		/// <summary>
-		/// Clones this instance.
-		/// </summary>
-		/// <returns></returns>
-		ICriteria Clone();
+		int MaxResults { get; }
+
+		int FirstResult { get; }
+
+		int Timeout { get; }
+
+		int FetchSize { get; }
+
+		System.Type CriteriaClass { get; }
+
+		IDictionary LockModes { get; }
+
+		IResultTransformer ResultTransformer { get; }
+
+		bool Cacheable { get; }
+
+		string CacheRegion { get; }
+
+		IProjection Projection { get; }
+
+		ICriteria ProjectionCriteria { get; }
+
+		IList Restrictions { get; }
+
+		IList Orders { get; }
+
+		IDictionary FetchModes { get; }
+
+		IList SubcriteriaList { get; }
+
+		string RootAlias { get; }
 
 		/// <summary>
 		/// Allows to get a sub criteria by path.
@@ -260,13 +286,5 @@ namespace NHibernate
 		/// <param name="alias">The alias.</param>
 		/// <returns></returns>
 		ICriteria GetCriteriaByAlias(string alias);
-
-		///<summary>
-		/// Remove all orderring on this criteria, useful when you clone a criteria
-		/// with orderring and you want to turn it into a projection 
-		/// (where orderring would break the query).
-		///</summary>
-		///<returns></returns>
-		ICriteria ClearSortOrder();
 	}
 }

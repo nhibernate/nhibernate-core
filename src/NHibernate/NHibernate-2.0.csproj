@@ -514,6 +514,7 @@
     <Compile Include="Context\MapBasedSessionContext.cs" />
     <Compile Include="Context\ThreadStaticSessionContext.cs" />
     <Compile Include="Context\WebSessionContext.cs" />
+    <Compile Include="CriteriaTransformer.cs" />
     <Compile Include="DebugHelpers\DictionaryProxy.cs" />
     <Compile Include="DebugHelpers\CollectionProxy.cs" />
     <Compile Include="Dialect\Function\AnsiExtractFunction.cs" />
