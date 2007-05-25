@@ -78,7 +78,7 @@ namespace NHibernate.Proxy
 					}
 					CheckMethodIsVirtual(type, (MethodInfo) member, errors);
 				}
-				else if (member is FieldInfo && ((FieldInfo)member).IsPublic)
+				else if (member is FieldInfo)
 				{
 					FieldInfo memberField = (FieldInfo) member;
 					if (memberField.IsPublic || memberField.IsAssembly || memberField.IsFamilyOrAssembly)
