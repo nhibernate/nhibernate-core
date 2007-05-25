@@ -58,6 +58,11 @@ namespace NHibernate.Expression
 		{
 			return new DetachedCriteria(typeof(T));
 		}
+
+		public static DetachedCriteria For<T>(string alias)
+		{
+			return new DetachedCriteria(typeof(T), alias);
+		}
 #endif
 
 		public static DetachedCriteria For(System.Type entityType, string alias)
