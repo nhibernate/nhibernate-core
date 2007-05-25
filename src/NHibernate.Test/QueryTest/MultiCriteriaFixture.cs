@@ -24,13 +24,14 @@ namespace NHibernate.Test.QueryTest
 			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
 
-			[Test]
+		[Test]
 		public void CanExecuteMultiplyQueriesInSingleRoundTrip_InTransaction()
 		{
 			using (ISession s = OpenSession())
 			{
 				Item item = new Item();
 				item.Id = 1;
+				item.Name = "foo";
 				s.Save(item);
 				s.Flush();
 			}
@@ -49,6 +50,7 @@ namespace NHibernate.Test.QueryTest
 				IList items = (IList)results[0];
 				Item fromDb = (Item)items[0];
 				Assert.AreEqual(1, fromDb.Id);
+				Assert.AreEqual("foo", fromDb.Name);
 
 				IList counts = (IList)results[1];
 				int count = (int)counts[0];
@@ -141,8 +143,8 @@ namespace NHibernate.Test.QueryTest
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
 					.Add(Expression.Expression.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
-					.Add(criteria.Clone().SetFirstResult(10))
-					.Add(criteria.Clone().SetProjection(Projections.RowCount()));
+					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
+					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
 				IList results = multiCriteria.List();
 				IList items = (IList)results[0];
@@ -163,8 +165,8 @@ namespace NHibernate.Test.QueryTest
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
 					.Add(Expression.Expression.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
-					.Add(criteria.Clone().SetFirstResult(10))
-					.Add(criteria.Clone().SetProjection(Projections.RowCount()));
+					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
+					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
 				IList results = multiCriteria.List();
 				IList items = (IList)results[0];
@@ -178,8 +180,8 @@ namespace NHibernate.Test.QueryTest
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
 					.Add(Expression.Expression.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
-					.Add(criteria.Clone().SetFirstResult(20))
-					.Add(criteria.Clone().SetProjection(Projections.RowCount()));
+					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(20))
+					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
 				IList results = multiCriteria.List();
 				IList items = (IList)results[0];
@@ -211,9 +213,9 @@ namespace NHibernate.Test.QueryTest
 					.Add(Expression.Expression.Gt("id", 50));
 
 				IList results = s.CreateMultiCriteria()
-					.Add(criteria.Clone()
+					.Add(CriteriaTransformer.Clone(criteria)
 						.SetFirstResult(10))
-					.Add(criteria.Clone()
+					.Add(CriteriaTransformer.Clone(criteria)
 						.SetProjection(Projections.RowCount()))
 					.List();
 				IList items = (IList)results[0];
@@ -241,8 +243,8 @@ namespace NHibernate.Test.QueryTest
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
 					.Add(Expression.Expression.In("id", new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
 				IList results = s.CreateMultiCriteria()
-					.Add(criteria.Clone())
-					.Add(criteria.Clone()
+					.Add(CriteriaTransformer.Clone(criteria))
+					.Add(CriteriaTransformer.Clone(criteria)
 						.SetProjection(Projections.RowCount()))
 					.List();
 
@@ -270,8 +272,8 @@ namespace NHibernate.Test.QueryTest
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
 					.Add(Expression.Expression.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
-					.Add(criteria.Clone().SetFirstResult(10))
-					.Add(criteria.Clone().SetProjection(Projections.RowCount()));
+					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
+					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
 				IList results = multiCriteria.List();
 				IList items = (IList)results[0];
