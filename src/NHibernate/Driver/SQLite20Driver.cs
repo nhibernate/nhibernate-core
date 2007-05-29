@@ -51,5 +51,10 @@ namespace NHibernate.Driver
 		{
 			get { return false; }
 		}
+		
+		public override bool SupportsMultipleQueries
+		{
+			get { return true; }
+		}
 	}
 }
