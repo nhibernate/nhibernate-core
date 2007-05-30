@@ -18,7 +18,7 @@ namespace NHibernate.Impl
 {
 	public class MultiCriteriaImpl : IMultiCriteria
 	{
-		private static ILog log = LogManager.GetLogger(typeof(MultiCriteriaImpl));
+		private static ILog log = LogManager.GetLogger(typeof (MultiCriteriaImpl));
 		private IList criteriaQueries = new ArrayList();
 
 		private SessionImpl session;
@@ -110,16 +110,16 @@ namespace NHibernate.Impl
 
 			IList result =
 				assembler.GetResultFromQueryCache(session,
-												  combinedParameters,
-												  querySpaces,
-												  queryCache,
-												  key);
+				                                  combinedParameters,
+				                                  querySpaces,
+				                                  queryCache,
+				                                  key);
 
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi criteria query");
 				IList list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, session);
+				queryCache.Put(key, new ICacheAssembler[] {assembler}, new object[] {list}, session);
 				result = list;
 			}
 
@@ -164,7 +164,9 @@ namespace NHibernate.Impl
 
 		private void GetResultsFromDatabase(ArrayList results)
 		{
-			using (IDbCommand command = session.Batcher.PrepareCommand(CommandType.Text, sqlString, (SqlType[])types.ToArray(typeof(SqlType))))
+			using (
+				IDbCommand command =
+					session.Batcher.PrepareCommand(CommandType.Text, sqlString, (SqlType[]) types.ToArray(typeof (SqlType))))
 			{
 				BindParameters(command);
 				ArrayList[] hydratedObjects = new ArrayList[loaders.Count];
@@ -190,9 +192,10 @@ namespace NHibernate.Impl
 						}
 						while (reader.Read())
 						{
-							object o = loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-																  null, hydratedObjects[i], keys, false);
-							if(createSubselects[i])
+							object o =
+								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
+								                           null, hydratedObjects[i], keys, false);
+							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
 							}
@@ -201,6 +204,11 @@ namespace NHibernate.Impl
 						results.Add(tmpResults);
 						reader.NextResult();
 					}
+				}
+				catch (Exception e)
+				{
+					log.Error("Error executing multi criteria : [" + command.CommandText + "]");
+					throw new HibernateException("Error executing multi criteria : [" + command.CommandText + "]", e)
 				}
 				finally
 				{
@@ -288,7 +296,7 @@ namespace NHibernate.Impl
 		{
 			for (int i = 0; i < loaders.Count; i++)
 			{
-				QueryParameters parameter = (QueryParameters)parameters[i];
+				QueryParameters parameter = (QueryParameters) parameters[i];
 				RowSelection selection = parameter.RowSelection;
 				if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
 				{
@@ -344,8 +352,8 @@ namespace NHibernate.Impl
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);
 				positionalParameterValues.AddRange(queryParameters.PositionalParameterValues);
 			}
-			combinedQueryParameters.PositionalParameterTypes = (IType[])positionalParameterTypes.ToArray(typeof(IType));
-			combinedQueryParameters.PositionalParameterValues = (object[])positionalParameterValues.ToArray(typeof(object));
+			combinedQueryParameters.PositionalParameterTypes = (IType[]) positionalParameterTypes.ToArray(typeof (IType));
+			combinedQueryParameters.PositionalParameterValues = (object[]) positionalParameterValues.ToArray(typeof (object));
 			return combinedQueryParameters;
 		}
 	}

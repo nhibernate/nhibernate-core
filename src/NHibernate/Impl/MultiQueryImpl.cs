@@ -464,8 +464,8 @@ namespace NHibernate.Impl
 			}
 			catch (Exception ex)
 			{
-				log.Error("Failed to execute multi query", ex);
-				throw new HibernateException("Failed to execute multi query", ex);
+				log.Error("Failed to execute multi query: [" + command.CommandText + "]", ex);
+				throw new HibernateException("Failed to execute multi query: [" + command.CommandText + "]", ex);
 			}
 			finally
 			{
