@@ -30,7 +30,7 @@ namespace NHibernate.Dialect
 	public class Oracle9Dialect : Dialect
 	{
 		/// <summary></summary>
-		public Oracle9Dialect() : base()
+		public Oracle9Dialect()
 		{
 			DefaultProperties[Environment.PrepareSql] = "false";
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.OracleClientDriver";
@@ -53,7 +53,7 @@ namespace NHibernate.Dialect
 			// having problems with both ODP and OracleClient from MS not being able
 			// to read values out of a field that is DOUBLE PRECISION
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //"FLOAT(53)" );
-			RegisterColumnType(DbType.Guid, "CHAR(38)");
+			//RegisterColumnType(DbType.Guid, "CHAR(38)");
 			RegisterColumnType(DbType.Int16, "NUMBER(5,0)");
 			RegisterColumnType(DbType.Int32, "NUMBER(10,0)");
 			RegisterColumnType(DbType.Int64, "NUMBER(20,0)");

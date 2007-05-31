@@ -30,6 +30,6 @@ namespace NHibernate.SqlCommand
 		public abstract CaseFragment AddWhenColumnNotNull(string alias, string columnName, string columnValue);
 
 		/// <summary></summary>
-		public abstract SqlString ToSqlStringFragment();
+		public abstract string ToSqlStringFragment();
 	}
 }

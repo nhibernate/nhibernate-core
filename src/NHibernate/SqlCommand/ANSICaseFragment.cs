@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	/// <remarks>This class looks StringHelper.SqlParameter safe...</remarks>
 	public class ANSICaseFragment : CaseFragment
 	{
-		private Dialect.Dialect dialect;
+		private readonly Dialect.Dialect dialect;
 
 		/// <summary>
 		/// 
@@ -23,7 +23,7 @@ namespace NHibernate.SqlCommand
 
 		private string returnColumnName;
 
-		private IList cases = new ArrayList();
+		private readonly IList cases = new ArrayList();
 
 		/// <summary>
 		/// 
@@ -63,7 +63,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary></summary>
-		public override SqlString ToSqlStringFragment()
+		public override string ToSqlStringFragment()
 		{
 			StringBuilder buf = new StringBuilder(cases.Count * 15 + 10);
 
@@ -82,7 +82,7 @@ namespace NHibernate.SqlCommand
 					.Append(returnColumnName);
 			}
 
-			return new SqlString(buf.ToString());
+			return buf.ToString();
 		}
 	}
 }

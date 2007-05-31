@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using NHibernate.Cache;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
@@ -18,6 +19,17 @@ namespace NHibernate.Test.QueryTest
 		protected override IList Mappings
 		{
 			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
+		}
+
+		[TestFixtureSetUp]
+		public void CheckMultiQuerySupport()
+		{
+			base.TestFixtureSetUp();
+			IDriver driver = sessions.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+			{
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+			}
 		}
 
 		[Test]

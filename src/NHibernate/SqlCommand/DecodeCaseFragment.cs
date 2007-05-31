@@ -21,7 +21,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		private string returnColumnName;
-		private IList cases = new ArrayList();
+		private IDictionary cases = new SequencedHashMap();
 
 		/// <summary>
 		/// 
@@ -55,40 +55,37 @@ namespace NHibernate.SqlCommand
 		public override CaseFragment AddWhenColumnNotNull(string alias, string columnName, string columnValue)
 		{
 			string key = alias + StringHelper.Dot + columnName;
-
-			if (columnValue.Equals("0"))
-			{
-				cases.Insert(0, key);
-			}
-			else
-			{
-				cases.Add(", " + key + ", " + columnValue);
-			}
-
+			cases.Add(key, columnValue);
 			return this;
 		}
 
 		/// <summary></summary>
-		public override SqlString ToSqlStringFragment()
+		public override string ToSqlStringFragment()
 		{
-			StringBuilder buf = new StringBuilder(cases.Count * 15 + 10);
+			StringBuilder buf = new StringBuilder(cases.Count * 15 + 10)
+				.Append("decode(");
 
-			buf.Append("decode (");
-
-			for (int i = 0; i < cases.Count; i++)
+			int number = 0;
+			foreach (DictionaryEntry de in cases)
 			{
-				buf.Append(cases[i]);
+				if (number < cases.Count - 1)
+				{
+					buf.Append(", ")
+						.Append(de.Key)
+						.Append(", ")
+						.Append(de.Value);
+				}
+				else
+				{
+					buf.Insert(7, de.Key)
+						.Append(", ")
+						.Append(de.Value);
+				}
+				number++;
 			}
 
-			buf.Append(",0 )");
-
-			if (returnColumnName != null)
-			{
-				buf.Append(" as ")
-					.Append(returnColumnName);
-			}
-
-			return new SqlString(buf.ToString());
+			buf.Append(')');
+			return buf.ToString();
 		}
 	}
 }
