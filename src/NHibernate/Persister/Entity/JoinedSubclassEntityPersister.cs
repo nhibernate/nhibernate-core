@@ -670,7 +670,7 @@ namespace NHibernate.Persister.Entity
 
 				//TODO: this will need to be changed to return a SqlString but for now the SqlString
 				// is being converted to a string for existing interfaces to work.
-				return new string[] {DiscriminatorFragment(alias).ToSqlStringFragment().ToString()};
+				return new string[] { DiscriminatorFragment(alias).ToSqlStringFragment() };
 			}
 			else
 			{

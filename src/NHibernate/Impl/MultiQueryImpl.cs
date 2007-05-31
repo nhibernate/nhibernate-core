@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Cache;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Hql.Classic;
@@ -39,12 +40,13 @@ namespace NHibernate.Impl
 
 		public MultiQueryImpl(ISessionImplementor session)
 		{
-			dialect = session.Factory.Dialect;
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			IDriver driver = session.Factory.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
 			{
 				throw new NotSupportedException(
-					string.Format("The dialect {0} does not support multiple queries.", dialect.GetType().FullName));
+					string.Format("The driver {0} does not support multiple queries.", driver.GetType().FullName));
 			}
+			this.dialect = session.Factory.Dialect;
 			this.session = session;
 		}
 

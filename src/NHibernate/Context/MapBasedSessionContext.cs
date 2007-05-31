@@ -6,7 +6,7 @@ namespace NHibernate.Context
 {
 	public abstract class MapBasedSessionContext : CurrentSessionContext
 	{
-		protected readonly ISessionFactoryImplementor _factory;
+		private readonly ISessionFactoryImplementor _factory;
 
 		protected MapBasedSessionContext(ISessionFactoryImplementor factory)
 		{

@@ -1,6 +1,11 @@
 using System;
 using System.Collections;
 using System.Data;
+
+using NHibernate.Driver;
+using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
+
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypeParameters
@@ -47,14 +52,16 @@ namespace NHibernate.Test.TypeParameters
 			s = OpenSession();
 			t = s.BeginTransaction();
 
+			IDriver driver = sessions.ConnectionProvider.Driver;
+
 			IDbConnection connection = s.Connection;
-			IDbCommand statement = connection.CreateCommand();
+			IDbCommand statement = driver.GenerateCommand(
+				CommandType.Text,
+				SqlString.Parse("SELECT * FROM STRANGE_TYPED_OBJECT WHERE ID=?"),
+				new SqlType[] {SqlTypeFactory.Int32});
+			statement.Connection = connection;
 			t.Enlist(statement);
-			statement.CommandText = "SELECT * FROM STRANGE_TYPED_OBJECT WHERE ID=@p0";
-			IDbDataParameter parameter = statement.CreateParameter();
-			parameter.Value = id;
-			parameter.ParameterName = "@p0";
-			statement.Parameters.Add(parameter);
+			((IDataParameter) statement.Parameters[0]).Value = id;
 			IDataReader reader = statement.ExecuteReader();
 
 			Assert.IsTrue(reader.Read(), "A row should have been returned");

@@ -16,7 +16,7 @@ namespace NHibernate.SqlCommand
 		private IList columnAliases = new ArrayList();
 		private Dialect.Dialect dialect;
 		private string[] usedAliases;
-		private SqlString extraSelectList;
+		private string extraSelectList;
 
 		public SelectFragment(Dialect.Dialect d)
 		{
@@ -166,13 +166,13 @@ namespace NHibernate.SqlCommand
 					buf.Append(StringHelper.CommaSpace);
 				}
 
-				buf.Append(extraSelectList.ToString());
+				buf.Append(extraSelectList);
 			}
 
 			return buf.ToString();
 		}
 
-		public SelectFragment SetExtraSelectList(SqlString extraSelectList)
+		public SelectFragment SetExtraSelectList(string extraSelectList)
 		{
 			this.extraSelectList = extraSelectList;
 			return this;
