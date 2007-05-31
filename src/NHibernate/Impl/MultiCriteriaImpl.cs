@@ -208,7 +208,7 @@ namespace NHibernate.Impl
 				catch (Exception e)
 				{
 					log.Error("Error executing multi criteria : [" + command.CommandText + "]");
-					throw new HibernateException("Error executing multi criteria : [" + command.CommandText + "]", e)
+					throw new HibernateException("Error executing multi criteria : [" + command.CommandText + "]", e);
 				}
 				finally
 				{
