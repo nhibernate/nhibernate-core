@@ -138,6 +138,18 @@ namespace NHibernate.Expression
 			return this;
 		}
 
+        public DetachedCriteria SetFirstResult(int firstResult)
+        {
+            criteria.SetFirstResult(firstResult);
+            return this;
+        }
+
+        public DetachedCriteria SetMaxResults(int maxResults)
+        {
+            criteria.SetMaxResults(maxResults);
+            return this;
+        }
+
 		public override string ToString()
 		{
 			return "DetachableCriteria(" + criteria.ToString() + ')';
