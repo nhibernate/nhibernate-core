@@ -44,7 +44,7 @@ namespace NHibernate.JetDriver
 			return this;
 		}
 
-		public override SqlString ToSqlStringFragment()
+		public override string ToSqlStringFragment()
 		{
 			StringBuilder buf = new StringBuilder(cases.Count * 15 + 10);
 
@@ -65,7 +65,7 @@ namespace NHibernate.JetDriver
 					.Append(returnColumnName);
 			}
 
-			return new SqlString(buf.ToString());
+			return buf.ToString();
 		}
 	}
 }
