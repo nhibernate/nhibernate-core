@@ -1251,6 +1251,7 @@ namespace NHibernate.Hql.Classic
 		{
 			IType[] returnTypes = ReturnTypes;
 			row = ToResultRow(row);
+			bool hasTransform = holderClass != null || resultTransformer != null;
 			if (hasScalars)
 			{
 				string[][] names = ScalarColumnNames;
@@ -1269,7 +1270,7 @@ namespace NHibernate.Hql.Classic
 					return row;
 				}
 			}
-			else if (holderClass == null)
+			else if (!hasTransform)
 			{
 				return (row.Length == 1) ? row[0] : row;
 			}
