@@ -239,6 +239,9 @@
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
+    <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
+    <Compile Include="NHSpecificTest\NH1018\Employer.cs" />
+    <Compile Include="NHSpecificTest\NH1018\NH1018Fixture.cs" />
     <Compile Include="NHSpecificTest\NH883\Cat.cs" />
     <Compile Include="NHSpecificTest\NH883\Fixture.cs" />
     <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Address.cs" />
@@ -928,6 +931,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="HQLFunctionTest\MaterialResource.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1018\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
