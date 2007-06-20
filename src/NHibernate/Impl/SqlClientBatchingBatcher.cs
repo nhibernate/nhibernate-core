@@ -1,7 +1,6 @@
-#if NET_2_0
-
-using System;
+using System.Collections.Specialized;
 using System.Data;
+using System.Text;
 using NHibernate.AdoNet;
 
 namespace NHibernate.Impl
@@ -14,6 +13,7 @@ namespace NHibernate.Impl
 		private int batchSize;
 		private int totalExpectedRowsAffected;
 		private SqlClientSqlCommandSet currentBatch;
+        private StringBuilder currentBatchCommandsLog = new StringBuilder();
 
 		public SqlClientBatchingBatcher(ConnectionManager connectionManager)
 			: base(connectionManager)
@@ -33,9 +33,10 @@ namespace NHibernate.Impl
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			log.Debug("Adding to batch:");
 			IDbCommand batchUpdate = CurrentCommand;
-			LogCommand(batchUpdate);
-
-			currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
+		    string commandLoggedText = GetCommandLogString(batchUpdate);
+		    currentBatchCommandsLog.Append("Batch command: ").
+		        AppendLine(commandLoggedText);
+		    currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
 			if (currentBatch.CountOfCommands >= batchSize)
 			{
 				DoExecuteBatch(batchUpdate);
@@ -47,6 +48,9 @@ namespace NHibernate.Impl
 			log.Debug("Executing batch");
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
+
+            logSql.Debug(currentBatchCommandsLog.ToString());
+		    currentBatchCommandsLog = new StringBuilder();
 			int rowsAffected = currentBatch.ExecuteNonQuery();
 
 			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
@@ -57,5 +61,3 @@ namespace NHibernate.Impl
 		}
 	}
 }
-
-#endif
