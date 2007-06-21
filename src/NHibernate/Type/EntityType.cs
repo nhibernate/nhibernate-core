@@ -75,7 +75,7 @@ namespace NHibernate.Type
 			get { return associatedClass; }
 		}
 
-		protected object GetIdentifier(object value, ISessionImplementor session)
+		public object GetIdentifier(object value, ISessionImplementor session)
 		{
 			if (IsReferenceToPrimaryKey)
 			{
