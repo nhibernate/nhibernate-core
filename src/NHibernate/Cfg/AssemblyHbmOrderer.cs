@@ -96,6 +96,18 @@ namespace NHibernate.Cfg
 		/// </returns>
 		public IList GetHbmFiles()
 		{
+			return GetHbmFiles(new HashedSet());
+		}
+
+		/// <summary>
+		/// Gets an <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
+		/// </summary>
+		/// <param name="loadedClasses">Classes loaded by some other process.</param>
+		/// <returns>
+		/// An <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
+		/// </returns>
+		public IList GetHbmFiles(ISet loadedClasses)
+		{
 			HashedSet classes = new HashedSet();
 
 			// tracks if any hbm.xml files make use of the "extends" attribute
@@ -155,7 +167,7 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			// only bother to do the sorting if one of the hbm files uses 'extends' - 
+			// only bother to do the sorting if one of the hbm files uses 'extends' -
 			// the sorting does quite a bit of looping through collections so if we don't
 			// need to spend the time doing that then don't bother.
 			if (containsExtends)
@@ -163,7 +175,7 @@ namespace NHibernate.Cfg
 				// Add ordered hbms *after* the extra files, so that the extra files are processed first.
 				// This may be useful if the extra files define filters, etc. that are being used by
 				// the entity mappings.
-				ArrayHelper.AddAll(extraFiles, OrderedHbmFiles(classes));
+				ArrayHelper.AddAll(extraFiles, OrderedHbmFiles(classes, loadedClasses));
 				return extraFiles;
 			}
 			else
@@ -195,7 +207,7 @@ namespace NHibernate.Cfg
 		/// <returns>
 		/// An <see cref="IList"/> of <see cref="String"/> objects that contain the <c>hbm.xml</c> file names.
 		/// </returns>
-		private static StringCollection OrderedHbmFiles(ISet unorderedClasses)
+		private static StringCollection OrderedHbmFiles(ISet unorderedClasses, ISet loadedClasses)
 		{
 			// Make sure joined-subclass mappings are loaded after base class
 			ArrayList sortedList = new ArrayList();
@@ -206,7 +218,7 @@ namespace NHibernate.Cfg
 			{
 				foreach (ClassEntry ce in unorderedClasses)
 				{
-					if (ce.FullExtends == null || processedClassNames.Contains(ce.FullExtends))
+					if (ce.FullExtends == null || processedClassNames.Contains(ce.FullExtends) || loadedClasses.Contains(ce.FullExtends.Type))
 					{
 						// This class extends nothing, or is derived from one of the classes that were already processed.
 						// Append it to the list since it's safe to process now.

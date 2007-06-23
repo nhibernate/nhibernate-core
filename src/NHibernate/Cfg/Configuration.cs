@@ -646,10 +646,16 @@ namespace NHibernate.Cfg
 		{
 			if (!skipOrdering)
 			{
+				ISet loadedClasses = new HashedSet();
+				foreach (DictionaryEntry de in classes)
+				{
+					PersistentClass pc = (PersistentClass)de.Value;
+					loadedClasses.Add(pc.MappedClass.FullName);
+				}
 				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(
 					assembly,
 					resources);
-				resources = orderer.GetHbmFiles();
+				resources = orderer.GetHbmFiles(loadedClasses);
 			}
 
 			foreach (string fileName in resources)
