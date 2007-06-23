@@ -194,6 +194,8 @@
     <Compile Include="JoinedSubclass\Person.cs" />
     <Compile Include="Join\Customer.cs" />
     <Compile Include="Join\Employee.cs" />
+    <Compile Include="Join\EmployeeWithCompositeKey.cs" />
+    <Compile Include="Join\JoinCompositeKeyTest.cs" />
     <Compile Include="Join\JoinTest.cs" />
     <Compile Include="Join\Person.cs" />
     <Compile Include="Join\User.cs" />
@@ -931,6 +933,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="HQLFunctionTest\MaterialResource.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Join\CompositeKey.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1018\Mappings.hbm.xml" />

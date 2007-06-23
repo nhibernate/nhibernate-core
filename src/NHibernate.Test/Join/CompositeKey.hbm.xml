@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.Join">
+	
+	<class name="EmployeeWithCompositeKey" table="DLEPAPPT" lazy="false">
+		<composite-id name="Pk" class="EmployeePk">
+			<key-property name="CompanyId" column="coy" />
+			<key-property name="EmpNumber" column="emp_number_main" />
+		</composite-id>
+
+		<property name="StartDate" column="emp_start_date" />
+
+		<join table="DLEPEM">
+			<key>
+				<column name="coy" />
+				<column name="emp_number" />
+			</key>
+			<property name="FirstName" column="emp_first_name" />
+			<property name="Surname" column="emp_surname" />
+			<property name="OtherNames" column="emp_other_names" />
+			<property name="Title" column="emp_title" />
+		</join>
+	</class>
+</hibernate-mapping>

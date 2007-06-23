@@ -413,7 +413,7 @@ namespace NHibernate.Persister.Entity
 				{
 					keyCols[k++] = col.GetQuotedName(factory.Dialect);
 				}
-				joinKeyColumns.AddRange(keyCols);
+				joinKeyColumns.Add(keyCols);
 			}
 
 			subclassTableSequentialSelect = ArrayHelper.ToBooleanArray(isDeferreds);
