@@ -1186,7 +1186,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
         
         <para>
             This functionality allows you to execute several HQL queries in one round-trip
-            against the database server. The common use case is executing a paged query while
+            against the database server. A simple use case is executing a paged query while
             also getting the total count of results, in a single round-trip. Here is a simple
             example:
         </para>
@@ -1228,7 +1228,7 @@ long count = (long)((IList)results[1])[0];]]></programlisting>
         <para>
             Multi query is executed by concatenating the queries and sending the query to the database
             as a single string. This means that the database should support returning several result sets
-            in a single query. At the moment this functionality is only enabled for Microsoft SQL Server.
+            in a single query. At the moment this functionality is only enabled for Microsoft SQL Server and SQLite.
         </para>
 
         <para>
@@ -1250,7 +1250,7 @@ IMultiQuery multiQuery = s.CreateMultiQuery()
 
         <para>
             An interesting usage of this feature is to load several collections of an object in one
-            round-trip:
+            round-trip, without an expensive cartesian product (blog * users * posts).
         </para>
 
         <programlisting><![CDATA[Blog blog = s.CreateMultiQuery()
@@ -1259,5 +1259,53 @@ IMultiQuery multiQuery = s.CreateMultiQuery()
     .SetInt32("id", 123)
     .UniqueResult<Blog>();]]></programlisting>
 
+    </sect1>
+    
+     <sect1 id="performance-multi-criteria">
+        <title>Multi Criteria</title>
+        
+        <para>
+			This is the counter-part to Multi Query, and allows you to perform several criteria queries
+			in a single round trip. A simple use case is executing a paged query while
+            also getting the total count of results, in a single round-trip. Here is a simple
+            example:
+        </para>
+        
+        <programlisting><![CDATA[IMultiCriteria multiCrit = s.CreateMultiCriteria()
+    .Add(s.CreateCriteria(typeof(Item))
+            .Add(Expression.Gt("Id", 50))
+            .SetFirstResult(10))
+    .Add(s.CreateCriteria(typeof(Item))
+            .Add(Expression.Gt("Id", 50))
+            .SetProject(Projections.RowCount()));
+IList results = multiCrit.List();
+IList items = (IList)results[0];
+long count = (long)((IList)results[1])[0];]]></programlisting>
+
+        <para>
+            The result is a list of query results, ordered according to the order of queries
+            added to the multi criteria. 
+		</para>
+		
+        <para>
+            You can add <literal>ICriteria</literal> or <literal>DetachedCriteria</literal> to the Multi Criteria query.
+            In fact, using DetachedCriteria in this fashion has some interesting implications. 
+        </para>
+        <programlisting><![CDATA[DetachedCriteria customersCriteria = AuthorizationService.GetAssociatedCustomersQuery();
+IList results = session.CreateMultiCriteria()
+	.Add(customersCriteria)
+	.Add(DetachedCriteria.For<Policy>()
+		.Add( Subqueries.PropertyIn("id", CriteriaTransformer.Clone(customersCriteria)
+                                                    .SetProjection(Projections.Id())
+                      ) )
+	).List();
+
+ICollection<Customer> customers = CollectionHelper.ToArray<Customer>(results[0]);
+ICollection<Policy> policies = CollectionHelper.ToArray<Policy>(results[1]);]]></programlisting>
+
+		<para>
+			As you see, we get a query that represnt the customers we can access, and then we can utlize this query further in order to 
+			perform additional logic (getting the policies of the customers we are associated with), all in a single database roundtrip.
+		</para>
     </sect1>
 </chapter>
