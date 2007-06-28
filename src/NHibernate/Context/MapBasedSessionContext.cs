@@ -38,7 +38,7 @@ namespace NHibernate.Context
 					map = new Hashtable();
 					SetMap(map);
 				}
-				map[value.SessionFactory] = value;
+				map[_factory] = value;
 			}
 		}
 
