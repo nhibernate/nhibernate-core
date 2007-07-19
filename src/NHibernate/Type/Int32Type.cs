@@ -26,7 +26,14 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object Get(IDataReader rs, int index)
 		{
-			return Convert.ToInt32(rs[index]);
+			try
+			{
+				return Convert.ToInt32(rs[index]);
+			}
+			catch(Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+			}
 		}
 
 		/// <summary>
@@ -37,7 +44,14 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object Get(IDataReader rs, string name)
 		{
-			return Convert.ToInt32(rs[name]);
+			try
+			{
+				return Convert.ToInt32(rs[name]);
+			}
+			catch(Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[name]), ex);
+			}
 		}
 
 		/// <summary></summary>
