@@ -4,8 +4,6 @@ using System.Reflection;
 using NHibernate.Type;
 using NHibernate.UserTypes.SqlTypes;
 
-using Nullables.NHibernate;
-
 using NUnit.Framework;
 
 namespace NHibernate.UserTypes.Tests
@@ -29,11 +27,4 @@ namespace NHibernate.UserTypes.Tests
 		{
 			CheckITypesInAssembly(typeof(SqlInt32Type).Assembly);
 		}
-
-		[Test]
-		public void NullableTypes()
-		{
-			CheckITypesInAssembly(typeof(NullableInt32Type).Assembly);
-		}
-	}
 }
