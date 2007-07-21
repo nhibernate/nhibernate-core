@@ -16,6 +16,12 @@
 	<!-- Disable performance tests by default. They take too much time. -->
 	<property name="run.performance.tests" value="false" overwrite="false" />
 
+	<!--
+		Supported versions of .NET Framework, separated by spaces.
+		Used by *-all-frameworks targets.
+	-->
+	<property name="supported.frameworks" value="net-2.0" />
+
 	<fileset id="buildfiles.all" basedir="src">
 		<!-- Files have to be in dependency order -->
 		<include name="HashCodeProvider/HashCodeProvider.build" />
@@ -183,7 +189,7 @@
 		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
 
 		<!-- Execute build for each framework -->
-		<foreach item="String" delim=" " property="framework" in="net-1.1 net-2.0">
+		<foreach item="String" delim=" " property="framework" in="${supported.frameworks}">
 			<call target="set-${framework}-framework-configuration" />
 			<call target="build" />
 			<!-- Copy and rename the license -->
@@ -205,7 +211,7 @@
 		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
 
 		<!-- Execute build for each framework -->
-		<foreach item="String" delim=" " property="framework" in="net-1.1 net-2.0">
+		<foreach item="String" delim=" " property="framework" in="${supported.frameworks}">
 			<call target="set-${framework}-framework-configuration" />
 			<call target="test" />
 		</foreach>
