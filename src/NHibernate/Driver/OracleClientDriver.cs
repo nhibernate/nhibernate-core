@@ -1,3 +1,6 @@
+using NHibernate.Engine;
+using NHibernate.Impl;
+
 namespace NHibernate.Driver
 {
 	/// <summary>
@@ -26,5 +29,16 @@ namespace NHibernate.Driver
 		{
 			get { return ":"; }
 		}
+
+        public override IBatcher CreateBatcher(ConnectionManager connectionManager)
+        {
+#if NET_2_0
+
+            if (connectionManager.Factory.IsBatchUpdateEnabled)
+                return new OracleClientBatchingBatcher(connectionManager);
+            else
+#endif
+                return new NonBatchingBatcher(connectionManager);
+        }
 	}
 }

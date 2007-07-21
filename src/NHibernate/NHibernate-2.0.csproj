@@ -50,6 +50,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -208,6 +209,11 @@
     <Compile Include="Impl\AbstractQueryImpl.cs" />
     <Compile Include="Impl\AbstractVisitor.cs" />
     <Compile Include="Impl\BatcherImpl.cs" />
+    <Compile Include="Impl\CommandSetBatchingBatcher.cs" />
+    <Compile Include="Impl\DbCommandSet.cs" />
+    <Compile Include="Impl\IDbCommandSet.cs" />
+    <Compile Include="Impl\OracleClientBatchingBatcher.cs" />
+    <Compile Include="Impl\OracleClientCommandSet.cs" />
     <Compile Include="Impl\OracleDataClientBatchingBatcher.cs" />
     <Compile Include="Impl\SqlClientBatchingBatcher.cs" />
     <Compile Include="Impl\CacheEntry.cs" />
@@ -242,6 +248,7 @@
     <Compile Include="Impl\SessionFactoryImpl.cs" />
     <Compile Include="Impl\SessionFactoryObjectFactory.cs" />
     <Compile Include="Impl\SessionImpl.cs" />
+    <Compile Include="Impl\SqlClientCommandSet.cs" />
     <Compile Include="Impl\SqlQueryImpl.cs" />
     <Compile Include="Impl\Status.cs" />
     <Compile Include="Impl\WrapVisitor.cs" />

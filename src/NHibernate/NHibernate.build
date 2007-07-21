@@ -18,6 +18,7 @@
 			<include name="System.dll" />
 			<include name="System.XML.dll" />
 			<include name="System.Data.dll" />
+			<include name="System.Data.OracleClient" if="${nant.settings.currentframework == 'net-2.0'}" />
 			<include name="System.Web.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
