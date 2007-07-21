@@ -85,7 +85,7 @@ namespace NHibernate.Expression
 
 		public DetachedCriteria CreateAlias(string associationPath, string alias, JoinType joinType)
 		{
-			criteria.CreateAlias(associationPath, Alias, joinType);
+			criteria.CreateAlias(associationPath, alias, joinType);
 			return this;
 		}
 
