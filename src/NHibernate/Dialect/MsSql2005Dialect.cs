@@ -5,9 +5,6 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-	/// <summary>
-	/// A <see cref="Dialect"/> for <c>Microsoft Sql Server 2005</c>.
-	/// </summary>
 	public class MsSql2005Dialect : MsSql2000Dialect
 	{
 		public MsSql2005Dialect()
@@ -27,77 +24,104 @@ namespace NHibernate.Dialect
 		/// <remarks>
 		/// The <c>LIMIT</c> SQL will look like
 		/// <code>
-		/// WITH query AS
-		///     (SELECT TOP last ROW_NUMBER() OVER (ORDER BY orderby) as __hibernate_row_nr__, ... original_query)
-		///  SELECT * 
-		///    FROM query
-		///    WHERE __hibernate_row_nr__ > offset
-		///    ORDER BY __hibernate_row_nr__
+		/// 
+		/// SELECT TOP last * FROM (
+		/// SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__ {sort direction 1} [, __hibernate_sort_expr_2__ {sort direction 2}, ...]) as row, query.* FROM (
+		///		{original select query part}, {sort field 1} as __hibernate_sort_expr_1__ [, {sort field 2} as __hibernate_sort_expr_2__, ...]
+		///		{remainder of original query minus the order by clause}
+		/// ) query
+		/// ) page WHERE page.row > offset
+		/// 
 		/// </code>
 		/// </remarks>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
 		{
-			string distinctStr;
+			int fromIndex = querySqlString.IndexOfCaseInsensitive(" from ");
+			SqlString select = querySqlString.Substring(0, fromIndex);
 
-			int index;
-			if (querySqlString.StartsWithCaseInsensitive("select distinct"))
+			int orderIndex = querySqlString.LastIndexOfCaseInsensitive(" order by ");
+			SqlString from;
+			string[] sortExpressions;
+			if (orderIndex > 0)
 			{
-				distinctStr = "DISTINCT ";
-				index = 15;
-			}
-			else if (querySqlString.StartsWithCaseInsensitive("select "))
-			{
-				distinctStr = string.Empty;
-				index = 6;
+				from = querySqlString.Substring(fromIndex, orderIndex - fromIndex).Trim();
+				string orderBy = querySqlString.Substring(orderIndex).ToString().Trim();
+				sortExpressions = orderBy.Substring(9).Split(',');
 			}
 			else
 			{
-				throw new ArgumentException("querySqlString should start with select", "querySqlString");
+				from = querySqlString.Substring(fromIndex).Trim();
+				// Use dummy sort to avoid errors
+				sortExpressions = new string[] { "CURRENT_TIMESTAMP" };
 			}
 
-			SqlString afterSelect = querySqlString.Substring(index);
-
-			string orderBy = querySqlString.SubstringStartingWithLast("order by").ToString();
-			if (orderBy.Length == 0)
-			{
-				// If no ORDER BY is specified use fake ORDER BY field to avoid errors 
-				orderBy = "ORDER BY CURRENT_TIMESTAMP";
-			}
-
-			SqlStringBuilder result = new SqlStringBuilder();
-			return result
-				.Add("WITH query AS (SELECT ")
-				.Add(distinctStr)
-				.Add("TOP ")
+			SqlStringBuilder result = new SqlStringBuilder()
+				.Add("SELECT TOP ")
 				.Add(last.ToString())
-				.Add(" ROW_NUMBER() OVER (")
-				.Add(orderBy)
-				.Add(") as __hibernate_row_nr__, ")
-				.Add(afterSelect)
-				.Add(") SELECT * FROM query WHERE __hibernate_row_nr__ > ")
-				.Add(offset.ToString())
-				.Add(" ORDER BY __hibernate_row_nr__")
-				.ToSqlString();
+				.Add(" * FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
+
+			for (int i = 1; i <= sortExpressions.Length; i++)
+			{
+				if (i > 1)
+					result.Add(", ");
+
+				result.Add("__hibernate_sort_expr_")
+					.Add(i.ToString())
+					.Add("__");
+
+				if (sortExpressions[i - 1].Trim().ToLower().EndsWith("desc"))
+					result.Add(" DESC");
+			}
+
+			result.Add(") as row, query.* FROM (")
+				.Add(select);
+
+			for (int i = 1; i <= sortExpressions.Length; i++)
+			{
+				string sortExpression = sortExpressions[i - 1].Trim().Split(' ')[0];
+				if (sortExpression.EndsWith(")desc", StringComparison.InvariantCultureIgnoreCase)) {
+					sortExpression = sortExpression.Remove(sortExpression.Length - 4);
+				}
+
+				result.Add(", ")
+					.Add(sortExpression)
+					.Add(" as __hibernate_sort_expr_")
+					.Add(i.ToString())
+					.Add("__");
+			}
+
+			result.Add(" ")
+				.Add(from)
+				.Add(") query ) page WHERE page.row > ")
+				.Add(offset.ToString());
+
+			return result.ToSqlString();
 		}
 
 		/// <summary>
 		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
-		/// functionallity.
+		/// functionality.
 		/// </summary>
-		/// <value><see langword="true" /></value>
+		/// <value><c>true</c></value>
 		public override bool SupportsLimit
 		{
-			get { return true; }
+			get
+			{
+				return true;
+			}
 		}
 
 		/// <summary>
 		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
-		/// functionallity with an offset.
+		/// functionality with an offset.
 		/// </summary>
-		/// <value><see langword="true" /></value>
+		/// <value><c>true</c></value>
 		public override bool SupportsLimitOffset
 		{
-			get { return true; }
+			get
+			{
+				return true;
+			}
 		}
 
 		protected override string GetSelectExistingObject(string name, Table table)
@@ -107,5 +131,16 @@ namespace NHibernate.Dialect
 								 objName, table.GetQuotedName(this));
 		}
 
+
+		/// <summary>
+		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
+		/// functionality with an offset.
+		/// </summary>
+		/// <value><c>false</c></value>
+		public override bool UseMaxForLimit {
+			get {
+				return false;
+			}
+		}
 	}
 }

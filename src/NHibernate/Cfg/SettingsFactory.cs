@@ -61,8 +61,7 @@ namespace NHibernate.Cfg
 			}
 
 			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider(properties);
-			ITransactionFactory transactionFactory = new AdoNetTransactionFactory();
-				// = TransactionFactoryFactory.BuildTransactionFactory(properties);
+			ITransactionFactory transactionFactory = CreateTransactionFactory(properties);
 			// TransactionManagerLookup transactionManagerLookup = TransactionManagerLookupFactory.GetTransactionManagerLookup( properties );
 
 			// Not ported: useGetGeneratedKeys, useScrollableResultSets
@@ -253,6 +252,22 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not instantiate QueryTranslatorFactory: " + className, cnfe);
+			}
+		}
+
+		private static ITransactionFactory CreateTransactionFactory(IDictionary properties)
+		{
+			string className = PropertiesHelper.GetString(
+				Environment.TransactionStrategy, properties, "NHibernate.Transaction.AdoNetTransactionFactory");
+			log.Info("Transaction factory: " + className);
+
+			try
+			{
+				return (ITransactionFactory)Activator.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not instantiate TransactionFactory: " + className, cnfe);
 			}
 		}
 	}

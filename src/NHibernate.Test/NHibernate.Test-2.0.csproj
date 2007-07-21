@@ -244,6 +244,8 @@
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employer.cs" />
     <Compile Include="NHSpecificTest\NH1018\NH1018Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1054\DummyTransactionFactory.cs" />
+    <Compile Include="NHSpecificTest\NH1054\NH1054Fixture.cs" />
     <Compile Include="NHSpecificTest\NH883\Cat.cs" />
     <Compile Include="NHSpecificTest\NH883\Fixture.cs" />
     <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Address.cs" />
@@ -664,6 +666,7 @@
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-2.0</Name>
     </ProjectReference>
+    <Folder Include="NHSpecificTest\NH1054" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH386\Mappings.hbm.xml" />

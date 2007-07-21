@@ -12,7 +12,7 @@
             The following model of the relationship between <literal>Employer</literal> and 
             <literal>Employee</literal> uses an actual entity class (<literal>Employment</literal>) 
             to represent the association. This is done because there might be more than one
-            period of employment for the same two parties. Components are used to model monetory 
+            period of employment for the same two parties. Components are used to model monetary 
             values and employee names.
         </para>
 

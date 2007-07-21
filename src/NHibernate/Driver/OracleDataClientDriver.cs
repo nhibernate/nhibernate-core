@@ -1,6 +1,8 @@
 using System;
 using System.Data;
 using NHibernate.SqlTypes;
+using NHibernate.Impl;
+using NHibernate.Engine;
 
 namespace NHibernate.Driver
 {
@@ -26,6 +28,22 @@ namespace NHibernate.Driver
 			"Oracle.DataAccess.Client.OracleCommand")
 		{
 		}
+
+        /// <summary>
+        /// Create an instance of <see cref="IBatcher"/> according to the configuration 
+        /// and the capabilities of the driver
+        /// </summary>
+        /// <remarks>
+        /// By default, .Net doesn't have any batching capabilities, drivers that does have
+        /// batching support need to override this method and return their own batcher.
+        /// </remarks>
+        public override IBatcher CreateBatcher(ConnectionManager connectionManager)
+        {
+            if (connectionManager.Factory.IsBatchUpdateEnabled)
+                return new OracleDataClientBatchingBatcher(connectionManager);
+            else
+                return new NonBatchingBatcher(connectionManager);
+        }
 
 		/// <summary></summary>
 		public override bool UseNamedPrefixInSql

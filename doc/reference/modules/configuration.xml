@@ -584,6 +584,19 @@ ISession session = sessions.OpenSession(conn);
                             </para>
                         </entry>
                     </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.transaction.factory_class</literal>
+                        </entry>
+                        <entry>
+                            The classname of a custom <literal>ITransactionFactory</literal> implementation,
+                            defaults to the built-in <literal>AdoNetTransactionFactory</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>classname.of.TransactionFactory, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
                 </tbody>
             </tgroup>
         </table>

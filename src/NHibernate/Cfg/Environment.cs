@@ -94,7 +94,6 @@ namespace NHibernate.Cfg
 		// Unused, not implemented
 		public const string OutputStylesheet = "hibernate.xml.output_stylesheet";
 
-		// Unused, not implemented (and somewhat Java-specific)
 		public const string TransactionStrategy = "hibernate.transaction.factory_class";
 
 		// Unused, not implemented (and somewhat Java-specific)
