@@ -37,7 +37,6 @@
 	<property name="clover.src" value="src\CloverSrc" />
 	<property name="clover.db" value="${clover.src}\clover.cdb" />
 
-	<property name="clover.framework" value=".NET 1.1" if="${nant.settings.currentframework == 'net-1.1'}" />
 	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-2.0'}" />
 	<property name="clover.framework" value=".NET 1.1" if="${nant.settings.currentframework == 'mono-1.0'}" />
 
@@ -49,8 +48,8 @@
 	</if>
 
 	<!-- 
-		Path to the folder that contain the external assemblies.  For net-1.1 the values will
-		be lib, lib/net, and lib/net/1.1 respectively.
+		Path to the folder that contain the external assemblies.  For net-2.0 the values will
+		be lib, lib/net, and lib/net/2.0 respectively.
 	-->
 	<property name="lib.dir" value="lib" dynamic="true" />
 	<property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
@@ -172,13 +171,6 @@
 			<fail message="The '${framework::get-target-framework()}' framework is not supported by this version of NHibernate." />
 		</if>
 		<call target="set-${framework::get-target-framework()}-framework-configuration" />
-	</target>
-
-	<target name="set-net-1.1-framework-configuration">
-		<property name="nant.settings.currentframework" value="net-1.1" />
-		<property name="current.build.defines" value="${build.defines}NET,NET_1_1" />
-		<property name="link.sdkdoc.version" value="SDK_v1_1" />
-		<property name="merge.targetplatform" value="v1.1" />
 	</target>
 
 	<target name="set-net-2.0-framework-configuration">

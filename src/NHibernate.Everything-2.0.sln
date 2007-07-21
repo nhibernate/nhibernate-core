@@ -115,24 +115,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache.
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables-2.0", "Nullables\Nullables-2.0.csproj", "{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.NHibernate-2.0", "Nullables.NHibernate\Nullables.NHibernate-2.0.csproj", "{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nullables.Tests-2.0", "Nullables.Tests\Nullables.Tests-2.0.csproj", "{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Mapping.Attributes-2.0", "NHibernate.Mapping.Attributes\NHibernate.Mapping.Attributes-2.0.csproj", "{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"

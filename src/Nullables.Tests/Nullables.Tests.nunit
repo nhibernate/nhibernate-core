@@ -1,9 +1,0 @@
-﻿<NUnitProject>
-  <Settings activeconfig="Debug" />
-  <Config name="Debug" appbase="bin\Debug" configfile="Nullables.Tests.dll.config" binpathtype="Auto">
-    <assembly path="Nullables.Tests.dll" />
-  </Config>
-  <Config name="Release" appbase="bin\Release" configfile="Nullables.Tests.dll.config" binpathtype="Auto">
-    <assembly path="Nullables.Tests.dll" />
-  </Config>
-</NUnitProject>

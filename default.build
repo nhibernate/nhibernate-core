@@ -50,9 +50,6 @@
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
 		<include name="NHibernate.UserTypes.Oracle/NHibernate.UserTypes.Oracle.build" />
 		<include name="NHibernate.UserTypes.SqlTypes/NHibernate.UserTypes.SqlTypes.build" />
-		<include name="Nullables/Nullables.build" />
-		<include name="Nullables.NHibernate/Nullables.NHibernate.build" />
-		<include name="Nullables.Tests/Nullables.Tests.build" />
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
 	</fileset>
 
@@ -67,7 +64,6 @@
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
-		<include name="Nullables.Tests/Nullables.Tests.build" />
 	</fileset>
 
 	<target name="init" depends="common.init"
@@ -237,7 +233,6 @@
 				<!-- copy all of the NHibernate source -->
 				<include name="src/NHibernate*/**" />
 				<include name="src/Iesi*/**" />
-				<include name="src/Nullables*/**" />
 				<include name="src/*.*" />
 
 				<include name="build-common/**" />
