@@ -78,8 +78,14 @@ namespace NHibernate.Dialect
 			for (int i = 1; i <= sortExpressions.Length; i++)
 			{
 				string sortExpression = sortExpressions[i - 1].Trim().Split(' ')[0];
-				if (sortExpression.EndsWith(")desc", StringComparison.InvariantCultureIgnoreCase)) {
-					sortExpression = sortExpression.Remove(sortExpression.Length - 4);
+				if (
+#if NET_2_0
+					sortExpression.EndsWith(")desc", StringComparison.InvariantCultureIgnoreCase)
+#else
+					sortExpression.EndsWith(")desc")
+#endif
+                ) {
+					sortExpression = sortExpression.Substring(0, sortExpression.Length - 4);
 				}
 
 				result.Add(", ")
