@@ -2,9 +2,7 @@ using System.Collections;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace NHibernate
 {
@@ -98,7 +96,6 @@ namespace NHibernate
 		/// <param name="results">The list to fill with the results.</param>
 		void List(IList results);
 
-#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="List()" />.
 		/// </summary>
@@ -108,7 +105,6 @@ namespace NHibernate
 		/// Strongly-typed version of <see cref="UniqueResult()" />.
 		/// </summary>
 		T UniqueResult<T>();
-#endif
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches

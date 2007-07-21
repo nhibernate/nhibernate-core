@@ -28,8 +28,6 @@ namespace NHibernate.Test.TypesTest
 			Assert.IsTrue(type.Seed(null) is Int64, "seed should be int64");
 		}
 
-#if NET_2_0
-
         [Test]
         public void NullableWrapperDirty()
         {
@@ -43,6 +41,5 @@ namespace NHibernate.Test.TypesTest
             Assert.IsFalse( type.IsDirty( valueLong, fiveAgain, null ), "should not be dirty - 5 to 5" );
         }
 
-#endif
 	}
 }

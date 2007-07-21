@@ -7,9 +7,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
 using NExpression = NHibernate.Expression;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace NHibernate.Impl
 {
@@ -123,7 +121,6 @@ namespace NHibernate.Impl
 				root.List(results);
 			}
 
-#if NET_2_0
 			public IList<T> List<T>()
 			{
 				return root.List<T>();
@@ -133,7 +130,6 @@ namespace NHibernate.Impl
 			{
 				return (T) UniqueResult();
 			}
-#endif
 
 			public object UniqueResult()
 			{
@@ -419,7 +415,6 @@ namespace NHibernate.Impl
 			session.Find(this, results);
 		}
 
-#if NET_2_0
 		public IList<T> List<T>()
 		{
 			return session.Find<T>(this);
@@ -429,8 +424,6 @@ namespace NHibernate.Impl
 		{
 			return (T) UniqueResult();
 		}
-
-#endif
 
 		public IEnumerable IterateExpressionEntries()
 		{

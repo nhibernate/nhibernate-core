@@ -22,7 +22,6 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-#if NET_2_0
 				if (IsGeneric && IsSorted)
 				{
 					CheckGenericArgumentsLength(2);
@@ -42,7 +41,6 @@ namespace NHibernate.Mapping
 							"Use collection-type='sorted-list/sorted-dictionary' to choose implementation for generic map");
 					}
 				}
-#endif
 				return base.CollectionType;
 			}
 		}
@@ -55,7 +53,6 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-#if NET_2_0
 				if (this.IsGeneric)
 				{
 					if (HasOrder)
@@ -73,7 +70,6 @@ namespace NHibernate.Mapping
 						return TypeFactory.GenericMap(Role, ReferencedPropertyName, GenericArguments[0], GenericArguments[1]);
 					}
 				}
-#endif
 				if (HasOrder)
 				{
 					return TypeFactory.OrderedMap(Role, ReferencedPropertyName);

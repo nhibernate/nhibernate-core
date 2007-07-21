@@ -1,6 +1,4 @@
 using System;
-#if NET_2_0
-#endif
 
 namespace NHibernate.Persister.Collection
 {

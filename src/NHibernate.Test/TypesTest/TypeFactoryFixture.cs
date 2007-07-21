@@ -35,7 +35,6 @@ namespace NHibernate.Test.TypesTest
 			Assert.IsFalse(string25 == string30, "string25 & string30 should be different strings");
 		}
 
-#if NET_2_0
 	/// <summary>
 	/// Test that Nullable&lt;&gt; wrappers around structs are returning the
 	/// correct NH IType.
@@ -63,6 +62,5 @@ namespace NHibernate.Test.TypesTest
 				set { _genericLong = value; }
 			}
 		}
-#endif
 	}
 }

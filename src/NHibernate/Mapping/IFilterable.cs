@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-#if NET_2_0
-#endif
 
 namespace NHibernate.Mapping
 {

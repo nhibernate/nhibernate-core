@@ -3,9 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Diagnostics;
 using log4net;
-#if NET_2_0
 using NHibernate.DebugHelpers;
-#endif
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -17,9 +15,7 @@ namespace NHibernate.Collection
 	/// A persistent wrapper for an array. lazy initialization is NOT supported
 	/// </summary>
 	[Serializable]
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(CollectionProxy))]
-#endif
 	public class PersistentArrayHolder : AbstractPersistentCollection
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(PersistentArrayHolder));

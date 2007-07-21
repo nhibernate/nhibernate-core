@@ -1,5 +1,3 @@
-#if NET_2_0
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,9 +18,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TKey">The type of the keys in the IDictionary.</typeparam>
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(DictionaryProxy<,>))]
-#endif
 	public class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, IDictionary
 	{
 		protected IDictionary<TKey, TValue> map;
@@ -471,5 +467,3 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
-
-#endif

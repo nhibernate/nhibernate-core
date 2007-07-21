@@ -43,12 +43,10 @@ namespace NHibernate.Driver
 		/// </remarks>
 		public override IBatcher CreateBatcher(ConnectionManager connectionManager)
 		{
-#if NET_2_0
 
 			if (connectionManager.Factory.IsBatchUpdateEnabled)
 				return new SqlClientBatchingBatcher(connectionManager);
 			else
-#endif
 				return new NonBatchingBatcher(connectionManager);
 		}
 

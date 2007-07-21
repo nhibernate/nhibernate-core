@@ -1,5 +1,3 @@
-#if NET_2_0
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,9 +17,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="T">The type of the element the list should hold.</typeparam>
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-#endif
 	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		private IList<T> list;
@@ -474,5 +470,3 @@ namespace NHibernate.Collection.Generic
 		#endregion
 	}
 }
-
-#endif

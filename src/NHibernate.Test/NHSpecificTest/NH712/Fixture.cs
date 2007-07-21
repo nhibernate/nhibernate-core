@@ -1,4 +1,3 @@
-#if NET_2_0
 using System;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -29,4 +28,3 @@ namespace NHibernate.Test.NHSpecificTest.NH712
 		}
 	}
 }
-#endif

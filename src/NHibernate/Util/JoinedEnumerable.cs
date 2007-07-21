@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using log4net;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace NHibernate.Util
 {
@@ -153,7 +151,6 @@ namespace NHibernate.Util
 		#endregion
 	}
 
-#if NET_2_0
 	public class GenericJoinedEnumerable<T> : JoinedEnumerable, IEnumerable<T>, IEnumerator<T>
 	{
 		public GenericJoinedEnumerable(IEnumerable[] enumerables)
@@ -172,5 +169,4 @@ namespace NHibernate.Util
 			get { return (T) this.Current; }
 		}
 	}
-#endif
 }

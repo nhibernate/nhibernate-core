@@ -71,7 +71,6 @@ namespace NHibernate.Type
 				typeByTypeOfName[additionalName] = nhibernateType;
 			}
 
-#if NET_2_0
 			if (systemType.IsValueType)
 			{
 				// Also register Nullable<systemType> for ValueTypes
@@ -79,7 +78,6 @@ namespace NHibernate.Type
 				typeByTypeOfName[nullableType.FullName] = nhibernateType;
 				typeByTypeOfName[nullableType.AssemblyQualifiedName] = nhibernateType;
 			}
-#endif
 		}
 
 		/// <summary></summary>
@@ -799,8 +797,6 @@ namespace NHibernate.Type
 			return new OrderedSetType(role, propertyRef);
 		}
 
-#if NET_2_0
-
 		private static CollectionType CreateCollectionType(
 			System.Type genericCollectionType,
 			string role,
@@ -955,8 +951,6 @@ namespace NHibernate.Type
 		{
 			return CreateSortedCollectionType(typeof(GenericSortedSetType<>), role, propertyRef, comparer, elementType);
 		}
-
-#endif
 
 		/// <summary>
 		/// Deep copy values in the first array into the second

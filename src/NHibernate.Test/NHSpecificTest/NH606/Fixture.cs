@@ -1,4 +1,3 @@
-#if NET_2_0
 using System;
 using System.Collections;
 using NHibernate.Cfg;
@@ -37,4 +36,3 @@ namespace NHibernate.Test.NHSpecificTest.NH606
 		}
 	}
 }
-#endif

@@ -1,5 +1,3 @@
-#if NET_2_0
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,9 +24,7 @@ namespace NHibernate.Collection.Generic
 	/// to .NET</a> that was written by JasonSmith.
 	/// </remarks>
 	[Serializable]
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-#endif
 	public class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, ISet
 	{
 		/// <summary>
@@ -544,5 +540,3 @@ namespace NHibernate.Collection.Generic
 		}
 	}
 }
-
-#endif

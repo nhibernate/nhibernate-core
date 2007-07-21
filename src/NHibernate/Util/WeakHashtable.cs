@@ -1,17 +1,13 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
-#if NET_2_0
 using NHibernate.DebugHelpers;
-#endif
 
 namespace NHibernate.Util
 {
 	// This class does not inherit from WeakReference but uses composition
 	// instead to avoid requiring UnmanagedCode permission.
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(DictionaryProxy))]
-#endif
 	public class WeakRefWrapper
 	{
 		private WeakReference reference;

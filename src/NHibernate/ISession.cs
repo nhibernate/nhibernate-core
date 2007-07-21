@@ -217,7 +217,6 @@ namespace NHibernate
 		/// <returns>The persistent instance or proxy</returns>
 		object Load(System.Type theType, object id);
 
-#if NET_2_0
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
 		/// obtaining the specified lock mode.
@@ -241,7 +240,6 @@ namespace NHibernate
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		/// <returns>The persistent instance or proxy</returns>
 		T Load<T>(object id);
-#endif
 
 		/// <summary>
 		/// Read the persistent state associated with the given identifier into the given transient 
@@ -676,7 +674,6 @@ namespace NHibernate
 		/// <returns>a persistent instance or null</returns>
 		object Get(System.Type clazz, object id, LockMode lockMode);
 
-#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
 		/// </summary>
@@ -686,7 +683,6 @@ namespace NHibernate
 		/// Strongly-typed version of <see cref="Get(System.Type, object, LockMode)" />
 		/// </summary>
 		T Get<T>(object id, LockMode lockMode);
-#endif
 
 		/// <summary>
 		/// Enable the named filter for this current session.

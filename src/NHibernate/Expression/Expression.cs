@@ -151,7 +151,6 @@ namespace NHibernate.Expression
 			return new InExpression(propertyName, ary);
 		}
 
-#if NET_2_0
 		/// <summary>
 		/// Apply an "in" constraint to the named property. This is the generic equivalent
 		/// of <see cref="In(string, ICollection)" />, renamed to avoid ambiguity.
@@ -171,7 +170,6 @@ namespace NHibernate.Expression
 			}
 			return new InExpression(propertyName, array);
 		}
-#endif
 
 		/// <summary>
 		/// Apply an "is null" constraint to the named property

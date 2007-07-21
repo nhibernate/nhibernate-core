@@ -1,4 +1,3 @@
-#if NET_2_0
 using System;
 using log4net;
 using NHibernate.Persister.Entity;
@@ -33,4 +32,3 @@ namespace NHibernate.Bytecode.Lightweight
 	}
 }
 
-#endif

@@ -1,5 +1,3 @@
-#if NET_2_0
-
 using System;
 using System.Collections.Generic;
 using NHibernate.Collection;
@@ -70,5 +68,3 @@ namespace NHibernate.Type
 		}
 	}
 }
-
-#endif

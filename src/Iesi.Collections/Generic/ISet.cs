@@ -1,5 +1,3 @@
-#if NET_2_0
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -139,5 +137,3 @@ namespace Iesi.Collections.Generic
 		bool RetainAll(ICollection<T> c);
 	}
 }
-
-#endif

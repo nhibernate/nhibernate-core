@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Diagnostics;
-#if NET_2_0
 using NHibernate.DebugHelpers;
-#endif
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -19,9 +17,7 @@ namespace NHibernate.Collection
 	/// The underlying collection used in an <see cref="ArrayList"/>.
 	/// </remarks>
 	[Serializable]
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(CollectionProxy))]
-#endif
 	public class PersistentList : AbstractPersistentCollection, IList
 	{
 		private IList list;

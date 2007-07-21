@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
-#if NET_2_0
-#endif
 
 namespace NHibernate.Impl
 {

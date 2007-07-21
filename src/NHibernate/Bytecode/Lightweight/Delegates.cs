@@ -1,5 +1,3 @@
-#if NET_2_0
-
 namespace NHibernate.Bytecode.Lightweight
 {
 	public delegate void SetterCallback(object obj, int index, object value);
@@ -12,5 +10,3 @@ namespace NHibernate.Bytecode.Lightweight
 
 	public delegate object CreateInstanceInvoker();
 }
-
-#endif

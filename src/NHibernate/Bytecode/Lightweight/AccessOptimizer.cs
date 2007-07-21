@@ -1,4 +1,3 @@
-#if NET_2_0
 using NHibernate.Property;
 
 namespace NHibernate.Bytecode.Lightweight
@@ -44,5 +43,3 @@ namespace NHibernate.Bytecode.Lightweight
 		}
 	}
 }
-
-#endif

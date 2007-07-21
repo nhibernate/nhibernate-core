@@ -1,5 +1,3 @@
-#if NET_2_0
-
 using System;
 using System.Collections.Generic;
 
@@ -463,5 +461,3 @@ namespace Iesi.Collections.Generic.Test
 		protected abstract Type ExpectedType { get; }
 	}
 }
-
-#endif

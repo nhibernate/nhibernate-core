@@ -1,4 +1,3 @@
-#if NET_2_0
 using System;
 using System.Collections;
 
@@ -60,4 +59,3 @@ namespace NHibernate.Test.CollectionTest
 		}
 	}
 }
-#endif

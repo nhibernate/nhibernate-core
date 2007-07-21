@@ -1,4 +1,3 @@
-#if NET_2_0
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,9 +27,7 @@ namespace NHibernate.Collection.Generic
 	/// </para>
 	/// </remarks>
 	[Serializable]
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-#endif
 	public class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList, IList<T>
 	{
 		private IList<T> values; //element
@@ -492,5 +489,3 @@ namespace NHibernate.Collection.Generic
 		}
 	}
 }
-
-#endif

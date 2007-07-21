@@ -7,9 +7,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace NHibernate.Engine
 {
@@ -161,7 +159,6 @@ namespace NHibernate.Engine
 
 		void Find(string query, QueryParameters parameters, IList results);
 
-#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="Find(string, QueryParameters)" />
 		/// </summary>
@@ -171,7 +168,6 @@ namespace NHibernate.Engine
 		/// Strongly-typed version of <see cref="Find(CriteriaImpl)" />
 		/// </summary>
 		IList<T> Find<T>(CriteriaImpl criteria);
-#endif
 
 		void Find(CriteriaImpl criteria, IList results);
 
@@ -185,36 +181,30 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		IEnumerable Enumerable(string query, QueryParameters parameters);
 
-#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
 		/// </summary>
 		IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters);
-#endif
 
 		/// <summary>
 		/// Execute a filter
 		/// </summary>
 		IList Filter(object collection, string filter, QueryParameters parameters);
 
-#if NET_2_0
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
 		/// </summary>
 		IList<T> Filter<T>(object collection, string filter, QueryParameters parameters);
-#endif
 
 		/// <summary>
 		/// Collection from a filter
 		/// </summary>
 		IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
 
-#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
 		/// </summary>
 		IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
-#endif
 
 		/// <summary>
 		/// Get the <c>IEntityPersister</c> for an object
@@ -318,12 +308,10 @@ namespace NHibernate.Engine
 
 		void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);
 
-#if NET_2_0
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
 		/// </summary>
 		IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
-#endif
 
 		/// <summary>
 		/// new in 2.1 no javadoc

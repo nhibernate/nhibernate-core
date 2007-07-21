@@ -251,11 +251,7 @@ namespace NHibernate.Cfg
 
 		public static IBytecodeProvider BuildBytecodeProvider(IDictionary properties)
 		{
-#if NET_2_0
 			string defaultBytecodeProvider = "lcg";
-#else
-			string defaultBytecodeProvider = "codedom";
-#endif
 			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties,
 			                                             defaultBytecodeProvider);
 			log.Info("Bytecode provider name : " + provider);
@@ -268,10 +264,8 @@ namespace NHibernate.Cfg
 			{
 				case "codedom":
 					return new BytecodeProviderImpl();
-#if NET_2_0
 				case "lcg":
 					return new Bytecode.Lightweight.BytecodeProviderImpl();
-#endif
 				case "null":
 					return new NullBytecodeProvider();
 				default:

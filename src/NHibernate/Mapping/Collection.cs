@@ -61,10 +61,8 @@ namespace NHibernate.Mapping
 		private bool customDeleteAllCallable;
 		private ExecuteUpdateResultCheckStyle deleteAllCheckStyle;
 
-#if NET_2_0
 		private bool isGeneric;
 		private System.Type[] genericArguments;
-#endif
 		private IDictionary filters = new Hashtable();
 		private IDictionary manyToManyFilters = new Hashtable();
 		private bool subselectLoadable;
@@ -278,7 +276,6 @@ namespace NHibernate.Mapping
 			set { fetchMode = value; }
 		}
 
-#if NET_2_0
 		/// <summary>
 		/// Gets or sets a <see cref="Boolean"/> indicating if this is a 
 		/// mapping for a generic collection.
@@ -317,7 +314,6 @@ namespace NHibernate.Mapping
 						Role, expectedLength, genericArguments.Length));
 			}
 		}
-#endif
 
 		public void CreateForeignKey()
 		{

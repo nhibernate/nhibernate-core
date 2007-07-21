@@ -1,22 +1,14 @@
 using System;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-#if NET_2_0
 using System.Collections.Generic;
-#else
-using System.Collections;
-#endif
 
 namespace NHibernate.Expression
 {
 	[Serializable]
 	public class ProjectionList : IProjection
 	{
-#if NET_2_0
 		private IList<IProjection> elements = new List<IProjection>();
-#else
-		IList elements = new ArrayList();
-#endif
 
 		protected internal ProjectionList()
 		{
@@ -40,11 +32,8 @@ namespace NHibernate.Expression
 
 		public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-#if NET_2_0
 			IList<IType> types = new List<IType>(Length);
-#else
-			IList types = new ArrayList(Length);
-#endif
+			
 			for (int i = 0; i < Length; i++)
 			{
 				IType[] elemTypes = this[i].GetTypes(criteria, criteriaQuery);
@@ -94,11 +83,7 @@ namespace NHibernate.Expression
 
 		public String[] GetColumnAliases(int loc)
 		{
-#if NET_2_0
 			IList<string> aliases = new List<string>(Length);
-#else
-			IList aliases = new ArrayList(Length);
-#endif
 
 			for (int i = 0; i < Length; i++)
 			{
@@ -137,11 +122,8 @@ namespace NHibernate.Expression
 		{
 			get
 			{
-#if NET_2_0
 				IList<string> aliasList = new List<string>(Length);
-#else
-				IList aliasList = new ArrayList(Length);
-#endif
+
 				for (int i = 0; i < Length; i++)
 				{
 					String[] aliases = this[i].Aliases;
@@ -158,11 +140,7 @@ namespace NHibernate.Expression
 		{
 			get
 			{
-#if NET_2_0
 				return elements[index];
-#else
-				return (IProjection) elements[index];
-#endif
 			}
 		}
 

@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Engine;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace NHibernate.Impl
 {
@@ -29,7 +27,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-#if NET_2_0
 		public override IEnumerable<T> Enumerable<T>()
 		{
 			VerifyParameters();
@@ -44,7 +41,6 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
-#endif
 
 		public override IList List()
 		{
@@ -76,7 +72,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-#if NET_2_0
 		public override IList<T> List<T>()
 		{
 			VerifyParameters();
@@ -91,6 +86,5 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
-#endif
 	}
 }

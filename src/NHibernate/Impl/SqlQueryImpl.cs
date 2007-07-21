@@ -5,9 +5,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Loader.Custom;
 using NHibernate.Type;
 using NHibernate.Util;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace NHibernate.Impl
 {
@@ -147,7 +145,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-#if NET_2_0
 		public override IList<T> List<T>()
 		{
 			VerifyParameters();
@@ -165,7 +162,6 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
-#endif
 
 		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary parameters)
 		{
@@ -187,12 +183,10 @@ namespace NHibernate.Impl
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
-#if NET_2_0
 		public override IEnumerable<T> Enumerable<T>()
 		{
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
-#endif
 
 		public ISQLQuery AddScalar(string columnAlias, IType type)
 		{

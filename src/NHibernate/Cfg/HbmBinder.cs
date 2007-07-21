@@ -981,7 +981,6 @@ namespace NHibernate.Cfg
 				model.OrphanDelete = true;
 			}
 
-#if NET_2_0
 			bool? isGeneric = null;
 
 			XmlAttribute genericAtt = node.Attributes["generic"];
@@ -1010,7 +1009,7 @@ namespace NHibernate.Cfg
 				System.Type[] genericArguments = collectionType.GetGenericArguments();
 				model.GenericArguments = genericArguments;
 			}
-#endif
+
 			HandleCustomSQL(node, model);
 
 			//set up second pass

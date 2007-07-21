@@ -90,15 +90,9 @@ namespace NHibernate.Test.UtilityTest
 			string typeName = "A`1[B]";
 			string alias = StringHelper.GenerateAlias(typeName, 10);
 
-#if NET_2_0
 			Assert.IsFalse( alias.Contains( "`" ), "alias '{0}' should not contain backticks",     alias );
 			Assert.IsFalse( alias.Contains( "[" ), "alias '{0}' should not contain left bracket",  alias );
 			Assert.IsFalse( alias.Contains( "]" ), "alias '{0}' should not contain right bracket", alias );
-#else
-			Assert.IsFalse(Contains(alias, "`"), "alias '{0}' should not contain backticks", alias);
-			Assert.IsFalse(Contains(alias, "["), "alias '{0}' should not contain left bracket", alias);
-			Assert.IsFalse(Contains(alias, "]"), "alias '{0}' should not contain right bracket", alias);
-#endif
 		}
 	}
 }

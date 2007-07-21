@@ -1,4 +1,3 @@
-#if NET_2_0
 using System;
 using System.Data;
 using Iesi.Collections.Generic;
@@ -200,4 +199,3 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 		}
 	}
 }
-#endif

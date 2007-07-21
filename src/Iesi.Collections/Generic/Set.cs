@@ -1,5 +1,3 @@
-#if NET_2_0
-
 /* Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith. */
 using System;
 using System.Collections;
@@ -561,5 +559,3 @@ namespace Iesi.Collections.Generic
 		#endregion ISet implementation
 	}
 }
-
-#endif

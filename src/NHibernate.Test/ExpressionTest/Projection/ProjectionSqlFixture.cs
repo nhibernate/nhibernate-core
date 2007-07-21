@@ -1,5 +1,3 @@
-#if NET_2_0
-
 using System;
 using System.Collections;
 using NUnit.Framework;
@@ -147,4 +145,3 @@ namespace NHibernate.Test.ExpressionTest.Projection
 		}
 	}
 }
-#endif

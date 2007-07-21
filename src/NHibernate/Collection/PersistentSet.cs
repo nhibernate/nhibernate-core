@@ -3,9 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Diagnostics;
 using Iesi.Collections;
-#if NET_2_0
 using NHibernate.DebugHelpers;
-#endif
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -24,9 +22,7 @@ namespace NHibernate.Collection
 	/// to .NET</a> that was written by JasonSmith.
 	/// </remarks>
 	[Serializable]
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(CollectionProxy))]
-#endif
 	public class PersistentSet : AbstractPersistentCollection, ISet
 	{
 		/// <summary>

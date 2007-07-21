@@ -116,12 +116,7 @@ namespace NHibernate.Bytecode.CodeDom
 			private IReflectionOptimizer Build(string code)
 			{
 				CodeDomProvider provider = new CSharpCodeProvider();
-#if NET_2_0
 				CompilerResults res = provider.CompileAssemblyFromSource(cp, new string[] {code});
-#else
-			ICodeCompiler compiler = provider.CreateCompiler();
-			CompilerResults res = compiler.CompileAssemblyFromSource( cp, code );
-#endif
 
 				if (res.Errors.HasErrors)
 				{

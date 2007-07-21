@@ -9,9 +9,7 @@ using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace NHibernate.Impl
 {
@@ -613,12 +611,10 @@ namespace NHibernate.Impl
 			get { return session; }
 		}
 
-#if NET_2_0
 		public T UniqueResult<T>()
 		{
 			return (T) UniqueResult();
 		}
-#endif
 
 		public object UniqueResult()
 		{
@@ -702,14 +698,10 @@ namespace NHibernate.Impl
 
 		// Remaining methods of IQuery interface - left for children to implement
 		public abstract IEnumerable Enumerable();
-#if NET_2_0
 		public abstract IEnumerable<T> Enumerable<T>();
-#endif
 		public abstract IList List();
 		public abstract void List(IList results);
-#if NET_2_0
 		public abstract IList<T> List<T>();
-#endif
 
 		public void SetOptionalId(object optionalId)
 		{

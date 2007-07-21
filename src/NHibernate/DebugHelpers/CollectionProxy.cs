@@ -1,4 +1,3 @@
-#if NET_2_0
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -47,5 +46,3 @@ namespace NHibernate.DebugHelpers
 		}
 	}
 }
-
-#endif

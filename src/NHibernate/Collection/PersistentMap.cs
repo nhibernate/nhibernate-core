@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Diagnostics;
-#if NET_2_0
 using NHibernate.DebugHelpers;
-#endif
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -17,9 +15,7 @@ namespace NHibernate.Collection
 	/// is a <see cref="Hashtable" />.
 	/// </summary>
 	[Serializable]
-#if NET_2_0
 	[DebuggerTypeProxy(typeof(DictionaryProxy))]
-#endif
 	public class PersistentMap : AbstractPersistentCollection, IDictionary
 	{
 		protected IDictionary map;
