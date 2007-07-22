@@ -106,12 +106,12 @@ namespace NHibernate.Cfg
 		private Hashtable namedQueries;
 		private Hashtable namedSqlQueries;
 		private Hashtable sqlResultSetMappings;
-		private ArrayList secondPasses;
-		private ArrayList propertyReferences;
+		private IList<ISecondPass> secondPasses;
+		private IList<Mappings.UniquePropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary properties;
 		private IDictionary filterDefinitions;
-		private IList auxiliaryDatabaseObjects;
+		private IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 		private IDictionary sqlFunctions;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
@@ -130,13 +130,13 @@ namespace NHibernate.Cfg
 			namedQueries = new Hashtable();
 			namedSqlQueries = new Hashtable();
 			sqlResultSetMappings = new Hashtable();
-			secondPasses = new ArrayList();
-			propertyReferences = new ArrayList();
+			secondPasses = new List<ISecondPass>();
+			propertyReferences = new List<Mappings.UniquePropertyReference>();
 			filterDefinitions = new Hashtable();
 			interceptor = emptyInterceptor;
 			mapping = new Mapping(this);
 			properties = Environment.Properties;
-			auxiliaryDatabaseObjects = new ArrayList();
+			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
 			sqlFunctions = new Hashtable();
 		}
 
@@ -151,7 +151,7 @@ namespace NHibernate.Cfg
 
 			private PersistentClass GetPersistentClass(System.Type type)
 			{
-				PersistentClass pc = (PersistentClass) configuration.classes[type];
+				PersistentClass pc = configuration.classes[type];
 				if (pc == null)
 				{
 					throw new MappingException("persistent class not known: " + type.FullName);
@@ -226,7 +226,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public PersistentClass GetClassMapping(System.Type persistentClass)
 		{
-			return (PersistentClass) classes[persistentClass];
+			return classes[persistentClass];
 		}
 
 		/// <summary>
@@ -653,7 +653,7 @@ namespace NHibernate.Cfg
 				ISet<string> loadedClasses = new HashedSet<string>();
 				foreach (KeyValuePair<System.Type, PersistentClass> de in classes)
 				{
-					PersistentClass pc = (PersistentClass)de.Value;
+					PersistentClass pc = de.Value;
 					loadedClasses.Add(pc.MappedClass.FullName);
 				}
 				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(assembly, resources);
@@ -733,7 +733,7 @@ namespace NHibernate.Cfg
 			// drop them in reverse order in case db needs it done that way...
 			for (int i = auxiliaryDatabaseObjects.Count - 1; i >= 0; i--)
 			{
-				IAuxiliaryDatabaseObject auxDbObj = (IAuxiliaryDatabaseObject) auxiliaryDatabaseObjects[i];
+				IAuxiliaryDatabaseObject auxDbObj = auxiliaryDatabaseObjects[i];
 				if (auxDbObj.AppliesToDialect(dialect))
 				{
 					script.Add(auxDbObj.SqlDropString(dialect, defaultSchema));
@@ -1012,7 +1012,7 @@ namespace NHibernate.Cfg
 					{
 						log.Debug("resolving reference to class: " + fk.ReferencedClass.Name);
 					}
-					PersistentClass referencedClass = (PersistentClass) classes[fk.ReferencedClass];
+					PersistentClass referencedClass = classes[fk.ReferencedClass];
 					if (referencedClass == null)
 					{
 						string messageTemplate = "An association from the table {0} refers to an unmapped class: {1}";

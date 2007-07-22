@@ -19,7 +19,7 @@ namespace NHibernate.Cfg
 		private readonly IDictionary queries;
 		private readonly IDictionary sqlqueries;
 		private readonly IDictionary resultSetMappings;
-		private readonly IList secondPasses;
+		private readonly IList<ISecondPass> secondPasses;
 		private readonly IDictionary imports;
 		private string schemaName;
 		private string defaultCascade;
@@ -28,9 +28,9 @@ namespace NHibernate.Cfg
 		private string defaultAccess;
 		private bool autoImport;
 		private bool defaultLazy;
-		private readonly IList propertyReferences;
+		private readonly IList<UniquePropertyReference> propertyReferences;
 		private readonly IDictionary filterDefinitions;
-		private readonly IList auxiliaryDatabaseObjects;
+		private readonly IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 
 		private INamingStrategy namingStrategy;
 
@@ -48,11 +48,11 @@ namespace NHibernate.Cfg
 			IDictionary sqlqueries,
 			IDictionary resultSetMappings,
 			IDictionary imports,
-			IList secondPasses,
-			IList propertyReferences,
+			IList<ISecondPass> secondPasses,
+			IList<UniquePropertyReference> propertyReferences,
 			INamingStrategy namingStrategy,
 			IDictionary filterDefinitions,
-			IList auxiliaryDatabaseObjects,
+			IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects,
 			string defaultAssembly,
 			string defaultNamespace
 			)
@@ -122,12 +122,12 @@ namespace NHibernate.Cfg
 		/// <returns></returns>
 		public PersistentClass GetClass(System.Type type)
 		{
-			return (PersistentClass) classes[type];
+			return classes[type];
 		}
 
 		public PersistentClass GetClass(string entityName)
 		{
-			return (PersistentClass) classes[ReflectHelper.ClassForName(entityName)];
+			return classes[ReflectHelper.ClassForName(entityName)];
 		}
 
 		/// <summary>
