@@ -9,6 +9,7 @@ using System.Xml;
 using System.Xml.Schema;
 
 using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 using log4net;
 
@@ -649,7 +650,7 @@ namespace NHibernate.Cfg
 		{
 			if (!skipOrdering)
 			{
-				ISet loadedClasses = new HashedSet();
+				ISet<string> loadedClasses = new HashedSet<string>();
 				foreach (DictionaryEntry de in classes)
 				{
 					PersistentClass pc = (PersistentClass)de.Value;

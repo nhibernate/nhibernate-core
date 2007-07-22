@@ -1,11 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
 
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 using NHibernate.Util;
 
@@ -34,7 +33,7 @@ namespace NHibernate.Cfg
 		private readonly Assembly _assembly;
 
 		/// <summary>
-		/// An <see cref="IList"/> of all the <c>hbm.xml</c> resources found
+		/// An <see cref="List{String}"/> of all the <c>hbm.xml</c> resources found
 		/// in the assembly.
 		/// </summary>
 		private readonly List<string> _hbmResources = new List<string>();
@@ -43,7 +42,7 @@ namespace NHibernate.Cfg
 		/// Creates a new instance of AssemblyHbmOrderer with the specified <paramref name="resources" />
 		/// added.
 		/// </summary>
-		public static AssemblyHbmOrderer CreateWithResources(Assembly assembly, IEnumerable resources)
+		public static AssemblyHbmOrderer CreateWithResources(Assembly assembly, IEnumerable<string> resources)
 		{
 			AssemblyHbmOrderer result = new AssemblyHbmOrderer(assembly);
 
@@ -88,26 +87,26 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Gets an <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
+		/// Gets an <see cref="IList{String}"/> of <c>hbm.xml</c> resources in the correct order.
 		/// </summary>
 		/// <returns>
-		/// An <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
+		/// An <see cref="IList{String}"/> of <c>hbm.xml</c> resources in the correct order.
 		/// </returns>
 		public IList<string> GetHbmFiles()
 		{
-			return GetHbmFiles(new HashedSet());
+			return GetHbmFiles(new HashedSet<string>());
 		}
 
 		/// <summary>
-		/// Gets an <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
+		/// Gets an <see cref="IList{String}"/> of <c>hbm.xml</c> resources in the correct order.
 		/// </summary>
 		/// <param name="loadedClasses">Classes loaded by some other process.</param>
 		/// <returns>
-		/// An <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
+		/// An <see cref="IList{String}"/> of <c>hbm.xml</c> resources in the correct order.
 		/// </returns>
-		public IList<string> GetHbmFiles(ISet loadedClasses)
+		public IList<string> GetHbmFiles(ISet<string> loadedClasses)
 		{
-			HashedSet classes = new HashedSet();
+			HashedSet<ClassEntry> classes = new HashedSet<ClassEntry>();
 
 			// tracks if any hbm.xml files make use of the "extends" attribute
 			bool containsExtends = false;
@@ -184,7 +183,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static string FormatExceptionMessage(ISet classEntries)
+		private static string FormatExceptionMessage(IEnumerable<ClassEntry> classEntries)
 		{
 			StringBuilder message = new StringBuilder("These classes extend unmapped classes:");
 
@@ -200,20 +199,20 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Returns an <see cref="IList"/> of <c>hbm.xml</c> files in the order that ensures
+		/// Returns an <see cref="IList{String}"/> of <c>hbm.xml</c> files in the order that ensures
 		/// base classes are loaded before their subclass/joined-subclass.
 		/// </summary>
-		/// <param name="unorderedClasses">An <see cref="ISet"/> of <see cref="ClassEntry"/> objects.</param>
+		/// <param name="unorderedClasses">An <see cref="ISet{ClassEntry}"/> of <see cref="ClassEntry"/> objects.</param>
 		/// <returns>
-		/// An <see cref="IList"/> of <see cref="string"/> objects that contain the <c>hbm.xml</c> file names.
+		/// An <see cref="IList{String}"/> of <see cref="string"/> objects that contain the <c>hbm.xml</c> file names.
 		/// </returns>
 		/// <param name="loadedClasses"></param>
-		private static IList<string> OrderedHbmFiles(ISet unorderedClasses, ISet loadedClasses)
+		private static IList<string> OrderedHbmFiles(ISet<ClassEntry> unorderedClasses, ICollection<string> loadedClasses)
 		{
 			// Make sure joined-subclass mappings are loaded after base class
-			ArrayList sortedList = new ArrayList();
-			ISet processedClassNames = new HashedSet();
-			ArrayList processedInThisIteration = new ArrayList();
+			List<ClassEntry> sortedList = new List<ClassEntry>();
+			ISet<AssemblyQualifiedTypeName> processedClassNames = new HashedSet<AssemblyQualifiedTypeName>();
+			List<ClassEntry> processedInThisIteration = new List<ClassEntry>();
 
 			while (true)
 			{
