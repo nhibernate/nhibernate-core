@@ -27,4 +27,5 @@ namespace NHibernate.UserTypes.Tests
 		{
 			CheckITypesInAssembly(typeof(SqlInt32Type).Assembly);
 		}
+	}
 }
