@@ -1,7 +1,9 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
+
 using NHibernate.Engine;
+using NHibernate.Mapping;
 
 namespace NHibernate.Cfg
 {
@@ -18,7 +20,7 @@ namespace NHibernate.Cfg
 			this.mappings = mappings;
 		}
 
-		public void DoSecondPass(IDictionary persistentClasses)
+		public void DoSecondPass(IDictionary<System.Type, PersistentClass> persistentClasses)
 		{
 			ResultSetMappingDefinition definition = BuildResultSetMappingDefinition(element, path, mappings);
 			mappings.AddResultSetMapping(definition);

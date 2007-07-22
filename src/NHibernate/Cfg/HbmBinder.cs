@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using log4net;
@@ -1780,7 +1781,7 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// Called for Lists, arrays, primitive arrays
 		/// </remarks>>
-		public static void BindListSecondPass(XmlNode node, List model, IDictionary classes, Mappings mappings)
+		public static void BindListSecondPass(XmlNode node, List model, IDictionary<System.Type, PersistentClass> classes, Mappings mappings)
 		{
 			BindCollectionSecondPass(node, model, classes, mappings);
 
@@ -1791,7 +1792,7 @@ namespace NHibernate.Cfg
 		}
 
 		public static void BindIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model,
-		                                                      IDictionary persitentClasses, Mappings mappings)
+		                                                      IDictionary<System.Type, PersistentClass> persitentClasses, Mappings mappings)
 		{
 			BindCollectionSecondPass(node, model, persitentClasses, mappings);
 
@@ -1809,7 +1810,7 @@ namespace NHibernate.Cfg
 		/// <param name="model"></param>
 		/// <param name="classes"></param>
 		/// <param name="mappings"></param>
-		public static void BindMapSecondPass(XmlNode node, Map model, IDictionary classes, Mappings mappings)
+		public static void BindMapSecondPass(XmlNode node, Map model, IDictionary<System.Type, PersistentClass> classes, Mappings mappings)
 		{
 			BindCollectionSecondPass(node, model, classes, mappings);
 
@@ -1857,7 +1858,7 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// Called for all collections
 		/// </remarks>
-		public static void BindCollectionSecondPass(XmlNode node, Mapping.Collection model, IDictionary persistentClasses,
+		public static void BindCollectionSecondPass(XmlNode node, Mapping.Collection model, IDictionary<System.Type, PersistentClass> persistentClasses,
 		                                            Mappings mappings)
 		{
 			if (model.IsOneToMany)
@@ -2160,7 +2161,7 @@ namespace NHibernate.Cfg
 				this.node = node;
 			}
 
-			public override void SecondPass(IDictionary persistentClasses)
+			public override void SecondPass(IDictionary<System.Type, PersistentClass> persistentClasses)
 			{
 				BindCollectionSecondPass(node, collection, persistentClasses, mappings);
 			}
@@ -2173,7 +2174,7 @@ namespace NHibernate.Cfg
 			{
 			}
 
-			public override void SecondPass(IDictionary persistentClasses)
+			public override void SecondPass(IDictionary<System.Type, PersistentClass> persistentClasses)
 			{
 				BindIdentifierCollectionSecondPass(node, (IdentifierCollection) collection, persistentClasses, mappings);
 			}
@@ -2186,7 +2187,7 @@ namespace NHibernate.Cfg
 			{
 			}
 
-			public override void SecondPass(IDictionary persistentClasses)
+			public override void SecondPass(IDictionary<System.Type, PersistentClass> persistentClasses)
 			{
 				BindMapSecondPass(node, (Map) collection, persistentClasses, mappings);
 			}
@@ -2199,7 +2200,7 @@ namespace NHibernate.Cfg
 			{
 			}
 
-			public override void SecondPass(IDictionary persistentClasses)
+			public override void SecondPass(IDictionary<System.Type, PersistentClass> persistentClasses)
 			{
 				BindSetSecondPass(node, (Set) collection, persistentClasses, mappings);
 			}
@@ -2212,7 +2213,7 @@ namespace NHibernate.Cfg
 			{
 			}
 
-			public override void SecondPass(IDictionary persistentClasses)
+			public override void SecondPass(IDictionary<System.Type, PersistentClass> persistentClasses)
 			{
 				BindListSecondPass(node, (List) collection, persistentClasses, mappings);
 			}
@@ -2465,7 +2466,7 @@ namespace NHibernate.Cfg
 			return ReflectHelper.ReflectedPropertyClass(containingType, propertyName, access);
 		}
 
-		public static void BindSetSecondPass(XmlNode node, Set model, IDictionary persistentClasses, Mappings mappings)
+		public static void BindSetSecondPass(XmlNode node, Set model, IDictionary<System.Type, PersistentClass> persistentClasses, Mappings mappings)
 		{
 			BindCollectionSecondPass(node, model, persistentClasses, mappings);
 

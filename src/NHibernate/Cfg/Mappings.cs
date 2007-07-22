@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 
-using Iesi.Collections;
-
-using log4net;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Util;
@@ -16,7 +13,7 @@ namespace NHibernate.Cfg
 	/// <remarks>Represents a single <c>&lt;hibernate-mapping&gt;</c> element.</remarks>
 	public class Mappings
 	{
-		private readonly IDictionary classes;
+		private readonly IDictionary<System.Type, PersistentClass> classes;
 		private readonly IDictionary collections;
 		private readonly IDictionary tables;
 		private readonly IDictionary queries;
@@ -44,7 +41,7 @@ namespace NHibernate.Cfg
 		}
 
 		internal Mappings(
-			IDictionary classes,
+			IDictionary<System.Type, PersistentClass> classes,
 			IDictionary collections,
 			IDictionary tables,
 			IDictionary queries,

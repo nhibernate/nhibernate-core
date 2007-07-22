@@ -1,6 +1,7 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
+
 using log4net;
+
 using NHibernate.Mapping;
 
 namespace NHibernate.Cfg
@@ -17,7 +18,7 @@ namespace NHibernate.Cfg
 			this.mappings = mappings;
 		}
 
-		public void DoSecondPass(IDictionary persistentClasses)
+		public void DoSecondPass(IDictionary<System.Type, PersistentClass> persistentClasses)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -46,6 +47,6 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public abstract void SecondPass(IDictionary persistentClasses);
+		public abstract void SecondPass(IDictionary<System.Type, PersistentClass> persistentClasses);
 	}
 }

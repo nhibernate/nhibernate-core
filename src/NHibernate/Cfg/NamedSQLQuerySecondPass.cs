@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Mapping;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -21,7 +23,7 @@ namespace NHibernate.Cfg
 			this.mappings = mappings;
 		}
 
-		public void DoSecondPass(IDictionary persistentClasses)
+		public void DoSecondPass(IDictionary<System.Type, PersistentClass> persistentClasses)
 		{
 			String queryName = queryElem.Attributes["name"].Value;
 			if (path != null)

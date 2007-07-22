@@ -99,7 +99,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
-		private IDictionary classes;
+		private IDictionary<System.Type, PersistentClass> classes;
 		private Hashtable imports;
 		private Hashtable collections;
 		private Hashtable tables;
@@ -123,7 +123,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		private void Reset()
 		{
-			classes = new Hashtable(); //new SequencedHashMap(); - to make NH-369 bug deterministic
+			classes = new HashtableDictionary<System.Type, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
 			imports = new Hashtable();
 			collections = new Hashtable();
 			tables = new Hashtable();
@@ -200,7 +200,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// The class mappings 
 		/// </summary>
-		public ICollection ClassMappings
+		public ICollection<PersistentClass> ClassMappings
 		{
 			get { return classes.Values; }
 		}
@@ -651,7 +651,7 @@ namespace NHibernate.Cfg
 			if (!skipOrdering)
 			{
 				ISet<string> loadedClasses = new HashedSet<string>();
-				foreach (DictionaryEntry de in classes)
+				foreach (KeyValuePair<System.Type, PersistentClass> de in classes)
 				{
 					PersistentClass pc = (PersistentClass)de.Value;
 					loadedClasses.Add(pc.MappedClass.FullName);
