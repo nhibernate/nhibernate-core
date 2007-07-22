@@ -1,8 +1,9 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
+
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
+
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH845
@@ -19,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH845
 			orderer.AddResource("NHibernate.DomainModel.Multi.hbm.xml");
 			orderer.AddResource("NHibernate.DomainModel.Query.hbm.xml");
 
-			IList files = orderer.GetHbmFiles();
+			IList<string> files = orderer.GetHbmFiles();
 			Assert.IsTrue(files.Contains("NHibernate.DomainModel.Query.hbm.xml"));
 		}
 	}

@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 using NHibernate.Cfg;
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 		public void OrderingAssemblyOrderer()
 		{
 			AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(MyAssembly, Resources);
-			IList orderedResources = orderer.GetHbmFiles();
+			IList<string> orderedResources = orderer.GetHbmFiles();
 			Assert.AreEqual(Resources.Length, orderedResources.Count);
 			Assert.AreEqual(Resources[3], orderedResources[0]);
 			Assert.AreEqual(Resources[1], orderedResources[1]);

@@ -1,6 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -38,7 +37,7 @@ namespace NHibernate.Cfg
 		/// An <see cref="IList"/> of all the <c>hbm.xml</c> resources found
 		/// in the assembly.
 		/// </summary>
-		private readonly ArrayList _hbmResources = new ArrayList();
+		private readonly List<string> _hbmResources = new List<string>();
 
 		/// <summary>
 		/// Creates a new instance of AssemblyHbmOrderer with the specified <paramref name="resources" />
@@ -94,7 +93,7 @@ namespace NHibernate.Cfg
 		/// <returns>
 		/// An <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
 		/// </returns>
-		public IList GetHbmFiles()
+		public IList<string> GetHbmFiles()
 		{
 			return GetHbmFiles(new HashedSet());
 		}
@@ -106,14 +105,14 @@ namespace NHibernate.Cfg
 		/// <returns>
 		/// An <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
 		/// </returns>
-		public IList GetHbmFiles(ISet loadedClasses)
+		public IList<string> GetHbmFiles(ISet loadedClasses)
 		{
 			HashedSet classes = new HashedSet();
 
 			// tracks if any hbm.xml files make use of the "extends" attribute
 			bool containsExtends = false;
 			// tracks any extra files, i.e. those that do not contain a class definition.
-			StringCollection extraFiles = new StringCollection();
+			List<string> extraFiles = new List<string>();
 
 			foreach (string fileName in _hbmResources)
 			{
@@ -175,7 +174,8 @@ namespace NHibernate.Cfg
 				// Add ordered hbms *after* the extra files, so that the extra files are processed first.
 				// This may be useful if the extra files define filters, etc. that are being used by
 				// the entity mappings.
-				ArrayHelper.AddAll(extraFiles, OrderedHbmFiles(classes, loadedClasses));
+				extraFiles.AddRange(OrderedHbmFiles(classes, loadedClasses));
+
 				return extraFiles;
 			}
 			else
@@ -205,9 +205,10 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="unorderedClasses">An <see cref="ISet"/> of <see cref="ClassEntry"/> objects.</param>
 		/// <returns>
-		/// An <see cref="IList"/> of <see cref="String"/> objects that contain the <c>hbm.xml</c> file names.
+		/// An <see cref="IList"/> of <see cref="string"/> objects that contain the <c>hbm.xml</c> file names.
 		/// </returns>
-		private static StringCollection OrderedHbmFiles(ISet unorderedClasses, ISet loadedClasses)
+		/// <param name="loadedClasses"></param>
+		private static IList<string> OrderedHbmFiles(ISet unorderedClasses, ISet loadedClasses)
 		{
 			// Make sure joined-subclass mappings are loaded after base class
 			ArrayList sortedList = new ArrayList();
@@ -244,7 +245,7 @@ namespace NHibernate.Cfg
 
 			// now that we know the order the classes should be loaded - order the
 			// hbm.xml files those classes are contained in.
-			StringCollection loadedFiles = new StringCollection();
+			List<string> loadedFiles = new List<string>();
 			foreach (ClassEntry ce in sortedList)
 			{
 				// Check if this file already loaded (this can happen if

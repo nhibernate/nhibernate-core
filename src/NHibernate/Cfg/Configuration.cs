@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
+
 using Iesi.Collections;
+
 using log4net;
+
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -604,9 +607,9 @@ namespace NHibernate.Cfg
 			return AddAssembly(assembly, false);
 		}
 
-		private static StringCollection GetAllHbmXmlResourceNames(Assembly assembly)
+		private static IList<string> GetAllHbmXmlResourceNames(Assembly assembly)
 		{
-			StringCollection result = new StringCollection();
+			List<string> result = new List<string>();
 
 			foreach (string resource in assembly.GetManifestResourceNames())
 			{
@@ -638,11 +641,11 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration AddAssembly(Assembly assembly, bool skipOrdering)
 		{
-			IList resources = GetAllHbmXmlResourceNames(assembly);
+			IList<string> resources = GetAllHbmXmlResourceNames(assembly);
 			return AddResources(assembly, resources, skipOrdering);
 		}
 
-		public Configuration AddResources(Assembly assembly, IList resources, bool skipOrdering)
+		public Configuration AddResources(Assembly assembly, IList<string> resources, bool skipOrdering)
 		{
 			if (!skipOrdering)
 			{
@@ -652,9 +655,7 @@ namespace NHibernate.Cfg
 					PersistentClass pc = (PersistentClass)de.Value;
 					loadedClasses.Add(pc.MappedClass.FullName);
 				}
-				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(
-					assembly,
-					resources);
+				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(assembly, resources);
 				resources = orderer.GetHbmFiles(loadedClasses);
 			}
 
