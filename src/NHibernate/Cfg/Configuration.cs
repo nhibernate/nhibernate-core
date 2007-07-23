@@ -105,7 +105,7 @@ namespace NHibernate.Cfg
 		private IDictionary<string, Table> tables;
 		private IDictionary<string, NamedQueryDefinition> namedQueries;
 		private IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
-		private Hashtable sqlResultSetMappings;
+		private IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 		private IList<ISecondPass> secondPasses;
 		private IList<Mappings.UniquePropertyReference> propertyReferences;
 		private IInterceptor interceptor;
@@ -129,7 +129,7 @@ namespace NHibernate.Cfg
 			tables = new HashtableDictionary<string, Table>();
 			namedQueries = new HashtableDictionary<string,NamedQueryDefinition>();
 			namedSqlQueries = new HashtableDictionary<string, NamedSQLQueryDefinition>();
-			sqlResultSetMappings = new Hashtable();
+			sqlResultSetMappings = new HashtableDictionary<string, ResultSetMappingDefinition>();
 			secondPasses = new List<ISecondPass>();
 			propertyReferences = new List<Mappings.UniquePropertyReference>();
 			filterDefinitions = new Hashtable();
@@ -236,7 +236,7 @@ namespace NHibernate.Cfg
 		/// <returns><see cref="NHibernate.Mapping.Collection" /></returns>
 		public NHibernate.Mapping.Collection GetCollectionMapping(string role)
 		{
-			return (NHibernate.Mapping.Collection) collections[role];
+			return collections[role];
 		}
 
 		/// <summary>
@@ -1579,7 +1579,7 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		public IDictionary SqlResultSetMappings
+		public IDictionary<string, ResultSetMappingDefinition> SqlResultSetMappings
 		{
 			get { return sqlResultSetMappings; }
 		}

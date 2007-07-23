@@ -18,7 +18,7 @@ namespace NHibernate.Cfg
 		private readonly IDictionary<string, Table> tables;
 		private readonly IDictionary<string, NamedQueryDefinition> queries;
 		private readonly IDictionary<string, NamedSQLQueryDefinition> sqlqueries;
-		private readonly IDictionary resultSetMappings;
+		private readonly IDictionary<string, ResultSetMappingDefinition> resultSetMappings;
 		private readonly IList<ISecondPass> secondPasses;
 		private readonly IDictionary<string, string> imports;
 		private string schemaName;
@@ -32,7 +32,7 @@ namespace NHibernate.Cfg
 		private readonly IDictionary filterDefinitions;
 		private readonly IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 
-		private INamingStrategy namingStrategy;
+		private readonly INamingStrategy namingStrategy;
 
 		internal class UniquePropertyReference
 		{
@@ -46,7 +46,7 @@ namespace NHibernate.Cfg
 			IDictionary<string, Table> tables,
 			IDictionary<string, NamedQueryDefinition> queries,
 			IDictionary<string, NamedSQLQueryDefinition> sqlqueries,
-			IDictionary resultSetMappings,
+			IDictionary<string, ResultSetMappingDefinition> resultSetMappings,
 			IDictionary<string, string> imports,
 			IList<ISecondPass> secondPasses,
 			IList<UniquePropertyReference> propertyReferences,
@@ -323,7 +323,7 @@ namespace NHibernate.Cfg
 		public void AddResultSetMapping(ResultSetMappingDefinition sqlResultSetMapping)
 		{
 			string name = sqlResultSetMapping.Name;
-			if (resultSetMappings.Contains(name))
+			if (resultSetMappings.ContainsKey(name))
 			{
 				throw new DuplicateMappingException("resultSet", name);
 			}

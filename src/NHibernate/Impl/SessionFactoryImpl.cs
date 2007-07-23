@@ -95,7 +95,7 @@ namespace NHibernate.Impl
 		private readonly HashtableDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
 
 		[NonSerialized]
-		private readonly IDictionary sqlResultSetMappings;
+		private readonly HashtableDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 
 		[NonSerialized]
 		private readonly IDictionary filters;
@@ -253,7 +253,7 @@ namespace NHibernate.Impl
 
 			namedQueries = new HashtableDictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
 			namedSqlQueries = new HashtableDictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
-			sqlResultSetMappings = new Hashtable(cfg.SqlResultSetMappings);
+			sqlResultSetMappings = new HashtableDictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
 			filters = new Hashtable(cfg.FilterDefinitions);
 
 			imports = new HashtableDictionary<string, string>(cfg.Imports);
