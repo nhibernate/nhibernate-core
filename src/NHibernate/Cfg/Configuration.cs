@@ -123,13 +123,13 @@ namespace NHibernate.Cfg
 		/// </summary>
 		private void Reset()
 		{
-			classes = new HashtableDictionary<System.Type, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
-			imports = new HashtableDictionary<string, string>();
-			collections = new HashtableDictionary<string, NHibernate.Mapping.Collection>();
-			tables = new HashtableDictionary<string, Table>();
-			namedQueries = new HashtableDictionary<string,NamedQueryDefinition>();
-			namedSqlQueries = new HashtableDictionary<string, NamedSQLQueryDefinition>();
-			sqlResultSetMappings = new HashtableDictionary<string, ResultSetMappingDefinition>();
+			classes = new Dictionary<System.Type, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
+			imports = new Dictionary<string, string>();
+			collections = new Dictionary<string, NHibernate.Mapping.Collection>();
+			tables = new Dictionary<string, Table>();
+			namedQueries = new Dictionary<string,NamedQueryDefinition>();
+			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>();
+			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>();
 			secondPasses = new List<ISecondPass>();
 			propertyReferences = new List<Mappings.UniquePropertyReference>();
 			filterDefinitions = new Hashtable();
@@ -137,7 +137,7 @@ namespace NHibernate.Cfg
 			mapping = new Mapping(this);
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
-			sqlFunctions = new HashtableDictionary<string, ISQLFunction>();
+			sqlFunctions = new Dictionary<string, ISQLFunction>();
 		}
 
 		private class Mapping : IMapping
@@ -226,7 +226,10 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public PersistentClass GetClassMapping(System.Type persistentClass)
 		{
-			return classes[persistentClass];
+			if (classes.ContainsKey(persistentClass))
+				return classes[persistentClass];
+			else
+				return null;
 		}
 
 		/// <summary>
@@ -236,7 +239,10 @@ namespace NHibernate.Cfg
 		/// <returns><see cref="NHibernate.Mapping.Collection" /></returns>
 		public NHibernate.Mapping.Collection GetCollectionMapping(string role)
 		{
-			return collections[role];
+			if (collections.ContainsKey(role))
+				return collections[role];
+			else
+				return null;
 		}
 
 		/// <summary>

@@ -79,11 +79,11 @@ namespace NHibernate.Cfg
 		/// <param name="persistentClass"></param>
 		public void AddClass(PersistentClass persistentClass)
 		{
-			object old = classes[persistentClass.MappedClass];
-			if (old != null)
+			if (classes.ContainsKey(persistentClass.MappedClass))
 			{
 				throw new DuplicateMappingException("class/entity", persistentClass.MappedClass.Name);
 			}
+
 			classes[persistentClass.MappedClass] = persistentClass;
 		}
 
@@ -93,8 +93,7 @@ namespace NHibernate.Cfg
 		/// <param name="collection"></param>
 		public void AddCollection(Mapping.Collection collection)
 		{
-			object old = collections[collection.Role];
-			if (old != null)
+			if (collections.ContainsKey(collection.Role))
 			{
 				throw new DuplicateMappingException("collection role", collection.Role);
 			}
@@ -201,16 +200,17 @@ namespace NHibernate.Cfg
 		public Table AddTable(string schema, string name)
 		{
 			string key = schema != null ? schema + "." + name : name;
-			Table table = tables[key];
 
-			if (table == null)
+			if (tables.ContainsKey(key))
+				return tables[key];
+			else
 			{
-				table = new Table();
+				Table table = new Table();
 				table.Name = name;
 				table.Schema = schema;
 				tables[key] = table;
+				return table;
 			}
-			return table;
 		}
 
 		/// <summary>

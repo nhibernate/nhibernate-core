@@ -11,13 +11,16 @@ namespace NHibernate.Dialect.Function
 		public SQLFunctionRegistry(Dialect dialect, IDictionary<string, ISQLFunction> userFunctions)
 		{
 			this.dialect = dialect;
-			this.userFunctions = new HashtableDictionary<string, ISQLFunction>(userFunctions,
+			this.userFunctions = new Dictionary<string, ISQLFunction>(userFunctions,
 				StringComparer.InvariantCultureIgnoreCase);
 		}
 
 		public ISQLFunction FindSQLFunction(string functionName)
 		{
-			return userFunctions[functionName] ?? (ISQLFunction) dialect.Functions[functionName];
+			if (userFunctions.ContainsKey(functionName))
+				return userFunctions[functionName];
+			else
+				return (ISQLFunction) dialect.Functions[functionName];
 		}
 
 		public bool HasFunction(string functionName)

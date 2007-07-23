@@ -549,7 +549,6 @@
     <Compile Include="Engine\BatchFetchQueue.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
-    <Compile Include="HashtableDictionary.cs" />
     <Compile Include="Hql\Classic\FunctionStack.cs" />
     <Compile Include="Impl\MultiCriteriaImpl.cs" />
     <Compile Include="Impl\MultipleQueriesCacheAssembler.cs" />

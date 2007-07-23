@@ -89,13 +89,13 @@ namespace NHibernate.Impl
 		private readonly IDictionary identifierGenerators;
 
 		[NonSerialized]
-		private readonly HashtableDictionary<string, NamedQueryDefinition> namedQueries;
+		private readonly IDictionary<string, NamedQueryDefinition> namedQueries;
 
 		[NonSerialized]
-		private readonly HashtableDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
+		private readonly IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
 
 		[NonSerialized]
-		private readonly HashtableDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
+		private readonly IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 
 		[NonSerialized]
 		private readonly IDictionary filters;
@@ -251,12 +251,12 @@ namespace NHibernate.Impl
 			// Named queries:
 			// TODO: precompile and cache named queries
 
-			namedQueries = new HashtableDictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
-			namedSqlQueries = new HashtableDictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
-			sqlResultSetMappings = new HashtableDictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
+			namedQueries = new Dictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
+			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
+			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
 			filters = new Hashtable(cfg.FilterDefinitions);
 
-			imports = new HashtableDictionary<string, string>(cfg.Imports);
+			imports = new Dictionary<string, string>(cfg.Imports);
 
 			// after *all* persisters and named queries are registered
 			foreach (IEntityPersister persister in classPersisters.Values)
@@ -755,14 +755,17 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Gets the <c>hql</c> query identified by the <c>name</c>.
 		/// </summary>
-		/// <param name="name">The name of that identifies the query.</param>
+		/// <param name="queryName">The name of that identifies the query.</param>
 		/// <returns>
 		/// A <c>hql</c> query or <see langword="null" /> if the named
 		/// query does not exist.
 		/// </returns>
-		public NamedQueryDefinition GetNamedQuery(string name)
+		public NamedQueryDefinition GetNamedQuery(string queryName)
 		{
-			return namedQueries[name];
+			if (namedQueries.ContainsKey(queryName))
+				return namedQueries[queryName];
+			else
+				return null;
 		}
 
 		/// <summary>
@@ -772,7 +775,10 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public NamedSQLQueryDefinition GetNamedSQLQuery(string queryName)
 		{
-			return namedSqlQueries[queryName];
+			if (namedSqlQueries.ContainsKey(queryName))
+				return namedSqlQueries[queryName];
+			else
+				return null;
 		}
 
 		/// <summary>
@@ -905,8 +911,10 @@ namespace NHibernate.Impl
 
 		public string GetImportedClassName(string className)
 		{
-			string result = imports[className];
-			return result ?? className;
+			if (imports.ContainsKey(className))
+				return imports[className];
+			else
+				return className;
 		}
 
 		/// <summary></summary>

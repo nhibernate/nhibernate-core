@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
@@ -16,7 +18,7 @@ namespace NHibernate.Test.SqlCommandTest
 		public void SetUp()
 		{
 			dialect = new MsSql2000Dialect();
-			functionRegistry = new SQLFunctionRegistry(dialect, new HashtableDictionary<string, ISQLFunction>());
+			functionRegistry = new SQLFunctionRegistry(dialect, new Dictionary<string, ISQLFunction>());
 		}
 
 		/// <summary>
