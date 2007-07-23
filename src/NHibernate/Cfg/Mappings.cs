@@ -16,7 +16,7 @@ namespace NHibernate.Cfg
 		private readonly IDictionary<System.Type, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;
 		private readonly IDictionary<string, Table> tables;
-		private readonly IDictionary queries;
+		private readonly IDictionary<string, NamedQueryDefinition> queries;
 		private readonly IDictionary sqlqueries;
 		private readonly IDictionary resultSetMappings;
 		private readonly IList<ISecondPass> secondPasses;
@@ -44,7 +44,7 @@ namespace NHibernate.Cfg
 			IDictionary<System.Type, PersistentClass> classes,
 			IDictionary<string, Mapping.Collection> collections,
 			IDictionary<string, Table> tables,
-			IDictionary queries,
+			IDictionary<string, NamedQueryDefinition> queries,
 			IDictionary sqlqueries,
 			IDictionary resultSetMappings,
 			IDictionary<string, string> imports,
@@ -248,7 +248,7 @@ namespace NHibernate.Cfg
 
 		private void CheckQueryExists(string name)
 		{
-			if (queries.Contains(name) || sqlqueries.Contains(name))
+			if (queries.ContainsKey(name) || sqlqueries.Contains(name))
 			{
 				throw new DuplicateMappingException("query / sql-query", name);
 			}
@@ -268,7 +268,7 @@ namespace NHibernate.Cfg
 
 		public NamedQueryDefinition GetQuery(string name)
 		{
-			return (NamedQueryDefinition) queries[name];
+			return queries[name];
 		}
 
 		internal void AddSecondPass(ISecondPass sp)

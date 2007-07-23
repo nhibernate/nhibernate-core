@@ -103,7 +103,7 @@ namespace NHibernate.Cfg
 		private IDictionary<string, string> imports;
 		private IDictionary<string, NHibernate.Mapping.Collection> collections;
 		private IDictionary<string, Table> tables;
-		private Hashtable namedQueries;
+		private IDictionary<string, NamedQueryDefinition> namedQueries;
 		private Hashtable namedSqlQueries;
 		private Hashtable sqlResultSetMappings;
 		private IList<ISecondPass> secondPasses;
@@ -127,7 +127,7 @@ namespace NHibernate.Cfg
 			imports = new HashtableDictionary<string, string>();
 			collections = new HashtableDictionary<string, NHibernate.Mapping.Collection>();
 			tables = new HashtableDictionary<string, Table>();
-			namedQueries = new Hashtable();
+			namedQueries = new HashtableDictionary<string,NamedQueryDefinition>();
 			namedSqlQueries = new Hashtable();
 			sqlResultSetMappings = new Hashtable();
 			secondPasses = new List<ISecondPass>();
@@ -1047,7 +1047,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// The named queries
 		/// </summary>
-		public IDictionary NamedQueries
+		public IDictionary<string, NamedQueryDefinition> NamedQueries
 		{
 			get { return namedQueries; }
 		}

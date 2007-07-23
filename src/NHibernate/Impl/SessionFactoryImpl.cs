@@ -89,7 +89,7 @@ namespace NHibernate.Impl
 		private readonly IDictionary identifierGenerators;
 
 		[NonSerialized]
-		private readonly IDictionary namedQueries;
+		private readonly HashtableDictionary<string, NamedQueryDefinition> namedQueries;
 
 		[NonSerialized]
 		private readonly IDictionary namedSqlQueries;
@@ -251,7 +251,7 @@ namespace NHibernate.Impl
 			// Named queries:
 			// TODO: precompile and cache named queries
 
-			namedQueries = new Hashtable(cfg.NamedQueries);
+			namedQueries = new HashtableDictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
 			namedSqlQueries = new Hashtable(cfg.NamedSQLQueries);
 			sqlResultSetMappings = new Hashtable(cfg.SqlResultSetMappings);
 			filters = new Hashtable(cfg.FilterDefinitions);
@@ -762,7 +762,7 @@ namespace NHibernate.Impl
 		/// </returns>
 		public NamedQueryDefinition GetNamedQuery(string name)
 		{
-			return (NamedQueryDefinition) namedQueries[name];
+			return namedQueries[name];
 		}
 
 		/// <summary>
