@@ -112,7 +112,7 @@ namespace NHibernate.Cfg
 		private IDictionary properties;
 		private IDictionary filterDefinitions;
 		private IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
-		private IDictionary sqlFunctions;
+		private IDictionary<string, ISQLFunction> sqlFunctions;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 		private System.Type proxyFactoryClass = typeof (CastleProxyFactory);
@@ -137,7 +137,7 @@ namespace NHibernate.Cfg
 			mapping = new Mapping(this);
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
-			sqlFunctions = new Hashtable();
+			sqlFunctions = new HashtableDictionary<string, ISQLFunction>();
 		}
 
 		private class Mapping : IMapping
@@ -1599,7 +1599,7 @@ namespace NHibernate.Cfg
 			auxiliaryDatabaseObjects.Add(obj);
 		}
 
-		public IDictionary SqlFunctions
+		public IDictionary<string, ISQLFunction> SqlFunctions
 		{
 			get { return sqlFunctions; }
 		}

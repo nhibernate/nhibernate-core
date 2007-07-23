@@ -1,30 +1,28 @@
 using System;
-using System.Collections;
-using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Dialect.Function
 {
 	public class SQLFunctionRegistry
 	{
 		private readonly Dialect dialect;
-		private readonly IDictionary userFunctions;
+		private readonly IDictionary<string, ISQLFunction> userFunctions;
 
-		public SQLFunctionRegistry(Dialect dialect, IDictionary userFunctions)
+		public SQLFunctionRegistry(Dialect dialect, IDictionary<string, ISQLFunction> userFunctions)
 		{
 			this.dialect = dialect;
-			this.userFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(userFunctions);
+			this.userFunctions = new HashtableDictionary<string, ISQLFunction>(userFunctions,
+				StringComparer.InvariantCultureIgnoreCase);
 		}
 
 		public ISQLFunction FindSQLFunction(string functionName)
 		{
-			ISQLFunction userFunction = (ISQLFunction) userFunctions[functionName];
-			return userFunction != null ? userFunction : (ISQLFunction) dialect.Functions[functionName];
+			return userFunctions[functionName] ?? (ISQLFunction) dialect.Functions[functionName];
 		}
 
 		public bool HasFunction(string functionName)
 		{
-			bool hasUserFunction = userFunctions.Contains(functionName);
-			return hasUserFunction || dialect.Functions.Contains(functionName);
+			return userFunctions.ContainsKey(functionName) || dialect.Functions.Contains(functionName);
 		}
 	}
 }
