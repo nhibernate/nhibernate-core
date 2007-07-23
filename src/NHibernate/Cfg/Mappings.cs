@@ -20,7 +20,7 @@ namespace NHibernate.Cfg
 		private readonly IDictionary sqlqueries;
 		private readonly IDictionary resultSetMappings;
 		private readonly IList<ISecondPass> secondPasses;
-		private readonly IDictionary imports;
+		private readonly IDictionary<string, string> imports;
 		private string schemaName;
 		private string defaultCascade;
 		private string defaultNamespace;
@@ -47,7 +47,7 @@ namespace NHibernate.Cfg
 			IDictionary queries,
 			IDictionary sqlqueries,
 			IDictionary resultSetMappings,
-			IDictionary imports,
+			IDictionary<string, string> imports,
 			IList<ISecondPass> secondPasses,
 			IList<UniquePropertyReference> propertyReferences,
 			INamingStrategy namingStrategy,
@@ -179,7 +179,7 @@ namespace NHibernate.Cfg
 			// the rename is not for a different className.  If it is a different className
 			// then we probably have 2 classes with the same name in a different namespace.  To 
 			// prevent this error one of the classes needs to have the attribute "
-			if (imports.Contains(rename) && (string) imports[rename] != className)
+			if (imports.ContainsKey(rename) && imports[rename] != className)
 			{
 				object existing = imports[rename];
 				throw new DuplicateMappingException("duplicate import: " + rename +

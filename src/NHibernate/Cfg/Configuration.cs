@@ -100,7 +100,7 @@ namespace NHibernate.Cfg
 		#endregion
 
 		private IDictionary<System.Type, PersistentClass> classes;
-		private Hashtable imports;
+		private IDictionary<string, string> imports;
 		private Hashtable collections;
 		private Hashtable tables;
 		private Hashtable namedQueries;
@@ -124,7 +124,7 @@ namespace NHibernate.Cfg
 		private void Reset()
 		{
 			classes = new HashtableDictionary<System.Type, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
-			imports = new Hashtable();
+			imports = new HashtableDictionary<string, string>();
 			collections = new Hashtable();
 			tables = new Hashtable();
 			namedQueries = new Hashtable();
@@ -1519,7 +1519,7 @@ namespace NHibernate.Cfg
 		/// Get the query language imports
 		/// </summary>
 		/// <returns></returns>
-		public IDictionary Imports
+		public IDictionary<string, string> Imports
 		{
 			get { return imports; }
 		}

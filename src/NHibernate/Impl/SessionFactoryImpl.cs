@@ -1,10 +1,14 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+
 using Iesi.Collections;
+
 using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -23,7 +27,8 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;
 using NHibernate.Type;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
+
+using Environment = NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
 
 namespace NHibernate.Impl
@@ -96,7 +101,7 @@ namespace NHibernate.Impl
 		private readonly IDictionary filters;
 
 		[NonSerialized]
-		private readonly IDictionary imports;
+		private readonly IDictionary<string, string> imports;
 
 		// templates are related to XmlDatabinder - nothing like that yet 
 		// in NHibernate.
@@ -251,7 +256,7 @@ namespace NHibernate.Impl
 			sqlResultSetMappings = new Hashtable(cfg.SqlResultSetMappings);
 			filters = new Hashtable(cfg.FilterDefinitions);
 
-			imports = new Hashtable(cfg.Imports);
+			imports = new HashtableDictionary<string, string>(cfg.Imports);
 
 			// after *all* persisters and named queries are registered
 			foreach (IEntityPersister persister in classPersisters.Values)
@@ -900,8 +905,8 @@ namespace NHibernate.Impl
 
 		public string GetImportedClassName(string className)
 		{
-			string result = imports[className] as string;
-			return (result == null) ? className : result;
+			string result = imports[className];
+			return result ?? className;
 		}
 
 		/// <summary></summary>
