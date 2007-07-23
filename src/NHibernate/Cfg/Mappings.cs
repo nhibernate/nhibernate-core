@@ -15,7 +15,7 @@ namespace NHibernate.Cfg
 	{
 		private readonly IDictionary<System.Type, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;
-		private readonly IDictionary tables;
+		private readonly IDictionary<string, Table> tables;
 		private readonly IDictionary queries;
 		private readonly IDictionary sqlqueries;
 		private readonly IDictionary resultSetMappings;
@@ -43,7 +43,7 @@ namespace NHibernate.Cfg
 		internal Mappings(
 			IDictionary<System.Type, PersistentClass> classes,
 			IDictionary<string, Mapping.Collection> collections,
-			IDictionary tables,
+			IDictionary<string, Table> tables,
 			IDictionary queries,
 			IDictionary sqlqueries,
 			IDictionary resultSetMappings,
@@ -201,7 +201,7 @@ namespace NHibernate.Cfg
 		public Table AddTable(string schema, string name)
 		{
 			string key = schema != null ? schema + "." + name : name;
-			Table table = (Table) tables[key];
+			Table table = tables[key];
 
 			if (table == null)
 			{
@@ -222,7 +222,7 @@ namespace NHibernate.Cfg
 		public Table GetTable(string schema, string name)
 		{
 			string key = schema != null ? schema + "." + name : name;
-			return (Table) tables[key];
+			return tables[key];
 		}
 
 		/// <summary></summary>
