@@ -10,7 +10,7 @@
             name="Id"
             column="Id">
             <generator
-                class="identity" />
+                class="native" />
         </id>
         <discriminator
             column="TypeCode" />
