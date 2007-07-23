@@ -14,7 +14,7 @@ namespace NHibernate.Cfg
 	public class Mappings
 	{
 		private readonly IDictionary<System.Type, PersistentClass> classes;
-		private readonly IDictionary collections;
+		private readonly IDictionary<string, Mapping.Collection> collections;
 		private readonly IDictionary tables;
 		private readonly IDictionary queries;
 		private readonly IDictionary sqlqueries;
@@ -42,7 +42,7 @@ namespace NHibernate.Cfg
 
 		internal Mappings(
 			IDictionary<System.Type, PersistentClass> classes,
-			IDictionary collections,
+			IDictionary<string, Mapping.Collection> collections,
 			IDictionary tables,
 			IDictionary queries,
 			IDictionary sqlqueries,
@@ -163,7 +163,7 @@ namespace NHibernate.Cfg
 		/// <returns></returns>
 		public Mapping.Collection GetCollection(string role)
 		{
-			return (Mapping.Collection) collections[role];
+			return collections[role];
 		}
 
 		/// <summary>

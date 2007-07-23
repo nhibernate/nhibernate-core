@@ -101,7 +101,7 @@ namespace NHibernate.Cfg
 
 		private IDictionary<System.Type, PersistentClass> classes;
 		private IDictionary<string, string> imports;
-		private Hashtable collections;
+		private IDictionary<string, NHibernate.Mapping.Collection> collections;
 		private Hashtable tables;
 		private Hashtable namedQueries;
 		private Hashtable namedSqlQueries;
@@ -125,7 +125,7 @@ namespace NHibernate.Cfg
 		{
 			classes = new HashtableDictionary<System.Type, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
 			imports = new HashtableDictionary<string, string>();
-			collections = new Hashtable();
+			collections = new HashtableDictionary<string, NHibernate.Mapping.Collection>();
 			tables = new Hashtable();
 			namedQueries = new Hashtable();
 			namedSqlQueries = new Hashtable();
@@ -208,7 +208,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// The collection mappings
 		/// </summary>
-		public ICollection CollectionMappings
+		public ICollection<NHibernate.Mapping.Collection> CollectionMappings
 		{
 			get { return collections.Values; }
 		}
