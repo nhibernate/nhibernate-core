@@ -142,7 +142,7 @@ namespace NHibernate.Cfg
 
 		private class Mapping : IMapping
 		{
-			private Configuration configuration;
+			private readonly Configuration configuration;
 
 			public Mapping(Configuration configuration)
 			{
@@ -261,10 +261,10 @@ namespace NHibernate.Cfg
 			return AddFile(xmlFile.FullName);
 		}
 
-		private static void LogAndThrow(MappingException me)
+		private static void LogAndThrow(Exception exception)
 		{
-			log.Error(me.Message, me);
-			throw me;
+			log.Error(exception.Message, exception);
+			throw exception;
 		}
 
 		/// <summary>
@@ -429,7 +429,7 @@ namespace NHibernate.Cfg
 			}
 			catch (Exception e)
 			{
-				string nameFormatted = name == null ? "(unknown)" : name;
+				string nameFormatted = name ?? "(unknown)";
 				LogAndThrow(new MappingException("Could not compile the mapping document: " + nameFormatted, e));
 			}
 		}
@@ -1014,37 +1014,43 @@ namespace NHibernate.Cfg
 				if (!done.Contains(fk))
 				{
 					done.Add(fk);
+					
 					if (log.IsDebugEnabled)
 					{
 						log.Debug("resolving reference to class: " + fk.ReferencedClass.Name);
 					}
-					PersistentClass referencedClass = classes[fk.ReferencedClass];
-					if (referencedClass == null)
+					
+					if (!classes.ContainsKey(fk.ReferencedClass))
 					{
 						string messageTemplate = "An association from the table {0} refers to an unmapped class: {1}";
 						string message = string.Format(messageTemplate, fk.Table.Name, fk.ReferencedClass.Name);
 
 						LogAndThrow(new MappingException(message));
 					}
+					else
+					{
+						PersistentClass referencedClass = classes[fk.ReferencedClass];
 
-					if (referencedClass.IsJoinedSubclass)
-					{
-						SecondPassCompileForeignKeys(referencedClass.Superclass.Table, done);
-					}
-
-					try
-					{
-						fk.ReferencedTable = referencedClass.Table;
-					}
-					catch (MappingException me)
-					{
-						if (log.IsErrorEnabled)
+						if (referencedClass.IsJoinedSubclass)
 						{
-							log.Error(me);
+							SecondPassCompileForeignKeys(referencedClass.Superclass.Table, done);
 						}
 
-						// rethrow the error - only caught it for logging purposes
-						throw;
+						try
+						{
+							fk.ReferencedTable = referencedClass.Table;
+						}
+						catch (MappingException me)
+						{
+							if (log.IsErrorEnabled)
+							{
+								log.Error(me);
+							}
+
+							// rethrow the error - only caught it for logging purposes
+							throw;
+						}
+						
 					}
 				}
 			}
@@ -1089,7 +1095,7 @@ namespace NHibernate.Cfg
 		public IInterceptor Interceptor
 		{
 			get { return interceptor; }
-			set { this.interceptor = value; }
+			set { interceptor = value; }
 		}
 
 		/// <summary>
@@ -1103,22 +1109,22 @@ namespace NHibernate.Cfg
 		public IDictionary Properties
 		{
 			get { return properties; }
-			set { this.properties = value; }
+			set { properties = value; }
 		}
 
 		/// <summary>
 		/// Set the default assembly to use for the mappings added to the configuration
 		/// afterwards.
 		/// </summary>
-		/// <param name="defaultAssembly">The default assembly name.</param>
+		/// <param name="newDefaultAssembly">The default assembly name.</param>
 		/// <returns>This configuration instance.</returns>
 		/// <remarks>
 		/// This setting can be overridden for a mapping file by setting <c>default-assembly</c>
 		/// attribute of <c>&lt;hibernate-mapping&gt;</c> element.
 		/// </remarks>
-		public Configuration SetDefaultAssembly(string defaultAssembly)
+		public Configuration SetDefaultAssembly(string newDefaultAssembly)
 		{
-			this.defaultAssembly = defaultAssembly;
+			defaultAssembly = newDefaultAssembly;
 			return this;
 		}
 
@@ -1126,35 +1132,35 @@ namespace NHibernate.Cfg
 		/// Set the default namespace to use for the mappings added to the configuration
 		/// afterwards.
 		/// </summary>
-		/// <param name="defaultNamespace">The default namespace.</param>
+		/// <param name="newDefaultNamespace">The default namespace.</param>
 		/// <returns>This configuration instance.</returns>
 		/// <remarks>
 		/// This setting can be overridden for a mapping file by setting <c>default-namespace</c>
 		/// attribute of <c>&lt;hibernate-mapping&gt;</c> element.
 		/// </remarks>
-		public Configuration SetDefaultNamespace(string defaultNamespace)
+		public Configuration SetDefaultNamespace(string newDefaultNamespace)
 		{
-			this.defaultNamespace = defaultNamespace;
+			defaultNamespace = newDefaultNamespace;
 			return this;
 		}
 
 		/// <summary>
 		/// Sets the default interceptor for use by all sessions.
 		/// </summary>
-		/// <param name="interceptor">The default interceptor.</param>
+		/// <param name="newInterceptor">The default interceptor.</param>
 		/// <returns>This configuration instance.</returns>
-		public Configuration SetInterceptor(IInterceptor interceptor)
+		public Configuration SetInterceptor(IInterceptor newInterceptor)
 		{
-			this.interceptor = interceptor;
+			interceptor = newInterceptor;
 			return this;
 		}
 
 		/// <summary>
 		/// Specify a completely new set of properties
 		/// </summary>
-		public Configuration SetProperties(IDictionary properties)
+		public Configuration SetProperties(IDictionary newProperties)
 		{
-			this.properties = properties;
+			properties = newProperties;
 			return this;
 		}
 
@@ -1163,15 +1169,15 @@ namespace NHibernate.Cfg
 		/// Key is the name of the Property and the Value is the <see cref="String"/>
 		/// value of the Property.
 		/// </summary>
-		/// <param name="properties">An <see cref="IDictionary"/> of configuration properties.</param>
+		/// <param name="additionalProperties">An <see cref="IDictionary"/> of configuration properties.</param>
 		/// <returns>
 		/// This <see cref="Configuration"/> object.
 		/// </returns>
-		public Configuration AddProperties(IDictionary properties)
+		public Configuration AddProperties(IDictionary additionalProperties)
 		{
-			foreach (DictionaryEntry de in properties)
+			foreach (DictionaryEntry de in additionalProperties)
 			{
-				this.properties.Add(de.Key, de.Value);
+				properties.Add(de.Key, de.Value);
 			}
 			return this;
 		}
@@ -1304,11 +1310,13 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure(Assembly assembly, string resourceName)
 		{
-			if (assembly == null || resourceName == null)
-			{
+			if (assembly == null)
 				throw new HibernateException("Could not configure NHibernate.",
-				                             new ArgumentException("A null value was passed in.", "assembly or resourceName"));
-			}
+					new ArgumentNullException("assembly"));
+
+			if (resourceName == null)
+				throw new HibernateException("Could not configure NHibernate.",
+					new ArgumentNullException("resourceName"));
 
 			Stream stream = null;
 			try
@@ -1317,8 +1325,9 @@ namespace NHibernate.Cfg
 				if (stream == null)
 				{
 					// resource does not exist - throw appropriate exception 
-					throw new HibernateException("A ManifestResourceStream could not be created for the resource " + resourceName +
-					                             " in Assembly " + assembly.FullName);
+					throw new HibernateException("A ManifestResourceStream could not be created for the resource " +
+						resourceName +
+							" in Assembly " + assembly.FullName);
 				}
 
 				return Configure(new XmlTextReader(stream));
@@ -1345,7 +1354,7 @@ namespace NHibernate.Cfg
 			if (reader == null)
 			{
 				throw new HibernateException("Could not configure NHibernate.",
-				                             new ArgumentException("A null value was passed in.", "reader"));
+					new ArgumentException("A null value was passed in.", "reader"));
 			}
 
 			XmlDocument doc = new XmlDocument();
@@ -1387,7 +1396,7 @@ namespace NHibernate.Cfg
 			if (sfNode == null)
 			{
 				throw new MappingException("<session-factory xmlns='" + CfgSchemaXMLNS +
-				                           "'> element was not found in the configuration file.");
+					"'> element was not found in the configuration file.");
 			}
 
 			XmlAttribute nameNode = sfNode.Attributes["name"];
@@ -1483,7 +1492,7 @@ namespace NHibernate.Cfg
 			{
 				throw new MappingException(
 					"You may only specify a cache for root <class> mappings "
-					+ "(cache was specified for " + clazz + ")");
+						+ "(cache was specified for " + clazz + ")");
 			}
 
 			return rootClass;
@@ -1556,32 +1565,33 @@ namespace NHibernate.Cfg
 			get { return namingStrategy; }
 		}
 
-
 		public System.Type ProxyFactoryClass
 		{
 			get { return proxyFactoryClass; }
 		}
 
-		public Configuration SetProxyFactoryClass(System.Type proxyFactoryClass)
+		public Configuration SetProxyFactoryClass(System.Type newProxyFactoryClass)
 		{
-			if(typeof(IProxyFactory).IsAssignableFrom(proxyFactoryClass)==false)
+			if (typeof (IProxyFactory).IsAssignableFrom(newProxyFactoryClass) == false)
 			{
-				HibernateException he = new HibernateException(proxyFactoryClass.FullName+" does not implement "+typeof(IProxyFactory).FullName);
+				HibernateException he =
+					new HibernateException(newProxyFactoryClass.FullName + " does not implement " +
+						typeof (IProxyFactory).FullName);
 				log.Error(he);
 				throw he;
 			}
-			this.proxyFactoryClass = proxyFactoryClass;
+			proxyFactoryClass = newProxyFactoryClass;
 			return this;
 		}
 
 		/// <summary>
 		/// Set a custom naming strategy
 		/// </summary>
-		/// <param name="namingStrategy">the NamingStrategy to set</param>
+		/// <param name="newNamingStrategy">the NamingStrategy to set</param>
 		/// <returns></returns>
-		public Configuration SetNamingStrategy(INamingStrategy namingStrategy)
+		public Configuration SetNamingStrategy(INamingStrategy newNamingStrategy)
 		{
-			this.namingStrategy = namingStrategy;
+			namingStrategy = newNamingStrategy;
 			return this;
 		}
 
@@ -1639,7 +1649,7 @@ namespace NHibernate.Cfg
 			{
 				XmlDocument hbmDocument = new XmlDocument();
 
-				validatingReader.ValidationEventHandler += new ValidationEventHandler(ValidationHandler);
+				validatingReader.ValidationEventHandler += ValidationHandler;
 				validatingReader.ValidationType = ValidationType.Schema;
 				validatingReader.Schemas.Add(MappingSchemaCollection);
 
@@ -1690,7 +1700,7 @@ namespace NHibernate.Cfg
 			LogAndThrow(new MappingException(message, args.Exception));
 		}
 
-		protected XmlNamespaceManager CreateXmlNamespaceManager(XmlDocument doc)
+		protected static XmlNamespaceManager CreateXmlNamespaceManager(XmlDocument doc)
 		{
 			XmlNamespaceManager cfgNamespaceMgr = new XmlNamespaceManager(doc.NameTable);
 			// note that the prefix has absolutely nothing to do with what the user
@@ -1701,13 +1711,13 @@ namespace NHibernate.Cfg
 			return cfgNamespaceMgr;
 		}
 
-		private XmlNode GetAppConfigConfigurationNode()
+		private static XmlNode GetAppConfigConfigurationNode()
 		{
 			XmlNode node = ConfigurationSettings.GetConfig("hibernate-configuration") as XmlNode;
 			return node;
 		}
 
-		private string GetDefaultConfigurationFilePath()
+		private static string GetDefaultConfigurationFilePath()
 		{
 			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
