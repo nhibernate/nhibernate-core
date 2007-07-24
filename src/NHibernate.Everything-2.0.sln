@@ -139,18 +139,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test-2.0",
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9BDB5C84-14EC-4384-B423-9E319675B3CA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{9BDB5C84-14EC-4384-B423-9E319675B3CA}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
-	ProjectSection(SolutionItems) = preProject
-		..\build-common\common-project.xml = ..\build-common\common-project.xml
-		..\build-common\common.xml = ..\build-common\common.xml
-		..\default.build = ..\default.build
-	EndProjectSection
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "D:\...\NHibernate.Example.Web\", "NHibernate.Example.Web", "{C5D6EE68-1760-4F97-AD31-42343593D8C1}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "C:\...\NHibernate.Example.Web\", "NHibernate.Example.Web\", "{C5D6EE68-1760-4F97-AD31-42343593D8C1}"
 	ProjectSection(WebsiteProperties) = preProject
 		ProjectReferences = "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}|NHibernate.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/NHibernate.Example.Web"
@@ -187,6 +182,78 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Search.Tests", "
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Iesi Collections", "Iesi Collections", "{C91E7018-3C67-4830-963A-C388C75E1BD5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{094F74CD-2DD7-496F-BC48-A6D357BF33FD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Caches", "Caches", "{B86033F7-9D86-4872-9F12-A62E2AD3C5AB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mapping Attributes", "Mapping Attributes", "{9F7A6D94-7029-4143-9998-82C0C70D7C15}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Search", "Search", "{65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hbm2net Tool", "hbm2net Tool", "{92509065-DAEA-4457-8300-C7B64CD0E9F4}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserTypes", "UserTypes", "{5568C105-BF06-4772-8989-F69E10DFE7A4}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{28EA2C84-8295-49ED-BC67-803B7778513E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NAnt Build", "NAnt Build", "{4CE16C2F-EFF6-48A4-99BC-8984DCC143FA}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		..\build-common\common-project.xml = ..\build-common\common-project.xml
+		..\build-common\common.xml = ..\build-common\common.xml
+		..\default.build = ..\default.build
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Information", "Information", "{1631B0BA-59AC-4F0D-B300-3F64CC7579C9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		..\gfdl.txt = ..\gfdl.txt
+		..\lgpl.txt = ..\lgpl.txt
+		..\readme.html = ..\readme.html
+		..\releasenotes.txt = ..\releasenotes.txt
+		..\sample build commands.txt = ..\sample build commands.txt
 	EndProjectSection
 EndProject
 Global
@@ -389,36 +456,6 @@ Global
 		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release|.NET.ActiveCfg = Release|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{9DEFA2EA-4A52-445A-8DA4-6531BD5D76B5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release|.NET.ActiveCfg = Release|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release|Any CPU.Build.0 = Release|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{35F82297-CAB4-4D57-AAB9-CBDB1F6B8841}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release|.NET.ActiveCfg = Release|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{2D3FBB15-830A-4A9E-82D7-A0712B7330E1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Debug|.NET.ActiveCfg = Debug|Any CPU
 		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -503,5 +540,43 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4CE16C2F-EFF6-48A4-99BC-8984DCC143FA} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
+		{1631B0BA-59AC-4F0D-B300-3F64CC7579C9} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
+		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344} = {C91E7018-3C67-4830-963A-C388C75E1BD5}
+		{58CE4584-31B9-4E74-A7FB-5D40BFAD0876} = {C91E7018-3C67-4830-963A-C388C75E1BD5}
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{C5D6EE68-1760-4F97-AD31-42343593D8C1} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{5C649B55-1B3F-4C38-9998-1B043E94A244} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{3905D37C-CA49-4C13-99A4-4D815EFCAA56} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{E3482030-5828-4112-9906-D4C5153DCE3F} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{C6F085E3-17FA-424A-9A09-143F3E177FEB} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{7AEE5B37-C552-4E59-9B6F-88755BCB5070} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
+		{EE1CD14F-FE9F-4DB4-ADE2-A8853935F44E} = {B86033F7-9D86-4872-9F12-A62E2AD3C5AB}
+		{2AE716DC-D909-4100-8ED5-09B701EF2E14} = {B86033F7-9D86-4872-9F12-A62E2AD3C5AB}
+		{BE827B8B-CF61-42AD-89BB-FF60D58D27F3} = {B86033F7-9D86-4872-9F12-A62E2AD3C5AB}
+		{51179C23-5555-45A4-9BBB-8F6E24D05C2B} = {B86033F7-9D86-4872-9F12-A62E2AD3C5AB}
+		{C04709C0-2FF9-424A-82FF-235312877853} = {B86033F7-9D86-4872-9F12-A62E2AD3C5AB}
+		{21FB1DFD-A6A9-4C8D-B4E2-CCB2EBDF8F16} = {B86033F7-9D86-4872-9F12-A62E2AD3C5AB}
+		{53E01216-76B6-4920-A386-2486ACEE5AEA} = {B86033F7-9D86-4872-9F12-A62E2AD3C5AB}
+		{AE0F3023-0ED6-45BE-8995-8C3B2E585A20} = {9F7A6D94-7029-4143-9998-82C0C70D7C15}
+		{A6585067-79C1-41A9-A006-A83C3A800B21} = {9F7A6D94-7029-4143-9998-82C0C70D7C15}
+		{CC25D767-990D-4CE0-9F64-3426E244403B} = {65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F}
+		{71560152-A693-4F66-99CF-570685A33169} = {65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F}
+		{136FFE16-EE3B-4556-90FB-E265113CB13F} = {92509065-DAEA-4457-8300-C7B64CD0E9F4}
+		{F2FBD35E-28C4-461F-804D-0E43BED01185} = {92509065-DAEA-4457-8300-C7B64CD0E9F4}
+		{E7D3A1AB-23A6-4924-8D36-DE18DBAD2D54} = {92509065-DAEA-4457-8300-C7B64CD0E9F4}
+		{21192DFF-BB53-4164-850F-A500E6ED9A66} = {5568C105-BF06-4772-8989-F69E10DFE7A4}
+		{094F49F9-499A-40DE-97E4-AB0C5C883355} = {5568C105-BF06-4772-8989-F69E10DFE7A4}
+		{C404F5BA-AF29-4D36-B1C3-2E67F5B2EE75} = {5568C105-BF06-4772-8989-F69E10DFE7A4}
+		{65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F} = {28EA2C84-8295-49ED-BC67-803B7778513E}
+		{5568C105-BF06-4772-8989-F69E10DFE7A4} = {28EA2C84-8295-49ED-BC67-803B7778513E}
+		{9F7A6D94-7029-4143-9998-82C0C70D7C15} = {28EA2C84-8295-49ED-BC67-803B7778513E}
+		{B86033F7-9D86-4872-9F12-A62E2AD3C5AB} = {28EA2C84-8295-49ED-BC67-803B7778513E}
+		{094F74CD-2DD7-496F-BC48-A6D357BF33FD} = {28EA2C84-8295-49ED-BC67-803B7778513E}
+		{92509065-DAEA-4457-8300-C7B64CD0E9F4} = {28EA2C84-8295-49ED-BC67-803B7778513E}
+		{C91E7018-3C67-4830-963A-C388C75E1BD5} = {28EA2C84-8295-49ED-BC67-803B7778513E}
 	EndGlobalSection
 EndGlobal
