@@ -35,7 +35,7 @@ namespace NHibernate.Search
 				object id = DocumentBuilder.GetDocumentId(searchFactory,hits.Doc(i));
 				ids.Add(id);
 			}
-			base._values = ids.ToArray();
+			base.Values = ids.ToArray();
 			return base.ToSqlString(criteria, criteriaQuery, enabledFilters);
 		}
 

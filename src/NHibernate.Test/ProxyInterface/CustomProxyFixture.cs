@@ -66,21 +66,21 @@ namespace NHibernate.Test.ProxyInterface
 		{
 			try
 			{
-				CastleLazyInitializer initializer = new DataBindingInterceptor(_persistentClass, id,
-																			  _getIdentifierMethod, _setIdentifierMethod, session);
+				CastleLazyInitializer initializer = new DataBindingInterceptor(PersistentClass, id,
+																			  GetIdentifierMethod, SetIdentifierMethod, session);
 
 				object generatedProxy = null;
 
-				ArrayList list = new ArrayList(_interfaces);
+				ArrayList list = new ArrayList(Interfaces);
 				list.Add(typeof(INotifyPropertyChanged));
 				System.Type[] interfaces = (System.Type[])list.ToArray(typeof(System.Type));
 				if (IsClassProxy)
 				{
-					generatedProxy = _proxyGenerator.CreateClassProxy(_persistentClass, interfaces, ProxyGenerationOptions.Default, initializer);
+					generatedProxy = DefaultProxyGenerator.CreateClassProxy(PersistentClass, interfaces, ProxyGenerationOptions.Default, initializer);
 				}
 				else
 				{
-					generatedProxy = _proxyGenerator.CreateInterfaceProxyWithoutTarget(interfaces[0], interfaces, initializer);
+					generatedProxy = DefaultProxyGenerator.CreateInterfaceProxyWithoutTarget(interfaces[0], interfaces, initializer);
 				}
 
 				initializer._constructed = true;

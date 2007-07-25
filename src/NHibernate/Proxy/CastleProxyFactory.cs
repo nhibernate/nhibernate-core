@@ -10,12 +10,12 @@ namespace NHibernate.Proxy
 	public class CastleProxyFactory : IProxyFactory
 	{
 		protected static readonly ILog log = LogManager.GetLogger(typeof(CastleProxyFactory));
-		protected static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
+		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
 
-		protected System.Type _persistentClass;
+		private System.Type _persistentClass;
 		protected System.Type[] _interfaces;
-		protected MethodInfo _getIdentifierMethod;
-		protected MethodInfo _setIdentifierMethod;
+		private MethodInfo _getIdentifierMethod;
+		private MethodInfo _setIdentifierMethod;
 
 		public virtual void PostInstantiate(System.Type persistentClass, ISet interfaces,
 		                            MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod)
@@ -25,6 +25,31 @@ namespace NHibernate.Proxy
 			interfaces.CopyTo(_interfaces, 0);
 			_getIdentifierMethod = getIdentifierMethod;
 			_setIdentifierMethod = setIdentifierMethod;
+		}
+
+		protected static ProxyGenerator DefaultProxyGenerator
+		{
+			get	{return _proxyGenerator;}
+		}
+
+		protected System.Type PersistentClass
+		{
+			get { return _persistentClass; }
+		}
+
+		protected System.Type[] Interfaces
+		{
+			get { return _interfaces; }
+		}
+
+		protected MethodInfo GetIdentifierMethod
+		{
+			get { return _getIdentifierMethod; }
+		}
+
+		protected MethodInfo SetIdentifierMethod
+		{
+			get { return _setIdentifierMethod; }
 		}
 
 		protected bool IsClassProxy

@@ -9,8 +9,8 @@ namespace NHibernate.Dialect.Function
 	/// </summary>
 	public class NoArgSQLFunction : ISQLFunction
 	{
-		protected readonly IType returnType = null;
-		protected readonly string name;
+		private readonly IType returnType = null;
+		private readonly string name;
 		private readonly bool hasParenthesesIfNoArguments;
 
 		public NoArgSQLFunction(string name, IType returnType) : this(name, returnType, true)
@@ -22,6 +22,16 @@ namespace NHibernate.Dialect.Function
 			this.name = name;
 			this.returnType = returnType;
 			this.hasParenthesesIfNoArguments = hasParenthesesIfNoArguments;
+		}
+
+		protected IType FunctionReturnType
+		{
+			get { return returnType; }
+		}
+
+		protected string Name
+		{
+			get { return name; }
 		}
 
 		#region ISQLFunction Members

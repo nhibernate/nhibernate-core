@@ -222,7 +222,7 @@ namespace NHibernate.Dialect
 			public override string Render(IList args, ISessionFactoryImplementor factory)
 			{
 				base.Render(args, factory);
-				return string.Format("cast('{0}' as {1})", name, returnType.SqlTypes(factory)[0]);
+				return string.Format("cast('{0}' as {1})", Name, FunctionReturnType.SqlTypes(factory)[0]);
 			}
 		}
 
@@ -234,7 +234,7 @@ namespace NHibernate.Dialect
 
 			public override string Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return name;
+				return Name;
 			}
 		}
 	}
