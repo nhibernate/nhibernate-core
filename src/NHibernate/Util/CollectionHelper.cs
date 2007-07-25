@@ -326,10 +326,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static Hashtable CreateCaseInsensitiveHashtable()
 		{
-			return new Hashtable(
-				CaseInsensitiveHashCodeProvider.DefaultInvariant,
-				CaseInsensitiveComparer.DefaultInvariant
-				);
+			return new Hashtable(StringComparer.InvariantCultureIgnoreCase);
 		}
 
 		/// <summary>
@@ -342,11 +339,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static Hashtable CreateCaseInsensitiveHashtable(IDictionary dictionary)
 		{
-			return new Hashtable(
-				dictionary,
-				CaseInsensitiveHashCodeProvider.DefaultInvariant,
-				CaseInsensitiveComparer.DefaultInvariant
-				);
+			return new Hashtable(dictionary,StringComparer.InvariantCultureIgnoreCase);
 		}
 
 		private CollectionHelper()
