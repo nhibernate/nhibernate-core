@@ -162,7 +162,7 @@ namespace NHibernate.Persister.Entity
 			}
 			else
 			{
-				builder.AddColumn(naturalOrderTableKeyColumns[j], IdentifierType);
+				builder.AddColumns(naturalOrderTableKeyColumns[j], null, IdentifierType);
 			}
 
 			return builder.ToSqlCommandInfo();

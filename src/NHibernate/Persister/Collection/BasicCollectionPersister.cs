@@ -51,14 +51,14 @@ namespace NHibernate.Persister.Collection
 		{
 			SqlInsertBuilder insert = new SqlInsertBuilder(Factory)
 				.SetTableName(qualifiedTableName)
-				.AddColumn(KeyColumnNames, KeyType);
+				.AddColumns(KeyColumnNames, null, KeyType);
 			if (HasIndex)
 			{
-				insert.AddColumn(IndexColumnNames, IndexType);
+				insert.AddColumns(IndexColumnNames, null, IndexType);
 			}
 			if (hasIdentifier)
 			{
-				insert.AddColumn(new string[] {IdentifierColumnName}, IdentifierType);
+				insert.AddColumns(new string[] {IdentifierColumnName}, null, IdentifierType);
 			}
 			insert.AddColumns(ElementColumnNames, elementColumnIsSettable, ElementType);
 
