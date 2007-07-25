@@ -2091,9 +2091,9 @@ namespace NHibernate.Persister.Entity
 		/// <param name="rs"></param>
 		/// <param name="id"></param>
 		/// <param name="obj"></param>
-		/// <param name="persister"></param>
-		/// <param name="session"></param>
+		/// <param name="rootLoadable"></param>
 		/// <param name="suffixedPropertyColumns"></param>
+		/// <param name="session"></param>
 		/// <returns></returns>
 		public object[] Hydrate(
 			IDataReader rs,

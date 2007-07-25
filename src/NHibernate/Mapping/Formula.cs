@@ -25,6 +25,7 @@ namespace NHibernate.Mapping
 		/// 
 		/// </summary>
 		/// <param name="dialect"></param>
+		/// <param name="functionRegistry"></param>
 		/// <returns></returns>
 		public string GetTemplate(Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
 		{

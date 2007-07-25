@@ -55,6 +55,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <param name="suffix"></param>
+		/// <param name="allProperties"></param>
 		/// <returns></returns>
 		string PropertySelectFragment(string alias, string suffix, bool allProperties);
 

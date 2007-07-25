@@ -32,6 +32,7 @@ namespace NHibernate.Dialect.Function
 		/// </summary>
 		/// <param name="name">SQL function name.</param>
 		/// <param name="typeValue">Return type for the fuction.</param>
+		/// <param name="allowedArgsCount">Exact number of arguments expected.</param>
 		public StandardSafeSQLFunction(string name, IType typeValue, int allowedArgsCount)
 			: base(name, typeValue)
 		{
