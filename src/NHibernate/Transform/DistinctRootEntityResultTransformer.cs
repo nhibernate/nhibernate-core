@@ -9,7 +9,7 @@ namespace NHibernate.Transform
 	public class DistinctRootEntityResultTransformer : IResultTransformer
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DistinctRootEntityResultTransformer));
-		private static readonly IHashCodeProvider IdentityHashCodeProvider = new IdentityHashCodeProvider();
+		private static readonly IEqualityComparer identityEqualityComparer = new IdentityEqualityComparer();
 
 		internal sealed class Identity
 		{
@@ -23,12 +23,12 @@ namespace NHibernate.Transform
 			public override bool Equals(object other)
 			{
 				Identity that = (Identity) other;
-				return entity == that.entity;
+				return identityEqualityComparer.Equals(entity, that.entity);
 			}
 
 			public override int GetHashCode()
 			{
-				return IdentityHashCodeProvider.GetHashCode(entity);
+				return identityEqualityComparer.GetHashCode(entity);
 			}
 		}
 

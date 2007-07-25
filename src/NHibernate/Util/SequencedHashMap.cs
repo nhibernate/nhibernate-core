@@ -176,7 +176,7 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Construct a new sequenced hash map with default initial size and load factor
 		/// </summary>
-		public SequencedHashMap() : this(0, 1.0F, null, null)
+		public SequencedHashMap() : this(0, 1.0F, null)
 		{
 		}
 
@@ -184,7 +184,7 @@ namespace NHibernate.Util
 		/// Construct a new sequenced hash map with the specified initial size and default load factor
 		/// </summary>
 		/// <param name="capacity">the initial size for the hash table</param>
-		public SequencedHashMap(int capacity) : this(capacity, 1.0F, null, null)
+		public SequencedHashMap(int capacity) : this(capacity, 1.0F, null)
 		{
 		}
 
@@ -193,7 +193,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="capacity">the initial size for the hashtable</param>
 		/// <param name="loadFactor">the load factor for the hash table</param>
-		public SequencedHashMap(int capacity, float loadFactor) : this(capacity, loadFactor, null, null)
+		public SequencedHashMap(int capacity, float loadFactor) : this(capacity, loadFactor, null)
 		{
 		}
 
@@ -202,9 +202,9 @@ namespace NHibernate.Util
 		/// and comparer
 		/// </summary>
 		/// <param name="capacity">the initial size for the hashtable</param>
-		/// <param name="hcp"></param>
-		/// <param name="comparer"></param>
-		public SequencedHashMap(int capacity, IHashCodeProvider hcp, IComparer comparer) : this(capacity, 1.0F, hcp, comparer)
+		/// <param name="equalityComparer"></param>
+		public SequencedHashMap(int capacity, IEqualityComparer equalityComparer)
+			: this(capacity, 1.0F, equalityComparer)
 		{
 		}
 
@@ -212,9 +212,9 @@ namespace NHibernate.Util
 		/// Creates an empty Hashtable with the default initial capacity and using the default load factor, 
 		/// the specified hash code provider and the specified comparer
 		/// </summary>
-		/// <param name="hcp"></param>
-		/// <param name="comparer"></param>
-		public SequencedHashMap(IHashCodeProvider hcp, IComparer comparer) : this(0, 1.0F, hcp, comparer)
+		/// <param name="equalityComparer"></param>
+		public SequencedHashMap(IEqualityComparer equalityComparer)
+			: this(0, 1.0F, equalityComparer)
 		{
 		}
 
@@ -224,14 +224,12 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="capacity">the initial size for the hashtable</param>
 		/// <param name="loadFactor">the load factor for the hash table</param>
-		/// <param name="hcp"></param>
-		/// <param name="comparer"></param>
-		public SequencedHashMap(int capacity, float loadFactor, IHashCodeProvider hcp, IComparer comparer)
+		/// <param name="equalityComparer"></param>
+		public SequencedHashMap(int capacity, float loadFactor, IEqualityComparer equalityComparer)
 		{
 			_sentinel = CreateSentinel();
-			_entries = new Hashtable(capacity, loadFactor, hcp, comparer);
+			_entries = new Hashtable(capacity, loadFactor, equalityComparer);
 		}
-
 
 		/// <summary>
 		/// Removes an internal entry from the linked list. THis does not remove it from the underlying

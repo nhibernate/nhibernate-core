@@ -19,8 +19,8 @@ namespace NHibernate.Proxy
 	[Serializable]
 	public abstract class LazyInitializer
 	{
-		private static readonly IHashCodeProvider IdentityHashCodeProvider =
-			new IdentityHashCodeProvider();
+		private static readonly IEqualityComparer IdentityEqualityComparer =
+			new IdentityEqualityComparer();
 
 		/// <summary>
 		/// If this is returned by Invoke then the subclass needs to Invoke the
@@ -139,7 +139,7 @@ namespace NHibernate.Proxy
 			{
 				if (!_overridesEquals && methodName == "GetHashCode")
 				{
-					return IdentityHashCodeProvider.GetHashCode(proxy);
+					return IdentityEqualityComparer.GetHashCode(proxy);
 				}
 				else if (method.Equals(_getIdentifierMethod))
 				{
@@ -154,7 +154,7 @@ namespace NHibernate.Proxy
 			{
 				if (!_overridesEquals && methodName == "Equals")
 				{
-					return args[0] == proxy;
+					return IdentityEqualityComparer.Equals(args[0], proxy);
 				}
 				else if (method.Equals(_setIdentifierMethod))
 				{

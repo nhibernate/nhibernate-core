@@ -40,9 +40,7 @@ namespace NHibernate.Util
 		/// <returns>A new IdentityMap based on a Hashtable.</returns>
 		public static IDictionary Instantiate(int size)
 		{
-			IHashCodeProvider ihcp = new IdentityHashCodeProvider();
-			IComparer comp = new IdentityComparer();
-			return new IdentityMap(new Hashtable(size, ihcp, comp));
+			return new IdentityMap(new Hashtable(size, new IdentityEqualityComparer()));
 		}
 
 		/// <summary>
@@ -53,9 +51,7 @@ namespace NHibernate.Util
 		/// <returns>A new IdentityMap based on ListDictionary.</returns>
 		public static IDictionary InstantiateSequenced(int size)
 		{
-			IHashCodeProvider ihcp = new IdentityHashCodeProvider();
-			IComparer comp = new IdentityComparer();
-			return new IdentityMap(new SequencedHashMap(size, ihcp, comp));
+			return new IdentityMap(new SequencedHashMap(size, new IdentityEqualityComparer()));
 		}
 
 		/// <summary>
@@ -265,57 +261,5 @@ namespace NHibernate.Util
 			return obj;
 		}
 
-		/// <summary>
-		/// Compares two objects for Equality using "==" instead of Object.Equals
-		/// </summary>
-		/// <remarks>
-		/// Only for use in IdentityMap.
-		/// </remarks>
-		[Serializable]
-		private class IdentityComparer : IComparer
-		{
-			#region IComparer Members
-
-			/// <summary>
-			/// Performs a null safe comparison using "==" instead of Object.Equals()
-			/// </summary>
-			/// <param name="x">First object to compare.</param>
-			/// <param name="y">Second object to compare.</param>
-			/// <remarks>
-			/// This is Lazy collection safe since it uses <c>==</c>, unlike <c>Object.Equals()</c> 
-			/// which currently causes NHibernate to load up the collection.  This behaivior of 
-			/// Collections is likely to change because Java's collections override Equals() and 
-			/// .net's collections don't.  So in .net there is no need to override Equals() and 
-			/// GetHashCode() on the NHibernate Collection implementations.
-			/// </remarks>
-			/// <returns>
-			/// Unlike the standard IComparer interface this will not return a <c>1</c> or <c>-1</c>
-			/// to indicate which is Greater Than or Less Than.  It always returns <c>-1</c> to 
-			/// indicate the two are not Equal.
-			/// </returns>
-			public int Compare(object x, object y)
-			{
-				if (x == null && y == null)
-				{
-					return 0;
-				}
-
-				if (x == null || y == null)
-				{
-					return -1;
-				}
-
-				if (x == y)
-				{
-					return 0;
-				}
-				else
-				{
-					return -1;
-				}
-			}
-
-			#endregion
-		}
 	}
 }
