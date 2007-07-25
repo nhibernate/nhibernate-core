@@ -1374,7 +1374,7 @@ namespace NHibernate.Persister.Entity
 		public string SelectFragment(string alias, string suffix)
 		{
 			return IdentifierSelectFragment(alias, suffix) +
-			       PropertySelectFragment(alias, suffix);
+			       PropertySelectFragment(alias, suffix, true);
 		}
 
 		public string[] GetIdentifierAliases(string suffix)

@@ -26,7 +26,7 @@ namespace NHibernate
 	///     .AddOrder( Order.Asc("age") ) 
 	///     .List(); 
 	/// </code>
-	/// You may navigate associations using <see cref="CreateAlias" /> or <see cref="CreateCriteria" />.
+	/// You may navigate associations using <see cref="CreateAlias(string,string)" /> or <see cref="CreateCriteria(string)" />.
 	/// <code>
 	/// IList cats = session.CreateCriteria(typeof(Cat))
 	///		.CreateCriteria("kittens")
