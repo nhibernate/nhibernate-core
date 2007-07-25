@@ -13,7 +13,7 @@ namespace NHibernate.Proxy
 		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
 
 		private System.Type _persistentClass;
-		protected System.Type[] _interfaces;
+		private System.Type[] _interfaces;
 		private MethodInfo _getIdentifierMethod;
 		private MethodInfo _setIdentifierMethod;
 
