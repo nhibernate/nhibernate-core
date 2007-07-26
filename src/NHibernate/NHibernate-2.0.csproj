@@ -483,6 +483,8 @@
     <Compile Include="Cfg\HbmConstants.cs" />
     <Compile Include="Cfg\IQuerySecondPass.cs" />
     <Compile Include="Cfg\ISecondPass.cs" />
+    <Compile Include="Cfg\MappingSchema\EndsWithHbmXmlFilter.cs" />
+    <Compile Include="Cfg\MappingSchema\IAssemblyResourceFilter.cs" />
     <Compile Include="Cfg\MappingSchema\IMappingDocumentParser.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentAggregator.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentParser.cs" />

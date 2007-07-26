@@ -11,20 +11,29 @@ namespace NHibernate.Cfg.MappingSchema
 	/// </summary>
 	public class MappingDocumentAggregator
 	{
+		private readonly IAssemblyResourceFilter defaultFilter;
 		private readonly List<hibernatemapping> documents = new List<hibernatemapping>();
 		private readonly IMappingDocumentParser parser;
 
+		/// <summary>
+		/// Calls the greedy constructor, passing it new instances of <see cref="MappingDocumentParser" /> and
+		/// <see cref="EndsWithHbmXmlFilter" />.
+		/// </summary>
 		public MappingDocumentAggregator()
-			: this(new MappingDocumentParser())
+			: this(new MappingDocumentParser(), new EndsWithHbmXmlFilter())
 		{
 		}
 
-		public MappingDocumentAggregator(IMappingDocumentParser parser)
+		public MappingDocumentAggregator(IMappingDocumentParser parser, IAssemblyResourceFilter defaultFilter)
 		{
 			if (parser == null)
 				throw new ArgumentNullException("parser");
 
+			if (defaultFilter == null)
+				throw new ArgumentNullException("defaultFilter");
+
 			this.parser = parser;
+			this.defaultFilter = defaultFilter;
 		}
 
 		public void Add(hibernatemapping document)
@@ -41,17 +50,36 @@ namespace NHibernate.Cfg.MappingSchema
 			Add(document);
 		}
 
-		/// <summary>Adds any embedded resource streams whose name ends with ".hbm.xml".</summary>
-		/// <param name="assembly">An assembly containing embedded mapping documents.</param>
-		public void Add(Assembly assembly)
+		public void Add(Assembly assembly, string resourceName)
 		{
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
 
+			using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+				Add(stream);
+		}
+
+		/// <summary>Adds any embedded resource streams which pass the <paramref name="filter"/>.</summary>
+		/// <param name="assembly">An assembly containing embedded mapping documents.</param>
+		/// <param name="filter">A custom filter.</param>
+		public void Add(Assembly assembly, IAssemblyResourceFilter filter)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+
+			if (filter == null)
+				throw new ArgumentNullException("filter");
+
 			foreach (string resourceName in assembly.GetManifestResourceNames())
-				if (resourceName.EndsWith(".hbm.xml"))
-					using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-						Add(stream);
+				if (defaultFilter.ShouldParse(resourceName))
+					Add(assembly, resourceName);
+		}
+
+		/// <summary>Adds any embedded resource streams which pass the default filter.</summary>
+		/// <param name="assembly">An assembly containing embedded mapping documents.</param>
+		public void Add(Assembly assembly)
+		{
+			Add(assembly, defaultFilter);
 		}
 
 		public void Add(FileInfo file)
