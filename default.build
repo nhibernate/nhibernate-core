@@ -355,4 +355,10 @@
 		<delete dir="${clover.src}" failonerror="false" />
 	</target>
 
+	<target name="gen-schema-classes" descripton="Generates schema classes from nhibernate-mapping.xsd">
+		<exec program="xsd.exe"
+			commandline="src\NHibernate\nhibernate-mapping.xsd /classes /fields /order /namespace:NHibernate.Cfg.MappingSchema /out:src\NHibernate\Cfg\MappingSchema\"/>
+		
+	</target>
+
 </project>

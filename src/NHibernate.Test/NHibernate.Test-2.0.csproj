@@ -78,6 +78,7 @@
     <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
     <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
+    <Compile Include="CfgTest\MappingDocumentParserTests.cs" />
     <Compile Include="CollectionTest\A.cs" />
     <Compile Include="CollectionTest\IdBagFixture.cs" />
     <Compile Include="CompositeCollection\BaseClassA.cs" />
@@ -666,7 +667,6 @@
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-2.0</Name>
     </ProjectReference>
-    <Folder Include="NHSpecificTest\NH1054" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH386\Mappings.hbm.xml" />

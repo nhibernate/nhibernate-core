@@ -483,6 +483,9 @@
     <Compile Include="Cfg\HbmConstants.cs" />
     <Compile Include="Cfg\IQuerySecondPass.cs" />
     <Compile Include="Cfg\ISecondPass.cs" />
+    <Compile Include="Cfg\MappingSchema\IMappingDocumentParser.cs" />
+    <Compile Include="Cfg\MappingSchema\MappingDocumentParser.cs" />
+    <Compile Include="Cfg\MappingSchema\nhibernate-mapping.cs" />
     <Compile Include="Cfg\NamedSQLQuerySecondPass.cs" />
     <Compile Include="Cfg\ResultSetMappingBinder.cs" />
     <Compile Include="Cfg\ResultSetMappingSecondPass.cs" />
