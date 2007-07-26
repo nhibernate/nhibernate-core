@@ -17,7 +17,7 @@ namespace NHibernate.Test.CfgTest
 
 			MappingDocumentAggregator aggregator = new MappingDocumentAggregator();
 			aggregator.Add(domainModelAssembly);
-			IList<hibernatemapping> results = aggregator.List();
+			IList<HbmMapping> results = aggregator.List();
 			Assert.IsTrue(results.Count > 0); // 54
 		}
 	}

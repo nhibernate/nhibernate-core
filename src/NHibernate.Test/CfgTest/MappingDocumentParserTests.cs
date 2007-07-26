@@ -24,7 +24,7 @@ namespace NHibernate.Test.CfgTest
 			foreach (string embeddedResource in someEmbeddedResources)
 				using (Stream stream = domainModelAssembly.GetManifestResourceStream(embeddedResource))
 				{
-					hibernatemapping mapping = parser.Parse(stream);
+					HbmMapping mapping = parser.Parse(stream);
 					Assert.IsNotNull(mapping, "Mapping: " + embeddedResource);
 				}
 		}

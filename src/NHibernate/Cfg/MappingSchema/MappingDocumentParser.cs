@@ -6,19 +6,19 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	/// <summary>
 	/// Responsible for converting a <see cref="Stream" /> of HBM XML into an instance of
-	/// <see cref="hibernatemapping" />.
+	/// <see cref="HbmMapping" />.
 	/// </summary>
 	/// <remarks>Uses an <see cref="XmlSerializer" /> to deserialize HBM.</remarks>
 	public class MappingDocumentParser : IMappingDocumentParser
 	{
-		private readonly XmlSerializer serializer = new XmlSerializer(typeof (hibernatemapping));
+		private readonly XmlSerializer serializer = new XmlSerializer(typeof (HbmMapping));
 
-		public hibernatemapping Parse(Stream stream)
+		public HbmMapping Parse(Stream stream)
 		{
 			if (stream == null)
 				throw new ArgumentNullException("stream");
 
-			return (hibernatemapping) serializer.Deserialize(stream);
+			return (HbmMapping) serializer.Deserialize(stream);
 
 			// TODO: What if Deserialize() throws an exception? Can we provide the user with any more useful
 			// information? Can we validate the stream against the XSD, and show any validation errors?

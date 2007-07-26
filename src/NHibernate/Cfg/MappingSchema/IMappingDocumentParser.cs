@@ -4,10 +4,10 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	/// <summary>
 	/// Responsible for converting a <see cref="Stream" /> of HBM XML into an instance of
-	/// <see cref="hibernatemapping" />.
+	/// <see cref="HbmMapping" />.
 	/// </summary>
 	public interface IMappingDocumentParser
 	{
-		hibernatemapping Parse(Stream stream);
+		HbmMapping Parse(Stream stream);
 	}
 }

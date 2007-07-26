@@ -6,13 +6,13 @@ using System.Reflection;
 namespace NHibernate.Cfg.MappingSchema
 {
 	/// <summary>
-	/// Responsible for building a list of <see cref="hibernatemapping" /> objects from a range of acceptable
+	/// Responsible for building a list of <see cref="HbmMapping" /> objects from a range of acceptable
 	/// sources.
 	/// </summary>
 	public class MappingDocumentAggregator
 	{
 		private readonly IAssemblyResourceFilter defaultFilter;
-		private readonly List<hibernatemapping> documents = new List<hibernatemapping>();
+		private readonly List<HbmMapping> documents = new List<HbmMapping>();
 		private readonly IMappingDocumentParser parser;
 
 		/// <summary>
@@ -36,7 +36,7 @@ namespace NHibernate.Cfg.MappingSchema
 			this.defaultFilter = defaultFilter;
 		}
 
-		public void Add(hibernatemapping document)
+		public void Add(HbmMapping document)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
@@ -46,7 +46,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public void Add(Stream stream)
 		{
-			hibernatemapping document = parser.Parse(stream);
+			HbmMapping document = parser.Parse(stream);
 			Add(document);
 		}
 
@@ -101,7 +101,7 @@ namespace NHibernate.Cfg.MappingSchema
 			Add(file);
 		}
 
-		public IList<hibernatemapping> List()
+		public IList<HbmMapping> List()
 		{
 			return documents.ToArray();
 		}
