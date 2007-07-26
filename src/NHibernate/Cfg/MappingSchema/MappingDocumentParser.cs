@@ -4,6 +4,11 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
+	/// <summary>
+	/// Responsible for converting a <see cref="Stream" /> of HBM XML into an instance of
+	/// <see cref="hibernatemapping" />.
+	/// </summary>
+	/// <remarks>Uses an <see cref="XmlSerializer" /> to deserialize HBM.</remarks>
 	public class MappingDocumentParser : IMappingDocumentParser
 	{
 		private readonly XmlSerializer serializer = new XmlSerializer(typeof (hibernatemapping));

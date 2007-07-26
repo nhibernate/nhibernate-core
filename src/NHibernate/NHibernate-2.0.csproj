@@ -484,6 +484,7 @@
     <Compile Include="Cfg\IQuerySecondPass.cs" />
     <Compile Include="Cfg\ISecondPass.cs" />
     <Compile Include="Cfg\MappingSchema\IMappingDocumentParser.cs" />
+    <Compile Include="Cfg\MappingSchema\MappingDocumentAggregator.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentParser.cs" />
     <Compile Include="Cfg\MappingSchema\nhibernate-mapping.cs" />
     <Compile Include="Cfg\NamedSQLQuerySecondPass.cs" />
