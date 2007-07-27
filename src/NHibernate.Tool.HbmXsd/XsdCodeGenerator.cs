@@ -1,3 +1,4 @@
+using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
@@ -9,17 +10,23 @@ using Microsoft.CSharp;
 
 namespace NHibernate.Tool.HbmXsd
 {
+	/// <summary>Responsible for code generation from an XML schema.</summary>
 	public class XsdCodeGenerator
 	{
-		public void Execute(string fileName, string @namespace, XmlSchema schema)
+		/// <summary>Generates C# classes.</summary>
+		/// <param name="outputFileName">The file to which the generated classes are written.</param>
+		/// <param name="namespace">The namespace to which the generated classes belong.</param>
+		/// <param name="schema">The schema from which the classes are generated.</param>
+		public void Execute(string outputFileName, string @namespace, XmlSchema schema)
 		{
-			using (StreamWriter writer = new StreamWriter(fileName, false))
-			{
-				CodeNamespace code = new CodeNamespace(@namespace);
-				GenerateClasses(code, schema);
-				CustomizeGeneratedCode(code, schema);
-				WriteCSharpCodeFile(code, writer);
-			}
+			if (schema == null)
+				throw new ArgumentNullException("schema");
+
+			CodeNamespace code = new CodeNamespace(@namespace);
+
+			GenerateClasses(code, schema);
+			CustomizeGeneratedCode(code, schema);
+			WriteCSharpCodeFile(code, outputFileName);
 		}
 
 		private static void GenerateClasses(CodeNamespace code, XmlSchema schema)
@@ -45,16 +52,22 @@ namespace NHibernate.Tool.HbmXsd
 			}
 		}
 
-		protected virtual void CustomizeGeneratedCode(CodeNamespace code, XmlSchema schema)
+		/// <summary>
+		/// If overridden by inheritors, customizes the generated code DOM before writing it to file.
+		/// </summary>
+		/// <param name="code">The customizable code DOM.</param>
+		/// <param name="sourceSchema">The source XML Schema.</param>
+		protected virtual void CustomizeGeneratedCode(CodeNamespace code, XmlSchema sourceSchema)
 		{
 		}
 
-		private static void WriteCSharpCodeFile(CodeNamespace code, TextWriter writer)
+		private static void WriteCSharpCodeFile(CodeNamespace code, string outputFileName)
 		{
 			CSharpCodeProvider provider = new CSharpCodeProvider();
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
 
-			provider.GenerateCodeFromNamespace(code, writer, options);
+			using (StreamWriter writer = new StreamWriter(outputFileName, false))
+				provider.GenerateCodeFromNamespace(code, writer, options);
 		}
 	}
 }

@@ -6,6 +6,8 @@ namespace NHibernate.Tool.HbmXsd
 	{
 		private static void Main(string[] args)
 		{
+			// For debugging: ..\..\..\NHibernate\Cfg\MappingSchema\Hbm.generated.cs
+
 			if (args.Length == 1)
 				new HbmCodeGenerator().Execute(args[0]);
 			else
