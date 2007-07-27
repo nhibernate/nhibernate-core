@@ -31,8 +31,8 @@ namespace NHibernate.Tool.HbmXsd
 		protected override void CustomizeGeneratedCode(CodeNamespace code, XmlSchema sourceSchema)
 		{
 			new ImproveHbmTypeNamesCommand(code).Execute();
+			new ImproveEnumFieldsCommand(code).Execute();
 
-			// TODO: Rename enum fields to better casing
 			// TODO: Rename class fields?
 		}
 	}

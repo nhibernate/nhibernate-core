@@ -38,10 +38,12 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="HbmCodeGenerator.cs" />
+    <Compile Include="ImproveEnumFieldsCommand.cs" />
     <Compile Include="ImproveHbmTypeNamesCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ImproveTypeNamesCommand.cs" />
+    <Compile Include="StringTools.cs" />
     <Compile Include="XsdCodeGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

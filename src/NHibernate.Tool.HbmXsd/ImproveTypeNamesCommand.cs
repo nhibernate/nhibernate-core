@@ -70,9 +70,9 @@ namespace NHibernate.Tool.HbmXsd
 		protected virtual string GetNewTypeName(string originalName, string rootElementName)
 		{
 			if (rootElementName == null)
-				return CamelCase(originalName);
+				return StringTools.CamelCase(originalName);
 			else
-				return CamelCase(rootElementName);
+				return StringTools.CamelCase(rootElementName);
 		}
 
 		private void UpdateFieldTypeReferences(CodeMemberField field)
@@ -90,7 +90,8 @@ namespace NHibernate.Tool.HbmXsd
 				}
 				else if (attribute.Name == typeof (DefaultValueAttribute).FullName)
 				{
-					CodeFieldReferenceExpression reference = attribute.Arguments[0].Value as CodeFieldReferenceExpression;
+					CodeFieldReferenceExpression reference = attribute.Arguments[0].Value
+						as CodeFieldReferenceExpression;
 
 					if (reference != null)
 						UpdateTypeReference(((CodeTypeReferenceExpression) reference.TargetObject).Type);
@@ -113,18 +114,6 @@ namespace NHibernate.Tool.HbmXsd
 		{
 			if (changedTypeNames.ContainsKey(type.BaseType))
 				type.BaseType = changedTypeNames[type.BaseType];
-		}
-
-		protected static string CamelCase(string name)
-		{
-			// TODO: handle long acronyms such as SQL -> Sql
-
-			string[] parts = name.Split('-');
-
-			for (int i = 0; i < parts.Length; i++)
-				parts[i] = parts[i].Substring(0, 1).ToUpper() + parts[i].Substring(1);
-
-			return string.Join("", parts);
 		}
 	}
 }

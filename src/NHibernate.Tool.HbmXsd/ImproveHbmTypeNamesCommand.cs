@@ -27,7 +27,7 @@ namespace NHibernate.Tool.HbmXsd
 
 				case "customSQL":
 				case "cacheType":
-					return Prefix + CamelCase(originalName);
+					return Prefix + StringTools.CamelCase(originalName);
 
 				default:
 					return Prefix + base.GetNewTypeName(originalName, rootElementName);
