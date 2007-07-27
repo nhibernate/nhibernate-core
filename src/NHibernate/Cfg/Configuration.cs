@@ -41,63 +41,15 @@ namespace NHibernate.Cfg
 	/// </remarks>
 	public class Configuration
 	{
-		#region NHibernate-Specific Members
-
-		private XmlSchemaCollection mappingSchemaCollection;
-		private XmlSchemaCollection cfgSchemaCollection;
-
-		/// <summary>
-		/// The XML Namespace for the nhibernate-mapping
-		/// </summary>
+		/// <summary>The XML Namespace for the nhibernate-mapping</summary>
 		public const string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
 
-		private const string MappingSchemaResource = "NHibernate.nhibernate-mapping.xsd";
-
-		/// <summary>
-		/// The XML Namespace for the nhibernate-configuration
-		/// </summary>
+		/// <summary>The XML Namespace for the nhibernate-configuration</summary>
 		public const string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.2";
 
-		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration.xsd";
 		private const string CfgNamespacePrefix = "cfg";
 
 		private string currentDocumentName;
-
-		/// <summary></summary>
-		/// <remarks>Allocate on first use as we are expensive in time/space</remarks>
-		private XmlSchemaCollection MappingSchemaCollection
-		{
-			get
-			{
-				if (mappingSchemaCollection == null)
-				{
-					mappingSchemaCollection = new XmlSchemaCollection();
-					mappingSchemaCollection.Add(
-						XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream(MappingSchemaResource), null));
-				}
-				return mappingSchemaCollection;
-			}
-			set { mappingSchemaCollection = value; }
-		}
-
-		/// <summary></summary>
-		/// <remarks>Allocate on first use as we are expensive in time/space</remarks>
-		private XmlSchemaCollection CfgSchemaCollection
-		{
-			get
-			{
-				if (cfgSchemaCollection == null)
-				{
-					cfgSchemaCollection = new XmlSchemaCollection();
-					cfgSchemaCollection.Add(
-						XmlSchema.Read(Assembly.GetExecutingAssembly().GetManifestResourceStream(CfgSchemaResource), null));
-				}
-				return cfgSchemaCollection;
-			}
-			set { cfgSchemaCollection = value; }
-		}
-
-		#endregion
 
 		private IDictionary<System.Type, PersistentClass> classes;
 		private IDictionary<string, string> imports;
@@ -1082,8 +1034,7 @@ namespace NHibernate.Cfg
 			Settings settings = BuildSettings();
 
 			// Ok, don't need schemas anymore, so free them
-			MappingSchemaCollection = null;
-			CfgSchemaCollection = null;
+			Schemas = null;
 
 			return new SessionFactoryImpl(this, mapping, settings);
 		}
@@ -1344,41 +1295,31 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Configure NHibernate using the specified XmlTextReader.
 		/// </summary>
-		/// <param name="reader">The <see cref="XmlTextReader"/> that contains the Xml to configure NHibernate.</param>
+		/// <param name="textReader">The <see cref="XmlTextReader"/> that contains the Xml to configure NHibernate.</param>
 		/// <returns>A Configuration object initialized with the file.</returns>
 		/// <remarks>
 		/// Calling Configure(XmlTextReader) will overwrite the values set in app.config or web.config
 		/// </remarks>
-		public Configuration Configure(XmlTextReader reader)
+		public Configuration Configure(XmlTextReader textReader)
 		{
-			if (reader == null)
+			if (textReader == null)
 			{
 				throw new HibernateException("Could not configure NHibernate.",
-					new ArgumentException("A null value was passed in.", "reader"));
+					new ArgumentException("A null value was passed in.", "textReader"));
 			}
 
 			XmlDocument doc = new XmlDocument();
-			XmlValidatingReader validatingReader = null;
 
 			try
 			{
-				validatingReader = new XmlValidatingReader(reader);
-				validatingReader.ValidationType = ValidationType.Schema;
-				validatingReader.Schemas.Add(CfgSchemaCollection);
-
-				doc.Load(validatingReader);
+				XmlReaderSettings settings = Schemas.CreateConfigReaderSettings();
+				using (XmlReader reader = XmlReader.Create(textReader, settings))
+					doc.Load(reader);
 			}
 			catch (Exception e)
 			{
 				log.Error("Problem parsing configuration", e);
-				throw new HibernateException("problem parsing configuration : " + e);
-			}
-			finally
-			{
-				if (validatingReader != null)
-				{
-					validatingReader.Close();
-				}
+				throw new HibernateException("problem parsing configuration : " + e, e);
 			}
 
 			return DoConfigure(doc);
@@ -1640,26 +1581,24 @@ namespace NHibernate.Cfg
 		/// <returns>Validated XmlDocument built from the XmlReader.</returns>
 		public XmlDocument LoadMappingDocument(XmlTextReader hbmReader, string name)
 		{
-			XmlValidatingReader validatingReader = new XmlValidatingReader(hbmReader);
+			XmlReaderSettings settings = Schemas.CreateMappingReaderSettings();
+			settings.ValidationEventHandler += ValidationHandler;
 
-			Debug.Assert(currentDocumentName == null);
-			currentDocumentName = name;
-
-			try
+			using (XmlReader reader = XmlReader.Create(hbmReader, settings))
 			{
-				XmlDocument hbmDocument = new XmlDocument();
+				Debug.Assert(currentDocumentName == null);
+				currentDocumentName = name;
 
-				validatingReader.ValidationEventHandler += ValidationHandler;
-				validatingReader.ValidationType = ValidationType.Schema;
-				validatingReader.Schemas.Add(MappingSchemaCollection);
-
-				hbmDocument.Load(validatingReader);
-				return hbmDocument;
-			}
-			finally
-			{
-				currentDocumentName = null;
-				validatingReader.Close();
+				try
+				{
+					XmlDocument hbmDocument = new XmlDocument();
+					hbmDocument.Load(reader);
+					return hbmDocument;
+				}
+				finally
+				{
+					currentDocumentName = null;
+				}
 			}
 		}
 
@@ -1726,5 +1665,14 @@ namespace NHibernate.Cfg
 		}
 
 		#endregion
+
+
+		private XmlSchemas schemas;
+
+		private XmlSchemas Schemas
+		{
+			get { return schemas = schemas ?? new XmlSchemas(); }
+			set { schemas = value; }
+		}
 	}
 }

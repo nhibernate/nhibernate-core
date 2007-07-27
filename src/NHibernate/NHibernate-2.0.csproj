@@ -494,6 +494,7 @@
     <Compile Include="Cfg\NamedSQLQuerySecondPass.cs" />
     <Compile Include="Cfg\ResultSetMappingBinder.cs" />
     <Compile Include="Cfg\ResultSetMappingSecondPass.cs" />
+    <Compile Include="Cfg\XmlSchemas.cs" />
     <Compile Include="Classic\ILifecycle.cs" />
     <Compile Include="Classic\IValidatable.cs" />
     <Compile Include="Classic\ValidationFailure.cs" />
