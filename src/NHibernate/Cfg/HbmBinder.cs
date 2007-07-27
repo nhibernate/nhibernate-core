@@ -14,7 +14,7 @@ using Array=NHibernate.Mapping.Array;
 
 namespace NHibernate.Cfg
 {
-	public class HbmBinder
+	public static class HbmBinder
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HbmBinder));
 
@@ -1658,7 +1658,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		protected static void PropertiesFromXML(XmlNode node, PersistentClass model, Mappings mappings)
+		public static void PropertiesFromXML(XmlNode node, PersistentClass model, Mappings mappings)
 		{
 			Table table = model.Table;
 
