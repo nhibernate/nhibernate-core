@@ -37,14 +37,20 @@
       <Link>nhibernate-mapping.xsd</Link>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="HbmCodeGenerator.cs" />
     <Compile Include="ImproveEnumFieldsCommand.cs" />
     <Compile Include="ImproveHbmTypeNamesCommand.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ImproveTypeNamesCommand.cs" />
     <Compile Include="StringTools.cs" />
     <Compile Include="XsdCodeGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NHibernate.Tool.HbmXsd.build" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
