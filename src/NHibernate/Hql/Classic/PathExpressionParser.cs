@@ -233,10 +233,14 @@ namespace NHibernate.Hql.Classic
 				q.AddType(name, entityClass);
 				//String[] keyColNames = memberPersister.getIdentifierColumnNames();
 				AddJoin(name, propertyType);
-				if (propertyType.IsOneToOne)
-				{
-					oneToOneOwnerName = currentName;
-				}
+                if (propertyType.IsOneToOne)
+                {
+                    oneToOneOwnerName = currentName;
+                }
+                else
+                {
+                    oneToOneOwnerName = null;
+                }
 				ownerAssociationType = propertyType;
 				currentName = name;
 				currentProperty = propertyName;

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH1080" default-lazy="false">
+  <class name="A">
+    <id name="ID" type="Int32"  unsaved-value="-1">
+      <generator class="foreign">
+        <param name="property">C</param>
+      </generator>
+    </id>
+
+    <property name="Value" not-null="true" length="255" />
+
+    <many-to-one name="B1" class="B" not-null="false" column="B1_ID" cascade="all-delete-orphan" lazy="proxy" fetch="select" />
+    <many-to-one name="B2" class="B" not-null="false" column="B2_ID" cascade="all-delete-orphan" lazy="proxy" fetch="join" />
+    <one-to-one name="C" class="C" constrained="true" fetch="select" lazy="proxy" cascade="none" />
+  </class>
+
+
+  <class name="B">
+    <id name="ID" type="Int32"  unsaved-value="-1">
+      <generator class="assigned" />
+    </id>
+
+    <property name="Value" not-null="true" length="255" />
+  </class>
+
+
+  <class name="C">
+    <id name="ID" type="Int32"  unsaved-value="-1">
+      <generator class="assigned" />
+    </id>
+
+    <property name="Value" not-null="true" length="255" />
+  </class>
+
+</hibernate-mapping>
+
