@@ -45,5 +45,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			return XmlHelper.GetAttributeValue(node, attributeName);
 		}
+
+		protected XmlNode SelectSingleNode(XmlNode node, string xpath)
+		{
+			return node.SelectSingleNode(xpath, namespaceManager);
+		}
+
+		protected XmlNodeList SelectNodes(XmlNode node, string xpath)
+		{
+			return node.SelectNodes(xpath, namespaceManager);
+		}
 	}
 }

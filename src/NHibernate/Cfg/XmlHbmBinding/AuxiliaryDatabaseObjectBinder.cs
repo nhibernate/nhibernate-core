@@ -21,46 +21,74 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public override void Bind(XmlNode node)
 		{
-			IAuxiliaryDatabaseObject auxDbObject;
-			XmlNode definitionNode = node.SelectSingleNode(HbmConstants.nsDefinition, namespaceManager);
+			XmlNode definitionNode = SelectSingleNode(node, HbmConstants.nsDefinition);
 
-			if (definitionNode != null)
+			if (definitionNode == null)
 			{
-				string className = XmlHelper.GetAttributeValue(definitionNode, "class");
-
-				try
-				{
-					auxDbObject = (IAuxiliaryDatabaseObject) Activator.CreateInstance(ReflectHelper.ClassForName(className));
-					Hashtable parameters = new Hashtable();
-					foreach (XmlNode childNode in definitionNode.ChildNodes)
-						parameters.Add(childNode.Attributes["name"].Value, childNode.InnerText.Trim());
-					auxDbObject.SetParameterValues(parameters);
-				}
-				catch (TypeLoadException e)
-				{
-					throw new MappingException(
-						"could not locate custom database object class [" +
-							className + "]", e
-						);
-				}
-				catch (Exception t)
-				{
-					throw new MappingException(
-						"could not instantiate custom database object class [" +
-							className + "]", t
-						);
-				}
+				IAuxiliaryDatabaseObject simpleObject = CreateSimpleObject(node);
+				AddDialectScopes(node, simpleObject);
+				mappings.AddAuxiliaryDatabaseObject(simpleObject);
 			}
 			else
-				auxDbObject = new SimpleAuxiliaryDatabaseObject(
-					XmlHelper.ElementTextTrim(node, HbmConstants.nsCreate, namespaceManager),
-					XmlHelper.ElementTextTrim(node, HbmConstants.nsDrop, namespaceManager)
-					);
+			{
+				IAuxiliaryDatabaseObject customObject = CreateCustomObject(definitionNode);
+				AddDialectScopes(node, customObject);
+				mappings.AddAuxiliaryDatabaseObject(customObject);
+			}
+		}
 
-			foreach (XmlNode dialectScoping in node.SelectNodes(HbmConstants.nsDialectScope, namespaceManager))
-				auxDbObject.AddDialectScope(XmlHelper.GetAttributeValue(dialectScoping, "name"));
+		private IAuxiliaryDatabaseObject CreateSimpleObject(XmlNode node)
+		{
+			XmlNode createNode = SelectSingleNode(node, HbmConstants.nsCreate);
+			string sqlCreateString = createNode == null ? null : createNode.InnerText.Trim();
 
-			mappings.AddAuxiliaryDatabaseObject(auxDbObject);
+			XmlNode dropNode = SelectSingleNode(node, HbmConstants.nsDrop);
+			string sqlDropString = dropNode == null ? null : dropNode.InnerText.Trim();
+
+			return new SimpleAuxiliaryDatabaseObject(sqlCreateString, sqlDropString);
+		}
+
+		private static IAuxiliaryDatabaseObject CreateCustomObject(XmlNode definitionNode)
+		{
+			string className = GetAttributeValue(definitionNode, "class");
+
+			try
+			{
+				System.Type type = ReflectHelper.ClassForName(className);
+				IAuxiliaryDatabaseObject auxDbObject = (IAuxiliaryDatabaseObject) Activator.CreateInstance(type);
+
+				Hashtable parameters = new Hashtable();
+
+				foreach (XmlNode childNode in definitionNode.ChildNodes)
+				{
+					string name = childNode.Attributes["name"].Value;
+					string text = childNode.InnerText.Trim();
+
+					parameters.Add(name, text);
+				}
+
+				auxDbObject.SetParameterValues(parameters);
+				return auxDbObject;
+			}
+			catch (TypeLoadException exception)
+			{
+				throw new MappingException(string.Format(
+					"Could not locate custom database object class [{0}].", className), exception);
+			}
+			catch (Exception exception)
+			{
+				throw new MappingException(string.Format(
+					"Could not instantiate custom database object class [{0}].", className), exception);
+			}
+		}
+
+		private void AddDialectScopes(XmlNode node, IAuxiliaryDatabaseObject auxDbObject)
+		{
+			foreach (XmlNode dialectScope in SelectNodes(node, HbmConstants.nsDialectScope))
+			{
+				string dialectName = GetAttributeValue(dialectScope, "name");
+				auxDbObject.AddDialectScope(dialectName);
+			}
 		}
 	}
 }
