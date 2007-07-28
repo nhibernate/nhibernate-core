@@ -248,6 +248,8 @@
     <Compile Include="NHSpecificTest\NH1018\NH1018Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1054\DummyTransactionFactory.cs" />
     <Compile Include="NHSpecificTest\NH1054\NH1054Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1080\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1080\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH883\Cat.cs" />
     <Compile Include="NHSpecificTest\NH883\Fixture.cs" />
     <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Address.cs" />
@@ -943,6 +945,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1018\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1080\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
