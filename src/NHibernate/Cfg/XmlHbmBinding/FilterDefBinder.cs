@@ -3,7 +3,6 @@ using System.Xml;
 
 using NHibernate.Engine;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -22,31 +21,37 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public override void Bind(XmlNode node)
 		{
 			string name = GetPropertyName(node);
-			log.Debug("Parsing filter-def [" + name + "]");
-			string defaultCondition = node.InnerText;
 
-			if (defaultCondition == null || StringHelper.IsEmpty(defaultCondition.Trim()))
-				if (node.Attributes != null)
-				{
-					XmlAttribute propertyNameNode = node.Attributes["condition"];
-					defaultCondition = (propertyNameNode == null) ? null : propertyNameNode.Value;
-				}
+			log.Debug(string.Format("Parsing filter-def [{0}]", name));
+			
+			string defaultCondition = GetInnerText(node) ?? GetAttributeValue(node, "condition");
+			Hashtable parameterTypes = GetFilterParameterTypes(node);
+			
+			log.Debug(string.Format("Parsed filter-def [{0}]", name));
+			
+			FilterDefinition def = new FilterDefinition(name, defaultCondition, parameterTypes);
+			mappings.AddFilterDefinition(def);
+		}
 
+		private Hashtable GetFilterParameterTypes(XmlNode node)
+		{
 			Hashtable paramMappings = new Hashtable();
 
-			foreach (XmlNode param in node.SelectNodes(HbmConstants.nsFilterParam, namespaceManager))
+			foreach (XmlNode param in SelectNodes(node, HbmConstants.nsFilterParam))
 			{
-				string paramName = GetPropertyName(param);
-				string paramType = param.Attributes["type"].Value;
-				log.Debug("adding filter parameter : " + paramName + " -> " + paramType);
+				string paramName = GetAttributeValue(param, "name");
+				string paramType = GetAttributeValue(param, "type");
+
+				log.Debug(string.Format("adding filter parameter : {0} -> {1}", paramName, paramType));
+			
 				IType heuristicType = TypeFactory.HeuristicType(paramType);
-				log.Debug("parameter heuristic type : " + heuristicType);
+				
+				log.Debug(string.Format("parameter heuristic type : {0}", heuristicType));
+
 				paramMappings.Add(paramName, heuristicType);
 			}
 
-			log.Debug("Parsed filter-def [" + name + "]");
-			FilterDefinition def = new FilterDefinition(name, defaultCondition, paramMappings);
-			mappings.AddFilterDefinition(def);
+			return paramMappings;
 		}
 	}
 }

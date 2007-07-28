@@ -3,8 +3,6 @@ using System.Xml;
 
 using log4net;
 
-using NHibernate.Util;
-
 namespace NHibernate.Cfg.XmlHbmBinding
 {
 	// TODO: Refactor HbmBinder methods and eventually eliminate it
@@ -37,13 +35,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void BindEach(XmlNode parentNode, string xpath)
 		{
-			foreach (XmlNode node in parentNode.SelectNodes(xpath, namespaceManager))
+			foreach (XmlNode node in SelectNodes(parentNode, xpath))
 				Bind(node);
 		}
 
-		protected static string GetAttributeValue(XmlNode node, string attributeName)
+		#region XML helper methods
+
+		protected XmlNodeList SelectNodes(XmlNode node, string xpath)
 		{
-			return XmlHelper.GetAttributeValue(node, attributeName);
+			return node.SelectNodes(xpath, namespaceManager);
 		}
 
 		protected XmlNode SelectSingleNode(XmlNode node, string xpath)
@@ -51,9 +51,25 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return node.SelectSingleNode(xpath, namespaceManager);
 		}
 
-		protected XmlNodeList SelectNodes(XmlNode node, string xpath)
+		protected static string GetAttributeValue(XmlNode node, string attributeName)
 		{
-			return node.SelectNodes(xpath, namespaceManager);
+			if (node != null && node.Attributes != null)
+			{
+				XmlAttribute attribute = node.Attributes[attributeName];
+				return attribute == null ? null : attribute.Value;
+			}
+			else
+				return null;
 		}
+
+		protected static string GetInnerText(XmlNode node)
+		{
+			if (node == null || node.InnerText == null || node.InnerText.Trim().Length == 0)
+				return null;
+			else
+				return node.InnerText.Trim();
+		}
+
+		#endregion
 	}
 }

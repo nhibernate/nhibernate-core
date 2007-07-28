@@ -39,11 +39,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private IAuxiliaryDatabaseObject CreateSimpleObject(XmlNode node)
 		{
-			XmlNode createNode = SelectSingleNode(node, HbmConstants.nsCreate);
-			string sqlCreateString = createNode == null ? null : createNode.InnerText.Trim();
-
-			XmlNode dropNode = SelectSingleNode(node, HbmConstants.nsDrop);
-			string sqlDropString = dropNode == null ? null : dropNode.InnerText.Trim();
+			string sqlCreateString = GetInnerText(SelectSingleNode(node, HbmConstants.nsCreate));
+			string sqlDropString = GetInnerText(SelectSingleNode(node, HbmConstants.nsDrop));
 
 			return new SimpleAuxiliaryDatabaseObject(sqlCreateString, sqlDropString);
 		}
@@ -61,8 +58,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				foreach (XmlNode childNode in definitionNode.ChildNodes)
 				{
-					string name = childNode.Attributes["name"].Value;
-					string text = childNode.InnerText.Trim();
+					string name = GetAttributeValue(childNode, "name");
+					string text = GetInnerText(childNode) ?? "";
 
 					parameters.Add(name, text);
 				}
