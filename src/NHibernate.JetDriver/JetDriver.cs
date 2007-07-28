@@ -133,6 +133,9 @@ namespace NHibernate.JetDriver
 		{
 			string transformed;
 
+			//"from ".Length
+			const int fromLength = 5;
+			fromClause = fromClause.Substring(fromLength, fromClause.Length - fromLength);
 			string[] blocks = fromClause.Split(',');
 			if (blocks.Length > 1)
 			{
@@ -153,13 +156,13 @@ namespace NHibernate.JetDriver
 			}
 			else
 			{
-				transformed = TransformJoinBlock(blocks[0]);
+				transformed = "from " + TransformJoinBlock(blocks[0]);
 			}
 
 			return transformed;
 		}
 
-		/// <param name="block">A string representing one join block.</param>
+/// <param name="block">A string representing one join block.</param>
 		private string TransformJoinBlock(string block)
 		{
 			int parenthesisCount = 0;
