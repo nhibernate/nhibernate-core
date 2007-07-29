@@ -1,5 +1,7 @@
 using System.Xml;
 
+using NHibernate.Engine;
+
 namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class ResultSetMappingDefinitionBinder : Binder
@@ -16,7 +18,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public override void Bind(XmlNode node)
 		{
-			mappings.AddSecondPass(new ResultSetMappingSecondPass(node, null, mappings));
+			mappings.AddSecondPass(new DelegatingSecondPass(delegate { SecondPassBind(node); }));
+		}
+
+		private void SecondPassBind(XmlNode node)
+		{
+			ResultSetMappingDefinition definition =
+				ResultSetMappingBinder.BuildResultSetMappingDefinition(node, null, mappings);
+
+			mappings.AddResultSetMapping(definition);
 		}
 	}
 }

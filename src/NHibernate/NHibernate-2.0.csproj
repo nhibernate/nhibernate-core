@@ -492,7 +492,6 @@
     <Compile Include="Cfg\MappingSchema\MappingDocumentAggregator.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentParser.cs" />
     <Compile Include="Cfg\ResultSetMappingBinder.cs" />
-    <Compile Include="Cfg\ResultSetMappingSecondPass.cs" />
     <Compile Include="Cfg\XmlHbmBinding\AuxiliaryDatabaseObjectBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\Binder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ClassBinder.cs" />

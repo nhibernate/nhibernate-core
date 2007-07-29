@@ -3,15 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+
 using log4net;
 
 using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Engine;
 using NHibernate.Mapping;
-using NHibernate.Persister.Entity;
 using NHibernate.Property;
 using NHibernate.Type;
 using NHibernate.Util;
+
 using Array=NHibernate.Mapping.Array;
 
 namespace NHibernate.Cfg
@@ -36,7 +37,7 @@ namespace NHibernate.Cfg
 		/// <param name="className"></param>
 		/// <param name="mapping"></param>
 		/// <returns></returns>
-		public static string FullClassName(string className, Mappings mapping)
+		protected static string FullClassName(string className, Mappings mapping)
 		{
 			if (className == null)
 			{
@@ -84,7 +85,7 @@ namespace NHibernate.Cfg
 			return ClassForFullNameChecked(FullClassName(name, mappings), errorMessage);
 		}
 
-		public static void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn, string propertyPath,
+		private static void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn, string propertyPath,
 		                               Mappings mappings)
 		{
 			Table table = model.Table;
@@ -170,7 +171,7 @@ namespace NHibernate.Cfg
 		}
 
 		//automatically makes a column with the default name if none is specifed by XML
-		public static void BindSimpleValue(XmlNode node, SimpleValue model, bool isNullable, string path, Mappings mappings)
+		protected static void BindSimpleValue(XmlNode node, SimpleValue model, bool isNullable, string path, Mappings mappings)
 		{
 			model.Type = GetTypeFromXML(node);
 			//BindSimpleValueType(node, model, mappings);
@@ -190,7 +191,7 @@ namespace NHibernate.Cfg
 			return accessNode != null ? accessNode.Value : mappings.DefaultAccess;
 		}
 
-		public static PropertyGeneration ParsePropertyGeneration(string name)
+		private static PropertyGeneration ParsePropertyGeneration(string name)
 		{
 			switch (name)
 			{
@@ -203,7 +204,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindProperty(XmlNode node, Mapping.Property property, Mappings mappings)
+		protected static void BindProperty(XmlNode node, Mapping.Property property, Mappings mappings)
 		{
 			string propName = XmlHelper.GetAttributeValue(node, "name");
 			property.Name = propName;
@@ -292,7 +293,7 @@ namespace NHibernate.Cfg
 			property.MetaAttributes = GetMetas(node);
 		}
 
-		public static string Columns(IValue val)
+		internal static string Columns(IValue val)
 		{
 			StringBuilder columns = new StringBuilder();
 			bool first = true;
@@ -315,7 +316,7 @@ namespace NHibernate.Cfg
 		/// Called for all collections. <paramref name="containingType" /> parameter
 		/// was added in NH to allow for reflection related to generic types.
 		/// </remarks>
-		public static void BindCollection(XmlNode node, Mapping.Collection model, string className, string path,
+		private static void BindCollection(XmlNode node, Mapping.Collection model, string className, string path,
 		                                  System.Type containingType, Mappings mappings)
 		{
 			// ROLENAME
@@ -539,7 +540,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static string GetEntityName(XmlNode elem, Mappings model)
+		protected static string GetEntityName(XmlNode elem, Mappings model)
 		{
 			//string entityName = XmlHelper.GetAttributeValue(elem, "entity-name");
 			//return entityName == null ? GetClassName( elem.Attributes[ "class" ], model ) : entityName;
