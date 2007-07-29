@@ -540,7 +540,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		protected static string GetEntityName(XmlNode elem, Mappings model)
+		protected internal static string GetEntityName(XmlNode elem, Mappings model)
 		{
 			//string entityName = XmlHelper.GetAttributeValue(elem, "entity-name");
 			//return entityName == null ? GetClassName( elem.Attributes[ "class" ], model ) : entityName;
