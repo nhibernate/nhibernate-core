@@ -1,6 +1,7 @@
 using System.Xml;
 
 using NHibernate.Mapping;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
@@ -163,27 +164,47 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			mappings.AddClass(rootClass);
 		}
 
-		private void BindVersioningProperty(Table table, XmlNode subnode, string name, RootClass entity)
+		private void BindVersioningProperty(Table table, XmlNode node, string name, PersistentClass entity)
 		{
-			string propertyName = subnode.Attributes["name"].Value;
-			SimpleValue val = new SimpleValue(table);
-			BindSimpleValue(subnode, val, false, propertyName, mappings);
-			if (val.Type == null)
-			{
-				val.Type = (("version".Equals(name)) ? NHibernateUtil.Int32 : NHibernateUtil.Timestamp);
-			}
-			Mapping.Property prop = new Mapping.Property(val);
-			BindProperty(subnode, prop, mappings);
+			string propertyName = GetAttributeValue(node, "name");
+			SimpleValue simpleValue = new SimpleValue(table);
+			BindSimpleValue(node, simpleValue, false, propertyName);
+
+			if (simpleValue.Type == null)
+				simpleValue.Type = simpleValue.Type ?? GetVersioningPropertyType(name);
+
+			Mapping.Property property = new Mapping.Property(simpleValue);
+			BindProperty(node, property, mappings);
+
 			// for version properties marked as being generated, make sure they are "always"
 			// generated; "insert" is invalid. This is dis-allowed by the schema, but just to make
 			// sure...
-			if (prop.Generation == PropertyGeneration.Insert)
-			{
+
+			if (property.Generation == PropertyGeneration.Insert)
 				throw new MappingException("'generated' attribute cannot be 'insert' for versioning property");
+
+			MakeVersion(node, simpleValue);
+			entity.Version = property;
+			entity.AddProperty(property);
+		}
+
+		private static NullableType GetVersioningPropertyType(string name)
+		{
+			return "version".Equals(name) ? NHibernateUtil.Int32 : NHibernateUtil.Timestamp;
+		}
+
+		public static void MakeVersion(XmlNode node, SimpleValue model)
+		{
+			// VERSION UNSAVED-VALUE
+			XmlAttribute nullValueNode = node.Attributes["unsaved-value"];
+			if (nullValueNode != null)
+			{
+				model.NullValue = nullValueNode.Value;
 			}
-			MakeVersion(subnode, val);
-			entity.Version = prop;
-			entity.AddProperty(prop);
+			else
+			{
+				model.NullValue = null;
+			}
 		}
 	}
 }

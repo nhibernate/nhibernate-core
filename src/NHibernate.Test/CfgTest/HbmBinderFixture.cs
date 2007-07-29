@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Xml;
 using NHibernate.Cfg;
+using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
@@ -42,7 +43,7 @@ namespace NHibernate.Test.CfgTest
 			XmlDocument document = LoadAndValidate(XML, versionTag);
 			XmlNode node = document.GetElementsByTagName(versionTag)[0];
 			SimpleValue model = new SimpleValue();
-			HbmBinder.MakeVersion(node, model);
+			RootClassBinder.MakeVersion(node, model);
 			Assert.IsNull(model.NullValue,
 			              "default unsaved-value for tag {0} should be null, but is '{1}'",
 			              versionTag, model.NullValue);

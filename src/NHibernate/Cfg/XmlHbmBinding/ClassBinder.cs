@@ -503,5 +503,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return mappings.NamingStrategy.TableName(tableNameNode.Value);
 			}
 		}
+
+		protected void BindSimpleValue(XmlNode node, SimpleValue simpleValue, bool isNullable, string path)
+		{
+			BindSimpleValue(node, simpleValue, isNullable, path, mappings);
+		}
 	}
 }
