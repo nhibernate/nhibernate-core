@@ -26,5 +26,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			command(persistentClasses);
 		}
+
+		internal delegate void SecondPassCommand(IDictionary<System.Type, PersistentClass> persistentClasses);
 	}
 }

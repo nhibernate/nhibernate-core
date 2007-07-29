@@ -5,7 +5,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class NamedQueryBinder : Binder
+	public class NamedQueryBinder : QueryBinder
 	{
 		public NamedQueryBinder(Binder parent)
 			: base(parent)
@@ -20,9 +20,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public override void Bind(XmlNode node)
 		{
 			string queryName = GetAttributeValue(node, "name");
-			string query = GetInnerText(node);
+			string queryText = GetInnerText(node);
 
-			log.Debug("Named query: " + queryName + " -> " + query);
+			log.Debug("Named query: " + queryName + " -> " + queryText);
 
 			bool cacheable = "true".Equals(GetAttributeValue(node, "cacheable"));
 			string region = GetAttributeValue(node, "cache-region");
@@ -34,7 +34,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			IDictionary parameterTypes = GetParameterTypes(node);
 
-			NamedQueryDefinition namedQuery = new NamedQueryDefinition(query, cacheable, region, timeout,
+			NamedQueryDefinition namedQuery = new NamedQueryDefinition(queryText, cacheable, region, timeout,
 				fetchSize, flushMode, readOnly, comment, parameterTypes);
 
 			mappings.AddQuery(queryName, namedQuery);

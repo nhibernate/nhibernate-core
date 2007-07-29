@@ -1319,32 +1319,6 @@ namespace NHibernate.Cfg
 			new MappingRootBinder(mappings, namespaceManager).Bind(doc.DocumentElement);
 		}
 
-		internal static FlushMode GetFlushMode(string flushMode)
-		{
-			switch (flushMode)
-			{
-				case null:
-					return FlushMode.Unspecified;
-				case "auto":
-					return FlushMode.Auto;
-				case "commit":
-					return FlushMode.Commit;
-				case "never":
-					return FlushMode.Never;
-				default:
-					throw new MappingException("unknown flushmode " + flushMode);
-			}
-		}
-
-		internal static IDictionary GetParameterTypes(XmlNode queryElem)
-		{
-			IDictionary result = new SequencedHashMap();
-			foreach (XmlElement element in queryElem.SelectNodes(HbmConstants.nsQueryParam, namespaceManager))
-			{
-				result[XmlHelper.GetAttributeValue(element, "name")] = XmlHelper.GetAttributeValue(element, "type");
-			}
-			return result;
-		}
 
 		private class CollectionSecondPass : Cfg.CollectionSecondPass
 		{

@@ -497,6 +497,7 @@
     <Compile Include="Cfg\XmlHbmBinding\Binder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ClassBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\DelegatingSecondPass.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\QueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\RootClassBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\FilterDefBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ImportBinder.cs" />
@@ -505,7 +506,6 @@
     <Compile Include="Cfg\XmlHbmBinding\NamedQueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\NamedSQLQueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ResultSetMappingDefinitionBinder.cs" />
-    <Compile Include="Cfg\XmlHbmBinding\SecondPassCommand.cs" />
     <Compile Include="Cfg\XmlHbmBinding\SubclassBinder.cs" />
     <Compile Include="Cfg\XmlSchemas.cs" />
     <Compile Include="Classic\ILifecycle.cs" />
