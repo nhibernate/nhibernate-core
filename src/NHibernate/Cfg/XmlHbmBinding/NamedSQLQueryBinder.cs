@@ -16,7 +16,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public override void Bind(XmlNode node)
 		{
-			mappings.AddSecondPass(new NamedSQLQuerySecondPass(node, null, mappings));
+			NamedSQLQuerySecondPass secondPass = new NamedSQLQuerySecondPass(node, null, mappings);
+			mappings.AddSecondPass(secondPass);
 		}
 	}
 }

@@ -1,7 +1,7 @@
+using System.Collections;
 using System.Xml;
 
 using NHibernate.Engine;
-using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -19,44 +19,25 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public override void Bind(XmlNode node)
 		{
-			string path = null;
+			string queryName = GetAttributeValue(node, "name");
+			string query = GetInnerText(node);
 
-			string queryName = node.Attributes["name"].Value;
-			if (path != null)
-			{
-				queryName = path + '.' + queryName;
-			}
-			string query = node.InnerText;
 			log.Debug("Named query: " + queryName + " -> " + query);
 
-			bool cacheable = "true".Equals(XmlHelper.GetAttributeValue(node, "cacheable"));
-			string region = XmlHelper.GetAttributeValue(node, "cache-region");
-			XmlAttribute tAtt = node.Attributes["timeout"];
-			int timeout = tAtt == null ? -1 : int.Parse(tAtt.Value);
-			XmlAttribute fsAtt = node.Attributes["fetch-size"];
-			int fetchSize = fsAtt == null ? -1 : int.Parse(fsAtt.Value);
-			XmlAttribute roAttr = node.Attributes["read-only"];
-			bool readOnly = roAttr != null && "true".Equals(roAttr.Value);
-			XmlAttribute cacheModeAtt = node.Attributes["cache-mode"];
-			string cacheMode = cacheModeAtt == null ? null : cacheModeAtt.Value;
-			XmlAttribute cmAtt = node.Attributes["comment"];
-			string comment = cmAtt == null ? null : cmAtt.Value;
+			bool cacheable = "true".Equals(GetAttributeValue(node, "cacheable"));
+			string region = GetAttributeValue(node, "cache-region");
+			int timeout = int.Parse(GetAttributeValue(node, "timeout") ?? "-1");
+			int fetchSize = int.Parse(GetAttributeValue(node, "fetch-size") ?? "-1");
+			bool readOnly = "true".Equals(GetAttributeValue(node, "read-only") ?? "true");
+			string comment = GetAttributeValue(node, "comment");
+			FlushMode flushMode = GetFlushMode(GetAttributeValue(node, "flush-mode"));
 
-			NamedQueryDefinition namedQuery = new NamedQueryDefinition(
-				query,
-				cacheable,
-				region,
-				timeout,
-				fetchSize,
-				GetFlushMode(XmlHelper.GetAttributeValue(node, "flush-mode")),
-				//GetCacheMode(cacheMode),
-				readOnly,
-				comment,
-				GetParameterTypes(node)
-				);
+			IDictionary parameterTypes = GetParameterTypes(node);
+
+			NamedQueryDefinition namedQuery = new NamedQueryDefinition(query, cacheable, region, timeout,
+				fetchSize, flushMode, readOnly, comment, parameterTypes);
 
 			mappings.AddQuery(queryName, namedQuery);
 		}
-
 	}
 }
