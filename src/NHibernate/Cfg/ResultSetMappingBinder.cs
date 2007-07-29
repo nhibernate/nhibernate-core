@@ -12,7 +12,7 @@ namespace NHibernate.Cfg
 {
 	public abstract class ResultSetMappingBinder
 	{
-		protected static ResultSetMappingDefinition BuildResultSetMappingDefinition(XmlNode resultSetElem, string path,
+		internal static ResultSetMappingDefinition BuildResultSetMappingDefinition(XmlNode resultSetElem, string path,
 		                                                                            Mappings mappings)
 		{
 			string resultSetName = resultSetElem.Attributes["name"].Value;
