@@ -18,8 +18,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public override void Bind(XmlNode node)
 		{
-			PersistentClass superModel = GetSuperclass(mappings, node);
-			HandleJoinedSubclass(superModel, mappings, node);
+			PersistentClass superModel = GetSuperclass(node);
+			HandleJoinedSubclass(superModel, node);
 		}
 	}
 }

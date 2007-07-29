@@ -20,7 +20,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		protected static void PropertiesFromXML(XmlNode node, PersistentClass model, Mappings mappings)
+		protected void PropertiesFromXML(XmlNode node, PersistentClass model)
 		{
 			Table table = model.Table;
 
@@ -75,16 +75,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					Join join = new Join();
 					join.PersistentClass = model;
-					BindJoin(subnode, join, mappings);
+					BindJoin(subnode, join);
 					model.AddJoin(join);
 				}
 				else if ("subclass".Equals(name))
 				{
-					HandleSubclass(model, mappings, subnode);
+					HandleSubclass(model, subnode);
 				}
 				else if ("joined-subclass".Equals(name))
 				{
-					HandleJoinedSubclass(model, mappings, subnode);
+					HandleJoinedSubclass(model, subnode);
 				}
 				else if ("filter".Equals(name))
 				{
@@ -97,9 +97,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		protected static void BindSubclass(XmlNode node, Subclass model, Mappings mappings)
+		private void BindSubclass(XmlNode node, Subclass model)
 		{
-			BindClass(node, model, mappings);
+			BindClass(node, model);
 
 			if (model.ClassPersisterClass == null)
 			{
@@ -109,28 +109,28 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.Info("Mapping subclass: " + model.Name + " -> " + model.Table.Name);
 
 			// properties
-			PropertiesFromXML(node, model, mappings);
+			PropertiesFromXML(node, model);
 		}
 
-		protected static void HandleJoinedSubclass(PersistentClass model, Mappings mappings, XmlNode subnode)
+		protected void HandleJoinedSubclass(PersistentClass model, XmlNode subnode)
 		{
 			JoinedSubclass subclass = new JoinedSubclass(model);
-			BindJoinedSubclass(subnode, subclass, mappings);
+			BindJoinedSubclass(subnode, subclass);
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);
 		}
 
-		protected static void HandleSubclass(PersistentClass model, Mappings mappings, XmlNode subnode)
+		protected void HandleSubclass(PersistentClass model, XmlNode subnode)
 		{
 			Subclass subclass = new SingleTableSubclass(model);
-			BindSubclass(subnode, subclass, mappings);
+			BindSubclass(subnode, subclass);
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);
 		}
 
-		protected static void BindJoinedSubclass(XmlNode node, JoinedSubclass model, Mappings mappings)
+		private void BindJoinedSubclass(XmlNode node, JoinedSubclass model)
 		{
-			BindClass(node, model, mappings);
+			BindClass(node, model);
 
 			// joined subclass
 			if (model.ClassPersisterClass == null)
@@ -141,12 +141,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//table + schema names
 			XmlAttribute schemaNode = node.Attributes["schema"];
 			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
-			Table mytable = mappings.AddTable(schema, GetClassTableName(model, node, mappings));
+			Table mytable = mappings.AddTable(schema, GetClassTableName(model, node));
 			((ITableOwner)model).Table = mytable;
 
 			log.Info("Mapping joined-subclass: " + model.Name + " -> " + model.Table.Name);
 
-			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, NamespaceManager);
+			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependentValue(mytable, model.Identifier);
 			model.Key = key;
 			BindSimpleValue(keyNode, key, false, model.Name, mappings);
@@ -171,10 +171,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			// properties
-			PropertiesFromXML(node, model, mappings);
+			PropertiesFromXML(node, model);
 		}
 
-		public static void BindClass(XmlNode node, PersistentClass model, Mappings mappings)
+		protected void BindClass(XmlNode node, PersistentClass model)
 		{
 			string className = node.Attributes["name"] == null ? null : FullClassName(node.Attributes["name"].Value, mappings);
 
@@ -277,13 +277,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// CUSTOM SQL
 			HandleCustomSQL(node, model);
 
-			foreach (XmlNode syncNode in node.SelectNodes(HbmConstants.nsSynchronize, NamespaceManager))
+			foreach (XmlNode syncNode in node.SelectNodes(HbmConstants.nsSynchronize, namespaceManager))
 			{
 				model.AddSynchronizedTable(XmlHelper.GetAttributeValue(syncNode, "table"));
 			}
 		}
 
-		public static void BindJoin(XmlNode node, Join join, Mappings mappings)
+		private void BindJoin(XmlNode node, Join join)
 		{
 			PersistentClass persistentClass = join.PersistentClass;
 			String path = persistentClass.Name;
@@ -297,7 +297,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table primaryTable = persistentClass.Table;
 			Table table = mappings.AddTable(
 				schema,
-				GetClassTableName(persistentClass, node, mappings));
+				GetClassTableName(persistentClass, node));
 			join.Table = table;
 
 			XmlAttribute fetchNode = node.Attributes["fetch"];
@@ -324,7 +324,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				);
 
 			// KEY
-			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, NamespaceManager);
+			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependentValue(table, persistentClass.Identifier);
 			join.Key = key;
 			// key.SetCascadeDeleteEnabled("cascade".Equals(keyNode.Attributes["on-delete"].Value));
@@ -376,7 +376,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				if (value != null)
 				{
-					NHibernate.Mapping.Property prop = CreateProperty(value, propertyName, persistentClass.MappedClass, subnode, mappings);
+					Mapping.Property prop = CreateProperty(value, propertyName, persistentClass.MappedClass, subnode, mappings);
 					prop.IsOptional = join.IsOptional;
 					join.AddProperty(prop);
 				}
@@ -386,9 +386,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HandleCustomSQL(node, join);
 		}
 
-		protected static void HandleCustomSQL(XmlNode node, PersistentClass model)
+		private void HandleCustomSQL(XmlNode node, PersistentClass model)
 		{
-			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, NamespaceManager);
+			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, namespaceManager);
 
 			if (element != null)
 			{
@@ -396,44 +396,44 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.SetCustomSQLInsert(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, NamespaceManager);
+			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, namespaceManager);
 			if (element != null)
 			{
 				bool callable = IsCallable(element);
 				model.SetCustomSQLDelete(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, NamespaceManager);
+			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, namespaceManager);
 			if (element != null)
 			{
 				bool callable = IsCallable(element);
 				model.SetCustomSQLUpdate(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsLoader, NamespaceManager);
+			element = node.SelectSingleNode(HbmConstants.nsLoader, namespaceManager);
 			if (element != null)
 			{
 				model.LoaderName = XmlHelper.GetAttributeValue(element, "query-ref");
 			}
 		}
 
-		protected static void HandleCustomSQL(XmlNode node, Join model)
+		private void HandleCustomSQL(XmlNode node, Join model)
 		{
-			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, NamespaceManager);
+			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, namespaceManager);
 			if (element != null)
 			{
 				bool callable = IsCallable(element);
 				model.SetCustomSQLInsert(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, NamespaceManager);
+			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, namespaceManager);
 			if (element != null)
 			{
 				bool callable = IsCallable(element);
 				model.SetCustomSQLDelete(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, NamespaceManager);
+			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, namespaceManager);
 			if (element != null)
 			{
 				bool callable = IsCallable(element);
@@ -441,7 +441,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		protected static OptimisticLockMode GetOptimisticLockMode(XmlAttribute olAtt)
+		private static OptimisticLockMode GetOptimisticLockMode(XmlAttribute olAtt)
 		{
 			if (olAtt == null)
 			{
@@ -472,18 +472,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-
-		protected static PersistentClass GetSuperclass(Mappings model, XmlNode subnode)
+		protected PersistentClass GetSuperclass(XmlNode subnode)
 		{
 			XmlAttribute extendsAttr = subnode.Attributes["extends"];
 			if (extendsAttr == null)
 			{
 				throw new MappingException("'extends' attribute is not found.");
 			}
-			String extendsValue = FullClassName(extendsAttr.Value, model);
+			String extendsValue = FullClassName(extendsAttr.Value, mappings);
 			System.Type superclass = ClassForFullNameChecked(extendsValue,
 															 "extended class not found: {0}");
-			PersistentClass superModel = model.GetClass(superclass);
+			PersistentClass superModel = mappings.GetClass(superclass);
 
 			if (superModel == null)
 			{
@@ -492,7 +491,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return superModel;
 		}
 
-		protected static string GetClassTableName(PersistentClass model, XmlNode node, Mappings mappings)
+		protected string GetClassTableName(PersistentClass model, XmlNode node)
 		{
 			XmlAttribute tableNameNode = node.Attributes["table"];
 			if (tableNameNode == null)
@@ -504,6 +503,5 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return mappings.NamingStrategy.TableName(tableNameNode.Value);
 			}
 		}
-
 	}
 }

@@ -556,12 +556,7 @@ namespace NHibernate.Cfg
 			return GetClassName(att.Value, model);
 		}
 
-		public static string GetClassNameWithoutAssembly(string unqualifiedName, Mappings model)
-		{
-			return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).Type;
-		}
-
-		public static string GetClassName(string unqualifiedName, Mappings model)
+		private static string GetClassName(string unqualifiedName, Mappings model)
 		{
 			return ClassForNameChecked(unqualifiedName, model, "unknown class {0}").AssemblyQualifiedName;
 			//return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).ToString();
@@ -582,7 +577,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable,
+		protected static void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable,
 		                                 Mappings mappings)
 		{
 			BindColumns(node, model, isNullable, true, defaultColumnName, mappings);
@@ -620,7 +615,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindAny(XmlNode node, Any model, bool isNullable, Mappings mappings)
+		protected static void BindAny(XmlNode node, Any model, bool isNullable, Mappings mappings)
 		{
 			model.IdentifierType = GetTypeFromXML(node);
 
@@ -666,7 +661,7 @@ namespace NHibernate.Cfg
 			BindColumns(node, model, isNullable, false, null, mappings);
 		}
 
-		public static void BindOneToOne(XmlNode node, OneToOne model, bool isNullable, Mappings mappings)
+		protected static void BindOneToOne(XmlNode node, OneToOne model, bool isNullable, Mappings mappings)
 		{
 			//BindColumns( node, model, isNullable, false, null, mappings );
 			InitOuterJoinFetchSetting(node, model);
@@ -707,7 +702,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindOneToMany(XmlNode node, OneToMany model, Mappings mappings)
+		private static void BindOneToMany(XmlNode node, OneToMany model, Mappings mappings)
 		{
 			model.ReferencedEntityName = ClassForNameChecked(node.Attributes["class"].Value, mappings,
 			                                                 "associated class not found: {0}");
@@ -716,7 +711,7 @@ namespace NHibernate.Cfg
 			model.IsIgnoreNotFound = "ignore".Equals(notFound);
 		}
 
-		public static void BindColumn(XmlNode node, Column model, bool isNullable)
+		private static void BindColumn(XmlNode node, Column model, bool isNullable)
 		{
 			XmlAttribute lengthNode = node.Attributes["length"];
 			if (lengthNode != null)
@@ -740,7 +735,7 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// Called for arrays and primitive arrays
 		/// </remarks>
-		public static void BindArray(XmlNode node, Array model, string prefix, string path, System.Type containingType,
+		private static void BindArray(XmlNode node, Array model, string prefix, string path, System.Type containingType,
 		                             Mappings mappings)
 		{
 			BindCollection(node, model, prefix, path, containingType, mappings);
@@ -785,7 +780,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindComponent(XmlNode node, Component model, System.Type reflectedClass, string className,
+		protected static void BindComponent(XmlNode node, Component model, System.Type reflectedClass, string className,
 		                                 string path, bool isNullable, Mappings mappings)
 		{
 			XmlAttribute classNode = node.Attributes["class"];
@@ -1146,7 +1141,7 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// Called for Lists, arrays, primitive arrays
 		/// </remarks>>
-		public static void BindListSecondPass(XmlNode node, List model, IDictionary<System.Type, PersistentClass> classes, Mappings mappings)
+		private static void BindListSecondPass(XmlNode node, List model, IDictionary<System.Type, PersistentClass> classes, Mappings mappings)
 		{
 			BindCollectionSecondPass(node, model, classes, mappings);
 
@@ -1156,7 +1151,7 @@ namespace NHibernate.Cfg
 			model.Index = iv;
 		}
 
-		public static void BindIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model,
+		private static void BindIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model,
 		                                                      IDictionary<System.Type, PersistentClass> persitentClasses, Mappings mappings)
 		{
 			BindCollectionSecondPass(node, model, persitentClasses, mappings);
@@ -1175,7 +1170,7 @@ namespace NHibernate.Cfg
 		/// <param name="model"></param>
 		/// <param name="classes"></param>
 		/// <param name="mappings"></param>
-		public static void BindMapSecondPass(XmlNode node, Map model, IDictionary<System.Type, PersistentClass> classes, Mappings mappings)
+		private static void BindMapSecondPass(XmlNode node, Map model, IDictionary<System.Type, PersistentClass> classes, Mappings mappings)
 		{
 			BindCollectionSecondPass(node, model, classes, mappings);
 
@@ -1223,7 +1218,7 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// Called for all collections
 		/// </remarks>
-		public static void BindCollectionSecondPass(XmlNode node, Mapping.Collection model, IDictionary<System.Type, PersistentClass> persistentClasses,
+		private static void BindCollectionSecondPass(XmlNode node, Mapping.Collection model, IDictionary<System.Type, PersistentClass> persistentClasses,
 		                                            Mappings mappings)
 		{
 			if (model.IsOneToMany)
@@ -1308,7 +1303,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public static void BindRoot(XmlDocument doc, Mappings mappings)
+		internal static void BindRoot(XmlDocument doc, Mappings mappings)
 		{
 			// note that the prefix has absolutely nothing to do with what the user
 			// selects as their prefix in the document.  It is the prefix we use to 
@@ -1570,7 +1565,7 @@ namespace NHibernate.Cfg
 			return map;
 		}
 
-		public static void BindIntegerValue(XmlNode node, IntegerValue model, string defaultColumnName, bool isNullable,
+		private static void BindIntegerValue(XmlNode node, IntegerValue model, string defaultColumnName, bool isNullable,
 		                                    Mappings mappings)
 		{
 			BindSimpleValue(node, model, isNullable, defaultColumnName, mappings);
@@ -1605,7 +1600,7 @@ namespace NHibernate.Cfg
 			return ReflectHelper.ReflectedPropertyClass(containingType, propertyName, access);
 		}
 
-		public static void BindSetSecondPass(XmlNode node, Set model, IDictionary<System.Type, PersistentClass> persistentClasses, Mappings mappings)
+		private static void BindSetSecondPass(XmlNode node, Set model, IDictionary<System.Type, PersistentClass> persistentClasses, Mappings mappings)
 		{
 			BindCollectionSecondPass(node, model, persistentClasses, mappings);
 

@@ -116,7 +116,7 @@ namespace NHibernate.Cfg
 					"] not formatted correctly {OwnerClassName.propertyName}"
 					);
 			}
-			string ownerClassName = HbmBinder.GetClassNameWithoutAssembly(collectionAttribute.Substring(0, dot), mappings);
+			string ownerClassName = GetClassNameWithoutAssembly(collectionAttribute.Substring(0, dot), mappings);
 			string ownerPropertyName = collectionAttribute.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
@@ -383,5 +383,11 @@ namespace NHibernate.Cfg
 				throw new MappingException("unknown lockmode " + lockMode);
 			}
 		}
+
+		private static string GetClassNameWithoutAssembly(string unqualifiedName, Mappings model)
+		{
+			return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).Type;
+		}
+
 	}
 }

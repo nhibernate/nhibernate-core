@@ -21,12 +21,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			RootClass rootClass = new RootClass();
 
-			BindClass(node, rootClass, mappings);
+			BindClass(node, rootClass);
 
 			//TABLENAME
 			XmlAttribute schemaNode = node.Attributes["schema"];
 			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
-			Table table = mappings.AddTable(schema, GetClassTableName(rootClass, node, mappings));
+			Table table = mappings.AddTable(schema, GetClassTableName(rootClass, node));
 			((ITableOwner) rootClass).Table = table;
 
 			log.Info("Mapping class: " + rootClass.Name + " -> " + rootClass.Table.Name);
@@ -122,7 +122,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					case "version":
 					case "timestamp":
 						//VERSION / TIMESTAMP
-						BindVersioningProperty(table, subnode, mappings, name, rootClass);
+						BindVersioningProperty(table, subnode, name, rootClass);
 						break;
 
 					case "discriminator":
@@ -159,11 +159,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			rootClass.CreatePrimaryKey(dialect);
 
-			PropertiesFromXML(node, rootClass, mappings);
+			PropertiesFromXML(node, rootClass);
 			mappings.AddClass(rootClass);
 		}
 
-		protected static void BindVersioningProperty(Table table, XmlNode subnode, Mappings mappings, string name, RootClass entity)
+		private void BindVersioningProperty(Table table, XmlNode subnode, string name, RootClass entity)
 		{
 			string propertyName = subnode.Attributes["name"].Value;
 			SimpleValue val = new SimpleValue(table);
