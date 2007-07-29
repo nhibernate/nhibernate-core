@@ -171,7 +171,7 @@ namespace NHibernate.Cfg
 
 		private static void LoadGlobalPropertiesFromAppConfig()
 		{
-			object config = ConfigurationSettings.GetConfig("nhibernate");
+			object config = ConfigurationManager.GetSection("nhibernate");
 
 			if (config == null)
 			{
