@@ -56,10 +56,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				Hashtable parameters = new Hashtable();
 
-				foreach (XmlNode childNode in definitionNode.ChildNodes)
+				foreach (XmlNode parameterNode in definitionNode.ChildNodes)
 				{
-					string name = GetAttributeValue(childNode, "name");
-					string text = GetInnerText(childNode) ?? "";
+					string name = GetAttributeValue(parameterNode, "name");
+					string text = GetInnerText(parameterNode) ?? "";
 
 					parameters.Add(name, text);
 				}
@@ -81,9 +81,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddDialectScopes(XmlNode node, IAuxiliaryDatabaseObject auxDbObject)
 		{
-			foreach (XmlNode dialectScope in SelectNodes(node, HbmConstants.nsDialectScope))
+			foreach (XmlNode dialectScopeNode in SelectNodes(node, HbmConstants.nsDialectScope))
 			{
-				string dialectName = GetAttributeValue(dialectScope, "name");
+				string dialectName = GetAttributeValue(dialectScopeNode, "name");
 				auxDbObject.AddDialectScope(dialectName);
 			}
 		}
