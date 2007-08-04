@@ -478,6 +478,7 @@
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />
     <Compile Include="Cache\NoCachingEnabledException.cs" />
+    <Compile Include="Cfg\HbmBinder.CollectionBinder.cs" />
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Cfg\HbmConstants.cs" />
     <Compile Include="Cfg\MappingSchema\EndsWithHbmXmlFilter.cs" />

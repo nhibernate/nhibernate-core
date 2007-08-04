@@ -35,12 +35,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				string name = subnode.LocalName; //.Name;
 				string propertyName = GetPropertyName(subnode);
 
-				CollectionType collectType = CollectionType.CollectionTypeFromString(name);
 				IValue value = null;
-				if (collectType != null)
+				if (CollectionBinder.CanCreate(name))
 				{
-					Mapping.Collection collection =
-						collectType.Create(subnode, model.Name, propertyName, model, model.MappedClass, mappings);
+					Mapping.Collection collection = CollectionBinder.Create(name, subnode, model.Name,
+						propertyName, model, model.MappedClass, mappings);
+
 					mappings.AddCollection(collection);
 					value = collection;
 				}
