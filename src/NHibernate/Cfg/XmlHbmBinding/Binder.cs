@@ -81,5 +81,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		#endregion
+
+		protected static bool IsInNHibernateNamespace(XmlNode node)
+		{
+			return node.NamespaceURI == Configuration.MappingSchemaXMLNS;
+		}
 	}
 }
