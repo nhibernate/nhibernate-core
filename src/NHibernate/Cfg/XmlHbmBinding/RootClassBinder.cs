@@ -21,35 +21,39 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public override void Bind(XmlNode node)
 		{
 			RootClass rootClass = new RootClass();
-
 			BindClass(node, rootClass);
 
 			//TABLENAME
-			XmlAttribute schemaNode = node.Attributes["schema"];
-			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
-			Table table = mappings.AddTable(schema, GetClassTableName(rootClass, node));
+			string schema = GetAttributeValue(node, "schema") ?? mappings.SchemaName;
+			string tableName = GetClassTableName(rootClass, node);
+
+			Table table = mappings.AddTable(schema, tableName);
 			((ITableOwner) rootClass).Table = table;
 
 			LogInfo("Mapping class: {0} -> {1}", rootClass.Name, rootClass.Table.Name);
 
 			//MUTABLE
-			XmlAttribute mutableNode = node.Attributes["mutable"];
-			rootClass.IsMutable = (mutableNode == null) || mutableNode.Value.Equals("true");
+			rootClass.IsMutable = "true".Equals(GetAttributeValue(node, "mutable") ?? "true");
 
 			//WHERE
-			XmlAttribute whereNode = node.Attributes["where"];
-			if (whereNode != null)
-				rootClass.Where = whereNode.Value;
+			rootClass.Where = GetAttributeValue(node, "where") ?? rootClass.Where;
 
 			//CHECK
-			XmlAttribute checkNode = node.Attributes["check"];
-			if (checkNode != null)
-				table.AddCheckConstraint(checkNode.Value);
+			string check = GetAttributeValue(node, "check");
+			if (check != null)
+				table.AddCheckConstraint(check);
 
 			//POLYMORPHISM
-			XmlAttribute polyNode = node.Attributes["polymorphism"];
-			rootClass.IsExplicitPolymorphism = (polyNode != null) && polyNode.Value.Equals("explicit");
+			rootClass.IsExplicitPolymorphism = "explicit".Equals(GetAttributeValue(node, "polymorphism"));
 
+			BindChildNodes(node, rootClass, table);
+			rootClass.CreatePrimaryKey(dialect);
+			PropertiesFromXML(node, rootClass);
+			mappings.AddClass(rootClass);
+		}
+
+		private void BindChildNodes(XmlNode node, RootClass rootClass, Table table)
+		{
 			foreach (XmlNode subnode in node.ChildNodes)
 			{
 				string name = subnode.LocalName; //Name;
@@ -157,11 +161,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						break;
 				}
 			}
-
-			rootClass.CreatePrimaryKey(dialect);
-
-			PropertiesFromXML(node, rootClass);
-			mappings.AddClass(rootClass);
 		}
 
 		private void BindVersioningProperty(Table table, XmlNode node, string name, PersistentClass entity)
@@ -196,15 +195,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public static void MakeVersion(XmlNode node, SimpleValue model)
 		{
 			// VERSION UNSAVED-VALUE
-			XmlAttribute nullValueNode = node.Attributes["unsaved-value"];
-			if (nullValueNode != null)
-			{
-				model.NullValue = nullValueNode.Value;
-			}
-			else
-			{
-				model.NullValue = null;
-			}
+			model.NullValue = GetAttributeValue(node, "unsaved-value");
 		}
 	}
 }
