@@ -48,7 +48,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					synchronizedTables, cacheable, region, timeout, fetchSize, flushMode, readOnly, comment,
 					parameterTypes, callable);
 
-				log.Debug("Named SQL query: " + queryName + " -> " + namedQuery.QueryString);
+				LogDebug("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 				mappings.AddSQLQuery(queryName, namedQuery);
 			}
 			else
@@ -61,7 +61,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					synchronizedTables, cacheable, region, timeout, fetchSize, flushMode, readOnly, comment,
 					parameterTypes, callable);
 
-				log.Debug("Named SQL query: " + queryName + " -> " + namedQuery.QueryString);
+				LogDebug("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 				mappings.AddSQLQuery(queryName, namedQuery);
 			}
 		}

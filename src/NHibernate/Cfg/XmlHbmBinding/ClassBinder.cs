@@ -106,7 +106,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.RootClazz.ClassPersisterClass = typeof(SingleTableEntityPersister);
 			}
 
-			log.Info("Mapping subclass: " + model.Name + " -> " + model.Table.Name);
+			LogInfo("Mapping subclass: {0} -> {1}", model.Name, model.Table.Name);
 
 			// properties
 			PropertiesFromXML(node, model);
@@ -144,7 +144,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table mytable = mappings.AddTable(schema, GetClassTableName(model, node));
 			((ITableOwner)model).Table = mytable;
 
-			log.Info("Mapping joined-subclass: " + model.Name + " -> " + model.Table.Name);
+			LogInfo("Mapping joined-subclass: {0} -> {1}", model.Name, model.Table.Name);
 
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependentValue(mytable, model.Identifier);
@@ -318,10 +318,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				join.IsOptional = "true".Equals(nullNode.Value);
 			}
 
-			log.Info(
-				"Mapping class join: " + persistentClass.Name +
-				" -> " + join.Table.Name
-				);
+			LogInfo("Mapping class join: {0} -> {1}", persistentClass.Name, join.Table.Name);
 
 			// KEY
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);

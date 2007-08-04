@@ -22,7 +22,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string queryName = GetAttributeValue(node, "name");
 			string queryText = GetInnerText(node);
 
-			log.Debug("Named query: " + queryName + " -> " + queryText);
+			LogDebug("Named query: {0} -> {1}", queryName, queryText);
 
 			bool cacheable = "true".Equals(GetAttributeValue(node, "cacheable"));
 			string region = GetAttributeValue(node, "cache-region");

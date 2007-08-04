@@ -21,7 +21,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string className = GetAttributeValue(node, "class");
 			string fullClassName = FullClassName(className, mappings);
 			string rename = GetAttributeValue(node, "rename") ?? StringHelper.GetClassname(fullClassName);
-			log.Debug("Import: " + rename + " -> " + fullClassName);
+
+			LogDebug("Import: {0} -> {1}", rename, fullClassName);
+
 			mappings.AddImport(fullClassName, rename);
 		}
 	}

@@ -30,7 +30,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table table = mappings.AddTable(schema, GetClassTableName(rootClass, node));
 			((ITableOwner) rootClass).Table = table;
 
-			log.Info("Mapping class: " + rootClass.Name + " -> " + rootClass.Table.Name);
+			LogInfo("Mapping class: {0} -> {1}", rootClass.Name, rootClass.Table.Name);
 
 			//MUTABLE
 			XmlAttribute mutableNode = node.Attributes["mutable"];
