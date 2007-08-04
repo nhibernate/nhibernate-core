@@ -478,11 +478,8 @@
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />
     <Compile Include="Cache\NoCachingEnabledException.cs" />
-    <Compile Include="Cfg\CollectionSecondPass.cs" />
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Cfg\HbmConstants.cs" />
-    <Compile Include="Cfg\IQuerySecondPass.cs" />
-    <Compile Include="Cfg\ISecondPass.cs" />
     <Compile Include="Cfg\MappingSchema\EndsWithHbmXmlFilter.cs" />
     <Compile Include="Cfg\MappingSchema\Hbm.generated.cs">
       <SubType>code</SubType>
@@ -495,7 +492,6 @@
     <Compile Include="Cfg\XmlHbmBinding\AuxiliaryDatabaseObjectBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\Binder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ClassBinder.cs" />
-    <Compile Include="Cfg\XmlHbmBinding\DelegatingSecondPass.cs" />
     <Compile Include="Cfg\XmlHbmBinding\QueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\RootClassBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\FilterDefBinder.cs" />

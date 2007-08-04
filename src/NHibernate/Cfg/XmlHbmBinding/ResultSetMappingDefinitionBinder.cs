@@ -18,7 +18,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public override void Bind(XmlNode node)
 		{
-			mappings.AddSecondPass(new DelegatingSecondPass(delegate { SecondPassBind(node); }));
+			mappings.AddSecondPass(delegate { SecondPassBind(node); });
 		}
 
 		private void SecondPassBind(XmlNode node)

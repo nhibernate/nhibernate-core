@@ -19,7 +19,7 @@ namespace NHibernate.Cfg
 		private readonly IDictionary<string, NamedQueryDefinition> queries;
 		private readonly IDictionary<string, NamedSQLQueryDefinition> sqlqueries;
 		private readonly IDictionary<string, ResultSetMappingDefinition> resultSetMappings;
-		private readonly IList<ISecondPass> secondPasses;
+		private readonly IList<SecondPassCommand> secondPasses;
 		private readonly IDictionary<string, string> imports;
 		private string schemaName;
 		private string defaultCascade;
@@ -48,7 +48,7 @@ namespace NHibernate.Cfg
 			IDictionary<string, NamedSQLQueryDefinition> sqlqueries,
 			IDictionary<string, ResultSetMappingDefinition> resultSetMappings,
 			IDictionary<string, string> imports,
-			IList<ISecondPass> secondPasses,
+			IList<SecondPassCommand> secondPasses,
 			IList<UniquePropertyReference> propertyReferences,
 			INamingStrategy namingStrategy,
 			IDictionary filterDefinitions,
@@ -271,9 +271,9 @@ namespace NHibernate.Cfg
 			return queries[name];
 		}
 
-		internal void AddSecondPass(ISecondPass sp)
+		internal void AddSecondPass(SecondPassCommand command)
 		{
-			secondPasses.Add(sp);
+			secondPasses.Add(command);
 		}
 
 		/// <summary>
@@ -330,4 +330,6 @@ namespace NHibernate.Cfg
 			resultSetMappings[name] = sqlResultSetMapping;
 		}
 	}
+
+	internal delegate void SecondPassCommand(IDictionary<System.Type, PersistentClass> persistentClasses);
 }

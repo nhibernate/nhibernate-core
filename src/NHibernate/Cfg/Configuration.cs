@@ -58,7 +58,7 @@ namespace NHibernate.Cfg
 		private IDictionary<string, NamedQueryDefinition> namedQueries;
 		private IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
 		private IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
-		private IList<ISecondPass> secondPasses;
+		private IList<SecondPassCommand> secondPasses;
 		private IList<Mappings.UniquePropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary properties;
@@ -82,7 +82,7 @@ namespace NHibernate.Cfg
 			namedQueries = new Dictionary<string,NamedQueryDefinition>();
 			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>();
 			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>();
-			secondPasses = new List<ISecondPass>();
+			secondPasses = new List<SecondPassCommand>();
 			propertyReferences = new List<Mappings.UniquePropertyReference>();
 			filterDefinitions = new Hashtable();
 			interceptor = emptyInterceptor;
@@ -927,9 +927,9 @@ namespace NHibernate.Cfg
 		{
 			log.Info("processing one-to-many association mappings");
 
-			foreach (ISecondPass sp in secondPasses)
+			foreach (SecondPassCommand command in secondPasses)
 			{
-				sp.DoSecondPass(classes);
+				command(classes);
 			}
 
 			secondPasses.Clear();
