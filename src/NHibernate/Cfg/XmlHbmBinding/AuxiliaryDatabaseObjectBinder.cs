@@ -47,35 +47,31 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private static IAuxiliaryDatabaseObject CreateCustomObject(XmlNode definitionNode)
 		{
-			string className = GetAttributeValue(definitionNode, "class");
+			string customTypeName = GetAttributeValue(definitionNode, "class");
 
 			try
 			{
-				System.Type type = ReflectHelper.ClassForName(className);
-				IAuxiliaryDatabaseObject auxDbObject = (IAuxiliaryDatabaseObject) Activator.CreateInstance(type);
+				System.Type customType = ReflectHelper.ClassForName(customTypeName);
+				
+				IAuxiliaryDatabaseObject customObject =
+					(IAuxiliaryDatabaseObject) Activator.CreateInstance(customType);
 
-				Hashtable parameters = new Hashtable();
+				// TODO: Move Build/Set parameters statements up into Bind method? Do they need to be in the
+				// try/catch block?
+				IDictionary parameters = BuildParameterCollection(definitionNode);
+				customObject.SetParameterValues(parameters);
 
-				foreach (XmlNode parameterNode in definitionNode.ChildNodes)
-				{
-					string name = GetAttributeValue(parameterNode, "name");
-					string text = GetInnerText(parameterNode) ?? "";
-
-					parameters.Add(name, text);
-				}
-
-				auxDbObject.SetParameterValues(parameters);
-				return auxDbObject;
+				return customObject;
 			}
 			catch (TypeLoadException exception)
 			{
 				throw new MappingException(string.Format(
-					"Could not locate custom database object class [{0}].", className), exception);
+					"Could not locate custom database object class [{0}].", customTypeName), exception);
 			}
 			catch (Exception exception)
 			{
 				throw new MappingException(string.Format(
-					"Could not instantiate custom database object class [{0}].", className), exception);
+					"Could not instantiate custom database object class [{0}].", customTypeName), exception);
 			}
 		}
 
@@ -86,6 +82,24 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				string dialectName = GetAttributeValue(dialectScopeNode, "name");
 				auxDbObject.AddDialectScope(dialectName);
 			}
+		}
+
+		private static IDictionary BuildParameterCollection(XmlNode definitionNode)
+		{
+			// TODO: Change type to Dictionary<string, string>? Would this have any side effects due to its
+			// different behavior when a requested key is not in the dictionary?
+
+			Hashtable parameters = new Hashtable();
+
+			foreach (XmlNode parameterNode in definitionNode.ChildNodes)
+			{
+				string name = GetAttributeValue(parameterNode, "name");
+				string text = GetInnerText(parameterNode) ?? "";
+
+				parameters.Add(name, text);
+			}
+
+			return parameters;
 		}
 	}
 }
