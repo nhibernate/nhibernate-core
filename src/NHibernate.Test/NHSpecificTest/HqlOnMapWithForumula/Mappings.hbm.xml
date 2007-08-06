@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula" default-lazy="false">
+  <class name="A">
+    <id name="ID" type="Int32"  unsaved-value="-1">
+      <generator class="foreign">
+        <param name="property">C</param>
+      </generator>
+    </id>
+
+    <property name="Value" not-null="true" length="255" />
+
+		<map name="MyMaps" table="Maps" lazy="false" fetch="subselect" >
+			<key column="ParentId" />
+			<index column="Name" type="System.String"/>
+			<composite-element class="Info">
+					<property name="RowCount" formula="select count(ID) from A a where A.ID = ID" />
+			</composite-element>
+		</map>
+  </class>
+
+</hibernate-mapping>
+

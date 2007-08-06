@@ -57,7 +57,7 @@ namespace NHibernate.Persister.Collection
 			{
 				case CollectionElements:
 					cols = memberPersister.ElementColumnNames;
-					return StringHelper.Qualify(alias, cols);
+					return StringHelper.Qualify(alias, cols, memberPersister.ElementForumlas);
 
 				case CollectionIndices:
 					CheckIndex(propertyName);

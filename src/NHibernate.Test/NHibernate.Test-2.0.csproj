@@ -241,6 +241,8 @@
     <Compile Include="NHSpecificTest\BasicTimeFixture.cs" />
     <Compile Include="NHSpecificTest\BugTestCase.cs" />
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
+    <Compile Include="NHSpecificTest\HqlOnMapWithForumula\Domain.cs" />
+    <Compile Include="NHSpecificTest\HqlOnMapWithForumula\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -948,6 +950,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1080\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\HqlOnMapWithForumula\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -23,6 +23,11 @@ namespace NHibernate.Persister.Collection
 		string[] ElementColumnNames { get; }
 
 		/// <summary>
+		/// Get the formulas of the collection elements
+		/// </summary>
+		string[] ElementForumlas { get; }
+
+		/// <summary>
 		/// Get the names of the collection element columns (or the primary
 		/// key columns in the case of a one-to-many association),
 		/// aliased by the given table alias

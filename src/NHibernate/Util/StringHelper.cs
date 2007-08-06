@@ -135,10 +135,10 @@ namespace NHibernate.Util
 				return new StringBuilder(template.Substring(0, loc))
 					.Append(replacement)
 					.Append(Replace(
-					        	template.Substring(loc + placeholder.Length),
-					        	placeholder,
-					        	replacement
-					        	)).ToString();
+								template.Substring(loc + placeholder.Length),
+								placeholder,
+								replacement
+								)).ToString();
 			}
 		}
 
@@ -197,7 +197,7 @@ namespace NHibernate.Util
 			{
 				results.Add(token);
 			}
-			return (string[]) results.ToArray(typeof(string));
+			return (string[])results.ToArray(typeof(string));
 		}
 
 		/// <summary>
@@ -292,8 +292,8 @@ namespace NHibernate.Util
 		public static string Suffix(string name, string suffix)
 		{
 			return (suffix == null) ?
-			       name :
-			       name + suffix;
+				   name :
+				   name + suffix;
 		}
 
 		/// <summary>
@@ -325,8 +325,8 @@ namespace NHibernate.Util
 		{
 			int loc = qualifiedName.IndexOf(".");
 			return (loc < 0)
-			       	? qualifiedName
-			       	: qualifiedName.Substring(0, loc);
+					? qualifiedName
+					: qualifiedName.Substring(0, loc);
 		}
 
 		/// <summary>
@@ -380,7 +380,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string[] Multiply(string str, IEnumerator placeholders, IEnumerator replacements)
 		{
-			string[] result = new string[] {str};
+			string[] result = new string[] { str };
 			while (placeholders.MoveNext())
 			{
 				replacements.MoveNext();
@@ -506,6 +506,32 @@ namespace NHibernate.Util
 			}
 		}
 
+		public static string[] Qualify(string prefix, string[] names, string[] formula)
+		{
+			// Should we check for prefix == string.Empty rather than a length check?
+			if (prefix != null && prefix.Length > 0)
+			{
+				int len = names.Length;
+				string[] qualified = new string[len];
+				for (int i = 0; i < len; i++)
+				{
+					if (names[i] != null)
+					{
+						qualified[i] = Qualify(prefix, names[i]);
+					}
+					else
+					{
+						qualified[i] = "(" + formula[i] + ")";
+					}
+				}
+				return qualified;
+			}
+			else
+			{
+				return names;
+			}
+		}
+
 		public static int FirstIndexOfChar(string sqlString, string str, int startIndex)
 		{
 			return sqlString.IndexOfAny(str.ToCharArray(), startIndex);
@@ -560,8 +586,8 @@ namespace NHibernate.Util
 		public static string GenerateAlias(string description, int unique)
 		{
 			return GenerateAliasRoot(description) +
-			       unique.ToString() +
-			       Underscore;
+				   unique.ToString() +
+				   Underscore;
 		}
 
 		private static string GenerateAliasRoot(string description)

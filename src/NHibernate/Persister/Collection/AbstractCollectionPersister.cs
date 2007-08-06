@@ -748,6 +748,11 @@ namespace NHibernate.Persister.Collection
 			get { return elementColumnNames; }
 		}
 
+		public string[] ElementForumlas
+		{
+			get { return elementFormulas; }
+		}
+
 		public string[] GetElementColumnNames(string alias)
 		{
 			return StringHelper.Qualify(alias, elementColumnNames);
