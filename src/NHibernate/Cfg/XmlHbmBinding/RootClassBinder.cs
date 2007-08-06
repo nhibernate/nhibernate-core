@@ -18,7 +18,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public override void Bind(XmlNode node)
+		public void BindEach(XmlNode parentNode, string xpath)
+		{
+			foreach (XmlNode node in SelectNodes(parentNode, xpath))
+				Bind(node);
+		}
+
+		public void Bind(XmlNode node)
 		{
 			RootClass rootClass = new RootClass();
 			BindClass(node, rootClass);
@@ -106,7 +112,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				id.SetTypeByReflection(rootClass.MappedClass, propertyName, PropertyAccess(idNode, mappings));
 				Mapping.Property prop = new Mapping.Property(id);
-				BindProperty(idNode, prop, mappings);
+				BindProperty(idNode, prop);
 				rootClass.IdentifierProperty = prop;
 			}
 
@@ -114,7 +120,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				throw new MappingException(
 					"Illegal use of an array as an identifier (arrays don't reimplement equals).");
 
-			MakeIdentifier(idNode, id, mappings);
+			MakeIdentifier(idNode, id);
 		}
 
 		private void BindCompositeIdNode(XmlNode compositeIdNode, PersistentClass rootClass)
@@ -125,7 +131,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (propertyName == null)
 			{
-				BindComponent(compositeIdNode, compositeId, null, rootClass.Name, "id", false, mappings);
+				BindComponent(compositeIdNode, compositeId, null, rootClass.Name, "id", false);
 				rootClass.HasEmbeddedIdentifier = compositeId.IsEmbedded;
 			}
 			else
@@ -134,14 +140,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					propertyName);
 
 				BindComponent(compositeIdNode, compositeId, reflectedClass, rootClass.Name, propertyName,
-					false, mappings);
+					false);
 
 				Mapping.Property prop = new Mapping.Property(compositeId);
-				BindProperty(compositeIdNode, prop, mappings);
+				BindProperty(compositeIdNode, prop);
 				rootClass.IdentifierProperty = prop;
 			}
 
-			MakeIdentifier(compositeIdNode, compositeId, mappings);
+			MakeIdentifier(compositeIdNode, compositeId);
 
 			System.Type compIdClass = compositeId.ComponentClass;
 			if (!ReflectHelper.OverridesEquals(compIdClass))
@@ -168,7 +174,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				simpleValue.Type = simpleValue.Type ?? versioningPropertyType;
 
 			Mapping.Property property = new Mapping.Property(simpleValue);
-			BindProperty(versionNode, property, mappings);
+			BindProperty(versionNode, property);
 
 			// for version properties marked as being generated, make sure they are "always"
 			// generated; "insert" is invalid. This is dis-allowed by the schema, but just to make

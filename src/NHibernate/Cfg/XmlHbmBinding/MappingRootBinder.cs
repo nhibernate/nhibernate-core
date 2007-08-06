@@ -9,7 +9,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public override void Bind(XmlNode node)
+		public void Bind(XmlNode node)
 		{
 			mappings.SchemaName = GetAttributeValue(node, "schema") ?? null;
 			mappings.DefaultCascade = GetAttributeValue(node, "default-cascade") ?? "none";

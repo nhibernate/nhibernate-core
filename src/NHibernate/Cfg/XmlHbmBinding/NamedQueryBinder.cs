@@ -17,7 +17,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public override void Bind(XmlNode node)
+		public void BindEach(XmlNode parentNode, string xpath)
+		{
+			foreach (XmlNode node in SelectNodes(parentNode, xpath))
+				Bind(node);
+		}
+
+		public void Bind(XmlNode node)
 		{
 			string queryName = GetAttributeValue(node, "name");
 			string queryText = GetInnerText(node);

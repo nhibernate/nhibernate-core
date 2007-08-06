@@ -19,7 +19,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public override void Bind(XmlNode node)
+		public void BindEach(XmlNode parentNode, string xpath)
+		{
+			foreach (XmlNode node in SelectNodes(parentNode, xpath))
+				Bind(node);
+		}
+
+		public void Bind(XmlNode node)
 		{
 			XmlNode definitionNode = SelectSingleNode(node, HbmConstants.nsDefinition);
 

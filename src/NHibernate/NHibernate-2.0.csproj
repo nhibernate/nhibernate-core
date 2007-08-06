@@ -478,7 +478,6 @@
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />
     <Compile Include="Cache\NoCachingEnabledException.cs" />
-    <Compile Include="Cfg\HbmBinder.CollectionBinder.cs" />
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Cfg\HbmConstants.cs" />
     <Compile Include="Cfg\MappingSchema\EndsWithHbmXmlFilter.cs" />
@@ -489,10 +488,11 @@
     <Compile Include="Cfg\MappingSchema\IMappingDocumentParser.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentAggregator.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentParser.cs" />
-    <Compile Include="Cfg\ResultSetMappingBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\ResultSetMappingBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\AuxiliaryDatabaseObjectBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\Binder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ClassBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\CollectionBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\QueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\RootClassBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\FilterDefBinder.cs" />

@@ -9,7 +9,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 	// TODO: Move methods shared by Binder inheritors into this class
 	public abstract class Binder : HbmBinder
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (Binder));
+		protected static readonly ILog log = LogManager.GetLogger(typeof (Binder));
 		protected readonly Mappings mappings;
 		protected readonly XmlNamespaceManager namespaceManager;
 
@@ -29,14 +29,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			this.mappings = mappings;
 			this.namespaceManager = namespaceManager;
-		}
-
-		public abstract void Bind(XmlNode node);
-
-		public void BindEach(XmlNode parentNode, string xpath)
-		{
-			foreach (XmlNode node in SelectNodes(parentNode, xpath))
-				Bind(node);
 		}
 
 		protected static void LogDebug(string format, params object[] args)

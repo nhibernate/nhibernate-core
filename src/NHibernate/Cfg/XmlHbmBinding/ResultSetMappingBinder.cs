@@ -8,12 +8,21 @@ using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Cfg
+namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public abstract class ResultSetMappingBinder
+	public class ResultSetMappingBinder : Binder
 	{
-		internal static ResultSetMappingDefinition BuildResultSetMappingDefinition(XmlNode resultSetElem, string path,
-		                                                                            Mappings mappings)
+		public ResultSetMappingBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
+			: base(mappings, namespaceManager)
+		{
+		}
+
+		public ResultSetMappingBinder(Binder parent)
+			: base(parent)
+		{
+		}
+
+		public ResultSetMappingDefinition BuildResultSetMappingDefinition(XmlNode resultSetElem, string path)
 		{
 			string resultSetName = resultSetElem.Attributes["name"].Value;
 			if (path != null)
@@ -35,21 +44,21 @@ namespace NHibernate.Cfg
 				}
 				else if ("return".Equals(name))
 				{
-					definition.AddQueryReturn(BindReturn(returnElem, mappings, cnt));
+					definition.AddQueryReturn(BindReturn(returnElem, cnt));
 				}
 				else if ("return-join".Equals(name))
 				{
-					definition.AddQueryReturn(BindReturnJoin(returnElem, mappings));
+					definition.AddQueryReturn(BindReturnJoin(returnElem));
 				}
 				else if ("load-collection".Equals(name))
 				{
-					definition.AddQueryReturn(BindLoadCollection(returnElem, mappings));
+					definition.AddQueryReturn(BindLoadCollection(returnElem));
 				}
 			}
 			return definition;
 		}
 
-		private static SQLQueryRootReturn BindReturn(XmlNode returnElem, Mappings mappings, int elementCount)
+		private SQLQueryRootReturn BindReturn(XmlNode returnElem, int elementCount)
 		{
 			String alias = XmlHelper.GetAttributeValue(returnElem, "alias");
 			if (StringHelper.IsEmpty(alias))
@@ -65,7 +74,7 @@ namespace NHibernate.Cfg
 			LockMode lockMode = GetLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
 
 			PersistentClass pc = mappings.GetClass(ReflectHelper.ClassForName(entityName));
-			IDictionary propertyResults = BindPropertyResults(alias, returnElem, pc, mappings);
+			IDictionary propertyResults = BindPropertyResults(alias, returnElem, pc);
 
 			return new SQLQueryRootReturn(
 				alias,
@@ -75,7 +84,7 @@ namespace NHibernate.Cfg
 				);
 		}
 
-		private static SQLQueryJoinReturn BindReturnJoin(XmlNode returnElem, Mappings mappings)
+		private SQLQueryJoinReturn BindReturnJoin(XmlNode returnElem)
 		{
 			String alias = XmlHelper.GetAttributeValue(returnElem, "alias");
 			String roleAttribute = XmlHelper.GetAttributeValue(returnElem, "property");
@@ -85,14 +94,14 @@ namespace NHibernate.Cfg
 			{
 				throw new MappingException(
 					"Role attribute for sql query return [alias=" + alias +
-					"] not formatted correctly {owningAlias.propertyName}"
+						"] not formatted correctly {owningAlias.propertyName}"
 					);
 			}
 			string roleOwnerAlias = roleAttribute.Substring(0, dot);
 			string roleProperty = roleAttribute.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
-			IDictionary propertyResults = BindPropertyResults(alias, returnElem, null, mappings);
+			IDictionary propertyResults = BindPropertyResults(alias, returnElem, null);
 
 			return new SQLQueryJoinReturn(
 				alias,
@@ -103,7 +112,7 @@ namespace NHibernate.Cfg
 				);
 		}
 
-		private static SQLQueryCollectionReturn BindLoadCollection(XmlNode returnElem, Mappings mappings)
+		private SQLQueryCollectionReturn BindLoadCollection(XmlNode returnElem)
 		{
 			string alias = XmlHelper.GetAttributeValue(returnElem, "alias");
 			string collectionAttribute = XmlHelper.GetAttributeValue(returnElem, "role");
@@ -113,14 +122,14 @@ namespace NHibernate.Cfg
 			{
 				throw new MappingException(
 					"Collection attribute for sql query return [alias=" + alias +
-					"] not formatted correctly {OwnerClassName.propertyName}"
+						"] not formatted correctly {OwnerClassName.propertyName}"
 					);
 			}
-			string ownerClassName = GetClassNameWithoutAssembly(collectionAttribute.Substring(0, dot), mappings);
+			string ownerClassName = GetClassNameWithoutAssembly(collectionAttribute.Substring(0, dot));
 			string ownerPropertyName = collectionAttribute.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
-			IDictionary propertyResults = BindPropertyResults(alias, returnElem, null, mappings);
+			IDictionary propertyResults = BindPropertyResults(alias, returnElem, null);
 
 			return new SQLQueryCollectionReturn(
 				alias,
@@ -131,12 +140,10 @@ namespace NHibernate.Cfg
 				);
 		}
 
-		private static IDictionary BindPropertyResults(
-			String alias, XmlNode returnElement, PersistentClass pc, Mappings mappings
-			)
+		private IDictionary BindPropertyResults(string alias, XmlNode returnElement, PersistentClass pc)
 		{
 			IDictionary propertyresults = new Hashtable();
-				// maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
+			// maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
 
 			XmlNode discriminatorResult =
 				returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, HbmBinder.NamespaceManager);
@@ -253,14 +260,14 @@ namespace NHibernate.Cfg
 				{
 					throw new MappingException(
 						"return-property for alias " + alias +
-						" must specify at least one column or return-column name"
+							" must specify at least one column or return-column name"
 						);
 				}
 				if (uniqueReturnProperty.Contains(name))
 				{
 					throw new MappingException(
 						"duplicate return-property for property " + name +
-						" on alias " + alias
+							" on alias " + alias
 						);
 				}
 				uniqueReturnProperty.Add(name);
@@ -384,9 +391,9 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static string GetClassNameWithoutAssembly(string unqualifiedName, Mappings model)
+		private string GetClassNameWithoutAssembly(string unqualifiedName)
 		{
-			return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).Type;
+			return TypeNameParser.Parse(unqualifiedName, mappings.DefaultNamespace, mappings.DefaultAssembly).Type;
 		}
 
 	}

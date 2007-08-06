@@ -16,7 +16,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public override void Bind(XmlNode node)
+		public void BindEach(XmlNode parentNode, string xpath)
+		{
+			foreach (XmlNode node in SelectNodes(parentNode, xpath))
+				Bind(node);
+		}
+
+		public void Bind(XmlNode node)
 		{
 			mappings.AddSecondPass(delegate { SecondPassBind(node); });
 		}
@@ -24,7 +30,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void SecondPassBind(XmlNode node)
 		{
 			ResultSetMappingDefinition definition =
-				ResultSetMappingBinder.BuildResultSetMappingDefinition(node, null, mappings);
+				new ResultSetMappingBinder(this).BuildResultSetMappingDefinition(node, null);
 
 			mappings.AddResultSetMapping(definition);
 		}

@@ -13,6 +13,7 @@ using Iesi.Collections.Generic;
 
 using log4net;
 
+using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -376,8 +377,19 @@ namespace NHibernate.Cfg
 		{
 			try
 			{
+				// note that the prefix has absolutely nothing to do with what the user
+				// selects as their prefix in the document.  It is the prefix we use to 
+				// build the XPath and the nsmgr takes care of translating our prefix into
+				// the user defined prefix...
+				XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
+				namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
+
+				// TODO: Refactor: Remove need to set these static properties
 				HbmBinder.dialect = Dialect.Dialect.GetDialect(properties);
-				HbmBinder.BindRoot(doc, CreateMappings());
+				HbmBinder.NamespaceManager = namespaceManager;
+
+				new MappingRootBinder(CreateMappings(), namespaceManager).Bind(doc.DocumentElement);
+
 			}
 			catch (Exception e)
 			{
