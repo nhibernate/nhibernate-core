@@ -6,13 +6,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class JoinedSubclassBinder : ClassBinder
 	{
-		public JoinedSubclassBinder(Binder parent)
-			: base(parent)
+		public JoinedSubclassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+			: base(mappings, namespaceManager, dialect)
 		{
 		}
 
-		public JoinedSubclassBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
-			: base(mappings, namespaceManager)
+		public JoinedSubclassBinder(Binder parent, Dialect.Dialect dialect)
+			: base(parent, dialect)
+		{
+		}
+
+		public JoinedSubclassBinder(ClassBinder parent)
+			: base(parent)
 		{
 		}
 

@@ -384,11 +384,10 @@ namespace NHibernate.Cfg
 				XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
 				namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
 
-				// TODO: Refactor: Remove need to set these static properties
-				HbmBinder.dialect = Dialect.Dialect.GetDialect(properties);
-				HbmBinder.NamespaceManager = namespaceManager;
+				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
+				Mappings mappings = CreateMappings();
 
-				new MappingRootBinder(CreateMappings(), namespaceManager).Bind(doc.DocumentElement);
+				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(doc.DocumentElement);
 
 			}
 			catch (Exception e)
@@ -606,7 +605,7 @@ namespace NHibernate.Cfg
 		/// The order of <c>hbm.xml</c> files only matters if the attribute "extends" is used.
 		/// The ordering should only be done when needed because it takes extra time 
 		/// to read the XML files to find out the order the files should be passed to
-		/// the <see cref="HbmBinder" />. If you don't use the "extends" attribute then it is
+		/// the <see cref="XmlHbmBinding.Binder" />. If you don't use the "extends" attribute then it is
 		/// reccommended to call this with <c>skipOrdering=true</c>.
 		/// </para>
 		/// </remarks>

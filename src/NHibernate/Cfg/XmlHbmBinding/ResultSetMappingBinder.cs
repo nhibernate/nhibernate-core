@@ -39,7 +39,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if ("return-scalar".Equals(name))
 				{
 					string column = XmlHelper.GetAttributeValue(returnElem, "column");
-					IType type = HbmBinder.GetTypeFromXML(returnElem);
+					IType type = GetTypeFromXML(returnElem);
 					definition.AddQueryReturn(new SQLQueryScalarReturn(column, type));
 				}
 				else if ("return".Equals(name))
@@ -66,7 +66,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				alias = "alias_" + elementCount; // hack/workaround as sqlquery impl depend on having a key.
 			}
 
-			string entityName = HbmBinder.GetEntityName(returnElem, mappings);
+			string entityName = GetEntityName(returnElem, mappings);
 			if (entityName == null)
 			{
 				throw new MappingException("<return alias='" + alias + "'> must specify either a class or entity-name");
@@ -146,7 +146,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
 
 			XmlNode discriminatorResult =
-				returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, HbmBinder.NamespaceManager);
+				returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, namespaceManager);
 			if (discriminatorResult != null)
 			{
 				ArrayList resultColumns = GetResultColumns(discriminatorResult);
@@ -156,7 +156,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			IList propertyNames = new ArrayList();
 
 			foreach (
-				XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, HbmBinder.NamespaceManager))
+				XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, namespaceManager))
 			{
 				String name = XmlHelper.GetAttributeValue(propertyresult, "name");
 				if (pc == null || name.IndexOf('.') == -1)
@@ -335,7 +335,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return -1;
 		}
 
-		private static ArrayList GetResultColumns(XmlNode propertyresult)
+		private ArrayList GetResultColumns(XmlNode propertyresult)
 		{
 			String column = Unquote(XmlHelper.GetAttributeValue(propertyresult, "column"));
 			ArrayList allResultColumns = new ArrayList();
@@ -343,7 +343,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				allResultColumns.Add(column);
 			}
-			foreach (XmlNode element in propertyresult.SelectNodes(HbmConstants.nsReturnColumn, HbmBinder.NamespaceManager))
+			foreach (XmlNode element in propertyresult.SelectNodes(HbmConstants.nsReturnColumn, namespaceManager))
 			{
 				allResultColumns.Add(Unquote(XmlHelper.GetAttributeValue(element, "name")));
 			}

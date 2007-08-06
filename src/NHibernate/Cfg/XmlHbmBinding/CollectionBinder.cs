@@ -15,14 +15,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private readonly IDictionary<string, CreateCollectionCommand> createCollectionCommands =
 			new Dictionary<string, CreateCollectionCommand>();
 
-		public CollectionBinder(Binder parent)
-			: base(parent)
+		public CollectionBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+			: base(mappings, namespaceManager, dialect)
 		{
 			CreateCommandCollection();
 		}
 
-		public CollectionBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
-			: base(mappings, namespaceManager)
+		public CollectionBinder(Binder parent, Dialect.Dialect dialect)
+			: base(parent, dialect)
+		{
+			CreateCommandCollection();
+		}
+
+		public CollectionBinder(ClassBinder parent)
+			: base(parent)
 		{
 			CreateCommandCollection();
 		}
@@ -224,7 +230,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (!isGeneric.HasValue)
 			{
-				collectionType = GetPropertyType(node, mappings, containingType, GetPropertyName(node));
+				collectionType = GetPropertyType(node, containingType, GetPropertyName(node));
 				isGeneric = collectionType.IsGenericType;
 			}
 
@@ -234,7 +240,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				// Determine the generic arguments using reflection
 				if (collectionType == null)
-					collectionType = GetPropertyType(node, mappings, containingType, GetPropertyName(node));
+					collectionType = GetPropertyType(node, containingType, GetPropertyName(node));
 				System.Type[] genericArguments = collectionType.GetGenericArguments();
 				model.GenericArguments = genericArguments;
 			}
@@ -258,7 +264,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				AddCollectionSecondPass(node, model);
 
 			foreach (XmlNode filter in node.SelectNodes(HbmConstants.nsFilter, namespaceManager))
-				ParseFilter(filter, model, mappings);
+				ParseFilter(filter, model);
 
 			XmlNode loader = node.SelectSingleNode(HbmConstants.nsLoader, namespaceManager);
 			if (loader != null)
@@ -442,7 +448,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsCollectionId, namespaceManager);
 			SimpleValue id = new SimpleValue(model.CollectionTable);
-			BindSimpleValue(subnode, id, false, IdentifierCollection.DefaultIdentifierColumnName, mappings);
+			BindSimpleValue(subnode, id, false, IdentifierCollection.DefaultIdentifierColumnName);
 			model.Identifier = id;
 			MakeIdentifier(subnode, id);
 		}
@@ -450,7 +456,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindIntegerValue(XmlNode node, IntegerValue model, string defaultColumnName,
 			bool isNullable)
 		{
-			BindSimpleValue(node, model, isNullable, defaultColumnName, mappings);
+			BindSimpleValue(node, model, isNullable, defaultColumnName);
 
 			if (model.ColumnCollection.Count > 1)
 				log.Error("This shouldn't happen, check BindIntegerValue");
@@ -493,7 +499,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if ("index".Equals(name))
 				{
 					SimpleValue value = new SimpleValue(model.CollectionTable);
-					BindSimpleValue(subnode, value, model.IsOneToMany, IndexedCollection.DefaultIndexColumnName, mappings);
+					BindSimpleValue(subnode, value, model.IsOneToMany, IndexedCollection.DefaultIndexColumnName);
 					model.Index = value;
 					if (model.Index.Type == null)
 						throw new MappingException("map index element must specify a type: " + model.Role);
@@ -501,7 +507,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("index-many-to-many".Equals(name))
 				{
 					ManyToOne mto = new ManyToOne(model.CollectionTable);
-					BindManyToOne(subnode, mto, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany, mappings);
+					BindManyToOne(subnode, mto, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
 					model.Index = mto;
 				}
 				else if ("composite-index".Equals(name))
@@ -513,7 +519,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("index-many-to-any".Equals(name))
 				{
 					Any any = new Any(model.CollectionTable);
-					BindAny(subnode, any, model.IsOneToMany, mappings);
+					BindAny(subnode, any, model.IsOneToMany);
 					model.Index = any;
 				}
 			}
@@ -556,7 +562,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if ("key".Equals(name) || "generated-key".Equals(name))
 				{
 					SimpleValue key = new SimpleValue(model.CollectionTable);
-					BindSimpleValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName, mappings);
+					BindSimpleValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName);
 					key.Type = model.Owner.Identifier.Type;
 					if (key.Type.ReturnedClass.IsArray)
 						throw new MappingException("illegal use of an array as an identifier (arrays don't reimplement Equals)");
@@ -566,13 +572,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					SimpleValue elt = new SimpleValue(model.CollectionTable);
 					model.Element = elt;
-					BindSimpleValue(subnode, elt, true, Mapping.Collection.DefaultElementColumnName, mappings);
+					BindSimpleValue(subnode, elt, true, Mapping.Collection.DefaultElementColumnName);
 				}
 				else if ("many-to-many".Equals(name))
 				{
 					ManyToOne element = new ManyToOne(model.CollectionTable);
 					model.Element = element;
-					BindManyToOne(subnode, element, Mapping.Collection.DefaultElementColumnName, false, mappings);
+					BindManyToOne(subnode, element, Mapping.Collection.DefaultElementColumnName, false);
 					BindManyToManySubelements(model, subnode);
 				}
 				else if ("composite-element".Equals(name))
@@ -585,7 +591,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					Any element = new Any(model.CollectionTable);
 					model.Element = element;
-					BindAny(subnode, element, true, mappings);
+					BindAny(subnode, element, true);
 				}
 				else if ("jcs-cache".Equals(name) || "cache".Equals(name))
 				{

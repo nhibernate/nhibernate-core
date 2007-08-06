@@ -14,14 +14,23 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class ClassBinder : Binder
 	{
-		public ClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
+		protected readonly Dialect.Dialect dialect;
+
+		public ClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
 			: base(mappings, namespaceManager)
 		{
+			this.dialect = dialect;
 		}
 
-		public ClassBinder(Binder parent)
+		public ClassBinder(Binder parent, Dialect.Dialect dialect)
 			: base(parent)
 		{
+			this.dialect = dialect;
+		}
+
+		public ClassBinder(ClassBinder parent) : base(parent)
+		{
+			this.dialect = parent.dialect;
 		}
 
 		protected void PropertiesFromXML(XmlNode node, PersistentClass model)
@@ -52,27 +61,27 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("many-to-one".Equals(name))
 				{
 					value = new ManyToOne(table);
-					BindManyToOne(subnode, (ManyToOne)value, propertyName, true, mappings);
+					BindManyToOne(subnode, (ManyToOne)value, propertyName, true);
 				}
 				else if ("any".Equals(name))
 				{
 					value = new Any(table);
-					BindAny(subnode, (Any)value, true, mappings);
+					BindAny(subnode, (Any)value, true);
 				}
 				else if ("one-to-one".Equals(name))
 				{
 					value = new OneToOne(table, model.Identifier);
-					BindOneToOne(subnode, (OneToOne)value, true, mappings);
+					BindOneToOne(subnode, (OneToOne)value, true);
 				}
 				else if ("property".Equals(name))
 				{
 					value = new SimpleValue(table);
-					BindSimpleValue(subnode, (SimpleValue)value, true, propertyName, mappings);
+					BindSimpleValue(subnode, (SimpleValue)value, true, propertyName);
 				}
 				else if ("component".Equals(name) || "dynamic-component".Equals(name))
 				{
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
-					System.Type reflectedClass = GetPropertyType(subnode, mappings, model.MappedClass, propertyName);
+					System.Type reflectedClass = GetPropertyType(subnode, model.MappedClass, propertyName);
 					value = new Component(model);
 					BindComponent(subnode, (Component)value, reflectedClass, model.Name, propertyName, true);
 				}
@@ -93,7 +102,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ("filter".Equals(name))
 				{
-					ParseFilter(subnode, model, mappings);
+					ParseFilter(subnode, model);
 				}
 				if (value != null)
 				{
@@ -154,7 +163,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependentValue(mytable, model.Identifier);
 			model.Key = key;
-			BindSimpleValue(keyNode, key, false, model.Name, mappings);
+			BindSimpleValue(keyNode, key, false, model.Name);
 			model.Key.Type = model.Identifier.Type;
 
 			model.CreatePrimaryKey(dialect);
@@ -330,7 +339,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			SimpleValue key = new DependentValue(table, persistentClass.Identifier);
 			join.Key = key;
 			// key.SetCascadeDeleteEnabled("cascade".Equals(keyNode.Attributes["on-delete"].Value));
-			BindSimpleValue(keyNode, key, false, persistentClass.Name, mappings);
+			BindSimpleValue(keyNode, key, false, persistentClass.Name);
 			// TODO: not sure if the following if-block is correct
 			if (key.Type == null)
 				key.Type = persistentClass.Identifier.Type;
@@ -351,15 +360,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					case "many-to-one":
 						value = new ManyToOne(table);
-						BindManyToOne(subnode, (ManyToOne)value, propertyName, true, mappings);
+						BindManyToOne(subnode, (ManyToOne)value, propertyName, true);
 						break;
 					case "any":
 						value = new Any(table);
-						BindAny(subnode, (Any)value, true, mappings);
+						BindAny(subnode, (Any)value, true);
 						break;
 					case "property":
 						value = new SimpleValue(table);
-						BindSimpleValue(subnode, (SimpleValue)value, true, propertyName, mappings);
+						BindSimpleValue(subnode, (SimpleValue)value, true, propertyName);
 						break;
 					case "component":
 					case "dynamic-component":
@@ -505,11 +514,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		protected void BindSimpleValue(XmlNode node, SimpleValue simpleValue, bool isNullable, string path)
-		{
-			BindSimpleValue(node, simpleValue, isNullable, path, mappings);
-		}
-
 		protected void MakeIdentifier(XmlNode node, SimpleValue model)
 		{
 			//GENERATOR
@@ -617,7 +621,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				IValue value = null;
 
-				CollectionBinder binder = new CollectionBinder(mappings, namespaceManager);
+				CollectionBinder binder = new CollectionBinder(this);
 
 				if (binder.CanCreate(name))
 				{
@@ -630,22 +634,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("many-to-one".Equals(name) || "key-many-to-one".Equals(name))
 				{
 					value = new ManyToOne(model.Table);
-					BindManyToOne(subnode, (ManyToOne)value, subpath, isNullable, mappings);
+					BindManyToOne(subnode, (ManyToOne)value, subpath, isNullable);
 				}
 				else if ("one-to-one".Equals(name))
 				{
 					value = new OneToOne(model.Table, model.Owner.Identifier);
-					BindOneToOne(subnode, (OneToOne)value, isNullable, mappings);
+					BindOneToOne(subnode, (OneToOne)value, isNullable);
 				}
 				else if ("any".Equals(name))
 				{
 					value = new Any(model.Table);
-					BindAny(subnode, (Any)value, isNullable, mappings);
+					BindAny(subnode, (Any)value, isNullable);
 				}
 				else if ("property".Equals(name) || "key-property".Equals(name))
 				{
 					value = new SimpleValue(model.Table);
-					BindSimpleValue(subnode, (SimpleValue)value, isNullable, subpath, mappings);
+					BindSimpleValue(subnode, (SimpleValue)value, isNullable, subpath);
 				}
 				else if ("component".Equals(name) || "dynamic-component".Equals(name) || "nested-composite-element".Equals(name))
 				{
@@ -653,7 +657,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 														?
 													null
 														:
-													GetPropertyType(subnode, mappings, model.ComponentClass, propertyName);
+													GetPropertyType(subnode, model.ComponentClass, propertyName);
 					value = (model.Owner != null)
 								?
 							new Component(model.Owner)
@@ -732,7 +736,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (parentClass != null && value.IsSimpleValue)
 			{
-				((SimpleValue)value).SetTypeByReflection(parentClass, propertyName, PropertyAccess(subnode, mappings));
+				((SimpleValue)value).SetTypeByReflection(parentClass, propertyName, PropertyAccess(subnode));
 			}
 
 			// This is done here 'cos we might only know the type here (ugly!)
@@ -764,7 +768,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				throw new MappingException("could not determine a property type for: " + property.Name);
 			}
 
-			property.PropertyAccessorName = PropertyAccess(node, mappings);
+			property.PropertyAccessorName = PropertyAccess(node);
 
 			XmlAttribute cascadeNode = node.Attributes["cascade"];
 			property.Cascade = (cascadeNode == null) ? mappings.DefaultCascade : cascadeNode.Value;
@@ -874,5 +878,448 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			return columns.ToString();
 		}
+
+		//automatically makes a column with the default name if none is specifed by XML
+		protected void BindSimpleValue(XmlNode node, SimpleValue model, bool isNullable, string path)
+		{
+			model.Type = GetTypeFromXML(node);
+			//BindSimpleValueType(node, model, mappings);
+
+			BindColumnsOrFormula(node, model, path, isNullable);
+
+			XmlAttribute fkNode = node.Attributes["foreign-key"];
+			if (fkNode != null)
+			{
+				model.ForeignKeyName = fkNode.Value;
+			}
+		}
+
+		private void BindColumnsOrFormula(XmlNode node, SimpleValue simpleValue, string path, bool isNullable)
+		{
+			XmlAttribute formulaNode = node.Attributes["formula"];
+			if (formulaNode != null)
+			{
+				Formula f = new Formula();
+				f.FormulaString = formulaNode.InnerText;
+				simpleValue.AddFormula(f);
+			}
+			else
+			{
+				BindColumns(node, simpleValue, isNullable, true, path);
+			}
+		}
+
+		protected void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable)
+		{
+			BindColumns(node, model, isNullable, true, defaultColumnName);
+			InitOuterJoinFetchSetting(node, model);
+			InitLaziness(node, model, true);
+
+			XmlAttribute ukName = node.Attributes["property-ref"];
+			if (ukName != null)
+			{
+				model.ReferencedPropertyName = ukName.Value;
+			}
+
+			// TODO NH: this is sort of redundant with the code below
+			model.ReferencedEntityName = GetEntityName(node, mappings);
+
+			string notFound = XmlHelper.GetAttributeValue(node, "not-found");
+			model.IsIgnoreNotFound = "ignore".Equals(notFound);
+
+			XmlAttribute typeNode = node.Attributes["class"];
+
+			if (typeNode != null)
+			{
+				model.Type = TypeFactory.ManyToOne(
+					ClassForNameChecked(typeNode.Value, mappings,
+										"could not find class: {0}"),
+					model.ReferencedPropertyName,
+					model.IsLazy,
+					model.IsIgnoreNotFound);
+			}
+
+			XmlAttribute fkNode = node.Attributes["foreign-key"];
+			if (fkNode != null)
+			{
+				model.ForeignKeyName = fkNode.Value;
+			}
+		}
+
+		protected void BindAny(XmlNode node, Any model, bool isNullable)
+		{
+			model.IdentifierType = GetTypeFromXML(node);
+
+			XmlAttribute metaAttribute = node.Attributes["meta-type"];
+			if (metaAttribute != null)
+			{
+				IType metaType = TypeFactory.HeuristicType(metaAttribute.Value);
+				if (metaType == null)
+				{
+					throw new MappingException("could not interpret meta-type");
+				}
+				model.MetaType = metaType;
+
+				Hashtable values = new Hashtable();
+				foreach (XmlNode metaValue in node.SelectNodes(HbmConstants.nsMetaValue, namespaceManager))
+				{
+					try
+					{
+						object value = model.MetaType.FromString(metaValue.Attributes["value"].Value);
+						System.Type clazz = ReflectHelper.ClassForName(FullClassName(metaValue.Attributes["class"].Value, mappings));
+						values[value] = clazz;
+					}
+					catch (InvalidCastException)
+					{
+						throw new MappingException("meta-type was not an IDiscriminatorType: " + metaType.Name);
+					}
+					catch (HibernateException he)
+					{
+						throw new MappingException("could not interpret meta-value", he);
+					}
+					catch (TypeLoadException cnfe)
+					{
+						throw new MappingException("meta-value class not found", cnfe);
+					}
+				}
+
+				if (values.Count > 0)
+				{
+					model.MetaType = new MetaType(values, model.MetaType);
+				}
+			}
+
+			BindColumns(node, model, isNullable, false, null);
+		}
+
+		protected void BindOneToOne(XmlNode node, OneToOne model, bool isNullable)
+		{
+			//BindColumns( node, model, isNullable, false, null, mappings );
+			InitOuterJoinFetchSetting(node, model);
+			InitLaziness(node, model, true);
+
+			XmlAttribute constrNode = node.Attributes["constrained"];
+			bool constrained = constrNode != null && constrNode.Value.Equals("true");
+			model.IsConstrained = constrained;
+
+			model.ForeignKeyDirection = (constrained
+											? ForeignKeyDirection.ForeignKeyFromParent
+											: ForeignKeyDirection.ForeignKeyToParent);
+
+			XmlAttribute fkNode = node.Attributes["foreign-key"];
+			if (fkNode != null)
+			{
+				model.ForeignKeyName = fkNode.Value;
+			}
+
+			XmlAttribute ukName = node.Attributes["property-ref"];
+			if (ukName != null)
+			{
+				model.ReferencedPropertyName = ukName.Value;
+			}
+
+			// TODO NH: this is sort of redundant with the code below
+			model.ReferencedEntityName = GetEntityName(node, mappings);
+
+			XmlAttribute classNode = node.Attributes["class"];
+			if (classNode != null)
+			{
+				model.Type = TypeFactory.OneToOne(
+					ClassForNameChecked(classNode.Value, mappings, "could not find class: {0}"),
+					model.ForeignKeyDirection,
+					model.ReferencedPropertyName,
+					model.IsLazy
+					);
+			}
+		}
+
+		protected IDictionary GetMetas(XmlNode node)
+		{
+			IDictionary map = new Hashtable();
+
+			foreach (XmlNode metaNode in node.SelectNodes(HbmConstants.nsMeta, namespaceManager))
+			{
+				string name = metaNode.Attributes["attribute"].Value;
+				MetaAttribute meta = (MetaAttribute)map[name];
+				if (meta == null)
+				{
+					meta = new MetaAttribute();
+					map[name] = meta;
+				}
+				meta.AddValue(metaNode.InnerText);
+			}
+
+			return map;
+		}
+
+		protected System.Type GetPropertyType(XmlNode definingNode, System.Type containingType, string propertyName)
+		{
+			if (definingNode.Attributes["class"] != null)
+			{
+				return ClassForNameChecked(definingNode.Attributes["class"].Value, mappings,
+										   "could not find class: {0}");
+			}
+			else if (containingType == null)
+			{
+				return null;
+			}
+
+			string access = PropertyAccess(definingNode);
+
+			return ReflectHelper.ReflectedPropertyClass(containingType, propertyName, access);
+		}
+
+		protected static bool IsCallable(XmlNode element)
+		{
+			XmlAttribute attrib = element.Attributes["callable"];
+			return attrib != null && "true".Equals(attrib.Value);
+		}
+
+		protected static ExecuteUpdateResultCheckStyle GetResultCheckStyle(XmlNode element, bool callable)
+		{
+			XmlAttribute attr = element.Attributes["check"];
+			if (attr == null)
+			{
+				// use COUNT as the default.  This mimics the old behavior, although
+				// NONE might be a better option moving forward in the case of callable
+				return ExecuteUpdateResultCheckStyle.Count;
+			}
+			return ExecuteUpdateResultCheckStyle.Parse(attr.Value);
+		}
+
+		protected void ParseFilter(XmlNode filterElement, IFilterable filterable)
+		{
+			string name = GetPropertyName(filterElement);
+			string condition = filterElement.InnerText;
+			if (condition == null || StringHelper.IsEmpty(condition.Trim()))
+			{
+				if (filterElement.Attributes != null)
+				{
+					XmlAttribute propertyNameNode = filterElement.Attributes["condition"];
+					condition = (propertyNameNode == null) ? null : propertyNameNode.Value;
+				}
+			}
+
+			//TODO: bad implementation, cos it depends upon ordering of mapping doc
+			//      fixing this requires that Collection/PersistentClass gain access
+			//      to the Mappings reference from Configuration (or the filterDefinitions
+			//      map directly) sometime during Configuration.buildSessionFactory
+			//      (after all the types/filter-defs are known and before building
+			//      persisters).
+			if (StringHelper.IsEmpty(condition))
+			{
+				condition = mappings.GetFilterDefinition(name).DefaultFilterCondition;
+			}
+			if (condition == null)
+			{
+				throw new MappingException("no filter condition found for filter: " + name);
+			}
+			log.Debug("Applying filter [" + name + "] as [" + condition + "]");
+			filterable.AddFilter(name, condition);
+		}
+
+		protected void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn,
+			string propertyPath)
+		{
+			Table table = model.Table;
+			//COLUMN(S)
+			XmlAttribute columnAttribute = node.Attributes["column"];
+			if (columnAttribute == null)
+			{
+				int count = 0;
+
+				foreach (XmlNode columnElement in node.SelectNodes(HbmConstants.nsColumn, namespaceManager))
+				{
+					Column col = new Column(model.Type, count++);
+					BindColumn(columnElement, col, isNullable);
+
+					string name = columnElement.Attributes["name"].Value;
+					col.Name = mappings.NamingStrategy.ColumnName(name);
+					if (table != null)
+					{
+						table.AddColumn(col);
+					}
+					//table=null -> an association, fill it in later
+					model.AddColumn(col);
+
+					//column index
+					BindIndex(columnElement.Attributes["index"], table, col);
+					//column group index (although it can serve as a separate column index)
+					BindIndex(node.Attributes["index"], table, col);
+
+					BindUniqueKey(columnElement.Attributes["unique-key"], table, col);
+					BindUniqueKey(node.Attributes["unique-key"], table, col);
+				}
+			}
+			else
+			{
+				Column col = new Column(model.Type, 0);
+				BindColumn(node, col, isNullable);
+				col.Name = mappings.NamingStrategy.ColumnName(columnAttribute.Value);
+				if (table != null)
+				{
+					table.AddColumn(col);
+				} //table=null -> an association - fill it in later
+				model.AddColumn(col);
+				//column group index (although can serve as a separate column index)
+				BindIndex(node.Attributes["index"], table, col);
+				BindUniqueKey(node.Attributes["unique-key"], table, col);
+			}
+
+			if (autoColumn && model.ColumnSpan == 0)
+			{
+				Column col = new Column(model.Type, 0);
+				BindColumn(node, col, isNullable);
+				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
+				model.Table.AddColumn(col);
+				model.AddColumn(col);
+				//column group index (although can serve as a separate column index)
+				BindIndex(node.Attributes["index"], table, col);
+				BindUniqueKey(node.Attributes["unique-key"], table, col);
+			}
+		}
+
+		private static void BindColumn(XmlNode node, Column model, bool isNullable)
+		{
+			XmlAttribute lengthNode = node.Attributes["length"];
+			if (lengthNode != null)
+			{
+				model.Length = int.Parse(lengthNode.Value);
+			}
+
+			XmlAttribute nullNode = node.Attributes["not-null"];
+			model.IsNullable = (nullNode != null) ? !StringHelper.BooleanValue(nullNode.Value) : isNullable;
+
+			XmlAttribute unqNode = node.Attributes["unique"];
+			model.IsUnique = unqNode != null && StringHelper.BooleanValue(unqNode.Value);
+
+			XmlAttribute chkNode = node.Attributes["check"];
+			model.CheckConstraint = chkNode != null ? chkNode.Value : string.Empty;
+
+			XmlAttribute typeNode = node.Attributes["sql-type"];
+			model.SqlType = (typeNode == null) ? null : typeNode.Value;
+		}
+
+		private static void BindIndex(XmlAttribute indexAttribute, Table table, Column column)
+		{
+			if (indexAttribute != null && table != null)
+			{
+				StringTokenizer tokens = new StringTokenizer(indexAttribute.Value, ", ");
+				foreach (string token in tokens)
+				{
+					table.GetIndex(token).AddColumn(column);
+				}
+			}
+		}
+
+		private static void BindUniqueKey(XmlAttribute uniqueKeyAttribute, Table table, Column column)
+		{
+			if (uniqueKeyAttribute != null && table != null)
+			{
+				StringTokenizer tokens = new StringTokenizer(uniqueKeyAttribute.Value, ", ");
+				foreach (string token in tokens)
+				{
+					table.GetUniqueKey(token).AddColumn(column);
+				}
+			}
+		}
+
+		protected static void InitLaziness(XmlNode node, ToOne fetchable, bool defaultLazy)
+		{
+			XmlAttribute lazyNode = node.Attributes["lazy"];
+			if (lazyNode != null && "no-proxy".Equals(lazyNode.Value))
+			{
+				//fetchable.UnwrapProxy = true;
+				fetchable.IsLazy = true;
+				//TODO: better to degrade to lazy="false" if uninstrumented
+			}
+			else
+			{
+				InitLaziness(node, fetchable, "proxy", defaultLazy);
+			}
+		}
+
+		protected static void InitLaziness(XmlNode node, IFetchable fetchable, string proxyVal, bool defaultLazy)
+		{
+			XmlAttribute lazyNode = node.Attributes["lazy"];
+			bool isLazyTrue = lazyNode == null
+				?
+					defaultLazy && fetchable.IsLazy
+				: //fetch="join" overrides default laziness
+				lazyNode.Value.Equals(proxyVal); //fetch="join" overrides default laziness
+			fetchable.IsLazy = isLazyTrue;
+		}
+
+		protected static void InitOuterJoinFetchSetting(XmlNode node, IFetchable model)
+		{
+			XmlAttribute fetchNode = node.Attributes["fetch"];
+			FetchMode fetchStyle;
+			bool lazy = true;
+
+			if (fetchNode == null)
+			{
+				XmlAttribute jfNode = node.Attributes["outer-join"];
+				if (jfNode == null)
+				{
+					if ("many-to-many".Equals(node.Name))
+					{
+						//NOTE SPECIAL CASE:
+						// default to join and non-lazy for the "second join"
+						// of the many-to-many
+						lazy = false;
+						fetchStyle = FetchMode.Join;
+					}
+					else if ("one-to-one".Equals(node.Name))
+					{
+						//NOTE SPECIAL CASE:
+						// one-to-one constrained=falase cannot be proxied,
+						// so default to join and non-lazy
+						lazy = ((OneToOne)model).IsConstrained;
+						fetchStyle = lazy ? FetchMode.Default : FetchMode.Join;
+					}
+					else
+					{
+						fetchStyle = FetchMode.Default;
+					}
+				}
+				else
+				{
+					// use old (HB 2.1) defaults if outer-join is specified
+					string eoj = jfNode.Value;
+					if ("auto".Equals(eoj))
+					{
+						fetchStyle = FetchMode.Default;
+					}
+					else
+					{
+						bool join = "true".Equals(eoj);
+						fetchStyle = join
+							?
+								FetchMode.Join
+							:
+								FetchMode.Select;
+					}
+				}
+			}
+			else
+			{
+				bool join = "join".Equals(fetchNode.Value);
+				fetchStyle = join
+					?
+						FetchMode.Join
+					:
+						FetchMode.Select;
+			}
+
+			model.FetchMode = fetchStyle;
+			model.IsLazy = lazy;
+		}
+
+		protected string PropertyAccess(XmlNode node)
+		{
+			XmlAttribute accessNode = node.Attributes["access"];
+			return accessNode != null ? accessNode.Value : mappings.DefaultAccess;
+		}
+
 	}
 }

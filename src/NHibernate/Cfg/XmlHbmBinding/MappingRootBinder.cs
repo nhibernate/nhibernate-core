@@ -4,9 +4,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class MappingRootBinder : Binder
 	{
-		public MappingRootBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
+		private readonly Dialect.Dialect dialect;
+
+		public MappingRootBinder(Mappings mappings, XmlNamespaceManager namespaceManager,
+			Dialect.Dialect dialect)
 			: base(mappings, namespaceManager)
 		{
+			this.dialect = dialect;
 		}
 
 		public void Bind(XmlNode node)
@@ -20,9 +24,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			mappings.DefaultAssembly = GetAttributeValue(node, "assembly") ?? mappings.DefaultAssembly;
 
 			new FilterDefBinder(this).BindEach(node, HbmConstants.nsFilterDef);
-			new RootClassBinder(this).BindEach(node, HbmConstants.nsClass);
-			new SubclassBinder(this).BindEach(node, HbmConstants.nsSubclass);
-			new JoinedSubclassBinder(this).BindEach(node, HbmConstants.nsJoinedSubclass);
+			new RootClassBinder(this, dialect).BindEach(node, HbmConstants.nsClass);
+			new SubclassBinder(this, dialect).BindEach(node, HbmConstants.nsSubclass);
+			new JoinedSubclassBinder(this, dialect).BindEach(node, HbmConstants.nsJoinedSubclass);
 			new NamedQueryBinder(this).BindEach(node, HbmConstants.nsQuery);
 			new NamedSQLQueryBinder(this).BindEach(node, HbmConstants.nsSqlQuery);
 			new ImportBinder(this).BindEach(node, HbmConstants.nsImport);

@@ -8,13 +8,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class RootClassBinder : ClassBinder
 	{
-		public RootClassBinder(Binder parent)
-			: base(parent)
+		public RootClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+			: base(mappings, namespaceManager, dialect)
 		{
 		}
 
-		public RootClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
-			: base(mappings, namespaceManager)
+		public RootClassBinder(Binder parent, Dialect.Dialect dialect)
+			: base(parent, dialect)
+		{
+		}
+
+		public RootClassBinder(ClassBinder parent)
+			: base(parent)
 		{
 		}
 
@@ -110,7 +115,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				BindSimpleValue(idNode, id, false, propertyName);
 
-				id.SetTypeByReflection(rootClass.MappedClass, propertyName, PropertyAccess(idNode, mappings));
+				id.SetTypeByReflection(rootClass.MappedClass, propertyName, PropertyAccess(idNode));
 				Mapping.Property prop = new Mapping.Property(id);
 				BindProperty(idNode, prop);
 				rootClass.IdentifierProperty = prop;
@@ -136,7 +141,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			else
 			{
-				System.Type reflectedClass = GetPropertyType(compositeIdNode, mappings, rootClass.MappedClass,
+				System.Type reflectedClass = GetPropertyType(compositeIdNode, rootClass.MappedClass,
 					propertyName);
 
 				BindComponent(compositeIdNode, compositeId, reflectedClass, rootClass.Name, propertyName,
