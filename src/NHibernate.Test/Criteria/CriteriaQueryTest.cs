@@ -1381,6 +1381,7 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual("ma", criteria.GetCriteriaByPath("mu.Material").Alias);
 
 			Assert.IsNull(criteria.GetCriteriaByPath("fooBar"));
+            Assert.IsNull(criteria.GetCriteriaByAlias("fooBar"));
 		}
 	}
 }

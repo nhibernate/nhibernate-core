@@ -164,17 +164,23 @@ namespace NHibernate.Expression
 			this.criteria = impl;
 		}
 
-		public ICriteria GetCriteriaByPath(string path)
-		{
-			return impl.GetCriteriaByPath(path);
-		}
+        public DetachedCriteria GetCriteriaByPath(string path)
+        {
+            ICriteria tmpCrit = criteria.GetCriteriaByPath(path);
+            if(tmpCrit==null)
+                return null;
+            return new DetachedCriteria(impl, tmpCrit);
+        }
 
-		public ICriteria GetCriteriaByAlias(string alias)
-		{
-			return impl.GetCriteriaByAlias(alias);
-		}
+	    public DetachedCriteria GetCriteriaByAlias(string alias)
+	    {
+	        ICriteria tmpCrit = criteria.GetCriteriaByAlias(alias);
+            if (tmpCrit == null)
+                return null; 
+            return new DetachedCriteria(impl, tmpCrit);
+	    }
 
-		public int MaxResults
+	    public int MaxResults
 		{
 			get { return impl.MaxResults; }
 		}
