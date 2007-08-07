@@ -259,7 +259,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		protected override void VerifyParameters()
+		protected internal override void VerifyParameters()
 		{
 			base.VerifyParameters();
 			bool noReturns = queryReturns == null || queryReturns.Count == 0;

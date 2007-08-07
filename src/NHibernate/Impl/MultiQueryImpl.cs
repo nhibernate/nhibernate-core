@@ -280,20 +280,19 @@ namespace NHibernate.Impl
 
         public IMultiQuery Add(IQuery query)
         {
+            ((AbstractQueryImpl)query).SetIgnoreUknownNamedParameters(true);
             queries.Add(query);
             return this;
         }
 
         public IMultiQuery Add(string hql)
         {
-            queries.Add(session.CreateQuery(hql));
-            return this;
+            return Add(session.CreateQuery(hql));
         }
 
         public IMultiQuery AddNamedQuery(string namedQuery)
         {
-            queries.Add(session.GetNamedQuery(namedQuery));
-            return this;
+            return Add(session.GetNamedQuery(namedQuery));
         }
 
         public IMultiQuery SetCacheable(bool cacheable)
@@ -511,6 +510,7 @@ namespace NHibernate.Impl
             {
                 QueryParameters queryParameters = query.GetQueryParameters();
                 queryParameters.ValidateParameters();
+                query.VerifyParameters();
                 IQueryTranslator[] queryTranslators =
                     session.GetQueries(query.BindParameterLists(queryParameters.NamedParameters), false);
                 foreach (QueryTranslator translator in queryTranslators)

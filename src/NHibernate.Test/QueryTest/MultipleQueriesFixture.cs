@@ -33,6 +33,33 @@ namespace NHibernate.Test.QueryTest
         }
 
         [Test]
+        public void NH_1085_WillIgnoreParametersIfDoesNotAppearInQuery()
+        {
+            using (ISession s = sessions.OpenSession())
+            {
+                IMultiQuery MultiQuery = s.CreateMultiQuery()
+                    .Add("from Item i where i.Id in (:ids)")
+                    .Add("from Item i where i.Id in (:ids2)")
+                .SetParameterList("ids", new int[] { 50 })
+                .SetParameterList("ids2", new int[] { 50 });
+                MultiQuery.List();
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(QueryException), ExpectedMessage = "Not all named parameters have been set: [ids] [from Item i where i.Id in (:ids)]")]
+        public void NH_1085_WillGiveReasonableErrorIfBadParameterName()
+        {
+            using (ISession s = sessions.OpenSession())
+            {
+                IMultiQuery MultiQuery = s.CreateMultiQuery()
+                    .Add("from Item i where i.Id in (:ids)")
+                    .Add("from Item i where i.Id in (:ids2)");
+                MultiQuery.List();
+            }
+        }
+
+        [Test]
         public void CanGetMultiQueryFromSecondLevelCache()
         {
             CreateItems();
