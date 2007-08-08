@@ -2,11 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
+using log4net;
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
+	/// <summary>
+	/// Configuration parsed values for a session-factory XML node.
+	/// </summary>
 	public class SessionFactoryConfiguration
 	{
+		//private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryConfiguration));
+
 		internal SessionFactoryConfiguration(XPathNavigator hbConfigurationSection)
 		{
 			if (hbConfigurationSection == null)
@@ -14,6 +20,10 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			Parse(hbConfigurationSection);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SessionFactoryConfiguration"/> class.
+		/// </summary>
+		/// <param name="name">The session factory name. Null or empty string are allowed.</param>
 		public SessionFactoryConfiguration(string name)
 		{
 			this.name = name;
@@ -63,18 +73,26 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				MappingConfiguration mc = new MappingConfiguration(xpni.Current);
 				if (!mc.IsEmpty())
 				{
-					// Workaround add first an assembly&resource and the only the same assembly. 
+					// Workaround add first an assembly&resource and then only the same assembly. 
 					// the <mapping> of whole assembly is ignored (included only sigles resources)
 					// The "ignore" log, is enough ?
 					// Perhaps we can add some intelligence to remove single resource reference when a whole assembly is referenced
-					if (!mappings.Contains(mc))
-					{
-						mappings.Add(mc);
-					}
-					else
-					{
-						// TODO: Log ignored
-					}
+					//if (!mappings.Contains(mc))
+					//{
+					//  mappings.Add(mc);
+					//}
+					//else
+					//{
+					//  string logMessage = "Ignored mapping -> " + mc.ToString();
+					//  if (log.IsDebugEnabled)
+					//    log.Debug(logMessage);
+					//  if (log.IsWarnEnabled)
+					//    log.Warn(logMessage);
+					//}
+
+					// The control to prevent mappings duplication was removed since the engine do the right thing 
+					// for this issue (simple is better)
+					mappings.Add(mc);
 				}
 			}
 		}
@@ -118,42 +136,63 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		}
 
 		private string name = string.Empty;
+		/// <summary>
+		/// The session factory name.
+		/// </summary>
 		public string Name
 		{
 			get { return name; }
 		}
 
 		private IDictionary<string, string> properties = new Dictionary<string, string>();
+		/// <summary>
+		/// Session factory propeties bag.
+		/// </summary>
 		public IDictionary<string,string> Properties
 		{
 			get { return properties; }
 		}
 
 		private IList<MappingConfiguration> mappings = new List<MappingConfiguration>();
+		/// <summary>
+		/// Session factory mapping configuration.
+		/// </summary>
 		public IList<MappingConfiguration> Mappings
 		{
 			get { return mappings; }
 		}
 
 		private IList<ClassCacheConfiguration> classesCache= new List<ClassCacheConfiguration>();
+		/// <summary>
+		/// Session factory class-cache configurations.
+		/// </summary>
 		public IList<ClassCacheConfiguration> ClassesCache
 		{
 			get { return classesCache; }
 		}
 
 		private IList<CollectionCacheConfiguration> collectionsCache= new List<CollectionCacheConfiguration>();
+		/// <summary>
+		/// Session factory collection-cache configurations.
+		/// </summary>
 		public IList<CollectionCacheConfiguration> CollectionsCache
 		{
 			get { return collectionsCache; }
 		}
 
 		private IList<EventConfiguration> events= new List<EventConfiguration>();
+		/// <summary>
+		/// Session factory event configurations.
+		/// </summary>
 		public IList<EventConfiguration> Events
 		{
 			get { return events; }
 		}
 
 		private IList<ListenerConfiguration> listeners= new List<ListenerConfiguration>();
+		/// <summary>
+		/// Session factory listener configurations.
+		/// </summary>
 		public IList<ListenerConfiguration> Listeners
 		{
 			get { return listeners; }

@@ -1,18 +1,38 @@
 using System;
 using System.Xml;
 using System.Xml.XPath;
+using log4net;
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
+	/// <summary>
+	/// Values for bytecode-provider system property.
+	/// </summary>
 	public enum BytecodeProviderType
 	{
+		/// <summary>Xml value: codedom</summary>
 		Codedom,
+		/// <summary>Xml value: lcg</summary>
 		Lcg,
+		/// <summary>Xml value: null</summary>
 		Null
 	}
 
+	/// <summary>
+	/// Configuration parsed values for hibernate-configuration section.
+	/// </summary>
 	public class HibernateConfiguration : IHibernateConfiguration
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(HibernateConfiguration));
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HibernateConfiguration"/> class.
+		/// </summary>
+		/// <param name="hbConfigurationReader">The XML reader to parse.</param>
+		/// <remarks>
+		/// The nhibernate-configuration.xsd is applied to the XML.
+		/// </remarks>
+		/// <exception cref="HibernateConfigException">When nhibernate-configuration.xsd can't be applied.</exception>
 		public HibernateConfiguration(XmlReader hbConfigurationReader)
 			: this(hbConfigurationReader, false)
 		{
@@ -61,8 +81,10 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			else
 			{
 				if (!fromAppConfig)
+				{
 					throw new HibernateConfigException("<session-factory xmlns='" + CfgXmlHelper.CfgSchemaXMLNS +
 					"'> element was not found in the configuration file.");
+				}
 			}
 		}
 
@@ -78,9 +100,15 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				}
 				else
 				{
-					// TODO: Warning for ByteCodeProvider ignored
+					LogWarnIgnoredProperty("bytecode-provider");
 				}
 			}
+		}
+
+		private static void LogWarnIgnoredProperty(string propName)
+		{
+			if (log.IsWarnEnabled)
+				log.Warn(string.Format("{0} propety is ignored out of application configuration file.", propName));
 		}
 
 		private void ParseReflectionOptimizer(XPathNavigator navigator, bool fromAppConfig)
@@ -95,24 +123,36 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				}
 				else
 				{
-					// TODO: Warning for ReflectionOptimizer ignored
+					LogWarnIgnoredProperty("reflection-optimizer");
 				}
 			}
 		}
 
 		private BytecodeProviderType byteCodeProviderType = BytecodeProviderType.Lcg;
+		/// <summary>
+		/// Value for bytecode-provider system property.
+		/// </summary>
+		/// <remarks>Default value <see cref="BytecodeProviderType.Lcg"/>.</remarks>
 		public BytecodeProviderType ByteCodeProviderType
 		{
 			get { return byteCodeProviderType; }
 		}
 
 		private bool useReflectionOptimizer = true;
+		/// <summary>
+		/// Value for reflection-optimizer system property.
+		/// </summary>
+		/// <remarks>Default value true.</remarks>
 		public bool UseReflectionOptimizer
 		{
 			get { return useReflectionOptimizer; }
 		}
 
 		private SessionFactoryConfiguration sessionFactory;
+		/// <summary>
+		/// The <see cref="SessionFactoryConfiguration"/> if the session-factory exists in hibernate-configuration;
+		/// Otherwise null.
+		/// </summary>
 		public SessionFactoryConfiguration SessionFactory
 		{
 			get { return sessionFactory; }

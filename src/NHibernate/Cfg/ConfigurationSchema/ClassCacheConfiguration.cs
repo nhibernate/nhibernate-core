@@ -5,20 +5,37 @@ using System.ComponentModel;
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
+	/// <summary>
+	/// Values for class-cache and collection-cache strategy.
+	/// </summary>
 	public enum ClassCacheUsage
 	{
+		/// <summary>Xml value: read-only</summary>
 		Readonly,
+		/// <summary>Xml value: read-write</summary>
 		ReadWrite,
+		/// <summary>Xml value: nonstrict-read-write</summary>
 		NonStrictReadWrite,
+		/// <summary>Xml value: transactional</summary>
 		Transactional
 	}
 
+	/// <summary>
+	/// Values for class-cache include.
+	/// </summary>
+	/// <remarks>Unused</remarks>
 	public enum ClassCacheInclude
 	{
+		// TODO: Implement ClassCacheInclude (remove de remarks from this enum and the property)
+		/// <summary>Xml value: all</summary>
 		All,
+		/// <summary>Xml value: non-lazy</summary>
 		NonLazy
 	}
 
+	/// <summary>
+	/// Configuration parsed values for a class-cache XML node.
+	/// </summary>
 	public class ClassCacheConfiguration
 	{
 		internal ClassCacheConfiguration(XPathNavigator classCacheElement)
@@ -26,6 +43,12 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			Parse(classCacheElement);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ClassCacheConfiguration"/> class.
+		/// </summary>
+		/// <param name="clazz">The class full name.</param>
+		/// <param name="usage">Cache strategy.</param>
+		/// <exception cref="ArgumentException">When <paramref name="clazz"/> is null or empty.</exception>
 		public ClassCacheConfiguration(string clazz, ClassCacheUsage usage)
 		{
 			if (string.IsNullOrEmpty(clazz))
@@ -34,18 +57,40 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			this.usage = usage;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ClassCacheConfiguration"/> class.
+		/// </summary>
+		/// <param name="clazz">The class full name.</param>
+		/// <param name="usage">Cache strategy.</param>
+		/// <param name="include">Values for class-cache include.</param>
+		/// <exception cref="ArgumentException">When <paramref name="clazz"/> is null or empty.</exception>
 		public ClassCacheConfiguration(string clazz, ClassCacheUsage usage, ClassCacheInclude include)
 			: this(clazz, usage)
 		{
 			this.include = include;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ClassCacheConfiguration"/> class.
+		/// </summary>
+		/// <param name="clazz">The class full name.</param>
+		/// <param name="usage">Cache strategy.</param>
+		/// <param name="region">The cache region.</param>
+		/// <exception cref="ArgumentException">When <paramref name="clazz"/> is null or empty.</exception>
 		public ClassCacheConfiguration(string clazz, ClassCacheUsage usage, string region)
 			: this(clazz, usage)
 		{
 			this.region = region;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ClassCacheConfiguration"/> class.
+		/// </summary>
+		/// <param name="clazz">The class full name.</param>
+		/// <param name="usage">Cache strategy.</param>
+		/// <param name="include">Values for class-cache include.</param>
+		/// <param name="region">The cache region.</param>
+		/// <exception cref="ArgumentException">When <paramref name="clazz"/> is null or empty.</exception>
 		public ClassCacheConfiguration(string clazz, ClassCacheUsage usage, ClassCacheInclude include, string region)
 			: this(clazz, usage, include)
 		{
@@ -81,12 +126,19 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		}
 
 		private string clazz;
+		/// <summary>
+		/// The class full name.
+		/// </summary>
 		public string Class
 		{
 			get { return clazz; }
 		}
 
 		private string region;
+		/// <summary>
+		/// The cache region.
+		/// </summary>
+		/// <remarks>If null or empty the <see cref="P:ClassCacheConfiguration.Class"/> is used during configuration.</remarks>
 		public string Region
 		{
 			get { return region; }
@@ -94,12 +146,22 @@ namespace NHibernate.Cfg.ConfigurationSchema
 
 
 		private ClassCacheUsage usage;
+		/// <summary>
+		/// Cache strategy.
+		/// </summary>
 		public ClassCacheUsage Usage
 		{
 			get { return usage; }
 		}
 
 		private ClassCacheInclude include = ClassCacheInclude.All;
+		/// <summary>
+		/// class-cache include.
+		/// </summary>
+		/// <remarks>
+		/// Unused.
+		/// Defaul value <see cref="ClassCacheInclude.All"/>.
+		/// </remarks>
 		public ClassCacheInclude Include
 		{
 			get { return include; }

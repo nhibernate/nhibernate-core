@@ -5,6 +5,9 @@ using System.Xml.XPath;
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
+	/// <summary>
+	/// Configuration parsed values for a event XML node.
+	/// </summary>
 	public class EventConfiguration
 	{
 		internal EventConfiguration(XPathNavigator eventElement)
@@ -12,6 +15,11 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			Parse(eventElement);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EventConfiguration"/> class.
+		/// </summary>
+		/// <param name="listener">The listener.</param>
+		/// <param name="type">The type.</param>
 		public EventConfiguration(ListenerConfiguration listener, ListenerType type)
 		{
 			if (listener == null)
@@ -33,12 +41,18 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		}
 
 		private ListenerType type;
+		/// <summary>
+		/// The default type of listeners.
+		/// </summary>
 		public ListenerType Type
 		{
 			get { return type; }
 		}
 
 		private IList<ListenerConfiguration> listeners = new List<ListenerConfiguration>();
+		/// <summary>
+		/// Listeners for this event.
+		/// </summary>
 		public IList<ListenerConfiguration> Listeners
 		{
 			get { return listeners; }

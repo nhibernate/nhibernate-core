@@ -5,13 +5,27 @@ using System.Xml.XPath;
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
-	public class MappingConfiguration: IEqualityComparer<MappingConfiguration>, IEquatable<MappingConfiguration>
+	/// <summary>
+	/// Configuration parsed values for a mapping XML node
+	/// </summary>
+	/// <remarks>
+	/// There are 3 possible combinations of mapping attributes
+	/// 1 - resource & assembly:  NHibernate will read the mapping resource from the specified assembly
+	/// 2 - file only: NHibernate will read the mapping from the file.
+	/// 3 - assembly only: NHibernate will find all the resources ending in hbm.xml from the assembly.
+	/// </remarks>
+	public class MappingConfiguration: IEquatable<MappingConfiguration>
 	{
 		internal MappingConfiguration(XPathNavigator mappingElement)
 		{
 			Parse(mappingElement);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MappingConfiguration"/> class.
+		/// </summary>
+		/// <param name="file">Mapped file.</param>
+		/// <exception cref="ArgumentException">When <paramref name="file"/> is null or empty.</exception>
 		public MappingConfiguration(string file)
 		{
 			if (string.IsNullOrEmpty(file))
@@ -19,12 +33,27 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			this.file = file;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MappingConfiguration"/> class.
+		/// </summary>
+		/// <param name="assembly">The assembly name.</param>
+		/// <param name="resource">The mapped embedded resource.</param>
+		/// <exception cref="ArgumentException">When <paramref name="assembly"/> is null or empty.</exception>
 		public MappingConfiguration(string assembly, string resource)
 		{
 			if (string.IsNullOrEmpty(assembly))
 				throw new ArgumentException("assembly is null or empty.", "assembly");
 			this.assembly = assembly;
 			this.resource = resource;
+		}
+
+		private bool IsValid()
+		{
+			// validate consistent (all empty ignore the element)
+			return (!string.IsNullOrEmpty(assembly) && string.IsNullOrEmpty(file)) ||
+							(!string.IsNullOrEmpty(file) && string.IsNullOrEmpty(assembly)) ||
+							(!string.IsNullOrEmpty(resource) && !string.IsNullOrEmpty(assembly)) ||
+							IsEmpty();
 		}
 
 		private void Parse(XPathNavigator mappingElement)
@@ -48,13 +77,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				}
 				while (mappingElement.MoveToNextAttribute());
 			}
-			// validate consistent (all empty ignore the element)
-			bool isValid =
-				(!string.IsNullOrEmpty(assembly) && string.IsNullOrEmpty(file)) ||
-				(!string.IsNullOrEmpty(file) && string.IsNullOrEmpty(assembly)) ||
-				(!string.IsNullOrEmpty(resource) && !string.IsNullOrEmpty(assembly)) ||
-				IsEmpty();
-			if (!isValid)
+			if (!IsValid())
 			{
 				throw new HibernateConfigException(string.Format(
 @"Ambiguous mapping tag in configuration assembly={0} resource={1} file={2};
@@ -91,38 +114,6 @@ There are 3 possible combinations of mapping attributes
 			get { return resource; }
 		}
 
-		#region IEqualityComparer<MappingConfiguration> Members
-
-		bool IEqualityComparer<MappingConfiguration>.Equals(MappingConfiguration x, MappingConfiguration y)
-		{
-			if (x == null && y == null)
-				return true;
-
-			if (x != null)
-				return x.Equals(y);
-			return false;
-		}
-
-		int IEqualityComparer<MappingConfiguration>.GetHashCode(MappingConfiguration obj)
-		{
-			// file only
-			if (!string.IsNullOrEmpty(file))
-				return file.GetHashCode();
-			// assembly only
-			if (!string.IsNullOrEmpty(assembly) && string.IsNullOrEmpty(resource))
-				return assembly.GetHashCode();
-			// assembly & resource
-			if (!string.IsNullOrEmpty(assembly) && !string.IsNullOrEmpty(resource))
-				return assembly.GetHashCode() ^ resource.GetHashCode();
-
-			// invalid or empty
-			return 0;
-		}
-
-		#endregion
-
-
-
 		#region IEquatable<MappingConfiguration> Members
 		public bool Equals(MappingConfiguration other)
 		{
@@ -147,5 +138,10 @@ There are 3 possible combinations of mapping attributes
 			return false;
 		}
 		#endregion
+
+		public override string ToString()
+		{
+			return string.Format("file='{0}';assembly='{1}';resource='{2}'",file,assembly,resource);
+		}
 	}
 }

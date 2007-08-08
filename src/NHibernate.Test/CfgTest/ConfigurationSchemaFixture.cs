@@ -105,14 +105,12 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void Mappings()
 		{
-			// this test include the test of IEquatable<MappingConfiguration>
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 	<session-factory>
 		<mapping file='AFile'/>
 		<mapping assembly='AAssembly'/>
-		<mapping assembly='AAssembly' resource='SomeResource'/>
 		<mapping assembly='AAssemblyWithResource' resource='AResource'/>
 		<mapping assembly='AAssemblyWithResource' resource='AnotherResource'/>
 	</session-factory>
@@ -125,7 +123,29 @@ namespace NHibernate.Test.CfgTest
 			Assert.IsTrue(hc.SessionFactory.Mappings.Contains(new MappingConfiguration("AAssembly", null)));
 			Assert.IsTrue(hc.SessionFactory.Mappings.Contains(new MappingConfiguration("AAssemblyWithResource", "AResource")));
 			Assert.IsTrue(hc.SessionFactory.Mappings.Contains(new MappingConfiguration("AAssemblyWithResource", "AnotherResource")));
-			// 		<mapping assembly='AAssembly' resource='SomeResource'/> was ignored
+		}
+
+		[Test]
+		public void MappingEquatable()
+		{
+			// Whole assembly and assembly&resource are equals
+			Assert.IsTrue((new MappingConfiguration("AAssembly", null)).Equals(
+				(new MappingConfiguration("AAssembly", "SomeResource"))), "Whole assembly is not equal then partial assembly.");
+
+			// Two different partial assembly are not equals
+			Assert.IsFalse((new MappingConfiguration("AAssembly", "AnotherResource")).Equals(
+				(new MappingConfiguration("AAssembly", "SomeResource"))));
+			Assert.IsTrue((new MappingConfiguration("AAssembly", "")).Equals(
+				(new MappingConfiguration("AAssembly", null))));
+			Assert.IsTrue((new MappingConfiguration("AAssembly", "aResource")).Equals(
+				(new MappingConfiguration("AAssembly", "aResource"))));
+
+			Assert.IsTrue((new MappingConfiguration("AFile")).Equals(
+				(new MappingConfiguration("AFile"))));
+			Assert.IsFalse((new MappingConfiguration("AFile")).Equals(
+				(new MappingConfiguration("AnotherFile"))));
+			Assert.IsFalse((new MappingConfiguration("AFile")).Equals(
+				(new MappingConfiguration("AAssembly", null))));
 		}
 
 		[Test, ExpectedException(typeof(HibernateConfigException))]

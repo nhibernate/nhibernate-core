@@ -5,6 +5,9 @@ using System.ComponentModel;
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
+	/// <summary>
+	/// Helper to parse hibernate-configuration XmlNode.
+	/// </summary>
 	public static class CfgXmlHelper
 	{
 		/// <summary>
@@ -43,16 +46,36 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			SessionFactoryListenersExpression = XPathExpression.Compile(RootPrefixPath + "session-factory//" + ChildPrefixPath + "listener", nsMgr);
 		}
 
+		/// <summary>XPath expression for bytecode-provider property.</summary>
 		public static readonly XPathExpression ByteCodeProviderExpression;
+		/// <summary>XPath expression for reflection-optimizer property.</summary>
 		public static readonly XPathExpression ReflectionOptimizerExpression;
+		/// <summary>XPath expression for session-factory whole node.</summary>
 		public static readonly XPathExpression SessionFactoryExpression;
+		/// <summary>XPath expression for session-factory.property nodes</summary>
 		public static readonly XPathExpression SessionFactoryPropertiesExpression;
+		/// <summary>XPath expression for session-factory.mapping nodes</summary>
 		public static readonly XPathExpression SessionFactoryMappingsExpression;
+		/// <summary>XPath expression for session-factory.class-cache nodes</summary>
 		public static readonly XPathExpression SessionFactoryClassesCacheExpression;
+		/// <summary>XPath expression for session-factory.collection-cache nodes</summary>
 		public static readonly XPathExpression SessionFactoryCollectionsCacheExpression;
+		/// <summary>XPath expression for session-factory.event nodes</summary>
 		public static readonly XPathExpression SessionFactoryEventsExpression;
+		/// <summary>XPath expression for session-factory.listener nodes</summary>
 		public static readonly XPathExpression SessionFactoryListenersExpression;
 
+		/// <summary>
+		/// Convert a string to <see cref="BytecodeProviderType"/>.
+		/// </summary>
+		/// <param name="byteCodeProvider">The string that represent <see cref="BytecodeProviderType"/>.</param>
+		/// <returns>
+		/// The <paramref name="byteCodeProvider"/> converted to <see cref="BytecodeProviderType"/>.
+		/// <see cref="BytecodeProviderType.Null"/> for invalid values.
+		/// </returns>
+		/// <remarks>
+		/// See <see cref="BytecodeProviderType"/> for allowed values.
+		/// </remarks>
 		public static BytecodeProviderType ByteCodeProviderConvertFrom(string byteCodeProvider)
 		{
 			switch (byteCodeProvider)
@@ -79,6 +102,17 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 		}
 
+		/// <summary>
+		/// Convert a string to <see cref="ClassCacheUsage"/>.
+		/// </summary>
+		/// <param name="usage">The string that represent <see cref="ClassCacheUsage"/>.</param>
+		/// <returns>
+		/// The <paramref name="usage"/> converted to <see cref="ClassCacheUsage"/>.
+		/// </returns>
+		/// <exception cref="HibernateConfigException">If the values is invalid.</exception>
+		/// <remarks>
+		/// See <see cref="ClassCacheUsage"/> for allowed values.
+		/// </remarks>
 		public static ClassCacheUsage ClassCacheUsageConvertFrom(string usage)
 		{
 			switch (usage)
@@ -113,6 +147,17 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 		}
 
+		/// <summary>
+		/// Convert a string to <see cref="ClassCacheInclude"/>.
+		/// </summary>
+		/// <param name="include">The string that represent <see cref="ClassCacheInclude"/>.</param>
+		/// <returns>
+		/// The <paramref name="include"/> converted to <see cref="ClassCacheInclude"/>.
+		/// </returns>
+		/// <exception cref="HibernateConfigException">If the values is invalid.</exception>
+		/// <remarks>
+		/// See <see cref="ClassCacheInclude"/> for allowed values.
+		/// </remarks>
 		public static ClassCacheInclude ClassCacheIncludeConvertFrom(string include)
 		{
 			switch (include)
@@ -139,6 +184,17 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 		}
 
+		/// <summary>
+		/// Convert a string to <see cref="ListenerType"/>.
+		/// </summary>
+		/// <param name="listenerType">The string that represent <see cref="ListenerType"/>.</param>
+		/// <returns>
+		/// The <paramref name="listenerType"/> converted to <see cref="ListenerType"/>.
+		/// </returns>
+		/// <exception cref="HibernateConfigException">If the values is invalid.</exception>
+		/// <remarks>
+		/// See <see cref="ListenerType"/> for allowed values.
+		/// </remarks>
 		public static ListenerType ListenerTypeConvertFrom(string listenerType)
 		{
 			switch (listenerType)
