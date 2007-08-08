@@ -22,6 +22,7 @@ using NHibernate.Mapping;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Cfg.ConfigurationSchema;
 
 namespace NHibernate.Cfg
 {
@@ -1168,21 +1169,15 @@ namespace NHibernate.Cfg
 			return properties[name] as string;
 		}
 
-		private void AddProperties(XmlNode parent, XmlNamespaceManager cfgNamespaceMgr)
+		private void AddProperties(IHibernateConfiguration hc)
 		{
-			foreach (XmlNode node in parent.SelectNodes(CfgNamespacePrefix + ":property", cfgNamespaceMgr))
+			foreach (KeyValuePair<string,string> kvp in hc.SessionFactory.Properties)
 			{
-				string name = node.Attributes["name"].Value;
-				string value = node.InnerText;
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(name + "=" + value);
+					log.Debug(kvp.Key + "=" + kvp.Value);
 				}
-				properties[name] = value;
-				if (!name.StartsWith("hibernate"))
-				{
-					properties["hibernate." + name] = value;
-				}
+				properties[kvp.Key] = kvp.Value;
 			}
 			Environment.VerifyProperties(properties);
 		}
@@ -1191,48 +1186,31 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Configure NHibernate using the <c>&lt;hibernate-configuration&gt;</c> section
-		/// from the application config file, if found, or the file <c>hibernate.cfg.xml</c>
-		/// otherwise.
+		/// from the application config file, if found, or the file <c>hibernate.cfg.xml</c> if the
+		/// <c>&lt;hibernate-configuration&gt;</c> section not include the session-factory configuration.
 		/// </summary>
 		/// <returns>A configuration object initialized with the file.</returns>
 		/// <remarks>
 		/// To configure NHibernate explicitly using <c>hibernate.cfg.xml</c>, ignoring
 		/// the application configuration file, use this code:
 		/// <code>
+		///		configuration.ConfigureIgnoringAppConfig("path/to/hibernate.cfg.xml");
+		/// </code>
+		/// to override/merge the configuration with the application configuration file, use this code:
+		/// <code>
 		///		configuration.Configure("path/to/hibernate.cfg.xml");
 		/// </code>
 		/// </remarks>
 		public Configuration Configure()
 		{
-			XmlNode configNode = GetAppConfigConfigurationNode();
-
-			if (configNode != null)
+			IHibernateConfiguration hc = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName) as IHibernateConfiguration;
+			if (hc != null && hc.SessionFactory != null)
 			{
-				return Configure(configNode);
+				return DoConfigure(hc);
 			}
 			else
 			{
 				return Configure(GetDefaultConfigurationFilePath());
-			}
-		}
-
-		/// <summary>
-		/// Configure NHibernate from an <see cref="XmlNode" /> representing the root
-		/// <c>&lt;hibernate-configuration&gt;</c> element.
-		/// </summary>
-		/// <param name="node">Configuration node</param>
-		/// <returns>This Configuration object</returns>
-		private Configuration Configure(XmlNode node)
-		{
-			XmlTextReader reader = new XmlTextReader(node.OuterXml, XmlNodeType.Document, null);
-			try
-			{
-				Configure(reader);
-				return this;
-			}
-			finally
-			{
-				reader.Close();
 			}
 		}
 
@@ -1242,10 +1220,34 @@ namespace NHibernate.Cfg
 		/// <param name="fileName">The location of the XML file to use to configure NHibernate.</param>
 		/// <returns>A Configuration object initialized with the file.</returns>
 		/// <remarks>
-		/// Calling Configure(string) will overwrite the values set in app.config or web.config
+		/// Calling Configure(string) will override/merge the values set in app.config or web.config
 		/// </remarks>
 		public Configuration Configure(string fileName)
 		{
+			return Configure(fileName, false);
+		}
+
+		/// <summary>
+		/// Configure NHibernate using the file specified.
+		/// </summary>
+		/// <param name="fileName">The location of the XML file to use to configure NHibernate.</param>
+		/// <returns>A Configuration object initialized with the file.</returns>
+		/// <remarks>
+		/// Calling ConfigureIgnoringAppConfig(string) will ignore the values set in app.config or web.config
+		/// </remarks>
+		public Configuration ConfigureIgnoringAppConfig(string fileName)
+		{
+			return Configure(fileName, true);
+		}
+
+		private Configuration Configure(string fileName, bool ignoreSessionFactoryConfig)
+		{
+			if (ignoreSessionFactoryConfig)
+			{
+				Environment.ResetSessionFactoryProperties();
+				properties = Environment.Properties;
+			}
+
 			XmlTextReader reader = null;
 			try
 			{
@@ -1315,114 +1317,89 @@ namespace NHibernate.Cfg
 		{
 			if (textReader == null)
 			{
-				throw new HibernateException("Could not configure NHibernate.",
+				throw new HibernateConfigException("Could not configure NHibernate.",
 					new ArgumentException("A null value was passed in.", "textReader"));
 			}
 
-			XmlDocument doc = new XmlDocument();
-
 			try
 			{
-				XmlReaderSettings settings = Schemas.CreateConfigReaderSettings();
-				using (XmlReader reader = XmlReader.Create(textReader, settings))
-					doc.Load(reader);
+				IHibernateConfiguration hc = new HibernateConfiguration(textReader);
+				return DoConfigure(hc);
 			}
 			catch (Exception e)
 			{
 				log.Error("Problem parsing configuration", e);
-				throw new HibernateException("problem parsing configuration : " + e, e);
+				throw;
 			}
-
-			return DoConfigure(doc);
 		}
 
 		// Not ported - configure(org.w3c.dom.Document)
 
-		protected Configuration DoConfigure(XmlDocument doc)
+		protected Configuration DoConfigure(IHibernateConfiguration hc)
 		{
-			XmlNamespaceManager cfgNamespaceMgr = CreateXmlNamespaceManager(doc);
-
-			XmlNode sfNode =
-				doc.DocumentElement.SelectSingleNode("//" + CfgNamespacePrefix + ":session-factory", cfgNamespaceMgr);
-
-			if (sfNode == null)
+			if (!string.IsNullOrEmpty(hc.SessionFactory.Name))
 			{
-				throw new MappingException("<session-factory xmlns='" + CfgSchemaXMLNS +
-					"'> element was not found in the configuration file.");
+				properties[Environment.SessionFactoryName] = hc.SessionFactory.Name;
 			}
 
-			XmlAttribute nameNode = sfNode.Attributes["name"];
-			string name = nameNode == null ? null : nameNode.Value;
+			AddProperties(hc);
 
-			if (name != null)
+			// Load mappings
+			foreach (MappingConfiguration mc in hc.SessionFactory.Mappings)
 			{
-				properties[Environment.SessionFactoryName] = name;
-			}
-			AddProperties(sfNode, cfgNamespaceMgr);
-
-			foreach (XmlNode mapElement in sfNode.ChildNodes)
-			{
-				string elemname = mapElement.LocalName;
-				if ("mapping".Equals(elemname))
+				if (mc.IsEmpty())
+					throw new HibernateConfigException("<mapping> element in configuration specifies no attributes");
+				if (!string.IsNullOrEmpty(mc.Resource))
 				{
-					XmlAttribute rsrc = mapElement.Attributes["resource"];
-					XmlAttribute file = mapElement.Attributes["file"];
-					XmlAttribute assembly = mapElement.Attributes["assembly"];
-					if (rsrc != null)
-					{
-						log.Debug(name + "<-" + rsrc.Value + " in " + assembly.Value);
-						AddResource(rsrc.Value, Assembly.Load(assembly.Value));
-					}
-					else if (assembly != null)
-					{
-						log.Debug(name + "<-" + assembly.Value);
-						AddAssembly(assembly.Value);
-					}
-					else if (file != null)
-					{
-						log.Debug(name + "<-" + file.Value);
-						AddFile(file.Value);
-					}
-					else
-					{
-						throw new MappingException("<mapping> element in configuration specifies no attributes");
-					}
+					log.Debug(hc.SessionFactory.Name + "<-" + mc.Resource + " in " + mc.Assembly);
+					AddResource(mc.Resource, Assembly.Load(mc.Assembly));
 				}
-				else if ("jcs-class-cache".Equals(elemname) || "class-cache".Equals(elemname))
+				else if (!string.IsNullOrEmpty(mc.Assembly))
 				{
-					string className = mapElement.Attributes["class"].Value;
-					System.Type clazz;
-					try
-					{
-						clazz = ReflectHelper.ClassForName(className);
-					}
-					catch (TypeLoadException tle)
-					{
-						throw new MappingException("Could not find class: " + className, tle);
-					}
-
-					XmlAttribute regionNode = mapElement.Attributes["region"];
-					string region = (regionNode == null) ? className : regionNode.Value;
-					SetCacheConcurrencyStrategy(clazz, mapElement.Attributes["usage"].Value, region);
+					log.Debug(hc.SessionFactory.Name + "<-" + mc.Assembly);
+					AddAssembly(mc.Assembly);
 				}
-				else if ("jcs-collection-cache".Equals(elemname) || "collection-cache".Equals(elemname))
+				else if (!string.IsNullOrEmpty(mc.File))
 				{
-					String role = mapElement.Attributes["collection"].Value;
-					NHibernate.Mapping.Collection collection = GetCollectionMapping(role);
-					if (collection == null)
-					{
-						throw new MappingException("Cannot configure cache for unknown collection role " + role);
-					}
-
-					XmlAttribute regionNode = mapElement.Attributes["region"];
-					string region = (regionNode == null) ? role : regionNode.Value;
-					SetCacheConcurrencyStrategy(role, mapElement.Attributes["usage"].Value, region);
+					log.Debug(hc.SessionFactory.Name + "<-" + mc.File);
+					AddFile(mc.File);
 				}
 			}
 
-			if (name != null)
+			// Load class-cache
+			foreach (ClassCacheConfiguration ccc in hc.SessionFactory.ClassesCache)
 			{
-				log.Info("Configured SessionFactory: " + name);
+				System.Type clazz;
+				try
+				{
+					clazz = ReflectHelper.ClassForName(ccc.Class);
+				}
+				catch (TypeLoadException tle)
+				{
+					throw new HibernateConfigException("class-cache Configuration: Could not find class " + ccc.Class, tle);
+				}
+
+				string region = string.IsNullOrEmpty(ccc.Region) ? ccc.Class : ccc.Region;
+				SetCacheConcurrencyStrategy(clazz, CfgXmlHelper.ClassCacheUsageConvertToString(ccc.Usage), region);
+			}
+
+			// Load collection-cache
+			foreach (CollectionCacheConfiguration ccc in hc.SessionFactory.CollectionsCache)
+			{
+				string role = ccc.Collection;
+				NHibernate.Mapping.Collection collection = GetCollectionMapping(role);
+				if (collection == null)
+				{
+					throw new HibernateConfigException("collection-cache Configuration: Cannot configure cache for unknown collection role " + role);
+				}
+
+				string region = string.IsNullOrEmpty(ccc.Region) ? role : ccc.Region;
+				SetCacheConcurrencyStrategy(role, CfgXmlHelper.ClassCacheUsageConvertToString(ccc.Usage), region);
+			}
+
+			if (!string.IsNullOrEmpty(hc.SessionFactory.Name))
+			{
+				log.Info("Configured SessionFactory: " + hc.SessionFactory.Name);
 			}
 			log.Debug("properties: " + properties);
 
@@ -1435,15 +1412,15 @@ namespace NHibernate.Cfg
 
 			if (persistentClass == null)
 			{
-				throw new MappingException("Cache specified for unmapped class " + clazz);
+				throw new HibernateConfigException("class-cache Configuration: Cache specified for unmapped class " + clazz);
 			}
 
 			RootClass rootClass = persistentClass as RootClass;
 
 			if (rootClass == null)
 			{
-				throw new MappingException(
-					"You may only specify a cache for root <class> mappings "
+				throw new HibernateConfigException(
+					"class-cache Configuration: You may only specify a cache for root <class> mappings "
 						+ "(cache was specified for " + clazz + ")");
 			}
 
@@ -1648,23 +1625,6 @@ namespace NHibernate.Cfg
 					args.Exception.LinePosition,
 					args.Exception.Message);
 			LogAndThrow(new MappingException(message, args.Exception));
-		}
-
-		protected static XmlNamespaceManager CreateXmlNamespaceManager(XmlDocument doc)
-		{
-			XmlNamespaceManager cfgNamespaceMgr = new XmlNamespaceManager(doc.NameTable);
-			// note that the prefix has absolutely nothing to do with what the user
-			// selects as their prefix in the document.  It is the prefix we use to 
-			// build the XPath and the nsmgr takes care of translating our prefix into
-			// the user defined prefix...
-			cfgNamespaceMgr.AddNamespace(CfgNamespacePrefix, CfgSchemaXMLNS);
-			return cfgNamespaceMgr;
-		}
-
-		private static XmlNode GetAppConfigConfigurationNode()
-		{
-			XmlNode node = ConfigurationManager.GetSection("hibernate-configuration") as XmlNode;
-			return node;
 		}
 
 		private static string GetDefaultConfigurationFilePath()

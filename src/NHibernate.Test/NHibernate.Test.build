@@ -41,6 +41,10 @@
 			tofile="${bin.dir}/hibernate.cfg.xml" 
 		/>
 		<copy
+			file="TestEnbeddedConfig.cfg.xml"
+			tofile="${bin.dir}/TestEnbeddedConfig.cfg.xml"
+		/>
+		<copy
 			file="${root.dir}/src/NHibernate.DomainModel/ABC.hbm.xml"
 			tofile="${bin.dir}/ABC.hbm.xml"
 		/>

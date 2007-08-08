@@ -13,6 +13,7 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 
 using NUnit.Framework;
+using System.IO;
 
 namespace NHibernate.Test
 {
@@ -23,7 +24,13 @@ namespace NHibernate.Test
 		protected ISessionFactory sessions;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
-		protected static readonly Dialect.Dialect Dialect = NHibernate.Dialect.Dialect.GetDialect();
+
+		protected Dialect.Dialect Dialect
+		{
+			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
+		}
+
+		private static readonly string hibernateConfigFile;
 
 		protected ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
@@ -45,6 +52,18 @@ namespace NHibernate.Test
 		{
 			// Configure log4net here since configuration through an attribute doesn't always work.
 			XmlConfigurator.Configure();
+
+			// Verify if hibernate.cfg.xml exists
+			hibernateConfigFile = GetDefaultConfigurationFilePath();
+		}
+
+		private static string GetDefaultConfigurationFilePath()
+		{
+			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
+			string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
+			string fullPath = Path.Combine(binPath, "hibernate.cfg.xml");
+			return File.Exists(fullPath) ? fullPath : null;
 		}
 
 		/// <summary>
@@ -178,6 +197,9 @@ namespace NHibernate.Test
 		private void Configure()
 		{
 			cfg = new Configuration();
+			if (hibernateConfigFile != null)
+				cfg.Configure(hibernateConfigFile);
+
 			Assembly assembly = Assembly.Load(MappingsAssembly);
 
 			foreach (string file in Mappings)
@@ -188,6 +210,18 @@ namespace NHibernate.Test
 			Configure(cfg);
 
 			ApplyCacheSettings(cfg);
+		}
+
+		/// <summary>
+		/// Standar Configuration for tests.
+		/// </summary>
+		/// <returns>The configuration using merge between App.Config and hibernate.cfg.xml if present.</returns>
+		public static Configuration GetDefaultConfiguration()
+		{
+			Configuration result = new Configuration();
+			if (hibernateConfigFile != null)
+				result.Configure(hibernateConfigFile);
+			return result;
 		}
 
 		private void CreateSchema()

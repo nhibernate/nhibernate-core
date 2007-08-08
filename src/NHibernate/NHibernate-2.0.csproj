@@ -478,7 +478,17 @@
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />
     <Compile Include="Cache\NoCachingEnabledException.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\CfgXmlHelper.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\ClassCacheConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\CollectionCacheConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\EventConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\HibernateConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\ListenerConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\MappingConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\SessionFactoryConfiguration.cs" />
     <Compile Include="Cfg\HbmConstants.cs" />
+    <Compile Include="Cfg\HibernateConfigException.cs" />
+    <Compile Include="Cfg\IHibernateConfiguration.cs" />
     <Compile Include="Cfg\MappingSchema\EndsWithHbmXmlFilter.cs" />
     <Compile Include="Cfg\MappingSchema\Hbm.generated.cs">
       <SubType>code</SubType>

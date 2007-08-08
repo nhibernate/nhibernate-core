@@ -13,7 +13,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void Default()
 		{
-			Configuration cfg = new Configuration();
+			Configuration cfg = TestCase.GetDefaultConfiguration();
 			cfg.AddResource("NHibernate.DomainModel.Simple.hbm.xml", typeof(Simple).Assembly);
 			cfg.SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 			ISessionFactory sf = cfg.BuildSessionFactory();
@@ -29,7 +29,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void Overridden()
 		{
-			Configuration cfg = new Configuration();
+			Configuration cfg = TestCase.GetDefaultConfiguration();
 			cfg.SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 			cfg.AddResource("NHibernate.DomainModel.Simple.hbm.xml", typeof(Simple).Assembly);
 			cfg.AddSqlFunction("count", new ClassicCountFunction());

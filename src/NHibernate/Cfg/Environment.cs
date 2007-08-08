@@ -1,12 +1,12 @@
 using System;
-using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Reflection;
 using log4net;
 using NHibernate.Bytecode;
 using NHibernate.Bytecode.CodeDom;
 using NHibernate.Util;
+using NHibernate.Cfg.ConfigurationSchema;
 
 namespace NHibernate.Cfg
 {
@@ -26,11 +26,14 @@ namespace NHibernate.Cfg
 	///		 by the <see cref="Cfg.Environment" /> properties
 	///		</description></item>
 	/// </list>
-	/// In NHibernate, <c>&lt;nhibernate&gt;</c> section in the application configuration file
-	/// corresponds to Java system-level properties; <c>&lt;hibernate-configuration&gt;</c>
-	/// section is considered to be the session-factory-level configuration. It is possible
-	/// to use the applicatoin configuration file (App.config) together with the NHibernate configuration
-	/// file (hibernate.cfg.xml) at the same time.
+	/// In NHibernate, <c>&lt;hibernate-configuration&gt;</c> section in the application configuration file
+	/// corresponds to Java system-level properties; <c>&lt;session-factory&gt;</c>
+	/// section is the session-factory-level configuration. 
+	/// 
+	/// It is possible to use the applicatoin configuration file (App.config) together with the NHibernate 
+	/// configuration file (hibernate.cfg.xml) at the same time.
+	/// Properties in hibernate.cfg.xml override properties in applicatoin configuration file where same
+	/// property is found. For others configuration a merge is applied.
 	/// </remarks>
 	public sealed class Environment
 	{
@@ -63,75 +66,75 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public const string ConnectionProvider = "hibernate.connection.provider";
-		public const string ConnectionDriver = "hibernate.connection.driver_class";
-		public const string ConnectionString = "hibernate.connection.connection_string";
-		public const string Isolation = "hibernate.connection.isolation";
-		public const string ReleaseConnections = "hibernate.connection.release_mode";
+		public const string ConnectionProvider = "connection.provider";
+		public const string ConnectionDriver = "connection.driver_class";
+		public const string ConnectionString = "connection.connection_string";
+		public const string Isolation = "connection.isolation";
+		public const string ReleaseConnections = "connection.release_mode";
 
 		/// <summary>
 		/// Used to find the .Net 2.0 named connection string
 		/// </summary>
-		public const string ConnectionStringName = "hibernate.connection.connection_string_name";
+		public const string ConnectionStringName = "connection.connection_string_name";
 
 		// Unused, Java-specific
-		public const string SessionFactoryName = "hibernate.session_factory_name";
+		public const string SessionFactoryName = "session_factory_name";
 
-		public const string Dialect = "hibernate.dialect";
-		public const string DefaultSchema = "hibernate.default_schema";
-		public const string ShowSql = "hibernate.show_sql";
-		public const string MaxFetchDepth = "hibernate.max_fetch_depth";
-		public const string CurrentSessionContextClass = "hibernate.current_session_context_class";
+		public const string Dialect = "dialect";
+		public const string DefaultSchema = "default_schema";
+		public const string ShowSql = "show_sql";
+		public const string MaxFetchDepth = "max_fetch_depth";
+		public const string CurrentSessionContextClass = "current_session_context_class";
 
 		// Unused, Java-specific
-		public const string UseGetGeneratedKeys = "hibernate.jdbc.use_get_generated_keys";
+		public const string UseGetGeneratedKeys = "jdbc.use_get_generated_keys";
 
 		// Unused, not implemented
-		public const string StatementFetchSize = "hibernate.jdbc.fetch_size";
+		public const string StatementFetchSize = "jdbc.fetch_size";
 
-		public const string BatchVersionedData = "hibernate.jdbc.batch_versioned_data";
+		public const string BatchVersionedData = "jdbc.batch_versioned_data";
 
 		// Unused, not implemented
-		public const string OutputStylesheet = "hibernate.xml.output_stylesheet";
+		public const string OutputStylesheet = "xml.output_stylesheet";
 
-		public const string TransactionStrategy = "hibernate.transaction.factory_class";
+		public const string TransactionStrategy = "transaction.factory_class";
 
 		// Unused, not implemented (and somewhat Java-specific)
-		public const string TransactionManagerStrategy = "hibernate.transaction.manager_lookup_class";
+		public const string TransactionManagerStrategy = "transaction.manager_lookup_class";
 
-		public const string CacheProvider = "hibernate.cache.provider_class";
-		public const string UseQueryCache = "hibernate.cache.use_query_cache";
-		public const string QueryCacheFactory = "hibernate.cache.query_cache_factory";
-		public const string UseSecondLevelCache = "hibernate.cache.use_second_level_cache";
-		public const string CacheRegionPrefix = "hibernate.cache.region_prefix";
-		public const string UseMinimalPuts = "hibernate.cache.use_minimal_puts";
-		public const string QuerySubstitutions = "hibernate.query.substitutions";
+		public const string CacheProvider = "cache.provider_class";
+		public const string UseQueryCache = "cache.use_query_cache";
+		public const string QueryCacheFactory = "cache.query_cache_factory";
+		public const string UseSecondLevelCache = "cache.use_second_level_cache";
+		public const string CacheRegionPrefix = "cache.region_prefix";
+		public const string UseMinimalPuts = "cache.use_minimal_puts";
+		public const string QuerySubstitutions = "query.substitutions";
 		// The classname of the HQL query parser factory
-		public const string QueryTranslator = "hibernate.query.factory_class";
+		public const string QueryTranslator = "query.factory_class";
 
 
 		// Unused, not implemented
-		public const string QueryImports = "hibernate.query.imports";
-		public const string Hbm2ddlAuto = "hibernate.hbm2ddl.auto";
+		public const string QueryImports = "query.imports";
+		public const string Hbm2ddlAuto = "hbm2ddl.auto";
 
 		// Unused, not implemented
-		public const string SqlExceptionConverter = "hibernate.sql_exception_converter";
+		public const string SqlExceptionConverter = "sql_exception_converter";
 
 		// Unused, not implemented
-		public const string WrapResultSets = "hibernate.wrap_result_sets";
+		public const string WrapResultSets = "wrap_result_sets";
 
 		// NHibernate-specific properties
-		public const string PrepareSql = "hibernate.prepare_sql";
-		public const string CommandTimeout = "hibernate.command_timeout";
-		public const string BatchSize = "hibernate.adonet.batch_size";
+		public const string PrepareSql = "prepare_sql";
+		public const string CommandTimeout = "command_timeout";
+		public const string BatchSize = "adonet.batch_size";
 
 
-		public const string PropertyBytecodeProvider = "hibernate.bytecode.provider";
-		public const string PropertyUseReflectionOptimizer = "hibernate.use_reflection_optimizer";
+		public const string PropertyBytecodeProvider = "bytecode.provider";
+		public const string PropertyUseReflectionOptimizer = "use_reflection_optimizer";
 
-		public const string UseProxyValidator = "hibernate.use_proxy_validator";
+		public const string UseProxyValidator = "use_proxy_validator";
 
-		private static IDictionary GlobalProperties;
+		private static Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
@@ -143,7 +146,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static void VerifyProperties(IDictionary props)
+		public static void VerifyProperties(System.Collections.IDictionary props)
 		{
 		}
 
@@ -155,8 +158,8 @@ namespace NHibernate.Cfg
 				log.Info("NHibernate " + Version);
 			}
 
-			GlobalProperties = new Hashtable();
-			GlobalProperties[PropertyUseReflectionOptimizer] = "true";
+			GlobalProperties = new Dictionary<string, string>();
+			GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
 			LoadGlobalPropertiesFromAppConfig();
 			VerifyProperties(GlobalProperties);
 
@@ -171,25 +174,48 @@ namespace NHibernate.Cfg
 
 		private static void LoadGlobalPropertiesFromAppConfig()
 		{
-			object config = ConfigurationManager.GetSection("nhibernate");
+			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
 
 			if (config == null)
 			{
-				log.Info("nhibernate section not found in application configuration file");
+				log.Info(string.Format("{0} section not found in application configuration file",CfgXmlHelper.CfgSectionName));
 				return;
 			}
 
-			NameValueCollection properties = config as NameValueCollection;
-			if (properties == null)
+			IHibernateConfiguration NHconfig = config as IHibernateConfiguration;
+			if (NHconfig == null)
 			{
-				log.Info("nhibernate section in application configuration file is not using NameValueSectionHandler, ignoring");
+				log.Info(string.Format("{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored", CfgXmlHelper.CfgSectionName));
 				return;
 			}
 
-			foreach (string key in properties)
+			GlobalProperties[PropertyBytecodeProvider] = CfgXmlHelper.ByteCodeProviderToString(NHconfig.ByteCodeProviderType);
+			GlobalProperties[PropertyUseReflectionOptimizer] = NHconfig.UseReflectionOptimizer.ToString();
+			foreach (KeyValuePair<string, string> kvp in NHconfig.SessionFactory.Properties)
 			{
-				GlobalProperties[key] = properties[key];
+				GlobalProperties[kvp.Key] = kvp.Value;
 			}
+		}
+
+		internal static void ResetSessionFactoryProperties()
+		{
+			string savedBytecodeProvider = null;
+			string savedUseReflectionOptimizer = null;
+
+			// Save values loaded and used in static constructor
+			if (GlobalProperties.ContainsKey(PropertyBytecodeProvider))
+				savedBytecodeProvider = GlobalProperties[PropertyBytecodeProvider];
+			if (GlobalProperties.ContainsKey(PropertyUseReflectionOptimizer))
+				savedUseReflectionOptimizer = GlobalProperties[PropertyUseReflectionOptimizer];
+			// Clean all property loaded from app.config
+			GlobalProperties.Clear();
+
+			// Restore values loaded and used in static constructor
+			if (savedBytecodeProvider != null)
+				GlobalProperties[PropertyBytecodeProvider] = savedBytecodeProvider;
+
+			if (savedUseReflectionOptimizer != null)
+				GlobalProperties[PropertyUseReflectionOptimizer] = savedUseReflectionOptimizer;
 		}
 
 		private Environment()
@@ -204,9 +230,9 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// This is the replacement for hibernate.properties
 		/// </remarks>
-		public static IDictionary Properties
+		public static System.Collections.IDictionary Properties
 		{
-			get { return new Hashtable(GlobalProperties); }
+			get { return new Dictionary<string,string>(GlobalProperties); }
 		}
 
 		[Obsolete]
@@ -249,7 +275,7 @@ namespace NHibernate.Cfg
 			set { EnableReflectionOptimizer = value; }
 		}
 
-		public static IBytecodeProvider BuildBytecodeProvider(IDictionary properties)
+		public static IBytecodeProvider BuildBytecodeProvider(System.Collections.IDictionary properties)
 		{
 			string defaultBytecodeProvider = "lcg";
 			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties,

@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Xml;
+using NHibernate.Cfg.ConfigurationSchema;
 
 namespace NHibernate.Cfg
 {
@@ -9,15 +10,11 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public class ConfigurationSectionHandler : IConfigurationSectionHandler
 	{
-		public ConfigurationSectionHandler()
-		{
-		}
-
 		#region IConfigurationSectionHandler Members
 
-		public object Create(object parent, object configContext, XmlNode section)
+		object IConfigurationSectionHandler.Create(object parent, object configContext, XmlNode section)
 		{
-			return section;
+			return HibernateConfiguration.FromAppConfig(section);
 		}
 
 		#endregion

@@ -17,18 +17,44 @@ namespace NHibernate.Test.CfgTest
 	public class ConfigurationFixture
 	{
 		/// <summary>
-		/// Verify that NHibernate can read the configuration from a hibernate.cfg.xml
+		/// Verify that NHibernate can read the configuration from any hibernate.cfg.xml
 		/// file and that the values override what is in the app.config.
 		/// </summary>
 		[Test]
 		public void ReadCfgXmlFromDefaultFile()
 		{
 			Configuration cfg = new Configuration();
-			cfg.Configure();
+			cfg.Configure("TestEnbeddedConfig.cfg.xml");
 
+			Assert.IsTrue(cfg.Properties.Contains(Environment.ShowSql));
+			Assert.IsTrue(cfg.Properties.Contains(Environment.UseQueryCache));
+			Assert.IsTrue(cfg.Properties.Contains(Environment.PrepareSql));
+			Assert.IsTrue(cfg.Properties.Contains(Environment.Isolation));
 			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
 			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
 			                cfg.Properties[Environment.ConnectionString]);
+		}
+
+		/// <summary>
+		/// Verify that NHibernate can read the configuration from any hibernate.cfg.xml
+		/// file and that the values ignore what is in the app.config.
+		/// </summary>
+		/// <remarks>
+		/// This test run Explicit because clean the NHibernate.Cfg.Environment.
+		/// </remarks>
+		[Test, Explicit]
+		public void ReadCfgXmlIgnorigAppConfig()
+		{
+			Configuration cfg = new Configuration();
+			cfg.ConfigureIgnoringAppConfig("TestEnbeddedConfig.cfg.xml");
+
+			Assert.IsFalse(cfg.Properties.Contains(Environment.ShowSql));
+			Assert.IsFalse(cfg.Properties.Contains(Environment.UseQueryCache));
+			Assert.IsFalse(cfg.Properties.Contains(Environment.PrepareSql));
+			Assert.IsFalse(cfg.Properties.Contains(Environment.Isolation));
+			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
+			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
+											cfg.Properties[Environment.ConnectionString]);
 		}
 
 		/// <summary>
@@ -42,10 +68,10 @@ namespace NHibernate.Test.CfgTest
 			Configuration cfg = new Configuration();
 			IDictionary props = new Hashtable();
 
-			props["hibernate.connection.provider"] = "NHibernate.Connection.DriverConnectionProvider";
-			props["hibernate.dialect"] = "NHibernate.Dialect.MsSql2000Dialect";
-			props["hibernate.connection.driver_class"] = "NHibernate.Driver.SqlClientDriver";
-			props["hibernate.connection.connection_string"] =
+			props[Environment.ConnectionProvider] = "NHibernate.Connection.DriverConnectionProvider";
+			props[Environment.Dialect] = "NHibernate.Dialect.MsSql2000Dialect";
+			props[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
+			props[Environment.ConnectionString] =
 				"Server=localhost;initial catalog=nhibernate;Integrated Security=SSPI";
 
 			foreach (DictionaryEntry de in props)
@@ -68,7 +94,7 @@ namespace NHibernate.Test.CfgTest
 		public void ReadCfgXmlFromAssembly()
 		{
 			Configuration cfg = new Configuration();
-			cfg.Configure(this.GetType().Assembly, "NHibernate.Test.hibernate.cfg.xml");
+			cfg.Configure(this.GetType().Assembly, "NHibernate.Test.TestEnbeddedConfig.cfg.xml");
 
 			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
 			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
@@ -83,7 +109,7 @@ namespace NHibernate.Test.CfgTest
 		public void InvalidXmlInCfgFile()
 		{
 			XmlDocument cfgXml = new XmlDocument();
-			cfgXml.Load("hibernate.cfg.xml");
+			cfgXml.Load("TestEnbeddedConfig.cfg.xml");
 
 			// this should put us at the first <property> element
 			XmlElement propElement = cfgXml.DocumentElement.GetElementsByTagName("property")[0] as XmlElement;
@@ -132,7 +158,7 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(MappingException))]
+		[ExpectedException(typeof(HibernateConfigException))]
 		public void CacheConfigurationForUnmappedClass()
 		{
 			string cfgString =
@@ -148,7 +174,7 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(MappingException))]
+		[ExpectedException(typeof(HibernateConfigException))]
 		public void CacheConfigurationForUnmappedCollection()
 		{
 			string cfgString =
@@ -165,7 +191,7 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(MappingException))]
+		[ExpectedException(typeof(HibernateConfigException))]
 		public void NoSessionFactoriesInConfiguration()
 		{
 			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?><someElement />";

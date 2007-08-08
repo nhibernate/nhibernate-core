@@ -18,7 +18,7 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			factory = cfg.BuildSessionFactory();
 			factoryImpl = (ISessionFactoryImplementor) factory;
-			dialect = Dialect.Dialect.GetDialect();
+			dialect = factory.Dialect;
 		}
 	}
 }

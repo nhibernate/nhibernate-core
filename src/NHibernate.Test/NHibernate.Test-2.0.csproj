@@ -63,6 +63,7 @@
       <HintPath>..\..\lib\net\2.0\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -74,6 +75,7 @@
     <Compile Include="CacheTest\QueryCacheFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
+    <Compile Include="CfgTest\ConfigurationSchemaFixture.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
     <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
@@ -611,7 +613,6 @@
     <EmbeddedResource Include="CompositeCollection\BaseClassB.hbm.xml" />
     <EmbeddedResource Include="CompositeCollection\Composite.xml" />
     <EmbeddedResource Include="CompositeId\ClassWithCompositeId.hbm.xml" />
-    <EmbeddedResource Include="hibernate.cfg.xml" />
     <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Customer.hbm.xml" />
     <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Employee.hbm.xml" />
     <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.hbm.xml" />
@@ -955,6 +956,11 @@
     <EmbeddedResource Include="NHSpecificTest\HqlOnMapWithForumula\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="TestEnbeddedConfig.cfg.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -968,8 +974,8 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>copy "$(ProjectDir)\App.config" "$(TargetPath).config"
-copy "$(ProjectDir)\hibernate.cfg.xml" "hibernate.cfg.xml"
+    <PostBuildEvent>copy "$(ProjectDir)App.config" "$(TargetPath).config"
+if exist "$(ProjectDir)hibernate.cfg.xml" (copy "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml")
 copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>

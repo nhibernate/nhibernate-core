@@ -262,6 +262,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.HbmXsd", "N
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration Templates", "Configuration Templates", "{936E50BD-4027-4864-ADE9-423C3FBF7FFB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		NHibernate.Config.Templates\FireBird.cfg.xml.tmpl = NHibernate.Config.Templates\FireBird.cfg.xml.tmpl
+		NHibernate.Config.Templates\MSSQL.cfg.xml.tmpl = NHibernate.Config.Templates\MSSQL.cfg.xml.tmpl
+		NHibernate.Config.Templates\MySql.cfg.xml.tmpl = NHibernate.Config.Templates\MySql.cfg.xml.tmpl
+		NHibernate.Config.Templates\Oracle.cfg.xml.tmpl = NHibernate.Config.Templates\Oracle.cfg.xml.tmpl
+		NHibernate.Config.Templates\PostgreSQL.cfg.xml.tmpl = NHibernate.Config.Templates\PostgreSQL.cfg.xml.tmpl
+		NHibernate.Config.Templates\SQLite.cfg.xml.tmpl = NHibernate.Config.Templates\SQLite.cfg.xml.tmpl
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
@@ -593,6 +607,7 @@ Global
 		{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344} = {C91E7018-3C67-4830-963A-C388C75E1BD5}
 		{4CE16C2F-EFF6-48A4-99BC-8984DCC143FA} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
 		{1631B0BA-59AC-4F0D-B300-3F64CC7579C9} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
+		{936E50BD-4027-4864-ADE9-423C3FBF7FFB} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
 		{71560152-A693-4F66-99CF-570685A33169} = {65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F}
 		{CC25D767-990D-4CE0-9F64-3426E244403B} = {65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F}
 	EndGlobalSection
