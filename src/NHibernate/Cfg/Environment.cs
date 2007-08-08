@@ -32,7 +32,7 @@ namespace NHibernate.Cfg
 	/// 
 	/// It is possible to use the applicatoin configuration file (App.config) together with the NHibernate 
 	/// configuration file (hibernate.cfg.xml) at the same time.
-	/// Properties in hibernate.cfg.xml override properties in applicatoin configuration file where same
+	/// Properties in hibernate.cfg.xml override/merge properties in applicatoin configuration file where same
 	/// property is found. For others configuration a merge is applied.
 	/// </remarks>
 	public sealed class Environment
@@ -224,7 +224,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Gets a copy of the configuration found in <c>&lt;nhibernate&gt;</c> section
+		/// Gets a copy of the configuration found in <c>&lt;hibernate-configuration&gt;</c> section
 		/// of app.config/web.config.
 		/// </summary>
 		/// <remarks>

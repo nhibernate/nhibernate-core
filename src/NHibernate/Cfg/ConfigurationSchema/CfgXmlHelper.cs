@@ -7,7 +7,13 @@ namespace NHibernate.Cfg.ConfigurationSchema
 {
 	public static class CfgXmlHelper
 	{
+		/// <summary>
+		/// The XML node name for hibernate configuration section in the App.config/Web.config and
+		/// for the hibernate.cfg.xml .
+		/// </summary>
 		public const string CfgSectionName = "hibernate-configuration";
+
+		/// <summary>The XML Namespace for the nhibernate-configuration</summary>
 		public const string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.2";
 
 		// note that the prefix has absolutely nothing to do with what the user

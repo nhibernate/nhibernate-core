@@ -15,7 +15,7 @@ namespace NHibernate
 	/// readable format.
 	/// </para>
 	/// <para>
-	/// The property <c>hibernate.xml.output_stylesheet</c> specifies a user-written stylesheet.
+	/// The property <c>xml.output_stylesheet</c> specifies a user-written stylesheet.
 	/// Hibernate will attempt to load the stylesheet from the classpath first and if not found,
 	/// will attempt to load it as a file
 	/// </para>

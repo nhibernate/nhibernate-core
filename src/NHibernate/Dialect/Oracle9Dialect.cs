@@ -18,11 +18,11 @@ namespace NHibernate.Dialect
 	///			<description>Default Value</description>
 	///		</listheader>
 	///		<item>
-	///			<term>hibernate.use_outer_join</term>
+	///			<term>use_outer_join</term>
 	///			<description><see langword="true" /></description>
 	///		</item>
 	///		<item>
-	///			<term>hibernate.connection.driver_class</term>
+	///			<term>connection.driver_class</term>
 	///			<description><see cref="NHibernate.Driver.OracleClientDriver" /></description>
 	///		</item>
 	/// </list>

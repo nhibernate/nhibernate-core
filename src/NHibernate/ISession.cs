@@ -560,7 +560,7 @@ namespace NHibernate
 		/// If a new underlying transaction is required, begin the transaction. Otherwise
 		/// continue the new work in the context of the existing underlying transaction.
 		/// The class of the returned <see cref="ITransaction" /> object is determined by
-		/// the property <c>hibernate.transaction_factory</c>
+		/// the property <c>transaction_factory</c>
 		/// </remarks>
 		/// <returns>A transaction instance</returns>
 		ITransaction BeginTransaction();

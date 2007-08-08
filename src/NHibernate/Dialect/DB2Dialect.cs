@@ -17,7 +17,7 @@ namespace NHibernate.Dialect
 	///			<description>Default Value</description>
 	///		</listheader>
 	///		<item>
-	///			<term>hibernate.connection.driver_class</term>
+	///			<term>connection.driver_class</term>
 	///			<description><see cref="NHibernate.Driver.DB2Driver" /></description>
 	///		</item>
 	/// </list>

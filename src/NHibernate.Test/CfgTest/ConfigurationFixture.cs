@@ -36,28 +36,6 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		/// <summary>
-		/// Verify that NHibernate can read the configuration from any hibernate.cfg.xml
-		/// file and that the values ignore what is in the app.config.
-		/// </summary>
-		/// <remarks>
-		/// This test run Explicit because clean the NHibernate.Cfg.Environment.
-		/// </remarks>
-		[Test, Explicit]
-		public void ReadCfgXmlIgnorigAppConfig()
-		{
-			Configuration cfg = new Configuration();
-			cfg.ConfigureIgnoringAppConfig("TestEnbeddedConfig.cfg.xml");
-
-			Assert.IsFalse(cfg.Properties.Contains(Environment.ShowSql));
-			Assert.IsFalse(cfg.Properties.Contains(Environment.UseQueryCache));
-			Assert.IsFalse(cfg.Properties.Contains(Environment.PrepareSql));
-			Assert.IsFalse(cfg.Properties.Contains(Environment.Isolation));
-			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
-			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
-											cfg.Properties[Environment.ConnectionString]);
-		}
-
-		/// <summary>
 		/// Recieved sample code that Configuration could not be configured manually.  It can be configured
 		/// manually just need to set all of the properties before adding classes
 		/// </summary>
@@ -117,12 +95,13 @@ namespace NHibernate.Test.CfgTest
 			// removing this will cause it not to validate
 			propElement.RemoveAttribute("name");
 
-			cfgXml.Save("hibernate.invalid.cfg.xml");
+			const string FileNameForInvalidCfg = "hibernate.invalid.cfg.xml";
+      cfgXml.Save(FileNameForInvalidCfg);
 
 			Configuration cfg = new Configuration();
 			try
 			{
-				cfg.Configure("hibernate.invalid.cfg.xml");
+				cfg.Configure(FileNameForInvalidCfg);
 			}
 			catch (HibernateException)
 			{
@@ -134,7 +113,7 @@ namespace NHibernate.Test.CfgTest
 				// itself we should be able to do this without problem.  If it does
 				// property release the resource then this won't be able to access
 				// the file to delete.
-				File.Delete("hibernate.invalid.cfg.xml");
+				File.Delete(FileNameForInvalidCfg);
 			}
 		}
 

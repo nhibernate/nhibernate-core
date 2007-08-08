@@ -46,10 +46,8 @@ namespace NHibernate.Cfg
 		/// <summary>The XML Namespace for the nhibernate-mapping</summary>
 		public const string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
 
-		/// <summary>The XML Namespace for the nhibernate-configuration</summary>
-		public const string CfgSchemaXMLNS = "urn:nhibernate-configuration-2.2";
-
-		private const string CfgNamespacePrefix = "cfg";
+		/// <summary>Default name for hibernate configuration file.</summary>
+		public const string DefaultHibernateCfgFileName = "hibernate.cfg.xml";
 
 		private string currentDocumentName;
 
@@ -1191,12 +1189,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <returns>A configuration object initialized with the file.</returns>
 		/// <remarks>
-		/// To configure NHibernate explicitly using <c>hibernate.cfg.xml</c>, ignoring
-		/// the application configuration file, use this code:
-		/// <code>
-		///		configuration.ConfigureIgnoringAppConfig("path/to/hibernate.cfg.xml");
-		/// </code>
-		/// to override/merge the configuration with the application configuration file, use this code:
+		/// To configure NHibernate explicitly using <c>hibernate.cfg.xml</c>, appling merge/override
+		/// of the application configuration file, use this code:
 		/// <code>
 		///		configuration.Configure("path/to/hibernate.cfg.xml");
 		/// </code>
@@ -1225,19 +1219,6 @@ namespace NHibernate.Cfg
 		public Configuration Configure(string fileName)
 		{
 			return Configure(fileName, false);
-		}
-
-		/// <summary>
-		/// Configure NHibernate using the file specified.
-		/// </summary>
-		/// <param name="fileName">The location of the XML file to use to configure NHibernate.</param>
-		/// <returns>A Configuration object initialized with the file.</returns>
-		/// <remarks>
-		/// Calling ConfigureIgnoringAppConfig(string) will ignore the values set in app.config or web.config
-		/// </remarks>
-		public Configuration ConfigureIgnoringAppConfig(string fileName)
-		{
-			return Configure(fileName, true);
 		}
 
 		private Configuration Configure(string fileName, bool ignoreSessionFactoryConfig)
@@ -1632,7 +1613,7 @@ namespace NHibernate.Cfg
 			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
 			string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
-			return Path.Combine(binPath, "hibernate.cfg.xml");
+			return Path.Combine(binPath, DefaultHibernateCfgFileName);
 		}
 
 		#endregion

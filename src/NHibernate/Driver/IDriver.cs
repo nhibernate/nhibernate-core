@@ -21,11 +21,11 @@ namespace NHibernate.Driver
 	/// <para>
 	/// This is the interface to implement, or you can inherit from <see cref="DriverBase"/> 
 	/// if you have an ADO.NET data provider that NHibernate does not have built in support for.
-	/// To use the driver, NHibernate property <c>hibernate.connection.driver_class</c> should be
+	/// To use the driver, NHibernate property <c>connection.driver_class</c> should be
 	/// set to the assembly-qualified name of the driver class.
 	/// </para>
 	/// <code>
-	/// key="hibernate.connection.driver_class"
+	/// key="connection.driver_class"
 	/// value="FullyQualifiedClassName, AssemblyName"
 	/// </code>
 	/// </remarks>

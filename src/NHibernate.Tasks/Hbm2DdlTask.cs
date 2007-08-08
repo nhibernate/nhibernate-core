@@ -181,10 +181,10 @@ namespace NHibernate.Tasks
 			Configuration config = new Configuration();
 			IDictionary properties = new Hashtable();
 
-			properties["hibernate.connection.provider"] = ConnectionProvider;
-			properties["hibernate.dialect"] = Dialect;
-			properties["hibernate.connection.driver_class"] = ConnectionDriverClass;
-			properties["hibernate.connection.connection_string"] = ConnectionString;
+			properties[NHibernate.Cfg.Environment.ConnectionProvider] = ConnectionProvider;
+			properties[NHibernate.Cfg.Environment.Dialect] = Dialect;
+			properties[NHibernate.Cfg.Environment.ConnectionDriver] = ConnectionDriverClass;
+			properties[NHibernate.Cfg.Environment.ConnectionString] = ConnectionString;
 
 			config.AddProperties(properties);
 

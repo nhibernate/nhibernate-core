@@ -655,7 +655,7 @@ namespace NHibernate.Impl
 			//if( templates == null )
 			//{
 			//	throw new HibernateException(
-			//		"No output stylesheet configured. Use the property hibernate.output_stylesheet and ensure xalan.jar is in classpath"
+			//		"No output stylesheet configured. Use the property output_stylesheet and ensure xalan.jar is in classpath"
 			//	);
 			//}
 			//try

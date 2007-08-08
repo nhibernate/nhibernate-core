@@ -363,7 +363,7 @@ namespace NHibernate.Engine
 
 		/// <summary>
 		/// Return the currently enabled filters.  The filter map is keyed by filter
-		/// name, with values corresponding to the {@link org.hibernate.impl.FilterImpl}
+		/// name, with values corresponding to the <see cref="FilterImpl"/>
 		/// instance.
 		/// </summary>
 		/// <returns>The currently enabled filters.</returns>

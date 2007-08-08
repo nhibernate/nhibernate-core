@@ -4,7 +4,7 @@ namespace NHibernate.Cache
 {
 	/// <summary>
 	/// Cache Provider plugin for NHibernate that is configured by using
-	/// <c>hibernate.cache.provider_class="NHibernate.Cache.HashtableCacheProvider"</c>
+	/// <c>cache.provider_class="NHibernate.Cache.HashtableCacheProvider"</c>
 	/// </summary>
 	public class HashtableCacheProvider : ICacheProvider
 	{

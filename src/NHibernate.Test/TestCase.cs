@@ -62,7 +62,7 @@ namespace NHibernate.Test
 			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
 			string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
-			string fullPath = Path.Combine(binPath, "hibernate.cfg.xml");
+			string fullPath = Path.Combine(binPath, Cfg.Configuration.DefaultHibernateCfgFileName);
 			return File.Exists(fullPath) ? fullPath : null;
 		}
 

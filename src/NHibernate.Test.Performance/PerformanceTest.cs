@@ -54,7 +54,7 @@ namespace NHibernate.Test.Performance
 
 		protected override void OnSetUp()
 		{
-			driverClass = (string) cfg.Properties["hibernate.connection.driver_class"];
+			driverClass = (string) cfg.Properties[Environment.ConnectionDriver];
 			if (driverClass.IndexOf(",") < 0)
 			{
 				driverClass += ", NHibernate";

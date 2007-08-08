@@ -514,35 +514,20 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// 
+		/// Get de <see cref="Dialect"/> from a property bag (prop name <see cref="F:Environment.Dialect"/>)
 		/// </summary>
-		/// <returns></returns>
-		public static Dialect GetDialect()
-		{
-			string dialectName = Environment.Properties[Environment.Dialect] as string;
-			if (dialectName == null)
-			{
-				throw new HibernateException("The dialect was not set. Set the property hibernate.dialect.");
-			}
-
-			return InstantiateDialect(dialectName);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="props"></param>
-		/// <returns></returns>
+		/// <param name="props">The property bag.</param>
+		/// <returns>An instance of <see cref="Dialect"/>.</returns>
+		/// <exception cref="ArgumentNullException">When <paramref name="props"/> is null.</exception>
+		/// <exception cref="HibernateException">When the property bag don't contains de property <see cref="F:Environment.Dialect"/>.</exception>
 		public static Dialect GetDialect(IDictionary props)
 		{
 			if (props == null)
-			{
-				return GetDialect();
-			}
-			string dialectName = (string) props[Environment.Dialect];
+				throw new ArgumentNullException("props");
+			string dialectName = (string)props[Environment.Dialect];
 			if (dialectName == null)
 			{
-				return GetDialect();
+				throw new HibernateException("The dialect was not set. Set the property 'dialect'.");
 			}
 
 			return InstantiateDialect(dialectName);

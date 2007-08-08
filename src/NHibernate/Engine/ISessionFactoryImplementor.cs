@@ -64,7 +64,7 @@ namespace NHibernate.Engine
 		bool IsGetGeneratedKeysEnabled { get; }
 
 		/// <summary>
-		/// Get the database schema specified in <c>hibernate.default_schema</c>
+		/// Get the database schema specified in <c>default_schema</c>
 		/// </summary>
 		string DefaultSchema { get; }
 
@@ -154,7 +154,7 @@ namespace NHibernate.Engine
 
 		/// <summary>
 		/// Gets a boolean indicating if the sql statement should be prepared.  The value
-		/// is calculated from <c>hibernate.adonet.batch_size</c> if the value exists and greater than 0.
+		/// is calculated from <c>adonet.batch_size</c> if the value exists and greater than 0.
 		/// </summary>
 		bool IsBatchUpdateEnabled { get; }
 
