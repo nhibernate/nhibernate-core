@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Util;
 using NHibernate.Type;
@@ -35,7 +34,7 @@ namespace NHibernate.Hql.Classic
 
 		public void Token(string token, QueryTranslator q)
 		{
-			string lctoken = token.ToLower(CultureInfo.InvariantCulture);
+			string lctoken = token.ToLowerInvariant();
 
 			if (first)
 			{

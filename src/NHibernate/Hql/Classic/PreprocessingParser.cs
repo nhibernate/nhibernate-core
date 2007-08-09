@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Globalization;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Util;
@@ -118,7 +117,7 @@ namespace NHibernate.Hql.Classic
 			}
 			else
 			{
-				string prop = (string) collectionProps[token.ToLower(CultureInfo.InvariantCulture)];
+				string prop = (string) collectionProps[token.ToLowerInvariant()];
 				if (prop != null)
 				{
 					currentCollectionProp = prop;
@@ -137,7 +136,7 @@ namespace NHibernate.Hql.Classic
 				string doubleToken = (token.Length > 1) ?
 				                     lastToken + ' ' + token :
 				                     lastToken + token;
-				if (operators.Contains(doubleToken.ToLower(CultureInfo.InvariantCulture)))
+				if (operators.Contains(doubleToken.ToLowerInvariant()))
 				{
 					parser.Token(doubleToken, q);
 					lastToken = null;

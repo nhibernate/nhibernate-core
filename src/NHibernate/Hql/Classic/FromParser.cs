@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Globalization;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -39,7 +38,7 @@ namespace NHibernate.Hql.Classic
 		public void Token(string token, QueryTranslator q)
 		{
 			// start by looking for HQL keywords....
-			string lcToken = token.ToLower(CultureInfo.InvariantCulture);
+			string lcToken = token.ToLowerInvariant();
 			if (lcToken.Equals(StringHelper.Comma))
 			{
 				if (!(expectingJoin | expectingAs))

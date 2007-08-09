@@ -4,7 +4,6 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Globalization;
 
 namespace NHibernate.Dialect.Function
 {
@@ -105,8 +104,8 @@ namespace NHibernate.Dialect.Function
 
 		bool IFunctionGrammar.IsKnownArgument(string token)
 		{
-			return "distinct".Equals(token.ToLower(CultureInfo.InvariantCulture)) ||
-				"all".Equals(token.ToLower(CultureInfo.InvariantCulture));
+			return "distinct".Equals(token.ToLowerInvariant()) ||
+				"all".Equals(token.ToLowerInvariant());
 		}
 
 		#endregion

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -904,7 +903,7 @@ namespace NHibernate.Hql.Classic
 					if (next is string)
 					{
 						string token = (string)next;
-						string lc = token.ToLower(CultureInfo.InvariantCulture);
+						string lc = token.ToLowerInvariant();
 						ISQLFunction func = Factory.SQLFunctionRegistry.FindSQLFunction(lc);
 						if (func != null)
 						{
@@ -990,7 +989,7 @@ namespace NHibernate.Hql.Classic
 		{
 			for (int tokenIdx = 0; tokenIdx < tokens.Count; tokenIdx++)
 			{
-				string token = tokens[tokenIdx].ToString().ToLower(CultureInfo.InvariantCulture);
+				string token = tokens[tokenIdx].ToString().ToLowerInvariant();
 				ISQLFunction func = Factory.SQLFunctionRegistry.FindSQLFunction(token);
 				if (func != null)
 				{
@@ -1113,7 +1112,7 @@ namespace NHibernate.Hql.Classic
 				}
 				else
 				{
-					ISQLFunction nfunc = Factory.SQLFunctionRegistry.FindSQLFunction(token.ToLower(CultureInfo.InvariantCulture));
+					ISQLFunction nfunc = Factory.SQLFunctionRegistry.FindSQLFunction(token.ToLowerInvariant());
 					if (nfunc != null)
 					{
 						// the token is a nested function call
@@ -1335,7 +1334,7 @@ namespace NHibernate.Hql.Classic
 				//update last non-whitespace token, if necessary
 				if (!ParserHelper.IsWhitespace(tokens[i - 1]))
 				{
-					last = tokens[i - 1].ToLower(CultureInfo.InvariantCulture);
+					last = tokens[i - 1].ToLowerInvariant();
 				}
 
 				string token = tokens[i];
@@ -1346,7 +1345,7 @@ namespace NHibernate.Hql.Classic
 					{
 						for (nextIndex = i + 1; nextIndex < tokens.Length; nextIndex++)
 						{
-							next = tokens[nextIndex].ToLower(CultureInfo.InvariantCulture);
+							next = tokens[nextIndex].ToLowerInvariant();
 							if (!ParserHelper.IsWhitespace(next))
 							{
 								break;

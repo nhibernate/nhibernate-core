@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Dialect.Function;
@@ -99,7 +98,7 @@ namespace NHibernate.SqlCommand
 			while (hasMore)
 			{
 				string token = nextToken;
-				string lcToken = token.ToLower(CultureInfo.InvariantCulture);
+				string lcToken = token.ToLowerInvariant();
 				hasMore = tokensEnum.MoveNext();
 				nextToken = hasMore ? tokensEnum.Current : null;
 
@@ -228,7 +227,7 @@ namespace NHibernate.SqlCommand
 			while (hasMore)
 			{
 				string token = nextToken;
-				string lcToken = token.ToLower(CultureInfo.InvariantCulture);
+				string lcToken = token.ToLowerInvariant();
 				hasMore = tokensEnum.MoveNext();
 				nextToken = hasMore ? tokensEnum.Current : null;
 

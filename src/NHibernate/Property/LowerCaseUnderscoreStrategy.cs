@@ -1,4 +1,3 @@
-using System.Globalization;
 
 namespace NHibernate.Property
 {
@@ -18,7 +17,7 @@ namespace NHibernate.Property
 		/// <returns>The name of the Field in lowercase prefixed with an underscore.</returns>
 		public string GetFieldName(string propertyName)
 		{
-			return "_" + propertyName.ToLower(CultureInfo.InvariantCulture);
+			return "_" + propertyName.ToLowerInvariant();
 		}
 
 		#endregion

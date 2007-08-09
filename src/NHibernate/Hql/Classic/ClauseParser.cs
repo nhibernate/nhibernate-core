@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Globalization;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Classic
@@ -17,7 +16,7 @@ namespace NHibernate.Hql.Classic
 
 		public virtual void Token(string token, QueryTranslator q)
 		{
-			string lcToken = token.ToLower(CultureInfo.InvariantCulture);
+			string lcToken = token.ToLowerInvariant();
 
 			if (token.Equals(StringHelper.OpenParen))
 			{

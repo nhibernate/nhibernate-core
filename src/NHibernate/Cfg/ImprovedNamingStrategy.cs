@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Text;
 using NHibernate.Util;
 
@@ -86,7 +85,7 @@ namespace NHibernate.Cfg
 				{
 					buf.Append('_');
 				}
-				buf.Append(char.ToLower(c, CultureInfo.InvariantCulture));
+				buf.Append(char.ToLowerInvariant(c));
 				prev = c;
 			}
 

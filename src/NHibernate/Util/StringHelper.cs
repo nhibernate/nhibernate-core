@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using System.Text;
 using NHibernate.SqlCommand;
 
@@ -339,7 +338,7 @@ namespace NHibernate.Util
 		/// </returns>
 		public static bool BooleanValue(string value)
 		{
-			string trimmed = value.Trim().ToLower(CultureInfo.InvariantCulture);
+			string trimmed = value.Trim().ToLowerInvariant();
 			return trimmed.Equals("true") || trimmed.Equals("t");
 		}
 
@@ -600,7 +599,7 @@ namespace NHibernate.Util
 			}
 
 			string result = Truncate(UnqualifyEntityName(description), AliasTruncateLength)
-				.ToLower(CultureInfo.InvariantCulture)
+				.ToLowerInvariant()
 				.Replace('/', '_') // entityNames may now include slashes for the representations
 				.Replace('+', '_') // classname may be an inner class
 				.Replace('[', '_') // classname may contain brackets
@@ -640,32 +639,32 @@ namespace NHibernate.Util
 
 		public static bool EqualsCaseInsensitive(string a, string b)
 		{
-			return CultureInfo.InvariantCulture.CompareInfo.Compare(a, b, CompareOptions.IgnoreCase) == 0;
+			return StringComparer.InvariantCultureIgnoreCase.Compare(a, b) == 0;
 		}
 
 		public static int IndexOfCaseInsensitive(string source, string value)
 		{
-			return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, CompareOptions.IgnoreCase);
+			return source.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		public static int IndexOfCaseInsensitive(string source, string value, int startIndex)
 		{
-			return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, CompareOptions.IgnoreCase);
+			return source.IndexOf(value, startIndex, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		public static int IndexOfCaseInsensitive(string source, string value, int startIndex, int count)
 		{
-			return CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, count, CompareOptions.IgnoreCase);
+			return source.IndexOf(value, startIndex, count, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		public static int LastIndexOfCaseInsensitive(string source, string value)
 		{
-			return CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(source, value, CompareOptions.IgnoreCase);
+			return source.LastIndexOf(value, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		public static bool StartsWithCaseInsensitive(string source, string prefix)
 		{
-			return CultureInfo.InvariantCulture.CompareInfo.IsPrefix(source, prefix, CompareOptions.IgnoreCase);
+			return source.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		/// <summary>

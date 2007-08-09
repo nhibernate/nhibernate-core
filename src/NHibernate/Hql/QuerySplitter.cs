@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using System.Text;
 using Iesi.Collections;
 using log4net;
@@ -68,7 +67,7 @@ namespace NHibernate.Hql
 				//update last non-whitespace token, if necessary
 				if (!ParserHelper.IsWhitespace(tokens[i - 1]))
 				{
-					last = tokens[i - 1].ToLower(CultureInfo.InvariantCulture);
+					last = tokens[i - 1].ToLowerInvariant();
 				}
 
 				// select-range is terminated by declaration of "from"
@@ -82,7 +81,7 @@ namespace NHibernate.Hql
 					{
 						for (nextIndex = i + 1; nextIndex < tokens.Length; nextIndex++)
 						{
-							next = tokens[nextIndex].ToLower(CultureInfo.InvariantCulture);
+							next = tokens[nextIndex].ToLowerInvariant();
 							if (!ParserHelper.IsWhitespace(next))
 							{
 								break;

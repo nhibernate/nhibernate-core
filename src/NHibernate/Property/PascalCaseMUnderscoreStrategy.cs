@@ -1,4 +1,3 @@
-using System.Globalization;
 
 namespace NHibernate.Property
 {
@@ -19,7 +18,7 @@ namespace NHibernate.Property
 		/// <returns>The name of the Field in PascalCase format prefixed with an 'm' and an underscore.</returns>
 		public string GetFieldName(string propertyName)
 		{
-			return "m_" + propertyName.Substring(0, 1).ToUpper(CultureInfo.InvariantCulture) + propertyName.Substring(1);
+			return "m_" + propertyName.Substring(0, 1).ToUpperInvariant() + propertyName.Substring(1);
 		}
 
 		#endregion

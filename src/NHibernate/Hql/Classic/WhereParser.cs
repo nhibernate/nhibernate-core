@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
@@ -203,7 +202,7 @@ namespace NHibernate.Hql.Classic
 		/// <param name="q"></param>
 		public void Token(string token, QueryTranslator q)
 		{
-			string lcToken = token.ToLower(CultureInfo.InvariantCulture);
+			string lcToken = token.ToLowerInvariant();
 
 			//Cope with [,]
 
@@ -547,7 +546,7 @@ namespace NHibernate.Hql.Classic
 					{
 						//anything else
 
-						string negatedToken = negated ? (string) negations[token.ToLower(CultureInfo.InvariantCulture)] : null;
+						string negatedToken = negated ? (string) negations[token.ToLowerInvariant()] : null;
 						if (negatedToken != null && (!betweenSpecialCase || !"or".Equals(negatedToken)))
 						{
 							AppendToken(q, negatedToken);

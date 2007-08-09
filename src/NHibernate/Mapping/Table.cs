@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Globalization;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -486,7 +485,7 @@ namespace NHibernate.Mapping
 				if (fk.ReferencedClass != referencedClass)
 				{
 					foreignKeys.Remove(keyName);
-					keyName += referencedClass.Name.GetHashCode().ToString("X").ToUpper(CultureInfo.InvariantCulture);
+					keyName += referencedClass.Name.GetHashCode().ToString("X").ToUpperInvariant();
 					return CreateForeignKey(keyName, columns, referencedClass);
 				}
 			}
