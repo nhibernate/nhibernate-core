@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections;
 using System.Xml;
 
@@ -93,12 +94,12 @@ namespace NHibernate.Util
 			if (propValue != null)
 			{
 				StringTokenizer tokens = new StringTokenizer(propValue, delim, false);
-				IEnumerator en = tokens.GetEnumerator();
+				IEnumerator<string> en = tokens.GetEnumerator();
 				while (en.MoveNext())
 				{
-					string key = (string) en.Current;
+					string key = en.Current;
 
-					string value = en.MoveNext() ? (string) en.Current : String.Empty;
+					string value = en.MoveNext() ? en.Current : String.Empty;
 					map[key] = value;
 				}
 			}

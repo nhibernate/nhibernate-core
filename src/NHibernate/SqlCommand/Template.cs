@@ -6,6 +6,7 @@ using Iesi.Collections;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Classic;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand
 {
@@ -92,15 +93,15 @@ namespace NHibernate.SqlCommand
 			bool inFromClause = false;
 			bool afterFromTable = false;
 
-			IEnumerator tokensEnum = tokens.GetEnumerator();
+			IEnumerator<string> tokensEnum = tokens.GetEnumerator();
 			bool hasMore = tokensEnum.MoveNext();
-			string nextToken = hasMore ? (string) tokensEnum.Current : null;
+			string nextToken = hasMore ? tokensEnum.Current : null;
 			while (hasMore)
 			{
 				string token = nextToken;
 				string lcToken = token.ToLower(CultureInfo.InvariantCulture);
 				hasMore = tokensEnum.MoveNext();
-				nextToken = hasMore ? (string) tokensEnum.Current : null;
+				nextToken = hasMore ? tokensEnum.Current : null;
 
 				bool isQuoteCharacter = false;
 
@@ -221,15 +222,15 @@ namespace NHibernate.SqlCommand
 			bool quoted = false;
 			bool quotedIdentifier = false;
 
-			IEnumerator tokensEnum = tokens.GetEnumerator();
+			IEnumerator<string> tokensEnum = tokens.GetEnumerator();
 			bool hasMore = tokensEnum.MoveNext();
-			string nextToken = hasMore ? (string) tokensEnum.Current : null;
+			string nextToken = hasMore ? tokensEnum.Current : null;
 			while (hasMore)
 			{
 				string token = nextToken;
 				string lcToken = token.ToLower(CultureInfo.InvariantCulture);
 				hasMore = tokensEnum.MoveNext();
-				nextToken = hasMore ? (string) tokensEnum.Current : null;
+				nextToken = hasMore ? tokensEnum.Current : null;
 
 				bool isQuoteCharacter = false;
 

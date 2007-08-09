@@ -555,10 +555,8 @@ namespace NHibernate.Impl
 			StringTokenizer st = new StringTokenizer(queryString, ParserHelper.HqlSeparators, true);
 			ISet result = new HashedSet();
 
-			IEnumerator enumer = st.GetEnumerator();
-			while (enumer.MoveNext())
+			foreach (string str in st)
 			{
-				string str = (string)enumer.Current;
 				if (str.StartsWith(ParserHelper.HqlVariablePrefix))
 				{
 					result.Add(str.Substring(1));
