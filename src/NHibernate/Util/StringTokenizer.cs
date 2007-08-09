@@ -1,12 +1,12 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
 	/// <summary>
 	/// A StringTokenizer java like object 
 	/// </summary>
-	public class StringTokenizer : IEnumerable
+	public class StringTokenizer : IEnumerable<string>
 	{
 		private const string _defaultDelim = " \t\n\r\f";
 		private string _origin;
@@ -49,13 +49,26 @@ namespace NHibernate.Util
 			_returnDelim = returnDelims;
 		}
 
-		/// <summary></summary>
-		public IEnumerator GetEnumerator()
+		#region IEnumerable<string> Members
+
+		public IEnumerator<string> GetEnumerator()
 		{
 			return new StringTokenizerEnumerator(this);
 		}
 
-		private class StringTokenizerEnumerator : IEnumerator
+		#endregion
+
+		#region IEnumerable Members
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return new StringTokenizerEnumerator(this);
+		}
+
+		#endregion
+
+
+		private class StringTokenizerEnumerator : IEnumerator<string>
 		{
 			private StringTokenizer _stokenizer;
 			private int _cursor = 0;
@@ -66,10 +79,34 @@ namespace NHibernate.Util
 				_stokenizer = stok;
 			}
 
+			#region IEnumerator<string> Members
+
+			public string Current
+			{
+				get { return _next; }
+			}
+
+			#endregion
+
+			#region IDisposable Members
+
+			public void Dispose()
+			{
+			}
+
+			#endregion
+
+			#region IEnumerator Members
+
+			object System.Collections.IEnumerator.Current
+			{
+				get { return Current; }
+			}
+
 			public bool MoveNext()
 			{
-				_next = GetNext();
-				return _next != null;
+			  _next = GetNext();
+			  return _next != null;
 			}
 
 			public void Reset()
@@ -77,10 +114,7 @@ namespace NHibernate.Util
 				_cursor = 0;
 			}
 
-			public object Current
-			{
-				get { return _next; }
-			}
+			#endregion
 
 			private string GetNext()
 			{
