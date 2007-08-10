@@ -142,7 +142,7 @@ namespace NHibernate.Cfg
 			if (useQueryCache)
 			{
 				string queryCacheFactoryClassName =
-					PropertiesHelper.GetString(Environment.QueryCacheFactory, properties, "NHibernate.Cache.StandardQueryCacheFactory");
+					PropertiesHelper.GetString(Environment.QueryCacheFactory, properties, typeof(NHibernate.Cache.StandardQueryCacheFactory).FullName);
 				log.Info("query cache factory: " + queryCacheFactoryClassName);
 				try
 				{
@@ -243,7 +243,7 @@ namespace NHibernate.Cfg
 		private static IQueryTranslatorFactory CreateQueryTranslatorFactory(IDictionary properties)
 		{
 			string className = PropertiesHelper.GetString(
-				Environment.QueryTranslator, properties, "NHibernate.Hql.Classic.ClassicQueryTranslatorFactory");
+				Environment.QueryTranslator, properties, typeof(NHibernate.Hql.Classic.ClassicQueryTranslatorFactory).FullName);
 			log.Info("Query translator: " + className);
 			try
 			{
@@ -258,7 +258,7 @@ namespace NHibernate.Cfg
 		private static ITransactionFactory CreateTransactionFactory(IDictionary properties)
 		{
 			string className = PropertiesHelper.GetString(
-				Environment.TransactionStrategy, properties, "NHibernate.Transaction.AdoNetTransactionFactory");
+				Environment.TransactionStrategy, properties, typeof(NHibernate.Transaction.AdoNetTransactionFactory).FullName);
 			log.Info("Transaction factory: " + className);
 
 			try
