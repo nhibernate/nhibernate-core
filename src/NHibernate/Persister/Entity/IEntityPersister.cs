@@ -358,6 +358,11 @@ namespace NHibernate.Persister.Entity
 		bool IsCacheInvalidationRequired { get; }
 
 		/// <summary>
+		/// Should lazy properties of this entity be cached?
+		/// </summary>
+		bool IsLazyPropertiesCacheable { get;}
+
+		/// <summary>
 		/// Does this class have a cache?
 		/// </summary>
 		bool HasCache { get; }

@@ -417,6 +417,12 @@ namespace NHibernate.DomainModel
 			throw new NotImplementedException();
 		}
 
+		public bool IsLazyPropertiesCacheable
+		{
+			get { return true; }
+		}
+
 		#endregion
+
 	}
 }

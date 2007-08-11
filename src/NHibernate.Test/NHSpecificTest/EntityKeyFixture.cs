@@ -503,6 +503,10 @@ namespace NHibernate.Test.NHSpecificTest
 			throw new NotImplementedException();
 		}
 
+		public bool IsLazyPropertiesCacheable
+		{
+			get { return true; }
+		}
 		#endregion
 	}
 

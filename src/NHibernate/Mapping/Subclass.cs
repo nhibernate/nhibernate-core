@@ -494,5 +494,10 @@ namespace NHibernate.Mapping
 				}
 			}
 		}
+
+		public override bool IsLazyPropertiesCacheable
+		{
+			get { return Superclass.IsLazyPropertiesCacheable; }
+		}
 	}
 }

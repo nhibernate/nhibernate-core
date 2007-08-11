@@ -91,6 +91,7 @@ namespace NHibernate.Persister.Entity
 
 		// the cache
 		private readonly ICacheConcurrencyStrategy cache;
+		private readonly bool isLazyPropertiesCacheable;
 
 		private readonly Hashtable uniqueKeyLoaders = new Hashtable();
 		//private readonly Hashtable uniqueKeyColumns = new Hashtable();
@@ -705,6 +706,7 @@ namespace NHibernate.Persister.Entity
 			this.factory = factory;
 			dialect = factory.Dialect;
 			this.cache = cache;
+			isLazyPropertiesCacheable = persistentClass.IsLazyPropertiesCacheable;
 			//sqlExceptionConverter = factory.SQLExceptionConverter;
 
 			entityMetamodel = new EntityMetamodel(persistentClass, factory);
@@ -2349,6 +2351,12 @@ namespace NHibernate.Persister.Entity
 		public abstract bool IsCacheInvalidationRequired { get; }
 
 		protected abstract int GetSubclassPropertyTableNumber(int i);
+
+		public bool IsLazyPropertiesCacheable
+		{
+			get { return isLazyPropertiesCacheable; }
+		}
+	
 
 		public bool IsUnsavedVersion(object[] values)
 		{

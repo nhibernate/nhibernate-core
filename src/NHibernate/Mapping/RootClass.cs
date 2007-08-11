@@ -377,5 +377,16 @@ namespace NHibernate.Mapping
 		{
 			get { return synchronizedTablesField; }
 		}
+
+		private bool lazyPropertiesCacheable = true;
+		public override bool IsLazyPropertiesCacheable
+		{
+			get { return lazyPropertiesCacheable; }
+		}
+
+		public void SetLazyPropertiesCacheable(bool isLazyPropertiesCacheable)
+		{
+			lazyPropertiesCacheable = isLazyPropertiesCacheable;
+		}
 	}
 }

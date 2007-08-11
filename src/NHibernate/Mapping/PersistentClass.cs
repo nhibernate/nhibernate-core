@@ -903,5 +903,8 @@ namespace NHibernate.Mapping
 		{
 			get { return PropertyClosureCollection; }
 		}
+
+		public abstract bool IsLazyPropertiesCacheable { get;}
+
 	}
 }

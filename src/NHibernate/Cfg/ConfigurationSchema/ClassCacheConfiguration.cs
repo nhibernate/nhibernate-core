@@ -23,7 +23,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Values for class-cache include.
 	/// </summary>
-	/// <remarks>Unused</remarks>
+	/// <remarks>Not implemented in Cache.</remarks>
 	public enum ClassCacheInclude
 	{
 		// TODO: Implement ClassCacheInclude (remove de remarks from this enum and the property)
@@ -159,7 +159,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// class-cache include.
 		/// </summary>
 		/// <remarks>
-		/// Unused.
+		/// Not implemented in Cache.
 		/// Defaul value <see cref="ClassCacheInclude.All"/>.
 		/// </remarks>
 		public ClassCacheInclude Include
