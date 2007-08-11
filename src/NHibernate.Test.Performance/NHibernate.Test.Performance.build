@@ -7,7 +7,6 @@
 >
 
 	<property name="root.dir" value="../.." />
-	<property name="config.FileName" value="hibernate.cfg.xml" />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
@@ -36,9 +35,14 @@
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 	<target name="build" depends="init generate-assemblyinfo common.compile-tests" >
-		<if test="${file::exists(config.FileName)}">
-			<copy file="hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
+		<!-- 
+			Create a config file for SQL2000 if one does not already exist 
+			(copied from the NHibernate.Test project)
+		-->
+		<if test="${not file::exists('hibernate.cfg.xml')}">
+			<copy file="../NHibernate.Test/hibernate.cfg.xml.sql2000" tofile="hibernate.cfg.xml"/>
 		</if>
+		<copy file="hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml"	/>
 	</target>
 	<target name="test" depends="build common.run-tests" />
 
