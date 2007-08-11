@@ -7,6 +7,7 @@
 >
 
 	<property name="root.dir" value="../.." />
+	<property name="config.FileName" value="hibernate.cfg.xml" />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
@@ -35,7 +36,9 @@
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 	<target name="build" depends="init generate-assemblyinfo common.compile-tests" >
-		<copy	file="hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml"	/>
+		<if test="${file::exists(config.FileName)}">
+			<copy file="hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
+		</if>
 	</target>
 	<target name="test" depends="build common.run-tests" />
 

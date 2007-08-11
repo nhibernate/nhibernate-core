@@ -25,7 +25,7 @@ namespace NHibernate.Test.Performance
 		[Test]
 		public void Many()
 		{
-			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(Environment.Properties);
+			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
 
 			long hiber = 0;
 			long adonet = 0;
@@ -137,7 +137,7 @@ namespace NHibernate.Test.Performance
 		[Test]
 		public void Simultaneous()
 		{
-			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(Environment.Properties);
+			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
 
 			ISession s;
 			for (int n = 2; n < 4000; n *= 2)
@@ -280,7 +280,7 @@ namespace NHibernate.Test.Performance
 		[Test]
 		public void AdoNetOnly()
 		{
-			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(Environment.Properties);
+			IConnectionProvider cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
 
 			ISession s;
 			for (int n = 2; n < 4000; n *= 2)
