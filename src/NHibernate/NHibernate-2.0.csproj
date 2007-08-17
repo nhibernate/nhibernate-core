@@ -493,12 +493,16 @@
     <Compile Include="Cfg\MappingSchema\Hbm.generated.cs">
       <SubType>code</SubType>
     </Compile>
+    <Compile Include="Cfg\MappingSchema\HbmBase.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmDatabaseObject.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IAssemblyResourceFilter.cs" />
     <Compile Include="Cfg\MappingSchema\IMappingDocumentParser.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentAggregator.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentParser.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\AuxiliaryDatabaseObjectFactory.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ResultSetMappingBinder.cs" />
-    <Compile Include="Cfg\XmlHbmBinding\AuxiliaryDatabaseObjectBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\Binder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ClassBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\CollectionBinder.cs" />

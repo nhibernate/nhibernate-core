@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
+using System.IO;
 using System.Xml;
-
+using System.Xml.Serialization;
 using log4net;
-
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -43,39 +43,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.Info(string.Format(format, args));
 		}
 
-		#region XML helper methods
-
-		protected XmlNodeList SelectNodes(XmlNode node, string xpath)
-		{
-			return node.SelectNodes(xpath, namespaceManager);
-		}
-
-		protected XmlNode SelectSingleNode(XmlNode node, string xpath)
-		{
-			return node.SelectSingleNode(xpath, namespaceManager);
-		}
-
-		protected static string GetAttributeValue(XmlNode node, string attributeName)
-		{
-			if (node != null && node.Attributes != null)
-			{
-				XmlAttribute attribute = node.Attributes[attributeName];
-				return attribute == null ? null : attribute.Value;
-			}
-			else
-				return null;
-		}
-
-		protected static string GetInnerText(XmlNode node)
-		{
-			if (node == null || node.InnerText == null || node.InnerText.Trim().Length == 0)
-				return null;
-			else
-				return node.InnerText.Trim();
-		}
-
-		#endregion
-
 		protected static bool IsInNHibernateNamespace(XmlNode node)
 		{
 			return node.NamespaceURI == Configuration.MappingSchemaXMLNS;
@@ -89,14 +56,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			XmlAttribute typeAttribute = node.Attributes["type"];
 			if (typeAttribute == null)
-			{
 				typeAttribute = node.Attributes["id-type"]; //for an any
-			}
 			string typeName;
 			if (typeAttribute != null)
-			{
 				typeName = typeAttribute.Value;
-			}
 			else
 			{
 				XmlNode typeNode = node.SelectSingleNode(HbmConstants.nsType, namespaceManager);
@@ -106,16 +69,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				typeName = nameAttribute.Value;
 				parameters = new Hashtable();
 				foreach (XmlNode childNode in typeNode.ChildNodes)
-				{
 					parameters.Add(childNode.Attributes["name"].Value,
 						childNode.InnerText.Trim());
-				}
 			}
 			type = TypeFactory.HeuristicType(typeName, parameters);
 			if (type == null)
-			{
 				throw new MappingException("could not interpret type: " + typeAttribute.Value);
-			}
 			return type;
 		}
 
@@ -135,9 +94,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		protected static string FullClassName(string className, Mappings mapping)
 		{
 			if (className == null)
-			{
 				return null;
-			}
 
 			return TypeNameParser.Parse(className, mapping.DefaultNamespace, mapping.DefaultAssembly)
 				.ToString();
@@ -193,9 +150,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private static string GetClassName(XmlAttribute att, Mappings model)
 		{
 			if (att == null)
-			{
 				return null;
-			}
 			return GetClassName(att.Value, model);
 		}
 
@@ -205,5 +160,43 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).ToString();
 		}
 
+		protected static T Deserialize<T>(XmlNode node)
+		{
+			using (StringReader reader = new StringReader(node.OuterXml))
+				return (T) new XmlSerializer(typeof (T)).Deserialize(reader);
+		}
+
+		#region XML helper methods
+
+		protected XmlNodeList SelectNodes(XmlNode node, string xpath)
+		{
+			return node.SelectNodes(xpath, namespaceManager);
+		}
+
+		protected XmlNode SelectSingleNode(XmlNode node, string xpath)
+		{
+			return node.SelectSingleNode(xpath, namespaceManager);
+		}
+
+		protected static string GetAttributeValue(XmlNode node, string attributeName)
+		{
+			if (node != null && node.Attributes != null)
+			{
+				XmlAttribute attribute = node.Attributes[attributeName];
+				return attribute == null ? null : attribute.Value;
+			}
+			else
+				return null;
+		}
+
+		protected static string GetInnerText(XmlNode node)
+		{
+			if (node == null || node.InnerText == null || node.InnerText.Trim().Length == 0)
+				return null;
+			else
+				return node.InnerText.Trim();
+		}
+
+		#endregion
 	}
 }

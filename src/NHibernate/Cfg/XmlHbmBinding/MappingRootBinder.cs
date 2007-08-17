@@ -1,4 +1,6 @@
 using System.Xml;
+using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -15,6 +17,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void Bind(XmlNode node)
 		{
+			HbmMapping mappingSchema = Deserialize<HbmMapping>(node);
+
 			mappings.SchemaName = GetAttributeValue(node, "schema") ?? null;
 			mappings.DefaultCascade = GetAttributeValue(node, "default-cascade") ?? "none";
 			mappings.DefaultAccess = GetAttributeValue(node, "default-access") ?? "property";
@@ -30,8 +34,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new NamedQueryBinder(this).BindEach(node, HbmConstants.nsQuery);
 			new NamedSQLQueryBinder(this).BindEach(node, HbmConstants.nsSqlQuery);
 			new ImportBinder(this).BindEach(node, HbmConstants.nsImport);
-			new AuxiliaryDatabaseObjectBinder(this).BindEach(node, HbmConstants.nsDatabaseObject);
+
+			CreateAndAddAuxiliaryDatabaseObjects(mappingSchema);
+
 			new ResultSetMappingDefinitionBinder(this).BindEach(node, HbmConstants.nsResultset);
+		}
+
+		private void CreateAndAddAuxiliaryDatabaseObjects(HbmMapping mappingSchema)
+		{
+			foreach (HbmDatabaseObject objectSchema in mappingSchema.ListDatabaseObjects())
+			{
+				IAuxiliaryDatabaseObject dbObject = AuxiliaryDatabaseObjectFactory.Create(objectSchema);
+				mappings.AddAuxiliaryDatabaseObject(dbObject);
+			}
 		}
 	}
 }
