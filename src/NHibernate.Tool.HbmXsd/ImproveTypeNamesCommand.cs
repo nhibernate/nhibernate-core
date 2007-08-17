@@ -36,8 +36,23 @@ namespace NHibernate.Tool.HbmXsd
 				string rootElementName = GetRootElementName(type);
 				string newTypeName = GetNewTypeName(type.Name, rootElementName);
 				changedTypeNames[type.Name] = newTypeName;
+
+				if (string.IsNullOrEmpty(rootElementName))
+					AddRootElementName(type);
+
 				type.Name = newTypeName;
 			}
+		}
+
+		private static void AddRootElementName(CodeTypeMember type)
+		{
+			foreach (CodeAttributeDeclaration attribute in type.CustomAttributes)
+				if (attribute.Name == typeof (XmlRootAttribute).FullName)
+				{
+					CodePrimitiveExpression value = new CodePrimitiveExpression(type.Name);
+					CodeAttributeArgument argument = new CodeAttributeArgument("", value);
+					attribute.Arguments.Insert(0, argument);
+				}
 		}
 
 		private void UpdateTypeReferences()
@@ -91,7 +106,7 @@ namespace NHibernate.Tool.HbmXsd
 				else if (attribute.Name == typeof (DefaultValueAttribute).FullName)
 				{
 					CodeFieldReferenceExpression reference = attribute.Arguments[0].Value
-						as CodeFieldReferenceExpression;
+					                                         as CodeFieldReferenceExpression;
 
 					if (reference != null)
 						UpdateTypeReference(((CodeTypeReferenceExpression) reference.TargetObject).Type);
