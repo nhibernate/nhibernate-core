@@ -31,7 +31,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new ImportBinder(this).BindEach(node, HbmConstants.nsImport);
 
 			AddAuxiliaryDatabaseObjects(mappingSchema);
-			AddResultSetMappingDefinitions(node, HbmConstants.nsResultset);
+			AddResultSetMappingDefinitions(mappingSchema);
 		}
 
 		private void SetMappingsProperties(HbmMapping mappingSchema)
@@ -63,17 +63,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void AddResultSetMappingDefinitions(XmlNode parentNode, string xpath)
+		private void AddResultSetMappingDefinitions(HbmMapping mappingSchema)
 		{
 			ResultSetMappingBinder binder = new ResultSetMappingBinder(this);
 
-			foreach (XmlNode node in SelectNodes(parentNode, xpath))
+			foreach (HbmResultSet resultSetSchema in mappingSchema.resultset ?? new HbmResultSet[0])
 			{
-				HbmResultSet resultSetSchema = Deserialize<HbmResultSet>(node);
+				// Do not inline this variable or the anonymous method will not work correctly.
+				HbmResultSet tempResultSetSchema = resultSetSchema;
 
 				mappings.AddSecondPass(delegate
 					{
-						ResultSetMappingDefinition definition = binder.Create(resultSetSchema);
+						ResultSetMappingDefinition definition = binder.Create(tempResultSetSchema);
 						mappings.AddResultSetMapping(definition);
 					});
 			}
