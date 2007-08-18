@@ -5,7 +5,7 @@ using NHibernate.Mapping;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class MappingRootBinder : Binder
+	public class MappingRootBinder : XmlBinder
 	{
 		private readonly Dialect.Dialect dialect;
 
@@ -31,8 +31,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new ImportBinder(this).BindEach(node, HbmConstants.nsImport);
 
 			AddAuxiliaryDatabaseObjects(mappingSchema);
-
-			new ResultSetMappingDefinitionBinder(this).BindEach(node, HbmConstants.nsResultset);
+			AddResultSetMappingDefinitions(node, HbmConstants.nsResultset);
 		}
 
 		private void SetMappingsProperties(HbmMapping mappingSchema)
@@ -61,6 +60,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				IAuxiliaryDatabaseObject dbObject = AuxiliaryDatabaseObjectFactory.Create(objectSchema);
 				mappings.AddAuxiliaryDatabaseObject(dbObject);
+			}
+		}
+
+		private void AddResultSetMappingDefinitions(XmlNode parentNode, string xpath)
+		{
+			ResultSetMappingBinder binder = new ResultSetMappingBinder(this);
+
+			foreach (XmlNode node in SelectNodes(parentNode, xpath))
+			{
+				HbmResultSet resultSetSchema = Deserialize<HbmResultSet>(node);
+
+				mappings.AddSecondPass(delegate
+					{
+						ResultSetMappingDefinition definition = binder.Create(resultSetSchema);
+						mappings.AddResultSetMapping(definition);
+					});
 			}
 		}
 	}

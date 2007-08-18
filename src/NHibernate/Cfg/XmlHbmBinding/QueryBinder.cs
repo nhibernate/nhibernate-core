@@ -5,14 +5,14 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public abstract class QueryBinder : Binder
+	public abstract class QueryBinder : XmlBinder
 	{
 		public QueryBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
 			: base(mappings, namespaceManager)
 		{
 		}
 
-		public QueryBinder(Binder parent)
+		public QueryBinder(XmlBinder parent)
 			: base(parent)
 		{
 		}

@@ -515,8 +515,8 @@
     <Compile Include="Cfg\XmlHbmBinding\MappingRootBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\NamedQueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\NamedSQLQueryBinder.cs" />
-    <Compile Include="Cfg\XmlHbmBinding\ResultSetMappingDefinitionBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\SubclassBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\XmlBinder.cs" />
     <Compile Include="Cfg\XmlSchemas.cs" />
     <Compile Include="Classic\ILifecycle.cs" />
     <Compile Include="Classic\IValidatable.cs" />

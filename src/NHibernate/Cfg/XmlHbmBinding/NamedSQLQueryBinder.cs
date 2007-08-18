@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Xml;
 
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 
 namespace NHibernate.Cfg.XmlHbmBinding
@@ -12,7 +13,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public NamedSQLQueryBinder(Binder parent)
+		public NamedSQLQueryBinder(XmlBinder parent)
 			: base(parent)
 		{
 		}
@@ -54,20 +55,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					synchronizedTables, cacheable, region, timeout, fetchSize, flushMode, readOnly, comment,
 					parameterTypes, callable);
 
-				LogDebug("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
+				log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 				mappings.AddSQLQuery(queryName, namedQuery);
 			}
 			else
 			{
+				HbmSqlQuery sqlQuerySchema = Deserialize<HbmSqlQuery>(node);
+
 				ResultSetMappingDefinition definition =
-					new ResultSetMappingBinder(this).BuildResultSetMappingDefinition(node, null);
+					new ResultSetMappingBinder(this).Create(sqlQuerySchema);
 
 				NamedSQLQueryDefinition namedQuery = new NamedSQLQueryDefinition(queryText,
 					definition.GetQueryReturns(),
 					synchronizedTables, cacheable, region, timeout, fetchSize, flushMode, readOnly, comment,
 					parameterTypes, callable);
 
-				LogDebug("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
+				log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 				mappings.AddSQLQuery(queryName, namedQuery);
 			}
 		}

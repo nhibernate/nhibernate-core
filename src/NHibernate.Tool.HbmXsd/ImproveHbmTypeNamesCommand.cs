@@ -25,6 +25,9 @@ namespace NHibernate.Tool.HbmXsd
 				case "hibernatemapping":
 					return Prefix + "Mapping";
 
+				case "resultset":
+					return Prefix + "ResultSet";
+
 				case "customSQL":
 				case "cacheType":
 					return Prefix + StringTools.CamelCase(originalName);

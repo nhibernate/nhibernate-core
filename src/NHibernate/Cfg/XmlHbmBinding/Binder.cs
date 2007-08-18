@@ -1,11 +1,11 @@
 using System;
-using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
+
 using log4net;
-using NHibernate.Type;
+
 using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
@@ -14,7 +14,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 	{
 		protected static readonly ILog log = LogManager.GetLogger(typeof (Binder));
 		protected readonly Mappings mappings;
-		protected readonly XmlNamespaceManager namespaceManager;
 
 		protected Binder(Binder parent)
 		{
@@ -22,82 +21,28 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				throw new ArgumentNullException("parent");
 
 			mappings = parent.mappings;
-			namespaceManager = parent.namespaceManager;
 		}
 
-		protected Binder(Mappings mappings, XmlNamespaceManager namespaceManager)
+		protected Binder(Mappings mappings)
 		{
 			if (mappings == null)
 				throw new ArgumentNullException("mappings");
 
 			this.mappings = mappings;
-			this.namespaceManager = namespaceManager;
-		}
-
-		protected static void LogDebug(string format, params object[] args)
-		{
-			log.Debug(string.Format(format, args));
-		}
-
-		protected static void LogInfo(string format, params object[] args)
-		{
-			log.Info(string.Format(format, args));
-		}
-
-		protected static bool IsInNHibernateNamespace(XmlNode node)
-		{
-			return node.NamespaceURI == Configuration.MappingSchemaXMLNS;
-		}
-
-		protected IType GetTypeFromXML(XmlNode node)
-		{
-			IType type;
-
-			IDictionary parameters = null;
-
-			XmlAttribute typeAttribute = node.Attributes["type"];
-			if (typeAttribute == null)
-				typeAttribute = node.Attributes["id-type"]; //for an any
-			string typeName;
-			if (typeAttribute != null)
-				typeName = typeAttribute.Value;
-			else
-			{
-				XmlNode typeNode = node.SelectSingleNode(HbmConstants.nsType, namespaceManager);
-				if (typeNode == null) //we will have to use reflection
-					return null;
-				XmlAttribute nameAttribute = typeNode.Attributes["name"]; //we know it exists because the schema validate it
-				typeName = nameAttribute.Value;
-				parameters = new Hashtable();
-				foreach (XmlNode childNode in typeNode.ChildNodes)
-					parameters.Add(childNode.Attributes["name"].Value,
-						childNode.InnerText.Trim());
-			}
-			type = TypeFactory.HeuristicType(typeName, parameters);
-			if (type == null)
-				throw new MappingException("could not interpret type: " + typeAttribute.Value);
-			return type;
-		}
-
-		protected static string GetEntityName(XmlNode elem, Mappings model)
-		{
-			//string entityName = XmlHelper.GetAttributeValue(elem, "entity-name");
-			//return entityName == null ? GetClassName( elem.Attributes[ "class" ], model ) : entityName;
-			return GetClassName(elem.Attributes["class"], model);
 		}
 
 		/// <summary>
 		/// Converts a partial class name into a fully qualified one
 		/// </summary>
 		/// <param name="className"></param>
-		/// <param name="mapping"></param>
+		/// <param name="mappings"></param>
 		/// <returns></returns>
-		protected static string FullClassName(string className, Mappings mapping)
+		protected static string FullClassName(string className, Mappings mappings)
 		{
 			if (className == null)
 				return null;
 
-			return TypeNameParser.Parse(className, mapping.DefaultNamespace, mapping.DefaultAssembly)
+			return TypeNameParser.Parse(className, mappings.DefaultNamespace, mappings.DefaultAssembly)
 				.ToString();
 		}
 
@@ -138,27 +83,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return ClassForFullNameChecked(FullClassName(name, mappings), errorMessage);
 		}
 
-		protected static string GetPropertyName(XmlNode node)
+		protected static string GetClassName(string unqualifiedName, Mappings mappings)
 		{
-			if (node.Attributes != null)
-			{
-				XmlAttribute propertyNameNode = node.Attributes["name"];
-				return (propertyNameNode == null) ? null : propertyNameNode.Value;
-			}
-			return null;
-		}
-
-		private static string GetClassName(XmlAttribute att, Mappings model)
-		{
-			if (att == null)
-				return null;
-			return GetClassName(att.Value, model);
-		}
-
-		private static string GetClassName(string unqualifiedName, Mappings model)
-		{
-			return ClassForNameChecked(unqualifiedName, model, "unknown class {0}").AssemblyQualifiedName;
-			//return TypeNameParser.Parse(unqualifiedName, model.DefaultNamespace, model.DefaultAssembly).ToString();
+			return ClassForNameChecked(unqualifiedName, mappings, "unknown class {0}").AssemblyQualifiedName;
+			//return TypeNameParser.Parse(unqualifiedName, mappings.DefaultNamespace, mappings.DefaultAssembly).ToString();
 		}
 
 		protected static T Deserialize<T>(XmlNode node)
@@ -166,39 +94,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			using (StringReader reader = new StringReader(node.OuterXml))
 				return (T) new XmlSerializer(typeof (T)).Deserialize(reader);
 		}
-
-		#region XML helper methods
-
-		protected XmlNodeList SelectNodes(XmlNode node, string xpath)
-		{
-			return node.SelectNodes(xpath, namespaceManager);
-		}
-
-		protected XmlNode SelectSingleNode(XmlNode node, string xpath)
-		{
-			return node.SelectSingleNode(xpath, namespaceManager);
-		}
-
-		protected static string GetAttributeValue(XmlNode node, string attributeName)
-		{
-			if (node != null && node.Attributes != null)
-			{
-				XmlAttribute attribute = node.Attributes[attributeName];
-				return attribute == null ? null : attribute.Value;
-			}
-			else
-				return null;
-		}
-
-		protected static string GetInnerText(XmlNode node)
-		{
-			if (node == null || node.InnerText == null || node.InnerText.Trim().Length == 0)
-				return null;
-			else
-				return node.InnerText.Trim();
-		}
-
-		#endregion
 
 		protected static string GetXmlEnumAttribute(Enum cascadeStyle)
 		{

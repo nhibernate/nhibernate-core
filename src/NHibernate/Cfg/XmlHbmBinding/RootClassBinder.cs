@@ -13,7 +13,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public RootClassBinder(Binder parent, Dialect.Dialect dialect)
+		public RootClassBinder(XmlBinder parent, Dialect.Dialect dialect)
 			: base(parent, dialect)
 		{
 		}
@@ -41,7 +41,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table table = mappings.AddTable(schema, tableName);
 			((ITableOwner) rootClass).Table = table;
 
-			LogInfo("Mapping class: {0} -> {1}", rootClass.Name, rootClass.Table.Name);
+			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.Name, rootClass.Table.Name);
 
 			//MUTABLE
 			rootClass.IsMutable = "true".Equals(GetAttributeValue(node, "mutable") ?? "true");

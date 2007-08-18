@@ -11,7 +11,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public JoinedSubclassBinder(Binder parent, Dialect.Dialect dialect)
+		public JoinedSubclassBinder(XmlBinder parent, Dialect.Dialect dialect)
 			: base(parent, dialect)
 		{
 		}

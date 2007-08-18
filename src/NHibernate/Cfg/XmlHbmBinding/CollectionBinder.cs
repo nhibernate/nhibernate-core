@@ -21,7 +21,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			CreateCommandCollection();
 		}
 
-		public CollectionBinder(Binder parent, Dialect.Dialect dialect)
+		public CollectionBinder(XmlBinder parent, Dialect.Dialect dialect)
 			: base(parent, dialect)
 		{
 			CreateCommandCollection();
@@ -190,7 +190,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
 				model.CollectionTable = mappings.AddTable(schema, tableName);
 
-				LogInfo("Mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
+				log.InfoFormat("Mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
 			}
 
 			//SORT

@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Xml;
+
 using Iesi.Collections;
+
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Loader.Custom;
 using NHibernate.Mapping;
@@ -12,8 +15,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class ResultSetMappingBinder : Binder
 	{
-		public ResultSetMappingBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
-			: base(mappings, namespaceManager)
+		public ResultSetMappingBinder(Mappings mappings)
+			: base(mappings)
 		{
 		}
 
@@ -22,148 +25,151 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public ResultSetMappingDefinition BuildResultSetMappingDefinition(XmlNode resultSetElem, string path)
+		public ResultSetMappingDefinition Create(HbmResultSet resultSetSchema)
 		{
-			string resultSetName = resultSetElem.Attributes["name"].Value;
-			if (path != null)
-			{
-				resultSetName = path + '.' + resultSetName;
-			}
-			ResultSetMappingDefinition definition = new ResultSetMappingDefinition(resultSetName);
+			return Create(resultSetSchema.name, resultSetSchema.Items);
+		}
 
-			int cnt = 0;
-			foreach (XmlNode returnElem in resultSetElem.ChildNodes)
+		public ResultSetMappingDefinition Create(HbmSqlQuery sqlQuerySchema)
+		{
+			return Create(sqlQuerySchema.name, sqlQuerySchema.Items);
+		}
+
+		private ResultSetMappingDefinition Create(string name, object[] items)
+		{
+			ResultSetMappingDefinition definition = new ResultSetMappingDefinition(name);
+
+			int count = 0;
+			foreach (object item in items ?? new object[0])
 			{
-				cnt++;
-				string name = returnElem.LocalName;
-				if ("return-scalar".Equals(name))
-				{
-					string column = XmlHelper.GetAttributeValue(returnElem, "column");
-					IType type = GetTypeFromXML(returnElem);
-					definition.AddQueryReturn(new SQLQueryScalarReturn(column, type));
-				}
-				else if ("return".Equals(name))
-				{
-					definition.AddQueryReturn(BindReturn(returnElem, cnt));
-				}
-				else if ("return-join".Equals(name))
-				{
-					definition.AddQueryReturn(BindReturnJoin(returnElem));
-				}
-				else if ("load-collection".Equals(name))
-				{
-					definition.AddQueryReturn(BindLoadCollection(returnElem));
-				}
+				count += 1;
+				ISQLQueryReturn queryReturn = CreateQueryReturn(item, count);
+
+				if (queryReturn != null)
+					definition.AddQueryReturn(queryReturn);
 			}
+
 			return definition;
 		}
 
-		private SQLQueryRootReturn BindReturn(XmlNode returnElem, int elementCount)
+		private ISQLQueryReturn CreateQueryReturn(object item, int count)
 		{
-			String alias = XmlHelper.GetAttributeValue(returnElem, "alias");
-			if (StringHelper.IsEmpty(alias))
-			{
-				alias = "alias_" + elementCount; // hack/workaround as sqlquery impl depend on having a key.
-			}
+			HbmLoadCollection loadCollectionSchema = item as HbmLoadCollection;
+			HbmReturn returnSchema = item as HbmReturn;
+			HbmReturnJoin returnJoinSchema = item as HbmReturnJoin;
+			HbmReturnScalar returnScalarSchema = item as HbmReturnScalar;
 
-			string entityName = GetEntityName(returnElem, mappings);
+			if (returnScalarSchema != null)
+				return CreateScalarReturn(returnScalarSchema);
+
+			else if (returnSchema != null)
+				return CreateReturn(returnSchema, count);
+
+			else if (returnJoinSchema != null)
+				return CreateJoinReturn(returnJoinSchema);
+
+			else if (loadCollectionSchema != null)
+				return CreateLoadCollectionReturn(loadCollectionSchema);
+
+			else
+				return null;
+		}
+
+		private static ISQLQueryReturn CreateScalarReturn(HbmReturnScalar returnScalarSchema)
+		{
+			IType type = TypeFactory.HeuristicType(returnScalarSchema.type, null);
+
+			if (type == null)
+				throw new MappingException("could not interpret type: " + returnScalarSchema.type);
+
+			return new SQLQueryScalarReturn(returnScalarSchema.column, type);
+		}
+
+		private SQLQueryRootReturn CreateReturn(HbmReturn returnSchema, int count)
+		{
+			String alias = returnSchema.alias;
+
+			if (StringHelper.IsEmpty(alias))
+				alias = "alias_" + count; // hack/workaround as sqlquery impl depend on having a key.
+
+			string entityName = GetClassName(returnSchema.@class, mappings);
+
 			if (entityName == null)
-			{
 				throw new MappingException("<return alias='" + alias + "'> must specify either a class or entity-name");
-			}
-			LockMode lockMode = GetLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
+
+			LockMode lockMode = GetLockMode(returnSchema.lockmode);
 
 			PersistentClass pc = mappings.GetClass(ReflectHelper.ClassForName(entityName));
-			IDictionary propertyResults = BindPropertyResults(alias, returnElem, pc);
+			IDictionary propertyResults =
+				BindPropertyResults(alias, returnSchema.returndiscriminator, returnSchema.returnproperty, pc);
 
-			return new SQLQueryRootReturn(
-				alias,
-				entityName,
-				propertyResults,
-				lockMode
-				);
+			return new SQLQueryRootReturn(alias, entityName, propertyResults, lockMode);
 		}
 
-		private SQLQueryJoinReturn BindReturnJoin(XmlNode returnElem)
+		private SQLQueryJoinReturn CreateJoinReturn(HbmReturnJoin returnJoinSchema)
 		{
-			String alias = XmlHelper.GetAttributeValue(returnElem, "alias");
-			String roleAttribute = XmlHelper.GetAttributeValue(returnElem, "property");
-			LockMode lockMode = GetLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
-			int dot = roleAttribute.LastIndexOf('.');
+			int dot = returnJoinSchema.property.LastIndexOf('.');
+
 			if (dot == -1)
-			{
 				throw new MappingException(
-					"Role attribute for sql query return [alias=" + alias +
+					"Role attribute for sql query return [alias=" + returnJoinSchema.alias +
 						"] not formatted correctly {owningAlias.propertyName}"
 					);
-			}
-			string roleOwnerAlias = roleAttribute.Substring(0, dot);
-			string roleProperty = roleAttribute.Substring(dot + 1);
+
+			string roleOwnerAlias = returnJoinSchema.property.Substring(0, dot);
+			string roleProperty = returnJoinSchema.property.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
-			IDictionary propertyResults = BindPropertyResults(alias, returnElem, null);
+			IDictionary propertyResults = BindPropertyResults(returnJoinSchema.alias, null, returnJoinSchema.Items, null);
 
-			return new SQLQueryJoinReturn(
-				alias,
-				roleOwnerAlias,
-				roleProperty,
+			return new SQLQueryJoinReturn(returnJoinSchema.alias, roleOwnerAlias, roleProperty,
 				propertyResults, // TODO: bindpropertyresults(alias, returnElem)
-				lockMode
-				);
+				GetLockMode(returnJoinSchema.lockmode));
 		}
 
-		private SQLQueryCollectionReturn BindLoadCollection(XmlNode returnElem)
+		private SQLQueryCollectionReturn CreateLoadCollectionReturn(HbmLoadCollection loadCollectionSchema)
 		{
-			string alias = XmlHelper.GetAttributeValue(returnElem, "alias");
-			string collectionAttribute = XmlHelper.GetAttributeValue(returnElem, "role");
-			LockMode lockMode = GetLockMode(XmlHelper.GetAttributeValue(returnElem, "lock-mode"));
-			int dot = collectionAttribute.LastIndexOf('.');
+			int dot = loadCollectionSchema.role.LastIndexOf('.');
+
 			if (dot == -1)
-			{
 				throw new MappingException(
-					"Collection attribute for sql query return [alias=" + alias +
+					"Collection attribute for sql query return [alias=" + loadCollectionSchema.alias +
 						"] not formatted correctly {OwnerClassName.propertyName}"
 					);
-			}
-			string ownerClassName = GetClassNameWithoutAssembly(collectionAttribute.Substring(0, dot));
-			string ownerPropertyName = collectionAttribute.Substring(dot + 1);
+
+			string ownerClassName = GetClassNameWithoutAssembly(loadCollectionSchema.role.Substring(0, dot));
+			string ownerPropertyName = loadCollectionSchema.role.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
-			IDictionary propertyResults = BindPropertyResults(alias, returnElem, null);
+			IDictionary propertyResults = BindPropertyResults(loadCollectionSchema.alias, null, loadCollectionSchema.Items, null);
 
-			return new SQLQueryCollectionReturn(
-				alias,
-				ownerClassName,
-				ownerPropertyName,
-				propertyResults,
-				lockMode
-				);
+			return new SQLQueryCollectionReturn(loadCollectionSchema.alias, ownerClassName, ownerPropertyName,
+				propertyResults, GetLockMode(loadCollectionSchema.lockmode));
 		}
 
-		private IDictionary BindPropertyResults(string alias, XmlNode returnElement, PersistentClass pc)
+		private IDictionary BindPropertyResults(string alias, HbmReturnDiscriminator discriminatorSchema,
+			HbmReturnProperty[] returnProperties, PersistentClass pc)
 		{
 			IDictionary propertyresults = new Hashtable();
 			// maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
 
-			XmlNode discriminatorResult =
-				returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, namespaceManager);
-			if (discriminatorResult != null)
+			if (discriminatorSchema != null)
 			{
-				ArrayList resultColumns = GetResultColumns(discriminatorResult);
+				ArrayList resultColumns = GetResultColumns(discriminatorSchema);
 				propertyresults["class"] = ArrayHelper.ToStringArray(resultColumns);
 			}
+
 			IList properties = new ArrayList();
 			IList propertyNames = new ArrayList();
 
-			foreach (
-				XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, namespaceManager))
+			foreach (HbmReturnProperty returnPropertySchema in returnProperties ?? new HbmReturnProperty[0])
 			{
-				String name = XmlHelper.GetAttributeValue(propertyresult, "name");
+				String name = returnPropertySchema.name;
 				if (pc == null || name.IndexOf('.') == -1)
 				{
 					//if dotted and not load-collection nor return-join
 					//regular property
-					properties.Add(propertyresult);
+					properties.Add(returnPropertySchema);
 					propertyNames.Add(name);
 				}
 				else
@@ -173,8 +179,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					// 2. list all the properties following the expected one in the parent property
 					// 3. calculate the lowest index and insert the property
 
-					if (pc == null)
-						throw new MappingException("dotted notation in <return-join> or <load-collection> not yet supported");
 					int dotIndex = name.LastIndexOf('.');
 					string reducedName = name.Substring(0, dotIndex);
 					IValue value = pc.GetRecursiveProperty(reducedName).Value;
@@ -189,7 +193,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						ToOne toOne = (ToOne) value;
 						PersistentClass referencedPc = mappings.GetClass(toOne.ReferencedEntityName);
 						if (toOne.ReferencedPropertyName != null)
-						{
 							try
 							{
 								parentPropIter =
@@ -199,9 +202,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							{
 								throw new MappingException("dotted notation reference neither a component nor a many/one to one", e);
 							}
-						}
 						else
-						{
 							try
 							{
 								parentPropIter = ((Component) referencedPc.IdentifierProperty.Value).PropertyCollection;
@@ -210,12 +211,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							{
 								throw new MappingException("dotted notation reference neither a component nor a many/one to one", e);
 							}
-						}
 					}
 					else
-					{
 						throw new MappingException("dotted notation reference neither a component nor a many/one to one");
-					}
 					bool hasFollowers = false;
 					IList followers = new ArrayList();
 					foreach (Mapping.Property prop in parentPropIter)
@@ -223,9 +221,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						String currentPropertyName = prop.Name;
 						String currentName = reducedName + '.' + currentPropertyName;
 						if (hasFollowers)
-						{
 							followers.Add(currentName);
-						}
 						if (name.Equals(currentName))
 							hasFollowers = true;
 					}
@@ -239,37 +235,31 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						index = currentIndex != -1 && currentIndex < index ? currentIndex : index;
 					}
 					propertyNames.Insert(index, name);
-					properties.Insert(index, propertyresult);
+					properties.Insert(index, returnPropertySchema);
 				}
 			}
 
 			ISet uniqueReturnProperty = new HashedSet();
-			foreach (XmlNode propertyresult in properties)
+			foreach (HbmReturnProperty returnPropertySchema in properties)
 			{
-				string name = XmlHelper.GetAttributeValue(propertyresult, "name");
+				string name = returnPropertySchema.name;
 				if ("class".Equals(name))
-				{
 					throw new MappingException(
 						"class is not a valid property name to use in a <return-property>, use <return-discriminator> instead"
 						);
-				}
 				//TODO: validate existing of property with the chosen name. (secondpass )
-				ArrayList allResultColumns = GetResultColumns(propertyresult);
+				ArrayList allResultColumns = GetResultColumns(returnPropertySchema);
 
 				if (allResultColumns.Count == 0)
-				{
 					throw new MappingException(
 						"return-property for alias " + alias +
 							" must specify at least one column or return-column name"
 						);
-				}
 				if (uniqueReturnProperty.Contains(name))
-				{
 					throw new MappingException(
 						"duplicate return-property for property " + name +
 							" on alias " + alias
 						);
-				}
 				uniqueReturnProperty.Add(name);
 
 				// the issue here is that for <return-join/> representing an entity collection,
@@ -296,105 +286,92 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				String key = name;
 				ArrayList intermediateResults = (ArrayList) propertyresults[key];
 				if (intermediateResults == null)
-				{
 					propertyresults[key] = allResultColumns;
-				}
 				else
-				{
 					ArrayHelper.AddAll(intermediateResults, allResultColumns);
-				}
 			}
 
 			IDictionary newPropertyResults = new Hashtable();
 
 			foreach (DictionaryEntry entry in propertyresults)
-			{
 				if (entry.Value is ArrayList)
 				{
 					ArrayList list = (ArrayList) entry.Value;
 					newPropertyResults[entry.Key] = ArrayHelper.ToStringArray(list);
 				}
 				else
-				{
 					newPropertyResults[entry.Key] = entry.Value;
-				}
-			}
 			return newPropertyResults.Count == 0 ? CollectionHelper.EmptyMap : newPropertyResults;
+		}
+
+		private static ArrayList GetResultColumns(HbmReturnProperty returnPropertySchema)
+		{
+			ArrayList allResultColumns = new ArrayList();
+			String column = Unquote(returnPropertySchema.column);
+
+			if (column != null)
+				allResultColumns.Add(column);
+
+			foreach (HbmReturnColumn returnColumnSchema in returnPropertySchema.returncolumn ?? new HbmReturnColumn[0])
+				allResultColumns.Add(Unquote(returnColumnSchema.name));
+
+			return allResultColumns;
+		}
+
+		private static ArrayList GetResultColumns(HbmReturnDiscriminator discriminatorSchema)
+		{
+			String column = Unquote(discriminatorSchema.column);
+			ArrayList allResultColumns = new ArrayList();
+
+			if (column != null)
+				allResultColumns.Add(column);
+
+			return allResultColumns;
+		}
+
+		private static LockMode GetLockMode(HbmLockMode lockMode)
+		{
+			switch (lockMode)
+			{
+				case HbmLockMode.None:
+					return LockMode.None;
+
+				case HbmLockMode.Read:
+					return LockMode.Read;
+
+				case HbmLockMode.Upgrade:
+					return LockMode.Upgrade;
+
+				case HbmLockMode.UpgradeNowait:
+					return LockMode.UpgradeNoWait;
+
+				case HbmLockMode.Write:
+					return LockMode.Write;
+
+				default:
+					throw new MappingException("unknown lockMode " + lockMode);
+			}
 		}
 
 		private static int GetIndexOfFirstMatchingProperty(IList propertyNames, string follower)
 		{
 			int propertySize = propertyNames.Count;
 			for (int propIndex = 0; propIndex < propertySize; propIndex++)
-			{
 				if (((String) propertyNames[propIndex]).StartsWith(follower))
-				{
 					return propIndex;
-				}
-			}
 			return -1;
-		}
-
-		private ArrayList GetResultColumns(XmlNode propertyresult)
-		{
-			String column = Unquote(XmlHelper.GetAttributeValue(propertyresult, "column"));
-			ArrayList allResultColumns = new ArrayList();
-			if (column != null)
-			{
-				allResultColumns.Add(column);
-			}
-			foreach (XmlNode element in propertyresult.SelectNodes(HbmConstants.nsReturnColumn, namespaceManager))
-			{
-				allResultColumns.Add(Unquote(XmlHelper.GetAttributeValue(element, "name")));
-			}
-			return allResultColumns;
 		}
 
 		private static String Unquote(String name)
 		{
 			if (name != null && name[0] == '`')
-			{
 				name = name.Substring(1, name.Length - 2);
-			}
 			return name;
-		}
-
-		private static LockMode GetLockMode(string lockMode)
-		{
-			if (lockMode == null || "read".Equals(lockMode))
-			{
-				return LockMode.Read;
-			}
-			else if ("none".Equals(lockMode))
-			{
-				return LockMode.None;
-			}
-			else if ("upgrade".Equals(lockMode))
-			{
-				return LockMode.Upgrade;
-			}
-			else if ("upgrade-nowait".Equals(lockMode))
-			{
-				return LockMode.UpgradeNoWait;
-			}
-			else if ("write".Equals(lockMode))
-			{
-				return LockMode.Write;
-			}
-				//else if ("force".equals(lockMode))
-				//{
-				//    return LockMode.FORCE;
-				//}
-			else
-			{
-				throw new MappingException("unknown lockmode " + lockMode);
-			}
 		}
 
 		private string GetClassNameWithoutAssembly(string unqualifiedName)
 		{
 			return TypeNameParser.Parse(unqualifiedName, mappings.DefaultNamespace, mappings.DefaultAssembly).Type;
 		}
-
 	}
 }

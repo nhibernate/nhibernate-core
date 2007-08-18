@@ -81,7 +81,7 @@ namespace NHibernate.Cfg.MappingSchema {
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
     [System.Xml.Serialization.XmlRootAttribute("resultset", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
-    public partial class HbmResultset {
+    public partial class HbmResultSet {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("load-collection", typeof(HbmLoadCollection))]
@@ -312,7 +312,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("resultset")]
-        public HbmResultset[] resultset;
+        public HbmResultSet[] resultset;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("query", typeof(HbmQuery))]

@@ -12,7 +12,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public abstract class ClassBinder : Binder
+	public abstract class ClassBinder : XmlBinder
 	{
 		protected readonly Dialect.Dialect dialect;
 
@@ -22,7 +22,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			this.dialect = dialect;
 		}
 
-		public ClassBinder(Binder parent, Dialect.Dialect dialect)
+		public ClassBinder(XmlBinder parent, Dialect.Dialect dialect)
 			: base(parent)
 		{
 			this.dialect = dialect;
@@ -120,7 +120,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.RootClazz.ClassPersisterClass = typeof(SingleTableEntityPersister);
 			}
 
-			LogInfo("Mapping subclass: {0} -> {1}", model.Name, model.Table.Name);
+			log.InfoFormat("Mapping subclass: {0} -> {1}", model.Name, model.Table.Name);
 
 			// properties
 			PropertiesFromXML(node, model);
@@ -158,7 +158,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table mytable = mappings.AddTable(schema, GetClassTableName(model, node));
 			((ITableOwner)model).Table = mytable;
 
-			LogInfo("Mapping joined-subclass: {0} -> {1}", model.Name, model.Table.Name);
+			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", model.Name, model.Table.Name);
 
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependentValue(mytable, model.Identifier);
@@ -332,7 +332,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				join.IsOptional = "true".Equals(nullNode.Value);
 			}
 
-			LogInfo("Mapping class join: {0} -> {1}", persistentClass.Name, join.Table.Name);
+			log.InfoFormat("Mapping class join: {0} -> {1}", persistentClass.Name, join.Table.Name);
 
 			// KEY
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);

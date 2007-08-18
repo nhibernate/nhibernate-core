@@ -7,7 +7,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class NamedQueryBinder : QueryBinder
 	{
-		public NamedQueryBinder(Binder parent)
+		public NamedQueryBinder(XmlBinder parent)
 			: base(parent)
 		{
 		}
@@ -28,7 +28,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string queryName = GetAttributeValue(node, "name");
 			string queryText = GetInnerText(node);
 
-			LogDebug("Named query: {0} -> {1}", queryName, queryText);
+			log.DebugFormat("Named query: {0} -> {1}", queryName, queryText);
 
 			bool cacheable = "true".Equals(GetAttributeValue(node, "cacheable"));
 			string region = GetAttributeValue(node, "cache-region");
