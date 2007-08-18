@@ -19,13 +19,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			HbmMapping mappingSchema = Deserialize<HbmMapping>(node);
 
-			mappings.SchemaName = GetAttributeValue(node, "schema") ?? null;
-			mappings.DefaultCascade = GetAttributeValue(node, "default-cascade") ?? "none";
-			mappings.DefaultAccess = GetAttributeValue(node, "default-access") ?? "property";
-			mappings.DefaultLazy = "true".Equals(GetAttributeValue(node, "default-lazy") ?? "true");
-			mappings.IsAutoImport = "true".Equals(GetAttributeValue(node, "auto-import") ?? "true");
-			mappings.DefaultNamespace = GetAttributeValue(node, "namespace") ?? mappings.DefaultNamespace;
-			mappings.DefaultAssembly = GetAttributeValue(node, "assembly") ?? mappings.DefaultAssembly;
+			mappings.SchemaName = mappingSchema.schema;
+			mappings.DefaultCascade = GetXmlEnumAttribute(mappingSchema.defaultcascade);
+			mappings.DefaultAccess = mappingSchema.defaultaccess;
+			mappings.DefaultLazy = mappingSchema.defaultlazy;
+			mappings.IsAutoImport = mappingSchema.autoimport;
+			mappings.DefaultNamespace = mappingSchema.@namespace ?? mappings.DefaultNamespace;
+			mappings.DefaultAssembly = mappingSchema.assembly ?? mappings.DefaultAssembly;
 
 			new FilterDefBinder(this).BindEach(node, HbmConstants.nsFilterDef);
 			new RootClassBinder(this, dialect).BindEach(node, HbmConstants.nsClass);

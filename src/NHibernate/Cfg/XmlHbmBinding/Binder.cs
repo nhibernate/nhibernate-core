@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
 using log4net;
@@ -198,5 +199,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		#endregion
+
+		protected static string GetXmlEnumAttribute(Enum cascadeStyle)
+		{
+			MemberInfo[] memberInfo = cascadeStyle.GetType().GetMember(cascadeStyle.ToString());
+
+			if (memberInfo != null && memberInfo.Length == 1)
+			{
+				object[] customAttributes = memberInfo[0].GetCustomAttributes(typeof(XmlEnumAttribute), false);
+
+				if (customAttributes.Length == 1)
+					return ((XmlEnumAttribute)customAttributes[0]).Name;
+			}
+
+			return null;
+		}
 	}
 }
