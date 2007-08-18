@@ -510,7 +510,6 @@
     <Compile Include="Cfg\XmlHbmBinding\CollectionBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\QueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\RootClassBinder.cs" />
-    <Compile Include="Cfg\XmlHbmBinding\ImportBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\JoinedSubclassBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\MappingRootBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\NamedQueryBinder.cs" />

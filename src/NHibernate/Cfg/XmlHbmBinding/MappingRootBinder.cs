@@ -1,7 +1,9 @@
 using System.Xml;
+
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -28,8 +30,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new JoinedSubclassBinder(this, dialect).BindEach(node, HbmConstants.nsJoinedSubclass);
 			new NamedQueryBinder(this).BindEach(node, HbmConstants.nsQuery);
 			new NamedSQLQueryBinder(this).BindEach(node, HbmConstants.nsSqlQuery);
-			new ImportBinder(this).BindEach(node, HbmConstants.nsImport);
 
+			AddImports(mappingSchema);
 			AddAuxiliaryDatabaseObjects(mappingSchema);
 			AddResultSetMappingDefinitions(mappingSchema);
 		}
@@ -51,6 +53,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				FilterDefinition definition = FilterDefinitionFactory.CreateFilterDefinition(filterDefSchema);
 				mappings.AddFilterDefinition(definition);
+			}
+		}
+
+		public void AddImports(HbmMapping mappingSchema)
+		{
+			foreach (HbmImport importSchema in mappingSchema.import ?? new HbmImport[0])
+			{
+				string fullClassName = FullClassName(importSchema.@class, mappings);
+				string rename = importSchema.rename ?? StringHelper.GetClassname(fullClassName);
+
+				log.DebugFormat("Import: {0} -> {1}", rename, fullClassName);
+				mappings.AddImport(fullClassName, rename);
 			}
 		}
 
