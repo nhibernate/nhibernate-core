@@ -1,5 +1,6 @@
 using System.Xml;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Engine;
 using NHibernate.Mapping;
 
 namespace NHibernate.Cfg.XmlHbmBinding
@@ -19,15 +20,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			HbmMapping mappingSchema = Deserialize<HbmMapping>(node);
 
-			mappings.SchemaName = mappingSchema.schema;
-			mappings.DefaultCascade = GetXmlEnumAttribute(mappingSchema.defaultcascade);
-			mappings.DefaultAccess = mappingSchema.defaultaccess;
-			mappings.DefaultLazy = mappingSchema.defaultlazy;
-			mappings.IsAutoImport = mappingSchema.autoimport;
-			mappings.DefaultNamespace = mappingSchema.@namespace ?? mappings.DefaultNamespace;
-			mappings.DefaultAssembly = mappingSchema.assembly ?? mappings.DefaultAssembly;
+			SetMappingsProperties(mappingSchema);
+			AddFilterDefinitions(mappingSchema);
 
-			new FilterDefBinder(this).BindEach(node, HbmConstants.nsFilterDef);
 			new RootClassBinder(this, dialect).BindEach(node, HbmConstants.nsClass);
 			new SubclassBinder(this, dialect).BindEach(node, HbmConstants.nsSubclass);
 			new JoinedSubclassBinder(this, dialect).BindEach(node, HbmConstants.nsJoinedSubclass);
@@ -35,12 +30,32 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new NamedSQLQueryBinder(this).BindEach(node, HbmConstants.nsSqlQuery);
 			new ImportBinder(this).BindEach(node, HbmConstants.nsImport);
 
-			CreateAndAddAuxiliaryDatabaseObjects(mappingSchema);
+			AddAuxiliaryDatabaseObjects(mappingSchema);
 
 			new ResultSetMappingDefinitionBinder(this).BindEach(node, HbmConstants.nsResultset);
 		}
 
-		private void CreateAndAddAuxiliaryDatabaseObjects(HbmMapping mappingSchema)
+		private void SetMappingsProperties(HbmMapping mappingSchema)
+		{
+			mappings.SchemaName = mappingSchema.schema;
+			mappings.DefaultCascade = GetXmlEnumAttribute(mappingSchema.defaultcascade);
+			mappings.DefaultAccess = mappingSchema.defaultaccess;
+			mappings.DefaultLazy = mappingSchema.defaultlazy;
+			mappings.IsAutoImport = mappingSchema.autoimport;
+			mappings.DefaultNamespace = mappingSchema.@namespace ?? mappings.DefaultNamespace;
+			mappings.DefaultAssembly = mappingSchema.assembly ?? mappings.DefaultAssembly;
+		}
+
+		private void AddFilterDefinitions(HbmMapping mappingSchema)
+		{
+			foreach (HbmFilterDef filterDefSchema in mappingSchema.ListFilterDefs())
+			{
+				FilterDefinition definition = FilterDefinitionFactory.CreateFilterDefinition(filterDefSchema);
+				mappings.AddFilterDefinition(definition);
+			}
+		}
+
+		private void AddAuxiliaryDatabaseObjects(HbmMapping mappingSchema)
 		{
 			foreach (HbmDatabaseObject objectSchema in mappingSchema.ListDatabaseObjects())
 			{
