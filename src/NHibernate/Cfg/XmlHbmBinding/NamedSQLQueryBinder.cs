@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Xml;
 
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -18,71 +20,77 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void BindEach(XmlNode parentNode, string xpath)
+		public void AddNamedSqlQuery(HbmSqlQuery querySchema)
 		{
-			foreach (XmlNode node in SelectNodes(parentNode, xpath))
-				Bind(node);
+			mappings.AddSecondPass(delegate
+				{
+					string queryName = querySchema.name;
+					string queryText = querySchema.GetText();
+					bool cacheable = false;
+					string region = null;
+					int timeout = -1;
+					int fetchSize = -1;
+					bool readOnly = true;
+					string comment = null;
+					bool callable = false;
+					string resultSetRef = querySchema.resultsetref;
+
+					FlushMode flushMode = GetFlushMode(querySchema.flushmodeSpecified,
+						querySchema.flushmode);
+
+					IDictionary parameterTypes = new SequencedHashMap();
+					IList synchronizedTables = GetSynchronizedTables(querySchema);
+
+					NamedSQLQueryDefinition namedQuery;
+
+					if (string.IsNullOrEmpty(resultSetRef))
+					{
+						ResultSetMappingDefinition definition =
+							new ResultSetMappingBinder(this).Create(querySchema);
+
+						namedQuery = new NamedSQLQueryDefinition(queryText,
+							definition.GetQueryReturns(), synchronizedTables, cacheable, region, timeout,
+							fetchSize, flushMode, readOnly, comment, parameterTypes, callable);
+					}
+					else
+						// TODO: check there is no actual definition elemnents when a ref is defined
+						namedQuery = new NamedSQLQueryDefinition(queryText,
+							resultSetRef, synchronizedTables, cacheable, region, timeout, fetchSize,
+							flushMode, readOnly, comment, parameterTypes, callable);
+
+					log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
+					mappings.AddSQLQuery(queryName, namedQuery);
+				});
 		}
 
-		public void Bind(XmlNode node)
+		private static FlushMode GetFlushMode(bool flushModeSpecified, HbmFlushMode flushMode)
 		{
-			mappings.AddSecondPass(delegate { SecondPassBind(node); });
-		}
+			if (!flushModeSpecified)
+				return FlushMode.Unspecified;
 
-		private void SecondPassBind(XmlNode node)
-		{
-			string queryName = GetAttributeValue(node, "name");
-			string queryText = GetInnerText(node);
-
-			bool cacheable = "true".Equals(GetAttributeValue(node, "cacheable"));
-			string region = GetAttributeValue(node, "cache-region");
-			int timeout = int.Parse(GetAttributeValue(node, "timeout") ?? "-1");
-			int fetchSize = int.Parse(GetAttributeValue(node, "fetch-size") ?? "-1");
-			bool readOnly = "true".Equals(GetAttributeValue(node, "read-only") ?? "true");
-			string comment = GetAttributeValue(node, "comment");
-			FlushMode flushMode = GetFlushMode(GetAttributeValue(node, "flush-mode"));
-			bool callable = "true".Equals(GetAttributeValue(node, "callable"));
-			string resultSetRef = GetAttributeValue(node, "resultset-ref");
-
-			IDictionary parameterTypes = GetParameterTypes(node);
-			IList synchronizedTables = GetSynchronizedTables(node);
-
-			if (!string.IsNullOrEmpty(resultSetRef))
+			switch (flushMode)
 			{
-				// TODO: check there is no actual definition elemnents when a ref is defined
+				case HbmFlushMode.Auto:
+					return FlushMode.Auto;
 
-				NamedSQLQueryDefinition namedQuery = new NamedSQLQueryDefinition(queryText, resultSetRef,
-					synchronizedTables, cacheable, region, timeout, fetchSize, flushMode, readOnly, comment,
-					parameterTypes, callable);
+				case HbmFlushMode.Never:
+					return FlushMode.Never;
 
-				log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
-				mappings.AddSQLQuery(queryName, namedQuery);
-			}
-			else
-			{
-				HbmSqlQuery sqlQuerySchema = Deserialize<HbmSqlQuery>(node);
-
-				ResultSetMappingDefinition definition =
-					new ResultSetMappingBinder(this).Create(sqlQuerySchema);
-
-				NamedSQLQueryDefinition namedQuery = new NamedSQLQueryDefinition(queryText,
-					definition.GetQueryReturns(),
-					synchronizedTables, cacheable, region, timeout, fetchSize, flushMode, readOnly, comment,
-					parameterTypes, callable);
-
-				log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
-				mappings.AddSQLQuery(queryName, namedQuery);
+				default:
+					throw new ArgumentOutOfRangeException("flushMode");
 			}
 		}
 
-		private IList GetSynchronizedTables(XmlNode node)
+		private static IList GetSynchronizedTables(HbmSqlQuery querySchema)
 		{
 			IList synchronizedTables = new ArrayList();
 
-			foreach (XmlNode synchronizeNode in SelectNodes(node, HbmConstants.nsSynchronize))
+			foreach (object item in querySchema.Items ?? new object[0])
 			{
-				string table = GetAttributeValue(synchronizeNode, "table");
-				synchronizedTables.Add(table);
+				HbmSynchronize synchronizeSchema = item as HbmSynchronize;
+
+				if (synchronizeSchema != null)
+					synchronizedTables.Add(synchronizeSchema.table);
 			}
 
 			return synchronizedTables;

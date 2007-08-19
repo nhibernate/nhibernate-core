@@ -29,8 +29,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new SubclassBinder(this, dialect).BindEach(node, HbmConstants.nsSubclass);
 			new JoinedSubclassBinder(this, dialect).BindEach(node, HbmConstants.nsJoinedSubclass);
 			new NamedQueryBinder(this).BindEach(node, HbmConstants.nsQuery);
-			new NamedSQLQueryBinder(this).BindEach(node, HbmConstants.nsSqlQuery);
 
+			AddNamedSqlQueries(mappingSchema);
 			AddImports(mappingSchema);
 			AddAuxiliaryDatabaseObjects(mappingSchema);
 			AddResultSetMappingDefinitions(mappingSchema);
@@ -53,6 +53,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				FilterDefinition definition = FilterDefinitionFactory.CreateFilterDefinition(filterDefSchema);
 				mappings.AddFilterDefinition(definition);
+			}
+		}
+
+		private void AddNamedSqlQueries(HbmMapping mappingSchema)
+		{
+			foreach (object item in mappingSchema.Items1 ?? new object[0])
+			{
+				HbmSqlQuery querySchema = item as HbmSqlQuery;
+
+				if (querySchema != null)
+					new NamedSQLQueryBinder(this).AddNamedSqlQuery(querySchema);
 			}
 		}
 

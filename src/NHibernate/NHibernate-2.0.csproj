@@ -497,6 +497,7 @@
     <Compile Include="Cfg\MappingSchema\HbmDatabaseObject.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
     <Compile Include="Cfg\MappingSchema\HbmMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmSqlQuery.cs" />
     <Compile Include="Cfg\MappingSchema\IAssemblyResourceFilter.cs" />
     <Compile Include="Cfg\MappingSchema\IMappingDocumentParser.cs" />
     <Compile Include="Cfg\MappingSchema\MappingDocumentAggregator.cs" />
