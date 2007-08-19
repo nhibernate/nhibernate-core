@@ -38,27 +38,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			AddResultSetMappingDefinitions(mappingSchema);
 		}
 
-		private void AddJoinedSubclasses(XmlNode node)
-		{
-			JoinedSubclassBinder binder = new JoinedSubclassBinder(this, namespaceManager, dialect);
-
-			binder.BindEach(node, HbmConstants.nsJoinedSubclass);
-		}
-
-		private void AddSubclasses(XmlNode node)
-		{
-			SubclassBinder binder = new SubclassBinder(this, namespaceManager, dialect);
-
-			binder.BindEach(node, HbmConstants.nsSubclass);
-		}
-
-		private void AddRootClasses(XmlNode node)
-		{
-			RootClassBinder binder = new RootClassBinder(this, namespaceManager, dialect);
-
-			binder.BindEach(node, HbmConstants.nsClass);
-		}
-
 		private void SetMappingsProperties(HbmMapping mappingSchema)
 		{
 			mappings.SchemaName = mappingSchema.schema;
@@ -77,6 +56,30 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				FilterDefinition definition = FilterDefinitionFactory.CreateFilterDefinition(filterDefSchema);
 				mappings.AddFilterDefinition(definition);
 			}
+		}
+
+		private void AddRootClasses(XmlNode parentNode)
+		{
+			RootClassBinder binder = new RootClassBinder(this, namespaceManager, dialect);
+
+			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsClass, namespaceManager))
+				binder.Bind(node, Deserialize<HbmClass>(node));
+		}
+
+		private void AddJoinedSubclasses(XmlNode parentNode)
+		{
+			JoinedSubclassBinder binder = new JoinedSubclassBinder(this, namespaceManager, dialect);
+
+			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsJoinedSubclass, namespaceManager))
+				binder.Bind(node);
+		}
+
+		private void AddSubclasses(XmlNode parentNode)
+		{
+			SubclassBinder binder = new SubclassBinder(this, namespaceManager, dialect);
+
+			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsSubclass, namespaceManager))
+				binder.Bind(node);
 		}
 
 		private void AddQueries(HbmMapping mappingSchema)

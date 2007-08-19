@@ -5,7 +5,6 @@ using System.Xml;
 
 using NHibernate.Engine;
 using NHibernate.Mapping;
-using NHibernate.Persister.Entity;
 using NHibernate.Property;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -89,77 +88,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					model.AddJoin(join);
 				}
 				else if ("subclass".Equals(name))
-					HandleSubclass(model, subnode);
+					new SubclassBinder(this).HandleSubclass(model, subnode);
+
 				else if ("joined-subclass".Equals(name))
-					HandleJoinedSubclass(model, subnode);
+					new JoinedSubclassBinder(this).HandleJoinedSubclass(model, subnode);
+
 				else if ("filter".Equals(name))
 					ParseFilter(subnode, model);
+
 				if (value != null)
 					model.AddProperty(CreateProperty(value, propertyName, model.MappedClass, subnode));
 			}
-		}
-
-		protected void HandleJoinedSubclass(PersistentClass model, XmlNode subnode)
-		{
-			JoinedSubclass subclass = new JoinedSubclass(model);
-
-			BindClass(subnode, subclass);
-
-			// joined subclass
-			if (subclass.ClassPersisterClass == null)
-				subclass.RootClazz.ClassPersisterClass = typeof (JoinedSubclassEntityPersister);
-
-			//table + schema names
-			XmlAttribute schemaNode = subnode.Attributes["schema"];
-			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
-			Table mytable = mappings.AddTable(schema, GetClassTableName(subclass, subnode));
-			((ITableOwner) subclass).Table = mytable;
-
-			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.Name, subclass.Table.Name);
-
-			XmlNode keyNode = subnode.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
-			SimpleValue key = new DependentValue(mytable, subclass.Identifier);
-			subclass.Key = key;
-			BindSimpleValue(keyNode, key, false, subclass.Name);
-			subclass.Key.Type = subclass.Identifier.Type;
-
-			subclass.CreatePrimaryKey(dialect);
-
-			if (!subclass.IsJoinedSubclass)
-				throw new MappingException(
-					"Cannot map joined-subclass " + subclass.Name + " to table " +
-						subclass.Table.Name + ", the same table as its base class.");
-
-			subclass.CreateForeignKey();
-
-			// CHECK
-			XmlAttribute chNode = subnode.Attributes["check"];
-			if (chNode != null)
-				mytable.AddCheckConstraint(chNode.Value);
-
-			// properties
-			PropertiesFromXML(subnode, subclass);
-
-			model.AddSubclass(subclass);
-			mappings.AddClass(subclass);
-		}
-
-		protected void HandleSubclass(PersistentClass model, XmlNode subnode)
-		{
-			Subclass subclass = new SingleTableSubclass(model);
-
-			BindClass(subnode, subclass);
-
-			if (subclass.ClassPersisterClass == null)
-				subclass.RootClazz.ClassPersisterClass = typeof (SingleTableEntityPersister);
-
-			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.Name, subclass.Table.Name);
-
-			// properties
-			PropertiesFromXML(subnode, subclass);
-
-			model.AddSubclass(subclass);
-			mappings.AddClass(subclass);
 		}
 
 		protected void BindClass(XmlNode node, PersistentClass model)
@@ -734,7 +673,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.MetaAttributes = GetMetas(node);
 		}
 
-		private static PropertyGeneration ParsePropertyGeneration(string name)
+		protected static PropertyGeneration ParsePropertyGeneration(string name)
 		{
 			switch (name)
 			{
@@ -889,7 +828,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					);
 		}
 
-		private IDictionary GetMetas(XmlNode node)
+		protected IDictionary GetMetas(XmlNode node)
 		{
 			IDictionary map = new Hashtable();
 

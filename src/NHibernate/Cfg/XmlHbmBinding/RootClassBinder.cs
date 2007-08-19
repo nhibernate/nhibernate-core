@@ -1,5 +1,6 @@
 using System.Xml;
 
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -13,77 +14,79 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void BindEach(XmlNode parentNode, string xpath)
-		{
-			foreach (XmlNode node in SelectNodes(parentNode, xpath))
-				Bind(node);
-		}
-
-		public void Bind(XmlNode node)
+		public void Bind(XmlNode node, HbmClass classSchema)
 		{
 			RootClass rootClass = new RootClass();
 			BindClass(node, rootClass);
 
 			//TABLENAME
-			string schema = GetAttributeValue(node, "schema") ?? mappings.SchemaName;
-			string tableName = GetClassTableName(rootClass, node);
+			string schema = classSchema.schema ?? mappings.SchemaName;
+			string tableName = GetClassTableName(rootClass, classSchema);
 
 			Table table = mappings.AddTable(schema, tableName);
 			((ITableOwner) rootClass).Table = table;
 
 			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.Name, rootClass.Table.Name);
 
-			//MUTABLE
-			rootClass.IsMutable = "true".Equals(GetAttributeValue(node, "mutable") ?? "true");
+			rootClass.IsMutable = classSchema.mutable;
+			rootClass.Where = classSchema.where ?? rootClass.Where;
 
-			//WHERE
-			rootClass.Where = GetAttributeValue(node, "where") ?? rootClass.Where;
+			if (classSchema.check != null)
+				table.AddCheckConstraint(classSchema.check);
 
-			//CHECK
-			string check = GetAttributeValue(node, "check");
-			if (check != null)
-				table.AddCheckConstraint(check);
+			rootClass.IsExplicitPolymorphism = classSchema.polymorphism == HbmPolymorphismType.Explicit;
 
-			//POLYMORPHISM
-			rootClass.IsExplicitPolymorphism = "explicit".Equals(GetAttributeValue(node, "polymorphism"));
-
-			foreach (XmlNode childNode in node.ChildNodes)
-				if (IsInNHibernateNamespace(childNode))
-					BindChildNode(childNode, rootClass, table);
+			BindChildren(node, rootClass, table, classSchema);
 
 			rootClass.CreatePrimaryKey(dialect);
 			PropertiesFromXML(node, rootClass);
 			mappings.AddClass(rootClass);
 		}
 
-		private void BindChildNode(XmlNode childNode, RootClass rootClass, Table table)
+		private string GetClassTableName(PersistentClass model, HbmClass classSchema)
 		{
-			switch (childNode.LocalName)
+			if (classSchema.table == null)
+				return mappings.NamingStrategy.ClassToTableName(model.Name);
+			else
+				return mappings.NamingStrategy.TableName(classSchema.table);
+		}
+
+		private void BindChildren(XmlNode node, RootClass rootClass, Table table, HbmClass classSchema)
+		{
+			BindCache(classSchema, rootClass);
+
+			foreach (XmlNode childNode in node.ChildNodes)
+				if (IsInNHibernateNamespace(childNode))
+					switch (childNode.LocalName)
+					{
+						case "id":
+							BindIdNode(childNode, rootClass, table);
+							break;
+
+						case "composite-id":
+							BindCompositeIdNode(childNode, rootClass);
+							break;
+
+						case "version":
+							BindVersionNode(childNode, rootClass, table, NHibernateUtil.Int32);
+							break;
+
+						case "timestamp":
+							BindVersionNode(childNode, rootClass, table, NHibernateUtil.Timestamp);
+							break;
+
+						case "discriminator":
+							BindDiscriminatorNode(childNode, rootClass, table);
+							break;
+					}
+		}
+
+		private static void BindCache(HbmClass classSchema, RootClass rootClass)
+		{
+			if (classSchema.Cache != null)
 			{
-				case "id":
-					BindIdNode(childNode, rootClass, table);
-					break;
-
-				case "composite-id":
-					BindCompositeIdNode(childNode, rootClass);
-					break;
-
-				case "version":
-					BindVersionNode(childNode, rootClass, table, NHibernateUtil.Int32);
-					break;
-
-				case "timestamp":
-					BindVersionNode(childNode, rootClass, table, NHibernateUtil.Timestamp);
-					break;
-
-				case "discriminator":
-					BindDiscriminatorNode(childNode, rootClass, table);
-					break;
-
-				case "jcs-cache":
-				case "cache":
-					BindCacheNode(childNode, rootClass);
-					break;
+				rootClass.CacheConcurrencyStrategy = GetXmlEnumAttribute(classSchema.Cache.usage);
+				rootClass.CacheRegionName = classSchema.Cache.region;
 			}
 		}
 
@@ -207,21 +210,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				rootClass.IsDiscriminatorInsertable = false;
 		}
 
-		private static void BindCacheNode(XmlNode cacheNode, RootClass rootClass)
-		{
-			XmlAttribute usageNode = cacheNode.Attributes["usage"];
-			rootClass.CacheConcurrencyStrategy = (usageNode != null) ? usageNode.Value : null;
-			XmlAttribute regionNode = cacheNode.Attributes["region"];
-			rootClass.CacheRegionName = (regionNode != null) ? regionNode.Value : null;
-		}
-
 		public static void MakeVersion(XmlNode node, SimpleValue model)
 		{
 			// VERSION UNSAVED-VALUE
 			model.NullValue = GetAttributeValue(node, "unsaved-value");
 		}
 
-		protected static string GetAttributeValue(XmlNode node, string attributeName)
+		private static string GetAttributeValue(XmlNode node, string attributeName)
 		{
 			if (node != null && node.Attributes != null)
 			{
@@ -232,11 +227,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return null;
 		}
 
-		protected static bool IsInNHibernateNamespace(XmlNode node)
+		private static bool IsInNHibernateNamespace(XmlNode node)
 		{
 			return node.NamespaceURI == Configuration.MappingSchemaXMLNS;
 		}
-
-
 	}
 }

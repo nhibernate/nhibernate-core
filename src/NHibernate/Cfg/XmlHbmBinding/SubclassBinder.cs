@@ -1,6 +1,7 @@
 using System.Xml;
 
 using NHibernate.Mapping;
+using NHibernate.Persister.Entity;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -11,10 +12,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void BindEach(XmlNode parentNode, string xpath)
+		public SubclassBinder(ClassBinder parent)
+			: base(parent)
 		{
-			foreach (XmlNode node in SelectNodes(parentNode, xpath))
-				Bind(node);
 		}
 
 		public void Bind(XmlNode node)
@@ -22,5 +22,24 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			PersistentClass superModel = GetSuperclass(node);
 			HandleSubclass(superModel, node);
 		}
+
+		public void HandleSubclass(PersistentClass model, XmlNode subnode)
+		{
+			Subclass subclass = new SingleTableSubclass(model);
+
+			BindClass(subnode, subclass);
+
+			if (subclass.ClassPersisterClass == null)
+				subclass.RootClazz.ClassPersisterClass = typeof(SingleTableEntityPersister);
+
+			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.Name, subclass.Table.Name);
+
+			// properties
+			PropertiesFromXML(subnode, subclass);
+
+			model.AddSubclass(subclass);
+			mappings.AddClass(subclass);
+		}
+
 	}
 }

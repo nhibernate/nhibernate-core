@@ -494,9 +494,12 @@
       <SubType>code</SubType>
     </Compile>
     <Compile Include="Cfg\MappingSchema\HbmBase.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmClass.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDatabaseObject.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
     <Compile Include="Cfg\MappingSchema\HbmMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmMeta.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmParam.cs" />
     <Compile Include="Cfg\MappingSchema\HbmQuery.cs" />
     <Compile Include="Cfg\MappingSchema\HbmSqlQuery.cs" />
     <Compile Include="Cfg\MappingSchema\IAssemblyResourceFilter.cs" />
