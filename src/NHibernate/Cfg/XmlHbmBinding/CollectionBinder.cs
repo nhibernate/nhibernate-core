@@ -15,18 +15,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private readonly IDictionary<string, CreateCollectionCommand> createCollectionCommands =
 			new Dictionary<string, CreateCollectionCommand>();
 
-		public CollectionBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(mappings, namespaceManager, dialect)
-		{
-			CreateCommandCollection();
-		}
-
-		public CollectionBinder(XmlBinder parent, Dialect.Dialect dialect)
-			: base(parent, dialect)
-		{
-			CreateCommandCollection();
-		}
-
 		public CollectionBinder(ClassBinder parent)
 			: base(parent)
 		{

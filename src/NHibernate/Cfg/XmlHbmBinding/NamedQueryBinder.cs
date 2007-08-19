@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class NamedQueryBinder : QueryBinder
+	public class NamedQueryBinder : Binder
 	{
 		public NamedQueryBinder(Mappings mappings)
 			: base(mappings)
@@ -31,7 +31,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			int fetchSize = -1;
 			bool readOnly = true;
 			string comment = null;
-			FlushMode flushMode = GetFlushMode(querySchema.flushmodeSpecified, querySchema.flushmode);
+			FlushMode flushMode = FlushModeConverter.GetFlushMode(querySchema);
 
 			IDictionary parameterTypes = new SequencedHashMap();
 

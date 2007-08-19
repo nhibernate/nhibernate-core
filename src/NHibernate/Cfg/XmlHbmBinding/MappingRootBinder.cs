@@ -7,14 +7,16 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class MappingRootBinder : XmlBinder
+	public class MappingRootBinder : Binder
 	{
+		private readonly XmlNamespaceManager namespaceManager;
 		private readonly Dialect.Dialect dialect;
 
 		public MappingRootBinder(Mappings mappings, XmlNamespaceManager namespaceManager,
 			Dialect.Dialect dialect)
-			: base(mappings, namespaceManager)
+			: base(mappings)
 		{
+			this.namespaceManager = namespaceManager;
 			this.dialect = dialect;
 		}
 
@@ -25,15 +27,36 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			SetMappingsProperties(mappingSchema);
 			AddFilterDefinitions(mappingSchema);
 
-			new RootClassBinder(this, dialect).BindEach(node, HbmConstants.nsClass);
-			new SubclassBinder(this, dialect).BindEach(node, HbmConstants.nsSubclass);
-			new JoinedSubclassBinder(this, dialect).BindEach(node, HbmConstants.nsJoinedSubclass);
+			AddRootClasses(node);
+			AddSubclasses(node);
+			AddJoinedSubclasses(node);
 
 			AddQueries(mappingSchema);
 			AddSqlQueries(mappingSchema);
 			AddImports(mappingSchema);
 			AddAuxiliaryDatabaseObjects(mappingSchema);
 			AddResultSetMappingDefinitions(mappingSchema);
+		}
+
+		private void AddJoinedSubclasses(XmlNode node)
+		{
+			JoinedSubclassBinder binder = new JoinedSubclassBinder(this, namespaceManager, dialect);
+
+			binder.BindEach(node, HbmConstants.nsJoinedSubclass);
+		}
+
+		private void AddSubclasses(XmlNode node)
+		{
+			SubclassBinder binder = new SubclassBinder(this, namespaceManager, dialect);
+
+			binder.BindEach(node, HbmConstants.nsSubclass);
+		}
+
+		private void AddRootClasses(XmlNode node)
+		{
+			RootClassBinder binder = new RootClassBinder(this, namespaceManager, dialect);
+
+			binder.BindEach(node, HbmConstants.nsClass);
 		}
 
 		private void SetMappingsProperties(HbmMapping mappingSchema)

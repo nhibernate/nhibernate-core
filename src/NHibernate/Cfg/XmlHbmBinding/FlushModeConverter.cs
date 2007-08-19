@@ -4,19 +4,19 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public abstract class QueryBinder : Binder
+	internal static class FlushModeConverter
 	{
-		public QueryBinder(Mappings mappings)
-			: base(mappings)
+		public static FlushMode GetFlushMode(HbmQuery querySchema)
 		{
+			return GetFlushMode(querySchema.flushmodeSpecified, querySchema.flushmode);
 		}
 
-		public QueryBinder(Binder parent)
-			: base(parent)
+		public static FlushMode GetFlushMode(HbmSqlQuery querySchema)
 		{
+			return GetFlushMode(querySchema.flushmodeSpecified, querySchema.flushmode);
 		}
 
-		protected static FlushMode GetFlushMode(bool flushModeSpecified, HbmFlushMode flushMode)
+		private static FlushMode GetFlushMode(bool flushModeSpecified, HbmFlushMode flushMode)
 		{
 			if (!flushModeSpecified)
 				return FlushMode.Unspecified;

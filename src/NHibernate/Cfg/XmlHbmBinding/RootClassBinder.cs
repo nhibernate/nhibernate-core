@@ -8,18 +8,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class RootClassBinder : ClassBinder
 	{
-		public RootClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(mappings, namespaceManager, dialect)
-		{
-		}
-
-		public RootClassBinder(XmlBinder parent, Dialect.Dialect dialect)
-			: base(parent, dialect)
-		{
-		}
-
-		public RootClassBinder(ClassBinder parent)
-			: base(parent)
+		public RootClassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+			: base(parent, namespaceManager, dialect)
 		{
 		}
 
@@ -230,5 +220,23 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// VERSION UNSAVED-VALUE
 			model.NullValue = GetAttributeValue(node, "unsaved-value");
 		}
+
+		protected static string GetAttributeValue(XmlNode node, string attributeName)
+		{
+			if (node != null && node.Attributes != null)
+			{
+				XmlAttribute attribute = node.Attributes[attributeName];
+				return attribute == null ? null : attribute.Value;
+			}
+			else
+				return null;
+		}
+
+		protected static bool IsInNHibernateNamespace(XmlNode node)
+		{
+			return node.NamespaceURI == Configuration.MappingSchemaXMLNS;
+		}
+
+
 	}
 }
