@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.Xml;
 
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Property;
@@ -901,7 +902,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			filterable.AddFilter(name, condition);
 		}
 
-		private void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn,
+		protected void BindColumns(XmlNode node, SimpleValue model, bool isNullable, bool autoColumn,
 			string propertyPath)
 		{
 			Table table = model.Table;
@@ -958,7 +959,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private static void BindColumn(XmlNode node, Column model, bool isNullable)
+		protected static void BindColumn(XmlNode node, Column model, bool isNullable)
 		{
 			XmlAttribute lengthNode = node.Attributes["length"];
 			if (lengthNode != null)
@@ -977,7 +978,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.SqlType = (typeNode == null) ? null : typeNode.Value;
 		}
 
-		private static void BindIndex(XmlAttribute indexAttribute, Table table, Column column)
+		protected static void BindIndex(XmlAttribute indexAttribute, Table table, Column column)
 		{
 			if (indexAttribute != null && table != null)
 			{
@@ -987,7 +988,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private static void BindUniqueKey(XmlAttribute uniqueKeyAttribute, Table table, Column column)
+		protected static void BindUniqueKey(XmlAttribute uniqueKeyAttribute, Table table, Column column)
 		{
 			if (uniqueKeyAttribute != null && table != null)
 			{
