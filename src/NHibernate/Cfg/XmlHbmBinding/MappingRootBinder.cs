@@ -28,9 +28,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new RootClassBinder(this, dialect).BindEach(node, HbmConstants.nsClass);
 			new SubclassBinder(this, dialect).BindEach(node, HbmConstants.nsSubclass);
 			new JoinedSubclassBinder(this, dialect).BindEach(node, HbmConstants.nsJoinedSubclass);
-			new NamedQueryBinder(this).BindEach(node, HbmConstants.nsQuery);
 
-			AddNamedSqlQueries(mappingSchema);
+			AddQueries(mappingSchema);
+			AddSqlQueries(mappingSchema);
 			AddImports(mappingSchema);
 			AddAuxiliaryDatabaseObjects(mappingSchema);
 			AddResultSetMappingDefinitions(mappingSchema);
@@ -56,14 +56,29 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void AddNamedSqlQueries(HbmMapping mappingSchema)
+		private void AddQueries(HbmMapping mappingSchema)
 		{
+			NamedQueryBinder binder = new NamedQueryBinder(this);
+
 			foreach (object item in mappingSchema.Items1 ?? new object[0])
 			{
-				HbmSqlQuery querySchema = item as HbmSqlQuery;
+				HbmQuery querySchema = item as HbmQuery;
 
 				if (querySchema != null)
-					new NamedSQLQueryBinder(this).AddNamedSqlQuery(querySchema);
+					binder.AddQuery(querySchema);
+			}
+		}
+
+		private void AddSqlQueries(HbmMapping mappingSchema)
+		{
+			NamedSQLQueryBinder binder = new NamedSQLQueryBinder(this);
+
+			foreach (object item in mappingSchema.Items1 ?? new object[0])
+			{
+				HbmSqlQuery sqlQuerySchema = item as HbmSqlQuery;
+
+				if (sqlQuerySchema != null)
+					binder.AddSqlQuery(sqlQuerySchema);
 			}
 		}
 

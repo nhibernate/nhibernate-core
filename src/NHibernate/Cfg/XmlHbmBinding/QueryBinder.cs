@@ -1,52 +1,37 @@
-using System.Collections;
-using System.Xml;
+using System;
 
-using NHibernate.Util;
+using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public abstract class QueryBinder : XmlBinder
+	public abstract class QueryBinder : Binder
 	{
-		public QueryBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
-			: base(mappings, namespaceManager)
+		public QueryBinder(Mappings mappings)
+			: base(mappings)
 		{
 		}
 
-		public QueryBinder(XmlBinder parent)
+		public QueryBinder(Binder parent)
 			: base(parent)
 		{
 		}
 
-		protected static FlushMode GetFlushMode(string flushModeText)
+		protected static FlushMode GetFlushMode(bool flushModeSpecified, HbmFlushMode flushMode)
 		{
-			switch (flushModeText)
+			if (!flushModeSpecified)
+				return FlushMode.Unspecified;
+
+			switch (flushMode)
 			{
-				case null:
-					return FlushMode.Unspecified;
-				case "auto":
+				case HbmFlushMode.Auto:
 					return FlushMode.Auto;
-				case "commit":
-					return FlushMode.Commit;
-				case "never":
+
+				case HbmFlushMode.Never:
 					return FlushMode.Never;
+
 				default:
-					throw new MappingException("unknown flushmode " + flushModeText);
+					throw new ArgumentOutOfRangeException("flushMode");
 			}
-		}
-
-		protected IDictionary GetParameterTypes(XmlNode node)
-		{
-			IDictionary parameterTypes = new SequencedHashMap();
-
-			foreach (XmlNode subNode in SelectNodes(node, HbmConstants.nsQueryParam))
-			{
-				string name = GetAttributeValue(subNode, "name");
-				string type = GetAttributeValue(subNode, "type");
-
-				parameterTypes[name] = type;
-			}
-
-			return parameterTypes;
 		}
 	}
 }

@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Xml;
 
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
@@ -10,17 +8,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class NamedSQLQueryBinder : QueryBinder
 	{
-		public NamedSQLQueryBinder(Mappings mappings, XmlNamespaceManager namespaceManager)
-			: base(mappings, namespaceManager)
+		public NamedSQLQueryBinder(Mappings mappings)
+			: base(mappings)
 		{
 		}
 
-		public NamedSQLQueryBinder(XmlBinder parent)
+		public NamedSQLQueryBinder(Binder parent)
 			: base(parent)
 		{
 		}
 
-		public void AddNamedSqlQuery(HbmSqlQuery querySchema)
+		public void AddSqlQuery(HbmSqlQuery querySchema)
 		{
 			mappings.AddSecondPass(delegate
 				{
@@ -61,24 +59,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 					mappings.AddSQLQuery(queryName, namedQuery);
 				});
-		}
-
-		private static FlushMode GetFlushMode(bool flushModeSpecified, HbmFlushMode flushMode)
-		{
-			if (!flushModeSpecified)
-				return FlushMode.Unspecified;
-
-			switch (flushMode)
-			{
-				case HbmFlushMode.Auto:
-					return FlushMode.Auto;
-
-				case HbmFlushMode.Never:
-					return FlushMode.Never;
-
-				default:
-					throw new ArgumentOutOfRangeException("flushMode");
-			}
 		}
 
 		private static IList GetSynchronizedTables(HbmSqlQuery querySchema)
