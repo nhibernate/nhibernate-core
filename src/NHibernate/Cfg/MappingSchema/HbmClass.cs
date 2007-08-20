@@ -11,5 +11,10 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get { return Item1 as HbmId; }
 		}
+
+		public HbmCompositeId CompositeId
+		{
+			get { return Item1 as HbmCompositeId; }
+		}
 	}
 }

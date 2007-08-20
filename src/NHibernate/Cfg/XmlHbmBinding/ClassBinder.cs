@@ -3,7 +3,6 @@ using System.Collections;
 using System.Text;
 using System.Xml;
 
-using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Property;
@@ -67,7 +66,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("one-to-one".Equals(name))
 				{
 					value = new OneToOne(table, model.Identifier);
-					BindOneToOne(subnode, (OneToOne) value, true);
+					BindOneToOne(subnode, (OneToOne) value);
 				}
 				else if ("property".Equals(name))
 				{
@@ -497,7 +496,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("one-to-one".Equals(name))
 				{
 					value = new OneToOne(model.Table, model.Owner.Identifier);
-					BindOneToOne(subnode, (OneToOne) value, isNullable);
+					BindOneToOne(subnode, (OneToOne) value);
 				}
 				else if ("any".Equals(name))
 				{
@@ -581,7 +580,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.Type = componentType;
 		}
 
-		private Mapping.Property CreateProperty(IValue value, string propertyName, System.Type parentClass,
+		protected Mapping.Property CreateProperty(IValue value, string propertyName, System.Type parentClass,
 			XmlNode subnode)
 		{
 			if (parentClass != null && value.IsSimpleValue)
@@ -794,7 +793,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindColumns(node, model, isNullable, false, null);
 		}
 
-		private void BindOneToOne(XmlNode node, OneToOne model, bool isNullable)
+		private void BindOneToOne(XmlNode node, OneToOne model)
 		{
 			//BindColumns( node, model, isNullable, false, null, mappings );
 			InitOuterJoinFetchSetting(node, model);
@@ -998,7 +997,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private static void InitLaziness(XmlNode node, ToOne fetchable, bool defaultLazy)
+		protected static void InitLaziness(XmlNode node, ToOne fetchable, bool defaultLazy)
 		{
 			XmlAttribute lazyNode = node.Attributes["lazy"];
 			if (lazyNode != null && "no-proxy".Equals(lazyNode.Value))
