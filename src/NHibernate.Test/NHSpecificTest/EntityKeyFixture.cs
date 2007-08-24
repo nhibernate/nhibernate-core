@@ -295,6 +295,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		public string EntityName
+		{
+			get { return null; }
+		}
+
 		public int[] FindModified(object[] old, object[] current, object owner, ISessionImplementor session)
 		{
 			// TODO:  Add TestingClassPersister.FindModified implementation

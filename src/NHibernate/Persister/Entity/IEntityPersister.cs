@@ -44,6 +44,13 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		string ClassName { get; }
 
+		// TODO H3: http://www.hibernate.org/hib_docs/v3/reference/en/html/mapping.html#mapping-entityname
+		// introduced in NH to prepare the work to port the feature during the port of other features (listener+events)
+		/// <summary>
+		/// The entity name which this persister maps.
+		/// </summary>
+		string EntityName { get;}
+
 		/// <summary>
 		/// Does the class implement the <c>ILifecycle</c> inteface?
 		/// </summary>

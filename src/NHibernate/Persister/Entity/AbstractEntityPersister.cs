@@ -207,6 +207,12 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.Type.FullName; }
 		}
 
+		// TODO H3: Implement Name in EntityMetamodel
+		public string EntityName
+		{
+			get { return entityMetamodel.Type.FullName; }
+		}
+
 		public virtual object IdentifierSpace
 		{
 			get { return entityMetamodel.RootTypeAssemblyQualifiedName; }

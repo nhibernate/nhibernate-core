@@ -975,6 +975,7 @@
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>copy "$(ProjectDir)App.config" "$(TargetPath).config"
+if exist hibernate.cfg.xml (del hibernate.cfg.xml)
 if exist "$(ProjectDir)hibernate.cfg.xml" (copy "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml")
 copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PostBuildEvent>
   </PropertyGroup>
