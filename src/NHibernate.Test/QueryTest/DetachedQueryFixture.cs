@@ -291,13 +291,6 @@ namespace NHibernate.Test.QueryTest
 		[Test, Explicit]
 		public void PerformanceDiffSimplyQuery()
 		{
-			DateTime sQStart = DateTime.Now;
-			using (ISession s = OpenSession())
-			{
-				IQuery q = s.CreateQuery("from Foo f where f.Name=:pn and f.Description=:pd").SetString("pn", "N2").SetString("pd", "D2");
-				IList l = q.List();
-			}
-			DateTime sQStop = DateTime.Now;
 
 			DateTime sDQStart = DateTime.Now;
 			DetachedQuery dq = new DetachedQuery("from Foo f where f.Name=:pn and f.Description=:pd");
@@ -305,12 +298,18 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList l = q.List();
 			}
 			DateTime sDQStop = DateTime.Now;
 
+			DateTime sQStart = DateTime.Now;
+			using (ISession s = OpenSession())
+			{
+				IQuery q = s.CreateQuery("from Foo f where f.Name=:pn and f.Description=:pd").SetString("pn", "N2").SetString("pd", "D2");
+			}
+			DateTime sQStop = DateTime.Now;
 
-			Console.WriteLine("DetacheQueryCycle={0} QueryCycl={1}  Diff={2}", sDQStop - sDQStart, sQStop - sQStart,
+
+			Console.WriteLine("DetachedQueryCycle={0} QueryCycl={1}  Diff={2}", sDQStop - sDQStart, sQStop - sQStart,
 			                  (sDQStop - sDQStart) - (sQStop - sQStart));
 		}
 
