@@ -205,23 +205,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			id.AddColumn(column);
 		}
 
-		private static void LogMappedProperty(Mapping.Property property)
-		{
-			if (log.IsDebugEnabled)
-			{
-				string msg = "Mapped property: " + property.Name;
-				string columns = Columns(property.Value);
-
-				if (columns.Length > 0)
-					msg += " -> " + columns;
-
-				if (property.Type != null)
-					msg += ", type: " + property.Type.Name;
-
-				log.Debug(msg);
-			}
-		}
-
 		private static IDictionary GetMetas(HbmId idSchema)
 		{
 			IDictionary map = new Hashtable();

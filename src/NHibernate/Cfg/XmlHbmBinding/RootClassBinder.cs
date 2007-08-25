@@ -3,7 +3,6 @@ using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -55,15 +54,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			BindCache(classSchema, rootClass);
 			new ClassIdBinder(this).BindId(classSchema.Id, rootClass, table);
+			new ClassCompositeIdBinder(this).BindCompositeId(classSchema.CompositeId, rootClass);
 
 			foreach (XmlNode childNode in node.ChildNodes)
 				if (IsInNHibernateNamespace(childNode))
 					switch (childNode.LocalName)
 					{
-						case "composite-id":
-							BindCompositeIdNode(childNode, rootClass);
-							break;
-
 						case "version":
 							BindVersionNode(childNode, rootClass, table, NHibernateUtil.Int32);
 							break;
@@ -76,46 +72,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							BindDiscriminatorNode(childNode, rootClass, table);
 							break;
 					}
-		}
-
-		private void BindCompositeIdNode(XmlNode compositeIdNode, PersistentClass rootClass)
-		{
-			string propertyName = GetAttributeValue(compositeIdNode, "name");
-			Component compositeId = new Component(rootClass);
-			rootClass.Identifier = compositeId;
-
-			if (propertyName == null)
-			{
-				BindComponent(compositeIdNode, compositeId, null, rootClass.Name, "id", false);
-				rootClass.HasEmbeddedIdentifier = compositeId.IsEmbedded;
-			}
-			else
-			{
-				System.Type reflectedClass = GetPropertyType(compositeIdNode, rootClass.MappedClass,
-					propertyName);
-
-				BindComponent(compositeIdNode, compositeId, reflectedClass, rootClass.Name, propertyName,
-					false);
-
-				Mapping.Property prop = new Mapping.Property(compositeId);
-				BindProperty(compositeIdNode, prop);
-				rootClass.IdentifierProperty = prop;
-			}
-
-			MakeIdentifier(compositeIdNode, compositeId);
-
-			System.Type compIdClass = compositeId.ComponentClass;
-			if (!ReflectHelper.OverridesEquals(compIdClass))
-				throw new MappingException(
-					"composite-id class must override Equals(): " + compIdClass.FullName
-					);
-
-			if (!ReflectHelper.OverridesGetHashCode(compIdClass))
-				throw new MappingException(
-					"composite-id class must override GetHashCode(): " + compIdClass.FullName
-					);
-
-			// Serializability check not ported
 		}
 
 		private void BindVersionNode(XmlNode versionNode, PersistentClass rootClass, Table table,
