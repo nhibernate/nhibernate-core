@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.QueryTest"
+				   default-access="field.camelcase">
+	
+	<class name="Foo" table="Foos">
+		<id name="Id" type="int">
+			<generator class="native"/>
+		</id>
+		<property name="Name" length="10"/>
+		<property name="Description" length="10"/>
+		<property name="IntValue" type="int"/>
+	</class>
+
+	<query name="Foo.WithParameters">
+		from Foo f where (f.Name = :pn) or ('@All@' = :pn)
+	</query>
+
+	<sql-query name="NoFoo.SQL.Parameters" flush-mode="never">
+		<return-scalar column="Name" type="string"/>
+		<return-scalar column="Description" type="string"/>
+		<![CDATA[
+			  SELECT Foos.Name as Name, Foos.Description as Description 
+				FROM Foos
+				WHERE Foos.Name like :p1
+			  ]]>
+	</sql-query>
+</hibernate-mapping>

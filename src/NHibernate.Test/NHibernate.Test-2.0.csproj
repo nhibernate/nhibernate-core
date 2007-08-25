@@ -490,6 +490,7 @@
     <Compile Include="QueryTest\Aggregated.cs" />
     <Compile Include="QueryTest\AggregateReturnTypesFixture.cs" />
     <Compile Include="QueryTest\CountFixture.cs" />
+    <Compile Include="QueryTest\DetachedQueryFixture.cs" />
     <Compile Include="QueryTest\MultiCriteriaFixture.cs" />
     <Compile Include="QueryTest\MultipleQueriesFixture.cs" />
     <Compile Include="QueryTest\NamedParametersFixture.cs" />
@@ -959,6 +960,9 @@
     <EmbeddedResource Include="TestEnbeddedConfig.cfg.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="QueryTest\DetachedQueryTest.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

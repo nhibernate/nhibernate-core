@@ -1,9 +1,12 @@
+using System;
+
 namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Information to determine how to run an IDbCommand and what
 	/// records to return from the IDataReader.
 	/// </summary>
+	[Serializable]
 	public sealed class RowSelection
 	{
 		/// <summary>

@@ -585,7 +585,11 @@
     <Compile Include="Engine\BatchFetchQueue.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
+    <Compile Include="Impl\AbstractDetachedQuery.cs" />
     <Compile Include="Hql\Classic\FunctionStack.cs" />
+    <Compile Include="Impl\DetachedNamedQuery.cs" />
+    <Compile Include="Impl\DetachedQuery.cs" />
+    <Compile Include="IDetachedQuery.cs" />
     <Compile Include="IdentityEqualityComparer.cs" />
     <Compile Include="Impl\MultiCriteriaImpl.cs" />
     <Compile Include="Impl\MultipleQueriesCacheAssembler.cs" />
