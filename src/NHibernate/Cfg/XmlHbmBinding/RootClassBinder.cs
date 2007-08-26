@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Xml;
 
 using NHibernate.Cfg.MappingSchema;
@@ -55,6 +56,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindCache(classSchema, rootClass);
 			new ClassIdBinder(this).BindId(classSchema.Id, rootClass, table);
 			new ClassCompositeIdBinder(this).BindCompositeId(classSchema.CompositeId, rootClass);
+			new ClassDiscriminatorBinder(this).BindDiscriminator(classSchema.discriminator, rootClass, table);
 
 			foreach (XmlNode childNode in node.ChildNodes)
 				if (IsInNHibernateNamespace(childNode))
@@ -66,10 +68,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 						case "timestamp":
 							BindVersionNode(childNode, rootClass, table, NHibernateUtil.Timestamp);
-							break;
-
-						case "discriminator":
-							BindDiscriminatorNode(childNode, rootClass, table);
 							break;
 					}
 		}
@@ -97,30 +95,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			MakeVersion(versionNode, simpleValue);
 			rootClass.Version = property;
 			rootClass.AddProperty(property);
-		}
-
-		private void BindDiscriminatorNode(XmlNode discriminatorNode, PersistentClass rootClass, Table table)
-		{
-			//DISCRIMINATOR
-			SimpleValue discrim = new SimpleValue(table);
-			rootClass.Discriminator = discrim;
-			BindSimpleValue(discriminatorNode, discrim, false, RootClass.DefaultDiscriminatorColumnName);
-			if (discrim.Type == null)
-			{
-				discrim.Type = NHibernateUtil.String;
-				foreach (Column col in discrim.ColumnCollection)
-				{
-					col.Type = NHibernateUtil.String;
-					break;
-				}
-			}
-			rootClass.IsPolymorphic = true;
-			if (discriminatorNode.Attributes["force"] != null &&
-				"true".Equals(discriminatorNode.Attributes["force"].Value))
-				rootClass.IsForceDiscriminator = true;
-			if (discriminatorNode.Attributes["insert"] != null &&
-				"false".Equals(discriminatorNode.Attributes["insert"].Value))
-				rootClass.IsDiscriminatorInsertable = false;
 		}
 
 		public static void MakeVersion(XmlNode node, SimpleValue model)

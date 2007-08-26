@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.Xml;
 
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Property;
@@ -1156,6 +1157,37 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				log.Debug(msg);
 			}
+		}
+
+		protected static void BindIndex(string indexAttribute, Table table, Column column)
+		{
+			if (indexAttribute != null && table != null)
+			{
+				StringTokenizer tokens = new StringTokenizer(indexAttribute, ", ");
+				foreach (string token in tokens)
+					table.GetIndex(token).AddColumn(column);
+			}
+		}
+
+		protected static void BindUniqueKey(string uniqueKeyAttribute, Table table, Column column)
+		{
+			if (uniqueKeyAttribute != null && table != null)
+			{
+				StringTokenizer tokens = new StringTokenizer(uniqueKeyAttribute, ", ");
+				foreach (string token in tokens)
+					table.GetUniqueKey(token).AddColumn(column);
+			}
+		}
+
+		protected static void BindColumn(HbmColumn columnSchema, Column column, bool isNullable)
+		{
+			if (columnSchema.length != null)
+				column.Length = int.Parse(columnSchema.length);
+
+			column.IsNullable = columnSchema.notnullSpecified ? !columnSchema.notnull : isNullable;
+			column.IsUnique = columnSchema.uniqueSpecified && columnSchema.unique;
+			column.CheckConstraint = columnSchema.check ?? string.Empty;
+			column.SqlType = columnSchema.sqltype;
 		}
 	}
 }

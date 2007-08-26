@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Xml;
 
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
@@ -256,10 +255,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					//column index
 					BindIndex(columnSchema.index, table, col);
 					//column group index (although it can serve as a separate column index)
-					BindIndex(null, table, col);
 
 					BindUniqueKey(columnSchema.uniquekey, table, col);
-					BindUniqueKey(null, table, col);
 				}
 			}
 			else
@@ -271,8 +268,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					table.AddColumn(col);
 				model.AddColumn(col);
 				//column group index (although can serve as a separate column index)
-				BindIndex(null, table, col);
-				BindUniqueKey(null, table, col);
 			}
 
 			if (autoColumn && model.ColumnSpan == 0)
@@ -283,39 +278,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.Table.AddColumn(col);
 				model.AddColumn(col);
 				//column group index (although can serve as a separate column index)
-				BindIndex(null, table, col);
-				BindUniqueKey(null, table, col);
-			}
-		}
-
-		private static void BindColumn(HbmColumn columnSchema, Column column, bool isNullable)
-		{
-			if (columnSchema.length != null)
-				column.Length = int.Parse(columnSchema.length);
-
-			column.IsNullable = columnSchema.notnullSpecified ? !columnSchema.notnull : isNullable;
-			column.IsUnique = columnSchema.uniqueSpecified && columnSchema.unique;
-			column.CheckConstraint = columnSchema.check ?? string.Empty;
-			column.SqlType = columnSchema.sqltype;
-		}
-
-		private static void BindIndex(string indexAttribute, Table table, Column column)
-		{
-			if (indexAttribute != null && table != null)
-			{
-				StringTokenizer tokens = new StringTokenizer(indexAttribute, ", ");
-				foreach (string token in tokens)
-					table.GetIndex(token).AddColumn(column);
-			}
-		}
-
-		private static void BindUniqueKey(string uniqueKeyAttribute, Table table, Column column)
-		{
-			if (uniqueKeyAttribute != null && table != null)
-			{
-				StringTokenizer tokens = new StringTokenizer(uniqueKeyAttribute, ", ");
-				foreach (string token in tokens)
-					table.GetUniqueKey(token).AddColumn(column);
 			}
 		}
 
@@ -387,7 +349,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string propertyPath)
 		{
 			Table table = model.Table;
-			
+
 			if (keyPropertySchema.column1 == null)
 			{
 				int count = 0;
@@ -406,10 +368,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					//column index
 					BindIndex(columnSchema.index, table, col);
 					//column group index (although it can serve as a separate column index)
-					BindIndex(null, table, col);
 
 					BindUniqueKey(columnSchema.uniquekey, table, col);
-					BindUniqueKey(null, table, col);
 				}
 			}
 			else
@@ -421,8 +381,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					table.AddColumn(col);
 				model.AddColumn(col);
 				//column group index (although can serve as a separate column index)
-				BindIndex(null, table, col);
-				BindUniqueKey(null, table, col);
 			}
 
 			if (autoColumn && model.ColumnSpan == 0)
@@ -433,8 +391,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.Table.AddColumn(col);
 				model.AddColumn(col);
 				//column group index (although can serve as a separate column index)
-				BindIndex(null, table, col);
-				BindUniqueKey(null, table, col);
 			}
 		}
 
@@ -458,10 +414,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// This is done here 'cos we might only know the type here (ugly!)
 			if (value is ToOne)
 			{
-				ToOne toOne = (ToOne)value;
+				ToOne toOne = (ToOne) value;
 				string propertyRef = toOne.ReferencedPropertyName;
 				if (propertyRef != null)
-					mappings.AddUniquePropertyReference(((EntityType)value.Type).AssociatedClass, propertyRef);
+					mappings.AddUniquePropertyReference(((EntityType) value.Type).AssociatedClass, propertyRef);
 			}
 
 			value.CreateForeignKey();
@@ -488,6 +444,5 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.MetaAttributes = new Hashtable();
 			LogMappedProperty(property);
 		}
-
 	}
 }
