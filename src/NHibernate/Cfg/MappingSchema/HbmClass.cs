@@ -16,5 +16,15 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get { return Item1 as HbmCompositeId; }
 		}
+
+		public HbmVersion Version
+		{
+			get { return Item2 as HbmVersion; }
+		}
+
+		public HbmTimestamp Timestamp
+		{
+			get { return Item2 as HbmTimestamp; }
+		}
 	}
 }
