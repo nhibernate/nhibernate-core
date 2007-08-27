@@ -1888,7 +1888,106 @@
 
         </sect2>
 
-       <sect2 id="mapping-declaration-collections">
+        <sect2 id="mapping-declaration-join" revision="1">
+            <title>join</title>
+
+            <para>
+                Using the <literal>&lt;join&gt;</literal> element, it is possible to map
+                properties of one class to several tables, when there's a 1-to-1 relationship between the tables.
+            </para>
+
+            <programlistingco>
+                <areaspec>
+                    <area id="join1" coords="2 50"/>
+                    <area id="join2" coords="3 50"/>
+                    <area id="join3" coords="4 50"/>
+                    <area id="join4" coords="5 50"/>
+                    <area id="join5" coords="6 50"/>
+                </areaspec>
+                <programlisting><![CDATA[<join
+        table="tablename"
+        schema="owner"
+        fetch="join|select"
+        inverse="true|false"
+        optional="true|false">
+
+        <key ... />
+
+        <property ... />
+        ...
+</join>]]></programlisting>
+
+                <calloutlist>
+                    <callout arearefs="join1">
+                        <para>
+                            <literal>table</literal>: The name of the joined table.
+                        </para>
+                    </callout>
+                    <callout arearefs="join2">
+                        <para>
+                            <literal>schema</literal> (optional): Override the schema name specified by
+                            the root <literal>&lt;hibernate-mapping&gt;</literal> element.
+                        </para>
+                    </callout>
+
+                    <callout arearefs="join3">
+                        <para>
+                            <literal>fetch</literal> (optional - defaults to <literal>join</literal>):
+                            If set to <literal>join</literal>, the default, Hibernate will use an inner join
+                            to retrieve a <literal>&lt;join&gt;</literal> defined by a class or its superclasses
+                            and an outer join for a <literal>&lt;join&gt;</literal> defined by a subclass.
+                            If set to <literal>select</literal> then Hibernate will use a sequential select for
+                            a <literal>&lt;join&gt;</literal> defined on a subclass, which will be issued only
+                            if a row turns out to represent an instance of the subclass. Inner joins will still
+                            be used to retrieve a <literal>&lt;join&gt;</literal> defined by the class and its
+                            superclasses.
+                        </para>
+                    </callout>
+                    <callout arearefs="join4">
+                        <para>
+                            <literal>inverse</literal> (optional - defaults to <literal>false</literal>):
+                            If enabled, Hibernate will not try to insert or update the properties defined
+                            by this join.
+                        </para>
+                    </callout>
+                    <callout arearefs="join5">
+                        <para>
+                            <literal>optional</literal> (optional - defaults to <literal>false</literal>):
+                            If enabled, Hibernate will insert a row only if the properties defined by this
+                            join are non-null and will always use an outer join to retrieve the properties.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+
+            <para>
+                For example, the address information for a person can be mapped to a separate
+                table (while preserving value type semantics for all properties):
+            </para>
+
+            <programlisting><![CDATA[<class name="Person"
+    table="PERSON">
+
+    <id name="id" column="PERSON_ID">...</id>
+
+    <join table="ADDRESS">
+        <key column="ADDRESS_ID"/>
+        <property name="address"/>
+        <property name="zip"/>
+        <property name="country"/>
+    </join>
+    ...]]></programlisting>
+
+            <para>
+                This feature is often only useful for legacy data models, we recommend fewer
+                tables than classes and a fine-grained domain model. However, it is useful
+                for switching between inheritance mapping strategies in a single hierarchy, as
+                explained later.
+            </para>
+
+        </sect2>
+
+        <sect2 id="mapping-declaration-collections">
             <title>map, set, list, bag</title>
 
             <para>
