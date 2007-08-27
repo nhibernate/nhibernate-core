@@ -899,7 +899,7 @@ namespace NHibernate.Persister.Collection
 								}
 								//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
 								int loc = WriteKey(st, id, offset, session);
-								if (hasIdentifier)
+								if (hasIdentifier && !(IdentifierGenerator is NHibernate.Id.IdentityGenerator))
 								{
 									loc = WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session);
 								}
@@ -1541,6 +1541,11 @@ namespace NHibernate.Persister.Collection
 		public bool IsVersioned
 		{
 			get { return isVersioned && OwnerEntityPersister.IsVersioned; }
+		}
+
+		protected Dialect.Dialect Dialect
+		{
+			get { return this.dialect; }
 		}
 	}
 }

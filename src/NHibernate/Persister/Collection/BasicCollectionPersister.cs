@@ -56,7 +56,7 @@ namespace NHibernate.Persister.Collection
 			{
 				insert.AddColumns(IndexColumnNames, null, IndexType);
 			}
-			if (hasIdentifier)
+			if (hasIdentifier && !(IdentifierGenerator is NHibernate.Id.IdentityGenerator))
 			{
 				insert.AddColumns(new string[] {IdentifierColumnName}, null, IdentifierType);
 			}
