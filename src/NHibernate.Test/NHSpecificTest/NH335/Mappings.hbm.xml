@@ -8,15 +8,15 @@
 			<generator class="assigned"/>
 		</id>
 
-		<discriminator formula="case when ClassType in ('a', 'b', 'c') then cast('AbcThing' as VARCHAR(10)) else cast('OtherThing' as VARCHAR(10)) end" insert="false" force="true"/>
+		<discriminator formula="case when ClassType in ('a', 'b', 'c') then '1' else '2' end" insert="false" force="true"/>
 		
 		<property name="ClassType" type="string" length="1" not-null="true" access="nosetter.pascalcase-underscore" update="false"/>
 		<property name="Name" type="string" length="100" not-null="false"/>
 		<property name="CommonValue" type="string" length="100"/>
 	</class>
 
-	<subclass name="AbcThing" extends="Thing" discriminator-value="AbcThing"></subclass>
+	<subclass name="AbcThing" extends="Thing" discriminator-value="1"></subclass>
 
-	<subclass name="OtherThing" extends="Thing" discriminator-value="OtherThing"></subclass>
+	<subclass name="OtherThing" extends="Thing" discriminator-value="2"></subclass>
 	
 </hibernate-mapping>
