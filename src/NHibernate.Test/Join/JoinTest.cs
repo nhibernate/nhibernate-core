@@ -180,7 +180,7 @@ namespace NHibernate.Test.Join
 			IDbCommand cmd = s.Connection.CreateCommand();
 			cmd.CommandText = "select count(*) from phone where phone_id = " + p.Id.ToString();
 			cmd.CommandType = CommandType.Text;
-			int count = (int)cmd.ExecuteScalar();
+			Int64 count = Convert.ToInt64(cmd.ExecuteScalar());
 
 			Assert.AreEqual(0, count);
 		}
@@ -267,7 +267,7 @@ namespace NHibernate.Test.Join
 				"select count(stuff_id) from inversed_stuff where stuff_id = {0}",
 				personId);
 			cmd.CommandType = CommandType.Text;
-			int count = (int)cmd.ExecuteScalar();
+			Int64 count = Convert.ToInt64(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Row from an inverse <join> was deleted.");
 
 			IDbCommand cmd2 = s.Connection.CreateCommand();
