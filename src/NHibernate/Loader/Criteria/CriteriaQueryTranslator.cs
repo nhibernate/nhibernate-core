@@ -504,14 +504,17 @@ namespace NHibernate.Loader.Criteria
 			string propertyName,
 			ICriteria subcriteria)
 		{
-			return GetPropertyMapping(GetEntityName(subcriteria, propertyName))
+		    System.Type type = GetEntityName(subcriteria, propertyName);
+            if (type == null)
+                throw new QueryException("Could not find property " + propertyName + " on " + subcriteria.CriteriaClass);
+		    return GetPropertyMapping(type)
 				.ToColumns(
 				GetSQLAlias(subcriteria, propertyName),
 				GetPropertyName(propertyName)
 				);
 		}
 
-		public IType GetTypeUsingProjection(ICriteria subcriteria, string propertyName)
+	    public IType GetTypeUsingProjection(ICriteria subcriteria, string propertyName)
 		{
 			//first look for a reference to a projection alias
 			IProjection projection = rootCriteria.Projection;
