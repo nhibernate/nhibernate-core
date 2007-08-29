@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using Lucene.Net.Analysis;
@@ -25,13 +26,25 @@ namespace NHibernate.Search
 		private IBackendQueueProcessorFactory backendQueueProcessorFactory;
 		private IQueueingProcessor queueingProcessor;
 		private static object searchFactoryKey = new object();
+	    private IDictionary items = new Hashtable();
 
-		public Dictionary<System.Type, DocumentBuilder> DocumentBuilders
+	    public Dictionary<System.Type, DocumentBuilder> DocumentBuilders
 		{
 			get { return documentBuilders; }
 		}
 
-		public static SearchFactory GetSearchFactory(ISession session)
+	    /// <summary>
+        /// This collections allows external libraries
+        /// to add their own configuration to the NHibernate session factory.
+        /// This is needed in such cases where the library is tightly coupled to NHibernate, such
+        /// as the case of NHibernate Search
+        /// </summary>
+        private IDictionary Items
+	    {
+	        get { return items; }
+	    }
+
+	    public static SearchFactory GetSearchFactory(ISession session)
 		{
 			SearchFactory searchFactory = (SearchFactory) sessionFactory2SearchFactory[session.SessionFactory];
 			if (searchFactory == null)
@@ -52,11 +65,11 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
 		{
 			//This is a bit tricky, but we basically need to have a way to attach 
 			//a search factory to a session factory.
-			//The session factory is keeping a reference the the cfg properties, so we put
+			//The session factory is keeping a reference to the items as long as it is alive, so we put
 			//the search factory inside the cfg factory, and thus keeping the GC from collecting it.
 			//We may want to find a better way
 			SearchFactory searchFactory = new SearchFactory(cfg);
-			cfg.Properties[searchFactoryKey] = searchFactory;
+            searchFactory.Items[searchFactoryKey] = searchFactory;
 			sessionFactory2SearchFactory[sessionFactory] = searchFactory;
 		}
 

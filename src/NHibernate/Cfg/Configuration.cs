@@ -1629,7 +1629,7 @@ namespace NHibernate.Cfg
 
 		private XmlSchemas schemas;
 
-		private XmlSchemas Schemas
+	    private XmlSchemas Schemas
 		{
 			get { return schemas = schemas ?? new XmlSchemas(); }
 			set { schemas = value; }
