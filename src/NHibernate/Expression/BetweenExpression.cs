@@ -35,7 +35,7 @@ namespace NHibernate.Expression
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
 			//IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
-			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
+			string[] columnNames = criteriaQuery.GetPropertyColumnNames(criteria, _propertyName);
 
 			if (columnNames.Length == 1)
 			{

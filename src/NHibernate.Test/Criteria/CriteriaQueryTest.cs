@@ -852,5 +852,78 @@ namespace NHibernate.Test.Criteria
 				s.Flush();
 			}
 		}
+
+        [Test]
+        public void SameColumnAndAliasNames()
+        {
+            DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
+                .Add(Expression.Property.ForName("Name").Eq("Gavin King"))
+                .AddOrder(Order.Asc("StudentNumber"))
+                .SetProjection(
+                    Projections.ProjectionList()
+                        .Add(Projections.Property("StudentNumber"), "StudentNumber")
+                        .Add(Projections.Property("Name"), "Name"));
+
+
+            ISession session = OpenSession();
+            ITransaction t = session.BeginTransaction();
+
+            Student gavin = new Student();
+            gavin.Name = "Gavin King";
+            gavin.StudentNumber = 232;
+            Student bizarroGavin = new Student();
+            bizarroGavin.Name = "Gavin King";
+            bizarroGavin.StudentNumber = 666;
+            session.Save(bizarroGavin);
+            session.Save(gavin);
+
+            IList result = dc.GetExecutableCriteria(session)
+                .SetMaxResults(3)
+                .List();
+
+            Assert.AreEqual(2, result.Count);
+
+            session.Delete(gavin);
+            session.Delete(bizarroGavin);
+            t.Commit();
+            session.Close();
+        }
+
+		[Test]
+		public void SameColumnAndAliasNamesResultTransformer()
+		{
+			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
+				.SetProjection(
+					Projections.ProjectionList()
+						.Add(Projections.Property("StudentNumber"), "StudentNumber")
+						.Add(Projections.Property("Name"), "Name"))
+				.SetResultTransformer(new AliasToBeanResultTransformer(typeof(Student)));
+
+
+			ISession session = OpenSession();
+			ITransaction t = session.BeginTransaction();
+
+			Student gavin = new Student();
+			gavin.Name = "Gavin King";
+			gavin.StudentNumber = 232;
+			Student bizarroGavin = new Student();
+			bizarroGavin.Name = "Gavin King";
+			bizarroGavin.StudentNumber = 666;
+			session.Save(bizarroGavin);
+			session.Save(gavin);
+
+			IList result = dc.GetExecutableCriteria(session)
+				.SetMaxResults(3)
+				.List();
+
+			Assert.AreEqual(2, result.Count);
+			Assert.IsInstanceOfType(typeof(Student), result[0]);
+			Assert.IsInstanceOfType(typeof(Student), result[1]);
+
+			session.Delete(gavin);
+			session.Delete(bizarroGavin);
+			t.Commit();
+			session.Close();
+		}
 	}
 }

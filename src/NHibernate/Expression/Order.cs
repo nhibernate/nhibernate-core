@@ -31,7 +31,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		public string ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			string[] columns = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
+			string[] columns = criteriaQuery.GetPropertyColumnAliases(criteria, _propertyName);
 
 			StringBuilder fragment = new StringBuilder();
 

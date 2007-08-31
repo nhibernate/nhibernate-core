@@ -35,11 +35,8 @@ namespace NHibernate.Loader
 			LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
-			IList allAssociations = new ArrayList();
-			foreach (object obj in associations)
-			{
-				allAssociations.Add(obj);
-			}
+			IList allAssociations = new ArrayList(associations);
+
 			allAssociations.Add(
 				new OuterJoinableAssociation(
 					persister.EntityType,
