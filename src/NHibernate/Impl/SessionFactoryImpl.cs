@@ -79,11 +79,14 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary classMetadata;
 
-		[NonSerialized]
+		[NonSerialized] 
 		private readonly IDictionary collectionPersisters;
 
 		[NonSerialized]
 		private readonly IDictionary collectionMetadata;
+
+		[NonSerialized]
+		private readonly IDictionary collectionRolesByEntityParticipant;
 
 		[NonSerialized]
 		private readonly IDictionary identifierGenerators;
@@ -214,7 +217,7 @@ namespace NHibernate.Impl
 				classMeta[model.MappedClass] = cp.ClassMetadata;
 			}
 			classMetadata = new Hashtable(classMeta);
-
+			IDictionary tmpEntityToCollectionRoleMap= new Hashtable();
 			collectionPersisters = new Hashtable();
 			foreach (Mapping.Collection map in cfg.CollectionMappings)
 			{
@@ -227,9 +230,34 @@ namespace NHibernate.Impl
 				collectionPersisters[map.Role] = PersisterFactory
 					.CreateCollectionPersister(map, cache, this)
 					.CollectionMetadata;
+				ICollectionPersister persister = collectionPersisters[map.Role] as ICollectionPersister;
+				IType indexType = persister.IndexType;
+				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
+				{
+					string entityName = ((IAssociationType)indexType).GetAssociatedEntityName(this);
+					ISet roles = tmpEntityToCollectionRoleMap[entityName] as ISet;
+					if (roles == null)
+					{
+						roles = new HashedSet();
+						tmpEntityToCollectionRoleMap[entityName] = roles;
+					}
+					roles.Add(persister.Role);
+				}
+				IType elementType = persister.ElementType;
+				if (elementType.IsAssociationType && !elementType.IsAnyType)
+				{
+					string entityName = ((IAssociationType)elementType).GetAssociatedEntityName(this);
+					ISet roles = tmpEntityToCollectionRoleMap[entityName] as ISet;
+					if (roles == null)
+					{
+						roles = new HashedSet();
+						tmpEntityToCollectionRoleMap[entityName] = roles;
+					}
+					roles.Add(persister.Role);
+				}
 			}
 			collectionMetadata = new Hashtable(collectionPersisters);
-
+			collectionRolesByEntityParticipant = new Hashtable(tmpEntityToCollectionRoleMap);
 			//TODO:
 			// For databinding:
 			//templates = XMLDatabinder.GetOutputStyleSheetTemplates( properties );
@@ -599,12 +627,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IEntityPersister GetEntityPersister(string className)
+		public IEntityPersister GetEntityPersister(string entityName)
 		{
-			return GetEntityPersister(className, true);
+			return GetEntityPersister(entityName, true);
 		}
 
-		public IEntityPersister GetEntityPersister(string className, bool throwIfNotFound)
+		public IEntityPersister GetEntityPersister(string entityName, bool throwIfNotFound)
 		{
 			// TODO: H2.1 has the code below, an equivalent for .NET would be useful
 			//if( className.StartsWith( "[" ) )
@@ -612,10 +640,10 @@ namespace NHibernate.Impl
 			//	throw new MappingException( "No persister for array result, likely a broken query" );
 			//}
 
-			IEntityPersister result = classPersistersByName[className] as IEntityPersister;
+			IEntityPersister result = classPersistersByName[entityName] as IEntityPersister;
 			if (result == null && throwIfNotFound)
 			{
-				throw new MappingException("No persister for: " + className);
+				throw new MappingException("No persister for: " + entityName);
 			}
 			return result;
 		}
@@ -643,6 +671,11 @@ namespace NHibernate.Impl
 				throw new MappingException("Unknown collection role: " + role);
 			}
 			return result;
+		}
+
+		public ISet GetCollectionRolesByEntityParticipant(string entityName)
+		{
+			return collectionRolesByEntityParticipant[entityName] as ISet;
 		}
 
 		/// <summary>
@@ -1020,6 +1053,19 @@ namespace NHibernate.Impl
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("evicting second-level cache: " + p.ClassName);
+				}
+				p.Cache.Clear();
+			}
+		}
+
+		public void EvictEntity(string entityName)
+		{
+			IEntityPersister p = GetEntityPersister(entityName);
+			if (p.HasCache)
+			{
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("evicting second-level cache: " + p.EntityName);
 				}
 				p.Cache.Clear();
 			}

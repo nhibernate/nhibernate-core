@@ -57,6 +57,7 @@ namespace NHibernate.Mapping
 
 		protected readonly ISet synchronizedTablesField = new HashedSet();
 		private bool hasSubselectLoadableCollections;
+		private string entityName;
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
@@ -189,6 +190,11 @@ namespace NHibernate.Mapping
 			get { return subclasses; }
 		}
 
+		public virtual string EntityName
+		{
+			get{return entityName;}
+			set{entityName = value;}
+		}
 		/// <summary>
 		/// Change the property definition or add a new property definition
 		/// </summary>

@@ -18,9 +18,10 @@ namespace NHibernate.Tuple
 
 		private ISessionFactoryImplementor sessionFactory;
 
-		// TODO H3: these are stored as System.Types for now
-		//private string name;
-		//private string rootName;
+		// DONE H3: ->these are stored as System.Types for now<-
+		// store name and rootName
+		private readonly string name;
+		private readonly string rootName;
 		private System.Type type;
 		private System.Type rootType;
 		private string rootTypeAssemblyQualifiedName;
@@ -85,9 +86,9 @@ namespace NHibernate.Tuple
 			this.sessionFactory = sessionFactory;
 
 
+			name = persistentClass.EntityName;
+			rootName = persistentClass.RootClazz.EntityName;
 			// TODO H3:
-			//name = persistentClass.getEntityName();
-			//rootName = persistentClass.getRootClass().getEntityName();
 			//entityType = TypeFactory.manyToOne( name );
 			type = persistentClass.MappedClass;
 			rootType = persistentClass.RootClazz.MappedClass;
@@ -436,6 +437,16 @@ namespace NHibernate.Tuple
 		public string RootTypeAssemblyQualifiedName
 		{
 			get { return rootTypeAssemblyQualifiedName; }
+		}
+
+		public string Name
+		{
+			get { return name; }
+		}
+
+		public string RootName
+		{
+			get { return rootName; }
 		}
 
 		public EntityType EntityType

@@ -50,6 +50,9 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		System.Type GetAssociatedClass(ISessionFactoryImplementor factory);
 
+		/// <summary> Get the entity name of the associated entity</summary>
+		string GetAssociatedEntityName(ISessionFactoryImplementor factory);
+
 		/// <summary>
 		/// Do we dirty check this association, even when there are
 		/// no columns to be updated.

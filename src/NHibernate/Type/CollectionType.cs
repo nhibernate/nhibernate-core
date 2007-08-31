@@ -275,6 +275,27 @@ namespace NHibernate.Type
 			}
 		}
 
+		public string GetAssociatedEntityName(ISessionFactoryImplementor factory)
+		{
+			try
+			{
+
+				IQueryableCollection collectionPersister = (IQueryableCollection)factory.GetCollectionPersister(role);
+
+				if (!collectionPersister.ElementType.IsEntityType)
+				{
+					throw new MappingException("collection was not an association: " + collectionPersister.Role);
+				}
+
+				return collectionPersister.ElementPersister.EntityName;
+			}
+			catch (InvalidCastException cce)
+			{
+				throw new MappingException("collection role is not queryable " + role, cce);
+			}
+		}
+
+
 		public virtual object InstantiateResult(object original)
 		{
 			return Instantiate();

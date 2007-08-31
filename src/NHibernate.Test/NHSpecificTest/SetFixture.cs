@@ -8,6 +8,7 @@ using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Metadata;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -80,6 +81,15 @@ namespace NHibernate.Test.NHSpecificTest
 			get
 			{
 				// TODO:  Add CollectionPersisterStub.OwnerClass getter implementation
+				return null;
+			}
+		}
+
+		public IEntityPersister OwnerEntityPersister
+		{
+			get
+			{
+				// TODO:  Add CollectionPersisterStub.OwnerEntityPersister getter implementation
 				return null;
 			}
 		}

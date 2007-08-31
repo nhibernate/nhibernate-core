@@ -44,6 +44,12 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		string ClassName { get; }
 
+		/// <summary> 
+		/// Returns an object that identifies the space in which identifiers of
+		/// this entity hierarchy are unique.
+		/// </summary>
+		string RootEntityName{get;}
+
 		// TODO H3: http://www.hibernate.org/hib_docs/v3/reference/en/html/mapping.html#mapping-entityname
 		// introduced in NH to prepare the work to port the feature during the port of other features (listener+events)
 		/// <summary>

@@ -8,6 +8,8 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Transaction;
 using NHibernate.Type;
+using System.Collections;
+using Iesi.Collections;
 
 namespace NHibernate.Engine
 {
@@ -191,5 +193,15 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <returns></returns>
 		IProxyFactory CreateProxyFactory();
+
+		/// <summary> 
+		/// Retrieves a set of all the collection roles in which the given entity
+		/// is a participant, as either an index or an element.
+		/// </summary>
+		/// <param name="entityName">The entity name for which to get the collection roles.</param>
+		/// <returns> 
+		/// Set of all the collection roles in which the given entityName participates.
+		/// </returns>
+		ISet GetCollectionRolesByEntityParticipant(string entityName);
 	}
 }

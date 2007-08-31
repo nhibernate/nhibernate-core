@@ -231,6 +231,11 @@ namespace NHibernate.DomainModel
 			get { return typeof(Custom).FullName; }
 		}
 
+		public string RootEntityName
+		{
+			get { return "CUSTOMS"; }
+		}
+
 		public string EntityName
 		{
 			get { return typeof(Custom).FullName; }

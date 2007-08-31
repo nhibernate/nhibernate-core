@@ -123,6 +123,13 @@ namespace NHibernate
 		/// <param name="id"></param>
 		void Evict(System.Type persistentClass, object id);
 
+		/// <summary> 
+		/// Evict all entries from the second-level cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		void EvictEntity(string entityName);
+
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect

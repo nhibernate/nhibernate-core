@@ -5,6 +5,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Metadata;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Persister.Collection
@@ -172,6 +173,9 @@ namespace NHibernate.Persister.Collection
 		/// Get the name of this collection role (the fully qualified class name, extended by a "property path")
 		/// </summary>
 		string Role { get; }
+
+		/// <summary> Get the persister of the entity that "owns" this collection</summary>
+		IEntityPersister OwnerEntityPersister { get;}
 
 		/// <summary>
 		/// Get the entity class that "owns" this collection

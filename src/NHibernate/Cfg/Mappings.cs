@@ -124,9 +124,9 @@ namespace NHibernate.Cfg
 			return classes[type];
 		}
 
-		public PersistentClass GetClass(string entityName)
+		public PersistentClass GetClass(string className)
 		{
-			return classes[ReflectHelper.ClassForName(entityName)];
+			return classes[ReflectHelper.ClassForName(className)];
 		}
 
 		/// <summary>

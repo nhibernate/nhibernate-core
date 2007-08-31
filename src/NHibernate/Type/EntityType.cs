@@ -293,6 +293,12 @@ namespace NHibernate.Type
 			return associatedClass;
 		}
 
+		// TODO H3: Until we don't implements EntityName this method have the same behaviour of AbstractEntityPersister
+		public string GetAssociatedEntityName(ISessionFactoryImplementor factory)
+		{
+			return associatedClass.FullName;
+		}
+
 		/// <summary>
 		/// When implemented by a class, gets the type of foreign key directionality 
 		/// of this association.

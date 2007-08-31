@@ -295,6 +295,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		public string RootEntityName
+		{
+			get { return null; }
+		}
+
 		public string EntityName
 		{
 			get { return null; }

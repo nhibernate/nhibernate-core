@@ -364,6 +364,11 @@ namespace NHibernate.Type
 			throw new InvalidOperationException("any types do not have a unique referenced persister");
 		}
 
+		public string GetAssociatedEntityName(ISessionFactoryImplementor factory)
+		{
+			throw new InvalidOperationException("any types do not have a unique referenced persister");
+		}
+
 		public string LHSPropertyName
 		{
 			get { return null; }

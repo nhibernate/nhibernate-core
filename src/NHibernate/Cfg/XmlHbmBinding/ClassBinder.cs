@@ -109,6 +109,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// CLASS
 			model.MappedClass = ClassForFullNameChecked(className, "persistent class {0} not found");
 
+			string entityName = node.Attributes["entity-name"] == null ? null : node.Attributes["name"].Value;
+			if (entityName == null)
+				entityName = className;
+			if (entityName == null)
+			{
+				throw new MappingException("Unable to determine entity name");
+			}
+			model.EntityName = entityName;
+
 			// PROXY INTERFACE
 			XmlAttribute proxyNode = node.Attributes["proxy"];
 			XmlAttribute lazyNode = node.Attributes["lazy"];
@@ -1117,6 +1126,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private static string GetEntityName(XmlNode elem, Mappings model)
 		{
+			// TODO: H3.2 Implement real entityName (look at IEntityPersister for feature)
 			//string entityName = XmlHelper.GetAttributeValue(elem, "entity-name");
 			//return entityName == null ? GetClassName( elem.Attributes[ "class" ], model ) : entityName;
 			XmlAttribute att = elem.Attributes["class"];

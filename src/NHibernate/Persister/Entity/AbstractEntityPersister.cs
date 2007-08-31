@@ -207,10 +207,9 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.Type.FullName; }
 		}
 
-		// TODO H3: Implement Name in EntityMetamodel
 		public string EntityName
 		{
-			get { return entityMetamodel.Type.FullName; }
+			get { return entityMetamodel.Name; }
 		}
 
 		public virtual object IdentifierSpace
@@ -1160,6 +1159,11 @@ namespace NHibernate.Persister.Entity
 		}
 
 		protected abstract SqlString GenerateLockString(SqlString sqlString, string forUpdateFragment);
+
+		public virtual string RootEntityName
+		{
+			get { return entityMetamodel.RootName; }
+		}
 
 		public virtual IClassMetadata ClassMetadata
 		{

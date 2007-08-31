@@ -239,5 +239,66 @@ namespace NHibernate.Impl
 
 			return s.ToString();
 		}
+
+		/// <summary> 
+		/// Generate an info message string relating to a given property value
+		/// for an entity. 
+		/// </summary>
+		/// <param name="entityName">The entity name </param>
+		/// <param name="propertyName">The name of the property </param>
+		/// <param name="key">The property value. </param>
+		/// <returns> An info string, in the form [Foo.bars#1] </returns>
+		public static string InfoString(string entityName, string propertyName, object key)
+		{
+			StringBuilder s = new StringBuilder()
+				.Append('[')
+				.Append(entityName)
+				.Append('.')
+				.Append(propertyName)
+				.Append('#')
+				.Append((key ?? "<null>"))
+				.Append(']');
+
+			return s.ToString();
+		}
+
+		/// <summary> 
+		/// Generate an info message string relating to a particular managed
+		/// collection.
+		/// </summary>
+		/// <param name="persister">The persister for the collection </param>
+		/// <param name="id">The id value of the owner </param>
+		/// <param name="factory">The session factory </param>
+		/// <returns> An info string, in the form [Foo.bars#1] </returns>
+		public static string InfoString(ICollectionPersister persister, object id, ISessionFactoryImplementor factory)
+		{
+			StringBuilder s = new StringBuilder();
+			s.Append('[');
+			if (persister == null)
+			{
+				s.Append("<unreferenced>");
+			}
+			else
+			{
+				s.Append(persister.Role);
+				s.Append('#');
+
+				if (id == null)
+				{
+					s.Append("<null>");
+				}
+				else
+				{
+					// Need to use the identifier type of the collection owner
+					// since the incoming is value is actually the owner's id.
+					// Using the collection's key type causes problems with
+					// property-ref keys...
+					s.Append(persister.OwnerEntityPersister.IdentifierType.ToLoggableString(id, factory));
+				}
+			}
+			s.Append(']');
+
+			return s.ToString();
+		}
 	}
 }
