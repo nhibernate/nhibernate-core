@@ -38,7 +38,7 @@ namespace NHibernate.Expression
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
+			string[] columnNames = criteriaQuery.GetPropertyColumnNames(criteria, _propertyName);
 
 			if (columnNames.Length != 1)
 			{
