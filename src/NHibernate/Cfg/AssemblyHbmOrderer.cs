@@ -32,13 +32,11 @@ namespace NHibernate.Cfg
 		 * This method solves the problem WELL enough to get by with for now.
 		 */
 
-		private readonly Assembly _assembly;
-
 		/// <summary>
-		/// An <see cref="IList"/> of all the <c>hbm.xml</c> resources found
-		/// in the assembly.
+		/// An <see cref="IList"/> of <see cref="EmbeddedResource" /> containing
+		/// all the <c>hbm.xml</c> resources found in the assembly (unordered).
 		/// </summary>
-		private readonly ArrayList _hbmResources = new ArrayList();
+		private readonly ArrayList _embeddedMappingFiles = new ArrayList();
 
 		/// <summary>
 		/// Creates a new instance of AssemblyHbmOrderer with the specified <paramref name="resources" />
@@ -46,35 +44,27 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public static AssemblyHbmOrderer CreateWithResources(Assembly assembly, IEnumerable resources)
 		{
-			AssemblyHbmOrderer result = new AssemblyHbmOrderer(assembly);
+			AssemblyHbmOrderer result = new AssemblyHbmOrderer();
 
 			foreach (string resource in resources)
 			{
-				result.AddResource(resource);
+				result.AddResource(assembly, resource);
 			}
 
 			return result;
 		}
 
 		/// <summary>
-		/// Creates a new instance of <see cref="AssemblyHbmOrderer"/>
-		/// </summary>
-		/// <param name="assembly">The <see cref="Assembly"/> to get resource streams from.</param>
-		public AssemblyHbmOrderer(Assembly assembly)
-		{
-			_assembly = assembly;
-		}
-
-		/// <summary>
 		/// Adds the specified resource to the resources being ordered.
 		/// </summary>
+		/// <param name="assembly">Assembly containing the resource.</param>
 		/// <param name="fileName">Name of the file (embedded resource).</param>
-		public void AddResource(string fileName)
+		public void AddResource(Assembly assembly, string fileName)
 		{
-			_hbmResources.Add(fileName);
+			_embeddedMappingFiles.Add(new EmbeddedResource(assembly, fileName));
 		}
 
-		private static ClassEntry BuildClassEntry(XmlReader xmlReader, string fileName, string assembly, string @namespace)
+		private static ClassEntry BuildClassEntry(XmlReader xmlReader, EmbeddedResource resource, string assembly, string @namespace)
 		{
 			xmlReader.MoveToAttribute("name");
 			string className = xmlReader.Value;
@@ -85,7 +75,7 @@ namespace NHibernate.Cfg
 				extends = xmlReader.Value;
 			}
 
-			return new ClassEntry(extends, className, assembly, @namespace, fileName);
+			return new ClassEntry(extends, className, assembly, @namespace, resource);
 		}
 
 		/// <summary>
@@ -100,14 +90,14 @@ namespace NHibernate.Cfg
 
 			// tracks if any hbm.xml files make use of the "extends" attribute
 			bool containsExtends = false;
-			// tracks any extra files, i.e. those that do not contain a class definition.
-			StringCollection extraFiles = new StringCollection();
+			// tracks any extra resources, i.e. those that do not contain a class definition.
+			ArrayList extraResources = new ArrayList();
 
-			foreach (string fileName in _hbmResources)
+			foreach (EmbeddedResource resource in _embeddedMappingFiles)
 			{
 				bool fileContainsClasses = false;
 
-				using (Stream xmlInputStream = _assembly.GetManifestResourceStream(fileName))
+				using (Stream xmlInputStream = resource.OpenStream())
 				{
 					// XmlReader does not implement IDisposable on .NET 1.1 so have to use
 					// try/finally instead of using here.
@@ -135,7 +125,7 @@ namespace NHibernate.Cfg
 								case "joined-subclass":
 								case "subclass":
 								case "union-subclass":
-									ClassEntry ce = BuildClassEntry(xmlReader, fileName, assembly, @namespace);
+									ClassEntry ce = BuildClassEntry(xmlReader, resource, assembly, @namespace);
 									classes.Add(ce);
 									fileContainsClasses = true;
 									containsExtends = containsExtends || ce.FullExtends != null;
@@ -151,7 +141,7 @@ namespace NHibernate.Cfg
 
 				if (!fileContainsClasses)
 				{
-					extraFiles.Add(fileName);
+					extraResources.Add(resource);
 				}
 			}
 
@@ -163,12 +153,12 @@ namespace NHibernate.Cfg
 				// Add ordered hbms *after* the extra files, so that the extra files are processed first.
 				// This may be useful if the extra files define filters, etc. that are being used by
 				// the entity mappings.
-				ArrayHelper.AddAll(extraFiles, OrderedHbmFiles(classes));
-				return extraFiles;
+				ArrayHelper.AddAll(extraResources, OrderedHbmFiles(classes));
+				return extraResources;
 			}
 			else
 			{
-				return _hbmResources;
+				return _embeddedMappingFiles;
 			}
 		}
 
@@ -188,14 +178,14 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Returns an <see cref="IList"/> of <c>hbm.xml</c> files in the order that ensures
+		/// Returns an <see cref="IList"/> of embedded resources in the order that ensures
 		/// base classes are loaded before their subclass/joined-subclass.
 		/// </summary>
 		/// <param name="unorderedClasses">An <see cref="ISet"/> of <see cref="ClassEntry"/> objects.</param>
 		/// <returns>
-		/// An <see cref="IList"/> of <see cref="String"/> objects that contain the <c>hbm.xml</c> file names.
+		/// An <see cref="IList"/> of <see cref="EmbeddedResource"/> objects.
 		/// </returns>
-		private static StringCollection OrderedHbmFiles(ISet unorderedClasses)
+		private static ArrayList OrderedHbmFiles(ISet unorderedClasses)
 		{
 			// Make sure joined-subclass mappings are loaded after base class
 			ArrayList sortedList = new ArrayList();
@@ -216,34 +206,39 @@ namespace NHibernate.Cfg
 					}
 				}
 
-				unorderedClasses.RemoveAll(processedInThisIteration);
-
 				if (processedInThisIteration.Count == 0)
 				{
-					if (!unorderedClasses.IsEmpty)
-					{
-						throw new MappingException(FormatExceptionMessage(unorderedClasses));
-					}
 					break;
 				}
 
+				unorderedClasses.RemoveAll(processedInThisIteration);
 				processedInThisIteration.Clear();
 			}
 
+			CheckNoUnorderedClasses(unorderedClasses);
+
 			// now that we know the order the classes should be loaded - order the
-			// hbm.xml files those classes are contained in.
-			StringCollection loadedFiles = new StringCollection();
+			// resources those classes are contained in.
+			ArrayList loadedResources = new ArrayList();
 			foreach (ClassEntry ce in sortedList)
 			{
 				// Check if this file already loaded (this can happen if
 				// we have mappings for multiple classes in one file).
-				if (loadedFiles.Contains(ce.FileName) == false)
+				if (!loadedResources.Contains(ce.Resource))
 				{
-					loadedFiles.Add(ce.FileName);
+					loadedResources.Add(ce.Resource);
 				}
 			}
 
-			return loadedFiles;
+			return loadedResources;
+		}
+
+		private static void CheckNoUnorderedClasses(ISet unorderedClasses)
+		{
+			if (!unorderedClasses.IsEmpty)
+			{
+				throw new MappingException(FormatExceptionMessage(unorderedClasses));
+			}
 		}
 
 		/// <summary>
@@ -253,13 +248,14 @@ namespace NHibernate.Cfg
 		{
 			private readonly AssemblyQualifiedTypeName _fullExtends;
 			private readonly AssemblyQualifiedTypeName _fullClassName;
-			private readonly string _fileName;
+			private readonly EmbeddedResource _resource;
 
-			public ClassEntry(string extends, string className, string assembly, string @namespace, string fileName)
+			public ClassEntry(string extends, string className, string assembly, string @namespace,
+				EmbeddedResource resource)
 			{
 				_fullExtends = extends == null ? null : TypeNameParser.Parse(extends, @namespace, assembly);
 				_fullClassName = TypeNameParser.Parse(className, @namespace, assembly);
-				_fileName = fileName;
+				_resource = resource;
 			}
 
 			public AssemblyQualifiedTypeName FullExtends
@@ -273,11 +269,11 @@ namespace NHibernate.Cfg
 			}
 
 			/// <summary>
-			/// Gets the name of the <c>hbm.xml</c> file this class was found in.
+			/// Gets the embedded resource this class was found in.
 			/// </summary>
-			public string FileName
+			public EmbeddedResource Resource
 			{
-				get { return _fileName; }
+				get { return _resource; }
 			}
 		}
 	}

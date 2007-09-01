@@ -29,10 +29,10 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 			AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(MyAssembly, Resources);
 			IList orderedResources = orderer.GetHbmFiles();
 			Assert.AreEqual(Resources.Length, orderedResources.Count);
-			Assert.AreEqual(Resources[3], orderedResources[0]);
-			Assert.AreEqual(Resources[1], orderedResources[1]);
-			Assert.AreEqual(Resources[2], orderedResources[2]);
-			Assert.AreEqual(Resources[0], orderedResources[3]);
+			Assert.AreEqual(Resources[3], ((EmbeddedResource) orderedResources[0]).Name);
+			Assert.AreEqual(Resources[1], ((EmbeddedResource) orderedResources[1]).Name);
+			Assert.AreEqual(Resources[2], ((EmbeddedResource) orderedResources[2]).Name);
+			Assert.AreEqual(Resources[0], ((EmbeddedResource) orderedResources[3]).Name);
 		}
 
 		[Test]

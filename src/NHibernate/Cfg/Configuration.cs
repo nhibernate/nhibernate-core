@@ -649,13 +649,22 @@ namespace NHibernate.Cfg
 				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(
 					assembly,
 					resources);
-				resources = orderer.GetHbmFiles();
-			}
 
-			foreach (string fileName in resources)
+				IList embeddedResources = orderer.GetHbmFiles();
+
+				foreach (EmbeddedResource resource in embeddedResources)
+				{
+					log.Info("Adding embedded mapping document: " + resource.Name);
+					AddResource(resource.Name, resource.Assembly);
+				}
+			}
+			else
 			{
-				log.Info("Adding embedded mapping document: " + fileName);
-				AddResource(fileName, assembly);
+				foreach (string fileName in resources)
+				{
+					log.Info("Adding embedded mapping document: " + fileName);
+					AddResource(fileName, assembly);
+				}
 			}
 
 			return this;
