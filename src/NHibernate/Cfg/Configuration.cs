@@ -650,9 +650,8 @@ namespace NHibernate.Cfg
 					assembly,
 					resources);
 
-				IList embeddedResources = orderer.GetHbmFiles();
-
-				foreach (EmbeddedResource resource in embeddedResources)
+				EmbeddedResource resource;
+				while ((resource = orderer.GetNextAvailableResource()) != null)
 				{
 					log.Info("Adding embedded mapping document: " + resource.Name);
 					AddResource(resource.Name, resource.Assembly);

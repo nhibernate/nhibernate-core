@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 		public void OrderingAssemblyOrderer()
 		{
 			AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(MyAssembly, Resources);
-			IList orderedResources = orderer.GetHbmFiles();
+			IList orderedResources = orderer.GetOrderedResources();
 			Assert.AreEqual(Resources.Length, orderedResources.Count);
 			Assert.AreEqual(Resources[3], ((EmbeddedResource) orderedResources[0]).Name);
 			Assert.AreEqual(Resources[1], ((EmbeddedResource) orderedResources[1]).Name);

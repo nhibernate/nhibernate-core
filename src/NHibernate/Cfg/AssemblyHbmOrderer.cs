@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -24,19 +23,15 @@ namespace NHibernate.Cfg
 	/// </remarks>
 	public class AssemblyHbmOrderer
 	{
-		/*
-		 * It almost seems like a better way to handle this would be to have
-		 * Binder.BindRoot throw a different exception when a subclass/joined-subclass
-		 * couldn't find their base class mapping.  The AddAssembly method could
-		 * "queue" up the problem hbm.xml files and run through them at the end.
-		 * This method solves the problem WELL enough to get by with for now.
-		 */
-
 		/// <summary>
 		/// An <see cref="IList"/> of <see cref="EmbeddedResource" /> containing
 		/// all the <c>hbm.xml</c> resources found in the assembly (unordered).
 		/// </summary>
 		private readonly ArrayList _embeddedMappingFiles = new ArrayList();
+
+		private IList _orderedResources;
+
+		private readonly ISet processedClassNames = new HashedSet();
 
 		/// <summary>
 		/// Creates a new instance of AssemblyHbmOrderer with the specified <paramref name="resources" />
@@ -79,12 +74,33 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Gets an <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
+		/// Gets an <see cref="EmbeddedResource" /> that can now be processed (i.e.
+		/// that doesn't depend on resources not yet processed).
 		/// </summary>
-		/// <returns>
-		/// An <see cref="IList"/> of <c>hbm.xml</c> resources in the correct order.
-		/// </returns>
-		public IList GetHbmFiles()
+		/// <returns></returns>
+		public EmbeddedResource GetNextAvailableResource()
+		{
+			if (_orderedResources == null)
+			{
+				_orderedResources = GetOrderedResources();
+			}
+
+			if (_orderedResources.Count == 0)
+			{
+				_orderedResources = null;
+				return null;
+			}
+
+			EmbeddedResource result = (EmbeddedResource) _orderedResources[0];
+			_orderedResources.RemoveAt(0);
+			return result;
+		}
+
+		/// <summary>
+		/// Gets an <see cref="IList"/> of embedded resources in the correct order.
+		/// Do not use. The method has public visibility only because of tests!
+		/// </summary>
+		public IList GetOrderedResources()
 		{
 			HashedSet classes = new HashedSet();
 
@@ -95,7 +111,7 @@ namespace NHibernate.Cfg
 
 			foreach (EmbeddedResource resource in _embeddedMappingFiles)
 			{
-				bool fileContainsClasses = false;
+				bool classFound = false;
 
 				using (Stream xmlInputStream = resource.OpenStream())
 				{
@@ -127,7 +143,7 @@ namespace NHibernate.Cfg
 								case "union-subclass":
 									ClassEntry ce = BuildClassEntry(xmlReader, resource, assembly, @namespace);
 									classes.Add(ce);
-									fileContainsClasses = true;
+									classFound = true;
 									containsExtends = containsExtends || ce.FullExtends != null;
 									break;
 							}
@@ -139,7 +155,7 @@ namespace NHibernate.Cfg
 					}
 				}
 
-				if (!fileContainsClasses)
+				if (!classFound)
 				{
 					extraResources.Add(resource);
 				}
@@ -153,7 +169,7 @@ namespace NHibernate.Cfg
 				// Add ordered hbms *after* the extra files, so that the extra files are processed first.
 				// This may be useful if the extra files define filters, etc. that are being used by
 				// the entity mappings.
-				ArrayHelper.AddAll(extraResources, OrderedHbmFiles(classes));
+				ArrayHelper.AddAll(extraResources, GetOrderedMappingResources(classes));
 				return extraResources;
 			}
 			else
@@ -185,18 +201,17 @@ namespace NHibernate.Cfg
 		/// <returns>
 		/// An <see cref="IList"/> of <see cref="EmbeddedResource"/> objects.
 		/// </returns>
-		private static ArrayList OrderedHbmFiles(ISet unorderedClasses)
+		private ArrayList GetOrderedMappingResources(ISet unorderedClasses)
 		{
 			// Make sure joined-subclass mappings are loaded after base class
 			ArrayList sortedList = new ArrayList();
-			ISet processedClassNames = new HashedSet();
 			ArrayList processedInThisIteration = new ArrayList();
 
 			while (true)
 			{
 				foreach (ClassEntry ce in unorderedClasses)
 				{
-					if (ce.FullExtends == null || processedClassNames.Contains(ce.FullExtends))
+					if (CanProcess(ce))
 					{
 						// This class extends nothing, or is derived from one of the classes that were already processed.
 						// Append it to the list since it's safe to process now.
@@ -231,6 +246,11 @@ namespace NHibernate.Cfg
 			}
 
 			return loadedResources;
+		}
+
+		private bool CanProcess(ClassEntry ce)
+		{
+			return ce.FullExtends == null || processedClassNames.Contains(ce.FullExtends);
 		}
 
 		private static void CheckNoUnorderedClasses(ISet unorderedClasses)
