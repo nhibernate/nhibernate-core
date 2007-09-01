@@ -19,8 +19,17 @@ namespace NHibernate.Test.NHSpecificTest.NH845
 			orderer.AddResource(domain, "NHibernate.DomainModel.Multi.hbm.xml");
 			orderer.AddResource(domain, "NHibernate.DomainModel.Query.hbm.xml");
 
-			IList files = orderer.GetOrderedResources();
-			Assert.IsTrue(files.Contains(new EmbeddedResource(domain, "NHibernate.DomainModel.Query.hbm.xml")));
+			EmbeddedResource resource;
+			EmbeddedResource queryResource = new EmbeddedResource(domain,
+				"NHibernate.DomainModel.Query.hbm.xml");
+			bool found = false;
+			while ((resource = orderer.GetNextAvailableResource()) != null)
+			{
+				found = queryResource.Equals(resource);
+				if (found) break;
+			}
+
+			Assert.IsTrue(found);
 		}
 	}
 }

@@ -29,9 +29,14 @@ namespace NHibernate.Cfg
 		/// </summary>
 		private readonly ArrayList _embeddedMappingFiles = new ArrayList();
 
-		private IList _orderedResources;
+		private Queue _orderedResources;
 
 		private readonly ISet processedClassNames = new HashedSet();
+
+		private readonly HashedSet classes = new HashedSet();
+
+		// tracks any extra resources, i.e. those that do not contain a class definition.
+		private readonly ArrayList extraResources = new ArrayList();
 
 		/// <summary>
 		/// Creates a new instance of AssemblyHbmOrderer with the specified <paramref name="resources" />
@@ -82,7 +87,7 @@ namespace NHibernate.Cfg
 		{
 			if (_orderedResources == null)
 			{
-				_orderedResources = GetOrderedResources();
+				OrderResources();
 			}
 
 			if (_orderedResources.Count == 0)
@@ -91,90 +96,111 @@ namespace NHibernate.Cfg
 				return null;
 			}
 
-			EmbeddedResource result = (EmbeddedResource) _orderedResources[0];
-			_orderedResources.RemoveAt(0);
-			return result;
+			return (EmbeddedResource) _orderedResources.Dequeue();
 		}
 
-		/// <summary>
-		/// Gets an <see cref="IList"/> of embedded resources in the correct order.
-		/// Do not use. The method has public visibility only because of tests!
-		/// </summary>
-		public IList GetOrderedResources()
+		private void ParseResource(EmbeddedResource resource, out bool classFound, ref bool containsExtends)
 		{
-			HashedSet classes = new HashedSet();
+			classFound = false;
 
+			using (Stream xmlInputStream = resource.OpenStream())
+			{
+				// XmlReader does not implement IDisposable on .NET 1.1 so have to use
+				// try/finally instead of using here.
+				XmlTextReader xmlReader = new XmlTextReader(xmlInputStream);
+
+				string assembly = null;
+				string @namespace = null;
+
+				try
+				{
+					while (xmlReader.Read())
+					{
+						if (xmlReader.NodeType != XmlNodeType.Element)
+						{
+							continue;
+						}
+
+						switch (xmlReader.Name)
+						{
+							case "hibernate-mapping":
+								assembly = xmlReader.MoveToAttribute("assembly") ? xmlReader.Value : null;
+								@namespace = xmlReader.MoveToAttribute("namespace") ? xmlReader.Value : null;
+								break;
+							case "class":
+							case "joined-subclass":
+							case "subclass":
+							case "union-subclass":
+								ClassEntry ce = BuildClassEntry(xmlReader, resource, assembly, @namespace);
+								classes.Add(ce);
+								classFound = true;
+								containsExtends = containsExtends || ce.FullExtends != null;
+								break;
+						}
+					}
+				}
+				finally
+				{
+					xmlReader.Close();
+				}
+			}
+		}
+
+		private void ParseResources(out bool containsExtends)
+		{
 			// tracks if any hbm.xml files make use of the "extends" attribute
-			bool containsExtends = false;
-			// tracks any extra resources, i.e. those that do not contain a class definition.
-			ArrayList extraResources = new ArrayList();
+			containsExtends = false;
 
 			foreach (EmbeddedResource resource in _embeddedMappingFiles)
 			{
-				bool classFound = false;
-
-				using (Stream xmlInputStream = resource.OpenStream())
-				{
-					// XmlReader does not implement IDisposable on .NET 1.1 so have to use
-					// try/finally instead of using here.
-					XmlTextReader xmlReader = new XmlTextReader(xmlInputStream);
-
-					string assembly = null;
-					string @namespace = null;
-
-					try
-					{
-						while (xmlReader.Read())
-						{
-							if (xmlReader.NodeType != XmlNodeType.Element)
-							{
-								continue;
-							}
-
-							switch (xmlReader.Name)
-							{
-								case "hibernate-mapping":
-									assembly = xmlReader.MoveToAttribute("assembly") ? xmlReader.Value : null;
-									@namespace = xmlReader.MoveToAttribute("namespace") ? xmlReader.Value : null;
-									break;
-								case "class":
-								case "joined-subclass":
-								case "subclass":
-								case "union-subclass":
-									ClassEntry ce = BuildClassEntry(xmlReader, resource, assembly, @namespace);
-									classes.Add(ce);
-									classFound = true;
-									containsExtends = containsExtends || ce.FullExtends != null;
-									break;
-							}
-						}
-					}
-					finally
-					{
-						xmlReader.Close();
-					}
-				}
+				bool classFound;
+				ParseResource(resource, out classFound, ref containsExtends);
 
 				if (!classFound)
 				{
 					extraResources.Add(resource);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets an <see cref="IList"/> of embedded resources in the correct order.
+		/// Do not use. The method has public visibility only because of tests!
+		/// </summary>
+		private void OrderResources()
+		{
+			// tracks if any hbm.xml files make use of the "extends" attribute
+			bool containsExtends;
+
+			ParseResources(out containsExtends);
 
 			// only bother to do the sorting if one of the hbm files uses 'extends' - 
 			// the sorting does quite a bit of looping through collections so if we don't
 			// need to spend the time doing that then don't bother.
 			if (containsExtends)
 			{
-				// Add ordered hbms *after* the extra files, so that the extra files are processed first.
+				// Queue ordered mappings *after* the extra files, so that the extra files are processed first.
 				// This may be useful if the extra files define filters, etc. that are being used by
 				// the entity mappings.
-				ArrayHelper.AddAll(extraResources, GetOrderedMappingResources(classes));
-				return extraResources;
+				QueueAll(extraResources);
+				QueueAll(GetOrderedMappingResources(classes));
 			}
 			else
 			{
-				return _embeddedMappingFiles;
+				QueueAll(_embeddedMappingFiles);
+			}
+		}
+
+		private void QueueAll(ICollection resources)
+		{
+			if (_orderedResources == null)
+			{
+				_orderedResources = new Queue();
+			}
+
+			foreach (EmbeddedResource res in resources)
+			{
+				_orderedResources.Enqueue(res);
 			}
 		}
 

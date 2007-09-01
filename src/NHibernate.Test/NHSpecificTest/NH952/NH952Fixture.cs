@@ -27,12 +27,11 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 		public void OrderingAssemblyOrderer()
 		{
 			AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(MyAssembly, Resources);
-			IList orderedResources = orderer.GetOrderedResources();
-			Assert.AreEqual(Resources.Length, orderedResources.Count);
-			Assert.AreEqual(Resources[3], ((EmbeddedResource) orderedResources[0]).Name);
-			Assert.AreEqual(Resources[1], ((EmbeddedResource) orderedResources[1]).Name);
-			Assert.AreEqual(Resources[2], ((EmbeddedResource) orderedResources[2]).Name);
-			Assert.AreEqual(Resources[0], ((EmbeddedResource) orderedResources[3]).Name);
+			Assert.AreEqual(Resources[3], orderer.GetNextAvailableResource().Name);
+			Assert.AreEqual(Resources[1], orderer.GetNextAvailableResource().Name);
+			Assert.AreEqual(Resources[2], orderer.GetNextAvailableResource().Name);
+			Assert.AreEqual(Resources[0], orderer.GetNextAvailableResource().Name);
+			Assert.IsNull(orderer.GetNextAvailableResource());
 		}
 
 		[Test]
