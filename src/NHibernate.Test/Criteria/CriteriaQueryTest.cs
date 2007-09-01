@@ -1428,7 +1428,9 @@ namespace NHibernate.Test.Criteria
 					Projections.ProjectionList()
 						.Add(Projections.Property("StudentNumber"), "StudentNumber")
 						.Add(Projections.Property("Name"), "Name"))
-				.SetResultTransformer(new AliasToBeanResultTransformer(typeof(Student)));
+				.SetResultTransformer(new AliasToBeanResultTransformer(typeof(Student)))
+				.Add(Expression.Property.ForName("Name").Eq("Gavin King"))
+				.AddOrder(Order.Asc("StudentNumber"));
 
 
 			ISession session = OpenSession();

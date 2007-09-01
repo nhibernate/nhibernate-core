@@ -18,11 +18,12 @@ namespace NHibernate.Loader.Criteria
 	{
 		public static readonly string RootSqlAlias = CriteriaUtil.RootAlias + '_';
 
-		private readonly ICriteriaQuery outerQueryTranslator;
+		private ICriteriaQuery outerQueryTranslator;
 
 		private readonly CriteriaImpl rootCriteria;
 		private readonly System.Type rootEntityName;
 		private readonly string rootSQLAlias;
+		private int aliasCount = 0;
 
 		private readonly IDictionary criteriaEntityNames = new SequencedHashMap();
 		private readonly ISet criteriaCollectionPersisters = new HashedSet();
@@ -65,7 +66,7 @@ namespace NHibernate.Loader.Criteria
 
 		public string GenerateSQLAlias()
 		{
-			return StringHelper.GenerateAlias(rootSQLAlias, 0);
+			return StringHelper.GenerateAlias(rootSQLAlias, aliasCount);
 		}
 
 		private ICriteria GetAliasedCriteria(string alias)
@@ -434,46 +435,73 @@ namespace NHibernate.Loader.Criteria
 			return cols[0];
 		}
 
-        public string[] GetPropertyColumnNames(ICriteria subcriteria, string propertyName)
-        {
-            try
-            {
-                return GetColumns(propertyName, subcriteria);
-            }
-            catch (HibernateException)
-            {
-                //not found in inner query , try the outer query
-                if (outerQueryTranslator != null)
-                {
-                    return outerQueryTranslator.GetPropertyColumnNames(subcriteria, propertyName);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
 		/// <summary>
 		/// Get the names of the columns constrained
 		/// by this criterion.
 		/// </summary>
-		public string[] GetPropertyColumnAliases(ICriteria subcriteria, string propertyName)
+		public string[] GetColumnsUsingProjection(
+			ICriteria subcriteria,
+			string propertyName)
+		{
+			try
+			{
+				return GetColumns(propertyName, subcriteria);
+			}
+			catch (HibernateException)
+			{
+				//not found in inner query , try the outer query
+				if (outerQueryTranslator != null)
+				{
+					return outerQueryTranslator.GetColumnsUsingProjection(subcriteria, propertyName);
+				}
+				else
+				{
+					throw;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get the aliases of the columns constrained
+		/// by this criterion (for use in ORDER BY clause).
+		/// </summary>
+		public string[] GetColumnAliasesUsingProjection(
+			ICriteria subcriteria,
+			string propertyName)
 		{
 			//first look for a reference to a projection alias
 
 			IProjection projection = rootCriteria.Projection;
-		    string[] projectionColumns = projection == null ?
-                                          null :
-                                          projection.GetColumnAliases(propertyName, 0);
+			string[] projectionColumns = projection == null ?
+										 null :
+										 projection.GetColumnAliases(propertyName, 0);
 
-			if (projectionColumns != null)
+			if (projectionColumns == null)
 			{
-			    //it refers to an alias of a projection
-			    return projectionColumns;
+				//it does not refer to an alias of a projection,
+				//look for a property
+				try
+				{
+					return GetColumns(propertyName, subcriteria);
+				}
+				catch (HibernateException)
+				{
+					//not found in inner query , try the outer query
+					if (outerQueryTranslator != null)
+					{
+						return outerQueryTranslator.GetColumnAliasesUsingProjection(subcriteria, propertyName);
+					}
+					else
+					{
+						throw;
+					}
+				}
 			}
-
-		    return GetPropertyColumnNames(subcriteria, propertyName);
+			else
+			{
+				//it refers to an alias of a projection
+				return projectionColumns;
+			}
 		}
 
 		public string[] GetIdentifierColumns(ICriteria subcriteria)
@@ -512,23 +540,43 @@ namespace NHibernate.Loader.Criteria
 				);
 		}
 
-		public IType GetPropertyType(ICriteria subcriteria, string propertyName)
+		public IType GetTypeUsingProjection(ICriteria subcriteria, string propertyName)
 		{
-			try
+			//first look for a reference to a projection alias
+			IProjection projection = rootCriteria.Projection;
+			IType[] projectionTypes = projection == null ?
+			                          null :
+			                          projection.GetTypes(propertyName, subcriteria, this);
+
+			if (projectionTypes == null)
 			{
-				return GetType(subcriteria, propertyName);
+				try
+				{
+					//it does not refer to an alias of a projection,
+					//look for a property
+					return GetType(subcriteria, propertyName);
+				}
+				catch (HibernateException)
+				{
+					//not found in inner query , try the outer query
+					if (outerQueryTranslator != null)
+					{
+						return outerQueryTranslator.GetType(subcriteria, propertyName);
+					}
+					else
+					{
+						throw;
+					}
+				}
 			}
-			catch (HibernateException)
+			else
 			{
-				//not found in inner query , try the outer query
-				if (outerQueryTranslator != null)
+				if (projectionTypes.Length != 1)
 				{
-					return outerQueryTranslator.GetType(subcriteria, propertyName);
+					//should never happen, i think
+					throw new QueryException("not a single-length projection: " + propertyName);
 				}
-				else
-				{
-					throw;
-				}
+				return projectionTypes[0];
 			}
 		}
 
@@ -560,7 +608,7 @@ namespace NHibernate.Loader.Criteria
 			}
 			// Otherwise, this is an ordinary value.
 			return new TypedValue(
-				GetPropertyType(subcriteria, propertyName),
+				GetTypeUsingProjection(subcriteria, propertyName),
 				value
 				// TODO H3: EntityMode.POJO
 				);
