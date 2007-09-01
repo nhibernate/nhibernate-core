@@ -14,13 +14,13 @@ namespace NHibernate.Impl
 	/// <seealso cref="IDetachedQuery"/>
 	/// <seealso cref="NHibernate.Impl.AbstractQueryImpl"/>
 	/// <remarks>
-	/// The behaviour of each method is basically the same of <see cref="NHibernate.Impl.AbstractQueryImpl"/>.
-	/// The main difference is:
-	/// If you mix <see cref="SetProperties(object)"/> with named parameters setter, if same param name are found,
+	/// The behaviour of each method is basically the same of <see cref="NHibernate.Impl.AbstractQueryImpl"/> methods.
+	/// The main difference is on <see cref="SetProperties(object)"/>:
+	/// If you mix <see cref="object"/> with named parameters setter, if same param name are found,
 	/// the value of the parameter setter override the value read from the POCO.
 	/// </remarks>
 	[Serializable]
-	public abstract class AbstractDetachedQuery : IDetachedQuery
+	public abstract class AbstractDetachedQuery : IDetachedQuery, IDetachedQueryImplementor
 	{
 		// Fields are protected for test scope
 		// All information are hold local to have more probability to make AbstractDetachedQuery serializable without
@@ -131,7 +131,7 @@ namespace NHibernate.Impl
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
-			namedListParams.Add(name, new TypedValue(type, vals)); // same behaviour of IQuery
+			namedListParams[name] = new TypedValue(type, vals);
 			return this;
 		}
 
@@ -139,7 +139,7 @@ namespace NHibernate.Impl
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
-			namedUntypeListParams.Add(name, vals); // same behaviour of IQuery
+			namedUntypeListParams[name] = vals;
 			return this;
 		}
 
@@ -391,6 +391,9 @@ namespace NHibernate.Impl
 		/// Fill all <see cref="IQuery"/> properties.
 		/// </summary>
 		/// <param name="q">The <see cref="IQuery"/>.</param>
+		/// <remarks>
+		/// Query properties are overriden/merged.
+		/// </remarks>
 		protected void SetQueryProperties(IQuery q)
 		{
 			q.SetMaxResults(selection.MaxRows)
@@ -443,5 +446,126 @@ namespace NHibernate.Impl
 			foreach (KeyValuePair<string, TypedValue> nlp in namedListParams)
 				q.SetParameterList(nlp.Key, (IEnumerable)nlp.Value.Value, nlp.Value.Type);
 		}
+
+		private void Reset()
+		{
+			ClearParameters();
+			lockModes.Clear();
+			selection.FirstRow = 0;
+			selection.MaxRows = RowSelection.NoValue;
+			selection.Timeout = RowSelection.NoValue;
+			selection.FetchSize = RowSelection.NoValue;
+			cacheable = false;
+			cacheRegion = null;
+			forceCacheRefresh = false;
+			flushMode = FlushMode.Unspecified;
+			resultTransformer = null;
+			shouldIgnoredUnknownNamedParameters = false;
+		}
+
+		private void ClearParameters()
+		{
+			posUntypeParams.Clear();
+			namedUntypeParams.Clear();
+			namedUntypeListParams.Clear();
+			optionalUntypeParams.Clear();
+			posParams.Clear();
+			namedParams.Clear();
+			namedListParams.Clear();
+		}
+
+		#region IDetachedQueryImplementor Members
+
+		/// <summary>
+		/// Copy all properties to a given <see cref="IDetachedQuery"/>.
+		/// </summary>
+		/// <param name="destination">The given <see cref="IDetachedQuery"/>.</param>
+		/// <remarks>
+		/// The method use <see cref="IDetachedQuery"/> to set properties of <paramref name="destination"/>.
+		/// </remarks>
+		public void CopyTo(IDetachedQuery destination)
+		{
+			destination.SetMaxResults(selection.MaxRows)
+				.SetFirstResult(selection.FirstRow)
+				.SetCacheable(cacheable)
+				.SetForceCacheRefresh(forceCacheRefresh)
+				.SetTimeout(selection.Timeout)
+				.SetFlushMode(flushMode);
+			if (!string.IsNullOrEmpty(cacheRegion))
+				destination.SetCacheRegion(cacheRegion);
+			if (resultTransformer != null)
+				destination.SetResultTransformer(resultTransformer);
+			foreach (KeyValuePair<string, LockMode> mode in lockModes)
+				destination.SetLockMode(mode.Key, mode.Value);
+
+			SetParametersTo(destination);
+		}
+
+		/// <summary>
+		/// Set only parameters to a given <see cref="IDetachedQuery"/>.
+		/// </summary>
+		/// <param name="destination">The given <see cref="IDetachedQuery"/>.</param>
+		/// <remarks>
+		/// The method use <see cref="IDetachedQuery"/> to set properties of <paramref name="destination"/>.
+		/// Existing parameters in <paramref name="destination"/> are merged/overriden.
+		/// </remarks>
+		public void SetParametersTo(IDetachedQuery destination)
+		{
+			foreach (object obj in optionalUntypeParams)
+				destination.SetProperties(obj);
+
+			// Set untyped positional parameters
+			foreach (KeyValuePair<int, object> pup in posUntypeParams)
+				destination.SetParameter(pup.Key, pup.Value);
+
+			// Set untyped named parameters
+			foreach (KeyValuePair<string, object> nup in namedUntypeParams)
+				destination.SetParameter(nup.Key, nup.Value);
+
+			// Set untyped named parameters list
+			foreach (KeyValuePair<string, IEnumerable> nulp in namedUntypeListParams)
+				destination.SetParameterList(nulp.Key, nulp.Value);
+
+			// Set typed positional parameters
+			foreach (KeyValuePair<int, TypedValue> pp in posParams)
+				destination.SetParameter(pp.Key, pp.Value.Value, pp.Value.Type);
+
+			// Set typed named parameters
+			foreach (KeyValuePair<string, TypedValue> np in namedParams)
+				destination.SetParameter(np.Key, np.Value.Value, np.Value.Type);
+
+			// Set typed named parameters List
+			foreach (KeyValuePair<string, TypedValue> nlp in namedListParams)
+				destination.SetParameterList(nlp.Key, (IEnumerable)nlp.Value.Value, nlp.Value.Type);
+		}
+
+		void IDetachedQueryImplementor.OverrideInfoFrom(IDetachedQueryImplementor origin)
+		{
+			Reset();
+			origin.CopyTo(this);
+		}
+
+		void IDetachedQueryImplementor.OverrideParametersFrom(IDetachedQueryImplementor origin)
+		{
+			ClearParameters();
+			origin.SetParametersTo(this);
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Clear all existing parameters and copy new parameters from a given origin.
+		/// </summary>
+		/// <param name="origin">The origin of parameters.</param>
+		/// <returns>The current instance</returns>
+		/// <exception cref="ArgumentNullException">If <paramref name="origin"/> is null.</exception>
+		public IDetachedQuery CopyParametersFrom(IDetachedQueryImplementor origin)
+		{
+			if (origin == null)
+				throw new ArgumentNullException("origin");
+			(this as IDetachedQueryImplementor).OverrideParametersFrom(origin);
+			return this;
+		}
+
 	}
 }

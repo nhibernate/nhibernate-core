@@ -593,6 +593,7 @@
     <Compile Include="Impl\DetachedQuery.cs" />
     <Compile Include="IDetachedQuery.cs" />
     <Compile Include="IdentityEqualityComparer.cs" />
+    <Compile Include="Impl\IDetachedQueryImplementor.cs" />
     <Compile Include="Impl\MultiCriteriaImpl.cs" />
     <Compile Include="Impl\MultipleQueriesCacheAssembler.cs" />
     <Compile Include="IMultiCriteria.cs" />

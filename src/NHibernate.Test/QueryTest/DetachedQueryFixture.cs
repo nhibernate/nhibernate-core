@@ -168,6 +168,151 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		[Test]
+		public void CopyToTest()
+		{
+			TestDetachedQuery origin = new TestDetachedQuery();
+			origin.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetForceCacheRefresh(true).SetTimeout(444).SetFlushMode
+				(FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof (NoFoo)));
+			origin.SetLockMode("LM1", LockMode.Upgrade);
+			origin.SetProperties(new Foo("Pallino", "Pinco"));
+			origin.SetInt64(1, 1);
+			origin.SetBinary(2, new byte[] {});
+			origin.SetBoolean(3, false);
+			origin.SetDateTime(6, DateTime.MaxValue);
+			origin.SetCharacter("5", 'A');
+			origin.SetDateTime("6", DateTime.MaxValue);
+			origin.SetDecimal("7", 10.15m);
+			origin.SetParameterList("UntypedList", new int[] {1, 2, 3});
+			origin.SetParameterList("TypedList", new Int64[] {1, 2, 3}, NHibernateUtil.Int64);
+
+			TestDetachedQuery tdq = new TestDetachedQuery();
+			tdq.SetLockMode("LM1", LockMode.Read);
+			tdq.SetLockMode("LM2", LockMode.Write);
+			tdq.SetProperties(new Foo("Fulano", "De Tal"));
+			tdq.SetAnsiString(1, ""); //will be override
+			tdq.SetByte(4, 255);
+			tdq.SetCharacter(5, 'A');
+			tdq.SetDateTime(6, DateTime.MinValue); // will be override
+			tdq.SetDateTime("6", DateTime.MinValue); // will be override
+			tdq.SetDouble("8", 8.1f);
+			tdq.SetEntity("9", new Foo("Fulano", "De Tal"));
+			tdq.SetParameterList("UntypedList", new int[] {5, 6, 7, 8}); // will be override
+			tdq.SetParameterList("TypedList", new Int64[] {5, 6, 7, 8}, NHibernateUtil.Int64); // will be override
+
+			origin.CopyTo(tdq);
+
+			Assert.AreEqual(5, tdq.Selection.FirstRow);
+			Assert.AreEqual(444, tdq.Selection.Timeout);
+			Assert.IsTrue(tdq.Cacheable);
+			Assert.IsTrue(tdq.ForceCacheRefresh);
+			Assert.AreEqual(FlushMode.Auto, tdq.FlushMode);
+			Assert.AreEqual("A_REGION", tdq.CacheRegion);
+			Assert.IsNotNull(tdq.ResultTransformer);
+
+			// merge/override of LockModes
+			Assert.AreEqual(2, tdq.LockModes.Count);
+			Assert.IsTrue(tdq.LockModes.ContainsKey("LM1"));
+			Assert.AreEqual(LockMode.Upgrade, tdq.LockModes["LM1"]);
+			Assert.IsTrue(tdq.LockModes.ContainsKey("LM2"));
+			Assert.AreEqual(LockMode.Write, tdq.LockModes["LM2"]);
+
+			// merge of OptionalUntypeParams (eventually override by IQuery)
+			Assert.AreEqual(2, tdq.OptionalUntypeParams.Count);
+			Assert.IsTrue(tdq.OptionalUntypeParams[0].Equals(new Foo("Fulano", "De Tal")));
+			Assert.IsTrue(tdq.OptionalUntypeParams[1].Equals(new Foo("Pallino", "Pinco")));
+
+			// merge/override positional parameters
+			Assert.IsTrue(tdq.PosParams[1].Type.Equals(NHibernateUtil.Int64));
+			Assert.IsTrue(tdq.PosParams[2].Type.Equals(NHibernateUtil.Binary));
+			Assert.IsTrue(tdq.PosParams[3].Type.Equals(NHibernateUtil.Boolean));
+			Assert.IsTrue(tdq.PosParams[4].Type.Equals(NHibernateUtil.Byte));
+			Assert.IsTrue(tdq.PosParams[5].Type.Equals(NHibernateUtil.Character));
+			Assert.IsTrue(tdq.PosParams[6].Type.Equals(NHibernateUtil.DateTime));
+			Assert.IsTrue(tdq.PosParams[6].Value.Equals(DateTime.MaxValue));
+
+			// merge/override named parameters
+			Assert.IsTrue(tdq.NamedParams["5"].Type.Equals(NHibernateUtil.Character));
+			Assert.IsTrue(tdq.NamedParams["6"].Type.Equals(NHibernateUtil.DateTime));
+			Assert.IsTrue(tdq.NamedParams["6"].Value.Equals(DateTime.MaxValue));
+			Assert.IsTrue(tdq.NamedParams["7"].Type.Equals(NHibernateUtil.Decimal));
+			Assert.IsTrue(tdq.NamedParams["8"].Type.Equals(NHibernateUtil.Double));
+			Assert.IsTrue(tdq.NamedParams["9"].Type.Equals(NHibernateUtil.Entity(typeof (Foo))));
+
+			// merge/override named parameters list
+			int expected = 1;
+			foreach (int i in tdq.NamedUntypeListParams["UntypedList"])
+			{
+				Assert.AreEqual(expected, i);
+				expected++;
+			}
+
+			// merge/override named params lists
+			long lexpected = 1;
+			foreach (long i in (tdq.NamedListParams["TypedList"].Value as IEnumerable))
+			{
+				Assert.AreEqual(lexpected, i);
+				lexpected++;
+			}
+		}
+
+		[Test]
+		public void OverrideTest()
+		{
+			TestDetachedQuery origin = new TestDetachedQuery();
+			origin.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetForceCacheRefresh(true).SetTimeout(444).SetFlushMode
+				(FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof(NoFoo)));
+			origin.SetLockMode("LM1", LockMode.Upgrade);
+			origin.SetProperties(new Foo("Pallino", "Pinco"));
+			origin.SetInt64(1, 1);
+
+			TestDetachedQuery tdq = new TestDetachedQuery();
+			tdq.SetLockMode("LM1", LockMode.Read);
+			tdq.SetLockMode("LM2", LockMode.Write);
+			tdq.SetProperties(new Foo("Fulano", "De Tal"));
+			tdq.SetAnsiString(1, ""); //will be override
+			tdq.SetByte(4, 255);
+			tdq.SetCharacter(5, 'A');
+			tdq.SetDateTime(6, DateTime.MinValue); // will be override
+			tdq.SetDateTime("6", DateTime.MinValue); // will be override
+			tdq.SetDouble("8", 8.1f);
+			tdq.SetEntity("9", new Foo("Fulano", "De Tal"));
+			tdq.SetParameterList("UntypedList", new int[] { 5, 6, 7, 8 }); // will be override
+			tdq.SetParameterList("TypedList", new Int64[] { 5, 6, 7, 8 }, NHibernateUtil.Int64); // will be override
+
+			tdq.OverrideInfoFrom(origin);
+
+			Assert.AreEqual(5, tdq.Selection.FirstRow);
+			Assert.AreEqual(444, tdq.Selection.Timeout);
+			Assert.IsTrue(tdq.Cacheable);
+			Assert.IsTrue(tdq.ForceCacheRefresh);
+			Assert.AreEqual(FlushMode.Auto, tdq.FlushMode);
+			Assert.AreEqual("A_REGION", tdq.CacheRegion);
+			Assert.IsNotNull(tdq.ResultTransformer);
+
+			// override of LockModes
+			Assert.AreEqual(1, tdq.LockModes.Count);
+			Assert.IsTrue(tdq.LockModes.ContainsKey("LM1"));
+			Assert.AreEqual(LockMode.Upgrade, tdq.LockModes["LM1"]);
+
+			// override OptionalUntypeParams
+			Assert.AreEqual(1, tdq.OptionalUntypeParams.Count);
+			Assert.IsTrue(tdq.OptionalUntypeParams[0].Equals(new Foo("Pallino", "Pinco")));
+
+			// override positional parameters
+			Assert.AreEqual(1, tdq.PosParams.Count);
+			Assert.IsTrue(tdq.PosParams[1].Type.Equals(NHibernateUtil.Int64));
+
+			// override named parameters
+			Assert.AreEqual(0, tdq.NamedParams.Count);
+
+			// override named parameters list
+			Assert.AreEqual(0, tdq.NamedUntypeListParams.Count);
+
+			// override named params lists
+			Assert.AreEqual(0, tdq.NamedListParams.Count);
+		}
+
+		[Test]
 		public void ExecutableQuery()
 		{
 			// Simply fetch
@@ -185,10 +330,10 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList l = q.List();
+				IList<Foo> l = q.List<Foo>();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual("N2", (l[0] as Foo).Name);
-				Assert.AreEqual("D2", (l[0] as Foo).Description);
+				Assert.AreEqual("N2", l[0].Name);
+				Assert.AreEqual("D2", l[0].Description);
 			}
 
 			// With UnTyped Parameters
@@ -197,10 +342,10 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList l = q.List();
+				IList<Foo> l = q.List<Foo>();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual("N2", (l[0] as Foo).Name);
-				Assert.AreEqual("D2", (l[0] as Foo).Description);
+				Assert.AreEqual("N2", l[0].Name);
+				Assert.AreEqual("D2", l[0].Description);
 			}
 
 			// With UnTyped Parameter List
@@ -209,10 +354,10 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList l = q.List();
+				IList<Foo> l = q.List<Foo>();
 				Assert.AreEqual(2, l.Count);
-				Assert.AreEqual("N2", (l[0] as Foo).Name);
-				Assert.AreEqual("N3", (l[1] as Foo).Name);
+				Assert.AreEqual("N2", l[0].Name);
+				Assert.AreEqual("N3", l[1].Name);
 			}
 
 			// Pagination
@@ -280,11 +425,11 @@ namespace NHibernate.Test.QueryTest
 			dq.SetString("pn", "N2").SetString("pd", "D2");
 			byte[] bytes = SerializationHelper.Serialize(dq);
 
-			DetachedQuery dcs = (DetachedQuery)SerializationHelper.Deserialize(bytes);
+			DetachedQuery dqs = (DetachedQuery)SerializationHelper.Deserialize(bytes);
 
 			using (ISession s = OpenSession())
 			{
-				dq.GetExecutableQuery(s).List();
+				dqs.GetExecutableQuery(s).List();
 			}
 		}
 
@@ -393,6 +538,16 @@ namespace NHibernate.Test.QueryTest
 			public override IQuery GetExecutableQuery(ISession session)
 			{
 				throw new Exception("The method or operation is not implemented.");
+			}
+
+			public new void CopyTo(IDetachedQuery destination)
+			{
+				base.CopyTo(destination);
+			}
+
+			public void OverrideInfoFrom(IDetachedQueryImplementor origin)
+			{
+				(this as IDetachedQueryImplementor).OverrideInfoFrom(origin);
 			}
 		}
 	}

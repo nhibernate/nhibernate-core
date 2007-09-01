@@ -33,10 +33,24 @@ namespace NHibernate.Impl
 			get { return queryName; }
 		}
 
+		/// <summary>
+		/// Get an executable instance of <see cref="IQuery"/>, to actually run the query.
+		/// </summary>
 		public override IQuery GetExecutableQuery(ISession session)
 		{
 			IQuery result = session.GetNamedQuery(queryName);
 			SetQueryProperties(result);
+			return result;
+		}
+
+		/// <summary>
+		/// Creates a new DetachedNamedQuery that is a deep copy of the current instance.
+		/// </summary>
+		/// <returns>The clone.</returns>
+		public DetachedNamedQuery Clone()
+		{
+			DetachedNamedQuery result = new DetachedNamedQuery(queryName);
+			CopyTo(result);
 			return result;
 		}
 	}

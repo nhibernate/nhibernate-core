@@ -30,10 +30,24 @@ namespace NHibernate.Impl
 			get { return hql; }
 		}
 
+		/// <summary>
+		/// Get an executable instance of <see cref="IQuery"/>, to actually run the query.
+		/// </summary>
 		public override IQuery GetExecutableQuery(ISession session)
 		{
 			IQuery result = session.CreateQuery(hql);
 			SetQueryProperties(result);
+			return result;
+		}
+
+		/// <summary>
+		/// Creates a new DetachedQuery that is a deep copy of the current instance.
+		/// </summary>
+		/// <returns>The clone.</returns>
+		public DetachedQuery Clone()
+		{
+			DetachedQuery result = new DetachedQuery(hql);
+			CopyTo(result);
 			return result;
 		}
 	}
