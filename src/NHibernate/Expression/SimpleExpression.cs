@@ -67,8 +67,8 @@ namespace NHibernate.Expression
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
-			string[] columnNames = criteriaQuery.GetPropertyColumnNames(criteria, _propertyName);
-			IType propertyType = criteriaQuery.GetPropertyType(criteria, _propertyName);
+			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
+			IType propertyType = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
 
 			if (_value != null && !(_value is System.Type) && !propertyType.ReturnedClass.IsInstanceOfType(_value))
 			{

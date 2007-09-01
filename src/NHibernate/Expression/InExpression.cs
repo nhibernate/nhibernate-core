@@ -33,7 +33,7 @@ namespace NHibernate.Expression
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
-			IType type = criteriaQuery.GetPropertyType(criteria, _propertyName);
+			IType type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
 			if (type.IsCollectionType)
 			{
 				throw new QueryException("Cannot use collections with InExpression");
@@ -47,7 +47,7 @@ namespace NHibernate.Expression
 
 			//TODO: add default capacity
 			SqlStringBuilder result = new SqlStringBuilder();
-			string[] columnNames = criteriaQuery.GetPropertyColumnNames(criteria, _propertyName);
+			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
 
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...
@@ -83,7 +83,7 @@ namespace NHibernate.Expression
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			ArrayList list = new ArrayList();
-			IType type = criteriaQuery.GetPropertyType(criteria, _propertyName);
+			IType type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
 
 			if (type.IsComponentType)
 			{

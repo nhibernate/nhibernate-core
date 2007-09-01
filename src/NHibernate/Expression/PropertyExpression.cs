@@ -32,8 +32,8 @@ namespace NHibernate.Expression
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
 		{
-			string[] columnNames = criteriaQuery.GetPropertyColumnNames(criteria, _lhsPropertyName);
-			string[] otherColumnNames = criteriaQuery.GetPropertyColumnNames(criteria, _rhsPropertyName);
+			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _lhsPropertyName);
+			string[] otherColumnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _rhsPropertyName);
 
 			string result = string.Join(
 				" and ",

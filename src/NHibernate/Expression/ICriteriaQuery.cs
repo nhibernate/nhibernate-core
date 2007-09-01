@@ -11,7 +11,11 @@ namespace NHibernate.Expression
 
 		IType GetType(ICriteria criteria, string propertyPath);
 
-		IType GetPropertyType(ICriteria criteria, string propertyPath);
+		string[] GetColumnAliasesUsingProjection(ICriteria criteria, string propertyPath);
+
+		string[] GetColumnsUsingProjection(ICriteria criteria, string propertyPath);
+
+		IType GetTypeUsingProjection(ICriteria criteria, string propertyPath);
 
 		TypedValue GetTypedValue(ICriteria criteria, string propertyPath, object value);
 
@@ -32,10 +36,5 @@ namespace NHibernate.Expression
 		TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value);
 
 		string GenerateSQLAlias();
-
-		// Column names are used in expressions (it's assumed that all expressions
-		// end up in the WHERE clause, not in HAVING). Column aliases are used in ORDER BY.
-		string[] GetPropertyColumnNames(ICriteria criteria, string propertyPath);
-		string[] GetPropertyColumnAliases(ICriteria criteria, string propertyPath);
-    }
+	}
 }
