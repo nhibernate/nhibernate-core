@@ -47,5 +47,10 @@ namespace NHibernate.Cfg
 		{
 			return name.GetHashCode() ^ assembly.GetHashCode();
 		}
+
+		public override string ToString()
+		{
+			return Name + " in " + Assembly;
+		}
 	}
 }
