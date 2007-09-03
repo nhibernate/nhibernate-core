@@ -963,8 +963,9 @@ namespace NHibernate.Impl
 		}
 
 		private bool disposed;
+	    private IDictionary items = new Hashtable();
 
-		public void Dispose()
+	    public void Dispose()
 		{
 			if (disposed)
 			{
@@ -1294,7 +1295,12 @@ namespace NHibernate.Impl
 			get { return settings; }
 		}
 
-		public ISession GetCurrentSession()
+	    public IDictionary Items
+	    {
+	        get { return items; }
+	    }
+
+	    public ISession GetCurrentSession()
 		{
 			if (currentSessionContext == null)
 			{

@@ -183,7 +183,15 @@ namespace NHibernate
 
 		Settings Settings { get; }
 
-		/// <summary>
+        /// <summary>
+        /// This collections allows external libraries
+        /// to add their own configuration to the NHibernate session factory.
+        /// This is needed in such cases where the library is tightly coupled to NHibernate, such
+        /// as the case of NHibernate Search
+        /// </summary>
+	    IDictionary Items { get; }
+
+	    /// <summary>
 		/// Obtains the current session.
 		/// </summary>
 		/// <remarks>
