@@ -585,6 +585,7 @@
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="EmptyInterceptor.cs" />
     <Compile Include="Engine\BatchFetchQueue.cs" />
+    <Compile Include="Engine\EntityUniqueKey.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
     <Compile Include="Impl\AbstractDetachedQuery.cs" />
