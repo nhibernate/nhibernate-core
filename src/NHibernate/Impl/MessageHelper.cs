@@ -300,5 +300,24 @@ namespace NHibernate.Impl
 
 			return s.ToString();
 		}
+
+		/// <summary> 
+		/// Generate an info message string relating to a particular entity,
+		/// based on the given entityName and id. 
+		/// </summary>
+		/// <param name="entityName">The defined entity name. </param>
+		/// <param name="id">The entity id value. </param>
+		/// <returns> An info string, in the form [FooBar#1]. </returns>
+		public static string InfoString(string entityName, object id)
+		{
+			StringBuilder s = new StringBuilder()
+				.Append('[')
+				.Append((entityName ?? "<null entity name>"))
+				.Append('#')
+				.Append((id ?? "<null>"))
+				.Append(']');
+
+			return s.ToString();
+		}
 	}
 }

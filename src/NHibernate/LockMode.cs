@@ -13,8 +13,8 @@ namespace NHibernate
 	[Serializable]
 	public sealed class LockMode
 	{
-		private int level;
-		private string name;
+		private readonly int level;
+		private readonly string name;
 
 		/// <summary>
 		/// 
@@ -93,6 +93,14 @@ namespace NHibernate
 		/// This is not a valid mode for <c>Load()</c> or <c>Lock()</c>.
 		/// </remarks>
 		public static LockMode Write = new LockMode(10, "Write");
+
+		// TODO H3.2: Implement Force where required
+		/// <summary> 
+		/// Similiar to <see cref="Upgrade"/> except that, for versioned entities,
+		/// it results in a forced version increment.
+		/// </summary>
+		public static readonly LockMode Force = new LockMode(15, "Force");
+
 
 		//TODO: need to implement .NET equivalent of readResolve - believe it is
 		// the IObjectReference interface...
