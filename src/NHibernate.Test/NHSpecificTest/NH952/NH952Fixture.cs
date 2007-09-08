@@ -23,22 +23,13 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 			};
 
 		[Test]
-		public void OrderingAssemblyOrderer()
-		{
-			AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(MyAssembly, Resources);
-			IList<string> orderedResources = orderer.GetHbmFiles();
-			Assert.AreEqual(Resources.Length, orderedResources.Count);
-			Assert.AreEqual(Resources[3], orderedResources[0]);
-			Assert.AreEqual(Resources[1], orderedResources[1]);
-			Assert.AreEqual(Resources[2], orderedResources[2]);
-			Assert.AreEqual(Resources[0], orderedResources[3]);
-		}
-
-		[Test]
 		public void OrderingAddResources()
 		{
 			Configuration cfg = new Configuration();
-			cfg.AddResources(MyAssembly, Resources, false);
+			foreach (string res in Resources)
+			{
+				cfg.AddResource(res, MyAssembly);
+			}
 			cfg.BuildSessionFactory().Close();
 		}
 	}

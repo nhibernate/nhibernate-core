@@ -17,7 +17,7 @@ namespace NHibernate.Test.CfgTest
 			{
 				XmlTextReader xmlReader = new XmlTextReader(stringReader);
 				Configuration cfg = new Configuration();
-				return cfg.LoadMappingDocument(xmlReader, name);
+				return cfg.LoadMappingDocument(xmlReader, name).Document;
 			}
 		}
 

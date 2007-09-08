@@ -68,6 +68,8 @@ namespace NHibernate.Cfg
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 		private System.Type proxyFactoryClass = typeof (CastleProxyFactory);
+		private MappingsQueue mappingsQueue;
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(Configuration));
 
 		/// <summary>
@@ -90,6 +92,7 @@ namespace NHibernate.Cfg
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
 			sqlFunctions = new Dictionary<string, ISQLFunction>();
+			mappingsQueue = new MappingsQueue();
 		}
 
 		private class Mapping : IMapping
@@ -370,9 +373,8 @@ namespace NHibernate.Cfg
 		/// Takes the validated XmlDocument and has the Binder do its work of
 		/// creating Mapping objects from the Mapping Xml.
 		/// </summary>
-		/// <param name="doc">The <b>validated</b> XmlDocument that contains the Mappings.</param>
-		/// <param name="name">The name of the document, for error reporting purposes.</param>
-		private void AddValidatedDocument(XmlDocument doc, string name)
+		/// <param name="doc">The NamedXmlDocument that contains the <b>validated</b> mapping XML file.</param>
+		private void AddValidatedDocument(NamedXmlDocument doc)
 		{
 			try
 			{
@@ -380,18 +382,17 @@ namespace NHibernate.Cfg
 				// selects as their prefix in the document.  It is the prefix we use to 
 				// build the XPath and the nsmgr takes care of translating our prefix into
 				// the user defined prefix...
-				XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
+				XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.Document.NameTable);
 				namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
 
 				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
 				Mappings mappings = CreateMappings();
 
-				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(doc.DocumentElement);
-
+				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(doc.Document.DocumentElement);
 			}
 			catch (Exception e)
 			{
-				string nameFormatted = name ?? "(unknown)";
+				string nameFormatted = doc.Name ?? "(unknown)";
 				LogAndThrow(new MappingException("Could not compile the mapping document: " + nameFormatted, e));
 			}
 		}
@@ -483,16 +484,17 @@ namespace NHibernate.Cfg
 		/// <returns>This configuration object.</returns>
 		public Configuration AddResource(string path, Assembly assembly)
 		{
-			log.Info("Mapping resource: " + path);
+			string debugName = path;
+			log.Info("Mapping resource: " + debugName);
 			Stream rsrc = assembly.GetManifestResourceStream(path);
 			if (rsrc == null)
 			{
-				LogAndThrow(new MappingException("Resource not found: " + path));
+				LogAndThrow(new MappingException("Resource not found: " + debugName));
 			}
 
 			try
 			{
-				return AddInputStream(rsrc, path);
+				return AddInputStream(rsrc, debugName);
 			}
 			catch (MappingException)
 			{
@@ -500,15 +502,12 @@ namespace NHibernate.Cfg
 			}
 			catch (Exception e)
 			{
-				LogAndThrow(new MappingException("Could not configure datastore from resource " + path, e));
+				LogAndThrow(new MappingException("Could not configure datastore from resource " + debugName, e));
 				return this; // To please the compiler
 			}
 			finally
 			{
-				if (rsrc != null)
-				{
-					rsrc.Close();
-				}
+				rsrc.Close();
 			}
 		}
 
@@ -563,17 +562,15 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="assembly">The assembly.</param>
 		/// <returns>This configuration object.</returns>
-		/// <remarks>
-		/// This method assumes that the <c>hbm.xml</c> files in the Assembly need to be put
-		/// in the correct order by NHibernate.  See <see cref="AddAssembly(Assembly, bool)">
-		/// AddAssembly(Assembly assembly, bool skipOrdering)</see> for the impacts and reasons
-		/// for letting NHibernate order the <c>hbm.xml</c> files.
-		/// </remarks>
 		public Configuration AddAssembly(Assembly assembly)
 		{
-			// assume ordering is needed because that is the
-			// safest way to handle it.
-			return AddAssembly(assembly, false);
+			IList<string> resourceNames = GetAllHbmXmlResourceNames(assembly);
+
+			foreach (string name in resourceNames)
+			{
+				AddResource(name, assembly);
+			}
+			return this;
 		}
 
 		private static IList<string> GetAllHbmXmlResourceNames(Assembly assembly)
@@ -589,52 +586,6 @@ namespace NHibernate.Cfg
 			}
 
 			return result;
-		}
-
-		/// <summary>
-		/// Adds all of the assembly's embedded resources whose names end with <c>.hbm.xml</c>.
-		/// </summary>
-		/// <param name="assembly">The loaded assembly.</param>
-		/// <param name="skipOrdering">
-		/// A <see cref="Boolean"/> indicating if the ordering of hbm.xml files can be skipped.
-		/// </param>
-		/// <returns>This configuration object.</returns>
-		/// <remarks>
-		/// <para>
-		/// The order of <c>hbm.xml</c> files only matters if the attribute "extends" is used.
-		/// The ordering should only be done when needed because it takes extra time 
-		/// to read the XML files to find out the order the files should be passed to
-		/// the <see cref="XmlHbmBinding.Binder" />. If you don't use the "extends" attribute then it is
-		/// reccommended to call this with <c>skipOrdering=true</c>.
-		/// </para>
-		/// </remarks>
-		public Configuration AddAssembly(Assembly assembly, bool skipOrdering)
-		{
-			IList<string> resources = GetAllHbmXmlResourceNames(assembly);
-			return AddResources(assembly, resources, skipOrdering);
-		}
-
-		public Configuration AddResources(Assembly assembly, IList<string> resources, bool skipOrdering)
-		{
-			if (!skipOrdering)
-			{
-				ISet<string> loadedClasses = new HashedSet<string>();
-				foreach (KeyValuePair<System.Type, PersistentClass> de in classes)
-				{
-					PersistentClass pc = de.Value;
-					loadedClasses.Add(pc.MappedClass.FullName);
-				}
-				AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(assembly, resources);
-				resources = orderer.GetHbmFiles(loadedClasses);
-			}
-
-			foreach (string fileName in resources)
-			{
-				log.Info("Adding embedded mapping document: " + fileName);
-				AddResource(fileName, assembly);
-			}
-
-			return this;
 		}
 
 		/// <summary>
@@ -935,6 +886,10 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		private void SecondPassCompile()
 		{
+			log.Info("checking mappings queue");
+
+			mappingsQueue.CheckNoUnavailableEntries();
+
 			log.Info("processing one-to-many association mappings");
 
 			foreach (SecondPassCommand command in secondPasses)
@@ -1555,8 +1510,8 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
 		/// <param name="name">The name of the document, for error reporting purposes.</param>
-		/// <returns>Validated XmlDocument built from the XmlReader.</returns>
-		public XmlDocument LoadMappingDocument(XmlTextReader hbmReader, string name)
+		/// <returns>NamedXmlDocument containing the validated XmlDocument built from the XmlReader.</returns>
+		public NamedXmlDocument LoadMappingDocument(XmlTextReader hbmReader, string name)
 		{
 			XmlReaderSettings settings = Schemas.CreateMappingReaderSettings();
 			settings.ValidationEventHandler += ValidationHandler;
@@ -1570,7 +1525,7 @@ namespace NHibernate.Cfg
 				{
 					XmlDocument hbmDocument = new XmlDocument();
 					hbmDocument.Load(reader);
-					return hbmDocument;
+					return new NamedXmlDocument(name, hbmDocument);
 				}
 				finally
 				{
@@ -1599,9 +1554,25 @@ namespace NHibernate.Cfg
 		/// <returns>This Configuration object.</returns>
 		public Configuration AddXmlReader(XmlTextReader hbmReader, string name)
 		{
-			XmlDocument document = LoadMappingDocument(hbmReader, name);
-			AddValidatedDocument(document, name);
+			NamedXmlDocument document = LoadMappingDocument(hbmReader, name);
+			AddDocumentThroughQueue(document);
 			return this;
+		}
+
+		private void AddDocumentThroughQueue(NamedXmlDocument document)
+		{
+			mappingsQueue.AddDocument(document);
+			ProcessMappingsQueue();
+		}
+
+		private void ProcessMappingsQueue()
+		{
+			NamedXmlDocument document;
+
+			while ((document = mappingsQueue.GetNextAvailableResource()) != null)
+			{
+				AddValidatedDocument(document);
+			}
 		}
 
 		private void ValidationHandler(object o, ValidationEventArgs args)

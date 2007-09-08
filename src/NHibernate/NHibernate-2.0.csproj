@@ -83,7 +83,7 @@
     <Compile Include="Cache\Timestamper.cs" />
     <Compile Include="Cache\UpdateTimestampsCache.cs" />
     <Compile Include="CallbackException.cs" />
-    <Compile Include="Cfg\AssemblyHbmOrderer.cs" />
+    <Compile Include="Cfg\MappingsQueue.cs" />
     <Compile Include="Cfg\Configuration.cs" />
     <Compile Include="Cfg\ConfigurationSectionHandler.cs" />
     <Compile Include="Cfg\DefaultNamingStrategy.cs" />
@@ -478,6 +478,7 @@
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />
     <Compile Include="Cache\NoCachingEnabledException.cs" />
+    <Compile Include="Cfg\ClassExtractor.cs" />
     <Compile Include="Cfg\ConfigurationSchema\CfgXmlHelper.cs" />
     <Compile Include="Cfg\ConfigurationSchema\ClassCacheConfiguration.cs" />
     <Compile Include="Cfg\ConfigurationSchema\CollectionCacheConfiguration.cs" />
@@ -489,6 +490,8 @@
     <Compile Include="Cfg\HbmConstants.cs" />
     <Compile Include="Cfg\HibernateConfigException.cs" />
     <Compile Include="Cfg\IHibernateConfiguration.cs" />
+    <Compile Include="Cfg\NamedXmlDocument.cs" />
+    <Compile Include="Cfg\MappingsQueueEntry.cs" />
     <Compile Include="Cfg\MappingSchema\EndsWithHbmXmlFilter.cs" />
     <Compile Include="Cfg\MappingSchema\Hbm.generated.cs">
       <SubType>code</SubType>
