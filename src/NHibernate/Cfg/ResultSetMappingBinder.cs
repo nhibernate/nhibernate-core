@@ -12,8 +12,17 @@ namespace NHibernate.Cfg
 {
 	public abstract class ResultSetMappingBinder
 	{
-		protected static ResultSetMappingDefinition BuildResultSetMappingDefinition(XmlNode resultSetElem, string path,
-		                                                                            Mappings mappings)
+		protected readonly XmlNamespaceManager nsmgr;
+
+		protected ResultSetMappingBinder(XmlNamespaceManager nsmgr)
+		{
+			this.nsmgr = nsmgr;
+		}
+
+		protected ResultSetMappingDefinition BuildResultSetMappingDefinition(
+			XmlNode resultSetElem,
+			string path,
+			Mappings mappings)
 		{
 			string resultSetName = resultSetElem.Attributes["name"].Value;
 			if (path != null)
@@ -49,7 +58,7 @@ namespace NHibernate.Cfg
 			return definition;
 		}
 
-		private static SQLQueryRootReturn BindReturn(XmlNode returnElem, Mappings mappings, int elementCount)
+		private SQLQueryRootReturn BindReturn(XmlNode returnElem, Mappings mappings, int elementCount)
 		{
 			String alias = XmlHelper.GetAttributeValue(returnElem, "alias");
 			if (StringHelper.IsEmpty(alias))
@@ -75,7 +84,7 @@ namespace NHibernate.Cfg
 				);
 		}
 
-		private static SQLQueryJoinReturn BindReturnJoin(XmlNode returnElem, Mappings mappings)
+		private SQLQueryJoinReturn BindReturnJoin(XmlNode returnElem, Mappings mappings)
 		{
 			String alias = XmlHelper.GetAttributeValue(returnElem, "alias");
 			String roleAttribute = XmlHelper.GetAttributeValue(returnElem, "property");
@@ -103,7 +112,7 @@ namespace NHibernate.Cfg
 				);
 		}
 
-		private static SQLQueryCollectionReturn BindLoadCollection(XmlNode returnElem, Mappings mappings)
+		private SQLQueryCollectionReturn BindLoadCollection(XmlNode returnElem, Mappings mappings)
 		{
 			string alias = XmlHelper.GetAttributeValue(returnElem, "alias");
 			string collectionAttribute = XmlHelper.GetAttributeValue(returnElem, "role");
@@ -131,7 +140,7 @@ namespace NHibernate.Cfg
 				);
 		}
 
-		private static IDictionary BindPropertyResults(
+		private IDictionary BindPropertyResults(
 			String alias, XmlNode returnElement, PersistentClass pc, Mappings mappings
 			)
 		{
@@ -139,7 +148,7 @@ namespace NHibernate.Cfg
 				// maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
 
 			XmlNode discriminatorResult =
-				returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, HbmBinder.NamespaceManager);
+				returnElement.SelectSingleNode(HbmConstants.nsReturnDiscriminator, nsmgr);
 			if (discriminatorResult != null)
 			{
 				ArrayList resultColumns = GetResultColumns(discriminatorResult);
@@ -149,7 +158,7 @@ namespace NHibernate.Cfg
 			IList propertyNames = new ArrayList();
 
 			foreach (
-				XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, HbmBinder.NamespaceManager))
+				XmlNode propertyresult in returnElement.SelectNodes(HbmConstants.nsReturnProperty, nsmgr))
 			{
 				String name = XmlHelper.GetAttributeValue(propertyresult, "name");
 				if (pc == null || name.IndexOf('.') == -1)
@@ -328,7 +337,7 @@ namespace NHibernate.Cfg
 			return -1;
 		}
 
-		private static ArrayList GetResultColumns(XmlNode propertyresult)
+		private ArrayList GetResultColumns(XmlNode propertyresult)
 		{
 			String column = Unquote(XmlHelper.GetAttributeValue(propertyresult, "column"));
 			ArrayList allResultColumns = new ArrayList();
@@ -336,7 +345,7 @@ namespace NHibernate.Cfg
 			{
 				allResultColumns.Add(column);
 			}
-			foreach (XmlNode element in propertyresult.SelectNodes(HbmConstants.nsReturnColumn, HbmBinder.NamespaceManager))
+			foreach (XmlNode element in propertyresult.SelectNodes(HbmConstants.nsReturnColumn, nsmgr))
 			{
 				allResultColumns.Add(Unquote(XmlHelper.GetAttributeValue(element, "name")));
 			}

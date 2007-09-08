@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Reflection;
 
 using NHibernate.Cfg;
@@ -24,21 +23,13 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 			};
 
 		[Test]
-		public void OrderingAssemblyOrderer()
-		{
-			AssemblyHbmOrderer orderer = AssemblyHbmOrderer.CreateWithResources(MyAssembly, Resources);
-			Assert.AreEqual(Resources[3], orderer.GetNextAvailableResource().Name);
-			Assert.AreEqual(Resources[1], orderer.GetNextAvailableResource().Name);
-			Assert.AreEqual(Resources[2], orderer.GetNextAvailableResource().Name);
-			Assert.AreEqual(Resources[0], orderer.GetNextAvailableResource().Name);
-			Assert.IsNull(orderer.GetNextAvailableResource());
-		}
-
-		[Test]
 		public void OrderingAddResources()
 		{
 			Configuration cfg = new Configuration();
-			cfg.AddResources(MyAssembly, Resources, false);
+			foreach (string res in Resources)
+			{
+				cfg.AddResource(res, MyAssembly);
+			}
 			cfg.BuildSessionFactory().Close();
 		}
 	}

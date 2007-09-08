@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.IO;
 using System.Xml;
 using Iesi.Collections;
 using NHibernate.Util;
@@ -42,59 +41,37 @@ namespace NHibernate.Cfg
 		/// Returns a collection of <see cref="ClassEntry" /> containing
 		/// information about all classes in this stream.
 		/// </summary>
-		/// <param name="stream"></param>
-		/// <returns></returns>
-		public static ICollection GetClassEntries(Stream stream)
+		/// <param name="document">A validated <see cref="XmlDocument"/> representing
+		/// a mapping file.</param>
+		public static ICollection GetClassEntries(XmlDocument document)
 		{
-			HashedSet classes = new HashedSet();
+			XmlNamespaceManager nsmgr = HbmBinder.BuildNamespaceManager(document.NameTable);
 
-			// XmlReader does not implement IDisposable on .NET 1.1 so have to use
-			// try/finally instead of using here.
-			XmlTextReader xmlReader = new XmlTextReader(stream);
+			// Since the document is validated, no error checking is done in this method.
+			HashedSet classEntries = new HashedSet();
 
-			string assembly = null;
-			string @namespace = null;
+			XmlNode root = document.DocumentElement;
 
-			try
+			string assembly = XmlHelper.GetAttributeValue(root, "assembly");
+			string @namespace = XmlHelper.GetAttributeValue(root, "namespace");
+
+			XmlNodeList classNodes = document.SelectNodes(
+				"//" + HbmConstants.nsClass +
+				"|//" + HbmConstants.nsSubclass +
+				"|//" + HbmConstants.nsJoinedSubclass +
+				"|//" + HbmConstants.nsUnionSubclass,
+				nsmgr
+				);
+
+			foreach (XmlNode classNode in classNodes)
 			{
-				while (xmlReader.Read())
-				{
-					if (xmlReader.NodeType != XmlNodeType.Element)
-					{
-						continue;
-					}
-
-					switch (xmlReader.Name)
-					{
-						case "hibernate-mapping":
-							assembly = xmlReader.MoveToAttribute("assembly") ? xmlReader.Value : null;
-							@namespace = xmlReader.MoveToAttribute("namespace") ? xmlReader.Value : null;
-							break;
-						case "class":
-						case "joined-subclass":
-						case "subclass":
-						case "union-subclass":
-							xmlReader.MoveToAttribute("name");
-							string className = xmlReader.Value;
-
-							string extends = null;
-							if (xmlReader.MoveToAttribute("extends"))
-							{
-								extends = xmlReader.Value;
-							}
-
-							ClassEntry ce = new ClassEntry(extends, className, assembly, @namespace);
-							classes.Add(ce);
-							break;
-					}
-				}
-			}
-			finally
-			{
-				xmlReader.Close();
+				string name = XmlHelper.GetAttributeValue(classNode, "name");
+				string extends = XmlHelper.GetAttributeValue(classNode, "extends");
+				ClassEntry ce = new ClassEntry(extends, name, assembly, @namespace);
+				classEntries.Add(ce);
 			}
 
-			return classes;
+			return classEntries;
 		}
 	}
 }

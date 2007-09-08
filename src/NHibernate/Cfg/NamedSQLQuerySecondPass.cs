@@ -10,11 +10,12 @@ namespace NHibernate.Cfg
 	public class NamedSQLQuerySecondPass : ResultSetMappingBinder, IQuerySecondPass
 	{
 		private static ILog log = LogManager.GetLogger(typeof(NamedSQLQuerySecondPass));
-		private XmlNode queryElem;
-		private string path;
-		private Mappings mappings;
+		private readonly XmlNode queryElem;
+		private readonly string path;
+		private readonly Mappings mappings;
 
-		public NamedSQLQuerySecondPass(XmlNode queryElem, string path, Mappings mappings)
+		public NamedSQLQuerySecondPass(XmlNode queryElem, string path, Mappings mappings, XmlNamespaceManager nsmgr)
+			: base(nsmgr)
 		{
 			this.queryElem = queryElem;
 			this.path = path;
@@ -44,7 +45,7 @@ namespace NHibernate.Cfg
 
 			IList synchronizedTables = new ArrayList();
 
-			foreach (XmlNode item in queryElem.SelectNodes(HbmConstants.nsSynchronize, HbmBinder.NamespaceManager))
+			foreach (XmlNode item in queryElem.SelectNodes(HbmConstants.nsSynchronize, nsmgr))
 			{
 				synchronizedTables.Add(XmlHelper.GetAttributeValue(item, "table"));
 			}

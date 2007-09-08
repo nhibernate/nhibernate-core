@@ -7,24 +7,24 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Holds information about mapped classes found in an embedded resource
 	/// </summary>
-	public class ResourceEntry
+	public class MappingsQueueEntry
 	{
-		private readonly EmbeddedResource resource;
+		private readonly NamedXmlDocument document;
 		private readonly ISet requiredClassNames;
 		private readonly ISet containedClassNames;
 
-		public ResourceEntry(EmbeddedResource resource, ICollection classEntries)
+		public MappingsQueueEntry(NamedXmlDocument document, ICollection classEntries)
 		{
-			this.resource = resource;
+			this.document = document;
 
 			containedClassNames = GetClassNames(classEntries);
 			requiredClassNames = GetExtendsNames(classEntries);
 			requiredClassNames.RemoveAll(containedClassNames);
 		}
 
-		public EmbeddedResource Resource
+		public NamedXmlDocument Document
 		{
-			get { return resource; }
+			get { return document; }
 		}
 
 		private static ISet GetClassNames(ICollection classEntries)

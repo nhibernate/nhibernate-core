@@ -7,11 +7,12 @@ namespace NHibernate.Cfg
 {
 	public class ResultSetMappingSecondPass : ResultSetMappingBinder, IQuerySecondPass
 	{
-		private XmlNode element;
-		private string path;
-		private Mappings mappings;
+		private readonly XmlNode element;
+		private readonly string path;
+		private readonly Mappings mappings;
 
-		public ResultSetMappingSecondPass(XmlNode element, String path, Mappings mappings)
+		public ResultSetMappingSecondPass(XmlNode element, String path, Mappings mappings, XmlNamespaceManager nsmgr)
+			: base(nsmgr)
 		{
 			this.element = element;
 			this.path = path;

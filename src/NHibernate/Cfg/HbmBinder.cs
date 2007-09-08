@@ -17,13 +17,7 @@ namespace NHibernate.Cfg
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HbmBinder));
 
-		// Made internal to be accessible from Cfg.CollectionSecondPass
 		private static XmlNamespaceManager nsmgr;
-
-		internal static XmlNamespaceManager NamespaceManager
-		{
-			get { return nsmgr; }
-		}
 
 		internal static Dialect.Dialect dialect;
 
@@ -42,6 +36,17 @@ namespace NHibernate.Cfg
 
 			return TypeNameParser.Parse(className, mapping.DefaultNamespace, mapping.DefaultAssembly)
 				.ToString();
+		}
+
+		public static XmlNamespaceManager BuildNamespaceManager(XmlNameTable nameTable)
+		{
+			XmlNamespaceManager result = new XmlNamespaceManager(nameTable);
+			// note that the prefix has absolutely nothing to do with what the user
+			// selects as their prefix in the document.  It is the prefix we use to 
+			// build the XPath and the nsmgr takes care of translating our prefix into
+			// the user defined prefix...
+			result.AddNamespace(HbmConstants.nsPrefix, Configuration.MappingSchemaXMLNS);
+			return result;
 		}
 
 		/// <summary>
@@ -1803,16 +1808,9 @@ namespace NHibernate.Cfg
 
 		public static void BindRoot(XmlDocument doc, Mappings mappings)
 		{
+			nsmgr = BuildNamespaceManager(doc.NameTable);
 			XmlNode hmNode = doc.DocumentElement;
 			ExtractRootAttributes(hmNode, mappings);
-
-			nsmgr = new XmlNamespaceManager(doc.NameTable);
-			// note that the prefix has absolutely nothing to do with what the user
-			// selects as their prefix in the document.  It is the prefix we use to 
-			// build the XPath and the nsmgr takes care of translating our prefix into
-			// the user defined prefix...
-			nsmgr.AddNamespace(HbmConstants.nsPrefix, Configuration.MappingSchemaXMLNS);
-
 
 			foreach (XmlNode n in hmNode.SelectNodes(HbmConstants.nsFilterDef, nsmgr))
 			{
@@ -1936,7 +1934,7 @@ namespace NHibernate.Cfg
 
 		private static void BindNamedSQLQuery(XmlNode queryElem, string path, Mappings mappings)
 		{
-			mappings.AddSecondPass(new NamedSQLQuerySecondPass(queryElem, path, mappings));
+			mappings.AddSecondPass(new NamedSQLQuerySecondPass(queryElem, path, mappings, nsmgr));
 			/*
 			string qname = queryElem.Attributes["name"].Value;
 			NamedSQLQuery namedQuery = new NamedSQLQuery(queryElem.InnerText);
@@ -2511,7 +2509,7 @@ namespace NHibernate.Cfg
 
 		private static void BindResultSetMappingDefinition(XmlNode resultSetElem, string path, Mappings mappings)
 		{
-			mappings.AddSecondPass(new ResultSetMappingSecondPass(resultSetElem, path, mappings));
+			mappings.AddSecondPass(new ResultSetMappingSecondPass(resultSetElem, path, mappings, nsmgr));
 		}
 
 		private static void BindManyToManySubelements(Mapping.Collection collection,

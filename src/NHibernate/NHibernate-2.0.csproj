@@ -80,7 +80,7 @@
     <Compile Include="Cache\Timestamper.cs" />
     <Compile Include="Cache\UpdateTimestampsCache.cs" />
     <Compile Include="CallbackException.cs" />
-    <Compile Include="Cfg\AssemblyHbmOrderer.cs" />
+    <Compile Include="Cfg\MappingsQueue.cs" />
     <Compile Include="Cfg\Configuration.cs" />
     <Compile Include="Cfg\ConfigurationSectionHandler.cs" />
     <Compile Include="Cfg\DefaultNamingStrategy.cs" />
@@ -483,13 +483,13 @@
     <Compile Include="Cache\NoCachingEnabledException.cs" />
     <Compile Include="Cfg\ClassExtractor.cs" />
     <Compile Include="Cfg\CollectionSecondPass.cs" />
-    <Compile Include="Cfg\EmbeddedResource.cs" />
     <Compile Include="Cfg\HbmBinder.cs" />
     <Compile Include="Cfg\HbmConstants.cs" />
     <Compile Include="Cfg\IQuerySecondPass.cs" />
     <Compile Include="Cfg\ISecondPass.cs" />
     <Compile Include="Cfg\NamedSQLQuerySecondPass.cs" />
-    <Compile Include="Cfg\ResourceEntry.cs" />
+    <Compile Include="Cfg\NamedXmlDocument.cs" />
+    <Compile Include="Cfg\MappingsQueueEntry.cs" />
     <Compile Include="Cfg\ResultSetMappingBinder.cs" />
     <Compile Include="Cfg\ResultSetMappingSecondPass.cs" />
     <Compile Include="Classic\ILifecycle.cs" />

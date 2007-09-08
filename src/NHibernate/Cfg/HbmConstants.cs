@@ -45,5 +45,7 @@ namespace NHibernate.Cfg
 		public const string nsDialectScope = nsPrefix + ":dialect-scope";
 
 		public const string nsResultset = nsPrefix + ":resultset";
+
+		public const string nsUnionSubclass = nsPrefix + ":union-subclass";
 	}
 }

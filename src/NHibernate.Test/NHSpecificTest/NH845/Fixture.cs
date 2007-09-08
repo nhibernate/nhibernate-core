@@ -13,23 +13,25 @@ namespace NHibernate.Test.NHSpecificTest.NH845
 		[Test]
 		public void HbmOrdererForgetsMappingFilesWithoutClassesIfExtendsIsUsed()
 		{
+			Configuration cfg = new Configuration();
 			Assembly domain = typeof(Master).Assembly;
-			AssemblyHbmOrderer orderer = new AssemblyHbmOrderer();
-			orderer.AddResource(domain, "NHibernate.DomainModel.MultiExtends.hbm.xml");
-			orderer.AddResource(domain, "NHibernate.DomainModel.Multi.hbm.xml");
-			orderer.AddResource(domain, "NHibernate.DomainModel.Query.hbm.xml");
+			cfg.AddResource("NHibernate.DomainModel.MultiExtends.hbm.xml", domain);
+			cfg.AddResource("NHibernate.DomainModel.Multi.hbm.xml", domain);
+			cfg.AddResource("NHibernate.DomainModel.Query.hbm.xml", domain);
 
-			EmbeddedResource resource;
-			EmbeddedResource queryResource = new EmbeddedResource(domain,
-				"NHibernate.DomainModel.Query.hbm.xml");
-			bool found = false;
-			while ((resource = orderer.GetNextAvailableResource()) != null)
+			ISessionFactory sf = cfg.BuildSessionFactory();
+
+			try
 			{
-				found = queryResource.Equals(resource);
-				if (found) break;
+				using (ISession session = sf.OpenSession())
+				{
+					Assert.IsNotNull(session.GetNamedQuery("AQuery"));
+				}
 			}
-
-			Assert.IsTrue(found);
+			finally
+			{
+				sf.Close();
+			}
 		}
 	}
 }
