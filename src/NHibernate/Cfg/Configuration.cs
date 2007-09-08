@@ -591,12 +591,6 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="assembly">The assembly.</param>
 		/// <returns>This configuration object.</returns>
-		/// <remarks>
-		/// This method assumes that the <c>hbm.xml</c> files in the Assembly need to be put
-		/// in the correct order by NHibernate.  See <see cref="AddAssembly(Assembly, bool)">
-		/// AddAssembly(Assembly assembly, bool skipOrdering)</see> for the impacts and reasons
-		/// for letting NHibernate order the <c>hbm.xml</c> files.
-		/// </remarks>
 		public Configuration AddAssembly(Assembly assembly)
 		{
 			IList resourceNames = GetAllHbmXmlResourceNames(assembly);
@@ -623,23 +617,6 @@ namespace NHibernate.Cfg
 			return result;
 		}
 
-		/// <summary>
-		/// Adds all of the assembly's embedded resources whose names end with <c>.hbm.xml</c>.
-		/// </summary>
-		/// <param name="assembly">The loaded assembly.</param>
-		/// <param name="skipOrdering">
-		/// Ignored since version 1.2.1
-		/// </param>
-		/// <returns>This configuration object.</returns>
-		/// <remarks>
-		/// <para>
-		/// The order of <c>hbm.xml</c> files only matters if the attribute "extends" is used.
-		/// The ordering should only be done when needed because it takes extra time 
-		/// to read the XML files to find out the order the files should be passed to
-		/// the <see cref="HbmBinder" />. If you don't use the "extends" attribute then it is
-		/// reccommended to call this with <c>skipOrdering=true</c>.
-		/// </para>
-		/// </remarks>
 		[Obsolete("Use AddAssembly(Assembly), since version 1.2.1 resource ordering cannot be skipped.")]
 		public Configuration AddAssembly(Assembly assembly, bool skipOrdering)
 		{
