@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine.Query;
+using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -378,5 +379,31 @@ namespace NHibernate.Engine
 		bool ContainsEntity(EntityKey key);
 
 		IInterceptor Interceptor { get; }
+
+		/// <summary> Retrieves the configured event listeners from this event source. </summary>
+		EventListeners Listeners { get;}
+
+		#region Feature IPersistenceContext
+		// TODO H3.2: Move these methods from ISessionImplementor to IPersistenceContext
+		// These methods was added here to use the existing implementation, in SessionImpl,
+		// for events-listener scope. In H3.2 these methods are in IPersistenceContext
+
+		/// <summary> 
+		/// Remove an entity from the session cache, also clear
+		/// up other state associated with the entity, all except
+		/// for the <see cref="EntityEntry"/>.
+		/// </summary>
+		/// <param name="key"></param>
+		object RemoveEntity(EntityKey key);
+
+		/// <summary> Remove a proxy from the session cache</summary>
+		/// <param name="key"></param>
+		void RemoveProxy(EntityKey key);
+
+		/// <summary> Remove an entity entry from the session cache</summary>
+		/// <param name="entity"></param>
+		EntityEntry RemoveEntry(object entity);
+
+		#endregion
 	}
 }

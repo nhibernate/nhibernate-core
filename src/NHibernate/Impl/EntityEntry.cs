@@ -166,12 +166,17 @@ namespace NHibernate.Impl
 			return loadedState[propertyIndex];
 		}
 
+		/// <summary> 
+		/// After actually inserting a row, record the fact that the instance exists on the 
+		/// database (needed for identity-column key generation)
+		/// </summary>
 		public void PostInsert()
 		{
 			existsInDatabase = true;
 		}
 
-		/// <summary>After actually updating the database, update the snapshot information,
+		/// <summary>
+		/// After actually updating the database, update the snapshot information,
 		/// and escalate the lock mode.
 		/// </summary>
 		public void PostUpdate(object entity, object[] updatedState, object nextVersion)
@@ -189,5 +194,16 @@ namespace NHibernate.Impl
 						nextVersion);
 			}
 		}
+
+		/// <summary> 
+		/// After actually deleting a row, record the fact that the instance no longer
+		/// exists in the database
+		/// </summary>
+		public void PostDelete()
+		{
+			status = Status.Gone;
+			existsInDatabase = false;
+		}
+
 	}
 }

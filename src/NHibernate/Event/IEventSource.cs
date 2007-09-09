@@ -6,7 +6,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
 {
-	public interface IEventSource
+	public interface IEventSource : ISessionImplementor
 	{
 		/// <summary> Get the ActionQueue for this session</summary>
 		// todo-events uncomment

@@ -1,3 +1,4 @@
+using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
@@ -11,13 +12,15 @@ namespace NHibernate.Event
 		private readonly object id;
 		private readonly object[] state;
 		private readonly IEntityPersister persister;
+		private readonly ISessionImplementor source;
 
-		public PreInsertEvent(object entity, object id, object[] state, IEntityPersister persister)
+		public PreInsertEvent(object entity, object id, object[] state, IEntityPersister persister, ISessionImplementor source)
 		{
 			this.entity = entity;
 			this.id = id;
 			this.state = state;
 			this.persister = persister;
+			this.source = source;
 		}
 
 		public object Entity
@@ -38,6 +41,11 @@ namespace NHibernate.Event
 		public IEntityPersister Persister
 		{
 			get { return persister; }
+		}
+
+		public ISessionImplementor Source
+		{
+			get { return source; }
 		}
 	}
 }

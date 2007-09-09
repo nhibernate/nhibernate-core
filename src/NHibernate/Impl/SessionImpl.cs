@@ -10,6 +10,7 @@ using NHibernate.Classic;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Id;
@@ -108,6 +109,10 @@ namespace NHibernate.Impl
 		private readonly ISet nonExists;
 
 		private readonly IInterceptor interceptor;
+
+		// todo-events: implements listeners
+		[NonSerialized]
+		private EventListeners listeners;
 
 		private readonly ConnectionManager connectionManager;
 
@@ -608,7 +613,7 @@ namespace NHibernate.Impl
 			return entitiesByKey[key];
 		}
 
-		private object RemoveEntity(EntityKey key)
+		public object RemoveEntity(EntityKey key)
 		{
 			object retVal = entitiesByKey[key];
 			entitiesByKey.Remove(key);
@@ -650,7 +655,7 @@ namespace NHibernate.Impl
 			return (EntityEntry)entityEntries[obj];
 		}
 
-		private EntityEntry RemoveEntry(object obj)
+		public EntityEntry RemoveEntry(object obj)
 		{
 			object retVal = entityEntries[obj];
 			entityEntries.Remove(obj);
@@ -3234,7 +3239,7 @@ namespace NHibernate.Impl
 			RemoveProxy(key);
 		}
 
-		private void RemoveProxy(EntityKey key)
+		public void RemoveProxy(EntityKey key)
 		{
 			if (batchFetchQueue != null)
 			{
@@ -5808,5 +5813,12 @@ namespace NHibernate.Impl
 		{
 			get { return interceptor; }
 		}
+
+		/// <summary> Retrieves the configured event listeners from this event source. </summary>
+		public EventListeners Listeners
+		{
+			get { return listeners; }
+		}
+
 	}
 }
