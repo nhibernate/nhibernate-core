@@ -32,4 +32,29 @@
 		</bag>
 		-->
 	</class>
+
+	<class name="Invoice" table="Invoice364">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Number"/>
+		<idbag name="Items" table="InvoiceItem364" lazy="true" access="field.pascalcase-underscore">
+			<collection-id column="Id" type="Int32">
+				<generator class="native"/>
+			</collection-id>
+			<key column="InvoiceId"/>
+			<composite-element class="InvoiceItem">
+				<property name="Quantity"/>
+				<!-- Could add more properties, but for testing, this would suffice -->
+				<many-to-one name="Product" column="ProductId"/>
+			</composite-element>
+		</idbag>
+	</class>
+
+	<class name="Product" table="Product364">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+	</class>
 </hibernate-mapping>

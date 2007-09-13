@@ -254,6 +254,7 @@
     <Compile Include="NHSpecificTest\NH1054\NH1054Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1080\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1080\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH364\Invoice.cs" />
     <Compile Include="NHSpecificTest\NH883\Cat.cs" />
     <Compile Include="NHSpecificTest\NH883\Fixture.cs" />
     <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Address.cs" />

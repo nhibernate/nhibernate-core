@@ -97,6 +97,7 @@ namespace NHibernate.Persister.Collection
 		//private readonly bool isSorted;
 		private readonly IIdentifierGenerator identifierGenerator;
 		protected readonly bool hasIdentifier;
+		protected readonly bool shouldInsertIdentifier;
 
 		//protected readonly string identifierColumnName;
 		private readonly string identifierColumnName;
@@ -287,6 +288,8 @@ namespace NHibernate.Persister.Collection
 				identifierColumnAlias = null;
 				identifierGenerator = null;
 			}
+
+			shouldInsertIdentifier = hasIdentifier && !(identifierGenerator is NHibernate.Id.IdentityGenerator);
 
 			sqlInsertRowString = GenerateInsertRowString();
 			if (collection.CustomSQLInsert == null)
@@ -899,7 +902,7 @@ namespace NHibernate.Persister.Collection
 								}
 								//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
 								int loc = WriteKey(st, id, offset, session);
-								if (hasIdentifier && !(IdentifierGenerator is NHibernate.Id.IdentityGenerator))
+								if (shouldInsertIdentifier)
 								{
 									loc = WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session);
 								}
@@ -1112,7 +1115,7 @@ namespace NHibernate.Persister.Collection
 							{
 								//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
 								int loc = WriteKey(st, id, offset, session);
-								if (hasIdentifier)
+								if (shouldInsertIdentifier)
 								{
 									loc = WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session);
 								}
