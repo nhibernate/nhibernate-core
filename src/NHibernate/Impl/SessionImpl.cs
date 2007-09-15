@@ -35,7 +35,7 @@ namespace NHibernate.Impl
 	/// NOT THREADSAFE
 	/// </remarks>
 	[Serializable]
-	public sealed class SessionImpl : ISessionImplementor, ISerializable, IDeserializationCallback
+	public sealed class SessionImpl : IEventSource, ISerializable, IDeserializationCallback
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SessionImpl));
 
@@ -113,6 +113,9 @@ namespace NHibernate.Impl
 		// todo-events: implements listeners
 		[NonSerialized]
 		private EventListeners listeners;
+
+		[NonSerialized]
+		private readonly ActionQueue actionQueue;
 
 		private readonly ConnectionManager connectionManager;
 
@@ -412,6 +415,8 @@ namespace NHibernate.Impl
 			this.interceptor = interceptor;
 			this.timestamp = timestamp;
 			this.factory = factory;
+			
+			actionQueue = new ActionQueue(this);
 
 			entitiesByKey = new Hashtable(50);
 			proxiesByKey = new Hashtable(10);
@@ -718,24 +723,6 @@ namespace NHibernate.Impl
 			return id;
 		}
 
-		private void ForceFlush(EntityEntry e)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("flushing to force deletion of re-saved object" + MessageHelper.InfoString(e.Persister, e.Id));
-			}
-
-			if (cascading > 0)
-			{
-				throw new ObjectDeletedException(
-					"deleted object would be re-saved by cascade (remove deleted object from associations)",
-					e.Id,
-					e.Persister.MappedClass);
-			}
-
-			Flush();
-		}
-
 		private object SaveWithGeneratedIdentifier(object obj, Cascades.CascadingAction action, object anything)
 		{
 			IEntityPersister persister = GetEntityPersister(obj);
@@ -988,29 +975,6 @@ namespace NHibernate.Impl
 			}
 
 			return id;
-		}
-
-		/// <summary>
-		/// If the parameter <c>value</c> is an unitialized proxy then it will be reassociated
-		/// with the session. 
-		/// </summary>
-		/// <param name="value">A persistable object, proxy, persistent collection or null</param>
-		/// <returns>
-		/// <see langword="true" /> when an uninitialized proxy was passed into this method, <see langword="false" /> otherwise.
-		/// </returns>
-		internal bool ReassociateIfUninitializedProxy(object value)
-		{
-			if (!NHibernateUtil.IsInitialized(value))
-			{
-				INHibernateProxy proxy = (INHibernateProxy)value;
-				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
-				ReassociateProxy(li, proxy);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
 		}
 
 		private void ReassociateProxy(Object value, object id)
@@ -1411,6 +1375,7 @@ namespace NHibernate.Impl
 
 		internal void RemoveCollection(ICollectionPersister role, object id)
 		{
+			// todo-events: Remove
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("collection dereferenced while transient " + MessageHelper.InfoString(role, id));
@@ -1427,6 +1392,7 @@ namespace NHibernate.Impl
 
 		private static bool IsCollectionSnapshotValid(ICollectionSnapshot snapshot)
 		{
+			// todo-events Remove
 			return snapshot != null &&
 				   snapshot.Role != null &&
 				   snapshot.Key != null;
@@ -1434,6 +1400,7 @@ namespace NHibernate.Impl
 
 		internal static bool IsOwnerUnchanged(ICollectionSnapshot snapshot, ICollectionPersister persister, object id)
 		{
+			// todo-events Remove
 			return IsCollectionSnapshotValid(snapshot) &&
 				   persister.Role.Equals(snapshot.Role) &&
 				   id.Equals(snapshot.Key);
@@ -1446,6 +1413,7 @@ namespace NHibernate.Impl
 		/// <param name="snapshot"></param>
 		internal void ReattachCollection(IPersistentCollection collection, ICollectionSnapshot snapshot)
 		{
+			// todo-events Remove
 			if (collection.WasInitialized)
 			{
 				AddInitializedDetachedCollection(collection, snapshot);
@@ -1948,21 +1916,9 @@ namespace NHibernate.Impl
 			return count;
 		}
 
-		private void CheckUniqueness(EntityKey key, object obj)
-		{
-			object entity = GetEntity(key);
-			if (entity == obj)
-			{
-				throw new AssertionFailure("object already associated in DoSave()");
-			}
-			if (entity != null)
-			{
-				throw new NonUniqueObjectException(key.Identifier, key.MappedClass);
-			}
-		}
-
 		private EntityEntry Reassociate(object obj, object id, IEntityPersister persister)
 		{
+			// todo-events Remove
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("reassociating transient instance: " + MessageHelper.InfoString(persister, id));
@@ -2195,6 +2151,16 @@ namespace NHibernate.Impl
 			return Instantiate(factory.GetEntityPersister(clazz), id);
 		}
 
+		/// <summary> Get the ActionQueue for this session</summary>
+		public ActionQueue ActionQueue
+		{
+			get
+			{
+				CheckIsOpen();
+				return actionQueue;
+			}
+		}
+
 		/// <summary>
 		/// Give the interceptor an opportunity to override the default instantiation
 		/// </summary>
@@ -2210,6 +2176,67 @@ namespace NHibernate.Impl
 			}
 			return result;
 		}
+
+		#region IEventSource Members
+		/// <summary> Force an immediate flush</summary>
+		public void ForceFlush(EntityEntry entityEntry)
+		{
+			CheckIsOpen();
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("flushing to force deletion of re-saved object: " + MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
+			}
+
+			if (cascading > 0) //CascadeLevel
+			{
+				throw new ObjectDeletedException(
+					"deleted object would be re-saved by cascade (remove deleted object from associations)", 
+					entityEntry.Id, 
+					entityEntry.Persister.MappedClass); // todo entityname: change with next line
+					//entityEntry.Persister.EntityName);
+			}
+
+			Flush();
+		}
+
+		/// <summary> Cascade merge an entity instance</summary>
+		public void Merge(string entityName, object obj, IDictionary copiedAlready)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary> Cascade persist an entity instance</summary>
+		public void Persist(string entityName, object obj, IDictionary createdAlready)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary> Cascade persist an entity instance during the flush process</summary>
+		public void PersistOnFlush(string entityName, object obj, IDictionary copiedAlready)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary> Cascade refesh an entity instance</summary>
+		public void Refresh(object obj, IDictionary refreshedAlready)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary> Cascade copy an entity instance</summary>
+		public void SaveOrUpdateCopy(string entityName, object obj, IDictionary copiedAlready)
+		{
+			throw new NotImplementedException();
+		}
+
+
+		/// <summary> Cascade delete an entity instance</summary>
+		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet transientEntities)
+		{
+			throw new NotImplementedException();
+		}
+
+		#endregion
 
 		/// <summary></summary>
 		public FlushMode FlushMode
@@ -3586,6 +3613,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		private void PreFlushEntities()
 		{
+			//todo-events Remove
 			ICollection iterSafeCollection = IdentityMap.ConcurrentEntries(entityEntries);
 
 			// so that we can be safe from the enumerator & concurrent modifications
@@ -3852,6 +3880,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		private void PreFlushCollections()
 		{
+			// todo-events Remove
 			// Initialize dirty flags for arrays + collections with composte elements
 			// and reset reached, doupdate, etc
 
@@ -3874,6 +3903,7 @@ namespace NHibernate.Impl
 		/// <param name="owner"></param>
 		public void UpdateReachableCollection(IPersistentCollection coll, IType type, object owner)
 		{
+			// todo-events: Remove method (use class Engine.Collections)
 			coll.Owner = owner;
 			CollectionEntry ce = GetCollectionEntry(coll);
 
@@ -3913,6 +3943,7 @@ namespace NHibernate.Impl
 		/// <param name="coll"></param>
 		private void UpdateUnreachableCollection(IPersistentCollection coll)
 		{
+			// todo-events: Remove method (use class Engine.Collections)
 			if (coll.Owner == null)
 			{
 				ProcessNeverReferencedCollection(coll);
@@ -3925,6 +3956,7 @@ namespace NHibernate.Impl
 
 		private void ProcessNeverReferencedCollection(IPersistentCollection coll)
 		{
+			// todo-events: Remove method (use class Engine.Collections)
 			CollectionEntry entry = GetCollectionEntry(coll);
 
 			log.Debug(
@@ -3943,6 +3975,7 @@ namespace NHibernate.Impl
 
 		private void ProcessDereferencedCollection(IPersistentCollection coll)
 		{
+			// todo-events: Remove method (use class Engine.Collections)
 			CollectionEntry entry = GetCollectionEntry(coll);
 
 			if (log.IsDebugEnabled && entry.LoadedPersister != null)
@@ -3990,6 +4023,7 @@ namespace NHibernate.Impl
 		/// <param name="entry"></param>
 		private void PrepareCollectionForUpdate(IPersistentCollection coll, CollectionEntry entry)
 		{
+			// todo-events: Remove method (use class Engine.Collections)
 			if (entry.IsProcessed)
 			{
 				throw new AssertionFailure("collection was processed twice by flush()");
@@ -4346,12 +4380,51 @@ namespace NHibernate.Impl
 			AddCollection(collection, ce, id);
 		}
 
-		private void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionPersister persister,
+		public void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionPersister persister,
 														object id)
 		{
 			CollectionEntry ce = new CollectionEntry(persister, id);
 			collection.CollectionSnapshot = ce;
 			AddCollection(collection, ce, id);
+		}
+
+		/// <summary> 
+		/// Add a new collection (ie. a newly created one, just instantiated by the
+		/// application, with no database state or snapshot)
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="collection">The collection to be associated with the persistence context </param>
+		public void AddNewCollection(ICollectionPersister persister, IPersistentCollection collection)
+		{
+			AddNewCollection(collection, persister);
+		}
+
+		/// <summary> Get the <see cref="PersistentArrayHolder"/> object for an array</summary>
+		public PersistentArrayHolder GetCollectionHolder(object array)
+		{
+			return GetArrayHolder(array);
+		}
+
+		/// <summary> 
+		/// Register a <see cref="PersistentArrayHolder"/> object for an array.
+		/// Associates a holder with an array - MUST be called after loading 
+		/// array, since the array instance is not created until endLoad().
+		/// </summary>
+		public void AddCollectionHolder(PersistentArrayHolder holder)
+		{
+			AddArrayHolder(holder);
+		}
+
+		/// <summary> 
+		/// Remove the mapping of collection to holder during eviction
+		/// of the owning entity
+		/// </summary>
+		public IPersistentCollection RemoveCollectionHolder(object array)
+		{
+			IPersistentCollection result;
+			result = (IPersistentCollection)arrayHolders[array];
+			arrayHolders.Remove(array);
+			return result;
 		}
 
 		/// <summary>
@@ -4387,6 +4460,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		internal void AddNewCollection(IPersistentCollection collection, ICollectionPersister persister)
 		{
+			// todo-events Remove (move implementation below)
 			CollectionEntry ce = AddCollection(collection);
 			if (persister.HasOrphanDelete)
 			{
@@ -4400,7 +4474,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="cs"></param>
-		private void AddInitializedDetachedCollection(IPersistentCollection collection, ICollectionSnapshot cs)
+		public void AddInitializedDetachedCollection(IPersistentCollection collection, ICollectionSnapshot cs)
 		{
 			if (cs.WasDereferenced)
 			{
@@ -4414,23 +4488,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="array"></param>
-		/// <returns></returns>
-		public PersistentArrayHolder GetArrayHolder(object array)
+		private PersistentArrayHolder GetArrayHolder(object array)
 		{
 			return (PersistentArrayHolder)arrayHolders[array];
 		}
 
-		/// <summary>
-		/// associate a holder with an array - called after loading an array
-		/// </summary>
-		/// <param name="holder"></param>
-		public void AddArrayHolder(PersistentArrayHolder holder)
+		private void AddArrayHolder(PersistentArrayHolder holder)
 		{
-			//TODO:refactor + make this method private
 			arrayHolders[holder.Array] = holder;
 		}
 
@@ -5061,6 +5125,7 @@ namespace NHibernate.Impl
 
 		internal void EvictCollection(object value, CollectionType type)
 		{
+			// todo-events remove
 			object pc;
 			if (type.IsArrayType)
 			{
@@ -5085,6 +5150,7 @@ namespace NHibernate.Impl
 
 		private void EvictCollection(IPersistentCollection collection)
 		{
+			// todo-events remove
 			CollectionEntry ce = (CollectionEntry)collectionEntries[collection];
 			collectionEntries.Remove(collection);
 			if (log.IsDebugEnabled)
@@ -5704,11 +5770,6 @@ namespace NHibernate.Impl
 			return query;
 		}
 
-		public IEnumerable CollectionEntries
-		{
-			get { return collectionEntries; }
-		}
-
 		public BatchFetchQueue BatchFetchQueue
 		{
 			get
@@ -5820,5 +5881,119 @@ namespace NHibernate.Impl
 			get { return listeners; }
 		}
 
+		#region Feature IPersistenceContext Members
+
+		public IDictionary EntitiesByKey
+		{
+			get { return entitiesByKey; }
+		}
+
+		public IDictionary EntityEntries
+		{
+			get { return entityEntries; }
+		}
+
+		public IDictionary CollectionEntries
+		{
+			get { return collectionEntries; }
+		}
+
+		/// <summary> Get the mapping from collection key to collection instance</summary>
+		public IDictionary CollectionsByKey
+		{
+			get { return collectionsByKey; }
+		}
+
+
+		public bool Flushing 
+		{
+			get { return flushing; }
+			set { flushing = value; }
+		}
+
+		/// <summary> Called before cascading</summary>
+		public int IncrementCascadeLevel()
+		{
+			return ++cascading;
+		}
+
+		/// <summary> Called after cascading</summary>
+		public int DecrementCascadeLevel()
+		{
+			return --cascading;
+		}
+
+		public void CheckUniqueness(EntityKey key, object obj)
+		{
+			object entity = GetEntity(key);
+			if (entity == obj)
+			{
+				throw new AssertionFailure("object already associated, but no entry was found");
+			}
+			if (entity != null)
+			{
+				throw new NonUniqueObjectException(key.Identifier, key.MappedClass);
+			}
+		}
+
+		/// <summary> Adds an entity to the internal caches.</summary>
+		public EntityEntry AddEntity(object entity, Status status, object[] loadedState, EntityKey entityKey, object version,
+																 LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
+																 bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
+		{
+			AddEntity(entityKey, entity);
+			return
+				AddEntry(entity, status, loadedState, entityKey.Identifier, version, lockMode,
+				         existsInDatabase, persister, disableVersionIncrement, lazyPropertiesAreUnfetched);
+		}
+
+		/// <summary> 
+		/// Generates an appropriate EntityEntry instance and adds it to the event source's internal caches.
+		/// </summary>
+		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object id, object version,
+																LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
+																bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
+		{
+			return
+				AddEntry(entity, status, loadedState, id, version, lockMode, existsInDatabase, persister, disableVersionIncrement);
+		}
+
+		/// <summary>
+		/// If the parameter <c>value</c> is an unitialized proxy then it will be reassociated
+		/// with the session. 
+		/// </summary>
+		/// <param name="value">A persistable object, proxy, persistent collection or null</param>
+		/// <returns>
+		/// <see langword="true" /> when an uninitialized proxy was passed into this method, <see langword="false" /> otherwise.
+		/// </returns>
+		public bool ReassociateIfUninitializedProxy(object value)
+		{
+			if (!NHibernateUtil.IsInitialized(value))
+			{
+				INHibernateProxy proxy = (INHibernateProxy)value;
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
+				ReassociateProxy(li, proxy);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId)
+		{
+			object tempObject = entitiesByKey[oldKey];
+			entitiesByKey.Remove(oldKey);
+			object entity = tempObject;
+			object tempObject2 = entityEntries[entity];
+			entityEntries.Remove(entity);
+			EntityEntry oldEntry = (EntityEntry)tempObject2;
+
+			EntityKey newKey = new EntityKey(generatedId, oldEntry.Persister);
+			AddEntity(newKey, entity);
+			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, generatedId, oldEntry.Version, oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated);
+		}
+		#endregion
 	}
 }

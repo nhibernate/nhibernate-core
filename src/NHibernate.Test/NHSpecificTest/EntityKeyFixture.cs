@@ -517,6 +517,11 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			get { return true; }
 		}
+
+		public object ForceVersionIncrement(object id, object currentVersion, ISessionImplementor session)
+		{
+			return null;
+		}
 		#endregion
 	}
 

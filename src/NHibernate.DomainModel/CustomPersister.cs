@@ -382,6 +382,11 @@ namespace NHibernate.DomainModel
 			return this;
 		}
 
+		public object ForceVersionIncrement(object id, object currentVersion, ISessionImplementor session)
+		{
+			return null;
+		}
+
 		public object CreateProxy(object id, ISessionImplementor session)
 		{
 			throw new NotSupportedException("CustomPersister.CreateProxy is not implemented");

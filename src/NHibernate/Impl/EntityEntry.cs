@@ -205,5 +205,12 @@ namespace NHibernate.Impl
 			existsInDatabase = false;
 		}
 
+		public void ForceLocked(object entity, object nextVersion)
+		{
+			version = nextVersion;
+			loadedState[persister.VersionProperty] = version;
+			LockMode = LockMode.Force;
+			persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
+		}
 	}
 }

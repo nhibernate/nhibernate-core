@@ -55,15 +55,11 @@ namespace NHibernate.Action
 				previousVersion = persister.GetVersion(instance);
 			}
 
-			CacheKey ck;
+			CacheKey ck = null;
 			if (persister.HasCache)
 			{
 				ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, Session.Factory);
 				slock = persister.Cache.Lock(ck, previousVersion);
-			}
-			else
-			{
-				ck = null;
 			}
 
 			if (!veto)
@@ -74,7 +70,7 @@ namespace NHibernate.Action
 			EntityEntry entry = Session.GetEntry(instance);
 			if (entry == null)
 			{
-				throw new HibernateException("Possible nonthreadsafe access to session");
+				throw new AssertionFailure("Possible nonthreadsafe access to session");
 			}
 
 			if (entry.Status == Impl.Status.Loaded || persister.IsVersionPropertyGenerated)
@@ -110,7 +106,7 @@ namespace NHibernate.Action
 					//CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), nextVersion, Session, instance);
 					//cacheEntry = persister.CacheEntryStructure.structure(ce);
 					//persister.Cache.Update(ck, cacheEntry, nextVersion, previousVersion);
-					cacheEntry = new CacheEntry(state, persister, Session);
+					cacheEntry = new CacheEntry(instance, persister, Session);
 					persister.Cache.Update(ck, cacheEntry);
 
 					// TODO: H3.2 not ported

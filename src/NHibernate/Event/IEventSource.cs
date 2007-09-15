@@ -9,11 +9,7 @@ namespace NHibernate.Event
 	public interface IEventSource : ISessionImplementor
 	{
 		/// <summary> Get the ActionQueue for this session</summary>
-		// todo-events uncomment
-		//ActionQueue ActionQueue
-		//{
-		//  get;
-		//}
+		ActionQueue ActionQueue { get;}
 
 		/// <summary> 
 		/// Instantiate an entity instance, using either an interceptor,

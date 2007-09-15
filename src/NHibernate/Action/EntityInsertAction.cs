@@ -21,6 +21,11 @@ namespace NHibernate.Action
 			this.version = version;
 		}
 
+		public object[] State
+		{
+			get { return state; }
+		}
+
 		protected internal override bool HasPostCommitEventListeners
 		{
 			get
@@ -47,7 +52,7 @@ namespace NHibernate.Action
 				EntityEntry entry = Session.GetEntry(instance);
 				if (entry == null)
 				{
-					throw new HibernateException("Possible nonthreadsafe access to session");
+					throw new AssertionFailure("Possible nonthreadsafe access to session");
 				}
 
 				entry.PostInsert();
@@ -68,7 +73,7 @@ namespace NHibernate.Action
 				// TODO H3.2 Different behaviour
 				//CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance), version, session, instance);
 				//cacheEntry = persister.CacheEntryStructure.structure(ce);
-				cacheEntry = new CacheEntry(state, persister, Session);
+				cacheEntry = new CacheEntry(instance, persister, Session);
 
 				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, Session.Factory);
 				persister.Cache.Insert(ck, cacheEntry);

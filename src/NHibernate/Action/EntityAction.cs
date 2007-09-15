@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
@@ -9,7 +11,7 @@ namespace NHibernate.Action
 	/// instance.
 	/// </summary>
 	[Serializable]
-	public abstract class EntityAction: IExecutable, IComparable<EntityAction>
+	public abstract class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
 	{
 		private readonly string entityName;
 		private readonly object id;
@@ -17,7 +19,7 @@ namespace NHibernate.Action
 		private readonly ISessionImplementor session;
 
 		[NonSerialized]
-		private readonly IEntityPersister persister;
+		private IEntityPersister persister;
 
 		/// <summary>
 		/// Instantiate an action.
@@ -93,7 +95,7 @@ namespace NHibernate.Action
 
 		public void BeforeExecutions()
 		{
-			throw new HibernateException("beforeExecutions() called for non-collection action");
+			throw new HibernateException("BeforeExecutions() called for non-collection action");
 		}
 
 		public abstract void Execute();
@@ -122,6 +124,22 @@ namespace NHibernate.Action
 				//then by id
 				// TODO: H3.2 Different behaviour (Equals instead Compare)
 				return persister.IdentifierType.Equals(id, other.id) ? 0 : -1;
+			}
+		}
+
+		#endregion
+
+		#region IDeserializationCallback Members
+
+		void IDeserializationCallback.OnDeserialization(object sender)
+		{
+			try
+			{
+				persister = session.GetEntityPersister(instance);
+			}
+			catch (MappingException e)
+			{
+				throw new IOException("Unable to resolve class persister on deserialization", e);
 			}
 		}
 

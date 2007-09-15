@@ -203,5 +203,8 @@ namespace NHibernate.Engine
 		/// Set of all the collection roles in which the given entityName participates.
 		/// </returns>
 		ISet GetCollectionRolesByEntityParticipant(string entityName);
+
+		/// <summary> The cache of table update timestamps</summary>
+		UpdateTimestampsCache UpdateTimestampsCache { get;}
 	}
 }

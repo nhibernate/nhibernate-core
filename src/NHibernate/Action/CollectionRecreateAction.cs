@@ -8,7 +8,7 @@ namespace NHibernate.Action
 	[Serializable]
 	public sealed class CollectionRecreateAction : CollectionAction
 	{
-		public CollectionRecreateAction(ICollectionPersister persister, IPersistentCollection collection, object key, ISessionImplementor session)
+		public CollectionRecreateAction(IPersistentCollection collection, ICollectionPersister persister, object key, ISessionImplementor session)
 			: base(persister, collection, key, session) { }
 
 		/// <summary> Execute this action</summary>

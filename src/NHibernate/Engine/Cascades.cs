@@ -33,6 +33,9 @@ namespace NHibernate.Engine
 		/// </summary>
 		CascadeAfterInsertBeforeDeleteViaCollection = 3,
 
+		/// <summary> A cascade point that occurs just before the session is flushed</summary>
+		CascadeBeforeFlush = 0,
+
 		/// <summary>
 		/// A cascade point that occurs just after the update of the parent entity
 		/// </summary>

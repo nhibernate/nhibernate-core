@@ -31,16 +31,6 @@ namespace NHibernate.Engine
 		object GetSnapshot(IPersistentCollection collection);
 
 		/// <summary>
-		/// Get the <see cref="IPersistentCollection" /> object for an array
-		/// </summary>
-		PersistentArrayHolder GetArrayHolder(object array);
-
-		/// <summary>
-		/// Register a <see cref="IPersistentCollection" /> object for an array
-		/// </summary>
-		void AddArrayHolder(PersistentArrayHolder holder);
-
-		/// <summary>
 		/// Initialize the collection (if not already initialized)
 		/// </summary>
 		/// <param name="coolection"></param>
@@ -370,8 +360,6 @@ namespace NHibernate.Engine
 		/// <returns>The currently enabled filters.</returns>
 		IDictionary EnabledFilters { get; }
 
-		IEnumerable CollectionEntries { get; }
-
 		IQuery GetNamedSQLQuery(string name);
 
 		IQueryTranslator[] GetQueries(string query, bool scalar);
@@ -403,6 +391,91 @@ namespace NHibernate.Engine
 		/// <summary> Remove an entity entry from the session cache</summary>
 		/// <param name="entity"></param>
 		EntityEntry RemoveEntry(object entity);
+
+		/// <summary> Get the mapping from key value to entity instance</summary>
+		IDictionary EntitiesByKey { get;}
+
+		/// <summary> Is a flush cycle currently in process?</summary>
+		/// <remarks> Called before and after the flushcycle</remarks>
+		bool Flushing { get;set;}
+
+		/// <summary> Get the mapping from key value to entity instance</summary>
+		IDictionary EntityEntries{ get;}
+
+		/// <summary> Get the mapping from collection instance to collection entry</summary>
+		IDictionary CollectionEntries { get; }
+
+		/// <summary> Get the mapping from collection key to collection instance</summary>
+		IDictionary CollectionsByKey { get;}
+
+		/// <summary> Called before cascading</summary>
+		int IncrementCascadeLevel();
+
+		/// <summary> Called after cascading</summary>
+		int DecrementCascadeLevel();
+
+		/// <summary> 
+		/// Attempts to check whether the given key represents an entity already loaded within the
+		/// current session.
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="obj">The entity reference against which to perform the uniqueness check. </param>
+		void CheckUniqueness(EntityKey key, object obj);
+
+		/// <summary> Adds an entity to the internal caches.</summary>
+		EntityEntry AddEntity(object entity, Impl.Status status, object[] loadedState, EntityKey entityKey, 
+			object version, LockMode lockMode, bool existsInDatabase, IEntityPersister persister, 
+			bool disableVersionIncrement, bool lazyPropertiesAreUnfetched);
+
+		/// <summary> 
+		/// Generates an appropriate EntityEntry instance and adds it to the event source's internal caches.
+		/// </summary>
+		EntityEntry AddEntry(object entity, Impl.Status status, object[] loadedState, 
+			object id, object version, LockMode lockMode, bool existsInDatabase, 
+			IEntityPersister persister, bool disableVersionIncrement, bool lazyPropertiesAreUnfetched);
+
+		/// <summary> 
+		/// Takes the given object and, if it represents a proxy, reassociates it with this event source.
+		/// </summary>
+		/// <param name="value">The possible proxy to be reassociated. </param>
+		/// <returns> Whether the passed value represented an actual proxy which got initialized. </returns>
+		bool ReassociateIfUninitializedProxy(object value);
+
+		/// <summary> 
+		/// Add an (initialized) collection that was created by another session and passed
+		/// into update() (ie. one with a snapshot and existing state on the database)
+		/// </summary>
+		void AddInitializedDetachedCollection(IPersistentCollection collection, ICollectionSnapshot snapshot);
+
+		/// <summary>Add a detached uninitialized collection</summary>
+		void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionPersister persister, object id);
+
+		/// <summary> 
+		/// Add a new collection (ie. a newly created one, just instantiated by the
+		/// application, with no database state or snapshot)
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <param name="collection">The collection to be associated with the persistence context </param>
+		void AddNewCollection(ICollectionPersister persister, IPersistentCollection collection);
+
+		/// <summary> Get the <see cref="PersistentArrayHolder"/> object for an array</summary>
+		PersistentArrayHolder GetCollectionHolder(object array);
+
+		/// <summary> 
+		/// Register a <see cref="PersistentArrayHolder"/> object for an array.
+		/// Associates a holder with an array - MUST be called after loading 
+		/// array, since the array instance is not created until endLoad().
+		/// </summary>
+		void AddCollectionHolder(PersistentArrayHolder holder);
+
+		/// <summary> 
+		/// Remove the mapping of collection to holder during eviction
+		/// of the owning entity
+		/// </summary>
+		IPersistentCollection RemoveCollectionHolder(object array);
+
+
+		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
 
 		#endregion
 	}

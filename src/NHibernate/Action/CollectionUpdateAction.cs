@@ -11,8 +11,8 @@ namespace NHibernate.Action
 	{
 		private readonly bool emptySnapshot;
 
-		public CollectionUpdateAction(ICollectionPersister persister,
-			IPersistentCollection collection, object key, bool emptySnapshot, ISessionImplementor session)
+		public CollectionUpdateAction(IPersistentCollection collection, ICollectionPersister persister,
+			 object key, bool emptySnapshot, ISessionImplementor session)
 			: base(persister, collection, key, session)
 		{
 			this.emptySnapshot = emptySnapshot;

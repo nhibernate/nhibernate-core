@@ -1495,6 +1495,73 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
+		public object ForceVersionIncrement(object id, object currentVersion, ISessionImplementor session)
+		{
+			if (!IsVersioned)
+			{
+				throw new AssertionFailure("cannot force version increment on non-versioned entity");
+			}
+
+			if (IsVersionPropertyGenerated)
+			{
+				// the difficulty here is exactly what do we update in order to
+				// force the version to be incremented in the db...
+				throw new HibernateException("LockMode.Force is currently not supported for generated version properties");
+			}
+
+			object nextVersion = VersionType.Next(currentVersion, session);
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("Forcing version increment [" + 
+					MessageHelper.InfoString(this, id, Factory) + "; " + 
+					VersionType.ToLoggableString(currentVersion, Factory) + " -> " + 
+					VersionType.ToLoggableString(nextVersion, Factory) + "]");
+			}
+
+			IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[0]);
+			// todo : cache this sql...
+			SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
+			try
+			{
+				IDbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
+				try
+				{
+					VersionType.NullSafeSet(st, nextVersion, 0, session);
+					IdentifierType.NullSafeSet(st, id, 1, session);
+					VersionType.NullSafeSet(st, currentVersion, 1 + IdentifierColumnSpan, session);
+					Check(session.Batcher.ExecuteNonQuery(st), id, 0, expectation, st);
+				}
+				finally
+				{
+					session.Batcher.CloseCommand(st, null);
+				}
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw Convert(sqle, "could not retrieve version: " + MessageHelper.InfoString(this, id), VersionSelectString);
+			}
+			return nextVersion;
+		}
+
+		private SqlCommandInfo GenerateVersionIncrementUpdateString()
+		{
+			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory);
+			update.SetTableName(GetTableName(0));
+			//if (Factory.Settings.IsCommentsEnabled)
+			//{
+			//  update.SetComment("forced version increment");
+			//}
+			update.AddColumns(new string[] { VersionColumnName }, VersionType);
+			update.SetIdentityColumn(GetKeyColumns(0), IdentifierType);
+			update.SetVersionColumn(new string[] { VersionColumnName }, VersionType);
+			return update.ToSqlCommandInfo();
+		}
+
 		/// <summary>
 		/// Do a version check
 		/// </summary>

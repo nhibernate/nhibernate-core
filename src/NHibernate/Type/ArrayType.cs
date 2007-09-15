@@ -64,7 +64,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 		{
-			base.NullSafeSet(st, session.GetArrayHolder(value), index, session);
+			base.NullSafeSet(st, session.GetCollectionHolder(value), index, session);
 		}
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace NHibernate.Type
 			{
 				return null;
 			}
-			return session.GetLoadedCollectionKey(session.GetArrayHolder(value));
+			return session.GetLoadedCollectionKey(session.GetCollectionHolder(value));
 		}
 
 		/// <summary>

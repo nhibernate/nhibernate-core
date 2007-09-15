@@ -69,7 +69,7 @@ namespace NHibernate.Action
 			EntityEntry entry = session.RemoveEntry(instance);
 			if (entry == null)
 			{
-				throw new HibernateException("Possible nonthreadsafe access to session");
+				throw new AssertionFailure("Possible nonthreadsafe access to session");
 			}
 			entry.PostDelete();
 

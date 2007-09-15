@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -12,23 +13,31 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract class CollectionAction : IExecutable, IComparable<CollectionAction>
+	public abstract class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
 	{
 		private readonly object key;
 		private object finalKey;
-		private readonly ICollectionPersister persister;
+		[NonSerialized]
+		private ICollectionPersister persister;
 		private readonly ISessionImplementor session;
 		private readonly string collectionRole;
 		private readonly IPersistentCollection collection;
 		private ISoftLock softLock;
 
+		/// <summary>
+		/// Initializes a new instance of <see cref="CollectionAction"/>.
+		/// </summary>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> that is responsible for the persisting the Collection.</param>
+		/// <param name="collection">The Persistent collection.</param>
+		/// <param name="key">The identifier of the Collection.</param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
 		public CollectionAction(ICollectionPersister persister, 
 			IPersistentCollection collection, object key, ISessionImplementor session)
 		{
 			this.persister = persister;
 			this.session = session;
 			this.key = key;
-			this.collectionRole = persister.Role;
+			collectionRole = persister.Role;
 			this.collection = collection;
 		}
 
@@ -163,5 +172,14 @@ namespace NHibernate.Action
 			// TODO: H3.2 Different behaviour (use persister istead collectionRole)
 			return StringHelper.Unqualify(GetType().FullName) + MessageHelper.InfoString(persister, key);
 		}
+
+		#region IDeserializationCallback Members
+
+		void IDeserializationCallback.OnDeserialization(object sender)
+		{
+			persister = session.Factory.GetCollectionPersister(collectionRole);
+		}
+
+		#endregion
 	}
 }

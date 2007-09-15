@@ -28,7 +28,7 @@ namespace NHibernate.Impl
 				IPersistentCollection coll;
 				if (type.IsArrayType)
 				{
-					coll = Session.GetArrayHolder(collection);
+					coll = Session.GetCollectionHolder(collection);
 				}
 				else
 				{

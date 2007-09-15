@@ -441,6 +441,8 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		object GetCurrentVersion(object id, ISessionImplementor session);
 
+		object ForceVersionIncrement(object id, object currentVersion, ISessionImplementor session);
+
 		/// <summary>
 		/// </summary>
 		/// <param name="values"></param>
