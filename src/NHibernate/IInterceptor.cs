@@ -110,7 +110,7 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="entity">A transient entity</param>
 		/// <returns></returns>
-		object IsUnsaved(object entity);
+		bool? IsUnsaved(object entity);
 
 		/// <summary>
 		/// Called from <c>Flush()</c>. The return value determines whether the entity is updated

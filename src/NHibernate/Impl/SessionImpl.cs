@@ -1503,9 +1503,9 @@ namespace NHibernate.Impl
 			else
 			{
 				// the object is transient
-				object isUnsaved = interceptor.IsUnsaved(theObj);
+				bool? isUnsaved = interceptor.IsUnsaved(theObj);
 				IEntityPersister persister = GetEntityPersister(theObj);
-				if (isUnsaved == null)
+				if (!isUnsaved.HasValue)
 				{
 					// use unsaved-value
 					if (persister.IsUnsaved(theObj))
@@ -3731,10 +3731,10 @@ namespace NHibernate.Impl
 				return true;
 			}
 
-			object isUnsaved = interceptor.IsUnsaved(obj);
-			if (isUnsaved != null)
+			bool? isUnsaved = interceptor.IsUnsaved(obj);
+			if (isUnsaved.HasValue)
 			{
-				return !(bool)isUnsaved;
+				return !isUnsaved.Value;
 			}
 
 			return !GetEntityPersister(obj).IsUnsaved(obj);
@@ -3768,9 +3768,9 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					object isUnsaved = interceptor.IsUnsaved(obj);
+					bool? isUnsaved = interceptor.IsUnsaved(obj);
 
-					if (isUnsaved != null && ((bool)isUnsaved))
+					if (isUnsaved.HasValue && (isUnsaved.Value))
 					{
 						ThrowTransientObjectException(obj);
 					}

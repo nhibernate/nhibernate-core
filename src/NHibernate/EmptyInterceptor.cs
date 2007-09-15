@@ -35,7 +35,7 @@ namespace NHibernate
 		{
 		}
 
-		public virtual object IsUnsaved(object entity)
+		public virtual bool? IsUnsaved(object entity)
 		{
 			return null;
 		}
