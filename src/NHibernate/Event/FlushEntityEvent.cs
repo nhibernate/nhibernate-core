@@ -68,5 +68,10 @@ namespace NHibernate.Event
 			get { return dirtyCheckHandledByInterceptor; }
 			set { dirtyCheckHandledByInterceptor = value; }
 		}
+
+		public bool HasDatabaseSnapshot
+		{
+			get { return databaseSnapshot != null; }
+		}
 	}
 }

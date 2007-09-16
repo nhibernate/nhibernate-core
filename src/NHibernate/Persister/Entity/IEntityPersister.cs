@@ -422,14 +422,16 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		bool HasUpdateGeneratedProperties { get; }
 
+		/// <summary> Is select snapshot before update enabled?</summary>
+		bool IsSelectBeforeUpdateRequired { get; }
+
 		/// <summary>
 		/// Get the current database state of the object, in a "hydrated" form, without resolving identifiers
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="version"></param>
 		/// <param name="session"></param>
 		/// <returns><see langword="null" /> if select-before-update is not enabled or not supported</returns>
-		object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session);
+		object[] GetDatabaseSnapshot(object id, ISessionImplementor session);
 
 		/// <summary>
 		/// Get the current version of the object, or return null if there is no row for

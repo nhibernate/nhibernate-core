@@ -492,6 +492,19 @@ namespace NHibernate.Engine
 
 		ISet NullifiableEntityKeys { get;}
 
+		/// <summary> 
+		/// Get the current state of the entity as known to the underlying
+		/// database, or null if there is no corresponding row 
+		/// </summary>
+		object[] GetDatabaseSnapshot(object id, IEntityPersister persister);
+
+		/// <summary> 
+		/// Retrieve the cached database snapshot for the requested entity key.
+		/// </summary>
+		/// <param name="key">The entity key for which to retrieve the cached snapshot </param>
+		/// <returns> The cached snapshot </returns>
+		object[] GetCachedDatabaseSnapshot(EntityKey key);
+
 		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
 
 		#endregion

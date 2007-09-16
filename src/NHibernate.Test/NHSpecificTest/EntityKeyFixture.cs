@@ -206,7 +206,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session)
+		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
 		{
 			// TODO:  Add TestingClassPersister.GetCurrentPersistentState implementation
 			return null;
@@ -499,6 +499,11 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		public bool HasUpdateGeneratedProperties
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsSelectBeforeUpdateRequired
 		{
 			get { throw new NotImplementedException(); }
 		}

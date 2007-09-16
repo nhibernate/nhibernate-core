@@ -36,6 +36,11 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// The Entity is in the process of being saved.
 		/// </summary>
-		Saving
+		Saving,
+
+		/// <summary>
+		/// The entity is read-only.
+		/// </summary>
+		ReadOnly
 	}
 }

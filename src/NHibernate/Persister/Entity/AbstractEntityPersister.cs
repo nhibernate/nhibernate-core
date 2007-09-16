@@ -1640,13 +1640,8 @@ namespace NHibernate.Persister.Entity
 			return id;
 		}
 
-		public object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session)
+		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
 		{
-			if (!HasSelectBeforeUpdate)
-			{
-				return null;
-			}
-
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Getting current persistent state for: " + MessageHelper.InfoString(this, id));
@@ -1658,15 +1653,16 @@ namespace NHibernate.Persister.Entity
 			SqlString sql = SQLSnapshotSelectString;
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, idAndVersionSqlTypes);
+				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, idSqlTypes);
 				IDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
-					if (IsVersioned)
-					{
-						VersionType.NullSafeSet(st, version, IdentifierColumnNames.Length, session);
-					}
+					// H3.2 don't use the version for snapshot
+					//if (IsVersioned)
+					//{
+					//  VersionType.NullSafeSet(st, version, IdentifierColumnNames.Length, session);
+					//}
 					rs = session.Batcher.ExecuteReader(st);
 					if (!rs.Read())
 					{
@@ -2759,14 +2755,15 @@ namespace NHibernate.Persister.Entity
 				.AddParameter()
 				.Add(WhereJoinFragment(RootAlias, true, false));
 
-			// TODO H3: this is commented out in H3.2
-			if (IsVersioned)
-			{
-				whereClauseBuilder.Add(" and ")
-					.Add(VersionColumnName)
-					.Add("=")
-					.AddParameter();
-			}
+			// DONE H3: this is commented out in H3.2
+			// H3.2 the Snapshot is what we found in DB without take care on version
+			//if (IsVersioned)
+			//{
+			//  whereClauseBuilder.Add(" and ")
+			//    .Add(VersionColumnName)
+			//    .Add("=")
+			//    .AddParameter();
+			//}
 
 			return select.SetSelectClause(selectClause)
 				.SetFromClause(fromClause)
@@ -3527,6 +3524,11 @@ namespace NHibernate.Persister.Entity
 		public bool HasUpdateGeneratedProperties
 		{
 			get { return entityMetamodel.HasUpdateGeneratedValues; }
+		}
+
+		public bool IsSelectBeforeUpdateRequired
+		{
+			get { return HasSelectBeforeUpdate; }
 		}
 
 		public void ProcessInsertGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)

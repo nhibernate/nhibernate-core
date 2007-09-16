@@ -363,10 +363,9 @@ namespace NHibernate.DomainModel
 		/// 
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="version"></param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		public object[] GetDatabaseSnapshot(object id, object version, ISessionImplementor session)
+		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
 		{
 			return null;
 		}
@@ -418,6 +417,11 @@ namespace NHibernate.DomainModel
 		}
 
 		public bool HasUpdateGeneratedProperties
+		{
+			get { return false; }
+		}
+
+		public bool IsSelectBeforeUpdateRequired
 		{
 			get { return false; }
 		}

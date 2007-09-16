@@ -607,7 +607,6 @@
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Engine\ForeignKeys.cs" />
     <Compile Include="Engine\Nullability.cs" />
-    <Compile Include="Engine\Status.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
     <Compile Include="Event\AbstractEvent.cs" />
     <Compile Include="Event\AutoFlushEvent.cs" />
@@ -620,6 +619,7 @@
     <Compile Include="Event\Default\DefaultDeleteEventListener.cs" />
     <Compile Include="Event\Default\DefaultDirtyCheckEventListener.cs" />
     <Compile Include="Event\Default\DefaultEvictEventListener.cs" />
+    <Compile Include="Event\Default\DefaultFlushEntityEventListener.cs" />
     <Compile Include="Event\Default\DefaultFlushEventListener.cs" />
     <Compile Include="Event\Default\DirtyCollectionSearchVisitor.cs" />
     <Compile Include="Event\Default\EvictVisitor.cs" />

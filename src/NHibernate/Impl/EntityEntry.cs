@@ -218,5 +218,18 @@ namespace NHibernate.Impl
 		{
 			return Status == Impl.Status.Saving || (earlyInsert ? !ExistsInDatabase : session.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister)));
 		}
+
+		public bool RequiresDirtyCheck(object entity)
+		{
+			bool isMutableInstance = status != Impl.Status.ReadOnly && persister.IsMutable;
+
+			return isMutableInstance;
+			// TODO H3.2 Different behaviour
+			//return
+			//  isMutableInstance
+			//  &&
+			//  (Persister.HasMutableProperties || !FieldInterceptionHelper.isInstrumented(entity)
+			//   || FieldInterceptionHelper.extractFieldInterceptor(entity).Dirty);
+		}
 	}
 }

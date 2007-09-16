@@ -215,48 +215,6 @@ namespace NHibernate.Persister.Entity
 
 		private const string ConcreteAlias = "x";
 
-		protected override SqlString GenerateSnapshotSelectString()
-		{
-			SqlStringBuilder select = new SqlStringBuilder();
-
-			select
-				.Add("select ")
-				.Add(string.Join(StringHelper.CommaSpace,
-				                 StringHelper.Qualify(ConcreteAlias, IdentifierColumnNames)))
-				.Add(ConcretePropertySelectFragment(ConcreteAlias, PropertyUpdateability))
-				.Add(" from ")
-				.Add(FromTableFragment(ConcreteAlias))
-				.Add(FromJoinFragment(ConcreteAlias, true, false))
-				.Add(" where ")
-				.Add(WhereJoinFragment(ConcreteAlias, true, false));
-
-			Parameter[] idParameters = Parameter.GenerateParameters(IdentifierType.GetColumnSpan(Factory));
-
-			for (int i = 0; i < idParameters.Length; i++)
-			{
-				if (i > 0)
-				{
-					select.Add(" and ");
-				}
-
-				select
-					.Add(IdentifierColumnNames[i])
-					.Add(" = ")
-					.Add(idParameters[i]);
-			}
-
-			if (IsVersioned)
-			{
-				Parameter[] versionParameters = Parameter.GenerateParameters(VersionType.GetColumnSpan(Factory));
-				select.Add(" and ")
-					.Add(VersionColumnName)
-					.Add(" = ")
-					.Add(versionParameters[0]);
-			}
-
-			return select.ToSqlString();
-		}
-
 		//INITIALIZATION:
 
 		/// <summary>

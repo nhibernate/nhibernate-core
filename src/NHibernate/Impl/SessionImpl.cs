@@ -61,6 +61,10 @@ namespace NHibernate.Impl
 		/// </summary>
 		private readonly IDictionary entitiesByKey;
 
+		// Snapshots of current database state for entities
+		// that have *not* been loaded
+		private IDictionary entitySnapshotsByKey;
+
 		/// <summary>
 		/// An <see cref="IDictionary"/> with the <see cref="EntityKey"/> as the key
 		/// and an <see cref="INHibernateProxy"/> as the value.
@@ -200,6 +204,7 @@ namespace NHibernate.Impl
 			this.factory = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
 
 			this.entitiesByKey = (IDictionary)info.GetValue("entitiesByKey", typeof(IDictionary));
+			entitySnapshotsByKey = (IDictionary)info.GetValue("entitySnapshotsByKey", typeof(IDictionary));
 			// we did not actually serializing the IDictionary but instead the proxies in an arraylist
 			//this.proxiesByKey = (IDictionary)info.GetValue( "proxiesByKey", typeof(IDictionary) );
 			tmpProxiesKey = (ArrayList)info.GetValue("tmpProxiesKey", typeof(ArrayList));
@@ -257,6 +262,7 @@ namespace NHibernate.Impl
 			info.AddValue("closed", closed);
 			info.AddValue("flushMode", flushMode);
 			info.AddValue("entitiesByKey", entitiesByKey, typeof(IDictionary));
+			info.AddValue("entitySnapshotsByKey", entitySnapshotsByKey, typeof(IDictionary));
 
 			// the IDictionary should not be serialized because the objects inside of it are not
 			// fully deserialized until after the session is deserialized. Instead use two ArrayList 
@@ -424,6 +430,7 @@ namespace NHibernate.Impl
 			entitiesByKey = new Hashtable(50);
 			proxiesByKey = new Hashtable(10);
 			nonExists = new HashedSet();
+			entitySnapshotsByKey = new Hashtable(50);
 			//TODO: hack with this cast
 			entityEntries = (IdentityMap)IdentityMap.InstantiateSequenced(50);
 			collectionEntries = (IdentityMap)IdentityMap.InstantiateSequenced(30);
@@ -553,6 +560,7 @@ namespace NHibernate.Impl
 		{
 			closed = true;
 			entitiesByKey.Clear();
+			entitySnapshotsByKey.Clear();
 			proxiesByKey.Clear();
 			entityEntries.Clear();
 			arrayHolders.Clear();
@@ -625,6 +633,7 @@ namespace NHibernate.Impl
 		{
 			object retVal = entitiesByKey[key];
 			entitiesByKey.Remove(key);
+			entitySnapshotsByKey.Remove(key);
 			nullifiables.Remove(key);
 			BatchFetchQueue.RemoveBatchLoadableEntityKey(key);
 			BatchFetchQueue.RemoveSubselect(key);
@@ -3402,7 +3411,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					currentPersistentState = persister.GetDatabaseSnapshot(entry.Id, entry.Version, this);
+					currentPersistentState = persister.GetDatabaseSnapshot(entry.Id, this);
 					if (currentPersistentState != null)
 					{
 						dirtyProperties = persister.FindModified(currentPersistentState, values, obj, this);
@@ -4448,6 +4457,44 @@ namespace NHibernate.Impl
 		public ISet NullifiableEntityKeys
 		{
 			get { return nullifiables; }
+		}
+
+		public object[] GetDatabaseSnapshot(object id, IEntityPersister persister)
+		{
+			EntityKey key = new EntityKey(id, persister);
+			object cached = entitySnapshotsByKey[key];
+			if (cached != null)
+			{
+				return cached == NoRow ? null : (object[])cached;
+			}
+			else
+			{
+				object[] snapshot = persister.GetDatabaseSnapshot(id, this);
+				entitySnapshotsByKey[key] = snapshot ?? NoRow;
+				return snapshot;
+			}
+		}
+
+		/// <summary> 
+		/// Retrieve the cached database snapshot for the requested entity key.
+		/// </summary>
+		/// <param name="key">The entity key for which to retrieve the cached snapshot </param>
+		/// <returns> The cached snapshot </returns>
+		/// <remarks>
+		/// <list type="bullet">
+		/// <listheader><description>This differs from <see cref="GetDatabaseSnapshot"/> is two important respects:</description></listheader>
+		/// <item><description>no snapshot is obtained from the database if not already cached</description></item>
+		/// <item><description>an entry of NO_ROW here is interpretet as an exception</description></item>
+		/// </list>
+		/// </remarks>
+		public object[] GetCachedDatabaseSnapshot(EntityKey key)
+		{
+			object snapshot = entitySnapshotsByKey[key];
+			if (snapshot == NoRow)
+			{
+				throw new HibernateException("persistence context reported no row snapshot for " + MessageHelper.InfoString(key.MappedClass, key.Identifier));
+			}
+			return (object[])snapshot;
 		}
 
 		private void SetHasNonReadOnlyEnties(Status value)
@@ -5921,6 +5968,8 @@ namespace NHibernate.Impl
 		}
 
 		#region Feature IPersistenceContext Members
+
+		public static readonly object NoRow = new object();
 
 		public IDictionary EntitiesByKey
 		{
