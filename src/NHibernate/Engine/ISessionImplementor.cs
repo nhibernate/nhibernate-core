@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Iesi.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
@@ -371,6 +372,10 @@ namespace NHibernate.Engine
 		/// <summary> Retrieves the configured event listeners from this event source. </summary>
 		EventListeners Listeners { get;}
 
+		int DontFlushFromFind { get;}
+
+		ConnectionManager ConnectionManager { get;}
+
 		#region Feature IPersistenceContext
 		// TODO H3.2: Move these methods from ISessionImplementor to IPersistenceContext
 		// These methods was added here to use the existing implementation, in SessionImpl,
@@ -391,6 +396,9 @@ namespace NHibernate.Engine
 		/// <summary> Remove an entity entry from the session cache</summary>
 		/// <param name="entity"></param>
 		EntityEntry RemoveEntry(object entity);
+
+		/// <summary> Is there an EntityEntry for this instance?</summary>
+		bool IsEntryFor(object entity);
 
 		/// <summary> Get the mapping from key value to entity instance</summary>
 		IDictionary EntitiesByKey { get;}
@@ -474,6 +482,15 @@ namespace NHibernate.Engine
 		/// </summary>
 		IPersistentCollection RemoveCollectionHolder(object array);
 
+		/// <summary> 
+		/// False if we know for certain that all the entities are read-only.
+		/// </summary>
+		bool HasNonReadOnlyEntities { get;}
+
+		/// <summary> Set the status of an entry</summary>
+		void SetEntryStatus(EntityEntry entry, Impl.Status status);
+
+		ISet NullifiableEntityKeys { get;}
 
 		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
 

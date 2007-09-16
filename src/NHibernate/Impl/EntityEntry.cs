@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Impl
@@ -211,6 +212,11 @@ namespace NHibernate.Impl
 			loadedState[persister.VersionProperty] = version;
 			LockMode = LockMode.Force;
 			persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
+		}
+
+		public bool IsNullifiable(bool earlyInsert, ISessionImplementor session)
+		{
+			return Status == Impl.Status.Saving || (earlyInsert ? !ExistsInDatabase : session.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister)));
 		}
 	}
 }

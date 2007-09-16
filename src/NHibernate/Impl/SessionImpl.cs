@@ -166,6 +166,9 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private bool flushing;
 
+		[NonSerialized] 
+		private bool hasNonReadOnlyEntities = false;
+
 		[NonSerialized]
 		private IBatcher batcher;
 
@@ -667,7 +670,7 @@ namespace NHibernate.Impl
 			return (EntityEntry)retVal;
 		}
 
-		private bool IsEntryFor(object obj)
+		public bool IsEntryFor(object obj)
 		{
 			return entityEntries.Contains(obj);
 		}
@@ -3843,6 +3846,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		private void PostFlush()
 		{
+			// todo-events Remove
 			log.Debug("post flush");
 
 			if (batchFetchQueue != null)
@@ -4427,6 +4431,33 @@ namespace NHibernate.Impl
 			return result;
 		}
 
+		/// <summary> 
+		/// False if we know for certain that all the entities are read-only.
+		/// </summary>
+		public bool HasNonReadOnlyEntities
+		{
+			get { return hasNonReadOnlyEntities; } // todo-events : implement hasNonReadOnlyEntities where needed
+		}
+
+		public void SetEntryStatus(EntityEntry entry, Status status)
+		{
+			entry.Status = status;
+			SetHasNonReadOnlyEnties(status);
+		}
+
+		public ISet NullifiableEntityKeys
+		{
+			get { return nullifiables; }
+		}
+
+		private void SetHasNonReadOnlyEnties(Status value)
+		{
+			if (value == Status.Deleted || value == Status.Loaded || value == Status.Saving)
+			{
+				hasNonReadOnlyEntities = true;
+			}
+		}
+
 		/// <summary>
 		/// add a collection we just pulled out of the cache (does not need initializing)
 		/// </summary>
@@ -4618,6 +4649,8 @@ namespace NHibernate.Impl
 		/// A flag to indicate if <c>Dispose()</c> has been called.
 		/// </summary>
 		private bool _isAlreadyDisposed;
+
+		private Status hasNonReadOnlyEnties;
 
 		/// <summary>
 		/// Finalizer that ensures the object is correctly disposed of.
@@ -5334,6 +5367,7 @@ namespace NHibernate.Impl
 			{
 				unownedCollections.Clear();
 			}
+			hasNonReadOnlyEntities = false;
 		}
 
 		/// <summary>
@@ -5879,6 +5913,11 @@ namespace NHibernate.Impl
 		public EventListeners Listeners
 		{
 			get { return listeners; }
+		}
+
+		public int DontFlushFromFind
+		{
+			get { return dontFlushFromFind; }
 		}
 
 		#region Feature IPersistenceContext Members

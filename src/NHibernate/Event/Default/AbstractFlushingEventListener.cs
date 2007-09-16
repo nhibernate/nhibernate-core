@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using Iesi.Collections;
 using log4net;
 using NHibernate.Action;
 using NHibernate.Collection;
@@ -210,6 +211,83 @@ namespace NHibernate.Event.Default
 			{
 				session.DecrementCascadeLevel();
 			}
+		}
+
+		/// <summary> 
+		/// Execute all SQL and second-level cache updates, in a
+		/// special order so that foreign-key constraints cannot
+		/// be violated:
+		/// <list type="bullet">
+		/// <item> <description>Inserts, in the order they were performed</description> </item>
+		/// <item> <description>Updates</description> </item>
+		/// <item> <description>Deletion of collection elements</description> </item>
+		/// <item> <description>Insertion of collection elements</description> </item>
+		/// <item> <description>Deletes, in the order they were performed</description> </item>
+		/// </list>
+		/// </summary>
+		protected internal void PerformExecutions(IEventSource session)
+		{
+			if (log.IsDebugEnabled)
+				log.Debug("executing flush");
+
+			try
+			{
+				session.ConnectionManager.FlushBeginning();
+				// we need to lock the collection caches before
+				// executing entity inserts/updates in order to
+				// account for bidi associations
+				session.ActionQueue.PrepareActions();
+				session.ActionQueue.ExecuteActions();
+			}
+			catch (HibernateException he)
+			{
+				if(log.IsErrorEnabled)
+					log.Error("Could not synchronize database state with session", he);
+				throw;
+			}
+			finally
+			{
+				session.ConnectionManager.FlushEnding();
+			}
+		}
+
+		/// <summary> 
+		/// 1. Recreate the collection key -> collection map
+		/// 2. rebuild the collection entries
+		/// 3. call Interceptor.postFlush()
+		/// </summary>
+		protected internal void PostFlush(ISessionImplementor session)
+		{
+			if (log.IsDebugEnabled)
+				log.Debug("post flush");
+
+			session.CollectionsByKey.Clear();
+			session.BatchFetchQueue.ClearSubselects();
+				//the database has changed now, so the subselect results need to be invalidated
+
+			ISet keysToRemove = new HashedSet();
+			IDictionary cEntries = session.CollectionEntries;
+			foreach (DictionaryEntry me in cEntries)
+			{
+				CollectionEntry collectionEntry = (CollectionEntry) me.Value;
+				IPersistentCollection persistentCollection = (IPersistentCollection) me.Key;
+				collectionEntry.PostFlush(persistentCollection);
+				if (collectionEntry.LoadedPersister == null)
+				{
+					keysToRemove.Add(persistentCollection);
+				}
+				else
+				{
+					//otherwise recreate the mapping between the collection and its key
+					CollectionKey collectionKey = new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey);
+					session.CollectionsByKey[collectionKey] = persistentCollection;
+				}
+			}
+			foreach (object key in keysToRemove)
+			{
+				session.CollectionEntries.Remove(key);
+			}
+			session.Interceptor.PostFlush(session.EntitiesByKey.Values);
 		}
 	}
 }

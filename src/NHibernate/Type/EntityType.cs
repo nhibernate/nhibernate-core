@@ -293,10 +293,20 @@ namespace NHibernate.Type
 			return associatedClass;
 		}
 
-		// TODO H3: Until we don't implements EntityName this method have the same behaviour of AbstractEntityPersister
+		/// <summary> 
+		/// The name of the associated entity.
+		/// </summary>
+		/// <returns> The associated entity name.
+		/// </returns>
+		public System.String GetAssociatedEntityName()
+		{
+			// TODO H3: Until we don't implements EntityName this method have the same behaviour of AbstractEntityPersister
+			return associatedClass.FullName;
+		}
+
 		public string GetAssociatedEntityName(ISessionFactoryImplementor factory)
 		{
-			return associatedClass.FullName;
+			return GetAssociatedEntityName();
 		}
 
 		/// <summary>

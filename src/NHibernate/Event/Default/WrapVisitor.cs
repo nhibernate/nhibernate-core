@@ -12,8 +12,14 @@ namespace NHibernate.Event.Default
 	public class WrapVisitor : ProxyVisitor
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(WrapVisitor));
+		private bool substitute = false;
 
 		internal WrapVisitor(IEventSource session) : base(session) { }
+
+		internal bool SubstitutionRequired
+		{
+			get { return substitute; }
+		}
 
 		internal override object ProcessCollection(object collection, CollectionType collectionType)
 		{

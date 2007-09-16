@@ -22,6 +22,11 @@ namespace NHibernate.Action
 			delayedEntityKey = isDelayed ? GenerateDelayedEntityKey() : null;
 		}
 
+		public object GeneratedId
+		{
+			get { return generatedId; }
+		}
+
 		public EntityKey DelayedEntityKey
 		{
 			get { return delayedEntityKey; }

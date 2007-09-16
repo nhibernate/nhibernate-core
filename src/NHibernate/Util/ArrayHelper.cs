@@ -70,6 +70,14 @@ namespace NHibernate.Util
 			return result;
 		}
 
+		public static void Fill<T>(T[] array, T value)
+		{
+			for (int i = 0; i < array.Length; i++)
+			{
+				array[i] = value;
+			}
+		}
+
 		public static int[] ToIntArray(ICollection coll)
 		{
 			return (int[]) ToArray(coll, typeof(int));

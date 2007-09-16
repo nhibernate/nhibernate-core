@@ -32,5 +32,10 @@ namespace NHibernate
 		/// ensure that queries never return stale state. This is the default flush mode.
 		/// </summary>
 		Auto = 10,
+		/// <summary> 
+		/// The <see cref="ISession"/> is flushed before every query. This is
+		/// almost always unnecessary and inefficient.
+		/// </summary>
+		Always = 20
 	}
 }
