@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using log4net;
 using NHibernate.Collection;
+using NHibernate.Event;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -80,6 +81,7 @@ namespace NHibernate.Engine
 			{
 			}
 
+			// todo-events change ISessionImplementor with IEventSource
 			/// <summary>
 			/// Cascade the action to the child object
 			/// </summary>
@@ -231,6 +233,57 @@ namespace NHibernate.Engine
 					return false; // I suppose?
 				}
 			}
+
+			public static CascadingAction ActionPersist = new ActionPersistClass();
+			private class ActionPersistClass : CascadingAction
+			{
+				public override void Cascade(ISessionImplementor session, object child, object anything)
+				{
+					if (log.IsDebugEnabled)
+					{
+						//log.Debug("cascading to persist: " + entityName);
+						log.Debug("cascading to persist");
+					}
+					IEventSource source = (IEventSource) session;
+					source.Persist(null, child, (IDictionary)anything); // todo-events session.persist(entityName, child, (System.Collections.IDictionary) anything);
+				}
+
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				{
+					return GetLoadedElementsCollection(collectionType, collection);
+				}
+
+				public override bool DeleteOrphans()
+				{
+					return false;
+				}
+			}
+
+			public static CascadingAction ActionPersistOnFlush = new ActionPersistOnFlushClass();
+			private class ActionPersistOnFlushClass : CascadingAction
+			{
+				public override void Cascade(ISessionImplementor session, object child, object anything)
+				{
+					if (log.IsDebugEnabled)
+					{
+						//log.Debug("cascading to persistOnFlush: " + entityName);
+						log.Debug("cascading to persistOnFlush");
+					}
+					IEventSource source = (IEventSource)session;
+					source.PersistOnFlush(null, child, (IDictionary)anything); // todo-events session.persistOnFlush(entityName, child, (System.Collections.IDictionary) anything);
+				}
+
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				{
+					return GetLoadedElementsCollection(collectionType, collection);
+				}
+
+				public override bool DeleteOrphans()
+				{
+					return true;
+				}
+			}
+
 		}
 
 		private static bool CollectionIsInitialized(object collection)

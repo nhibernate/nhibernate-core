@@ -624,6 +624,10 @@
     <Compile Include="Event\Default\DefaultInitializeCollectionEventListener.cs" />
     <Compile Include="Event\Default\DefaultLockEventListener.cs" />
     <Compile Include="Event\Default\DefaultMergeEventListener.cs" />
+    <Compile Include="Event\Default\DefaultPersistEventListener.cs" />
+    <Compile Include="Event\Default\DefaultPersistOnFlushEventListener.cs" />
+    <Compile Include="Event\Default\DefaultPostLoadEventListener.cs" />
+    <Compile Include="Event\Default\DefaultPreLoadEventListener.cs" />
     <Compile Include="Event\Default\DirtyCollectionSearchVisitor.cs" />
     <Compile Include="Event\Default\EvictVisitor.cs" />
     <Compile Include="Event\Default\FlushVisitor.cs" />
