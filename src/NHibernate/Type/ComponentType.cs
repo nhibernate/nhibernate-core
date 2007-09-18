@@ -532,13 +532,28 @@ namespace NHibernate.Type
 				return target;
 			}
 
-			object result = target == null
-			                	? Instantiate(owner, session)
-			                	: target;
+			object result = target ?? Instantiate(owner, session);
 
 			object[] values = TypeFactory.Replace(
 				GetPropertyValues(original), GetPropertyValues(result),
 				propertyTypes, session, owner, copiedAlready);
+
+			SetPropertyValues(result, values);
+			return result;
+		}
+
+		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		{
+			if (original == null)
+			{
+				return null;
+			}
+			//if ( original == target ) return target;
+
+			object result = target ?? Instantiate(owner, session);
+
+			object[] values = TypeFactory.Replace(GetPropertyValues(original), GetPropertyValues(result), 
+				propertyTypes, session, owner, copyCache, foreignKeyDirection);
 
 			SetPropertyValues(result, values);
 			return result;

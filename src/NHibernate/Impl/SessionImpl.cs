@@ -1000,7 +1000,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private object Unproxy(object maybeProxy)
+		public object Unproxy(object maybeProxy)
 		{
 			if (maybeProxy is INHibernateProxy)
 			{
@@ -1019,7 +1019,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private object UnproxyAndReassociate(object maybeProxy)
+		public object UnproxyAndReassociate(object maybeProxy)
 		{
 			if (maybeProxy is INHibernateProxy)
 			{
@@ -2470,6 +2470,37 @@ namespace NHibernate.Impl
 		public T Get<T>(object id, LockMode lockMode)
 		{
 			return (T)Get(typeof(T), id, lockMode);
+		}
+
+		public string GetEntityName(object obj)
+		{
+			CheckIsOpen();
+			if (obj is INHibernateProxy)
+			{
+				if (!ContainsProxy(obj))
+				{
+					throw new TransientObjectException("proxy was not associated with the session");
+				}
+				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
+
+				obj = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj).GetImplementation();
+			}
+
+			EntityEntry entry = GetEntry(obj);
+			if (entry == null)
+			{
+				ThrowTransientObjectException(obj);
+			}
+			return entry.Persister.EntityName;
+		}
+
+		public bool ContainsProxy(object obj)
+		{
+			foreach (DictionaryEntry entry in proxiesByKey)
+			{
+				if(entry.Value.Equals(obj)) return true;
+			}
+			return false;
 		}
 
 		public object Get(System.Type clazz, object id)
@@ -5580,6 +5611,7 @@ namespace NHibernate.Impl
 		private bool InitializeCollectionFromCache(object id, object owner, ICollectionPersister persister,
 												   IPersistentCollection collection)
 		{
+			//todo-events remove
 			if (enabledFilters.Count > 0 && persister.IsAffectedByEnabledFilters(this))
 			{
 				log.Debug("disregarding cached version (if any) of collection due to enabled filters ");

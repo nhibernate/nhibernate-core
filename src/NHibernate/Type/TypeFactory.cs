@@ -1092,15 +1092,15 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// 
+		///  Apply the <see cref="IType.Replace"/> operation across a series of values.
 		/// </summary>
-		/// <param name="original"></param>
-		/// <param name="target"></param>
-		/// <param name="types"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <param name="copiedAlready"></param>
-		/// <returns></returns>
+		/// <param name="original">The source of the state </param>
+		/// <param name="target">The target into which to replace the source values. </param>
+		/// <param name="types">The value types </param>
+		/// <param name="session">The orginating session </param>
+		/// <param name="owner">The entity "owning" the values </param>
+		/// <param name="copiedAlready">Represent a cache of already replaced state </param>
+		/// <returns> The replaced state </returns>
 		public static object[] Replace(object[] original, object[] target, IType[] types, ISessionImplementor session,
 		                               object owner, IDictionary copiedAlready)
 		{
@@ -1108,6 +1108,84 @@ namespace NHibernate.Type
 			for (int i = 0; i < original.Length; i++)
 			{
 				copied[i] = types[i].Replace(original[i], target[i], session, owner, copiedAlready);
+			}
+			return copied;
+		}
+
+		/// <summary>
+		///  Apply the <see cref="IType.Replace"/> operation across a series of values.
+		/// </summary>
+		/// <param name="original">The source of the state </param>
+		/// <param name="target">The target into which to replace the source values. </param>
+		/// <param name="types">The value types </param>
+		/// <param name="session">The orginating session </param>
+		/// <param name="owner">The entity "owning" the values </param>
+		/// <param name="copyCache">A map representing a cache of already replaced state </param>
+		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
+		/// <returns> The replaced state </returns>
+		public static object[] Replace(object[] original, object[] target, IType[] types, 
+			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		{
+			object[] copied = new object[original.Length];
+			for (int i = 0; i < types.Length; i++)
+			{
+				// TODO H3.2 Not ported
+				//if (original[i] == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY || original[i] == BackrefPropertyAccessor.UNKNOWN)
+				//{
+				//  copied[i] = target[i];
+				//}
+				//else
+				copied[i] = types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection);
+			}
+			return copied;
+		}
+
+		/// <summary> 
+		/// Apply the <see cref="IType.Replace"/> operation across a series of values, as
+		/// long as the corresponding <see cref="IType"/> is an association.
+		/// </summary>
+		/// <param name="original">The source of the state </param>
+		/// <param name="target">The target into which to replace the source values. </param>
+		/// <param name="types">The value types </param>
+		/// <param name="session">The orginating session </param>
+		/// <param name="owner">The entity "owning" the values </param>
+		/// <param name="copyCache">A map representing a cache of already replaced state </param>
+		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
+		/// <returns> The replaced state </returns>
+		/// <remarks>
+		/// If the corresponding type is a component type, then apply <see cref="ReplaceAssociations"/>
+		/// accross the component subtypes but do not replace the component value itself.
+		/// </remarks>
+		public static object[] ReplaceAssociations(object[] original, object[] target, IType[] types, 
+			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		{
+			object[] copied = new object[original.Length];
+			for (int i = 0; i < types.Length; i++)
+			{
+				// TODO H3.2 Not ported
+				//if (original[i] == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY || original[i] == BackrefPropertyAccessor.UNKNOWN)
+				//{
+				//  copied[i] = target[i];
+				//}
+				//else 
+				if (types[i].IsComponentType)
+				{
+					// need to extract the component values and check for subtype replacements...
+					IAbstractComponentType componentType = (IAbstractComponentType)types[i];
+					IType[] subtypes = componentType.Subtypes;
+					object[] origComponentValues = original[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(original[i], session);
+					object[] targetComponentValues = componentType.GetPropertyValues(target[i], session);
+					ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache, foreignKeyDirection);
+					copied[i] = target[i];
+				}
+				else if (!types[i].IsAssociationType)
+				{
+					copied[i] = target[i];
+				}
+				else
+				{
+					copied[i] = types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection);
+				}
 			}
 			return copied;
 		}

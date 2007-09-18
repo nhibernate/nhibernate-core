@@ -237,6 +237,22 @@ namespace NHibernate.Type
 			return value == null;
 		}
 
+		public virtual object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
+		                      ForeignKeyDirection foreignKeyDirection)
+		{
+			bool include;
+			if (IsAssociationType)
+			{
+				IAssociationType atype = (IAssociationType)this;
+				include = atype.ForeignKeyDirection == foreignKeyDirection;
+			}
+			else
+			{
+				include = ForeignKeyDirection.ForeignKeyFromParent == foreignKeyDirection;
+			}
+			return include ? Replace(original, target, session, owner, copyCache) : target;
+		}
+
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
 		/// /> 

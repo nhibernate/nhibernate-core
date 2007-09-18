@@ -621,6 +621,9 @@
     <Compile Include="Event\Default\DefaultEvictEventListener.cs" />
     <Compile Include="Event\Default\DefaultFlushEntityEventListener.cs" />
     <Compile Include="Event\Default\DefaultFlushEventListener.cs" />
+    <Compile Include="Event\Default\DefaultInitializeCollectionEventListener.cs" />
+    <Compile Include="Event\Default\DefaultLockEventListener.cs" />
+    <Compile Include="Event\Default\DefaultMergeEventListener.cs" />
     <Compile Include="Event\Default\DirtyCollectionSearchVisitor.cs" />
     <Compile Include="Event\Default\EvictVisitor.cs" />
     <Compile Include="Event\Default\FlushVisitor.cs" />

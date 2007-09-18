@@ -261,5 +261,14 @@ namespace NHibernate.Util
 			return obj;
 		}
 
+		public static IDictionary Invert(IDictionary map)
+		{
+			IDictionary result = Instantiate(map.Count);
+			foreach (DictionaryEntry me in result)
+			{
+				result[me.Value] = me.Key;
+			}
+			return result;
+		}
 	}
 }

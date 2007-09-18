@@ -684,6 +684,13 @@ namespace NHibernate
 		/// </summary>
 		T Get<T>(object id, LockMode lockMode);
 
+		/// <summary> 
+		/// Return the entity name for a persistent entity
+		/// </summary>
+		/// <param name="obj">a persistent entity</param>
+		/// <returns> the entity name </returns>
+		System.String GetEntityName(object obj);
+
 		/// <summary>
 		/// Enable the named filter for this current session.
 		/// </summary>

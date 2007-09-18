@@ -505,6 +505,23 @@ namespace NHibernate.Engine
 		/// <returns> The cached snapshot </returns>
 		object[] GetCachedDatabaseSnapshot(EntityKey key);
 
+		/// <summary> 
+		/// Possibly unproxy the given reference and reassociate it with the current session.
+		/// </summary>
+		/// <param name="maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
+		/// <returns> The unproxied instance. </returns>
+		object UnproxyAndReassociate(object maybeProxy);
+
+		/// <summary> Is the given proxy associated with this persistence context?</summary>
+		bool ContainsProxy(object proxy);
+
+		/// <summary> 
+		/// Get the entity instance underlying the given proxy, throwing
+		/// an exception if the proxy is uninitialized. If the given object
+		/// is not a proxy, simply return the argument.
+		/// </summary>
+		object Unproxy(object maybeProxy);
+
 		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
 
 		#endregion

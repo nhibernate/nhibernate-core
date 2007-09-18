@@ -14,6 +14,7 @@ namespace NHibernate.Event.Default
 {
 	public enum EntityState
 	{
+		Undefined = -1,
 		Persistent = 0,
 		Transient = 1,
 		Detached = 2,

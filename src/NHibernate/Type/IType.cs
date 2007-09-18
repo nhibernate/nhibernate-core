@@ -154,5 +154,21 @@ namespace NHibernate.Type
 		/// otherwise, <see langword="false" />.
 		/// </returns>
 		bool IsDatabaseNull(object value);
+
+		/// <summary> 
+		/// During merge, replace the existing (target) value in the entity we are merging to
+		/// with a new (original) value from the detached entity we are merging. For immutable
+		/// objects, or null values, it is safe to simply return the first parameter. For
+		/// mutable objects, it is safe to return a copy of the first parameter. For objects
+		/// with component values, it might make sense to recursively replace component values. 
+		/// </summary>
+		/// <param name="original">the value from the detached entity being merged </param>
+		/// <param name="target">the value in the managed entity </param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <param name="copyCache"></param>
+		/// <param name="foreignKeyDirection"></param>
+		/// <returns> the value to be merged </returns>
+		object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection);
 	}
 }
