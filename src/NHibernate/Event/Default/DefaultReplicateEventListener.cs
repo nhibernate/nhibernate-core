@@ -15,16 +15,16 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultReplicateEventListener));
 
-		public void OnReplicate(ReplicateEvent theEvent)
+		public void OnReplicate(ReplicateEvent @event)
 		{
-			IEventSource source = theEvent.Session;
-			if (source.ReassociateIfUninitializedProxy(theEvent.Entity))
+			IEventSource source = @event.Session;
+			if (source.ReassociateIfUninitializedProxy(@event.Entity))
 			{
 				log.Debug("uninitialized proxy passed to replicate()");
 				return;
 			}
 
-			object entity = source.UnproxyAndReassociate(theEvent.Entity);
+			object entity = source.UnproxyAndReassociate(@event.Entity);
 
 			if (source.IsEntryFor(entity))
 			{
@@ -45,7 +45,7 @@ namespace NHibernate.Event.Default
 				throw new TransientObjectException("instance with null id passed to replicate()");
 			}
 
-			ReplicationMode replicationMode = theEvent.ReplicationMode;
+			ReplicationMode replicationMode = @event.ReplicationMode;
 			object oldVersion;
 			if (replicationMode == ReplicationMode.Exception)
 			{

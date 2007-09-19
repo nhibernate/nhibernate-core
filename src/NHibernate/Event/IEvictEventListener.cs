@@ -4,7 +4,7 @@ namespace NHibernate.Event
 	public interface IEvictEventListener
 	{
 		/// <summary> Handle the given evict event. </summary>
-		/// <param name="theEvent">The evict event to be handled.</param>
-		void OnEvict(EvictEvent theEvent);
+		/// <param name="event">The evict event to be handled.</param>
+		void OnEvict(EvictEvent @event);
 	}
 }

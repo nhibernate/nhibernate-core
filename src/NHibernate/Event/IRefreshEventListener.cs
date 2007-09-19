@@ -8,14 +8,14 @@ namespace NHibernate.Event
 	public interface IRefreshEventListener
 	{
 		/// <summary> Handle the given refresh event. </summary>
-		/// <param name="theEvent">The refresh event to be handled.</param>
-		void OnRefresh(RefreshEvent theEvent);
+		/// <param name="event">The refresh event to be handled.</param>
+		void OnRefresh(RefreshEvent @event);
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="theEvent"></param>
+		/// <param name="event"></param>
 		/// <param name="refreshedAlready"></param>
-		void OnRefresh(RefreshEvent theEvent, IDictionary refreshedAlready);
+		void OnRefresh(RefreshEvent @event, IDictionary refreshedAlready);
 	}
 }

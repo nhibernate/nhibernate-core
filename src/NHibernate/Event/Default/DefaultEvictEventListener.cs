@@ -18,10 +18,10 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultEvictEventListener));
 
-		public void OnEvict(EvictEvent theEvent)
+		public void OnEvict(EvictEvent @event)
 		{
-			IEventSource source = theEvent.Session;
-			object obj = theEvent.Entity;
+			IEventSource source = @event.Session;
+			object obj = @event.Entity;
 
 			if (obj is INHibernateProxy)
 			{
@@ -39,8 +39,8 @@ namespace NHibernate.Event.Default
 					object entity = source.RemoveEntity(key);
 					if (entity != null)
 					{
-						EntityEntry e = theEvent.Session.RemoveEntry(entity);
-						DoEvict(entity, key, e.Persister, theEvent.Session);
+						EntityEntry e = @event.Session.RemoveEntry(entity);
+						DoEvict(entity, key, e.Persister, @event.Session);
 					}
 				}
 				li.Session = null;

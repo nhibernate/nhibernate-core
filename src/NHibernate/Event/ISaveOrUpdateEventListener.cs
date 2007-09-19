@@ -6,7 +6,7 @@ namespace NHibernate.Event
 	public interface ISaveOrUpdateEventListener
 	{
 		/// <summary> Handle the given update event. </summary>
-		/// <param name="theEvent">The update event to be handled.</param>
-		void OnSaveOrUpdate(SaveOrUpdateEvent theEvent);
+		/// <param name="event">The update event to be handled.</param>
+		void OnSaveOrUpdate(SaveOrUpdateEvent @event);
 	}
 }

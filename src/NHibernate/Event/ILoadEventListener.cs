@@ -8,9 +8,9 @@ namespace NHibernate.Event
 		/// <summary> 
 		/// Handle the given load event. 
 		/// </summary>
-		/// <param name="theEvent">The load event to be handled. </param>
+		/// <param name="event">The load event to be handled. </param>
 		/// <param name="loadType"></param>
 		/// <returns> The result (i.e., the loaded entity). </returns>
-		void OnLoad(LoadEvent theEvent, LoadType loadType);
+		void OnLoad(LoadEvent @event, LoadType loadType);
 	}
 }

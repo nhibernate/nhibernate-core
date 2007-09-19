@@ -9,12 +9,12 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultFlushEventListener : AbstractFlushingEventListener, IFlushEventListener
 	{
-		public void OnFlush(FlushEvent theEvent)
+		public void OnFlush(FlushEvent @event)
 		{
-			IEventSource source = theEvent.Session;
+			IEventSource source = @event.Session;
 			if (source.HasNonReadOnlyEntities)
 			{
-				FlushEverythingToExecutions(theEvent);
+				FlushEverythingToExecutions(@event);
 				PerformExecutions(source);
 				PostFlush(source);
 

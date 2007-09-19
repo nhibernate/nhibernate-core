@@ -21,24 +21,24 @@ namespace NHibernate.Event.Default
 		public static readonly object InconsistentRTNClassMarker= new object();
 		public static readonly LockMode DefaultLockMode = LockMode.None;
 
-		public void OnLoad(LoadEvent theEvent, LoadType loadType)
+		public void OnLoad(LoadEvent @event, LoadType loadType)
 		{
-			ISessionImplementor source = theEvent.Session;
+			ISessionImplementor source = @event.Session;
 
 			IEntityPersister persister;
-			if (theEvent.InstanceToLoad != null)
+			if (@event.InstanceToLoad != null)
 			{
-				persister = source.GetEntityPersister(theEvent.InstanceToLoad); //the load() which takes an entity does not pass an entityName
-				theEvent.EntityClassName = theEvent.InstanceToLoad.GetType().FullName;
+				persister = source.GetEntityPersister(@event.InstanceToLoad); //the load() which takes an entity does not pass an entityName
+				@event.EntityClassName = @event.InstanceToLoad.GetType().FullName;
 			}
 			else
 			{
-				persister = source.Factory.GetEntityPersister(theEvent.EntityClassName);
+				persister = source.Factory.GetEntityPersister(@event.EntityClassName);
 			}
 
 			if (persister == null)
 			{
-				throw new HibernateException("Unable to locate persister: " + theEvent.EntityClassName);
+				throw new HibernateException("Unable to locate persister: " + @event.EntityClassName);
 			}
 
 			if (persister.IdentifierType.IsComponentType)
@@ -50,31 +50,31 @@ namespace NHibernate.Event.Default
 			else
 			{
 				System.Type idClass = persister.IdentifierType.ReturnedClass;
-				if (idClass != null && !idClass.IsInstanceOfType(theEvent.EntityId))
+				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId))
 				{
-					throw new TypeMismatchException("Provided id of the wrong type. Expected: " + idClass + ", got " + theEvent.EntityId.GetType());
+					throw new TypeMismatchException("Provided id of the wrong type. Expected: " + idClass + ", got " + @event.EntityId.GetType());
 				}
 			}
 
-			EntityKey keyToLoad = new EntityKey(theEvent.EntityId, persister);
+			EntityKey keyToLoad = new EntityKey(@event.EntityId, persister);
 			try
 			{
 				if (loadType.IsNakedEntityReturned)
 				{
 					//do not return a proxy!
 					//(this option indicates we are initializing a proxy)
-					theEvent.Result = Load(theEvent, persister, keyToLoad, loadType);
+					@event.Result = Load(@event, persister, keyToLoad, loadType);
 				}
 				else
 				{
 					//return a proxy if appropriate
-					if (theEvent.LockMode == LockMode.None)
+					if (@event.LockMode == LockMode.None)
 					{
-						theEvent.Result = ProxyOrLoad(theEvent, persister, keyToLoad, loadType);
+						@event.Result = ProxyOrLoad(@event, persister, keyToLoad, loadType);
 					}
 					else
 					{
-						theEvent.Result = LockAndLoad(theEvent, persister, keyToLoad, loadType, source);
+						@event.Result = LockAndLoad(@event, persister, keyToLoad, loadType, source);
 					}
 				}
 			}

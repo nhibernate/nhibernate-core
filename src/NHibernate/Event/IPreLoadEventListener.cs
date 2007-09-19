@@ -8,7 +8,7 @@ namespace NHibernate.Event
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="theEvent"></param>
-		void OnPreLoad(PreLoadEvent theEvent);
+		/// <param name="event"></param>
+		void OnPreLoad(PreLoadEvent @event);
 	}
 }

@@ -21,11 +21,11 @@ namespace NHibernate.Event.Default
 			get { return Cascades.CascadingAction.ActionSaveUpdate; }
 		}
 
-		public void OnSaveOrUpdate(SaveOrUpdateEvent theEvent)
+		public void OnSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
-			ISessionImplementor source = theEvent.Session;
-			object obj = theEvent.Entity;
-			object requestedId = theEvent.RequestedId;
+			ISessionImplementor source = @event.Session;
+			object obj = @event.Entity;
+			object requestedId = @event.RequestedId;
 
 			if (requestedId != null)
 			{
@@ -48,10 +48,10 @@ namespace NHibernate.Event.Default
 			{
 				//initialize properties of the event:
 				object entity = source.UnproxyAndReassociate(obj);
-				theEvent.Entity = entity;
-				theEvent.Entry = source.GetEntry(entity);
+				@event.Entity = entity;
+				@event.Entry = source.GetEntry(entity);
 				//return the id in the event object
-				theEvent.ResultId = PerformSaveOrUpdate(theEvent);
+				@event.ResultId = PerformSaveOrUpdate(@event);
 			}
 		}
 

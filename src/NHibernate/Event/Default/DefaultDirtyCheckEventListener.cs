@@ -12,20 +12,20 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultDirtyCheckEventListener));
 
-		public void OnDirtyCheck(DirtyCheckEvent theEvent)
+		public void OnDirtyCheck(DirtyCheckEvent @event)
 		{
-			int oldSize = theEvent.Session.ActionQueue.CollectionRemovalsCount;
+			int oldSize = @event.Session.ActionQueue.CollectionRemovalsCount;
 
 			try
 			{
-				FlushEverythingToExecutions(theEvent);
-				bool wasNeeded = theEvent.Session.ActionQueue.HasAnyQueuedActions;
+				FlushEverythingToExecutions(@event);
+				bool wasNeeded = @event.Session.ActionQueue.HasAnyQueuedActions;
 				log.Debug(wasNeeded ? "session dirty" : "session not dirty");
-				theEvent.Dirty = wasNeeded;
+				@event.Dirty = wasNeeded;
 			}
 			finally
 			{
-				theEvent.Session.ActionQueue.ClearFromFlushNeededCheck(oldSize);
+				@event.Session.ActionQueue.ClearFromFlushNeededCheck(oldSize);
 			}
 		}
 	}

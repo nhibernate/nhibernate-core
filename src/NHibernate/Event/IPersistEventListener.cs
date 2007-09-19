@@ -8,12 +8,12 @@ namespace NHibernate.Event
 	public interface IPersistEventListener
 	{
 		/// <summary> Handle the given create event.</summary>
-		/// <param name="theEvent">The create event to be handled.</param>
-		void OnPersist(PersistEvent theEvent);
+		/// <param name="event">The create event to be handled.</param>
+		void OnPersist(PersistEvent @event);
 
 		/// <summary> Handle the given create event. </summary>
-		/// <param name="theEvent">The create event to be handled.</param>
+		/// <param name="event">The create event to be handled.</param>
 		/// <param name="createdAlready"></param>
-		void OnPersist(PersistEvent theEvent, IDictionary createdAlready);
+		void OnPersist(PersistEvent @event, IDictionary createdAlready);
 	}
 }

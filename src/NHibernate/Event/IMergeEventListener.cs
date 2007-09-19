@@ -8,12 +8,12 @@ namespace NHibernate.Event
 	public interface IMergeEventListener
 	{
 		/// <summary> Handle the given merge event. </summary>
-		/// <param name="theEvent">The merge event to be handled. </param>
-		void OnMerge(MergeEvent theEvent);
+		/// <param name="event">The merge event to be handled. </param>
+		void OnMerge(MergeEvent @event);
 
 		/// <summary> Handle the given merge event. </summary>
-		/// <param name="theEvent">The merge event to be handled. </param>
+		/// <param name="event">The merge event to be handled. </param>
 		/// <param name="copiedAlready"></param>
-		void OnMerge(MergeEvent theEvent, IDictionary copiedAlready);
+		void OnMerge(MergeEvent @event, IDictionary copiedAlready);
 	}
 }

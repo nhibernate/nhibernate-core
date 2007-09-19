@@ -6,7 +6,7 @@ namespace NHibernate.Event
 	public interface IPreDeleteEventListener
 	{
 		/// <summary> Return true if the operation should be vetoed</summary>
-		/// <param name="theEvent"></param>
-		bool OnPreDelete(PreDeleteEvent theEvent);
+		/// <param name="event"></param>
+		bool OnPreDelete(PreDeleteEvent @event);
 	}
 }

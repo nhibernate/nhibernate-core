@@ -27,15 +27,15 @@ namespace NHibernate.Event.Default
 			get { return true; }
 		}
 
-		public void OnPersist(PersistEvent theEvent)
+		public void OnPersist(PersistEvent @event)
 		{
-			OnPersist(theEvent, IdentityMap.Instantiate(10));
+			OnPersist(@event, IdentityMap.Instantiate(10));
 		}
 
-		public void OnPersist(PersistEvent theEvent, IDictionary createdAlready)
+		public void OnPersist(PersistEvent @event, IDictionary createdAlready)
 		{
-			ISessionImplementor source = theEvent.Session;
-			object obj = theEvent.Entity;
+			ISessionImplementor source = @event.Session;
+			object obj = @event.Entity;
 
 			object entity;
 			if (obj is INHibernateProxy)
@@ -59,18 +59,18 @@ namespace NHibernate.Event.Default
 				entity = obj;
 			}
 
-			EntityState entityState = GetEntityState(entity, theEvent.EntityName, source.GetEntry(entity), source);
+			EntityState entityState = GetEntityState(entity, @event.EntityName, source.GetEntry(entity), source);
 
 			switch (entityState)
 			{
 				case EntityState.Persistent:
-					EntityIsPersistent(theEvent, createdAlready);
+					EntityIsPersistent(@event, createdAlready);
 					break;
 				case EntityState.Transient:
-					EntityIsTransient(theEvent, createdAlready);
+					EntityIsTransient(@event, createdAlready);
 					break;
 				case EntityState.Detached:
-					throw new PersistentObjectException("detached entity passed to persist: " + GetLoggableName(theEvent.EntityName, entity));
+					throw new PersistentObjectException("detached entity passed to persist: " + GetLoggableName(@event.EntityName, entity));
 				default:
 					throw new ObjectDeletedException("deleted instance passed to merge", null, entity.GetType());
 			}

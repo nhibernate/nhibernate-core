@@ -19,19 +19,19 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultRefreshEventListener));
 
-		public void OnRefresh(RefreshEvent theEvent)
+		public void OnRefresh(RefreshEvent @event)
 		{
-			OnRefresh(theEvent, IdentityMap.Instantiate(10));
+			OnRefresh(@event, IdentityMap.Instantiate(10));
 		}
 
-		public void OnRefresh(RefreshEvent theEvent, IDictionary refreshedAlready)
+		public void OnRefresh(RefreshEvent @event, IDictionary refreshedAlready)
 		{
-			IEventSource source = theEvent.Session;
+			IEventSource source = @event.Session;
 
-			if (source.ReassociateIfUninitializedProxy(theEvent.Entity))
+			if (source.ReassociateIfUninitializedProxy(@event.Entity))
 				return;
 
-			object obj = source.UnproxyAndReassociate(theEvent.Entity);
+			object obj = source.UnproxyAndReassociate(@event.Entity);
 
 			if (refreshedAlready.Contains(obj))
 			{
@@ -97,7 +97,7 @@ namespace NHibernate.Event.Default
 			// todo-events Different behaviour
 			//string previousFetchProfile = source.FetchProfile;
 			//source.FetchProfile = "refresh";
-			object result = persister.Load(id, obj, theEvent.LockMode, source);
+			object result = persister.Load(id, obj, @event.LockMode, source);
 			//source.FetchProfile = previousFetchProfile;
 
 			UnresolvableObjectException.ThrowIfNull(result, id, persister.MappedClass);

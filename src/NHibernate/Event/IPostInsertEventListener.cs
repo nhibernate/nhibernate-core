@@ -6,7 +6,7 @@ namespace NHibernate.Event
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="theEvent"></param>
-		void OnPostInsert(PostInsertEvent theEvent);
+		/// <param name="event"></param>
+		void OnPostInsert(PostInsertEvent @event);
 	}
 }

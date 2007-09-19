@@ -4,7 +4,7 @@ namespace NHibernate.Event
 	public interface IFlushEventListener
 	{
 		/// <summary>Handle the given flush event. </summary>
-		/// <param name="theEvent">The flush event to be handled.</param>
-		void OnFlush(FlushEvent theEvent);
+		/// <param name="event">The flush event to be handled.</param>
+		void OnFlush(FlushEvent @event);
 	}
 }

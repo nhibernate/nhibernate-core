@@ -12,10 +12,10 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultPreLoadEventListener : IPreLoadEventListener
 	{
-		public void OnPreLoad(PreLoadEvent theEvent)
+		public void OnPreLoad(PreLoadEvent @event)
 		{
-			IEntityPersister persister = theEvent.Persister;
-			theEvent.Session.Interceptor.OnLoad(theEvent.Entity, theEvent.Id, theEvent.State, persister.PropertyNames, persister.PropertyTypes);
+			IEntityPersister persister = @event.Persister;
+			@event.Session.Interceptor.OnLoad(@event.Entity, @event.Id, @event.State, persister.PropertyNames, persister.PropertyTypes);
 		}
 	}
 }

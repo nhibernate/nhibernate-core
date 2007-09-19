@@ -13,22 +13,22 @@ namespace NHibernate.Event.Default
 	public class DefaultLockEventListener : AbstractLockUpgradeEventListener, ILockEventListener
 	{
 		/// <summary>Handle the given lock event. </summary>
-		/// <param name="theEvent">The lock event to be handled.</param>
-		public void OnLock(LockEvent theEvent)
+		/// <param name="event">The lock event to be handled.</param>
+		public void OnLock(LockEvent @event)
 		{
-			if (theEvent.Entity == null)
+			if (@event.Entity == null)
 			{
 				throw new NullReferenceException("attempted to lock null");
 			}
 
-			if (theEvent.LockMode == LockMode.Write)
+			if (@event.LockMode == LockMode.Write)
 			{
 				throw new HibernateException("Invalid lock mode for lock()");
 			}
 
-			ISessionImplementor source = theEvent.Session;
+			ISessionImplementor source = @event.Session;
 
-			object entity = source.UnproxyAndReassociate(theEvent.Entity);
+			object entity = source.UnproxyAndReassociate(@event.Entity);
 			//TODO: if object was an uninitialized proxy, this is inefficient,resulting in two SQL selects
 
 			EntityEntry entry = source.GetEntry(entity);
@@ -36,17 +36,17 @@ namespace NHibernate.Event.Default
 			{
 				IEntityPersister persister = source.GetEntityPersister(entity);
 				object id = persister.GetIdentifier(entity);
-				if (!ForeignKeys.IsNotTransient(theEvent.EntityName, entity, false, source))
+				if (!ForeignKeys.IsNotTransient(@event.EntityName, entity, false, source))
 				{
 					throw new TransientObjectException("cannot lock an unsaved transient instance: " + persister.EntityName);
 				}
 
-				entry = Reassociate(theEvent, entity, id, persister);
+				entry = Reassociate(@event, entity, id, persister);
 
-				CascadeOnLock(theEvent, persister, entity);
+				CascadeOnLock(@event, persister, entity);
 			}
 
-			UpgradeLock(entity, entry, theEvent.LockMode, source);
+			UpgradeLock(entity, entry, @event.LockMode, source);
 		}
 
 		private void CascadeOnLock(LockEvent @event, IEntityPersister persister, object entity)

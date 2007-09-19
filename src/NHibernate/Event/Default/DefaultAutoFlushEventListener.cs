@@ -17,18 +17,18 @@ namespace NHibernate.Event.Default
 		/// <summary>
 		/// Handle the given auto-flush event.
 		/// </summary>
-		/// <param name="theEvent">The auto-flush event to be handled.</param>
-		public void OnAutoFlush(AutoFlushEvent theEvent)
+		/// <param name="event">The auto-flush event to be handled.</param>
+		public void OnAutoFlush(AutoFlushEvent @event)
 		{
-			IEventSource source = theEvent.Session;
+			IEventSource source = @event.Session;
 
 			if (FlushMightBeNeeded(source))
 			{
 				int oldSize = source.ActionQueue.CollectionRemovalsCount;
 
-				FlushEverythingToExecutions(theEvent);
+				FlushEverythingToExecutions(@event);
 
-				if (FlushIsReallyNeeded(theEvent, source))
+				if (FlushIsReallyNeeded(@event, source))
 				{
 					if (log.IsDebugEnabled)
 						log.Debug("Need to execute flush");
@@ -52,7 +52,7 @@ namespace NHibernate.Event.Default
 					source.ActionQueue.ClearFromFlushNeededCheck(oldSize);
 				}
 
-				theEvent.FlushRequired = FlushIsReallyNeeded(theEvent, source);
+				@event.FlushRequired = FlushIsReallyNeeded(@event, source);
 			}
 		}
 

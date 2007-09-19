@@ -6,9 +6,9 @@ namespace NHibernate.Event
 	public interface IDeleteEventListener
 	{
 		/// <summary>Handle the given delete event. </summary>
-		/// <param name="theEvent">The delete event to be handled. </param>
-		void OnDelete(DeleteEvent theEvent);
+		/// <param name="event">The delete event to be handled. </param>
+		void OnDelete(DeleteEvent @event);
 
-		void OnDelete(DeleteEvent theEvent, ISet transientEntities);
+		void OnDelete(DeleteEvent @event, ISet transientEntities);
 	}
 }

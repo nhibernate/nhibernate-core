@@ -6,7 +6,7 @@ namespace NHibernate.Event
 	public interface IPreUpdateEventListener
 	{
 		/// <summary> Return true if the operation should be vetoed</summary>
-		/// <param name="theEvent"></param>
-		bool OnPreUpdate(PreUpdateEvent theEvent);
+		/// <param name="event"></param>
+		bool OnPreUpdate(PreUpdateEvent @event);
 	}
 }

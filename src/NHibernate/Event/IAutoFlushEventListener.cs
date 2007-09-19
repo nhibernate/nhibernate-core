@@ -6,7 +6,7 @@ namespace NHibernate.Event
 		/// <summary>
 		/// Handle the given auto-flush event.
 		/// </summary>
-		/// <param name="theEvent">The auto-flush event to be handled.</param>
-		void OnAutoFlush(AutoFlushEvent theEvent);
+		/// <param name="event">The auto-flush event to be handled.</param>
+		void OnAutoFlush(AutoFlushEvent @event);
 	}
 }

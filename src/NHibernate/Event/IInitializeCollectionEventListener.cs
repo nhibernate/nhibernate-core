@@ -6,6 +6,6 @@ namespace NHibernate.Event
 	/// </summary>
 	public interface IInitializeCollectionEventListener
 	{
-		void OnInitializeCollection(InitializeCollectionEvent theEvent);
+		void OnInitializeCollection(InitializeCollectionEvent @event);
 	}
 }

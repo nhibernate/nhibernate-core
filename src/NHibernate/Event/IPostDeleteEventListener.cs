@@ -6,7 +6,7 @@ namespace NHibernate.Event
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="theEvent"></param>
-		void OnPostDelete(PostDeleteEvent theEvent);
+		/// <param name="event"></param>
+		void OnPostDelete(PostDeleteEvent @event);
 	}
 }

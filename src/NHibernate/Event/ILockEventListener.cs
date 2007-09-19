@@ -6,7 +6,7 @@ namespace NHibernate.Event
 	public interface ILockEventListener
 	{
 		/// <summary>Handle the given lock event. </summary>
-		/// <param name="theEvent">The lock event to be handled. </param>
-		void OnLock(LockEvent theEvent);
+		/// <param name="event">The lock event to be handled. </param>
+		void OnLock(LockEvent @event);
 	}
 }

@@ -14,10 +14,10 @@ namespace NHibernate.Event.Default
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultInitializeCollectionEventListener));
 
 		/// <summary> called by a collection that wants to initialize itself</summary>
-		public void OnInitializeCollection(InitializeCollectionEvent theEvent)
+		public void OnInitializeCollection(InitializeCollectionEvent @event)
 		{
-			IPersistentCollection collection = theEvent.Collection;
-			ISessionImplementor source = theEvent.Session;
+			IPersistentCollection collection = @event.Collection;
+			ISessionImplementor source = @event.Session;
 
 			CollectionEntry ce = source.GetCollectionEntry(collection);
 			if (ce == null)

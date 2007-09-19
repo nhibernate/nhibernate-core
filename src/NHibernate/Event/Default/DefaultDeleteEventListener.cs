@@ -24,13 +24,13 @@ namespace NHibernate.Event.Default
 		#region IDeleteEventListener Members
 
 		/// <summary>Handle the given delete event. </summary>
-		/// <param name="theEvent">The delete event to be handled. </param>
-		public void OnDelete(DeleteEvent theEvent)
+		/// <param name="event">The delete event to be handled. </param>
+		public void OnDelete(DeleteEvent @event)
 		{
-			OnDelete(theEvent, new IdentitySet());
+			OnDelete(@event, new IdentitySet());
 		}
 
-		public void OnDelete(DeleteEvent theEvent, ISet transientEntities)
+		public void OnDelete(DeleteEvent @event, ISet transientEntities)
 		{
 			throw new NotImplementedException();
 		}

@@ -21,11 +21,11 @@ namespace NHibernate.Event.Default
 		/// <summary> 
 		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary
 		/// </summary>
-		public void OnFlushEntity(FlushEntityEvent theEvent)
+		public void OnFlushEntity(FlushEntityEvent @event)
 		{
-			object entity = theEvent.Entity;
-			EntityEntry entry = theEvent.EntityEntry;
-			IEventSource session = theEvent.Session;
+			object entity = @event.Entity;
+			EntityEntry entry = @event.EntityEntry;
+			IEventSource session = @event.Session;
 			IEntityPersister persister = entry.Persister;
 			Status status = entry.Status;
 			IType[] types = persister.PropertyTypes;
@@ -34,14 +34,14 @@ namespace NHibernate.Event.Default
 
 			object[] values = GetValues(entity, entry, mightBeDirty, session);
 
-			theEvent.PropertyValues = values;
+			@event.PropertyValues = values;
 
 			//TODO: avoid this for non-new instances where mightBeDirty==false
 			bool substitute = WrapCollections(session, persister, types, values);
 
-			if (IsUpdateNecessary(theEvent, mightBeDirty))
+			if (IsUpdateNecessary(@event, mightBeDirty))
 			{
-				substitute = ScheduleUpdate(theEvent) || substitute;
+				substitute = ScheduleUpdate(@event) || substitute;
 			}
 
 			if (status != Status.Deleted)

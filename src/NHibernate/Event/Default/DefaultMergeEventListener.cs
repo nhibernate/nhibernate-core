@@ -34,15 +34,15 @@ namespace NHibernate.Event.Default
 			return IdentityMap.Invert((IDictionary)anything);
 		}
 
-		public void OnMerge(MergeEvent theEvent)
+		public void OnMerge(MergeEvent @event)
 		{
-			OnMerge(theEvent, IdentityMap.Instantiate(10));
+			OnMerge(@event, IdentityMap.Instantiate(10));
 		}
 
-		public void OnMerge(MergeEvent theEvent, IDictionary copyCache)
+		public void OnMerge(MergeEvent @event, IDictionary copyCache)
 		{
-			IEventSource source = theEvent.Session;
-			object original = theEvent.Original;
+			IEventSource source = @event.Session;
+			object original = @event.Original;
 
 			if (original != null)
 			{
@@ -53,7 +53,7 @@ namespace NHibernate.Event.Default
 					if (li.IsUninitialized)
 					{
 						log.Debug("ignoring uninitialized proxy");
-						theEvent.Result = source.Load(li.PersistentClass, li.Identifier);
+						@event.Result = source.Load(li.PersistentClass, li.Identifier);
 						return; //EARLY EXIT!
 					}
 					else
@@ -69,11 +69,11 @@ namespace NHibernate.Event.Default
 				if (copyCache.Contains(entity))
 				{
 					log.Debug("already merged");
-					theEvent.Result = entity;
+					@event.Result = entity;
 				}
 				else
 				{
-					theEvent.Entity = entity;
+					@event.Entity = entity;
 					EntityState entityState = EntityState.Undefined;
 
 					// Check the persistence context for an entry relating to this
@@ -102,19 +102,19 @@ namespace NHibernate.Event.Default
 
 					if (entityState == EntityState.Undefined)
 					{
-						entityState = GetEntityState(entity, theEvent.EntityName, entry, source);
+						entityState = GetEntityState(entity, @event.EntityName, entry, source);
 					}
 
 					switch (entityState)
 					{
 						case EntityState.Persistent:
-							EntityIsPersistent(theEvent, copyCache);
+							EntityIsPersistent(@event, copyCache);
 							break;
 						case EntityState.Transient:
-							EntityIsTransient(theEvent, copyCache);
+							EntityIsTransient(@event, copyCache);
 							break;
 						case EntityState.Detached:
-							EntityIsDetached(theEvent, copyCache);
+							EntityIsDetached(@event, copyCache);
 							break;
 						default:
 							throw new ObjectDeletedException("deleted instance passed to merge", null, entity.GetType());

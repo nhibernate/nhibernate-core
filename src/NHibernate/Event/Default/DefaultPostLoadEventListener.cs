@@ -9,12 +9,12 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultPostLoadEventListener : IPostLoadEventListener
 	{
-		public void OnPostLoad(PostLoadEvent theEvent)
+		public void OnPostLoad(PostLoadEvent @event)
 		{
-			if (theEvent.Persister.ImplementsLifecycle)
+			if (@event.Persister.ImplementsLifecycle)
 			{
 				//log.debug( "calling onLoad()" );
-				((ILifecycle)theEvent.Entity).OnLoad(theEvent.Session, theEvent.Id);
+				((ILifecycle)@event.Entity).OnLoad(@event.Session, @event.Id);
 			}
 		}
 	}
