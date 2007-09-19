@@ -376,6 +376,14 @@ namespace NHibernate.Engine
 
 		ConnectionManager ConnectionManager { get;}
 
+		bool HasEventSource { get;}
+
+		/// <summary> 
+		/// Get the entity instance associated with the given <tt>Key</tt>,
+		/// calling the Interceptor if necessary
+		/// </summary>
+		object GetEntityUsingInterceptor(EntityKey key);
+
 		#region Feature IPersistenceContext
 		// TODO H3.2: Move these methods from ISessionImplementor to IPersistenceContext
 		// These methods was added here to use the existing implementation, in SessionImpl,
@@ -528,6 +536,24 @@ namespace NHibernate.Engine
 		/// </summary>
 		void ReassociateProxy(object value, object id);
 
+		/// <summary> Add a proxy to the session cache</summary>
+		void AddProxy(EntityKey key, object proxy);
+
+		/// <summary> Get an existing proxy by key</summary>
+		object GetProxy(EntityKey key);
+
+		/// <summary> 
+		/// If the existing proxy is insufficiently "narrow" (derived), instantiate a new proxy
+		/// and overwrite the registration of the old one. This breaks == and occurs only for
+		/// "class" proxies rather than "interface" proxies. Also init the proxy to point to
+		/// the given target implementation if necessary. 
+		/// </summary>
+		/// <param name="proxy">The proxy instance to be narrowed. </param>
+		/// <param name="persister">The persister for the proxied entity. </param>
+		/// <param name="key">The internal cache key for the proxied entity. </param>
+		/// <param name="obj">(optional) the actual proxied entity instance. </param>
+		/// <returns> An appropriately narrowed instance.</returns>
+		object NarrowProxy(object proxy, IEntityPersister persister, EntityKey key, object obj);
 
 		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
 

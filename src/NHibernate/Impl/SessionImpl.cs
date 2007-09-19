@@ -1000,6 +1000,16 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public void AddProxy(EntityKey key, object proxy)
+		{
+			proxiesByKey[key] = proxy;
+		}
+
+		public object GetProxy(EntityKey key)
+		{
+			return proxiesByKey[key];
+		}
+
 		public object Unproxy(object maybeProxy)
 		{
 			if (maybeProxy is INHibernateProxy)
@@ -2255,6 +2265,37 @@ namespace NHibernate.Impl
 		{
 			get { return flushMode; }
 			set { flushMode = value; }
+		}
+
+		public bool HasEventSource
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		public object GetEntityUsingInterceptor(EntityKey key)
+		{
+			CheckIsOpen();
+			// todo : should this get moved to PersistentContext?
+			// logically, is PersistentContext the "thing" to which an interceptor gets attached?
+			object result = GetEntity(key);
+			if (result == null)
+			{
+				// TODO H3.2 Not ported
+				//object newObject = interceptor.GetEntity(key.EntityName, key.Identifier);
+				//if (newObject != null)
+				//{
+				//  Lock(newObject, LockMode.None);
+				//}
+				//return newObject;
+				return null;
+			}
+			else
+			{
+				return result;
+			}
 		}
 
 		/// <summary>

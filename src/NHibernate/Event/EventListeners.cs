@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NHibernate.Cfg;
+using NHibernate.Event.Default;
 
 namespace NHibernate.Event
 {
@@ -44,24 +45,24 @@ namespace NHibernate.Event
 			eventInterfaceFromType["post-commit-insert"] = typeof(IPostInsertEventListener);
 		}
 
-		private ILoadEventListener[] loadEventListeners = new ILoadEventListener[] { }; // todo-events { new DefaultLoadEventListener() };
-		private ISaveOrUpdateEventListener[] saveOrUpdateEventListeners = new ISaveOrUpdateEventListener[] { }; // todo-events { new DefaultSaveOrUpdateEventListener() };
-		private IMergeEventListener[] mergeEventListeners = new IMergeEventListener[] { }; // todo-events { new DefaultMergeEventListener() };
-		private IPersistEventListener[] persistEventListeners = new IPersistEventListener[] { }; // todo-events { new DefaultPersistEventListener() };
-		private IPersistEventListener[] persistOnFlushEventListeners = new IPersistEventListener[] { }; // todo-events { new DefaultPersistOnFlushEventListener() };
-		private IReplicateEventListener[] replicateEventListeners = new IReplicateEventListener[] { }; // todo-events { new DefaultReplicateEventListener() };
-		private IDeleteEventListener[] deleteEventListeners = new IDeleteEventListener[] { }; // todo-events { new DefaultDeleteEventListener() };
-		private IAutoFlushEventListener[] autoFlushEventListeners = new IAutoFlushEventListener[] { }; // todo-events { new DefaultAutoFlushEventListener() };
-		private IDirtyCheckEventListener[] dirtyCheckEventListeners = new IDirtyCheckEventListener[] { }; // todo-events { new DefaultDirtyCheckEventListener() };
-		private IFlushEventListener[] flushEventListeners = new IFlushEventListener[] { }; // todo-events { new DefaultFlushEventListener() };
-		private IEvictEventListener[] evictEventListeners = new IEvictEventListener[] { }; // todo-events { new DefaultEvictEventListener() };
-		private ILockEventListener[] lockEventListeners = new ILockEventListener[] { }; // todo-events { new DefaultLockEventListener() };
-		private IRefreshEventListener[] refreshEventListeners = new IRefreshEventListener[] { }; // todo-events { new DefaultRefreshEventListener() };
-		private IFlushEntityEventListener[] flushEntityEventListeners = new IFlushEntityEventListener[] { }; // todo-events { new DefaultFlushEntityEventListener() };
-		private IInitializeCollectionEventListener[] initializeCollectionEventListeners = new IInitializeCollectionEventListener[] { }; // todo-events { new DefaultInitializeCollectionEventListener() };
+		private ILoadEventListener[] loadEventListeners = new ILoadEventListener[] { new DefaultLoadEventListener() };
+		private ISaveOrUpdateEventListener[] saveOrUpdateEventListeners = new ISaveOrUpdateEventListener[] { new DefaultSaveOrUpdateEventListener() };
+		private IMergeEventListener[] mergeEventListeners = new IMergeEventListener[] { new DefaultMergeEventListener() };
+		private IPersistEventListener[] persistEventListeners = new IPersistEventListener[] { new DefaultPersistEventListener() };
+		private IPersistEventListener[] persistOnFlushEventListeners = new IPersistEventListener[] { new DefaultPersistOnFlushEventListener() };
+		private IReplicateEventListener[] replicateEventListeners = new IReplicateEventListener[] { new DefaultReplicateEventListener() };
+		private IDeleteEventListener[] deleteEventListeners = new IDeleteEventListener[] { new DefaultDeleteEventListener() };
+		private IAutoFlushEventListener[] autoFlushEventListeners = new IAutoFlushEventListener[] { new DefaultAutoFlushEventListener() };
+		private IDirtyCheckEventListener[] dirtyCheckEventListeners = new IDirtyCheckEventListener[] { new DefaultDirtyCheckEventListener() };
+		private IFlushEventListener[] flushEventListeners = new IFlushEventListener[] { new DefaultFlushEventListener() };
+		private IEvictEventListener[] evictEventListeners = new IEvictEventListener[] { new DefaultEvictEventListener() };
+		private ILockEventListener[] lockEventListeners = new ILockEventListener[] { new DefaultLockEventListener() };
+		private IRefreshEventListener[] refreshEventListeners = new IRefreshEventListener[] { new DefaultRefreshEventListener() };
+		private IFlushEntityEventListener[] flushEntityEventListeners = new IFlushEntityEventListener[] { new DefaultFlushEntityEventListener() };
+		private IInitializeCollectionEventListener[] initializeCollectionEventListeners = new IInitializeCollectionEventListener[] { new DefaultInitializeCollectionEventListener() };
 
-		private IPostLoadEventListener[] postLoadEventListeners = new IPostLoadEventListener[] { }; // todo-events { new DefaultPostLoadEventListener() };
-		private IPreLoadEventListener[] preLoadEventListeners = new IPreLoadEventListener[] { }; // todo-events { new DefaultPreLoadEventListener() };
+		private IPostLoadEventListener[] postLoadEventListeners = new IPostLoadEventListener[] { new DefaultPostLoadEventListener() };
+		private IPreLoadEventListener[] preLoadEventListeners = new IPreLoadEventListener[] { new DefaultPreLoadEventListener() };
 
 		private IPreDeleteEventListener[] preDeleteEventListeners = new IPreDeleteEventListener[] { };
 		private IPreUpdateEventListener[] preUpdateEventListeners = new IPreUpdateEventListener[] { };
@@ -73,8 +74,8 @@ namespace NHibernate.Event
 		private IPostUpdateEventListener[] postCommitUpdateEventListeners = new IPostUpdateEventListener[] { };
 		private IPostInsertEventListener[] postCommitInsertEventListeners = new IPostInsertEventListener[] { };
 
-		private ISaveOrUpdateEventListener[] saveEventListeners = new ISaveOrUpdateEventListener[] { }; // todo-events { new DefaultSaveEventListener() };
-		private ISaveOrUpdateEventListener[] updateEventListeners = new ISaveOrUpdateEventListener[] { }; // todo-events { new DefaultUpdateEventListener() };
+		private ISaveOrUpdateEventListener[] saveEventListeners = new ISaveOrUpdateEventListener[] { new DefaultSaveEventListener() };
+		private ISaveOrUpdateEventListener[] updateEventListeners = new ISaveOrUpdateEventListener[] { new DefaultUpdateEventListener() };
 
 		public ILoadEventListener[] LoadEventListeners
 		{

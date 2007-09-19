@@ -607,6 +607,7 @@
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Engine\ForeignKeys.cs" />
     <Compile Include="Engine\Nullability.cs" />
+    <Compile Include="Engine\TwoPhaseLoad.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
     <Compile Include="Event\AbstractEvent.cs" />
     <Compile Include="Event\AutoFlushEvent.cs" />
@@ -622,6 +623,7 @@
     <Compile Include="Event\Default\DefaultFlushEntityEventListener.cs" />
     <Compile Include="Event\Default\DefaultFlushEventListener.cs" />
     <Compile Include="Event\Default\DefaultInitializeCollectionEventListener.cs" />
+    <Compile Include="Event\Default\DefaultLoadEventListener.cs" />
     <Compile Include="Event\Default\DefaultLockEventListener.cs" />
     <Compile Include="Event\Default\DefaultMergeEventListener.cs" />
     <Compile Include="Event\Default\DefaultPersistEventListener.cs" />
@@ -881,6 +883,7 @@
     <Compile Include="Tuple\PropertyFactory.cs" />
     <Compile Include="Tuple\StandardProperty.cs" />
     <Compile Include="Tuple\VersionProperty.cs" />
+    <Compile Include="TypeMismatchException.cs" />
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\AnyType.cs" />
     <Compile Include="Type\BaseCharType.cs" />

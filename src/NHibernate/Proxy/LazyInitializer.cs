@@ -39,6 +39,7 @@ namespace NHibernate.Proxy
 		private MethodInfo _getIdentifierMethod;
 		private MethodInfo _setIdentifierMethod;
 		private bool _overridesEquals;
+		private bool unwrap;
 
 		/// <summary>
 		/// Create a LazyInitializer to handle all of the Methods/Properties that are called
@@ -208,6 +209,12 @@ namespace NHibernate.Proxy
 		public bool IsUninitialized
 		{
 			get { return (_target == null); }
+		}
+
+		public bool Unwrap
+		{
+			get { return unwrap; }
+			set { unwrap = value; }
 		}
 
 		/// <summary></summary>
