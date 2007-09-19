@@ -56,7 +56,13 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// A cascade point that occurs just after copying from a transient parent entity into the object in the session cache
 		/// </summary>
-		CascadeOnCopy = 0
+		CascadeOnCopy = 0,
+
+		/// <summary> 
+		/// A cascade point that occurs just after locking a transient parent entity into the
+		/// session cache
+		/// </summary>
+		CascadeBeforeRefresh = 0
 	}
 
 	/// <summary>
@@ -284,6 +290,56 @@ namespace NHibernate.Engine
 				}
 			}
 
+			public static CascadingAction ActionRefresh = new ActionRefreshClass();
+			private class ActionRefreshClass : CascadingAction
+			{
+				public override void Cascade(ISessionImplementor session, object child, object anything)
+				{
+					if (log.IsDebugEnabled)
+					{
+						//log.Debug("cascading to refresh: " + entityName);
+						log.Debug("cascading to refresh");
+					}
+					IEventSource source = (IEventSource)session;
+					source.Refresh(child, (IDictionary)anything);
+				}
+
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				{
+					return GetLoadedElementsCollection(collectionType, collection);
+				}
+
+				public override bool DeleteOrphans()
+				{
+					return false;
+				}
+			}
+
+			public static CascadingAction ActionSaveUpdateCopy = new ActionSaveUpdateCopyClass();
+			private class ActionSaveUpdateCopyClass : CascadingAction
+			{
+				public override void Cascade(ISessionImplementor session, object child, object anything)
+				{
+					if (log.IsDebugEnabled)
+					{
+						//log.Debug("cascading to saveOrUpdateCopy: " + entityName);
+						log.Debug("cascading to saveOrUpdateCopy");
+					}
+					IEventSource source = (IEventSource)session;
+					source.SaveOrUpdateCopy(null, child, (IDictionary)anything); //todo-events source.SaveOrUpdateCopy(entityName, child, (System.Collections.IDictionary)anything);
+				}
+
+				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				{
+					return GetLoadedElementsCollection(collectionType, collection);
+				}
+
+				public override bool DeleteOrphans()
+				{
+					// orphans should not be deleted during copy??
+					return false;
+				}
+			}
 		}
 
 		private static bool CollectionIsInitialized(object collection)

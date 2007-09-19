@@ -522,6 +522,13 @@ namespace NHibernate.Engine
 		/// </summary>
 		object Unproxy(object maybeProxy);
 
+		/// <summary> 
+		/// If a deleted entity instance is re-saved, and it has a proxy, we need to
+		/// reset the identifier of the proxy 
+		/// </summary>
+		void ReassociateProxy(object value, object id);
+
+
 		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
 
 		#endregion

@@ -628,6 +628,12 @@
     <Compile Include="Event\Default\DefaultPersistOnFlushEventListener.cs" />
     <Compile Include="Event\Default\DefaultPostLoadEventListener.cs" />
     <Compile Include="Event\Default\DefaultPreLoadEventListener.cs" />
+    <Compile Include="Event\Default\DefaultRefreshEventListener.cs" />
+    <Compile Include="Event\Default\DefaultReplicateEventListener.cs" />
+    <Compile Include="Event\Default\DefaultSaveEventListener.cs" />
+    <Compile Include="Event\Default\DefaultSaveOrUpdateCopyEventListener.cs" />
+    <Compile Include="Event\Default\DefaultSaveOrUpdateEventListener.cs" />
+    <Compile Include="Event\Default\DefaultUpdateEventListener.cs" />
     <Compile Include="Event\Default\DirtyCollectionSearchVisitor.cs" />
     <Compile Include="Event\Default\EvictVisitor.cs" />
     <Compile Include="Event\Default\FlushVisitor.cs" />

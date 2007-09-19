@@ -989,7 +989,7 @@ namespace NHibernate.Impl
 			return id;
 		}
 
-		private void ReassociateProxy(Object value, object id)
+		public void ReassociateProxy(Object value, object id)
 		{
 			if (value is INHibernateProxy)
 			{
