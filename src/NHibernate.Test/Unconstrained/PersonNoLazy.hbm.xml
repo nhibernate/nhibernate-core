@@ -10,6 +10,7 @@
 		</id>
 		<property name="EmployeeId" unique="true"/>
 		<many-to-one name="Employee" insert="false" update="false" column="EmployeeId" not-found="ignore" cascade="all"/>
+		<property name="Unrelated" />
 	</class>
 	
     <class name="Employee">

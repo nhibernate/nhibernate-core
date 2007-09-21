@@ -7,6 +7,8 @@ namespace NHibernate.Test.Unconstrained
 		private string _name;
 		private string _employeeId;
 		private Employee _employee;
+		// Just a property that can be changed to force an update of the object.
+		private int _unrelated;
 
 		public Person()
 		{
@@ -33,6 +35,12 @@ namespace NHibernate.Test.Unconstrained
 		{
 			get { return _employeeId; }
 			set { _employeeId = value; }
+		}
+
+		public virtual int Unrelated
+		{
+			get { return _unrelated; }
+			set { _unrelated = value; }
 		}
 	}
 }

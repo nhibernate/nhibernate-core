@@ -1740,9 +1740,14 @@ namespace NHibernate.Persister.Entity
 		protected bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
 		{
 			bool[] propsToUpdate = new bool[HydrateSpan];
+			bool[] updateability = PropertyUpdateability;
 			for (int j = 0; j < dirtyProperties.Length; j++)
 			{
-				propsToUpdate[dirtyProperties[j]] = true;
+				int property = dirtyProperties[j];
+				if (updateability[property])
+				{
+					propsToUpdate[property] = true;
+				}
 			}
 			if (IsVersioned)
 			{

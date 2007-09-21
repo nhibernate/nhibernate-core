@@ -131,5 +131,34 @@ namespace NHibernate.Test.Unconstrained
 			tx.Commit();
 			session.Close();
 		}
+
+		[Test]
+		public void ManyToOneUpdateFalse()
+		{
+			ISession session = OpenSession();
+			ITransaction tx = session.BeginTransaction();
+			Person p = new Person("gavin");
+			p.EmployeeId = "123456";
+			p.Unrelated = 10;
+			session.Save(p);
+			tx.Commit();
+
+			session.BeginTransaction();
+			p.Employee = new Employee("456123");
+			p.Unrelated = 235; // Force update of the object
+			session.Save(p.Employee);
+			session.Transaction.Commit();
+			session.Close();
+
+			session = OpenSession();
+			session.BeginTransaction();
+			p = (Person) session.Load(typeof (Person), "gavin");
+			// Should be null, not Employee#456123
+			Assert.IsNull(p.Employee);
+			session.Delete(p);
+			session.Delete("from Employee");
+			session.Transaction.Commit();
+			session.Close();
+		}
 	}
 }
