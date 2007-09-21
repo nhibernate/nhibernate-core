@@ -41,7 +41,6 @@ namespace NHibernate.Expression
 
 			if (innerQuery.HasProjection == false)
 				throw new QueryException("Cannot use subqueries on a criteria without a projection.");
-			types = innerQuery.ProjectedTypes;
 
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 
@@ -108,6 +107,7 @@ namespace NHibernate.Expression
 			                                         criteriaQuery);
 
 			parameters = innerQuery.GetQueryParameters();
+			types = innerQuery.ProjectedTypes;
 		}
 	}
 }
