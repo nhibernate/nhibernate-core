@@ -11,8 +11,8 @@ namespace NHibernate.Expression
 	[Serializable]
 	public class Order
 	{
-		private bool _ascending;
-		private string _propertyName;
+		protected bool _ascending;
+		protected string _propertyName;
 
 		/// <summary>
 		/// Constructor for Order.
@@ -29,7 +29,7 @@ namespace NHibernate.Expression
 		/// <summary>
 		/// Render the SQL fragment
 		/// </summary>
-		public string ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public virtual string ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, _propertyName);
 
