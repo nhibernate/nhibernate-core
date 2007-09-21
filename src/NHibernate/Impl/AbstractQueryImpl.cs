@@ -616,7 +616,15 @@ namespace NHibernate.Impl
 #if NET_2_0
 		public T UniqueResult<T>()
 		{
-			return (T) UniqueResult();
+			object result = UniqueResult();
+			if (result == null && typeof(T).IsValueType)
+			{
+				throw new InvalidCastException("UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");
+			}
+			else
+			{
+				return (T)UniqueResult();
+			}
 		}
 #endif
 
