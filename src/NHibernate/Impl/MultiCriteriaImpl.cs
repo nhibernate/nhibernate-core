@@ -186,11 +186,13 @@ namespace NHibernate.Impl
 						RowSelection selection = parameters[i].RowSelection;
 						createSubselects[i] = loader.IsSubselectLoadingEnabled;
 						subselectResultKeys[i] = createSubselects[i] ? new ArrayList() : null;
+						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !NHibernate.Loader.Loader.UseLimit(selection, dialect))
 						{
 							loader.Advance(reader, selection);
 						}
-						while (reader.Read())
+						int count;
+            for (count = 0; count < maxRows && reader.Read(); count++)
 						{
 							object o =
 								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
