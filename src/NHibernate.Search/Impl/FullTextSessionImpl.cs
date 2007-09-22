@@ -330,6 +330,11 @@ namespace NHibernate.Search.Impl
 			return session.Get<T>(id, lockMode);
 		}
 
+		public String GetEntityName(object obj)
+		{
+			return session.GetEntityName(obj);
+		}
+
 		public IFilter EnableFilter(string filterName)
 		{
 			return session.EnableFilter(filterName);
