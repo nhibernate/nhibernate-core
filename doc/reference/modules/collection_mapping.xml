@@ -830,8 +830,8 @@ int count = (int) countEn.Current;]]></programlisting>
         </para>
 
         <para>
-            In the current implementation, the <literal>native</literal> identifier generation
-            strategy is not supported for <literal>&lt;idbag&gt;</literal> collection identifiers.
+            As of version 2.0, the <literal>native</literal> identifier generation
+            strategy is supported for <literal>&lt;idbag&gt;</literal> collection identifiers.
         </para>
 
     </sect1>
