@@ -988,6 +988,20 @@ namespace NHibernate.Cfg
 				return result;
 		}
 
+		/// <summary> 
+		/// Retrieve the user-supplied delegate to handle non-existent entity scenarios.
+		/// </summary>
+		/// <remarks>
+		/// Specify a user-supplied delegate to be used to handle scenarios where an entity could not be
+		/// located by specified id.  This is mainly intended for EJB3 implementations to be able to
+		/// control how proxy initialization errors should be handled...
+		/// </remarks>
+		public IEntityNotFoundDelegate EntityNotFoundDelegate
+		{
+			get { return entityNotFoundDelegate; }
+			set { entityNotFoundDelegate = value; }
+		}
+
 		public EventListeners EventListeners
 		{
 			get { return eventListeners; }
@@ -1627,8 +1641,8 @@ namespace NHibernate.Cfg
 
 		#endregion
 
-
 		private XmlSchemas schemas;
+		private IEntityNotFoundDelegate entityNotFoundDelegate;
 
 		private XmlSchemas Schemas
 		{

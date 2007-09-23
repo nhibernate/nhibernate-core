@@ -102,7 +102,7 @@ namespace NHibernate.Proxy
 		{
 			if (_target == null)
 			{
-				throw new ObjectNotFoundException(_id, _persistentClass);
+				Session.Factory.EntityNotFoundDelegate.HandleEntityNotFound(_persistentClass.FullName, _id);
 			}
 		}
 

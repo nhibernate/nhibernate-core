@@ -68,6 +68,16 @@ namespace NHibernate.Impl
 	[Serializable]
 	internal class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
 	{
+		#region Default entity not found delegate
+		private class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
+		{
+			public void HandleEntityNotFound(string entityName, object id)
+			{
+				throw new ObjectNotFoundException(id, entityName);
+			}
+		}
+		#endregion
+
 		private readonly string name;
 		private readonly string uuid;
 
@@ -140,6 +150,9 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private readonly SQLFunctionRegistry sqlFunctionRegistry;
+
+		[NonSerialized]
+		private IEntityNotFoundDelegate entityNotFoundDelegate;
 
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
@@ -338,6 +351,14 @@ namespace NHibernate.Impl
 				queryCache = null;
 				queryCaches = null;
 			}
+
+			// EntityNotFoundDelegate
+			IEntityNotFoundDelegate enfd = cfg.EntityNotFoundDelegate;
+			if (enfd == null)
+			{
+				enfd = new DefaultEntityNotFoundDelegate();
+			}
+			entityNotFoundDelegate = enfd;
 		}
 
 		// Emulates constant time LRU/MRU algorithms for cache
@@ -968,9 +989,9 @@ namespace NHibernate.Impl
 		}
 
 		private bool disposed;
-	    private IDictionary items = new Hashtable();
+	  private IDictionary items = new Hashtable();
 
-	    public void Dispose()
+		public void Dispose()
 		{
 			if (disposed)
 			{
@@ -1361,6 +1382,11 @@ namespace NHibernate.Impl
 		public SQLFunctionRegistry SQLFunctionRegistry
 		{
 			get { return sqlFunctionRegistry; }
+		}
+
+		public IEntityNotFoundDelegate EntityNotFoundDelegate
+		{
+			get { return entityNotFoundDelegate; }
 		}
 	}
 }

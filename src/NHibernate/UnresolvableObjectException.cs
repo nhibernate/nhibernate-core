@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using NHibernate.Impl;
 
 namespace NHibernate
 {
@@ -13,6 +14,7 @@ namespace NHibernate
 	{
 		private readonly object identifier;
 		private readonly System.Type clazz;
+		private readonly string entityName;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnresolvableObjectException"/> class.
@@ -23,6 +25,9 @@ namespace NHibernate
 			this("No row with the given identifier exists", identifier, clazz)
 		{
 		}
+
+		public UnresolvableObjectException(object identifier, string entityName)
+			:this("No row with the given identifier exists", identifier, entityName) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnresolvableObjectException"/> class.
@@ -37,6 +42,13 @@ namespace NHibernate
 			this.clazz = clazz;
 		}
 
+		public UnresolvableObjectException(string message, object identifier, string entityName)
+			: base(message)
+		{
+			this.identifier = identifier;
+			this.entityName = entityName;
+		}
+
 		public object Identifier
 		{
 			get { return identifier; }
@@ -44,12 +56,21 @@ namespace NHibernate
 
 		public override string Message
 		{
-			get { return base.Message + ": " + identifier + ", of class: " + clazz.FullName; }
+			get { return base.Message + MessageHelper.InfoString(EntityName, identifier); }
 		}
 
 		public System.Type PersistentClass
 		{
 			get { return clazz; }
+		}
+
+		public string EntityName
+		{
+			get 
+			{
+				if (clazz != null) return clazz.FullName;
+				return entityName; 
+			}
 		}
 
 		public static void ThrowIfNull(object o, object id, System.Type clazz)
@@ -69,6 +90,7 @@ namespace NHibernate
 			base.GetObjectData(info, context);
 			info.AddValue("identifier", identifier);
 			info.AddValue("clazz", clazz);
+			info.AddValue("entityName", entityName);
 		}
 
 		protected UnresolvableObjectException(SerializationInfo info, StreamingContext context)
@@ -76,6 +98,7 @@ namespace NHibernate
 		{
 			identifier = info.GetValue("identifier", typeof(object));
 			clazz = info.GetValue("clazz", typeof(System.Type)) as System.Type;
+			entityName = info.GetString("entityName");
 		}
 
 		#endregion

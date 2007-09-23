@@ -23,6 +23,8 @@ namespace NHibernate
 		{
 		}
 
+		public ObjectNotFoundException(object identifier, string entityName) : base(identifier, entityName) {}
+
 		public new static void ThrowIfNull(object o, object id, System.Type clazz)
 		{
 			if (o == null)

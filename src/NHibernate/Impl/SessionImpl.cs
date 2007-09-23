@@ -1423,7 +1423,9 @@ namespace NHibernate.Impl
 			try
 			{
 				FireLoad(loadEvent, LoadEventListener.Load);
-				ObjectNotFoundException.ThrowIfNull(loadEvent.Result, id, clazz);
+				if (loadEvent.Result == null)
+					factory.EntityNotFoundDelegate.HandleEntityNotFound(clazz.FullName, id);
+
 				success = true;
 				return loadEvent.Result;
 			}

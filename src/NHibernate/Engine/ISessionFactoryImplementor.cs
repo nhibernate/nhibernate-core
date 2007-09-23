@@ -171,6 +171,8 @@ namespace NHibernate.Engine
 
 		SQLFunctionRegistry SQLFunctionRegistry { get; }
 
+		IEntityNotFoundDelegate EntityNotFoundDelegate { get;}
+
 		/// <summary>
 		/// Gets the ICurrentSessionContext instance attached to this session factory.
 		/// </summary>

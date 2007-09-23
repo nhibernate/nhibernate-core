@@ -104,12 +104,10 @@ namespace NHibernate.Event.Default
 
 			if (!options.IsAllowNulls || isOptionalInstance)
 			{
-				ObjectNotFoundException.ThrowIfNull(entity, keyToLoad.Identifier, persister.MappedClass);
-
-				//if (entity == null)
-				//{
-				//  @event.Session.Factory.EntityNotFoundDelegate.handleEntityNotFound(@event.EntityClassName, @event.EntityId);
-				//}
+				if (entity == null)
+				{
+					@event.Session.Factory.EntityNotFoundDelegate.HandleEntityNotFound(@event.EntityClassName, @event.EntityId);
+				}
 			}
 
 			if (isOptionalInstance && entity != @event.InstanceToLoad)
@@ -178,11 +176,10 @@ namespace NHibernate.Event.Default
 			if (!options.IsAllowProxyCreation)
 			{
 				impl = Load(@event, persister, keyToLoad, options);
-				//if (impl == null)
-				//{
-				//  @event.Session.Factory.EntityNotFoundDelegate.handleEntityNotFound(persister.EntityName, keyToLoad.Identifier);
-				//}
-				ObjectNotFoundException.ThrowIfNull(impl, keyToLoad.Identifier, persister.MappedClass);
+				if (impl == null)
+				{
+					@event.Session.Factory.EntityNotFoundDelegate.HandleEntityNotFound(persister.EntityName, keyToLoad.Identifier);
+				}
 			}
 			return persistenceContext.NarrowProxy(proxy, persister, keyToLoad, impl);
 		}
