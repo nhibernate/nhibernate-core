@@ -90,10 +90,10 @@ namespace NHibernate.Event.Default
 		/// <summary>
 		/// make sure user didn't mangle the id
 		/// </summary>
-		/// <param name="object_Renamed"></param>
+		/// <param name="obj"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		public virtual void CheckId(object object_Renamed, IEntityPersister persister, object id)
+		public virtual void CheckId(object obj, IEntityPersister persister, object id)
 		{
 			if (id != null && id is DelayedPostInsertIdentifier)
 			{
@@ -104,7 +104,7 @@ namespace NHibernate.Event.Default
 
 			if (persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier)
 			{
-				object oid = persister.GetIdentifier(object_Renamed);
+				object oid = persister.GetIdentifier(obj);
 				if (id == null)
 				{
 					throw new AssertionFailure("null id in " + persister.EntityName + " entry (don't flush the Session after an exception occurs)");
@@ -262,30 +262,30 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal virtual bool HandleInterception(FlushEntityEvent event_Renamed)
+		protected internal virtual bool HandleInterception(FlushEntityEvent @event)
 		{
-			ISessionImplementor session = event_Renamed.Session;
-			EntityEntry entry = event_Renamed.EntityEntry;
+			ISessionImplementor session = @event.Session;
+			EntityEntry entry = @event.EntityEntry;
 			IEntityPersister persister = entry.Persister;
-			object entity = event_Renamed.Entity;
+			object entity = @event.Entity;
 
 			//give the Interceptor a chance to modify property values
-			object[] values = event_Renamed.PropertyValues;
+			object[] values = @event.PropertyValues;
 			bool intercepted = InvokeInterceptor(session, entity, entry, values, persister);
 
 			//now we might need to recalculate the dirtyProperties array
-			if (intercepted && event_Renamed.DirtyCheckPossible && !event_Renamed.DirtyCheckHandledByInterceptor)
+			if (intercepted && @event.DirtyCheckPossible && !@event.DirtyCheckHandledByInterceptor)
 			{
 				int[] dirtyProperties;
-				if (event_Renamed.HasDatabaseSnapshot)
+				if (@event.HasDatabaseSnapshot)
 				{
-					dirtyProperties = persister.FindModified(event_Renamed.DatabaseSnapshot, values, entity, session);
+					dirtyProperties = persister.FindModified(@event.DatabaseSnapshot, values, entity, session);
 				}
 				else
 				{
 					dirtyProperties = persister.FindDirty(values, entry.LoadedState, entity, session);
 				}
-				event_Renamed.DirtyProperties = dirtyProperties;
+				@event.DirtyProperties = dirtyProperties;
 			}
 
 			return intercepted;
@@ -368,14 +368,14 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private bool HasDirtyCollections(FlushEntityEvent event_Renamed, IEntityPersister persister, Status status)
+		private bool HasDirtyCollections(FlushEntityEvent @event, IEntityPersister persister, Status status)
 		{
 			if (IsCollectionDirtyCheckNecessary(persister, status))
 			{
-				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(event_Renamed.Session, persister.PropertyVersionability);
-				visitor.ProcessEntityPropertyValues(event_Renamed.PropertyValues, persister.PropertyTypes);
+				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(@event.Session, persister.PropertyVersionability);
+				visitor.ProcessEntityPropertyValues(@event.PropertyValues, persister.PropertyTypes);
 				bool hasDirtyCollections = visitor.WasDirtyCollectionFound;
-				event_Renamed.HasDirtyCollection = hasDirtyCollections;
+				@event.HasDirtyCollection = hasDirtyCollections;
 				return hasDirtyCollections;
 			}
 			else

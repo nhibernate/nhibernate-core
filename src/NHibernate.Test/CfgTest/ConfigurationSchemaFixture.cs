@@ -1,6 +1,6 @@
 using System;
 using System.Configuration;
-
+using NHibernate.Event;
 using NUnit.Framework;
 using NHibernate.Cfg;
 using NHibernate.Cfg.ConfigurationSchema;

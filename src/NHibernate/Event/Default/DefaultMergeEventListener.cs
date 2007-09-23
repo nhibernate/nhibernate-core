@@ -152,7 +152,10 @@ namespace NHibernate.Event.Default
 
 			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity) : null;
 
-			object copy = persister.Instantiate(id); //TODO: should this be Session.instantiate(Persister, ...)?
+			// NH : Different behavior (H3.2 don't change the original entity state, NH did)
+			//object copy = persister.Instantiate(id); // should this be Session.instantiate(Persister, ...)?
+			object copy = entity;
+
 			copyCache[entity] = copy; //before cascade!
 
 			// cascade first, so that all unsaved objects get their

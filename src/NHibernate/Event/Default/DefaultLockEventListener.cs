@@ -28,6 +28,13 @@ namespace NHibernate.Event.Default
 
 			ISessionImplementor source = @event.Session;
 
+			if (@event.LockMode == LockMode.None && source.ReassociateIfUninitializedProxy(@event.Entity))
+			{
+				// NH-specific: shortcut for uninitialized proxies - reassociate
+				// without initialization
+				return;
+			}
+
 			object entity = source.UnproxyAndReassociate(@event.Entity);
 			//TODO: if object was an uninitialized proxy, this is inefficient,resulting in two SQL selects
 

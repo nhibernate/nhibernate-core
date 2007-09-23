@@ -32,10 +32,124 @@ namespace NHibernate.Event.Default
 
 		public void OnDelete(DeleteEvent @event, ISet transientEntities)
 		{
-			throw new NotImplementedException();
+			IEventSource source = @event.Session;
+			object entity = source.UnproxyAndReassociate(@event.Entity);
+
+			EntityEntry entityEntry = source.GetEntry(entity);
+			IEntityPersister persister;
+			object id;
+			object version;
+
+			if (entityEntry == null)
+			{
+				log.Debug("entity was not persistent in delete processing");
+
+				persister = source.GetEntityPersister(entity);
+				if (ForeignKeys.IsTransient(persister.EntityName, entity, null, source))
+				{
+					DeleteTransientEntity(source, entity, @event.CascadeDeleteEnabled, persister, transientEntities);
+					// EARLY EXIT!!!
+					return;
+				}
+				else
+				{
+					PerformDetachedEntityDeletionCheck(@event);
+				}
+
+				id = persister.GetIdentifier(entity);
+
+				if (id == null)
+				{
+					throw new TransientObjectException("the detached instance passed to delete() had a null identifier");
+				}
+
+				EntityKey key = new EntityKey(id, persister);
+
+				source.CheckUniqueness(key, entity);
+
+				new OnUpdateVisitor(source, id, entity).Process(entity, persister);
+
+				version = persister.GetVersion(entity);
+
+				entityEntry = source.AddEntity(entity, Status.Loaded, persister.GetPropertyValues(entity), key, version, LockMode.None, true, persister, false, false);
+			}
+			else
+			{
+				log.Debug("deleting a persistent instance");
+
+				if (entityEntry.Status == Status.Deleted || entityEntry.Status == Status.Gone)
+				{
+					log.Debug("object was already deleted");
+					return;
+				}
+				persister = entityEntry.Persister;
+				id = entityEntry.Id;
+				version = entityEntry.Version;
+			}
+
+			/*if ( !persister.isMutable() ) {
+			throw new HibernateException(
+			"attempted to delete an object of immutable class: " +
+			MessageHelper.infoString(persister)
+			);
+			}*/
+
+			if (InvokeDeleteLifecycle(source, entity, persister))
+			{
+				return;
+			}
+
+			DeleteEntity(source, entity, entityEntry, @event.CascadeDeleteEnabled, persister, transientEntities);
+
+			// TODO H3.2 Not ported
+			//if (source.Factory.Settings.IsIdentifierRollbackEnabled)
+			//{
+			//  persister.ResetIdentifier(entity, id, version);
+			//}
 		}
 
 		#endregion
+		/// <summary> Called when we have recognized an attempt to delete a detached entity.
+		/// <p/>
+		/// This is perfectly valid in Hibernate usage; JPA, however, forbids this.
+		/// Thus, this is a hook for HEM to affect this behavior.
+		/// 
+		/// </summary>
+		/// <param name="event">The event.
+		/// </param>
+		protected internal void PerformDetachedEntityDeletionCheck(DeleteEvent @event)
+		{
+			// ok in normal Hibernate usage to delete a detached entity; JPA however
+			// forbids it, thus this is a hook for HEM to affect this behavior
+		}
+
+		/// <summary> 
+		/// We encountered a delete request on a transient instance.
+		/// <p/>
+		/// This is a deviation from historical Hibernate (pre-3.2) behavior to
+		/// align with the JPA spec, which states that transient entities can be
+		/// passed to remove operation in which case cascades still need to be
+		/// performed.
+		///  </summary>
+		/// <param name="session">The session which is the source of the event </param>
+		/// <param name="entity">The entity being delete processed </param>
+		/// <param name="cascadeDeleteEnabled">Is cascading of deletes enabled</param>
+		/// <param name="persister">The entity persister </param>
+		/// <param name="transientEntities">
+		/// A cache of already visited transient entities (to avoid infinite recursion).
+		/// </param>
+		protected internal void DeleteTransientEntity(IEventSource session, object entity, bool cascadeDeleteEnabled, IEntityPersister persister, ISet transientEntities)
+		{
+			log.Info("handling transient entity in delete processing");
+			if (transientEntities.Contains(entity))
+			{
+				log.Debug("already handled transient entity; skipping");
+				return;
+			}
+			transientEntities.Add(entity);
+			CascadeBeforeDelete(session, persister, entity, null, transientEntities);
+			CascadeAfterDelete(session, persister, entity, transientEntities);
+		}
 
 		/// <summary> 
 		/// Perform the entity deletion.  Well, as with most operations, does not

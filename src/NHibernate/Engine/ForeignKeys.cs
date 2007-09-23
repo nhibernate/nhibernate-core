@@ -186,14 +186,15 @@ namespace NHibernate.Engine
 			if (isUnsaved.HasValue)
 				return isUnsaved.Value;
 
-			// we use the assumed value, if there is one, to avoid hitting
-			// the database
-			if (assumed.HasValue)
-				return assumed.Value;
-
 			// let the persister inspect the instance to decide
 			IEntityPersister persister = session.GetEntityPersister(entity);
 			return persister.IsUnsaved(entity);
+
+			// NH : Different behavior (the persister return a value any way)
+			// we use the assumed value, if there is one, to avoid hitting
+			// the database
+			//if (assumed.HasValue)
+			//  return assumed.Value;
 
 			// hit the database, after checking the session cache for a snapshot
 			//System.Object[] snapshot = session.PersistenceContext.getDatabaseSnapshot(persister.getIdentifier(entity, session.EntityMode), persister);

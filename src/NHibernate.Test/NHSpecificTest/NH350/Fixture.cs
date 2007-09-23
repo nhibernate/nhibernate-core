@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 
 		// We pass an Int32 id to Load and expect an exception, since the class
 		// uses Int64 ids.
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(TypeMismatchException))]
 		public void Loading()
 		{
 			object parentId;

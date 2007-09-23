@@ -23,10 +23,10 @@ namespace NHibernate.Engine
 		/// to resolve any associations yet, because there might be other entities waiting to be
 		/// read from the JDBC result set we are currently processing
 		/// </summary>
-		public static void PostHydrate(IEntityPersister persister, object id, object[] values, object object_Renamed, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
+		public static void PostHydrate(IEntityPersister persister, object id, object[] values, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
 			object version = Versioning.GetVersion(values, persister);
-			session.AddEntry(object_Renamed, Status.Loading, values, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			session.AddEntry(obj, Status.Loading, values, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 
 			if (log.IsDebugEnabled && version != null)
 			{
@@ -62,10 +62,10 @@ namespace NHibernate.Engine
 			{
 				hydratedState[i] = types[i].ResolveIdentifier(hydratedState[i], session, entity);
 
-				//object value_Renamed = hydratedState[i];
-				//if (value_Renamed != org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY && value_Renamed != BackrefPropertyAccessor.UNKNOWN)
+				//object value = hydratedState[i];
+				//if (value != org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY && value != BackrefPropertyAccessor.UNKNOWN)
 				//{
-				//  hydratedState[i] = types[i].Resolve(value_Renamed, session, entity);
+				//  hydratedState[i] = types[i].Resolve(value, session, entity);
 				//}
 			}
 

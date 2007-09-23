@@ -73,10 +73,11 @@ namespace NHibernate.Event.Default
 				id = e.Id;
 			}
 
+			// NH Different behavior (H3.2 the cascade is explicit in events; NH are implicit in loader and so on)
 			// cascade the refresh prior to refreshing this entity
-			refreshedAlready[obj] = obj;
-			Cascades.Cascade(source, persister, obj, Cascades.CascadingAction.ActionRefresh, CascadePoint.CascadeBeforeRefresh,
-			                 refreshedAlready);
+			//refreshedAlready[obj] = obj;
+			//Cascades.Cascade(source, persister, obj, Cascades.CascadingAction.ActionRefresh, CascadePoint.CascadeBeforeRefresh,
+			//                 refreshedAlready);
 
 			if (e != null)
 			{

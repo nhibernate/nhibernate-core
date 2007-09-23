@@ -65,7 +65,9 @@ namespace NHibernate.Event.Default
 
 		private bool FlushMightBeNeeded(IEventSource source)
 		{
-			return !(source.FlushMode < FlushMode.Auto) && source.DontFlushFromFind == 0 && source.HasNonReadOnlyEntities;
+			// NH Different behavior
+			//return !(source.FlushMode < FlushMode.Auto) && source.DontFlushFromFind == 0 && source.HasNonReadOnlyEntities;
+			return !(source.FlushMode < FlushMode.Auto) && source.DontFlushFromFind == 0;
 		}
 	}
 }

@@ -2,6 +2,7 @@ using log4net;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Event.Default
@@ -19,6 +20,17 @@ namespace NHibernate.Event.Default
 		internal bool SubstitutionRequired
 		{
 			get { return substitute; }
+		}
+
+		internal override void Process(object obj, IEntityPersister persister)
+		{
+			System.Object[] values = persister.GetPropertyValues(obj);
+			IType[] types = persister.PropertyTypes;
+			ProcessEntityPropertyValues(values, types);
+			if (SubstitutionRequired)
+			{
+				persister.SetPropertyValues(obj, values);
+			}
 		}
 
 		internal override object ProcessCollection(object collection, CollectionType collectionType)
@@ -52,6 +64,7 @@ namespace NHibernate.Event.Default
 			ICollectionPersister persister = session.Factory.GetCollectionPersister(collectionType.Role);
 
 			//TODO: move into collection type, so we can use polymorphism!
+
 			if (collectionType.IsArrayType)
 			{
 				//if (collection == CollectionType.UNFETCHED_COLLECTION)
@@ -77,6 +90,41 @@ namespace NHibernate.Event.Default
 
 				return persistentCollection; //Force a substitution!
 			}
+		}
+
+		internal override void ProcessValue(int i, object[] values, IType[] types)
+		{
+			System.Object result = ProcessValue(values[i], types[i]);
+			if (result != null)
+			{
+				substitute = true;
+				values[i] = result;
+			}
+		}
+
+		internal override object ProcessComponent(object component, IAbstractComponentType componentType)
+		{
+			if (component != null)
+			{
+				object[] values = componentType.GetPropertyValues(component, Session);
+				IType[] types = componentType.Subtypes;
+				bool substituteComponent = false;
+				for (int i = 0; i < types.Length; i++)
+				{
+					System.Object result = ProcessValue(values[i], types[i]);
+					if (result != null)
+					{
+						values[i] = result;
+						substituteComponent = true;
+					}
+				}
+				if (substituteComponent)
+				{
+					componentType.SetPropertyValues(component, values);
+				}
+			}
+
+			return null;
 		}
 	}
 }

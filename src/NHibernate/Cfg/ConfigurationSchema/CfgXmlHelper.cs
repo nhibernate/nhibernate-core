@@ -1,7 +1,6 @@
-using System;
 using System.Xml;
 using System.Xml.XPath;
-using System.ComponentModel;
+using NHibernate.Event;
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
@@ -27,7 +26,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		private const string RootPrefixPath = "//" + CfgNamespacePrefix + ":";
 		private const string ChildPrefixPath = CfgNamespacePrefix + ":";
 
-		private static XmlNamespaceManager nsMgr;
+		private static readonly XmlNamespaceManager nsMgr;
 
 		static CfgXmlHelper()
 		{

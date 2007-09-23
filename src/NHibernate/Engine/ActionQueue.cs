@@ -17,6 +17,7 @@ namespace NHibernate.Engine
 	/// until a flush forces them to be executed against the database. 
 	/// </para>
 	/// </summary>
+	[Serializable]
 	public class ActionQueue
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ActionQueue));

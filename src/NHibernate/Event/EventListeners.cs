@@ -11,38 +11,38 @@ namespace NHibernate.Event
 	[Serializable]
 	public class EventListeners
 	{
-		private static readonly IDictionary<string, System.Type> eventInterfaceFromType =
-			new Dictionary<string, System.Type>(28);
+		private static readonly IDictionary<ListenerType, System.Type> eventInterfaceFromType =
+			new Dictionary<ListenerType, System.Type>(28);
 		static EventListeners()
 		{
-			eventInterfaceFromType["auto-flush"] = typeof(IAutoFlushEventListener);
-			eventInterfaceFromType["merge"] = typeof(IMergeEventListener);
-			eventInterfaceFromType["create"] = typeof(IPersistEventListener);
-			eventInterfaceFromType["create-onflush"] = typeof(IPersistEventListener);
-			eventInterfaceFromType["delete"] = typeof(IDeleteEventListener);
-			eventInterfaceFromType["dirty-check"] = typeof(IDirtyCheckEventListener);
-			eventInterfaceFromType["evict"] = typeof(IEvictEventListener);
-			eventInterfaceFromType["flush"] = typeof(IFlushEventListener);
-			eventInterfaceFromType["flush-entity"] = typeof(IFlushEntityEventListener);
-			eventInterfaceFromType["load"] = typeof(ILoadEventListener);
-			eventInterfaceFromType["load-collection"] = typeof(IInitializeCollectionEventListener);
-			eventInterfaceFromType["lock"] = typeof(ILockEventListener);
-			eventInterfaceFromType["refresh"] = typeof(IRefreshEventListener);
-			eventInterfaceFromType["replicate"] = typeof(IReplicateEventListener);
-			eventInterfaceFromType["save-update"] = typeof(ISaveOrUpdateEventListener);
-			eventInterfaceFromType["save"] = typeof(ISaveOrUpdateEventListener);
-			eventInterfaceFromType["update"] = typeof(ISaveOrUpdateEventListener);
-			eventInterfaceFromType["pre-load"] = typeof(IPreLoadEventListener);
-			eventInterfaceFromType["pre-update"] = typeof(IPreUpdateEventListener);
-			eventInterfaceFromType["pre-delete"] = typeof(IPreDeleteEventListener);
-			eventInterfaceFromType["pre-insert"] = typeof(IPreInsertEventListener);
-			eventInterfaceFromType["post-load"] = typeof(IPostLoadEventListener);
-			eventInterfaceFromType["post-update"] = typeof(IPostUpdateEventListener);
-			eventInterfaceFromType["post-delete"] = typeof(IPostDeleteEventListener);
-			eventInterfaceFromType["post-insert"] = typeof(IPostInsertEventListener);
-			eventInterfaceFromType["post-commit-update"] = typeof(IPostUpdateEventListener);
-			eventInterfaceFromType["post-commit-delete"] = typeof(IPostDeleteEventListener);
-			eventInterfaceFromType["post-commit-insert"] = typeof(IPostInsertEventListener);
+			eventInterfaceFromType[ListenerType.Autoflush] = typeof(IAutoFlushEventListener);
+			eventInterfaceFromType[ListenerType.Merge] = typeof(IMergeEventListener);
+			eventInterfaceFromType[ListenerType.Create] = typeof(IPersistEventListener);
+			eventInterfaceFromType[ListenerType.CreateOnFlush] = typeof(IPersistEventListener);
+			eventInterfaceFromType[ListenerType.Delete] = typeof(IDeleteEventListener);
+			eventInterfaceFromType[ListenerType.DirtyCheck] = typeof(IDirtyCheckEventListener);
+			eventInterfaceFromType[ListenerType.Evict] = typeof(IEvictEventListener);
+			eventInterfaceFromType[ListenerType.Flush] = typeof(IFlushEventListener);
+			eventInterfaceFromType[ListenerType.FlushEntity] = typeof(IFlushEntityEventListener);
+			eventInterfaceFromType[ListenerType.Load] = typeof(ILoadEventListener);
+			eventInterfaceFromType[ListenerType.LoadCollection] = typeof(IInitializeCollectionEventListener);
+			eventInterfaceFromType[ListenerType.Lock] = typeof(ILockEventListener);
+			eventInterfaceFromType[ListenerType.Refresh] = typeof(IRefreshEventListener);
+			eventInterfaceFromType[ListenerType.Replicate] = typeof(IReplicateEventListener);
+			eventInterfaceFromType[ListenerType.SaveUpdate] = typeof(ISaveOrUpdateEventListener);
+			eventInterfaceFromType[ListenerType.Save] = typeof(ISaveOrUpdateEventListener);
+			eventInterfaceFromType[ListenerType.Update] = typeof(ISaveOrUpdateEventListener);
+			eventInterfaceFromType[ListenerType.PreLoad] = typeof(IPreLoadEventListener);
+			eventInterfaceFromType[ListenerType.PreUpdate] = typeof(IPreUpdateEventListener);
+			eventInterfaceFromType[ListenerType.PreDelete] = typeof(IPreDeleteEventListener);
+			eventInterfaceFromType[ListenerType.PreInsert] = typeof(IPreInsertEventListener);
+			eventInterfaceFromType[ListenerType.PreLoad] = typeof(IPostLoadEventListener);
+			eventInterfaceFromType[ListenerType.PostUpdate] = typeof(IPostUpdateEventListener);
+			eventInterfaceFromType[ListenerType.PostDelete] = typeof(IPostDeleteEventListener);
+			eventInterfaceFromType[ListenerType.PostInsert] = typeof(IPostInsertEventListener);
+			eventInterfaceFromType[ListenerType.PostCommitUpdate] = typeof(IPostUpdateEventListener);
+			eventInterfaceFromType[ListenerType.PostCommitDelete] = typeof(IPostDeleteEventListener);
+			eventInterfaceFromType[ListenerType.PostCommitInsert] = typeof(IPostInsertEventListener);
 		}
 
 		private ILoadEventListener[] loadEventListeners = new ILoadEventListener[] { new DefaultLoadEventListener() };
@@ -76,6 +76,7 @@ namespace NHibernate.Event
 
 		private ISaveOrUpdateEventListener[] saveEventListeners = new ISaveOrUpdateEventListener[] { new DefaultSaveEventListener() };
 		private ISaveOrUpdateEventListener[] updateEventListeners = new ISaveOrUpdateEventListener[] { new DefaultUpdateEventListener() };
+		private IMergeEventListener[] saveOrUpdateCopyEventListeners = new IMergeEventListener[] { new DefaultSaveOrUpdateCopyEventListener() }; //saveOrUpdateCopy() is deprecated!
 
 		public ILoadEventListener[] LoadEventListeners
 		{
@@ -407,7 +408,19 @@ namespace NHibernate.Event
 			}
 		}
 
-		public System.Type GetListenerClassFor(string type)
+		public IMergeEventListener[] SaveOrUpdateCopyEventListeners
+		{
+			get { return saveOrUpdateCopyEventListeners; }
+			set
+			{
+				if (value != null)
+				{
+					saveOrUpdateCopyEventListeners = value;
+				}
+			}
+		}
+
+		public System.Type GetListenerClassFor(ListenerType type)
 		{
 			if (!eventInterfaceFromType.ContainsKey(type))
 				throw new MappingException("Unrecognized listener type [" + type + "]");
@@ -422,62 +435,51 @@ namespace NHibernate.Event
 		/// <seealso cref="IInitializable"/>
 		public virtual void InitializeListeners(Configuration cfg)
 		{
-			foreach (IInitializable initializable in loadEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in saveOrUpdateEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in mergeEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in persistEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in persistOnFlushEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in replicateEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in deleteEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in autoFlushEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in dirtyCheckEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in flushEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in evictEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in lockEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in refreshEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in flushEntityEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in initializeCollectionEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in postLoadEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in preLoadEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in preDeleteEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in preUpdateEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in preInsertEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in postDeleteEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in postUpdateEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in postInsertEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in postCommitDeleteEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in postCommitUpdateEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in postCommitInsertEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in saveEventListeners)
-				initializable.Initialize(cfg);
-			foreach (IInitializable initializable in updateEventListeners)
-				initializable.Initialize(cfg);
+			InitializeListeners(cfg, loadEventListeners);
+			InitializeListeners(cfg, saveOrUpdateEventListeners);
+			InitializeListeners(cfg, saveOrUpdateCopyEventListeners);
+			InitializeListeners(cfg, mergeEventListeners);
+			InitializeListeners(cfg, persistEventListeners);
+			InitializeListeners(cfg, persistOnFlushEventListeners);
+			InitializeListeners(cfg, replicateEventListeners);
+			InitializeListeners(cfg, deleteEventListeners);
+			InitializeListeners(cfg, autoFlushEventListeners);
+			InitializeListeners(cfg, dirtyCheckEventListeners);
+			InitializeListeners(cfg, flushEventListeners);
+			InitializeListeners(cfg, evictEventListeners);
+			InitializeListeners(cfg, lockEventListeners);
+			InitializeListeners(cfg, refreshEventListeners);
+			InitializeListeners(cfg, flushEntityEventListeners);
+			InitializeListeners(cfg, initializeCollectionEventListeners);
+			InitializeListeners(cfg, postLoadEventListeners);
+			InitializeListeners(cfg, preLoadEventListeners);
+			InitializeListeners(cfg, preDeleteEventListeners);
+			InitializeListeners(cfg, preUpdateEventListeners);
+			InitializeListeners(cfg, preInsertEventListeners);
+			InitializeListeners(cfg, postDeleteEventListeners);
+			InitializeListeners(cfg, postUpdateEventListeners);
+			InitializeListeners(cfg, postInsertEventListeners);
+			InitializeListeners(cfg, postCommitDeleteEventListeners);
+			InitializeListeners(cfg, postCommitUpdateEventListeners);
+			InitializeListeners(cfg, postCommitInsertEventListeners);
+			InitializeListeners(cfg, saveEventListeners);
+			InitializeListeners(cfg, updateEventListeners);
+		}
+
+		private void InitializeListeners(Configuration cfg, object[] list) 
+		{
+			foreach (object i in list)
+			{
+				IInitializable initializable = i as IInitializable;
+				if (initializable != null)
+					initializable.Initialize(cfg);
+			}
+		}
+
+		public EventListeners ShallowCopy()
+		{
+			// todo-events Not ported
+			return this;
 		}
 	}
 }

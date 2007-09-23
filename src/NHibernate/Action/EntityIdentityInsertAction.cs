@@ -19,7 +19,7 @@ namespace NHibernate.Action
 		{
 			this.state = state;
 			this.isDelayed = isDelayed;
-			delayedEntityKey = isDelayed ? GenerateDelayedEntityKey() : null;
+			delayedEntityKey = this.isDelayed ? GenerateDelayedEntityKey() : null;
 		}
 
 		public object GeneratedId

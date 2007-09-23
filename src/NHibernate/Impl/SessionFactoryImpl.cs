@@ -15,6 +15,7 @@ using NHibernate.Connection;
 using NHibernate.Context;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
+using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
@@ -135,13 +136,16 @@ namespace NHibernate.Impl
 		private readonly IDictionary allCacheRegions = new Hashtable();
 
 		[NonSerialized]
+		private EventListeners eventListeners;
+
+		[NonSerialized]
 		private readonly SQLFunctionRegistry sqlFunctionRegistry;
 
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryImpl));
 
-		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings)
+		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings, EventListeners listeners)
 		{
 			log.Info("building session factory");
 
@@ -150,6 +154,7 @@ namespace NHibernate.Impl
 			this.proxyFactoryClass = cfg.ProxyFactoryClass;
 			this.settings = settings;
 			this.sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
+			eventListeners = listeners;
 
 			if (log.IsDebugEnabled)
 			{
@@ -1288,6 +1293,11 @@ namespace NHibernate.Impl
 		public ICollection DefinedFilterNames
 		{
 			get { return filters.Keys; }
+		}
+
+		public EventListeners EventListeners
+		{
+			get { return eventListeners; }
 		}
 
 		public Settings Settings

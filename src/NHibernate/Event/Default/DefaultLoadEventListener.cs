@@ -104,7 +104,7 @@ namespace NHibernate.Event.Default
 
 			if (!options.IsAllowNulls || isOptionalInstance)
 			{
-				throw new ObjectNotFoundException(keyToLoad.Identifier, persister.MappedClass);
+				ObjectNotFoundException.ThrowIfNull(entity, keyToLoad.Identifier, persister.MappedClass);
 
 				//if (entity == null)
 				//{
@@ -192,7 +192,7 @@ namespace NHibernate.Event.Default
 		/// Check if the entity is already loaded. If it is, return the entity,
 		/// otherwise create and return a proxy.
 		/// </summary>
-		private object CreateProxyIfNecessary(LoadEvent event_Renamed, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor persistenceContext)
+		private object CreateProxyIfNecessary(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor persistenceContext)
 		{
 			object existing = persistenceContext.GetEntity(keyToLoad);
 			if (existing != null)
@@ -214,7 +214,7 @@ namespace NHibernate.Event.Default
 			{
 				log.Debug("creating new proxy for entity");
 				// return new uninitialized proxy
-				object proxy = persister.CreateProxy(event_Renamed.EntityId, event_Renamed.Session);
+				object proxy = persister.CreateProxy(@event.EntityId, @event.Session);
 				persistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(keyToLoad);
 				persistenceContext.AddProxy(keyToLoad, proxy);
 				return proxy;

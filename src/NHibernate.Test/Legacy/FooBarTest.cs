@@ -5004,7 +5004,8 @@ namespace NHibernate.Test.Legacy
 			{
 				s.Load(typeof(Foo), id);
 			}
-			catch (ObjectDeletedException ode)
+			//catch (ObjectDeletedException ode) Changed to have same behavior of H3.2
+			catch (ObjectNotFoundException ode)
 			{
 				Assert.IsNotNull(ode); //getting ride of 'ode' is never used compile warning
 				err = true;
@@ -5037,7 +5038,8 @@ namespace NHibernate.Test.Legacy
 			{
 				s.Load(typeof(Fo), id);
 			}
-			catch (ObjectDeletedException ode)
+			//catch (ObjectDeletedException ode) Changed to have same behavior of H3.2
+			catch (ObjectNotFoundException ode)
 			{
 				Assert.IsNotNull(ode); //getting ride of 'ode' is never used compile warning
 				err = true;

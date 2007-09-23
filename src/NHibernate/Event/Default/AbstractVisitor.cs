@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal void ProcessValue(int i, object[] values, IType[] types)
+		internal virtual void ProcessValue(int i, object[] values, IType[] types)
 		{
 			ProcessValue(values[i], types[i]);
 		}

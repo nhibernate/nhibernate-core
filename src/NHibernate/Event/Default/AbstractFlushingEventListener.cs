@@ -148,7 +148,6 @@ namespace NHibernate.Event.Default
 			IEventSource source = @event.Session;
 
 			ICollection list = IdentityMap.ConcurrentEntries(source.EntityEntries);
-			//UPGRADE_NOTE: Final was removed from the declaration of 'size '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 			foreach (DictionaryEntry me in list)
 			{
 				// Update the status of the object and if necessary, schedule an update

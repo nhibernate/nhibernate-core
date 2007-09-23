@@ -210,22 +210,24 @@ namespace NHibernate.Event.Default
 
 			object id = key == null ? null : key.Identifier;
 
-			bool inTxn = source.ConnectionManager.IsInActiveTransaction;
-			bool shouldDelayIdentityInserts = !inTxn && !requiresImmediateIdAccess;
+			// NH Different behavior (shouldDelayIdentityInserts=false anyway)
+			//bool inTxn = source.ConnectionManager.IsInActiveTransaction;
+			//bool shouldDelayIdentityInserts = !inTxn && !requiresImmediateIdAccess;
+			bool shouldDelayIdentityInserts = false;
 
+			// Put a placeholder in entries, so we don't recurse back and try to save() the
+			// same object again. QUESTION: should this be done before onSave() is called?
+			// likewise, should it be done before onUpdate()?
+			source.AddEntry(entity, Status.Saving, null, id, null, LockMode.Write, useIdentityColumn, persister, false, false);
+
+			CascadeBeforeSave(source, persister, entity, anything);
+
+			// NH-962: This was originally done before many-to-one cascades.
 			if (useIdentityColumn && !shouldDelayIdentityInserts)
 			{
 				log.Debug("executing insertions");
 				source.ActionQueue.ExecuteInserts();
 			}
-
-			// Put a placeholder in entries, so we don't recurse back and try to save() the
-			// same object again. QUESTION: should this be done before onSave() is called?
-			// likewise, should it be done before onUpdate()?
-
-			source.AddEntry(entity, Status.Saving, null, id, null, LockMode.Write, useIdentityColumn, persister, false, false);
-
-			CascadeBeforeSave(source, persister, entity, anything);
 
 			// H3.2 Different behaviour
 			//object[] values = persister.GetPropertyValuesToInsert(entity, GetMergeMap(anything), source);
@@ -330,7 +332,9 @@ namespace NHibernate.Event.Default
 			//keep the existing version number in the case of replicate!
 			if (persister.IsVersioned)
 			{
-				substitute |= Versioning.SeedVersion(values, persister.VersionProperty, persister.VersionType, false, source);
+				// NH Different behavior (H3.2 use null value for versionProperty; NH ask to persister to know if a valueType mean unversioned)
+				//substitute |= Versioning.SeedVersion(values, persister.VersionProperty, persister.VersionType, false, source);
+				substitute |= Versioning.SeedVersion(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(values), source);
 			}
 			return substitute;
 		}
