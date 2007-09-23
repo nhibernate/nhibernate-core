@@ -132,15 +132,21 @@ namespace NHibernate.Test.Legacy
 				s.SaveOrUpdateCopy(cat);
 				s.Flush();
 			}
-
 			using (ISession s = OpenSession())
 			{
 				cat = (Category) s.CreateQuery("from Category cat where cat.Name='new foo'").UniqueResult();
 				newSubCat = (Category) s.CreateQuery("from Category cat where cat.Name='new sub'").UniqueResult();
 				newSubCat.Subcategories.Add(cat);
-				subCatBaz = (Category) s.SaveOrUpdateCopy(newSubCat, subCatBaz.Id);
-				Assert.IsTrue(subCatBaz.Name.Equals("new sub"));
-				Assert.IsTrue(subCatBaz.Subcategories.Count == 1 && subCatBaz.Subcategories[0] == cat);
+			}
+			cat.Name="new new foo";
+
+			using (ISession s = OpenSession())
+			{
+				newSubCat = (Category)s.SaveOrUpdateCopy(newSubCat, newSubCat.Id);
+				Assert.IsTrue(newSubCat.Name.Equals("new sub"));
+				Assert.AreEqual(1, newSubCat.Subcategories.Count);
+				cat	= (Category)newSubCat.Subcategories[0];
+				Assert.AreEqual("new new foo", cat.Name);
 				newSubCat.Subcategories.Remove(cat);
 				s.Delete(cat);
 				s.Delete(subCatBaz);
