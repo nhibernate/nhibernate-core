@@ -118,7 +118,7 @@ namespace NHibernate.Event.Default
 
 		private void CheckNaturalId(IEntityPersister persister, object identifier, object[] current, object[] loaded, ISessionImplementor session)
 		{
-			// todo-events Not ported
+			// todo Natural Identifier
 			//if (persister.HasNaturalIdentifier)
 			//{
 			//  if (loaded == null)

@@ -113,7 +113,6 @@ namespace NHibernate.Impl
 
 		private readonly IInterceptor interceptor;
 
-		// todo-events: implements listeners
 		[NonSerialized]
 		private EventListeners listeners;
 
@@ -2245,7 +2244,11 @@ namespace NHibernate.Impl
 		/// <param name="collection">The collection to be associated with the persistence context </param>
 		public void AddNewCollection(ICollectionPersister persister, IPersistentCollection collection)
 		{
-			AddNewCollection(collection, persister);
+			CollectionEntry ce = AddCollection(collection);
+			if (persister.HasOrphanDelete)
+			{
+				ce.InitSnapshot(collection, persister);
+			}
 		}
 
 		/// <summary> Get the <see cref="PersistentArrayHolder"/> object for an array</summary>
@@ -2364,22 +2367,6 @@ namespace NHibernate.Impl
 			collectionEntries[collection] = ce;
 			collection.CollectionSnapshot = ce;
 			return ce;
-		}
-
-		/// <summary>
-		/// Add a new collection (i.e. a newly created one, just instantiated by
-		/// the application, with no database state or snapshot)
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="persister"></param>
-		internal void AddNewCollection(IPersistentCollection collection, ICollectionPersister persister)
-		{
-			// todo-events Remove (move implementation below)
-			CollectionEntry ce = AddCollection(collection);
-			if (persister.HasOrphanDelete)
-			{
-				ce.InitSnapshot(collection, persister);
-			}
 		}
 
 		/// <summary>

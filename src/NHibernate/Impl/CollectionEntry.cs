@@ -155,6 +155,20 @@ namespace NHibernate.Impl
 			this.ignore = ignore;
 		}
 
+		/// <summary> For collections just loaded from the database</summary>
+		public CollectionEntry(IPersistentCollection collection, ICollectionPersister loadedPersister, object loadedKey, bool ignore)
+		{
+			this.ignore = ignore;
+
+			//collection.clearDirty()
+
+			this.loadedKey = loadedKey;
+			SetLoadedPersister(loadedPersister);
+			snapshot = null;
+			collection.CollectionSnapshot = this;
+			//postInitialize() will be called after initialization
+		}
+
 		/// <summary>
 		/// Initializes a new instance of <see cref="CollectionEntry"/> for initialized detached collections.
 		/// </summary>

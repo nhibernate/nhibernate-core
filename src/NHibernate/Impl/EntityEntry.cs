@@ -231,5 +231,29 @@ namespace NHibernate.Impl
 			//  (Persister.HasMutableProperties || !FieldInterceptionHelper.isInstrumented(entity)
 			//   || FieldInterceptionHelper.extractFieldInterceptor(entity).Dirty);
 		}
+
+		public void SetReadOnly(bool readOnly, object entity)
+		{
+			if (status != Impl.Status.Loaded && status != Impl.Status.ReadOnly)
+			{
+				throw new HibernateException("instance was not in a valid state");
+			}
+			if (readOnly)
+			{
+				Status = Impl.Status.ReadOnly;
+				loadedState = null;
+			}
+			else
+			{
+				Status = Impl.Status.Loaded;
+				loadedState = Persister.GetPropertyValues(entity);
+			}
+		}
+
+		// TODO property lazyness
+		public bool LoadedWithLazyPropertiesUnfetched
+		{
+			get { return false; }
+		}
 	}
 }

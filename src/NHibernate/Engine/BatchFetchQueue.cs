@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -43,6 +42,12 @@ namespace NHibernate.Engine
 		public BatchFetchQueue(ISessionImplementor session)
 		{
 			this.session = session;
+		}
+
+		// TODO persistent context (remove constructor with ISessionImplementor)
+		public BatchFetchQueue(IPersistenceContext session)
+		{
+			this.session = session.Session;
 		}
 
 		/// <summary>
