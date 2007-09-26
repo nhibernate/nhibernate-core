@@ -1,5 +1,6 @@
 using System.Data;
 using NHibernate.Cfg;
+using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -54,6 +55,11 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 4000, "varchar($1)");
 			RegisterColumnType(DbType.String, 1073741823, "text"); //
 			RegisterColumnType(DbType.Time, "time");
+
+			// Override standard HQL function
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("now", NHibernateUtil.DateTime, true));
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as varchar)"));
+			RegisterFunction("locate", new PositionSubstringFunction());
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.NpgsqlDriver";
 		}
