@@ -395,7 +395,7 @@ namespace NHibernate.Test.QueryTest
 				Assert.AreEqual("D2", l[0].Description);
 			}
 			// reusing same IDetachedQuery
-			dq.SetString("pn", "@ALL@");
+			dq.SetString("pn", "@All@");
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
