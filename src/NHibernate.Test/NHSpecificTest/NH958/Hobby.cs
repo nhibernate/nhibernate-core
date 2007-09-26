@@ -4,7 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 {
     public class Hobby
     {
-        private Guid _id;
+        private int _id;
         private string _name = null;
         private Person _person = null;
 
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
             _name = name;
         }
 
-        public virtual Guid Id
+        public virtual int Id
         {
             get { return _id; }
             set { _id = value; }

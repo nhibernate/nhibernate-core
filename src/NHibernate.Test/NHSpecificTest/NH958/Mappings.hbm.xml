@@ -3,7 +3,7 @@
 
 	<class name="Person">
 		<id name="Id">
-			<generator class="guid" />
+			<generator class="native" />
 		</id>
 		
 		<discriminator column="Gender" type="String" />
@@ -22,8 +22,8 @@
 	</class>
 	
 	<class name="Hobby">
-		<id name="Id" column="HobbyId" type="Guid">
-			<generator class="guid"  />
+		<id name="Id" column="HobbyId" type="int">
+			<generator class="native"  />
 		</id>
 		
 		<property name="Name" />
@@ -32,7 +32,7 @@
 		<!-- 
 		    <many-to-one name="Person" column="PersonId" class="Person" />
 		-->
-		<any name="Person" meta-type="String" id-type="Guid" >
+		<any name="Person" meta-type="String" id-type="int" >
 			<meta-value value="Male" class="Male" />
 			<meta-value value="Female" class="Female" />
 			<column name="Gender" />

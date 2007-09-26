@@ -5,7 +5,7 @@
 				   namespace="NHibernate.Test.NHSpecificTest.NH898">
 	<class name="ClassA" table="ClassA">
 		<id name="Id" column="Id">
-			<generator class="guid" />
+			<generator class="native" />
 		</id>
 		<one-to-one name="B" property-ref="A" />
 	</class>

@@ -4,9 +4,9 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 {
 	public class ClassA
 	{
-		private Guid id;
+		private int id;
 		private ClassB b;
-		public virtual Guid Id
+		public virtual int Id
 		{
 			get { return id; }
 			set { id = value; }
