@@ -6,6 +6,7 @@ using log4net;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -600,6 +601,19 @@ namespace NHibernate.Loader
 					}
 				}
 			}
+			//important: reuse the same event instances for performance!
+			PreLoadEvent pre;
+			PostLoadEvent post;
+			if (session.HasEventSource)
+			{
+				pre = new PreLoadEvent((IEventSource)session);
+				post = new PostLoadEvent((IEventSource)session);
+			}
+			else
+			{
+				pre = null;
+				post = null;
+			}
 
 			if (hydratedObjects != null)
 			{
@@ -612,7 +626,8 @@ namespace NHibernate.Loader
 
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
-					session.InitializeEntity(hydratedObjects[i]);
+					// TODO Different behaviour (InitializeEntitiesAndCollections need one more parameter to force readonly)
+					TwoPhaseLoad.InitializeEntity(hydratedObjects[i], false, session, pre, post);
 				}
 			}
 

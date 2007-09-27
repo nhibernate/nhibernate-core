@@ -217,11 +217,6 @@ namespace NHibernate.Engine
 		void PostHydrate(IEntityPersister persister, object id, object[] values, object obj, LockMode lockMode);
 
 		/// <summary>
-		/// Perform the second step of 2-phase load (ie. fully initialize the entity instance)
-		/// </summary>
-		void InitializeEntity(object obj);
-
-		/// <summary>
 		/// Get the entity instance associated with the given <c>EntityKey</c>
 		/// </summary>
 		object GetEntity(EntityKey key);

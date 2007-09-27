@@ -1067,7 +1067,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				CacheKey ck = new CacheKey(id, p.IdentifierType, (string) p.IdentifierSpace, this);
+				CacheKey ck = new CacheKey(id, p.IdentifierType, p.RootEntityName, this);
 				p.Cache.Remove(ck);
 			}
 		}

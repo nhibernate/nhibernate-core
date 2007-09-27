@@ -4,6 +4,7 @@ using System.Reflection;
 
 using NHibernate.Cache;
 using NHibernate.Engine;
+using NHibernate.Event;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -305,14 +306,35 @@ namespace NHibernate.DomainModel
 
 		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)
 		{
+			// fails when optional object is supplied
 			Custom clone = null;
-			Custom obj = (Custom) Instances[id];
+			Custom obj = (Custom)Instances[id];
 			if (obj != null)
 			{
-				clone = (Custom) obj.Clone();
-				session.AddUninitializedEntity(new EntityKey(id, this), clone, LockMode.None);
-				session.PostHydrate(this, id, new string[] {obj.Name}, clone, LockMode.None);
-				session.InitializeEntity(clone);
+				clone = (Custom)obj.Clone();
+				TwoPhaseLoad.AddUninitializedEntity(
+						new EntityKey(id, this),
+						clone,
+						this,
+						LockMode.None,
+						false,
+						session
+					);
+				TwoPhaseLoad.PostHydrate(
+						this, id,
+						new String[] { obj.Name },
+						clone,
+						LockMode.None,
+						false,
+						session
+					);
+				TwoPhaseLoad.InitializeEntity(
+						clone,
+						false,
+						session,
+						new PreLoadEvent((IEventSource)session),
+						new PostLoadEvent((IEventSource)session)
+					);
 			}
 			return clone;
 		}
