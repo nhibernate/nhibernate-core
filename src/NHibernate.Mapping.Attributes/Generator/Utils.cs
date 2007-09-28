@@ -77,7 +77,7 @@ namespace NHibernate.Mapping.Attributes.Generator
 		{
 			return name=="HibernateMapping" || name=="Class"
 				|| name=="Subclass" || name=="JoinedSubclass"
-				|| name=="Component";
+				|| name=="Component" || name=="Import";
 		}
 
 
@@ -105,7 +105,8 @@ namespace NHibernate.Mapping.Attributes.Generator
 				return parentEltName == "component" || parentEltName == "composite-element" || parentEltName == "composite-id"
 					|| parentEltName == "composite-index" || parentEltName == "index-many-to-many" || parentEltName == "key-many-to-one"
 					|| parentEltName == "many-to-many" || parentEltName == "many-to-one" || parentEltName == "meta-value"
-					|| parentEltName == "nested-composite-element" || parentEltName == "one-to-many" || parentEltName == "one-to-one";
+					|| parentEltName == "nested-composite-element" || parentEltName == "one-to-many" || parentEltName == "one-to-one"
+					|| parentEltName == "import"  || parentEltName == "definition";
 
 			if(attribMember.Name == "type")
 				return parentEltName == "collection-id" || parentEltName == "discriminator" || parentEltName == "element"
@@ -214,6 +215,11 @@ namespace NHibernate.Mapping.Attributes.Generator
 								throw new System.Exception("Unknown xs:group " + groupName + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));
 							elements.AddRange( GetElements(group.Particle.Items, schemaItems) );
 						}
+						else if(item is System.Xml.Schema.XmlSchemaSequence)
+						{
+							System.Xml.Schema.XmlSchemaSequence subSeq = item as System.Xml.Schema.XmlSchemaSequence;
+							elements.AddRange( GetElements(subSeq.Items, schemaItems) );
+						}
 						else
 							log.Warn("Unknown Object: " + item.ToString() + string.Format(", nh-mapping.xsd({0})", item.LineNumber));
 				}
@@ -231,6 +237,11 @@ namespace NHibernate.Mapping.Attributes.Generator
 					if(group==null) // Not found
 						throw new System.Exception("Unknown xs:group " + groupName + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));
 					elements.AddRange( GetElements(group.Particle.Items, schemaItems) );
+				}
+				else if(obj is System.Xml.Schema.XmlSchemaSequence)
+				{
+					System.Xml.Schema.XmlSchemaSequence subSeq = obj as System.Xml.Schema.XmlSchemaSequence;
+					elements.AddRange( GetElements(subSeq.Items, schemaItems) );
 				}
 				else
 					log.Warn("Unknown Object: " + obj.ToString() + string.Format(", nh-mapping.xsd({0})", obj.LineNumber));

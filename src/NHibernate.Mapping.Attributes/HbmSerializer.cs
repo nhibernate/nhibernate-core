@@ -288,6 +288,22 @@ namespace NHibernate.Mapping.Attributes
 				writer.WriteComment( string.Format( "Generated from NHibernate.Mapping.Attributes on {0}.", System.DateTime.Now.ToString("u") ) );
 			WriteHibernateMapping(writer, null);
 
+			// Write imports (classes decorated with the [ImportAttribute])
+			foreach(System.Type type in assembly.GetTypes())
+			{
+				object[] imports = type.GetCustomAttributes(typeof(ImportAttribute), false);
+				foreach(ImportAttribute import in imports)
+				{
+					writer.WriteStartElement("import");
+					if(import.Class != null && import.Class != string.Empty)
+						writer.WriteAttributeString("class", import.Class);
+					else // Assume that it is the current type that must be imported
+						writer.WriteAttributeString("class", type.FullName + ", " + type.Assembly.GetName().Name);
+					if(import.Rename != null && import.Rename != string.Empty)
+						writer.WriteAttributeString("rename", import.Rename);
+					writer.WriteEndElement();
+				}
+			}
 
 			// Write classes, subclasses and joined-subclasses (classes must come first if inherited by "external" subclasses)
 			System.Collections.ArrayList mappedClassesNames = new System.Collections.ArrayList();

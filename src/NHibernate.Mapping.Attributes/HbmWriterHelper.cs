@@ -396,5 +396,10 @@ namespace NHibernate.Mapping.Attributes
 		{
 			return ThrowRequiredValueNotProvidedException(member);
 		}
+
+		public string Get_Definition_Class_DefaultValue(System.Reflection.MemberInfo member)
+		{
+			return ThrowRequiredValueNotProvidedException(member);
+		}
 	}
 }

@@ -23,78 +23,117 @@ namespace NHibernate.Mapping.Attributes
 	/// <summary> </summary>
 	[System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field, AllowMultiple=true)]
 	[System.Serializable()]
-	public class SqlQueryAttribute : BaseAttribute
+	public class JoinAttribute : BaseAttribute
 	{
 		
-		private string _name = null;
+		private string _table = null;
 		
-		private string _content = null;
+		private bool _inverse = false;
 		
-		private string _resultsetref = null;
+		private bool _optional = false;
 		
-		private FlushMode _flushmode = FlushMode.Unspecified;
+		private FetchMode _fetch = FetchMode.Unspecified;
+		
+		private bool _optionalspecified;
+		
+		private bool _inversespecified;
+		
+		private string _schema = null;
 		
 		/// <summary> Default constructor (position=0) </summary>
-		public SqlQueryAttribute() : 
+		public JoinAttribute() : 
 				base(0)
 		{
 		}
 		
 		/// <summary> Constructor taking the position of the attribute. </summary>
-		public SqlQueryAttribute(int position) : 
+		public JoinAttribute(int position) : 
 				base(position)
 		{
 		}
 		
 		/// <summary> </summary>
-		public virtual string Name
+		public virtual string Table
 		{
 			get
 			{
-				return this._name;
+				return this._table;
 			}
 			set
 			{
-				this._name = value;
+				this._table = value;
+			}
+		}
+		
+		/// <summary>default: no value</summary>
+		public virtual string Schema
+		{
+			get
+			{
+				return this._schema;
+			}
+			set
+			{
+				this._schema = value;
 			}
 		}
 		
 		/// <summary> </summary>
-		public virtual string ResultSetRef
+		public virtual FetchMode Fetch
 		{
 			get
 			{
-				return this._resultsetref;
+				return this._fetch;
 			}
 			set
 			{
-				this._resultsetref = value;
+				this._fetch = value;
 			}
 		}
 		
 		/// <summary> </summary>
-		public virtual FlushMode FlushMode
+		public virtual bool Inverse
 		{
 			get
 			{
-				return this._flushmode;
+				return this._inverse;
 			}
 			set
 			{
-				this._flushmode = value;
+				this._inverse = value;
+				_inversespecified = true;
 			}
 		}
 		
-		/// <summary> Gets or sets the content of this element </summary>
-		public virtual string Content
+		/// <summary> Tells if Inverse has been specified. </summary>
+		public virtual bool InverseSpecified
 		{
 			get
 			{
-				return this._content;
+				return this._inversespecified;
+			}
+		}
+		
+		/// <summary> </summary>
+		public virtual bool Optional
+		{
+			get
+			{
+				return this._optional;
 			}
 			set
 			{
-				this._content = value;
+				this._optional = value;
+				_optionalspecified = true;
+			}
+		}
+		
+		/// <summary> Tells if Optional has been specified. </summary>
+		public virtual bool OptionalSpecified
+		{
+			get
+			{
+				return this._optionalspecified;
 			}
 		}
 	}

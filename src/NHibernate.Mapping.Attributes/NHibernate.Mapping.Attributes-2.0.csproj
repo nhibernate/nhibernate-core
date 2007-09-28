@@ -140,6 +140,7 @@
     <Compile Include="CreateAttribute.cs" />
     <Compile Include="CustomSqlCheck.cs" />
     <Compile Include="DatabaseObjectAttribute.cs" />
+    <Compile Include="DefinitionAttribute.cs" />
     <Compile Include="DialectScopeAttribute.cs" />
     <Compile Include="DiscriminatorAttribute.cs">
       <SubType>Code</SubType>
@@ -203,6 +204,7 @@
     <Compile Include="JcsCacheUsage.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="JoinAttribute.cs" />
     <Compile Include="JoinedSubclassAttribute.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -23,78 +23,49 @@ namespace NHibernate.Mapping.Attributes
 	/// <summary> </summary>
 	[System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field, AllowMultiple=true)]
 	[System.Serializable()]
-	public class SqlQueryAttribute : BaseAttribute
+	public class DefinitionAttribute : BaseAttribute
 	{
 		
-		private string _name = null;
-		
-		private string _content = null;
-		
-		private string _resultsetref = null;
-		
-		private FlushMode _flushmode = FlushMode.Unspecified;
+		private string _class = null;
 		
 		/// <summary> Default constructor (position=0) </summary>
-		public SqlQueryAttribute() : 
+		public DefinitionAttribute() : 
 				base(0)
 		{
 		}
 		
 		/// <summary> Constructor taking the position of the attribute. </summary>
-		public SqlQueryAttribute(int position) : 
+		public DefinitionAttribute(int position) : 
 				base(position)
 		{
 		}
 		
 		/// <summary> </summary>
-		public virtual string Name
+		public virtual string Class
 		{
 			get
 			{
-				return this._name;
+				return this._class;
 			}
 			set
 			{
-				this._name = value;
+				this._class = value;
 			}
 		}
 		
 		/// <summary> </summary>
-		public virtual string ResultSetRef
+		public virtual System.Type ClassType
 		{
 			get
 			{
-				return this._resultsetref;
+				return System.Type.GetType( this.Class );
 			}
 			set
 			{
-				this._resultsetref = value;
-			}
-		}
-		
-		/// <summary> </summary>
-		public virtual FlushMode FlushMode
-		{
-			get
-			{
-				return this._flushmode;
-			}
-			set
-			{
-				this._flushmode = value;
-			}
-		}
-		
-		/// <summary> Gets or sets the content of this element </summary>
-		public virtual string Content
-		{
-			get
-			{
-				return this._content;
-			}
-			set
-			{
-				this._content = value;
+				if(value.Assembly == typeof(int).Assembly)
+					this.Class = value.FullName.Substring(7);
+				else
+					this.Class = value.FullName + ", " + value.Assembly.GetName().Name;
 			}
 		}
 	}

@@ -20,7 +20,11 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	public class Foo {}
 	public class FooComponent {}
 	public interface FooProxy {}
-	public class Glarch {}
+
+	[NHMA.Import]
+	[NHMA.Import(1, ClassType=typeof(double), Rename="RealNumber")]
+	public class Glarch { }
+
 	class ReverseComparator {}
 
 
@@ -80,7 +84,9 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 			set { _list = value; }
 		}
 
-		[NHMA.ComponentProperty] // Auto-detection :)
+		[NHMA.ComponentProperty()] // Auto-detection :)
+		[NHMA.Join(-1, Table="SubTable")]
+			[NHMA.Key(1, Column="SubKey")]
 		public CompAddress MyAutoCompAddress
 		{
 			get { return null;  }
@@ -896,6 +902,10 @@ namespace NHibernate.Mapping.Attributes.Test.DomainModel
 	[NHMA.JcsCache(Usage=NHMA.JcsCacheUsage.NonStrictReadWrite)]
 	public class Stuff
 	{
+		[NHMA.Join(Table="Table", Schema="Schema", Fetch=FetchMode.Join, Inverse=true, Optional=false)]
+			[NHMA.Key(1, Column="JoinedKey")]
+			[NHMA.Property(2, Name="JoinedProp")]
+			[NHMA.ManyToOne(3, Name="JoinedManyToOne")]
 		private long _id;
 		private Foo _foo;
 		private DateTime _timestamp;

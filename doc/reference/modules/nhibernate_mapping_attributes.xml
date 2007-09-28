@@ -57,6 +57,9 @@
 		</formalpara>
 		<orderedlist>
 			<listitem>
+				<para>It is possible to import classes by simply decorating them with <literal>[Import] class ImportedClass1 {}</literal>. Note that you must use <literal>HbmSerializer.Serialize(assembly)</literal>; The <literal>&lt;import/&gt;</literal> mapping will be added before the classes mapping. If you prefer to keep these imports in the class using them, you can specify them all on the class: <literal>[Import(ClassType=typeof(ImportedClass1))] class Query {}</literal>.</para>
+			</listitem>
+			<listitem>
 				<para><classname>[RawXmlAttribute]</classname> is a new attribute allowing to insert xml as-is in the mapping. This feature can be very useful to do complex mapping (eg: components). It may also be used to quickly move the mapping from xml files to attributes. Usage: <literal>[RawXml(After=typeof(ComponentAttribute), Content="&lt;component name="..."&gt;...&lt;/component&gt;")]</literal>. <methodname>After</methodname> tells after which kind of mapping the xml should be inserted (generally, it is the type of the mapping you are inserting); it is optional (in which case the xml is inserted on the top of the mapping). Note: At the moment, all raw xmls are prefixed by a <literal>&lt;!----&gt;</literal> (in the generated stream); this is a known side-effect.</para>
 			</listitem>
 			<listitem>
