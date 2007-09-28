@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Classic;
 using NHibernate.Engine;
+using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
@@ -65,21 +66,23 @@ namespace NHibernate.Impl
 		private static object[] Assemble(object[] values, object result, object id, IEntityPersister persister,
 		                                 IInterceptor interceptor, ISessionImplementor session)
 		{
-			IType[] propertyTypes = persister.PropertyTypes;
-			object[] assembledProps = new object[propertyTypes.Length];
-			for (int i = 0; i < values.Length; i++)
-			{
-				assembledProps[i] = propertyTypes[i].Assemble(values[i], session, result);
-			}
+			//assembled state gets put in a new array (we read from cache by value!)
+			object[] assembledProps = TypeFactory.Assemble(values, persister.PropertyTypes, session, result);
+	
+			//from h3.2 TODO: reuse the PreLoadEvent
+			PreLoadEvent preLoadEvent = new PreLoadEvent((IEventSource) session);
+			preLoadEvent.Entity = result;
+			preLoadEvent.State=assembledProps;
+			preLoadEvent.Id = id;
+			preLoadEvent.Persister=persister;
 
-			interceptor.OnLoad(result, id, assembledProps, persister.PropertyNames, propertyTypes);
+			IPreLoadEventListener[] listeners = session.Listeners.PreLoadEventListeners;
+			for (int i = 0; i < listeners.Length; i++)
+			{
+				listeners[i].OnPreLoad(preLoadEvent);
+			}
 
 			persister.SetPropertyValues(result, assembledProps);
-
-			if (persister.ImplementsLifecycle)
-			{
-				((ILifecycle) result).OnLoad(session, id);
-			}
 
 			return assembledProps;
 		}
