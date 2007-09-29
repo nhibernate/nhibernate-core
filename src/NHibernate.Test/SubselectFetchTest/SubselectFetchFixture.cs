@@ -256,7 +256,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			//Assert.AreEqual(3, sessions.Statistics.getPrepareStatementCount());
 
 			r = (Parent) s.Get(typeof(Parent), r.Name);
-			Assert.IsTrue(NHibernateUtil.IsInitialized(r.Children));
+			Assert.IsFalse(NHibernateUtil.IsInitialized(r.Children));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(r.MoreChildren));
 			Assert.AreEqual(r.Children.Count, 1);
 			Assert.AreEqual(r.MoreChildren.Count, 0);

@@ -542,6 +542,7 @@ namespace NHibernate.Loader
 						subselectFetches[i] = new SubselectFetch(
 							//getSQLString(), 
 							aliases[i],
+							factory.Dialect,
 							loadables[i],
 							queryParameters,
 							keySets[i],
@@ -1183,7 +1184,7 @@ namespace NHibernate.Loader
 			return selection != null && selection.MaxRows != RowSelection.NoValue;
 		}
 
-		private static int GetFirstRow(RowSelection selection)
+		internal static int GetFirstRow(RowSelection selection)
 		{
 			return (selection == null) ? 0 : selection.FirstRow;
 		}
@@ -1326,7 +1327,7 @@ namespace NHibernate.Loader
 		/// Some dialect-specific LIMIT clauses require the maximum last row number,
 		/// others require the maximum returned row count.
 		/// </summary>
-		private static int GetMaxOrLimit(Dialect.Dialect dialect, RowSelection selection)
+		internal static int GetMaxOrLimit(Dialect.Dialect dialect, RowSelection selection)
 		{
 			int firstRow = GetFirstRow(selection);
 			int lastRow = selection.MaxRows;

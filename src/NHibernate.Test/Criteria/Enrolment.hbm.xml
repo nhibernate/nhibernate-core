@@ -16,7 +16,7 @@
 			<generator class="assigned"/>
 		</id>
 		<property name="Name" not-null="true"/>
-		<set name="Enrolments" inverse="true" cascade="delete">
+		<set name="Enrolments" inverse="true" cascade="delete" fetch="subselect">
 			<key column="studentId"/>
 			<one-to-many class="Enrolment"/>
 		</set>
