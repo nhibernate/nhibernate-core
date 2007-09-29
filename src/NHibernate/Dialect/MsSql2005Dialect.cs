@@ -1,10 +1,12 @@
-using System;
-using System.Data;
-using NHibernate.Mapping;
-using NHibernate.SqlCommand;
-
 namespace NHibernate.Dialect
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Data;
+	using Mapping;
+	using SqlCommand;
+	using Util;
+
 	public class MsSql2005Dialect : MsSql2000Dialect
 	{
 		public MsSql2005Dialect()
@@ -25,19 +27,25 @@ namespace NHibernate.Dialect
 		/// The <c>LIMIT</c> SQL will look like
 		/// <code>
 		/// 
-		/// SELECT TOP last * FROM (
-		/// SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__ {sort direction 1} [, __hibernate_sort_expr_2__ {sort direction 2}, ...]) as row, query.* FROM (
+		/// SELECT TOP last (columns) FROM (
+		/// SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__ {sort direction 1} [, __hibernate_sort_expr_2__ {sort direction 2}, ...]) as row, (query.columns) FROM (
 		///		{original select query part}, {sort field 1} as __hibernate_sort_expr_1__ [, {sort field 2} as __hibernate_sort_expr_2__, ...]
 		///		{remainder of original query minus the order by clause}
 		/// ) query
 		/// ) page WHERE page.row > offset
 		/// 
 		/// </code>
+		/// 
+		/// Note that we need to add explicitly specify the columns, because we need to be able to use them
+		/// in a paged subselect. NH-1155
 		/// </remarks>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
 		{
 			int fromIndex = querySqlString.IndexOfCaseInsensitive(" from ");
 			SqlString select = querySqlString.Substring(0, fromIndex);
+			List<string> columnsOrAliases;
+			Dictionary<string, string> aliasToColumn;
+			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn);
 
 			int orderIndex = querySqlString.LastIndexOfCaseInsensitive(" order by ");
 			SqlString from;
@@ -58,7 +66,9 @@ namespace NHibernate.Dialect
 			SqlStringBuilder result = new SqlStringBuilder()
 				.Add("SELECT TOP ")
 				.Add(last.ToString())
-				.Add(" * FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
+				.Add(" ")
+				.Add(StringHelper.Join(", ", columnsOrAliases))
+				.Add(" FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
 
 			for (int i = 1; i <= sortExpressions.Length; i++)
 			{
@@ -73,15 +83,29 @@ namespace NHibernate.Dialect
 					result.Add(" DESC");
 			}
 
-			result.Add(") as row, query.* FROM (")
+			result.Add(") as row, ");
+
+			for (int i = 0; i < columnsOrAliases.Count; i++)
+			{
+				result.Add("query.").Add(columnsOrAliases[i]);
+				bool notLastColumn = i != columnsOrAliases.Count-1;
+				if (notLastColumn)
+					result.Add(", ");
+			}
+
+			result.Add(" FROM (")
 				.Add(select);
 
 			for (int i = 1; i <= sortExpressions.Length; i++)
 			{
 				string sortExpression = sortExpressions[i - 1].Trim().Split(' ')[0];
-				if (sortExpression.EndsWith(")desc", StringComparison.InvariantCultureIgnoreCase)) {
+				if (sortExpression.EndsWith(")desc", StringComparison.InvariantCultureIgnoreCase))
+				{
 					sortExpression = sortExpression.Remove(sortExpression.Length - 4);
 				}
+
+				if (aliasToColumn.ContainsKey(sortExpression))
+					sortExpression = aliasToColumn[sortExpression];
 
 				result.Add(", ")
 					.Add(sortExpression)
@@ -96,6 +120,38 @@ namespace NHibernate.Dialect
 				.Add(offset.ToString());
 
 			return result.ToSqlString();
+		}
+
+		private static void ExtractColumnOrAliasNames(SqlString select, 
+			out List<string> columnsOrAliases,
+			out Dictionary<string, string> aliasToColumn)
+		{
+			columnsOrAliases = new List<string>();
+			aliasToColumn = new Dictionary<string, string>();
+
+			string selectString = select  + ",";
+			int currentIndex, lastIndex = 7;// equals to "select ".Length
+			while ((currentIndex = selectString.IndexOf(",", lastIndex)) != -1)
+			{
+				string columnAndAlias = selectString.Substring(lastIndex, currentIndex - lastIndex);
+				int seperatorPosition = columnAndAlias.IndexOf(" as ");
+				string columnOrAliasName;
+				if (seperatorPosition != -1)
+				{
+					string alias = columnAndAlias.Substring(seperatorPosition + 4);
+					string column = columnAndAlias.Substring(0, seperatorPosition);
+					aliasToColumn[alias] = column;
+					columnOrAliasName = alias;
+				}
+				else
+				{
+					seperatorPosition = columnAndAlias.IndexOf(".");
+					columnOrAliasName = columnAndAlias.Substring(seperatorPosition + 1);
+					aliasToColumn[columnOrAliasName] = columnOrAliasName;
+				}
+				columnsOrAliases.Add(columnOrAliasName);
+				lastIndex = currentIndex + 1;
+			}
 		}
 
 		/// <summary>
@@ -137,8 +193,10 @@ namespace NHibernate.Dialect
 		/// functionality with an offset.
 		/// </summary>
 		/// <value><c>false</c></value>
-		public override bool UseMaxForLimit {
-			get {
+		public override bool UseMaxForLimit
+		{
+			get
+			{
 				return false;
 			}
 		}
