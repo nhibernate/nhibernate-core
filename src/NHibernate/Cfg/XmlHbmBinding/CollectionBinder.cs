@@ -216,7 +216,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			System.Type collectionType = null;
 
-			if (!isGeneric.HasValue)
+			if (!isGeneric.HasValue && containingType != null)
 			{
 				collectionType = GetPropertyType(node, containingType, GetPropertyName(node));
 				isGeneric = collectionType.IsGenericType;

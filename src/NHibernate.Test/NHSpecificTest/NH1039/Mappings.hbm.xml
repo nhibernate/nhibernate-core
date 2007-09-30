@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1039"
+				   assembly="NHibernate.Test">
+
+	<class name="Person" table="NH1039_Person">
+		<id name="ID" type="string" length="32">
+			<generator class="assigned"/>
+		</id>
+
+		<property name="Name"/>
+		
+		<dynamic-component name="Properties">
+			<set name="Phones" table="NH1039_Phone">
+				<key column="PersonId"/>
+				<element column="Number" type="string"/>
+			</set>
+		</dynamic-component>
+	</class>
+
+</hibernate-mapping>
