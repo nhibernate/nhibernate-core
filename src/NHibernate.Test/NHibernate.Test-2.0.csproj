@@ -435,6 +435,8 @@
     <Compile Include="NHSpecificTest\NH898\ClassBParent.cs" />
     <Compile Include="NHSpecificTest\NH898\ClassC.cs" />
     <Compile Include="NHSpecificTest\NH898\NH898Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH901\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH901\Model.cs" />
     <Compile Include="NHSpecificTest\NH930\NH930Fixture.cs" />
     <Compile Include="NHSpecificTest\NH930\Model.cs" />
     <Compile Include="NHSpecificTest\NH940\A.cs" />
@@ -974,6 +976,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1039\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH901\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
