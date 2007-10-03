@@ -22,7 +22,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Equals()
 		{
-			GuidType type = (GuidType) NHibernateUtil.Guid;
+			GuidType type = (GuidType)NHibernateUtil.Guid;
 
 			Guid lhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
 			Guid rhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
@@ -48,13 +48,43 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 
 			s = OpenSession();
-			basic = (GuidClass) s.Load(typeof(GuidClass), 1);
+			basic = (GuidClass)s.Load(typeof(GuidClass), 1);
 
 			Assert.AreEqual(val, basic.GuidValue);
 
 			s.Delete(basic);
 			s.Flush();
 			s.Close();
+		}
+
+		[Test]
+		public void GuidInWhereClause()
+		{
+			Guid val = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
+			GuidClass basic = new GuidClass();
+
+			using (ISession s = OpenSession())
+			{
+				basic.Id = 1;
+				basic.GuidValue = val;
+
+				s.Save(basic);
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				basic = (GuidClass)s.CreateCriteria(typeof(GuidClass))
+														.Add(Expression.Expression.Eq("GuidValue", val))
+														.UniqueResult();
+
+				Assert.IsNotNull(basic);
+				Assert.AreEqual(1, basic.Id);
+				Assert.AreEqual(val, basic.GuidValue);
+
+				s.Delete(basic);
+				s.Flush();
+			}
 		}
 	}
 }

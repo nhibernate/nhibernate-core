@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 namespace NHibernate.Dialect
 {
@@ -12,6 +13,11 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class PostgreSQL82Dialect : PostgreSQL81Dialect
 	{
+		public PostgreSQL82Dialect()
+		{
+			RegisterColumnType(DbType.Guid, "uuid");
+		}
+
 		protected override bool SupportsIfExistsBeforeTableName
 		{
 			get { return true; }
