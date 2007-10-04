@@ -322,7 +322,7 @@ namespace NHibernate.Mapping
 		private void CreateForeignKeys()
 		{
 			// for inverse collections, let the "other end" hanlde it
-			if (!IsInverse)
+			if (!IsInverse && referencedPropertyName == null)
 			{
 				Element.CreateForeignKey();
 				Key.CreateForeignKeyOfClass(Owner.MappedClass);

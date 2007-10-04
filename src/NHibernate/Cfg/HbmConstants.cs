@@ -11,6 +11,7 @@ namespace NHibernate.Cfg
 		public const string nsOneToMany = nsPrefix + ":one-to-many";
 		public const string nsParam = nsPrefix + ":param";
 		public const string nsIndex = nsPrefix + ":index";
+		public const string nsListIndex = nsPrefix + ":list-index";
 		public const string nsGenerator = nsPrefix + ":generator";
 		public const string nsType = nsPrefix + ":type";
 		public const string nsCollectionId = nsPrefix + ":collection-id";

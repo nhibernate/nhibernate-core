@@ -829,7 +829,9 @@ namespace NHibernate.Persister.Entity
 
 		public override string GetPropertyTableName(string propertyName)
 		{
-			return tableNames[0];
+			object index = EntityMetamodel.GetPropertyIndexOrNull(propertyName);
+			if (index == null) { return null; }
+			return qualifiedTableNames[propertyTableNumbers[(int)index]];
 		}
 
 		public override string FilterFragment(string alias)

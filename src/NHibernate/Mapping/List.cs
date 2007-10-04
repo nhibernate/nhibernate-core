@@ -8,6 +8,8 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class List : IndexedCollection
 	{
+		private int baseIndex;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="List"/> class.
 		/// </summary>
@@ -31,6 +33,17 @@ namespace NHibernate.Mapping
 				}
 				return TypeFactory.List(Role, ReferencedPropertyName);
 			}
+		}
+        
+		public int BaseIndex
+		{
+			get { return baseIndex; }
+			set { baseIndex = value; }
+		}
+
+		public override bool IsList
+		{
+			get { return true; }
 		}
 	}
 }

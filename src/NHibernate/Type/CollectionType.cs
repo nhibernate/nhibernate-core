@@ -227,7 +227,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return session.GetCollection(role, value, owner);
+				return session.GetCollection(role, GetKeyOfOwner(owner, session), owner);
 			}
 		}
 
@@ -438,8 +438,16 @@ namespace NHibernate.Type
 				// later in the mapping document) - now, we could try and use e.getStatus()
 				// to decide to semiResolve(), trouble is that initializeEntity() reuses
 				// the same array for resolved and hydrated values
-				object id = entityEntry.GetLoadedValue(foreignKeyPropertyName);
-
+				object id;
+                if (entityEntry.LoadedState != null)
+                {
+                    id = entityEntry.GetLoadedValue(foreignKeyPropertyName);    
+                }
+                else
+                {
+                    id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName);
+                }
+                
 				// NOTE VERY HACKISH WORKAROUND!!
 				IType keyType = GetPersister(session).KeyType;
 				if (!keyType.ReturnedClass.IsInstanceOfType(id))

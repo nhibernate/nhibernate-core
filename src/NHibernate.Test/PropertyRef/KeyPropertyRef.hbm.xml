@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.PropertyRef">
+  <class name="A" table="a" lazy="false">
+    <id name="Id" column="id">
+      <generator class="native" />
+    </id>
+    <property name="Name" column="aname" />
+    <property name="ExtraId" column="extraid" />
+    <set name="Items" lazy="true">
+      <key column="id" property-ref="ExtraId" />
+      <one-to-many class="B" />
+    </set>
+  </class>
+
+  <class name="B" table="b">
+    <id name="Id" column="id">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" column="aname" />
+  </class>
+</hibernate-mapping>

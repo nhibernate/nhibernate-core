@@ -257,6 +257,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlNode loader = node.SelectSingleNode(HbmConstants.nsLoader, namespaceManager);
 			if (loader != null)
 				model.LoaderName = XmlHelper.GetAttributeValue(loader, "query-ref");
+
+			XmlNode key = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
+			if (key != null)
+				model.ReferencedPropertyName = XmlHelper.GetAttributeValue(key, "property-ref");
+
 		}
 
 		/// <remarks>
@@ -414,10 +419,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			BindCollectionSecondPass(node, model, persistentClasses);
 
-			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsIndex, namespaceManager);
+			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsListIndex, namespaceManager);
+			if (subnode == null) { subnode = node.SelectSingleNode(HbmConstants.nsIndex, namespaceManager); }
 			IntegerValue iv = new IntegerValue(model.CollectionTable);
 			BindIntegerValue(subnode, iv, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
 			model.Index = iv;
+
+			string baseIndex = XmlHelper.GetAttributeValue(subnode, "base");
+			if (baseIndex != null) { model.BaseIndex = Convert.ToInt32(baseIndex); }
 		}
 
 		private void BindOneToMany(XmlNode node, OneToMany model)
@@ -549,9 +558,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				if ("key".Equals(name) || "generated-key".Equals(name))
 				{
-					SimpleValue key = new SimpleValue(model.CollectionTable);
+					string propRef = model.ReferencedPropertyName;
+					IKeyValue keyValue;
+					if (propRef == null)
+					{
+						keyValue = model.Owner.Identifier;
+					}
+					else
+					{
+						keyValue = (IKeyValue)model.Owner.GetProperty(propRef).Value;
+					}
+					SimpleValue key = new DependentValue(model.CollectionTable, keyValue);
 					BindSimpleValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName);
-					key.Type = model.Owner.Identifier.Type;
+					key.Type = keyValue.Type;
 					if (key.Type.ReturnedClass.IsArray)
 						throw new MappingException("illegal use of an array as an identifier (arrays don't reimplement Equals)");
 					model.Key = key;

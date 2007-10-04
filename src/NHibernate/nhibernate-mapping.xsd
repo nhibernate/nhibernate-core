@@ -850,6 +850,15 @@
 			<xs:attribute name="length" type="xs:positiveInteger" use="optional" />
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="list-index">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="column" type="xs:string" />
+			<xs:attribute name="base" type="xs:positiveInteger" use="optional" />
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="index-many-to-any">
 		<xs:complexType>
 			<xs:sequence>
@@ -877,6 +886,7 @@
 			</xs:sequence>
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
+			<xs:attribute name="property-ref" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="key-many-to-one">
@@ -1120,7 +1130,10 @@
 					<xs:element ref="cache" />
 				</xs:choice>
 				<xs:element ref="key" />
-				<xs:element ref="index" />
+				<xs:choice>
+					<xs:element ref="index"/>
+					<xs:element ref="list-index"/>
+				</xs:choice>
 				<xs:choice>
 					<xs:element ref="element" />
 					<xs:element ref="one-to-many" />

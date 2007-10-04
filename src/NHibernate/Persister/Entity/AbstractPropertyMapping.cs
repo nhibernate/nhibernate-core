@@ -97,9 +97,21 @@ namespace NHibernate.Persister.Entity
 					              path, ClassName, type.Name, type.GetColumnSpan(factory), columns.Length));
 			}
 
-			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
+			if (type.IsAssociationType)
 			{
-				columns = IdentifierColumnNames;
+				IAssociationType actType = (IAssociationType)type;
+				if (actType.UseLHSPrimaryKey)
+				{
+					columns = IdentifierColumnNames;
+				}
+				else
+				{
+					string foreignKeyProperty = actType.LHSPropertyName;
+					if (foreignKeyProperty != null)
+					{
+						columns = (string[])columnsByPropertyPath[foreignKeyProperty];
+					}
+				}
 			}
 
 			if (path != null)

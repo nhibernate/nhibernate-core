@@ -214,6 +214,9 @@
     <Compile Include="Legacy\SimpleTest.cs" />
     <Compile Include="Legacy\SQLFunctionsTest.cs" />
     <Compile Include="Legacy\SQLLoaderTest.cs" />
+    <Compile Include="ListIndex\A.cs" />
+    <Compile Include="ListIndex\B.cs" />
+    <Compile Include="ListIndex\ListIndexFixture.cs" />
     <Compile Include="Log4netConfiguration.cs" />
     <Compile Include="MappingExceptions\A.cs" />
     <Compile Include="MappingExceptions\AddClassFixture.cs" />
@@ -470,6 +473,9 @@
     <Compile Include="NHSpecificTest\UserTypeFixture.cs" />
     <Compile Include="NHSpecificTest\VersionTest.cs" />
     <Compile Include="ObjectAssertion.cs" />
+    <Compile Include="PropertyRef\A.cs" />
+    <Compile Include="PropertyRef\B.cs" />
+    <Compile Include="PropertyRef\KeyPropertyRefFixture.cs" />
     <Compile Include="PropertyTest\BasicSetterExceptionFixture.cs" />
     <Compile Include="PropertyTest\FieldAccessorFixture.cs" />
     <Compile Include="PropertyTest\FieldCamelCaseFixture.cs" />
@@ -979,6 +985,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH901\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PropertyRef\KeyPropertyRef.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ListIndex\ListIndex.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

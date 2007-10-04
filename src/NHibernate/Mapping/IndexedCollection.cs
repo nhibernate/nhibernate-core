@@ -27,6 +27,11 @@ namespace NHibernate.Mapping
 			get { return true; }
 		}
 
+		public virtual bool IsList
+		{
+			get { return false; }
+		}
+
 		public override void CreatePrimaryKey()
 		{
 			if (!IsOneToMany)

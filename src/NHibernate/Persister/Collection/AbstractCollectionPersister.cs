@@ -55,8 +55,7 @@ namespace NHibernate.Persister.Collection
 		private readonly string sqlWhereStringTemplate;
 		private readonly bool hasOrder;
 		private readonly bool hasWhere;
-		// TODO H3:
-		//private readonly int baseIndex;
+		private readonly int baseIndex;
 
 		private readonly bool hasOrphanDelete;
 
@@ -249,6 +248,7 @@ namespace NHibernate.Persister.Collection
 					i++;
 				}
 				indexColumnAliases = alias.ToAliasStrings(indexAliases, dialect);
+				baseIndex = indexedCollection.IsList ? ((List)indexedCollection).BaseIndex : 0;
 				CheckColumnDuplication(distinctColumns, indexedCollection.Index.ColumnCollection);
 			}
 			else
@@ -256,6 +256,7 @@ namespace NHibernate.Persister.Collection
 				indexType = null;
 				indexColumnNames = null;
 				indexColumnAliases = null;
+				baseIndex = 0;
 			}
 
 			hasIdentifier = collection.IsIdentified;
@@ -590,6 +591,16 @@ namespace NHibernate.Persister.Collection
 			{
 				throw new HibernateException("null index column for collection: " + role);
 			}
+			index = DecrementIndexByBase(index);
+			return index;
+		}
+
+		public object DecrementIndexByBase(object index)
+		{
+			if (baseIndex != 0)
+			{
+				index = (int)index - baseIndex;
+			}
 			return index;
 		}
 
@@ -616,8 +627,17 @@ namespace NHibernate.Persister.Collection
 
 		protected int WriteIndex(IDbCommand st, object idx, int i, ISessionImplementor session)
 		{
-			IndexType.NullSafeSet(st, idx, i, session);
+			IndexType.NullSafeSet(st, IncrementIndexByBase(idx), i, session);
 			return i + indexColumnNames.Length;
+		}
+
+		protected object IncrementIndexByBase(object index)
+		{
+			if (baseIndex != 0)
+			{
+				index = (int)index + baseIndex;
+			}
+			return index;
 		}
 
 		protected int WriteElementToWhere(IDbCommand st, object elt, int i, ISessionImplementor session)
