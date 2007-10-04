@@ -82,5 +82,25 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+		
+		public override bool HasDataTypeInIdentityColumn
+		{
+			get { return false; }
+		}
+		
+		public override bool SupportsIdentityColumns
+		{
+			get { return true; }
+		}
+		
+		public override string IdentityColumnString
+		{
+			get
+			{
+				// identity columns in sqlite are marked as being integer primary key
+				// the primary key part will be put in at the end of the create table,
+				// so just the integer part is needed here
+				return "integer";
+			}
 	}
 }
