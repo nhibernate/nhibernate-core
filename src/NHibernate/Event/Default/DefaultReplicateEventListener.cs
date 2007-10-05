@@ -65,7 +65,7 @@ namespace NHibernate.Event.Default
 					log.Debug("found existing row for " + MessageHelper.InfoString(persister, id, source.Factory));
 				}
 
-				/// HHH-2378
+				// HHH-2378
 				object realOldVersion = persister.IsVersioned ? oldVersion : null;
 
 				bool canReplicate = replicationMode.ShouldOverwriteCurrentVersion(entity, realOldVersion, persister.GetVersion(entity), persister.VersionType);
