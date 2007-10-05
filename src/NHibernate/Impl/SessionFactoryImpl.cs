@@ -66,7 +66,7 @@ namespace NHibernate.Impl
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	internal class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
+	public sealed class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
 	{
 		#region Default entity not found delegate
 		private class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate

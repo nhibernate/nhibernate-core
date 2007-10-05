@@ -7,6 +7,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Impl;
+using NHibernate.Loader.Custom;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -177,6 +178,11 @@ namespace NHibernate.Engine
 		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
 		/// </summary>
 		IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
+
+		/// <summary> Execute an SQL Query</summary>
+		void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
+
+		IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
 
 		/// <summary>
 		/// new in 2.1 no javadoc

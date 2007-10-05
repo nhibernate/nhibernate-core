@@ -2283,7 +2283,7 @@ namespace NHibernate.Test.Legacy
 						};
 
 
-					//IList results = s.Find( hqlString, values, types );
+					//IList results = s.List( hqlString, values, types );
 					IQuery q = s.CreateQuery(hqlString);
 					for (int i = 0; i < values.Length; i++)
 					{

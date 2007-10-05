@@ -32,23 +32,11 @@ namespace NHibernate.Impl
 	/// NOT THREADSAFE
 	/// </remarks>
 	[Serializable]
-	public sealed class SessionImpl : IEventSource, ISerializable, IDeserializationCallback
+	public sealed class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SessionImpl));
 
-		[NonSerialized]
-		private readonly SessionFactoryImpl factory;
-
 		private readonly long timestamp;
-
-		/// <summary>
-		/// Indicates if the Session has been closed.
-		/// </summary>
-		/// <value>
-		/// <see langword="false" /> (by default) if the Session is Open and can be used, 
-		/// <see langword="true" /> if the Session has had the methods <c>Close()</c> or
-		/// <c>Dispose()</c> invoked.</value>
-		private bool closed = false;
 
 		private FlushMode flushMode = FlushMode.Auto;
 
@@ -103,7 +91,6 @@ namespace NHibernate.Impl
 
 			actionQueue = (ActionQueue)info.GetValue("actionQueue", typeof(ActionQueue));
 
-			closed = info.GetBoolean("closed");
 			flushMode = (FlushMode)info.GetValue("flushMode", typeof(FlushMode));
 
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
@@ -140,7 +127,6 @@ namespace NHibernate.Impl
 			info.AddValue("persistenceContext", persistenceContext, typeof (StatefulPersistenceContext));
 			info.AddValue("actionQueue", actionQueue, typeof(ActionQueue));
 			info.AddValue("timestamp", timestamp);
-			info.AddValue("closed", closed);
 			info.AddValue("flushMode", flushMode);
 
 			info.AddValue("interceptor", interceptor, typeof(IInterceptor));
@@ -197,7 +183,7 @@ namespace NHibernate.Impl
 			SessionFactoryImpl factory,
 			long timestamp,
 			IInterceptor interceptor,
-			ConnectionReleaseMode connectionReleaseMode)
+			ConnectionReleaseMode connectionReleaseMode):base(factory)
 		{
 			if (interceptor == null)
 				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
@@ -205,7 +191,6 @@ namespace NHibernate.Impl
 			connectionManager = new ConnectionManager(this, connection, connectionReleaseMode);
 			this.interceptor = interceptor;
 			this.timestamp = timestamp;
-			this.factory = factory;
 			listeners = factory.EventListeners;
 			actionQueue = new ActionQueue(this);
 			persistenceContext = new StatefulPersistenceContext(this);
@@ -216,19 +201,13 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public IBatcher Batcher
+		public override IBatcher Batcher
 		{
 			get { return batcher; }
 		}
 
 		/// <summary></summary>
-		public ISessionFactoryImplementor Factory
-		{
-			get { return factory; }
-		}
-
-		/// <summary></summary>
-		public long Timestamp
+		public override long Timestamp
 		{
 			get { return timestamp; }
 		}
@@ -244,6 +223,7 @@ namespace NHibernate.Impl
 			}
 			finally
 			{
+				SetClosed();
 				Cleanup();
 			}
 		}
@@ -253,7 +233,7 @@ namespace NHibernate.Impl
 		/// and that all of the softlocks in the <see cref="Cache"/> have
 		/// been released.
 		/// </summary>
-		public void AfterTransactionCompletion(bool success, ITransaction tx)
+		public override void AfterTransactionCompletion(bool success, ITransaction tx)
 		{
 			connectionManager.AfterTransaction();
 			log.Debug("transaction completion");
@@ -280,15 +260,9 @@ namespace NHibernate.Impl
 			batcher = SessionFactory.ConnectionProvider.Driver.CreateBatcher(connectionManager);
 		}
 
-		/// <summary>
-		/// Mark the Session as being closed and Clear out the HashTables of
-		/// entities and proxies along with the Identity Maps for entries, array
-		/// holders, collections, and nullifiables.
-		/// </summary>
 		private void Cleanup()
 		{
 			persistenceContext.Clear();
-			closed = true;
 		}
 
 		public LockMode GetCurrentLockMode(object obj)
@@ -321,9 +295,9 @@ namespace NHibernate.Impl
 			return e.LockMode;
 		}
 
-		public bool IsOpen
+		public override bool IsOpen
 		{
-			get { return !closed; }
+			get { return !IsClosed; }
 		}
 
 		/// <summary>
@@ -399,21 +373,21 @@ namespace NHibernate.Impl
 			return List(query, new QueryParameters(types, values));
 		}
 
-		public IList List(string query, QueryParameters parameters)
+		public override IList List(string query, QueryParameters parameters)
 		{
 			IList results = new ArrayList();
 			List(query, parameters, results);
 			return results;
 		}
 
-		public IList<T> List<T>(string query, QueryParameters parameters)
+		public override IList<T> List<T>(string query, QueryParameters parameters)
 		{
 			List<T> results = new List<T>();
 			List(query, parameters, results);
 			return results;
 		}
 
-		public void List(string query, QueryParameters parameters, IList results)
+		public override void List(string query, QueryParameters parameters, IList results)
 		{
 			ErrorIfClosed();
 
@@ -455,7 +429,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IQueryTranslator[] GetQueries(string query, bool scalar)
+		public override IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
 			// take the union of the query spaces (ie the queried tables)
 			IQueryTranslator[] q = factory.GetQuery(query, scalar, enabledFilters);
@@ -485,7 +459,7 @@ namespace NHibernate.Impl
 			return Enumerable(query, new QueryParameters(types, values));
 		}
 
-		public IEnumerable<T> Enumerable<T>(string query, QueryParameters parameters)
+		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters parameters)
 		{
 			ErrorIfClosed();
 
@@ -530,7 +504,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IEnumerable Enumerable(string query, QueryParameters parameters)
+		public override IEnumerable Enumerable(string query, QueryParameters parameters)
 		{
 			ErrorIfClosed();
 
@@ -647,109 +621,7 @@ namespace NHibernate.Impl
 			return new QueryFilterImpl(queryString, collection, this);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="queryString"></param>
-		/// <returns></returns>
-		public IQuery CreateQuery(string queryString)
-		{
-			ErrorIfClosed();
-
-			return new QueryImpl(queryString, FlushMode.Unspecified, this);
-		}
-
-		/// <summary>
-		/// Obtain an instance of <see cref="IQuery" /> for a named query string defined in the
-		/// mapping file.
-		/// </summary>
-		/// <param name="queryName">The name of a query defined externally.</param>
-		/// <returns>An <see cref="IQuery"/> fro a named query string.</returns>
-		/// <remarks>
-		/// The query can be either in <c>hql</c> or <c>sql</c> format.
-		/// </remarks>
-		public IQuery GetNamedQuery(string queryName)
-		{
-			ErrorIfClosed();
-
-			NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
-
-			IQuery query;
-
-			if (nqd != null)
-			{
-				string queryString = nqd.QueryString;
-				query = new QueryImpl(
-					queryString,
-					nqd.FlushMode,
-					this //,
-					//GetHQLQueryPlan(queryString, false).ParameterMetadata
-					);
-				//TODO: query.Comment = "named HQL query " + queryName;
-			}
-			else
-			{
-				NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(queryName);
-				if (nsqlqd == null)
-				{
-					throw new MappingException("Named query not known: " + queryName);
-				}
-				query = new SqlQueryImpl(
-					nsqlqd,
-					this //,
-					//factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString)
-					);
-				//TODO: query.Comment = "named native SQL query " + queryName;
-				nqd = nsqlqd;
-			}
-			InitQuery(query, nqd);
-			return query;
-		}
-
-		public bool IsClosed
-		{
-			get { return closed;}
-		}
-
-		public IQuery GetNamedSQLQuery(string queryName)
-		{
-			ErrorIfClosed();
-			NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(queryName);
-			if (nsqlqd == null)
-			{
-				throw new MappingException("Named SQL query not known: " + queryName);
-			}
-			IQuery query = new SqlQueryImpl(
-				nsqlqd,
-				this //,
-				//factory.QueryPlanCache.GetSQLParameterMetadata( nsqlqd.QueryString )
-				);
-			//query.setComment( "named native SQL query " + queryName );
-			InitQuery(query, nsqlqd);
-			return query;
-		}
-
-		private void InitQuery(IQuery query, NamedQueryDefinition nqd)
-		{
-			query.SetCacheable(nqd.IsCacheable);
-			query.SetCacheRegion(nqd.CacheRegion);
-			if (nqd.Timeout != -1)
-			{
-				query.SetTimeout(nqd.Timeout);
-			}
-			//if (nqd.FetchSize != -1)
-			//{
-			//	query.SetFetchSize(nqd.FetchSize);
-			//}
-			//if ( nqd.getCacheMode() != null ) query.setCacheMode( nqd.getCacheMode() );
-			//query.SetReadOnly(nqd.IsReadOnly);
-			//if (nqd.Comment != null)
-			//{
-			//	query.SetComment(nqd.Comment);
-			//}
-		}
-
-		public object Instantiate(System.Type clazz, object id)
+		public override object Instantiate(System.Type clazz, object id)
 		{
 			return Instantiate(factory.GetEntityPersister(clazz), id);
 		}
@@ -841,13 +713,13 @@ namespace NHibernate.Impl
 		#endregion
 
 		/// <summary></summary>
-		public FlushMode FlushMode
+		public override FlushMode FlushMode
 		{
 			get { return flushMode; }
 			set { flushMode = value; }
 		}
 
-		public string BestGuessEntityName(object entity)
+		public override string BestGuessEntityName(object entity)
 		{
 			INHibernateProxy proxy = entity as INHibernateProxy;
 			if (proxy != null)
@@ -873,13 +745,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public string GuessEntityName(object entity)
+		public override string GuessEntityName(object entity)
 		{
 			string entityName = entity.GetType().FullName;
 			return entityName;
 		}
 
-		public bool IsEventSource
+		public override bool IsEventSource
 		{
 			get
 			{
@@ -887,7 +759,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public object GetEntityUsingInterceptor(EntityKey key)
+		public override object GetEntityUsingInterceptor(EntityKey key)
 		{
 			ErrorIfClosed();
 			// todo : should this get moved to PersistentContext?
@@ -911,7 +783,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IPersistenceContext PersistenceContext
+		public override IPersistenceContext PersistenceContext
 		{
 			get
 			{
@@ -1030,7 +902,7 @@ namespace NHibernate.Impl
 		/// Load the data for the object with the specified id into a newly created object.
 		/// Do NOT return a proxy.
 		///</summary>
-		public object ImmediateLoad(System.Type clazz, object id)
+		public override object ImmediateLoad(System.Type clazz, object id)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -1047,7 +919,7 @@ namespace NHibernate.Impl
 		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
 		/// return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
 		/// </summary>
-		public object InternalLoad(System.Type clazz, object id, bool eager, bool isNullable)
+		public override object InternalLoad(System.Type clazz, object id, bool eager, bool isNullable)
 		{
 			// todo : remove
 			LoadType type = isNullable ? LoadEventListener.InternalLoadNullable: (eager ? LoadEventListener.InternalLoadEager: LoadEventListener.InternalLoadLazy);
@@ -1147,7 +1019,7 @@ namespace NHibernate.Impl
 		/// holding. If they had a nonpersistable collection, substitute a persistable one
 		/// </para>
 		/// </remarks>
-		public void Flush()
+		public override void Flush()
 		{
 			ErrorIfClosed();
 			if (persistenceContext.CascadeLevel > 0)
@@ -1161,7 +1033,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public bool TransactionInProgress
+		public override bool TransactionInProgress
 		{
 			get
 			{
@@ -1207,7 +1079,7 @@ namespace NHibernate.Impl
 			return lastResultForClass;
 		}
 
-		public IEntityPersister GetEntityPersister(object obj)
+		public override IEntityPersister GetEntityPersister(object obj)
 		{
 			return GetClassPersister(obj.GetType());
 		}
@@ -1250,7 +1122,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object GetContextEntityIdentifier(object obj)
+		public override object GetContextEntityIdentifier(object obj)
 		{
 			INHibernateProxy proxy = obj as INHibernateProxy;
 			if (proxy != null)
@@ -1269,7 +1141,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public bool IsSaved(object obj)
+		public override bool IsSaved(object obj)
 		{
 			if (obj is INHibernateProxy)
 			{
@@ -1299,7 +1171,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object GetEntityIdentifierIfNotUnsaved(object obj)
+		public override object GetEntityIdentifierIfNotUnsaved(object obj)
 		{
 			// TODO : Remove method (entityName)
 			if (obj == null)
@@ -1356,7 +1228,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="writing"></param>
-		public void InitializeCollection(IPersistentCollection collection, bool writing)
+		public override void InitializeCollection(IPersistentCollection collection, bool writing)
 		{
 			ErrorIfClosed();
 			IInitializeCollectionEventListener[] listener = listeners.InitializeCollectionEventListeners;
@@ -1366,7 +1238,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IDbConnection Connection
+		public override IDbConnection Connection
 		{
 			get { return connectionManager.GetConnection(); }
 		}
@@ -1382,7 +1254,7 @@ namespace NHibernate.Impl
 		/// of its state) or if it the field <c>connect</c> is true.  Meaning that it will connect
 		/// at the next operation that requires a connection.
 		/// </remarks>
-		public bool IsConnected
+		public override bool IsConnected
 		{
 			get { return connectionManager.IsConnected; }
 		}
@@ -1602,21 +1474,21 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IList ListFilter(object collection, string filter, QueryParameters parameters)
+		public override IList ListFilter(object collection, string filter, QueryParameters parameters)
 		{
 			ArrayList results = new ArrayList();
 			Filter(collection, filter, parameters, results);
 			return results;
 		}
 
-		public IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters)
+		public override IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters)
 		{
 			List<T> results = new List<T>();
 			Filter(collection, filter, parameters, results);
 			return results;
 		}
 
-		public IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters)
+		public override IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters)
 		{
 			string[] concreteFilters = QuerySplitter.ConcreteQueries(filter, factory);
 			IFilterTranslator[] filters = new IFilterTranslator[concreteFilters.Length];
@@ -1663,7 +1535,7 @@ namespace NHibernate.Impl
 			return many ? new JoinedEnumerable(results) : result;
 		}
 
-		public IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters)
+		public override IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters)
 		{
 			string[] concreteFilters = QuerySplitter.ConcreteQueries(filter, factory);
 			IFilterTranslator[] filters = new IFilterTranslator[concreteFilters.Length];
@@ -1719,21 +1591,21 @@ namespace NHibernate.Impl
 			return new CriteriaImpl(persistentClass, alias, this);
 		}
 
-		public IList List(CriteriaImpl criteria)
+		public override IList List(CriteriaImpl criteria)
 		{
 			ArrayList results = new ArrayList();
 			List(criteria, results);
 			return results;
 		}
 
-		public IList<T> List<T>(CriteriaImpl criteria)
+		public override IList<T> List<T>(CriteriaImpl criteria)
 		{
 			List<T> results = new List<T>();
 			List(criteria, results);
 			return results;
 		}
 
-		public void List(CriteriaImpl criteria, IList results)
+		public override void List(CriteriaImpl criteria, IList results)
 		{
 			// The body of this method is modified from H2.1 version, because the Java version
 			// used factory.GetImplementors which returns a list of implementor class names
@@ -1867,21 +1739,21 @@ namespace NHibernate.Impl
 			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, querySpaces);
 		}
 
-		public IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
+		public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
 		{
 			ArrayList results = new ArrayList();
 			List(spec, queryParameters, results);
 			return results;
 		}
 
-		public IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
+		public override IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
 		{
 			List<T> results = new List<T>();
 			List(spec, queryParameters, results);
 			return results;
 		}
 
-		public void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
+		public override void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
 		{
 			SQLCustomQuery query = new SQLCustomQuery(
 				spec.SqlQueryReturns,
@@ -1891,7 +1763,7 @@ namespace NHibernate.Impl
 			ListCustomQuery(query, queryParameters, results);
 		}
 
-		public void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
+		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
 			ErrorIfClosed();
 
@@ -1912,7 +1784,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
+		public override IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
 		{
 			ErrorIfClosed();
 
@@ -1968,7 +1840,7 @@ namespace NHibernate.Impl
 			return FireSaveOrUpdateCopy(new MergeEvent(null, obj, this));
 		}
 
-		public object Copy(object obj, IDictionary copiedAlready)
+		public override object Copy(object obj, IDictionary copiedAlready)
 		{
 			// TODO H3.2 Different behavior
 			MergeEvent mergeEvent = new MergeEvent(null, obj, this);
@@ -1986,9 +1858,9 @@ namespace NHibernate.Impl
 			return ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqlException, message);
 		}
 
-		private void ErrorIfClosed()
+		protected internal override void ErrorIfClosed()
 		{
-			if (_isAlreadyDisposed || closed)
+			if (_isAlreadyDisposed || IsClosed)
 			{
 				throw new ObjectDisposedException("ISession", "Session was disposed of or closed");
 			}
@@ -2015,7 +1887,7 @@ namespace NHibernate.Impl
 			enabledFilters.Remove(filterName);
 		}
 
-		public Object GetFilterParameterValue(string filterParameterName)
+		public override Object GetFilterParameterValue(string filterParameterName)
 		{
 			ErrorIfClosed();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
@@ -2027,7 +1899,7 @@ namespace NHibernate.Impl
 			return filter.GetParameter(parsed[1]);
 		}
 
-		public IType GetFilterParameterType(string filterParameterName)
+		public override IType GetFilterParameterType(string filterParameterName)
 		{
 			ErrorIfClosed();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
@@ -2045,7 +1917,7 @@ namespace NHibernate.Impl
 			return type;
 		}
 
-		public IDictionary EnabledFilters
+		public override IDictionary EnabledFilters
 		{
 			get
 			{
@@ -2072,13 +1944,7 @@ namespace NHibernate.Impl
 			return new string[] { filterName, parameterName };
 		}
 
-		public ISQLQuery CreateSQLQuery(string sql)
-		{
-			SqlQueryImpl query = new SqlQueryImpl(sql, this);
-			return query;
-		}
-
-		public ConnectionManager ConnectionManager
+		public override ConnectionManager ConnectionManager
 		{
 			get { return connectionManager; }
 		}
@@ -2101,13 +1967,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void AfterTransactionBegin(ITransaction tx)
+		public override void AfterTransactionBegin(ITransaction tx)
 		{
 			ErrorIfClosed();
 			interceptor.AfterTransactionBegin(tx);
 		}
 
-		public void BeforeTransactionCompletion(ITransaction tx)
+		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
 			log.Debug("before transaction completion");
 			//if ( rootSession == null ) {
@@ -2135,18 +2001,18 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IInterceptor Interceptor
+		public override IInterceptor Interceptor
 		{
 			get { return interceptor; }
 		}
 
 		/// <summary> Retrieves the configured event listeners from this event source. </summary>
-		public EventListeners Listeners
+		public override EventListeners Listeners
 		{
 			get { return listeners; }
 		}
 
-		public int DontFlushFromFind
+		public override int DontFlushFromFind
 		{
 			get { return dontFlushFromFind; }
 		}
