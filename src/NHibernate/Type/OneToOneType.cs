@@ -68,7 +68,7 @@ namespace NHibernate.Type
 
 		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return session.GetEntityIdentifier(owner);
+			return session.GetContextEntityIdentifier(owner);
 		}
 
 		public override bool IsNullable
@@ -88,7 +88,7 @@ namespace NHibernate.Type
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			return ResolveIdentifier(session.GetEntityIdentifier(owner), session, owner);
+			return ResolveIdentifier(session.GetContextEntityIdentifier(owner), session, owner);
 		}
 
 		/// <summary>

@@ -26,7 +26,7 @@ namespace NHibernate
 	/// <para>
 	///	Transient instances may be made persistent by calling <c>Save()</c>, <c>Insert()</c>,
 	///	or <c>Update()</c>. Persistent instances may be made transient by calling <c>Delete()</c>.
-	///	Any instance returned by a <c>Find()</c>, <c>Iterate()</c>, <c>Load()</c>, or <c>Create</c>
+	///	Any instance returned by a <c>List()</c>, <c>Iterate()</c>, <c>Load()</c>, or <c>Create</c>
 	///	method is persistent.
 	/// </para>
 	/// <para>
@@ -384,7 +384,7 @@ namespace NHibernate
 		/// <para>
 		/// Entities returned as results are initialized on demand. The first SQL query returns
 		/// identifiers only. So <c>Enumerator()</c> is usually a less efficient way to retrieve
-		/// object than <c>Find()</c>.
+		/// object than <c>List()</c>.
 		/// </para>
 		/// </remarks>
 		/// <param name="query">The query string</param>
@@ -404,7 +404,7 @@ namespace NHibernate
 		/// <para>
 		/// Entities returned as results are initialized on demand. The first SQL query returns
 		/// identifiers only. So <c>Enumerator()</c> is usually a less efficient way to retrieve
-		/// object than <c>Find()</c>.
+		/// object than <c>List()</c>.
 		/// </para>
 		/// </remarks>
 		/// <param name="query">The query string</param>
@@ -426,7 +426,7 @@ namespace NHibernate
 		/// <para>
 		/// Entities returned as results are initialized on demand. The first SQL query returns
 		/// identifiers only. So <c>Enumerator()</c> is usually a less efficient way to retrieve
-		/// object than <c>Find()</c>.
+		/// object than <c>List()</c>.
 		/// </para>
 		/// </remarks>
 		/// <param name="query">The query string</param>

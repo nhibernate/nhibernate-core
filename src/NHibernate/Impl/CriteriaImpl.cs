@@ -415,17 +415,17 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			return session.Find(this);
+			return session.List(this);
 		}
 
 		public void List(IList results)
 		{
-			session.Find(this, results);
+			session.List(this, results);
 		}
 
 		public IList<T> List<T>()
 		{
-			return session.Find<T>(this);
+			return session.List<T>(this);
 		}
 
 		public T UniqueResult<T>()

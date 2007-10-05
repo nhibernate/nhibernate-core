@@ -159,7 +159,7 @@ namespace NHibernate.Type
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			//NH Different behavior
-			object id = session.GetEntityIdentifier(owner);
+			object id = session.GetContextEntityIdentifier(owner);
 			if (id == null)
 			{
 				throw new AssertionFailure("owner id unknown when re-assembling collection reference");
@@ -217,7 +217,7 @@ namespace NHibernate.Type
 
 		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
-			return session.GetEntityIdentifier(owner);
+			return session.GetContextEntityIdentifier(owner);
 		}
 
 		public override object ResolveIdentifier(object key, ISessionImplementor session, object owner)

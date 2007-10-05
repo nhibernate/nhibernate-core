@@ -238,7 +238,7 @@ namespace NHibernate.Type
 			       null :
 			       new ObjectTypeCacheEntry(
 			       	NHibernateProxyHelper.GuessClass(value),
-			       	session.GetEntityIdentifier(value));
+			       	session.GetContextEntityIdentifier(value));
 		}
 
 		public override object Replace(object original, object current, ISessionImplementor session, object owner,

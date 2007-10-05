@@ -293,7 +293,7 @@ namespace NHibernate.Impl
 
 		public LockMode GetCurrentLockMode(object obj)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			if (obj == null)
 			{
@@ -386,36 +386,36 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IList Find(string query)
 		{
-			return Find(query, new QueryParameters());
+			return List(query, new QueryParameters());
 		}
 
 		public IList Find(string query, object value, IType type)
 		{
-			return Find(query, new QueryParameters(type, value));
+			return List(query, new QueryParameters(type, value));
 		}
 
 		public IList Find(string query, object[] values, IType[] types)
 		{
-			return Find(query, new QueryParameters(types, values));
+			return List(query, new QueryParameters(types, values));
 		}
 
-		public IList Find(string query, QueryParameters parameters)
+		public IList List(string query, QueryParameters parameters)
 		{
 			IList results = new ArrayList();
-			Find(query, parameters, results);
+			List(query, parameters, results);
 			return results;
 		}
 
-		public IList<T> Find<T>(string query, QueryParameters parameters)
+		public IList<T> List<T>(string query, QueryParameters parameters)
 		{
 			List<T> results = new List<T>();
-			Find(query, parameters, results);
+			List(query, parameters, results);
 			return results;
 		}
 
-		public void Find(string query, QueryParameters parameters, IList results)
+		public void List(string query, QueryParameters parameters, IList results)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			if (log.IsDebugEnabled)
 			{
@@ -487,7 +487,7 @@ namespace NHibernate.Impl
 
 		public IEnumerable<T> Enumerable<T>(string query, QueryParameters parameters)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			if (log.IsDebugEnabled)
 			{
@@ -532,7 +532,7 @@ namespace NHibernate.Impl
 
 		public IEnumerable Enumerable(string query, QueryParameters parameters)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			if (log.IsDebugEnabled)
 			{
@@ -607,7 +607,7 @@ namespace NHibernate.Impl
 				throw new ArgumentNullException("query", "attempt to perform delete-by-query with null query");
 			}
 
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			if (log.IsDebugEnabled)
 			{
@@ -640,7 +640,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateFilter(object collection, string queryString)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			//Had to replace FilterImpl with version consistent with Hibernate3
 			//Changed old FilterImpl to QueryFilterImpl
@@ -654,7 +654,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateQuery(string queryString)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			return new QueryImpl(queryString, FlushMode.Unspecified, this);
 		}
@@ -670,7 +670,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public IQuery GetNamedQuery(string queryName)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
 
@@ -713,7 +713,7 @@ namespace NHibernate.Impl
 
 		public IQuery GetNamedSQLQuery(string queryName)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(queryName);
 			if (nsqlqd == null)
 			{
@@ -759,7 +759,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				CheckIsOpen();
+				ErrorIfClosed();
 				return actionQueue;
 			}
 		}
@@ -784,7 +784,7 @@ namespace NHibernate.Impl
 		/// <summary> Force an immediate flush</summary>
 		public void ForceFlush(EntityEntry entityEntry)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("flushing to force deletion of re-saved object: " + MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
@@ -889,7 +889,7 @@ namespace NHibernate.Impl
 
 		public object GetEntityUsingInterceptor(EntityKey key)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			// todo : should this get moved to PersistentContext?
 			// logically, is PersistentContext the "thing" to which an interceptor gets attached?
 			object result = persistenceContext.GetEntity(key);
@@ -915,7 +915,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				CheckIsOpen();
+				ErrorIfClosed();
 				return persistenceContext;
 			}
 		}
@@ -928,7 +928,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		private bool AutoFlushIfRequired(ISet querySpaces)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			AutoFlushEvent autoFlushEvent = new AutoFlushEvent(querySpaces, this);
 			IAutoFlushEventListener[] autoFlushEventListener = listeners.AutoFlushEventListeners;
 			for (int i = 0; i < autoFlushEventListener.Length; i++)
@@ -989,7 +989,7 @@ namespace NHibernate.Impl
 
 		public string GetEntityName(object obj)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			INHibernateProxy proxy = obj as INHibernateProxy;
 			if (proxy != null)
 			{
@@ -1111,13 +1111,13 @@ namespace NHibernate.Impl
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			return connectionManager.BeginTransaction(isolationLevel);
 		}
 
 		public ITransaction BeginTransaction()
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			return connectionManager.BeginTransaction();
 		}
 
@@ -1130,7 +1130,7 @@ namespace NHibernate.Impl
 		/// 
 		/// </summary>
 		/// <remarks>
-		/// This can be called from commit() or at the start of a Find() method.
+		/// This can be called from commit() or at the start of a List() method.
 		/// <para>
 		/// Perform all the necessary SQL statements in a sensible order, to allow
 		/// users to repect foreign key constraints:
@@ -1149,7 +1149,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public void Flush()
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			if (persistenceContext.CascadeLevel > 0)
 			{
 				throw new HibernateException("Flush during cascade is dangerous");
@@ -1161,9 +1161,17 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public bool TransactionInProgress
+		{
+			get
+			{
+				return !IsClosed && Transaction.IsActive;
+			}
+		}
+
 		public bool IsDirty()
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			log.Debug("checking session dirtiness");
 			if (actionQueue.AreInsertionsOrDeletionsQueued)
@@ -1211,7 +1219,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object GetIdentifier(object obj)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			// Actually the case for proxies will probably work even with
 			// the session closed, but do the check here anyway, so that
 			// the behavior is uniform.
@@ -1242,7 +1250,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public object GetEntityIdentifier(object obj)
+		public object GetContextEntityIdentifier(object obj)
 		{
 			INHibernateProxy proxy = obj as INHibernateProxy;
 			if (proxy != null)
@@ -1350,7 +1358,7 @@ namespace NHibernate.Impl
 		/// <param name="writing"></param>
 		public void InitializeCollection(IPersistentCollection collection, bool writing)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IInitializeCollectionEventListener[] listener = listeners.InitializeCollectionEventListeners;
 			for (int i = 0; i < listener.Length; i++)
 			{
@@ -1382,21 +1390,21 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public IDbConnection Disconnect()
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			log.Debug("disconnecting session");
 			return connectionManager.Disconnect();
 		}
 
 		public void Reconnect()
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			log.Debug("reconnecting session");
 			connectionManager.Reconnect();
 		}
 
 		public void Reconnect(IDbConnection conn)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			log.Debug("reconnecting session");
 			connectionManager.Reconnect(conn);
 		}
@@ -1461,25 +1469,25 @@ namespace NHibernate.Impl
 		public ICollection Filter(object collection, string filter)
 		{
 			QueryParameters qp = new QueryParameters(new IType[1], new object[1]);
-			return Filter(collection, filter, qp);
+			return ListFilter(collection, filter, qp);
 		}
 
 		public ICollection Filter(object collection, string filter, object value, IType type)
 		{
 			QueryParameters qp = new QueryParameters(new IType[] { null, type }, new object[] { null, value });
-			return Filter(collection, filter, qp);
+			return ListFilter(collection, filter, qp);
 		}
 
 		public ICollection Filter(object collection, string filter, object[] values, IType[] types)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			object[] vals = new object[values.Length + 1];
 			IType[] typs = new IType[values.Length + 1];
 			Array.Copy(values, 0, vals, 1, values.Length);
 			Array.Copy(types, 0, typs, 1, types.Length);
 			QueryParameters qp = new QueryParameters(typs, vals);
-			return Filter(collection, filter, qp);
+			return ListFilter(collection, filter, qp);
 		}
 
 		/// <summary>
@@ -1594,14 +1602,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IList Filter(object collection, string filter, QueryParameters parameters)
+		public IList ListFilter(object collection, string filter, QueryParameters parameters)
 		{
 			ArrayList results = new ArrayList();
 			Filter(collection, filter, parameters, results);
 			return results;
 		}
 
-		public IList<T> Filter<T>(object collection, string filter, QueryParameters parameters)
+		public IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters)
 		{
 			List<T> results = new List<T>();
 			Filter(collection, filter, parameters, results);
@@ -1699,33 +1707,33 @@ namespace NHibernate.Impl
 
 		public ICriteria CreateCriteria(System.Type persistentClass)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			return new CriteriaImpl(persistentClass, this);
 		}
 
 		public ICriteria CreateCriteria(System.Type persistentClass, string alias)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			return new CriteriaImpl(persistentClass, alias, this);
 		}
 
-		public IList Find(CriteriaImpl criteria)
+		public IList List(CriteriaImpl criteria)
 		{
 			ArrayList results = new ArrayList();
-			Find(criteria, results);
+			List(criteria, results);
 			return results;
 		}
 
-		public IList<T> Find<T>(CriteriaImpl criteria)
+		public IList<T> List<T>(CriteriaImpl criteria)
 		{
 			List<T> results = new List<T>();
-			Find(criteria, results);
+			List(criteria, results);
 			return results;
 		}
 
-		public void Find(CriteriaImpl criteria, IList results)
+		public void List(CriteriaImpl criteria, IList results)
 		{
 			// The body of this method is modified from H2.1 version, because the Java version
 			// used factory.GetImplementors which returns a list of implementor class names
@@ -1797,7 +1805,7 @@ namespace NHibernate.Impl
 
 		public bool Contains(object obj)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			if (obj is INHibernateProxy)
 			{
@@ -1840,21 +1848,21 @@ namespace NHibernate.Impl
 
 		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, null);
 		}
 
 		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, null);
 		}
 
 		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses, ICollection querySpaces)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, querySpaces);
 		}
@@ -1885,7 +1893,7 @@ namespace NHibernate.Impl
 
 		public void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			CustomLoader loader = new CustomLoader(customQuery, factory);
 			AutoFlushIfRequired(loader.QuerySpaces);
@@ -1906,7 +1914,7 @@ namespace NHibernate.Impl
 
 		public IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			CustomLoader loader = new CustomLoader(customQuery, factory);
 			AutoFlushIfRequired(loader.QuerySpaces);
@@ -1928,7 +1936,7 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public void Clear()
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			actionQueue.Clear();
 			persistenceContext.Clear();
 		}
@@ -1945,7 +1953,7 @@ namespace NHibernate.Impl
 
 		public void CancelQuery()
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 
 			Batcher.CancelLastQuery();
 		}
@@ -1978,7 +1986,7 @@ namespace NHibernate.Impl
 			return ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqlException, message);
 		}
 
-		private void CheckIsOpen()
+		private void ErrorIfClosed()
 		{
 			if (_isAlreadyDisposed || closed)
 			{
@@ -1988,13 +1996,13 @@ namespace NHibernate.Impl
 
 		public IFilter GetEnabledFilter(string filterName)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			return (IFilter)enabledFilters[filterName];
 		}
 
 		public IFilter EnableFilter(string filterName)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			FilterImpl filter = new FilterImpl(factory.GetFilterDefinition(filterName));
 			if (enabledFilters[filterName] == null)
 				enabledFilters.Add(filterName, filter);
@@ -2003,13 +2011,13 @@ namespace NHibernate.Impl
 
 		public void DisableFilter(string filterName)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			enabledFilters.Remove(filterName);
 		}
 
 		public Object GetFilterParameterValue(string filterParameterName)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
 			FilterImpl filter = (FilterImpl)enabledFilters[parsed[0]];
 			if (filter == null)
@@ -2021,7 +2029,7 @@ namespace NHibernate.Impl
 
 		public IType GetFilterParameterType(string filterParameterName)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
 			FilterDefinition filterDef = factory.GetFilterDefinition(parsed[0]);
 			if (filterDef == null)
@@ -2041,7 +2049,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				CheckIsOpen();
+				ErrorIfClosed();
 
 				foreach (IFilter filter in enabledFilters.Values)
 				{
@@ -2095,7 +2103,7 @@ namespace NHibernate.Impl
 
 		public void AfterTransactionBegin(ITransaction tx)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			interceptor.AfterTransactionBegin(tx);
 		}
 
@@ -2145,13 +2153,13 @@ namespace NHibernate.Impl
 
 		public void SetReadOnly(object entity, bool readOnly)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			persistenceContext.SetReadOnly(entity, readOnly);
 		}
 
 		private void FireDelete(DeleteEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
 			for (int i = 0; i < deleteEventListener.Length; i++)
 			{
@@ -2161,7 +2169,7 @@ namespace NHibernate.Impl
 
 		private void FireDelete(DeleteEvent @event, ISet transientEntities)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
 			for (int i = 0; i < deleteEventListener.Length; i++)
 			{
@@ -2171,7 +2179,7 @@ namespace NHibernate.Impl
 
 		private void FireEvict(EvictEvent evictEvent)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IEvictEventListener[] evictEventListener = listeners.EvictEventListeners;
 			for (int i = 0; i < evictEventListener.Length; i++)
 			{
@@ -2181,7 +2189,7 @@ namespace NHibernate.Impl
 
 		private void FireLoad(LoadEvent @event, LoadType loadType)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			ILoadEventListener[] loadEventListener = listeners.LoadEventListeners;
 			for (int i = 0; i < loadEventListener.Length; i++)
 			{
@@ -2191,7 +2199,7 @@ namespace NHibernate.Impl
 
 		private void FireLock(LockEvent lockEvent)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			ILockEventListener[] lockEventListener = listeners.LockEventListeners;
 			for (int i = 0; i < lockEventListener.Length; i++)
 			{
@@ -2201,7 +2209,7 @@ namespace NHibernate.Impl
 
 		private object FireMerge(MergeEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
 			for (int i = 0; i < mergeEventListener.Length; i++)
 			{
@@ -2212,7 +2220,7 @@ namespace NHibernate.Impl
 
 		private void FireMerge(IDictionary copiedAlready, MergeEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
 			for (int i = 0; i < mergeEventListener.Length; i++)
 			{
@@ -2222,7 +2230,7 @@ namespace NHibernate.Impl
 
 		private void FirePersist(IDictionary copiedAlready, PersistEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IPersistEventListener[] persistEventListener = listeners.PersistEventListeners;
 			for (int i = 0; i < persistEventListener.Length; i++)
 			{
@@ -2232,7 +2240,7 @@ namespace NHibernate.Impl
 
 		private void FirePersist(PersistEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IPersistEventListener[] createEventListener = listeners.PersistEventListeners;
 			for (int i = 0; i < createEventListener.Length; i++)
 			{
@@ -2242,7 +2250,7 @@ namespace NHibernate.Impl
 
 		private void FirePersistOnFlush(IDictionary copiedAlready, PersistEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IPersistEventListener[] persistEventListener = listeners.PersistOnFlushEventListeners;
 			for (int i = 0; i < persistEventListener.Length; i++)
 			{
@@ -2252,7 +2260,7 @@ namespace NHibernate.Impl
 
 		private void FirePersistOnFlush(PersistEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IPersistEventListener[] createEventListener = listeners.PersistOnFlushEventListeners;
 			for (int i = 0; i < createEventListener.Length; i++)
 			{
@@ -2262,7 +2270,7 @@ namespace NHibernate.Impl
 
 		private void FireRefresh(RefreshEvent refreshEvent)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
 			for (int i = 0; i < refreshEventListener.Length; i++)
 			{
@@ -2272,7 +2280,7 @@ namespace NHibernate.Impl
 
 		private void FireRefresh(IDictionary refreshedAlready, RefreshEvent refreshEvent)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
 			for (int i = 0; i < refreshEventListener.Length; i++)
 			{
@@ -2282,7 +2290,7 @@ namespace NHibernate.Impl
 
 		private void FireReplicate(ReplicateEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IReplicateEventListener[] replicateEventListener = listeners.ReplicateEventListeners;
 			for (int i = 0; i < replicateEventListener.Length; i++)
 			{
@@ -2292,7 +2300,7 @@ namespace NHibernate.Impl
 
 		private object FireSave(SaveOrUpdateEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			ISaveOrUpdateEventListener[] saveEventListener = listeners.SaveEventListeners;
 			for (int i = 0; i < saveEventListener.Length; i++)
 			{
@@ -2303,7 +2311,7 @@ namespace NHibernate.Impl
 
 		private void FireSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			ISaveOrUpdateEventListener[] saveOrUpdateEventListener = listeners.SaveOrUpdateEventListeners;
 			for (int i = 0; i < saveOrUpdateEventListener.Length; i++)
 			{
@@ -2313,7 +2321,7 @@ namespace NHibernate.Impl
 
 		private void FireSaveOrUpdateCopy(IDictionary copiedAlready, MergeEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
 			for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
 			{
@@ -2323,7 +2331,7 @@ namespace NHibernate.Impl
 
 		private object FireSaveOrUpdateCopy(MergeEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
 			for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
 			{
@@ -2334,7 +2342,7 @@ namespace NHibernate.Impl
 
 		private void FireUpdate(SaveOrUpdateEvent @event)
 		{
-			CheckIsOpen();
+			ErrorIfClosed();
 			ISaveOrUpdateEventListener[] updateEventListener = listeners.UpdateEventListeners;
 			for (int i = 0; i < updateEventListener.Length; i++)
 			{

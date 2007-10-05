@@ -219,7 +219,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				object id = session.GetEntityIdentifier(entity);
+				object id = session.GetContextEntityIdentifier(entity);
 				if (id == null)
 				{
 					// context-entity-identifier returns null explicitly if the entity

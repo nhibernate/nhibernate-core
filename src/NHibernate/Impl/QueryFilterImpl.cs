@@ -42,14 +42,14 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Filter(collection, BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			return Session.ListFilter(collection, BindParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IList<T> List<T>()
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.Filter<T>(collection, BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			return Session.ListFilter<T>(collection, BindParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IType[] TypeArray()

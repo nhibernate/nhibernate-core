@@ -313,7 +313,7 @@ namespace NHibernate.Hql.Classic
 		}
 
 		/// <summary>
-		/// Persisters for the return values of a <c>Find</c> style query
+		/// Persisters for the return values of a <c>List</c> style query
 		/// </summary>
 		/// <remarks>
 		/// The <c>Persisters</c> stored by QueryTranslator have to be <see cref="IQueryable"/>.  The

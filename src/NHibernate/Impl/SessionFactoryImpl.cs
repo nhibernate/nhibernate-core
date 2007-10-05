@@ -929,7 +929,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Added to solve a problem with SessionImpl.Find( CriteriaImpl ),
+		/// Added to solve a problem with SessionImpl.List( CriteriaImpl ),
 		/// see the comment there for an explanation.
 		/// </summary>
 		/// <param name="clazz"></param>

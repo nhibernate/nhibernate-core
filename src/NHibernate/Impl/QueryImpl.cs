@@ -49,7 +49,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return Session.Find(BindParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.List(BindParameterLists(namedParams), GetQueryParameters(namedParams));
 			}
 			finally
 			{
@@ -64,7 +64,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				Session.Find(BindParameterLists(namedParams), GetQueryParameters(namedParams), results);
+				Session.List(BindParameterLists(namedParams), GetQueryParameters(namedParams), results);
 			}
 			finally
 			{
@@ -79,7 +79,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return Session.Find<T>(BindParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.List<T>(BindParameterLists(namedParams), GetQueryParameters(namedParams));
 			}
 			finally
 			{

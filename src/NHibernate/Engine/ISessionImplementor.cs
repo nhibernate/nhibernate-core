@@ -68,28 +68,28 @@ namespace NHibernate.Engine
 		IBatcher Batcher { get; }
 
 		/// <summary>
-		/// Execute a <c>Find()</c> query
+		/// Execute a <c>List()</c> query
 		/// </summary>
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IList Find(string query, QueryParameters parameters);
+		IList List(string query, QueryParameters parameters);
 
-		void Find(string query, QueryParameters parameters, IList results);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Find(string, QueryParameters)" />
-		/// </summary>
-		IList<T> Find<T>(string query, QueryParameters queryParameters);
+		void List(string query, QueryParameters parameters, IList results);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="Find(CriteriaImpl)" />
+		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
 		/// </summary>
-		IList<T> Find<T>(CriteriaImpl criteria);
+		IList<T> List<T>(string query, QueryParameters queryParameters);
 
-		void Find(CriteriaImpl criteria, IList results);
+		/// <summary>
+		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
+		/// </summary>
+		IList<T> List<T>(CriteriaImpl criteria);
 
-		IList Find(CriteriaImpl criteria);
+		void List(CriteriaImpl criteria, IList results);
+
+		IList List(CriteriaImpl criteria);
 
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
@@ -107,12 +107,12 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Execute a filter
 		/// </summary>
-		IList Filter(object collection, string filter, QueryParameters parameters);
+		IList ListFilter(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
 		/// </summary>
-		IList<T> Filter<T>(object collection, string filter, QueryParameters parameters);
+		IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
 		/// Collection from a filter
@@ -151,7 +151,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Return the identifier of the persistent object, or null if transient
 		/// </summary>
-		object GetEntityIdentifier(object obj);
+		object GetContextEntityIdentifier(object obj);
 
 		/// <summary>
 		/// Return the identifer of the persistent or transient object, or throw
@@ -159,7 +159,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		object GetEntityIdentifierIfNotUnsaved(object obj);
 
-		bool IsSaved(object obj);
+		bool IsSaved(object obj); // NH specific
 
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
@@ -184,7 +184,7 @@ namespace NHibernate.Engine
 		/// <param name="obj"></param>
 		/// <param name="copiedAlready"></param>
 		/// <returns></returns>
-		object Copy(object obj, IDictionary copiedAlready);
+		object Copy(object obj, IDictionary copiedAlready); // NH specific : TODO Remove when port Cascade behavior from H3.2.5
 
 		/// <summary>
 		/// Retreive the currently set value for a filter parameter.
@@ -212,7 +212,7 @@ namespace NHibernate.Engine
 
 		IQuery GetNamedSQLQuery(string name);
 
-		IQueryTranslator[] GetQueries(string query, bool scalar);
+		IQueryTranslator[] GetQueries(string query, bool scalar); // NH specific for MultiQuery
 
 		IInterceptor Interceptor { get; }
 
@@ -266,5 +266,12 @@ namespace NHibernate.Engine
 		bool IsClosed { get;}
 
 		void Flush();
+
+		/// <summary> 
+		/// Does this <tt>Session</tt> have an active Hibernate transaction
+		/// or is there a JTA transaction in progress?
+		/// </summary>
+		bool TransactionInProgress { get;}
+
 	}
 }

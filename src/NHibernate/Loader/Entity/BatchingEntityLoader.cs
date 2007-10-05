@@ -33,7 +33,7 @@ namespace NHibernate.Loader.Entity
 			{
 				bool equal = idType.Equals(
 					id,
-					session.GetEntityIdentifier(obj));
+					session.GetContextEntityIdentifier(obj));
 
 				if (equal)
 				{

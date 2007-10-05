@@ -12,7 +12,7 @@ namespace NHibernate
 	/// <remarks>
 	/// An <c>IQuery</c> instance is obtained by calling <c>ISession.CreateQuery()</c>. This interface
 	/// exposes some extra functionality beyond that provided by <c>ISession.Iterate()</c> and
-	/// <c>ISession.Find()</c>;
+	/// <c>ISession.List()</c>;
 	/// <list>
 	///		<item>
 	///			A particulare page of the result set may be selected by calling 
