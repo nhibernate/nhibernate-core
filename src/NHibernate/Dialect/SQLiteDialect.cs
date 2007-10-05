@@ -92,7 +92,7 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
-		
+
 		public override string IdentityColumnString
 		{
 			get
@@ -102,5 +102,6 @@ namespace NHibernate.Dialect
 				// so just the integer part is needed here
 				return "integer";
 			}
+		}
 	}
 }
