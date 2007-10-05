@@ -82,16 +82,10 @@ namespace NHibernate.Engine
 		/// </summary>
 		public abstract class CascadingAction
 		{
-			/// <summary></summary>
-			protected CascadingAction()
-			{
-			}
-
-			// todo-events change ISessionImplementor with IEventSource
 			/// <summary>
 			/// Cascade the action to the child object
 			/// </summary>
-			public abstract void Cascade(ISessionImplementor session, object child, object anything);
+			public abstract void Cascade(IEventSource eventSource, object child, object anything);
 
 			/// <summary>
 			/// The children to whom we should cascade.
@@ -108,12 +102,12 @@ namespace NHibernate.Engine
 
 			private class ActionDeleteClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					log.Debug("cascading to delete()");
-					if (session.IsSaved(child))
+					if (eventSource.IsSaved(child))
 					{
-						session.Delete(child);
+						eventSource.Delete(child);
 					}
 				}
 
@@ -133,10 +127,10 @@ namespace NHibernate.Engine
 
 			private class ActionLockClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					log.Debug("cascading to lock()");
-					session.Lock(child, (LockMode) anything);
+					eventSource.Lock(child, (LockMode) anything);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -155,10 +149,10 @@ namespace NHibernate.Engine
 
 			private class ActionEvictClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					log.Debug("cascading to evict()");
-					session.Evict(child);
+					eventSource.Evict(child);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -177,10 +171,10 @@ namespace NHibernate.Engine
 
 			private class ActionSaveUpdateClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					log.Debug("cascading to SaveOrUpdate()");
-					session.SaveOrUpdate(child);
+					eventSource.SaveOrUpdate(child);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -199,10 +193,10 @@ namespace NHibernate.Engine
 
 			private class ActionCopyClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					log.Debug("cascading to Copy()");
-					session.Copy(child, (IDictionary) anything);
+					eventSource.Copy(child, (IDictionary)anything);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -223,10 +217,10 @@ namespace NHibernate.Engine
 
 			private class ActionReplicateClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					log.Debug("cascading to Replicate()");
-					session.Replicate(child, (ReplicationMode) anything);
+					eventSource.Replicate(child, (ReplicationMode)anything);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -243,15 +237,14 @@ namespace NHibernate.Engine
 			public static CascadingAction ActionPersist = new ActionPersistClass();
 			private class ActionPersistClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					if (log.IsDebugEnabled)
 					{
 						//log.Debug("cascading to persist: " + entityName);
 						log.Debug("cascading to persist");
 					}
-					IEventSource source = (IEventSource) session;
-					source.Persist(null, child, (IDictionary)anything); // todo-events session.persist(entityName, child, (System.Collections.IDictionary) anything);
+					eventSource.Persist(null, child, (IDictionary)anything); // todo-events session.persist(entityName, child, (System.Collections.IDictionary) anything);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -268,15 +261,14 @@ namespace NHibernate.Engine
 			public static CascadingAction ActionPersistOnFlush = new ActionPersistOnFlushClass();
 			private class ActionPersistOnFlushClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					if (log.IsDebugEnabled)
 					{
 						//log.Debug("cascading to persistOnFlush: " + entityName);
 						log.Debug("cascading to persistOnFlush");
 					}
-					IEventSource source = (IEventSource)session;
-					source.PersistOnFlush(null, child, (IDictionary)anything); // todo-events session.persistOnFlush(entityName, child, (System.Collections.IDictionary) anything);
+					eventSource.PersistOnFlush(null, child, (IDictionary)anything); // todo-events session.persistOnFlush(entityName, child, (System.Collections.IDictionary) anything);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -293,15 +285,14 @@ namespace NHibernate.Engine
 			public static CascadingAction ActionRefresh = new ActionRefreshClass();
 			private class ActionRefreshClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					if (log.IsDebugEnabled)
 					{
 						//log.Debug("cascading to refresh: " + entityName);
 						log.Debug("cascading to refresh");
 					}
-					IEventSource source = (IEventSource)session;
-					source.Refresh(child, (IDictionary)anything);
+					eventSource.Refresh(child, (IDictionary)anything);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -318,15 +309,14 @@ namespace NHibernate.Engine
 			public static CascadingAction ActionSaveUpdateCopy = new ActionSaveUpdateCopyClass();
 			private class ActionSaveUpdateCopyClass : CascadingAction
 			{
-				public override void Cascade(ISessionImplementor session, object child, object anything)
+				public override void Cascade(IEventSource eventSource, object child, object anything)
 				{
 					if (log.IsDebugEnabled)
 					{
 						//log.Debug("cascading to saveOrUpdateCopy: " + entityName);
 						log.Debug("cascading to saveOrUpdateCopy");
 					}
-					IEventSource source = (IEventSource)session;
-					source.SaveOrUpdateCopy(null, child, (IDictionary)anything); //todo-events source.SaveOrUpdateCopy(entityName, child, (System.Collections.IDictionary)anything);
+					eventSource.SaveOrUpdateCopy(null, child, (IDictionary)anything); //todo-events source.SaveOrUpdateCopy(entityName, child, (System.Collections.IDictionary)anything);
 				}
 
 				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
@@ -350,11 +340,6 @@ namespace NHibernate.Engine
 		/// <summary></summary>
 		public abstract class CascadeStyle
 		{
-			/// <summary></summary>
-			protected CascadeStyle()
-			{
-			}
-
 			/// <summary>
 			/// Should the given action be cascaded?
 			/// </summary>
@@ -476,7 +461,7 @@ namespace NHibernate.Engine
 			/// <summary></summary>
 			protected IdentifierValue()
 			{
-				this.value = null;
+				value = null;
 			}
 
 			/// <summary>
@@ -558,7 +543,7 @@ namespace NHibernate.Engine
 			/// <summary></summary>
 			protected VersionValue()
 			{
-				this.value = null;
+				value = null;
 			}
 
 			/// <summary>
@@ -647,7 +632,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Cascade an action to the child or children
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="eventSource"></param>
 		/// <param name="child"></param>
 		/// <param name="type"></param>
 		/// <param name="action"></param>
@@ -655,7 +640,7 @@ namespace NHibernate.Engine
 		/// <param name="cascadeTo"></param>
 		/// <param name="anything"></param>
 		private static void Cascade(
-			ISessionImplementor session,
+			IEventSource eventSource,
 			object child,
 			IType type,
 			CascadingAction action,
@@ -671,7 +656,7 @@ namespace NHibernate.Engine
 					{
 						if (type.IsEntityType || type.IsAnyType)
 						{
-							action.Cascade(session, child, anything);
+							action.Cascade(eventSource, child, anything);
 						}
 						else if (type.IsCollectionType)
 						{
@@ -685,13 +670,13 @@ namespace NHibernate.Engine
 								cascadeVia = cascadeTo;
 							}
 							CollectionType pctype = (CollectionType) type;
-							ICollectionPersister persister = session.Factory.GetCollectionPersister(pctype.Role);
+							ICollectionPersister persister = eventSource.Factory.GetCollectionPersister(pctype.Role);
 							IType elemType = persister.ElementType;
 
 							// cascade to current collection elements
 							if (elemType.IsEntityType || elemType.IsAnyType || elemType.IsComponentType)
 							{
-								CascadeCollection(action, style, pctype, elemType, child, cascadeVia, session, anything);
+								CascadeCollection(action, style, pctype, elemType, child, cascadeVia, eventSource, anything);
 							}
 						}
 					}
@@ -699,14 +684,14 @@ namespace NHibernate.Engine
 				else if (type.IsComponentType)
 				{
 					IAbstractComponentType ctype = ((IAbstractComponentType) type);
-					object[] children = ctype.GetPropertyValues(child, session);
+					object[] children = ctype.GetPropertyValues(child, eventSource);
 					IType[] types = ctype.Subtypes;
 					for (int i = 0; i < types.Length; i++)
 					{
 						CascadeStyle componentPropertyStyle = ctype.GetCascadeStyle(i);
 						if (componentPropertyStyle.DoCascade(action))
 						{
-							Cascade(session, children[i], types[i], action, componentPropertyStyle, cascadeTo, anything);
+							Cascade(eventSource, children[i], types[i], action, componentPropertyStyle, cascadeTo, anything);
 						}
 					}
 				}
@@ -716,27 +701,27 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="eventSource"></param>
 		/// <param name="persister"></param>
 		/// <param name="parent"></param>
 		/// <param name="action"></param>
 		/// <param name="cascadeTo"></param>
-		public static void Cascade(ISessionImplementor session, IEntityPersister persister, object parent,
+		public static void Cascade(IEventSource eventSource, IEntityPersister persister, object parent,
 		                           CascadingAction action, CascadePoint cascadeTo)
 		{
-			Cascade(session, persister, parent, action, cascadeTo, null);
+			Cascade(eventSource, persister, parent, action, cascadeTo, null);
 		}
 
 		/// <summary>
 		/// Cascade an action from the parent object to all its children.
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="eventSource"></param>
 		/// <param name="persister"></param>
 		/// <param name="parent"></param>
 		/// <param name="action"></param>
 		/// <param name="cascadeTo"></param>
 		/// <param name="anything"></param>
-		public static void Cascade(ISessionImplementor session, IEntityPersister persister, object parent,
+		public static void Cascade(IEventSource eventSource, IEntityPersister persister, object parent,
 		                           CascadingAction action, CascadePoint cascadeTo, object anything)
 		{
 			if (persister.HasCascades)
@@ -752,7 +737,7 @@ namespace NHibernate.Engine
 					CascadeStyle style = cascadeStyles[i];
 					if (style.DoCascade(action))
 					{
-						Cascade(session, persister.GetPropertyValue(parent, i), types[i], action, style, cascadeTo, anything);
+						Cascade(eventSource, persister.GetPropertyValue(parent, i), types[i], action, style, cascadeTo, anything);
 					}
 				}
 				if (log.IsDebugEnabled)
@@ -771,7 +756,7 @@ namespace NHibernate.Engine
 		/// <param name="elemType"></param>
 		/// <param name="child"></param>
 		/// <param name="cascadeVia"></param>
-		/// <param name="session"></param>
+		/// <param name="eventSource"></param>
 		/// <param name="anything"></param>
 		private static void CascadeCollection(
 			CascadingAction action,
@@ -780,7 +765,7 @@ namespace NHibernate.Engine
 			IType elemType,
 			object child,
 			CascadePoint cascadeVia,
-			ISessionImplementor session,
+			IEventSource eventSource,
 			object anything)
 		{
 			// cascade to current collection elements
@@ -791,7 +776,7 @@ namespace NHibernate.Engine
 			ICollection iter = action.CascadableChildrenCollection(collectionType, child);
 			foreach (object obj in iter)
 			{
-				Cascade(session, obj, elemType, action, style, cascadeVia, anything);
+				Cascade(eventSource, obj, elemType, action, style, cascadeVia, anything);
 			}
 
 			// handle oprhaned entities!!
@@ -800,17 +785,17 @@ namespace NHibernate.Engine
 				// We can do the cast since orphan-delete does not apply to:
 				// 1. newly instatiated collections
 				// 2. arrays ( we can't track orphans for detached arrays)
-				System.Type entityName = collectionType.GetAssociatedClass(session.Factory);
-				DeleteOrphans(entityName, child as IPersistentCollection, session);
+				System.Type entityName = collectionType.GetAssociatedClass(eventSource.Factory);
+				DeleteOrphans(entityName, child as IPersistentCollection, eventSource);
 			}
 		}
 
-		private static void DeleteOrphans(System.Type entityName, IPersistentCollection pc, ISessionImplementor session)
+		private static void DeleteOrphans(System.Type entityName, IPersistentCollection pc, IEventSource eventSource)
 		{
 			ICollection orphans;
 			if (pc.WasInitialized) // can't be any orphans if it was not initialized
 			{
-				CollectionEntry ce = session.GetCollectionEntry(pc);
+				CollectionEntry ce = eventSource.PersistenceContext.GetCollectionEntry(pc);
 				orphans = ce == null ? CollectionHelper.EmptyCollection :
 				          ce.GetOrphans(entityName, pc);
 			}
@@ -823,7 +808,7 @@ namespace NHibernate.Engine
 			{
 				if (orphan != null)
 				{
-					session.Delete(orphan);
+					eventSource.Delete(orphan);
 				}
 			}
 		}

@@ -123,7 +123,7 @@ namespace NHibernate.Event.Default
 			//{
 			//  if (loaded == null)
 			//  {
-			//    loaded = session.GetNaturalIdSnapshot(identifier, persister);
+			//    loaded = session.PersistenceContext.GetNaturalIdSnapshot(identifier, persister);
 			//  }
 			//  IType[] types = persister.PropertyTypes;
 			//  int[] props = persister.NaturalIdentifierProperties;
@@ -447,7 +447,7 @@ namespace NHibernate.Event.Default
 		{
 			if (persister.IsSelectBeforeUpdateRequired)
 			{
-				object[] snapshot = session.GetDatabaseSnapshot(id, persister);
+				object[] snapshot = session.PersistenceContext.GetDatabaseSnapshot(id, persister);
 				if (snapshot == null)
 				{
 					//do we even really need this? the update will fail anyway....
@@ -467,7 +467,7 @@ namespace NHibernate.Event.Default
 			{
 				//TODO: optimize away this lookup for entities w/o unsaved-value="undefined"
 				EntityKey entityKey = new EntityKey(id, persister);
-				return session.GetCachedDatabaseSnapshot(entityKey);
+				return session.PersistenceContext.GetCachedDatabaseSnapshot(entityKey);
 			}
 		}
 

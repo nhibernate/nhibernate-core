@@ -131,7 +131,7 @@ namespace NHibernate.Engine
 				// entity identifier and assume that the entity is persistent if the
 				// id is not "unsaved" (that is, we rely on foreign keys to keep
 				// database integrity)
-				EntityEntry entityEntry = session.GetEntry(obj);
+				EntityEntry entityEntry = session.PersistenceContext.GetEntry(obj);
 				if (entityEntry == null)
 				{
 					return IsTransient(entityName, obj, null, session);
@@ -155,7 +155,7 @@ namespace NHibernate.Engine
 		{
 			if (entity is INHibernateProxy)
 				return true;
-			if (session.IsEntryFor(entity))
+			if (session.PersistenceContext.IsEntryFor(entity))
 				return true;
 			return !IsTransient(entityName, entity, assumed, session);
 		}
@@ -190,7 +190,7 @@ namespace NHibernate.Engine
 			IEntityPersister persister = session.GetEntityPersister(entity);
 			return persister.IsUnsaved(entity);
 
-			// NH : Different behavior (the persister return a value any way)
+			// NH : Different behavior (the persister.IsUnsaved return a value any way)
 			// we use the assumed value, if there is one, to avoid hitting
 			// the database
 			//if (assumed.HasValue)
@@ -223,10 +223,26 @@ namespace NHibernate.Engine
 				if (id == null)
 				{
 					// context-entity-identifier returns null explicitly if the entity
-					// is not associated with the persistence context; so make some
-					// deeper checks...
+					// is not associated with the persistence context; so make some deeper checks...
+
+					/***********************************************/
+					// NH-479 (very dirty patch)
+					if (entity.GetType().IsPrimitive)
+						return entity;
+					/**********************************************/
+
 					if (IsTransient(entityName, entity, false, session))
 					{
+						/***********************************************/
+						// TODO NH verify the behavior of NH607 test
+						// these lines are only to pass test NH607 during PersistenceContext porting
+						// i'm not secure that NH607 is a test for a right behavior
+						EntityEntry entry = session.PersistenceContext.GetEntry(entity);
+						if (entry != null)
+							return entry.Id;
+						// the check was put here to have les possible impact
+						/**********************************************/
+
 						// TODO H3.2 EntityName
 						//throw new TransientObjectException("object references an unsaved transient instance - save the transient instance before flushing: " + 
 						//  (entityName ?? session.GuessEntityName(entity)));

@@ -459,7 +459,9 @@ namespace NHibernate.Persister.Collection
 				return null;
 			}
 
-			SubselectFetch subselect = session.BatchFetchQueue.GetSubselect(new EntityKey(key, OwnerEntityPersister));
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+
+			SubselectFetch subselect = persistenceContext.BatchFetchQueue.GetSubselect(new EntityKey(key, OwnerEntityPersister));
 
 			if (subselect == null)
 			{
@@ -472,7 +474,7 @@ namespace NHibernate.Persister.Collection
 				ArrayList keysToRemove = new ArrayList();
 				foreach (EntityKey entityKey in subselect.Result)
 				{
-					if (!session.ContainsEntity(entityKey))
+					if (!persistenceContext.ContainsEntity(entityKey))
 					{
 						keysToRemove.Add(entityKey);
 					}

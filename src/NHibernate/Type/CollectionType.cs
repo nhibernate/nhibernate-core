@@ -158,6 +158,7 @@ namespace NHibernate.Type
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
+			//NH Different behavior
 			object id = session.GetEntityIdentifier(owner);
 			if (id == null)
 			{
@@ -219,16 +220,54 @@ namespace NHibernate.Type
 			return session.GetEntityIdentifier(owner);
 		}
 
-		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+		public override object ResolveIdentifier(object key, ISessionImplementor session, object owner)
 		{
-			if (value == null)
+			return key == null ? null : ResolveKey(GetKeyOfOwner(owner, session), session, owner);
+		}
+
+		private object ResolveKey(object key, ISessionImplementor session, object owner)
+		{
+			return key == null ? null : GetCollection(key, session, owner);
+		}
+
+		public object GetCollection(object key, ISessionImplementor session, object owner)
+		{
+			ICollectionPersister persister = GetPersister(session);
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+
+			//if (!isEmbeddedInXML)
+			//{
+			//  return UNFETCHED_COLLECTION;
+			//}
+
+			// check if collection is currently being loaded
+			IPersistentCollection collection = persistenceContext.LoadContexts.LocateLoadingCollection(persister, key);
+			if (collection == null)
 			{
-				return null;
+				// check if it is already completely loaded, but unowned
+				collection = persistenceContext.UseUnownedCollection(new CollectionKey(persister, key));
+				if (collection == null)
+				{
+					// create a new collection wrapper, to be initialized later
+					collection = Instantiate(session, persister);
+					collection.Owner = owner;
+
+					persistenceContext.AddUninitializedCollection(persister, collection, key);
+
+					// NH Different behavior
+					if (IsArrayType)
+					{
+						session.InitializeCollection(collection, false);
+						persistenceContext.AddCollectionHolder(collection);
+					}
+					else if (!persister.IsLazy)
+					{
+						persistenceContext.AddNonLazyCollection(collection);
+					}
+				}
 			}
-			else
-			{
-				return session.GetCollection(role, GetKeyOfOwner(owner, session), owner);
-			}
+			collection.Owner = owner;
+			return collection.GetValue();
 		}
 
 		public override object SemiResolve(object value, ISessionImplementor session, object owner)
@@ -419,7 +458,7 @@ namespace NHibernate.Type
 		/// </summary>
 		public object GetKeyOfOwner(object owner, ISessionImplementor session)
 		{
-			EntityEntry entityEntry = session.GetEntry(owner);
+			EntityEntry entityEntry = session.PersistenceContext.GetEntry(owner);
 			if (entityEntry == null)
 			{
 				// This just handles a particular case of component
@@ -438,16 +477,8 @@ namespace NHibernate.Type
 				// later in the mapping document) - now, we could try and use e.getStatus()
 				// to decide to semiResolve(), trouble is that initializeEntity() reuses
 				// the same array for resolved and hydrated values
-				object id;
-                if (entityEntry.LoadedState != null)
-                {
-                    id = entityEntry.GetLoadedValue(foreignKeyPropertyName);    
-                }
-                else
-                {
-                    id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName);
-                }
-                
+				object id = entityEntry.GetLoadedValue(foreignKeyPropertyName);
+
 				// NOTE VERY HACKISH WORKAROUND!!
 				IType keyType = GetPersister(session).KeyType;
 				if (!keyType.ReturnedClass.IsInstanceOfType(id))

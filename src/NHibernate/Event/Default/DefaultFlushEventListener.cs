@@ -16,22 +16,22 @@ namespace NHibernate.Event.Default
 			// NH: Different behavior
 			// in H3.2 they use persist but we don't have the same behavior
 			// to maintains backdraw compatibility with NH1.2.x we perform flush any way.
-			FlushEverythingToExecutions(@event);
-			PerformExecutions(source);
-			PostFlush(source);
+			//FlushEverythingToExecutions(@event);
+			//PerformExecutions(source);
+			//PostFlush(source);
 
-			//if (source.HasNonReadOnlyEntities)
-			//{
-			//  FlushEverythingToExecutions(@event);
-			//  PerformExecutions(source);
-			//  PostFlush(source);
+			if (source.PersistenceContext.HasNonReadOnlyEntities)
+			{
+				FlushEverythingToExecutions(@event);
+				PerformExecutions(source);
+				PostFlush(source);
 
-			//  // TODO: H3.2 not ported
-			//  //if (source.Factory.Statistics.StatisticsEnabled)
-			//  //{
-			//  //  source.Factory.StatisticsImplementor.flush();
-			//  //}
-			//}
+				// TODO: H3.2 not ported
+				//if (source.Factory.Statistics.StatisticsEnabled)
+				//{
+				//  source.Factory.StatisticsImplementor.flush();
+				//}
+			}
 		}
 	}
 }

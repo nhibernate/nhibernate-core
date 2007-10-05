@@ -1,5 +1,6 @@
 using System;
 using log4net;
+using NHibernate.Engine;
 
 namespace NHibernate.Event.Default
 {
@@ -60,14 +61,12 @@ namespace NHibernate.Event.Default
 
 		private bool FlushIsReallyNeeded(AutoFlushEvent @event, IEventSource source)
 		{
-			return source.ActionQueue.AreTablesToBeUpdated(@event.QuerySpaces) || source.FlushMode == FlushMode.Always;
+			return source.ActionQueue.AreTablesToBeUpdated(@event.QuerySpaces) || ((ISessionImplementor)source).FlushMode == FlushMode.Always;
 		}
 
-		private bool FlushMightBeNeeded(IEventSource source)
+		private bool FlushMightBeNeeded(ISessionImplementor source)
 		{
-			// NH Different behavior
-			//return !(source.FlushMode < FlushMode.Auto) && source.DontFlushFromFind == 0 && source.HasNonReadOnlyEntities;
-			return !(source.FlushMode < FlushMode.Auto) && source.DontFlushFromFind == 0;
+			return !(source.FlushMode < FlushMode.Auto) && source.DontFlushFromFind == 0 && source.PersistenceContext.HasNonReadOnlyEntities;
 		}
 	}
 }

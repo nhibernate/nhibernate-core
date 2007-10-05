@@ -104,9 +104,9 @@ namespace NHibernate.Type
 			{
 				IEntityPersister persister = session.Factory.GetEntityPersister(AssociatedClass);
 				EntityKey entityKey = new EntityKey(id, persister);
-				if (!session.ContainsEntity(entityKey))
+				if (!session.PersistenceContext.ContainsEntity(entityKey))
 				{
-					session.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
+					session.PersistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
 				}
 			}
 		}
@@ -140,7 +140,7 @@ namespace NHibernate.Type
 			{
 				// cache the actual id of the object, not the value of the
 				// property-ref, which might not be initialized
-				object id = session.GetEntityIdentifierIfNotUnsaved(value);
+				object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session);
 				if (id == null)
 				{
 					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + AssociatedClass.Name);

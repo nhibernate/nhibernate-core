@@ -12,7 +12,7 @@ namespace NHibernate.Event.Default
 		{
 			// this implementation is supposed to tolerate incorrect unsaved-value
 			// mappings, for the purpose of backward-compatibility
-			EntityEntry entry = @event.Session.GetEntry(@event.Entity);
+			EntityEntry entry = @event.Session.PersistenceContext.GetEntry(@event.Entity);
 			if (entry != null)
 			{
 				if (entry.Status == Status.Deleted)

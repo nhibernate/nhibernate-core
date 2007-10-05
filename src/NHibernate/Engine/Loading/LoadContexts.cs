@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -27,6 +28,7 @@ namespace NHibernate.Engine.Loading
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(LoadContexts));
 
+		[NonSerialized]
 		private readonly IPersistenceContext persistenceContext;
 		private IDictionary collectionLoadContexts;
 		private IDictionary entityLoadContexts;
@@ -246,7 +248,8 @@ namespace NHibernate.Engine.Loading
 			{
 				log.Debug("attempting to locate loading collection entry [" + key + "] in any result-set context");
 			}
-			LoadingCollectionEntry rtn = xrefLoadingCollectionEntries[key];
+			LoadingCollectionEntry rtn;
+			xrefLoadingCollectionEntries.TryGetValue(key, out rtn);
 			if (log.IsDebugEnabled)
 			{
 				log.Debug(string.Format("collection [{0}] {1} in load context", key, (rtn == null ? "located" : "not located")));

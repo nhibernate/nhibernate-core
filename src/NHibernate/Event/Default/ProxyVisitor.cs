@@ -23,7 +23,7 @@ namespace NHibernate.Event.Default
 
 			if (value != null)
 			{
-				Session.ReassociateIfUninitializedProxy(value);
+				Session.PersistenceContext.ReassociateIfUninitializedProxy(value);
 				// if it is an initialized proxy, let cascade
 				// handle it later on
 			}
@@ -56,15 +56,14 @@ namespace NHibernate.Event.Default
 		{
 			if (collection.WasInitialized)
 			{
-				Session.AddInitializedDetachedCollection(collection, snapshot);
+				Session.PersistenceContext.AddInitializedDetachedCollection(collection, snapshot);
 			}
 			else
 			{
 				if (!IsCollectionSnapshotValid(snapshot))
 					throw new HibernateException("could not reassociate uninitialized transient collection");
 
-				ICollectionPersister collectionPersister = Session.Factory.GetCollectionPersister(snapshot.Role);
-				Session.AddUninitializedDetachedCollection(collection, collectionPersister, snapshot.Key);
+				Session.PersistenceContext.AddUninitializedDetachedCollection(collection, snapshot);
 			}
 		}
 	}

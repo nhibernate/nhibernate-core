@@ -216,7 +216,7 @@ namespace NHibernate.Impl
 
 		public bool IsNullifiable(bool earlyInsert, ISessionImplementor session)
 		{
-			return Status == Impl.Status.Saving || (earlyInsert ? !ExistsInDatabase : session.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister)));
+			return Status == Impl.Status.Saving || (earlyInsert ? !ExistsInDatabase : session.PersistenceContext.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister)));
 		}
 
 		public bool RequiresDirtyCheck(object entity)

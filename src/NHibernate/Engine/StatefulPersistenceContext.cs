@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
@@ -26,7 +28,8 @@ namespace NHibernate.Engine
 	/// the current state of its context.  Event-listeners then use the
 	/// PersistentContext to drive their processing.
 	/// </remarks>
-	public class StatefulPersistenceContext : IPersistenceContext
+	[Serializable]
+	public class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
 		private static readonly ILog log = LogManager.GetLogger(typeof(StatefulPersistenceContext));
@@ -34,9 +37,10 @@ namespace NHibernate.Engine
 
 		public static readonly object NoRow = new object();
 
-		private readonly ISessionImplementor session;
+		[NonSerialized]
+		private ISessionImplementor session;
 
-	  // Loaded entity instances, by EntityKey
+		// Loaded entity instances, by EntityKey
 		private readonly Dictionary<EntityKey, object> entitiesByKey;
 
 		// Loaded entity instances, by EntityUniqueKey
@@ -59,7 +63,7 @@ namespace NHibernate.Engine
 		private readonly IDictionary collectionEntries;
 
 		// Collection wrappers, by the CollectionKey
-		private readonly Dictionary<CollectionKey,IPersistentCollection> collectionsByKey;
+		private readonly Dictionary<CollectionKey, IPersistentCollection> collectionsByKey;
 
 		// Set of EntityKeys of deleted objects
 		private readonly HashedSet<EntityKey> nullifiableEntityKeys;
@@ -69,19 +73,28 @@ namespace NHibernate.Engine
 
 		// A list of collection wrappers that were instantiating during result set
 		// processing, that we will need to initialize at the end of the query
+		[NonSerialized]
 		private List<IPersistentCollection> nonlazyCollections;
 
 		// A container for collections we load up when the owning entity is not
 		// yet loaded ... for now, this is purely transient!
 		private Dictionary<CollectionKey, IPersistentCollection> unownedCollections;
 
-		private int cascading = 0;
-		private int loadCounter = 0;
-		private bool flushing = false;
-
 		private bool hasNonReadOnlyEntities = false;
 
+		[NonSerialized]
+		private int cascading = 0;
+
+		[NonSerialized]
+		private bool flushing = false;
+
+		[NonSerialized]
+		private int loadCounter = 0;
+
+		[NonSerialized]
 		private LoadContexts loadContexts;
+
+		[NonSerialized]
 		private BatchFetchQueue batchFetchQueue;
 
 		/// <summary> Constructs a PersistentContext, bound to the given session. </summary>
@@ -104,6 +117,7 @@ namespace NHibernate.Engine
 
 		private void InitTransientState()
 		{
+			loadContexts = null;
 			nullAssociations = new HashedSet<AssociationKey>();
 			nonlazyCollections = new List<IPersistentCollection>(InitCollectionSize);
 		}
@@ -216,8 +230,9 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				IPersistentCollection tempObject = unownedCollections[key];
-				unownedCollections.Remove(key);
+				IPersistentCollection tempObject;
+				if (unownedCollections.TryGetValue(key, out tempObject))
+					unownedCollections.Remove(key);
 				return tempObject;
 			}
 		}
@@ -234,7 +249,7 @@ namespace NHibernate.Engine
 			ICollection collectionEntryArray = IdentityMap.ConcurrentEntries(collectionEntries);
 			foreach (DictionaryEntry entry in collectionEntryArray)
 			{
-				((IPersistentCollection) entry.Key).UnsetSession(Session);
+				((IPersistentCollection)entry.Key).UnsetSession(Session);
 			}
 
 			arrayHolders.Clear();
@@ -297,8 +312,8 @@ namespace NHibernate.Engine
 		public object[] GetDatabaseSnapshot(object id, IEntityPersister persister)
 		{
 			EntityKey key = new EntityKey(id, persister);
-			object cached = entitySnapshotsByKey[key];
-			if (cached != null)
+			object cached;
+			if (entitySnapshotsByKey.TryGetValue(key,out cached))
 			{
 				return cached == NoRow ? null : (object[])cached;
 			}
@@ -324,7 +339,10 @@ namespace NHibernate.Engine
 		/// </remarks>
 		public object[] GetCachedDatabaseSnapshot(EntityKey key)
 		{
-			object snapshot = entitySnapshotsByKey[key];
+			object snapshot;
+			if (!entitySnapshotsByKey.TryGetValue(key, out snapshot))
+				return null;
+
 			if (snapshot == NoRow)
 			{
 				throw new HibernateException("persistence context reported no row snapshot for " + MessageHelper.InfoString(key.MappedClass, key.Identifier));
@@ -395,7 +413,9 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object GetEntity(EntityKey key)
 		{
-			return entitiesByKey[key];
+			object result;
+			entitiesByKey.TryGetValue(key, out result);
+			return result;
 		}
 
 		/// <summary> Is there an entity with the given key in the persistence context</summary>
@@ -417,7 +437,7 @@ namespace NHibernate.Engine
 			List<EntityUniqueKey> toRemove = new List<EntityUniqueKey>();
 			foreach (KeyValuePair<EntityUniqueKey, object> pair in entitiesByUniqueKey)
 			{
-				if(pair.Value==entity) toRemove.Add(pair.Key);
+				if (pair.Value == entity) toRemove.Add(pair.Key);
 			}
 			foreach (EntityUniqueKey uniqueKey in toRemove)
 			{
@@ -434,7 +454,9 @@ namespace NHibernate.Engine
 		/// <summary> Get an entity cached by unique key</summary>
 		public object GetEntity(EntityUniqueKey euk)
 		{
-			return entitiesByUniqueKey[euk];
+			object result;
+			entitiesByUniqueKey.TryGetValue(euk, out result);
+			return result;
 		}
 
 		/// <summary> Add an entity to the cache by unique key</summary>
@@ -556,7 +578,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("setting proxy identifier: " + id);
 				}
-				INHibernateProxy proxy = (INHibernateProxy) value;
+				INHibernateProxy proxy = (INHibernateProxy)value;
 				LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 				li.Identifier = id;
 				ReassociateProxy(li, proxy);
@@ -709,7 +731,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object ProxyFor(IEntityPersister persister, EntityKey key, object impl)
 		{
-			if (!persister.HasProxy)
+			if (!persister.HasProxy || key == null)
 				return impl;
 
 			INHibernateProxy proxy;
@@ -745,6 +767,7 @@ namespace NHibernate.Engine
 		public void AddUninitializedCollection(ICollectionPersister persister, IPersistentCollection collection, object id)
 		{
 			CollectionEntry ce = new CollectionEntry(persister, id, flushing);
+			collection.CollectionSnapshot = ce; // NH Different behavior
 			AddCollection(collection, ce, id);
 		}
 
@@ -752,6 +775,7 @@ namespace NHibernate.Engine
 		public void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionSnapshot snapshot)
 		{
 			CollectionEntry ce = new CollectionEntry(snapshot, Session.Factory);
+			collection.CollectionSnapshot = ce; // NH Different behavior
 			AddCollection(collection, ce, ce.Key);
 		}
 
@@ -821,6 +845,7 @@ namespace NHibernate.Engine
 			else
 			{
 				CollectionEntry ce = new CollectionEntry(snapshot, session.Factory);
+				collection.CollectionSnapshot = ce; // NH Different behavior
 				AddCollection(collection, ce, ce.Key);
 			}
 		}
@@ -831,6 +856,7 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			ce.PostInitialize(collection);
+			collection.CollectionSnapshot = ce; // NH Different behavior
 			AddCollection(collection, ce, id);
 			return ce;
 		}
@@ -838,7 +864,11 @@ namespace NHibernate.Engine
 		/// <summary> Get the collection instance associated with the <tt>CollectionKey</tt></summary>
 		public IPersistentCollection GetCollection(CollectionKey collectionKey)
 		{
-			return collectionsByKey[collectionKey];
+			IPersistentCollection result;
+			if (collectionsByKey.TryGetValue(collectionKey, out result))
+				return result;
+			else
+				return null;
 		}
 
 		/// <summary> 
@@ -863,12 +893,11 @@ namespace NHibernate.Engine
 				loadCounter++; //don't let this method be called recursively
 				try
 				{
-					int size;
-					while ((size = nonlazyCollections.Count) > 0)
+					while (nonlazyCollections.Count > 0)
 					{
 						//note that each iteration of the loop may add new elements
-						IPersistentCollection tempObject = nonlazyCollections[size - 1];
-						nonlazyCollections.RemoveAt(size - 1);
+						IPersistentCollection tempObject = nonlazyCollections[nonlazyCollections.Count - 1];
+						nonlazyCollections.RemoveAt(nonlazyCollections.Count - 1);
 						tempObject.ForceInitialization();
 					}
 				}
@@ -924,25 +953,36 @@ namespace NHibernate.Engine
 		/// </summary>
 		public CollectionEntry GetCollectionEntryOrNull(object collection)
 		{
-			throw new NotImplementedException();
-			//IPersistentCollection coll = collection as IPersistentCollection;
-			//if (coll == null)
-			//{
-			//  //commented in H3.2 throw new TransientObjectException("Collection was not yet persistent");
-			//}
-			//else
-			//{
-			//  coll = GetCollectionHolder(collection);
-			// TODO persistent context (see H3.2.5 implementation) (needed for FilterQueryPlan)
-			//}
-
-			//return (coll == null) ? null : GetCollectionEntry(coll);
+			//commented in H3.2 if (collection==null) throw new TransientObjectException("Collection was not yet persistent");
+			IPersistentCollection coll = collection as IPersistentCollection;
+			if (coll == null)
+			{
+				coll = GetCollectionHolder(collection);
+				if (coll == null)
+				{
+					// it might be an unwrapped collection reference!
+					// try to find a wrapper (slowish)
+					foreach (IPersistentCollection pc in collectionEntries.Keys)
+					{
+						if (pc.IsWrapper(collection))
+						{
+							coll = pc;
+							break;
+						}
+					}
+				}
+			}
+			return (coll == null) ? null : GetCollectionEntry(coll);
 		}
 
 		/// <summary> Get an existing proxy by key</summary>
 		public object GetProxy(EntityKey key)
 		{
-			return proxiesByKey[key];
+			INHibernateProxy result;
+			if (proxiesByKey.TryGetValue(key, out result))
+				return result;
+			else
+				return null;
 		}
 
 		/// <summary> Add a proxy to the session cache</summary>
@@ -959,8 +999,9 @@ namespace NHibernate.Engine
 				batchFetchQueue.RemoveBatchLoadableEntityKey(key);
 				batchFetchQueue.RemoveSubselect(key);
 			}
-			INHibernateProxy tempObject = proxiesByKey[key];
-			proxiesByKey.Remove(key);
+			INHibernateProxy tempObject;
+			if (proxiesByKey.TryGetValue(key, out tempObject))
+				proxiesByKey.Remove(key);
 			return tempObject;
 		}
 
@@ -1061,5 +1102,100 @@ namespace NHibernate.Engine
 				.Append("]")
 				.ToString();
 		}
+
+		#region IDeserializationCallback Members
+		internal void SetSession(ISessionImplementor session)
+		{
+			this.session = session;
+		}
+
+		void IDeserializationCallback.OnDeserialization(object sender)
+		{
+			log.Debug("Deserialization callback persistent-context");
+
+			foreach (DictionaryEntry collectionEntry in collectionEntries)
+			{
+				try
+				{
+					((IPersistentCollection)collectionEntry.Key).SetCurrentSession(session);
+					CollectionEntry ce = (CollectionEntry)collectionEntry.Value;
+					if (ce.Role != null)
+					{
+						ce.SetLoadedPersister(Session.Factory.GetCollectionPersister(ce.Role));
+					}
+
+				}
+				catch (HibernateException he)
+				{
+					throw new InvalidOperationException(he.Message);
+				}
+			}
+
+			List<EntityKey> keysToRemove = new List<EntityKey>();
+			foreach (KeyValuePair<EntityKey, INHibernateProxy> p in proxiesByKey)
+			{
+				if (p.Value !=null)
+				{
+					NHibernateProxyHelper.GetLazyInitializer(p.Value).Session = session;
+				}
+				else
+				{
+					// the proxy was pruned during the serialization process because the target had been instantiated.
+					keysToRemove.Add(p.Key);
+				}
+			}
+			for (int i = 0; i < keysToRemove.Count; i++)
+				proxiesByKey.Remove(keysToRemove[i]);
+
+			foreach (EntityEntry e in entityEntries.Values)
+			{
+				try
+				{
+					e.Persister = session.Factory.GetEntityPersister(e.ClassName);
+				}
+				catch (MappingException me)
+				{
+					throw new InvalidOperationException(me.Message);
+				}
+			}
+		}
+
+		#endregion
+
+		#region ISerializable Members
+		internal StatefulPersistenceContext(SerializationInfo info, StreamingContext context)
+		{
+			entitiesByKey =(Dictionary<EntityKey, object>) info.GetValue("context.entitiesByKey", typeof (Dictionary<EntityKey, object>));
+			entitiesByUniqueKey =(Dictionary<EntityUniqueKey, object>)info.GetValue("context.entitiesByUniqueKey", typeof (Dictionary<EntityUniqueKey, object>));
+			entityEntries = (IdentityMap) info.GetValue("context.entityEntries", typeof (IdentityMap));
+			proxiesByKey =(Dictionary<EntityKey, INHibernateProxy>)info.GetValue("context.proxiesByKey", typeof (Dictionary<EntityKey, INHibernateProxy>));
+			entitySnapshotsByKey =(Dictionary<EntityKey, object>)info.GetValue("context.entitySnapshotsByKey", typeof (Dictionary<EntityKey, object>));
+			arrayHolders = (IdentityMap) info.GetValue("context.arrayHolders", typeof (IdentityMap));
+			collectionEntries = (IdentityMap) info.GetValue("context.collectionEntries", typeof (IdentityMap));
+			collectionsByKey =(Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.collectionsByKey", typeof (Dictionary<CollectionKey, IPersistentCollection>));
+			nullifiableEntityKeys =(HashedSet<EntityKey>) info.GetValue("context.nullifiableEntityKeys", typeof (HashedSet<EntityKey>));
+			unownedCollections =(Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.unownedCollections", typeof (Dictionary<CollectionKey, IPersistentCollection>));
+			hasNonReadOnlyEntities = info.GetBoolean("context.hasNonReadOnlyEntities");
+			InitTransientState();
+		}
+
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			log.Debug("serializing persistent-context");
+
+			info.AddValue("context.entitiesByKey", entitiesByKey, typeof(Dictionary<EntityKey, object>));
+			info.AddValue("context.entitiesByUniqueKey", entitiesByUniqueKey, typeof(Dictionary<EntityUniqueKey, object>));
+			info.AddValue("context.entityEntries", entityEntries, typeof(IdentityMap));
+			info.AddValue("context.proxiesByKey", proxiesByKey, typeof(Dictionary<EntityKey, INHibernateProxy>));
+			info.AddValue("context.entitySnapshotsByKey", entitySnapshotsByKey, typeof(Dictionary<EntityKey, object>));
+			info.AddValue("context.arrayHolders", arrayHolders, typeof(IdentityMap));
+			info.AddValue("context.collectionEntries", collectionEntries, typeof(IdentityMap));
+			info.AddValue("context.collectionsByKey", collectionsByKey, typeof(Dictionary<CollectionKey, IPersistentCollection>));
+			info.AddValue("context.nullifiableEntityKeys", nullifiableEntityKeys, typeof(HashedSet<EntityKey>));
+			info.AddValue("context.unownedCollections", unownedCollections, typeof(Dictionary<CollectionKey, IPersistentCollection>));
+			info.AddValue("context.hasNonReadOnlyEntities", hasNonReadOnlyEntities);
+		}
+		#endregion
 	}
 }

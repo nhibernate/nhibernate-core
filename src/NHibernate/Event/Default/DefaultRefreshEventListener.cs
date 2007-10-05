@@ -28,10 +28,10 @@ namespace NHibernate.Event.Default
 		{
 			IEventSource source = @event.Session;
 
-			if (source.ReassociateIfUninitializedProxy(@event.Entity))
+			if (source.PersistenceContext.ReassociateIfUninitializedProxy(@event.Entity))
 				return;
 
-			object obj = source.UnproxyAndReassociate(@event.Entity);
+			object obj = source.PersistenceContext.UnproxyAndReassociate(@event.Entity);
 
 			if (refreshedAlready.Contains(obj))
 			{
@@ -39,7 +39,7 @@ namespace NHibernate.Event.Default
 				return;
 			}
 
-			EntityEntry e = source.GetEntry(obj);
+			EntityEntry e = source.PersistenceContext.GetEntry(obj);
 			IEntityPersister persister;
 			object id;
 
@@ -52,7 +52,7 @@ namespace NHibernate.Event.Default
 					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, source.Factory));
 				}
 				EntityKey key = new EntityKey(id, persister);
-				if (source.GetEntry(key) != null)
+				if (source.PersistenceContext.GetEntry(key) != null)
 				{
 					throw new PersistentObjectException("attempted to refresh transient instance when persistent instance was already associated with the Session: " + 
 						MessageHelper.InfoString(persister, id, source.Factory));
@@ -82,7 +82,7 @@ namespace NHibernate.Event.Default
 			if (e != null)
 			{
 				EntityKey key = new EntityKey(id, persister);
-				source.RemoveEntity(key);
+				source.PersistenceContext.RemoveEntity(key);
 				if (persister.HasCollections)
 					new EvictVisitor(source).Process(obj, persister);
 			}

@@ -614,9 +614,9 @@ namespace NHibernate.Type
 		/// A one-to-one association type for the given class and cascade style.
 		/// </summary>
 		public static IType OneToOne(System.Type persistentClass, ForeignKeyDirection foreignKeyDirection,
-		                             string uniqueKeyPropertyName, bool lazy)
+																 string uniqueKeyPropertyName, bool lazy, string propertyName)
 		{
-			return new OneToOneType(persistentClass, foreignKeyDirection, uniqueKeyPropertyName, lazy);
+			return new OneToOneType(persistentClass, foreignKeyDirection, uniqueKeyPropertyName, lazy, propertyName);
 		}
 
 		/// <summary>

@@ -177,7 +177,7 @@ namespace NHibernate.Proxy
 					if (_target == null & _session != null)
 					{
 						EntityKey key = new EntityKey(_id, _session.Factory.GetEntityPersister(_persistentClass));
-						_target = _session.GetEntity(key);
+						_target = _session.PersistenceContext.GetEntity(key);
 					}
 
 					// let the specific LazyInitializer write its requirements for deserialization 
@@ -225,7 +225,7 @@ namespace NHibernate.Proxy
 			{
 				if (value != _session)
 				{
-					if (_session != null && _session.IsOpen)
+					if (_session != null && _session.IsOpen && value != null)
 					{
 						//TODO: perhaps this should be some other RuntimeException...
 						throw new LazyInitializationException("Illegally attempted to associate a proxy with two open Sessions");
@@ -256,7 +256,7 @@ namespace NHibernate.Proxy
 		public object GetImplementation(ISessionImplementor s)
 		{
 			EntityKey key = new EntityKey(Identifier, s.Factory.GetEntityPersister(PersistentClass));
-			return s.GetEntity(key);
+			return s.PersistenceContext.GetEntity(key);
 		}
 
 		public void SetImplementation(object target)

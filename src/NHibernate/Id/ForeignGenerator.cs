@@ -28,20 +28,39 @@ namespace NHibernate.Id
 		/// <summary>
 		/// Generates an identifer from the value of a Property. 
 		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name="sessionImplementor">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>
 		/// The identifier value from the associated object or  
 		/// <see cref="IdentifierGeneratorFactory.ShortCircuitIndicator"/> if the <c>session</c>
 		/// already contains <c>obj</c>.
 		/// </returns>
-		public object Generate(ISessionImplementor session, object obj)
+		public object Generate(ISessionImplementor sessionImplementor, object obj)
 		{
-			object associatedObject = session.Factory
+			ISession session = (ISession)sessionImplementor;
+
+			object associatedObject = sessionImplementor.Factory
 				.GetClassMetadata(obj.GetType())
 				.GetPropertyValue(obj, propertyName);
 
-			object id = session.Save(associatedObject);
+			if (associatedObject == null)
+			{
+				throw new IdentifierGenerationException("attempted to assign id from null one-to-one property: " + propertyName);
+			}
+
+			EntityType type = (EntityType)sessionImplementor.Factory.GetClassMetadata(obj.GetType()).GetPropertyType(propertyName);
+
+			object id;
+			try
+			{
+				id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(type.GetAssociatedEntityName(), associatedObject, sessionImplementor);
+			}
+			catch (TransientObjectException)
+			{
+				id = session.Save(associatedObject);
+			}
+
+
 			if (session.Contains(obj))
 			{
 				//abort the save (the object is already saved by a circular cascade)

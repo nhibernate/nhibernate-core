@@ -33,21 +33,15 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// The owning persistence context.
 		/// </summary>
-		private readonly ISessionImplementor session;
+		private readonly IPersistenceContext context;
 
 		/// <summary>
 		/// Constructs a queue for the given context.
 		/// </summary>
-		/// <param name="session">The owning persistence context.</param>
-		public BatchFetchQueue(ISessionImplementor session)
+		/// <param name="context">The owning persistence context.</param>
+		public BatchFetchQueue(IPersistenceContext context)
 		{
-			this.session = session;
-		}
-
-		// TODO persistent context (remove constructor with ISessionImplementor)
-		public BatchFetchQueue(IPersistenceContext session)
-		{
-			this.session = session.Session;
+			this.context = context;
 		}
 
 		/// <summary>
@@ -154,7 +148,7 @@ namespace NHibernate.Engine
 			// this only works because collection entries are kept in a sequenced
 			// map by persistence context (maybe we should do like entities and
 			// keep a separate sequences set...)
-			foreach (DictionaryEntry me in session.CollectionEntries)
+			foreach (DictionaryEntry me in context.CollectionEntries)
 			{
 				CollectionEntry ce = (CollectionEntry) me.Value;
 				IPersistentCollection collection = (IPersistentCollection) me.Key;
@@ -257,7 +251,7 @@ namespace NHibernate.Engine
 					entityKey.Identifier,
 					persister.IdentifierType,
 					entityKey.MappedClass.FullName,
-					session.Factory
+					context.Session.Factory
 					);
 				return persister.Cache.Cache.Get(key) != null;
 			}
@@ -274,7 +268,7 @@ namespace NHibernate.Engine
 					collectionKey,
 					persister.KeyType,
 					persister.Role,
-					session.Factory
+					context.Session.Factory
 					);
 				return persister.Cache.Cache.Get(cacheKey) != null;
 			}

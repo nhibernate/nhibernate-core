@@ -59,7 +59,7 @@ namespace NHibernate.Event.Default
 				entity = obj;
 			}
 
-			EntityState entityState = GetEntityState(entity, @event.EntityName, source.GetEntry(entity), source);
+			EntityState entityState = GetEntityState(entity, @event.EntityName, source.PersistenceContext.GetEntry(entity), source);
 
 			switch (entityState)
 			{
@@ -82,7 +82,7 @@ namespace NHibernate.Event.Default
 			IEventSource source = @event.Session;
 
 			//TODO: check that entry.getIdentifier().equals(requestedId)
-			object entity = source.Unproxy(@event.Entity);
+			object entity = source.PersistenceContext.Unproxy(@event.Entity);
 			IEntityPersister persister = source.GetEntityPersister(entity);
 
 			object tempObject;
@@ -105,7 +105,7 @@ namespace NHibernate.Event.Default
 			log.Debug("saving transient instance");
 
 			IEventSource source = @event.Session;
-			object entity = source.Unproxy(@event.Entity);
+			object entity = source.PersistenceContext.Unproxy(@event.Entity);
 
 			object tempObject;
 			tempObject = createCache[entity];

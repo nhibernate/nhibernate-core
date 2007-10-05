@@ -62,7 +62,8 @@ namespace NHibernate.Event.Default
 			ISessionImplementor session = Session;
 
 			ICollectionPersister persister = session.Factory.GetCollectionPersister(collectionType.Role);
-
+			
+			IPersistenceContext persistenceContext = session.PersistenceContext;
 			//TODO: move into collection type, so we can use polymorphism!
 
 			if (collectionType.IsArrayType)
@@ -70,20 +71,20 @@ namespace NHibernate.Event.Default
 				//if (collection == CollectionType.UNFETCHED_COLLECTION)
 				//  return null;
 
-				PersistentArrayHolder ah = session.GetCollectionHolder(collection);
+				PersistentArrayHolder ah = persistenceContext.GetCollectionHolder(collection) as PersistentArrayHolder;
 				if (ah == null)
 				{
 					//ah = collectionType.Wrap(session, collection);
 					ah = new PersistentArrayHolder(session, collection);
-					session.AddNewCollection(persister, ah);
-					session.AddCollectionHolder(ah);
+					persistenceContext.AddNewCollection(persister, ah);
+					persistenceContext.AddCollectionHolder(ah);
 				}
 				return null;
 			}
 			else
 			{
 				IPersistentCollection persistentCollection = collectionType.Wrap(session, collection);
-				session.AddNewCollection(persister, persistentCollection);
+				persistenceContext.AddNewCollection(persister, persistentCollection);
 
 				if (log.IsDebugEnabled)
 					log.Debug("Wrapped collection in role: " + collectionType.Role);

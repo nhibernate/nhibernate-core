@@ -78,7 +78,7 @@ namespace NHibernate.Event.Default
 
 					// Check the persistence context for an entry relating to this
 					// entity to be merged...
-					EntityEntry entry = source.GetEntry(entity);
+					EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 					if (entry == null)
 					{
 						IEntityPersister persister = source.GetEntityPersister(entity);
@@ -86,8 +86,8 @@ namespace NHibernate.Event.Default
 						if (id != null)
 						{
 							EntityKey key = new EntityKey(id, persister);
-							object managedEntity = source.GetEntity(key);
-							entry = source.GetEntry(managedEntity);
+							object managedEntity = source.PersistenceContext.GetEntity(key);
+							entry = source.PersistenceContext.GetEntry(managedEntity);
 							if (entry != null)
 							{
 								// we have specialized case of a detached entity from the
@@ -236,7 +236,7 @@ namespace NHibernate.Event.Default
 			{
 				copyCache[entity] = result; //before cascade!
 
-				object target = source.Unproxy(result);
+				object target = source.PersistenceContext.Unproxy(result);
 				if (target == entity)
 				{
 					throw new AssertionFailure("entity was not detached");
@@ -306,15 +306,15 @@ namespace NHibernate.Event.Default
 
 		private static bool ExistsInDatabase(object entity, IEventSource source, IEntityPersister persister)
 		{
-			EntityEntry entry = source.GetEntry(entity);
+			EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 			if (entry == null)
 			{
 				object id = persister.GetIdentifier(entity);
 				if (id != null)
 				{
 					EntityKey key = new EntityKey(id, persister);
-					object managedEntity = source.GetEntity(key);
-					entry = source.GetEntry(managedEntity);
+					object managedEntity = source.PersistenceContext.GetEntity(key);
+					entry = source.PersistenceContext.GetEntry(managedEntity);
 				}
 			}
 
@@ -371,14 +371,14 @@ namespace NHibernate.Event.Default
 		/// <param name="copyCache">A cache of already copied instance. </param>
 		protected internal void CascadeOnMerge(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache)
 		{
-			source.IncrementCascadeLevel();
+			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
 				Cascades.Cascade(source, persister, entity, CascadeAction, CascadePoint.CascadeOnCopy, copyCache);
 			}
 			finally
 			{
-				source.DecrementCascadeLevel();
+				source.PersistenceContext.DecrementCascadeLevel();
 			}
 		}
 		

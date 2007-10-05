@@ -18,15 +18,15 @@ namespace NHibernate.Event.Default
 		public void OnReplicate(ReplicateEvent @event)
 		{
 			IEventSource source = @event.Session;
-			if (source.ReassociateIfUninitializedProxy(@event.Entity))
+			if (source.PersistenceContext.ReassociateIfUninitializedProxy(@event.Entity))
 			{
 				log.Debug("uninitialized proxy passed to replicate()");
 				return;
 			}
 
-			object entity = source.UnproxyAndReassociate(@event.Entity);
+			object entity = source.PersistenceContext.UnproxyAndReassociate(@event.Entity);
 
-			if (source.IsEntryFor(entity))
+			if (source.PersistenceContext.IsEntryFor(entity))
 			{
 				log.Debug("ignoring persistent instance passed to replicate()");
 				//hum ... should we cascade anyway? throw an exception? fine like it is?
@@ -107,14 +107,14 @@ namespace NHibernate.Event.Default
 
 			new OnReplicateVisitor(source, id, entity, true).Process(entity, persister);
 
-			source.AddEntity(entity, Status.Loaded, null, new EntityKey(id, persister), version, LockMode.None, true, persister, true, false);
+			source.PersistenceContext.AddEntity(entity, Status.Loaded, null, new EntityKey(id, persister), version, LockMode.None, true, persister, true, false);
 
 			CascadeAfterReplicate(entity, persister, replicationMode, source);
 		}
 
 		private void CascadeAfterReplicate(object entity, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
 		{
-			source.IncrementCascadeLevel();
+			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
 				Cascades.Cascade(source, persister, entity, Cascades.CascadingAction.ActionReplicate, CascadePoint.CascadeOnUpdate,
@@ -122,7 +122,7 @@ namespace NHibernate.Event.Default
 			}
 			finally
 			{
-				source.DecrementCascadeLevel();
+				source.PersistenceContext.DecrementCascadeLevel();
 			}
 		}
 

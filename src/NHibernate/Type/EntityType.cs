@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Text;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
@@ -75,11 +76,11 @@ namespace NHibernate.Type
 			get { return associatedClass; }
 		}
 
-		public object GetIdentifier(object value, ISessionImplementor session)
+		protected internal object GetIdentifier(object value, ISessionImplementor session)
 		{
 			if (IsReferenceToPrimaryKey)
 			{
-				return session.GetEntityIdentifierIfNotUnsaved(value); //tolerates nulls
+				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
 			}
 			else if (value == null)
 			{
@@ -87,9 +88,18 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return session.Factory
-					.GetEntityPersister(AssociatedClass)
-					.GetPropertyValue(value, uniqueKeyPropertyName);
+				IEntityPersister entityPersister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
+				object propertyValue = entityPersister.GetPropertyValue(value, uniqueKeyPropertyName);
+				// We now have the value of the property-ref we reference.  However,
+				// we need to dig a little deeper, as that property might also be
+				// an entity type, in which case we need to resolve its identitifier
+				IType type = entityPersister.GetPropertyType(uniqueKeyPropertyName);
+				if (type.IsEntityType)
+				{
+					propertyValue = ((EntityType)type).GetIdentifier(propertyValue, session);
+				}
+
+				return propertyValue;
 			}
 		}
 
@@ -259,19 +269,20 @@ namespace NHibernate.Type
 		/// </summary>
 		protected object ResolveIdentifier(object id, ISessionImplementor session)
 		{
-			return session.InternalLoad(AssociatedClass, id, eager, IsNullable);
+			object proxyOrEntity = session.InternalLoad(AssociatedClass, id, eager, IsNullable);
+			return proxyOrEntity;
 		}
 
 		/// <summary>
 		/// Resolve an identifier or unique key value
 		/// </summary>
-		/// <param name="id"></param>
+		/// <param name="value"></param>
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ResolveIdentifier(object id, ISessionImplementor session, object owner)
+		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
-			if (id == null)
+			if (value == null)
 			{
 				return null;
 			}
@@ -279,11 +290,11 @@ namespace NHibernate.Type
 			{
 				if (IsReferenceToPrimaryKey)
 				{
-					return ResolveIdentifier(id, session);
+					return ResolveIdentifier(value, session);
 				}
 				else
 				{
-					return session.LoadByUniqueKey(AssociatedClass, uniqueKeyPropertyName, id);
+					return LoadByUniqueKey(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session);
 				}
 			}
 		}
@@ -331,6 +342,11 @@ namespace NHibernate.Type
 			get { return uniqueKeyPropertyName; }
 		}
 
+		public virtual string PropertyName
+		{
+			get { return null; }
+		}
+
 		public override bool Equals(object obj)
 		{
 			if (!base.Equals(obj))
@@ -363,6 +379,43 @@ namespace NHibernate.Type
 			else
 			{
 				return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
+			}
+		}
+
+		/// <summary> 
+		/// Load an instance by a unique key that is not the primary key. 
+		/// </summary>
+		/// <param name="entityName">The name of the entity to load </param>
+		/// <param name="uniqueKeyPropertyName">The name of the property defining the uniqie key. </param>
+		/// <param name="key">The unique key property value. </param>
+		/// <param name="session">The originating session. </param>
+		/// <returns> The loaded entity </returns>
+		public object LoadByUniqueKey(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session)
+		{
+			ISessionFactoryImplementor factory = session.Factory;
+			IUniqueKeyLoadable persister = (IUniqueKeyLoadable)factory.GetEntityPersister(entityName);
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+
+			//TODO: implement caching?! proxies?!
+			try
+			{
+				object result;
+				// NH Different behavior
+				//EntityUniqueKey euk = new EntityUniqueKey(entityName, uniqueKeyPropertyName, key, GetIdentifierOrUniqueKeyType(factory), session.Factory);
+				//result = persistenceContext.GetEntity(euk);
+				//if (result == null)
+					result = persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session);
+
+				return result == null ? null : persistenceContext.ProxyFor(result);
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqle, "Error performing LoadByUniqueKey");
 			}
 		}
 	}

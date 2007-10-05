@@ -66,7 +66,9 @@ namespace NHibernate.Action
 			// After actually deleting a row, record the fact that the instance no longer 
 			// exists on the database (needed for identity-column key generation), and
 			// remove it from the session cache
-			EntityEntry entry = session.RemoveEntry(instance);
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+
+			EntityEntry entry = persistenceContext.RemoveEntry(instance);
 			if (entry == null)
 			{
 				throw new AssertionFailure("Possible nonthreadsafe access to session");
@@ -74,8 +76,8 @@ namespace NHibernate.Action
 			entry.PostDelete();
 
 			EntityKey key = new EntityKey(entry.Id, entry.Persister);
-			session.RemoveEntity(key);
-			session.RemoveProxy(key);
+			persistenceContext.RemoveEntity(key);
+			persistenceContext.RemoveProxy(key);
 
 			if (persister.HasCache)
 				persister.Cache.Evict(ck);

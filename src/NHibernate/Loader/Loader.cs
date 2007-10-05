@@ -175,7 +175,9 @@ namespace NHibernate.Loader
 			QueryParameters queryParameters,
 			bool returnProxies)
 		{
-			session.BeforeLoad();
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+
+			persistenceContext.BeforeLoad();
 			IList result;
 			try
 			{
@@ -183,9 +185,9 @@ namespace NHibernate.Loader
 			}
 			finally
 			{
-				session.AfterLoad();
+				persistenceContext.AfterLoad();
 			}
-			session.InitializeNonLazyCollections();
+			persistenceContext.InitializeNonLazyCollections();
 
 			return result;
 		}
@@ -237,7 +239,7 @@ namespace NHibernate.Loader
 				hydratedObjects,
 				resultSet,
 				session);
-			session.InitializeNonLazyCollections();
+			session.PersistenceContext.InitializeNonLazyCollections();
 			return result;
 		}
 
@@ -334,7 +336,7 @@ namespace NHibernate.Loader
 				for (int i = 0; i < entitySpan; i++)
 				{
 					object entity = row[i];
-					object proxy = session.ProxyFor(persisters[i], keys[i], entity);
+					object proxy = session.PersistenceContext.ProxyFor(persisters[i], keys[i], entity);
 
 					if (entity != proxy)
 					{
@@ -557,7 +559,7 @@ namespace NHibernate.Loader
 					{
 						if (rowKeys[i] != null && subselectFetches[i] != null)
 						{
-							session.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetches[i]);
+							session.PersistenceContext.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetches[i]);
 						}
 					}
 				}
@@ -605,7 +607,7 @@ namespace NHibernate.Loader
 			//important: reuse the same event instances for performance!
 			PreLoadEvent pre;
 			PostLoadEvent post;
-			if (session.HasEventSource)
+			if (session.IsEventSource)
 			{
 				pre = new PreLoadEvent((IEventSource)session);
 				post = new PostLoadEvent((IEventSource)session);
@@ -653,7 +655,10 @@ namespace NHibernate.Loader
 			ISessionImplementor session,
 			ICollectionPersister collectionPersister)
 		{
-			session.EndLoadingCollections(collectionPersister, resultSetId);
+			//this is a query and we are loading multiple instances of the same collection role
+			session.PersistenceContext.LoadContexts
+				.GetCollectionLoadContext((IDataReader)resultSetId)
+				.EndLoadingCollections(collectionPersister);
 		}
 
 		protected virtual IList GetResultList(IList results, IResultTransformer resultTransformer)
@@ -697,21 +702,13 @@ namespace NHibernate.Loader
 						EntityKey ownerKey = keys[owner];
 						if (keys[i] == null && ownerKey != null)
 						{
-							//bool isOneToOneAssociation = ownerAssociationTypes != null &&
-							//	ownerAssociationTypes[ i ] != null &&
-							//	ownerAssociationTypes[ i ].IsOneToOne;
-
-							//if( isOneToOneAssociation )
-							//{
-							// Added to fix NH-687, not in Hibernate:
-							bool isUniqueKeyReference = ownerAssociationTypes != null &&
+							bool isOneToOneAssociation = ownerAssociationTypes != null &&
 							                            ownerAssociationTypes[i] != null &&
-							                            ownerAssociationTypes[i].IsUniqueKeyReference;
-							if (!isUniqueKeyReference)
+							                            ownerAssociationTypes[i].IsOneToOne;
+							if (isOneToOneAssociation)
 							{
-								session.AddNonExist(new EntityKey(ownerKey.Identifier, persisters[i]));
+								session.PersistenceContext.AddNullProperty(ownerKey, ownerAssociationTypes[i].PropertyName);
 							}
-							//}
 						}
 					}
 				}
@@ -730,6 +727,8 @@ namespace NHibernate.Loader
 			ISessionImplementor session
 			)
 		{
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+
 			object collectionRowKey = persister.ReadKey(
 				rs,
 				descriptor.SuffixedKeyAliases,
@@ -749,7 +748,7 @@ namespace NHibernate.Loader
 				object owner = optionalOwner;
 				if (owner == null)
 				{
-					owner = session.GetCollectionOwner(collectionRowKey, persister);
+					owner = persistenceContext.GetCollectionOwner(collectionRowKey, persister);
 					if (owner == null)
 					{
 						//TODO: This is assertion is disabled because there is a bug that means the
@@ -759,7 +758,7 @@ namespace NHibernate.Loader
 						//throw new AssertionFailure("bug loading unowned collection");
 					}
 				}
-				IPersistentCollection rowCollection = session.GetLoadingCollection(persister, collectionRowKey, rs);
+				IPersistentCollection rowCollection = persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, collectionRowKey);
 
 				if (rowCollection != null)
 				{
@@ -778,7 +777,7 @@ namespace NHibernate.Loader
 						"result set contains (possibly empty) collection: " +
 						MessageHelper.InfoString(persister, optionalKey));
 				}
-				session.GetLoadingCollection(persister, optionalKey, rs); // handle empty collection
+				persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, optionalKey); // handle empty collection
 			}
 
 			// else no collection element, but also no owner
@@ -812,7 +811,7 @@ namespace NHibernate.Loader
 							log.Debug("result set contains (possibly empty) collection: " +
 							          MessageHelper.InfoString(collectionPersisters[j], keys[i]));
 						}
-						session.GetLoadingCollection(collectionPersisters[j], keys[i], resultSetId);
+						session.PersistenceContext.LoadContexts.GetCollectionLoadContext((IDataReader)resultSetId).GetLoadingCollection(collectionPersisters[j], keys[i]);
 					}
 				}
 			}
@@ -929,7 +928,7 @@ namespace NHibernate.Loader
 				else
 				{
 					//If the object is already loaded, return the loaded one
-					obj = session.GetEntity(key);
+					obj = session.PersistenceContext.GetEntity(key);
 					if (obj != null)
 					{
 						//its already loaded so dont need to hydrate it
@@ -971,12 +970,13 @@ namespace NHibernate.Loader
 				// we don't need to worry about existing version being uninitialized
 				// because this block isn't called by a re-entrant load (re-entrant
 				// load _always_ have lock mode NONE
-				if (persister.IsVersioned && session.GetLockMode(obj).LessThan(lockMode))
+				// TODO : Optimize using session.PersistenceContext.GetEntry only one time
+				if (persister.IsVersioned && session.PersistenceContext.GetEntry(obj).LockMode.LessThan(lockMode))
 				{
 					// we only check the version when _upgrading_ lock modes
-					CheckVersion(i, persister, key.Identifier, session.GetVersion(obj), rs, session);
+					CheckVersion(i, persister, key.Identifier, session.PersistenceContext.GetEntry(obj).Version, rs, session);
 					// we need to upgrade the lock mode to the mode requested
-					session.SetLockMode(obj, lockMode);
+					session.PersistenceContext.GetEntry(obj).LockMode= lockMode;
 				}
 			}
 		}
@@ -1044,7 +1044,7 @@ namespace NHibernate.Loader
 			// add temp entry so that the next step is circular-reference
 			// safe - only needed because some types don't take proper
 			// advantage of two-phase-load (esp. components)
-			session.AddUninitializedEntity(key, obj, lockMode);
+			TwoPhaseLoad.AddUninitializedEntity(key, obj, persister, lockMode, false, session);
 
 			// This is not very nice (and quite slow):
 			string[][] cols = persister == rootPersister ?
@@ -1086,7 +1086,7 @@ namespace NHibernate.Loader
 //				}
 //			}
 
-			session.PostHydrate(persister, id, values, obj, lockMode);
+			TwoPhaseLoad.PostHydrate(persister, id, values, obj, lockMode, false, session);
 		}
 
 		/// <summary>

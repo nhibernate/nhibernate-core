@@ -160,12 +160,12 @@ namespace NHibernate.Event.Default
 			if (!useIdentityColumn)
 			{
 				key = new EntityKey(id, persister);
-				object old = source.GetEntity(key);
+				object old = source.PersistenceContext.GetEntity(key);
 				if (old != null)
 				{
-					if (source.GetEntry(old).Status == Status.Deleted)
+					if (source.PersistenceContext.GetEntry(old).Status == Status.Deleted)
 					{
-						source.ForceFlush(source.GetEntry(old));
+						source.ForceFlush(source.PersistenceContext.GetEntry(old));
 					}
 					else
 					{
@@ -218,7 +218,7 @@ namespace NHibernate.Event.Default
 			// Put a placeholder in entries, so we don't recurse back and try to save() the
 			// same object again. QUESTION: should this be done before onSave() is called?
 			// likewise, should it be done before onUpdate()?
-			source.AddEntry(entity, Status.Saving, null, id, null, LockMode.Write, useIdentityColumn, persister, false, false);
+			source.PersistenceContext.AddEntry(entity, Status.Saving, null, id, null, LockMode.Write, useIdentityColumn, persister, false, false);
 
 			CascadeBeforeSave(source, persister, entity, anything);
 
@@ -262,7 +262,7 @@ namespace NHibernate.Event.Default
 					//now done in EntityIdentityInsertAction
 					//persister.setIdentifier( entity, id, source.getEntityMode() );
 					key = new EntityKey(id, persister);
-					source.CheckUniqueness(key, entity);
+					source.PersistenceContext.CheckUniqueness(key, entity);
 					//source.getBatcher().executeBatch(); //found another way to ensure that all batched joined inserts have been executed
 				}
 				else
@@ -274,7 +274,7 @@ namespace NHibernate.Event.Default
 			}
 
 			object version = Versioning.GetVersion(values, persister);
-			source.AddEntity(entity, Status.Loaded, values, key, version, LockMode.Write, useIdentityColumn, persister, VersionIncrementDisabled, false);
+			source.PersistenceContext.AddEntity(entity, Status.Loaded, values, key, version, LockMode.Write, useIdentityColumn, persister, VersionIncrementDisabled, false);
 			//source.getPersistenceContext().removeNonExist( new EntityKey( id, persister, source.getEntityMode() ) );
 
 			if (!useIdentityColumn)
@@ -347,14 +347,14 @@ namespace NHibernate.Event.Default
 		protected internal virtual void CascadeBeforeSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
 			// cascade-save to many-to-one BEFORE the parent is saved
-			source.IncrementCascadeLevel();
+			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
 				Cascades.Cascade(source, persister, entity, CascadeAction, CascadePoint.CascadeBeforeInsertAfterDelete, anything);
 			}
 			finally
 			{
-				source.DecrementCascadeLevel();
+				source.PersistenceContext.DecrementCascadeLevel();
 			}
 		}
 
@@ -366,14 +366,14 @@ namespace NHibernate.Event.Default
 		protected internal virtual void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
 			// cascade-save to collections AFTER the collection owner was saved
-			source.IncrementCascadeLevel();
+			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
 				Cascades.Cascade(source, persister, entity, CascadeAction, CascadePoint.CascadeAfterInsertBeforeDelete, anything);
 			}
 			finally
 			{
-				source.DecrementCascadeLevel();
+				source.PersistenceContext.DecrementCascadeLevel();
 			}
 		}
 

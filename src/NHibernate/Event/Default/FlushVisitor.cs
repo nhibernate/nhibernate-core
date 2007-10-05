@@ -31,7 +31,7 @@ namespace NHibernate.Event.Default
 				IPersistentCollection coll;
 				if (type.IsArrayType)
 				{
-					coll = Session.GetCollectionHolder(collection);
+					coll = Session.PersistenceContext.GetCollectionHolder(collection);
 				}
 				else
 				{

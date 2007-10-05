@@ -26,7 +26,7 @@ namespace NHibernate.Engine
 		public static void PostHydrate(IEntityPersister persister, object id, object[] values, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
 			object version = Versioning.GetVersion(values, persister);
-			session.AddEntry(obj, Status.Loading, values, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			session.PersistenceContext.AddEntry(obj, Status.Loading, values, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 
 			if (log.IsDebugEnabled && version != null)
 			{
@@ -44,8 +44,8 @@ namespace NHibernate.Engine
 		public static void InitializeEntity(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent)
 		{
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
-
-			EntityEntry entityEntry = session.GetEntry(entity);
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+			EntityEntry entityEntry = persistenceContext.GetEntry(entity);
 			if (entityEntry == null)
 			{
 				throw new AssertionFailure("possible non-threadsafe access to the session");
@@ -63,14 +63,14 @@ namespace NHibernate.Engine
 				hydratedState[i] = types[i].ResolveIdentifier(hydratedState[i], session, entity);
 
 				//object value = hydratedState[i];
-				//if (value != org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY && value != BackrefPropertyAccessor.UNKNOWN)
+				//if (value != org.hibernate.intercept.LazyPropertyInitializer.UNFETCHED_PROPERTY && value != BackrefPropertyAccessor.UNKNOWN)
 				//{
-				//  hydratedState[i] = types[i].Resolve(value, session, entity);
+				//hydratedState[i] = types[i].ResolveIdentifier(value, session, entity);
 				//}
 			}
 
 			//Must occur after resolving identifiers!
-			if (session.HasEventSource)
+			if (session.IsEventSource)
 			{
 				preLoadEvent.Entity = entity;
 				preLoadEvent.State = hydratedState;
@@ -114,19 +114,19 @@ namespace NHibernate.Engine
 				//performance optimization, but not really
 				//important, except for entities with huge 
 				//mutable property values
-				session.SetEntryStatus(entityEntry, Status.ReadOnly);
+				persistenceContext.SetEntryStatus(entityEntry, Status.ReadOnly);
 			}
 			else
 			{
 				//take a snapshot
 				TypeFactory.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState);
-				session.SetEntryStatus(entityEntry, Status.Loaded);
+				persistenceContext.SetEntryStatus(entityEntry, Status.Loaded);
 			}
 
 			// TODO H3.2 properties lazyness
 			//persister.AfterInitialize(entity, entityEntry.LoadedWithLazyPropertiesUnfetched, session);
 
-			if (session.HasEventSource)
+			if (session.IsEventSource)
 			{
 				postLoadEvent.Entity = entity;
 				postLoadEvent.Id = id;
@@ -164,12 +164,12 @@ namespace NHibernate.Engine
 		/// </summary>
 		public static void AddUninitializedEntity(EntityKey key, object obj, IEntityPersister persister, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
-			session.AddEntity(obj, Status.Loading, null, key, null, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			session.PersistenceContext.AddEntity(obj, Status.Loading, null, key, null, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 		}
 
 		public static void AddUninitializedCachedEntity(EntityKey key, object obj, IEntityPersister persister, LockMode lockMode, bool lazyPropertiesAreUnfetched, object version, ISessionImplementor session)
 		{
-			session.AddEntity(obj, Status.Loading, null, key, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			session.PersistenceContext.AddEntity(obj, Status.Loading, null, key, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 		}
 	}
 }

@@ -94,7 +94,7 @@ namespace NHibernate.Action
 		{
 			if (isDelayed)
 			{
-				Session.ReplaceDelayedEntityIdentityInsertKeys(delayedEntityKey, generatedId);
+				Session.PersistenceContext.ReplaceDelayedEntityIdentityInsertKeys(delayedEntityKey, generatedId);
 			}
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
 			if (postListeners.Length > 0)

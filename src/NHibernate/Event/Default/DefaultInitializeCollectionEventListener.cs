@@ -19,7 +19,7 @@ namespace NHibernate.Event.Default
 			IPersistentCollection collection = @event.Collection;
 			ISessionImplementor source = @event.Session;
 
-			CollectionEntry ce = source.GetCollectionEntry(collection);
+			CollectionEntry ce = source.PersistenceContext.GetCollectionEntry(collection);
 			if (ce == null)
 				throw new HibernateException("collection was evicted");
 			if (!collection.WasInitialized)
@@ -93,9 +93,13 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					collection.InitializeFromCache(persister, ce, source.GetCollectionOwner(id,persister));
-					// collection.AfterInitialize(persister); TODO present in NH not in H3.2 (NH-739)
-					source.GetCollectionEntry(collection).PostInitialize(collection);
+					IPersistenceContext persistenceContext = source.PersistenceContext;
+
+					// NH Different implementation but similar behavior H3.2 CollectionCacheEntry.Assemble do de same
+					collection.InitializeFromCache(persister, ce, persistenceContext.GetCollectionOwner(id, persister));
+					collection.AfterInitialize(persister);
+
+					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection);
 					return true;
 				}
 			}

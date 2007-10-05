@@ -42,7 +42,7 @@ namespace NHibernate.Event.Default
 				wrapper.SetCurrentSession(session);
 				if (wrapper.WasInitialized)
 				{
-					session.AddNewCollection(persister, wrapper);
+					session.PersistenceContext.AddNewCollection(persister, wrapper);
 				}
 				else
 				{

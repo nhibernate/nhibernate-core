@@ -3176,10 +3176,10 @@ namespace NHibernate.Persister.Entity
 				//
 				// Note, it potentially could be a proxy, so perform the location the safe way...
 				EntityKey key = new EntityKey(id, this);
-				object entity = session.GetEntity(key);
+				object entity = session.PersistenceContext.GetEntity(key);
 				if (entity != null)
 				{
-					EntityEntry entry = session.GetEntry(entity);
+					EntityEntry entry = session.PersistenceContext.GetEntry(entity);
 					loadedState = entry.LoadedState;
 				}
 			}

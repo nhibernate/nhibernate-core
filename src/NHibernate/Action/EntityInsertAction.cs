@@ -49,7 +49,7 @@ namespace NHibernate.Action
 
 				persister.Insert(id, state, instance, Session);
 
-				EntityEntry entry = Session.GetEntry(instance);
+				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
 				if (entry == null)
 				{
 					throw new AssertionFailure("Possible nonthreadsafe access to session");

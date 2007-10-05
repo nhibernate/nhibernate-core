@@ -59,7 +59,7 @@ namespace NHibernate.Action
 				if (key is DelayedPostInsertIdentifier)
 				{
 					// need to look it up from the persistence-context
-					finalKey = session.GetEntry(collection.Owner).Id;
+					finalKey = session.PersistenceContext.GetEntry(collection.Owner).Id;
 					if (finalKey == key)
 					{
 						// we may be screwed here since the collection action is about to execute

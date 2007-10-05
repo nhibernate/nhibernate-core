@@ -24,7 +24,7 @@ namespace NHibernate.Action
 
 			if (Collection != null)
 			{
-				Session.GetCollectionEntry(Collection).AfterAction(Collection);
+				Session.PersistenceContext.GetCollectionEntry(Collection).AfterAction(Collection);
 			}
 
 			Evict();

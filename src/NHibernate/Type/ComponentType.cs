@@ -586,7 +586,7 @@ namespace NHibernate.Type
 			{
 				if (parentSetter != null && parent != null)
 				{
-					parentSetter.Set(result, session.ProxyFor(parent));
+					parentSetter.Set(result, session.PersistenceContext.ProxyFor(parent));
 				}
 				return result;
 			}

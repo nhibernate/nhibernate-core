@@ -27,7 +27,7 @@ namespace NHibernate.Loader.Collection
 
 		public void Initialize(object id, ISessionImplementor session)
 		{
-			object[] batch = session.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
+			object[] batch = session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
 
 			for (int i = 0; i < batchSizes.Length; i++)
 			{

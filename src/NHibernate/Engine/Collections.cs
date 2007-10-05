@@ -29,7 +29,7 @@ namespace NHibernate.Engine
 
 		private static void ProcessNeverReferencedCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
-			CollectionEntry entry = session.GetCollectionEntry(coll);
+			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
 
 			log.Debug("Found collection with unloaded owner: " + MessageHelper.InfoString(entry.LoadedPersister, entry.LoadedKey, session.Factory));
 
@@ -41,7 +41,8 @@ namespace NHibernate.Engine
 
 		private static void ProcessDereferencedCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
-			CollectionEntry entry = session.GetCollectionEntry(coll);
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+			CollectionEntry entry = persistenceContext.GetCollectionEntry(coll);
 			ICollectionPersister loadedPersister = entry.LoadedPersister;
 
 			if (log.IsDebugEnabled && loadedPersister != null)
@@ -59,7 +60,7 @@ namespace NHibernate.Engine
 				//  // the persistence context
 				//  if (session.Factory.Settings.IsIdentifierRollbackEnabled)
 				//  {
-				//    EntityEntry ownerEntry = session.GetEntry(coll.Owner);
+				//    EntityEntry ownerEntry = persistenceContext.GetEntry(coll.Owner);
 				//    if (ownerEntry != null)
 				//    {
 				//      ownerId = ownerEntry.Id;
@@ -71,14 +72,14 @@ namespace NHibernate.Engine
 				//  }
 				//}
 				EntityKey key = new EntityKey(ownerId, loadedPersister.OwnerEntityPersister);
-				object owner = session.GetEntity(key);
+				object owner = persistenceContext.GetEntity(key);
 				if (owner == null)
 				{
 					throw new AssertionFailure("collection owner not associated with session: " + loadedPersister.Role);
 				}
-				EntityEntry e = session.GetEntry(owner);
+				EntityEntry e = persistenceContext.GetEntry(owner);
 				//only collections belonging to deleted entities are allowed to be dereferenced in the case of orphan delete
-				if (e != null && e.Status != Impl.Status.Deleted && e.Status != Impl.Status.Gone)
+				if (e != null && e.Status != Status.Deleted && e.Status != Status.Gone)
 				{
 					throw new HibernateException("A collection with cascade=\"all-delete-orphan\" was no longer referenced by the owning entity instance: " + loadedPersister.Role);
 				}
@@ -152,7 +153,7 @@ namespace NHibernate.Engine
 		public static void ProcessReachableCollection(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session)
 		{
 			collection.Owner = entity;
-			CollectionEntry ce = session.GetCollectionEntry(collection);
+			CollectionEntry ce = session.PersistenceContext.GetCollectionEntry(collection);
 
 			if (ce == null)
 			{

@@ -28,17 +28,17 @@ namespace NHibernate.Event.Default
 
 			ISessionImplementor source = @event.Session;
 
-			if (@event.LockMode == LockMode.None && source.ReassociateIfUninitializedProxy(@event.Entity))
+			if (@event.LockMode == LockMode.None && source.PersistenceContext.ReassociateIfUninitializedProxy(@event.Entity))
 			{
 				// NH-specific: shortcut for uninitialized proxies - reassociate
 				// without initialization
 				return;
 			}
 
-			object entity = source.UnproxyAndReassociate(@event.Entity);
+			object entity = source.PersistenceContext.UnproxyAndReassociate(@event.Entity);
 			//TODO: if object was an uninitialized proxy, this is inefficient,resulting in two SQL selects
 
-			EntityEntry entry = source.GetEntry(entity);
+			EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 			if (entry == null)
 			{
 				IEntityPersister persister = source.GetEntityPersister(entity);
@@ -59,14 +59,14 @@ namespace NHibernate.Event.Default
 		private void CascadeOnLock(LockEvent @event, IEntityPersister persister, object entity)
 		{
 			IEventSource source = @event.Session;
-			source.IncrementCascadeLevel();
+			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
 				Cascades.Cascade(source, persister, entity, Cascades.CascadingAction.ActionLock, CascadePoint.CascadeOnLock);
 			}
 			finally
 			{
-				source.DecrementCascadeLevel();
+				source.PersistenceContext.DecrementCascadeLevel();
 			}
 		}
 	}

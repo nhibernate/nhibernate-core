@@ -64,7 +64,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 		{
-			base.NullSafeSet(st, session.GetCollectionHolder(value), index, session);
+			base.NullSafeSet(st, session.PersistenceContext.GetCollectionHolder(value), index, session);
 		}
 
 		/// <summary>
@@ -86,10 +86,9 @@ namespace NHibernate.Type
 		public override object Disassemble(object value, ISessionImplementor session)
 		{
 			if (value == null)
-			{
 				return null;
-			}
-			return session.GetLoadedCollectionKey(session.GetCollectionHolder(value));
+			IPersistenceContext pc = session.PersistenceContext;
+			return pc.GetCollectionEntry(pc.GetCollectionHolder(value)).LoadedKey;
 		}
 
 		/// <summary>
@@ -113,12 +112,6 @@ namespace NHibernate.Type
 
 		// Not ported - ToString( object value, ISessionFactoryImplementor factory )
 		// - PesistentCollectionType implementation is able to handle arrays too in .NET
-
-		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
-		                                       ISessionImplementor session)
-		{
-			return base.ReplaceElements(original, target, owner, copyCache, session);
-		}
 
 		public override object Replace(object original, object target, ISessionImplementor session, object owner,
 		                               IDictionary copyCache)

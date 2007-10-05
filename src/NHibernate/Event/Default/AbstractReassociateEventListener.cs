@@ -36,14 +36,14 @@ namespace NHibernate.Event.Default
 			IEventSource source = @event.Session;
 			EntityKey key = new EntityKey(id, persister);
 
-			source.CheckUniqueness(key, entity);
+			source.PersistenceContext.CheckUniqueness(key, entity);
 
 			//get a snapshot
 			object[] values = persister.GetPropertyValues(entity);
 			TypeFactory.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values);
 			object version = Versioning.GetVersion(values, persister);
 
-			EntityEntry newEntry = source.AddEntity(entity, Status.Loaded, values, key, version, LockMode.None, true, persister, false, true);
+			EntityEntry newEntry = source.PersistenceContext.AddEntity(entity, Status.Loaded, values, key, version, LockMode.None, true, persister, false, true);
 
 			new OnLockVisitor(source, id, entity).Process(entity, persister);
 

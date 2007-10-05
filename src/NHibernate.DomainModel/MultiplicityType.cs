@@ -141,11 +141,7 @@ namespace NHibernate.DomainModel
 			}
 
 			Multiplicity m = (Multiplicity) value;
-			return new object[]
-				{
-					m.count,
-					session.GetEntityIdentifierIfNotUnsaved(m.glarch)
-				};
+			return new object[] {m.count, ForeignKeys.GetEntityIdentifierIfNotUnsaved(null, m.glarch, session)};
 		}
 
 		public object Replace(object original, object target, ISessionImplementor session, object owner)

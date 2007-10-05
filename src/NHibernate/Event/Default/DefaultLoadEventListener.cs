@@ -91,7 +91,7 @@ namespace NHibernate.Event.Default
 		{
 			if (@event.InstanceToLoad != null)
 			{
-				if (@event.Session.GetEntry(@event.InstanceToLoad) != null)
+				if (@event.Session.PersistenceContext.GetEntry(@event.InstanceToLoad) != null)
 				{
 					throw new PersistentObjectException("attempted to load into an instance that was already associated with the session: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
@@ -137,7 +137,7 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				ISessionImplementor persistenceContext = @event.Session;
+				IPersistenceContext persistenceContext = @event.Session.PersistenceContext;
 
 				// look for a proxy
 				object proxy = persistenceContext.GetProxy(keyToLoad);
@@ -164,7 +164,7 @@ namespace NHibernate.Event.Default
 		/// Given that there is a pre-existing proxy.
 		/// Initialize it if necessary; narrow if necessary.
 		/// </summary>
-		private object ReturnNarrowedProxy(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor persistenceContext, object proxy)
+		private object ReturnNarrowedProxy(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy)
 		{
 			log.Debug("entity proxy found in session cache");
 			LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)proxy);
@@ -181,7 +181,7 @@ namespace NHibernate.Event.Default
 					@event.Session.Factory.EntityNotFoundDelegate.HandleEntityNotFound(persister.EntityName, keyToLoad.Identifier);
 				}
 			}
-			return persistenceContext.NarrowProxy(proxy, persister, keyToLoad, impl);
+			return persistenceContext.NarrowProxy((INHibernateProxy)proxy, persister, keyToLoad, impl);
 		}
 
 		/// <summary> 
@@ -189,7 +189,7 @@ namespace NHibernate.Event.Default
 		/// Check if the entity is already loaded. If it is, return the entity,
 		/// otherwise create and return a proxy.
 		/// </summary>
-		private object CreateProxyIfNecessary(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor persistenceContext)
+		private object CreateProxyIfNecessary(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext)
 		{
 			object existing = persistenceContext.GetEntity(keyToLoad);
 			if (existing != null)
@@ -213,7 +213,7 @@ namespace NHibernate.Event.Default
 				// return new uninitialized proxy
 				object proxy = persister.CreateProxy(@event.EntityId, @event.Session);
 				persistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(keyToLoad);
-				persistenceContext.AddProxy(keyToLoad, proxy);
+				persistenceContext.AddProxy(keyToLoad, (INHibernateProxy)proxy);
 				return proxy;
 			}
 		}
@@ -250,7 +250,7 @@ namespace NHibernate.Event.Default
 				}
 			}
 
-			object proxy = @event.Session.ProxyFor(persister, keyToLoad, entity);
+			object proxy = @event.Session.PersistenceContext.ProxyFor(persister, keyToLoad, entity);
 
 			return proxy;
 		}
@@ -355,7 +355,7 @@ namespace NHibernate.Event.Default
 			if (old != null)
 			{
 				// this object was already loaded
-				EntityEntry oldEntry = session.GetEntry(old);
+				EntityEntry oldEntry = session.PersistenceContext.GetEntry(old);
 				if (options.IsCheckDeleted)
 				{
 					Status status = oldEntry.Status;
@@ -457,12 +457,14 @@ namespace NHibernate.Event.Default
 				log.Debug("Cached Version: " + version);
 			}
 
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+
 			// TODO H3.2 property lazynes
 			//session.AddEntry(result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister, false, entry.AreLazyPropertiesUnfetched());
 			//subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched(), session);
-			session.AddEntry(result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister, false, false);
-			
-			session.InitializeNonLazyCollections();
+			persistenceContext.AddEntry(result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister, false, false);
+
+			persistenceContext.InitializeNonLazyCollections();
 			// upgrade the lock if necessary:
 			//lock(result, lockMode);
 

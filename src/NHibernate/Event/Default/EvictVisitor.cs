@@ -30,7 +30,7 @@ namespace NHibernate.Event.Default
 			IPersistentCollection pc;
 			if (type.IsArrayType)
 			{
-				pc = Session.RemoveCollectionHolder(value);
+				pc = Session.PersistenceContext.RemoveCollectionHolder(value);
 			}
 			else if (value is IPersistentCollection)
 			{
@@ -48,14 +48,14 @@ namespace NHibernate.Event.Default
 
 		private void EvictCollection(IPersistentCollection collection)
 		{
-			CollectionEntry ce = (CollectionEntry)Session.CollectionEntries[collection];
-			Session.CollectionEntries.Remove(collection);
+			CollectionEntry ce = (CollectionEntry)Session.PersistenceContext.CollectionEntries[collection];
+			Session.PersistenceContext.CollectionEntries.Remove(collection);
 			if (log.IsDebugEnabled)
 				log.Debug("evicting collection: " + MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, Session.Factory));
 			if (ce.LoadedPersister != null && ce.LoadedKey != null)
 			{
 				//TODO: is this 100% correct?
-				Session.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey));
+				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey));
 			}
 		}
 	}

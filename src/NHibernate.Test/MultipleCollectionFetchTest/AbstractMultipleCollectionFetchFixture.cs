@@ -126,7 +126,6 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 					{
 						Assert.IsTrue(NHibernateUtil.IsInitialized(child));
 					}
-
 					Assert.IsTrue(NHibernateUtil.IsInitialized(p.Friends));
 					Assert.AreEqual(3, p.Friends.Count);
 					foreach (Person friend in p.Friends)

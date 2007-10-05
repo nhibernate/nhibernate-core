@@ -33,9 +33,10 @@ namespace NHibernate.Event.Default
 		public void OnDelete(DeleteEvent @event, ISet transientEntities)
 		{
 			IEventSource source = @event.Session;
-			object entity = source.UnproxyAndReassociate(@event.Entity);
+			IPersistenceContext persistenceContext = source.PersistenceContext;
+			object entity = persistenceContext.UnproxyAndReassociate(@event.Entity);
 
-			EntityEntry entityEntry = source.GetEntry(entity);
+			EntityEntry entityEntry = persistenceContext.GetEntry(entity);
 			IEntityPersister persister;
 			object id;
 			object version;
@@ -65,13 +66,13 @@ namespace NHibernate.Event.Default
 
 				EntityKey key = new EntityKey(id, persister);
 
-				source.CheckUniqueness(key, entity);
+				persistenceContext.CheckUniqueness(key, entity);
 
 				new OnUpdateVisitor(source, id, entity).Process(entity, persister);
 
 				version = persister.GetVersion(entity);
 
-				entityEntry = source.AddEntity(entity, Status.Loaded, persister.GetPropertyValues(entity), key, version, LockMode.None, true, persister, false, false);
+				entityEntry = persistenceContext.AddEntity(entity, Status.Loaded, persister.GetPropertyValues(entity), key, version, LockMode.None, true, persister, false, false);
 			}
 			else
 			{
@@ -170,6 +171,8 @@ namespace NHibernate.Event.Default
 				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
 			}
 
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+
 			IType[] propTypes = persister.PropertyTypes;
 			object version = entityEntry.Version;
 
@@ -190,14 +193,14 @@ namespace NHibernate.Event.Default
 			session.Interceptor.OnDelete(entity, entityEntry.Id, deletedState, persister.PropertyNames, propTypes);
 
 			// before any callbacks, etc, so subdeletions see that this deletion happened first
-			session.SetEntryStatus(entityEntry, Status.Deleted);
+			persistenceContext.SetEntryStatus(entityEntry, Status.Deleted);
 			EntityKey key = new EntityKey(entityEntry.Id, persister);
 
 			CascadeBeforeDelete(session, persister, entity, entityEntry, transientEntities);
 
 			new ForeignKeys.Nullifier(entity, true, false, session).NullifyTransientReferences(entityEntry.DeletedState, propTypes);
 			new Nullability(session).CheckNullability(entityEntry.DeletedState, persister, true);
-			session.NullifiableEntityKeys.Add(key);
+			persistenceContext.NullifiableEntityKeys.Add(key);
 
 			// Ensures that containing deletions happen before sub-deletions
 			session.ActionQueue.AddAction(new EntityDeleteAction(entityEntry.Id, deletedState, version, entity, persister, isCascadeDeleteEnabled, session));
@@ -240,7 +243,7 @@ namespace NHibernate.Event.Default
 			// TODO H3.2 : CacheMode not ported
 			//CacheMode cacheMode = session.CacheMode;
 			//session.CacheMode = CacheMode.GET;
-			session.IncrementCascadeLevel();
+			session.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
 				// cascade-delete to collections BEFORE the collection owner is deleted
@@ -249,7 +252,7 @@ namespace NHibernate.Event.Default
 			}
 			finally
 			{
-				session.DecrementCascadeLevel();
+				session.PersistenceContext.DecrementCascadeLevel();
 				//session.CacheMode = cacheMode;
 			}
 		}
@@ -259,7 +262,7 @@ namespace NHibernate.Event.Default
 			// TODO H3.2 : CacheMode not ported
 			//CacheMode cacheMode = session.CacheMode;
 			//session.CacheMode = CacheMode.GET;
-			session.IncrementCascadeLevel();
+			session.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
 				// cascade-delete to many-to-one AFTER the parent was deleted
@@ -268,7 +271,7 @@ namespace NHibernate.Event.Default
 			}
 			finally
 			{
-				session.DecrementCascadeLevel();
+				session.PersistenceContext.DecrementCascadeLevel();
 				//session.CacheMode = cacheMode;
 			}
 		}

@@ -22,6 +22,7 @@ namespace NHibernate.Event.Default
 		{
 			IEventSource source = @event.Session;
 			object obj = @event.Entity;
+			IPersistenceContext persistenceContext = source.PersistenceContext;
 
 			if (obj is INHibernateProxy)
 			{
@@ -33,13 +34,13 @@ namespace NHibernate.Event.Default
 					throw new ArgumentException("null identifier");
 				}
 				EntityKey key = new EntityKey(id, persister);
-				source.RemoveProxy(key);
+				persistenceContext.RemoveProxy(key);
 				if (!li.IsUninitialized)
 				{
-					object entity = source.RemoveEntity(key);
+					object entity = persistenceContext.RemoveEntity(key);
 					if (entity != null)
 					{
-						EntityEntry e = @event.Session.RemoveEntry(entity);
+						EntityEntry e = @event.Session.PersistenceContext.RemoveEntry(entity);
 						DoEvict(entity, key, e.Persister, @event.Session);
 					}
 				}
@@ -47,11 +48,11 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				EntityEntry e = source.RemoveEntry(obj);
+				EntityEntry e = persistenceContext.RemoveEntry(obj);
 				if (e != null)
 				{
 					EntityKey key = new EntityKey(e.Id, e.Persister);
-					source.RemoveEntity(key);
+					persistenceContext.RemoveEntity(key);
 					DoEvict(obj, key, e.Persister, source);
 				}
 			}

@@ -39,7 +39,7 @@ namespace NHibernate.Mapping
 						ReflectHelper.ReflectedPropertyClass(propertyClass, propertyName, propertyAccess),
 						foreignKeyDirection,
 						ReferencedPropertyName,
-						IsLazy);
+						IsLazy, propertyName);
 				}
 			}
 			catch (HibernateException he)

@@ -14,6 +14,7 @@ namespace NHibernate.Type
 		private static readonly SqlType[] NoSqlTypes = new SqlType[0];
 
 		private readonly ForeignKeyDirection foreignKeyDirection;
+		private readonly string propertyName;
 
 		public override int GetColumnSpan(IMapping session)
 		{
@@ -29,13 +30,15 @@ namespace NHibernate.Type
 			System.Type persistentClass,
 			ForeignKeyDirection foreignKeyDirection,
 			string uniqueKeyPropertyName,
-			bool lazy)
+			bool lazy,
+			string propertyName)
 			: base(
 				persistentClass,
 				uniqueKeyPropertyName,
 				!lazy)
 		{
 			this.foreignKeyDirection = foreignKeyDirection;
+			this.propertyName = propertyName;
 		}
 
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
@@ -96,6 +99,11 @@ namespace NHibernate.Type
 		public override bool IsAlwaysDirtyChecked
 		{
 			get { return false; }
+		}
+
+		public override string PropertyName
+		{
+			get { return propertyName; }
 		}
 
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)

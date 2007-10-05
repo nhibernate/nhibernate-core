@@ -6,6 +6,7 @@ using log4net;
 
 using NHibernate;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -62,7 +63,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		private bool IsConnectedToSession
 		{
-			get { return session != null && session.IsOpen && session.GetCollectionEntry(this) != null; }
+			get { return session != null && session.IsOpen && session.PersistenceContext.ContainsCollection(this); }
 		}
 
 		/// <summary>
@@ -83,7 +84,16 @@ namespace NHibernate.Collection
 			{
 				return !initialized &&
 				       IsConnectedToSession &&
-				       session.IsInverseCollection(this);
+							 InverseOneToManyOrNoOrphanDelete;
+			}
+		}
+
+		private bool InverseOneToManyOrNoOrphanDelete
+		{
+			get 
+			{
+				CollectionEntry ce = session.PersistenceContext.GetCollectionEntry(this);
+				return ce != null && ce.LoadedPersister.IsInverse && (ce.LoadedPersister.IsOneToMany || !ce.LoadedPersister.HasOrphanDelete);
 			}
 		}
 
@@ -241,31 +251,29 @@ namespace NHibernate.Collection
 		{
 			if (!initialized)
 			{
-				if (initializing) throw new LazyInitializationException("cannot access loading collection");
-				if (IsConnectedToSession)
-				{
-					if (session.IsConnected)
-					{
-						try
-						{
-							session.InitializeCollection(this, writing);
-						}
-						catch (Exception e)
-						{
-							log.Error("Failed to lazily initialize a collection", e);
-							throw new LazyInitializationException("Failed to lazily initialize a collection", e);
-						}
-					}
-					else
-					{
-						throw new LazyInitializationException("Failed to lazily initialize a collection - session is disconnected");
-					}
-				}
-				else
-				{
-					throw new LazyInitializationException("Failed to lazily initialize a collection - no session");
-				}
+				if (initializing)
+					throw new LazyInitializationException("illegal access to loading collection");
+				ThrowLazyInitializationExceptionIfNotConnected();
+				session.InitializeCollection(this, writing);
 			}
+		}
+
+		private void ThrowLazyInitializationExceptionIfNotConnected()
+		{
+			if (!IsConnectedToSession)
+			{
+				ThrowLazyInitializationException("no session or session was closed");
+			}
+			if (!session.IsConnected)
+			{
+				ThrowLazyInitializationException("session is disconnected");
+			}
+		}
+
+		private void ThrowLazyInitializationException(string message)
+		{
+			//throw new LazyInitializationException("failed to lazily initialize a collection" + (role == null ? "" : " of role: " + role) + ", " + message);
+			throw new LazyInitializationException("failed to lazily initialize a collection, " + message);
 		}
 
 		/// <summary>
@@ -324,7 +332,7 @@ namespace NHibernate.Collection
 		{
 			if (session == this.session
 			    // NH: added to fix NH-704
-			    && session.GetCollectionEntry(this) != null
+			    && session.PersistenceContext.ContainsCollection(this)
 				)
 			{
 				return false;
@@ -333,7 +341,16 @@ namespace NHibernate.Collection
 			{
 				if (IsConnectedToSession)
 				{
-					throw new HibernateException("Illegal attempt to associate a collection with two open sessions");
+					CollectionEntry ce = session.PersistenceContext.GetCollectionEntry(this);
+					if (ce == null)
+					{
+						throw new HibernateException("Illegal attempt to associate a collection with two open sessions");
+					}
+					else
+					{
+						throw new HibernateException("Illegal attempt to associate a collection with two open sessions: " + 
+							MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, session.Factory));
+					} 
 				}
 				else
 				{
@@ -495,7 +512,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		protected object GetSnapshot()
 		{
-			return session.GetSnapshot(this);
+			return session.PersistenceContext.GetSnapshot(this);
 		}
 
 		/// <summary></summary>
@@ -588,16 +605,19 @@ namespace NHibernate.Collection
 			ISet currentIds = new HashedSet();
 			foreach (object current in currentElements)
 			{
-				if (session.IsSaved(current))
+				// todo entityName
+				if (current != null && ForeignKeys.IsNotTransient(null, current, null, session))
 				{
-					currentIds.Add(session.GetEntityIdentifierIfNotUnsaved(current));
+					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(null, current, session);
+					currentIds.Add(currentId);
 				}
 			}
 
 			// iterate over the *old* list
 			foreach (object old in oldElements)
 			{
-				object id = session.GetEntityIdentifierIfNotUnsaved(old);
+				// todo entityName
+				object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(null, old, session);
 				if (!currentIds.Contains(id))
 				{
 					res.Add(old);
@@ -620,10 +640,11 @@ namespace NHibernate.Collection
 
 			if (session.IsSaved(obj))
 			{
-				object idOfCurrent = session.GetEntityIdentifierIfNotUnsaved(obj);
+				// todo entityName
+				object idOfCurrent = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName.FullName, obj, session);
 				for (int i = 0; i < list.Count; i++)
 				{
-					object idOfOld = session.GetEntityIdentifierIfNotUnsaved(list[i]);
+					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName.FullName, list[i], session);
 					if (idType.Equals(idOfOld, idOfCurrent))
 					{
 						// in hibernate this used the Iterator to remove the item - since in .NET

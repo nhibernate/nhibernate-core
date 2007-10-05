@@ -287,7 +287,7 @@ namespace NHibernate.Impl
 
         public IMultiQuery Add(string hql)
         {
-            return Add(session.CreateQuery(hql));
+            return Add(((ISession)session).CreateQuery(hql));
         }
 
         public IMultiQuery AddNamedQuery(string namedQuery)

@@ -54,7 +54,7 @@ namespace NHibernate.Action
 				persister.InsertRows(collection, id, session);
 			}
 
-			Session.GetCollectionEntry(collection).AfterAction(collection);
+			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 
 			Evict();
 

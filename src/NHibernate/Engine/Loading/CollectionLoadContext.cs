@@ -154,9 +154,12 @@ namespace NHibernate.Engine.Loading
 			// internal loadingCollections map for matches and store those matches
 			// in a temp collection.  the temp collection is then used to "drive"
 			// the #endRead processing.
+			List<CollectionKey> toRemove = new List<CollectionKey>();
 			List<LoadingCollectionEntry> matches =new List<LoadingCollectionEntry>();
 			foreach (CollectionKey collectionKey in localLoadingCollectionKeys)
 			{
+				ISessionImplementor session = LoadContext.PersistenceContext.Session;
+
 				LoadingCollectionEntry lce = loadContext.LocateLoadingCollectionEntry(collectionKey);
 				if (lce == null)
 				{
@@ -167,7 +170,7 @@ namespace NHibernate.Engine.Loading
 					matches.Add(lce);
 					if (lce.Collection.Owner == null)
 					{
-						LoadContext.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
+						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
 						                                                lce.Collection);
 					}
 					if (log.IsDebugEnabled)
@@ -177,9 +180,10 @@ namespace NHibernate.Engine.Loading
 
 					// todo : i'd much rather have this done from #endLoadingCollection(CollectionPersister,LoadingCollectionEntry)...
 					loadContext.UnregisterLoadingCollectionXRef(collectionKey);
+					toRemove.Add(collectionKey);
 				}
 			}
-			localLoadingCollectionKeys.Clear();
+			localLoadingCollectionKeys.RemoveAll(toRemove);
 
 			EndLoadingCollections(persister, matches);
 			if ((localLoadingCollectionKeys.Count == 0))

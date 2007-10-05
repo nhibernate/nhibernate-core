@@ -54,7 +54,7 @@ namespace NHibernate.Action
 			{
 				if (id is DelayedPostInsertIdentifier)
 				{
-					return session.GetEntry(instance).Id;
+					return session.PersistenceContext.GetEntry(instance).Id;
 				}
 				return id;
 			}

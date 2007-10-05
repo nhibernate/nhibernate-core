@@ -829,12 +829,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.ReferencedEntityName = GetEntityName(node, mappings);
 
 			XmlAttribute classNode = node.Attributes["class"];
-			if (classNode != null)
+			XmlAttribute nameNode = node.Attributes["name"];
+			if (classNode != null && nameNode != null)
 				model.Type = TypeFactory.OneToOne(
 					ClassForNameChecked(classNode.Value, mappings, "could not find class: {0}"),
 					model.ForeignKeyDirection,
 					model.ReferencedPropertyName,
-					model.IsLazy
+					model.IsLazy,
+					nameNode.Value
 					);
 		}
 

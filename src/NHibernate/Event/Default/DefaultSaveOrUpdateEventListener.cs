@@ -47,9 +47,9 @@ namespace NHibernate.Event.Default
 			else
 			{
 				//initialize properties of the event:
-				object entity = source.UnproxyAndReassociate(obj);
+				object entity = source.PersistenceContext.UnproxyAndReassociate(obj);
 				@event.Entity = entity;
-				@event.Entry = source.GetEntry(entity);
+				@event.Entry = source.PersistenceContext.GetEntry(entity);
 				//return the id in the event object
 				@event.ResultId = PerformSaveOrUpdate(@event);
 			}
@@ -57,7 +57,7 @@ namespace NHibernate.Event.Default
 
 		protected internal virtual bool ReassociateIfUninitializedProxy(object obj, ISessionImplementor source)
 		{
-			return source.ReassociateIfUninitializedProxy(obj);
+			return source.PersistenceContext.ReassociateIfUninitializedProxy(obj);
 		}
 
 		protected internal virtual object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
@@ -148,7 +148,7 @@ namespace NHibernate.Event.Default
 
 			object id = SaveWithGeneratedOrRequestedId(@event);
 
-			source.ReassociateProxy(@event.Entity, id);
+			source.PersistenceContext.ReassociateProxy(@event.Entity, id);
 
 			return id;
 		}
@@ -172,7 +172,7 @@ namespace NHibernate.Event.Default
 		{
 			log.Debug("updating detached instance");
 
-			if (@event.Session.IsEntryFor(@event.Entity))
+			if (@event.Session.PersistenceContext.IsEntryFor(@event.Entity))
 			{
 				//TODO: assertion only, could be optimized away
 				throw new AssertionFailure("entity was persistent");
@@ -227,7 +227,7 @@ namespace NHibernate.Event.Default
 
 				EntityKey key = new EntityKey(@event.RequestedId, persister);
 
-				source.CheckUniqueness(key, entity);
+				source.PersistenceContext.CheckUniqueness(key, entity);
 
 				if (InvokeUpdateLifecycle(entity, persister, source))
 				{
@@ -250,7 +250,7 @@ namespace NHibernate.Event.Default
 				entry.getState(); //TODO: half-assemble this stuff
 				}*/
 
-				source.AddEntity(entity, Status.Loaded, null, key, persister.GetVersion(entity), LockMode.None, true, persister, false, true);
+				source.PersistenceContext.AddEntity(entity, Status.Loaded, null, key, persister.GetVersion(entity), LockMode.None, true, persister, false, true);
 
 				//persister.AfterReassociate(entity, source); TODO H3.2 not ported
 
@@ -287,16 +287,15 @@ namespace NHibernate.Event.Default
 		private void CascadeOnUpdate(SaveOrUpdateEvent @event, IEntityPersister persister, object entity)
 		{
 			IEventSource source = @event.Session;
-			source.IncrementCascadeLevel();
+			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
 				Cascades.Cascade(source, persister, entity, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate);
 			}
 			finally
 			{
-				source.DecrementCascadeLevel();
+				source.PersistenceContext.DecrementCascadeLevel();
 			}
 		}
-
 	}
 }
