@@ -82,6 +82,8 @@
     <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
     <Compile Include="CfgTest\MappingDocumentAggregatorTests.cs" />
     <Compile Include="CfgTest\MappingDocumentParserTests.cs" />
+    <Compile Include="Classic\ValidatableFixture.cs" />
+    <Compile Include="Classic\Video.cs" />
     <Compile Include="CollectionTest\A.cs" />
     <Compile Include="CollectionTest\IdBagFixture.cs" />
     <Compile Include="CompositeCollection\BaseClassA.cs" />
@@ -996,6 +998,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ListIndex\ListIndex.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Classic\Video.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
