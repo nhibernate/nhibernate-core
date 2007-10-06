@@ -127,8 +127,8 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
         {
             if (session.Transaction.IsActive)
             {
-                ISessionImplementor si = (ISessionImplementor)session;
-                ((SearchInterceptor)si.Interceptor).RegisterSyncronization(si.Transaction, luceneWork);
+            	SearchInterceptor interceptor = (SearchInterceptor)session.GetSessionImplementation().Interceptor;
+            	interceptor.RegisterSyncronization(session.Transaction, luceneWork);
             }
             else
             {

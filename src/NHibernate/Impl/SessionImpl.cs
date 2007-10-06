@@ -2001,6 +2001,12 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+
+		public override ISession GetSession()
+		{
+			return this;
+		}
+
 		public override IInterceptor Interceptor
 		{
 			get { return interceptor; }

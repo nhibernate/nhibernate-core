@@ -27,8 +27,8 @@ namespace NHibernate.Search.Impl
 		/// <summary>
 		/// classes must be immutable
 		/// </summary>
-		public FullTextQueryImpl(Query query, System.Type[] classes, ISessionImplementor session)
-			: base(query.ToString(), FlushMode.Unspecified, session)
+		public FullTextQueryImpl(Query query, System.Type[] classes, ISession session)
+			: base(query.ToString(), FlushMode.Unspecified, session.GetSessionImplementation())
 		{
 			this.luceneQuery = query;
 			this.classes = classes;
@@ -50,12 +50,12 @@ namespace NHibernate.Search.Impl
 			//user stop using it
 			//scrollable is better in this area
 
-			SearchFactory searchFactory = SearchFactory.GetSearchFactory(Session);
+			SearchFactory searchFactory = SearchFactory.GetSearchFactory(Session.GetSession());
 			//find the directories
 			Searcher searcher = FullTextSearchHelper.BuildSearcher(searchFactory, out classesAndSubclasses, classes);
 			if (searcher == null)
 			{
-				return new IteratorImpl<T>(new List<EntityInfo>(), Session).Iterate();
+				return new IteratorImpl<T>(new List<EntityInfo>(), Session.GetSession()).Iterate();
 			}
 			try
 			{
@@ -73,7 +73,7 @@ namespace NHibernate.Search.Impl
 					entityInfo.id = DocumentBuilder.GetDocumentId(searchFactory, document);
 					entityInfos.Add(entityInfo);
 				}
-				return new IteratorImpl<T>(entityInfos, Session).Iterate();
+				return new IteratorImpl<T>(entityInfos, Session.GetSession()).Iterate();
 			}
 			catch (IOException e)
 			{
@@ -133,7 +133,7 @@ namespace NHibernate.Search.Impl
 
 		public override void List(IList list)
 		{
-			SearchFactory searchFactory = SearchFactory.GetSearchFactory(Session);
+			SearchFactory searchFactory = SearchFactory.GetSearchFactory(Session.GetSession());
 			//find the directories
 			Searcher searcher = FullTextSearchHelper.BuildSearcher(searchFactory, out classesAndSubclasses, classes);
 			if (searcher == null)
@@ -150,7 +150,7 @@ namespace NHibernate.Search.Impl
 					Document document = hits.Doc(index);
 					System.Type clazz = DocumentBuilder.GetDocumentClass(document);
 					object id = DocumentBuilder.GetDocumentId(searchFactory, document);
-					list.Add(this.Session.Load(clazz, id));
+					list.Add(this.Session.GetSession().Load(clazz, id));
 					//use load to benefit from the batch-size
 					//we don't face proxy casting issues since the exact class is extracted from the index
 				}

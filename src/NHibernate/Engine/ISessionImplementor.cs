@@ -279,5 +279,11 @@ namespace NHibernate.Engine
 		/// </summary>
 		bool TransactionInProgress { get;}
 
+		/// <summary>
+		/// Allow to get the ISession instance without having to 
+		/// down cast
+		/// </summary>
+		/// <returns></returns>
+		ISession GetSession();
 	}
 }

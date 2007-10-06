@@ -70,6 +70,7 @@ namespace NHibernate.Impl
 		public abstract object Copy(object obj, IDictionary copiedAlready);
 		public abstract object GetFilterParameterValue(string filterParameterName);
 		public abstract IType GetFilterParameterType(string filterParameterName);
+		public abstract ISession GetSession();
 
 		public abstract IDictionary EnabledFilters { get; }
 

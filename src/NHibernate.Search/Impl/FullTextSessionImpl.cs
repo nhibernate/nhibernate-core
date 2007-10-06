@@ -37,7 +37,7 @@ namespace NHibernate.Search.Impl
 
 		public IQuery CreateFullTextQuery(Query luceneQuery, params System.Type[] entities)
 		{
-			return new FullTextQueryImpl(luceneQuery, entities, (ISessionImplementor)session);
+			return new FullTextQueryImpl(luceneQuery, entities, session);
 		}
 
 		public IFullTextSession Index(object entity)
