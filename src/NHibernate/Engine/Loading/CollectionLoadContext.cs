@@ -248,8 +248,8 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection);
 			}
 
-			bool addToCache = hasNoQueuedAdds && persister.HasCache && !ce.IsDoremove;
-				//session.CacheMode.PutEnabled && !ce.IsDoremove; // and this is not a forced initialization during flush
+			bool addToCache = hasNoQueuedAdds && persister.HasCache && 
+				((session.CacheMode & CacheMode.Put) == CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
 
 			if (addToCache)
 			{
@@ -310,7 +310,7 @@ namespace NHibernate.Engine.Loading
 			CacheKey ck = new CacheKey(lce.Key, persister.KeyType, persister.Role, factory);
 			persister.Cache.Put(ck, lce.Collection.Disassemble(persister), 
 			                    session.Timestamp, version, versionComparator,
-			                    factory.Settings.IsMinimalPutsEnabled /*&& cacheMode != CacheMode.REFRESH*/);
+													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 
 			// TODO H3.2 Not ported
 			//if (put && factory.Statistics.StatisticsEnabled)

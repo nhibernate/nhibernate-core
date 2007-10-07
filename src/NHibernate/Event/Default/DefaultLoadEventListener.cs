@@ -386,7 +386,8 @@ namespace NHibernate.Event.Default
 		protected internal object LoadFromSecondLevelCache(LoadEvent @event, IEntityPersister persister, LoadType options)
 		{
 			ISessionImplementor source = @event.Session;
-			bool useCache = persister.HasCache && @event.LockMode.LessThan(LockMode.Read);
+			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get)
+				&& @event.LockMode.LessThan(LockMode.Read);
 
 			if (useCache)
 			{

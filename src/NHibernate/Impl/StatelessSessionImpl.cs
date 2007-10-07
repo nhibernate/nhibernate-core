@@ -437,6 +437,13 @@ namespace NHibernate.Impl
 
 		public override void Flush()
 		{
+			ManagedFlush(); // NH Different behavior since ADOContext.Context is not implemented
+		}
+
+		public void ManagedFlush()
+		{
+			ErrorIfClosed();
+			Batcher.ExecuteBatch();
 		}
 
 		public override bool TransactionInProgress
@@ -450,6 +457,12 @@ namespace NHibernate.Impl
 		public ITransaction Transaction
 		{
 			get { return connectionManager.Transaction; }
+		}
+
+		public override CacheMode CacheMode
+		{
+			get { return CacheMode.Ignore; }
+			set { throw new NotSupportedException(); }
 		}
 
 		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>

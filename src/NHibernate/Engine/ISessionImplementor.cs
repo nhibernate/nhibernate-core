@@ -240,6 +240,8 @@ namespace NHibernate.Engine
 		/// <summary> Get the persistence context for this session</summary>
 		IPersistenceContext PersistenceContext { get;}
 
+		CacheMode CacheMode { get;set;}
+
 		/// <summary>
 		/// Is the <c>ISession</c> still open?
 		/// </summary>

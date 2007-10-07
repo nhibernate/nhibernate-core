@@ -468,6 +468,7 @@
     <Compile Include="Bytecode\Lightweight\ReflectionOptimizer.cs" />
     <Compile Include="Bytecode\NullBytecodeProvider.cs" />
     <Compile Include="Bytecode\EmitUtil.cs" />
+    <Compile Include="CacheMode.cs" />
     <Compile Include="Cache\CacheKey.cs" />
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />

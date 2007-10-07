@@ -61,9 +61,7 @@ namespace NHibernate.Event.Default
 				return false;
 			}
 
-			// TODO H3.2 Different behaviour
-			//bool useCache = persister.HasCache && source.CacheMode.GetEnabled;
-			bool useCache = persister.HasCache;
+			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get);
 
 			if (!useCache)
 			{

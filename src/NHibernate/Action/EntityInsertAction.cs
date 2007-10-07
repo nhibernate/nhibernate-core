@@ -153,11 +153,10 @@ namespace NHibernate.Action
 			return veto;
 		}
 
-		private static bool IsCachePutEnabled(IEntityPersister persister)
+		private bool IsCachePutEnabled(IEntityPersister persister)
 		{
-			// TODO H3.2 Different behaviour
-			//return persister.HasCache && !persister.CacheInvalidationRequired && session.CacheMode.PutEnabled;
-			return persister.HasCache && !persister.IsCacheInvalidationRequired;
+			return persister.HasCache && !persister.IsCacheInvalidationRequired && 
+				((Session.CacheMode & CacheMode.Put) == CacheMode.Put);
 		}
 
 		public override int CompareTo(EntityAction other)

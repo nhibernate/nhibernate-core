@@ -22,7 +22,7 @@ namespace NHibernate.Test.Stateless
 			get { return new string[] { "Stateless.Document.hbm.xml" }; }
 		}
 
-		[Test, Ignore("Porting in progress")]
+		[Test]
 		public void CreateUpdateReadDelete()
 		{
 			IStatelessSession ss = sessions.OpenStatelessSession();
@@ -37,8 +37,8 @@ namespace NHibernate.Test.Stateless
 			tx = ss.BeginTransaction();
 			doc.Text = "blah blah blah .... blah";
 			ss.Update(doc);
-			Assert.IsTrue(initVersion.HasValue);
-			Assert.AreSame(initVersion, doc.LastModified);
+			Assert.IsTrue(doc.LastModified.HasValue);
+			Assert.AreNotEqual(initVersion, doc.LastModified);
 			tx.Commit();
 
 			tx = ss.BeginTransaction();
@@ -101,7 +101,7 @@ namespace NHibernate.Test.Stateless
 			//ss.Close();
 		}
 
-		[Test, Ignore("Porting in progress")]
+		[Test]
 		public void InitId()
 		{
 			IStatelessSession ss = sessions.OpenStatelessSession();
@@ -118,7 +118,7 @@ namespace NHibernate.Test.Stateless
 			ss.Close();
 		}
 
-		[Test, Ignore("Porting in progress")]
+		[Test]
 		public void Refresh()
 		{
 			IStatelessSession ss = sessions.OpenStatelessSession();

@@ -37,6 +37,7 @@ namespace NHibernate.Impl
 
 		private readonly long timestamp;
 
+		private CacheMode cacheMode= CacheMode.Normal;
 		private FlushMode flushMode = FlushMode.Auto;
 
 		// these are used to serialize hashtables because .NET's Hashtable
@@ -91,6 +92,7 @@ namespace NHibernate.Impl
 			actionQueue = (ActionQueue)info.GetValue("actionQueue", typeof(ActionQueue));
 
 			flushMode = (FlushMode)info.GetValue("flushMode", typeof(FlushMode));
+			cacheMode = (CacheMode)info.GetValue("cacheMode", typeof(CacheMode));
 
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 
@@ -127,6 +129,7 @@ namespace NHibernate.Impl
 			info.AddValue("actionQueue", actionQueue, typeof(ActionQueue));
 			info.AddValue("timestamp", timestamp);
 			info.AddValue("flushMode", flushMode);
+			info.AddValue("cacheMode", cacheMode);
 
 			info.AddValue("interceptor", interceptor, typeof(IInterceptor));
 
@@ -2001,6 +2004,20 @@ namespace NHibernate.Impl
 		public override int DontFlushFromFind
 		{
 			get { return dontFlushFromFind; }
+		}
+
+		public override CacheMode CacheMode
+		{
+			get { return cacheMode; }
+			set
+			{
+				ErrorIfClosed();
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("setting cache mode to: " + value);
+				}
+				cacheMode = value;
+			}
 		}
 
 		public void SetReadOnly(object entity, bool readOnly)

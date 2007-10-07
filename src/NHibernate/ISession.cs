@@ -88,6 +88,13 @@ namespace NHibernate
 		/// </remarks>
 		FlushMode FlushMode { get; set; }
 
+		/// <summary> The current cache mode. </summary>
+		/// <remarks>
+		/// Cache mode determines the manner in which this session can interact with
+		/// the second level cache.
+		/// </remarks>
+		CacheMode CacheMode { get;set;}
+
 		/// <summary>
 		/// Get the <see cref="ISessionFactory" /> that created this instance.
 		/// </summary>

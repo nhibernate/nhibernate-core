@@ -85,8 +85,7 @@ namespace NHibernate.Engine
 
 			persister.SetPropertyValues(entity, hydratedState);
 
-			//if (persister.HasCache && session.CacheMode.PutEnabled) TODO H3.2 Different behaviour
-			if (persister.HasCache)
+			if (persister.HasCache && ((session.CacheMode & CacheMode.Put) == CacheMode.Put))
 			{
 				if (log.IsDebugEnabled)
 					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, session.Factory));
@@ -150,7 +149,7 @@ namespace NHibernate.Engine
 
 		private static bool UseMinimalPuts(ISessionImplementor session, EntityEntry entityEntry)
 		{
-			return session.Factory.Settings.IsMinimalPutsEnabled;
+			return session.Factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh;
 			// TODO H3.2 Different behaviour property lazyness
 			//return (session.Factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.REFRESH)
 			//|| (entityEntry.Persister.hasLazyProperties() && entityEntry.LoadedWithLazyPropertiesUnfetched && entityEntry.Persister.LazyPropertiesCacheable);

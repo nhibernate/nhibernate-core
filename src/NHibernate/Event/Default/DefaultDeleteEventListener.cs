@@ -240,9 +240,9 @@ namespace NHibernate.Event.Default
 
 		protected internal void CascadeBeforeDelete(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet transientEntities)
 		{
-			// TODO H3.2 : CacheMode not ported
-			//CacheMode cacheMode = session.CacheMode;
-			//session.CacheMode = CacheMode.GET;
+			ISessionImplementor si = session;
+			CacheMode cacheMode = si.CacheMode;
+			si.CacheMode = CacheMode.Get;
 			session.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
@@ -253,15 +253,15 @@ namespace NHibernate.Event.Default
 			finally
 			{
 				session.PersistenceContext.DecrementCascadeLevel();
-				//session.CacheMode = cacheMode;
+				si.CacheMode = cacheMode;
 			}
 		}
 
 		protected internal void CascadeAfterDelete(IEventSource session, IEntityPersister persister, object entity, ISet transientEntities)
 		{
-			// TODO H3.2 : CacheMode not ported
-			//CacheMode cacheMode = session.CacheMode;
-			//session.CacheMode = CacheMode.GET;
+			ISessionImplementor si = session;
+			CacheMode cacheMode = si.CacheMode;
+			si.CacheMode = CacheMode.Get;
 			session.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
@@ -272,7 +272,7 @@ namespace NHibernate.Event.Default
 			finally
 			{
 				session.PersistenceContext.DecrementCascadeLevel();
-				//session.CacheMode = cacheMode;
+				si.CacheMode = cacheMode;
 			}
 		}
 	}

@@ -72,7 +72,6 @@ namespace NHibernate.Impl
 		public abstract object GetFilterParameterValue(string filterParameterName);
 		public abstract IType GetFilterParameterType(string filterParameterName);
 		public abstract ISession GetSession();
-
 		public abstract IDictionary EnabledFilters { get; }
 
 		public IQuery GetNamedSQLQuery(string name)
@@ -94,29 +93,19 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IQueryTranslator[] GetQueries(string query, bool scalar);
-
 		public abstract IInterceptor Interceptor { get; }
-
 		public abstract EventListeners Listeners { get; }
-
 		public abstract int DontFlushFromFind { get; }
-
 		public abstract ConnectionManager ConnectionManager { get; }
-
 		public abstract bool IsEventSource { get; }
 		public abstract object GetEntityUsingInterceptor(EntityKey key);
-
 		public abstract IPersistenceContext PersistenceContext { get; }
-
+		public abstract CacheMode CacheMode { get; set; }
 		public abstract bool IsOpen { get; }
-
 		public abstract bool IsConnected { get; }
-
 		public abstract FlushMode FlushMode { get; set; }
 		public abstract string BestGuessEntityName(object entity);
-
 		public abstract string GuessEntityName(object entity);
-
 		public abstract IDbConnection Connection { get; }
 
 		public IQuery GetNamedQuery(string queryName)
