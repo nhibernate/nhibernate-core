@@ -269,7 +269,7 @@ namespace NHibernate.Type
 		/// </summary>
 		protected object ResolveIdentifier(object id, ISessionImplementor session)
 		{
-			object proxyOrEntity = session.InternalLoad(AssociatedClass, id, eager, IsNullable);
+			object proxyOrEntity = session.InternalLoad(AssociatedClass.FullName, id, eager, IsNullable);
 			return proxyOrEntity;
 		}
 

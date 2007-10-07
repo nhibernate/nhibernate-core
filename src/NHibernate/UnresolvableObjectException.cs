@@ -81,6 +81,14 @@ namespace NHibernate
 			}
 		}
 
+		public static void ThrowIfNull(object o, object id, string entityName)
+		{
+			if (o == null)
+			{
+				throw new UnresolvableObjectException(id, entityName);
+			}
+		}
+
 		#region ISerializable Members
 
 		[SecurityPermission(SecurityAction.LinkDemand,

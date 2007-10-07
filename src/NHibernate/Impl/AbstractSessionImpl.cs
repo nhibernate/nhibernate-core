@@ -6,6 +6,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
+using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Loader.Custom;
 using NHibernate.Persister.Entity;
@@ -31,7 +32,7 @@ namespace NHibernate.Impl
 		#region ISessionImplementor Members
 
 		public abstract void InitializeCollection(IPersistentCollection coolection, bool writing);
-		public abstract object InternalLoad(System.Type persistentClass, object id, bool eager, bool isNullable);
+		public abstract object InternalLoad(string entityName, object id, bool eager, bool isNullable);
 		public abstract object ImmediateLoad(System.Type persistentClass, object id);
 		public abstract long Timestamp { get; }
 
@@ -215,5 +216,11 @@ namespace NHibernate.Impl
 			//query.SetComment("dynamic native SQL query");
 			return query;
 		}
+
+		protected static ADOException Convert(Exception sqlException, string message)
+		{
+			return ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqlException, message);
+		}
+
 	}
 }

@@ -183,15 +183,15 @@ namespace NHibernate
 
 		Settings Settings { get; }
 
-        /// <summary>
-        /// This collections allows external libraries
-        /// to add their own configuration to the NHibernate session factory.
-        /// This is needed in such cases where the library is tightly coupled to NHibernate, such
-        /// as the case of NHibernate Search
-        /// </summary>
-	    IDictionary Items { get; }
+		/// <summary>
+		/// This collections allows external libraries
+		/// to add their own configuration to the NHibernate session factory.
+		/// This is needed in such cases where the library is tightly coupled to NHibernate, such
+		/// as the case of NHibernate Search
+		/// </summary>
+		IDictionary Items { get; }
 
-	    /// <summary>
+		/// <summary>
 		/// Obtains the current session.
 		/// </summary>
 		/// <remarks>
@@ -203,5 +203,11 @@ namespace NHibernate
 		/// <returns>The current session.</returns>
 		/// <exception cref="HibernateException">Indicates an issue locating a suitable current session.</exception>
 		ISession GetCurrentSession();
+
+		/// <summary> Get a new stateless session.</summary>
+		IStatelessSession OpenStatelessSession();
+
+		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
+		IStatelessSession OpenStatelessSession(IDbConnection connection);
 	}
 }

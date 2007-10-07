@@ -10,7 +10,6 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
-using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
@@ -919,15 +918,15 @@ namespace NHibernate.Impl
 		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
 		/// return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
 		/// </summary>
-		public override object InternalLoad(System.Type clazz, object id, bool eager, bool isNullable)
+		public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
 		{
 			// todo : remove
 			LoadType type = isNullable ? LoadEventListener.InternalLoadNullable: (eager ? LoadEventListener.InternalLoadEager: LoadEventListener.InternalLoadLazy);
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, true, this);
+			LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
 			FireLoad(loadEvent, type);
 			if (!isNullable)
 			{
-				UnresolvableObjectException.ThrowIfNull(loadEvent.Result, id, clazz);
+				UnresolvableObjectException.ThrowIfNull(loadEvent.Result, id, entityName);
 			}
 			return loadEvent.Result; 
 		}
@@ -1786,23 +1785,9 @@ namespace NHibernate.Impl
 
 		public override IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
-
-			CustomLoader loader = new CustomLoader(customQuery, factory);
-			AutoFlushIfRequired(loader.QuerySpaces);
-
-			dontFlushFromFind++;
-			try
-			{
-				IList results = loader.List(this, queryParameters);
-				List<T> typedResults = new List<T>();
-				ArrayHelper.AddAll(typedResults, results);
-				return typedResults;
-			}
-			finally
-			{
-				dontFlushFromFind--;
-			}
+			List<T> results = new List<T>();
+			ListCustomQuery(customQuery, queryParameters, results);
+			return results;
 		}
 
 		/// <summary></summary>
@@ -1851,11 +1836,6 @@ namespace NHibernate.Impl
 		public object SaveOrUpdateCopy(object obj, object id)
 		{
 			return FireSaveOrUpdateCopy(new MergeEvent(null, obj, id, this));
-		}
-
-		private ADOException Convert(Exception sqlException, string message)
-		{
-			return ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqlException, message);
 		}
 
 		protected internal override void ErrorIfClosed()

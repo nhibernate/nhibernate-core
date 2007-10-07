@@ -146,22 +146,25 @@ namespace NHibernate.Type
 		{
 			return (clazz == null || id == null) ?
 			       null :
-			       session.InternalLoad(clazz, id, false, false);
+			       session.InternalLoad(clazz.FullName, id, false, false);
 		}
 
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			object id;
-			System.Type clazz;
+			string entityName;
+			System.Type clazz; // TODO entityName : remove 
 
 			if (value == null)
 			{
 				id = null;
+				entityName = null;
 				clazz = null;
 			}
 			else
 			{
-				id = session.GetEntityIdentifierIfNotUnsaved(value);
+				entityName = session.BestGuessEntityName(value);
+				id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, value, session);
 				clazz = NHibernateProxyHelper.GuessClass(value);
 			}
 
@@ -229,7 +232,7 @@ namespace NHibernate.Type
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			ObjectTypeCacheEntry e = (ObjectTypeCacheEntry) cached;
-			return (cached == null) ? null : session.InternalLoad(e.clazz, e.id, false, false);
+			return (cached == null) ? null : session.InternalLoad(e.clazz.FullName, e.id, false, false);
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session)
@@ -250,14 +253,9 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				System.Type entityClass = NHibernateProxyHelper.GuessClass(original);
-				object id = session.GetEntityIdentifierIfNotUnsaved(original);
-				return session.InternalLoad(
-						entityClass,
-						id,
-						false,
-						false
-					);
+				string entityName = session.BestGuessEntityName(original);
+				object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, original, session);
+				return session.InternalLoad(entityName, id, false, false);
 			}
 		}
 
@@ -299,7 +297,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return session.GetEntityIdentifierIfNotUnsaved(component);
+				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(session.BestGuessEntityName(component), component, session);
 			}
 			catch (TransientObjectException)
 			{

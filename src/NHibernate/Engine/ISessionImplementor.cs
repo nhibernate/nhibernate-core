@@ -33,7 +33,7 @@ namespace NHibernate.Engine
 		/// Load an instance without checking if it was deleted. If it does not exist and isn't nullable, throw an exception.
 		/// This method may create a new proxy or return an existing proxy.
 		/// </summary>
-		/// <param name="persistentClass">The <see cref="System.Type"/> to load.</param>
+		/// <param name="entityName">The entityName (or class full name) to load.</param>
 		/// <param name="id">The identifier of the object in the database.</param>
 		/// <param name="isNullable">Allow null instance</param>
 		/// <param name="eager">When enabled, the object is eagerly fetched.</param>
@@ -41,7 +41,7 @@ namespace NHibernate.Engine
 		/// A proxy of the object or an instance of the object if the <c>persistentClass</c> does not have a proxy.
 		/// </returns>
 		/// <exception cref="ObjectNotFoundException">No object could be found with that <c>id</c>.</exception>
-		object InternalLoad(System.Type persistentClass, object id, bool eager, bool isNullable);
+		object InternalLoad(string entityName, object id, bool eager, bool isNullable);
 
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy.

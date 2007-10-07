@@ -1341,6 +1341,18 @@ namespace NHibernate.Impl
 			return currentSessionContext.CurrentSession();
 		}
 
+		/// <summary> Get a new stateless session.</summary>
+		public IStatelessSession OpenStatelessSession()
+		{
+			return new StatelessSessionImpl(null, this);
+		}
+
+		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
+		public IStatelessSession OpenStatelessSession(IDbConnection connection)
+		{
+			return new StatelessSessionImpl(connection, this);
+		}
+
 		/// <summary>
 		/// Gets the ICurrentSessionContext instance attached to this session factory.
 		/// </summary>

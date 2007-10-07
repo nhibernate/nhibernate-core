@@ -545,6 +545,9 @@
     <Compile Include="SqlTest\SelfReferencingCollectionLoadTest.cs" />
     <Compile Include="SqlTest\SpaceShip.cs" />
     <Compile Include="SqlTest\Speech.cs" />
+    <Compile Include="Stateless\Document.cs" />
+    <Compile Include="Stateless\Paper.cs" />
+    <Compile Include="Stateless\StatelessSessionFixture.cs" />
     <Compile Include="SubclassFilterTest\JoinedSubclassFilterTest.cs" />
     <Compile Include="SubclassFilterTest\Customer.cs" />
     <Compile Include="SubclassFilterTest\DiscrimSubclassFilterTest.cs" />
@@ -1001,6 +1004,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Classic\Video.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Stateless\Document.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
