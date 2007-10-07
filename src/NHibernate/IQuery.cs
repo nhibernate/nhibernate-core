@@ -529,5 +529,10 @@ namespace NHibernate
 		/// "shape" of the query result.
 		/// </summary>
 		IQuery SetResultTransformer(IResultTransformer resultTransformer);
+
+		/// <summary> Override the current session cache mode, just for this query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		IQuery SetCacheMode(CacheMode cacheMode);
 	}
 }

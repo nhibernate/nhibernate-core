@@ -43,6 +43,8 @@ namespace NHibernate.Impl
 		private object collectionKey;
 		private IResultTransformer resultTransformer;
 		private bool shouldIgnoredUnknownNamedParameters;
+		private CacheMode? cacheMode;
+		private CacheMode? sessionCacheMode;
 
 		public AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session)
 		{
@@ -50,6 +52,7 @@ namespace NHibernate.Impl
 			this.queryString = queryString;
 			this.flushMode = flushMode;
 			selection = new RowSelection();
+			cacheMode = null;
 			InitParameterBookKeeping();
 		}
 
@@ -742,6 +745,11 @@ namespace NHibernate.Impl
 				sessionFlushMode = Session.FlushMode;
 				Session.FlushMode = flushMode;
 			}
+			if (cacheMode.HasValue)
+			{
+				sessionCacheMode = Session.CacheMode;
+				Session.CacheMode = cacheMode.Value;
+			}
 		}
 
 		protected void After()
@@ -750,6 +758,11 @@ namespace NHibernate.Impl
 			{
 				Session.FlushMode = sessionFlushMode;
 				sessionFlushMode = FlushMode.Unspecified;
+			}
+			if (sessionCacheMode.HasValue)
+			{
+				Session.CacheMode = sessionCacheMode.Value;
+				sessionCacheMode = null;
 			}
 		}
 
@@ -765,6 +778,16 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		/// <summary> Override the current session cache mode, just for this query.
+		/// </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		public IQuery SetCacheMode(CacheMode cacheMode)
+		{
+			this.cacheMode = cacheMode;
+			return this;
+
+		}
 
 		public IQuery SetIgnoreUknownNamedParameters(bool ignoredUnknownNamedParameters)
 		{

@@ -14,9 +14,14 @@ namespace NHibernate.Engine
 		private readonly FlushMode flushMode = FlushMode.Unspecified;
 		private readonly IDictionary parameterTypes;
 
-		//private CacheMode cacheMode;
-		private bool readOnly;
-		private string comment;
+		private readonly CacheMode? cacheMode;
+		private readonly bool readOnly;
+		private readonly string comment;
+
+		public NamedQueryDefinition(string query, bool cacheable, string cacheRegion, int timeout,
+			int fetchSize, FlushMode flushMode, bool readOnly, string comment, IDictionary parameterTypes)
+			: this(query,cacheable,cacheRegion,timeout,fetchSize,flushMode,null,readOnly,comment,parameterTypes) 
+		{}
 
 		public NamedQueryDefinition(
 			string query,
@@ -25,7 +30,7 @@ namespace NHibernate.Engine
 			int timeout,
 			int fetchSize,
 			FlushMode flushMode,
-			//CacheMode cacheMode,
+			CacheMode? cacheMode,
 			bool readOnly,
 			string comment,
 			IDictionary parameterTypes
@@ -38,7 +43,7 @@ namespace NHibernate.Engine
 			this.fetchSize = fetchSize;
 			this.flushMode = flushMode;
 			this.parameterTypes = parameterTypes;
-			//this.cacheMode = cacheMode;
+			this.cacheMode = cacheMode;
 			this.readOnly = readOnly;
 			this.comment = comment;
 		}
@@ -88,11 +93,6 @@ namespace NHibernate.Engine
 			get { return query; }
 		}
 
-		//public CacheMode CacheMode
-		//{
-		//    get { return cacheMode; }
-		//}
-
 		public bool IsReadOnly
 		{
 			get { return readOnly; }
@@ -101,6 +101,11 @@ namespace NHibernate.Engine
 		public string Comment
 		{
 			get { return comment; }
+		}
+
+		public CacheMode? CacheMode
+		{
+			get { return cacheMode; }
 		}
 	}
 }

@@ -35,6 +35,8 @@ namespace NHibernate.Impl
 		private IResultTransformer resultTransformer = new RootEntityResultTransformer();
 		private bool cacheable;
 		private string cacheRegion;
+		private CacheMode? cacheMode;
+		private CacheMode? sessionCacheMode;
 
 		private IList subcriteriaList = new ArrayList();
 		private string rootAlias;
@@ -268,6 +270,15 @@ namespace NHibernate.Impl
 				return root.GetCriteriaByAlias(alias);
 			}
 
+			/// <summary> Override the cache mode for this particular query. </summary>
+			/// <param name="cacheMode">The cache mode to use. </param>
+			/// <returns> this (for method chaining) </returns>
+			public ICriteria SetCacheMode(CacheMode cacheMode)
+			{
+				root.SetCacheMode(cacheMode);
+				return this;
+			}
+
 			public int MaxResults
 			{
 				get { return root.MaxResults; }
@@ -349,6 +360,24 @@ namespace NHibernate.Impl
 			}
 		}
 
+		protected internal void Before()
+		{
+			if (cacheMode.HasValue)
+			{
+				sessionCacheMode = Session.CacheMode;
+				Session.CacheMode = cacheMode.Value;
+			}
+		}
+
+		protected internal void After()
+		{
+			if (sessionCacheMode.HasValue)
+			{
+				Session.CacheMode = sessionCacheMode.Value;
+				sessionCacheMode = null;
+			}
+		}
+
 		public ICriteria SetMaxResults(int maxResults)
 		{
 			this.maxResults = maxResults;
@@ -410,22 +439,35 @@ namespace NHibernate.Impl
 			this.session = session;
 			this.cacheable = false;
 			this.rootAlias = alias;
+			cacheMode = null;
 			subcriteriaByAlias[alias] = this;
 		}
 
 		public IList List()
 		{
-			return session.List(this);
+			ArrayList results = new ArrayList();
+			List(results);
+			return results;
 		}
 
 		public void List(IList results)
 		{
-			session.List(this, results);
+			Before();
+			try
+			{
+				session.List(this, results);
+			}
+			finally
+			{
+				After();
+			}
 		}
 
 		public IList<T> List<T>()
 		{
-			return session.List<T>(this);
+			List<T> results = new List<T>();
+			List(results);
+			return results;
 		}
 
 		public T UniqueResult<T>()
@@ -649,6 +691,15 @@ namespace NHibernate.Impl
 		public ICriteria GetCriteriaByAlias(string alias)
 		{
 			return (ICriteria) subcriteriaByAlias[alias];
+		}
+
+		/// <summary> Override the cache mode for this particular query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		public ICriteria SetCacheMode(CacheMode cacheMode)
+		{
+			this.cacheMode = cacheMode;
+			return this;
 		}
 
 		public ICriteria ProjectionCriteria

@@ -7,10 +7,10 @@ namespace NHibernate.Engine
 	[Serializable]
 	public class NamedSQLQueryDefinition : NamedQueryDefinition
 	{
-		private ISQLQueryReturn[] queryReturns;
+		private readonly ISQLQueryReturn[] queryReturns;
 		private readonly IList querySpaces;
 		private readonly bool callable;
-		private string resultSetRef;
+		private readonly string resultSetRef;
 
 		public NamedSQLQueryDefinition(
 			string query,
@@ -21,6 +21,7 @@ namespace NHibernate.Engine
 			int timeout,
 			int fetchSize,
 			FlushMode flushMode,
+			CacheMode? cacheMode,
 			bool readOnly,
 			string comment,
 			IDictionary parameterTypes,
@@ -32,7 +33,7 @@ namespace NHibernate.Engine
 				timeout,
 				fetchSize,
 				flushMode,
-				//cacheMode,
+				cacheMode,
 				readOnly,
 				comment,
 				parameterTypes
@@ -52,7 +53,7 @@ namespace NHibernate.Engine
 			int timeout,
 			int fetchSize,
 			FlushMode flushMode,
-			//CacheMode cacheMode,
+			CacheMode? cacheMode,
 			bool readOnly,
 			string comment,
 			IDictionary parameterTypes,
@@ -64,7 +65,7 @@ namespace NHibernate.Engine
 				timeout,
 				fetchSize,
 				flushMode,
-				//cacheMode,
+				cacheMode,
 				readOnly,
 				comment,
 				parameterTypes

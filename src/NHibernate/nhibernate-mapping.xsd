@@ -88,7 +88,6 @@
 			<xs:enumeration value="always" />
 		</xs:restriction>
 	</xs:simpleType>
-
 	<!--
 		This is the same as laziness for now, but H3.2 allows lazy="no-proxy"
 		in some elements but not in others, so separate types are used.
@@ -587,7 +586,8 @@
 					<xs:element ref="many-to-one" />
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="table" type="xs:string"></xs:attribute>
+			<xs:attribute name="table" type="xs:string">
+			</xs:attribute>
 			<xs:attribute name="schema" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>default: no value</xs:documentation>
@@ -1043,6 +1043,7 @@
 		<xs:complexType mixed="true">
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
+			<xs:attribute name="cache-mode" type="cacheMode" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="return">
@@ -1119,6 +1120,7 @@
 			<!-- <xs:attribute name="callable" type="xs:boolean" use="optional" default="false" /> -->
 			<xs:attribute name="resultset-ref" type="xs:string" use="optional" />
 			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
+			<xs:attribute name="cache-mode" type="cacheMode" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="list">
@@ -1131,8 +1133,8 @@
 				</xs:choice>
 				<xs:element ref="key" />
 				<xs:choice>
-					<xs:element ref="index"/>
-					<xs:element ref="list-index"/>
+					<xs:element ref="index" />
+					<xs:element ref="list-index" />
 				</xs:choice>
 				<xs:choice>
 					<xs:element ref="element" />
@@ -1231,4 +1233,13 @@
 			<xs:attribute name="name" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="cacheMode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="get" />
+			<xs:enumeration value="ignore" />
+			<xs:enumeration value="normal" />
+			<xs:enumeration value="put" />
+			<xs:enumeration value="refresh" />
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

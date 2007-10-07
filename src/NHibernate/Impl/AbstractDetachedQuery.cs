@@ -50,6 +50,7 @@ namespace NHibernate.Impl
 		protected FlushMode flushMode = FlushMode.Unspecified;
 		protected IResultTransformer resultTransformer;
 		protected bool shouldIgnoredUnknownNamedParameters;
+		protected CacheMode? cacheMode;
 
 		#region IDetachedQuery Members
 
@@ -385,6 +386,15 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		/// <summary> Override the current session cache mode, just for this query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		public IDetachedQuery SetCacheMode(CacheMode cacheMode)
+		{
+			this.cacheMode = cacheMode;
+			return this;
+		}
+
 		#endregion
 
 		/// <summary>
@@ -406,6 +416,8 @@ namespace NHibernate.Impl
 				q.SetCacheRegion(cacheRegion);
 			if (resultTransformer != null)
 				q.SetResultTransformer(resultTransformer);
+			if (cacheMode.HasValue)
+				q.SetCacheMode(cacheMode.Value);
 			foreach (KeyValuePair<string, LockMode> mode in lockModes)
 				q.SetLockMode(mode.Key, mode.Value);
 
@@ -457,6 +469,7 @@ namespace NHibernate.Impl
 			selection.FetchSize = RowSelection.NoValue;
 			cacheable = false;
 			cacheRegion = null;
+			cacheMode = null;
 			forceCacheRefresh = false;
 			flushMode = FlushMode.Unspecified;
 			resultTransformer = null;
@@ -493,6 +506,8 @@ namespace NHibernate.Impl
 				.SetFlushMode(flushMode);
 			if (!string.IsNullOrEmpty(cacheRegion))
 				destination.SetCacheRegion(cacheRegion);
+			if (cacheMode.HasValue)
+				destination.SetCacheMode(cacheMode.Value);
 			if (resultTransformer != null)
 				destination.SetResultTransformer(resultTransformer);
 			foreach (KeyValuePair<string, LockMode> mode in lockModes)

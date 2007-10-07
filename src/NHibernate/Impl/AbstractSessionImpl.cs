@@ -182,7 +182,9 @@ namespace NHibernate.Impl
 			//{
 			//	query.SetFetchSize(nqd.FetchSize);
 			//}
-			//if ( nqd.getCacheMode() != null ) query.setCacheMode( nqd.getCacheMode() );
+			if (nqd.CacheMode.HasValue) 
+				query.SetCacheMode(nqd.CacheMode.Value);
+
 			//query.SetReadOnly(nqd.IsReadOnly);
 			//if (nqd.Comment != null)
 			//{

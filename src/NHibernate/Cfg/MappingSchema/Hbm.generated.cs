@@ -1278,6 +1278,10 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("foreign-key")]
         public string foreignkey;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("property-ref")]
+        public string propertyref;
     }
     
     /// <remarks/>
@@ -2174,7 +2178,9 @@ namespace NHibernate.Cfg.MappingSchema {
         public HbmKey key;
         
         /// <remarks/>
-        public HbmIndex index;
+        [System.Xml.Serialization.XmlElementAttribute("index", typeof(HbmIndex))]
+        [System.Xml.Serialization.XmlElementAttribute("list-index", typeof(HbmListIndex))]
+        public object Item1;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("composite-element", typeof(HbmCompositeElement))]
@@ -2182,7 +2188,7 @@ namespace NHibernate.Cfg.MappingSchema {
         [System.Xml.Serialization.XmlElementAttribute("many-to-any", typeof(HbmManyToAny))]
         [System.Xml.Serialization.XmlElementAttribute("many-to-many", typeof(HbmManyToMany))]
         [System.Xml.Serialization.XmlElementAttribute("one-to-many", typeof(HbmOneToMany))]
-        public object Item1;
+        public object Item2;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("filter")]
@@ -2297,6 +2303,28 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("jcs-cache")]
         JcsCache,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "2.0.0.1001")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
+    [System.Xml.Serialization.XmlRootAttribute("list-index", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
+    public partial class HbmListIndex {
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("column")]
+        public HbmColumn[] column;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("column")]
+        public string column1;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType="positiveInteger")]
+        public string @base;
     }
     
     /// <remarks/>
@@ -3392,6 +3420,14 @@ namespace NHibernate.Cfg.MappingSchema {
         public bool flushmodeSpecified;
         
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("cache-mode")]
+        public HbmCacheMode cachemode;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool cachemodeSpecified;
+        
+        /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text;
     }
@@ -3409,6 +3445,33 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("never")]
         Never,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "2.0.0.1001")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
+    public enum HbmCacheMode {
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("get")]
+        Get,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("ignore")]
+        Ignore,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("normal")]
+        Normal,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("put")]
+        Put,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("refresh")]
+        Refresh,
     }
     
     /// <remarks/>
@@ -3447,6 +3510,14 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool flushmodeSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("cache-mode")]
+        public HbmCacheMode cachemode;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool cachemodeSpecified;
     }
     
     /// <remarks/>

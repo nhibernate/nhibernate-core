@@ -423,5 +423,10 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="ignoredUnknownNamedParameters">True to ignore unknow parameters names.</param>
 		IDetachedQuery SetIgnoreUknownNamedParameters(bool ignoredUnknownNamedParameters);
+
+		/// <summary> Override the current session cache mode, just for this query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		IDetachedQuery SetCacheMode(CacheMode cacheMode);
 	}
 }

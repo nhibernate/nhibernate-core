@@ -32,6 +32,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			bool readOnly = true;
 			string comment = null;
 			FlushMode flushMode = FlushModeConverter.GetFlushMode(querySchema);
+			CacheMode? cacheMode = (querySchema.cachemodeSpecified)
+			                       	? CacheModeConverter.GetCacheMode(querySchema.cachemode)
+			                       	: null;
 
 			IDictionary parameterTypes = new SequencedHashMap();
 

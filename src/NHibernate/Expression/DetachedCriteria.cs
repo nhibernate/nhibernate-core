@@ -124,6 +124,12 @@ namespace NHibernate.Expression
 			return this;
 		}
 
+		public DetachedCriteria SetCacheMode(CacheMode cacheMode)
+		{
+			criteria.SetCacheMode(cacheMode);
+			return this;
+		}
+
 		public DetachedCriteria SetProjection(IProjection projection)
 		{
 			criteria.SetProjection(projection);

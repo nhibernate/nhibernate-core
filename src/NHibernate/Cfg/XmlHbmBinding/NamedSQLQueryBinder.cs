@@ -34,6 +34,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					string resultSetRef = querySchema.resultsetref;
 
 					FlushMode flushMode = FlushModeConverter.GetFlushMode(querySchema);
+					CacheMode? cacheMode = (querySchema.cachemodeSpecified)
+												? CacheModeConverter.GetCacheMode(querySchema.cachemode)
+												: null;
 
 					IDictionary parameterTypes = new SequencedHashMap();
 					IList synchronizedTables = GetSynchronizedTables(querySchema);
@@ -47,13 +50,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 						namedQuery = new NamedSQLQueryDefinition(queryText,
 							definition.GetQueryReturns(), synchronizedTables, cacheable, region, timeout,
-							fetchSize, flushMode, readOnly, comment, parameterTypes, callable);
+							fetchSize, flushMode, cacheMode, readOnly, comment, parameterTypes, callable);
 					}
 					else
 						// TODO: check there is no actual definition elemnents when a ref is defined
 						namedQuery = new NamedSQLQueryDefinition(queryText,
 							resultSetRef, synchronizedTables, cacheable, region, timeout, fetchSize,
-							flushMode, readOnly, comment, parameterTypes, callable);
+							flushMode, cacheMode, readOnly, comment, parameterTypes, callable);
 
 					log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 					mappings.AddSQLQuery(queryName, namedQuery);

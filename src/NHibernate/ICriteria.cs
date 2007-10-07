@@ -282,5 +282,10 @@ namespace NHibernate
 		/// <param name="alias">The alias.</param>
 		/// <returns></returns>
 		ICriteria GetCriteriaByAlias(string alias);
+
+		/// <summary> Override the cache mode for this particular query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		ICriteria SetCacheMode(CacheMode cacheMode);
 	}
 }
