@@ -1159,6 +1159,22 @@ namespace NHibernate.Impl
 			get { return updateTimestampsCache; }
 		}
 
+		public IDictionary GetAllSecondLevelCacheRegions()
+		{
+			lock (allCacheRegions.SyncRoot)
+			{
+				return new Hashtable(allCacheRegions);
+			}
+		}
+
+		public ICache GetSecondLevelCacheRegion(string regionName)
+		{
+			lock (allCacheRegions.SyncRoot)
+			{
+				return (ICache)allCacheRegions[regionName];
+			}
+		}
+
 		public IQueryCache QueryCache
 		{
 			get { return queryCache; }

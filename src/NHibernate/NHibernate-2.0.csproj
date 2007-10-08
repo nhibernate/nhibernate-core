@@ -868,6 +868,16 @@
     <Compile Include="SqlCommand\ISqlStringVisitor.cs" />
     <Compile Include="SqlCommand\SqlCommandInfo.cs" />
     <Compile Include="StaleStateException.cs" />
+    <Compile Include="Stat\CategorizedStatistics.cs" />
+    <Compile Include="Stat\CollectionStatistics.cs" />
+    <Compile Include="Stat\EntityStatistics.cs" />
+    <Compile Include="Stat\ISessionStatistics.cs" />
+    <Compile Include="Stat\IStatistics.cs" />
+    <Compile Include="Stat\IStatisticsImplementor.cs" />
+    <Compile Include="Stat\QueryStatistics.cs" />
+    <Compile Include="Stat\SecondLevelCacheStatistics.cs" />
+    <Compile Include="Stat\SessionStatisticsImpl.cs" />
+    <Compile Include="Stat\StatisticsImpl.cs" />
     <Compile Include="Transaction\AdoNetTransactionFactory.cs" />
     <Compile Include="Transform\AliasToBeanConstructorResultTransformer.cs" />
     <Compile Include="Transform\AliasToBeanResultTransformer.cs" />

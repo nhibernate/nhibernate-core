@@ -20,7 +20,8 @@
 	<namespace name="NHibernate.Property">The classes and interfaces that NHibernate uses to get/set values in the objects.</namespace> 
 	<namespace name="NHibernate.Proxy"></namespace> 
 	<namespace name="NHibernate.SqlCommand">The classes that NHibernate uses to build Sql Statements for the Drivers &amp; Dialects to convert to SQL.</namespace> 
-	<namespace name="NHibernate.SqlTypes">The classes that NHibernate uses to add extra information to DbTypes.</namespace> 
+	<namespace name="NHibernate.SqlTypes">The classes that NHibernate uses to add extra information to DbTypes.</namespace>
+	<namespace name="NHibernate.Stat">Exposes statistics about a running NHibernate instance to the application.</namespace>
 	<namespace name="NHibernate.Tool.hbm2ddl">The classes that NHibernate uses to build ddl from the mapped classes.</namespace> 
 	<namespace name="NHibernate.Transaction">The classes and interfaces that NHibernate uses to manage transactions.</namespace> 
 	<namespace name="NHibernate.Type">The classes and interfaces that NHibernate uses to convert .NET objects to database values.</namespace> 

@@ -208,5 +208,10 @@ namespace NHibernate.Engine
 
 		/// <summary> The cache of table update timestamps</summary>
 		UpdateTimestampsCache UpdateTimestampsCache { get;}
+
+		IDictionary GetAllSecondLevelCacheRegions();
+
+		/// <summary> Get a named second-level cache region</summary>
+		ICache GetSecondLevelCacheRegion(string regionName);
 	}
 }
