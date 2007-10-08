@@ -681,21 +681,21 @@ namespace NHibernate.Loader
 						EntityKey ownerKey = keys[owner];
 						if (keys[i] == null && ownerKey != null)
 						{
-							//bool isOneToOneAssociation = ownerAssociationTypes != null &&
-							//	ownerAssociationTypes[ i ] != null &&
-							//	ownerAssociationTypes[ i ].IsOneToOne;
+							bool isOneToOneAssociation = ownerAssociationTypes != null &&
+								ownerAssociationTypes[i] != null &&
+								ownerAssociationTypes[i].IsOneToOne;
 
-							//if( isOneToOneAssociation )
-							//{
-							// Added to fix NH-687, not in Hibernate:
-							bool isUniqueKeyReference = ownerAssociationTypes != null &&
-							                            ownerAssociationTypes[i] != null &&
-							                            ownerAssociationTypes[i].IsUniqueKeyReference;
-							if (!isUniqueKeyReference)
+							if (isOneToOneAssociation)
 							{
-								session.AddNonExist(new EntityKey(ownerKey.Identifier, persisters[i]));
+								// Added to fix NH-687, not in Hibernate:
+								bool isUniqueKeyReference = ownerAssociationTypes != null &&
+								                            ownerAssociationTypes[i] != null &&
+								                            ownerAssociationTypes[i].IsUniqueKeyReference;
+								if (!isUniqueKeyReference)
+								{
+									session.AddNonExist(new EntityKey(ownerKey.Identifier, persisters[i]));
+								}
 							}
-							//}
 						}
 					}
 				}

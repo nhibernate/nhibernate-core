@@ -221,6 +221,8 @@
     <Compile Include="NHSpecificTest\BasicTimeFixture.cs" />
     <Compile Include="NHSpecificTest\BugTestCase.cs" />
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
+    <Compile Include="NHSpecificTest\NH1064\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1064\Model.cs" />
     <Compile Include="NHSpecificTest\NH1119\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1119\Model.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -915,6 +917,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1119\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1064\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
