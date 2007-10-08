@@ -8,6 +8,7 @@ namespace NHibernate.Action
 	[Serializable]
 	public sealed class EntityIdentityInsertAction : EntityAction
 	{
+		private readonly object lockObject = new object();
 		private readonly object[] state;
 		private readonly bool isDelayed;
 		private readonly EntityKey delayedEntityKey;
@@ -34,7 +35,7 @@ namespace NHibernate.Action
 
 		private EntityKey GenerateDelayedEntityKey()
 		{
-			lock (this)
+			lock (lockObject)
 			{
 				if (!isDelayed)
 					throw new HibernateException("Cannot request delayed entity-key for non-delayed post-insert-id generation");
