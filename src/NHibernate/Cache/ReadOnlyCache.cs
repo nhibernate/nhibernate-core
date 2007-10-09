@@ -112,7 +112,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		public void AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock)
+		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock)
 		{
 			log.Error("Application attempted to edit read only item: " + key);
 			throw new InvalidOperationException("Can't write to a readonly object");
@@ -121,9 +121,10 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing.
 		/// </summary>
-		public void AfterInsert(CacheKey key, object value, object version)
+		public bool AfterInsert(CacheKey key, object value, object version)
 		{
 			// Ignore
+			return true;
 		}
 
 		/// <summary>
@@ -137,15 +138,15 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing.
 		/// </summary>
-		public void Insert(CacheKey key, object value)
+		public bool Insert(CacheKey key, object value, object currentVersion)
 		{
-			// NOOP
+			return false;
 		}
 
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		public void Update(CacheKey key, object value)
+		public bool Update(CacheKey key, object value, object currentVersion, object previousVersion)
 		{
 			log.Error("Application attempted to edit read only item: " + key);
 			throw new InvalidOperationException("Can't write to a readonly object");

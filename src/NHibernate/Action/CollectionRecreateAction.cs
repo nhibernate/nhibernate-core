@@ -22,11 +22,10 @@ namespace NHibernate.Action
 
 			Evict();
 
-			// TODO: H3.2 not ported
-			//if (Session.Factory.Statistics.StatisticsEnabled)
-			//{
-			//  Session.Factory.StatisticsImplementor.recreateCollection(Persister.Role);
-			//}
+			if (Session.Factory.Statistics.IsStatisticsEnabled)
+			{
+			  Session.Factory.StatisticsImplementor.RecreateCollection(Persister.Role);
+			}
 		}
 	}
 }

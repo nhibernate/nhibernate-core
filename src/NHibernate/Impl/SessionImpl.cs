@@ -200,6 +200,11 @@ namespace NHibernate.Impl
 
 			InitTransientState();
 
+			if (factory.Statistics.IsStatisticsEnabled)
+			{
+				factory.StatisticsImplementor.OpenSession();
+			}
+
 			log.Debug("opened session");
 		}
 
@@ -219,6 +224,15 @@ namespace NHibernate.Impl
 		public IDbConnection Close()
 		{
 			log.Debug("closing session");
+			if (IsClosed)
+			{
+				throw new SessionException("Session was already closed");
+			}
+
+			if (factory.Statistics.IsStatisticsEnabled)
+			{
+				factory.StatisticsImplementor.CloseSession();
+			}
 
 			try
 			{
@@ -238,8 +252,13 @@ namespace NHibernate.Impl
 		/// </summary>
 		public override void AfterTransactionCompletion(bool success, ITransaction tx)
 		{
-			connectionManager.AfterTransaction();
 			log.Debug("transaction completion");
+			if (Factory.Statistics.IsStatisticsEnabled)
+			{
+				Factory.StatisticsImplementor.EndTransaction(success);
+			}
+
+			connectionManager.AfterTransaction();
 			persistenceContext.AfterTransactionCompletion();
 			actionQueue.AfterTransactionCompletion(success);
 			if (//rootSession == null && 
@@ -254,6 +273,8 @@ namespace NHibernate.Impl
 					log.Error("exception in interceptor afterTransactionCompletion()", t);
 				}
 			}
+
+
 			//if (autoClear)
 			//	Clear();
 		}
@@ -1327,7 +1348,7 @@ namespace NHibernate.Impl
 
 			// free managed resources that are being managed by the session if we
 			// know this call came through Dispose()
-			if (isDisposing)
+			if (isDisposing && !IsClosed)
 			{
 				Close();
 			}

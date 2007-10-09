@@ -261,11 +261,10 @@ namespace NHibernate.Engine.Loading
 				log.Debug("collection fully initialized: " + MessageHelper.InfoString(persister, lce.Key, session.Factory));
 			}
 
-			// TODO H3.2 not ported
-			//if (session.Factory.Statistics.StatisticsEnabled)
-			//{
-			//  session.Factory.StatisticsImplementor.loadCollection(persister.Role);
-			//}
+			if (session.Factory.Statistics.IsStatisticsEnabled)
+			{
+				session.Factory.StatisticsImplementor.LoadCollection(persister.Role);
+			}
 		}
 
 		/// <summary> Add the collection to the second-level cache </summary>
@@ -308,15 +307,14 @@ namespace NHibernate.Engine.Loading
 			}
 
 			CacheKey ck = new CacheKey(lce.Key, persister.KeyType, persister.Role, factory);
-			persister.Cache.Put(ck, lce.Collection.Disassemble(persister), 
+			bool put = persister.Cache.Put(ck, lce.Collection.Disassemble(persister), 
 			                    session.Timestamp, version, versionComparator,
 													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 
-			// TODO H3.2 Not ported
-			//if (put && factory.Statistics.StatisticsEnabled)
-			//{
-			//  factory.StatisticsImplementor.secondLevelCachePut(persister.Cache.RegionName);
-			//}
+			if (put && factory.Statistics.IsStatisticsEnabled)
+			{
+				factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+			}
 		}
 
 		internal void Cleanup()

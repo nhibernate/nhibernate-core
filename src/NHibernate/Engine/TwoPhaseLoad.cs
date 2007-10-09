@@ -84,6 +84,8 @@ namespace NHibernate.Engine
 			}
 
 			persister.SetPropertyValues(entity, hydratedState);
+			
+			ISessionFactoryImplementor factory = session.Factory;
 
 			if (persister.HasCache && ((session.CacheMode & CacheMode.Put) == CacheMode.Put))
 			{
@@ -95,16 +97,15 @@ namespace NHibernate.Engine
 					new CacheEntry(entity, persister, session);
 				CacheKey cacheKey =
 					new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.Factory);
-				persister.Cache.Put(cacheKey, entry, session.Timestamp, version,
+				bool put = persister.Cache.Put(cacheKey, entry, session.Timestamp, version,
 				                    persister.IsVersioned ? persister.VersionType.Comparator : null,
 				                    UseMinimalPuts(session, entityEntry));
 					//we could use persister.hasLazyProperties() instead of true
 
-				// TODO H3.2 Not ported
-				//if (put && factory.Statistics.StatisticsEnabled)
-				//{
-				//  factory.StatisticsImplementor.secondLevelCachePut(persister.Cache.RegionName);
-				//}
+				if (put && factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+				}
 			}
 
 			if (readOnly || !persister.IsMutable)
@@ -140,11 +141,10 @@ namespace NHibernate.Engine
 			if (log.IsDebugEnabled)
 				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, session.Factory));
 
-			// TODO H3.2 Not ported
-			//if (factory.Statistics.StatisticsEnabled)
-			//{
-			//  factory.StatisticsImplementor.loadEntity(persister.EntityName);
-			//}
+			if (factory.Statistics.IsStatisticsEnabled)
+			{
+				factory.StatisticsImplementor.LoadEntity(persister.EntityName);
+			}
 		}
 
 		private static bool UseMinimalPuts(ISessionImplementor session, EntityEntry entityEntry)

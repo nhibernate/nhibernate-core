@@ -68,6 +68,8 @@ namespace NHibernate.Action
 				}
 			}
 
+			ISessionFactoryImplementor factory = Session.Factory;
+
 			if (IsCachePutEnabled(persister))
 			{
 				// TODO H3.2 Different behaviour
@@ -76,22 +78,20 @@ namespace NHibernate.Action
 				cacheEntry = new CacheEntry(instance, persister, Session);
 
 				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, Session.Factory);
-				persister.Cache.Insert(ck, cacheEntry);
+				bool put = persister.Cache.Insert(ck, cacheEntry, version);
 
-				// TODO: H3.2 not ported
-				//if (put && factory.Statistics.StatisticsEnabled)
-				//{
-				//  factory.StatisticsImplementor.secondLevelCachePut(Persister.Cache.RegionName);
-				//}
+				if (put && factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+				}
 			}
 
 			PostInsert();
 
-			// TODO: H3.2 not ported
-			//if (factory.Statistics.StatisticsEnabled && !veto)
-			//{
-			//  factory.StatisticsImplementor.insertEntity(Persister.EntityName);
-			//}
+			if (factory.Statistics.IsStatisticsEnabled && !veto)
+			{
+				factory.StatisticsImplementor.InsertEntity(Persister.EntityName);
+			}
 		}
 
 		public override void AfterTransactionCompletion(bool success)
@@ -101,13 +101,12 @@ namespace NHibernate.Action
 			if (success && IsCachePutEnabled(persister))
 			{
 				CacheKey ck = new CacheKey(Id, persister.IdentifierType, persister.RootEntityName, Session.Factory);
-				persister.Cache.AfterInsert(ck, cacheEntry, version);
+				bool put = persister.Cache.AfterInsert(ck, cacheEntry, version);
 
-				// TODO: H3.2 not ported
-				//if (put && Session.Factory.Statistics.StatisticsEnabled)
-				//{
-				//  Session.Factory.StatisticsImplementor.secondLevelCachePut(Persister.Cache.RegionName);
-				//}
+				if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+				{
+					Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+				}
 			}
 			PostCommitInsert();
 		}

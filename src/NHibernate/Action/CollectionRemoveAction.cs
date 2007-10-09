@@ -29,11 +29,10 @@ namespace NHibernate.Action
 
 			Evict();
 
-			// TODO: H3.2 not ported
-			//if (Session.Factory.Statistics.StatisticsEnabled)
-			//{
-			//  Session.Factory.StatisticsImplementor.removeCollection(Persister.Role);
-			//}
+			if (Session.Factory.Statistics.IsStatisticsEnabled)
+			{
+				Session.Factory.StatisticsImplementor.RemoveCollection(Persister.Role);
+			}
 		}
 
 		public override int CompareTo(CollectionAction other)

@@ -172,7 +172,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Get the mapping from key value to entity instance</summary>
-		public IDictionary EntitiesByKey
+		public IDictionary<EntityKey, object> EntitiesByKey
 		{
 			get { return entitiesByKey; }
 		}
@@ -190,7 +190,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Get the mapping from collection key to collection instance</summary>
-		public IDictionary CollectionsByKey
+		public IDictionary<CollectionKey, IPersistentCollection> CollectionsByKey
 		{
 			get { return collectionsByKey; }
 		}

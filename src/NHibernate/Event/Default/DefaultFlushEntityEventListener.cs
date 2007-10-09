@@ -451,11 +451,10 @@ namespace NHibernate.Event.Default
 				if (snapshot == null)
 				{
 					//do we even really need this? the update will fail anyway....
-					// TODO: H3.2 not ported
-					//if (session.Factory.Statistics.StatisticsEnabled)
-					//{
-					//  session.Factory.StatisticsImplementor.optimisticFailure(persister.EntityName);
-					//}
+					if (session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						session.Factory.StatisticsImplementor.OptimisticFailure(persister.EntityName);
+					}
 					throw new StaleObjectStateException(persister.MappedClass, id);
 				}
 				else

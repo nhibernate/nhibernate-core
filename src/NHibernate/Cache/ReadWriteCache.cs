@@ -303,7 +303,7 @@ namespace NHibernate.Cache
 		/// Re-cache the updated state, if and only if there there are
 		/// no other concurrent soft locks. Release our lock.
 		/// </summary>
-		public void AfterUpdate(CacheKey key, object value, object version, ISoftLock clientLock)
+		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock clientLock)
 		{
 			lock (_lockObject)
 			{
@@ -335,10 +335,12 @@ namespace NHibernate.Cache
 								log.Debug("Updated: " + key);
 							}
 						}
+						return true;
 					}
 					else
 					{
 						HandleLockExpiry(key);
+						return false;
 					}
 				}
 				finally
@@ -348,7 +350,7 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public void AfterInsert(CacheKey key, object value, object version)
+		public bool AfterInsert(CacheKey key, object value, object version)
 		{
 			lock (_lockObject)
 			{
@@ -369,6 +371,11 @@ namespace NHibernate.Cache
 						{
 							log.Debug("Inserted: " + key);
 						}
+						return true;
+					}
+					else
+					{
+						return false;
 					}
 				}
 				finally
@@ -383,14 +390,14 @@ namespace NHibernate.Cache
 			// NOOP
 		}
 
-		public void Insert(CacheKey key, object value)
+		public bool Insert(CacheKey key, object value, object currentVersion)
 		{
-			// NOOP
+			return false;
 		}
 
-		public void Update(CacheKey key, object value)
+		public bool Update(CacheKey key, object value, object currentVersion, object previousVersion)
 		{
-			// NOOP
+			return false;
 		}
 
 		/// <summary>

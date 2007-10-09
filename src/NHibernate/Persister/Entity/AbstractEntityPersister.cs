@@ -645,6 +645,11 @@ namespace NHibernate.Persister.Entity
 			{
 				if (!IsNullableTable(tableNumber))
 				{
+					if (Factory.Statistics.IsStatisticsEnabled)
+					{
+						Factory.StatisticsImplementor.OptimisticFailure(EntityName);
+					}
+
 					throw new StaleObjectStateException(MappedClass, id);
 				}
 			}

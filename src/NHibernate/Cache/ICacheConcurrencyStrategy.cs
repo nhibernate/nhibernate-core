@@ -63,16 +63,19 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
+		/// <param name="currentVersion"></param>
+		/// <param name="previousVersion"></param>
 		/// <remarks>This method is used by "synchronous" concurrency strategies.</remarks>
-		void Update(CacheKey key, object value);
+		bool Update(CacheKey key, object value, object currentVersion, object previousVersion);
 
 		/// <summary>
 		/// Called after an item has been inserted (before the transaction completes), instead of calling Evict().
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="value"></param>
+		/// <param name="currentVersion"></param>
 		/// <remarks>This method is used by "synchronous" concurrency strategies.</remarks>
-		void Insert(CacheKey key, object value);
+		bool Insert(CacheKey key, object value, object currentVersion);
 
 		/// <summary>
 		/// Called when we have finished the attempted update/delete (which may or
@@ -93,7 +96,7 @@ namespace NHibernate.Cache
 		/// <param name="version"></param>
 		/// <param name="lock"></param>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		void AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock);
+		bool AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock);
 
 		/// <summary>
 		/// Called after an item has been inserted (after the transaction completes), instead of calling release().
@@ -102,7 +105,7 @@ namespace NHibernate.Cache
 		/// <param name="value"></param>
 		/// <param name="version"></param>
 		/// <remarks>This method is used by "asynchronous" concurrency strategies.</remarks>
-		void AfterInsert(CacheKey key, object value, object version);
+		bool AfterInsert(CacheKey key, object value, object version);
 
 		/// <summary>
 		/// Evict an item from the cache immediately (without regard for transaction isolation).

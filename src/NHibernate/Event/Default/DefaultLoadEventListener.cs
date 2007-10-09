@@ -323,11 +323,10 @@ namespace NHibernate.Event.Default
 			ISessionImplementor source = @event.Session;
 			object entity = persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source);
 
-			// TODO H3.2 Not ported
-			//if (@event.AssociationFetch && source.Factory.Statistics.StatisticsEnabled)
-			//{
-			//  source.Factory.StatisticsImplementor.fetchEntity(@event.EntityClassName);
-			//}
+			if (@event.IsAssociationFetch && source.Factory.Statistics.IsStatisticsEnabled)
+			{
+				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName);
+			}
 
 			return entity;
 		}
@@ -391,17 +390,18 @@ namespace NHibernate.Event.Default
 
 			if (useCache)
 			{
-				CacheKey ck = new CacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName, source.Factory);
+				ISessionFactoryImplementor factory = source.Factory;
+
+				CacheKey ck = new CacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName, factory);
 				object ce = persister.Cache.Get(ck, source.Timestamp);
 
-				// TODO H3.2 Not ported
-				//if (factory.Statistics.StatisticsEnabled)
-				//{
-				//  if (ce == null)
-				//    factory.StatisticsImplementor.secondLevelCacheMiss(persister.Cache.RegionName);
-				//  else
-				//    factory.StatisticsImplementor.secondLevelCacheHit(persister.Cache.RegionName);
-				//}
+				if (factory.Statistics.IsStatisticsEnabled)
+				{
+					if (ce == null)
+						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+					else
+						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+				}
 
 				if (ce != null)
 				{

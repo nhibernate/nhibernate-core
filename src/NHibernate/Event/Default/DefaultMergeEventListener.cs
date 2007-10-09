@@ -247,11 +247,10 @@ namespace NHibernate.Event.Default
 				}
 				else if (IsVersionChanged(entity, source, persister, target))
 				{
-					// TODO H3.2 Not ported
-					//if (source.Factory.Statistics.StatisticsEnabled)
-					//{
-					//  source.Factory.StatisticsImplementor.optimisticFailure(entityName);
-					//}
+					if (source.Factory.Statistics.IsStatisticsEnabled)
+					{
+						source.Factory.StatisticsImplementor.OptimisticFailure(entityName);
+					}
 					throw new StaleObjectStateException(persister.MappedClass, id);
 				}
 

@@ -39,11 +39,10 @@ namespace NHibernate.Event.Default
 					// note: performExecutions() clears all collectionXxxxtion 
 					// collections (the collection actions) in the session
 
-					// TODO: H3.2 not ported
-					//if (source.Factory.Statistics.StatisticsEnabled)
-					//{
-					//  source.Factory.StatisticsImplementor.flush();
-					//}
+					if (source.Factory.Statistics.IsStatisticsEnabled)
+					{
+						source.Factory.StatisticsImplementor.Flush();
+					}
 				}
 				else
 				{

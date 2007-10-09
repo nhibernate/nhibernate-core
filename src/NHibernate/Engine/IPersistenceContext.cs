@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
@@ -36,7 +37,7 @@ namespace NHibernate.Engine
 		ISet NullifiableEntityKeys { get;}
 
 		/// <summary> Get the mapping from key value to entity instance</summary>
-		IDictionary EntitiesByKey { get;}
+		IDictionary<EntityKey, object> EntitiesByKey { get;}
 
 		/// <summary> Get the mapping from entity instance to entity entry</summary>
 		IDictionary EntityEntries { get;}
@@ -45,7 +46,7 @@ namespace NHibernate.Engine
 		IDictionary CollectionEntries { get;}
 
 		/// <summary> Get the mapping from collection key to collection instance</summary>
-		IDictionary CollectionsByKey { get;}
+		IDictionary<CollectionKey, IPersistentCollection> CollectionsByKey { get;}
 
 		/// <summary> How deep are we cascaded?</summary>
 		int CascadeLevel { get;}

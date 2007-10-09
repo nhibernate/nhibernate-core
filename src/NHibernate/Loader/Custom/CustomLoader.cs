@@ -455,5 +455,10 @@ namespace NHibernate.Loader.Custom
 				return type.NullSafeGet(resultSet, alias, session, null);
 			}
 		}
+
+		public override string QueryIdentifier
+		{
+			get { return sql.ToString(); }
+		}
 	}
 }

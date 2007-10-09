@@ -64,13 +64,13 @@ namespace NHibernate.Stat
 		/// <param name="time">time taken </param>
 		internal void Executed(long rows, long time)
 		{
-			if (time < ExecutionMinTime)
+			if (time < executionMinTime)
 				executionMinTime = time;
-			if (time > ExecutionMaxTime)
+			if (time > executionMaxTime)
 				executionMaxTime = time;
-			executionAvgTime = (ExecutionAvgTime * ExecutionCount + time) / (ExecutionCount + 1);
-			executionCount = ExecutionCount + 1;
-			executionRowCount = ExecutionRowCount + rows;
+			executionCount++;
+			executionRowCount += rows;
+			executionAvgTime = (executionAvgTime * executionCount + time) / executionCount;
 		}
 
 		public override string ToString()

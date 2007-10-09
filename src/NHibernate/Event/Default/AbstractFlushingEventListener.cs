@@ -44,7 +44,7 @@ namespace NHibernate.Event.Default
 			IEventSource session = @event.Session;
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 
-			session.Interceptor.PreFlush(persistenceContext.EntitiesByKey.Values);
+			session.Interceptor.PreFlush((ICollection)persistenceContext.EntitiesByKey.Values);
 
 			PrepareEntityFlushes(session);
 			// we could move this inside if we wanted to
@@ -289,7 +289,7 @@ namespace NHibernate.Event.Default
 			{
 				persistenceContext.CollectionEntries.Remove(key);
 			}
-			session.Interceptor.PostFlush(persistenceContext.EntitiesByKey.Values);
+			session.Interceptor.PostFlush((ICollection)persistenceContext.EntitiesByKey.Values);
 		}
 	}
 }

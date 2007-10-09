@@ -41,6 +41,7 @@ namespace NHibernate.Action
 
 		public override void Execute()
 		{
+			ISessionFactoryImplementor factory = Session.Factory;
 			object id = Id;
 			IEntityPersister persister = Persister;
 			object instance = Instance;
@@ -58,7 +59,7 @@ namespace NHibernate.Action
 			CacheKey ck = null;
 			if (persister.HasCache)
 			{
-				ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, Session.Factory);
+				ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, factory);
 				slock = persister.Cache.Lock(ck, previousVersion);
 			}
 
@@ -73,7 +74,7 @@ namespace NHibernate.Action
 				throw new AssertionFailure("Possible nonthreadsafe access to session");
 			}
 
-			if (entry.Status == Impl.Status.Loaded || persister.IsVersionPropertyGenerated)
+			if (entry.Status == Status.Loaded || persister.IsVersionPropertyGenerated)
 			{
 				// get the updated snapshot of the entity state by cloning current state;
 				// it is safe to copy in place, since by this time no-one else (should have)
@@ -96,7 +97,7 @@ namespace NHibernate.Action
 
 			if (persister.HasCache)
 			{
-				if (persister.IsCacheInvalidationRequired || entry.Status != Impl.Status.Loaded)
+				if (persister.IsCacheInvalidationRequired || entry.Status != Status.Loaded)
 				{
 					persister.Cache.Evict(ck);
 				}
@@ -107,23 +108,21 @@ namespace NHibernate.Action
 					//cacheEntry = persister.CacheEntryStructure.structure(ce);
 					//persister.Cache.Update(ck, cacheEntry, nextVersion, previousVersion);
 					cacheEntry = new CacheEntry(instance, persister, Session);
-					persister.Cache.Update(ck, cacheEntry);
+					bool put = persister.Cache.Update(ck, cacheEntry, nextVersion, previousVersion);
 
-					// TODO: H3.2 not ported
-					//if (put && factory.Statistics.StatisticsEnabled)
-					//{
-					//  factory.StatisticsImplementor.secondLevelCachePut(Persister.Cache.RegionName);
-					//}
+					if (put && factory.Statistics.IsStatisticsEnabled)
+					{
+						factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+					}
 				}
 			}
 
 			PostUpdate();
 
-			// TODO: H3.2 not ported
-			//if (factory.Statistics.StatisticsEnabled && !veto)
-			//{
-			//  factory.StatisticsImplementor.updateEntity(Persister.EntityName);
-			//}
+			if (factory.Statistics.IsStatisticsEnabled && !veto)
+			{
+				factory.StatisticsImplementor.UpdateEntity(Persister.EntityName);
+			}
 		}
 
 		public override void AfterTransactionCompletion(bool success)
@@ -136,12 +135,12 @@ namespace NHibernate.Action
 				if (success && cacheEntry != null)
 				{
 					persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
+					bool put = persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
 
-					// TODO H3.2 Different behaviour
-					//if (put && Session.Factory.Statistics.StatisticsEnabled)
-					//{
-					//  Session.Factory.StatisticsImplementor.secondLevelCachePut(Persister.Cache.RegionName);
-					//}
+					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+					}
 				}
 				else
 				{

@@ -84,11 +84,10 @@ namespace NHibernate.Action
 			}*/
 
 			PostInsert();
-			// TODO: H3.2 not ported
-			//if (session.Factory.Statistics.StatisticsEnabled && !veto)
-			//{
-			//  session.Factory.StatisticsImplementor.insertEntity(Persister.EntityName);
-			//}
+			if (Session.Factory.Statistics.IsStatisticsEnabled && !veto)
+			{
+				Session.Factory.StatisticsImplementor.InsertEntity(Persister.EntityName);
+			}
 		}
 
 		private void PostInsert()

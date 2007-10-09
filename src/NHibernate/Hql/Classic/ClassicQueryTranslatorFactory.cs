@@ -11,16 +11,16 @@ namespace NHibernate.Hql.Classic
 	{
 		#region IQueryTranslatorFactory Members
 
-		public IQueryTranslator CreateQueryTranslator(string queryString, IDictionary filters,
+		public IQueryTranslator CreateQueryTranslator(string queryIdentifier, string queryString, IDictionary filters,
 		                                              ISessionFactoryImplementor factory)
 		{
-			return new QueryTranslator(factory, queryString, filters);
+			return new QueryTranslator(queryIdentifier, queryString, filters, factory);
 		}
 
-		public IFilterTranslator CreateFilterTranslator(string queryString, IDictionary filters,
+		public IFilterTranslator CreateFilterTranslator(string queryIdentifier, string queryString, IDictionary filters,
 		                                                ISessionFactoryImplementor factory)
 		{
-			return new QueryTranslator(factory, queryString, filters);
+			return new QueryTranslator(queryIdentifier, queryString, filters, factory);
 		}
 
 		#endregion

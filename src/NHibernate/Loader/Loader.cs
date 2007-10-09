@@ -886,6 +886,11 @@ namespace NHibernate.Loader
 				object currentVersion = versionType.NullSafeGet(rs, EntityAliases[i].SuffixedVersionAliases, session, null);
 				if (!versionType.Equals(version, currentVersion))
 				{
+					if (session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						session.Factory.StatisticsImplementor.OptimisticFailure(persister.EntityName);
+					}
+
 					throw new StaleObjectStateException(persister.MappedClass, id);
 				}
 			}
@@ -1788,36 +1793,44 @@ namespace NHibernate.Loader
 		{
 			if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
 			{
-				queryCache.Put(key, resultTypes, result, session);
-				// TODO H3.2 Not ported
-				//if (put && factory.Statistics.StatisticsEnabled)
-				//{
-				//  factory.StatisticsImplementor.queryCachePut(getQueryIdentifier(), queryCache.RegionName);
-				//}
+				bool put = queryCache.Put(key, resultTypes, result, session);
+				if (put && factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
+				}
 			}		
 		}
 
-		private static IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		private IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 		                                             ISet querySpaces, IType[] resultTypes, IQueryCache queryCache,
 		                                             QueryKey key)
 		{
+			IList result = null;
 			if ((!queryParameters.ForceCacheRefresh) && (session.CacheMode & CacheMode.Get) == CacheMode.Get)
 			{
-				return queryCache.Get(key, resultTypes, querySpaces, session);
-				// TODO H3.2 Not ported
-				//if (factory.Statistics.StatisticsEnabled)
-				//{
-				//  if (result == null)
-				//  {
-				//    factory.StatisticsImplementor.queryCacheMiss(getQueryIdentifier(), queryCache.RegionName);
-				//  }
-				//  else
-				//  {
-				//    factory.StatisticsImplementor.queryCacheHit(getQueryIdentifier(), queryCache.RegionName);
-				//  }
-				//}
+				result= queryCache.Get(key, resultTypes, querySpaces, session);
+				if (factory.Statistics.IsStatisticsEnabled)
+				{
+					if (result == null)
+					{
+						factory.StatisticsImplementor.QueryCacheMiss(QueryIdentifier, queryCache.RegionName);
+					}
+					else
+					{
+						factory.StatisticsImplementor.QueryCacheHit(QueryIdentifier, queryCache.RegionName);
+					}
+				}
 			}
-			return null;
+			return result;
+		}
+
+		/// <summary> 
+		/// Identifies the query for statistics reporting, if null,
+		/// no statistics will be reported
+		/// </summary>
+		public virtual string QueryIdentifier
+		{
+			get { return null; }
 		}
 
 		/// <summary>
@@ -1828,10 +1841,15 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected IList DoList(ISessionImplementor session, QueryParameters queryParameters)
 		{
+			bool stats = Factory.Statistics.IsStatisticsEnabled;
+			long startTime = 0;
+			if (stats)
+				startTime = DateTime.Now.Ticks;
+
+			IList result;
 			try
 			{
-				return DoQueryAndInitializeNonLazyCollections(
-					session, queryParameters, true);
+				result = DoQueryAndInitializeNonLazyCollections(session, queryParameters, true);
 			}
 			catch (HibernateException)
 			{
@@ -1847,6 +1865,11 @@ namespace NHibernate.Loader
 					queryParameters.PositionalParameterValues,
 					queryParameters.NamedParameters);
 			}
+			if (stats)
+			{
+				Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, result.Count, (DateTime.Now.Ticks - startTime));
+			}
+			return result;
 		}
 
 		/// <summary>

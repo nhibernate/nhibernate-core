@@ -29,6 +29,7 @@ namespace NHibernate.Hql.Classic
 	{
 		private static readonly string[] NoReturnAliases = new string[] {};
 
+		private readonly string queryIdentifier;
 		private readonly string queryString;
 
 		private readonly IDictionary typeMap = new SequencedHashMap();
@@ -221,15 +222,30 @@ namespace NHibernate.Hql.Classic
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(QueryTranslator));
 
+		/// <summary> Construct a query translator </summary>
+		/// <param name="queryIdentifier">
+		/// A unique identifier for the query of which this
+		/// translation is part; typically this is the original, user-supplied query string.
+		/// </param>
+		/// <param name="queryString">
+		/// The "preprocessed" query string; at the very least
+		/// already processed by {@link org.hibernate.hql.QuerySplitter}.
+		/// </param>
+		/// <param name="enabledFilters">Any enabled filters.</param>
+		/// <param name="factory">The session factory. </param>
+		public QueryTranslator(string queryIdentifier, string queryString, IDictionary enabledFilters, ISessionFactoryImplementor factory)
+			: base(factory)
+		{
+			this.queryIdentifier = queryIdentifier;
+			this.queryString = queryString;
+			this.enabledFilters = enabledFilters;
+		}
+
 		/// <summary> 
 		/// Construct a query translator
 		/// </summary>
 		public QueryTranslator(ISessionFactoryImplementor factory, string queryString, IDictionary enabledFilters)
-			: base(factory)
-		{
-			this.queryString = queryString;
-			this.enabledFilters = enabledFilters;
-		}
+			: this(queryString, queryString, enabledFilters, factory) {}
 
 		/// <summary>
 		/// Compile a subquery
@@ -1298,14 +1314,27 @@ namespace NHibernate.Hql.Classic
 
 		public IEnumerable GetEnumerable(QueryParameters parameters, ISessionImplementor session)
 		{
+			bool stats = session.Factory.Statistics.IsStatisticsEnabled;
+			long startTime = 0;
+			if (stats)
+				startTime = DateTime.Now.Ticks;
+
 			IDbCommand cmd = PrepareQueryCommand(parameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
 			IDataReader rs = GetResultSet(cmd, parameters.RowSelection, session);
 			HolderInstantiator hi =
 				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
-			return new EnumerableImpl(rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection,
-			                          hi);
+			IEnumerable result =
+				new EnumerableImpl(rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection, hi);
+			if (stats)
+			{
+				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + queryString, 0, (DateTime.Now.Ticks  - startTime));
+				// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
+				// probably we have a bug some where else for statistic RowCount
+				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, (DateTime.Now.Ticks - startTime));
+			}
+			return result;
 		}
 
 		public static string[] ConcreteQueries(string query, ISessionFactoryImplementor factory)
@@ -1723,6 +1752,11 @@ namespace NHibernate.Hql.Classic
 			}
 
 			#endregion
+		}
+
+		public override string QueryIdentifier
+		{
+			get { return queryIdentifier; }
 		}
 	}
 }

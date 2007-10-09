@@ -42,11 +42,10 @@ namespace NHibernate.Event.Default
 					ce.LoadedPersister.Initialize(ce.LoadedKey, source);
 					log.Debug("collection initialized");
 
-					// TODO: H3.2 not ported
-					//if (source.Factory.Statistics.StatisticsEnabled)
-					//{
-					//  source.Factory.StatisticsImplementor.fetchCollection(ce.getLoadedPersister().Role);
-					//}
+					if (source.Factory.Statistics.IsStatisticsEnabled)
+					{
+						source.Factory.StatisticsImplementor.FetchCollection(ce.LoadedPersister.Role);
+					}
 				}
 			}
 		}
@@ -69,21 +68,22 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				CacheKey ck = new CacheKey(id, persister.KeyType, persister.Role, source.Factory);
+				ISessionFactoryImplementor factory = source.Factory;
+
+				CacheKey ck = new CacheKey(id, persister.KeyType, persister.Role, factory);
 				object ce = persister.Cache.Get(ck, source.Timestamp);
 
-				// TODO: H3.2 not ported
-				//if (factory.Statistics.StatisticsEnabled)
-				//{
-				//  if (ce == null)
-				//  {
-				//    factory.StatisticsImplementor.secondLevelCacheMiss(persister.Cache.RegionName);
-				//  }
-				//  else
-				//  {
-				//    factory.StatisticsImplementor.secondLevelCacheHit(persister.Cache.RegionName);
-				//  }
-				//}
+				if (factory.Statistics.IsStatisticsEnabled)
+				{
+					if (ce == null)
+					{
+						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+					}
+					else
+					{
+						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+					}
+				}
 
 				if (ce == null)
 				{

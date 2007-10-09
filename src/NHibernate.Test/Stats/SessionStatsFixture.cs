@@ -31,7 +31,13 @@ namespace NHibernate.Test.Stats
 			return europe;
 		}
 
-		[Test, Ignore("Not ported yet")]
+		private static void CleanDb(ISession s)
+		{
+			s.Delete("from Country");
+			s.Delete("from Continent");
+		}
+
+		[Test]
 		public void SessionStatistics()
 		{
 			ISession s = OpenSession();
@@ -60,6 +66,7 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(1, sessionStats.CollectionKeys.Count);
 			Assert.AreEqual(1, sessionStats.CollectionCount);
 
+			CleanDb(s);
 			tx.Commit();
 			s.Close();
 

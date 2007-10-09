@@ -43,7 +43,7 @@ namespace NHibernate.Test.Stats
 			s.Delete("from Continent");
 		}
 
-		[Test, Ignore("Not ported yet")]
+		[Test]
 		public void CollectionFetchVsLoad()
 		{
 			IStatistics stats = sessions.Statistics;
@@ -78,13 +78,13 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(0, stats.CollectionLoadCount);
 			Assert.AreEqual(0, stats.CollectionFetchCount);
 
-			europe2 = s.CreateQuery("from Continent a join fetch a.countries where a.id = " + europe.Id).UniqueResult<Continent>();
+			europe2 = s.CreateQuery("from Continent a join fetch a.Countries where a.id = " + europe.Id).UniqueResult<Continent>();
 			Assert.AreEqual(1, stats.CollectionLoadCount);
 			Assert.AreEqual(0, stats.CollectionFetchCount, "collection should be loaded in the same query as its parent");
 			tx.Commit();
 			s.Close();
 
-			Mapping.Collection coll = cfg.GetCollectionMapping("Continent.Countries");
+			Mapping.Collection coll = cfg.GetCollectionMapping("NHibernate.Test.Stats.Continent.Countries");
 			coll.FetchMode = FetchMode.Join;
 			coll.IsLazy = false;
 			ISessionFactory sf = cfg.BuildSessionFactory();
@@ -108,7 +108,7 @@ namespace NHibernate.Test.Stats
 			s.Close();
 			sf.Close();
 
-			coll = cfg.GetCollectionMapping("Continent.Countries");
+			coll = cfg.GetCollectionMapping("NHibernate.Test.Stats.Continent.Countries");
 			coll.FetchMode = FetchMode.Select;
 			coll.IsLazy = false;
 			sf = cfg.BuildSessionFactory();
@@ -135,7 +135,7 @@ namespace NHibernate.Test.Stats
 			s.Close();
 		}
 
-		[Test, Ignore("Not ported yet")]
+		[Test]
 		public void QueryStatGathering()
 		{
 			IStatistics stats = sessions.Statistics;
@@ -160,9 +160,9 @@ namespace NHibernate.Test.Stats
 			//Assert.AreEqual( continents, stats.QueryExecutionMaxTimeQueryString );
 
 			IEnumerable itr = s.CreateQuery(continents).Enumerable();
-			// iterate() should increment the execution count
+			// Enumerable() should increment the execution count
 			Assert.AreEqual(2, continentStats.ExecutionCount, "unexpected execution count");
-						// but should not effect the cumulative row count
+			// but should not effect the cumulative row count
 			Assert.AreEqual(results, continentStats.ExecutionRowCount, "unexpected row count");
 			NHibernateUtil.Close(itr);
 			tx.Commit();
@@ -191,7 +191,7 @@ namespace NHibernate.Test.Stats
 			stats.Clear();
 			s = OpenSession();
 			tx = s.BeginTransaction();
-			string sql = "select id, name from Country";
+			string sql = "select Id, Name from Country";
 			results = s.CreateSQLQuery(sql).AddEntity(typeof (Country)).List().Count;
 			QueryStatistics sqlStats = stats.GetQueryStatistics(sql);
 			Assert.IsNotNull(sqlStats, "sql stats were null");

@@ -170,6 +170,10 @@ namespace NHibernate.Impl
 				if (ownConnection)
 				{
 					connection = session.Factory.OpenConnection();
+					if (session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						session.Factory.StatisticsImplementor.Connect();
+					}
 				}
 				else if (session.IsOpen)
 				{

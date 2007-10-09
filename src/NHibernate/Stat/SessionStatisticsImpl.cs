@@ -31,7 +31,7 @@ namespace NHibernate.Stat
 			get
 			{
 				List<EntityKey> result = new List<EntityKey>();
-				//result.AddRange(session.PersistenceContext.EntitiesByKey.Keys);
+				result.AddRange(session.PersistenceContext.EntitiesByKey.Keys);
 				return result.AsReadOnly();
 			}
 		}
@@ -41,7 +41,7 @@ namespace NHibernate.Stat
 			get 
 			{
 				List<CollectionKey> result = new List<CollectionKey>();
-				//result.AddRange(session.PersistenceContext.CollectionsByKey.Keys);
+				result.AddRange(session.PersistenceContext.CollectionsByKey.Keys);
 				return result.AsReadOnly();
 			}
 		}

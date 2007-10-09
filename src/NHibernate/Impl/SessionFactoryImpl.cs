@@ -362,6 +362,8 @@ namespace NHibernate.Impl
 				queryCaches = null;
 			}
 
+			Statistics.IsStatisticsEnabled = settings.IsStatisticsEnabled;
+
 			// EntityNotFoundDelegate
 			IEntityNotFoundDelegate enfd = cfg.EntityNotFoundDelegate;
 			if (enfd == null)
@@ -549,23 +551,23 @@ namespace NHibernate.Impl
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IQueryTranslator[] CreateQueryTranslators(string[] concreteQueryStrings, QueryCacheKey cacheKey,
+		private IQueryTranslator[] CreateQueryTranslators(string hql, string[] concreteQueryStrings, QueryCacheKey cacheKey,
 		                                                  IDictionary enabledFilters)
 		{
 			int length = concreteQueryStrings.Length;
 			IQueryTranslator[] queries = new IQueryTranslator[length];
 			for (int i = 0; i < length; i++)
 			{
-				queries[i] = settings.QueryTranslatorFactory.CreateQueryTranslator(concreteQueryStrings[i], enabledFilters, this);
+				queries[i] = settings.QueryTranslatorFactory.CreateQueryTranslator(hql, concreteQueryStrings[i], enabledFilters, this);
 			}
 			Put(cacheKey, queries);
 			return queries;
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IFilterTranslator CreateFilterTranslator(string filterString, FilterCacheKey cacheKey)
+		private IFilterTranslator CreateFilterTranslator(string hql, string filterString, FilterCacheKey cacheKey)
 		{
-			IFilterTranslator filter = settings.QueryTranslatorFactory.CreateFilterTranslator(filterString, filters, this);
+			IFilterTranslator filter = settings.QueryTranslatorFactory.CreateFilterTranslator(hql, filterString, filters, this);
 			Put(cacheKey, filter);
 			return filter;
 		}
@@ -586,7 +588,7 @@ namespace NHibernate.Impl
 				// a query that names an interface or unmapped class in the from clause
 				// is actually executed as multiple queries
 				string[] concreteQueryStrings = QuerySplitter.ConcreteQueries(queryString, this);
-				queries = CreateQueryTranslators(concreteQueryStrings, cacheKey, enabledFilters);
+				queries = CreateQueryTranslators(queryString, concreteQueryStrings, cacheKey, enabledFilters);
 			}
 
 			foreach (IQueryTranslator q in queries)
@@ -605,7 +607,7 @@ namespace NHibernate.Impl
 			IFilterTranslator filter = (IFilterTranslator) Get(cacheKey);
 			if (filter == null)
 			{
-				filter = CreateFilterTranslator(filterString, cacheKey);
+				filter = CreateFilterTranslator(filterString, filterString, cacheKey);
 			}
 
 			filter.Compile(collectionRole, settings.QuerySubstitutions, scalar);

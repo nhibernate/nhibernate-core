@@ -135,16 +135,18 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		public void Update(CacheKey key, object value)
+		public bool Update(CacheKey key, object value, object currentVersion, object previousVersion)
 		{
 			Evict(key);
+			return false;
 		}
 
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public void Insert(CacheKey key, object value)
+		public bool Insert(CacheKey key, object value, object currentVersion)
 		{
+			return false;
 		}
 
 		/// <summary>
@@ -163,16 +165,18 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		public void AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock)
+		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock)
 		{
 			Release(key, @lock);
+			return false;
 		}
 
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public void AfterInsert(CacheKey key, object value, object version)
+		public bool AfterInsert(CacheKey key, object value, object version)
 		{
+			return false;
 		}
 	}
 }

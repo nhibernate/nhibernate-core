@@ -22,6 +22,11 @@ namespace NHibernate.Cache
 		private UpdateTimestampsCache updateTimestampsCache;
 		private readonly string regionName;
 
+		public string RegionName
+		{
+			get { return regionName; }
+		}
+
 		public void Clear()
 		{
 			queryCache.Clear();
@@ -43,7 +48,7 @@ namespace NHibernate.Cache
 			this.regionName = regionName;
 		}
 
-		public void Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, ISessionImplementor session)
+		public bool Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -63,6 +68,7 @@ namespace NHibernate.Cache
 				}
 			}
 			queryCache.Put(key, cacheable);
+			return true;
 		}
 
 		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, ISet spaces, ISessionImplementor session)

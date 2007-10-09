@@ -412,21 +412,31 @@ namespace NHibernate.Impl
 	        return outputText;
 	    }
 
-	    private static void LogOpenPreparedCommand()
+		private void LogOpenPreparedCommand()
 		{
 			if (log.IsDebugEnabled)
 			{
 				openCommandCount++;
 				log.Debug("Opened new IDbCommand, open IDbCommands: " + openCommandCount);
 			}
+
+			if (factory.Statistics.IsStatisticsEnabled)
+			{
+				factory.StatisticsImplementor.PrepareStatement();
+			}
 		}
 
-		private static void LogClosePreparedCommand()
+		private void LogClosePreparedCommand()
 		{
 			if (log.IsDebugEnabled)
 			{
 				openCommandCount--;
 				log.Debug("Closed IDbCommand, open IDbCommands: " + openCommandCount);
+			}
+
+			if (factory.Statistics.IsStatisticsEnabled)
+			{
+				factory.StatisticsImplementor.CloseStatement();
 			}
 		}
 

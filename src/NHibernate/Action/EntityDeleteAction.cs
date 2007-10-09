@@ -84,11 +84,10 @@ namespace NHibernate.Action
 
 			PostDelete();
 
-			// TODO: H3.2 not ported
-			//if (Session.Factory.Statistics.StatisticsEnabled && !veto)
-			//{
-			//  Session.Factory.StatisticsImplementor.deleteEntity(Persister.EntityName);
-			//}
+			if (Session.Factory.Statistics.IsStatisticsEnabled && !veto)
+			{
+				Session.Factory.StatisticsImplementor.DeleteEntity(Persister.EntityName);
+			}
 		}
 
 		private void PostDelete()
