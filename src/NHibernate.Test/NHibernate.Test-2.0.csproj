@@ -1016,8 +1016,8 @@
     <EmbeddedResource Include="Stateless\Document.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Stats\Continent.hbm.xml" />
-    <Content Include="Stats\Continent2.hbm.xml" />
+    <EmbeddedResource Include="Stats\Continent.hbm.xml" />
+    <EmbeddedResource Include="Stats\Continent2.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
