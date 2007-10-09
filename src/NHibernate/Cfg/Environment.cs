@@ -55,7 +55,7 @@ namespace NHibernate.Cfg
 
 					if (attrs != null && attrs.Length > 0)
 					{
-						cachedVersion = thisAssembly.GetName().Version.ToString() + " (" + attrs[0].InformationalVersion + ")";
+						cachedVersion = string.Format("{0} ({1})", thisAssembly.GetName().Version, attrs[0].InformationalVersion);
 					}
 					else
 					{
@@ -109,9 +109,12 @@ namespace NHibernate.Cfg
 		public const string CacheRegionPrefix = "cache.region_prefix";
 		public const string UseMinimalPuts = "cache.use_minimal_puts";
 		public const string QuerySubstitutions = "query.substitutions";
+
+		/// <summary> Enable statistics collection</summary>
+		public const string GenerateStatistics = "generate_statistics";
+
 		// The classname of the HQL query parser factory
 		public const string QueryTranslator = "query.factory_class";
-
 
 		// Unused, not implemented
 		public const string QueryImports = "query.imports";
@@ -127,7 +130,6 @@ namespace NHibernate.Cfg
 		public const string PrepareSql = "prepare_sql";
 		public const string CommandTimeout = "command_timeout";
 		public const string BatchSize = "adonet.batch_size";
-
 
 		public const string PropertyBytecodeProvider = "bytecode.provider";
 		public const string PropertyUseReflectionOptimizer = "use_reflection_optimizer";

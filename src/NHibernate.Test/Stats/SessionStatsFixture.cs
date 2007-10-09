@@ -1,0 +1,69 @@
+using System.Collections;
+using Iesi.Collections.Generic;
+using NHibernate.Stat;
+using NUnit.Framework;
+
+namespace NHibernate.Test.Stats
+{
+	[TestFixture]
+	public class SessionStatsFixture : TestCase
+	{
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
+
+		protected override IList Mappings
+		{
+			get { return new string[] { "Stats.Continent2.hbm.xml" }; }
+		}
+
+		private static Continent FillDb(ISession s)
+		{
+			Continent europe = new Continent();
+			europe.Name="Europe";
+			Country france = new Country();
+			france.Name="France";
+			europe.Countries= new HashedSet<Country>();
+			europe.Countries.Add(france);
+			s.Save(france);
+			s.Save(europe);
+			return europe;
+		}
+
+		[Test, Ignore("Not ported yet")]
+		public void SessionStatistics()
+		{
+			ISession s = OpenSession();
+			ITransaction tx = s.BeginTransaction();
+			IStatistics stats = sessions.Statistics;
+			stats.Clear();
+			bool isStats = stats.IsStatisticsEnabled;
+			stats.IsStatisticsEnabled = true;
+			Continent europe = FillDb(s);
+			tx.Commit();
+			s.Clear();
+			tx = s.BeginTransaction();
+			ISessionStatistics sessionStats = s.Statistics;
+			Assert.AreEqual(0, sessionStats.EntityKeys.Count);
+			Assert.AreEqual(0, sessionStats.EntityCount);
+			Assert.AreEqual(0, sessionStats.CollectionKeys.Count);
+			Assert.AreEqual(0, sessionStats.CollectionCount);
+
+			europe = s.Get<Continent>(europe.Id);
+			NHibernateUtil.Initialize(europe.Countries);
+			IEnumerator itr = europe.Countries.GetEnumerator();
+			itr.MoveNext();
+			NHibernateUtil.Initialize(itr.Current);
+			Assert.AreEqual(2, sessionStats.EntityKeys.Count);
+			Assert.AreEqual(2, sessionStats.EntityCount);
+			Assert.AreEqual(1, sessionStats.CollectionKeys.Count);
+			Assert.AreEqual(1, sessionStats.CollectionCount);
+
+			tx.Commit();
+			s.Close();
+
+			stats.IsStatisticsEnabled = isStats;
+		}
+	}
+}

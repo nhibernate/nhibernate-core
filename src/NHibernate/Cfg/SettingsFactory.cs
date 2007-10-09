@@ -88,11 +88,17 @@ namespace NHibernate.Cfg
 				log.Info("Default schema set to: " + defaultSchema);
 			}
 
+			//Statistics and logging:
+
 			bool showSql = PropertiesHelper.GetBoolean(Environment.ShowSql, properties, false);
 			if (showSql)
 			{
 				log.Info("echoing all SQL to stdout");
 			}
+
+			bool useStatistics = PropertiesHelper.GetBoolean(Environment.GenerateStatistics, properties);
+			log.Info("Statistics: " + EnabledDisabled(useStatistics));
+			settings.IsStatisticsEnabled = useStatistics;
 
 			// queries:
 
@@ -203,6 +209,11 @@ namespace NHibernate.Cfg
 			settings.IsolationLevel = isolation;
 
 			return settings;
+		}
+
+		private static string EnabledDisabled(bool value)
+		{
+			return value ? "enabled" : "disabled";
 		}
 
 		private static ICacheProvider CreateCacheProvider(IDictionary properties)

@@ -6,6 +6,7 @@ using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
+using NHibernate.Stat;
 using NHibernate.Transaction;
 using NHibernate.Type;
 using System.Collections;
@@ -213,5 +214,8 @@ namespace NHibernate.Engine
 
 		/// <summary> Get a named second-level cache region</summary>
 		ICache GetSecondLevelCacheRegion(string regionName);
+
+		/// <summary> Statistics SPI</summary>
+		IStatisticsImplementor StatisticsImplementor { get;}
 	}
 }

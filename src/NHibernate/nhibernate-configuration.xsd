@@ -91,6 +91,7 @@
 								<xs:enumeration value="use_proxy_validator" />
 								<xs:enumeration value="use_outer_join" />
 								<xs:enumeration value="xml.output_stylesheet" />
+								<xs:enumeration value="generate_statistics" />
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

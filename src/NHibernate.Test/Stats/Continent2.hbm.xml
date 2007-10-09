@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.Stats" assembly="NHibernate.Test" >
+	<class name="Continent" table="tbl_continent">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+		<set name="Countries">
+			<key column="country_id"/>
+			<one-to-many class="Country"/>
+		</set>
+	</class>
+
+	<class name="Country" table="tbl_country">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+	</class>
+</hibernate-mapping>

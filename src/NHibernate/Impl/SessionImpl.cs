@@ -16,6 +16,7 @@ using NHibernate.Loader.Custom;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
+using NHibernate.Stat;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -1940,6 +1941,15 @@ namespace NHibernate.Impl
 		public IMultiCriteria CreateMultiCriteria()
 		{
 			return new MultiCriteriaImpl(this, factory);
+		}
+
+		/// <summary> Get the statistics for this session.</summary>
+		public ISessionStatistics Statistics
+		{
+			get
+			{
+				return new SessionStatisticsImpl(this);
+			}
 		}
 
 		private void AfterOperation(bool success)

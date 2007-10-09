@@ -548,6 +548,13 @@
     <Compile Include="Stateless\Document.cs" />
     <Compile Include="Stateless\Paper.cs" />
     <Compile Include="Stateless\StatelessSessionFixture.cs" />
+    <Compile Include="Stats\Continent.cs" />
+    <Compile Include="Stats\Country.cs" />
+    <Compile Include="Stats\Locality.cs" />
+    <Compile Include="Stats\Province.cs" />
+    <Compile Include="Stats\SessionStatsFixture.cs" />
+    <Compile Include="Stats\State.cs" />
+    <Compile Include="Stats\StatsFixture.cs" />
     <Compile Include="SubclassFilterTest\JoinedSubclassFilterTest.cs" />
     <Compile Include="SubclassFilterTest\Customer.cs" />
     <Compile Include="SubclassFilterTest\DiscrimSubclassFilterTest.cs" />
@@ -1007,6 +1014,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Stateless\Document.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Stats\Continent.hbm.xml" />
+    <Content Include="Stats\Continent2.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

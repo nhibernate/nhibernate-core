@@ -5,6 +5,7 @@ using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Metadata;
+using NHibernate.Stat;
 
 namespace NHibernate
 {
@@ -209,5 +210,8 @@ namespace NHibernate
 
 		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
 		IStatelessSession OpenStatelessSession(IDbConnection connection);
+
+		/// <summary> Get the statistics for this session factory</summary>
+		IStatistics Statistics { get;}
 	}
 }

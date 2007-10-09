@@ -40,9 +40,10 @@ namespace NHibernate.Cfg
 		// TODO: private bool _sqlExceptionConverter;
 		// TODO: private bool _wrapDataReadersEnabled;
 		private ConnectionReleaseMode connectionReleaseMode;
-
 		// New in NH:
 		private IsolationLevel _isolationLevel;
+
+		private bool statisticsEnabled;
 
 		public bool IsShowSqlEnabled
 		{
@@ -192,6 +193,12 @@ namespace NHibernate.Cfg
 		{
 			get { return connectionReleaseMode; }
 			set { connectionReleaseMode = value; }
+		}
+
+		public bool IsStatisticsEnabled
+		{
+			get { return statisticsEnabled; }
+			set { statisticsEnabled = value; }
 		}
 	}
 }

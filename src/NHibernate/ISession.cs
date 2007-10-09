@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Stat;
 using NHibernate.Type;
 
 namespace NHibernate
@@ -755,5 +756,8 @@ namespace NHibernate
 		/// </summary>
 		/// <returns></returns>
 		IMultiCriteria CreateMultiCriteria();
+
+		/// <summary> Get the statistics for this session.</summary>
+		ISessionStatistics Statistics { get;}
 	}
 }

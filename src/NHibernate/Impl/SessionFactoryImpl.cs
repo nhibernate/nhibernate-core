@@ -24,6 +24,7 @@ using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
+using NHibernate.Stat;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -154,12 +155,21 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private IEntityNotFoundDelegate entityNotFoundDelegate;
 
+		[NonSerialized]
+		private StatisticsImpl statistics;
+
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryImpl));
 
+		private void Init()
+		{
+			statistics = new StatisticsImpl(this);
+		}
+
 		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings, EventListeners listeners)
 		{
+			Init();
 			log.Info("building session factory");
 
 			this.properties = cfg.Properties;
@@ -1175,6 +1185,12 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <summary> Statistics SPI</summary>
+		public IStatisticsImplementor StatisticsImplementor
+		{
+			get { return statistics; }
+		}
+
 		public IQueryCache QueryCache
 		{
 			get { return queryCache; }
@@ -1367,6 +1383,12 @@ namespace NHibernate.Impl
 		public IStatelessSession OpenStatelessSession(IDbConnection connection)
 		{
 			return new StatelessSessionImpl(connection, this);
+		}
+
+		/// <summary> Get the statistics for this session factory</summary>
+		public IStatistics Statistics
+		{
+			get { return statistics; }
 		}
 
 		/// <summary>
