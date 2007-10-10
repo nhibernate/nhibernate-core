@@ -1,14 +1,14 @@
-using System;
 using System.Collections;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Engine.Query.Sql;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
-namespace NHibernate.Loader.Custom
+namespace NHibernate.Loader.Custom.Sql
 {
 	public class SQLCustomQuery : ICustomQuery
 	{
@@ -40,7 +40,7 @@ namespace NHibernate.Loader.Custom
 		}
 
 		public SQLCustomQuery(
-			ISQLQueryReturn[] queryReturns,
+			INativeSQLQueryReturn[] queryReturns,
 			string sqlQuery,
 			ICollection additionalQuerySpaces,
 			ISessionFactoryImplementor factory)
@@ -50,7 +50,7 @@ namespace NHibernate.Loader.Custom
 			SQLQueryReturnProcessor.ResultAliasContext aliasContext = processor.Process();
 
 			SQLQueryParser parser = new SQLQueryParser(sqlQuery, new ParserContext(aliasContext));
-			this.sql = parser.Process();
+			sql = parser.Process();
 			ArrayHelper.AddAll(this.namedParameterBindPoints, parser.NamedParameters);
 			ArrayHelper.AddAll(customQueryReturns, processor.GenerateCustomReturns(parser.QueryHasAliases));
 

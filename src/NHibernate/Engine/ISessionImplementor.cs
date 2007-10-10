@@ -3,7 +3,7 @@ using System.Collections;
 using System.Data;
 using Iesi.Collections;
 using NHibernate.Collection;
-using NHibernate.Engine.Query;
+using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Impl;

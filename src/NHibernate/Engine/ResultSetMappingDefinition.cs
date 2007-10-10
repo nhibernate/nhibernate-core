@@ -1,13 +1,12 @@
-using System;
 using System.Collections;
-using NHibernate.Loader.Custom;
+using NHibernate.Engine.Query.Sql;
 
 namespace NHibernate.Engine
 {
 	public class ResultSetMappingDefinition
 	{
-		private string name;
-		private IList queryReturns = new ArrayList();
+		private readonly string name;
+		private readonly IList queryReturns = new ArrayList();
 
 		public ResultSetMappingDefinition(string name)
 		{
@@ -19,14 +18,14 @@ namespace NHibernate.Engine
 			get { return name; }
 		}
 
-		public void AddQueryReturn(ISQLQueryReturn queryReturn)
+		public void AddQueryReturn(INativeSQLQueryReturn queryReturn)
 		{
 			queryReturns.Add(queryReturn);
 		}
 
-		public ISQLQueryReturn[] GetQueryReturns()
+		public INativeSQLQueryReturn[] GetQueryReturns()
 		{
-			ISQLQueryReturn[] result = new ISQLQueryReturn[queryReturns.Count];
+			INativeSQLQueryReturn[] result = new INativeSQLQueryReturn[queryReturns.Count];
 			queryReturns.CopyTo(result, 0);
 			return result;
 		}

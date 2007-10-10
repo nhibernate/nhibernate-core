@@ -1,20 +1,20 @@
 using System;
 using System.Collections;
-using NHibernate.Loader.Custom;
+using NHibernate.Engine.Query.Sql;
 
 namespace NHibernate.Engine
 {
 	[Serializable]
 	public class NamedSQLQueryDefinition : NamedQueryDefinition
 	{
-		private readonly ISQLQueryReturn[] queryReturns;
+		private readonly INativeSQLQueryReturn[] queryReturns;
 		private readonly IList querySpaces;
 		private readonly bool callable;
 		private readonly string resultSetRef;
 
 		public NamedSQLQueryDefinition(
 			string query,
-			ISQLQueryReturn[] queryReturns,
+			INativeSQLQueryReturn[] queryReturns,
 			IList querySpaces,
 			bool cacheable,
 			string cacheRegion,
@@ -76,7 +76,7 @@ namespace NHibernate.Engine
 			this.callable = callable;
 		}
 
-		public ISQLQueryReturn[] QueryReturns
+		public INativeSQLQueryReturn[] QueryReturns
 		{
 			get { return queryReturns; }
 		}

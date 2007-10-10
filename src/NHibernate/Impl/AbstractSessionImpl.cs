@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using NHibernate.Collection;
 using NHibernate.Engine;
-using NHibernate.Engine.Query;
+using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql;

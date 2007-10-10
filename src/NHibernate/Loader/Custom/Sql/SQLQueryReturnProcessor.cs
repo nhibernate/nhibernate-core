@@ -1,18 +1,18 @@
-using System;
 using System.Collections;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Engine.Query.Sql;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
-namespace NHibernate.Loader.Custom
+namespace NHibernate.Loader.Custom.Sql
 {
 	public class SQLQueryReturnProcessor
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SQLQueryReturnProcessor));
 
-		private readonly ISQLQueryReturn[] queryReturns;
+		private readonly INativeSQLQueryReturn[] queryReturns;
 
 		private readonly IDictionary alias2Return = new Hashtable();
 		private readonly IDictionary alias2OwnerAlias = new Hashtable();
@@ -37,7 +37,7 @@ namespace NHibernate.Loader.Custom
 		}
 
 		public SQLQueryReturnProcessor(
-			ISQLQueryReturn[] queryReturns,
+			INativeSQLQueryReturn[] queryReturns,
 			ISessionFactoryImplementor factory)
 		{
 			this.queryReturns = queryReturns;
@@ -86,10 +86,10 @@ namespace NHibernate.Loader.Custom
 
 		private IDictionary InternalGetPropertyResultsMap(string alias)
 		{
-			ISQLQueryReturn rtn = (ISQLQueryReturn) alias2Return[alias];
-			if (rtn is SQLQueryNonScalarReturn)
+			INativeSQLQueryReturn rtn = (INativeSQLQueryReturn) alias2Return[alias];
+			if (rtn is NativeSQLQueryNonScalarReturn)
 			{
-				return ((SQLQueryNonScalarReturn) rtn).PropertyResultsMap;
+				return ((NativeSQLQueryNonScalarReturn) rtn).PropertyResultsMap;
 			}
 			else
 			{
@@ -109,13 +109,13 @@ namespace NHibernate.Loader.Custom
 			// so that role returns can be more easily resolved to their owners
 			for (int i = 0; i < queryReturns.Length; i++)
 			{
-				if (queryReturns[i] is SQLQueryNonScalarReturn)
+				if (queryReturns[i] is NativeSQLQueryNonScalarReturn)
 				{
-					SQLQueryNonScalarReturn rtn = (SQLQueryNonScalarReturn) queryReturns[i];
+					NativeSQLQueryNonScalarReturn rtn = (NativeSQLQueryNonScalarReturn) queryReturns[i];
 					alias2Return[rtn.Alias] = rtn;
-					if (rtn is SQLQueryJoinReturn)
+					if (rtn is NativeSQLQueryJoinReturn)
 					{
-						SQLQueryJoinReturn roleReturn = (SQLQueryJoinReturn) queryReturns[i];
+						NativeSQLQueryJoinReturn roleReturn = (NativeSQLQueryJoinReturn) queryReturns[i];
 						alias2OwnerAlias[roleReturn.Alias] = roleReturn.OwnerAlias;
 					}
 				}
@@ -150,31 +150,31 @@ namespace NHibernate.Loader.Custom
 			return collectionSuffixSeed++ + "__";
 		}
 
-		private void ProcessReturn(ISQLQueryReturn rtn)
+		private void ProcessReturn(INativeSQLQueryReturn rtn)
 		{
-			if (rtn is SQLQueryScalarReturn)
+			if (rtn is NativeSQLQueryScalarReturn)
 			{
-				ProcessScalarReturn((SQLQueryScalarReturn) rtn);
+				ProcessScalarReturn((NativeSQLQueryScalarReturn) rtn);
 			}
-			else if (rtn is SQLQueryRootReturn)
+			else if (rtn is NativeSQLQueryRootReturn)
 			{
-				ProcessRootReturn((SQLQueryRootReturn) rtn);
+				ProcessRootReturn((NativeSQLQueryRootReturn) rtn);
 			}
-			else if (rtn is SQLQueryCollectionReturn)
+			else if (rtn is NativeSQLQueryCollectionReturn)
 			{
-				ProcessCollectionReturn((SQLQueryCollectionReturn) rtn);
+				ProcessCollectionReturn((NativeSQLQueryCollectionReturn) rtn);
 			}
 			else
 			{
-				ProcessJoinReturn((SQLQueryJoinReturn) rtn);
+				ProcessJoinReturn((NativeSQLQueryJoinReturn) rtn);
 			}
 		}
 
-		private void ProcessScalarReturn(SQLQueryScalarReturn typeReturn)
+		private void ProcessScalarReturn(NativeSQLQueryScalarReturn typeReturn)
 		{
 		}
 
-		private void ProcessRootReturn(SQLQueryRootReturn rootReturn)
+		private void ProcessRootReturn(NativeSQLQueryRootReturn rootReturn)
 		{
 			if (alias2Persister.Contains(rootReturn.Alias))
 			{
@@ -229,7 +229,7 @@ namespace NHibernate.Loader.Custom
 			return result;
 		}
 
-		private void ProcessCollectionReturn(SQLQueryCollectionReturn collectionReturn)
+		private void ProcessCollectionReturn(NativeSQLQueryCollectionReturn collectionReturn)
 		{
 			// we are initializing an owned collection
 			string role = collectionReturn.OwnerEntityName + '.' + collectionReturn.OwnerProperty;
@@ -240,7 +240,7 @@ namespace NHibernate.Loader.Custom
 				);
 		}
 
-		private void ProcessJoinReturn(SQLQueryJoinReturn fetchReturn)
+		private void ProcessJoinReturn(NativeSQLQueryJoinReturn fetchReturn)
 		{
 			string alias = fetchReturn.Alias;
 			if (alias2Persister.Contains(alias) || alias2CollectionPersister.Contains(alias))
@@ -263,7 +263,7 @@ namespace NHibernate.Loader.Custom
 			// If this return's alias has not been processed yet, do so b4 further processing of this return
 			if (!alias2Persister.Contains(ownerAlias))
 			{
-				SQLQueryNonScalarReturn ownerReturn = (SQLQueryNonScalarReturn) alias2Return[ownerAlias];
+				NativeSQLQueryNonScalarReturn ownerReturn = (NativeSQLQueryNonScalarReturn) alias2Return[ownerAlias];
 				ProcessReturn(ownerReturn);
 			}
 
@@ -290,14 +290,14 @@ namespace NHibernate.Loader.Custom
 			IDictionary customReturnsByAlias = new Hashtable();
 			for (int i = 0; i < queryReturns.Length; i++)
 			{
-				if (queryReturns[i] is SQLQueryScalarReturn)
+				if (queryReturns[i] is NativeSQLQueryScalarReturn)
 				{
-					SQLQueryScalarReturn rtn = (SQLQueryScalarReturn) queryReturns[i];
+					NativeSQLQueryScalarReturn rtn = (NativeSQLQueryScalarReturn) queryReturns[i];
 					customReturns.Add(new ScalarReturn(rtn.Type, rtn.ColumnAlias));
 				}
-				else if (queryReturns[i] is SQLQueryRootReturn)
+				else if (queryReturns[i] is NativeSQLQueryRootReturn)
 				{
-					SQLQueryRootReturn rtn = (SQLQueryRootReturn) queryReturns[i];
+					NativeSQLQueryRootReturn rtn = (NativeSQLQueryRootReturn) queryReturns[i];
 					string alias = rtn.Alias;
 					IEntityAliases entityAliases;
 					if (queryHadAliases || HasPropertyResultMap(alias))
@@ -325,9 +325,9 @@ namespace NHibernate.Loader.Custom
 					customReturns.Add(customReturn);
 					customReturnsByAlias[rtn.Alias] = customReturn;
 				}
-				else if (queryReturns[i] is SQLQueryCollectionReturn)
+				else if (queryReturns[i] is NativeSQLQueryCollectionReturn)
 				{
-					SQLQueryCollectionReturn rtn = (SQLQueryCollectionReturn) queryReturns[i];
+					NativeSQLQueryCollectionReturn rtn = (NativeSQLQueryCollectionReturn) queryReturns[i];
 					string alias = rtn.Alias;
 					ISqlLoadableCollection persister = (ISqlLoadableCollection) alias2CollectionPersister[alias];
 					bool isEntityElements = persister.ElementType.IsEntityType;
@@ -375,9 +375,9 @@ namespace NHibernate.Loader.Custom
 					customReturns.Add(customReturn);
 					customReturnsByAlias[rtn.Alias] = customReturn;
 				}
-				else if (queryReturns[i] is SQLQueryJoinReturn)
+				else if (queryReturns[i] is NativeSQLQueryJoinReturn)
 				{
-					SQLQueryJoinReturn rtn = (SQLQueryJoinReturn) queryReturns[i];
+					NativeSQLQueryJoinReturn rtn = (NativeSQLQueryJoinReturn) queryReturns[i];
 					string alias = rtn.Alias;
 					FetchReturn customReturn;
 					NonScalarReturn ownerCustomReturn = (NonScalarReturn) customReturnsByAlias[rtn.OwnerAlias];

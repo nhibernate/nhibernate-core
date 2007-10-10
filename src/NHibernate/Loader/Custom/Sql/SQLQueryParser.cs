@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Engine.Query;
@@ -6,7 +5,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Loader.Custom
+namespace NHibernate.Loader.Custom.Sql
 {
 	public class SQLQueryParser
 	{

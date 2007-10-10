@@ -1,21 +1,19 @@
-using System;
 using System.Collections;
 using Iesi.Collections;
-using NHibernate.Loader.Custom;
 using NHibernate.Util;
 
-namespace NHibernate.Engine.Query
+namespace NHibernate.Engine.Query.Sql
 {
 	public class NativeSQLQuerySpecification
 	{
 		private readonly string queryString;
-		private readonly ISQLQueryReturn[] sqlQueryReturns;
+		private readonly INativeSQLQueryReturn[] sqlQueryReturns;
 		private readonly ISet querySpaces;
 		private readonly int hashCode;
 
 		public NativeSQLQuerySpecification(
 			string queryString,
-			ISQLQueryReturn[] sqlQueryReturns,
+			INativeSQLQueryReturn[] sqlQueryReturns,
 			ICollection querySpaces)
 		{
 			this.queryString = queryString;
@@ -34,17 +32,17 @@ namespace NHibernate.Engine.Query
 			}
 
 			// pre-determine and cache the hashcode
-			int hashCode = queryString.GetHashCode();
+			int hCode = queryString.GetHashCode();
 			unchecked
 			{
-				hashCode = 29 * hashCode + this.querySpaces.GetHashCode();
+				hCode = 29 * hCode + this.querySpaces.GetHashCode();
 				if (this.sqlQueryReturns != null)
 				{
-					hashCode = 29 * hashCode + sqlQueryReturns.Length;
+					hCode = 29 * hCode + sqlQueryReturns.Length;
 				}
 			}
 
-			this.hashCode = hashCode;
+			hashCode = hCode;
 		}
 
 		public string QueryString
@@ -52,7 +50,7 @@ namespace NHibernate.Engine.Query
 			get { return queryString; }
 		}
 
-		public ISQLQueryReturn[] SqlQueryReturns
+		public INativeSQLQueryReturn[] SqlQueryReturns
 		{
 			get { return sqlQueryReturns; }
 		}

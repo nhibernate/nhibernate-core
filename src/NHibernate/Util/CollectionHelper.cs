@@ -342,6 +342,14 @@ namespace NHibernate.Util
 			return new Hashtable(dictionary,StringComparer.InvariantCultureIgnoreCase);
 		}
 
+		public static void PutAll(IDictionary target, IDictionary origin)
+		{
+			foreach (DictionaryEntry entry in origin)
+			{
+				target[entry.Key] = entry.Value;
+			}
+		}
+
 		private CollectionHelper()
 		{
 		}

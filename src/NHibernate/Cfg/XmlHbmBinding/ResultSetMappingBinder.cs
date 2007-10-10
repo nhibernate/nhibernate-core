@@ -1,12 +1,9 @@
 using System;
 using System.Collections;
-using System.Xml;
-
 using Iesi.Collections;
-
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
-using NHibernate.Loader.Custom;
+using NHibernate.Engine.Query.Sql;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -43,7 +40,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			foreach (object item in items ?? new object[0])
 			{
 				count += 1;
-				ISQLQueryReturn queryReturn = CreateQueryReturn(item, count);
+				INativeSQLQueryReturn queryReturn = CreateQueryReturn(item, count);
 
 				if (queryReturn != null)
 					definition.AddQueryReturn(queryReturn);
@@ -52,7 +49,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return definition;
 		}
 
-		private ISQLQueryReturn CreateQueryReturn(object item, int count)
+		private INativeSQLQueryReturn CreateQueryReturn(object item, int count)
 		{
 			HbmLoadCollection loadCollectionSchema = item as HbmLoadCollection;
 			HbmReturn returnSchema = item as HbmReturn;
@@ -75,17 +72,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return null;
 		}
 
-		private static ISQLQueryReturn CreateScalarReturn(HbmReturnScalar returnScalarSchema)
+		private static INativeSQLQueryReturn CreateScalarReturn(HbmReturnScalar returnScalarSchema)
 		{
 			IType type = TypeFactory.HeuristicType(returnScalarSchema.type, null);
 
 			if (type == null)
 				throw new MappingException("could not interpret type: " + returnScalarSchema.type);
 
-			return new SQLQueryScalarReturn(returnScalarSchema.column, type);
+			return new NativeSQLQueryScalarReturn(returnScalarSchema.column, type);
 		}
 
-		private SQLQueryRootReturn CreateReturn(HbmReturn returnSchema, int count)
+		private NativeSQLQueryRootReturn CreateReturn(HbmReturn returnSchema, int count)
 		{
 			String alias = returnSchema.alias;
 
@@ -103,10 +100,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			IDictionary propertyResults =
 				BindPropertyResults(alias, returnSchema.returndiscriminator, returnSchema.returnproperty, pc);
 
-			return new SQLQueryRootReturn(alias, entityName, propertyResults, lockMode);
+			return new NativeSQLQueryRootReturn(alias, entityName, propertyResults, lockMode);
 		}
 
-		private SQLQueryJoinReturn CreateJoinReturn(HbmReturnJoin returnJoinSchema)
+		private NativeSQLQueryJoinReturn CreateJoinReturn(HbmReturnJoin returnJoinSchema)
 		{
 			int dot = returnJoinSchema.property.LastIndexOf('.');
 
@@ -122,12 +119,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//FIXME: get the PersistentClass
 			IDictionary propertyResults = BindPropertyResults(returnJoinSchema.alias, null, returnJoinSchema.Items, null);
 
-			return new SQLQueryJoinReturn(returnJoinSchema.alias, roleOwnerAlias, roleProperty,
+			return new NativeSQLQueryJoinReturn(returnJoinSchema.alias, roleOwnerAlias, roleProperty,
 				propertyResults, // TODO: bindpropertyresults(alias, returnElem)
 				GetLockMode(returnJoinSchema.lockmode));
 		}
 
-		private SQLQueryCollectionReturn CreateLoadCollectionReturn(HbmLoadCollection loadCollectionSchema)
+		private NativeSQLQueryCollectionReturn CreateLoadCollectionReturn(HbmLoadCollection loadCollectionSchema)
 		{
 			int dot = loadCollectionSchema.role.LastIndexOf('.');
 
@@ -143,7 +140,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//FIXME: get the PersistentClass
 			IDictionary propertyResults = BindPropertyResults(loadCollectionSchema.alias, null, loadCollectionSchema.Items, null);
 
-			return new SQLQueryCollectionReturn(loadCollectionSchema.alias, ownerClassName, ownerPropertyName,
+			return new NativeSQLQueryCollectionReturn(loadCollectionSchema.alias, ownerClassName, ownerPropertyName,
 				propertyResults, GetLockMode(loadCollectionSchema.lockmode));
 		}
 
