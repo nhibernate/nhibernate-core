@@ -1,17 +1,14 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
-using Iesi.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader.Custom;
-using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
-using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -214,7 +211,7 @@ namespace NHibernate.Engine
 		/// instance.
 		/// </summary>
 		/// <returns>The currently enabled filters.</returns>
-		IDictionary EnabledFilters { get; }
+		IDictionary<string, IFilter> EnabledFilters { get; }
 
 		IQuery GetNamedSQLQuery(string name);
 

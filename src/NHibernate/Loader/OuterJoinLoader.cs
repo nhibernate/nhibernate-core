@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -31,9 +31,9 @@ namespace NHibernate.Loader
 		private string[] suffixes;
 		private string[] collectionSuffixes;
 
-		private IDictionary enabledFilters;
+		private readonly IDictionary<string, IFilter> enabledFilters;
 
-		public OuterJoinLoader(ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		public OuterJoinLoader(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory)
 		{
 			this.enabledFilters = enabledFilters;
@@ -79,7 +79,7 @@ namespace NHibernate.Loader
 			return lockModeArray;
 		}
 
-		public IDictionary EnabledFilters
+		public IDictionary<string, IFilter> EnabledFilters
 		{
 			get { return enabledFilters; }
 		}

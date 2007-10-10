@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -33,7 +33,7 @@ namespace NHibernate.Loader.Collection
 			int batchSize,
 			SqlString subquery,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.oneToManyPersister = oneToManyPersister;
@@ -51,7 +51,7 @@ namespace NHibernate.Loader.Collection
 			                    	alias,
 			                    	JoinType.LeftOuterJoin,
 			                    	Factory,
-			                    	CollectionHelper.EmptyMap
+			                    	new CollectionHelper.EmptyMapClass<string, IFilter>()
 			                    	));
 
 			InitPersisters(allAssociations, LockMode.None);

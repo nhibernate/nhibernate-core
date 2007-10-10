@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -11,7 +11,7 @@ namespace NHibernate.Hql
 	{
 		public static string CreateCollectionSubquery(
 			JoinSequence joinSequence,
-			IDictionary enabledFilters,
+			IDictionary<string, IFilter> enabledFilters,
 			String[] columns)
 		{
 			try

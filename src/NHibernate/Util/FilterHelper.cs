@@ -4,6 +4,7 @@ using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
+using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -35,11 +36,11 @@ namespace NHibernate.Util
 			}
 		}
 
-		public bool IsAffectedBy(IDictionary enabledFilters)
+		public bool IsAffectedBy(IDictionary<string, IFilter> enabledFilters)
 		{
 			for (int i = 0, max = filterNames.Length; i < max; i++)
 			{
-				if (enabledFilters.Contains(filterNames[i]))
+				if (enabledFilters.ContainsKey(filterNames[i]))
 				{
 					return true;
 				}
@@ -47,20 +48,20 @@ namespace NHibernate.Util
 			return false;
 		}
 
-		public string Render(String alias, IDictionary enabledFilters)
+		public string Render(String alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder buffer = new StringBuilder();
 			Render(buffer, alias, enabledFilters);
 			return buffer.ToString();
 		}
 
-		public void Render(StringBuilder buffer, string alias, IDictionary enabledFilters)
+		public void Render(StringBuilder buffer, string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			if (filterNames != null && filterNames.Length > 0)
 			{
 				for (int i = 0, max = filterNames.Length; i < max; i++)
 				{
-					if (enabledFilters.Contains(filterNames[i]))
+					if (enabledFilters.ContainsKey(filterNames[i]))
 					{
 						string condition = filterConditions[i];
 						if (StringHelper.IsNotEmpty(condition))

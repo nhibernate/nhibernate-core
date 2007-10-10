@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Hql
@@ -23,7 +22,7 @@ namespace NHibernate.Hql
 		/// <param name="filters">Currently enabled filters</param>
 		/// <param name="factory">The session factory</param>
 		/// <returns>An appropriate translator.</returns>
-		IQueryTranslator CreateQueryTranslator(string queryIdentifier, string queryString, IDictionary filters, ISessionFactoryImplementor factory);
+		IQueryTranslator CreateQueryTranslator(string queryIdentifier, string queryString, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory);
 
 		/// <summary>
 		/// Construct a <see cref="NHibernate.Hql.IFilterTranslator"/> instance capable of 
@@ -38,6 +37,6 @@ namespace NHibernate.Hql
 		/// <param name="filters">Currently enabled filters</param>
 		/// <param name="factory">The session factory</param>
 		/// <returns>An appropriate translator.</returns>
-		IFilterTranslator CreateFilterTranslator(string queryIdentifier, string queryString, IDictionary filters, ISessionFactoryImplementor factory);
+		IFilterTranslator CreateFilterTranslator(string queryIdentifier, string queryString, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory);
 	}
 }

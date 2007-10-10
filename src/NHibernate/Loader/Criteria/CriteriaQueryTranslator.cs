@@ -11,6 +11,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -369,7 +370,7 @@ namespace NHibernate.Loader.Criteria
 			get { return rootCriteria.Projection.Aliases; }
 		}
 
-		public SqlString GetWhereCondition(IDictionary enabledFilters)
+		public SqlString GetWhereCondition(IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder condition = new SqlStringBuilder(30);
 

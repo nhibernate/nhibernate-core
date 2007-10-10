@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Expression;
@@ -23,7 +22,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion notExpression = Expression.Expression.Not(Expression.Expression.Eq("Address", "12 Adress"));
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = notExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+			SqlString sqlString = notExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
 			string expectedSql = dialect is MySQLDialect ?
 			                     "not (sql_alias.address = ?)" :

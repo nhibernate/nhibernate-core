@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -11,15 +11,15 @@ namespace NHibernate.Cache
 	[Serializable]
 	public class FilterKey
 	{
-		private string filterName;
-		private IDictionary filterParameters = new Hashtable();
+		private readonly string filterName;
+		private readonly Dictionary<string, TypedValue> filterParameters = new Dictionary<string, TypedValue>();
 
-		public FilterKey(string name, IDictionary @params, IDictionary types)
+		public FilterKey(string name, IDictionary<string, object> @params, IDictionary<string, IType> types)
 		{
 			filterName = name;
-			foreach (DictionaryEntry me in @params)
+			foreach (KeyValuePair<string, object> me in @params)
 			{
-				IType type = (IType) types[me.Key];
+				IType type = types[me.Key];
 				filterParameters[me.Key] = new TypedValue(type, me.Value);
 			}
 		}
@@ -28,7 +28,7 @@ namespace NHibernate.Cache
 		{
 			int result = 13;
 			result = 37 * result + filterName.GetHashCode();
-			result = 37 * result + CollectionHelper.GetHashCode(filterParameters);
+			result = 37 * result + CollectionHelper.GetHashCode<KeyValuePair<string, TypedValue>>(filterParameters);
 			return result;
 		}
 
@@ -49,7 +49,7 @@ namespace NHibernate.Cache
 			return "FilterKey[" + filterName + filterParameters + ']';
 		}
 
-		public static ISet CreateFilterKeys(IDictionary enabledFilters)
+		public static ISet CreateFilterKeys(IDictionary<string, IFilter> enabledFilters)
 		{
 			if (enabledFilters.Count == 0)
 				return null;

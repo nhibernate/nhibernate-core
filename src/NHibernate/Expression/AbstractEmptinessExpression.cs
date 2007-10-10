@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -33,7 +33,7 @@ namespace NHibernate.Expression
 			return propertyName + (ExcludeEmpty ? " is not empty" : " is empty");
 		}
 
-		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
+		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			System.Type entityType = criteriaQuery.GetEntityName(criteria, propertyName);
 			string actualPropertyName = criteriaQuery.GetPropertyName(propertyName);

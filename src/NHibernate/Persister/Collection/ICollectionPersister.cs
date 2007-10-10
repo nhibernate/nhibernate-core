@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -113,7 +113,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		bool IsOneToMany { get; }
 
-		string GetManyToManyFilterFragment(string alias, IDictionary enabledFilters);
+		string GetManyToManyFilterFragment(string alias, IDictionary<string, IFilter> enabledFilters);
 
 		/// <summary>
 		/// Is this an "indexed" collection? (list or map)

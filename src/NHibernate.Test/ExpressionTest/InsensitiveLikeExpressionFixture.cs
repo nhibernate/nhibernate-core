@@ -24,7 +24,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion expression = Expression.Expression.InsensitiveLike("Address", "12 Adress");
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
 			string expectedSql = "lower(sql_alias.address) like ?";
 			if ((factory as ISessionFactoryImplementor).Dialect is PostgreSQLDialect)

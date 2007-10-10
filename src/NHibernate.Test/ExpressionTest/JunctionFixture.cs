@@ -37,7 +37,7 @@ namespace NHibernate.Test.ExpressionTest
 			using (ISession session = factory.OpenSession())
 			{
 				CreateObjects(typeof(Simple), session);
-				sqlString = _conjunction.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+				sqlString = _conjunction.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 			}
 
 			string expectedSql = "(sql_alias.address is null and sql_alias.count_ between ? and ?)";

@@ -59,7 +59,7 @@ namespace NHibernate.Cfg
 		private IList<Mappings.UniquePropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary properties;
-		private IDictionary filterDefinitions;
+		private IDictionary<string, FilterDefinition> filterDefinitions;
 		private IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 		private IDictionary<string, ISQLFunction> sqlFunctions;
 
@@ -85,7 +85,7 @@ namespace NHibernate.Cfg
 			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>();
 			secondPasses = new List<SecondPassCommand>();
 			propertyReferences = new List<Mappings.UniquePropertyReference>();
-			filterDefinitions = new Hashtable();
+			filterDefinitions = new Dictionary<string, FilterDefinition>();
 			interceptor = emptyInterceptor;
 			mapping = new Mapping(this);
 			properties = Environment.Properties;
@@ -1517,7 +1517,7 @@ namespace NHibernate.Cfg
 			get { return sqlResultSetMappings; }
 		}
 
-		public IDictionary FilterDefinitions
+		public IDictionary<string, FilterDefinition> FilterDefinitions
 		{
 			get { return filterDefinitions; }
 		}

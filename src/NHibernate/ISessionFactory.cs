@@ -6,6 +6,7 @@ using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Stat;
+using System.Collections.Generic;
 
 namespace NHibernate
 {
@@ -173,7 +174,7 @@ namespace NHibernate
 		/// Obtain a set of the names of all filters defined on this SessionFactory.
 		/// </summary>
 		/// <return>The set of filter names.</return>
-		ICollection DefinedFilterNames { get; }
+		ICollection<string> DefinedFilterNames { get; }
 
 		/// <summary>
 		/// Obtain the definition of a filter by name.

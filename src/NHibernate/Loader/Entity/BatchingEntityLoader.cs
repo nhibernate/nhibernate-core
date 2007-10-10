@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Loader.Entity
 {
@@ -77,7 +78,7 @@ namespace NHibernate.Loader.Entity
 			int maxBatchSize,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{

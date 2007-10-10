@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Type;
 
 namespace NHibernate.Engine
@@ -13,7 +13,7 @@ namespace NHibernate.Engine
 	{
 		private readonly string filterName;
 		private readonly string defaultFilterCondition;
-		private readonly IDictionary parameterTypes = new Hashtable();
+		private readonly IDictionary<string, IType> parameterTypes= new Dictionary<string, IType>();
 
 		/// <summary>
 		/// Set the named parameter's value list for this filter. 
@@ -22,10 +22,10 @@ namespace NHibernate.Engine
 		/// <param name="defaultCondition">The default filter condition.</param>
 		/// <param name="parameterTypes">A dictionary storing the NHibernate <see cref="IType" /> type
 		/// of each parameter under its name.</param>
-		public FilterDefinition(string name, string defaultCondition, IDictionary parameterTypes)
+		public FilterDefinition(string name, string defaultCondition, IDictionary<string, IType> parameterTypes)
 		{
-			this.filterName = name;
-			this.defaultFilterCondition = defaultCondition;
+			filterName = name;
+			defaultFilterCondition = defaultCondition;
 			this.parameterTypes = parameterTypes;
 		}
 
@@ -42,7 +42,7 @@ namespace NHibernate.Engine
 		/// Get a set of the parameters defined by this configuration.
 		/// </summary>
 		/// <returns>The parameters named by this configuration.</returns>
-		public ICollection ParameterNames
+		public ICollection<string> ParameterNames
 		{
 			get { return parameterTypes.Keys; }
 		}
@@ -54,7 +54,9 @@ namespace NHibernate.Engine
 		/// <returns>The type of the named parameter.</returns>
 		public IType GetParameterType(string parameterName)
 		{
-			return (IType) parameterTypes[parameterName];
+			IType result;
+			parameterTypes.TryGetValue(parameterName, out result);
+			return result;
 		}
 
 		public string DefaultFilterCondition
@@ -62,7 +64,7 @@ namespace NHibernate.Engine
 			get { return defaultFilterCondition; }
 		}
 
-		public IDictionary ParameterTypes
+		public IDictionary<string, IType> ParameterTypes
 		{
 			get { return parameterTypes; }
 		}

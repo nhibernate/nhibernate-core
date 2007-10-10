@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -15,7 +14,7 @@ namespace NHibernate.Loader.Collection
 	/// </summary>
 	public abstract class CollectionJoinWalker : JoinWalker
 	{
-		public CollectionJoinWalker(ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		public CollectionJoinWalker(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 		}

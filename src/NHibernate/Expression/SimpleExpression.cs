@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -65,7 +65,7 @@ namespace NHibernate.Expression
 		/// Converts the SimpleExpression to a <see cref="SqlString"/>.
 		/// </summary>
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
 			IType propertyType = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);

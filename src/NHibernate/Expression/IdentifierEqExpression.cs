@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -21,7 +21,7 @@ namespace NHibernate.Expression
 
 		#region ICriterion Members
 
-		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
+		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			//Implementation changed from H3.2 to use SqlString
 			string[] columns = criteriaQuery.GetIdentifierColumns(criteria);
@@ -56,10 +56,5 @@ namespace NHibernate.Expression
 		}
 
 		#endregion
-
-		public override string ToString()
-		{
-			return base.ToString();
-		}
 	}
 }

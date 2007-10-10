@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
+using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -15,8 +16,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private FilterDefinition definition;
 
-		private string filterName;
-		private IDictionary parameters = new Hashtable();
+		private readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
 
 		public void AfterDeserialize(FilterDefinition factoryDefinition)
 		{
@@ -25,8 +25,7 @@ namespace NHibernate.Impl
 
 		public FilterImpl(FilterDefinition configuration)
 		{
-			this.definition = configuration;
-			filterName = definition.FilterName;
+			definition = configuration;
 		}
 
 		public FilterDefinition FilterDefinition
@@ -42,7 +41,7 @@ namespace NHibernate.Impl
 			get { return definition.FilterName; }
 		}
 
-		public IDictionary Parameters
+		public IDictionary<string, object> Parameters
 		{
 			get { return parameters; }
 		}
@@ -82,7 +81,7 @@ namespace NHibernate.Impl
 			// Make sure this is a defined parameter and check the incoming value type
 			if (values == null)
 			{
-				throw new ArgumentException("values", "Collection must be not null!");
+				throw new ArgumentException("Collection must be not null!", "values");
 			}
 			IType type = definition.GetParameterType(name);
 			if (type == null)
@@ -123,12 +122,11 @@ namespace NHibernate.Impl
 		/// Perform validation of the filter state.  This is used to verify the
 		/// state of the filter after its enablement and before its use.
 		/// </summary>
-		/// <returns></returns>
 		public void Validate()
 		{
 			foreach (string parameterName in  definition.ParameterNames)
 			{
-				if (parameters[parameterName] == null)
+				if (!parameters.ContainsKey(parameterName))
 				{
 					throw new HibernateException(
 						"Filter [" + Name + "] parameter [" + parameterName + "] value not set"

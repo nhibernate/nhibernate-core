@@ -1,4 +1,3 @@
-using System;
 using NHibernate.DomainModel;
 using NHibernate.Expression;
 using NHibernate.SqlCommand;
@@ -22,7 +21,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion notNullExpression = Expression.Expression.IsNotNull("Address");
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = notNullExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+			SqlString sqlString = notNullExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
 			string expectedSql = "sql_alias.address is not null";
 			CompareSqlStrings(sqlString, expectedSql, 0);

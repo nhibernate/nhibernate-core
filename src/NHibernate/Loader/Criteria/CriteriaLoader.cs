@@ -7,6 +7,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
+using System.Collections.Generic;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -31,7 +32,7 @@ namespace NHibernate.Loader.Criteria
 			ISessionFactoryImplementor factory,
 			CriteriaImpl rootCriteria,
 			System.Type rootEntityName, // TODO H3: change to string rootEntityName
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			translator = new CriteriaQueryTranslator(

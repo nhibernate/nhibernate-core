@@ -351,9 +351,9 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override IDictionary EnabledFilters
+		public override IDictionary<string, IFilter> EnabledFilters
 		{
-			get { return CollectionHelper.EmptyMap; }
+			get { return new CollectionHelper.EmptyMapClass<string, IFilter>(); }
 		}
 
 		public override IQueryTranslator[] GetQueries(string query, bool scalar)

@@ -8,6 +8,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
@@ -499,7 +500,7 @@ namespace NHibernate.Type
 		/// </summary>
 		public abstract object Instantiate();
 
-		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
 		}

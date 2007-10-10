@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -77,7 +77,7 @@ namespace NHibernate.Hql
 		/// Returns the filters enabled for this query translator.
 		/// </summary>
 		/// <returns>Filters enabled for this query execution.</returns>
-		IDictionary EnabledFilters { get; }
+		IDictionary<string, IFilter> EnabledFilters { get; }
 
 		/// <summary>
 		/// Returns an array of Types represented in the query result.

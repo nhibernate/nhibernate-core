@@ -6,6 +6,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
@@ -448,7 +449,7 @@ namespace NHibernate.Type
 			get { return null; }
 		}
 
-		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			throw new NotSupportedException();
 		}

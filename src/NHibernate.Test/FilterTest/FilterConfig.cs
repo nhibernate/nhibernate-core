@@ -17,9 +17,9 @@ namespace NHibernate.Test.FilterTest
 			cfg.AddResource(mappingCfg, this.GetType().Assembly);
 			Assert.AreEqual(cfg.FilterDefinitions.Count, 2);
 
-			Assert.IsTrue(cfg.FilterDefinitions.Contains("LiveFilter"));
+			Assert.IsTrue(cfg.FilterDefinitions.ContainsKey("LiveFilter"));
 
-			FilterDefinition f = cfg.FilterDefinitions["LiveFilter"] as FilterDefinition;
+			FilterDefinition f = cfg.FilterDefinitions["LiveFilter"];
 
 			Assert.AreEqual(f.ParameterTypes.Count, 1);
 

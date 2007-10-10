@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -22,14 +21,14 @@ namespace NHibernate.Loader.Entity
 			int batchSize,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(persister, factory, enabledFilters)
 		{
 			this.lockMode = lockMode;
 
 			SqlStringBuilder whereCondition = WhereString(Alias, uniqueKey, uniqueKeyType, batchSize)
 				//include the discriminator and class-level where, but not filters
-				.Add(persister.FilterFragment(Alias, CollectionHelper.EmptyMap));
+				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
 			InitAll(whereCondition.ToSqlString(), "", lockMode);
 		}

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -30,7 +30,7 @@ namespace NHibernate.Expression
 			_rhsPropertyName = rhsPropertyName;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _lhsPropertyName);
 			string[] otherColumnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _rhsPropertyName);

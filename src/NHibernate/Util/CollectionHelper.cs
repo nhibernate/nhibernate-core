@@ -398,7 +398,7 @@ namespace NHibernate.Util
 		/// <summary>
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
-		internal class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
+		public class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
 		{
 			private static readonly EmptyEnumerator<TKey, TValue> EmptyEnumerator = new EmptyEnumerator<TKey, TValue>();
 
@@ -515,7 +515,7 @@ namespace NHibernate.Util
 
 				foreach (T obj in coll)
 				{
-					if (!default(T).Equals(obj))
+					if (!obj.Equals(default(T)))
 						result += obj.GetHashCode();
 				}
 

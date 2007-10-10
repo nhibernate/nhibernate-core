@@ -9,6 +9,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Loader
 {
@@ -17,7 +18,7 @@ namespace NHibernate.Loader
 		private readonly ISessionFactoryImplementor factory;
 		protected readonly IList associations = new ArrayList();
 		private readonly ISet visitedAssociationKeys = new HashedSet();
-		private readonly IDictionary enabledFilters;
+		private readonly IDictionary<string, IFilter> enabledFilters;
 
 		private string[] suffixes;
 		private string[] collectionSuffixes;
@@ -100,12 +101,12 @@ namespace NHibernate.Loader
 			get { return factory.Dialect; }
 		}
 
-		protected IDictionary EnabledFilters
+		protected IDictionary<string, IFilter> EnabledFilters
 		{
 			get { return enabledFilters; }
 		}
 
-		protected JoinWalker(ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		protected JoinWalker(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			this.factory = factory;
 			this.enabledFilters = enabledFilters;

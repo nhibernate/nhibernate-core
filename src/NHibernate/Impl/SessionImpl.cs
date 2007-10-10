@@ -42,13 +42,6 @@ namespace NHibernate.Impl
 		private CacheMode cacheMode= CacheMode.Normal;
 		private FlushMode flushMode = FlushMode.Auto;
 
-		// these are used to serialize hashtables because .NET's Hashtable
-		// implements IDeserializationCallback as we do, and .NET runtime calls our
-		// OnDeserialize method before that of our hashtables which means that
-		// the hashtables are not usable in our OnDeserialize.
-		private ArrayList tmpEnabledFiltersKey;
-		private ArrayList tmpEnabledFiltersValue;
-
 		private readonly IInterceptor interceptor;
 
 		[NonSerialized]
@@ -66,7 +59,7 @@ namespace NHibernate.Impl
 		private IBatcher batcher;
 
 		[NonSerialized]
-		private IDictionary enabledFilters = new Hashtable();
+		private IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
 
 		[NonSerialized]
 		private readonly StatefulPersistenceContext persistenceContext;
@@ -98,9 +91,7 @@ namespace NHibernate.Impl
 
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 
-			//this.enabledFilters = (IDictionary) info.GetValue("enabledFilters", typeof(IDictionary));
-			tmpEnabledFiltersKey = (ArrayList)info.GetValue("tmpEnabledFiltersKey", typeof(ArrayList));
-			tmpEnabledFiltersValue = (ArrayList)info.GetValue("tmpEnabledFiltersValue", typeof(ArrayList));
+			enabledFilters = (IDictionary<string, IFilter>)info.GetValue("enabledFilters", typeof(Dictionary<string, IFilter>));
 
 			connectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
 		}
@@ -135,17 +126,7 @@ namespace NHibernate.Impl
 
 			info.AddValue("interceptor", interceptor, typeof(IInterceptor));
 
-			tmpEnabledFiltersKey = new ArrayList(enabledFilters.Count);
-			tmpEnabledFiltersValue = new ArrayList(enabledFilters.Count);
-			foreach (DictionaryEntry de in enabledFilters)
-			{
-				tmpEnabledFiltersKey.Add(de.Key);
-				tmpEnabledFiltersValue.Add(de.Value);
-			}
-
-			//info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary));
-			info.AddValue("tmpEnabledFiltersKey", tmpEnabledFiltersKey);
-			info.AddValue("tmpEnabledFiltersValue", tmpEnabledFiltersValue);
+			info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary<string, IFilter>));
 
 			info.AddValue("connectionManager", connectionManager, typeof(ConnectionManager));
 		}
@@ -167,13 +148,6 @@ namespace NHibernate.Impl
 			// serializing them like java does.
 			InitTransientState();
 			persistenceContext.SetSession(this);
-			// recreate the enabledFilters hashtable from the two arraylists.
-			enabledFilters = new Hashtable(tmpEnabledFiltersKey.Count);
-			for (int i = 0; i < tmpEnabledFiltersKey.Count; i++)
-			{
-				enabledFilters.Add(tmpEnabledFiltersKey[i], tmpEnabledFiltersValue[i]);
-			}
-
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
 				filter.AfterDeserialize(factory.GetFilterDefinition(filter.Name));
@@ -1428,13 +1402,13 @@ namespace NHibernate.Impl
 				{
 					throw new QueryException("the collection was unreferenced");
 				}
-				filterTranslator = factory.GetFilter(filter, roleAfterFlush.Role, scalar);
+				filterTranslator = factory.GetFilter(filter, roleAfterFlush.Role, scalar, enabledFilters);
 			}
 			else
 			{
 				// otherwise, we only need to flush if there are
 				// in-memory changes to the queried tables
-				filterTranslator = factory.GetFilter(filter, roleBeforeFlush.Role, scalar);
+				filterTranslator = factory.GetFilter(filter, roleBeforeFlush.Role, scalar, enabledFilters);
 				if (AutoFlushIfRequired(filterTranslator.QuerySpaces))
 				{
 					// might need to run a different filter entirely after the flush
@@ -1448,7 +1422,7 @@ namespace NHibernate.Impl
 							throw new QueryException("The collection was dereferenced");
 						}
 					}
-					filterTranslator = factory.GetFilter(filter, roleAfterFlush.Role, scalar);
+					filterTranslator = factory.GetFilter(filter, roleAfterFlush.Role, scalar, enabledFilters);
 				}
 			}
 
@@ -1875,15 +1849,17 @@ namespace NHibernate.Impl
 		public IFilter GetEnabledFilter(string filterName)
 		{
 			ErrorIfClosed();
-			return (IFilter)enabledFilters[filterName];
+			return enabledFilters[filterName];
 		}
 
 		public IFilter EnableFilter(string filterName)
 		{
 			ErrorIfClosed();
 			FilterImpl filter = new FilterImpl(factory.GetFilterDefinition(filterName));
-			if (enabledFilters[filterName] == null)
+			if (!enabledFilters.ContainsKey(filterName))
+			{
 				enabledFilters.Add(filterName, filter);
+			}
 			return filter;
 		}
 
@@ -1923,7 +1899,7 @@ namespace NHibernate.Impl
 			return type;
 		}
 
-		public override IDictionary EnabledFilters
+		public override IDictionary<string, IFilter> EnabledFilters
 		{
 			get
 			{

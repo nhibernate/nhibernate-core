@@ -27,7 +27,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion expression = Expression.Expression.EqProperty("Address", "Name");
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
 			string expectedSql = "sql_alias.address = sql_alias.Name";
 

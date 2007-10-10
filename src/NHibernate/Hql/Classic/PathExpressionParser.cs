@@ -7,6 +7,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Hql.Classic
 {
@@ -537,7 +538,7 @@ namespace NHibernate.Hql.Classic
 		}
 
 		/// <summary></summary>
-		public string GetCollectionSubquery(IDictionary enabledFilters)
+		public string GetCollectionSubquery(IDictionary<string, IFilter> enabledFilters)
 		{
 			return CollectionSubqueryFactory.CreateCollectionSubquery(
 				joinSequence, enabledFilters, CurrentColumns());

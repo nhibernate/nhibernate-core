@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -15,10 +14,10 @@ namespace NHibernate.Loader.Collection
 	{
 		private readonly IQueryableCollection collectionPersister;
 
-		public CollectionLoader(IQueryableCollection persister, ISessionFactoryImplementor factory, IDictionary enabledFilters)
+		public CollectionLoader(IQueryableCollection persister, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
-			this.collectionPersister = persister;
+			collectionPersister = persister;
 		}
 
 		protected internal override bool IsSubselectLoadingEnabled

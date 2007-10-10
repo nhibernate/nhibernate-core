@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
@@ -22,7 +22,7 @@ namespace NHibernate.Loader.Collection
 			QueryParameters queryParameters,
 			IDictionary namedParameterLocMap,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(persister, 1, subquery, factory, enabledFilters)
 		{
 			keys = new object[entityKeys.Count];

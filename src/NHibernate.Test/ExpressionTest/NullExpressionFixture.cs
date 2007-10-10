@@ -22,7 +22,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion expression = Expression.Expression.IsNull("Address");
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
 			string expectedSql = "sql_alias.address is null";
 			CompareSqlStrings(sqlString, expectedSql, 0);

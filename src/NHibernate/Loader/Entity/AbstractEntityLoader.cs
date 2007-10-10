@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
@@ -23,11 +23,11 @@ namespace NHibernate.Loader.Entity
 			IOuterJoinLoadable persister,
 			IType uniqueKeyType,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.uniqueKeyType = uniqueKeyType;
-			this.entityName = persister.MappedClass;
+			entityName = persister.MappedClass;
 			this.persister = persister;
 		}
 

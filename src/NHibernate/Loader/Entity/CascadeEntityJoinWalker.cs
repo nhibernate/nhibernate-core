@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -13,12 +12,12 @@ namespace NHibernate.Loader.Entity
 
 		public CascadeEntityJoinWalker(IOuterJoinLoadable persister, Cascades.CascadingAction action,
 		                               ISessionFactoryImplementor factory)
-			: base(persister, factory, CollectionHelper.EmptyMap)
+			: base(persister, factory, new CollectionHelper.EmptyMapClass<string, IFilter>())
 		{
-			this.cascadeAction = action;
+			cascadeAction = action;
 			SqlStringBuilder whereCondition = WhereString(Alias, persister.IdentifierColumnNames, persister.IdentifierType, 1)
 				//include the discriminator and class-level where, but not filters
-				.Add(persister.FilterFragment(Alias, CollectionHelper.EmptyMap));
+				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
 			InitAll(whereCondition.ToSqlString(), "", LockMode.Read);
 		}

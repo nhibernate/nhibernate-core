@@ -6,6 +6,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Loader.Collection
 {
@@ -21,7 +22,7 @@ namespace NHibernate.Loader.Collection
 			int batchSize,
 			SqlString subquery,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.collectionPersister = collectionPersister;

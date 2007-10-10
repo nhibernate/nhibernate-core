@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -14,7 +14,7 @@ namespace NHibernate.Loader
 		private string alias;
 
 		public AbstractEntityJoinWalker(IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
-		                                IDictionary enabledFilters)
+																		IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.persister = persister;
@@ -22,7 +22,7 @@ namespace NHibernate.Loader
 		}
 
 		public AbstractEntityJoinWalker(string alias, IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
-		                                IDictionary enabledFilters)
+																		IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.persister = persister;
@@ -48,7 +48,7 @@ namespace NHibernate.Loader
 					alias,
 					JoinType.LeftOuterJoin,
 					Factory,
-					CollectionHelper.EmptyMap
+					new CollectionHelper.EmptyMapClass<string, IFilter>()
 					));
 
 			InitPersisters(allAssociations, lockMode);

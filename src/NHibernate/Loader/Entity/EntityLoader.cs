@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -20,7 +20,7 @@ namespace NHibernate.Loader.Entity
 			IOuterJoinLoadable persister,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: this(persister, 1, lockMode, factory, enabledFilters)
 		{
 		}
@@ -30,7 +30,7 @@ namespace NHibernate.Loader.Entity
 			int batchSize,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: this(
 				persister,
 				persister.IdentifierColumnNames,
@@ -49,7 +49,7 @@ namespace NHibernate.Loader.Entity
 			int batchSize,
 			LockMode lockMode,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(persister, uniqueKeyType, factory, enabledFilters)
 		{
 			JoinWalker walker = new EntityJoinWalker(

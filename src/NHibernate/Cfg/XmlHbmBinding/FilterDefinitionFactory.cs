@@ -1,7 +1,5 @@
-using System.Collections;
-
+using System.Collections.Generic;
 using log4net;
-
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -17,16 +15,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.DebugFormat("Parsing filter-def [{0}]", filterDefSchema.name);
 
 			string defaultCondition = filterDefSchema.GetDefaultCondition();
-			Hashtable parameterTypes = GetFilterParameterTypes(filterDefSchema);
+			IDictionary<string, IType> parameterTypes = GetFilterParameterTypes(filterDefSchema);
 
 			log.DebugFormat("Parsed filter-def [{0}]", filterDefSchema.name);
 
 			return new FilterDefinition(filterDefSchema.name, defaultCondition, parameterTypes);
 		}
 
-		private static Hashtable GetFilterParameterTypes(HbmFilterDef filterDefSchema)
+		private static IDictionary<string, IType> GetFilterParameterTypes(HbmFilterDef filterDefSchema)
 		{
-			Hashtable parameterTypes = new Hashtable();
+			Dictionary<string, IType> parameterTypes = new Dictionary<string, IType>();
 
 			foreach (HbmFilterParam paramSchema in filterDefSchema.ListParameters())
 			{

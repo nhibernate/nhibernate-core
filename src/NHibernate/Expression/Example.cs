@@ -6,6 +6,7 @@ using NHibernate.Metadata;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Expression
 {
@@ -253,7 +254,7 @@ namespace NHibernate.Expression
 			       _selector.Include(value, name, type);
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add(StringHelper.OpenParen);
@@ -404,7 +405,7 @@ namespace NHibernate.Expression
 			object propertyValue,
 			ICriteria criteria,
 			ICriteriaQuery cq,
-			IDictionary enabledFilters,
+			IDictionary<string, IFilter> enabledFilters,
 			SqlStringBuilder builder)
 		{
 			if (builder.Count > 1)
@@ -433,7 +434,7 @@ namespace NHibernate.Expression
 			IAbstractComponentType type,
 			ICriteria criteria,
 			ICriteriaQuery criteriaQuery,
-			IDictionary enabledFilters,
+			IDictionary<string, IFilter> enabledFilters,
 			SqlStringBuilder builder)
 		{
 			if (component != null)

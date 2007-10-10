@@ -25,6 +25,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using Array=System.Array;
 using Environment=NHibernate.Cfg.Environment;
+using System.Collections.Generic;
 
 namespace NHibernate.Persister.Entity
 {
@@ -1303,7 +1304,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode, IDictionary enabledFilters)
+		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode, IDictionary<string, IFilter> enabledFilters)
 		{
 			//TODO: disable batch loading if lockMode > READ?
 			return BatchingEntityLoader.CreateBatchingEntityLoader(this, batchSize, lockMode, Factory, enabledFilters);
@@ -1311,7 +1312,7 @@ namespace NHibernate.Persister.Entity
 
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode)
 		{
-			return CreateEntityLoader(lockMode, CollectionHelper.EmptyMap);
+			return CreateEntityLoader(lockMode, new CollectionHelper.EmptyMapClass<string, IFilter>());
 		}
 
 		protected void CreateUniqueKeyLoaders()
@@ -1329,13 +1330,13 @@ namespace NHibernate.Persister.Entity
 						CreateUniqueKeyLoader(
 							propertyTypes[i],
 							GetPropertyColumnNames(i),
-							CollectionHelper.EmptyMap
+							new CollectionHelper.EmptyMapClass<string, IFilter>()
 							);
 				}
 			}
 		}
 
-		private EntityLoader CreateUniqueKeyLoader(IType uniqueKeyType, string[] columns, IDictionary enabledFilters)
+		private EntityLoader CreateUniqueKeyLoader(IType uniqueKeyType, string[] columns, IDictionary<string, IFilter> enabledFilters)
 		{
 			if (uniqueKeyType.IsEntityType)
 			{
@@ -2863,7 +2864,7 @@ namespace NHibernate.Persister.Entity
 
 		public abstract string FilterFragment(string alias);
 
-		public string FilterFragment(string alias, IDictionary enabledFilters)
+		public string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), enabledFilters);
@@ -2911,7 +2912,7 @@ namespace NHibernate.Persister.Entity
 
 		private IUniqueEntityLoader GetAppropriateLoader(LockMode lockMode, ISessionImplementor session)
 		{
-			IDictionary enabledFilters = session.EnabledFilters;
+			IDictionary<string, IFilter> enabledFilters = session.EnabledFilters;
 			if (queryLoader != null)
 			{
 				return queryLoader;

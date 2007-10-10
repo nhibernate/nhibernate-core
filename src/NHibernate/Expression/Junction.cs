@@ -3,6 +3,7 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Expression
 {
@@ -53,7 +54,7 @@ namespace NHibernate.Expression
 		/// </summary>
 		protected abstract SqlString EmptyExpression { get; }
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			if (_criteria.Count == 0)
 			{

@@ -19,6 +19,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Dialect.Function;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace NHibernate.Hql.Classic
 {
@@ -218,7 +219,7 @@ namespace NHibernate.Hql.Classic
 
 		private string[] suffixes;
 
-		private IDictionary enabledFilters;
+		private IDictionary<string, IFilter> enabledFilters;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(QueryTranslator));
 
@@ -233,7 +234,7 @@ namespace NHibernate.Hql.Classic
 		/// </param>
 		/// <param name="enabledFilters">Any enabled filters.</param>
 		/// <param name="factory">The session factory. </param>
-		public QueryTranslator(string queryIdentifier, string queryString, IDictionary enabledFilters, ISessionFactoryImplementor factory)
+		public QueryTranslator(string queryIdentifier, string queryString, IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
 			: base(factory)
 		{
 			this.queryIdentifier = queryIdentifier;
@@ -244,7 +245,7 @@ namespace NHibernate.Hql.Classic
 		/// <summary> 
 		/// Construct a query translator
 		/// </summary>
-		public QueryTranslator(ISessionFactoryImplementor factory, string queryString, IDictionary enabledFilters)
+		public QueryTranslator(ISessionFactoryImplementor factory, string queryString, IDictionary<string, IFilter> enabledFilters)
 			: this(queryString, queryString, enabledFilters, factory) {}
 
 		/// <summary>
@@ -1622,7 +1623,7 @@ namespace NHibernate.Hql.Classic
 			set { owners = value; }
 		}
 
-		public IDictionary EnabledFilters
+		public IDictionary<string, IFilter> EnabledFilters
 		{
 			get { return enabledFilters; }
 		}

@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Util;
@@ -29,7 +27,7 @@ namespace NHibernate.Cfg
 		private bool autoImport;
 		private bool defaultLazy;
 		private readonly IList<UniquePropertyReference> propertyReferences;
-		private readonly IDictionary filterDefinitions;
+		private readonly IDictionary<string, FilterDefinition> filterDefinitions;
 		private readonly IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 
 		private readonly INamingStrategy namingStrategy;
@@ -51,7 +49,7 @@ namespace NHibernate.Cfg
 			IList<SecondPassCommand> secondPasses,
 			IList<UniquePropertyReference> propertyReferences,
 			INamingStrategy namingStrategy,
-			IDictionary filterDefinitions,
+			IDictionary<string, FilterDefinition> filterDefinitions,
 			IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects,
 			string defaultAssembly,
 			string defaultNamespace
@@ -300,7 +298,7 @@ namespace NHibernate.Cfg
 			set { defaultLazy = value; }
 		}
 
-		public IDictionary FilterDefinitions
+		public IDictionary<string, FilterDefinition> FilterDefinitions
 		{
 			get { return filterDefinitions; }
 		}
@@ -312,7 +310,7 @@ namespace NHibernate.Cfg
 
 		public FilterDefinition GetFilterDefinition(string name)
 		{
-			return (FilterDefinition) filterDefinitions[name];
+			return filterDefinitions[name];
 		}
 
 		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject auxiliaryDatabaseObject)

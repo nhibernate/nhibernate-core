@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -14,7 +13,7 @@ namespace NHibernate.Loader.Collection
 		public BasicCollectionLoader(
 			IQueryableCollection collectionPersister,
 			ISessionFactoryImplementor session,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: this(collectionPersister, 1, session, enabledFilters)
 		{
 		}
@@ -23,7 +22,7 @@ namespace NHibernate.Loader.Collection
 			IQueryableCollection collectionPersister,
 			int batchSize,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: this(collectionPersister, batchSize, null, factory, enabledFilters)
 		{
 		}
@@ -33,7 +32,7 @@ namespace NHibernate.Loader.Collection
 			int batchSize,
 			SqlString subquery,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(collectionPersister, factory, enabledFilters)
 		{
 			JoinWalker walker = new BasicCollectionJoinWalker(

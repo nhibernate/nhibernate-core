@@ -5,6 +5,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using System.Collections.Generic;
 
 namespace NHibernate.Loader
 {
@@ -18,7 +19,7 @@ namespace NHibernate.Loader
 		private readonly string[] rhsColumns;
 		private readonly JoinType joinType;
 		private readonly string on;
-		private readonly IDictionary enabledFilters;
+		private readonly IDictionary<string, IFilter> enabledFilters;
 
 		public OuterJoinableAssociation(
 			IAssociationType joinableType,
@@ -27,7 +28,7 @@ namespace NHibernate.Loader
 			String rhsAlias,
 			JoinType joinType,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 		{
 			this.joinableType = joinableType;
 			this.lhsAlias = lhsAlias;

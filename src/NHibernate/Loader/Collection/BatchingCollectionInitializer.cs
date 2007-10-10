@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
@@ -48,7 +48,7 @@ namespace NHibernate.Loader.Collection
 			OneToManyPersister persister,
 			int maxBatchSize,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{
@@ -71,7 +71,7 @@ namespace NHibernate.Loader.Collection
 			IQueryableCollection persister,
 			int maxBatchSize,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{

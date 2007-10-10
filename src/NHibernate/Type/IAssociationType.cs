@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
@@ -63,6 +62,6 @@ namespace NHibernate.Type
 		/// Get the "filtering" SQL fragment that is applied in the
 		/// SQL on clause, in addition to the usual join condition.
 		/// </summary>
-		string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary enabledFilters);
+		string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters);
 	}
 }

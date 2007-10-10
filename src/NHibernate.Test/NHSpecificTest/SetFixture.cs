@@ -11,6 +11,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -148,7 +149,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public string GetManyToManyFilterFragment(string alias, IDictionary enabledFilters)
+		public string GetManyToManyFilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			throw new NotImplementedException();
 		}

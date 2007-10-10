@@ -27,7 +27,7 @@ namespace NHibernate.Test.ExpressionTest
 				Expression.Expression.Or(Expression.Expression.IsNull("Address"), Expression.Expression.Between("Count", 5, 10));
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = orExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+			SqlString sqlString = orExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
 			string expectedSql = "(sql_alias.address is null or sql_alias.count_ between ? and ?)";
 

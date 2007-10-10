@@ -19,6 +19,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array=NHibernate.Mapping.Array;
+using System.Collections.Generic;
 
 namespace NHibernate.Persister.Collection
 {
@@ -489,7 +490,7 @@ namespace NHibernate.Persister.Collection
 		protected abstract ICollectionInitializer CreateSubselectInitializer(SubselectFetch subselect,
 		                                                                     ISessionImplementor session);
 
-		protected abstract ICollectionInitializer CreateCollectionInitializer(IDictionary enabledFilters);
+		protected abstract ICollectionInitializer CreateCollectionInitializer(IDictionary<string, IFilter> enabledFilters);
 
 		public ICacheConcurrencyStrategy Cache
 		{
@@ -1380,7 +1381,7 @@ namespace NHibernate.Persister.Collection
 		public void PostInstantiate()
 		{
 			initializer = queryLoaderName == null
-			              	? CreateCollectionInitializer(CollectionHelper.EmptyMap)
+											? CreateCollectionInitializer(new CollectionHelper.EmptyMapClass<string, IFilter>())
 			              	: new NamedQueryCollectionInitializer(queryLoaderName, this);
 		}
 
@@ -1389,7 +1390,7 @@ namespace NHibernate.Persister.Collection
 			return HasWhere ? " and " + GetSQLWhereString(alias) : "";
 		}
 
-		public virtual string FilterFragment(string alias, IDictionary enabledFilters)
+		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, alias, enabledFilters);
@@ -1397,7 +1398,7 @@ namespace NHibernate.Persister.Collection
 			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
 		}
 
-		public string GetManyToManyFilterFragment(string alias, IDictionary enabledFilters)
+		public string GetManyToManyFilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder buffer = new StringBuilder();
 			manyToManyFilterHelper.Render(buffer, alias, enabledFilters);

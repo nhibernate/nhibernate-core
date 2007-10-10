@@ -11,6 +11,7 @@ using NHibernate.Loader.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Persister.Collection
 {
@@ -292,7 +293,7 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Create the <see cref="OneToManyLoader" />
 		/// </summary>
-		protected override ICollectionInitializer CreateCollectionInitializer(IDictionary enabledFilters)
+		protected override ICollectionInitializer CreateCollectionInitializer(IDictionary<string, IFilter> enabledFilters)
 		{
 			return BatchingCollectionInitializer.CreateBatchingOneToManyInitializer(this, batchSize, Factory, enabledFilters);
 		}

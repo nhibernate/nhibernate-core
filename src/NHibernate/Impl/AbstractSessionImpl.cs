@@ -72,7 +72,7 @@ namespace NHibernate.Impl
 		public abstract object GetFilterParameterValue(string filterParameterName);
 		public abstract IType GetFilterParameterType(string filterParameterName);
 		public abstract ISession GetSession();
-		public abstract IDictionary EnabledFilters { get; }
+		public abstract IDictionary<string, IFilter> EnabledFilters { get; }
 
 		public IQuery GetNamedSQLQuery(string name)
 		{

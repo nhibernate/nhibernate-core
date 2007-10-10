@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -128,16 +128,16 @@ namespace NHibernate.Engine
 
 		public JoinFragment ToJoinFragment()
 		{
-			return ToJoinFragment(CollectionHelper.EmptyMap, true);
+			return ToJoinFragment(new CollectionHelper.EmptyMapClass<string, IFilter>(), true);
 		}
 
-		public JoinFragment ToJoinFragment(IDictionary enabledFilters, bool includeExtraJoins)
+		public JoinFragment ToJoinFragment(IDictionary<string, IFilter> enabledFilters, bool includeExtraJoins)
 		{
 			return ToJoinFragment(enabledFilters, includeExtraJoins, null, null);
 		}
 
 		public JoinFragment ToJoinFragment(
-			IDictionary enabledFilters,
+			IDictionary<string, IFilter> enabledFilters,
 			bool includeExtraJoins,
 			string withClauseFragment,
 			string withClauseJoinAlias)

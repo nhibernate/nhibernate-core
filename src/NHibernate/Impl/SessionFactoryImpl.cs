@@ -32,6 +32,7 @@ using NHibernate.Util;
 
 using Environment = NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -113,7 +114,7 @@ namespace NHibernate.Impl
 		private readonly IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 
 		[NonSerialized]
-		private readonly IDictionary filters;
+		private readonly IDictionary<string, FilterDefinition> filters;
 
 		[NonSerialized]
 		private readonly IDictionary<string, string> imports;
@@ -310,7 +311,7 @@ namespace NHibernate.Impl
 			namedQueries = new Dictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
 			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
 			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
-			filters = new Hashtable(cfg.FilterDefinitions);
+			filters = new Dictionary<string, FilterDefinition>(cfg.FilterDefinitions);
 
 			imports = new Dictionary<string, string>(cfg.Imports);
 
@@ -402,20 +403,20 @@ namespace NHibernate.Impl
 		{
 			private string _query;
 			private bool _scalar;
-			private ISet _filterNames;
+			private ISet<string> _filterNames;
 			private int _hashCode;
 
-			internal QueryCacheKey(string query, bool scalar, IDictionary enabledFilters)
+			internal QueryCacheKey(string query, bool scalar, IDictionary<string, IFilter> enabledFilters)
 			{
 				_query = query;
 				_scalar = scalar;
 				if (enabledFilters == null || enabledFilters.Count == 0)
 				{
-					_filterNames = new HashedSet();
+					_filterNames = new HashedSet<string>();
 				}
 				else
 				{
-					_filterNames = new HashedSet(enabledFilters.Keys);
+					_filterNames = new HashedSet<string>(enabledFilters.Keys);
 				}
 
 				unchecked
@@ -436,7 +437,7 @@ namespace NHibernate.Impl
 				get { return _scalar; }
 			}
 
-			public ISet FilterNames
+			public ISet<string> FilterNames
 			{
 				get { return _filterNames; }
 			}
@@ -552,7 +553,7 @@ namespace NHibernate.Impl
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		private IQueryTranslator[] CreateQueryTranslators(string hql, string[] concreteQueryStrings, QueryCacheKey cacheKey,
-		                                                  IDictionary enabledFilters)
+																											IDictionary<string, IFilter> enabledFilters)
 		{
 			int length = concreteQueryStrings.Length;
 			IQueryTranslator[] queries = new IQueryTranslator[length];
@@ -565,14 +566,15 @@ namespace NHibernate.Impl
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IFilterTranslator CreateFilterTranslator(string hql, string filterString, FilterCacheKey cacheKey)
+		private IFilterTranslator CreateFilterTranslator(string hql, string filterString, FilterCacheKey cacheKey, IDictionary<string, IFilter> enabledFilters)
 		{
-			IFilterTranslator filter = settings.QueryTranslatorFactory.CreateFilterTranslator(hql, filterString, filters, this);
+			IFilterTranslator filter =
+				settings.QueryTranslatorFactory.CreateFilterTranslator(hql, filterString, enabledFilters, this);
 			Put(cacheKey, filter);
 			return filter;
 		}
 
-		public IQueryTranslator[] GetQuery(string queryString, bool shallow, IDictionary enabledFilters)
+		public IQueryTranslator[] GetQuery(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			QueryCacheKey cacheKey = new QueryCacheKey(queryString, shallow, enabledFilters);
 
@@ -600,14 +602,14 @@ namespace NHibernate.Impl
 			return queries;
 		}
 
-		public IFilterTranslator GetFilter(string filterString, string collectionRole, bool scalar)
+		public IFilterTranslator GetFilter(string filterString, string collectionRole, bool scalar, IDictionary<string, IFilter> enabledFilters)
 		{
 			FilterCacheKey cacheKey = new FilterCacheKey(collectionRole, filterString, scalar);
 
 			IFilterTranslator filter = (IFilterTranslator) Get(cacheKey);
 			if (filter == null)
 			{
-				filter = CreateFilterTranslator(filterString, filterString, cacheKey);
+				filter = CreateFilterTranslator(filterString, filterString, cacheKey, enabledFilters);
 			}
 
 			filter.Compile(collectionRole, settings.QuerySubstitutions, scalar);
@@ -879,7 +881,7 @@ namespace NHibernate.Impl
 			{
 				throw new HibernateException("Query does not refer to any persistent classes: " + queryString);
 			}
-			return GetQuery(queries[0], false, CollectionHelper.EmptyMap)[0].ReturnTypes;
+			return GetQuery(queries[0], false, new CollectionHelper.EmptyMapClass<string, IFilter>())[0].ReturnTypes;
 		}
 
 		/// <summary></summary>
@@ -1332,7 +1334,7 @@ namespace NHibernate.Impl
 
 		public ResultSetMappingDefinition GetResultSetMapping(string resultSetName)
 		{
-			return (ResultSetMappingDefinition) sqlResultSetMappings[resultSetName];
+			return sqlResultSetMappings[resultSetName];
 		}
 
 		public FilterDefinition GetFilterDefinition(string filterName)
@@ -1345,7 +1347,7 @@ namespace NHibernate.Impl
 			return def;
 		}
 
-		public ICollection DefinedFilterNames
+		public ICollection<string> DefinedFilterNames
 		{
 			get { return filters.Keys; }
 		}

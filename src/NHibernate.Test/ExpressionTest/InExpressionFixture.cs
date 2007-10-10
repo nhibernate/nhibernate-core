@@ -22,7 +22,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion inExpression = Expression.Expression.In("Count", new int[] {3, 4, 5});
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = inExpression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+			SqlString sqlString = inExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
 			string expectedSql = "sql_alias.count_ in (?, ?, ?)";
 
@@ -37,7 +37,7 @@ namespace NHibernate.Test.ExpressionTest
 			ISession session = factory.OpenSession();
 			InExpression expression = new InExpression("Count", new object[0]);
 			CreateObjects(typeof(Simple), session);
-			SqlString sql = expression.ToSqlString(criteria, criteriaQuery, CollectionHelper.EmptyMap);
+			SqlString sql = expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 			Assert.AreEqual("1=0", sql.ToString());
 			session.Close();
 		}

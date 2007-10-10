@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -21,7 +20,7 @@ namespace NHibernate.Loader.Collection
 		public OneToManyLoader(
 			IQueryableCollection oneToManyPersister,
 			ISessionFactoryImplementor session,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: this(oneToManyPersister, 1, session, enabledFilters)
 		{
 		}
@@ -30,7 +29,7 @@ namespace NHibernate.Loader.Collection
 			IQueryableCollection oneToManyPersister,
 			int batchSize,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: this(oneToManyPersister, batchSize, null, factory, enabledFilters)
 		{
 		}
@@ -40,7 +39,7 @@ namespace NHibernate.Loader.Collection
 			int batchSize,
 			SqlString subquery,
 			ISessionFactoryImplementor factory,
-			IDictionary enabledFilters)
+			IDictionary<string, IFilter> enabledFilters)
 			: base(oneToManyPersister, factory, enabledFilters)
 		{
 			JoinWalker walker = new OneToManyJoinWalker(
