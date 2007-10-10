@@ -11,6 +11,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Search.Impl
 {
+	using Stat;
+
 	public class FullTextSessionImpl : IFullTextSession
 	{
 		private readonly ISession session;
@@ -360,10 +362,21 @@ namespace NHibernate.Search.Impl
 			return session.CreateMultiCriteria();
 		}
 
+		public ISessionStatistics Statistics
+		{
+			get { return session.Statistics; }
+		}
+
 		public FlushMode FlushMode
 		{
 			get { return session.FlushMode; }
 			set { session.FlushMode = value; }
+		}
+
+		public CacheMode CacheMode
+		{
+			get { return session.CacheMode; }
+			set { session.CacheMode = value; }
 		}
 
 		public ISessionFactory SessionFactory
