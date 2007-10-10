@@ -597,6 +597,11 @@
     <Compile Include="Engine\Loading\LoadContexts.cs" />
     <Compile Include="Engine\Loading\LoadingCollectionEntry.cs" />
     <Compile Include="Engine\Nullability.cs" />
+    <Compile Include="Engine\Query\NamedParameterDescriptor.cs" />
+    <Compile Include="Engine\Query\OrdinalParameterDescriptor.cs" />
+    <Compile Include="Engine\Query\ParameterMetadata.cs" />
+    <Compile Include="Engine\Query\ParamLocationRecognizer.cs" />
+    <Compile Include="Engine\Query\ReturnMetadata.cs" />
     <Compile Include="Engine\Query\Sql\INativeSQLQueryReturn.cs" />
     <Compile Include="Engine\Query\Sql\NativeSQLQueryCollectionReturn.cs" />
     <Compile Include="Engine\Query\Sql\NativeSQLQueryJoinReturn.cs" />
@@ -705,6 +710,7 @@
     <Compile Include="IStatelessSession.cs" />
     <Compile Include="Mapping\PropertyGeneration.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
+    <Compile Include="QueryParameterException.cs" />
     <Compile Include="SessionException.cs" />
     <Compile Include="SqlCommand\SubselectClauseExtractor.cs" />
     <Compile Include="Engine\SubselectFetch.cs" />

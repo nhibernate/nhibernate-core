@@ -30,7 +30,7 @@ namespace NHibernate.Engine.Query.Sql
 			
 			if (propertyResults != null)
 			{
-				CollectionHelper.PutAll(this.propertyResults, propertyResults);
+				ArrayHelper.AddAll(this.propertyResults, propertyResults);
 			}
 		}
 
