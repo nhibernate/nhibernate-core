@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -342,16 +344,210 @@ namespace NHibernate.Util
 			return new Hashtable(dictionary,StringComparer.InvariantCultureIgnoreCase);
 		}
 
-		public static void PutAll(IDictionary target, IDictionary origin)
-		{
-			foreach (DictionaryEntry entry in origin)
-			{
-				target[entry.Key] = entry.Value;
-			}
-		}
-
 		private CollectionHelper()
 		{
 		}
+
+		// ~~~~~~~~~~~~~~~~~~~~~~ Generics ~~~~~~~~~~~~~~~~~~~~~~
+		private class EmptyEnumerator<TKey, TValue> : IEnumerator<KeyValuePair<TKey, TValue>>
+		{
+			#region IEnumerator<KeyValuePair<TKey,TValue>> Members
+
+			KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current
+			{
+				get
+				{
+					throw new InvalidOperationException(
+						string.Format("EmptyEnumerator<{0},{1}>.KeyValuePair", typeof(TKey), typeof(TValue)));
+				}
+			}
+
+			#endregion
+
+			#region IDisposable Members
+
+			public void Dispose()
+			{
+			}
+
+			#endregion
+
+			#region IEnumerator Members
+
+			public bool MoveNext()
+			{
+				return false;
+			}
+
+			public void Reset()
+			{
+			}
+
+			public object Current
+			{
+				get
+				{
+					throw new InvalidOperationException(
+						string.Format("EmptyEnumerator<{0},{1}>.Current", typeof(TKey), typeof(TValue)));
+				}
+			}
+
+			#endregion
+		}
+
+		/// <summary>
+		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
+		/// </summary>
+		internal class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
+		{
+			private static readonly EmptyEnumerator<TKey, TValue> EmptyEnumerator = new EmptyEnumerator<TKey, TValue>();
+
+			#region IDictionary<TKey,TValue> Members
+
+			public bool ContainsKey(TKey key)
+			{
+				return false;
+			}
+
+			public void Add(TKey key, TValue value)
+			{
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Add", typeof(TKey), typeof(TValue)));
+			}
+
+			public bool Remove(TKey key)
+			{
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Remove", typeof(TKey), typeof(TValue)));
+			}
+
+			public bool TryGetValue(TKey key, out TValue value)
+			{
+				value = default(TValue);
+				return false;
+			}
+
+			public TValue this[TKey key]
+			{
+				get { return default(TValue); }
+				set { throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.set_Item", typeof(TKey), typeof(TValue))); }
+			}
+
+			public ICollection<TKey> Keys
+			{
+				get { return new List<TKey>(); }
+			}
+
+			public ICollection<TValue> Values
+			{
+				get { return new List<TValue>(); }
+			}
+
+			#endregion
+
+			#region ICollection<KeyValuePair<TKey,TValue>> Members
+
+			public void Add(KeyValuePair<TKey, TValue> item)
+			{
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Add", typeof(TKey), typeof(TValue)));
+			}
+
+			public void Clear()
+			{
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Clear", typeof(TKey), typeof(TValue)));
+			}
+
+			public bool Contains(KeyValuePair<TKey, TValue> item)
+			{
+				return false;
+			}
+
+			public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+			{
+			}
+
+			public bool Remove(KeyValuePair<TKey, TValue> item)
+			{
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Remove", typeof(TKey), typeof(TValue)));
+			}
+
+			public int Count
+			{
+				get { return 0; }
+			}
+
+			public bool IsReadOnly
+			{
+				get { return true; }
+			}
+
+			#endregion
+
+			#region IEnumerable<KeyValuePair<TKey,TValue>> Members
+
+			IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
+			{
+				return EmptyEnumerator;
+			}
+
+			#endregion
+
+			#region IEnumerable Members
+
+			public IEnumerator GetEnumerator()
+			{
+				return ((IEnumerable<KeyValuePair<TKey, TValue>>)this).GetEnumerator();
+			}
+
+			#endregion
+		}
+
+		/// <summary>
+		/// Computes a hash code for <paramref name="coll"/>.
+		/// </summary>
+		/// <remarks>The hash code is computed as the sum of hash codes of
+		/// individual elements, so that the value is independent of the
+		/// collection iteration order.
+		/// </remarks>
+		public static int GetHashCode<T>(ICollection<T> coll)
+		{
+			unchecked
+			{
+				int result = 0;
+
+				foreach (T obj in coll)
+				{
+					if (!default(T).Equals(obj))
+						result += obj.GetHashCode();
+				}
+
+				return result;
+			}
+		}
+
+		public static bool SetEquals<T>(ISet<T> a, ISet<T> b)
+		{
+			if (Equals(a, b))
+			{
+				return true;
+			}
+
+			if (a == null || b == null)
+			{
+				return false;
+			}
+
+			if (a.Count != b.Count)
+			{
+				return false;
+			}
+
+			foreach (T obj in a)
+			{
+				if (!b.Contains(obj))
+					return false;
+			}
+
+			return true;
+		}
+
 	}
 }
