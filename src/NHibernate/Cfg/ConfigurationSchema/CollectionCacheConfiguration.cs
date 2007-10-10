@@ -1,5 +1,4 @@
 using System;
-using System.Xml;
 using System.Xml.XPath;
 
 namespace NHibernate.Cfg.ConfigurationSchema
@@ -78,7 +77,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <summary>
 		/// The cache region.
 		/// </summary>
-		/// <remarks>If null or empty the <see cref="P:CollectionCacheConfiguration.Collection"/> is used during configuration.</remarks>
+		/// <remarks>If null or empty the <see cref="CollectionCacheConfiguration.Collection"/> is used during configuration.</remarks>
 		public string Region
 		{
 			get { return region; }

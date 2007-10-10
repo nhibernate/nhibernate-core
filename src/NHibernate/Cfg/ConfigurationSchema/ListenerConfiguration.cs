@@ -1,5 +1,4 @@
 using System;
-using System.Xml;
 using System.Xml.XPath;
 using NHibernate.Event;
 

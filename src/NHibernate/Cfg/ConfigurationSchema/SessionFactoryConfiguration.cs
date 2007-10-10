@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.Xml.XPath;
-using log4net;
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
