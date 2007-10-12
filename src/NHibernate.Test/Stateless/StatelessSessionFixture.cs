@@ -22,50 +22,71 @@ namespace NHibernate.Test.Stateless
 			get { return new string[] { "Stateless.Document.hbm.xml" }; }
 		}
 
+		protected override void OnTearDown()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from Document");
+				s.Delete("from Paper");
+			}
+		}
+
 		[Test]
 		public void CreateUpdateReadDelete()
 		{
-			IStatelessSession ss = sessions.OpenStatelessSession();
-			ITransaction tx = ss.BeginTransaction();
-			Document doc = new Document("blah blah blah", "Blahs");
-			ss.Insert(doc);
-			Assert.IsNotNull(doc.LastModified);
-			DateTime? initVersion = doc.LastModified;
-			Assert.IsTrue(initVersion.HasValue);
-			tx.Commit();
+			Document doc;
+			DateTime? initVersion;
 
-			tx = ss.BeginTransaction();
-			doc.Text = "blah blah blah .... blah";
-			ss.Update(doc);
-			Assert.IsTrue(doc.LastModified.HasValue);
-			Assert.AreNotEqual(initVersion, doc.LastModified);
-			tx.Commit();
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ITransaction tx;
+				using (tx = ss.BeginTransaction())
+				{
+					doc = new Document("blah blah blah", "Blahs");
+					ss.Insert(doc);
+					Assert.IsNotNull(doc.LastModified);
+					initVersion = doc.LastModified;
+					Assert.IsTrue(initVersion.HasValue);
+					tx.Commit();
+				}
+				using (tx = ss.BeginTransaction())
+				{
+					doc.Text = "blah blah blah .... blah";
+					ss.Update(doc);
+					Assert.IsTrue(doc.LastModified.HasValue);
+					// TODO: initVersion and doc.LastModified are not always different here
+					// even when nothing is wrong
+					Assert.AreNotEqual(initVersion, doc.LastModified); 
+					tx.Commit();
+				}
+				using (tx = ss.BeginTransaction())
+				{
+					doc.Text = "blah blah blah .... blah blay";
+					ss.Update(doc);
+					tx.Commit();
+				}
+				Document doc2 = (Document)ss.Get<Document>("Blahs");
+				Assert.AreEqual("Blahs", doc2.Name);
+				Assert.AreEqual(doc.Text, doc2.Text);
 
-			tx = ss.BeginTransaction();
-			doc.Text = "blah blah blah .... blah blay";
-			ss.Update(doc);
-			tx.Commit();
+				doc2 = (Document)ss.CreateQuery("from Document where text is not null").UniqueResult();
+				Assert.AreEqual("Blahs", doc2.Name);
+				Assert.AreEqual(doc.Text, doc2.Text);
 
-			Document doc2 = (Document) ss.Get<Document>("Blahs");
-			Assert.AreEqual("Blahs", doc2.Name);
-			Assert.AreEqual(doc.Text, doc2.Text);
+				doc2 = (Document)ss.CreateSQLQuery("select * from Document").AddEntity(typeof(Document)).UniqueResult();
+				Assert.AreEqual("Blahs", doc2.Name);
+				Assert.AreEqual(doc.Text, doc2.Text);
 
-			doc2 = (Document) ss.CreateQuery("from Document where text is not null").UniqueResult();
-			Assert.AreEqual("Blahs", doc2.Name);
-			Assert.AreEqual(doc.Text, doc2.Text);
+				doc2 = (Document)ss.CreateCriteria<Document>().UniqueResult();
+				Assert.AreEqual("Blahs", doc2.Name);
+				Assert.AreEqual(doc.Text, doc2.Text);
 
-			doc2 = (Document) ss.CreateSQLQuery("select * from Document").AddEntity(typeof (Document)).UniqueResult();
-			Assert.AreEqual("Blahs", doc2.Name);
-			Assert.AreEqual(doc.Text, doc2.Text);
-
-			doc2 = (Document) ss.CreateCriteria<Document>().UniqueResult();
-			Assert.AreEqual("Blahs", doc2.Name);
-			Assert.AreEqual(doc.Text, doc2.Text);
-
-			tx = ss.BeginTransaction();
-			ss.Delete(doc);
-			tx.Commit();
-			ss.Close();
+				using (tx = ss.BeginTransaction())
+				{
+					ss.Delete(doc);
+					tx.Commit();
+				}
+			}
 		}
 
 		[Test, Ignore("Not supported yet")]
@@ -104,47 +125,57 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void InitId()
 		{
-			IStatelessSession ss = sessions.OpenStatelessSession();
-			ITransaction tx = ss.BeginTransaction();
-			Paper paper = new Paper();
-			paper.Color = "White";
-			ss.Insert(paper);
-			Assert.IsTrue(paper.Id != 0);
-			tx.Commit();
+			Paper paper;
 
-			tx = ss.BeginTransaction();
-			ss.Delete(ss.Get<Paper>(paper.Id));
-			tx.Commit();
-			ss.Close();
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ITransaction tx;
+				using (tx = ss.BeginTransaction())
+				{
+					paper = new Paper();
+					paper.Color = "White";
+					ss.Insert(paper);
+					Assert.IsTrue(paper.Id != 0);
+					tx.Commit();
+				}
+				using (tx = ss.BeginTransaction())
+				{
+					ss.Delete(ss.Get<Paper>(paper.Id));
+					tx.Commit();
+				}
+			}
 		}
 
 		[Test]
 		public void Refresh()
 		{
-			IStatelessSession ss = sessions.OpenStatelessSession();
-			ITransaction tx = ss.BeginTransaction();
-			Paper paper = new Paper();
-			paper.Color = "whtie";
-			ss.Insert(paper);
-			tx.Commit();
-			ss.Close();
+			Paper paper;
 
-			ss = sessions.OpenStatelessSession();
-			tx = ss.BeginTransaction();
-			Paper p2 = (Paper) ss.Get<Paper>(paper.Id);
-			p2.Color = "White";
-			ss.Update(p2);
-			tx.Commit();
-			ss.Close();
-
-			ss = sessions.OpenStatelessSession();
-			tx = ss.BeginTransaction();
-			Assert.AreEqual("whtie", paper.Color);
-			ss.Refresh(paper);
-			Assert.AreEqual("White", paper.Color);
-			ss.Delete(paper);
-			tx.Commit();
-			ss.Close();
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (ITransaction tx = ss.BeginTransaction())
+			{
+				paper = new Paper();
+				paper.Color = "whtie";
+				ss.Insert(paper);
+				tx.Commit();
+			}
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (ITransaction tx = ss.BeginTransaction())
+			{
+				Paper p2 = (Paper)ss.Get<Paper>(paper.Id);
+				p2.Color = "White";
+				ss.Update(p2);
+				tx.Commit();
+			}
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (ITransaction tx = ss.BeginTransaction())
+			{
+				Assert.AreEqual("whtie", paper.Color);
+				ss.Refresh(paper);
+				Assert.AreEqual("White", paper.Color);
+				ss.Delete(paper);
+				tx.Commit();
+			}
 		}
 	}
 }
