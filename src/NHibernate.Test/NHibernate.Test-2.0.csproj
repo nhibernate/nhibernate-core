@@ -252,6 +252,8 @@
     <Compile Include="NHSpecificTest\HqlOnMapWithForumula\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1039\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1039\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1064\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1064\Model.cs" />
     <Compile Include="NHSpecificTest\NH1119\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1119\Model.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
@@ -1018,6 +1020,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Stats\Continent.hbm.xml" />
     <EmbeddedResource Include="Stats\Continent2.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1064\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
