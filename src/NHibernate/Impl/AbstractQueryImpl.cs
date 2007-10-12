@@ -32,7 +32,7 @@ namespace NHibernate.Impl
 		private IDictionary namedParameterLists = new Hashtable(4);
 		private bool cacheable;
 		private string cacheRegion;
-		private bool forceCacheRefresh;
+		private bool readOnly;
 		private static readonly object UNSET_PARAMETER = new object();
 		private static readonly object UNSET_TYPE = new object();
 		private object optionalId;
@@ -681,12 +681,13 @@ namespace NHibernate.Impl
 					namedParams,
 					lockModes,
 					selection,
+					readOnly,
 					cacheable,
 					cacheRegion,
-					forceCacheRefresh,
+					string.Empty,
 					collectionKey == null ? null : new object[] { collectionKey },
 					optionalObject,
-					optionalEntityName,
+					optionalEntityName == null ? null : optionalEntityName.FullName,
 					optionalId,
 					resultTransformer);
 		}
@@ -704,9 +705,9 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetForceCacheRefresh(bool forceCacheRefresh)
+		public IQuery SetReadOnly(bool readOnly)
 		{
-			this.forceCacheRefresh = forceCacheRefresh;
+			this.readOnly = readOnly;
 			return this;
 		}
 

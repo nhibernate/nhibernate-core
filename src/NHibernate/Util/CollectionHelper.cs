@@ -40,6 +40,14 @@ namespace NHibernate.Util
 			}
 		}
 
+		private class EmptyEnumerableClass : IEnumerable
+		{
+			public IEnumerator GetEnumerator()
+			{
+				return new EmptyEnumerator();
+			}
+		}
+
 		/// <summary>
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
@@ -201,6 +209,7 @@ namespace NHibernate.Util
 			}
 		}
 
+		public static readonly IEnumerable EmptyEnumerable = new EmptyEnumerableClass();
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
 		public static readonly ICollection EmptyCollection = EmptyMap;
 		public static readonly IList EmptyList = new EmptyListClass();

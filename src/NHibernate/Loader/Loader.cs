@@ -235,10 +235,7 @@ namespace NHibernate.Loader
 				                                 queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
 			}
 
-			InitializeEntitiesAndCollections(
-				hydratedObjects,
-				resultSet,
-				session);
+			InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.ReadOnly);
 			session.PersistenceContext.InitializeNonLazyCollections();
 			return result;
 		}
@@ -249,9 +246,9 @@ namespace NHibernate.Loader
 		{
 			object optionalObject = queryParameters.OptionalObject;
 			object optionalId = queryParameters.OptionalId;
-			System.Type optionalEntityClass = queryParameters.OptionalEntityClass;
+			string optionalEntityName = queryParameters.OptionalEntityName;
 
-			if (optionalObject != null && optionalEntityClass != null)
+			if (optionalObject != null && !string.IsNullOrEmpty(optionalEntityName))
 			{
 				return new EntityKey(
 					optionalId,
@@ -475,7 +472,7 @@ namespace NHibernate.Loader
 				session.Batcher.CloseCommand(st, rs);
 			}
 
-			InitializeEntitiesAndCollections(hydratedObjects, rs, session);
+			InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.ReadOnly);
 
 			if (createSubselects)
 			{
@@ -586,7 +583,7 @@ namespace NHibernate.Loader
 		internal void InitializeEntitiesAndCollections(
 			IList hydratedObjects,
 			object resultSetId,
-			ISessionImplementor session)
+			ISessionImplementor session, bool readOnly)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
@@ -629,8 +626,7 @@ namespace NHibernate.Loader
 
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
-					// TODO Different behaviour (InitializeEntitiesAndCollections need one more parameter to force readonly)
-					TwoPhaseLoad.InitializeEntity(hydratedObjects[i], false, session, pre, post);
+					TwoPhaseLoad.InitializeEntity(hydratedObjects[i], readOnly, session, pre, post);
 				}
 			}
 
@@ -1530,7 +1526,8 @@ namespace NHibernate.Loader
 					new IType[] {identifierType},
 					new object[] {id},
 					optionalObject,
-					optionalEntityName, optionalIdentifier
+					optionalEntityName == null ? null : optionalEntityName.FullName,
+					optionalIdentifier
 					);
 				result = DoQueryAndInitializeNonLazyCollections(
 					session,
@@ -1588,7 +1585,7 @@ namespace NHibernate.Loader
 			{
 				result = DoQueryAndInitializeNonLazyCollections(
 					session,
-					new QueryParameters(types, ids, optionalObject, optionalEntityName, optionalId),
+					new QueryParameters(types, ids, optionalObject, optionalEntityName == null ? null : optionalEntityName.FullName, optionalId),
 					false
 					);
 			}

@@ -58,5 +58,11 @@ namespace NHibernate.Engine
 			get { return fetchSize; }
 			set { fetchSize = value; }
 		}
+
+		public bool DefinesLimits
+		{
+			get { return maxRows != NoValue || (firstRow != NoValue && firstRow <= 0); }
+		}
+
 	}
 }

@@ -152,14 +152,12 @@ namespace NHibernate
 		/// for the default query cache</param>
 		IQuery SetCacheRegion(string cacheRegion);
 
-		/// Should the query force a refresh of the specified query cache region?
-		/// This is particularly useful in cases where underlying data may have been
-		/// updated via a seperate process (i.e., not modified through Hibernate) and
-		/// allows the application to selectively refresh the query cache regions
-		/// based on its knowledge of those events.
-		/// <param name="forceCacheRefresh">Should the query result in a forceable refresh of
-		/// the query cache?</param>
-		IQuery SetForceCacheRefresh(bool forceCacheRefresh);
+		/// <summary> 
+		/// Entities retrieved by this query will be loaded in 
+		/// a read-only mode where Hibernate will never dirty-check
+		/// them or make changes persistent. 
+		/// </summary>
+		IQuery SetReadOnly(bool readOnly);
 
 		/// <summary>
 		/// The timeout for the underlying ADO query

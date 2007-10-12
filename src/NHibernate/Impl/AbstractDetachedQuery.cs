@@ -46,7 +46,7 @@ namespace NHibernate.Impl
 		protected readonly RowSelection selection = new RowSelection();
 		protected bool cacheable;
 		protected string cacheRegion;
-		protected bool forceCacheRefresh;
+		protected bool readOnly;
 		protected FlushMode flushMode = FlushMode.Unspecified;
 		protected IResultTransformer resultTransformer;
 		protected bool shouldIgnoredUnknownNamedParameters;
@@ -80,9 +80,9 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetForceCacheRefresh(bool forceCacheRefresh)
+		public IDetachedQuery SetReadOnly(bool readOnly)
 		{
-			this.forceCacheRefresh = forceCacheRefresh;
+			this.readOnly = readOnly;
 			return this;
 		}
 
@@ -409,7 +409,7 @@ namespace NHibernate.Impl
 			q.SetMaxResults(selection.MaxRows)
 				.SetFirstResult(selection.FirstRow)
 				.SetCacheable(cacheable)
-				.SetForceCacheRefresh(forceCacheRefresh)
+				.SetReadOnly(readOnly)
 				.SetTimeout(selection.Timeout)
 				.SetFlushMode(flushMode);
 			if (!string.IsNullOrEmpty(cacheRegion))
@@ -470,7 +470,7 @@ namespace NHibernate.Impl
 			cacheable = false;
 			cacheRegion = null;
 			cacheMode = null;
-			forceCacheRefresh = false;
+			readOnly = false;
 			flushMode = FlushMode.Unspecified;
 			resultTransformer = null;
 			shouldIgnoredUnknownNamedParameters = false;
@@ -501,7 +501,7 @@ namespace NHibernate.Impl
 			destination.SetMaxResults(selection.MaxRows)
 				.SetFirstResult(selection.FirstRow)
 				.SetCacheable(cacheable)
-				.SetForceCacheRefresh(forceCacheRefresh)
+				.SetReadOnly(readOnly)
 				.SetTimeout(selection.Timeout)
 				.SetFlushMode(flushMode);
 			if (!string.IsNullOrEmpty(cacheRegion))

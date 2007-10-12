@@ -323,8 +323,9 @@ namespace NHibernate.Loader.Criteria
 				selection,
 				rootCriteria.Cacheable,
 				rootCriteria.CacheRegion,
-				"", // TODO H3: rootCriteria.Comment,
-				rootCriteria.IsLookupByNaturalKey()
+				string.Empty, // TODO H3: rootCriteria.Comment,
+				rootCriteria.IsLookupByNaturalKey(),
+				null
 				);
 		}
 

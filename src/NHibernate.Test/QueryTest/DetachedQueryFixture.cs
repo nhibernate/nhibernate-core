@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Transform;
@@ -50,14 +49,14 @@ namespace NHibernate.Test.QueryTest
 		public void PropertiesSet()
 		{
 			TestDetachedQuery tdq = new TestDetachedQuery();
-			tdq.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetForceCacheRefresh(true).SetTimeout(444).SetFlushMode(
+			tdq.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetReadOnly(true).SetTimeout(444).SetFlushMode(
 				FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof (NoFoo))).
 				SetIgnoreUknownNamedParameters(true);
 			Assert.AreEqual(10, tdq.Selection.MaxRows);
 			Assert.AreEqual(5, tdq.Selection.FirstRow);
 			Assert.AreEqual(444, tdq.Selection.Timeout);
 			Assert.IsTrue(tdq.Cacheable);
-			Assert.IsTrue(tdq.ForceCacheRefresh);
+			Assert.IsTrue(tdq.ReadOnly);
 			Assert.AreEqual(FlushMode.Auto, tdq.FlushMode);
 			Assert.AreEqual("A_REGION", tdq.CacheRegion);
 			Assert.IsNotNull(tdq.ResultTransformer);
@@ -171,7 +170,7 @@ namespace NHibernate.Test.QueryTest
 		public void CopyToTest()
 		{
 			TestDetachedQuery origin = new TestDetachedQuery();
-			origin.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetForceCacheRefresh(true).SetTimeout(444).SetFlushMode
+			origin.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetReadOnly(true).SetTimeout(444).SetFlushMode
 				(FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof (NoFoo)));
 			origin.SetLockMode("LM1", LockMode.Upgrade);
 			origin.SetProperties(new Foo("Pallino", "Pinco"));
@@ -204,7 +203,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.AreEqual(5, tdq.Selection.FirstRow);
 			Assert.AreEqual(444, tdq.Selection.Timeout);
 			Assert.IsTrue(tdq.Cacheable);
-			Assert.IsTrue(tdq.ForceCacheRefresh);
+			Assert.IsTrue(tdq.ReadOnly);
 			Assert.AreEqual(FlushMode.Auto, tdq.FlushMode);
 			Assert.AreEqual("A_REGION", tdq.CacheRegion);
 			Assert.IsNotNull(tdq.ResultTransformer);
@@ -259,7 +258,7 @@ namespace NHibernate.Test.QueryTest
 		public void OverrideTest()
 		{
 			TestDetachedQuery origin = new TestDetachedQuery();
-			origin.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetForceCacheRefresh(true).SetTimeout(444).SetFlushMode
+			origin.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetReadOnly(true).SetTimeout(444).SetFlushMode
 				(FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof(NoFoo)));
 			origin.SetLockMode("LM1", LockMode.Upgrade);
 			origin.SetProperties(new Foo("Pallino", "Pinco"));
@@ -284,7 +283,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.AreEqual(5, tdq.Selection.FirstRow);
 			Assert.AreEqual(444, tdq.Selection.Timeout);
 			Assert.IsTrue(tdq.Cacheable);
-			Assert.IsTrue(tdq.ForceCacheRefresh);
+			Assert.IsTrue(tdq.ReadOnly);
 			Assert.AreEqual(FlushMode.Auto, tdq.FlushMode);
 			Assert.AreEqual("A_REGION", tdq.CacheRegion);
 			Assert.IsNotNull(tdq.ResultTransformer);
@@ -505,9 +504,9 @@ namespace NHibernate.Test.QueryTest
 				get { return cacheRegion; }
 			}
 
-			public bool ForceCacheRefresh
+			public bool ReadOnly
 			{
-				get { return forceCacheRefresh; }
+				get { return readOnly; }
 			}
 
 			public FlushMode FlushMode

@@ -28,7 +28,7 @@ namespace NHibernate.Engine
 		private bool _forceCacheRefresh;
 		private object[] _collectionKeys;
 		private object _optionalObject;
-		private System.Type _optionalEntityClass;
+		private string _optionalEntityName;
 		private object _optionalId;
 		private string _comment;
 		private bool _isNaturalKeyLookup;
@@ -40,8 +40,6 @@ namespace NHibernate.Engine
 		private object[] processedPositionalParameterValues;
 
 		private IResultTransformer _resultTransformer;
-
-
 		// not implemented: private ScrollMode _scrollMode;
 
 		public QueryParameters()
@@ -50,156 +48,47 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType type, object value)
-			: this(new IType[] {type}, new object[] {value})
+			: this(new IType[] { type }, new object[] { value })
 		{
 		}
 
-		public QueryParameters(
-			IType[] positionalParameterTypes,
-			object[] positionalParameterValues,
-			object optionalObject,
-			System.Type optionalEntityClass,
-			object optionalId)
-			: this(positionalParameterTypes, positionalParameterValues)
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, 
+			object optionalObject, string optionalEntityName, object optionalObjectId)
+			: this(positionalParameterTypes, postionalParameterValues)
 		{
 			_optionalObject = optionalObject;
-			_optionalId = optionalId;
-			_optionalEntityClass = optionalEntityClass;
+			_optionalId = optionalObjectId;
+			_optionalEntityName = optionalEntityName;
 		}
 
-		/// <summary>
-		/// Initializes an instance of the <see cref="QueryParameters"/> class.
-		/// </summary>
-		/// <param name="positionalParameterTypes">An array of <see cref="IType"/> objects for the parameters.</param>
-		/// <param name="positionalParameterValues">An array of <see cref="object"/> objects for the parameters.</param>
-		public QueryParameters(
-			IType[] positionalParameterTypes,
-			object[] positionalParameterValues)
-			: this(
-				positionalParameterTypes,
-				positionalParameterValues,
-				null,
-				null)
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues)
+			: this(positionalParameterTypes, postionalParameterValues, null, null, false, null, null, false, null)
 		{
 		}
 
-		public QueryParameters(
-			IType[] positionalParameterTypes,
-			object[] positionalParameterValues,
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, 
 			object[] collectionKeys)
-			: this(
-				positionalParameterTypes,
-				positionalParameterValues,
-				null,
-				collectionKeys)
+			: this(positionalParameterTypes, postionalParameterValues, null, collectionKeys)
 		{
 		}
 
-		public QueryParameters(
-			IType[] positionalParameterTypes,
-			object[] positionalParameterValues,
-			IDictionary namedParameters,
-			object[] collectionKeys)
-			: this(
-				positionalParameterTypes,
-				positionalParameterValues,
-				namedParameters,
-				null,
-				null,
-				false,
-				null,
-				false,
-				collectionKeys,
-				null,
-				null,
-				null,
-				null)
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, 
+			IDictionary namedParameters, object[] collectionKeys)
+			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, null, null, collectionKeys, null)
 		{
 		}
 
-		/// <summary>
-		/// Initializes an instance of the <see cref="QueryParameters"/> class.
-		/// </summary>
-		/// <param name="positionalParameterTypes">An array of <see cref="IType"/> objects for the parameters.</param>
-		/// <param name="positionalParameterValues">An array of <see cref="object"/> objects for the parameters.</param>
-		/// <param name="namedParameters">An <see cref="IDictionary"/> that is <c>parameter name</c> keyed to a <see cref="TypedValue"/> value.</param>
-		/// <param name="lockModes">An <see cref="IDictionary"/> that is <c>hql alias</c> keyed to a LockMode value.</param>
-		/// <param name="rowSelection"></param>
-		/// <param name="cacheable"></param>
-		/// <param name="cacheRegion"></param>
-		/// <param name="forceCacheRefresh"></param>
-		/// <param name="collectionKeys"></param>
-		/// <param name="optionalObject"></param>
-		/// <param name="optionalEntityName"></param>
-		/// <param name="optionalId"></param>
-		/// <param name="resultTransformer"></param>
-		public QueryParameters(
-			IType[] positionalParameterTypes,
-			object[] positionalParameterValues,
-			IDictionary namedParameters,
-			IDictionary lockModes,
-			RowSelection rowSelection,
-			bool cacheable,
-			string cacheRegion,
-			bool forceCacheRefresh,
-			object[] collectionKeys,
-			object optionalObject,
-			System.Type optionalEntityName,
-			object optionalId,
-			IResultTransformer resultTransformer)
-		{
-			_positionalParameterTypes = positionalParameterTypes;
-			_positionalParameterValues = positionalParameterValues;
-			_namedParameters = namedParameters;
-			_lockModes = lockModes;
-			_rowSelection = rowSelection;
-			_cacheable = cacheable;
-			_cacheRegion = cacheRegion;
-			_forceCacheRefresh = forceCacheRefresh;
-			_collectionKeys = collectionKeys;
-			_optionalObject = optionalObject;
-			_optionalEntityClass = optionalEntityName;
-			_optionalId = optionalId;
-			_resultTransformer = resultTransformer;
-		}
-
-		public QueryParameters(
-			IType[] positionalParameterTypes,
-			object[] positionalParameterValues,
-			IDictionary lockModes,
-			RowSelection rowSelection,
-			bool cacheable,
-			string cacheRegion,
-			//bool forceCacheRefresh,
-			string comment,
-			bool isLookupByNaturalKey)
-			: this(
-				positionalParameterTypes,
-				positionalParameterValues,
-				null,
-				lockModes,
-				rowSelection,
-				false,
-				cacheable,
-				cacheRegion,
-				comment,
-				null)
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, 
+			IDictionary lockModes, RowSelection rowSelection, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, cacheable, cacheRegion, comment, null, transformer)
 		{
 			_isNaturalKeyLookup = isLookupByNaturalKey;
 		}
 
-		public QueryParameters(
-			IType[] positionalParameterTypes,
-			object[] positionalParameterValues,
-			IDictionary namedParameters,
-			IDictionary lockModes,
-			RowSelection rowSelection,
-			bool readOnly,
-			bool cacheable,
-			string cacheRegion,
-			//final boolean forceCacheRefresh,
-			string comment,
-			object[] collectionKeys)
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, 
+			IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection, 
+			bool readOnly, bool cacheable, string cacheRegion, string comment, 
+			object[] collectionKeys, IResultTransformer transformer)
 		{
 			_positionalParameterTypes = positionalParameterTypes;
 			_positionalParameterValues = positionalParameterValues;
@@ -208,10 +97,21 @@ namespace NHibernate.Engine
 			_rowSelection = rowSelection;
 			_cacheable = cacheable;
 			_cacheRegion = cacheRegion;
-			//this.forceCacheRefresh = forceCacheRefresh;
 			_comment = comment;
 			_collectionKeys = collectionKeys;
 			_readOnly = readOnly;
+			_resultTransformer = transformer;
+		}
+
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, 
+			IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection, 
+			bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys, 
+			object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
+			: this(positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, readOnly, cacheable, cacheRegion, comment, collectionKeys, transformer)
+		{
+			_optionalEntityName = optionalEntityName;
+			_optionalId = optionalId;
+			_optionalObject = optionalObject;
 		}
 
 		/// <summary></summary>
@@ -334,10 +234,10 @@ namespace NHibernate.Engine
 			set { _forceCacheRefresh = value; }
 		}
 
-		public System.Type OptionalEntityClass
+		public string OptionalEntityName
 		{
-			get { return _optionalEntityClass; }
-			set { _optionalEntityClass = value; }
+			get { return _optionalEntityName; }
+			set { _optionalEntityName = value; }
 		}
 
 		public object OptionalId
@@ -362,6 +262,12 @@ namespace NHibernate.Engine
 		{
 			get { return _callable; }
 			set { _callable = value; }
+		}
+
+		public bool ReadOnly
+		{
+			get { return _readOnly; }
+			set { _readOnly = value; }
 		}
 
 		/************** Filters ********************************/
@@ -469,6 +375,17 @@ namespace NHibernate.Engine
 		public IResultTransformer ResultTransformer
 		{
 			get { return _resultTransformer; }
+		}
+
+		public QueryParameters CreateCopyUsing(RowSelection selection)
+		{
+			QueryParameters copy = new QueryParameters(_positionalParameterTypes, _positionalParameterValues, 
+				_namedParameters, _lockModes, selection, _readOnly, _cacheable, _cacheRegion, _comment, 
+				_collectionKeys, _optionalObject, _optionalEntityName, _optionalId, _resultTransformer);
+			copy.processedSQL = processedSQL;
+			copy.processedPositionalParameterTypes = processedPositionalParameterTypes;
+			copy.processedPositionalParameterValues = processedPositionalParameterValues;
+			return copy;
 		}
 	}
 }
