@@ -30,6 +30,39 @@
             </summary>
             <value>The lifestyle.</value>
         </member>
+        <member name="M:Castle.Core.CastleComponentAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Core.CastleComponentAttribute"/> class.
+            </summary>
+            <param name="key">The key.</param>
+        </member>
+        <member name="M:Castle.Core.CastleComponentAttribute.#ctor(System.String,System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Core.CastleComponentAttribute"/> class.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="service">The service.</param>
+        </member>
+        <member name="M:Castle.Core.CastleComponentAttribute.#ctor(System.String,System.Type,Castle.Core.LifestyleType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Core.CastleComponentAttribute"/> class.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="service">The service.</param>
+            <param name="lifestyle">The lifestyle.</param>
+        </member>
+        <member name="P:Castle.Core.CastleComponentAttribute.Service">
+            <summary>
+            Gets the service.
+            </summary>
+            <value>The service.</value>
+        </member>
+        <member name="P:Castle.Core.CastleComponentAttribute.Key">
+            <summary>
+            Gets the key.
+            </summary>
+            <value>The key.</value>
+        </member>
         <member name="T:Castle.Core.ComponentActivatorAttribute">
             <summary>
             Associates a custom component with a component
@@ -57,11 +90,22 @@
             Initializes a new instance of the <see cref="T:Castle.Core.ComponentProxyBehaviorAttribute"/> class.
             </summary>
         </member>
+        <member name="P:Castle.Core.ComponentProxyBehaviorAttribute.UseMarshalByRefProxy">
+            <summary>
+            Gets or sets a value indicating whether the generated 
+            interface proxy should inherit from <see cref="T:System.MarshalByRefObject"/>.
+            </summary>
+        </member>
         <member name="P:Castle.Core.ComponentProxyBehaviorAttribute.UseSingleInterfaceProxy">
             <summary>
             Determines if the component requires a single interface proxy.
             </summary>
             <value><c>true</c> if the component requires a single interface proxy.</value>
+        </member>
+        <member name="P:Castle.Core.ComponentProxyBehaviorAttribute.AdditionalInterfaces">
+            <summary>
+             Gets or sets the additional interfaces used during proxy generation.
+            </summary>
         </member>
         <member name="T:Castle.Core.DoNotWireAttribute">
             <summary>
@@ -227,11 +271,6 @@
             Interceptors might implement this to receive the
             ComponentModel on behalf of the component where the
             interceptor is acting.
-            </summary>
-        </member>
-        <member name="T:Castle.Core.Interceptor.IProxyTargetAccessor">
-            <summary>
-            
             </summary>
         </member>
         <member name="M:Castle.Core.Interceptor.IProxyTargetAccessor.DynProxyGetTarget">
@@ -2974,6 +3013,37 @@
             Used by Castle Project components to, for example, 
             gather logging factories
             </remarks>
+        </member>
+        <member name="T:Castle.Core.IServiceProviderEx">
+            <summary>
+            Increments <c>IServiceProvider</c> with a generic service resolution operation.
+            </summary>
+        </member>
+        <member name="T:Castle.Core.IServiceProviderExAccessor">
+            <summary>
+            This interface should be implemented by classes
+            that are available in a bigger context, exposing
+            the container to different areas in the same application.
+            <para>
+            For example, in Web application, the (global) HttpApplication
+            subclasses should implement this interface to expose 
+            the configured container
+            </para>
+            </summary>
+        </member>
+        <member name="T:Castle.Core.Pair`2">
+            <summary>
+            General purpose class to represent a standard pair of values. 
+            </summary>
+            <typeparam name="TFirst">Type of the first value</typeparam>
+            <typeparam name="TSecond">Type of the second value</typeparam>
+        </member>
+        <member name="M:Castle.Core.Pair`2.#ctor(`0,`1)">
+            <summary>
+            Constructs a pair with its values
+            </summary>
+            <param name="first"></param>
+            <param name="second"></param>
         </member>
     </members>
 </doc>

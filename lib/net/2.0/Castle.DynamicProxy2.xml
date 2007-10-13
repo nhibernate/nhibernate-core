@@ -20,11 +20,6 @@
             
             </summary>
         </member>
-        <member name="T:Castle.DynamicProxy.Generators.Emitters.CustomAttributeUtil">
-            <summary>
-            Handles replication of custom attributes
-            </summary>
-        </member>
         <member name="M:Castle.DynamicProxy.Generators.Emitters.CustomAttributeUtil.InitializeConstructorArgs(System.Type,System.Attribute,System.Object[],System.Reflection.ParameterInfo[])">
             <summary>
             Here we try to match a constructor argument to its value.
@@ -194,6 +189,13 @@
             <param name="method"></param>
             <returns></returns>
         </member>
+        <member name="M:Castle.DynamicProxy.Generators.BaseProxyGenerator.ShouldSkipAttributeReplication(System.Attribute)">
+            <summary>
+            Attributes should be replicated if they are non-inheritable,
+            but there are some special cases where the attributes means
+            something to the CLR, where they should be skipped.
+            </summary>
+        </member>
         <member name="M:Castle.DynamicProxy.Generators.BaseProxyGenerator.ShouldCreateNewSlot(System.Reflection.MethodInfo)">
             <summary>
             Checks if the method has the same signature as a method that was marked as
@@ -227,13 +229,12 @@
             
             </summary>
         </member>
-        <member name="M:Castle.DynamicProxy.Generators.InterfaceProxyWithTargetGenerator.FindMethodOnTargetType(System.Reflection.MethodInfo,System.Type,System.Boolean)">
+        <member name="M:Castle.DynamicProxy.Generators.InterfaceProxyWithTargetGenerator.FindMethodOnTargetType(System.Reflection.MethodInfo,System.Type)">
             <summary>
             Finds the type of the method on target.
             </summary>
             <param name="methodOnInterface">The method on interface.</param>
             <param name="proxyTargetType">Type of the proxy target.</param>
-            <param name="checkMixins">if set to <c>true</c> will check implementation on mixins.</param>
             <returns></returns>
         </member>
         <member name="M:Castle.DynamicProxy.Generators.InterfaceProxyWithTargetGenerator.IsTypeEquivalent(System.Type,System.Type)">
@@ -251,26 +252,20 @@
             which generator it should use
             </summary>
         </member>
+        <member name="T:Castle.DynamicProxy.Generators.MethodFinder">
+            <summary>
+            Returns the methods implemented by a type. Use this instead of Type.GetMethods() to work around a CLR issue
+            where duplicate MethodInfos are returned by Type.GetMethods() after a token of a generic type's method was loaded.
+            </summary>
+        </member>
         <member name="T:Castle.DynamicProxy.Serialization.ProxyObjectReference">
             <summary>
             Handles the deserialization of proxies.
-            See here for more details:
-            http://groups.google.com/group/castle-project-devel/msg/fb5ef9656d050ba5
             </summary>
         </member>
         <member name="M:Castle.DynamicProxy.Serialization.ProxyObjectReference.ResetScope">
             <summary>
             Usefull for test cases
-            </summary>
-        </member>
-        <member name="T:Castle.DynamicProxy.Serialization.ProxySerializer">
-            <summary>
-            Assists in serializing instances of the generated proxy types so that they can be deserialized via <see cref="T:Castle.DynamicProxy.Serialization.ProxyObjectReference"/>.
-            </summary>
-        </member>
-        <member name="T:Castle.DynamicProxy.Serialization.ProxySerializer.Indirection">
-            <summary>
-            Used to circumvent a serialization bug, where direct self references and directly held delegates are not deserialized correctly.
             </summary>
         </member>
         <member name="T:Castle.DynamicProxy.IProxyGenerationHook">
@@ -361,6 +356,12 @@
             <param name="options"></param>
             <returns></returns>
         </member>
+        <member name="P:Castle.DynamicProxy.IProxyBuilder.ModuleScope">
+            <summary>
+            Gets the module scope used by this builder for generating code.
+            </summary>
+            <value>The module scope used by this builder.</value>
+        </member>
         <member name="M:Castle.DynamicProxy.InternalsHelper.IsInternalToDynamicProxy(System.Reflection.Assembly)">
             <summary>
             Determines whether this assembly has internals visisble to dynamic proxy.
@@ -381,36 +382,158 @@
             Summary description for ModuleScope.
             </summary>
         </member>
-        <member name="F:Castle.DynamicProxy.ModuleScope.moduleBuilderWithStrongName">
+        <member name="F:Castle.DynamicProxy.ModuleScope.DEFAULT_FILE_NAME">
             <summary>
-            Avoid leaks caused by non disposal of generated types.
+            The default file name used when the assembly is saved using <see cref="F:Castle.DynamicProxy.ModuleScope.DEFAULT_FILE_NAME"/>.
             </summary>
         </member>
-        <member name="F:Castle.DynamicProxy.ModuleScope.typeCache">
+        <member name="F:Castle.DynamicProxy.ModuleScope.DEFAULT_ASSEMBLY_NAME">
             <summary>
-            Keep track of generated types
-            </summary>
-        </member>
-        <member name="F:Castle.DynamicProxy.ModuleScope._lockobj">
-            <summary>
-            Used to lock the module builder creation
+            The default assembly (simple) name used for the assemblies generated by a <see cref="T:Castle.DynamicProxy.ModuleScope"/> instance.
             </summary>
         </member>
         <member name="M:Castle.DynamicProxy.ModuleScope.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Castle.DynamicProxy.ModuleScope"/> class.
+            Initializes a new instance of the <see cref="T:Castle.DynamicProxy.ModuleScope"/> class; assemblies created by this instance will not be saved.
             </summary>
         </member>
         <member name="M:Castle.DynamicProxy.ModuleScope.#ctor(System.Boolean)">
             <summary>
-            Initializes a new instance of the <see cref="T:Castle.DynamicProxy.ModuleScope"/> class.
+            Initializes a new instance of the <see cref="T:Castle.DynamicProxy.ModuleScope"/> class, allowing to specify whether the assemblies generated by this instance
+            should be saved.
             </summary>
-            <param name="savePhysicalAssembly">if set to <c>true</c> saves the generated module.</param>
+            <param name="savePhysicalAssembly">If set to <c>true</c> saves the generated module.</param>
+        </member>
+        <member name="M:Castle.DynamicProxy.ModuleScope.#ctor(System.Boolean,System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.DynamicProxy.ModuleScope"/> class, allowing to specify whether the assemblies generated by this instance
+            should be saved and what simple names are to be assigned to them.
+            </summary>
+            <param name="savePhysicalAssembly">If set to <c>true</c> saves the generated module.</param>
+            <param name="strongAssemblyName">The simple name of the strong-named assembly generated by this <see cref="T:Castle.DynamicProxy.ModuleScope"/>.</param>
+            <param name="strongModulePath">The path and file name of the manifest module of the strong-named assembly generated by this <see cref="T:Castle.DynamicProxy.ModuleScope"/>.</param>
+            <param name="weakAssemblyName">The simple name of the weak-named assembly generated by this <see cref="T:Castle.DynamicProxy.ModuleScope"/>.</param>
+            <param name="weakModulePath">The path and file name of the manifest module of the weak-named assembly generated by this <see cref="T:Castle.DynamicProxy.ModuleScope"/>.</param>
+        </member>
+        <member name="M:Castle.DynamicProxy.ModuleScope.GetFromCache(Castle.DynamicProxy.Generators.CacheKey)">
+            <summary>
+            Returns a type from this scope's type cache, or null if the key cannot be found.
+            </summary>
+            <param name="key">The key to be looked up in the cache.</param>
+            <returns>The type from this scope's type cache matching the key, or null if the key cannot be found</returns>
+        </member>
+        <member name="M:Castle.DynamicProxy.ModuleScope.RegisterInCache(Castle.DynamicProxy.Generators.CacheKey,System.Type)">
+            <summary>
+            Registers a type in this scope's type cache.
+            </summary>
+            <param name="key">The key to be associated with the type.</param>
+            <param name="type">The type to be stored in the cache.</param>
+        </member>
+        <member name="M:Castle.DynamicProxy.ModuleScope.GetKeyPair">
+            <summary>
+            Gets the key pair used to sign the strong-named assembly generated by this <see cref="T:Castle.DynamicProxy.ModuleScope"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.DynamicProxy.ModuleScope.ObtainDynamicModule(System.Boolean)">
+            <summary>
+            Gets the specified module generated by this scope, creating a new one if none has yet been generated.
+            </summary>
+            <param name="isStrongNamed">If set to true, a strong-named module is returned; otherwise, a weak-named module is returned.</param>
+            <returns>A strong-named or weak-named module generated by this scope, as specified by the <paramref name="isStrongNamed"/> parameter.</returns>
+        </member>
+        <member name="M:Castle.DynamicProxy.ModuleScope.ObtainDynamicModuleWithStrongName">
+            <summary>
+            Gets the strong-named module generated by this scope, creating a new one if none has yet been generated.
+            </summary>
+            <returns>A strong-named module generated by this scope.</returns>
+        </member>
+        <member name="M:Castle.DynamicProxy.ModuleScope.ObtainDynamicModuleWithWeakName">
+            <summary>
+            Gets the weak-named module generated by this scope, creating a new one if none has yet been generated.
+            </summary>
+            <returns>A weak-named module generated by this scope.</returns>
         </member>
         <member name="M:Castle.DynamicProxy.ModuleScope.SaveAssembly">
             <summary>
-            Saves the generated assembly.
+            Saves the generated assembly with the name and directory information given when this <see cref="T:Castle.DynamicProxy.ModuleScope"/> instance was created (or with
+            the <see cref="F:Castle.DynamicProxy.ModuleScope.DEFAULT_FILE_NAME"/> and current directory if none was given).
             </summary>
+            <remarks>
+            <para>
+            This method stores the generated assembly in the directory passed as part of the module information specified when this instance was
+            constructed (if any, else the current directory is used). If both a strong-named and a weak-named assembly
+            have been generated, it will throw an exception; in this case, use the <see cref="M:Castle.DynamicProxy.ModuleScope.SaveAssembly(System.Boolean)"/> overload.
+            </para>
+            <para>
+            If this <see cref="T:Castle.DynamicProxy.ModuleScope"/> was created without indicating that the assembly should be saved, this method does nothing.
+            </para></remarks>
+            <exception cref="T:System.InvalidOperationException">Both a strong-named and a weak-named assembly have been generated or no assembly has been
+            generated.</exception>
+        </member>
+        <member name="M:Castle.DynamicProxy.ModuleScope.SaveAssembly(System.Boolean)">
+            <summary>
+            Saves the specified generated assembly with the name and directory information given when this <see cref="T:Castle.DynamicProxy.ModuleScope"/> instance was created
+            (or with the <see cref="F:Castle.DynamicProxy.ModuleScope.DEFAULT_FILE_NAME"/> and current directory if none was given).
+            </summary>
+            <param name="strongNamed">True if the generated assembly with a strong name should be saved (see <see cref="P:Castle.DynamicProxy.ModuleScope.StrongNamedModule"/>);
+              false if the generated assembly without a strong name should be saved (see <see cref="P:Castle.DynamicProxy.ModuleScope.WeakNamedModule"/>.</param>
+            <remarks>
+            <para>
+            This method stores the specified generated assembly in the directory passed as part of the module information specified when this instance was
+            constructed (if any, else the current directory is used).
+            </para>
+            <para>
+            If this <see cref="T:Castle.DynamicProxy.ModuleScope"/> was created without indicating that the assembly should be saved, this method does nothing.
+            </para>
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">No assembly has been generated that matches the <paramref name="strongNamed"/> parameter.
+            </exception>
+        </member>
+        <member name="P:Castle.DynamicProxy.ModuleScope.RWLock">
+            <summary>
+            Users of this <see cref="T:Castle.DynamicProxy.ModuleScope"/> should use this lock when accessing the cache.
+            </summary>
+        </member>
+        <member name="P:Castle.DynamicProxy.ModuleScope.StrongNamedModule">
+            <summary>
+            Gets the strong-named module generated by this scope, or <see langword="null"/> if none has yet been generated.
+            </summary>
+            <value>The strong-named module generated by this scope, or <see langword="null"/> if none has yet been generated.</value>
+        </member>
+        <member name="P:Castle.DynamicProxy.ModuleScope.StrongNamedModuleName">
+            <summary>
+            Gets the file name of the strongly named module generated by this scope.
+            </summary>
+            <value>The file name of the strongly named module generated by this scope.</value>
+        </member>
+        <member name="P:Castle.DynamicProxy.ModuleScope.StrongNamedModuleDirectory">
+            <summary>
+            Gets the directory where the strongly named module generated by this scope will be saved, or <see langword="null"/> if the current directory
+            is used.
+            </summary>
+            <value>The directory where the strongly named module generated by this scope will be saved when <see cref="M:Castle.DynamicProxy.ModuleScope.SaveAssembly"/> is called
+            (if this scope was created to save modules).</value>
+        </member>
+        <member name="P:Castle.DynamicProxy.ModuleScope.WeakNamedModule">
+            <summary>
+            Gets the weak-named module generated by this scope, or <see langword="null"/> if none has yet been generated.
+            </summary>
+            <value>The weak-named module generated by this scope, or <see langword="null"/> if none has yet been generated.</value>
+        </member>
+        <member name="P:Castle.DynamicProxy.ModuleScope.WeakNamedModuleName">
+            <summary>
+            Gets the file name of the weakly named module generated by this scope.
+            </summary>
+            <value>The file name of the weakly named module generated by this scope.</value>
+        </member>
+        <member name="P:Castle.DynamicProxy.ModuleScope.WeakNamedModuleDirectory">
+            <summary>
+            Gets the directory where the weakly named module generated by this scope will be saved, or <see langword="null"/> if the current directory
+            is used.
+            </summary>
+            <value>The directory where the weakly named module generated by this scope will be saved when <see cref="M:Castle.DynamicProxy.ModuleScope.SaveAssembly"/> is called
+            (if this scope was created to save modules).</value>
         </member>
         <member name="T:Castle.DynamicProxy.PersistentProxyBuilder">
             <summary>
@@ -425,17 +548,6 @@
             Initializes a new instance of the <see cref="T:Castle.DynamicProxy.PersistentProxyBuilder"/> class.
             </summary>
         </member>
-        <member name="T:Castle.DynamicProxy.ProxyGenerationOptions">
-            <summary>
-            The proxy generation options, note that this is a statefull class with regard to mixin.
-            </summary>
-        </member>
-        <member name="F:Castle.DynamicProxy.ProxyGenerationOptions.Default">
-            <summary>
-            Gets the default options
-            </summary>
-            <value>The default.</value>
-        </member>
         <member name="M:Castle.DynamicProxy.ProxyGenerationOptions.#ctor(Castle.DynamicProxy.IProxyGenerationHook)">
             <summary>
             Initializes a new instance of the <see cref="T:Castle.DynamicProxy.ProxyGenerationOptions"/> class.
@@ -446,35 +558,6 @@
             <summary>
             Initializes a new instance of the <see cref="T:Castle.DynamicProxy.ProxyGenerationOptions"/> class.
             </summary>
-        </member>
-        <member name="M:Castle.DynamicProxy.ProxyGenerationOptions.AddMixinInterfaceImplementation(System.Object)">
-            <summary>
-            This is required because a mixin may implement more than a single interface.
-            In order to track that, we register them all here, and when we instansiate the proxy, we pass it the 
-            mixins implementations, where each interface has an object that implements it.
-            Example:
-            FooBar foo implements IFoo and IBar
-            
-            proxy ctor would be:
-            
-            public Proxy(IFoo, IBar, IInterceptor[], object target)
-            
-            And will be invoked with:
-            new Proxy(foo, foo, inteceptors, target);
-            </summary>
-            <param name="mixin">The mixin.</param>
-        </member>
-        <member name="M:Castle.DynamicProxy.ProxyGenerationOptions.InspectAndRegisterMixinInterfaces">
-            <summary>
-            Because we need to cache the types based on the mixed in mixins, we do the following here:
-             - Get all the mixin interfaces
-             - Sort them by full name
-             - Return them by position
-            
-            The idea is to have reproducable behavior for the case that mixins are registered in different orders.
-            This method is here because it is required 
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:Castle.DynamicProxy.ProxyGenerator.#ctor(Castle.DynamicProxy.IProxyBuilder)">
             <summary>
