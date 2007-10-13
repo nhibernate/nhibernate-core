@@ -19,7 +19,7 @@ namespace NHibernate.Search
 			this.luceneQuery = luceneQuery;
 		}
 
-		public override NHibernate.SqlCommand.SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, System.Collections.IDictionary enabledFilters)
+		public override NHibernate.SqlCommand.SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			System.Type type = GetCriteriaClass(criteria);
 			SearchFactory searchFactory = SearchFactory.GetSearchFactory(GetSession(criteria));
