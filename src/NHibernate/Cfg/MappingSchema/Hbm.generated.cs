@@ -3428,6 +3428,42 @@ namespace NHibernate.Cfg.MappingSchema {
         public bool cachemodeSpecified;
         
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool cacheable;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool cacheableSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("cache-region")]
+        public string cacheregion;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("fetch-size")]
+        public int fetchsize;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool fetchsizeSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int timeout;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool timeoutSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("read-only")]
+        public bool @readonly;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool readonlySpecified;
+        
+        /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text;
     }
@@ -3445,6 +3481,10 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("never")]
         Never,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("always")]
+        Always,
     }
     
     /// <remarks/>
@@ -3518,6 +3558,50 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool cachemodeSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool callable;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool callableSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("read-only")]
+        public bool @readonly;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool readonlySpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int timeout;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool timeoutSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("fetch-size")]
+        public int fetchsize;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool fetchsizeSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("cache-region")]
+        public string cacheregion;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool cacheable;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool cacheableSpecified;
     }
     
     /// <remarks/>

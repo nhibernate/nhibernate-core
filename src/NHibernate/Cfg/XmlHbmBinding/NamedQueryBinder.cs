@@ -25,21 +25,24 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			log.DebugFormat("Named query: {0} -> {1}", queryName, queryText);
 
-			bool cacheable = false;
-			string region = null;
-			int timeout = -1;
-			int fetchSize = -1;
-			bool readOnly = true;
+			bool cacheable = querySchema.cacheableSpecified ? querySchema.cacheable : false;
+			string region = querySchema.cacheregion;
+			int timeout = querySchema.timeoutSpecified ? querySchema.timeout : RowSelection.NoValue;
+			int fetchSize = querySchema.fetchsizeSpecified ? querySchema.fetchsize : -1;
+			bool readOnly = querySchema.readonlySpecified ? querySchema.@readonly : false;
 			string comment = null;
+
 			FlushMode flushMode = FlushModeConverter.GetFlushMode(querySchema);
 			CacheMode? cacheMode = (querySchema.cachemodeSpecified)
-			                       	? CacheModeConverter.GetCacheMode(querySchema.cachemode)
-			                       	: null;
+										? CacheModeConverter.GetCacheMode(querySchema.cachemode)
+										: null;
+
+
 
 			IDictionary parameterTypes = new SequencedHashMap();
 
 			NamedQueryDefinition namedQuery = new NamedQueryDefinition(queryText, cacheable, region, timeout,
-				fetchSize, flushMode, readOnly, comment, parameterTypes);
+				fetchSize, flushMode, cacheMode, readOnly, comment, parameterTypes);
 
 			mappings.AddQuery(queryName, namedQuery);
 		}

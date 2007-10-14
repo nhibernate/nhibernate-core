@@ -29,6 +29,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				case HbmFlushMode.Never:
 					return FlushMode.Never;
 
+				case HbmFlushMode.Always:
+					return FlushMode.Always;
+
 				default:
 					throw new ArgumentOutOfRangeException("flushMode");
 			}

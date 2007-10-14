@@ -37,6 +37,7 @@
 			<xs:enumeration value="auto" />
 			<xs:enumeration value="never" />
 			<!-- <xs:enumeration value="always" /> - not implemented yet -->
+			<xs:enumeration value="always" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="cascadeStyle">
@@ -1044,6 +1045,11 @@
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
 			<xs:attribute name="cache-mode" type="cacheMode" />
+			<xs:attribute name="cacheable" type="xs:boolean" />
+			<xs:attribute name="cache-region" type="xs:string" />
+			<xs:attribute name="fetch-size" type="xs:int" />
+			<xs:attribute name="timeout" type="xs:int" />
+			<xs:attribute name="read-only" type="xs:boolean" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="return">
@@ -1121,6 +1127,12 @@
 			<xs:attribute name="resultset-ref" type="xs:string" use="optional" />
 			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
 			<xs:attribute name="cache-mode" type="cacheMode" />
+			<xs:attribute name="callable" type="xs:boolean" />
+			<xs:attribute name="read-only" type="xs:boolean" />
+			<xs:attribute name="timeout" type="xs:int" />
+			<xs:attribute name="fetch-size" type="xs:int" />
+			<xs:attribute name="cache-region" type="xs:string" />
+			<xs:attribute name="cacheable" type="xs:boolean" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="list">
