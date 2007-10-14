@@ -101,7 +101,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
 		/// <param name="type">The Hibernate type of the values</param>
-		IDetachedQuery SetParameterList(string name, IEnumerable vals, IType type);
+		IDetachedQuery SetParameterList(string name, ICollection vals, IType type);
 
 		/// <summary>
 		/// Bind multiple values to a named query parameter, guessing the Hibernate
@@ -110,7 +110,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
-		IDetachedQuery SetParameterList(string name, IEnumerable vals);
+		IDetachedQuery SetParameterList(string name, ICollection vals);
 
 		/// <summary>
 		/// Bind the property values of the given object to named parameters of the query,

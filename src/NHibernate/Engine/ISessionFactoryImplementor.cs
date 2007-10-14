@@ -2,6 +2,7 @@ using System.Data;
 using NHibernate.Cache;
 using NHibernate.Context;
 using NHibernate.Dialect.Function;
+using NHibernate.Engine.Query;
 using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -77,6 +78,9 @@ namespace NHibernate.Engine
 		/// <param name="queryString"></param>
 		/// <returns></returns>
 		IType[] GetReturnTypes(string queryString);
+
+		/// <summary> Get the return aliases of a query</summary>
+		string[] GetReturnAliases(string queryString);
 
 		/// <summary>
 		/// Get the names of all persistent classes that implement/extend the given interface/class
@@ -217,5 +221,8 @@ namespace NHibernate.Engine
 
 		/// <summary> Statistics SPI</summary>
 		IStatisticsImplementor StatisticsImplementor { get;}
+
+		QueryPlanCache QueryPlanCache { get;}
+
 	}
 }

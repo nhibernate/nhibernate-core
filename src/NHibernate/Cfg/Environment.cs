@@ -110,6 +110,10 @@ namespace NHibernate.Cfg
 		public const string UseMinimalPuts = "cache.use_minimal_puts";
 		public const string QuerySubstitutions = "query.substitutions";
 
+		/// <summary> Should named queries be checked during startup (the default is enabled). </summary>
+		/// <remarks>Mainly intended for test environments.</remarks>
+		public const string QueryStartupChecking = "query.startup_check";
+
 		/// <summary> Enable statistics collection</summary>
 		public const string GenerateStatistics = "generate_statistics";
 

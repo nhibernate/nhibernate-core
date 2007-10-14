@@ -205,7 +205,12 @@ namespace NHibernate.Stat
 
 		public string[] Queries
 		{
-			get { return ArrayHelper.ToStringArray(queryStatistics.Keys); }
+			get
+			{
+				string[] result = new string[queryStatistics.Keys.Count];
+				queryStatistics.Keys.CopyTo(result,0);
+				return result;
+			}
 		}
 
 		public string[] EntityNames
@@ -214,7 +219,9 @@ namespace NHibernate.Stat
 			{
 				if (sessionFactory == null)
 				{
-					return ArrayHelper.ToStringArray(entityStatistics.Keys);
+					string[] result = new string[entityStatistics.Keys.Count];
+					entityStatistics.Keys.CopyTo(result, 0);
+					return result;
 				}
 				else
 				{
@@ -229,7 +236,9 @@ namespace NHibernate.Stat
 			{
 				if (sessionFactory == null)
 				{
-					return ArrayHelper.ToStringArray(collectionStatistics.Keys);
+					string[] result = new string[collectionStatistics.Keys.Count];
+					collectionStatistics.Keys.CopyTo(result, 0);
+					return result;
 				}
 				else
 				{
@@ -244,7 +253,9 @@ namespace NHibernate.Stat
 			{
 				if (sessionFactory == null)
 				{
-					return ArrayHelper.ToStringArray(secondLevelCacheStatistics.Keys);
+					string[] result = new string[secondLevelCacheStatistics.Keys.Count];
+					secondLevelCacheStatistics.Keys.CopyTo(result, 0);
+					return result;
 				}
 				else
 				{

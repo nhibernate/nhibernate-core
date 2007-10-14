@@ -116,7 +116,7 @@
 		<return alias="emp" class="Employment"/>
 		SELECT EMPLOYEE AS {emp.Employee}, EMPLOYER AS {emp.Employer},
 		STARTDATE AS {emp.StartDate}, ENDDATE AS {emp.EndDate},
-		REGIONCODE as {emp.RegionCode}, EMPID AS {emp.Id}
+		REGIONCODE as {emp.RegionCode}, EMPID AS {emp.employmentId}
 		FROM EMPLOYMENT
 		WHERE EMPID = ?
 	</sql-query>
@@ -144,7 +144,7 @@
 		<synchronize table="EMPLOYMENT"/>
 		SELECT EMPLOYEE AS {emp.Employee}, EMPLOYER AS {emp.Employer},
 		STARTDATE AS {emp.StartDate}, ENDDATE AS {emp.EndDate},
-		REGIONCODE as {emp.RegionCode}, EMPID AS {emp.Id}, VALUE, CURRENCY
+		REGIONCODE as {emp.RegionCode}, EMPID AS {emp.employmentId}, VALUE, CURRENCY
 		FROM EMPLOYMENT
 		WHERE EMPLOYER = :id AND ENDDATE IS NULL
 		ORDER BY STARTDATE ASC

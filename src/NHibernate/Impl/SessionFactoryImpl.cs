@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-
+using System.Text;
 using Iesi.Collections;
 
 using log4net;
@@ -15,6 +15,8 @@ using NHibernate.Connection;
 using NHibernate.Context;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
+using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Id;
@@ -159,6 +161,8 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private StatisticsImpl statistics;
 
+		private QueryPlanCache queryPlanCache;
+
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryImpl));
@@ -166,6 +170,7 @@ namespace NHibernate.Impl
 		private void Init()
 		{
 			statistics = new StatisticsImpl(this);
+			queryPlanCache = new QueryPlanCache(this);
 		}
 
 		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings, EventListeners listeners)
@@ -363,6 +368,22 @@ namespace NHibernate.Impl
 				queryCaches = null;
 			}
 
+			//checking for named queries
+			if (settings.IsNamedQueryStartupCheckingEnabled)
+			{
+				IDictionary<string, HibernateException> errors = CheckNamedQueries();
+				if (errors.Count > 0)
+				{
+					StringBuilder failingQueries = new StringBuilder("Errors in named queries: ");
+					foreach (KeyValuePair<string, HibernateException> pair in errors)
+					{
+						failingQueries.Append('{').Append(pair.Key).Append('}');
+						log.Error("Error in named query: " + pair.Key, pair.Value);
+					}
+					throw new HibernateException(failingQueries.ToString());
+				}
+			}
+
 			Statistics.IsStatisticsEnabled = settings.IsStatisticsEnabled;
 
 			// EntityNotFoundDelegate
@@ -372,6 +393,74 @@ namespace NHibernate.Impl
 				enfd = new DefaultEntityNotFoundDelegate();
 			}
 			entityNotFoundDelegate = enfd;
+		}
+
+		private IDictionary<string, HibernateException> CheckNamedQueries()
+		{
+			IDictionary<string, HibernateException> errors = new Dictionary<string, HibernateException>();
+
+			// Check named HQL queries
+			log.Debug("Checking " + namedQueries.Count + " named HQL queries");
+			foreach (KeyValuePair<string, NamedQueryDefinition> entry in namedQueries)
+			{
+				string queryName = entry.Key;
+				NamedQueryDefinition qd = entry.Value;
+				// this will throw an error if there's something wrong.
+				try
+				{
+					log.Debug("Checking named query: " + queryName);
+					//TODO: BUG! this currently fails for named queries for non-POJO entities
+					queryPlanCache.GetHQLQueryPlan(qd.QueryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>());
+				}
+				catch (QueryException e)
+				{
+					errors[queryName] = e;
+				}
+				catch (MappingException e)
+				{
+					errors[queryName] = e;
+				}
+			}
+
+			log.Debug("Checking " + namedSqlQueries.Count + " named SQL queries");
+			foreach (KeyValuePair<string, NamedSQLQueryDefinition> entry in namedSqlQueries)
+			{
+				string queryName = entry.Key;
+				NamedSQLQueryDefinition qd = entry.Value;
+				// this will throw an error if there's something wrong.
+				try
+				{
+					log.Debug("Checking named SQL query: " + queryName);
+					// TODO : would be really nice to cache the spec on the query-def so as to not have to re-calc the hash;
+					// currently not doable though because of the resultset-ref stuff...
+					NativeSQLQuerySpecification spec;
+					if (qd.ResultSetRef != null)
+					{
+						ResultSetMappingDefinition definition = sqlResultSetMappings[qd.ResultSetRef];
+						if (definition == null)
+						{
+							throw new MappingException("Unable to find resultset-ref definition: " + qd.ResultSetRef);
+						}
+						spec = new NativeSQLQuerySpecification(qd.QueryString, definition.GetQueryReturns(), qd.QuerySpaces);
+					}
+					else
+					{
+						spec = new NativeSQLQuerySpecification(qd.QueryString, qd.QueryReturns, qd.QuerySpaces);
+					}
+					queryPlanCache.GetNativeSQLQueryPlan(spec);
+				}
+				catch (QueryException e)
+				{
+					errors[queryName] = e;
+				}
+				catch (MappingException e)
+				{
+					errors[queryName] = e;
+				}
+				
+			}
+
+			return errors;
 		}
 
 		// Emulates constant time LRU/MRU algorithms for cache
@@ -835,10 +924,9 @@ namespace NHibernate.Impl
 		/// </returns>
 		public NamedQueryDefinition GetNamedQuery(string queryName)
 		{
-			if (namedQueries.ContainsKey(queryName))
-				return namedQueries[queryName];
-			else
-				return null;
+			NamedQueryDefinition result;
+			namedQueries.TryGetValue(queryName, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -848,10 +936,9 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public NamedSQLQueryDefinition GetNamedSQLQuery(string queryName)
 		{
-			if (namedSqlQueries.ContainsKey(queryName))
-				return namedSqlQueries[queryName];
-			else
-				return null;
+			NamedSQLQueryDefinition result;
+			namedSqlQueries.TryGetValue(queryName, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -876,12 +963,13 @@ namespace NHibernate.Impl
 
 		public IType[] GetReturnTypes(String queryString)
 		{
-			string[] queries = QuerySplitter.ConcreteQueries(queryString, this);
-			if (queries.Length == 0)
-			{
-				throw new HibernateException("Query does not refer to any persistent classes: " + queryString);
-			}
-			return GetQuery(queries[0], false, new CollectionHelper.EmptyMapClass<string, IFilter>())[0].ReturnTypes;
+			return queryPlanCache.GetHQLQueryPlan(queryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>()).ReturnMetadata.ReturnTypes;
+		}
+
+		/// <summary> Get the return aliases of a query</summary>
+		public string[] GetReturnAliases(string queryString)
+		{
+			return queryPlanCache.GetHQLQueryPlan(queryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>()).ReturnMetadata.ReturnAliases;
 		}
 
 		/// <summary></summary>
@@ -1334,12 +1422,14 @@ namespace NHibernate.Impl
 
 		public ResultSetMappingDefinition GetResultSetMapping(string resultSetName)
 		{
-			return sqlResultSetMappings[resultSetName];
+			ResultSetMappingDefinition result;
+			sqlResultSetMappings.TryGetValue(resultSetName, out result);
+			return result;
 		}
 
 		public FilterDefinition GetFilterDefinition(string filterName)
 		{
-			FilterDefinition def = (FilterDefinition) filters[filterName];
+			FilterDefinition def = filters[filterName];
 			if (def == null)
 			{
 				throw new HibernateException("No such filter configured [" + filterName + "]");
@@ -1441,6 +1531,11 @@ namespace NHibernate.Impl
 		public IEntityNotFoundDelegate EntityNotFoundDelegate
 		{
 			get { return entityNotFoundDelegate; }
+		}
+
+		public QueryPlanCache QueryPlanCache
+		{
+			get { return queryPlanCache; }
 		}
 	}
 }

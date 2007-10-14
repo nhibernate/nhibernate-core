@@ -28,6 +28,7 @@ namespace NHibernate.Cfg
 		private string _sessionFactoryName;
 		private bool autoCreateSchema;
 		private bool autoDropSchema;
+		private bool namedQueryStartupCheckingEnabled;
 		//private bool autoUpdateSchema;
 		private ICacheProvider _cacheProvider;
 		private bool _queryCacheEnabled;
@@ -199,6 +200,12 @@ namespace NHibernate.Cfg
 		{
 			get { return statisticsEnabled; }
 			set { statisticsEnabled = value; }
+		}
+
+		public bool IsNamedQueryStartupCheckingEnabled
+		{
+			get { return namedQueryStartupCheckingEnabled; }
+			set { namedQueryStartupCheckingEnabled = value; }
 		}
 	}
 }

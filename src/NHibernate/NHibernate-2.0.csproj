@@ -787,7 +787,7 @@
     <Compile Include="Impl\ConnectionManager.cs" />
     <Compile Include="Impl\MultiQueryImpl.cs" />
     <Compile Include="Impl\SqlClientSqlCommandSet.cs" />
-    <Compile Include="Impl\QueryFilterImpl.cs" />
+    <Compile Include="Impl\CollectionFilterImpl.cs" />
     <Compile Include="IMultiQuery.cs" />
     <Compile Include="InvalidProxyTypeException.cs">
       <SubType>Code</SubType>

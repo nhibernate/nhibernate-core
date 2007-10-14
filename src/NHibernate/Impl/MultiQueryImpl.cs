@@ -512,7 +512,7 @@ namespace NHibernate.Impl
                 queryParameters.ValidateParameters();
                 query.VerifyParameters();
                 IQueryTranslator[] queryTranslators =
-                    session.GetQueries(query.BindParameterLists(queryParameters.NamedParameters), false);
+                    session.GetQueries(query.ExpandParameterLists(queryParameters.NamedParameters), false);
                 foreach (QueryTranslator translator in queryTranslators)
                 {
                     translators.Add(translator);

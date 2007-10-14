@@ -28,7 +28,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					string region = null;
 					int timeout = -1;
 					int fetchSize = -1;
-					bool readOnly = true;
+					bool readOnly = false;
 					string comment = null;
 					bool callable = false;
 					string resultSetRef = querySchema.resultsetref;

@@ -1,15 +1,16 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Hql.Classic;
 using NHibernate.Property;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -18,23 +19,20 @@ namespace NHibernate.Impl
 	/// </summary>
 	public abstract class AbstractQueryImpl : IQuery
 	{
-		private string queryString;
-		private IDictionary lockModes = new Hashtable(2);
-
+		private readonly string queryString;
 		private readonly ISessionImplementor session;
+		protected internal ParameterMetadata parameterMetadata;
 
-		private RowSelection selection;
-		private ArrayList values = new ArrayList(4);
-		private ArrayList types = new ArrayList(4);
-		private int positionalParameterCount = 0;
-		private ISet actualNamedParameters;
-		private IDictionary namedParameters = new Hashtable(4);
-		private IDictionary namedParameterLists = new Hashtable(4);
+		private readonly RowSelection selection;
+		private readonly ArrayList values = new ArrayList(4);
+		private readonly List<IType> types = new List<IType>(4);
+		private readonly Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(4);
+		private readonly Dictionary<string, TypedValue> namedParameterLists = new Dictionary<string, TypedValue>(4);
 		private bool cacheable;
 		private string cacheRegion;
 		private bool readOnly;
 		private static readonly object UNSET_PARAMETER = new object();
-		private static readonly object UNSET_TYPE = new object();
+		private static readonly IType UNSET_TYPE = null;
 		private object optionalId;
 		private object optionalObject;
 		private System.Type optionalEntityName;
@@ -46,41 +44,42 @@ namespace NHibernate.Impl
 		private CacheMode? cacheMode;
 		private CacheMode? sessionCacheMode;
 
-		public AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session)
+		public AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session,
+			ParameterMetadata parameterMetadata)
 		{
 			this.session = session;
 			this.queryString = queryString;
-			this.flushMode = flushMode;
 			selection = new RowSelection();
+			this.flushMode = flushMode;
 			cacheMode = null;
-			InitParameterBookKeeping();
-		}
-
-		public string QueryString
-		{
-			get { return queryString; }
-		}
-
-		protected internal IDictionary NamedParams
-		{
-			// NB The java one always returns a copy, so I'm going to reproduce that behaviour
-			get { return new Hashtable(namedParameters); }
+			this.parameterMetadata = parameterMetadata;
 		}
 
 		public bool HasNamedParameters
 		{
-			get { return actualNamedParameters.Count > 0; }
+			get { return parameterMetadata.NamedParameterNames.Count > 0; }
 		}
 
 		protected internal virtual void VerifyParameters()
 		{
-			if (actualNamedParameters.Count > namedParameters.Count + namedParameterLists.Count)
+			VerifyParameters(false);
+		}
+
+		/// <summary> 
+		/// Perform parameter validation.  Used prior to executing the encapsulated query. 
+		/// </summary>
+		/// <param name="reserveFirstParameter">
+		/// if true, the first ? will not be verified since
+		/// its needed for e.g. callable statements returning a out parameter
+		/// </param>
+		protected internal virtual void VerifyParameters(bool reserveFirstParameter)
+		{
+			if (parameterMetadata.NamedParameterNames.Count != namedParameters.Count + namedParameterLists.Count)
 			{
-				Set missingParams = new ListSet(actualNamedParameters);
+				HashedSet<string> missingParams = new HashedSet<string>(parameterMetadata.NamedParameterNames);
 				missingParams.RemoveAll(namedParameterLists.Keys);
 				missingParams.RemoveAll(namedParameters.Keys);
-				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams),
-																 QueryString);
+				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams), QueryString);
 			}
 
 			int positionalValueSpan = 0;
@@ -89,78 +88,205 @@ namespace NHibernate.Impl
 				object obj = types[i];
 				if (values[i] == UNSET_PARAMETER || obj == UNSET_TYPE)
 				{
-					throw new QueryException("Unset positional parameter at position: " + i, QueryString);
+					if (reserveFirstParameter && i == 0)
+					{
+						continue;
+					}
+					else
+					{
+						throw new QueryException("Unset positional parameter at position: " + i, QueryString);
+					}
 				}
 				positionalValueSpan += ((IType)obj).GetColumnSpan(session.Factory);
 			}
 
-			if (positionalParameterCount != positionalValueSpan)
+			if (parameterMetadata.OrdinalParameterCount != positionalValueSpan)
 			{
-				throw new QueryException(
-						string.Format("Not all positional parameters have been set. Expected {0}, set {1}", positionalParameterCount,
-													values.Count),
-						QueryString);
+				if (reserveFirstParameter && parameterMetadata.OrdinalParameterCount - 1 != positionalValueSpan)
+				{
+					throw new QueryException(
+						"Expected positional parameter count: " + (parameterMetadata.OrdinalParameterCount - 1) + ", actual parameters: "
+						+ CollectionPrinter.ToString(values), QueryString);
+				}
+				else if (!reserveFirstParameter)
+				{
+					throw new QueryException(
+						"Expected positional parameter count: " + parameterMetadata.OrdinalParameterCount + ", actual parameters: "
+						+ CollectionPrinter.ToString(values), QueryString);
+				}
 			}
 		}
 
-		protected IDictionary NamedParameterLists
+		protected internal virtual IType DetermineType(int paramPosition, object paramValue, IType defaultType)
 		{
-			get { return namedParameterLists; }
+			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1);
+			if (type == null)
+			{
+				type = defaultType;
+			}
+			return type;
 		}
 
-		protected IList Values
+		protected internal virtual IType DetermineType(int paramPosition, object paramValue)
 		{
-			get { return values; }
+			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1);
+			if (type == null)
+			{
+				type = GuessType(paramValue);
+			}
+			return type;
 		}
 
-		protected IList Types
+		protected internal virtual IType DetermineType(string paramName, object paramValue, IType defaultType)
 		{
-			get { return types; }
+			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName);
+			if (type == null)
+			{
+				type = defaultType;
+			}
+			return type;
 		}
 
-		// TODO: maybe call it RowSelection ?
-		public RowSelection Selection
+		protected internal virtual IType DetermineType(string paramName, object paramValue)
 		{
-			get { return selection; }
+			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName);
+			if (type == null)
+			{
+				type = GuessType(paramValue);
+			}
+			return type;
 		}
 
-		public IQuery SetMaxResults(int maxResults)
+		protected internal virtual IType DetermineType(string paramName, System.Type clazz)
 		{
-			selection.MaxRows = maxResults;
-			return this;
+			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName);
+			if (type == null)
+			{
+				type = GuessType(clazz);
+			}
+			return type;
 		}
 
-		public IQuery SetTimeout(int timeout)
+		/// <summary>
+		/// Guesses the <see cref="IType"/> from the <c>param</c>'s value.
+		/// </summary>
+		/// <param name="param">The object to guess the <see cref="IType"/> of.</param>
+		/// <returns>An <see cref="IType"/> for the object.</returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the <c>param</c> is null because the <see cref="IType"/>
+		/// can't be guess from a null value.
+		/// </exception>
+		private IType GuessType(object param)
 		{
-			selection.Timeout = timeout;
-			return this;
+			if (param == null)
+			{
+				throw new ArgumentNullException("param", "The IType can not be guessed for a null value.");
+			}
+
+			System.Type clazz = NHibernateProxyHelper.GuessClass(param);
+			return GuessType(clazz);
 		}
 
-		public IQuery SetFetchSize(int fetchSize)
+		/// <summary>
+		/// Guesses the <see cref="IType"/> from the <see cref="System.Type"/>.
+		/// </summary>
+		/// <param name="clazz">The <see cref="System.Type"/> to guess the <see cref="IType"/> of.</param>
+		/// <returns>An <see cref="IType"/> for the <see cref="System.Type"/>.</returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the <c>clazz</c> is null because the <see cref="IType"/>
+		/// can't be guess from a null type.
+		/// </exception>
+		private IType GuessType(System.Type clazz)
 		{
-			selection.FetchSize = fetchSize;
-			return this;
+			if (clazz == null)
+			{
+				throw new ArgumentNullException("clazz", "The IType can not be guessed for a null value.");
+			}
+
+			string typename = clazz.AssemblyQualifiedName;
+			IType type = TypeFactory.HeuristicType(typename);
+			bool serializable = (type != null && type is SerializableType);
+			if (type == null || serializable)
+			{
+				try
+				{
+					session.Factory.GetEntityPersister(clazz);
+				}
+				catch (MappingException)
+				{
+					if (serializable)
+					{
+						return type;
+					}
+					else
+					{
+						throw new HibernateException("Could not determine a type for class: " + typename);
+					}
+				}
+				return NHibernateUtil.Entity(clazz);
+			}
+			else
+			{
+				return type;
+			}
 		}
 
-		public IQuery SetFirstResult(int firstResult)
+		/// <summary> 
+		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query string!
+		/// </summary>
+		protected internal virtual string ExpandParameterLists(IDictionary namedParamsCopy)
 		{
-			selection.FirstRow = firstResult;
-			return this;
+			string query = queryString;
+			foreach (KeyValuePair<string, TypedValue> me in namedParameterLists)
+				query = ExpandParameterList(query, me.Key, me.Value, namedParamsCopy);
+
+			return query;
 		}
+
+		/// <summary> 
+		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query string!
+		/// </summary>
+		private string ExpandParameterList(string query, string name, TypedValue typedList, IDictionary namedParamsCopy)
+		{
+			ICollection vals = (ICollection)typedList.Value;
+			IType type = typedList.Type;
+			if (vals.Count == 1)
+			{
+				// short-circuit for performance...
+				IEnumerator iter = vals.GetEnumerator();
+				iter.MoveNext();
+				namedParamsCopy[name] = new TypedValue(type, iter.Current);
+				return query;
+			}
+
+			StringBuilder list = new StringBuilder(16);
+			int i = 0;
+			bool isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
+			foreach (object obj in vals)
+			{
+				if (i > 0)
+					list.Append(StringHelper.CommaSpace);
+
+				string alias = (isJpaPositionalParam ? 'x' + name : name) + i++ + StringHelper.Underscore;
+				namedParamsCopy[alias] = new TypedValue(type, obj);
+				list.Append(ParserHelper.HqlVariablePrefix).Append(alias);
+			}
+			string paramPrefix = isJpaPositionalParam ? StringHelper.SqlParameter : ParserHelper.HqlVariablePrefix;
+			return StringHelper.Replace(query, paramPrefix + name, list.ToString());
+		}
+
+		#region Parameters
 
 		public IQuery SetParameter(int position, object val, IType type)
 		{
-			if (positionalParameterCount == 0)
+			if (parameterMetadata.OrdinalParameterCount == 0)
 			{
-				throw new ArgumentOutOfRangeException(string.Format("No positional parameters in query: {0}", QueryString));
+				throw new ArgumentException("No positional parameters in query: " + QueryString);
 			}
-
-			if (position < 0 || position > positionalParameterCount - 1)
+			if (position < 0 || position > parameterMetadata.OrdinalParameterCount - 1)
 			{
-				throw new ArgumentOutOfRangeException(
-						string.Format("Positional parameter does not exists: {0} in query: {1}", position, QueryString));
+				throw new ArgumentException("Positional parameter does not exist: " + position + " in query: " + QueryString);
 			}
-
 			int size = values.Count;
 			if (position < size)
 			{
@@ -169,7 +295,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				// Put guard values in for any positions before the wanted position - allows us to detect unset parameters on validate.
+				// prepend value and type list with null for any positions before the wanted position.
 				for (int i = 0; i < position - size; i++)
 				{
 					values.Add(UNSET_PARAMETER);
@@ -183,8 +309,55 @@ namespace NHibernate.Impl
 
 		public IQuery SetParameter(string name, object val, IType type)
 		{
-			namedParameters[name] = new TypedValue(type, val);
+			if (!parameterMetadata.NamedParameterNames.Contains(name))
+			{
+				if (shouldIgnoredUnknownNamedParameters)//just ignore it
+					return this;
+				throw new ArgumentException("Parameter " + name + " does not exist as a named parameter in [" + QueryString + "]");
+			}
+			else
+			{
+				namedParameters[name] = new TypedValue(type, val);
+				return this;
+			}
+		}
+
+		public IQuery SetParameter(string name, object val)
+		{
+			if (!parameterMetadata.NamedParameterNames.Contains(name))
+			{
+				if (shouldIgnoredUnknownNamedParameters)//just ignore it
+					return this;
+			}
+
+			if (val == null)
+			{
+				IType type = parameterMetadata.GetNamedParameterExpectedType(name);
+				if (type == null)
+				{
+					throw new ArgumentNullException("val",
+																					"A type specific Set(name, val) should be called because the Type can not be guessed from a null value.");
+				}
+			}
+			else
+			{
+				SetParameter(name, val, DetermineType(name, val));
+			}
 			return this;
+		}
+
+		public IQuery SetParameter(int position, object val)
+		{
+			if (val == null)
+			{
+				throw new ArgumentNullException("val",
+																				"A type specific Set(position, val) should be called because the Type can not be guessed from a null value.");
+			}
+			else
+			{
+				SetParameter(position, val, DetermineType(position, val));
+			}
+			return this; 
 		}
 
 		public IQuery SetAnsiString(int position, string val)
@@ -403,90 +576,145 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetParameter(string name, object val)
+		public IQuery SetProperties(IDictionary map)
 		{
-			if (val == null)
+			string[] @params = NamedParameters;
+			for (int i = 0; i < @params.Length; i++)
 			{
-				throw new ArgumentNullException("val",
-																				"A type specific Set(name, val) should be called because the Type can not be guessed from a null value.");
+				string namedParam = @params[i];
+				object obj = map[namedParam];
+				if (obj == null)
+				{
+					continue;
+				}
+				System.Type retType = obj.GetType();
+				if (typeof(ICollection).IsAssignableFrom(retType))
+				{
+					SetParameterList(namedParam, (ICollection)obj);
+				}
+				else if (retType.IsArray)
+				{
+					SetParameterList(namedParam, (object[])obj);
+				}
+				else
+				{
+					SetParameter(namedParam, obj, DetermineType(namedParam, retType));
+				}
 			}
-			SetParameter(name, val, GuessType(val));
 			return this;
 		}
 
-		public IQuery SetParameter(int position, object val)
+		public IQuery SetProperties(object bean)
 		{
-			if (val == null)
+			System.Type clazz = bean.GetType();
+			string[] @params = NamedParameters;
+			for (int i = 0; i < @params.Length; i++)
 			{
-				throw new ArgumentNullException("val",
-																				"A type specific Set(position, val) should be called because the Type can not be guessed from a null value.");
-			}
-			SetParameter(position, val, GuessType(val));
-			return this;
-		}
-
-		/// <summary>
-		/// Guesses the <see cref="IType"/> from the <c>param</c>'s value.
-		/// </summary>
-		/// <param name="param">The object to guess the <see cref="IType"/> of.</param>
-		/// <returns>An <see cref="IType"/> for the object.</returns>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when the <c>param</c> is null because the <see cref="IType"/>
-		/// can't be guess from a null value.
-		/// </exception>
-		private IType GuessType(object param)
-		{
-			if (param == null)
-			{
-				throw new ArgumentNullException("param", "The IType can not be guessed for a null value.");
-			}
-
-			System.Type clazz = NHibernateProxyHelper.GuessClass(param);
-			return GuessType(clazz);
-		}
-
-		/// <summary>
-		/// Guesses the <see cref="IType"/> from the <see cref="System.Type"/>.
-		/// </summary>
-		/// <param name="clazz">The <see cref="System.Type"/> to guess the <see cref="IType"/> of.</param>
-		/// <returns>An <see cref="IType"/> for the <see cref="System.Type"/>.</returns>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when the <c>clazz</c> is null because the <see cref="IType"/>
-		/// can't be guess from a null type.
-		/// </exception>
-		private IType GuessType(System.Type clazz)
-		{
-			if (clazz == null)
-			{
-				throw new ArgumentNullException("clazz", "The IType can not be guessed for a null value.");
-			}
-
-			string typename = clazz.AssemblyQualifiedName;
-			IType type = TypeFactory.HeuristicType(typename);
-			bool serializable = (type != null && type is SerializableType);
-			if (type == null || serializable)
-			{
+				string namedParam = @params[i];
 				try
 				{
-					session.Factory.GetEntityPersister(clazz);
-				}
-				catch (MappingException)
-				{
-					if (serializable)
+					IGetter getter = ReflectHelper.GetGetter(clazz, namedParam, "property");
+					System.Type retType = getter.ReturnType;
+					object obj = getter.Get(bean);
+					if (typeof(ICollection).IsAssignableFrom(retType))
 					{
-						return type;
+						SetParameterList(namedParam, (ICollection)obj);
+					}
+					else if (retType.IsArray)
+					{
+						SetParameterList(namedParam, (Object[])obj);
 					}
 					else
 					{
-						throw new HibernateException("Could not determine a type for class: " + typename);
+						SetParameter(namedParam, obj, DetermineType(namedParam, retType));
 					}
 				}
-				return NHibernateUtil.Entity(clazz);
+				catch (PropertyNotFoundException)
+				{
+					// ignore
+				}
+			}
+			return this;
+		}
+
+		public IQuery SetParameterList(string name, ICollection vals, IType type)
+		{
+			if (!parameterMetadata.NamedParameterNames.Contains(name))
+			{
+				if (shouldIgnoredUnknownNamedParameters)//just ignore it
+					return this;
+
+				throw new ArgumentException("Parameter " + name + " does not exist as a named parameter in [" + QueryString + "]");
+			}
+			namedParameterLists[name] = new TypedValue(type, vals);
+			return this;
+		}
+
+		public IQuery SetParameterList(string name, ICollection vals)
+		{
+			if (vals == null)
+			{
+				throw new QueryException("Collection must be not null!");
+			}
+
+			if (!parameterMetadata.NamedParameterNames.Contains(name))
+			{
+				if (shouldIgnoredUnknownNamedParameters)//just ignore it
+					return this;
+			}
+
+			if (vals.Count == 0)
+			{
+				SetParameterList(name, vals, null);
 			}
 			else
 			{
-				return type;
+				IEnumerator iter = vals.GetEnumerator();
+				iter.MoveNext();
+				SetParameterList(name, vals, DetermineType(name, iter.Current));
 			}
+
+			return this;
+		}
+
+		public IQuery SetParameterList(string name, object[] vals, IType type)
+		{
+			return SetParameterList(name, new ArrayList(vals), type);
+		}
+
+		public IQuery SetParameterList(string name, object[] vals)
+		{
+			return SetParameterList(name, new ArrayList(vals));
+		}
+
+		#endregion
+
+		#region Query properties
+
+		public string QueryString
+		{
+			get { return queryString; }
+		}
+
+		protected internal IDictionary NamedParams
+		{
+			// NB The java one always returns a copy, so I'm going to reproduce that behaviour
+			get { return new Hashtable(namedParameters); }
+		}
+
+		protected IDictionary NamedParameterLists
+		{
+			get { return namedParameterLists; }
+		}
+
+		protected IList Values
+		{
+			get { return values; }
+		}
+
+		protected IList<IType> Types
+		{
+			get { return types; }
 		}
 
 		public virtual IType[] ReturnTypes
@@ -494,129 +722,136 @@ namespace NHibernate.Impl
 			get { return session.Factory.GetReturnTypes(queryString); }
 		}
 
-		public IQuery SetParameterList(string name, IEnumerable vals, IType type)
+		// TODO: maybe call it RowSelection ?
+		public RowSelection Selection
 		{
-			if (!actualNamedParameters.Contains(name))
-			{
-				if (shouldIgnoredUnknownNamedParameters)//just ignore it
-					return this;
-				throw new ArgumentOutOfRangeException(
-						string.Format("Parameter {0} does not exist as a named parameter in [{1}]", name, queryString));
-			}
+			get { return selection; }
+		}
 
-			namedParameterLists.Add(name, new TypedValue(type, vals));
+		public IQuery SetMaxResults(int maxResults)
+		{
+			selection.MaxRows = maxResults;
 			return this;
 		}
 
-		public string BindParameterLists()
+		public IQuery SetTimeout(int timeout)
 		{
-			return BindParameterLists(NamedParams);
-		}
-
-		protected internal string BindParameterLists(IDictionary namedParams)
-		{
-			string query = queryString;
-			foreach (DictionaryEntry de in namedParameterLists)
-			{
-				query = BindParameterList(query, (string)de.Key, (TypedValue)de.Value, namedParams);
-			}
-			return query;
-		}
-
-		private string BindParameterList(string queryString, string name, TypedValue typedList, IDictionary namedParams)
-		{
-			IEnumerable vals = (IEnumerable)typedList.Value;
-			IType type = typedList.Type;
-			StringBuilder list = new StringBuilder(16);
-			int i = 0;
-			foreach (object obj in vals)
-			{
-				if (i > 0)
-				{
-					list.Append(StringHelper.CommaSpace);
-				}
-				string alias = name + i++ + StringHelper.Underscore;
-				namedParams.Add(alias, new TypedValue(type, obj));
-				list.Append(ParserHelper.HqlVariablePrefix + alias);
-			}
-
-			return StringHelper.Replace(queryString, ParserHelper.HqlVariablePrefix + name, list.ToString());
-		}
-
-		public IQuery SetParameterList(string name, IEnumerable vals)
-		{
-			foreach (object obj in vals)
-			{
-				SetParameterList(name, vals, GuessType(obj));
-				break; // fairly hackish...need the type of the first object
-			}
+			selection.Timeout = timeout;
 			return this;
 		}
 
-		private void InitParameterBookKeeping()
+		public IQuery SetFetchSize(int fetchSize)
 		{
-			StringTokenizer st = new StringTokenizer(queryString, ParserHelper.HqlSeparators, true);
-			ISet result = new HashedSet();
+			selection.FetchSize = fetchSize;
+			return this;
+		}
 
-			foreach (string str in st)
-			{
-				if (str.StartsWith(ParserHelper.HqlVariablePrefix))
-				{
-					result.Add(str.Substring(1));
-				}
-			}
-
-			actualNamedParameters = result;
-			// TODO: This is weak as it doesn't take account of ? embedded in the SQL
-			positionalParameterCount = StringHelper.CountUnquoted(queryString, StringHelper.SqlParameter.ToCharArray()[0]);
+		public IQuery SetFirstResult(int firstResult)
+		{
+			selection.FirstRow = firstResult;
+			return this;
 		}
 
 		public string[] NamedParameters
 		{
 			get
 			{
-				string[] retVal = new String[actualNamedParameters.Count];
-				int i = 0;
-				foreach (string parm in actualNamedParameters)
-				{
-					retVal[i++] = parm;
-				}
-				return retVal;
+				return ArrayHelper.ToStringArray(parameterMetadata.NamedParameterNames);
 			}
 		}
 
-		public IQuery SetProperties(object bean)
-		{
-			System.Type clazz = bean.GetType();
-			foreach (string namedParam in actualNamedParameters)
-			{
-				try
-				{
-					IGetter getter = ReflectHelper.GetGetter(clazz, namedParam, "property");
-					SetParameter(namedParam, getter.Get(bean), GuessType(getter.ReturnType));
-				}
-				catch (Exception)
-				{
-				}
-			}
-			return this;
-		}
-
-		public virtual void SetLockMode(string alias, LockMode lockMode)
-		{
-			lockModes[alias] = lockMode;
-		}
-
-		public IDictionary LockModes
-		{
-			get { return lockModes; }
-		}
+		public abstract IQuery SetLockMode(string alias, LockMode lockMode);
 
 		internal protected ISessionImplementor Session
 		{
 			get { return session; }
 		}
 
+		protected RowSelection RowSelection
+		{
+			get { return selection; }
+		}
+
+		public IQuery SetCacheable(bool cacheable)
+		{
+			this.cacheable = cacheable;
+			return this;
+		}
+
+		public IQuery SetCacheRegion(string cacheRegion)
+		{
+			if (cacheRegion != null)
+				this.cacheRegion = cacheRegion.Trim();
+			return this;
+		}
+
+		public IQuery SetReadOnly(bool readOnly)
+		{
+			this.readOnly = readOnly;
+			return this;
+		}
+
+		public void SetOptionalId(object optionalId)
+		{
+			this.optionalId = optionalId;
+		}
+
+		public void SetOptionalObject(object optionalObject)
+		{
+			this.optionalObject = optionalObject;
+		}
+
+		public void SetOptionalEntityName(System.Type optionalEntityName)
+		{
+			this.optionalEntityName = optionalEntityName;
+		}
+
+		public IQuery SetFlushMode(FlushMode flushMode)
+		{
+			this.flushMode = flushMode;
+			return this;
+		}
+
+		public IQuery SetCollectionKey(object collectionKey)
+		{
+			this.collectionKey = collectionKey;
+			return this;
+		}
+
+		public IQuery SetResultTransformer(IResultTransformer transformer)
+		{
+			resultTransformer = transformer;
+			return this;
+		}
+
+		/// <summary> Override the current session cache mode, just for this query.
+		/// </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		public IQuery SetCacheMode(CacheMode cacheMode)
+		{
+			this.cacheMode = cacheMode;
+			return this;
+
+		}
+
+		public IQuery SetIgnoreUknownNamedParameters(bool ignoredUnknownNamedParameters)
+		{
+			shouldIgnoredUnknownNamedParameters = ignoredUnknownNamedParameters;
+			return this;
+		}
+
+		protected internal abstract IDictionary LockModes { get;}
+
+		#endregion
+
+		#region Execution methods
+
+		public abstract IEnumerable Enumerable();
+		public abstract IEnumerable<T> Enumerable<T>();
+		public abstract IList List();
+		public abstract void List(IList results);
+		public abstract IList<T> List<T>();
 		public T UniqueResult<T>()
 		{
 			object result = UniqueResult();
@@ -653,14 +888,9 @@ namespace NHibernate.Impl
 			return first;
 		}
 
-		protected RowSelection RowSelection
-		{
-			get { return selection; }
-		}
-
 		public virtual IType[] TypeArray()
 		{
-			return (IType[])types.ToArray(typeof(IType));
+			return types.ToArray();
 		}
 
 		public virtual object[] ValueArray()
@@ -679,7 +909,7 @@ namespace NHibernate.Impl
 					TypeArray(),
 					ValueArray(),
 					namedParams,
-					lockModes,
+					LockModes,
 					selection,
 					readOnly,
 					cacheable,
@@ -690,53 +920,6 @@ namespace NHibernate.Impl
 					optionalEntityName == null ? null : optionalEntityName.FullName,
 					optionalId,
 					resultTransformer);
-		}
-
-		public IQuery SetCacheable(bool cacheable)
-		{
-			this.cacheable = cacheable;
-			return this;
-		}
-
-		public IQuery SetCacheRegion(string cacheRegion)
-		{
-			if (cacheRegion != null)
-				this.cacheRegion = cacheRegion.Trim();
-			return this;
-		}
-
-		public IQuery SetReadOnly(bool readOnly)
-		{
-			this.readOnly = readOnly;
-			return this;
-		}
-
-		// Remaining methods of IQuery interface - left for children to implement
-		public abstract IEnumerable Enumerable();
-		public abstract IEnumerable<T> Enumerable<T>();
-		public abstract IList List();
-		public abstract void List(IList results);
-		public abstract IList<T> List<T>();
-
-		public void SetOptionalId(object optionalId)
-		{
-			this.optionalId = optionalId;
-		}
-
-		public void SetOptionalObject(object optionalObject)
-		{
-			this.optionalObject = optionalObject;
-		}
-
-		public void SetOptionalEntityName(System.Type optionalEntityName)
-		{
-			this.optionalEntityName = optionalEntityName;
-		}
-
-		public IQuery SetFlushMode(FlushMode flushMode)
-		{
-			this.flushMode = flushMode;
-			return this;
 		}
 
 		protected void Before()
@@ -767,34 +950,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IQuery SetCollectionKey(object collectionKey)
-		{
-			this.collectionKey = collectionKey;
-			return this;
-		}
-
-		public IQuery SetResultTransformer(IResultTransformer transformer)
-		{
-			this.resultTransformer = transformer;
-			return this;
-		}
-
-		/// <summary> Override the current session cache mode, just for this query.
-		/// </summary>
-		/// <param name="cacheMode">The cache mode to use. </param>
-		/// <returns> this (for method chaining) </returns>
-		public IQuery SetCacheMode(CacheMode cacheMode)
-		{
-			this.cacheMode = cacheMode;
-			return this;
-
-		}
-
-		public IQuery SetIgnoreUknownNamedParameters(bool ignoredUnknownNamedParameters)
-		{
-			this.shouldIgnoredUnknownNamedParameters = ignoredUnknownNamedParameters;
-			return this;
-		}
+		#endregion
 
 		public override string ToString()
 		{

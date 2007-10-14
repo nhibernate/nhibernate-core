@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
@@ -74,7 +75,7 @@ namespace NHibernate.Impl
 		public abstract ISession GetSession();
 		public abstract IDictionary<string, IFilter> EnabledFilters { get; }
 
-		public IQuery GetNamedSQLQuery(string name)
+		public virtual IQuery GetNamedSQLQuery(string name)
 		{
 			ErrorIfClosed();
 			NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(name);
@@ -82,12 +83,8 @@ namespace NHibernate.Impl
 			{
 				throw new MappingException("Named SQL query not known: " + name);
 			}
-			IQuery query = new SqlQueryImpl(
-				nsqlqd,
-				this //,
-				//factory.QueryPlanCache.GetSQLParameterMetadata( nsqlqd.QueryString )
-				);
-			//query.setComment( "named native SQL query " + queryName );
+			IQuery query = new SqlQueryImpl(nsqlqd, this, factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
+			//query.SetComment("named native SQL query " + name);
 			InitQuery(query, nsqlqd);
 			return query;
 		}
@@ -108,24 +105,16 @@ namespace NHibernate.Impl
 		public abstract string GuessEntityName(object entity);
 		public abstract IDbConnection Connection { get; }
 
-		public IQuery GetNamedQuery(string queryName)
+		public virtual IQuery GetNamedQuery(string queryName)
 		{
 			ErrorIfClosed();
-
 			NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
-
 			IQuery query;
-
 			if (nqd != null)
 			{
 				string queryString = nqd.QueryString;
-				query = new QueryImpl(
-					queryString,
-					nqd.FlushMode,
-					this //,
-					//GetHQLQueryPlan(queryString, false).ParameterMetadata
-					);
-				//TODO: query.Comment = "named HQL query " + queryName;
+				query = new QueryImpl(queryString, nqd.FlushMode, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
+				//query.SetComment("named HQL query " + queryName);
 			}
 			else
 			{
@@ -134,12 +123,8 @@ namespace NHibernate.Impl
 				{
 					throw new MappingException("Named query not known: " + queryName);
 				}
-				query = new SqlQueryImpl(
-					nsqlqd,
-					this //,
-					//factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString)
-					);
-				//TODO: query.Comment = "named native SQL query " + queryName;
+				query = new SqlQueryImpl(nsqlqd, this, factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
+				//query.SetComment("named native SQL query " + queryName);
 				nqd = nsqlqd;
 			}
 			InitQuery(query, nqd);
@@ -185,7 +170,7 @@ namespace NHibernate.Impl
 			if (nqd.CacheMode.HasValue) 
 				query.SetCacheMode(nqd.CacheMode.Value);
 
-			//query.SetReadOnly(nqd.IsReadOnly);
+			query.SetReadOnly(nqd.IsReadOnly);
 			//if (nqd.Comment != null)
 			//{
 			//	query.SetComment(nqd.Comment);
@@ -195,7 +180,7 @@ namespace NHibernate.Impl
 		public virtual IQuery CreateQuery(string queryString)
 		{
 			ErrorIfClosed();
-			QueryImpl query = new QueryImpl(queryString, FlushMode.Unspecified, this);
+			QueryImpl query = new QueryImpl(queryString, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
 			//query.SetComment(queryString);
 			return query;
 		}
@@ -203,9 +188,19 @@ namespace NHibernate.Impl
 		public virtual ISQLQuery CreateSQLQuery(string sql)
 		{
 			ErrorIfClosed();
-			SqlQueryImpl query = new SqlQueryImpl(sql, this);
+			SqlQueryImpl query = new SqlQueryImpl(sql, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 			//query.SetComment("dynamic native SQL query");
 			return query;
+		}
+
+		protected internal virtual HQLQueryPlan GetHQLQueryPlan(string query, bool shallow)
+		{
+			return factory.QueryPlanCache.GetHQLQueryPlan(query, shallow, EnabledFilters);
+		}
+
+		protected internal virtual NativeSQLQueryPlan GetNativeSQLQueryPlan(NativeSQLQuerySpecification spec)
+		{
+			return factory.QueryPlanCache.GetNativeSQLQueryPlan(spec);
 		}
 
 		protected static ADOException Convert(Exception sqlException, string message)

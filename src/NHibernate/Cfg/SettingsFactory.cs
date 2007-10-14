@@ -184,6 +184,10 @@ namespace NHibernate.Cfg
 				}
 			}
 
+			bool namedQueryChecking = PropertiesHelper.GetBoolean(Environment.QueryStartupChecking, properties, true);
+			log.Info("Named query checking : " + EnabledDisabled(namedQueryChecking));
+			settings.IsNamedQueryStartupCheckingEnabled = namedQueryChecking;
+
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled

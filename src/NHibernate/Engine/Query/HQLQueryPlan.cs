@@ -196,7 +196,7 @@ namespace NHibernate.Engine.Query
 			return new ParameterMetadata(ordinalParamDescriptors, namedParamDescriptorMap);
 		}
 
-		public IList PerformList(QueryParameters queryParameters, ISessionImplementor session)
+		public void PerformList(QueryParameters queryParameters, ISessionImplementor session, IList results)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -219,7 +219,7 @@ namespace NHibernate.Engine.Query
 				queryParametersToUse = queryParameters;
 			}
 
-			IList combinedResults = new ArrayList();
+			IList combinedResults = results ?? new ArrayList();
 			IdentitySet distinction = new IdentitySet();
 			int includedCount = -1;
 			for (int i = 0; i < translators.Length; i++)
@@ -229,12 +229,12 @@ namespace NHibernate.Engine.Query
 				{
 					// NOTE : firstRow is zero-based
 					int first = queryParameters.RowSelection.FirstRow == RowSelection.NoValue
-					            	? 0
-					            	: queryParameters.RowSelection.FirstRow;
+												? 0
+												: queryParameters.RowSelection.FirstRow;
 
 					int max = queryParameters.RowSelection.MaxRows == RowSelection.NoValue
-					          	? RowSelection.NoValue
-					          	: queryParameters.RowSelection.MaxRows;
+											? RowSelection.NoValue
+											: queryParameters.RowSelection.MaxRows;
 
 					int size = tmp.Count;
 					for (int x = 0; x < size; x++)
@@ -253,49 +253,76 @@ namespace NHibernate.Engine.Query
 						if (max >= 0 && includedCount > max)
 						{
 							// break the outer loop !!!
-							goto translator_loop_brk;
+							return;
 						}
 					}
 				}
 				else
-				{
 					ArrayHelper.AddAll(combinedResults, tmp);
-				}
 			}
-
-translator_loop_brk: ;
-
-			return combinedResults;
 		}
 
 		public IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session)
 		{
+			bool? many;
+			IEnumerable[] results;
+			IEnumerable result;
+
+			DoIterate(queryParameters, session, out many, out results, out result);
+
+			return (many.HasValue && many.Value) ? new JoinedEnumerable(results) : result;
+		}
+
+		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
+		{
+			bool? many;
+			IEnumerable[] results;
+			IEnumerable result;
+
+			DoIterate(queryParameters, session, out many, out results, out result);
+
+			// NH Different behavior (we need to implement the translators.GetEnumerable<T>)
+			if (many.HasValue && many.Value)
+				return new GenericJoinedEnumerable<T>(results);
+			else
+			{
+				results = new IEnumerable[] {result};
+				return new GenericJoinedEnumerable<T>(results);
+			}
+		}
+
+		private void DoIterate(QueryParameters queryParameters, IEventSource session, out bool? isMany,
+			out IEnumerable[] results, out IEnumerable result)
+		{
+			isMany = null;
+			results = null;
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("iterate: " + SourceQuery);
+				log.Debug("enumerable: " + SourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
 			if (translators.Length == 0)
 			{
-				return CollectionHelper.EmptyEnumerable;
+				result = CollectionHelper.EmptyEnumerable;
 			}
-
-			IEnumerable[] results = null;
-			bool many = translators.Length > 1;
-			if (many)
+			else
 			{
-				results = new IEnumerable[translators.Length];
-			}
-
-			IEnumerable result = null;
-			for (int i = 0; i < translators.Length; i++)
-			{
-				result = translators[i].GetEnumerable(queryParameters, session);
+				results = null;
+				bool many = translators.Length > 1;
 				if (many)
-					results[i] = result;
-			}
+				{
+					results = new IEnumerable[translators.Length];
+				}
 
-			return many ? new JoinedEnumerable(results) : result;
+				result = null;
+				for (int i = 0; i < translators.Length; i++)
+				{
+					result = translators[i].GetEnumerable(queryParameters, session);
+					if (many)
+						results[i] = result;
+				}
+				isMany = many;
+			}
 		}
 
 		public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)

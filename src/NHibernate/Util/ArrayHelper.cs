@@ -4,6 +4,7 @@ using System.Data;
 using System.Text;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -266,6 +267,11 @@ namespace NHibernate.Util
 		public static string[] ToStringArray(ICollection coll)
 		{
 			return (string[]) ToArray(coll, typeof(string));
+		}
+
+		public static string[] ToStringArray(ICollection<string> coll)
+		{
+			return new List<string>(coll).ToArray();
 		}
 
 		public static SqlType[] ToSqlTypeArray(ICollection coll)

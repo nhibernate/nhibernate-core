@@ -38,9 +38,9 @@ namespace NHibernate.Engine.Query
 			get { return ordinalDescriptors.Length; }
 		}
 
-		public ISet<string> NamedParameterNames
+		public ICollection<string> NamedParameterNames
 		{
-			get { return new HashedSet<string>(namedDescriptorMap.Keys); }
+			get { return namedDescriptorMap.Keys; }
 		}
 
 		public OrdinalParameterDescriptor GetOrdinalParameterDescriptor(int position)

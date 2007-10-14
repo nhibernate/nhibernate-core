@@ -6,6 +6,7 @@ using log4net;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Hql;
@@ -85,26 +86,15 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		public override void List(string query, QueryParameters parameters, IList results)
+		public override void List(string query, QueryParameters queryParameters, IList results)
 		{
 			ErrorIfClosed();
-
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("find: " + query);
-				parameters.LogParameters(factory);
-			}
-
-			parameters.ValidateParameters();
-			IQueryTranslator[] q = GetQueries(query, false);
-			//execute the queries and return all result lists as a single list
+			queryParameters.ValidateParameters();
+			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
 			bool success = false;
 			try
 			{
-				for (int i = q.Length - 1; i >= 0; i--)
-				{
-					ArrayHelper.AddAll(results, q[i].List(this, parameters));
-				}
+				plan.PerformList(queryParameters, this, results);
 				success = true;
 			}
 			catch (HibernateException)
@@ -120,6 +110,7 @@ namespace NHibernate.Impl
 			{
 				AfterOperation(success);
 			}
+			temporaryPersistenceContext.Clear();
 		}
 
 		private void AfterOperation(bool success)

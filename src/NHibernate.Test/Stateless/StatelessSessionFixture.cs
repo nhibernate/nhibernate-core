@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -49,13 +50,12 @@ namespace NHibernate.Test.Stateless
 					Assert.IsTrue(initVersion.HasValue);
 					tx.Commit();
 				}
+				Thread.Sleep(100); // Only to be secure that next modification have a different version
 				using (tx = ss.BeginTransaction())
 				{
 					doc.Text = "blah blah blah .... blah";
 					ss.Update(doc);
 					Assert.IsTrue(doc.LastModified.HasValue);
-					// TODO: initVersion and doc.LastModified are not always different here
-					// even when nothing is wrong
 					Assert.AreNotEqual(initVersion, doc.LastModified); 
 					tx.Commit();
 				}

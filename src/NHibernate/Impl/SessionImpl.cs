@@ -8,6 +8,7 @@ using Iesi.Collections;
 using log4net;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Hql;
@@ -386,30 +387,18 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		public override void List(string query, QueryParameters parameters, IList results)
+		public override void List(string query, QueryParameters queryParameters, IList results)
 		{
 			ErrorIfClosed();
+			queryParameters.ValidateParameters();
+			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+			AutoFlushIfRequired(plan.QuerySpaces);
 
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("find: " + query);
-				parameters.LogParameters(factory);
-			}
-
-			parameters.ValidateParameters();
-
-			IQueryTranslator[] q = GetQueries(query, false);
-
-			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-
-			//execute the queries and return all result lists as a single list
 			bool success = false;
+			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 			try
 			{
-				for (int i = q.Length - 1; i >= 0; i--)
-				{
-					ArrayHelper.AddAll(results, q[i].List(this, parameters));
-				}
+				plan.PerformList(queryParameters, this, results);
 				success = true;
 			}
 			catch (HibernateException)
@@ -458,44 +447,17 @@ namespace NHibernate.Impl
 			return Enumerable(query, new QueryParameters(types, values));
 		}
 
-		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters parameters)
+		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
 		{
 			ErrorIfClosed();
-
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("GetEnumerable: " + query);
-				parameters.LogParameters(factory);
-			}
-
-			IQueryTranslator[] q = GetQueries(query, true);
-
-			if (q.Length == 0)
-			{
-				return new List<T>();
-			}
-
-			IEnumerable[] results = new IEnumerable[q.Length];
+			queryParameters.ValidateParameters();
+			HQLQueryPlan plan = GetHQLQueryPlan(query, true);
+			AutoFlushIfRequired(plan.QuerySpaces);
 
 			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-			//execute the queries and return all results as a single enumerable
 			try
 			{
-				for (int i = 0; i < q.Length; i++)
-				{
-					results[i] = q[i].GetEnumerable(parameters, this);
-				}
-
-				return new GenericJoinedEnumerable<T>(results);
-			}
-			catch (HibernateException)
-			{
-				// Do not call Convert on HibernateExceptions
-				throw;
-			}
-			catch (Exception sqle)
-			{
-				throw Convert(sqle, "Could not execute query");
+				return plan.PerformIterate<T>(queryParameters, this);
 			}
 			finally
 			{
@@ -503,57 +465,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IEnumerable Enumerable(string query, QueryParameters parameters)
+		public override IEnumerable Enumerable(string query, QueryParameters queryParameters)
 		{
 			ErrorIfClosed();
-
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("GetEnumerable: " + query);
-				parameters.LogParameters(factory);
-			}
-
-			IQueryTranslator[] q = GetQueries(query, true);
-
-			if (q.Length == 0)
-			{
-				return new ArrayList();
-			}
-
-			IEnumerable result = null;
-			IEnumerable[] results = null;
-			bool many = q.Length > 1;
-			if (many)
-			{
-				results = new IEnumerable[q.Length];
-			}
+			queryParameters.ValidateParameters();
+			HQLQueryPlan plan = GetHQLQueryPlan(query, true);
+			AutoFlushIfRequired(plan.QuerySpaces);
 
 			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-			//execute the queries and return all results as a single enumerable
 			try
 			{
-				for (int i = 0; i < q.Length; i++)
-				{
-					try
-					{
-						result = q[i].GetEnumerable(parameters, this);
-					}
-					catch (HibernateException)
-					{
-						// Do not call Convert on HibernateExceptions
-						throw;
-					}
-					catch (Exception sqle)
-					{
-						throw Convert(sqle, "Could not execute query");
-					}
-					if (many)
-					{
-						results[i] = result;
-					}
-				}
-
-				return many ? new JoinedEnumerable(results) : result;
+				return plan.PerformIterate(queryParameters, this);
 			}
 			finally
 			{
@@ -615,9 +537,67 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 
-			//Had to replace FilterImpl with version consistent with Hibernate3
-			//Changed old FilterImpl to QueryFilterImpl
-			return new QueryFilterImpl(queryString, collection, this);
+			ErrorIfClosed();
+			CollectionFilterImpl filter =
+				new CollectionFilterImpl(queryString, collection, this,
+				                         GetFilterQueryPlan(collection, queryString, null, false).ParameterMetadata);
+			//filter.SetComment(queryString);
+			return filter;
+		}
+
+		private FilterQueryPlan GetFilterQueryPlan(object collection, string filter, QueryParameters parameters, bool shallow)
+		{
+			if (collection == null)
+			{
+				throw new ArgumentNullException("collection", "null collection passed to filter");
+			}
+
+			CollectionEntry entry = persistenceContext.GetCollectionEntryOrNull(collection);
+			ICollectionPersister roleBeforeFlush = (entry == null) ? null : entry.LoadedPersister;
+
+			FilterQueryPlan plan;
+			if (roleBeforeFlush == null)
+			{
+				// if it was previously unreferenced, we need to flush in order to
+				// get its state into the database in order to execute query
+				Flush();
+				entry = persistenceContext.GetCollectionEntryOrNull(collection);
+				ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
+				if (roleAfterFlush == null)
+				{
+					throw new QueryException("The collection was unreferenced");
+				}
+				plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
+			}
+			else
+			{
+				// otherwise, we only need to flush if there are in-memory changes
+				// to the queried tables
+				plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
+				if (AutoFlushIfRequired(plan.QuerySpaces))
+				{
+					// might need to run a different filter entirely after the flush
+					// because the collection role may have changed
+					entry = persistenceContext.GetCollectionEntryOrNull(collection);
+					ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
+					if (roleBeforeFlush != roleAfterFlush)
+					{
+						if (roleAfterFlush == null)
+						{
+							throw new QueryException("The collection was dereferenced");
+						}
+						plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
+					}
+				}
+			}
+
+			if (parameters != null)
+			{
+				parameters.PositionalParameterValues[0] = entry.LoadedKey;
+				parameters.PositionalParameterTypes[0] = entry.LoadedPersister.KeyType;
+			}
+
+			return plan;
 		}
 
 		public override object Instantiate(System.Type clazz, object id)
@@ -800,6 +780,12 @@ namespace NHibernate.Impl
 		private bool AutoFlushIfRequired(ISet querySpaces)
 		{
 			ErrorIfClosed();
+			// NH different behavior (H3.2 use transaction any way)
+			//if (!TransactionInProgress)
+			//{
+			//  // do not auto-flush while outside a transaction
+			//  return false;
+			//}
 			AutoFlushEvent autoFlushEvent = new AutoFlushEvent(querySpaces, this);
 			IAutoFlushEventListener[] autoFlushEventListener = listeners.AutoFlushEventListeners;
 			for (int i = 0; i < autoFlushEventListener.Length; i++)
@@ -1361,100 +1347,16 @@ namespace NHibernate.Impl
 			return ListFilter(collection, filter, qp);
 		}
 
-		/// <summary>
-		/// 1. determine the collection role of the given collection (this may require a flush, if the collection is recorded as unreferenced)
-		/// 2. obtain a compiled filter query
-		/// 3. autoflush if necessary
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="filter"></param>
-		/// <param name="parameters"></param>
-		/// <param name="scalar"></param>
-		/// <returns></returns>
-		private IFilterTranslator GetFilterTranslator(object collection, string filter, QueryParameters parameters,
-													  bool scalar)
+		private void Filter(object collection, string filter, QueryParameters queryParameters, IList results)
 		{
-			if (collection == null)
-			{
-				throw new ArgumentNullException("collection", "null collection passed to Filter");
-			}
-
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("filter: " + filter);
-				parameters.LogParameters(factory);
-			}
-
-			CollectionEntry entry = PersistenceContext.GetCollectionEntryOrNull(collection);
-			ICollectionPersister roleBeforeFlush = (entry == null) ? null : entry.LoadedPersister;
-
-			IFilterTranslator filterTranslator;
-			if (roleBeforeFlush == null)
-			{
-				// if it was previously unreferenced, we need
-				// to flush in order to get its state into the
-				// database to query
-				Flush();
-				entry = PersistenceContext.GetCollectionEntryOrNull(collection);
-				ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
-
-				if (roleAfterFlush == null)
-				{
-					throw new QueryException("the collection was unreferenced");
-				}
-				filterTranslator = factory.GetFilter(filter, roleAfterFlush.Role, scalar, enabledFilters);
-			}
-			else
-			{
-				// otherwise, we only need to flush if there are
-				// in-memory changes to the queried tables
-				filterTranslator = factory.GetFilter(filter, roleBeforeFlush.Role, scalar, enabledFilters);
-				if (AutoFlushIfRequired(filterTranslator.QuerySpaces))
-				{
-					// might need to run a different filter entirely after the flush
-					// because the collection role may have changed
-					entry = PersistenceContext.GetCollectionEntryOrNull(collection);
-					ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
-					if (roleBeforeFlush != roleAfterFlush)
-					{
-						if (roleAfterFlush == null)
-						{
-							throw new QueryException("The collection was dereferenced");
-						}
-					}
-					filterTranslator = factory.GetFilter(filter, roleAfterFlush.Role, scalar, enabledFilters);
-				}
-			}
-
-			parameters.PositionalParameterValues[0] = entry.LoadedKey;
-			parameters.PositionalParameterTypes[0] = entry.LoadedPersister.KeyType;
-
-			return filterTranslator;
-		}
-
-		public void Filter(object collection, string filter, QueryParameters parameters, IList results)
-		{
-			string[] concreteFilters = QuerySplitter.ConcreteQueries(filter, factory);
-			IFilterTranslator[] filters = new IFilterTranslator[concreteFilters.Length];
-
-			for (int i = 0; i < concreteFilters.Length; i++)
-			{
-				filters[i] = GetFilterTranslator(
-					collection,
-					concreteFilters[i],
-					parameters,
-					false);
-			}
+			ErrorIfClosed();
+			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, false);
 
 			bool success = false;
-			dontFlushFromFind++; // stops flush being called multiple times if this method is recursively called
-
+			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 			try
 			{
-				for (int i = filters.Length - 1; i >= 0; i--)
-				{
-					ArrayHelper.AddAll(results, filters[i].List(this, parameters));
-				}
+				plan.PerformList(queryParameters, this, results);
 				success = true;
 			}
 			catch (HibernateException)
@@ -1473,107 +1375,32 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IList ListFilter(object collection, string filter, QueryParameters parameters)
+		public override IList ListFilter(object collection, string filter, QueryParameters queryParameters)
 		{
-			ArrayList results = new ArrayList();
-			Filter(collection, filter, parameters, results);
+			IList results = new ArrayList();
+			Filter(collection, filter, queryParameters, results);
 			return results;
 		}
 
-		public override IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters)
+		public override IList<T> ListFilter<T>(object collection, string filter, QueryParameters queryParameters)
 		{
 			List<T> results = new List<T>();
-			Filter(collection, filter, parameters, results);
+			Filter(collection, filter, queryParameters, results);
 			return results;
 		}
 
-		public override IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters)
+		public override IEnumerable EnumerableFilter(object collection, string filter, QueryParameters queryParameters)
 		{
-			string[] concreteFilters = QuerySplitter.ConcreteQueries(filter, factory);
-			IFilterTranslator[] filters = new IFilterTranslator[concreteFilters.Length];
-
-			for (int i = 0; i < concreteFilters.Length; i++)
-			{
-				filters[i] = GetFilterTranslator(
-					collection,
-					concreteFilters[i],
-					parameters,
-					true);
-			}
-
-			if (filters.Length == 0)
-			{
-				return new ArrayList(0);
-			}
-
-			IEnumerable result = null;
-			IEnumerable[] results = null;
-			bool many = filters.Length > 1;
-			if (many)
-			{
-				results = new IEnumerable[filters.Length];
-			}
-
-			// execute the queries and return all results as a single enumerable
-			for (int i = 0; i < filters.Length; i++)
-			{
-				try
-				{
-					result = filters[i].GetEnumerable(parameters, this);
-				}
-				catch (Exception e)
-				{
-					throw new ADOException("could not execute query", e);
-				}
-				if (many)
-				{
-					results[i] = result;
-				}
-			}
-
-			return many ? new JoinedEnumerable(results) : result;
+			ErrorIfClosed();
+			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
+			return plan.PerformIterate(queryParameters, this);
 		}
 
-		public override IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters)
+		public override IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters queryParameters)
 		{
-			string[] concreteFilters = QuerySplitter.ConcreteQueries(filter, factory);
-			IFilterTranslator[] filters = new IFilterTranslator[concreteFilters.Length];
-
-			for (int i = 0; i < concreteFilters.Length; i++)
-			{
-				filters[i] = GetFilterTranslator(
-					collection,
-					concreteFilters[i],
-					parameters,
-					true);
-			}
-
-			if (filters.Length == 0)
-			{
-				return new List<T>(0);
-			}
-
-			IEnumerable[] results = new IEnumerable[filters.Length];
-
-			// execute the queries and return all results as a single enumerable
-			for (int i = 0; i < filters.Length; i++)
-			{
-				try
-				{
-					results[i] = filters[i].GetEnumerable(parameters, this);
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "could not execute query");
-				}
-			}
-
-			return new GenericJoinedEnumerable<T>(results);
+			ErrorIfClosed();
+			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
+			return plan.PerformIterate<T>(queryParameters, this);
 		}
 
 		public ICriteria CreateCriteria(System.Type persistentClass)
@@ -1717,25 +1544,22 @@ namespace NHibernate.Impl
 			FireEvict(new EvictEvent(obj, this));
 		}
 
+		public override ISQLQuery CreateSQLQuery(string sql)
+		{
+			ErrorIfClosed();
+			return base.CreateSQLQuery(sql);
+		}
+
 		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
 		{
 			ErrorIfClosed();
-
-			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, null);
+			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 		}
 
 		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
 		{
 			ErrorIfClosed();
-
-			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, null);
-		}
-
-		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses, ICollection querySpaces)
-		{
-			ErrorIfClosed();
-
-			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, querySpaces);
+			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 		}
 
 		public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)

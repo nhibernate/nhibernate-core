@@ -76,7 +76,8 @@ namespace NHibernate.Engine.Query
 
 		private NamedParameterDescription GetOrBuildNamedParameterDescription(string name, bool jpa)
 		{
-			NamedParameterDescription desc = namedParameterDescriptions[name];
+			NamedParameterDescription desc;
+			namedParameterDescriptions.TryGetValue(name, out desc);
 			if (desc == null)
 			{
 				desc = new NamedParameterDescription(jpa);

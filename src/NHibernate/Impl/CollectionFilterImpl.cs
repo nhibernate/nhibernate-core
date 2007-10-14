@@ -1,5 +1,6 @@
 using System.Collections;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Type;
 using System.Collections.Generic;
 
@@ -8,18 +9,12 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Implementation of the <see cref="IQuery"/> interface for collection filters.
 	/// </summary>
-	public class QueryFilterImpl : QueryImpl
+	public class CollectionFilterImpl : QueryImpl
 	{
-		private object collection;
+		private readonly object collection;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="queryString"></param>
-		/// <param name="collection"></param>
-		/// <param name="session"></param>
-		public QueryFilterImpl(string queryString, object collection, ISessionImplementor session)
-			: base(queryString, FlushMode.Unspecified, session)
+		public CollectionFilterImpl(string queryString, object collection, ISessionImplementor session, ParameterMetadata parameterMetadata)
+			: base(queryString, session, parameterMetadata)
 		{
 			this.collection = collection;
 		}
@@ -28,38 +23,38 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.EnumerableFilter(collection, BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			return Session.EnumerableFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IEnumerable<T> Enumerable<T>()
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.EnumerableFilter<T>(collection, BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			return Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IList List()
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.ListFilter(collection, BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			return Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IList<T> List<T>()
 		{
 			VerifyParameters();
 			IDictionary namedParams = NamedParams;
-			return Session.ListFilter<T>(collection, BindParameterLists(namedParams), GetQueryParameters(namedParams));
+			return Session.ListFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IType[] TypeArray()
 		{
-			IList typeList = Types;
+			IList<IType> typeList = Types;
 			int size = typeList.Count;
 			IType[] result = new IType[size + 1];
 			for (int i = 0; i < size; i++)
 			{
-				result[i + 1] = (IType) typeList[i];
+				result[i + 1] = typeList[i];
 			}
 			return result;
 		}

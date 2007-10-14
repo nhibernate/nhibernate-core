@@ -16,6 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH845
 		{
 			Configuration cfg = new Configuration();
 			Assembly domain = typeof(Master).Assembly;
+			cfg.AddResource("NHibernate.DomainModel.MasterDetail.hbm.xml", domain);
 			cfg.AddResource("NHibernate.DomainModel.MultiExtends.hbm.xml", domain);
 			cfg.AddResource("NHibernate.DomainModel.Multi.hbm.xml", domain);
 			cfg.AddResource("NHibernate.DomainModel.Query.hbm.xml", domain);

@@ -14,8 +14,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		public static readonly int NoValue = -1;
 
-		// framework defaults value to 0
-		private int firstRow;
+		private int firstRow = NoValue;
 		private int maxRows = NoValue;
 		private int timeout = NoValue;
 		private int fetchSize = NoValue;
@@ -61,7 +60,7 @@ namespace NHibernate.Engine
 
 		public bool DefinesLimits
 		{
-			get { return maxRows != NoValue || (firstRow != NoValue && firstRow <= 0); }
+			get { return maxRows != NoValue || firstRow != NoValue; }
 		}
 
 	}

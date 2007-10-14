@@ -92,6 +92,7 @@
 								<xs:enumeration value="use_outer_join" />
 								<xs:enumeration value="xml.output_stylesheet" />
 								<xs:enumeration value="generate_statistics" />
+								<xs:enumeration value="query.startup_check" />
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

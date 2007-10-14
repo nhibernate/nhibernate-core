@@ -732,7 +732,6 @@ namespace NHibernate.Test.Legacy
 			s.Save(new Holder("ice cube"));
 
 			Assert.AreEqual(15, s.CreateQuery("from o in class System.Object").List().Count);
-			Console.WriteLine(s.CreateQuery("from n in class INamed").List());
 			Assert.AreEqual(7, s.CreateQuery("from n in class INamed").List().Count);
 			Assert.IsTrue(s.CreateQuery("from n in class INamed where n.Name is not null").List().Count == 4);
 

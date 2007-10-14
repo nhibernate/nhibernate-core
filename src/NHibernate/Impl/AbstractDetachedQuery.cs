@@ -30,7 +30,7 @@ namespace NHibernate.Impl
 		// Untyped Parameters
 		protected readonly Dictionary<int, object> posUntypeParams = new Dictionary<int, object>(4);
 		protected readonly Dictionary<string, object> namedUntypeParams = new Dictionary<string, object>();
-		protected readonly Dictionary<string, IEnumerable> namedUntypeListParams = new Dictionary<string, IEnumerable>(2);
+		protected readonly Dictionary<string, ICollection> namedUntypeListParams = new Dictionary<string, ICollection>(2);
 
 		// Optional parameters are used for parameters values from bean.
 		// The IQuery implementation use the actualNamedParameters to know wich property it need.
@@ -128,7 +128,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetParameterList(string name, IEnumerable vals, Type.IType type)
+		public IDetachedQuery SetParameterList(string name, ICollection vals, Type.IType type)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -136,7 +136,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetParameterList(string name, IEnumerable vals)
+		public IDetachedQuery SetParameterList(string name, ICollection vals)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -443,7 +443,7 @@ namespace NHibernate.Impl
 				q.SetParameter(nup.Key, nup.Value);
 
 			// Set untyped named parameters list
-			foreach (KeyValuePair<string, IEnumerable> nulp in namedUntypeListParams)
+			foreach (KeyValuePair<string, ICollection> nulp in namedUntypeListParams)
 				q.SetParameterList(nulp.Key, nulp.Value);
 
 			// Set typed positional parameters
@@ -456,14 +456,14 @@ namespace NHibernate.Impl
 
 			// Set typed named parameters List
 			foreach (KeyValuePair<string, TypedValue> nlp in namedListParams)
-				q.SetParameterList(nlp.Key, (IEnumerable)nlp.Value.Value, nlp.Value.Type);
+				q.SetParameterList(nlp.Key, (ICollection)nlp.Value.Value, nlp.Value.Type);
 		}
 
 		private void Reset()
 		{
 			ClearParameters();
 			lockModes.Clear();
-			selection.FirstRow = 0;
+			selection.FirstRow = RowSelection.NoValue;
 			selection.MaxRows = RowSelection.NoValue;
 			selection.Timeout = RowSelection.NoValue;
 			selection.FetchSize = RowSelection.NoValue;
@@ -538,7 +538,7 @@ namespace NHibernate.Impl
 				destination.SetParameter(nup.Key, nup.Value);
 
 			// Set untyped named parameters list
-			foreach (KeyValuePair<string, IEnumerable> nulp in namedUntypeListParams)
+			foreach (KeyValuePair<string, ICollection> nulp in namedUntypeListParams)
 				destination.SetParameterList(nulp.Key, nulp.Value);
 
 			// Set typed positional parameters
@@ -551,7 +551,7 @@ namespace NHibernate.Impl
 
 			// Set typed named parameters List
 			foreach (KeyValuePair<string, TypedValue> nlp in namedListParams)
-				destination.SetParameterList(nlp.Key, (IEnumerable)nlp.Value.Value, nlp.Value.Type);
+				destination.SetParameterList(nlp.Key, (ICollection)nlp.Value.Value, nlp.Value.Type);
 		}
 
 		void IDetachedQueryImplementor.OverrideInfoFrom(IDetachedQueryImplementor origin)
