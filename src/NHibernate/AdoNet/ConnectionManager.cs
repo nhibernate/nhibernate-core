@@ -5,7 +5,7 @@ using System.Security.Permissions;
 using log4net;
 using NHibernate.Engine;
 
-namespace NHibernate.Impl
+namespace NHibernate.AdoNet
 {
 	/// <summary>
 	/// Manages the database connection and transaction for an <see cref="ISession" />.

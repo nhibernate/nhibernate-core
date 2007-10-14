@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
-using NHibernate.Impl;
 
 namespace NHibernate.Stat
 {

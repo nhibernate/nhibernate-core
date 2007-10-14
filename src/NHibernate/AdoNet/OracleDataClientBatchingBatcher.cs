@@ -1,13 +1,9 @@
 using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Reflection;
 using System.Collections;
-using NHibernate.AdoNet;
-using NHibernate.Engine;
+using System.Data;
+using System.Reflection;
 
-namespace NHibernate.Impl
+namespace NHibernate.AdoNet
 {
 	/// <summary>
 	/// Summary description for OracleDataClientBatchingBatcher.

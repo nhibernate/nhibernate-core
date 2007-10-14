@@ -3,9 +3,10 @@ using System.Collections;
 using log4net;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 
-namespace NHibernate.Impl
+namespace NHibernate.Cache.Entry
 {
 	/// <summary>
 	/// We need an entry to tell us all about the current state
@@ -396,7 +397,7 @@ namespace NHibernate.Impl
 				           	? //|| !loadedPersister.IsMutable ? 
 				           null
 				           	:
-				           collection.GetSnapshot(loadedPersister); //re-snapshot
+				           		collection.GetSnapshot(loadedPersister); //re-snapshot
 			}
 
 			collection.PostAction();

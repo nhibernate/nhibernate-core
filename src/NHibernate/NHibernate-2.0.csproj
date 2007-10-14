@@ -210,19 +210,18 @@
     <Compile Include="Id\UUIDStringGenerator.cs" />
     <Compile Include="IInterceptor.cs" />
     <Compile Include="Impl\AbstractQueryImpl.cs" />
-    <Compile Include="Impl\BatcherImpl.cs" />
-    <Compile Include="Impl\OracleDataClientBatchingBatcher.cs" />
-    <Compile Include="Impl\SqlClientBatchingBatcher.cs" />
-    <Compile Include="Impl\CacheEntry.cs" />
-    <Compile Include="Impl\CollectionEntry.cs" />
-    <Compile Include="Impl\CollectionKey.cs" />
+    <Compile Include="AdoNet\BatcherImpl.cs" />
+    <Compile Include="AdoNet\OracleDataClientBatchingBatcher.cs" />
+    <Compile Include="AdoNet\SqlClientBatchingBatcher.cs" />
+    <Compile Include="Cache\Entry\CacheEntry.cs" />
+    <Compile Include="Cache\Entry\CollectionEntry.cs" />
+    <Compile Include="Engine\CollectionKey.cs" />
     <Compile Include="Impl\CriteriaImpl.cs" />
-    <Compile Include="Impl\EntityEntry.cs" />
+    <Compile Include="Engine\EntityEntry.cs" />
     <Compile Include="Impl\EnumerableImpl.cs" />
     <Compile Include="Impl\FilterImpl.cs" />
-    <Compile Include="Impl\IExecutable.cs" />
     <Compile Include="Impl\MessageHelper.cs" />
-    <Compile Include="Impl\NonBatchingBatcher.cs" />
+    <Compile Include="AdoNet\NonBatchingBatcher.cs" />
     <Compile Include="Impl\Printer.cs" />
     <Compile Include="Impl\QueryImpl.cs" />
     <Compile Include="Event\Default\ReattachVisitor.cs" />
@@ -230,7 +229,7 @@
     <Compile Include="Impl\SessionFactoryObjectFactory.cs" />
     <Compile Include="Impl\SessionImpl.cs" />
     <Compile Include="Impl\SqlQueryImpl.cs" />
-    <Compile Include="Impl\Status.cs" />
+    <Compile Include="Engine\Status.cs" />
     <Compile Include="InstantiationException.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="ISession.cs" />
@@ -784,9 +783,9 @@
     <Compile Include="Hql\Util\SessionFactoryHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Impl\ConnectionManager.cs" />
+    <Compile Include="AdoNet\ConnectionManager.cs" />
     <Compile Include="Impl\MultiQueryImpl.cs" />
-    <Compile Include="Impl\SqlClientSqlCommandSet.cs" />
+    <Compile Include="AdoNet\SqlClientSqlCommandSet.cs" />
     <Compile Include="Impl\CollectionFilterImpl.cs" />
     <Compile Include="IMultiQuery.cs" />
     <Compile Include="InvalidProxyTypeException.cs">

@@ -1,4 +1,5 @@
 using System.Collections;
+using NHibernate.Cache.Entry;
 
 namespace NHibernate.Cache
 {
@@ -11,7 +12,7 @@ namespace NHibernate.Cache
 	/// </para>
 	/// <para>
 	/// When used to cache entities and collections the key is the identifier of the
-	/// entity/collection and the value should be set to the <see cref="Impl.CacheEntry"/> 
+	/// entity/collection and the value should be set to the <see cref="CacheEntry"/> 
 	/// for an entity and the results of <see cref="Collection.AbstractPersistentCollection.Disassemble"/>
 	/// for a collection.
 	/// </para>

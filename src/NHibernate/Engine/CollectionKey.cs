@@ -3,7 +3,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
-namespace NHibernate.Impl
+namespace NHibernate.Engine
 {
 	[Serializable]
 	public sealed class CollectionKey

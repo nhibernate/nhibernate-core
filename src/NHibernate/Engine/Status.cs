@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.Impl
+namespace NHibernate.Engine
 {
 	/// <summary>
 	/// Represents the status of an entity with respect to 

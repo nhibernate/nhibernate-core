@@ -1,6 +1,5 @@
 using System;
 using NHibernate.Engine;
-using NHibernate.Impl;
 
 namespace NHibernate.Event.Default
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Data;
+using NHibernate.AdoNet;
 using NHibernate.SqlTypes;
-using NHibernate.Impl;
 using NHibernate.Engine;
 
 namespace NHibernate.Driver

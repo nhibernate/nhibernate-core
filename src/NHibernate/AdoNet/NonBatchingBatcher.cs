@@ -3,7 +3,7 @@ using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 
-namespace NHibernate.Impl
+namespace NHibernate.AdoNet
 {
 	/// <summary>
 	/// An implementation of the <see cref="IBatcher" /> 

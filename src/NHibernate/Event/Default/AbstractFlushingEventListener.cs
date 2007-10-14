@@ -4,12 +4,13 @@ using System.Text;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Action;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
-using Status=NHibernate.Impl.Status;
+using Status=NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {

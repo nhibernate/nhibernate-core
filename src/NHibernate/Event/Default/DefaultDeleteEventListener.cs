@@ -8,7 +8,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
-using Status=NHibernate.Impl.Status;
+using Status=NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {

@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
-using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;

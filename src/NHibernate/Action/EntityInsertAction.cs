@@ -1,8 +1,8 @@
 using System;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Engine;
 using NHibernate.Event;
-using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Action

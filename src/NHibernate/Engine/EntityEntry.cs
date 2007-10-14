@@ -2,7 +2,7 @@ using System;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
-namespace NHibernate.Impl
+namespace NHibernate.Engine
 {
 	/// <summary>
 	/// We need an entry to tell us all about the current state
@@ -79,7 +79,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <value>The identifier of the Entity in the database if one has been assigned.</value>
 		/// <remarks>This might be <see langword="null" /> when the <see cref="EntityEntry.Status"/> is 
-		/// <see cref="Impl.Status.Saving"/> and the database generates the id.</remarks>
+		/// <see cref="Engine.Status.Saving"/> and the database generates the id.</remarks>
 		public object Id
 		{
 			get { return id; }
@@ -190,9 +190,9 @@ namespace NHibernate.Impl
 			{
 				this.version = nextVersion;
 				Persister.SetPropertyValue(
-						entity,
-						Persister.VersionProperty,
-						nextVersion);
+					entity,
+					Persister.VersionProperty,
+					nextVersion);
 			}
 		}
 
@@ -216,12 +216,12 @@ namespace NHibernate.Impl
 
 		public bool IsNullifiable(bool earlyInsert, ISessionImplementor session)
 		{
-			return Status == Impl.Status.Saving || (earlyInsert ? !ExistsInDatabase : session.PersistenceContext.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister)));
+			return Status == Status.Saving || (earlyInsert ? !ExistsInDatabase : session.PersistenceContext.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister)));
 		}
 
 		public bool RequiresDirtyCheck(object entity)
 		{
-			bool isMutableInstance = status != Impl.Status.ReadOnly && persister.IsMutable;
+			bool isMutableInstance = status != Status.ReadOnly && persister.IsMutable;
 
 			return isMutableInstance;
 			// TODO H3.2 Different behaviour
@@ -234,18 +234,18 @@ namespace NHibernate.Impl
 
 		public void SetReadOnly(bool readOnly, object entity)
 		{
-			if (status != Impl.Status.Loaded && status != Impl.Status.ReadOnly)
+			if (status != Status.Loaded && status != Status.ReadOnly)
 			{
 				throw new HibernateException("instance was not in a valid state");
 			}
 			if (readOnly)
 			{
-				Status = Impl.Status.ReadOnly;
+				Status = Status.ReadOnly;
 				loadedState = null;
 			}
 			else
 			{
-				Status = Impl.Status.Loaded;
+				Status = Status.Loaded;
 				loadedState = Persister.GetPropertyValues(entity);
 			}
 		}

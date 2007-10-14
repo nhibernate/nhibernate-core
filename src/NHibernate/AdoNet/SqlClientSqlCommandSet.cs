@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace NHibernate.Impl
+namespace NHibernate.AdoNet
 {
 	/// <summary>
 	/// Expose the batch functionality in ADO.Net 2.0

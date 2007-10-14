@@ -1,11 +1,10 @@
 using System;
-using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
-namespace NHibernate.Impl
+namespace NHibernate.Cache.Entry
 {
 	/// <summary>
 	/// A cached instance of a persistent class

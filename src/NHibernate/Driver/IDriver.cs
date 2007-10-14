@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Data;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 

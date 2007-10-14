@@ -1,5 +1,6 @@
 using log4net;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Event;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;

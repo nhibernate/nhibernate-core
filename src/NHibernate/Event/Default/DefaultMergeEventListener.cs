@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using log4net;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;

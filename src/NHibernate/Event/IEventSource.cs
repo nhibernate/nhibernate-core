@@ -1,7 +1,6 @@
 using System.Collections;
 using Iesi.Collections;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
