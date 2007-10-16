@@ -472,7 +472,15 @@ namespace NHibernate.Impl
 
 		public T UniqueResult<T>()
 		{
-			return (T) UniqueResult();
+			object result = UniqueResult();
+			if (result == null && typeof(T).IsValueType)
+			{
+				return default(T);
+			}
+			else
+			{
+				return (T)result;
+			}
 		}
 
 		public IEnumerable IterateExpressionEntries()
