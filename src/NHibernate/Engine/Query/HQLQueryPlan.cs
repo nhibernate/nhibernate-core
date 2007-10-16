@@ -6,7 +6,6 @@ using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Event;
 using NHibernate.Hql;
-using NHibernate.Hql.Classic;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -46,7 +45,7 @@ namespace NHibernate.Engine.Query
 			HashedSet<string> combinedQuerySpaces = new HashedSet<string>();
 			string[] concreteQueryStrings = QuerySplitter.ConcreteQueries(hql, factory);
 			int length = concreteQueryStrings.Length;
-			translators = new QueryTranslator[length];
+			translators = new IQueryTranslator[length];
 			IList sqlStringList = new ArrayList();
 			for (int i = 0; i < length; i++)
 			{
@@ -146,11 +145,11 @@ namespace NHibernate.Engine.Query
 			get { return shallow; }
 		}
 
-		public QueryTranslator[] Translators
+		public IQueryTranslator[] Translators
 		{
 			get
 			{
-				QueryTranslator[] copy = new QueryTranslator[translators.Length];
+				IQueryTranslator[] copy = new IQueryTranslator[translators.Length];
 				Array.Copy(translators, 0, copy, 0, copy.Length);
 				return copy;
 			}
