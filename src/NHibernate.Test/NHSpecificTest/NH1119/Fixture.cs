@@ -1,7 +1,5 @@
-using NUnit.Framework;
-
 using System;
-using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1119
 {
@@ -18,15 +16,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1119
 		{
 			using (ISession s = OpenSession())
 			{
-				try
-				{
-					DateTime dt = s.CreateQuery("select max(tc.DateTimeProperty) from TestClass tc").UniqueResult<DateTime>();
-					string msg = "Calling UniqueResult<T> where T is a value type"
-						+ " should throw InvalidCastException when the result"
-						+ " is null";
-					Assert.Fail(msg);
-				}
-				catch (InvalidCastException) { }
+				DateTime dt = s.CreateQuery("select max(tc.DateTimeProperty) from TestClass tc").UniqueResult<DateTime>();
+				Assert.AreEqual(default(DateTime), dt);
 			}
 		}
 	}
