@@ -329,10 +329,10 @@ namespace NHibernate.Test.HQLFunctionTest
 			// test only the parser
 			using (ISession s = OpenSession())
 			{
-				string hql = "from Animal a where bit_length(a.BodyWeight) = 24";
+				string hql = "from Animal a where bit_length(a.Description) = 24";
 				IList result = s.CreateQuery(hql).List();
 
-				hql = "select bit_length(a.BodyWeight) from Animal a";
+				hql = "select bit_length(a.Description) from Animal a";
 				result = s.CreateQuery(hql).List();
 			}
 		}
