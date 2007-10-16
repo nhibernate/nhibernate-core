@@ -153,6 +153,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
+			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
