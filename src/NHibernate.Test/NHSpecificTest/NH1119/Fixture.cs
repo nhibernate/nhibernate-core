@@ -18,6 +18,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1119
 			{
 				DateTime dt = s.CreateQuery("select max(tc.DateTimeProperty) from TestClass tc").UniqueResult<DateTime>();
 				Assert.AreEqual(default(DateTime), dt);
+				DateTime? dtn = s.CreateQuery("select max(tc.DateTimeProperty) from TestClass tc").UniqueResult<DateTime?>();
+				Assert.IsFalse(dtn.HasValue);
 			}
 		}
 	}
