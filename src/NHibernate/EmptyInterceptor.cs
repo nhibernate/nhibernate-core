@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate
@@ -8,6 +9,18 @@ namespace NHibernate
 	public class EmptyInterceptor : IInterceptor
 	{
 		public virtual void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types)
+		{
+		}
+
+		public void OnCollectionRecreate(object collection, object key)
+		{
+		}
+
+		public void OnCollectionRemove(object collection, object key)
+		{
+		}
+
+		public void OnCollectionUpdate(object collection, object key)
 		{
 		}
 
@@ -45,6 +58,16 @@ namespace NHibernate
 			return null;
 		}
 
+		public string GetEntityName(object entity)
+		{
+			return null;
+		}
+
+		public object GetEntity(string entityName, object id)
+		{
+			return null;
+		}
+
 		public virtual int[] FindDirty(object entity, object id, object[] currentState, object[] previousState,
 		                               string[] propertyNames, IType[] types)
 		{
@@ -65,6 +88,11 @@ namespace NHibernate
 
 		public virtual void SetSession(ISession session)
 		{
+		}
+
+		public SqlString OnPrepareStatement(SqlString sql)
+		{
+			return sql;
 		}
 	}
 }

@@ -728,7 +728,11 @@ namespace NHibernate.Impl
 
 		public override string GuessEntityName(object entity)
 		{
-			string entityName = entity.GetType().FullName;
+			string entityName = interceptor.GetEntityName(entity);
+			if (entityName == null)
+			{
+				entityName = entity.GetType().FullName;
+			}
 			return entityName;
 		}
 
@@ -749,14 +753,12 @@ namespace NHibernate.Impl
 
 			if (result == null)
 			{
-				// TODO H3.2 Not ported
-				//object newObject = interceptor.GetEntity(key.EntityName, key.Identifier);
-				//if (newObject != null)
-				//{
-				//  Lock(newObject, LockMode.None);
-				//}
-				//return newObject;
-				return null;
+				object newObject = interceptor.GetEntity(key.MappedClass.FullName, key.Identifier);
+				if (newObject != null)
+				{
+					Lock(newObject, LockMode.None);
+				}
+				return newObject;
 			}
 			else
 			{

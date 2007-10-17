@@ -548,5 +548,16 @@ namespace NHibernate.AdoNet
 		}
 
 		#endregion
+
+		//protected SqlString GetSQL(SqlString sql)
+		//{
+		//  sql = interceptor.OnPrepareStatement(sql);
+		//  if (sql == null || sql.Length == 0)
+		//  {
+		//    throw new AssertionFailure("Interceptor.onPrepareStatement() returned null or empty string.");
+		//  }
+		//  return sql;
+		//}
+
 	}
 }

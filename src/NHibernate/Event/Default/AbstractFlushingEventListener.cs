@@ -118,17 +118,17 @@ namespace NHibernate.Event.Default
 				// todo-events : change the Interceptor interface and uncomment lines below
 				if (ce.IsDorecreate)
 				{
-					//session.Interceptor.OnCollectionRecreate(coll, ce.CurrentKey);
+					session.Interceptor.OnCollectionRecreate(coll, ce.CurrentKey);
 					actionQueue.AddAction(new CollectionRecreateAction(coll, ce.CurrentPersister, ce.CurrentKey, session));
 				}
 				if (ce.IsDoremove)
 				{
-					//session.Interceptor.OnCollectionRemove(coll, ce.LoadedKey);
+					session.Interceptor.OnCollectionRemove(coll, ce.LoadedKey);
 					actionQueue.AddAction(new CollectionRemoveAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
 				}
 				if (ce.IsDoupdate)
 				{
-					//session.Interceptor.OnCollectionUpdate(coll, ce.LoadedKey);
+					session.Interceptor.OnCollectionUpdate(coll, ce.LoadedKey);
 					actionQueue.AddAction(new CollectionUpdateAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
 				}
 			}

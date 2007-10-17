@@ -1,4 +1,5 @@
 using System.Collections;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate
@@ -83,7 +84,12 @@ namespace NHibernate
 		/// It is not recommended that the interceptor modify the <c>state</c>.
 		/// </remarks>
 		void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types);
-
+		/// <summary> Called before a collection is (re)created.</summary>
+		void OnCollectionRecreate(object collection, object key);
+		/// <summary> Called before a collection is deleted.</summary>
+		void OnCollectionRemove(object collection, object key);
+		/// <summary> Called before a collection is updated.</summary>
+		void OnCollectionUpdate(object collection, object key);
 		/// <summary>
 		/// Called before a flush
 		/// </summary>
@@ -141,6 +147,16 @@ namespace NHibernate
 		/// <returns>An instance of the class, or <see langword="null" /> to choose default behaviour</returns>
 		object Instantiate(System.Type type, object id);
 
+		/// <summary> Get the entity name for a persistent or transient instance</summary>
+		/// <param name="entity">an entity instance </param>
+		/// <returns> the name of the entity </returns>
+		string GetEntityName(object entity);
+		/// <summary> Get a fully loaded entity instance that is cached externally</summary>
+		/// <param name="entityName">the name of the entity </param>
+		/// <param name="id">the instance identifier </param>
+		/// <returns> a fully initialized entity </returns>
+		object GetEntity(string entityName, object id);
+
 		/// <summary>
 		/// Called when a NHibernate transaction is begun via the NHibernate <see cref="ITransaction" />
 		/// API. Will not be called if transactions are being controlled via some other mechanism.
@@ -162,5 +178,11 @@ namespace NHibernate
 		/// to a session
 		/// </summary>
 		void SetSession(ISession session);
+
+		/// <summary> Called when sql string is being prepared. </summary>
+		/// <param name="sql">sql to be prepared </param>
+		/// <returns> original or modified sql </returns>
+		/// <remarks>Not used yet</remarks>
+		SqlString OnPrepareStatement(SqlString sql);
 	}
 }
