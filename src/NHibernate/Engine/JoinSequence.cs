@@ -184,6 +184,14 @@ namespace NHibernate.Engine
 				{
 					condition = on;
 				}
+				//Start NH1179 ************
+				if (string.IsNullOrEmpty(condition))
+				{
+					string filterCondition = join.Joinable.FilterFragment(join.Alias, enabledFilters);
+					joinFragment.HasFilterCondition = joinFragment.AddCondition(filterCondition);
+				}
+				//End   NH1179 ************
+
 				if (withClauseFragment != null)
 				{
 					if (join.Alias.Equals(withClauseJoinAlias))
