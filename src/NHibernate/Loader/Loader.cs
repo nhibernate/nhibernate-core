@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Runtime.CompilerServices;
 using Iesi.Collections;
 using log4net;
+using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -41,7 +43,7 @@ namespace NHibernate.Loader
 		private static readonly ILog log = LogManager.GetLogger(typeof(Loader));
 
 		private readonly ISessionFactoryImplementor factory;
-		// TODO: private ColumnNameCache columnNameCache;
+		private ColumnNameCache columnNameCache;
 
 		public Loader(ISessionFactoryImplementor factory)
 		{
@@ -312,7 +314,7 @@ namespace NHibernate.Loader
 				//TODO: the i==entitySpan-1 bit depends upon subclass implementation (very bad)
 			}
 
-			RegisterNonExists(keys, persisters, session);
+			RegisterNonExists(keys, session);
 
 			// this call is side-effecty
 			object[] row = GetRow(
@@ -680,11 +682,7 @@ namespace NHibernate.Loader
 		/// result set, register the fact that the the object is missing with the
 		/// session.
 		/// </summary>
-		private void RegisterNonExists(
-			EntityKey[] keys,
-			ILoadable[] persisters,
-			ISessionImplementor session
-			)
+		private void RegisterNonExists(EntityKey[] keys,ISessionImplementor session)
 		{
 			int[] owners = Owners;
 			if (owners != null)
@@ -698,9 +696,8 @@ namespace NHibernate.Loader
 						EntityKey ownerKey = keys[owner];
 						if (keys[i] == null && ownerKey != null)
 						{
-							bool isOneToOneAssociation = ownerAssociationTypes != null &&
-							                            ownerAssociationTypes[i] != null &&
-							                            ownerAssociationTypes[i].IsOneToOne;
+							bool isOneToOneAssociation = ownerAssociationTypes != null && ownerAssociationTypes[i] != null
+							                             && ownerAssociationTypes[i].IsOneToOne;
 							if (isOneToOneAssociation)
 							{
 								session.PersistenceContext.AddNullProperty(ownerKey, ownerAssociationTypes[i].PropertyName);
@@ -1125,40 +1122,6 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Unmarshall the fields of a persistent instance from a result set,
-		/// without resolving associations or collections
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="id"></param>
-		/// <param name="obj"></param>
-		/// <param name="persister"></param>
-		/// <param name="session"></param>
-		/// <param name="suffixedPropertyColumns"></param>
-		/// <returns></returns>
-		private object[] Hydrate(
-			IDataReader rs,
-			object id,
-			object obj,
-			ILoadable persister,
-			ISessionImplementor session,
-			string[][] suffixedPropertyColumns)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("Hydrating entity: " + persister.ClassName + '#' + id);
-			}
-
-			IType[] types = persister.PropertyTypes;
-			object[] values = new object[types.Length];
-
-			for (int i = 0; i < types.Length; i++)
-			{
-				values[i] = types[i].Hydrate(rs, suffixedPropertyColumns[i], session, obj);
-			}
-			return values;
-		}
-
-		/// <summary>
 		/// Advance the cursor to the first required row of the <c>IDataReader</c>
 		/// </summary>
 		/// <param name="rs"></param>
@@ -1403,8 +1366,9 @@ namespace NHibernate.Loader
 			try
 			{
 				log.Info(st.CommandText);
-				// TODO: Add WrapResultSetIfEnabled below
+
 				rs = session.Batcher.ExecuteReader(st);
+				rs = WrapResultSetIfEnabled(rs, session);
 
 				Dialect.Dialect dialect = session.Factory.Dialect;
 				if (!dialect.SupportsLimitOffset || !UseLimit(selection, dialect))
@@ -1422,36 +1386,41 @@ namespace NHibernate.Loader
 			}
 		}
 
-		/* TODO:
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IDataReader WrapDataReaderIfEnabled( IDataReader rs, ISessionImplementor session )
+		private IDataReader WrapResultSetIfEnabled(IDataReader rs, ISessionImplementor session)
 		{
-			if( session.Factory.IsWrapResultSetsEnabled )
+			// synchronized to avoid multi-thread access issues; defined as method synch to avoid
+			// potential deadlock issues due to nature of code.
+			if (session.Factory.Settings.WrapResultSetsEnabled)
 			{
 				try
 				{
-					log.Debug( "Wrapping data reader [" + rs + "]" );
-					return new DataReaderWrapper( rs, RetrieveColumnNameToIndexCache( rs ) );
+					log.Debug("Wrapping result set [" + rs + "]");
+					return new ResultSetWrapper(rs, RetreiveColumnNameToIndexCache(rs));
 				}
-				catch( Exception e )
+				catch (Exception e)
 				{
-					log.Info( "Error wrapping result set; using naked result set", e );
+					log.Info("Error wrapping result set", e);
+					return rs;
 				}
 			}
-			return rs;
+			else
+			{
+				return rs;
+			}
 		}
 
-		private ColumnNameCache RetrieveColumnNameToIndexCache( IDataReader rs )
+		private ColumnNameCache RetreiveColumnNameToIndexCache(IDataReader rs)
 		{
-			if( columnNameCache == null )
+			if (columnNameCache == null)
 			{
-				log.Debug( "Building columnName->columnIndex cache" );
-				columnNameCache = ColumnNameCache.Construct( rs.GetSchemaTable() );
+				log.Debug("Building columnName->columnIndex cache");
+				columnNameCache = new ColumnNameCache(rs.GetSchemaTable().Rows.Count);
 			}
 
 			return columnNameCache;
 		}
-		*/
+
 
 		/// <summary>
 		/// Bind named parameters to the <c>IDbCommand</c>

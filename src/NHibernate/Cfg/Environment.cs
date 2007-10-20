@@ -127,20 +127,19 @@ namespace NHibernate.Cfg
 		// Unused, not implemented
 		public const string SqlExceptionConverter = "sql_exception_converter";
 
-		// Unused, not implemented
-		public const string WrapResultSets = "wrap_result_sets";
+		public const string WrapResultSets = "adonet.wrap_result_sets";
+		public const string BatchSize = "adonet.batch_size";
 
 		// NHibernate-specific properties
 		public const string PrepareSql = "prepare_sql";
 		public const string CommandTimeout = "command_timeout";
-		public const string BatchSize = "adonet.batch_size";
 
 		public const string PropertyBytecodeProvider = "bytecode.provider";
 		public const string PropertyUseReflectionOptimizer = "use_reflection_optimizer";
 
 		public const string UseProxyValidator = "use_proxy_validator";
 
-		private static Dictionary<string, string> GlobalProperties;
+		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;

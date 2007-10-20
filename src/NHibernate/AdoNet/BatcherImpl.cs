@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using Iesi.Collections;
@@ -9,6 +10,7 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.AdoNet
 {
@@ -33,7 +35,7 @@ namespace NHibernate.AdoNet
 		private SqlString batchCommandSql;
 
 		private ISet commandsToClose = new HashedSet();
-		private ISet readersToClose = new HashedSet();
+		private readonly ISet<IDataReader> readersToClose = new HashedSet<IDataReader>();
 		private IDbCommand lastQuery;
 
 		private bool releasing;
@@ -281,7 +283,8 @@ namespace NHibernate.AdoNet
 			{
 				if (reader != null)
 				{
-					readersToClose.Remove(reader);
+					ResultSetWrapper rsw = reader as ResultSetWrapper;
+					readersToClose.Remove(rsw == null ? reader : rsw.Target);
 					CloseReader(reader);
 				}
 			}

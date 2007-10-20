@@ -163,8 +163,13 @@ namespace NHibernate.Cfg
 
 			string sessionFactoryName = (string) properties[Environment.SessionFactoryName];
 
+			//ADO.NET and connection settings:
+
 			// TODO: Environment.BatchVersionedData
-			// TODO: wrapResultSets/DataReaders
+			settings.BatchSize = PropertiesHelper.GetInt32(Environment.BatchSize, properties, 0);
+			bool wrapResultSets = PropertiesHelper.GetBoolean(Environment.WrapResultSets, properties, false);
+			log.Debug("Wrap result sets: " + EnabledDisabled(wrapResultSets));
+			settings.WrapResultSetsEnabled = wrapResultSets;
 
 			string isolationString = PropertiesHelper.GetString(Environment.Isolation, properties, String.Empty);
 			IsolationLevel isolation = IsolationLevel.Unspecified;
@@ -191,7 +196,6 @@ namespace NHibernate.Cfg
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled
-			settings.BatchSize = PropertiesHelper.GetInt32(Environment.BatchSize, properties, 0);
 			settings.DefaultSchemaName = defaultSchema;
 			settings.IsShowSqlEnabled = showSql;
 			settings.Dialect = dialect;
@@ -207,7 +211,6 @@ namespace NHibernate.Cfg
 			settings.IsMinimalPutsEnabled = useMinimalPuts;
 			// Not ported - JdbcBatchVersionedData
 			// TODO: SQLExceptionConverter
-			// TODO: WrapResultSetsEnabled
 
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;

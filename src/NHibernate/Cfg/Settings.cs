@@ -39,7 +39,7 @@ namespace NHibernate.Cfg
 		private IQueryTranslatorFactory _queryTranslatorFactory;
 		// not ported - private bool _jdbcBatchVersionedData
 		// TODO: private bool _sqlExceptionConverter;
-		// TODO: private bool _wrapDataReadersEnabled;
+		private bool _wrapResultSetsEnabled;
 		private ConnectionReleaseMode connectionReleaseMode;
 		// New in NH:
 		private IsolationLevel _isolationLevel;
@@ -206,6 +206,12 @@ namespace NHibernate.Cfg
 		{
 			get { return namedQueryStartupCheckingEnabled; }
 			set { namedQueryStartupCheckingEnabled = value; }
+		}
+
+		public bool WrapResultSetsEnabled
+		{
+			get { return _wrapResultSetsEnabled; }
+			set { _wrapResultSetsEnabled = value; }
 		}
 	}
 }

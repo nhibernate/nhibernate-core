@@ -155,10 +155,6 @@ namespace NHibernate.Engine
 		/// </remarks>
 		IsolationLevel Isolation { get; }
 
-		// TODO H2.1:
-		// bool IsWrapDataReadersEnabled { get; }
-
-
 		/// <summary>
 		/// Gets a boolean indicating if the sql statement should be prepared.  The value
 		/// is calculated from <c>adonet.batch_size</c> if the value exists and greater than 0.
