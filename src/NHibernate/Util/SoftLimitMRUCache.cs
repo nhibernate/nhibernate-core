@@ -92,8 +92,8 @@ namespace NHibernate.Util
 		{
 			lock (SyncRoot)
 			{
-				softReferenceCache.Add(key, value);
-				strongReferenceCache.Add(key, value);
+				softReferenceCache[key] = value;
+				strongReferenceCache[key] = value;
 			}
 		}
 

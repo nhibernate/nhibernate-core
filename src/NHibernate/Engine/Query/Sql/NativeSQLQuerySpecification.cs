@@ -35,7 +35,7 @@ namespace NHibernate.Engine.Query.Sql
 			int hCode = queryString.GetHashCode();
 			unchecked
 			{
-				hCode = 29 * hCode + this.querySpaces.GetHashCode();
+				hCode = 29 * hCode + CollectionHelper.GetHashCode(this.querySpaces);
 				if (this.sqlQueryReturns != null)
 				{
 					hCode = 29 * hCode + sqlQueryReturns.Length;

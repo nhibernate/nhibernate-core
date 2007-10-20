@@ -171,7 +171,7 @@ namespace NHibernate.Engine.Query
 
 				int hash = query.GetHashCode();
 				hash = 29 * hash + (shallow ? 1 : 0);
-				hash = 29 * hash + filterNames.GetHashCode();
+				hash = 29 * hash + CollectionHelper.GetHashCode(filterNames);
 				hashCode = hash;
 			}
 
@@ -181,21 +181,23 @@ namespace NHibernate.Engine.Query
 				{
 					return true;
 				}
-				if (obj == null || GetType() != obj.GetType())
+
+				HQLQueryPlanKey that = obj as HQLQueryPlanKey;
+				if (that == null)
 				{
 					return false;
 				}
-
-				HQLQueryPlanKey that = (HQLQueryPlanKey)obj;
 
 				if (shallow != that.shallow)
 				{
 					return false;
 				}
+
 				if (!CollectionHelper.SetEquals(filterNames, that.filterNames))
 				{
 					return false;
 				}
+
 				if (!query.Equals(that.query))
 				{
 					return false;
@@ -237,7 +239,7 @@ namespace NHibernate.Engine.Query
 				int hash = query.GetHashCode();
 				hash = 29 * hash + collectionRole.GetHashCode();
 				hash = 29 * hash + (shallow ? 1 : 0);
-				hash = 29 * hash + filterNames.GetHashCode();
+				hash = 29 * hash + CollectionHelper.GetHashCode(filterNames);
 				hashCode = hash;
 			}
 

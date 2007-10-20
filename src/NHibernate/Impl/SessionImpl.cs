@@ -1701,12 +1701,12 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
-			FilterImpl filter = (FilterImpl)enabledFilters[parsed[0]];
-			if (filter == null)
+			IFilter filter;
+			if (!enabledFilters.TryGetValue(parsed[0], out filter))
 			{
 				throw new ArgumentException("Filter [" + parsed[0] + "] currently not enabled");
 			}
-			return filter.GetParameter(parsed[1]);
+			return (filter as FilterImpl).GetParameter(parsed[1]);
 		}
 
 		public override IType GetFilterParameterType(string filterParameterName)
