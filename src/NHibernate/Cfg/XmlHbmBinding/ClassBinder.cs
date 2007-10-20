@@ -891,6 +891,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		protected void ParseFilter(XmlNode filterElement, IFilterable filterable)
 		{
 			string name = GetPropertyName(filterElement);
+			if(name.IndexOf('.') > -1)
+				throw new MappingException("Filter name can't contain the character '.'(point): " + name);
 			string condition = filterElement.InnerText;
 			if (condition == null || StringHelper.IsEmpty(condition.Trim()))
 				if (filterElement.Attributes != null)
