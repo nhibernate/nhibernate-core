@@ -15,11 +15,13 @@ using Directory = Lucene.Net.Store.Directory;
 
 namespace NHibernate.Search.Impl
 {
+	using NHibernate.Engine.Query;
+
 	public class FullTextQueryImpl : AbstractQueryImpl
 	{
-		private static ILog log = LogManager.GetLogger(typeof (FullTextQueryImpl));
-		private Query luceneQuery;
-		private System.Type[] classes;
+		private static readonly ILog log = LogManager.GetLogger(typeof (FullTextQueryImpl));
+		private readonly Query luceneQuery;
+		private readonly System.Type[] classes;
 		private ISet<System.Type> classesAndSubclasses;
 		private int resultSize;
 		private int batchSize = 1;
@@ -27,8 +29,8 @@ namespace NHibernate.Search.Impl
 		/// <summary>
 		/// classes must be immutable
 		/// </summary>
-		public FullTextQueryImpl(Query query, System.Type[] classes, ISession session)
-			: base(query.ToString(), FlushMode.Unspecified, session.GetSessionImplementation())
+		public FullTextQueryImpl(Query query, System.Type[] classes, ISession session, ParameterMetadata parameterMetadata)
+			: base(query.ToString(), FlushMode.Unspecified, session.GetSessionImplementation(),parameterMetadata)
 		{
 			this.luceneQuery = query;
 			this.classes = classes;
@@ -221,6 +223,16 @@ namespace NHibernate.Search.Impl
 		public int ResultSize
 		{
 			get { return this.resultSize; }
+		}
+
+		public override IQuery SetLockMode(string alias, LockMode lockMode)
+		{
+			throw new NotImplementedException("Full Text Query doesn't support lock modes");
+		}
+
+		protected override IDictionary LockModes
+		{
+			get { throw new NotImplementedException("Full Text Query doesn't support lock modes"); }
 		}
 
 		private class EntityInfo

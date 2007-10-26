@@ -27,19 +27,19 @@ namespace NHibernate.Search.Impl
 		{
 			QueryParser queryParser = new QueryParser(defaultField, new StandardAnalyzer());
 			Query query = queryParser.Parse(queryString);
-			return CreateFullTextQuery(query, typeof (TEntity));
+			return CreateFullTextQuery(query, typeof(TEntity));
 		}
 
 		public IQuery CreateFullTextQuery<TEntity>(string queryString)
 		{
-			QueryParser queryParser = new QueryParser("",new StandardAnalyzer());
+			QueryParser queryParser = new QueryParser("", new StandardAnalyzer());
 			Query query = queryParser.Parse(queryString);
-			return CreateFullTextQuery(query, typeof (TEntity));
+			return CreateFullTextQuery(query, typeof(TEntity));
 		}
 
 		public IQuery CreateFullTextQuery(Query luceneQuery, params System.Type[] entities)
 		{
-			return new FullTextQueryImpl(luceneQuery, entities, session);
+			return new FullTextQueryImpl(luceneQuery, entities, session, null);
 		}
 
 		public IFullTextSession Index(object entity)
@@ -356,7 +356,7 @@ namespace NHibernate.Search.Impl
 		{
 			return session.CreateMultiQuery();
 		}
-		
+
 		public IMultiCriteria CreateMultiCriteria()
 		{
 			return session.CreateMultiCriteria();
