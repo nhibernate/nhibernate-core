@@ -4,8 +4,10 @@ using System.Data;
 using System.Text.RegularExpressions;
 
 using NHibernate.Dialect.Function;
+using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 using Environment = NHibernate.Cfg.Environment;
@@ -75,6 +77,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 4000, "NVARCHAR($1)");
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
+
+			RegisterFunction("count", new CountBigQueryFunction());
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("absval", new StandardSQLFunction("absval"));
@@ -438,6 +442,19 @@ namespace NHibernate.Dialect
 		{
 			string selectExistingObject = GetSelectExistingObject(name, table);
 			return string.Format(@"if not exists ({0})", selectExistingObject);
+		}
+
+		protected class CountBigQueryFunction : ClassicAggregateFunction
+		{
+			public CountBigQueryFunction()
+				: base("count_big", true)
+			{
+			}
+
+			public override IType ReturnType(IType columnType, IMapping mapping)
+			{
+				return NHibernateUtil.Int64;
+			}
 		}
 	}
 }
