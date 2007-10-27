@@ -1268,14 +1268,14 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Configure NHibernate using the specified XmlTextReader.
+		/// Configure NHibernate using the specified XmlReader.
 		/// </summary>
-		/// <param name="textReader">The <see cref="XmlTextReader"/> that contains the Xml to configure NHibernate.</param>
+		/// <param name="textReader">The <see cref="XmlReader"/> that contains the Xml to configure NHibernate.</param>
 		/// <returns>A Configuration object initialized with the file.</returns>
 		/// <remarks>
-		/// Calling Configure(XmlTextReader) will overwrite the values set in app.config or web.config
+		/// Calling Configure(XmlReader) will overwrite the values set in app.config or web.config
 		/// </remarks>
-		public Configuration Configure(XmlTextReader textReader)
+		public Configuration Configure(XmlReader textReader)
 		{
 			if (textReader == null)
 			{
@@ -1545,7 +1545,7 @@ namespace NHibernate.Cfg
 		#region NHibernate-Specific Members
 
 		/// <summary>
-		/// Load and validate the mappings in the <see cref="XmlTextReader" /> against
+		/// Load and validate the mappings in the <see cref="XmlReader" /> against
 		/// the nhibernate-mapping-2.2 schema, without adding them to the configuration.
 		/// </summary>
 		/// <remarks>
@@ -1555,7 +1555,7 @@ namespace NHibernate.Cfg
 		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
 		/// <param name="name">The name of the document, for error reporting purposes.</param>
 		/// <returns>NamedXmlDocument containing the validated XmlDocument built from the XmlReader.</returns>
-		public NamedXmlDocument LoadMappingDocument(XmlTextReader hbmReader, string name)
+		public NamedXmlDocument LoadMappingDocument(XmlReader hbmReader, string name)
 		{
 			XmlReaderSettings settings = Schemas.CreateMappingReaderSettings();
 			settings.ValidationEventHandler += ValidationHandler;
@@ -1579,24 +1579,24 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds the Mappings in the <see cref="XmlTextReader"/> after validating it
+		/// Adds the Mappings in the <see cref="XmlReader"/> after validating it
 		/// against the nhibernate-mapping-2.2 schema.
 		/// </summary>
-		/// <param name="hbmReader">The XmlTextReader that contains the mapping.</param>
+		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddXmlReader(XmlTextReader hbmReader)
+		public Configuration AddXmlReader(XmlReader hbmReader)
 		{
 			return AddXmlReader(hbmReader, null);
 		}
 
 		/// <summary>
-		/// Adds the Mappings in the <see cref="XmlTextReader"/> after validating it
+		/// Adds the Mappings in the <see cref="XmlReader"/> after validating it
 		/// against the nhibernate-mapping-2.2 schema.
 		/// </summary>
-		/// <param name="hbmReader">The XmlTextReader that contains the mapping.</param>
+		/// <param name="hbmReader">The XmlReader that contains the mapping.</param>
 		/// <param name="name">The name of the document to use for error reporting. May be <see langword="null" />.</param>
 		/// <returns>This Configuration object.</returns>
-		public Configuration AddXmlReader(XmlTextReader hbmReader, string name)
+		public Configuration AddXmlReader(XmlReader hbmReader, string name)
 		{
 			NamedXmlDocument document = LoadMappingDocument(hbmReader, name);
 			AddDocumentThroughQueue(document);
