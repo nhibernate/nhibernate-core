@@ -44,5 +44,17 @@ namespace NHibernate.Test.DialectTest
 				"SELECT TOP 20 * FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__ DESC) as row, query.* FROM (SELECT *, name as __hibernate_sort_expr_1__ FROM fish LEFT JOIN (SELECT * FROM meat ORDER BY weight) AS t) query ) page WHERE page.row > 10",
 				str.ToString());
 		}
+
+		[Test, Ignore("Not fixed yet.")]
+		public void NH1187()
+		{
+			// The test use the function "cast" because cast need the keyWork "as" too
+			MsSql2005Dialect d = new MsSql2005Dialect();
+			SqlString str = d.GetLimitString(new SqlString("SELECT fish.id, cast('astring, with,comma' as string) FROM fish"), 0, 10);
+			Assert.AreEqual(
+	"SELECT TOP 10 id FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.id FROM (SELECT fish.id, cast('astring, with,comma' as string), CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 0",
+	str.ToString());
+		}
+
 	}
 }
