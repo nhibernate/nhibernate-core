@@ -1466,7 +1466,11 @@ namespace NHibernate.Cfg
 
 				IDictionary parms = new Hashtable();
 
-				if (mappings.SchemaName != null)
+				if (model.Table.Schema != null)
+				{
+					parms.Add("schema", model.Table.Schema);
+				}
+				else if (mappings.SchemaName != null)
 				{
 					parms.Add("schema", dialect.QuoteForSchemaName(mappings.SchemaName));
 				}
