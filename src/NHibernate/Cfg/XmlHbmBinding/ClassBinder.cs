@@ -412,6 +412,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				IDictionary parms = new Hashtable();
 
+				// NOTE: While fixing NH-1061, a couple of lines similar to the following
+				// were added to ClassIdBinder.GetGeneratorProperties().  It looks like
+				// we may need it here too.  But I don't want to put it in just yet.
+				/* if (model.Table.Schema != null)
+				    parms.Add("schema", model.Table.Schema);
+				else */
 				if (mappings.SchemaName != null)
 					parms.Add("schema", dialect.QuoteForSchemaName(mappings.SchemaName));
 

@@ -122,7 +122,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			IDictionary results = new Hashtable();
 
-			if (mappings.SchemaName != null)
+			if (id.Table.Schema != null)
+				results.Add("schema", id.Table.Schema);
+			else if (mappings.SchemaName != null)
 				results.Add("schema", dialect.QuoteForSchemaName(mappings.SchemaName));
 
 			results.Add("target_table", id.Table.GetQuotedName(dialect));
