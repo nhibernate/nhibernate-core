@@ -4,6 +4,8 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DialectTest
 {
+	using System.Collections.Generic;
+
 	[TestFixture]
 	public class MsSql2005DialectFixture
 	{
@@ -45,16 +47,72 @@ namespace NHibernate.Test.DialectTest
 				str.ToString());
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test]
 		public void NH1187()
 		{
-			// The test use the function "cast" because cast need the keyWork "as" too
 			MsSql2005Dialect d = new MsSql2005Dialect();
-			SqlString str = d.GetLimitString(new SqlString("SELECT fish.id, cast('astring, with,comma' as string) FROM fish"), 0, 10);
+			SqlString result =
+				d.GetLimitString(new SqlString("select concat(a.Description,', ', a.Description) as desc from Animal a"), 0, 10);
+			Assert.AreEqual("SELECT TOP 10 desc FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.desc FROM (select concat(a.Description,', ', a.Description) as desc, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ from Animal a) query ) page WHERE page.row > 0", result.ToString());
+
+			// The test use the function "cast" because cast need the keyWork "as" too
+			SqlString str =
+				d.GetLimitString(new SqlString("SELECT fish.id, cast('astring, with,comma' as string) as bar FROM fish"), 0, 10);
 			Assert.AreEqual(
-	"SELECT TOP 10 id FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.id FROM (SELECT fish.id, cast('astring, with,comma' as string), CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 0",
-	str.ToString());
+				"SELECT TOP 10 id, bar FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.id, query.bar FROM (SELECT fish.id, cast('astring, with,comma' as string) as bar, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 0",
+				str.ToString());
 		}
 
+		[Test]
+		public void QuotedAndParanthesisStringTokenizerTests_WithComma_InQuotes()
+		{
+			MsSql2005Dialect.QuotedAndParanthesisStringTokenizer tokenizier =
+				new MsSql2005Dialect.QuotedAndParanthesisStringTokenizer(
+					"select concat(a.Description,', ', a.Description) from Animal a");
+			string[] expected = new string[]
+				{
+					"select",
+					"concat(a.Description,', ', a.Description)",
+					"from",
+					"Animal",
+					"a"
+				};
+			int current = 0;
+			foreach (string token in tokenizier)
+			{
+				Assert.AreEqual(expected[current], token);
+				current += 1;
+			}
+			Assert.AreEqual(current, expected.Length);
+		}
+
+		[Test]
+		public void QuotedAndParanthesisStringTokenizerTests_WithFunctionCallContainingComma()
+		{
+			MsSql2005Dialect.QuotedAndParanthesisStringTokenizer tokenizier =
+				new MsSql2005Dialect.QuotedAndParanthesisStringTokenizer(
+					"SELECT fish.id, cast('astring, with,comma' as string) as bar, f FROM fish");
+			string[] expected = new string[]
+				{
+					"SELECT",
+					"fish.id",
+					",",
+					"cast('astring, with,comma' as string)",
+					"as",
+					"bar",
+					",",
+					"f",
+					"FROM",
+					"fish"
+				};
+			int current = 0;
+			IList<string> tokens = tokenizier.GetTokens();
+			foreach (string token in tokens)
+			{
+				Assert.AreEqual(expected[current], token);
+				current += 1;
+			}
+			Assert.AreEqual(current, expected.Length);
+		}
 	}
 }
