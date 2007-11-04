@@ -176,7 +176,7 @@ namespace NHibernate.Impl
 
 			public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType)
 			{
-				return new Subcriteria(root, this, associationPath, alias, JoinType.InnerJoin);
+				return new Subcriteria(root, this, associationPath, alias, joinType);
 			}
 
 			// Deprecated methods not ported: ReturnMaps, ReturnRootEntities
