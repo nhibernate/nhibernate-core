@@ -715,6 +715,7 @@
     <Compile Include="IMultiCriteria.cs" />
     <Compile Include="IStatelessSession.cs" />
     <Compile Include="Mapping\PropertyGeneration.cs" />
+    <Compile Include="Persister\Entity\UnionSubclassEntityPersister.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
     <Compile Include="QueryParameterException.cs" />
     <Compile Include="SessionException.cs" />

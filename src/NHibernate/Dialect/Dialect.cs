@@ -977,6 +977,33 @@ namespace NHibernate.Dialect
 			return tableName;
 		}
 
+		// union subclass support ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		/// <summary> 
+		/// Given a <see cref="DbType"/> type code, determine an appropriate
+		/// null value to use in a select clause.
+		/// </summary>
+		/// <param name="sqlType">The <see cref="DbType"/> type code. </param>
+		/// <returns> The appropriate select clause value fragment. </returns>
+		/// <remarks>
+		/// One thing to consider here is that certain databases might
+		/// require proper casting for the nulls here since the select here
+		/// will be part of a UNION/UNION ALL.
+		/// </remarks>
+		public virtual string GetSelectClauseNullString(SqlType sqlType)
+		{
+			return "null";
+		}
+
+		/// <summary> 
+		/// Does this dialect support UNION ALL, which is generally a faster variant of UNION? 
+		/// True if UNION ALL is supported; false otherwise.
+		/// </summary>
+		public virtual bool SupportsUnionAll
+		{
+			get { return false; }
+		}
+
 		#region Agregate function redefinition
 
 		protected class CountQueryFunctionInfo : ClassicAggregateFunction

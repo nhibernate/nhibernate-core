@@ -25,6 +25,8 @@ namespace NHibernate.Mapping
 		private bool quoted;
 		private static int tableCounter = 0;
 		private IList checkConstraints = new ArrayList();
+		private bool isAbstract;
+		private bool hasDenormalizedTables = false;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Table"/>.
@@ -567,5 +569,32 @@ namespace NHibernate.Mapping
 		{
 			checkConstraints.Add(constraint);
 		}
+
+		public bool IsAbstractUnionTable
+		{
+			get { return HasDenormalizedTables && isAbstract; }
+		}
+
+		private bool HasDenormalizedTables
+		{
+			get { return hasDenormalizedTables; }
+		}
+
+		internal void SetHasDenormalizedTables()
+		{
+			hasDenormalizedTables = true;
+		}
+
+		public bool IsAbstract
+		{
+			get { return isAbstract; }
+			set { isAbstract = value; }
+		}
+
+		public bool ContainsColumn(Column column)
+		{
+			return columns.ContainsValue(column);
+		}
+
 	}
 }

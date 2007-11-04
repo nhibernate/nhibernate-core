@@ -4,6 +4,7 @@ using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -27,7 +28,7 @@ namespace NHibernate.Mapping
 		private bool lazy;
 		private ArrayList properties = new ArrayList();
 		private System.Type proxyInterface;
-		private readonly ArrayList subclasses = new ArrayList();
+		private readonly List<Subclass> subclasses = new List<Subclass>();
 		private readonly ArrayList subclassProperties = new ArrayList();
 		private readonly ArrayList subclassTables = new ArrayList();
 		private bool dynamicInsert;
@@ -156,11 +157,11 @@ namespace NHibernate.Mapping
 		/// It will recursively go through Subclasses so that if a Subclass has Subclasses
 		/// it will pick those up also.
 		/// </value>
-		public virtual ICollection SubclassCollection
+		public virtual ICollection<PersistentClass> SubclassCollection
 		{
 			get
 			{
-				ArrayList retVal = new ArrayList();
+				List<PersistentClass> retVal = new List<PersistentClass>();
 
 				// check to see if there are any subclass in our subclasses 
 				// and add them into the collection
@@ -171,7 +172,8 @@ namespace NHibernate.Mapping
 
 				// finally add the subclasses from this PersistentClass into
 				// the collection to return
-				retVal.AddRange(subclasses);
+				foreach (Subclass subclass in subclasses)
+					retVal.Add(subclass);
 
 				return retVal;
 			}
@@ -185,7 +187,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="Subclass"/> objects
 		/// that directly inherit from this PersistentClass.
 		/// </value>
-		public virtual ICollection DirectSubclasses
+		public virtual ICollection<Subclass> DirectSubclasses
 		{
 			get { return subclasses; }
 		}
