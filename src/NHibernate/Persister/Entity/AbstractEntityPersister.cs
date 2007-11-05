@@ -26,6 +26,7 @@ using NHibernate.Util;
 using Array=System.Array;
 using Environment=NHibernate.Cfg.Environment;
 using System.Collections.Generic;
+using NHibernate.Dialect.Lock;
 
 namespace NHibernate.Persister.Entity
 {
@@ -37,7 +38,7 @@ namespace NHibernate.Persister.Entity
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
 	public abstract class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
-	                                                IUniqueKeyLoadable, ISqlLoadable
+	                                                IUniqueKeyLoadable, ISqlLoadable, ILockable
 	{
 		private readonly ISessionFactoryImplementor factory;
 
@@ -100,7 +101,7 @@ namespace NHibernate.Persister.Entity
 		private readonly Hashtable subclassPropertyAliases = new Hashtable();
 		private readonly Hashtable subclassPropertyColumnNames = new Hashtable();
 
-		private readonly Hashtable lockers = new Hashtable();
+		private readonly Dictionary<LockMode, ILockingStrategy> lockers = new Dictionary<LockMode, ILockingStrategy>();
 
 		private readonly IReflectionOptimizer optimizer = null;
 
@@ -192,9 +193,16 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract string[] GetSubclassTableKeyColumns(int j);
 
-		protected SqlString GetLockString(LockMode lockMode)
+		private ILockingStrategy GetLocker(LockMode lockMode)
 		{
-			return (SqlString) lockers[lockMode];
+			try
+			{
+				return lockers[lockMode];
+			}
+			catch(KeyNotFoundException)
+			{
+				throw	new HibernateException(string.Format("LockMode {0} not supported by {1}", lockMode, GetType().FullName));
+			}
 		}
 
 		public System.Type MappedClass
@@ -571,11 +579,35 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.IdentifierProperty.Name; }
 		}
 
+		#region ILockable Members
+		public virtual string RootTableName
+		{
+			get { return GetSubclassTableName(0); }
+		}
+
+		public virtual string[] RootTableIdentifierColumnNames
+		{
+			get { return rootTableKeyColumnNames; }
+		}
+
 		/// <summary></summary>
 		public virtual string VersionColumnName
 		{
 			get { return versionColumnName; }
 		}
+
+		public virtual string GetRootTableAlias(string drivingAlias)
+		{
+			return drivingAlias;
+		}
+
+
+		public virtual SqlType[] IdAndVersionSqlTypes
+		{
+			get { return idAndVersionSqlTypes; }
+		}
+
+		#endregion
 
 		/// <summary></summary>
 		public virtual bool ImplementsLifecycle
@@ -1153,18 +1185,13 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected void InitLockers()
+		protected internal virtual void InitLockers()
 		{
-			SqlString lockString = GenerateLockString(null, null);
-			SqlString lockExclusiveString = GenerateLockString(lockString, Dialect.ForUpdateString);
-			SqlString lockExclusiveNowaitString = GenerateLockString(lockString, Dialect.ForUpdateNowaitString);
-
-			lockers.Add(LockMode.Read, lockString);
-			lockers.Add(LockMode.Upgrade, lockExclusiveString);
-			lockers.Add(LockMode.UpgradeNoWait, lockExclusiveNowaitString);
+			lockers[LockMode.Read] = GenerateLocker(LockMode.Read);
+			lockers[LockMode.Upgrade] = GenerateLocker(LockMode.Upgrade);
+			lockers[LockMode.UpgradeNoWait] = GenerateLocker(LockMode.UpgradeNoWait);
+			lockers[LockMode.Force] = GenerateLocker(LockMode.Force);
 		}
-
-		protected abstract SqlString GenerateLockString(SqlString sqlString, string forUpdateFragment);
 
 		public virtual string RootEntityName
 		{
@@ -1573,52 +1600,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		public virtual void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session)
 		{
-			if (lockMode != LockMode.None)
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("Locking entity: " + MessageHelper.InfoString(this, id));
-					if (IsVersioned)
-					{
-						log.Debug("Version: " + version);
-					}
-				}
-
-				SqlString sql = GetLockString(lockMode);
-				try
-				{
-					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, idAndVersionSqlTypes);
-					IDataReader rs = null;
-
-					try
-					{
-						IdentifierType.NullSafeSet(st, id, 0, session);
-						if (IsVersioned)
-						{
-							VersionType.NullSafeSet(st, version, IdentifierColumnNames.Length, session);
-						}
-
-						rs = session.Batcher.ExecuteReader(st);
-						if (!rs.Read())
-						{
-							throw new StaleObjectStateException(MappedClass, id);
-						}
-					}
-					finally
-					{
-						session.Batcher.CloseCommand(st, rs);
-					}
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception sqle)
-				{
-					throw Convert(sqle, "could not lock: " + MessageHelper.InfoString(this, id), sql);
-				}
-			}
+			GetLocker(lockMode).Lock(id, version, obj, session);
 		}
 
 		protected object GetGeneratedIdentity(object obj, ISessionImplementor session, IDataReader rs)
@@ -3684,5 +3666,11 @@ namespace NHibernate.Persister.Entity
 		{
 			return false;
 		}
+
+		protected internal virtual ILockingStrategy GenerateLocker(LockMode lockMode)
+		{
+			return factory.Dialect.GetLockingStrategy(this, lockMode);
+		}
+
 	}
 }

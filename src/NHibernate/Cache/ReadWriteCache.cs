@@ -22,6 +22,14 @@ namespace NHibernate.Cache
 	/// </remarks>
 	public class ReadWriteCache : ICacheConcurrencyStrategy
 	{
+		public interface ILockable
+		{
+			CacheLock Lock(long timeout, int id);
+			bool IsLock { get; }
+			bool IsGettable(long txTimestamp);
+			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator);
+		}
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(ReadWriteCache));
 
 		private readonly object _lockObject = new object();

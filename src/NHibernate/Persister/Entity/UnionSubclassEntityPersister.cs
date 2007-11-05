@@ -222,11 +222,6 @@ namespace NHibernate.Persister.Entity
 			return IdentifierColumnNames;
 		}
 
-		protected override SqlString GenerateLockString(SqlString sqlString, string forUpdateFragment)
-		{
-			throw new System.Exception("The method or operation is not implemented.");
-		}
-
 		protected override string DiscriminatorAlias
 		{
 			get { return DiscriminatorColumnName; }

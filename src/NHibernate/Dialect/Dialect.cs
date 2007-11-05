@@ -4,8 +4,10 @@ using System.Data;
 using System.Text;
 using log4net;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Lock;
 using NHibernate.Engine;
 using NHibernate.Mapping;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -125,7 +127,7 @@ namespace NHibernate.Dialect
 			string result = typeNames.Get(sqlType.DbType);
 			if (result == null)
 			{
-				throw new HibernateException("No default type mapping for SqlType " + sqlType.ToString());
+				throw new HibernateException(string.Format("No default type mapping for SqlType {0}", sqlType));
 			}
 
 			return result;
@@ -143,7 +145,7 @@ namespace NHibernate.Dialect
 			string result = typeNames.Get(sqlType.DbType, length);
 			if (result == null)
 			{
-				throw new HibernateException("No type mapping for SqlType " + sqlType.ToString() + " of length " + length);
+				throw new HibernateException(string.Format("No type mapping for SqlType {0} of length {1}", sqlType, length));
 			}
 			return result;
 		}
@@ -220,24 +222,24 @@ namespace NHibernate.Dialect
 			get { return ";"; }
 		}
 
-		/// <summary>
-		/// Retrieves the <c>FOR UPDATE</c> syntax specific to this dialect
+		#region Lock acquisition support
+		/// <summary> 
+		/// Get a strategy instance which knows how to acquire a database-level lock
+		/// of the specified mode for this dialect. 
 		/// </summary>
-		/// <value>The appropriate <c>FOR UPDATE</c> clause string.</value>
-		public virtual string ForUpdateString
+		/// <param name="lockable">The persister for the entity to be locked. </param>
+		/// <param name="lockMode">The type of lock to be acquired. </param>
+		/// <returns> The appropriate locking strategy. </returns>
+		public virtual ILockingStrategy GetLockingStrategy(ILockable lockable, LockMode lockMode)
 		{
-			get { return " for update"; }
+			return new SelectLockingStrategy(lockable, lockMode);
 		}
 
-		/// <summary>
-		/// Retrieves the <c>FOR UPDATE NOWAIT</c> syntax specific to this dialect
+		/// <summary> 
+		/// Given a lock mode, determine the appropriate for update fragment to use. 
 		/// </summary>
-		/// <value>The appropriate <c>FOR UPDATE NOWAIT</c> clause string.</value>
-		public virtual string ForUpdateNowaitString
-		{
-			get { return ForUpdateString; }
-		}
-
+		/// <param name="lockMode">The lock mode to apply. </param>
+		/// <returns> The appropriate for update fragment. </returns>
 		public virtual string GetForUpdateString(LockMode lockMode)
 		{
 			if (lockMode == LockMode.Upgrade)
@@ -248,11 +250,108 @@ namespace NHibernate.Dialect
 			{
 				return ForUpdateNowaitString;
 			}
+			else if (lockMode == LockMode.Force)
+			{
+				return ForUpdateNowaitString;
+			}
 			else
 			{
 				return string.Empty;
 			}
 		}
+
+		/// <summary>
+		/// Get the string to append to SELECT statements to acquire locks
+		/// for this dialect.
+		/// </summary>
+		/// <value>The appropriate <c>FOR UPDATE</c> clause string.</value>
+		public virtual string ForUpdateString
+		{
+			get { return " for update"; }
+		}
+
+		/// <summary> Is <tt>FOR UPDATE OF</tt> syntax supported? </summary>
+		/// <value> True if the database supports <tt>FOR UPDATE OF</tt> syntax; false otherwise. </value>
+		public virtual bool ForUpdateOfColumns
+		{
+			// by default we report no support
+			get { return false; }
+		}
+
+		/// <summary> 
+		/// Does this dialect support <tt>FOR UPDATE</tt> in conjunction with outer joined rows?
+		/// </summary>
+		/// <value> True if outer joined rows can be locked via <tt>FOR UPDATE</tt>. </value>
+		public virtual bool SupportsOuterJoinForUpdate
+		{
+			get { return true; }
+		}
+
+		/// <summary> 
+		/// Get the <tt>FOR UPDATE OF column_list</tt> fragment appropriate for this
+		/// dialect given the aliases of the columns to be write locked.
+		///  </summary>
+		/// <param name="aliases">The columns to be write locked. </param>
+		/// <returns> The appropriate <tt>FOR UPDATE OF column_list</tt> clause string. </returns>
+		public virtual string GetForUpdateString(string aliases)
+		{
+			// by default we simply return the ForUpdateString result since
+			// the default is to say no support for "FOR UPDATE OF ..."
+			return ForUpdateString;
+		}
+
+		/// <summary>
+		/// Retrieves the <c>FOR UPDATE NOWAIT</c> syntax specific to this dialect
+		/// </summary>
+		/// <value>The appropriate <c>FOR UPDATE NOWAIT</c> clause string.</value>
+		public virtual string ForUpdateNowaitString
+		{
+			// by default we report no support for NOWAIT lock semantics
+			get { return ForUpdateString; }
+		}
+
+		/// <summary> 
+		/// Get the <tt>FOR UPDATE OF column_list NOWAIT</tt> fragment appropriate
+		/// for this dialect given the aliases of the columns to be write locked.
+		/// </summary>
+		/// <param name="aliases">The columns to be write locked. </param>
+		/// <returns> The appropriate <tt>FOR UPDATE colunm_list NOWAIT</tt> clause string. </returns>
+		public virtual string GetForUpdateNowaitString(string aliases)
+		{
+			return GetForUpdateString(aliases);
+		}
+
+		/// <summary> 
+		/// Modifies the given SQL by applying the appropriate updates for the specified
+		/// lock modes and key columns.
+		/// </summary>
+		/// <param name="sql">the SQL string to modify </param>
+		/// <param name="aliasedLockModes">a map of lock modes indexed by aliased table names. </param>
+		/// <param name="keyColumnNames">a map of key columns indexed by aliased table names. </param>
+		/// <returns> the modified SQL string. </returns>
+		/// <remarks>
+		/// The behavior here is that of an ANSI SQL <tt>SELECT FOR UPDATE</tt>.  This
+		/// method is really intended to allow dialects which do not support
+		/// <tt>SELECT FOR UPDATE</tt> to achieve this in their own fashion.
+		/// </remarks>
+		public virtual SqlString ApplyLocksToSql(SqlString sql, IDictionary aliasedLockModes, IDictionary keyColumnNames)
+		{
+			return sql.Append(new ForUpdateFragment(this, aliasedLockModes, keyColumnNames).ToSqlStringFragment());
+		}
+
+		/// <summary> 
+		/// Some dialects support an alternative means to <tt>SELECT FOR UPDATE</tt>,
+		/// whereby a "lock hint" is appends to the table name in the from clause.
+		///  </summary>
+		/// <param name="lockMode">The lock mode to apply </param>
+		/// <param name="tableName">The name of the table to which to apply the lock hint. </param>
+		/// <returns> The table with any required lock hints. </returns>
+		public virtual string AppendLockHint(LockMode lockMode, string tableName)
+		{
+			return tableName;
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Does this dialect support subselects?
@@ -932,11 +1031,6 @@ namespace NHibernate.Dialect
 			get { return 10; }
 		}
 
-		public virtual bool ForUpdateOfColumns
-		{
-			get { return false; }
-		}
-
 		/// <summary>
 		/// Gives the best resolution that the database can use for storing
 		/// date/time values, in ticks.
@@ -955,26 +1049,6 @@ namespace NHibernate.Dialect
 		public virtual long TimestampResolutionInTicks
 		{
 			get { return 1L; } // Maximum precision (one tick)
-		}
-
-		public virtual string GetForUpdateNowaitString(string aliases)
-		{
-			return GetForUpdateString(aliases);
-		}
-
-		public virtual string GetForUpdateString(string aliases)
-		{
-			return ForUpdateString;
-		}
-
-		public virtual SqlString ApplyLocksToSql(SqlString sql, IDictionary aliasedLockModes, IDictionary keyColumnNames)
-		{
-			return sql.Append(new ForUpdateFragment(this, aliasedLockModes, keyColumnNames).ToSqlStringFragment());
-		}
-
-		public virtual string AppendLockHint(LockMode lockMode, string tableName)
-		{
-			return tableName;
 		}
 
 		// union subclass support ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

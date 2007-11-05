@@ -222,51 +222,6 @@ namespace NHibernate.Persister.Entity
 			return GenerateUpdateString(includeProperty, 0, null);
 		}
 
-		/// <summary>
-		/// Generates the SQL that pessimistically locks a row by id (and version)
-		/// </summary>
-		/// <param name="sqlString">An existing SqlString to copy for then new SqlString.</param>
-		/// <param name="forUpdateFragment"></param>
-		/// <returns>A new SqlString</returns>
-		/// <remarks>
-		/// The parameter <c>sqlString</c> does not get modified.  It is Cloned to make a new SqlString.
-		/// If the parameter<c>sqlString</c> is null a new one will be created.
-		/// </remarks>
-		protected override SqlString GenerateLockString(SqlString sqlString, string forUpdateFragment)
-		{
-			SqlStringBuilder sqlBuilder;
-
-			if (sqlString == null)
-			{
-				SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory);
-
-				// set the table name and add the columns to select
-				builder.SetTableName(TableName)
-					.AddColumns(IdentifierColumnNames);
-
-				// add the parameters to use in the WHERE clause
-				builder.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
-				if (IsVersioned)
-				{
-					builder.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
-				}
-
-				sqlBuilder = new SqlStringBuilder(builder.ToSqlString());
-			}
-			else
-			{
-				sqlBuilder = new SqlStringBuilder(sqlString);
-			}
-
-			// add any special text that is contained in the forUpdateFragment
-			if (forUpdateFragment != null && forUpdateFragment != string.Empty)
-			{
-				sqlBuilder.Add(forUpdateFragment);
-			}
-
-			return sqlBuilder.ToSqlString();
-		}
-
 		//INITIALIZATION:
 
 		public SingleTableEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache,

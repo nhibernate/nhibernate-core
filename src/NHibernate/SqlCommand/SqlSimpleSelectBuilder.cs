@@ -102,6 +102,12 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public virtual SqlSimpleSelectBuilder SetLockMode(LockMode lockMode)
+		{
+			this.lockMode = lockMode;
+			return this;
+		}
+
 		/// <summary>
 		/// Gets the Alias that should be used for the column
 		/// </summary>
