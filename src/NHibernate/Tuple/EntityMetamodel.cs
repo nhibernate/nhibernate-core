@@ -236,7 +236,7 @@ namespace NHibernate.Tuple
 //				);
 			mutable = persistentClass.IsMutable;
 
-			if (persistentClass.IsAbstract == null)
+			if (!persistentClass.IsAbstract.HasValue)
 			{
 				// legacy behavior (with no abstract attribute specified)
 				isAbstract = persistentClass.HasPojoRepresentation &&
@@ -244,7 +244,7 @@ namespace NHibernate.Tuple
 			}
 			else
 			{
-				isAbstract = (bool) persistentClass.IsAbstract;
+				isAbstract = persistentClass.IsAbstract.Value;
 				if (!isAbstract && persistentClass.HasPojoRepresentation &&
 				    ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
 				{

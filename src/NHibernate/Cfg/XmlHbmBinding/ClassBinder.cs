@@ -121,19 +121,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// PROXY INTERFACE
 			XmlAttribute proxyNode = node.Attributes["proxy"];
 			XmlAttribute lazyNode = node.Attributes["lazy"];
-			bool lazy = lazyNode == null
-				?
-					mappings.DefaultLazy
-				:
-					"true".Equals(lazyNode.Value);
+			bool lazy = lazyNode == null ? mappings.DefaultLazy : "true".Equals(lazyNode.Value);
 
 			// go ahead and set the lazy here, since pojo.proxy can override it.
 			model.IsLazy = lazy;
 
 			if (proxyNode != null)
 			{
-				model.ProxyInterface = ClassForNameChecked(proxyNode.Value, mappings,
-					"proxy class not found: {0}");
+				model.ProxyInterface = ClassForNameChecked(proxyNode.Value, mappings, "proxy class not found: {0}");
 				model.IsLazy = true;
 			}
 			else if (model.IsLazy)
@@ -141,24 +136,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			// DISCRIMINATOR
 			XmlAttribute discriminatorNode = node.Attributes["discriminator-value"];
-			model.DiscriminatorValue = (discriminatorNode == null)
-				? model.Name
-				: discriminatorNode.Value;
+			model.DiscriminatorValue = (discriminatorNode == null) ? model.Name : discriminatorNode.Value;
 
 			// DYNAMIC UPDATE
 			XmlAttribute dynamicNode = node.Attributes["dynamic-update"];
-			model.DynamicUpdate = (dynamicNode == null)
-				? false
-				:
-					"true".Equals(dynamicNode.Value);
+			model.DynamicUpdate = (dynamicNode == null) ? false : "true".Equals(dynamicNode.Value);
 
 			// DYNAMIC INSERT
 			XmlAttribute insertNode = node.Attributes["dynamic-insert"];
-			model.DynamicInsert = (insertNode == null)
-				?
-					false
-				:
-					"true".Equals(insertNode.Value);
+			model.DynamicInsert = (insertNode == null) ? false : "true".Equals(insertNode.Value);
 
 			// IMPORT
 
@@ -197,15 +183,25 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				//persister = typeof( EntityPersister );
 			}
 			else
-				model.ClassPersisterClass = ClassForNameChecked(
-					persisterNode.Value, mappings,
-					"could not instantiate persister class: {0}");
+				model.ClassPersisterClass =
+					ClassForNameChecked(persisterNode.Value, mappings, "could not instantiate persister class: {0}");
 
 			// CUSTOM SQL
 			HandleCustomSQL(node, model);
 
 			foreach (XmlNode syncNode in node.SelectNodes(HbmConstants.nsSynchronize, namespaceManager))
 				model.AddSynchronizedTable(XmlHelper.GetAttributeValue(syncNode, "table"));
+
+			bool? isAbstract = null;
+			XmlAttribute abstractNode = node.Attributes["abstract"];
+			if (abstractNode != null)
+			{
+				if ("true".Equals(abstractNode.Value) || "1".Equals(abstractNode.Value))
+					isAbstract = true;
+				else if ("false".Equals(abstractNode.Value) || "0".Equals(abstractNode.Value))
+					isAbstract = false;
+			}
+			model.IsAbstract = isAbstract;
 		}
 
 		private void BindJoin(XmlNode node, Join join)

@@ -522,6 +522,14 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool @abstract;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool abstractSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
         public string table;
         
         /// <remarks/>
@@ -3241,6 +3249,14 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool @abstract;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool abstractSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
         public string extends;
         
         /// <remarks/>
@@ -3344,6 +3360,14 @@ namespace NHibernate.Cfg.MappingSchema {
         [System.Xml.Serialization.XmlAttributeAttribute("select-before-update")]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool selectbeforeupdate;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool @abstract;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool abstractSpecified;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]

@@ -114,6 +114,7 @@
 		<xs:attribute name="dynamic-update" type="xs:boolean" use="optional" default="false" />
 		<xs:attribute name="dynamic-insert" type="xs:boolean" use="optional" default="false" />
 		<xs:attribute name="select-before-update" type="xs:boolean" use="optional" default="false" />
+		<xs:attribute name="abstract" type="xs:boolean" />
 	</xs:attributeGroup>
 	<xs:attributeGroup name="baseCollectionAttributes">
 		<xs:attribute name="name" type="xs:string" use="required" />

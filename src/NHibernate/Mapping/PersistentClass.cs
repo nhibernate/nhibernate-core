@@ -56,6 +56,8 @@ namespace NHibernate.Mapping
 
 		private string loaderName;
 
+		private bool? isAbstract;
+
 		protected readonly ISet synchronizedTablesField = new HashedSet();
 		private bool hasSubselectLoadableCollections;
 		private string entityName;
@@ -736,10 +738,10 @@ namespace NHibernate.Mapping
 			get { return true; }
 		}
 
-		public object IsAbstract
+		public bool? IsAbstract
 		{
-			// TODO H3:
-			get { return null; }
+			get { return isAbstract; }
+			set { isAbstract = value; }
 		}
 
 		public Property GetRecursiveProperty(string propertyPath)
