@@ -25,7 +25,7 @@ namespace NHibernate.Test
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 		protected static readonly Dialect.Dialect Dialect = NHibernate.Dialect.Dialect.GetDialect();
 
-		private ISession lastOpenedSession;
+		protected ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
 
 		/// <summary>

@@ -688,8 +688,11 @@ namespace NHibernate.Type
 				values[i] = val;
 				begin += length;
 			}
-
-			return notNull ? values : null;
+			
+			if (this.componentClass.IsValueType)
+				return values;
+			else
+				return notNull ? values : null;
 		}
 
 		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
