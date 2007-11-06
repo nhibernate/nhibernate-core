@@ -9,7 +9,7 @@ namespace NHibernate.Mapping
 	public abstract class Constraint : IRelationalModel
 	{
 		private string name;
-		private ArrayList columns = new ArrayList();
+		private readonly ArrayList columns = new ArrayList();
 		private Table table;
 
 		/// <summary>
@@ -67,6 +67,11 @@ namespace NHibernate.Mapping
 		public int ColumnSpan
 		{
 			get { return columns.Count; }
+		}
+
+		public IList Columns
+		{
+			get{return columns;}
 		}
 
 		/// <summary>

@@ -809,16 +809,12 @@ namespace NHibernate.Hql.Classic
 			foreach (string name in collections.Values)
 			{
 				ICollectionPersister p = GetCollectionPersister(name);
-				AddQuerySpace(p.CollectionSpace);
+				AddQuerySpaces(new object[] { p.CollectionSpace });
 			}
 			foreach (string name in typeMap.Keys)
 			{
 				IQueryable p = GetPersisterForName(name);
-				object[] spaces = p.PropertySpaces;
-				for (int i = 0; i < spaces.Length; i++)
-				{
-					AddQuerySpace(spaces[i]);
-				}
+				AddQuerySpaces(p.QuerySpaces);
 			}
 
 			sqlString = sql.ToQuerySqlString();
@@ -1199,15 +1195,6 @@ namespace NHibernate.Hql.Classic
 		public bool IsShallowQuery
 		{
 			get { return shallowQuery; }
-		}
-
-		internal void AddQuerySpace(object table)
-		{
-			querySpaces.Add(table);
-			if (superQuery != null)
-			{
-				superQuery.AddQuerySpace(table);
-			}
 		}
 
 		internal bool Distinct
@@ -1759,5 +1746,16 @@ namespace NHibernate.Hql.Classic
 		{
 			get { return queryIdentifier; }
 		}
+
+		internal void AddQuerySpaces(object[] spaces)
+		{
+			for (int i = 0; i < spaces.Length; i++)
+			{
+				querySpaces.Add(spaces[i]);
+			}
+			if (superQuery != null)
+				superQuery.AddQuerySpaces(spaces);
+		}
+
 	}
 }

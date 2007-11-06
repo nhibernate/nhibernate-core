@@ -640,6 +640,28 @@ namespace NHibernate.Dialect
 			get { return properties; }
 		}
 
+		/// <summary> Command used to create a table. </summary>
+		public virtual string CreateTableString
+		{
+			get { return "create table"; }
+		}
+
+		/// <summary> 
+		/// Slight variation on <see cref="CreateTableString"/>.
+		/// The command used to create a multiset table. 
+		/// </summary>
+		/// <remarks>
+		/// Here, we have the command used to create a table when there is no primary key and
+		/// duplicate rows are expected.
+		/// <p/>
+		/// Most databases do not care about the distinction; originally added for
+		/// Teradata support which does care.
+		/// </remarks>
+		public virtual string CreateMultisetTableString
+		{
+			get { return CreateTableString; }
+		}
+
 		/// <summary>
 		/// Completely optional cascading drop clause
 		/// </summary>

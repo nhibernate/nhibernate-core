@@ -189,26 +189,43 @@ namespace NHibernate.Cfg
 			imports[rename] = className;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="schema"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public Table AddTable(string schema, string name)
+		public Table AddTable(string schema, string name, bool isAbstract)
 		{
-			string key = schema != null ? schema + "." + name : name;
-
-			if (tables.ContainsKey(key))
-				return tables[key];
-			else
+			string key = Table.Qualify(schema, name);
+			//string key = subselect ?? Table.Qualify(schema, name);
+			Table table;
+			if (!tables.TryGetValue(key, out table))
 			{
-				Table table = new Table();
+				table = new Table();
+				table.IsAbstract = isAbstract;
 				table.Name = name;
 				table.Schema = schema;
 				tables[key] = table;
-				return table;
 			}
+			else
+			{
+				if (!isAbstract)
+					table.IsAbstract = false;
+			}
+			return table;
+		}
+
+		public Table AddDenormalizedTable(string schema, System.String name, bool isAbstract, Table includedTable)
+		{
+			string key = Table.Qualify(schema, name);
+			//string key = subselect ?? Table.Qualify(schema, name);
+			if (tables.ContainsKey(key))
+			{
+				throw new DuplicateMappingException("table", name);
+			}
+
+			Table table = new DenormalizedTable(includedTable);
+			table.IsAbstract = isAbstract;
+			table.Name = name;
+			table.Schema = schema;
+			//table.Subselect= subselect;
+			tables[key] = table;
+			return table;
 		}
 
 		/// <summary>

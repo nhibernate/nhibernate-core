@@ -176,7 +176,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					tableName = mappings.NamingStrategy.PropertyToTableName(className, path);
 				XmlAttribute schemaNode = node.Attributes["schema"];
 				string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
-				model.CollectionTable = mappings.AddTable(schema, tableName);
+				model.CollectionTable = mappings.AddTable(schema, tableName, false);
 
 				log.InfoFormat("Mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
 			}

@@ -235,6 +235,7 @@
 					<xs:element ref="class" />
 					<xs:element ref="subclass" />
 					<xs:element ref="joined-subclass" />
+					<xs:element ref="union-subclass" />
 				</xs:choice>
 				<xs:element ref="resultset" minOccurs="0" maxOccurs="unbounded" />
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -373,6 +374,7 @@
 						<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 					<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element ref="union-subclass" maxOccurs="unbounded" minOccurs="0" />
 				</xs:choice>
 				<xs:group ref="classCustomSQL" />
 				<xs:element ref="filter" minOccurs="0" maxOccurs="unbounded" />
@@ -1255,4 +1257,44 @@
 			<xs:enumeration value="refresh" />
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:element name="union-subclass">
+		<xs:annotation>
+			<xs:documentation>Joined subclasses are used for the normalized table-per-subclass mapping strategy</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded" />
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="property" />
+					<xs:element ref="many-to-one" />
+					<xs:element ref="one-to-one" />
+					<xs:element ref="component" />
+					<xs:element ref="dynamic-component" />
+					<xs:element ref="any" />
+					<xs:element ref="map" />
+					<xs:element ref="set" />
+					<xs:element ref="list" />
+					<xs:element ref="bag" />
+					<xs:element ref="idbag" />
+					<xs:element ref="array" />
+					<xs:element ref="primitive-array" />
+				</xs:choice>
+				<xs:element ref="union-subclass" minOccurs="0" maxOccurs="unbounded" />
+				<xs:group ref="classCustomSQL" />
+			</xs:sequence>
+			<xs:attributeGroup ref="baseClassAttributes" />
+			<xs:attribute name="extends" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Name of the root class. Required if the Joined Subclass is declared outside the declaration of its root class</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="schema" type="xs:string" use="optional" />
+			<xs:attribute name="table" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>default: unqualified classname</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="check" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

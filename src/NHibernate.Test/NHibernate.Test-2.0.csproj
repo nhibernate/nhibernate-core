@@ -623,6 +623,14 @@
     <Compile Include="Unconstrained\SimplyManyToOneIgnoreTest.cs" />
     <Compile Include="Unconstrained\UnconstrainedNoLazyTest.cs" />
     <Compile Include="Unconstrained\UnconstrainedTest.cs" />
+    <Compile Include="Unionsubclass\Alien.cs" />
+    <Compile Include="Unionsubclass\Being.cs" />
+    <Compile Include="Unionsubclass\Employee.cs" />
+    <Compile Include="Unionsubclass\Hive.cs" />
+    <Compile Include="Unionsubclass\Human.cs" />
+    <Compile Include="Unionsubclass\Location.cs" />
+    <Compile Include="Unionsubclass\Thing.cs" />
+    <Compile Include="Unionsubclass\UnionSubclassFixture.cs" />
     <Compile Include="UserCollection\Email.cs" />
     <Compile Include="UserCollection\MyList.cs" />
     <Compile Include="UserCollection\MyListType.cs" />
@@ -1038,7 +1046,11 @@
     <EmbeddedResource Include="NHSpecificTest\NH1061\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Unionsubclass\Beings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Unionsubclass2\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

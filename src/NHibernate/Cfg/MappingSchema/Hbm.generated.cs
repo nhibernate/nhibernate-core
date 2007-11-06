@@ -308,6 +308,7 @@ namespace NHibernate.Cfg.MappingSchema {
         [System.Xml.Serialization.XmlElementAttribute("class", typeof(HbmClass))]
         [System.Xml.Serialization.XmlElementAttribute("joined-subclass", typeof(HbmJoinedSubclass))]
         [System.Xml.Serialization.XmlElementAttribute("subclass", typeof(HbmSubclass))]
+        [System.Xml.Serialization.XmlElementAttribute("union-subclass", typeof(HbmUnionSubclass))]
         public object[] Items;
         
         /// <remarks/>
@@ -468,6 +469,7 @@ namespace NHibernate.Cfg.MappingSchema {
         [System.Xml.Serialization.XmlElementAttribute("join", typeof(HbmJoin))]
         [System.Xml.Serialization.XmlElementAttribute("joined-subclass", typeof(HbmJoinedSubclass))]
         [System.Xml.Serialization.XmlElementAttribute("subclass", typeof(HbmSubclass))]
+        [System.Xml.Serialization.XmlElementAttribute("union-subclass", typeof(HbmUnionSubclass))]
         public object[] Items1;
         
         /// <remarks/>
@@ -3378,6 +3380,116 @@ namespace NHibernate.Cfg.MappingSchema {
         public string discriminatorvalue;
         
         public HbmSubclass() {
+            this.dynamicupdate = false;
+            this.dynamicinsert = false;
+            this.selectbeforeupdate = false;
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "2.0.0.1001")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
+    [System.Xml.Serialization.XmlRootAttribute("union-subclass", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
+    public partial class HbmUnionSubclass {
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("meta")]
+        public HbmMeta[] meta;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("any", typeof(HbmAny))]
+        [System.Xml.Serialization.XmlElementAttribute("array", typeof(HbmArray))]
+        [System.Xml.Serialization.XmlElementAttribute("bag", typeof(HbmBag))]
+        [System.Xml.Serialization.XmlElementAttribute("component", typeof(HbmComponent))]
+        [System.Xml.Serialization.XmlElementAttribute("dynamic-component", typeof(HbmDynamicComponent))]
+        [System.Xml.Serialization.XmlElementAttribute("idbag", typeof(HbmIdbag))]
+        [System.Xml.Serialization.XmlElementAttribute("list", typeof(HbmList))]
+        [System.Xml.Serialization.XmlElementAttribute("many-to-one", typeof(HbmManyToOne))]
+        [System.Xml.Serialization.XmlElementAttribute("map", typeof(HbmMap))]
+        [System.Xml.Serialization.XmlElementAttribute("one-to-one", typeof(HbmOneToOne))]
+        [System.Xml.Serialization.XmlElementAttribute("primitive-array", typeof(HbmPrimitiveArray))]
+        [System.Xml.Serialization.XmlElementAttribute("property", typeof(HbmProperty))]
+        [System.Xml.Serialization.XmlElementAttribute("set", typeof(HbmSet))]
+        public object[] Items;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("union-subclass")]
+        public HbmUnionSubclass[] unionsubclass1;
+        
+        /// <remarks/>
+        public HbmLoader loader;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("sql-insert")]
+        public HbmCustomSQL sqlinsert;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("sql-update")]
+        public HbmCustomSQL sqlupdate;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("sql-delete")]
+        public HbmCustomSQL sqldelete;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string name;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string proxy;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool lazy;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool lazySpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("dynamic-update")]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool dynamicupdate;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("dynamic-insert")]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool dynamicinsert;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("select-before-update")]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool selectbeforeupdate;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool @abstract;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool abstractSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string extends;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string schema;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string table;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string check;
+        
+        public HbmUnionSubclass() {
             this.dynamicupdate = false;
             this.dynamicinsert = false;
             this.selectbeforeupdate = false;

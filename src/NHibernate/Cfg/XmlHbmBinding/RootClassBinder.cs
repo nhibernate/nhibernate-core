@@ -24,7 +24,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string schema = classSchema.schema ?? mappings.SchemaName;
 			string tableName = GetClassTableName(rootClass, classSchema);
 
-			Table table = mappings.AddTable(schema, tableName);
+			Table table = mappings.AddTable(schema, tableName, rootClass.IsAbstract.GetValueOrDefault());
 			((ITableOwner) rootClass).Table = table;
 
 			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.Name, rootClass.Table.Name);

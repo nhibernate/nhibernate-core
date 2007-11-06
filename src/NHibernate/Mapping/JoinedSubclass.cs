@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	public class JoinedSubclass : Subclass, ITableOwner
 	{
 		private Table table;
-		private SimpleValue key;
+		private IKeyValue key;
 
 		public JoinedSubclass(PersistentClass superclass)
 			: base(superclass) { }
@@ -27,7 +27,7 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public override SimpleValue Key
+		public override IKeyValue Key
 		{
 			get { return key; }
 			set { key = value; }

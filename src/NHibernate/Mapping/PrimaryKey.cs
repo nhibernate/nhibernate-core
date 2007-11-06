@@ -18,7 +18,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlConstraintString(Dialect.Dialect d, string defaultSchema)
 		{
-			StringBuilder buf = new StringBuilder(" primary key (");
+			StringBuilder buf = new StringBuilder("primary key (");
 			int i = 0;
 			foreach (Column col in ColumnCollection)
 			{

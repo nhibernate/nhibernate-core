@@ -522,6 +522,7 @@
     <Compile Include="Cfg\XmlHbmBinding\NamedQueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\NamedSQLQueryBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\SubclassBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\UnionSubclassBinder.cs" />
     <Compile Include="Cfg\XmlSchemas.cs" />
     <Compile Include="Classic\ILifecycle.cs" />
     <Compile Include="Classic\IValidatable.cs" />
@@ -716,7 +717,9 @@
     <Compile Include="Impl\StatelessSessionImpl.cs" />
     <Compile Include="IMultiCriteria.cs" />
     <Compile Include="IStatelessSession.cs" />
+    <Compile Include="Mapping\DenormalizedTable.cs" />
     <Compile Include="Mapping\PropertyGeneration.cs" />
+    <Compile Include="Mapping\UnionSubclass.cs" />
     <Compile Include="Persister\Entity\ILockable.cs" />
     <Compile Include="Persister\Entity\UnionSubclassEntityPersister.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />

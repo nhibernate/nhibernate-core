@@ -2924,7 +2924,7 @@ namespace NHibernate.Persister.Entity
 			loaders.Add(LockMode.UpgradeNoWait, CreateEntityLoader(LockMode.UpgradeNoWait));
 		}
 
-		public object[] QuerySpaces
+		public virtual object[] QuerySpaces
 		{
 			get { return PropertySpaces; }
 		}
@@ -2961,7 +2961,7 @@ namespace NHibernate.Persister.Entity
 				.SetTableName(GetTableName(j));
 
 			// add normal properties
-			for (int i = 0; i < HydrateSpan; i++)
+			for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 			{
 				if (includeProperty[i] && IsPropertyOfTable(i, j))
 				{

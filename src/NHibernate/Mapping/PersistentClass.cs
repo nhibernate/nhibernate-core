@@ -58,7 +58,7 @@ namespace NHibernate.Mapping
 
 		private bool? isAbstract;
 
-		protected readonly ISet synchronizedTablesField = new HashedSet();
+		protected readonly ISet synchronizedTables = new HashedSet();
 		private bool hasSubselectLoadableCollections;
 		private string entityName;
 
@@ -621,7 +621,7 @@ namespace NHibernate.Mapping
 		/// that contains information about the Key.
 		/// </summary>
 		/// <value>The <see cref="SimpleValue"/> that contains information about the Key.</value>
-		public abstract SimpleValue Key { get; set; }
+		public abstract IKeyValue Key { get; set; }
 
 		/// <summary>
 		/// Creates the <see cref="PrimaryKey"/> for the <see cref="Table"/>
@@ -856,7 +856,7 @@ namespace NHibernate.Mapping
 
 		public void AddSynchronizedTable(string table)
 		{
-			synchronizedTablesField.Add(table);
+			synchronizedTables.Add(table);
 		}
 
 		public void AddFilter(string name, string condition)

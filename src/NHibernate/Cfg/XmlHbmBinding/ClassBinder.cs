@@ -94,6 +94,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("joined-subclass".Equals(name))
 					new JoinedSubclassBinder(this).HandleJoinedSubclass(model, subnode);
 
+				else if ("union-subclass".Equals(name))
+					new UnionSubclassBinder(this).HandleUnionSubclass(model, subnode);
+
 				else if ("filter".Equals(name))
 					ParseFilter(subnode, model);
 
@@ -217,9 +220,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					mappings.SchemaName
 				: schemaNode.Value;
 
-			Table table = mappings.AddTable(
-				schema,
-				GetClassTableName(persistentClass, node));
+			Table table = mappings.AddTable(schema, GetClassTableName(persistentClass, node), false);
 			join.Table = table;
 
 			XmlAttribute fetchNode = node.Attributes["fetch"];

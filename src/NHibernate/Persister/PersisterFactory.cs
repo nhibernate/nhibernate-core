@@ -53,6 +53,10 @@ namespace NHibernate.Persister
 			{
 				return new JoinedSubclassEntityPersister(model, cache, factory, cfg);
 			}
+			else if (persisterClass == typeof(UnionSubclassEntityPersister))
+			{
+				return new UnionSubclassEntityPersister(model, cache, factory, cfg);
+			}
 			else
 			{
 				return Create(persisterClass, model, cache, factory, cfg);

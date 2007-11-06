@@ -25,10 +25,11 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
 		{
-			StringBuilder buf = new StringBuilder("create index ")
+			StringBuilder buf =
+				new StringBuilder("create index ")
 				.Append(dialect.QualifyIndexName ? name : StringHelper.Unqualify(name))
 				.Append(" on ")
-				.Append(table.GetQualifiedName(dialect))
+				.Append(table.GetQualifiedName(dialect, defaultSchema))
 				.Append(" (");
 
 			bool commaNeeded = false;
@@ -103,6 +104,14 @@ namespace NHibernate.Mapping
 			if (!columns.Contains(column))
 			{
 				columns.Add(column);
+			}
+		}
+
+		public void AddColumns(IEnumerable extraColumns)
+		{
+			foreach (Column column in extraColumns)
+			{
+				AddColumn(column);
 			}
 		}
 

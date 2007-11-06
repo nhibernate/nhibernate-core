@@ -169,10 +169,10 @@ namespace NHibernate.Persister.Entity
 					{
 						columns.Add(column);
 					}
-				}				
+				}
 			}
 
-		StringBuilder buf = new StringBuilder().Append("( ");
+			StringBuilder buf = new StringBuilder().Append("( ");
 			List<PersistentClass> subClasses = new List<PersistentClass>();
 			subClasses.Add(model);
 			subClasses.AddRange(model.SubclassCollection);
@@ -198,7 +198,6 @@ namespace NHibernate.Persister.Entity
 					if (dialect.SupportsUnionAll)
 						buf.Append("all ");
 				}
-				
 			}
 
 			if (buf.Length > 2)
@@ -339,7 +338,7 @@ namespace NHibernate.Persister.Entity
 
 		protected override string GetTableName(int table)
 		{
-			return subquery;
+			return tableName;
 		}
 
 		protected override string[] GetKeyColumns(int table)
@@ -355,6 +354,11 @@ namespace NHibernate.Persister.Entity
 		protected override int[] PropertyTableNumbers
 		{
 			get { return new int[PropertySpan]; }
+		}
+
+		public override object[] QuerySpaces
+		{
+			get { return subclassSpaces; }
 		}
 	}
 }

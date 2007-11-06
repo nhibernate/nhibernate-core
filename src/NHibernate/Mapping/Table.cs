@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Data;
 using System.Text;
@@ -15,16 +14,16 @@ namespace NHibernate.Mapping
 	{
 		private string name;
 		private string schema;
-		private SequencedHashMap columns = new SequencedHashMap();
+		private readonly SequencedHashMap columns = new SequencedHashMap();
 		private SimpleValue idValue;
 		private PrimaryKey primaryKey;
-		private IDictionary indexes = new Hashtable();
-		private IDictionary foreignKeys = new Hashtable();
-		private IDictionary uniqueKeys = new Hashtable();
-		private int uniqueInteger;
+		private readonly IDictionary indexes = new Hashtable();
+		private readonly IDictionary foreignKeys = new Hashtable();
+		private readonly IDictionary uniqueKeys = new Hashtable();
+		private readonly int uniqueInteger;
 		private bool quoted;
 		private static int tableCounter = 0;
-		private IList checkConstraints = new ArrayList();
+		private readonly IList checkConstraints = new ArrayList();
 		private bool isAbstract;
 		private bool hasDenormalizedTables = false;
 
@@ -165,10 +164,10 @@ namespace NHibernate.Mapping
 		/// <param name="column">The <see cref="Column"/> to include in the Table.</param>
 		public void AddColumn(Column column)
 		{
-			Column old = (Column) columns[column.Name];
+			Column old = GetColumn(column);
 			if (old == null)
 			{
-				columns[column.Name] = column;
+				columns[column.CanonicalName] = column;
 				column.uniqueInteger = columns.Count;
 			}
 			else
@@ -196,7 +195,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="Column"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public ICollection ColumnCollection
+		public virtual ICollection ColumnCollection
 		{
 			get { return columns.Values; }
 		}
@@ -209,7 +208,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="Index"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public ICollection IndexCollection
+		public virtual ICollection IndexCollection
 		{
 			get { return indexes.Values; }
 		}
@@ -235,22 +234,18 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="UniqueKey"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public ICollection UniqueKeyCollection
+		public virtual ICollection UniqueKeyCollection
 		{
 			get { return uniqueKeys.Values; }
 		}
 
 		/// <summary>
-		/// 
+		/// Not supported
 		/// </summary>
-		/// <param name="dialect"></param>
-		/// <param name="p"></param>
-		/// <param name="tableInfo"></param>
-		/// <returns></returns>
-		public IList SqlAlterStrings(Dialect.Dialect dialect, IMapping p, DataTable tableInfo)
+		public IList SqlAlterStrings(Dialect.Dialect dialect, IMapping p, DataTable tableInfo, string defaultSchema)
 		{
 			StringBuilder root = new StringBuilder("alter table ")
-				.Append(GetQualifiedName(dialect))
+				.Append(GetQualifiedName(dialect,defaultSchema))
 				.Append(" ")
 				.Append(dialect.AddColumnString);
 
@@ -292,18 +287,20 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
 		{
-			StringBuilder buf = new StringBuilder("create table ")
-				.Append(GetQualifiedName(dialect, defaultSchema))
-				.Append(" (");
+			StringBuilder buf = new StringBuilder(HasPrimaryKey ? 
+				dialect.CreateTableString : dialect.CreateMultisetTableString)
+					.Append(' ')
+					.Append(GetQualifiedName(dialect, defaultSchema))
+					.Append(" (");
 
 			bool identityColumn = idValue != null && idValue.CreateIdentifierGenerator(dialect) is IdentityGenerator;
 
 			// try to find out the name of the pk to create it as identity if the 
 			// identitygenerator is used
 			string pkname = null;
-			if (primaryKey != null && identityColumn)
+			if (HasPrimaryKey && identityColumn)
 			{
-				foreach (Column col in primaryKey.ColumnCollection)
+				foreach (Column col in PrimaryKey.ColumnCollection)
 				{
 					pkname = col.GetQuotedName(dialect); //should only go through this loop once
 				}
@@ -356,15 +353,9 @@ namespace NHibernate.Mapping
 					buf.Append(StringHelper.CommaSpace);
 				}
 			}
-
-			if (primaryKey != null)
+			if (HasPrimaryKey)
 			{
-				//if ( dialect is HSQLDialect && identityColumn ) {
-				// // skip the primary key definition	
-				// //ugly hack...
-				//} else {
-				buf.Append(',').Append(primaryKey.SqlConstraintString(dialect, defaultSchema));
-				//}
+				buf.Append(", ").Append(PrimaryKey.SqlConstraintString(dialect, defaultSchema));
 			}
 
 			foreach (UniqueKey uk in UniqueKeyCollection)
@@ -395,7 +386,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets the <see cref="PrimaryKey"/> of the Table.
 		/// </summary>
 		/// <value>The <see cref="PrimaryKey"/> of the Table.</value>
-		public PrimaryKey PrimaryKey
+		public virtual PrimaryKey PrimaryKey
 		{
 			get { return primaryKey; }
 			set { primaryKey = value; }
@@ -461,7 +452,7 @@ namespace NHibernate.Mapping
 		/// one already exists for the columns then it will return an 
 		/// existing <see cref="ForeignKey"/>.
 		/// </remarks>
-		public ForeignKey CreateForeignKey(string keyName, IList columns, System.Type referencedClass)
+		public virtual ForeignKey CreateForeignKey(string keyName, IList columns, System.Type referencedClass)
 		{
 			if (keyName == null)
 			{
@@ -492,6 +483,10 @@ namespace NHibernate.Mapping
 				}
 			}
 			return fk;
+		}
+
+		public virtual void CreateForeignKeys()
+		{
 		}
 
 		/// <summary>
@@ -591,9 +586,48 @@ namespace NHibernate.Mapping
 			set { isAbstract = value; }
 		}
 
-		public bool ContainsColumn(Column column)
+		public virtual bool ContainsColumn(Column column)
 		{
 			return columns.ContainsValue(column);
+		}
+
+		/// <summary> Return the column which is identified by column provided as argument. </summary>
+		/// <param name="column">column with atleast a name. </param>
+		/// <returns> 
+		/// The underlying column or null if not inside this table.
+		/// Note: the instance *can* be different than the input parameter, but the name will be the same.
+		/// </returns>
+		public virtual Column GetColumn(Column column)
+		{
+			if (column == null)
+			{
+				return null;
+			}
+
+			Column myColumn = (Column)columns[column.CanonicalName];
+
+			return column.Equals(myColumn) ? myColumn : null;
+		}
+
+		internal IDictionary UniqueKeys
+		{
+			// NH : Different behavior
+			get { return uniqueKeys; }
+		}
+
+		public static string Qualify(string schema, string table)
+		{
+			StringBuilder qualifiedName = new StringBuilder();
+			if (!string.IsNullOrEmpty(schema))
+			{
+				qualifiedName.Append(schema).Append('.');
+			}
+			return qualifiedName.Append(table).ToString();
+		}
+
+		public bool HasPrimaryKey
+		{
+			get { return PrimaryKey != null; }
 		}
 
 	}

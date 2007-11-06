@@ -926,6 +926,8 @@ namespace NHibernate.Cfg
 
 		private void SecondPassCompileForeignKeys(Table table, ISet done)
 		{
+			table.CreateForeignKeys();
+
 			foreach (ForeignKey fk in table.ForeignKeyCollection)
 			{
 				if (!done.Contains(fk))

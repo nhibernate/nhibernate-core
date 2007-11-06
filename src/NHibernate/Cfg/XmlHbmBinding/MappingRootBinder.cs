@@ -30,6 +30,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			AddRootClasses(node);
 			AddSubclasses(node);
 			AddJoinedSubclasses(node);
+			AddUnionSubclasses(node);
 
 			AddQueries(mappingSchema);
 			AddSqlQueries(mappingSchema);
@@ -64,6 +65,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsClass, namespaceManager))
 				binder.Bind(node, Deserialize<HbmClass>(node));
+		}
+
+		private void AddUnionSubclasses(XmlNode parentNode)
+		{
+			UnionSubclassBinder binder = new UnionSubclassBinder(this, namespaceManager, dialect);
+
+			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsUnionSubclass, namespaceManager))
+				binder.Bind(node);
 		}
 
 		private void AddJoinedSubclasses(XmlNode parentNode)

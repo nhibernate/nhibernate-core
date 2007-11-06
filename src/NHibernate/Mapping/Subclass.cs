@@ -12,7 +12,7 @@ namespace NHibernate.Mapping
 	public class Subclass : PersistentClass
 	{
 		private PersistentClass superclass;
-		private SimpleValue key;
+		private IKeyValue key;
 		private System.Type classPersisterClass;
 		private int subclassId;
 
@@ -335,7 +335,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the Key.
 		/// </summary>
 		/// <value>The <see cref="SimpleValue"/> that contains information about the Key.</value>
-		public override SimpleValue Key
+		public override IKeyValue Key
 		{
 			get
 			{
@@ -463,7 +463,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				HashedSet result = new HashedSet();
-				result.AddAll(synchronizedTablesField);
+				result.AddAll(synchronizedTables);
 				result.AddAll(Superclass.SynchronizedTables);
 				return result;
 			}

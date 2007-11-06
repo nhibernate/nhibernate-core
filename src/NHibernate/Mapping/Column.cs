@@ -86,6 +86,11 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		public string CanonicalName
+		{
+			get { return quoted ? name : name.ToLowerInvariant(); }
+		}
+
 		/// <summary>
 		/// Gets the name of this Column in quoted form if it is necessary.
 		/// </summary>
@@ -308,17 +313,15 @@ namespace NHibernate.Mapping
 			{
 				return true;
 			}
-
-			return name.Equals(column.Name);
+			return IsQuoted ? name.Equals(column.name) : name.ToLowerInvariant().Equals(column.name.ToLowerInvariant());
 		}
 
 		/// <summary>
 		/// Returns the hash code for this instance.
 		/// </summary>
-		/// <value>The value of Name.GetHashCode().</value>
 		public override int GetHashCode()
 		{
-			return name.GetHashCode();
+			return IsQuoted ? name.GetHashCode() : name.ToLowerInvariant().GetHashCode();
 		}
 
 		#endregion

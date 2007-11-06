@@ -36,7 +36,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//table + schema names
 			XmlAttribute schemaNode = subnode.Attributes["schema"];
 			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
-			Table mytable = mappings.AddTable(schema, GetClassTableName(subclass, subnode));
+			Table mytable = mappings.AddTable(schema, GetClassTableName(subclass, subnode), false);
 			((ITableOwner)subclass).Table = mytable;
 
 			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.Name, subclass.Table.Name);
@@ -45,7 +45,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			SimpleValue key = new DependentValue(mytable, subclass.Identifier);
 			subclass.Key = key;
 			BindSimpleValue(keyNode, key, false, subclass.Name);
-			subclass.Key.Type = subclass.Identifier.Type;
+			key.Type = subclass.Identifier.Type;
 
 			subclass.CreatePrimaryKey(dialect);
 
