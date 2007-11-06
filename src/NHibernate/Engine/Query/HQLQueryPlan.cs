@@ -282,11 +282,11 @@ namespace NHibernate.Engine.Query
 
 			// NH Different behavior (we need to implement the translators.GetEnumerable<T>)
 			if (many.HasValue && many.Value)
-				return new GenericJoinedEnumerable<T>(results);
+				return new JoinedEnumerable<T>(results);
 			else
 			{
-				results = new IEnumerable[] {result};
-				return new GenericJoinedEnumerable<T>(results);
+				results = new IEnumerable[] { result };
+				return new JoinedEnumerable<T>(results);
 			}
 		}
 

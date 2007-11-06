@@ -296,7 +296,7 @@ namespace NHibernate.Test
 			foreach (PersistentClass clazz in configuration.ClassMappings)
 			{
 				bool hasLob = false;
-				foreach (Mapping.Property prop in clazz.PropertyClosureCollection)
+				foreach (Mapping.Property prop in clazz.PropertyClosureIterator)
 				{
 					if (prop.Value.IsSimpleValue)
 					{

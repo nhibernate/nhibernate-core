@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
@@ -179,7 +180,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					int dotIndex = name.LastIndexOf('.');
 					string reducedName = name.Substring(0, dotIndex);
 					IValue value = pc.GetRecursiveProperty(reducedName).Value;
-					ICollection parentPropIter;
+					IEnumerable<Mapping.Property> parentPropIter;
 					if (value is Component)
 					{
 						Component comp = (Component) value;

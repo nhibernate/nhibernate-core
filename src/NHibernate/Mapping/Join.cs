@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -11,7 +10,7 @@ namespace NHibernate.Mapping
 	{
 		private static readonly Alias PK_ALIAS = new Alias(15, "PK");
 
-		private ArrayList properties = new ArrayList();
+		private readonly List<Property> properties = new List<Property>();
 		private Table table;
 		private IKeyValue key;
 		private PersistentClass persistentClass;
@@ -33,7 +32,7 @@ namespace NHibernate.Mapping
 		public void AddProperty(Property prop)
 		{
 			properties.Add(prop);
-			prop.PersistentClass = this.PersistentClass;
+			prop.PersistentClass = PersistentClass;
 		}
 
 		public bool ContainsProperty(Property prop)
@@ -41,7 +40,7 @@ namespace NHibernate.Mapping
 			return properties.Contains(prop);
 		}
 
-		public ICollection PropertyCollection
+		public IEnumerable<Property> PropertyIterator
 		{
 			get { return properties; }
 		}

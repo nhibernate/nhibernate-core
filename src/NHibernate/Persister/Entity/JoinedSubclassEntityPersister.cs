@@ -235,7 +235,7 @@ namespace NHibernate.Persister.Entity
 			keyColumns.Add(base.IdentifierColumnNames);
 
 			// move through each table that contains the data for this entity.
-			foreach (Table tab in model.TableClosureCollection)
+			foreach (Table tab in model.TableClosureIterator)
 			{
 				string tabname = tab.GetQualifiedName(Dialect, factory.DefaultSchema);
 				if (!tabname.Equals(qualifiedTableName))
@@ -259,7 +259,7 @@ namespace NHibernate.Persister.Entity
 			keyColumns = new ArrayList();
 			subtables.Add(this.qualifiedTableName);
 			keyColumns.Add(base.IdentifierColumnNames);
-			foreach (Table tab in model.SubclassTableClosureCollection)
+			foreach (Table tab in model.SubclassTableClosureIterator)
 			{
 				string tabname = tab.GetQualifiedName(Dialect, factory.DefaultSchema);
 				if (!tabname.Equals(qualifiedTableName))
@@ -339,7 +339,7 @@ namespace NHibernate.Persister.Entity
 			this.naturalOrderPropertyTables = new int[HydrateSpan];
 
 			int i = 0;
-			foreach (Mapping.Property prop in model.PropertyClosureCollection)
+			foreach (Mapping.Property prop in model.PropertyClosureIterator)
 			{
 				Table tab = prop.Value.Table;
 				string tabname = tab.GetQualifiedName(Dialect, factory.DefaultSchema);
@@ -354,7 +354,7 @@ namespace NHibernate.Persister.Entity
 			ArrayList formulaTableNumbers = new ArrayList();
 			ArrayList propTableNumbers = new ArrayList(); // this.subclassPropertyTableNameClosure
 
-			foreach (Mapping.Property prop in model.SubclassPropertyClosureCollection)
+			foreach (Mapping.Property prop in model.SubclassPropertyClosureIterator)
 			{
 				Table tab = prop.Value.Table;
 				String tabname = tab.GetQualifiedName(
@@ -423,7 +423,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			int p = 0;
-			foreach (Subclass sc in model.SubclassCollection)
+			foreach (Subclass sc in model.SubclassIterator)
 			{
 				subclassClosure[p] = sc.MappedClass;
 				try

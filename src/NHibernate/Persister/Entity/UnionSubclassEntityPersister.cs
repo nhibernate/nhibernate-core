@@ -86,7 +86,7 @@ namespace NHibernate.Persister.Entity
 			if (persistentClass.IsPolymorphic)
 			{
 				int k = 1;
-				foreach (Subclass sc in persistentClass.SubclassCollection)
+				foreach (Subclass sc in persistentClass.SubclassIterator)
 				{
 					subclassClosure[k++] = sc.EntityName;
 					subclassByDiscriminatorValue[sc.SubclassId] = sc.MappedClass;
@@ -100,7 +100,7 @@ namespace NHibernate.Persister.Entity
 				ArrayHelper.ToStringArray(persistentClass.SynchronizedTables));
 
 			HashedSet<string> subclassTables = new HashedSet<string>();
-			foreach (Table table in persistentClass.SubclassTableClosureCollection)
+			foreach (Table table in persistentClass.SubclassTableClosureIterator)
 			{
 				subclassTables.Add(table.GetQualifiedName(factory.Dialect, factory.DefaultSchema));				
 			}
@@ -118,7 +118,7 @@ namespace NHibernate.Persister.Entity
 					tableNames.Add(tableName);
 					keyColumns.Add(IdentifierColumnNames);
 				}
-				foreach (Table tab in persistentClass.SubclassTableClosureCollection)
+				foreach (Table tab in persistentClass.SubclassTableClosureIterator)
 				{
 					if (!tab.IsAbstractUnionTable)
 					{
@@ -161,7 +161,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			HashedSet<Column> columns = new HashedSet<Column>();
-			foreach (Table table in model.SubclassTableClosureCollection)
+			foreach (Table table in model.SubclassTableClosureIterator)
 			{
 				if (!table.IsAbstractUnionTable)
 				{
@@ -173,10 +173,9 @@ namespace NHibernate.Persister.Entity
 			}
 
 			StringBuilder buf = new StringBuilder().Append("( ");
-			List<PersistentClass> subClasses = new List<PersistentClass>();
-			subClasses.Add(model);
-			subClasses.AddRange(model.SubclassCollection);
-			foreach (PersistentClass clazz in subClasses)
+			IEnumerable siter = new JoinedEnumerable(new SingletonEnumerable<PersistentClass>(model), model.SubclassIterator);
+
+			foreach (PersistentClass clazz in siter)
 			{
 				Table table = clazz.Table;
 				if (!table.IsAbstractUnionTable)

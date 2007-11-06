@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -63,8 +64,8 @@ namespace NHibernate.Mapping
 
 		private bool isGeneric;
 		private System.Type[] genericArguments;
-		private IDictionary filters = new Hashtable();
-		private IDictionary manyToManyFilters = new Hashtable();
+		private readonly Dictionary<string, string> filters = new Dictionary<string, string>();
+		private readonly Dictionary<string, string> manyToManyFilters = new Dictionary<string, string>();
 		private bool subselectLoadable;
 		private string manyToManyWhere;
 		private string manyToManyOrderBy;
@@ -480,7 +481,7 @@ namespace NHibernate.Mapping
 			filters.Add(name, condition);
 		}
 
-		public IDictionary FilterMap
+		public IDictionary<string,string> FilterMap
 		{
 			get { return filters; }
 		}
@@ -490,7 +491,7 @@ namespace NHibernate.Mapping
 			manyToManyFilters.Add(name, condition);
 		}
 
-		public IDictionary ManyToManyFilterMap
+		public IDictionary<string, string> ManyToManyFilterMap
 		{
 			get { return manyToManyFilters; }
 		}

@@ -1,10 +1,9 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
-using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -14,24 +13,19 @@ namespace NHibernate.Util
 		private readonly string[] filterNames;
 		private readonly string[] filterConditions;
 
-		public FilterHelper(IDictionary filters, Dialect.Dialect dialect, SQLFunctionRegistry sqlFunctionRegistry)
+		public FilterHelper(IDictionary<string, string> filters, Dialect.Dialect dialect, SQLFunctionRegistry sqlFunctionRegistry)
 		{
 			int filterCount = filters.Count;
 			filterNames = new string[filterCount];
 			filterConditions = new string[filterCount];
 			filterCount = 0;
-			foreach (DictionaryEntry entry in  filters)
+			foreach (KeyValuePair<string, string> entry in filters)
 			{
-				filterNames[filterCount] = (string) entry.Key;
-				filterConditions[filterCount] = Template.RenderWhereStringTemplate(
-					(String) entry.Value,
-					FilterImpl.MARKER,
-					dialect,
-					sqlFunctionRegistry
-					);
-				filterConditions[filterCount] = StringHelper.Replace(filterConditions[filterCount],
-				                                                     ":",
-				                                                     ":" + filterNames[filterCount] + ".");
+				filterNames[filterCount] = entry.Key;
+				filterConditions[filterCount] =
+					Template.RenderWhereStringTemplate(entry.Value, FilterImpl.MARKER, dialect, sqlFunctionRegistry);
+				filterConditions[filterCount] =
+					StringHelper.Replace(filterConditions[filterCount], ":", ":" + filterNames[filterCount] + ".");
 				filterCount++;
 			}
 		}

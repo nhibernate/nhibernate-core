@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -9,7 +10,7 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class Component : SimpleValue
 	{
-		private ArrayList properties = new ArrayList();
+		private readonly List<Property> properties = new List<Property>();
 		private System.Type componentClass;
 		private bool embedded;
 		private string parentProperty;
@@ -23,7 +24,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public ICollection PropertyCollection
+		public IEnumerable<Property> PropertyCollection
 		{
 			get { return properties; }
 		}
@@ -145,12 +146,6 @@ namespace NHibernate.Mapping
 			set { parentProperty = value; }
 		}
 
-		/// <summary></summary>
-		public ArrayList Properties
-		{
-			get { return properties; }
-		}
-
 		public override bool[] ColumnInsertability
 		{
 			get
@@ -191,7 +186,7 @@ namespace NHibernate.Mapping
 
 		public Property GetProperty(string propertyName)
 		{
-			ICollection iter = PropertyCollection;
+			IEnumerable<Property> iter = PropertyCollection;
 			foreach (Property prop in iter)
 			{
 				if (prop.Name.Equals(propertyName))

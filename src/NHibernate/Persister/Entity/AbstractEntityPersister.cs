@@ -806,7 +806,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			// HYDRATE SPAN
-			hydrateSpan = persistentClass.PropertyClosureCollection.Count;
+			hydrateSpan = persistentClass.PropertyClosureSpan;
 
 			// IDENTIFIER 
 
@@ -862,7 +862,7 @@ namespace NHibernate.Persister.Entity
 			// NH: reflection optimizer works with custom accessors
 			//bool foundCustomAccessor = false;
 
-			foreach (Mapping.Property prop in persistentClass.PropertyClosureCollection)
+			foreach (Mapping.Property prop in persistentClass.PropertyClosureIterator)
 			{
 				//if( !prop.IsBasicPropertyAccessor )
 				//{
@@ -895,7 +895,7 @@ namespace NHibernate.Persister.Entity
 			i = 0;
 			bool foundFormula = false;
 
-			foreach (Mapping.Property prop in persistentClass.PropertyClosureCollection)
+			foreach (Mapping.Property prop in persistentClass.PropertyClosureIterator)
 			{
 				thisClassProperties.Add(prop);
 
@@ -958,7 +958,7 @@ namespace NHibernate.Persister.Entity
 			ArrayList columnSelectables = new ArrayList();
 			ArrayList propNullables = new ArrayList();
 
-			foreach (Mapping.Property prop in persistentClass.SubclassPropertyClosureCollection)
+			foreach (Mapping.Property prop in persistentClass.SubclassPropertyClosureIterator)
 			{
 				names.Add(prop.Name);
 				classes.Add(prop.PersistentClass.MappedClass);
@@ -1082,7 +1082,7 @@ namespace NHibernate.Persister.Entity
 
 				if (HasProxy)
 				{
-					foreach (Subclass subclass in persistentClass.SubclassCollection)
+					foreach (Subclass subclass in persistentClass.SubclassIterator)
 					{
 						System.Type subclassProxy = subclass.ProxyInterface;
 						if (subclassProxy == null)
@@ -1129,7 +1129,7 @@ namespace NHibernate.Persister.Entity
 		protected void InitSubclassPropertyAliasesMap(PersistentClass model)
 		{
 			// ALIASES
-			InternalInitSubclassPropertyAliasesMap(null, model.SubclassPropertyClosureCollection);
+			InternalInitSubclassPropertyAliasesMap(null, model.SubclassPropertyClosureIterator);
 
 			// aliases for identifier
 			if (HasIdentifierProperty)
@@ -1157,7 +1157,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private void InternalInitSubclassPropertyAliasesMap(string path, ICollection col)
+		private void InternalInitSubclassPropertyAliasesMap(string path, IEnumerable<Mapping.Property> col)
 		{
 			foreach (Mapping.Property prop in col)
 			{

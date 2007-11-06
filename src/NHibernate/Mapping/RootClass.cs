@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -150,9 +152,9 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="Property"/> objects that 
 		/// this mapped class contains.
 		/// </value>
-		public override ICollection PropertyClosureCollection
+		public override IEnumerable<Property> PropertyClosureIterator
 		{
-			get { return PropertyCollection; }
+			get { return PropertyIterator; }
 		}
 
 		/// <summary>
@@ -167,14 +169,9 @@ namespace NHibernate.Mapping
 		/// There is only one <see cref="Table"/> in the <see cref="ICollection"/> since
 		/// this is the root class.
 		/// </remarks>
-		public override ICollection TableClosureCollection
+		public override IEnumerable<Table> TableClosureIterator
 		{
-			get
-			{
-				ArrayList retVal = new ArrayList();
-				retVal.Add(Table);
-				return retVal;
-			}
+			get { return new SingletonEnumerable<Table>(Table); }
 		}
 
 		/// <summary>
@@ -373,7 +370,7 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public override ISet SynchronizedTables
+		public override ISet<string> SynchronizedTables
 		{
 			get { return synchronizedTables; }
 		}
@@ -387,6 +384,21 @@ namespace NHibernate.Mapping
 		public void SetLazyPropertiesCacheable(bool isLazyPropertiesCacheable)
 		{
 			lazyPropertiesCacheable = isLazyPropertiesCacheable;
+		}
+
+		public virtual ISet<Table> IdentityTables
+		{
+			get
+			{
+				ISet<Table> tables = new HashedSet<Table>();
+				foreach (PersistentClass clazz in SubclassClosureIterator)
+				{
+					if (!clazz.IsAbstract.GetValueOrDefault())
+						tables.Add(clazz.IdentityTable);
+				}
+				return tables;
+			}
+
 		}
 	}
 }

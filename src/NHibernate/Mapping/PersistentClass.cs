@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -26,20 +26,20 @@ namespace NHibernate.Mapping
 		private System.Type mappedClass;
 		private string discriminatorValue;
 		private bool lazy;
-		private ArrayList properties = new ArrayList();
+		private readonly List<Property> properties = new List<Property>();
 		private System.Type proxyInterface;
 		private readonly List<Subclass> subclasses = new List<Subclass>();
-		private readonly ArrayList subclassProperties = new ArrayList();
-		private readonly ArrayList subclassTables = new ArrayList();
+		private readonly List<Property> subclassProperties = new List<Property>();
+		private readonly List<Table> subclassTables = new List<Table>();
 		private bool dynamicInsert;
 		private bool dynamicUpdate;
 		private int batchSize = 1;
 		private bool selectBeforeUpdate;
 		private OptimisticLockMode optimisticLockMode;
 		private IDictionary metaAttributes;
-		private readonly ArrayList joins = new ArrayList();
-		private readonly ArrayList subclassJoins = new ArrayList();
-		private IDictionary filters = new Hashtable();
+		private readonly List<Join> joins = new List<Join>();
+		private readonly List<Join> subclassJoins = new List<Join>();
+		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
 
 
 		private SqlString customSQLInsert;
@@ -58,7 +58,7 @@ namespace NHibernate.Mapping
 
 		private bool? isAbstract;
 
-		protected readonly ISet synchronizedTables = new HashedSet();
+		protected readonly ISet<string> synchronizedTables = new HashedSet<string>();
 		private bool hasSubselectLoadableCollections;
 		private string entityName;
 
@@ -153,43 +153,36 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets the Collection of Subclasses for this PersistentClass.  
+		/// Iterate over subclasses in a special 'order', most derived subclasses first.
 		/// </summary>
 		/// <value>
 		/// It will recursively go through Subclasses so that if a Subclass has Subclasses
 		/// it will pick those up also.
 		/// </value>
-		public virtual ICollection<PersistentClass> SubclassCollection
+		public virtual IEnumerable<Subclass> SubclassIterator
 		{
 			get
 			{
-				List<PersistentClass> retVal = new List<PersistentClass>();
-
-				// check to see if there are any subclass in our subclasses 
-				// and add them into the collection
-				foreach (Subclass sc in subclasses)
-				{
-					retVal.AddRange(sc.SubclassCollection);
-				}
-
-				// finally add the subclasses from this PersistentClass into
-				// the collection to return
+				IEnumerable<Subclass>[] iters = new IEnumerable<Subclass>[subclasses.Count + 1];
+				int i = 0;
 				foreach (Subclass subclass in subclasses)
-					retVal.Add(subclass);
-
-				return retVal;
+				{
+					iters[i++] = subclass.SubclassIterator;
+				}
+				iters[i] = subclasses;
+				return new JoinedEnumerable<Subclass>(iters);
 			}
 		}
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="Subclass"/> objects
+		/// Gets an <see cref="IEnumerable"/> of <see cref="Subclass"/> objects
 		/// that directly inherit from this PersistentClass.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Subclass"/> objects
+		/// An <see cref="IEnumerable"/> of <see cref="Subclass"/> objects
 		/// that directly inherit from this PersistentClass.
 		/// </value>
-		public virtual ICollection<Subclass> DirectSubclasses
+		public virtual IEnumerable<Subclass> DirectSubclasses
 		{
 			get { return subclasses; }
 		}
@@ -234,7 +227,7 @@ namespace NHibernate.Mapping
 		public virtual int GetJoinNumber(Property prop)
 		{
 			int result = 1;
-			foreach (Join join in SubclassJoinClosureCollection)
+			foreach (Join join in SubclassJoinClosureIterator)
 			{
 				if (join.ContainsProperty(prop))
 					return result;
@@ -244,22 +237,22 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="Property"/> objects.
+		/// Gets an <see cref="IEnumerable"/> of <see cref="Property"/> objects.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Property"/> objects.
+		/// An <see cref="IEnumerable"/> of <see cref="Property"/> objects.
 		/// </value>
-		public virtual ICollection PropertyCollection
+		public virtual IEnumerable<Property> PropertyIterator
 		{
 			get
 			{
-				ArrayList result = new ArrayList();
-				result.AddRange(properties);
+				List<IEnumerable<Property>> iterators = new List<IEnumerable<Property>>();
+				iterators.Add(properties);
 				foreach (Join join in joins)
 				{
-					result.AddRange(join.PropertyCollection);
+					iterators.Add(join.PropertyIterator);
 				}
-				return result;
+				return new JoinedEnumerable<Property>(iterators);
 			}
 		}
 
@@ -388,33 +381,33 @@ namespace NHibernate.Mapping
 		public abstract bool IsExplicitPolymorphism { get; set; }
 
 		/// <summary>
-		/// When implemented by a class, gets an <see cref="ICollection"/> 
+		/// When implemented by a class, gets an <see cref="IEnumerable"/> 
 		/// of <see cref="Property"/> objects that this mapped class contains.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Property"/> objects that 
+		/// An <see cref="IEnumerable"/> of <see cref="Property"/> objects that 
 		/// this mapped class contains.
 		/// </value>
 		/// <remarks>
 		/// This is all of the properties of this mapped class and each mapped class that
 		/// it is inheriting from.
 		/// </remarks>
-		public abstract ICollection PropertyClosureCollection { get; }
+		public abstract IEnumerable<Property> PropertyClosureIterator { get; }
 
 		/// <summary>
-		/// When implemented by a class, gets an <see cref="ICollection"/> 
+		/// When implemented by a class, gets an <see cref="IEnumerable"/> 
 		/// of <see cref="Table"/> objects that this mapped class reads from
 		/// and writes to.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Table"/> objects that 
+		/// An <see cref="IEnumerable"/> of <see cref="Table"/> objects that 
 		/// this mapped class reads from and writes to.
 		/// </value>
 		/// <remarks>
 		/// This is all of the tables of this mapped class and each mapped class that
 		/// it is inheriting from.
 		/// </remarks>
-		public abstract ICollection TableClosureCollection { get; }
+		public abstract IEnumerable<Table> TableClosureIterator { get; }
 
 		/// <summary>
 		/// Adds a <see cref="Property"/> that is implemented by a subclass.
@@ -440,54 +433,42 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="Property"/> objects that
+		/// Gets an <see cref="IEnumerable"/> of <see cref="Property"/> objects that
 		/// this mapped class contains and that all of its subclasses contain.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Property"/> objects that
+		/// An <see cref="IEnumerable"/> of <see cref="Property"/> objects that
 		/// this mapped class contains and that all of its subclasses contain.
 		/// </value>
-		public virtual ICollection SubclassPropertyClosureCollection
+		public virtual IEnumerable<Property> SubclassPropertyClosureIterator
 		{
 			get
 			{
-				ArrayList retVal = new ArrayList();
-				retVal.AddRange(PropertyClosureCollection);
-				retVal.AddRange(subclassProperties);
+				List<IEnumerable<Property>> iters = new List<IEnumerable<Property>>();
+				iters.Add(PropertyClosureIterator);
+				iters.Add(subclassProperties);
 				foreach (Join join in subclassJoins)
 				{
-					retVal.AddRange(join.PropertyCollection);
+					iters.Add(join.PropertyIterator);
 				}
-				return retVal;
+				return new JoinedEnumerable<Property>(iters);
 			}
 		}
 
-		public virtual ICollection SubclassJoinClosureCollection
+		public virtual IEnumerable<Join> SubclassJoinClosureIterator
 		{
-			get
-			{
-				ArrayList retVal = new ArrayList();
-				retVal.AddRange(JoinClosureCollection);
-				retVal.AddRange(subclassJoins);
-				return retVal;
-			}
+			get { return new JoinedEnumerable<Join>(JoinClosureIterator, subclassJoins); }
 		}
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of all of the <see cref="Table"/> objects that the 
+		/// Gets an <see cref="IEnumerable"/> of all of the <see cref="Table"/> objects that the 
 		/// subclass finds its information in.  
 		/// </summary>
-		/// <value>An <see cref="ICollection"/> of <see cref="Table"/> objects.</value>
-		/// <remarks>It adds the TableClosureCollection and the subclassTables into the ICollection.</remarks>
-		public virtual ICollection SubclassTableClosureCollection
+		/// <value>An <see cref="IEnumerable"/> of <see cref="Table"/> objects.</value>
+		/// <remarks>It adds the TableClosureIterator and the subclassTables into the IEnumerable.</remarks>
+		public virtual IEnumerable<Table> SubclassTableClosureIterator
 		{
-			get
-			{
-				ArrayList retVal = new ArrayList();
-				retVal.AddRange(TableClosureCollection);
-				retVal.AddRange(subclassTables);
-				return retVal;
-			}
+			get { return new JoinedEnumerable<Table>(TableClosureIterator, subclassTables); }
 		}
 
 		public virtual bool IsClassOrSuperclassJoin(Join join)
@@ -554,12 +535,12 @@ namespace NHibernate.Mapping
 			return (MetaAttribute) metaAttributes[name];
 		}
 
-		public virtual ICollection JoinCollection
+		public virtual IEnumerable<Join> JoinIterator
 		{
 			get { return joins; }
 		}
 
-		public virtual ICollection JoinClosureCollection
+		public virtual IEnumerable<Join> JoinClosureIterator
 		{
 			get { return joins; }
 		}
@@ -667,14 +648,14 @@ namespace NHibernate.Mapping
 		/// <returns></returns>
 		public Property GetProperty(string propertyName)
 		{
-			return GetProperty(propertyName, PropertyClosureCollection);
+			return GetProperty(propertyName, PropertyClosureIterator);
 		}
 
-		private Property GetProperty(string propertyName, ICollection iter)
+		private Property GetProperty(string propertyName, IEnumerable<Property> iter)
 		{
 			foreach (Property prop in iter)
 			{
-				if (prop.Name == propertyName)
+				if (prop.Name.Equals(propertyName))
 				{
 					return prop;
 				}
@@ -721,7 +702,7 @@ namespace NHibernate.Mapping
 		/// <param name="mapping"></param>
 		public virtual void Validate(IMapping mapping)
 		{
-			foreach (Property prop in PropertyCollection)
+			foreach (Property prop in PropertyIterator)
 			{
 				if (!prop.IsValid(mapping))
 				{
@@ -746,10 +727,10 @@ namespace NHibernate.Mapping
 
 		public Property GetRecursiveProperty(string propertyPath)
 		{
-			return GetRecursiveProperty(propertyPath, PropertyCollection);
+			return GetRecursiveProperty(propertyPath, PropertyIterator);
 		}
 
-		private Property GetRecursiveProperty(string propertyPath, ICollection iter)
+		private Property GetRecursiveProperty(string propertyPath, IEnumerable<Property> iter)
 		{
 			Property property = null;
 
@@ -852,7 +833,7 @@ namespace NHibernate.Mapping
 			updateCheckStyle = checkStyle;
 		}
 
-		public abstract ISet SynchronizedTables { get; }
+		public abstract ISet<string> SynchronizedTables { get; }
 
 		public void AddSynchronizedTable(string table)
 		{
@@ -864,7 +845,7 @@ namespace NHibernate.Mapping
 			filters.Add(name, condition);
 		}
 
-		public virtual IDictionary FilterMap
+		public virtual IDictionary<string,string> FilterMap
 		{
 			get { return filters; }
 		}
@@ -893,7 +874,7 @@ namespace NHibernate.Mapping
 		{
 			try
 			{
-				return GetRecursiveProperty(propertyPath, ReferenceablePropertyCollection);
+				return GetRecursiveProperty(propertyPath, ReferenceablePropertyIterator);
 			}
 			catch (MappingException e)
 			{
@@ -909,12 +890,48 @@ namespace NHibernate.Mapping
 		/// <remarks>
 		/// See <see cref="GetReferencedProperty"/> for a discussion of "referenceable".
 		/// </remarks>
-		public virtual ICollection ReferenceablePropertyCollection
+		public virtual IEnumerable<Property> ReferenceablePropertyIterator
 		{
-			get { return PropertyClosureCollection; }
+			get { return PropertyClosureIterator; }
 		}
 
 		public abstract bool IsLazyPropertiesCacheable { get;}
 
+		protected internal virtual IEnumerable<Property> NonDuplicatedPropertyIterator
+		{
+			get { return UnjoinedPropertyIterator; }
+		}
+
+		/// <summary> 
+		/// Build an enumerable over the properties defined on this class <b>which
+		/// are not defined as part of a join</b>.  
+		/// As with <see cref="PropertyIterator"/> the returned iterator only accounts 
+		/// for non-identifier properties.
+		/// </summary>
+		/// <returns> An enumerable over the non-joined "normal" properties.</returns>
+		public virtual IEnumerable<Property> UnjoinedPropertyIterator
+		{
+			get { return properties; }
+		}
+
+		public virtual Table IdentityTable
+		{
+			get { return RootTable; }
+		}
+
+		public virtual IEnumerable<PersistentClass> SubclassClosureIterator
+		{
+			get
+			{
+				List<IEnumerable<PersistentClass>> iters = new List<IEnumerable<PersistentClass>>();
+				iters.Add(new SingletonEnumerable<PersistentClass>(this));
+				foreach (PersistentClass clazz in SubclassIterator)
+				{
+					iters.Add(clazz.SubclassClosureIterator);
+				}
+				return new JoinedEnumerable<PersistentClass>(iters);
+			}
+
+		}
 	}
 }

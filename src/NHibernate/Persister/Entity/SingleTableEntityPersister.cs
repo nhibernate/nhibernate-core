@@ -282,7 +282,7 @@ namespace NHibernate.Persister.Entity
 			#region JOINS
 
 			int j = 1;
-			foreach (Join join in model.JoinClosureCollection)
+			foreach (Join join in model.JoinClosureIterator)
 			{
 				qualifiedTableNames[j] = join.Table.GetQualifiedName(
 					factory.Dialect, 
@@ -350,7 +350,7 @@ namespace NHibernate.Persister.Entity
 			isNullables.Add(false);
 			isLazies.Add(false);
 
-			foreach (Join join in model.SubclassJoinClosureCollection)
+			foreach (Join join in model.SubclassJoinClosureIterator)
 			{
 				
 				isConcretes.Add(model.IsClassOrSuperclassJoin(join));
@@ -475,7 +475,7 @@ namespace NHibernate.Persister.Entity
 
 			propertyTableNumbers = new int[PropertySpan];
 			i = 0;
-			foreach (Property prop in model.PropertyClosureCollection)
+			foreach (Property prop in model.PropertyClosureIterator)
 			{
 				propertyTableNumbers[i++] = model.GetJoinNumber(prop);
 			}
@@ -484,7 +484,7 @@ namespace NHibernate.Persister.Entity
 			ArrayList formulaJoinedNumbers = new ArrayList();
 			ArrayList propertyJoinNumbers = new ArrayList();
 
-			foreach (Property prop in model.SubclassPropertyClosureCollection)
+			foreach (Property prop in model.SubclassPropertyClosureIterator)
 			{
 				int joinNumber = model.GetJoinNumber(prop);
 				propertyJoinNumbers.Add(joinNumber);
@@ -521,7 +521,7 @@ namespace NHibernate.Persister.Entity
 			if (model.IsPolymorphic)
 			{
 				int k = 1;
-				foreach (Subclass sc in model.SubclassCollection)
+				foreach (Subclass sc in model.SubclassIterator)
 				{
 					subclassClosure[k++] = sc.MappedClass;
 					if (sc.IsDiscriminatorValueNull)

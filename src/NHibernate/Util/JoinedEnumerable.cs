@@ -12,7 +12,7 @@ namespace NHibernate.Util
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(JoinedEnumerable));
 
-		private IEnumerator[] _enumerators;
+		private readonly IEnumerator[] _enumerators;
 		private int _current;
 
 		/// <summary>
@@ -28,6 +28,17 @@ namespace NHibernate.Util
 			}
 			_current = 0;
 		}
+
+		public JoinedEnumerable(List<IEnumerable> enumerables)
+			: this(enumerables.ToArray())
+		{
+		}
+
+		public JoinedEnumerable(IEnumerable first, IEnumerable second)
+			: this(new IEnumerable[] { first, second })
+		{
+		}
+
 
 		#region System.Collections.IEnumerator Members
 
@@ -151,10 +162,25 @@ namespace NHibernate.Util
 		#endregion
 	}
 
-	public class GenericJoinedEnumerable<T> : JoinedEnumerable, IEnumerable<T>, IEnumerator<T>
+	public class JoinedEnumerable<T> : JoinedEnumerable, IEnumerable<T>, IEnumerator<T>
 	{
-		public GenericJoinedEnumerable(IEnumerable[] enumerables)
+		public JoinedEnumerable(IEnumerable[] enumerables)
 			: base(enumerables)
+		{
+		}
+
+		public JoinedEnumerable(IEnumerable<T>[] enumerables)
+			: base(enumerables)
+		{
+		}
+
+		public JoinedEnumerable(List<IEnumerable<T>> enumerables)
+			: this(enumerables.ToArray())
+		{
+		}
+
+		public JoinedEnumerable(IEnumerable<T> first, IEnumerable<T> second)
+			: this(new IEnumerable<T>[] { first, second })
 		{
 		}
 
@@ -166,7 +192,7 @@ namespace NHibernate.Util
 
 		T IEnumerator<T>.Current
 		{
-			get { return (T) this.Current; }
+			get { return (T) Current; }
 		}
 	}
 }

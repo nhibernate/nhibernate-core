@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -8,8 +7,8 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public interface IFilterable
 	{
-		void AddFilter(String name, String condition);
+		void AddFilter(string name, string condition);
 
-		IDictionary FilterMap { get; }
+		IDictionary<string, string> FilterMap { get; }
 	}
 }

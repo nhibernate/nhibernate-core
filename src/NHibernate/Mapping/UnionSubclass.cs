@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -31,9 +34,19 @@ namespace NHibernate.Mapping
 			get { return table; }
 		}
 
-		public override ISet SynchronizedTables
+		public override ISet<string> SynchronizedTables
 		{
 			get { return synchronizedTables; }
+		}
+
+		protected internal override IEnumerable<Property> NonDuplicatedPropertyIterator
+		{
+			get { return PropertyClosureIterator; }
+		}
+
+		public override Table IdentityTable
+		{
+			get { return Table; }
 		}
 	}
 }

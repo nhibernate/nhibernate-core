@@ -136,7 +136,7 @@ namespace NHibernate.Tuple
 			bool foundInsertGeneratedValue = false;
 			bool foundUpdateGeneratedValue = false;
 
-			foreach (Mapping.Property prop in persistentClass.PropertyClosureCollection)
+			foreach (Mapping.Property prop in persistentClass.PropertyClosureIterator)
 			{
 				if (prop == persistentClass.Version)
 				{
@@ -275,7 +275,7 @@ namespace NHibernate.Tuple
 
 			// TODO H3: tuplizers = TuplizerLookup.create(persistentClass, this);
 
-			foreach (PersistentClass obj in persistentClass.SubclassCollection)
+			foreach (PersistentClass obj in persistentClass.SubclassIterator)
 			{
 				// TODO H3: subclassEntityNames.Add( obj.EntityName );
 				subclassTypes.Add(obj.MappedClass);

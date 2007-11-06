@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using Iesi.Collections;
 using NHibernate.Engine;
+using System.Collections.Generic;
+using NHibernate.Util;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -216,15 +219,9 @@ namespace NHibernate.Mapping
 		/// This is all of the properties of this mapped class and each mapped class that
 		/// it is inheriting from.
 		/// </remarks>
-		public override ICollection PropertyClosureCollection
+		public override IEnumerable<Property> PropertyClosureIterator
 		{
-			get
-			{
-				ArrayList retVal = new ArrayList();
-				retVal.AddRange(PropertyCollection);
-				retVal.AddRange(Superclass.PropertyClosureCollection);
-				return retVal;
-			}
+			get { return new JoinedEnumerable<Property>(Superclass.PropertyClosureIterator, PropertyIterator); }
 		}
 
 		/// <summary>
@@ -239,15 +236,9 @@ namespace NHibernate.Mapping
 		/// This is all of the tables of this mapped class and each mapped class that
 		/// it is inheriting from.
 		/// </remarks>
-		public override ICollection TableClosureCollection
+		public override IEnumerable<Table> TableClosureIterator
 		{
-			get
-			{
-				ArrayList retVal = new ArrayList();
-				retVal.AddRange(Superclass.TableClosureCollection);
-				retVal.Add(Table);
-				return retVal;
-			}
+			get { return new JoinedEnumerable<Table>(Superclass.TableClosureIterator, new SingletonEnumerable<Table>(Table)); }
 		}
 
 		/// <summary>
@@ -437,14 +428,11 @@ namespace NHibernate.Mapping
 			get { return Superclass.PropertyClosureSpan + base.PropertyClosureSpan; }
 		}
 
-		public override ICollection JoinClosureCollection
+		public override IEnumerable<Join> JoinClosureIterator
 		{
 			get
 			{
-				ArrayList result = new ArrayList();
-				result.AddRange(Superclass.JoinClosureCollection);
-				result.AddRange(base.JoinClosureCollection);
-				return result;
+				return new JoinedEnumerable<Join>(Superclass.JoinClosureIterator, base.JoinClosureIterator);
 			}
 		}
 
@@ -458,11 +446,11 @@ namespace NHibernate.Mapping
 			return base.IsClassOrSuperclassTable(closureTable) || Superclass.IsClassOrSuperclassTable(closureTable);
 		}
 
-		public override ISet SynchronizedTables
+		public override ISet<string> SynchronizedTables
 		{
 			get
 			{
-				HashedSet result = new HashedSet();
+				HashedSet<string> result = new HashedSet<string>();
 				result.AddAll(synchronizedTables);
 				result.AddAll(Superclass.SynchronizedTables);
 				return result;
@@ -475,24 +463,9 @@ namespace NHibernate.Mapping
 			set { base.HasSubselectLoadableCollections = value; }
 		}
 
-		public override IDictionary FilterMap
+		public override IDictionary<string, string> FilterMap
 		{
 			get { return Superclass.FilterMap; }
-		}
-
-		public override ICollection ReferenceablePropertyCollection
-		{
-			get
-			{
-				if (IsJoinedSubclass)
-				{
-					return PropertyCollection;
-				}
-				else
-				{
-					return base.ReferenceablePropertyCollection;
-				}
-			}
 		}
 
 		public override bool IsLazyPropertiesCacheable
