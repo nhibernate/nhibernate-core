@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   default-access="field.pascalcase-underscore"
+				   namespace="NHibernate.Test.Join"
+				   assembly="NHibernate.Test"
+>
+	<!-- This mapping is created specifically for NH-1059 -->
+	<class name="Worker" lazy="true" discriminator-value="null">
+
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+
+		<discriminator column="worker_type" type="string" length="1" not-null="false" force="true"/>
+
+		<property name="Name" />
+
+		<!--
+		The issue arise when there is not already a <join> element
+		in the root class.  If the <join> element below is uncommented,
+		everything is fine.
+		-->
+		<!--
+		<join table="junk">
+			<key column="worker_id"/>
+			<property name="Junk"/>
+		</join>
+		-->
+
+		<subclass name="PaidWorker"
+				  discriminator-value="P"
+				  lazy="true"
+		>
+			<join table="PaidWorker" fetch="join">
+				<key column="worker_id"/>
+				<property name="Wage"/>
+			</join>
+		</subclass>
+	</class>
+</hibernate-mapping>

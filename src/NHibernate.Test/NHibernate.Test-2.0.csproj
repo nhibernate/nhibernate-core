@@ -203,7 +203,9 @@
     <Compile Include="Join\EmployeeWithCompositeKey.cs" />
     <Compile Include="Join\JoinCompositeKeyTest.cs" />
     <Compile Include="Join\JoinTest.cs" />
+    <Compile Include="Join\NH1059Fixture.cs" />
     <Compile Include="Join\Person.cs" />
+    <Compile Include="Join\Worker.cs" />
     <Compile Include="Join\User.cs" />
     <Compile Include="Legacy\ABCProxyTest.cs" />
     <Compile Include="Legacy\ABCTest.cs" />
@@ -1044,6 +1046,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1061\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Join\Worker.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Unionsubclass\Beings.hbm.xml" />

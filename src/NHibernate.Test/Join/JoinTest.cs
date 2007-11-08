@@ -29,108 +29,84 @@ namespace NHibernate.Test.Join
 			}
 		}
 
-		ISession s;
-		ITransaction t;
-
-		protected override void OnSetUp()
-		{
-			s = OpenSession();
-			//t = s.BeginTransaction();
-
-			objectsNeedDeleting.Clear();
-		}
-
 		protected override void OnTearDown()
 		{
-			s.Flush();
-			s.Clear();
-			try
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
 			{
-				foreach (object obj in objectsNeedDeleting)
-				{
-					s.Delete(obj);
-				}
-				s.Flush();
-			}
-			finally
-			{
-				//t.Commit();
-				s.Close();
-			}
+				s.Delete("from Person");
 
-			t = null;
-			s = null;
+				tx.Commit();
+			}
 		}
-
-		private IList objectsNeedDeleting = new ArrayList();
 
 		[Test]
 		public void TestSequentialSelects()
 		{
-			Employee mark = new Employee();
-			mark.Name = "Mark";
-			mark.Title = "internal sales";
-			mark.Sex = 'M';
-			mark.Address = "buckhead";
-			mark.Zip = "30305";
-			mark.Country = "USA";
-
-			Customer joe = new Customer();
-			joe.Name = "Joe";
-			joe.Address = "San Francisco";
-			joe.Zip = "54353";
-			joe.Country = "USA";
-			joe.Comments = "very demanding";
-			joe.Sex = 'M';
-			joe.Salesperson = mark;
-
-			Person yomomma = new Person();
-			yomomma.Name = "mom";
-			yomomma.Sex = 'F';
-
-			s.Save(yomomma);
-			s.Save(mark);
-			s.Save(joe);
-
-			objectsNeedDeleting.Add(yomomma);
-			objectsNeedDeleting.Add(mark);
-			objectsNeedDeleting.Add(joe);
-
-			s.Flush();
-			s.Clear();
-
-			Person p = s.Get<Person>(yomomma.Id);
-			Assert.AreEqual(yomomma.Name, p.Name);
-			Assert.AreEqual(yomomma.Sex, p.Sex);
-			s.Clear();
-
-			// Copied from H3.  Don't really know what it is testing
-			//Assert.AreEqual(0, s.CreateQuery("from System.Serializable").List().Count);
-
-			Assert.AreEqual(3, s.CreateQuery("from Person").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("from Person p where p.class is null").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("from Person p where p.class = Customer").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("from Customer c").List().Count);
-			s.Clear();
-
-			IList customers = s.CreateQuery("from Customer c left join fetch c.Salesperson").List();
-			foreach (Customer c in customers)
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
 			{
-				Assert.IsTrue(NHibernateUtil.IsInitialized(c.Salesperson));
-				Assert.AreEqual("Mark", c.Salesperson.Name);
+				Employee mark = new Employee();
+				mark.Name = "Mark";
+				mark.Title = "internal sales";
+				mark.Sex = 'M';
+				mark.Address = "buckhead";
+				mark.Zip = "30305";
+				mark.Country = "USA";
+
+				Customer joe = new Customer();
+				joe.Name = "Joe";
+				joe.Address = "San Francisco";
+				joe.Zip = "54353";
+				joe.Country = "USA";
+				joe.Comments = "very demanding";
+				joe.Sex = 'M';
+				joe.Salesperson = mark;
+
+				Person yomomma = new Person();
+				yomomma.Name = "mom";
+				yomomma.Sex = 'F';
+
+				s.Save(yomomma);
+				s.Save(mark);
+				s.Save(joe);
+
+				s.Flush();
+				s.Clear();
+
+				Person p = s.Get<Person>(yomomma.Id);
+				Assert.AreEqual(yomomma.Name, p.Name);
+				Assert.AreEqual(yomomma.Sex, p.Sex);
+				s.Clear();
+
+				// Copied from H3.  Don't really know what it is testing
+				//Assert.AreEqual(0, s.CreateQuery("from System.Serializable").List().Count);
+
+				Assert.AreEqual(3, s.CreateQuery("from Person").List().Count);
+				Assert.AreEqual(1, s.CreateQuery("from Person p where p.class is null").List().Count);
+				Assert.AreEqual(1, s.CreateQuery("from Person p where p.class = Customer").List().Count);
+				Assert.AreEqual(1, s.CreateQuery("from Customer c").List().Count);
+				s.Clear();
+
+				IList customers = s.CreateQuery("from Customer c left join fetch c.Salesperson").List();
+				foreach (Customer c in customers)
+				{
+					Assert.IsTrue(NHibernateUtil.IsInitialized(c.Salesperson));
+					Assert.AreEqual("Mark", c.Salesperson.Name);
+				}
+				Assert.AreEqual(1, customers.Count);
+				s.Clear();
+
+				mark = (Employee) s.Get(typeof (Employee), mark.Id);
+				joe = (Customer) s.Get(typeof (Customer), joe.Id);
+
+				mark.Zip = "30306";
+				s.Flush();
+				s.Clear();
+				Assert.AreEqual(1, s.CreateQuery("from Person p where p.Zip = '30306'").List().Count);
+
+				tx.Commit();
 			}
-			Assert.AreEqual(1, customers.Count);
-			s.Clear();
-
-			mark = (Employee)s.Get(typeof(Employee), mark.Id);
-			joe = (Customer)s.Get(typeof(Customer), joe.Id);
-
-			mark.Zip = "30306";
-			s.Flush();
-			s.Clear();
-			Assert.AreEqual(1, s.CreateQuery("from Person p where p.Zip = '30306'").List().Count);
-
-			// Clean up done in TearDown
 		}
 
 		[Test]
@@ -138,70 +114,74 @@ namespace NHibernate.Test.Join
 		{
 			// The "optional" attribute on <join/> does not yet work
 
-			User jesus = new User();
-			jesus.Name = "Jesus Olvera y Martinez";
-			jesus.Sex = 'M';
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				User jesus = new User();
+				jesus.Name = "Jesus Olvera y Martinez";
+				jesus.Sex = 'M';
 
-			s.Save(jesus);
-			//objectsNeedDeleting.Add(jesus);
+				s.Save(jesus);
+				//objectsNeedDeleting.Add(jesus);
 
-			Assert.AreEqual(1, s.CreateQuery("from Person").List().Count);
-			Assert.AreEqual(0, s.CreateQuery("from Person p where p.class is null").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("from Person p where p.class = User").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("from User u").List().Count);
-			s.Clear();
+				Assert.AreEqual(1, s.CreateQuery("from Person").List().Count);
+				Assert.AreEqual(0, s.CreateQuery("from Person p where p.class is null").List().Count);
+				Assert.AreEqual(1, s.CreateQuery("from Person p where p.class = User").List().Count);
+				Assert.AreEqual(1, s.CreateQuery("from User u").List().Count);
+				s.Clear();
 
-			// Remove the optional row from the join table and requery the User obj
-			IDbCommand cmd = s.Connection.CreateCommand();
-			cmd.CommandText = "delete from t_user";
-			cmd.CommandType = CommandType.Text;
-			cmd.ExecuteNonQuery();
-			s.Clear();
+				// Remove the optional row from the join table and requery the User obj
+				ExecuteStatement("delete from t_user");
+				s.Clear();
 
-			// Clean up the test data
-			s.Delete(jesus);
-			s.Flush();
+				// Clean up the test data
+				s.Delete(jesus);
+				s.Flush();
 
-			Assert.AreEqual(0, s.CreateQuery("from Person").List().Count);
+				Assert.AreEqual(0, s.CreateQuery("from Person").List().Count);
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void TestOptional()
 		{
-			Person p = CreatePerson("A guy");
-			p.HomePhone = null;
-			p.BusinessPhone = null;
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				Person p = CreatePerson("A guy");
+				p.HomePhone = null;
+				p.BusinessPhone = null;
 
-			s.Save(p);
-			objectsNeedDeleting.Add(p);
-			s.Flush();
-			s.Clear();
+				s.Save(p);
+				s.Flush();
+				s.Clear();
 
-			IDbCommand cmd = s.Connection.CreateCommand();
-			cmd.CommandText = "select count(*) from phone where phone_id = " + p.Id.ToString();
-			cmd.CommandType = CommandType.Text;
-			Int64 count = Convert.ToInt64(cmd.ExecuteScalar());
+				IDbCommand cmd = s.Connection.CreateCommand();
+				tx.Enlist(cmd);
+				cmd.CommandText = "select count(*) from phone where phone_id = " + p.Id.ToString();
+				cmd.CommandType = CommandType.Text;
+				Int64 count = Convert.ToInt64(cmd.ExecuteScalar());
 
-			Assert.AreEqual(0, count);
+				Assert.AreEqual(0, count);
+				tx.Commit();
+			}
 		}
 
-		private Person PreparePersonWithInverseJoin(string name, string stuffName)
+		private Person PreparePersonWithInverseJoin(ISession s, string name, string stuffName)
 		{
 			Person p = CreatePerson(name);
 
 			s.Save(p);
-			objectsNeedDeleting.Add(p);
 			s.Flush();
 			s.Clear();
 
 			if (stuffName != null)
 			{
-				IDbCommand cmd = s.Connection.CreateCommand();
-				cmd.CommandText =
+				int count = ExecuteStatement(
 					string.Format("insert into inversed_stuff (stuff_id, StuffName) values ({0}, '{1}')",
-						p.Id, stuffName);
-				cmd.CommandType = CommandType.Text;
-				int count = cmd.ExecuteNonQuery();
+					              p.Id, stuffName));
 				Assert.AreEqual(1, count, "Insert statement failed.");
 			}
 
@@ -211,72 +191,97 @@ namespace NHibernate.Test.Join
 		[Test]
 		public void TestInverseJoinSelected()
 		{
-			string stuffName = "name of the stuff";
-			Person p = PreparePersonWithInverseJoin("John", stuffName);
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				string stuffName = "name of the stuff";
+				Person p = PreparePersonWithInverseJoin(s, "John", stuffName);
 
-			Person result = (Person)s.Get(typeof(Person), p.Id);
-			Assert.IsNotNull(result);
-			Assert.AreEqual(stuffName, result.StuffName);
+				Person result = (Person) s.Get(typeof (Person), p.Id);
+				Assert.IsNotNull(result);
+				Assert.AreEqual(stuffName, result.StuffName);
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void TestInverseJoinNotUpdated()
 		{
-			string stuffName = "name of the stuff";
-			Person p = PreparePersonWithInverseJoin("John", stuffName);
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				string stuffName = "name of the stuff";
 
-			Person personToUpdate = (Person)s.Get(typeof(Person), p.Id);
-			Assert.IsNotNull(personToUpdate);
+				Person p = PreparePersonWithInverseJoin(s, "John", stuffName);
 
-			personToUpdate.StuffName = "new stuff name";
-			s.Flush();
-			s.Clear();
+				Person personToUpdate = (Person) s.Get(typeof (Person), p.Id);
+				Assert.IsNotNull(personToUpdate);
 
-			Person loaded = (Person)s.Get(typeof(Person), p.Id);
-			Assert.AreEqual(stuffName, loaded.StuffName, "StuffName should not have been updated");
+				personToUpdate.StuffName = "new stuff name";
+				s.Flush();
+				s.Clear();
+
+				Person loaded = (Person) s.Get(typeof (Person), p.Id);
+				Assert.AreEqual(stuffName, loaded.StuffName, "StuffName should not have been updated");
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void TestInverseJoinNotInserted()
 		{
-			Person p = CreatePerson("John");
-			p.StuffName = "stuff name in TestInverse_Select";
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				Person p = CreatePerson("John");
+				p.StuffName = "stuff name in TestInverse_Select";
 
-			s.Save(p);
-			objectsNeedDeleting.Add(p);
-			s.Flush();
-			s.Clear();
+				s.Save(p);
+				s.Flush();
+				s.Clear();
 
-			Person result = (Person)s.Get(typeof(Person), p.Id);
-			Assert.IsNotNull(result);
-			Assert.IsNull(result.StuffName);
+				Person result = (Person) s.Get(typeof (Person), p.Id);
+				Assert.IsNotNull(result);
+				Assert.IsNull(result.StuffName);
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void TestInverseJoinNotDeleted()
 		{
-			string stuffName = "stuff not deleted";
-			Person p = PreparePersonWithInverseJoin("John", stuffName);
-			objectsNeedDeleting.Remove(p);
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				string stuffName = "stuff not deleted";
+				Person p = PreparePersonWithInverseJoin(s, "John", stuffName);
 
-			long personId = p.Id;
-			s.Delete(p);
+				long personId = p.Id;
+				s.Delete(p);
 
-			IDbCommand cmd = s.Connection.CreateCommand();
-			cmd.CommandText = string.Format(
-				"select count(stuff_id) from inversed_stuff where stuff_id = {0}",
-				personId);
-			cmd.CommandType = CommandType.Text;
-			Int64 count = Convert.ToInt64(cmd.ExecuteScalar());
-			Assert.AreEqual(1, count, "Row from an inverse <join> was deleted.");
+				IDbCommand cmd = s.Connection.CreateCommand();
+				tx.Enlist(cmd);
+				cmd.CommandText = string.Format(
+					"select count(stuff_id) from inversed_stuff where stuff_id = {0}",
+					personId);
+				cmd.CommandType = CommandType.Text;
+				Int64 count = Convert.ToInt64(cmd.ExecuteScalar());
+				Assert.AreEqual(1, count, "Row from an inverse <join> was deleted.");
 
-			IDbCommand cmd2 = s.Connection.CreateCommand();
-			cmd2.CommandText = string.Format(
-				"select StuffName from inversed_stuff where stuff_id = {0}",
-				personId);
-			cmd2.CommandType = CommandType.Text;
-			string retrievedStuffName = (string)cmd2.ExecuteScalar();
-			Assert.AreEqual(stuffName, retrievedStuffName, "Retrieved inverse <join> does not match");
+				IDbCommand cmd2 = s.Connection.CreateCommand();
+				tx.Enlist(cmd2);
+				cmd2.CommandText = string.Format(
+					"select StuffName from inversed_stuff where stuff_id = {0}",
+					personId);
+				cmd2.CommandType = CommandType.Text;
+				string retrievedStuffName = (string) cmd2.ExecuteScalar();
+				Assert.AreEqual(stuffName, retrievedStuffName, "Retrieved inverse <join> does not match");
+
+				tx.Commit();
+			}
 		}
 
 		private Person CreatePerson(string name)
@@ -306,7 +311,7 @@ namespace NHibernate.Test.Join
 			return true;
 		}
 
-		private Person[] CreateAndInsertPersons(int count)
+		private Person[] CreateAndInsertPersons(ISession s, int count)
 		{
 			Person[] result = new Person[count];
 
@@ -314,7 +319,6 @@ namespace NHibernate.Test.Join
 			{
 				result[i] = CreatePerson("Person " + i.ToString());
 				s.Save(result[i]);
-				objectsNeedDeleting.Add(result[i]);
 			}
 
 			s.Flush();
@@ -326,42 +330,59 @@ namespace NHibernate.Test.Join
 		[Test]
 		public void TestRetrieveUsingGet()
 		{
-			// Create a new person John
-			Person john = CreatePerson("John");
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				// Create a new person John
+				Person john = CreatePerson("John");
 
-			s.Save(john);
-			objectsNeedDeleting.Add(john);
-			s.Flush();
-			s.Clear();
+				s.Save(john);
+				s.Flush();
+				s.Clear();
 
-			Person p = (Person)s.Get(typeof(Person), john.Id);
-			Assert.IsTrue(PersonsAreEqual(john, p));
+				Person p = (Person) s.Get(typeof (Person), john.Id);
+				Assert.IsTrue(PersonsAreEqual(john, p));
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void TestRetrieveUsingCriteriaInterface()
 		{
-			Person[] people = CreateAndInsertPersons(3);
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				Person[] people = CreateAndInsertPersons(s, 3);
 
-			ICriteria criteria = s.CreateCriteria(typeof(Person))
-				.Add(Expression.Expression.Eq("Name", people[1].Name));
-			IList list = criteria.List();
+				ICriteria criteria = s.CreateCriteria(typeof (Person))
+					.Add(Expression.Expression.Eq("Name", people[1].Name));
+				IList list = criteria.List();
 
-			Assert.AreEqual(1, list.Count);
-			Assert.IsTrue(PersonsAreEqual(people[1], (Person)list[0]));
+				Assert.AreEqual(1, list.Count);
+				Assert.IsTrue(PersonsAreEqual(people[1], (Person) list[0]));
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void TestRetrieveUsingHql()
 		{
-			Person[] people = CreateAndInsertPersons(3);
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				Person[] people = CreateAndInsertPersons(s, 3);
 
-			IQuery query = s.CreateQuery("from Person p where p.Name = :name")
-				.SetParameter("name", people[1].Name);
-			IList list = query.List();
+				IQuery query = s.CreateQuery("from Person p where p.Name = :name")
+					.SetParameter("name", people[1].Name);
+				IList list = query.List();
 
-			Assert.AreEqual(1, list.Count);
-			Assert.IsTrue(PersonsAreEqual(people[1], (Person)list[0]));
+				Assert.AreEqual(1, list.Count);
+				Assert.IsTrue(PersonsAreEqual(people[1], (Person) list[0]));
+
+				tx.Commit();
+			}
 		}
 
 		private Employee CreateEmployee(string name, string title)
@@ -381,7 +402,7 @@ namespace NHibernate.Test.Join
 			return p;
 		}
 
-		private Employee[] CreateAndInsertEmployees(int count)
+		private Employee[] CreateAndInsertEmployees(ISession s, int count)
 		{
 			Employee[] result = new Employee[count];
 
@@ -389,7 +410,6 @@ namespace NHibernate.Test.Join
 			{
 				result[i] = CreateEmployee("Employee " + i.ToString(), "Title " + i.ToString());
 				s.Save(result[i]);
-				objectsNeedDeleting.Add(result[i]);
 			}
 
 			s.Flush();
@@ -402,42 +422,51 @@ namespace NHibernate.Test.Join
 		[Test]
 		public void TestSimpleInsertAndRetrieveEmployee()
 		{
-			// Create a new employee Jack
-			Employee jack = CreateEmployee("Jack", "Boss");
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				// Create a new employee Jack
+				Employee jack = CreateEmployee("Jack", "Boss");
 
-			s.Save(jack);
-			objectsNeedDeleting.Add(jack);
-			s.Flush();
-			s.Clear();
+				s.Save(jack);
+				s.Flush();
+				s.Clear();
 
-			IList list = s.CreateQuery("from Employee p where p.Id = :id")
-				.SetParameter("id", jack.Id)
-				.List();
-			Assert.AreEqual(1, list.Count);
-			Assert.IsTrue(list[0] is Employee);
-			Assert.IsTrue(EmployeesAreEqual(jack, (Employee)list[0]));
+				IList list = s.CreateQuery("from Employee p where p.Id = :id")
+					.SetParameter("id", jack.Id)
+					.List();
+				Assert.AreEqual(1, list.Count);
+				Assert.IsTrue(list[0] is Employee);
+				Assert.IsTrue(EmployeesAreEqual(jack, (Employee) list[0]));
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void TestDeleteUsingHql()
 		{
-			Person[] people = new Person[3];
-			for (int i = 0; i < people.Length; i++)
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
 			{
-				people[i] = CreatePerson(string.Format("Person {0}", i + 1));
-				s.Save(people[i]);
-				objectsNeedDeleting.Add(people[i]);
+				Person[] people = new Person[3];
+				for (int i = 0; i < people.Length; i++)
+				{
+					people[i] = CreatePerson(string.Format("Person {0}", i + 1));
+					s.Save(people[i]);
+				}
+
+				s.Flush();
+				s.Clear();
+
+				s.Delete("from Person");
+				s.Flush();
+
+				IList list = s.CreateQuery("from Person").List();
+				Assert.AreEqual(0, list.Count);
+
+				tx.Commit();
 			}
-
-			s.Flush();
-			s.Clear();
-
-			s.Delete("from Person");
-			s.Flush();
-
-			IList list = s.CreateQuery("from Person").List();
-			objectsNeedDeleting = list;
-			Assert.AreEqual(0, list.Count);
 		}
 
 		private bool EmployeesAreEqual(Employee x, Employee y)
@@ -463,52 +492,70 @@ namespace NHibernate.Test.Join
 		[Test]
 		public void TestUpdateEmployee()
 		{
-			Employee[] employees = CreateAndInsertEmployees(3);
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				Employee[] employees = CreateAndInsertEmployees(s, 3);
 
-			Employee emp0 = (Employee)s.Get(typeof(Employee), employees[0].Id);
-			Assert.IsNotNull(emp0);
-			emp0.Address = "Address";
-			emp0.BusinessPhone = "BusinessPhone";
-			emp0.Country = "Country";
-			emp0.HomePhone = "HomePhone";
-			emp0.Manager = employees[2];
-			emp0.Name = "Name";
-			emp0.Salary = 20000;
-			emp0.Title = "Title";
-			emp0.Zip = "Zip";
-			// Not updating emp0.Sex because it is marked update=false in the mapping file.
+				Employee emp0 = (Employee) s.Get(typeof (Employee), employees[0].Id);
+				Assert.IsNotNull(emp0);
+				emp0.Address = "Address";
+				emp0.BusinessPhone = "BusinessPhone";
+				emp0.Country = "Country";
+				emp0.HomePhone = "HomePhone";
+				emp0.Manager = employees[2];
+				emp0.Name = "Name";
+				emp0.Salary = 20000;
+				emp0.Title = "Title";
+				emp0.Zip = "Zip";
+				// Not updating emp0.Sex because it is marked update=false in the mapping file.
 
-			s.Flush();
-			s.Clear();
+				s.Flush();
+				s.Clear();
 
-			Employee emp0updated = (Employee)s.Get(typeof(Employee), employees[0].Id);
-			Assert.IsTrue(EmployeesAreEqual(emp0, emp0updated));
+				Employee emp0updated = (Employee) s.Get(typeof (Employee), employees[0].Id);
+				Assert.IsTrue(EmployeesAreEqual(emp0, emp0updated));
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void Learn_SubclassBehavior()
 		{
-			SubclassOne one = new SubclassOne();
-			one.TestDateTime = DateTime.Now;
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				SubclassOne one = new SubclassOne();
+				one.TestDateTime = DateTime.Now;
 
-			s.Save(one);
-			s.Flush();
-			s.Clear();
+				s.Save(one);
+				s.Flush();
+				s.Clear();
 
-			SubclassOne result = (SubclassOne)s.Get(typeof(SubclassBase), one.Id);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is SubclassOne);
+				SubclassOne result = (SubclassOne) s.Get(typeof (SubclassBase), one.Id);
+				Assert.IsNotNull(result);
+				Assert.IsTrue(result is SubclassOne);
 
-			s.Delete(result);
+				s.Delete(result);
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void PolymorphicGetByTypeofSuperclass()
 		{
-			Employee[] employees = CreateAndInsertEmployees(1);
-			Employee emp0 = (Employee)s.Get(typeof(Person), employees[0].Id);
-			Assert.IsNotNull(emp0);
-			Assert.IsTrue(emp0 is Employee);
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				Employee[] employees = CreateAndInsertEmployees(s, 1);
+				Employee emp0 = (Employee) s.Get(typeof (Person), employees[0].Id);
+				Assert.IsNotNull(emp0);
+				Assert.IsTrue(emp0 is Employee);
+
+				tx.Commit();
+			}
 		}
 	}
 }
