@@ -252,6 +252,8 @@
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
     <Compile Include="NHSpecificTest\HqlOnMapWithForumula\Domain.cs" />
     <Compile Include="NHSpecificTest\HqlOnMapWithForumula\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1027\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1027\ManyToManyAssoc.cs" />
     <Compile Include="NHSpecificTest\NH1039\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1039\Model.cs" />
     <Compile Include="NHSpecificTest\NH1061\Fixture.cs" />
@@ -1052,6 +1054,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Unionsubclass\Beings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1027\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
