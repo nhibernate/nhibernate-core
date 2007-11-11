@@ -1,11 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using log4net;
-using log4net.Appender;
-using log4net.Config;
-using log4net.Core;
-using log4net.Plugin;
-using log4net.Repository.Hierarchy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH995
@@ -13,10 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		private Logger sqlLogger;
-		Level prevLogLevel;
-		private MemoryAppender appender;
-		
 		public override string BugNumber
 		{
 			get
@@ -25,31 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			}
 		}
 
-		protected override void OnSetUp()
-		{
-			// Get the logger that logs the SQL
-			ILog log = LogManager.GetLogger("NHibernate.SQL");
-			sqlLogger = log.Logger as Logger;
-			if (sqlLogger == null)
-			{
-				Assert.Fail("Unable to get the SQL logger");
-			}
-
-			// Change the log level to DEBUG and temporarily save the previous log level
-			prevLogLevel = sqlLogger.Level;
-			sqlLogger.Level = Level.Debug;
-
-			// Add a new MemoryAppender to the logger.
-			appender = new MemoryAppender();
-			sqlLogger.AddAppender(appender);
-		}
-
 		protected override void OnTearDown()
 		{
-			// Restore the previous log level of the SQL logger and remove the MemoryAppender
-			sqlLogger.Level = prevLogLevel;
-			sqlLogger.RemoveAppender(appender);
-
 			using (ISession s = OpenSession())
 			using(ITransaction tx = s.BeginTransaction())
 			{
@@ -108,14 +74,15 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			using(ISession s = OpenSession())
 			using(ITransaction tx = s.BeginTransaction())
 			{
-				appender.Clear();
+				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
+				{
+					IList<ClassC> c_list = s.CreateCriteria(typeof (ClassC)).List<ClassC>();
+					// make sure we initialize B
+					NHibernateUtil.Initialize(c_list[0].B);
 
-				IList<ClassC> c_list = s.CreateCriteria(typeof (ClassC)).List<ClassC>();
-				// make sure we initialize B
-				NHibernateUtil.Initialize(c_list[0].B);
-
-				Assert.AreEqual(1, appender.GetEvents().Length,
-				                "Only one SQL should have been issued");
+					Assert.AreEqual(1, sqlLogSpy.Appender.GetEvents().Length,
+					                "Only one SQL should have been issued");
+				}
 
 				tx.Commit();
 			}
