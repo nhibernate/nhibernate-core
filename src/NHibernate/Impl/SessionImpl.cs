@@ -705,7 +705,7 @@ namespace NHibernate.Impl
 			INHibernateProxy proxy = entity as INHibernateProxy;
 			if (proxy != null)
 			{
-				AbstractLazyInitializer initializer = NHibernateProxyHelper.GetLazyInitializer(proxy);
+				ILazyInitializer initializer = NHibernateProxyHelper.GetLazyInitializer(proxy);
 
 				// it is possible for this method to be called during flush processing,
 				// so make certain that we do not accidently initialize an uninitialized proxy
@@ -858,7 +858,7 @@ namespace NHibernate.Impl
 				{
 					throw new TransientObjectException("proxy was not associated with the session");
 				}
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
 
 				obj = li.GetImplementation();
 			}
@@ -1087,7 +1087,7 @@ namespace NHibernate.Impl
 
 			if (obj is INHibernateProxy)
 			{
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
 				if (li.Session != this)
 				{
 					throw new TransientObjectException("The proxy was not associated with this session");
@@ -1514,7 +1514,7 @@ namespace NHibernate.Impl
 				//do not use proxiesByKey, since not all
 				//proxies that point to this session's
 				//instances are in that collection!
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
 				if (li.IsUninitialized)
 				{
 					//if it is an uninitialized proxy, pointing

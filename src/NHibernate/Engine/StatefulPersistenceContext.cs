@@ -243,7 +243,7 @@ namespace NHibernate.Engine
 		{
 			foreach (INHibernateProxy proxy in proxiesByKey.Values)
 			{
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 				li.Session = null;
 			}
 
@@ -550,7 +550,7 @@ namespace NHibernate.Engine
 			if (!NHibernateUtil.IsInitialized(value))
 			{
 				INHibernateProxy proxy = (INHibernateProxy)value;
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 				ReassociateProxy(li, proxy);
 				return true;
 			}
@@ -580,7 +580,7 @@ namespace NHibernate.Engine
 					log.Debug("setting proxy identifier: " + id);
 				}
 				INHibernateProxy proxy = (INHibernateProxy)value;
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 				li.Identifier = id;
 				ReassociateProxy(li, proxy);
 			}
@@ -591,7 +591,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="li">The proxy initializer. </param>
 		/// <param name="proxy">The proxy to reassociate. </param>
-		private void ReassociateProxy(AbstractLazyInitializer li, INHibernateProxy proxy)
+		private void ReassociateProxy(ILazyInitializer li, INHibernateProxy proxy)
 		{
 			if (li.Session != Session)
 			{
@@ -622,7 +622,7 @@ namespace NHibernate.Engine
 			if (maybeProxy is INHibernateProxy)
 			{
 				INHibernateProxy proxy = (INHibernateProxy)maybeProxy;
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 				if (li.IsUninitialized)
 					throw new PersistentObjectException("object was an uninitialized proxy for " + li.PersistentClass.FullName);
 
@@ -651,7 +651,7 @@ namespace NHibernate.Engine
 			if (maybeProxy is INHibernateProxy)
 			{
 				INHibernateProxy proxy = (INHibernateProxy)maybeProxy;
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 				ReassociateProxy(li, proxy);
 				return li.GetImplementation(); //initialize + unwrap the object 
 			}
@@ -718,7 +718,7 @@ namespace NHibernate.Engine
 			{
 				if (obj != null)
 				{
-					AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
+					ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 					li.SetImplementation(obj);
 				}
 				return proxy;

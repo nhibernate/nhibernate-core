@@ -48,7 +48,7 @@ namespace NHibernate.Event.Default
 				object entity;
 				if (original is INHibernateProxy)
 				{
-					AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)original);
+					ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)original);
 					if (li.IsUninitialized)
 					{
 						log.Debug("ignoring uninitialized proxy");

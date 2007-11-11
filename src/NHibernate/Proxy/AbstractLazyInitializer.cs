@@ -17,7 +17,7 @@ namespace NHibernate.Proxy
 	/// to cglib was made in .net.
 	/// </remarks>
 	[Serializable]
-	public abstract class AbstractLazyInitializer
+	public abstract class AbstractLazyInitializer : ILazyInitializer
 	{
 		private static readonly IEqualityComparer IdentityEqualityComparer =
 			new IdentityEqualityComparer();

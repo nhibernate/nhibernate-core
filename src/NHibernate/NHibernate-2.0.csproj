@@ -728,6 +728,7 @@
     <Compile Include="Persister\Entity\UnionSubclassEntityPersister.cs" />
     <Compile Include="Property\MapAccessor.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
+    <Compile Include="Proxy\ILazyInitializer.cs" />
     <Compile Include="QueryParameterException.cs" />
     <Compile Include="SessionException.cs" />
     <Compile Include="SqlCommand\SubselectClauseExtractor.cs" />

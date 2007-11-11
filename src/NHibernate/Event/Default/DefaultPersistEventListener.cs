@@ -40,7 +40,7 @@ namespace NHibernate.Event.Default
 			object entity;
 			if (obj is INHibernateProxy)
 			{
-				AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
+				ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
 				if (li.IsUninitialized)
 				{
 					if (li.Session == source)
