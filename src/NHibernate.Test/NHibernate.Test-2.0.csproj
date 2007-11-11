@@ -252,6 +252,9 @@
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
     <Compile Include="NHSpecificTest\HqlOnMapWithForumula\Domain.cs" />
     <Compile Include="NHSpecificTest\HqlOnMapWithForumula\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1001\Department.cs" />
+    <Compile Include="NHSpecificTest\NH1001\Employee.cs" />
+    <Compile Include="NHSpecificTest\NH1001\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1027\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1027\ManyToManyAssoc.cs" />
     <Compile Include="NHSpecificTest\NH1039\Fixture.cs" />
@@ -533,6 +536,7 @@
     <Compile Include="SecondLevelCacheTest\SecondLevelCacheTest.cs" />
     <Compile Include="Assertions\HaveSerializableAttributeAsserter.cs" />
     <Compile Include="SessionCacheTest.cs" />
+    <Compile Include="SqlLogSpy.cs" />
     <Compile Include="SqlCommandTest\InFragmentFixture.cs" />
     <Compile Include="SqlCommandTest\SqlDeleteBuilderFixture.cs" />
     <Compile Include="SqlCommandTest\SqlInsertBuilderFixture.cs" />
@@ -1051,6 +1055,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1061\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1001\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Join\Worker.hbm.xml" />
