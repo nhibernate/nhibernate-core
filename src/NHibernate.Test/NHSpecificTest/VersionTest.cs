@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void UnsavedNegativeIntOrShort()
 		{
-			Cascades.VersionValue negative = Cascades.VersionValue.VersionNegative;
+			VersionValue negative = VersionValue.VersionNegative;
 
 			Assert.AreEqual(true, negative.IsUnsaved((short) -1));
 			Assert.AreEqual(true, negative.IsUnsaved(-1));

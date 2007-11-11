@@ -1,85 +1,88 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Tuple
+namespace NHibernate.Tuple.Entity
 {
 	[Serializable]
 	public class EntityMetamodel
 	{
-		private static ILog log = LogManager.GetLogger(typeof(EntityMetamodel));
+		private static readonly ILog log = LogManager.GetLogger(typeof(EntityMetamodel));
 
-		private static int NoVersionIndex = -66;
+		private const int NoVersionIndex = -66;
 
-		private ISessionFactoryImplementor sessionFactory;
+		private readonly ISessionFactoryImplementor sessionFactory;
 
 		// DONE H3: ->these are stored as System.Types for now<-
 		// store name and rootName
 		private readonly string name;
 		private readonly string rootName;
-		private System.Type type;
-		private System.Type rootType;
-		private string rootTypeAssemblyQualifiedName;
+		private readonly System.Type type;
+		private readonly System.Type rootType;
+		private readonly string rootTypeAssemblyQualifiedName;
 
-		private EntityType entityType;
+		private readonly EntityType entityType;
 
-		private IdentifierProperty identifierProperty;
-		private bool versioned;
+		private readonly IdentifierProperty identifierProperty;
+		private readonly bool versioned;
 
-		private int propertySpan;
-		private int versionPropertyIndex;
+		private readonly int propertySpan;
+		private readonly int versionPropertyIndex;
 
-		private StandardProperty[] properties;
-		// temporary ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		private string[] propertyNames;
-		private IType[] propertyTypes;
-		private bool[] propertyLaziness;
-		private bool[] propertyUpdateability;
-		private bool[] nonlazyPropertyUpdateability;
-		private bool[] propertyCheckability;
-		private bool[] propertyInsertability;
-		private ValueInclusion[] insertInclusions;
-		private ValueInclusion[] updateInclusions;
-		private bool[] propertyNullability;
-		private bool[] propertyVersionability;
-		private Cascades.CascadeStyle[] cascadeStyles;
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		private IDictionary propertyIndexes = new Hashtable();
-		private bool hasCollections;
-		private bool hasMutableProperties;
-		private bool hasLazyProperties;
+		private readonly StandardProperty[] properties;
+
+		#region temporary
+
+		private readonly string[] propertyNames;
+		private readonly IType[] propertyTypes;
+		private readonly bool[] propertyLaziness;
+		private readonly bool[] propertyUpdateability;
+		private readonly bool[] nonlazyPropertyUpdateability;
+		private readonly bool[] propertyCheckability;
+		private readonly bool[] propertyInsertability;
+		private readonly ValueInclusion[] insertInclusions;
+		private readonly ValueInclusion[] updateInclusions;
+		private readonly bool[] propertyNullability;
+		private readonly bool[] propertyVersionability;
+		private readonly Cascades.CascadeStyle[] cascadeStyles;
+
+		#endregion
+
+		private readonly IDictionary propertyIndexes = new Hashtable();
+		private readonly bool hasCollections;
+		private readonly bool hasMutableProperties;
+		private readonly bool hasLazyProperties;
 
 		// TODO H3:
 		//private int[] naturalIdPropertyNumbers;
 
 		private bool lazy;
-		private bool hasCascades;
-		private bool mutable;
-		private bool isAbstract;
-		private bool selectBeforeUpdate;
-		private bool dynamicUpdate;
-		private bool dynamicInsert;
-		private OptimisticLockMode optimisticLockMode;
+		private readonly bool hasCascades;
+		private readonly bool mutable;
+		private readonly bool isAbstract;
+		private readonly bool selectBeforeUpdate;
+		private readonly bool dynamicUpdate;
+		private readonly bool dynamicInsert;
+		private readonly OptimisticLockMode optimisticLockMode;
 
-		private bool polymorphic;
+		private readonly bool polymorphic;
 		// TODO H3: This is stored as System.Type currently
 		//private string superclass;  // superclass entity-name
-		private System.Type superclassType;
+		private readonly System.Type superclassType;
 
-		private bool explicitPolymorphism;
-		private bool inherited;
-		private bool hasSubclasses;
+		private readonly bool explicitPolymorphism;
+		private readonly bool inherited;
+		private readonly bool hasSubclasses;
 
 		// TODO H3: These are stored as System.Types currently
-		//private ISet subclassEntityNames = new HashedSet();
-		private ISet subclassTypes = new HashedSet();
-		private bool hasInsertGeneratedValues;
-		private bool hasUpdateGeneratedValues;
+		private readonly HashedSet<string> subclassEntityNames = new HashedSet<string>();
+		private readonly bool hasInsertGeneratedValues;
+		private readonly bool hasUpdateGeneratedValues;
 
 		public EntityMetamodel(PersistentClass persistentClass, ISessionFactoryImplementor sessionFactory)
 		{
@@ -104,7 +107,7 @@ namespace NHibernate.Tuple
 
 			bool lazyAvailable = false;
 			// TODO H3:
-			//bool lazyAvailable = persistentClass.HasPojoRepresentation &&
+			//bool lazyAvailable = persistentClass.HasPocoRepresentation &&
 			//	typeof(InterceptFieldEnabled).isAssignableFrom( persistentClass.getMappedClass() );
 			bool hasLazy = false;
 
@@ -112,7 +115,8 @@ namespace NHibernate.Tuple
 			properties = new StandardProperty[propertySpan];
 			//IList naturalIdNumbers = new ArrayList();
 
-			// temporary ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			#region temporary
+
 			propertyNames = new string[propertySpan];
 			propertyTypes = new IType[propertySpan];
 			propertyUpdateability = new bool[propertySpan];
@@ -125,7 +129,8 @@ namespace NHibernate.Tuple
 			propertyVersionability = new bool[propertySpan];
 			propertyLaziness = new bool[propertySpan];
 			cascadeStyles = new Cascades.CascadeStyle[propertySpan];
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+			#endregion
 
 
 			int i = 0;
@@ -151,9 +156,9 @@ namespace NHibernate.Tuple
 //				if ( prop.IsNaturalIdentifier ) 
 //				{
 //					naturalIdNumbers.Add( i );
-//				}
+				//				}
 
-				// temporary ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				#region temporary
 				// TODO H3:
 				//bool lazy = prop.IsLazy && lazyAvailable;
 				bool lazyProperty = false;
@@ -174,7 +179,7 @@ namespace NHibernate.Tuple
 				                           ((IAssociationType) propertyTypes[i]).IsAlwaysDirtyChecked);
 
 				cascadeStyles[i] = properties[i].CascadeStyle;
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				#endregion
 
 				if (properties[i].IsLazy)
 				{
@@ -231,7 +236,7 @@ namespace NHibernate.Tuple
 			// TODO H3:
 //			lazy = persistentClass.IsLazy && (
 //				// TODO: this disables laziness even in non-pojo entity modes:
-//				!persistentClass.HasPojoRepresentation ||
+//				!persistentClass.HasPocoRepresentation ||
 //				!ReflectHelper.IsFinalClass( persistentClass.ProxyInterface )
 //				);
 			mutable = persistentClass.IsMutable;
@@ -239,13 +244,13 @@ namespace NHibernate.Tuple
 			if (!persistentClass.IsAbstract.HasValue)
 			{
 				// legacy behavior (with no abstract attribute specified)
-				isAbstract = persistentClass.HasPojoRepresentation &&
+				isAbstract = persistentClass.HasPocoRepresentation &&
 				             ReflectHelper.IsAbstractClass(persistentClass.MappedClass);
 			}
 			else
 			{
 				isAbstract = persistentClass.IsAbstract.Value;
-				if (!isAbstract && persistentClass.HasPojoRepresentation &&
+				if (!isAbstract && persistentClass.HasPocoRepresentation &&
 				    ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
 				{
 					log.Warn("entity [" + type.FullName +
@@ -260,8 +265,8 @@ namespace NHibernate.Tuple
 			explicitPolymorphism = persistentClass.IsExplicitPolymorphism;
 			inherited = persistentClass.IsInherited;
 			superclassType = inherited ?
-			                 persistentClass.Superclass.MappedClass :
-			                 null;
+			                           	persistentClass.Superclass.MappedClass :
+			                           	                                       	null;
 			hasSubclasses = persistentClass.HasSubclasses;
 
 			optimisticLockMode = persistentClass.OptimisticLockMode;
@@ -275,13 +280,11 @@ namespace NHibernate.Tuple
 
 			// TODO H3: tuplizers = TuplizerLookup.create(persistentClass, this);
 
-			foreach (PersistentClass obj in persistentClass.SubclassIterator)
+			foreach (Subclass obj in persistentClass.SubclassIterator)
 			{
-				// TODO H3: subclassEntityNames.Add( obj.EntityName );
-				subclassTypes.Add(obj.MappedClass);
+				subclassEntityNames.Add(obj.EntityName);
 			}
-			// TODO H3: subclassEntityNames.Add( name );
-			subclassTypes.Add(type);
+			subclassEntityNames.Add(name);
 		}
 
 		private ValueInclusion DetermineInsertValueGenerationType(Mapping.Property mappingProperty, StandardProperty runtimeProperty)
@@ -290,9 +293,9 @@ namespace NHibernate.Tuple
 			{
 				return ValueInclusion.Full;
 			}
-			else if (mappingProperty.Value is Component)
+			else if (mappingProperty.Value is Mapping.Component)
 			{
-				if (HasPartialInsertComponentGeneration((Component) mappingProperty.Value))
+				if (HasPartialInsertComponentGeneration((Mapping.Component)mappingProperty.Value))
 				{
 					return ValueInclusion.Partial;
 				}
@@ -300,17 +303,17 @@ namespace NHibernate.Tuple
 			return ValueInclusion.None;
 		}
 
-		private bool HasPartialInsertComponentGeneration(Component component)
+		private bool HasPartialInsertComponentGeneration(Mapping.Component component)
 		{
-			foreach (Mapping.Property prop in component.PropertyCollection)
+			foreach (Mapping.Property prop in component.PropertyIterator)
 			{
 				if (prop.Generation == PropertyGeneration.Always || prop.Generation == PropertyGeneration.Insert)
 				{
 					return true;
 				}
-				else if (prop.Value is Component)
+				else if (prop.Value is Mapping.Component)
 				{
-					if (HasPartialInsertComponentGeneration((Component) prop.Value))
+					if (HasPartialInsertComponentGeneration((Mapping.Component)prop.Value))
 					{
 						return true;
 					}
@@ -325,9 +328,9 @@ namespace NHibernate.Tuple
 			{
 				return ValueInclusion.Full;
 			}
-			else if (mappingProperty.Value is Component)
+			else if (mappingProperty.Value is Mapping.Component)
 			{
-				if (HasPartialUpdateComponentGeneration((Component) mappingProperty.Value))
+				if (HasPartialUpdateComponentGeneration((Mapping.Component)mappingProperty.Value))
 				{
 					return ValueInclusion.Partial;
 				}
@@ -335,17 +338,17 @@ namespace NHibernate.Tuple
 			return ValueInclusion.None;
 		}
 
-		private bool HasPartialUpdateComponentGeneration(Component component)
+		private bool HasPartialUpdateComponentGeneration(Mapping.Component component)
 		{
-			foreach (Mapping.Property prop in component.PropertyCollection)
+			foreach (Mapping.Property prop in component.PropertyIterator)
 			{
 				if (prop.Generation == PropertyGeneration.Always)
 				{
 					return true;
 				}
-				else if (prop.Value is Component)
+				else if (prop.Value is Mapping.Component)
 				{
-					if (HasPartialUpdateComponentGeneration((Component) prop.Value))
+					if (HasPartialUpdateComponentGeneration((Mapping.Component)prop.Value))
 					{
 						return true;
 					}
@@ -357,9 +360,9 @@ namespace NHibernate.Tuple
 		private void MapPropertyToIndex(Mapping.Property prop, int i)
 		{
 			propertyIndexes[prop.Name] = i;
-			if (prop.Value is Component)
+			if (prop.Value is Mapping.Component)
 			{
-				foreach (Mapping.Property subprop in ((Component) prop.Value).PropertyCollection)
+				foreach (Mapping.Property subprop in ((Mapping.Component)prop.Value).PropertyIterator)
 				{
 					propertyIndexes[prop.Name + '.' + subprop.Name] = i;
 				}
@@ -377,14 +380,9 @@ namespace NHibernate.Tuple
 //			get { return naturalIdPropertyNumbers != null; }
 //		}
 //	
-//		public ISet SubclassEntityNames
-//		{
-//			get { return subclassEntityNames; }
-//		}
-
-		public ISet SubclassTypes
+		public ISet<string> SubclassEntityNames
 		{
-			get { return subclassTypes; }
+			get { return subclassEntityNames; }
 		}
 
 		private bool IndicatesCollection(IType type)
@@ -583,6 +581,7 @@ namespace NHibernate.Tuple
 		public bool IsLazy
 		{
 			get { return lazy; }
+			set { lazy = value; }
 		}
 
 		public bool IsVersioned
@@ -600,7 +599,7 @@ namespace NHibernate.Tuple
 			return "EntityMetamodel(" + type.FullName + ':' + ArrayHelper.ToString(properties) + ')';
 		}
 
-		// temporary ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		#region temporary
 		public string[] PropertyNames
 		{
 			get { return propertyNames; }
@@ -671,6 +670,6 @@ namespace NHibernate.Tuple
 			get { return hasUpdateGeneratedValues; }
 		}
 
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		#endregion
 	}
 }

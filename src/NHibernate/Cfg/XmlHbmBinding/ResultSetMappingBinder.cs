@@ -184,7 +184,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					if (value is Component)
 					{
 						Component comp = (Component) value;
-						parentPropIter = comp.PropertyCollection;
+						parentPropIter = comp.PropertyIterator;
 					}
 					else if (value is ToOne)
 					{
@@ -194,7 +194,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							try
 							{
 								parentPropIter =
-									((Component) referencedPc.GetRecursiveProperty(toOne.ReferencedPropertyName).Value).PropertyCollection;
+									((Component) referencedPc.GetRecursiveProperty(toOne.ReferencedPropertyName).Value).PropertyIterator;
 							}
 							catch (InvalidCastException e)
 							{
@@ -203,7 +203,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						else
 							try
 							{
-								parentPropIter = ((Component) referencedPc.IdentifierProperty.Value).PropertyCollection;
+								parentPropIter = ((Component) referencedPc.IdentifierProperty.Value).PropertyIterator;
 							}
 							catch (InvalidCastException e)
 							{

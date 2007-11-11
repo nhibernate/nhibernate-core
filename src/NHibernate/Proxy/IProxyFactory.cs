@@ -19,6 +19,7 @@ namespace NHibernate.Proxy
 			ISet interfaces,
 			MethodInfo getIdentifierMethod,
 			MethodInfo setIdentifierMethod);
+		// TODO H3.2 different implementation
 
 		/// <summary>
 		/// Create a new proxy

@@ -31,7 +31,7 @@ namespace NHibernate.Engine
 		/// reading it's id property, or if that is not possible, using the java default
 		/// value for the type
 		/// </summary>
-		public static Cascades.IdentifierValue GetUnsavedIdentifierValue(
+		public static IdentifierValue GetUnsavedIdentifierValue(
 			string unsavedValue,
 			IGetter identifierGetter,
 			IType identifierType,
@@ -43,7 +43,7 @@ namespace NHibernate.Engine
 				{
 					// use the id value of a newly instantiated instance as the unsaved-value
 					object defaultValue = identifierGetter.Get(Instantiate(constructor));
-					return new Cascades.IdentifierValue(defaultValue);
+					return new IdentifierValue(defaultValue);
 				}
 					// TODO: NH - the branch below is actually never visited, so it's commented out
 					/*
@@ -55,12 +55,12 @@ namespace NHibernate.Engine
 				*/
 				else
 				{
-					return Cascades.IdentifierValue.SaveNull;
+					return IdentifierValue.SaveNull;
 				}
 			}
 			else if ("null" == unsavedValue)
 			{
-				return Cascades.IdentifierValue.SaveNull;
+				return IdentifierValue.SaveNull;
 			}
 				// TODO: H3 only, IdentifierValue.IsUnsaved may return true/false/null in H3
 				// and SaveUndefined always returns null.
@@ -72,17 +72,17 @@ namespace NHibernate.Engine
 			*/
 			else if ("none" == unsavedValue)
 			{
-				return Cascades.IdentifierValue.SaveNone;
+				return IdentifierValue.SaveNone;
 			}
 			else if ("any" == unsavedValue)
 			{
-				return Cascades.IdentifierValue.SaveAny;
+				return IdentifierValue.SaveAny;
 			}
 			else
 			{
 				try
 				{
-					return new Cascades.IdentifierValue(((IIdentifierType) identifierType).StringToObject(unsavedValue));
+					return new IdentifierValue(((IIdentifierType) identifierType).StringToObject(unsavedValue));
 				}
 				catch (InvalidCastException cce)
 				{
@@ -95,7 +95,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public static Cascades.VersionValue GetUnsavedVersionValue(
+		public static VersionValue GetUnsavedVersionValue(
 			String versionUnsavedValue,
 			IGetter versionGetter,
 			IVersionType versionType,
@@ -109,32 +109,32 @@ namespace NHibernate.Engine
 					// if the version of a newly instantiated object is not the same
 					// as the version seed value, use that as the unsaved-value
 					return versionType.Equals(versionType.Seed(null), defaultValue) ?
-					       Cascades.VersionValue.VersionUndefined :
-					       new Cascades.VersionValue(defaultValue);
+					       VersionValue.VersionUndefined :
+					       new VersionValue(defaultValue);
 				}
 				else
 				{
-					return Cascades.VersionValue.VersionUndefined;
+					return VersionValue.VersionUndefined;
 				}
 			}
 			else if ("undefined" == versionUnsavedValue)
 			{
-				return Cascades.VersionValue.VersionUndefined;
+				return VersionValue.VersionUndefined;
 			}
 			else if ("null" == versionUnsavedValue)
 			{
-				return Cascades.VersionValue.VersionSaveNull;
+				return VersionValue.VersionSaveNull;
 			}
 			else if ("negative" == versionUnsavedValue)
 			{
-				return Cascades.VersionValue.VersionNegative;
+				return VersionValue.VersionNegative;
 			}
 			else
 			{
 				// NHibernate-specific
 				try
 				{
-					return new Cascades.VersionValue(versionType.StringToObject(versionUnsavedValue));
+					return new VersionValue(versionType.StringToObject(versionUnsavedValue));
 				}
 				catch (InvalidCastException ice)
 				{

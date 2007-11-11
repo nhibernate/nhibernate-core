@@ -16,6 +16,8 @@ namespace NHibernate.Mapping
 		private string parentProperty;
 		private PersistentClass owner;
 		private bool dynamic;
+		private bool isKey;
+		private string roleName;
 
 		/// <summary></summary>
 		public int PropertySpan
@@ -24,7 +26,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public IEnumerable<Property> PropertyCollection
+		public IEnumerable<Property> PropertyIterator
 		{
 			get { return properties; }
 		}
@@ -53,7 +55,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				int n = 0;
-				foreach (Property p in PropertyCollection)
+				foreach (Property p in PropertyIterator)
 				{
 					n += p.ColumnSpan;
 				}
@@ -67,7 +69,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				ArrayList retVal = new ArrayList();
-				foreach (Property prop in PropertyCollection)
+				foreach (Property prop in PropertyIterator)
 				{
 					retVal.AddRange(prop.ColumnCollection);
 				}
@@ -152,7 +154,7 @@ namespace NHibernate.Mapping
 			{
 				bool[] result = new bool[ColumnSpan];
 				int i = 0;
-				foreach (Property prop in PropertyCollection)
+				foreach (Property prop in PropertyIterator)
 				{
 					bool[] chunk = prop.Value.ColumnInsertability;
 					if (prop.IsInsertable)
@@ -171,7 +173,7 @@ namespace NHibernate.Mapping
 			{
 				bool[] result = new bool[ColumnSpan];
 				int i = 0;
-				foreach (Property prop in PropertyCollection)
+				foreach (Property prop in PropertyIterator)
 				{
 					bool[] chunk = prop.Value.ColumnUpdateability;
 					if (prop.IsUpdateable)
@@ -184,9 +186,21 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		public bool IsKey
+		{
+			get { return isKey; }
+			set { isKey = value; }
+		}
+
+		public string RoleName
+		{
+			get { return roleName; }
+			set { roleName = value; }
+		}
+
 		public Property GetProperty(string propertyName)
 		{
-			IEnumerable<Property> iter = PropertyCollection;
+			IEnumerable<Property> iter = PropertyIterator;
 			foreach (Property prop in iter)
 			{
 				if (prop.Name.Equals(propertyName))

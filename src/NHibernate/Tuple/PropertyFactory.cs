@@ -30,7 +30,7 @@ namespace NHibernate.Tuple
 			IType type = mappedEntity.Identifier.Type;
 			Mapping.Property property = mappedEntity.IdentifierProperty;
 
-			Cascades.IdentifierValue unsavedValue = UnsavedValueFactory.GetUnsavedIdentifierValue(
+			IdentifierValue unsavedValue = UnsavedValueFactory.GetUnsavedIdentifierValue(
 				mappedUnsavedValue,
 				GetGetter(property),
 				type,
@@ -71,7 +71,7 @@ namespace NHibernate.Tuple
 		{
 			String mappedUnsavedValue = ((IKeyValue) property.Value).NullValue;
 
-			Cascades.VersionValue unsavedValue = UnsavedValueFactory.GetUnsavedVersionValue(
+			VersionValue unsavedValue = UnsavedValueFactory.GetUnsavedVersionValue(
 				mappedUnsavedValue,
 				GetGetter(property),
 				(IVersionType) property.Type,
@@ -132,7 +132,8 @@ namespace NHibernate.Tuple
 				property.IsOptional,
 				alwaysDirtyCheck || property.IsUpdateable,
 				property.IsOptimisticLocked,
-				property.CascadeStyle
+				property.CascadeStyle,
+				property.Value.FetchMode
 				);
 		}
 

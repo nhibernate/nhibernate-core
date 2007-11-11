@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Reflection;
 using log4net;
 using NHibernate.Bytecode;
-using NHibernate.Bytecode.CodeDom;
 using NHibernate.Util;
 using NHibernate.Cfg.ConfigurationSchema;
 
@@ -294,7 +293,7 @@ namespace NHibernate.Cfg
 			switch (providerName)
 			{
 				case "codedom":
-					return new BytecodeProviderImpl();
+					return new Bytecode.CodeDom.BytecodeProviderImpl();
 				case "lcg":
 					return new Bytecode.Lightweight.BytecodeProviderImpl();
 				case "null":

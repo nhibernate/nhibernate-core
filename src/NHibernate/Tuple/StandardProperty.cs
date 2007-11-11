@@ -12,15 +12,16 @@ namespace NHibernate.Tuple
 	/// </remarks>
 	public class StandardProperty : Property
 	{
-		private bool lazy;
-		private bool insertable;
-		private bool updateable;
-		private bool insertGenerated;
-		private bool updateGenerated;
-		private bool nullable;
-		private bool dirtyCheckable;
-		private bool versionable;
-		private Cascades.CascadeStyle cascadeStyle;
+		private readonly bool lazy;
+		private readonly bool insertable;
+		private readonly bool updateable;
+		private readonly bool insertGenerated;
+		private readonly bool updateGenerated;
+		private readonly bool nullable;
+		private readonly bool dirtyCheckable;
+		private readonly bool versionable;
+		private readonly Cascades.CascadeStyle cascadeStyle;
+		private readonly FetchMode? fetchMode;
 
 		/// <summary>
 		/// Constructs StandardProperty instances.
@@ -39,6 +40,7 @@ namespace NHibernate.Tuple
 		/// <param name="checkable">Is this property a checkable value?</param>
 		/// <param name="versionable">Is this property a versionable value?</param>
 		/// <param name="cascadeStyle">The cascade style for this property's value.</param>
+		/// <param name="fetchMode">Any fetch mode defined for this property </param>
 		public StandardProperty(
 			String name,
 			String node,
@@ -51,7 +53,8 @@ namespace NHibernate.Tuple
 			bool nullable,
 			bool checkable,
 			bool versionable,
-			Cascades.CascadeStyle cascadeStyle)
+			Cascades.CascadeStyle cascadeStyle,
+			FetchMode? fetchMode)
 			: base(name, node, type)
 		{
 			this.lazy = lazy;
@@ -63,6 +66,7 @@ namespace NHibernate.Tuple
 			this.dirtyCheckable = checkable;
 			this.versionable = versionable;
 			this.cascadeStyle = cascadeStyle;
+			this.fetchMode = fetchMode;
 		}
 
 		public bool IsLazy
@@ -113,6 +117,11 @@ namespace NHibernate.Tuple
 		public Cascades.CascadeStyle CascadeStyle
 		{
 			get { return cascadeStyle; }
+		}
+
+		public FetchMode? FetchMode
+		{
+			get { return fetchMode; }
 		}
 	}
 }

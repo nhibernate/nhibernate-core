@@ -9,6 +9,16 @@ namespace NHibernate.Bytecode
 	/// </summary>
 	public class NullBytecodeProvider : IBytecodeProvider
 	{
+		#region IBytecodeProvider Members
+
+		public IProxyFactoryFactory ProxyFactoryFactory
+		{
+			get { return new DefaultProxyFactoryFactory(); }
+			set { throw new NotSupportedException(); }
+		}
+
+		#endregion
+
 		public IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters)
 		{
 			return null;

@@ -1,5 +1,4 @@
 using System;
-using log4net;
 using NHibernate.Persister.Entity;
 using NHibernate.Property;
 
@@ -15,7 +14,15 @@ namespace NHibernate.Bytecode.Lightweight
 	/// </remarks>
 	public class BytecodeProviderImpl : IBytecodeProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(BytecodeProviderImpl));
+		#region IBytecodeProvider Members
+
+		public virtual IProxyFactoryFactory ProxyFactoryFactory
+		{
+			get { return new DefaultProxyFactoryFactory(); }
+			set { throw new NotSupportedException(); }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Generate the IReflectionOptimizer object

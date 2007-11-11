@@ -17,7 +17,7 @@ namespace NHibernate.Tuple
 	{
 		private bool isVirtual;
 		private bool embedded;
-		private Cascades.IdentifierValue unsavedValue;
+		private IdentifierValue unsavedValue;
 		private IIdentifierGenerator identifierGenerator;
 		private bool identifierAssignedByInsert;
 
@@ -38,7 +38,7 @@ namespace NHibernate.Tuple
 			String node,
 			IType type,
 			bool embedded,
-			Cascades.IdentifierValue unsavedValue,
+			IdentifierValue unsavedValue,
 			IIdentifierGenerator identifierGenerator)
 			: base(name, node, type)
 		{
@@ -61,7 +61,7 @@ namespace NHibernate.Tuple
 		public IdentifierProperty(
 			IType type,
 			bool embedded,
-			Cascades.IdentifierValue unsavedValue,
+			IdentifierValue unsavedValue,
 			IIdentifierGenerator identifierGenerator)
 			: base(null, null, type)
 		{
@@ -83,7 +83,7 @@ namespace NHibernate.Tuple
 			get { return embedded; }
 		}
 
-		public Cascades.IdentifierValue UnsavedValue
+		public IdentifierValue UnsavedValue
 		{
 			get { return unsavedValue; }
 		}

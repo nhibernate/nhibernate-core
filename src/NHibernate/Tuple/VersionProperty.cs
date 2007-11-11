@@ -13,7 +13,7 @@ namespace NHibernate.Tuple
 	[Serializable]
 	public class VersionProperty : StandardProperty
 	{
-		private readonly Cascades.VersionValue unsavedValue;
+		private readonly VersionValue unsavedValue;
 
 		/// <summary>
 		/// Constructs VersionProperty instances.
@@ -48,15 +48,15 @@ namespace NHibernate.Tuple
 			bool checkable,
 			bool versionable,
 			Cascades.CascadeStyle cascadeStyle,
-			Cascades.VersionValue unsavedValue)
+			VersionValue unsavedValue)
 			: base(
 				name, node, type, lazy, insertable, updateable, insertGenerated, updateGenerated, nullable, checkable, versionable,
-				cascadeStyle)
+				cascadeStyle, null)
 		{
 			this.unsavedValue = unsavedValue;
 		}
 
-		public Cascades.VersionValue UnsavedValue
+		public VersionValue UnsavedValue
 		{
 			get { return unsavedValue; }
 		}

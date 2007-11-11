@@ -9,7 +9,7 @@ namespace NHibernate.Property
 	/// </summary>
 	public sealed class PropertyAccessorFactory
 	{
-		private static IDictionary accessors;
+		private static readonly IDictionary accessors;
 
 		/// <summary>
 		/// Initializes the static members in <see cref="PropertyAccessorFactory"/>.
@@ -202,5 +202,12 @@ namespace NHibernate.Property
 				throw new MappingException("could not instantiate PropertyAccessor type: " + type, e);
 			}
 		}
+
+		private static readonly IPropertyAccessor MapAccessor = new MapAccessor();
+		public static IPropertyAccessor DynamicMapPropertyAccessor
+		{
+			get { return MapAccessor; }
+		}
+
 	}
 }

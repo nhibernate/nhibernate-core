@@ -20,7 +20,7 @@ using NHibernate.Property;
 using NHibernate.Proxy;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
-using NHibernate.Tuple;
+using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array=System.Array;
@@ -555,7 +555,7 @@ namespace NHibernate.Persister.Entity
 
 			if (IsVersioned)
 			{
-				Cascades.VersionValue unsavedVersionValue = entityMetamodel.VersionProperty.UnsavedValue;
+				VersionValue unsavedVersionValue = entityMetamodel.VersionProperty.UnsavedValue;
 				// let this take precedence if defined, since it works for
 				// assigned identifiers
 				object result = unsavedVersionValue.IsUnsaved(GetVersion(obj));
@@ -1165,7 +1165,7 @@ namespace NHibernate.Persister.Entity
 				if (prop.IsComposite)
 				{
 					Component component = (Component) prop.Value;
-					InternalInitSubclassPropertyAliasesMap(propName, component.PropertyCollection);
+					InternalInitSubclassPropertyAliasesMap(propName, component.PropertyIterator);
 				}
 				else
 				{

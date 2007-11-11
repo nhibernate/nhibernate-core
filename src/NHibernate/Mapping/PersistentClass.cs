@@ -40,6 +40,7 @@ namespace NHibernate.Mapping
 		private readonly List<Join> joins = new List<Join>();
 		private readonly List<Join> subclassJoins = new List<Join>();
 		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
+		private Component identifierMapper;
 
 
 		private SqlString customSQLInsert;
@@ -713,9 +714,8 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public bool HasPojoRepresentation
+		public bool HasPocoRepresentation
 		{
-			// TODO H3:
 			get { return true; }
 		}
 
@@ -925,7 +925,7 @@ namespace NHibernate.Mapping
 			{
 				List<IEnumerable<PersistentClass>> iters = new List<IEnumerable<PersistentClass>>();
 				iters.Add(new SingletonEnumerable<PersistentClass>(this));
-				foreach (PersistentClass clazz in SubclassIterator)
+				foreach (Subclass clazz in SubclassIterator)
 				{
 					iters.Add(clazz.SubclassClosureIterator);
 				}
@@ -933,5 +933,17 @@ namespace NHibernate.Mapping
 			}
 
 		}
+
+		public virtual Component IdentifierMapper
+		{
+			get { return identifierMapper; }
+			set { identifierMapper = value; }
+		}
+
+		public virtual bool HasIdentifierMapper
+		{
+			get { return identifierMapper != null; }
+		}
+
 	}
 }

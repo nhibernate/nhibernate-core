@@ -10,7 +10,13 @@ namespace NHibernate
 	[Serializable]
 	public class InstantiationException : HibernateException
 	{
-		private System.Type type;
+		private readonly System.Type type;
+
+		public InstantiationException(string message, System.Type type)
+			: base(message)
+		{
+			this.type = type;
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InstantiationException"/> class.

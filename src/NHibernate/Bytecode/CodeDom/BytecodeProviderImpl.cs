@@ -15,6 +15,16 @@ namespace NHibernate.Bytecode.CodeDom
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(BytecodeProviderImpl));
 
+		#region IBytecodeProvider Members
+
+		public IProxyFactoryFactory ProxyFactoryFactory
+		{
+			get { return new DefaultProxyFactoryFactory(); }
+			set { throw new NotSupportedException(); }
+		}
+
+		#endregion
+
 		public IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters)
 		{
 			if (clazz.IsValueType)

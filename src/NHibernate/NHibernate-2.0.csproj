@@ -458,9 +458,11 @@
     <Compile Include="AdoNet\ResultSetWrapper.cs" />
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
+    <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />
     <Compile Include="Bytecode\IBytecodeProvider.cs" />
     <Compile Include="Bytecode\IInstantiationOptimizer.cs" />
+    <Compile Include="Bytecode\IProxyFactoryFactory.cs" />
     <Compile Include="Bytecode\IReflectionOptimizer.cs" />
     <Compile Include="Bytecode\Lightweight\AccessOptimizer.cs" />
     <Compile Include="Bytecode\Lightweight\BytecodeProviderImpl.cs" />
@@ -595,6 +597,7 @@
     <Compile Include="Engine\EntityUniqueKey.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
     <Compile Include="Engine\ForeignKeys.cs" />
+    <Compile Include="Engine\IdentifierValue.cs" />
     <Compile Include="Engine\IPersistenceContext.cs" />
     <Compile Include="Engine\Loading\CollectionLoadContext.cs" />
     <Compile Include="Engine\Loading\EntityLoadContext.cs" />
@@ -620,6 +623,7 @@
     <Compile Include="Engine\StatefulPersistenceContext.cs" />
     <Compile Include="Engine\TwoPhaseLoad.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
+    <Compile Include="Engine\VersionValue.cs" />
     <Compile Include="Event\AbstractEvent.cs" />
     <Compile Include="Event\AutoFlushEvent.cs" />
     <Compile Include="Event\Default\AbstractFlushingEventListener.cs" />
@@ -722,6 +726,7 @@
     <Compile Include="Mapping\UnionSubclass.cs" />
     <Compile Include="Persister\Entity\ILockable.cs" />
     <Compile Include="Persister\Entity\UnionSubclassEntityPersister.cs" />
+    <Compile Include="Property\MapAccessor.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
     <Compile Include="QueryParameterException.cs" />
     <Compile Include="SessionException.cs" />
@@ -902,8 +907,20 @@
     <Compile Include="Transform\AliasToBeanResultTransformer.cs" />
     <Compile Include="Transform\PassThroughResultTransformer.cs" />
     <Compile Include="Transform\Transformers.cs" />
-    <Compile Include="Tuple\EntityMetamodel.cs" />
+    <Compile Include="Tuple\Component\AbstractComponentTuplizer.cs" />
+    <Compile Include="Tuple\Component\ComponentMetamodel.cs" />
+    <Compile Include="Tuple\Component\DynamicMapComponentTuplizer.cs" />
+    <Compile Include="Tuple\Component\IComponentTuplizer.cs" />
+    <Compile Include="Tuple\Component\PocoComponentTuplizer.cs" />
+    <Compile Include="Tuple\DynamicMapInstantiator.cs" />
+    <Compile Include="Tuple\Entity\AbstractEntityTuplizer.cs" />
+    <Compile Include="Tuple\Entity\EntityMetamodel.cs" />
+    <Compile Include="Tuple\Entity\IEntityTuplizer.cs" />
+    <Compile Include="Tuple\Entity\PocoEntityTuplizer.cs" />
     <Compile Include="Tuple\IdentifierProperty.cs" />
+    <Compile Include="Tuple\IInstantiator.cs" />
+    <Compile Include="Tuple\ITuplizer.cs" />
+    <Compile Include="Tuple\PocoInstantiator.cs" />
     <Compile Include="Tuple\Property.cs" />
     <Compile Include="Tuple\PropertyFactory.cs" />
     <Compile Include="Tuple\StandardProperty.cs" />

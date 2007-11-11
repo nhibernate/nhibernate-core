@@ -550,7 +550,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			FetchMode[] joinedFetch = new FetchMode[span];
 
 			int i = 0;
-			foreach (Mapping.Property prop in model.PropertyCollection)
+			foreach (Mapping.Property prop in model.PropertyIterator)
 			{
 				names[i] = prop.Name;
 				types[i] = prop.Type;
@@ -569,7 +569,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				ISetter[] setters = new ISetter[span];
 				bool foundCustomAccessor = false;
 				i = 0;
-				foreach (Mapping.Property prop in model.PropertyCollection)
+				foreach (Mapping.Property prop in model.PropertyIterator)
 				{
 					setters[i] = prop.GetSetter(model.ComponentClass);
 					getters[i] = prop.GetGetter(model.ComponentClass);
