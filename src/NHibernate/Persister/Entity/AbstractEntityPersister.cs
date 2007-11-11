@@ -27,6 +27,7 @@ using Array=System.Array;
 using Environment=NHibernate.Cfg.Environment;
 using System.Collections.Generic;
 using NHibernate.Dialect.Lock;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Persister.Entity
 {
@@ -1060,7 +1061,7 @@ namespace NHibernate.Persister.Entity
 
 			if (hasProxy)
 			{
-				HashedSet proxyInterfaces = new HashedSet();
+				HashedSet<System.Type> proxyInterfaces = new HashedSet<System.Type>();
 				proxyInterfaces.Add(typeof(INHibernateProxy));
 
 				if (!mappedClass.Equals(concreteProxyClass))
@@ -1101,7 +1102,9 @@ namespace NHibernate.Persister.Entity
 				if (HasProxy)
 				{
 					proxyFactory = CreateProxyFactory();
-					proxyFactory.PostInstantiate(mappedClass, proxyInterfaces, proxyGetIdentifierMethod, proxySetIdentifierMethod);
+					proxyFactory.PostInstantiate(EntityName, mappedClass, proxyInterfaces, proxyGetIdentifierMethod,
+					                             proxySetIdentifierMethod,
+					                             persistentClass.HasEmbeddedIdentifier ? (IAbstractComponentType) persistentClass.Identifier.Type: null);
 				}
 				else
 				{

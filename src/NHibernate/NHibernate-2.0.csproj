@@ -303,11 +303,11 @@
     <Compile Include="Property\PascalCaseMUnderscoreStrategy.cs" />
     <Compile Include="Property\PascalCaseUnderscoreStrategy.cs" />
     <Compile Include="Property\PropertyAccessorFactory.cs" />
-    <Compile Include="Proxy\CastleLazyInitializer.cs" />
-    <Compile Include="Proxy\CastleProxyFactory.cs" />
+    <Compile Include="Proxy\Poco\Castle\CastleLazyInitializer.cs" />
+    <Compile Include="Proxy\Poco\Castle\CastleProxyFactory.cs" />
     <Compile Include="Proxy\INHibernateProxy.cs" />
     <Compile Include="Proxy\IProxyFactory.cs" />
-    <Compile Include="Proxy\LazyInitializer.cs" />
+    <Compile Include="Proxy\AbstractLazyInitializer.cs" />
     <Compile Include="Proxy\NHibernateProxyHelper.cs" />
     <Compile Include="Proxy\ProxyTypeValidator.cs" />
     <Compile Include="QueryException.cs" />

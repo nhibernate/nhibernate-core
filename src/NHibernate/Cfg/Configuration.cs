@@ -18,6 +18,7 @@ using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Mapping;
 using NHibernate.Proxy;
+using NHibernate.Proxy.Poco.Castle;
 using NHibernate.Type;
 using NHibernate.Util;
 

@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 				//reassociating the proxy
 				if (obj is INHibernateProxy)
 				{
-					LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
+					AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)obj);
 					li.Identifier = requestedId;
 				}
 			}

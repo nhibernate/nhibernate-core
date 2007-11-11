@@ -1,18 +1,17 @@
 using System;
 using System.Reflection;
 using Castle.Core.Interceptor;
-using Castle.DynamicProxy;
 using log4net;
 using NHibernate.Engine;
 
-namespace NHibernate.Proxy
+namespace NHibernate.Proxy.Poco.Castle
 {
 	/// <summary>
-	/// A <see cref="LazyInitializer"/> for use with the Castle Dynamic Class Generator.
+	/// A <see cref="ILazyInitializer"/> for use with the Castle Dynamic Class Generator.
 	/// </summary>
 	[Serializable]
 	[CLSCompliant(false)]
-	public class CastleLazyInitializer : LazyInitializer, Castle.Core.Interceptor.IInterceptor
+	public class CastleLazyInitializer : AbstractLazyInitializer, global::Castle.Core.Interceptor.IInterceptor
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(CastleLazyInitializer));
 

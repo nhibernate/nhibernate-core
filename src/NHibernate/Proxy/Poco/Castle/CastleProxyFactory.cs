@@ -1,11 +1,12 @@
 using System;
 using System.Reflection;
 using Castle.DynamicProxy;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Type;
 
-namespace NHibernate.Proxy
+namespace NHibernate.Proxy.Poco.Castle
 {
 	public class CastleProxyFactory : IProxyFactory
 	{
@@ -17,8 +18,9 @@ namespace NHibernate.Proxy
 		private MethodInfo _getIdentifierMethod;
 		private MethodInfo _setIdentifierMethod;
 
-		public virtual void PostInstantiate(System.Type persistentClass, ISet interfaces,
-		                            MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod)
+		public virtual void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
+		                                    MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
+		                                    IAbstractComponentType componentIdType)
 		{
 			_persistentClass = persistentClass;
 			_interfaces = new System.Type[interfaces.Count];

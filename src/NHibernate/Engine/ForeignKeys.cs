@@ -102,7 +102,7 @@ namespace NHibernate.Engine
 				if (proxy != null)
 				{
 					// if its an uninitialized proxy it can't be transient
-					LazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
+					AbstractLazyInitializer li = NHibernateProxyHelper.GetLazyInitializer(proxy);
 					if (li.GetImplementation(session) == null)
 					{
 						return false;

@@ -26,6 +26,7 @@ using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
+using NHibernate.Proxy.Poco.Castle;
 using NHibernate.Stat;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;

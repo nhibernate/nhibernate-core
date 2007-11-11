@@ -5,6 +5,7 @@ using System.Reflection;
 using Castle.DynamicProxy;
 using NHibernate.Engine;
 using NHibernate.Proxy;
+using NHibernate.Proxy.Poco.Castle;
 using NHibernate.Test.ExpressionTest.SubQueries;
 using NUnit.Framework;
 

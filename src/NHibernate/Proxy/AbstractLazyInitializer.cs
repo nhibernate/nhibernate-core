@@ -17,7 +17,7 @@ namespace NHibernate.Proxy
 	/// to cglib was made in .net.
 	/// </remarks>
 	[Serializable]
-	public abstract class LazyInitializer
+	public abstract class AbstractLazyInitializer
 	{
 		private static readonly IEqualityComparer IdentityEqualityComparer =
 			new IdentityEqualityComparer();
@@ -50,7 +50,7 @@ namespace NHibernate.Proxy
 		/// <param name="getIdentifierMethod"></param>
 		/// <param name="setIdentifierMethod"></param>
 		/// <param name="session">The ISession this Proxy is in.</param>
-		protected LazyInitializer(System.Type persistentClass, object id,
+		protected AbstractLazyInitializer(System.Type persistentClass, object id,
 		                          MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
 		                          ISessionImplementor session)
 		{
@@ -180,7 +180,7 @@ namespace NHibernate.Proxy
 						_target = _session.PersistenceContext.GetEntity(key);
 					}
 
-					// let the specific LazyInitializer write its requirements for deserialization 
+					// let the specific AbstractLazyInitializer write its requirements for deserialization 
 					// into the stream.
 					AddSerializationInfo(info, context);
 

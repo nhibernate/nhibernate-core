@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Property;
 using NHibernate.Proxy;
+using NHibernate.Type;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -154,11 +155,8 @@ namespace NHibernate.Tuple.Entity
 			IProxyFactory pf = BuildProxyFactoryInternal(persistentClass, idGetter, idSetter);
 			try
 			{
-				pf.PostInstantiate(_mappedClass, proxyInterfaces, proxyGetIdentifierMethod, proxySetIdentifierMethod);
-				// TODO H3.2
-				//pf.PostInstantiate(EntityName, _mappedClass, 
-				//  proxyInterfaces, proxyGetIdentifierMethod, proxySetIdentifierMethod), 
-				//persistentClass.HasEmbeddedIdentifier ? (AbstractComponentType)persistentClass.GetIdentifier().Type : null);
+				pf.PostInstantiate(EntityName, _mappedClass, proxyInterfaces, proxyGetIdentifierMethod, proxySetIdentifierMethod,
+				                   persistentClass.HasEmbeddedIdentifier ? (IAbstractComponentType) persistentClass.Identifier.Type: null);
 			}
 			catch (HibernateException he)
 			{

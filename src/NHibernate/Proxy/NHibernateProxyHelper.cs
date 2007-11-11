@@ -16,16 +16,16 @@ namespace NHibernate.Proxy
 		}
 
 		/// <summary>
-		/// Gets the <see cref="LazyInitializer"/> that is used by the Proxy.
+		/// Gets the <see cref="AbstractLazyInitializer"/> that is used by the Proxy.
 		/// </summary>
 		/// <param name="proxy">The Proxy object</param>
 		/// <returns>
-		/// A reference to <see cref="LazyInitializer"/> that contains the details 
+		/// A reference to <see cref="AbstractLazyInitializer"/> that contains the details 
 		/// of the Proxied object.
 		/// </returns>
-		public static LazyInitializer GetLazyInitializer(INHibernateProxy proxy)
+		public static AbstractLazyInitializer GetLazyInitializer(INHibernateProxy proxy)
 		{
-			return (LazyInitializer) ((IProxyTargetAccessor)proxy).GetInterceptors()[0];
+			return (AbstractLazyInitializer) ((IProxyTargetAccessor)proxy).GetInterceptors()[0];
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace NHibernate.Proxy
 			if (obj is INHibernateProxy)
 			{
 				INHibernateProxy proxy = (INHibernateProxy) obj;
-				LazyInitializer li = GetLazyInitializer(proxy);
+				AbstractLazyInitializer li = GetLazyInitializer(proxy);
 				return li.PersistentClass;
 			}
 			else
@@ -61,7 +61,7 @@ namespace NHibernate.Proxy
 		{
 			if (proxy is INHibernateProxy)
 			{
-				LazyInitializer li = GetLazyInitializer((INHibernateProxy) proxy);
+				AbstractLazyInitializer li = GetLazyInitializer((INHibernateProxy) proxy);
 				if (li.IsUninitialized)
 				{
 					return li.PersistentClass;
@@ -82,7 +82,7 @@ namespace NHibernate.Proxy
 			if (obj is INHibernateProxy)
 			{
 				INHibernateProxy proxy = (INHibernateProxy) obj;
-				LazyInitializer li = GetLazyInitializer(proxy);
+				AbstractLazyInitializer li = GetLazyInitializer(proxy);
 				return li.Identifier;
 			}
 			else
