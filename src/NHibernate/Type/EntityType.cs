@@ -34,7 +34,12 @@ namespace NHibernate.Type
 
 		public override sealed bool Equals(object x, object y)
 		{
-			return x == y;
+			if (x == y)
+				return true;
+			else if (x != null)
+				return x.Equals(y);
+			else
+				return y.Equals(x);
 		}
 
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
