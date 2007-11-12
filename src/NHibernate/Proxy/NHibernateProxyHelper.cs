@@ -1,4 +1,3 @@
-using Castle.Core.Interceptor;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Proxy
@@ -36,11 +35,10 @@ namespace NHibernate.Proxy
 		/// <returns>The Underlying Type for the object regardless of if it is a Proxy.</returns>
 		public static System.Type GetClass(object obj)
 		{
-			if (obj is INHibernateProxy)
+			INHibernateProxy proxy = obj as INHibernateProxy;
+			if (proxy != null)
 			{
-				INHibernateProxy proxy = (INHibernateProxy) obj;
-				ILazyInitializer li = GetLazyInitializer(proxy);
-				return li.PersistentClass;
+				return proxy.HibernateLazyInitializer.PersistentClass;
 			}
 			else
 			{
@@ -52,16 +50,17 @@ namespace NHibernate.Proxy
 		/// Get the true, underlying class of a proxied persistent class. This operation
 		/// will NOT initialize the proxy and thus may return an incorrect result.
 		/// </summary>
-		/// <param name="proxy">a persistable object or proxy</param>
+		/// <param name="entity">a persistable object or proxy</param>
 		/// <returns>guessed class of the instance</returns>
 		/// <remarks>
 		/// This method is approximate match for Session.bestGuessEntityName in H3.2
 		/// </remarks>
-		public static System.Type GuessClass(object proxy)
+		public static System.Type GuessClass(object entity)
 		{
-			if (proxy is INHibernateProxy)
+			INHibernateProxy proxy = entity as INHibernateProxy;
+			if (proxy != null)
 			{
-				ILazyInitializer li = GetLazyInitializer((INHibernateProxy) proxy);
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 				{
 					return li.PersistentClass;
@@ -73,17 +72,16 @@ namespace NHibernate.Proxy
 			}
 			else
 			{
-				return proxy.GetType();
+				return entity.GetType();
 			}
 		}
 
 		public static object GetIdentifier(object obj, IEntityPersister persister)
 		{
-			if (obj is INHibernateProxy)
+			INHibernateProxy proxy = obj as INHibernateProxy;
+			if (proxy != null)
 			{
-				INHibernateProxy proxy = (INHibernateProxy) obj;
-				ILazyInitializer li = GetLazyInitializer(proxy);
-				return li.Identifier;
+				return proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
