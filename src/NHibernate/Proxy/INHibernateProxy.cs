@@ -17,5 +17,7 @@ namespace NHibernate.Proxy
 	/// </remarks>
 	public interface INHibernateProxy
 	{
+		/// <summary> Get the underlying lazy initialization handler. </summary>
+		ILazyInitializer HibernateLazyInitializer { get;}
 	}
 }

@@ -44,10 +44,10 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy.
 		/// </summary>
-		/// <param name="persistentClass"></param>
+		/// <param name="entityName"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		object ImmediateLoad(System.Type persistentClass, object id);
+		object ImmediateLoad(string entityName, object id);
 
 		/// <summary>
 		/// System time before the start of the transaction

@@ -252,5 +252,10 @@ namespace NHibernate.Tuple.Entity
 		{
 			get { return isValidatableImplementor; }
 		}
+
+		public override EntityMode EntityMode
+		{
+			get { return NHibernate.EntityMode.Poco; }
+		}
 	}
 }

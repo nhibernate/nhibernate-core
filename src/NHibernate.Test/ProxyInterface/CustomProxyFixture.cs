@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Proxy;
 using NHibernate.Proxy.Poco.Castle;
 using NHibernate.Test.ExpressionTest.SubQueries;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ProxyInterface
@@ -67,8 +68,8 @@ namespace NHibernate.Test.ProxyInterface
 		{
 			try
 			{
-				CastleLazyInitializer initializer = new DataBindingInterceptor(PersistentClass, id,
-																			  GetIdentifierMethod, SetIdentifierMethod, session);
+				CastleLazyInitializer initializer = new DataBindingInterceptor(EntityName, PersistentClass, id,
+																				GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, session);
 
 				object generatedProxy = null;
 
@@ -98,11 +99,14 @@ namespace NHibernate.Test.ProxyInterface
 	public class DataBindingInterceptor : CastleLazyInitializer
 	{
 		private PropertyChangedEventHandler subscribers = delegate { };
+		public DataBindingInterceptor(string entityName, System.Type persistentClass, object id, 
+			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType, ISessionImplementor session) 
+			: base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session) {}
 
-		public DataBindingInterceptor(System.Type persistentClass, object id, MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, ISessionImplementor session)
-			: base(persistentClass, id, getIdentifierMethod, setIdentifierMethod, session)
-		{
-		}
+		//public DataBindingInterceptor(System.Type persistentClass, object id, MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, ISessionImplementor session)
+		//  : base(persistentClass, id, getIdentifierMethod, setIdentifierMethod, session)
+		//{
+		//}
 
 		public override void Intercept(Castle.Core.Interceptor.IInvocation invocation)
 		{

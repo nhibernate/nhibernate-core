@@ -64,7 +64,7 @@ namespace NHibernate.Impl
 			return loaded ?? Get(entityName, id);
 		}
 
-		public override object ImmediateLoad(System.Type persistentClass, object id)
+		public override object ImmediateLoad(string entityName, object id)
 		{
 			throw new SessionException("proxies cannot be fetched by a stateless session");
 		}

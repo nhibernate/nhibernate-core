@@ -15,6 +15,9 @@ namespace NHibernate.Proxy
 		/// <summary></summary>
 		object Identifier { get; set; }
 
+		/// <summary> Get the entity name</summary>
+		string EntityName { get;}
+
 		/// <summary></summary>
 		System.Type PersistentClass { get; }
 

@@ -295,6 +295,9 @@ namespace NHibernate.Tuple.Entity
 
 		#endregion
 
+		/// <summary> Return the entity-mode handled by this tuplizer instance. </summary>
+		public abstract EntityMode EntityMode { get;}
+
 		protected internal virtual IInstantiator Instantiator
 		{
 			get { return instantiator; }

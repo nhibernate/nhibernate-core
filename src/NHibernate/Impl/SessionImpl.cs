@@ -887,22 +887,24 @@ namespace NHibernate.Impl
 			}
 		}
 
-		///<summary> 
+		/// <summary> 
 		/// Load the data for the object with the specified id into a newly created object.
+		/// This is only called when lazily initializing a proxy.
 		/// Do NOT return a proxy.
-		///</summary>
-		public override object ImmediateLoad(System.Type clazz, object id)
+		/// </summary>
+		public override object ImmediateLoad(string entityName, object id)
 		{
 			if (log.IsDebugEnabled)
 			{
-				IEntityPersister persister = Factory.GetEntityPersister(clazz);
+				IEntityPersister persister = Factory.GetEntityPersister(entityName);
 				log.Debug("initializing proxy: " + MessageHelper.InfoString(persister, id, Factory));
 			}
 
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, true, this);
-			FireLoad(loadEvent,LoadEventListener.ImmediateLoad);
+			LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
+			FireLoad(loadEvent, LoadEventListener.ImmediateLoad);
 			return loadEvent.Result;
 		}
+
 
 		/// <summary>
 		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,

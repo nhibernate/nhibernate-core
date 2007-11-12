@@ -25,7 +25,7 @@ namespace NHibernate.Proxy
 		/// </returns>
 		public static ILazyInitializer GetLazyInitializer(INHibernateProxy proxy)
 		{
-			return (AbstractLazyInitializer) ((IProxyTargetAccessor)proxy).GetInterceptors()[0];
+			return proxy.HibernateLazyInitializer;
 		}
 
 		/// <summary>

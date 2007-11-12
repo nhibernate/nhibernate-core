@@ -35,7 +35,7 @@ namespace NHibernate.Impl
 
 		public abstract void InitializeCollection(IPersistentCollection coolection, bool writing);
 		public abstract object InternalLoad(string entityName, object id, bool eager, bool isNullable);
-		public abstract object ImmediateLoad(System.Type persistentClass, object id);
+		public abstract object ImmediateLoad(string entityName, object id);
 		public abstract long Timestamp { get; }
 
 		public ISessionFactoryImplementor Factory

@@ -745,8 +745,10 @@ namespace NHibernate.Impl
 
 		public IProxyFactory CreateProxyFactory()
 		{
-			if(proxyFactoryClass==typeof(CastleProxyFactory))
-				return new CastleProxyFactory();
+			if (proxyFactoryClass == typeof(CastleProxyFactory))
+			{
+				return Environment.BytecodeProvider.ProxyFactoryFactory.BuildProxyFactory();
+			}
 			try
 			{
 				return (IProxyFactory)Activator.CreateInstance(proxyFactoryClass);

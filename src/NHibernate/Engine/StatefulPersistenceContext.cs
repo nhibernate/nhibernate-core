@@ -595,7 +595,7 @@ namespace NHibernate.Engine
 		{
 			if (li.Session != Session)
 			{
-				IEntityPersister persister = session.Factory.GetEntityPersister(li.PersistentClass);
+				IEntityPersister persister = session.Factory.GetEntityPersister(li.EntityName);
 				EntityKey key = new EntityKey(li.Identifier, persister);
 				// any earlier proxy takes precedence
 				if (!proxiesByKey.ContainsKey(key))

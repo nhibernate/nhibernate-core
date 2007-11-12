@@ -624,6 +624,7 @@
     <Compile Include="Engine\TwoPhaseLoad.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
     <Compile Include="Engine\VersionValue.cs" />
+    <Compile Include="EntityMode.cs" />
     <Compile Include="Event\AbstractEvent.cs" />
     <Compile Include="Event\AutoFlushEvent.cs" />
     <Compile Include="Event\Default\AbstractFlushingEventListener.cs" />
@@ -729,6 +730,10 @@
     <Compile Include="Property\MapAccessor.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
     <Compile Include="Proxy\ILazyInitializer.cs" />
+    <Compile Include="Proxy\Map\MapLazyInitializer.cs" />
+    <Compile Include="Proxy\Map\MapProxy.cs" />
+    <Compile Include="Proxy\Map\MapProxyFactory.cs" />
+    <Compile Include="Proxy\Poco\BasicLazyInitializer.cs" />
     <Compile Include="QueryParameterException.cs" />
     <Compile Include="SessionException.cs" />
     <Compile Include="SqlCommand\SubselectClauseExtractor.cs" />
@@ -914,7 +919,10 @@
     <Compile Include="Tuple\Component\IComponentTuplizer.cs" />
     <Compile Include="Tuple\Component\PocoComponentTuplizer.cs" />
     <Compile Include="Tuple\DynamicMapInstantiator.cs" />
+    <Compile Include="Tuple\EntityModeToTuplizerMapping.cs" />
     <Compile Include="Tuple\Entity\AbstractEntityTuplizer.cs" />
+    <Compile Include="Tuple\Entity\DynamicMapEntityTuplizer.cs" />
+    <Compile Include="Tuple\Entity\EntityEntityModeToTuplizerMapping.cs" />
     <Compile Include="Tuple\Entity\EntityMetamodel.cs" />
     <Compile Include="Tuple\Entity\IEntityTuplizer.cs" />
     <Compile Include="Tuple\Entity\PocoEntityTuplizer.cs" />

@@ -285,5 +285,11 @@ namespace NHibernate.Mapping
 			}
 			set { isLazy = value; }
 		}
+
+		public virtual bool BackRef
+		{
+			get { return false; }
+		}
+
 	}
 }

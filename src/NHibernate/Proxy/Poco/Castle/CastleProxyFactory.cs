@@ -17,16 +17,20 @@ namespace NHibernate.Proxy.Poco.Castle
 		private System.Type[] _interfaces;
 		private MethodInfo _getIdentifierMethod;
 		private MethodInfo _setIdentifierMethod;
+		private string _entityName;
+		private IAbstractComponentType _componentIdType;
 
 		public virtual void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
 		                                    MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
 		                                    IAbstractComponentType componentIdType)
 		{
+			_entityName = entityName;
 			_persistentClass = persistentClass;
 			_interfaces = new System.Type[interfaces.Count];
 			interfaces.CopyTo(_interfaces, 0);
 			_getIdentifierMethod = getIdentifierMethod;
 			_setIdentifierMethod = setIdentifierMethod;
+			_componentIdType = componentIdType;
 		}
 
 		protected static ProxyGenerator DefaultProxyGenerator
@@ -59,6 +63,16 @@ namespace NHibernate.Proxy.Poco.Castle
 			get { return _interfaces.Length == 1; }
 		}
 
+		public string EntityName
+		{
+			get { return _entityName; }
+		}
+
+		public IAbstractComponentType ComponentIdType
+		{
+			get { return _componentIdType; }
+		}
+
 		/// <summary>
 		/// Build a proxy using the Castle.DynamicProxy library.
 		/// </summary>
@@ -69,10 +83,11 @@ namespace NHibernate.Proxy.Poco.Castle
 		{
 			try
 			{
-				CastleLazyInitializer initializer = new CastleLazyInitializer(_persistentClass, id,
-				                                                              _getIdentifierMethod, _setIdentifierMethod, session);
+				CastleLazyInitializer initializer =
+					new CastleLazyInitializer(EntityName, _persistentClass, id, _getIdentifierMethod, _setIdentifierMethod,
+					                          ComponentIdType, session);
 
-				object generatedProxy = null;
+				object generatedProxy;
 
 				if (IsClassProxy)
 				{

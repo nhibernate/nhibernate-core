@@ -114,7 +114,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			string entityName = node.Attributes["entity-name"] == null ? null : node.Attributes["name"].Value;
 			if (entityName == null)
-				entityName = className;
+				entityName = model.MappedClass.FullName;
 			if (entityName == null)
 			{
 				throw new MappingException("Unable to determine entity name");

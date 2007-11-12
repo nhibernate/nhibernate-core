@@ -3,6 +3,7 @@ using System.Reflection;
 using Castle.Core.Interceptor;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Proxy.Poco.Castle
 {
@@ -11,7 +12,7 @@ namespace NHibernate.Proxy.Poco.Castle
 	/// </summary>
 	[Serializable]
 	[CLSCompliant(false)]
-	public class CastleLazyInitializer : AbstractLazyInitializer, global::Castle.Core.Interceptor.IInterceptor
+	public class CastleLazyInitializer : BasicLazyInitializer, global::Castle.Core.Interceptor.IInterceptor
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(CastleLazyInitializer));
 
@@ -22,18 +23,17 @@ namespace NHibernate.Proxy.Poco.Castle
 		/// <summary>
 		/// Initializes a new <see cref="CastleLazyInitializer"/> object.
 		/// </summary>
+		/// <param name="entityName"></param>
 		/// <param name="persistentClass">The Class to Proxy.</param>
 		/// <param name="id">The Id of the Object we are Proxying.</param>
 		/// <param name="getIdentifierMethod"></param>
 		/// <param name="setIdentifierMethod"></param>
+		/// <param name="componentIdType"></param>
 		/// <param name="session">The ISession this Proxy is in.</param>
-		public CastleLazyInitializer(
-			System.Type persistentClass,
-			object id,
-			MethodInfo getIdentifierMethod,
-			MethodInfo setIdentifierMethod,
-			ISessionImplementor session)
-			: base(persistentClass, id, getIdentifierMethod, setIdentifierMethod, session)
+		public CastleLazyInitializer(string entityName, System.Type persistentClass, object id, 
+			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, 
+			IAbstractComponentType componentIdType, ISessionImplementor session)
+			:base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session)
 		{
 		}
 
