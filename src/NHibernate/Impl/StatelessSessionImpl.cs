@@ -412,7 +412,7 @@ namespace NHibernate.Impl
 			INHibernateProxy proxy = entity as INHibernateProxy;
 			if (proxy != null)
 			{
-				entity = NHibernateProxyHelper.GetLazyInitializer(proxy).GetImplementation();
+				entity = proxy.HibernateLazyInitializer.GetImplementation();
 			}
 			return GuessEntityName(entity);
 		}

@@ -51,9 +51,10 @@ namespace NHibernate.Type
 			}
 
 			object id;
-			if (x is INHibernateProxy)
+			INHibernateProxy proxy = x as INHibernateProxy;
+			if (proxy!=null)
 			{
-				id = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) x).Identifier;
+				id = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{

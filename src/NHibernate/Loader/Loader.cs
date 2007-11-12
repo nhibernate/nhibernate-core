@@ -340,8 +340,7 @@ namespace NHibernate.Loader
 					if (entity != proxy)
 					{
 						// Force the proxy to resolve itself
-						NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy)
-							.SetImplementation(entity);
+						((INHibernateProxy) proxy).HibernateLazyInitializer.SetImplementation(entity);
 						row[i] = proxy;
 					}
 				}

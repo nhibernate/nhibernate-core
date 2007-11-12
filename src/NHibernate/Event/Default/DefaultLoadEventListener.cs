@@ -168,7 +168,7 @@ namespace NHibernate.Event.Default
 		private object ReturnNarrowedProxy(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy)
 		{
 			log.Debug("entity proxy found in session cache");
-			ILazyInitializer li = NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy)proxy);
+			ILazyInitializer li = ((INHibernateProxy)proxy).HibernateLazyInitializer;
 			if (li.Unwrap)
 			{
 				return li.GetImplementation();

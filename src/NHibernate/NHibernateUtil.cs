@@ -274,7 +274,7 @@ namespace NHibernate
 			}
 			else if (proxy is INHibernateProxy)
 			{
-				NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy).Initialize();
+				((INHibernateProxy) proxy).HibernateLazyInitializer.Initialize();
 			}
 			else if (proxy is IPersistentCollection)
 			{
@@ -291,7 +291,7 @@ namespace NHibernate
 		{
 			if (proxy is INHibernateProxy)
 			{
-				return !NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy).IsUninitialized;
+				return !((INHibernateProxy) proxy).HibernateLazyInitializer.IsUninitialized;
 			}
 			else if (proxy is IPersistentCollection)
 			{
@@ -313,7 +313,7 @@ namespace NHibernate
 		{
 			if (proxy is INHibernateProxy)
 			{
-				return NHibernateProxyHelper.GetLazyInitializer((INHibernateProxy) proxy).GetImplementation().GetType();
+				return ((INHibernateProxy) proxy).HibernateLazyInitializer.GetImplementation().GetType();
 			}
 			else
 			{

@@ -15,19 +15,6 @@ namespace NHibernate.Proxy
 		}
 
 		/// <summary>
-		/// Gets the <see cref="AbstractLazyInitializer"/> that is used by the Proxy.
-		/// </summary>
-		/// <param name="proxy">The Proxy object</param>
-		/// <returns>
-		/// A reference to <see cref="AbstractLazyInitializer"/> that contains the details 
-		/// of the Proxied object.
-		/// </returns>
-		public static ILazyInitializer GetLazyInitializer(INHibernateProxy proxy)
-		{
-			return proxy.HibernateLazyInitializer;
-		}
-
-		/// <summary>
 		/// Convenience method to figure out the underlying type for the object regardless of it
 		/// is a Proxied object or the real object.
 		/// </summary>
