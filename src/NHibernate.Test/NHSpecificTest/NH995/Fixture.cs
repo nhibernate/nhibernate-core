@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH995
@@ -63,10 +63,10 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				// Load a so we can use it to load b
-				ClassA a = s.Get<ClassA>(a_id);
+				ClassA a = (ClassA)s.Get(typeof(ClassA), a_id);
 
 				// Load b so b will be in cache
-				ClassB b = s.Get<ClassB>(new ClassBId("bbb", a));
+				s.Get(typeof(ClassB), new ClassBId("bbb", a));
 
 				tx.Commit();
 			}
@@ -76,9 +76,9 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			{
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
-					IList<ClassC> c_list = s.CreateCriteria(typeof (ClassC)).List<ClassC>();
+					IList c_list = s.CreateCriteria(typeof (ClassC)).List();
 					// make sure we initialize B
-					NHibernateUtil.Initialize(c_list[0].B);
+					NHibernateUtil.Initialize(((ClassC)c_list[0]).B);
 
 					Assert.AreEqual(1, sqlLogSpy.Appender.GetEvents().Length,
 					                "Only one SQL should have been issued");

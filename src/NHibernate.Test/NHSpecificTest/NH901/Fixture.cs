@@ -1,9 +1,5 @@
 using NUnit.Framework;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace NHibernate.Test.NHSpecificTest.NH901
 {
 	[TestFixture]
@@ -46,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 			using (ISession s = OpenSession(interceptor))
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Person jimmy = s.Get<Person>("Jimmy Hendrix");
+				Person jimmy = (Person)s.Get(typeof(Person), "Jimmy Hendrix");
 				interceptor.entityToCheck = jimmy;
 				tx.Commit();
 			}
@@ -56,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 			using (ISession s = OpenSession(interceptor2))
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Person jimmy = s.Get<Person>("Jimmy Hendrix");
+				Person jimmy = (Person)s.Get(typeof(Person), "Jimmy Hendrix");
 				jimmy.Address = new Address();
 				interceptor.entityToCheck = jimmy;
 				tx.Commit();
@@ -84,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 			using (ISession s = OpenSession(interceptor))
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Person jimmy = s.Get<Person>("Jimmy Hendrix");
+				Person jimmy = (Person)s.Get(typeof(Person), "Jimmy Hendrix");
 				interceptor.entityToCheck = jimmy;
 
 				Address a = new Address();
