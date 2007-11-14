@@ -79,7 +79,6 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool inherited;
 		private readonly bool hasSubclasses;
 
-		// TODO H3: These are stored as System.Types currently
 		private readonly HashedSet<string> subclassEntityNames = new HashedSet<string>();
 		private readonly bool hasInsertGeneratedValues;
 		private readonly bool hasUpdateGeneratedValues;

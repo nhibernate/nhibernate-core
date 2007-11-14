@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 
 using NHibernate.Cfg.MappingSchema;
@@ -207,15 +208,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			id.AddColumn(column);
 		}
 
-		private static IDictionary GetMetas(HbmId idSchema)
+		private static IDictionary<string, MetaAttribute> GetMetas(HbmId idSchema)
 		{
-			IDictionary map = new Hashtable();
+			Dictionary<string, MetaAttribute> map = new Dictionary<string, MetaAttribute>();
 
 			foreach (HbmMeta metaSchema in idSchema.meta ?? new HbmMeta[0])
 			{
-				MetaAttribute meta = (MetaAttribute) map[metaSchema.attribute];
-
-				if (meta == null)
+				MetaAttribute meta;
+				if (!map.TryGetValue(metaSchema.attribute, out meta))
 				{
 					meta = new MetaAttribute();
 					map[metaSchema.attribute] = meta;

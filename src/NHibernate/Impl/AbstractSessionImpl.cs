@@ -42,6 +42,7 @@ namespace NHibernate.Impl
 		{
 			get { return factory; }
 		}
+		public abstract EntityMode EntityMode { get;}
 
 		public abstract IBatcher Batcher { get; }
 

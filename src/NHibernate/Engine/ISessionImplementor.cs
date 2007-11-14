@@ -285,5 +285,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <returns></returns>
 		ISession GetSession();
+
+		/// <summary> Retrieve the entity mode in effect for this session. </summary>
+		EntityMode EntityMode { get;}
 	}
 }

@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Property;
 using NHibernate.Type;
@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// Mapping for a property of a .NET class (entity
 	/// or component).
 	/// </summary>
-	public class Property
+	public class Property: IMetaAttributable
 	{
 		private string name;
 		private IValue propertyValue;
@@ -21,7 +21,7 @@ namespace NHibernate.Mapping
 		private bool selectable = true;
 		private string propertyAccessorName;
 		private bool optional;
-		private IDictionary metaAttributes;
+		private IDictionary<string, MetaAttribute> metaAttributes;
 		private PersistentClass persistentClass;
 		private bool isOptimisticLocked;
 		private PropertyGeneration generation = PropertyGeneration.Never;
@@ -202,7 +202,7 @@ namespace NHibernate.Mapping
 			get { return propertyAccessorName == null || propertyAccessorName.Equals("property"); }
 		}
 
-		public IDictionary MetaAttributes
+		public IDictionary<string, MetaAttribute> MetaAttributes
 		{
 			get { return metaAttributes; }
 			set { metaAttributes = value; }

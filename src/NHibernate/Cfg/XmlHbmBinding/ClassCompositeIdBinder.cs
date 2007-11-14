@@ -1,5 +1,4 @@
-using System.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -175,7 +174,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.IsInsertable = true;
 			property.IsOptimisticLocked = true;
 			property.Generation = PropertyGeneration.Never;
-			property.MetaAttributes = new Hashtable();
+			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
 
 			LogMappedProperty(property);
 		}
@@ -320,7 +319,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.IsInsertable = true;
 			property.IsOptimisticLocked = true;
 			property.Generation = PropertyGeneration.Never;
-			property.MetaAttributes = new Hashtable();
+			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
 
 			LogMappedProperty(property);
 		}
@@ -441,7 +440,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.IsInsertable = true;
 			property.IsOptimisticLocked = true;
 			property.Generation = PropertyGeneration.Never;
-			property.MetaAttributes = new Hashtable();
+			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
 			LogMappedProperty(property);
 		}
 	}

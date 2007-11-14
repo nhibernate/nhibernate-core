@@ -458,6 +458,11 @@ namespace NHibernate.Impl
 			set { throw new NotSupportedException(); }
 		}
 
+		public override EntityMode EntityMode
+		{
+			get { return NHibernate.EntityMode.Poco; }
+		}
+
 		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>
 		public void Close()
 		{

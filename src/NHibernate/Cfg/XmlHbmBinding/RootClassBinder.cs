@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
-
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Type;
@@ -152,7 +151,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property.IsUpdateable = false;
 			}
 
-			property.MetaAttributes = new Hashtable();
+			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
 
 			LogMappedProperty(property);
 		}
@@ -272,7 +271,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property.IsUpdateable = false;
 			}
 
-			property.MetaAttributes = new Hashtable();
+			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
 
 			LogMappedProperty(property);
 		}

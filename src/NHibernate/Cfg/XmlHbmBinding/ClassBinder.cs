@@ -9,6 +9,7 @@ using NHibernate.Mapping;
 using NHibernate.Property;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -843,15 +844,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					);
 		}
 
-		protected IDictionary GetMetas(XmlNode node)
+		protected IDictionary<string, MetaAttribute> GetMetas(XmlNode node)
 		{
-			IDictionary map = new Hashtable();
+			Dictionary<string, MetaAttribute> map = new Dictionary<string, MetaAttribute>();
 
 			foreach (XmlNode metaNode in node.SelectNodes(HbmConstants.nsMeta, namespaceManager))
 			{
 				string name = metaNode.Attributes["attribute"].Value;
-				MetaAttribute meta = (MetaAttribute) map[name];
-				if (meta == null)
+				MetaAttribute meta;
+				if (!map.TryGetValue(name, out meta))
 				{
 					meta = new MetaAttribute();
 					map[name] = meta;

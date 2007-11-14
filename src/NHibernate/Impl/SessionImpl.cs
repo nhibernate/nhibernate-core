@@ -48,6 +48,9 @@ namespace NHibernate.Impl
 		private readonly IInterceptor interceptor;
 
 		[NonSerialized]
+		private EntityMode entityMode;
+
+		[NonSerialized]
 		private readonly EventListeners listeners;
 
 		[NonSerialized]
@@ -1856,6 +1859,11 @@ namespace NHibernate.Impl
 				}
 				cacheMode = value;
 			}
+		}
+
+		public override EntityMode EntityMode
+		{
+			get { return entityMode; }
 		}
 
 		public void SetReadOnly(object entity, bool readOnly)

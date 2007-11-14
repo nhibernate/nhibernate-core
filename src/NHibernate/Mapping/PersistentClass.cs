@@ -13,7 +13,7 @@ namespace NHibernate.Mapping
 	/// <see cref="Subclass"/> that is mapped by <c>&lt;subclass&gt;</c> or 
 	/// <c>&lt;joined-subclass&gt;</c>.
 	/// </summary>
-	public abstract class PersistentClass : IFilterable
+	public abstract class PersistentClass : IFilterable, IMetaAttributable
 	{
 		private static readonly Alias PKAlias = new Alias(15, "PK");
 
@@ -36,7 +36,7 @@ namespace NHibernate.Mapping
 		private int batchSize = 1;
 		private bool selectBeforeUpdate;
 		private OptimisticLockMode optimisticLockMode;
-		private IDictionary metaAttributes;
+		private IDictionary<string, MetaAttribute> metaAttributes;
 		private readonly List<Join> joins = new List<Join>();
 		private readonly List<Join> subclassJoins = new List<Join>();
 		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
@@ -62,6 +62,8 @@ namespace NHibernate.Mapping
 		protected readonly ISet<string> synchronizedTables = new HashedSet<string>();
 		private bool hasSubselectLoadableCollections;
 		private string entityName;
+
+		private IDictionary<EntityMode, System.Type> tuplizerImpls;
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
@@ -525,7 +527,7 @@ namespace NHibernate.Mapping
 			get { return NullDiscriminatorMapping.Equals(DiscriminatorValue); }
 		}
 
-		public IDictionary MetaAttributes
+		public IDictionary<string, MetaAttribute> MetaAttributes
 		{
 			get { return metaAttributes; }
 			set { metaAttributes = value; }
@@ -533,7 +535,7 @@ namespace NHibernate.Mapping
 
 		public MetaAttribute GetMetaAttribute(string name)
 		{
-			return (MetaAttribute) metaAttributes[name];
+			return metaAttributes[name];
 		}
 
 		public virtual IEnumerable<Join> JoinIterator
@@ -945,5 +947,32 @@ namespace NHibernate.Mapping
 			get { return identifierMapper != null; }
 		}
 
+		public void AddTuplizer(EntityMode entityMode, System.Type implClass)
+		{
+			if (tuplizerImpls == null)
+			{
+				tuplizerImpls = new Dictionary<EntityMode, System.Type>();
+			}
+			tuplizerImpls[entityMode] = implClass;
+		}
+
+		public virtual System.Type GetTuplizerImplClassName(EntityMode mode)
+		{
+			if (tuplizerImpls == null)
+				return null;
+			return tuplizerImpls[mode];
+		}
+
+		public virtual IDictionary<EntityMode, System.Type> TuplizerMap
+		{
+			get
+			{
+				if (tuplizerImpls == null)
+					return null;
+
+				return new Dictionary<EntityMode, System.Type>(tuplizerImpls);
+			}
+
+		}
 	}
 }
