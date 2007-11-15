@@ -27,7 +27,7 @@ namespace NHibernate.Test.MappingExceptions
 			catch (MappingException me)
 			{
 				Assert.AreEqual(
-					"The mapped class NHibernate.Test.MappingExceptions.MissingDefCtor must declare a default (no-arg) constructor.",
+					"Object class NHibernate.Test.MappingExceptions.MissingDefCtor must declare a default (no-argument) constructor",
 					me.Message);
 				excCaught = true;
 			}

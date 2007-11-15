@@ -26,6 +26,7 @@ namespace NHibernate.Mapping
 		private bool isOptimisticLocked;
 		private PropertyGeneration generation = PropertyGeneration.Never;
 		private bool isLazy;
+		private bool isNaturalIdentifier;
 
 		public Property()
 		{
@@ -74,7 +75,7 @@ namespace NHibernate.Mapping
 		public IValue Value
 		{
 			get { return propertyValue; }
-			set { this.propertyValue = value; }
+			set { propertyValue = value; }
 		}
 
 		public Cascades.CascadeStyle CascadeStyle
@@ -172,8 +173,8 @@ namespace NHibernate.Mapping
 
 		public bool IsOptional
 		{
-			get { return this.optional || IsNullable; }
-			set { this.optional = value; }
+			get { return optional || IsNullable; }
+			set { optional = value; }
 		}
 
 		public string PropertyAccessorName
@@ -210,7 +211,7 @@ namespace NHibernate.Mapping
 
 		public MetaAttribute GetMetaAttribute(string name)
 		{
-			return (MetaAttribute) metaAttributes[name];
+			return metaAttributes[name];
 		}
 
 		public bool IsValid(IMapping mapping)
@@ -291,5 +292,10 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
+		public bool IsNaturalIdentifier
+		{
+			get { return isNaturalIdentifier; }
+			set { isNaturalIdentifier = value; }
+		}
 	}
 }

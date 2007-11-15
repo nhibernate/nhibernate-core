@@ -1,8 +1,9 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Intercept;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -18,8 +19,6 @@ namespace NHibernate.Tuple.Entity
 
 		private readonly ISessionFactoryImplementor sessionFactory;
 
-		// DONE H3: ->these are stored as System.Types for now<-
-		// store name and rootName
 		private readonly string name;
 		private readonly string rootName;
 		private readonly System.Type type;
@@ -53,16 +52,16 @@ namespace NHibernate.Tuple.Entity
 
 		#endregion
 
-		private readonly IDictionary propertyIndexes = new Hashtable();
+		private readonly IDictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
 		private readonly bool hasCollections;
 		private readonly bool hasMutableProperties;
 		private readonly bool hasLazyProperties;
 
-		// TODO H3:
-		//private int[] naturalIdPropertyNumbers;
+		private readonly int[] naturalIdPropertyNumbers;
 
 		private bool lazy;
 		private readonly bool hasCascades;
+		private readonly bool hasNonIdentifierPropertyNamedId;
 		private readonly bool mutable;
 		private readonly bool isAbstract;
 		private readonly bool selectBeforeUpdate;
@@ -71,8 +70,7 @@ namespace NHibernate.Tuple.Entity
 		private readonly OptimisticLockMode optimisticLockMode;
 
 		private readonly bool polymorphic;
-		// TODO H3: This is stored as System.Type currently
-		//private string superclass;  // superclass entity-name
+		private readonly string superclass;
 		private readonly System.Type superclassType;
 
 		private readonly bool explicitPolymorphism;
@@ -104,15 +102,12 @@ namespace NHibernate.Tuple.Entity
 
 			versioned = persistentClass.IsVersioned;
 
-			bool lazyAvailable = false;
-			// TODO H3:
-			//bool lazyAvailable = persistentClass.HasPocoRepresentation &&
-			//	typeof(InterceptFieldEnabled).isAssignableFrom( persistentClass.getMappedClass() );
+			bool lazyAvailable = persistentClass.HasPocoRepresentation && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
 			bool hasLazy = false;
 
 			propertySpan = persistentClass.PropertyClosureSpan;
 			properties = new StandardProperty[propertySpan];
-			//IList naturalIdNumbers = new ArrayList();
+			List<int> naturalIdNumbers = new List<int>();
 
 			#region temporary
 
@@ -139,6 +134,7 @@ namespace NHibernate.Tuple.Entity
 			bool foundMutable = false;
 			bool foundInsertGeneratedValue = false;
 			bool foundUpdateGeneratedValue = false;
+			bool foundNonIdentifierPropertyNamedId = false;
 
 			foreach (Mapping.Property prop in persistentClass.PropertyClosureIterator)
 			{
@@ -152,16 +148,20 @@ namespace NHibernate.Tuple.Entity
 					properties[i] = PropertyFactory.BuildStandardProperty(prop, lazyAvailable);
 				}
 
-//				if ( prop.IsNaturalIdentifier ) 
-//				{
-//					naturalIdNumbers.Add( i );
-				//				}
+				if (prop.IsNaturalIdentifier)
+				{
+					naturalIdNumbers.Add(i);
+				}
+
+				if ("id".Equals(prop.Name))
+				{
+					foundNonIdentifierPropertyNamedId = true;
+				}
 
 				#region temporary
-				// TODO H3:
-				//bool lazy = prop.IsLazy && lazyAvailable;
-				bool lazyProperty = false;
-				if (lazyProperty) hasLazy = true;
+				bool lazyProperty = prop.IsLazy && lazyAvailable;
+				if (lazyProperty)
+					hasLazy = true;
 				propertyLaziness[i] = lazyProperty;
 
 				propertyNames[i] = properties[i].Name;
@@ -214,30 +214,22 @@ namespace NHibernate.Tuple.Entity
 				i++;
 			}
 
-			// TODO H3:
-//			if( naturalIdNumbers.Count == 0 )
-//			{
-//				naturalIdPropertyNumbers = null;
-//			}
-//			else 
-//			{
-//				naturalIdPropertyNumbers = ArrayHelper.ToIntArray( naturalIdNumbers );
-//			}
+			if (naturalIdNumbers.Count == 0)
+				naturalIdPropertyNumbers = null;
+			else
+				naturalIdPropertyNumbers = naturalIdNumbers.ToArray();
 
 			hasCascades = foundCascade;
 			hasInsertGeneratedValues = foundInsertGeneratedValue;
 			hasUpdateGeneratedValues = foundUpdateGeneratedValue;
+			hasNonIdentifierPropertyNamedId = foundNonIdentifierPropertyNamedId;
+
 			versionPropertyIndex = tempVersionProperty;
 			hasLazyProperties = hasLazy;
-			if (hasLazyProperties) log.Info("lazy property fetching available for: " + type.FullName);
+			if (hasLazyProperties) log.Info("lazy property fetching available for: " + name);
 
-			lazy = persistentClass.IsLazy;
-			// TODO H3:
-//			lazy = persistentClass.IsLazy && (
-//				// TODO: this disables laziness even in non-pojo entity modes:
-//				!persistentClass.HasPocoRepresentation ||
-//				!ReflectHelper.IsFinalClass( persistentClass.ProxyInterface )
-//				);
+			lazy = persistentClass.IsLazy && 
+				(!persistentClass.HasPocoRepresentation || !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
 			mutable = persistentClass.IsMutable;
 
 			if (!persistentClass.IsAbstract.HasValue)
@@ -263,6 +255,7 @@ namespace NHibernate.Tuple.Entity
 			polymorphic = persistentClass.IsPolymorphic;
 			explicitPolymorphism = persistentClass.IsExplicitPolymorphism;
 			inherited = persistentClass.IsInherited;
+			superclass = inherited ? persistentClass.Superclass.EntityName : null;
 			superclassType = inherited ?
 			                           	persistentClass.Superclass.MappedClass :
 			                           	                                       	null;
@@ -277,13 +270,13 @@ namespace NHibernate.Tuple.Entity
 			hasCollections = foundCollection;
 			hasMutableProperties = foundMutable;
 
-			// TODO H3: tuplizers = TuplizerLookup.create(persistentClass, this);
-
 			foreach (Subclass obj in persistentClass.SubclassIterator)
 			{
 				subclassEntityNames.Add(obj.EntityName);
 			}
 			subclassEntityNames.Add(name);
+
+			tuplizerMapping = new EntityEntityModeToTuplizerMapping(persistentClass, this);
 		}
 
 		private ValueInclusion DetermineInsertValueGenerationType(Mapping.Property mappingProperty, StandardProperty runtimeProperty)
@@ -359,26 +352,16 @@ namespace NHibernate.Tuple.Entity
 		private void MapPropertyToIndex(Mapping.Property prop, int i)
 		{
 			propertyIndexes[prop.Name] = i;
-			if (prop.Value is Mapping.Component)
+			Mapping.Component comp = prop.Value as Mapping.Component;
+			if (comp != null)
 			{
-				foreach (Mapping.Property subprop in ((Mapping.Component)prop.Value).PropertyIterator)
+				foreach (Mapping.Property subprop in comp.PropertyIterator)
 				{
 					propertyIndexes[prop.Name + '.' + subprop.Name] = i;
 				}
 			}
 		}
 
-		// TODO H3:
-//		public int[] NaturalIdentifierProperties 
-//		{
-//			get { return naturalIdPropertyNumbers; }
-//		}
-//	
-//		public bool HasNaturalIdentifier
-//		{
-//			get { return naturalIdPropertyNumbers != null; }
-//		}
-//	
 		public ISet<string> SubclassEntityNames
 		{
 			get { return subclassEntityNames; }
@@ -408,18 +391,6 @@ namespace NHibernate.Tuple.Entity
 		{
 			get { return sessionFactory; }
 		}
-
-		/*
-		public string getName() 
-		{
-			return name;
-		}
-
-		public string getRootName() 
-		{
-			return rootName;
-		}
-		*/
 
 		public System.Type Type
 		{
@@ -488,17 +459,21 @@ namespace NHibernate.Tuple.Entity
 
 		public int GetPropertyIndex(string propertyName)
 		{
-			object index = GetPropertyIndexOrNull(propertyName);
-			if (index == null)
+			int? index = GetPropertyIndexOrNull(propertyName);
+			if (!index.HasValue)
 			{
 				throw new HibernateException("Unable to resolve property: " + propertyName);
 			}
-			return (int) index;
+			return index.Value;
 		}
 
-		public object GetPropertyIndexOrNull(string propertyName)
+		public int? GetPropertyIndexOrNull(string propertyName)
 		{
-			return propertyIndexes[propertyName];
+			int? result;
+			if (propertyIndexes.TryGetValue(propertyName, out result))
+				return result;
+			else
+				return null;
 		}
 
 		public bool HasCollections
@@ -551,11 +526,10 @@ namespace NHibernate.Tuple.Entity
 			get { return polymorphic; }
 		}
 
-		// TODO H3:
-//		public string Superclass
-//		{
-//			get { return superclass; }
-//		}
+		public string Superclass
+		{
+			get { return superclass; }
+		}
 
 		public System.Type SuperclassType
 		{
@@ -670,5 +644,39 @@ namespace NHibernate.Tuple.Entity
 		}
 
 		#endregion
+
+		#region Tuplizer
+		private readonly EntityEntityModeToTuplizerMapping tuplizerMapping;
+
+		public IEntityTuplizer GetTuplizer(EntityMode entityMode)
+		{
+			return (IEntityTuplizer)tuplizerMapping.GetTuplizer(entityMode);
+		}
+
+		public IEntityTuplizer GetTuplizerOrNull(EntityMode entityMode)
+		{
+			return (IEntityTuplizer)tuplizerMapping.GetTuplizerOrNull(entityMode);
+		}
+
+		public EntityMode? GuessEntityMode(object obj)
+		{
+			return tuplizerMapping.GuessEntityMode(obj);
+		}
+		#endregion
+
+		public bool HasNaturalIdentifier
+		{
+			get { return naturalIdPropertyNumbers != null; }
+		}
+
+		public bool HasNonIdentifierPropertyNamedId
+		{
+			get { return hasNonIdentifierPropertyNamedId; }
+		}
+
+		public int[] NaturalIdentifierProperties
+		{
+			get { return naturalIdPropertyNumbers; }
+		}
 	}
 }

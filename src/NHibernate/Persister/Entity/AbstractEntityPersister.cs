@@ -3675,5 +3675,25 @@ namespace NHibernate.Persister.Entity
 			return factory.Dialect.GetLockingStrategy(this, lockMode);
 		}
 
+		protected internal IEntityTuplizer GetTuplizer(ISessionImplementor session)
+		{
+			return GetTuplizer(session.EntityMode);
+		}
+
+		protected internal IEntityTuplizer GetTuplizer(EntityMode entityMode)
+		{
+			return entityMetamodel.GetTuplizer(entityMode);
+		}
+
+		public void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
+		{
+			GetTuplizer(session).AfterInitialize(entity, lazyPropertiesAreUnfetched, session);
+		}
+
+		public System.Type GetConcreteProxyClass(EntityMode entityMode)
+		{
+			return GetTuplizer(entityMode).ConcreteProxyClass;
+		}
+
 	}
 }

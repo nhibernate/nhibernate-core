@@ -721,6 +721,10 @@
     <Compile Include="Impl\MultipleQueriesCacheAssembler.cs" />
     <Compile Include="Impl\StatelessSessionImpl.cs" />
     <Compile Include="IMultiCriteria.cs" />
+    <Compile Include="Intercept\AbstractFieldInterceptor.cs" />
+    <Compile Include="Intercept\FieldInterceptionHelper.cs" />
+    <Compile Include="Intercept\IFieldInterceptor.cs" />
+    <Compile Include="Intercept\ILazyPropertyInitializer.cs" />
     <Compile Include="IStatelessSession.cs" />
     <Compile Include="Mapping\DenormalizedTable.cs" />
     <Compile Include="Mapping\IMetaAttributable.cs" />
@@ -1002,6 +1006,7 @@
     <Content Include="NamespaceSummary.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Intercept\Castle\" />
     <Folder Include="Loader\Hql\" />
     <Folder Include="Properties\" />
   </ItemGroup>
