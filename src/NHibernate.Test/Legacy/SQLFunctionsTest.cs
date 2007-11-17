@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using log4net;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
@@ -247,12 +248,12 @@ namespace NHibernate.Test.Legacy
 
 		private string LocateAppropriateDialectFunctionNameForAliasTest()
 		{
-			foreach (DictionaryEntry de in Dialect.Functions)
+			foreach (KeyValuePair<string, ISQLFunction> de in Dialect.Functions)
 			{
-				ISQLFunction function = (ISQLFunction) de.Value;
+				ISQLFunction function = de.Value;
 				if (!function.HasArguments && !function.HasParenthesesIfNoArguments)
 				{
-					return (string) de.Key;
+					return de.Key;
 				}
 			}
 

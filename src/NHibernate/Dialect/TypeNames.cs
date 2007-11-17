@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Util;
 
@@ -16,8 +16,8 @@ namespace NHibernate.Dialect
 	/// Eg, setting
 	/// <code>
 	///		Names.Put(DbType,			"TEXT" );
-	///		Names.Put(DbType,	255,	"VARCHAR($1)" );
-	///		Names.Put(DbType,	65534,	"LONGVARCHAR($1)" );
+	///		Names.Put(DbType,	255,	"VARCHAR($l)" );
+	///		Names.Put(DbType,	65534,	"LONGVARCHAR($l)" );
 	/// </code>
 	/// will give you back the following:
 	/// <code>
@@ -28,11 +28,11 @@ namespace NHibernate.Dialect
 	/// </code>
 	/// On the other hand, simply putting
 	/// <code>
-	///		Names.Put(DbType, "VARCHAR($1)" );
+	///		Names.Put(DbType, "VARCHAR($l)" );
 	/// </code>
 	/// would result in
 	/// <code>
-	///		Names.Get(DbType)			// --> "VARCHAR($1)" (will cause trouble)
+	///		Names.Get(DbType)			// --> "VARCHAR($l)" (will cause trouble)
 	///		Names.Get(DbType,100)		// --> "VARCHAR(100)" 
 	///		Names.Get(DbType,1000)	// --> "VARCHAR(1000)"
 	///		Names.Get(DbType,10000)	// --> "VARCHAR(10000)"
@@ -40,18 +40,14 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class TypeNames
 	{
-		private string placeholder;
-		private Hashtable weighted = new Hashtable();
-		private Hashtable defaults = new Hashtable();
+		public const string LengthPlaceHolder = "$l";
+		public const string PrecisionPlaceHolder = "$p";
+		public const string ScalePlaceHolder = "$s";
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="placeholder">String to be replaced by actual size/length in type names</param>
-		public TypeNames(string placeholder)
-		{
-			this.placeholder = placeholder;
-		}
+		private readonly Dictionary<DbType, SortedList<int, string>> weighted = 
+			new Dictionary<DbType, SortedList<int, string>>();
+
+		private readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();
 
 		/// <summary>
 		/// Get default type name for specified type
@@ -60,12 +56,10 @@ namespace NHibernate.Dialect
 		/// <returns>the default type name associated with the specified key</returns>
 		public string Get(DbType typecode)
 		{
-			string result = (string) defaults[typecode];
-
-			if (result == null)
+			string result;
+			if (!defaults.TryGetValue(typecode, out result))
 			{
-				throw new ArgumentException("Dialect does not support DbType." + typecode,
-				                            "typecode");
+				throw new ArgumentException("Dialect does not support DbType." + typecode, "typecode");
 			}
 			return result;
 		}
@@ -74,30 +68,36 @@ namespace NHibernate.Dialect
 		/// Get the type name specified type and size
 		/// </summary>
 		/// <param name="typecode">the type key</param>
-		/// <param name="size">the (maximum) type size/length</param>
+		/// <param name="size">the SQL length </param>
+		/// <param name="scale">the SQL scale </param>
+		/// <param name="precision">the SQL precision </param>
 		/// <returns>
 		/// The associated name with smallest capacity >= size if available and the
 		/// default type name otherwise
 		/// </returns>
-		public string Get(DbType typecode, int size)
+		public string Get(DbType typecode, int size, int precision, int scale)
 		{
-			IDictionary map = weighted[typecode] as IDictionary;
+			SortedList<int, string> map;
+			weighted.TryGetValue(typecode, out map);
 			if (map != null && map.Count > 0)
 			{
-				foreach (int entrySize in map.Keys)
+				foreach (KeyValuePair<int, string> entry in map)
 				{
-					if (size <= entrySize)
+					if (size <= entry.Key)
 					{
-						return StringHelper.ReplaceOnce(
-							(string) map[entrySize],
-							placeholder,
-							size.ToString()
-							);
+						return Replace(entry.Value, size, precision, scale);
 					}
 				}
 			}
 			//Could not find a specific type for the size, using the default
-			return StringHelper.ReplaceOnce(Get(typecode), placeholder, size.ToString());
+			return Replace(Get(typecode), size, precision, scale);
+		}
+
+		private static string Replace(string type, int size, int precision, int scale)
+		{
+			type = StringHelper.ReplaceOnce(type, LengthPlaceHolder, size.ToString());
+			type = StringHelper.ReplaceOnce(type, ScalePlaceHolder, scale.ToString());
+			return StringHelper.ReplaceOnce(type, PrecisionPlaceHolder, precision.ToString());
 		}
 
 		/// <summary>
@@ -108,10 +108,11 @@ namespace NHibernate.Dialect
 		/// <param name="value">The associated name</param>
 		public void Put(DbType typecode, int capacity, string value)
 		{
-			SequencedHashMap map = weighted[typecode] as SequencedHashMap;
-			if (map == null)
+			SortedList<int, string> map;
+			if (!weighted.TryGetValue(typecode, out map))
 			{
-				weighted[typecode] = map = new SequencedHashMap();
+				// add new ordered map
+				weighted[typecode] = map = new SortedList<int, string>();
 			}
 			map[capacity] = value;
 		}

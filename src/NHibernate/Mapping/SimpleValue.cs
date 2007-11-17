@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -12,8 +13,9 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class SimpleValue : IKeyValue
 	{
-		private ArrayList columns = new ArrayList();
+		private readonly List<ISelectable> columns = new List<ISelectable>();
 		private IType type;
+
 		private IDictionary identifierGeneratorProperties;
 		private string identifierGeneratorStrategy = "assigned";
 		private string nullValue;
@@ -37,10 +39,8 @@ namespace NHibernate.Mapping
 			{
 				columns.Add(column);
 			}
-
-			// TODO H3:			
-//			column.Value = this;
-//			column.TypeIndex = columns.Count - 1;
+			column.Value = this;
+			column.TypeIndex = columns.Count - 1;
 		}
 
 		public virtual void AddFormula(Formula formula)
@@ -53,12 +53,12 @@ namespace NHibernate.Mapping
 			get { return columns.Count; }
 		}
 
-		public virtual ICollection ColumnCollection
+		public virtual IEnumerable<ISelectable> ColumnIterator
 		{
 			get { return columns; }
 		}
 
-		public virtual IList ConstraintColumns
+		public virtual IList<ISelectable> ConstraintColumns
 		{
 			get { return columns; }
 		}
@@ -71,7 +71,7 @@ namespace NHibernate.Mapping
 				this.type = value;
 				int count = 0;
 
-				foreach (ISelectable sel in ColumnCollection)
+				foreach (ISelectable sel in ColumnIterator)
 				{
 					if (sel is Column)
 					{
@@ -128,7 +128,7 @@ namespace NHibernate.Mapping
 				{
 					type = ReflectHelper.ReflectedPropertyType(propertyClass, propertyName, propertyAccess);
 					int count = 0;
-					foreach (ISelectable thing in ColumnCollection)
+					foreach (ISelectable thing in ColumnIterator)
 					{
 						Column col = thing as Column;
 						if (col != null)
@@ -190,7 +190,7 @@ namespace NHibernate.Mapping
 				}
 
 				bool nullable = true;
-				foreach (Column col in ColumnCollection)
+				foreach (Column col in ColumnIterator)
 				{
 					if (!col.IsNullable)
 					{
@@ -219,7 +219,7 @@ namespace NHibernate.Mapping
 			{
 				bool[] result = new bool[ColumnSpan];
 				int i = 0;
-				foreach (ISelectable s in ColumnCollection)
+				foreach (ISelectable s in ColumnIterator)
 				{
 					result[i++] = !s.IsFormula;
 				}
@@ -236,7 +236,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				foreach (ISelectable s in ColumnCollection)
+				foreach (ISelectable s in ColumnIterator)
 				{
 					if (s.IsFormula)
 					{

@@ -20,12 +20,16 @@ namespace NHibernate.Dialect.Function
 			if (userFunctions.ContainsKey(functionName))
 				return userFunctions[functionName];
 			else
-				return (ISQLFunction) dialect.Functions[functionName];
+			{
+				ISQLFunction result;
+				dialect.Functions.TryGetValue(functionName, out result);
+				return result;
+			}
 		}
 
 		public bool HasFunction(string functionName)
 		{
-			return userFunctions.ContainsKey(functionName) || dialect.Functions.Contains(functionName);
+			return userFunctions.ContainsKey(functionName) || dialect.Functions.ContainsKey(functionName);
 		}
 	}
 }

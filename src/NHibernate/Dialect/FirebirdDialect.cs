@@ -29,9 +29,9 @@ namespace NHibernate.Dialect
 		public FirebirdDialect()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
-			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
-			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($1)");
+			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "BLOB SUB_TYPE 1"); // should use the IType.ClobType
 			RegisterColumnType(DbType.Binary, "BLOB SUB_TYPE 0");
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB SUB_TYPE 0"); // should use the IType.BlobType
@@ -41,7 +41,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(18,5)"); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
-			RegisterColumnType(DbType.Decimal, 18, "DECIMAL(18, $1)");
+			RegisterColumnType(DbType.Decimal, 18, "DECIMAL(18, $l)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
 			RegisterColumnType(DbType.Guid, "CHAR(16) CHARACTER SET OCTETS");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -49,9 +49,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Int64, "BIGINT");
 			RegisterColumnType(DbType.Single, "FLOAT");
 			RegisterColumnType(DbType.StringFixedLength, "CHAR(255)");
-			RegisterColumnType(DbType.StringFixedLength, 4000, "CHAR($1)");
+			RegisterColumnType(DbType.StringFixedLength, 4000, "CHAR($l)");
 			RegisterColumnType(DbType.String, "VARCHAR(255)");
-			RegisterColumnType(DbType.String, 4000, "VARCHAR($1)");
+			RegisterColumnType(DbType.String, 4000, "VARCHAR($l)");
 			RegisterColumnType(DbType.String, 1073741823, "BLOB SUB_TYPE 1"); // should use the IType.ClobType
 			RegisterColumnType(DbType.Time, "TIME");
 

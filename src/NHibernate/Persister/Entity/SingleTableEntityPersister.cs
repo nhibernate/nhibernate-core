@@ -12,6 +12,7 @@ using NHibernate.Util;
 namespace NHibernate.Persister.Entity
 {
 	using NHibernate.Mapping;
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// Default implementation of the <c>ClassPersister</c> interface. Implements the
@@ -308,7 +309,7 @@ namespace NHibernate.Persister.Entity
 					? ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[j], deleteCallable[j])
 					: join.CustomSQLDeleteCheckStyle;
 
-				ICollection keyColumns = join.Key.ColumnCollection;
+				IEnumerable<ISelectable> keyColumns = join.Key.ColumnIterator;
 				keyColumnNames[j] = new string[join.Key.ColumnSpan];
 				i = 0;
 				foreach (Column col in keyColumns)
@@ -364,7 +365,7 @@ namespace NHibernate.Persister.Entity
 				subclassTables.Add(join.Table.GetQualifiedName(factory.Dialect, factory.DefaultSchema));
 				string[] keyCols = new string[join.Key.ColumnSpan];
 				int k = 0;
-				foreach (Column col in join.Key.ColumnCollection)
+				foreach (Column col in join.Key.ColumnIterator)
 				{
 					keyCols[k++] = col.GetQuotedName(factory.Dialect);
 				}
@@ -397,7 +398,7 @@ namespace NHibernate.Persister.Entity
 				forceDiscriminator = model.IsForceDiscriminator;
 
 				// the discriminator will have only one column 
-				foreach (ISelectable selectable in d.ColumnCollection)
+				foreach (ISelectable selectable in d.ColumnIterator)
 				{
 					if (d.HasFormula)
 					{
@@ -493,7 +494,7 @@ namespace NHibernate.Persister.Entity
 					prop.PersistentClass.MappedClass.FullName + "." + prop.Name,
 					joinNumber);
 
-				foreach (ISelectable thing in prop.ColumnCollection)
+				foreach (ISelectable thing in prop.ColumnIterator)
 				{
 					if (thing.IsFormula)
 						formulaJoinedNumbers.Add(joinNumber);

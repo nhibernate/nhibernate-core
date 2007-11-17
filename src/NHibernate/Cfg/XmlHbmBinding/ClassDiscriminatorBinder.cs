@@ -25,7 +25,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (discriminator.Type == null)
 			{
 				discriminator.Type = NHibernateUtil.String;
-				foreach (Column col in discriminator.ColumnCollection)
+				foreach (Column col in discriminator.ColumnIterator)
 				{
 					col.Type = NHibernateUtil.String;
 					break;

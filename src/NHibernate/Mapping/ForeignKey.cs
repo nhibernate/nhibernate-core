@@ -32,14 +32,14 @@ namespace NHibernate.Mapping
 			string[] refcols = new string[ColumnSpan];
 			int i = 0;
 
-			foreach (Column col in referencedTable.PrimaryKey.ColumnCollection)
+			foreach (Column col in referencedTable.PrimaryKey.ColumnIterator)
 			{
 				refcols[i] = col.GetQuotedName(d);
 				i++;
 			}
 
 			i = 0;
-			foreach (Column col in ColumnCollection)
+			foreach (Column col in ColumnIterator)
 			{
 				cols[i] = col.GetQuotedName(d);
 				i++;
@@ -69,8 +69,8 @@ namespace NHibernate.Mapping
 					throw new MappingException(string.Format(message, this.Table.Name, value.Name));
 				}
 
-				IEnumerator fkCols = ColumnCollection.GetEnumerator();
-				IEnumerator pkCols = value.PrimaryKey.ColumnCollection.GetEnumerator();
+				IEnumerator fkCols = ColumnIterator.GetEnumerator();
+				IEnumerator pkCols = value.PrimaryKey.ColumnIterator.GetEnumerator();
 
 				while (fkCols.MoveNext() && pkCols.MoveNext())
 				{

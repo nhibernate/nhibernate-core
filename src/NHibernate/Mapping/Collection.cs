@@ -19,7 +19,7 @@ namespace NHibernate.Mapping
 	/// </remarks>
 	public abstract class Collection : IFetchable, IValue, IFilterable
 	{
-		private static readonly ICollection EmptyColumns = new object[0];
+		private static readonly IEnumerable<ISelectable> EmptyColumns = new ISelectable[0];
 
 		public const string DefaultElementColumnName = "elt";
 		public const string DefaultKeyColumnName = "id";
@@ -157,7 +157,7 @@ namespace NHibernate.Mapping
 			set { role = value; }
 		}
 
-		public ICollection ColumnCollection
+		public IEnumerable<ISelectable> ColumnIterator
 		{
 			get { return EmptyColumns; }
 		}

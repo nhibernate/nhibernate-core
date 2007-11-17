@@ -38,13 +38,13 @@ namespace NHibernate.Mapping
 			{
 				PrimaryKey pk = new PrimaryKey();
 
-				foreach (Column col in Key.ColumnCollection)
+				foreach (Column col in Key.ColumnIterator)
 				{
 					pk.AddColumn(col);
 				}
 
 				// Index should be last column listed
-				foreach (Column col in Index.ColumnCollection)
+				foreach (Column col in Index.ColumnIterator)
 				{
 					pk.AddColumn(col);
 				}

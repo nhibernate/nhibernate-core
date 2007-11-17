@@ -37,7 +37,7 @@ namespace NHibernate.Mapping
 			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				foreach (Column col in Identifier.ColumnCollection)
+				foreach (Column col in Identifier.ColumnIterator)
 				{
 					pk.AddColumn(col);
 				}

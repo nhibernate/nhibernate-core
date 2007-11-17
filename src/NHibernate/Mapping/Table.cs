@@ -300,7 +300,7 @@ namespace NHibernate.Mapping
 			string pkname = null;
 			if (HasPrimaryKey && identityColumn)
 			{
-				foreach (Column col in PrimaryKey.ColumnCollection)
+				foreach (Column col in PrimaryKey.ColumnIterator)
 				{
 					pkname = col.GetQuotedName(dialect); //should only go through this loop once
 				}
@@ -452,8 +452,9 @@ namespace NHibernate.Mapping
 		/// one already exists for the columns then it will return an 
 		/// existing <see cref="ForeignKey"/>.
 		/// </remarks>
-		public virtual ForeignKey CreateForeignKey(string keyName, IList columns, System.Type referencedClass)
+		public virtual ForeignKey CreateForeignKey(string keyName, IEnumerable columns, System.Type referencedClass)
 		{
+			// TODO NH: columns may have formulas
 			if (keyName == null)
 			{
 				keyName = "FK" + UniqueColumnString(columns);
@@ -497,7 +498,7 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// An unique string for the <see cref="Column"/> objects.
 		/// </returns>
-		public string UniqueColumnString(ICollection col)
+		public string UniqueColumnString(IEnumerable col)
 		{
 			int result = 0;
 

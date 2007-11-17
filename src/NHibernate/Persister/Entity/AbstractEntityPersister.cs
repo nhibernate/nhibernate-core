@@ -818,7 +818,7 @@ namespace NHibernate.Persister.Entity
 			loaderName = persistentClass.LoaderName;
 
 			int i = 0;
-			foreach (Column col in idValue.ColumnCollection)
+			foreach (Column col in idValue.ColumnIterator)
 			{
 				rootTableKeyColumnNames[i] = col.GetQuotedName(factory.Dialect);
 				identifierAliases[i] = col.GetAlias(Dialect, persistentClass.RootTable);
@@ -829,7 +829,7 @@ namespace NHibernate.Persister.Entity
 
 			if (persistentClass.IsVersioned)
 			{
-				foreach (Column col in persistentClass.Version.ColumnCollection)
+				foreach (Column col in persistentClass.Version.ColumnIterator)
 				{
 					versionColumnName = col.GetQuotedName(Dialect);
 					break; //only happens once
@@ -908,7 +908,7 @@ namespace NHibernate.Persister.Entity
 				string[] templates = new string[span];
 
 				int k = 0;
-				foreach (ISelectable thing in prop.ColumnCollection)
+				foreach (ISelectable thing in prop.ColumnIterator)
 				{
 					colAliases[k] = thing.GetAlias(factory.Dialect, prop.Value.Table);
 					if (thing.IsFormula)
@@ -975,7 +975,7 @@ namespace NHibernate.Persister.Entity
 				int l = 0;
 				// TODO H3: bool lazy = prop.IsLazy;
 
-				foreach (ISelectable thing in prop.ColumnCollection)
+				foreach (ISelectable thing in prop.ColumnIterator)
 				{
 					if (thing.IsFormula)
 					{
@@ -1175,7 +1175,7 @@ namespace NHibernate.Persister.Entity
 					string[] aliases = new string[prop.ColumnSpan];
 					string[] cols = new string[prop.ColumnSpan];
 					int l = 0;
-					foreach (ISelectable thing in prop.ColumnCollection)
+					foreach (ISelectable thing in prop.ColumnIterator)
 					{
 						aliases[l] = thing.GetAlias(dialect, prop.Value.Table);
 						cols[l] = thing.GetText(dialect);

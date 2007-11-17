@@ -88,7 +88,7 @@ namespace NHibernate.Mapping
 			pk.Name = PK_ALIAS.ToAliasString(table.Name, dialect);
 			table.PrimaryKey = pk;
 
-			pk.AddColumns(Key.ColumnCollection.GetEnumerator());
+			pk.AddColumns(Key.ColumnIterator);
 		}
 
 		public int PropertySpan

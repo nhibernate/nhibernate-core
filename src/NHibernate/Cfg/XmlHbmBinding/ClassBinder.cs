@@ -421,7 +421,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				parms.Add("target_table", model.Table.GetQuotedName(dialect));
 
-				foreach (Column col in model.ColumnCollection)
+				foreach (Column col in model.ColumnIterator)
 				{
 					parms.Add("target_column", col);
 					break;
@@ -704,7 +704,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			StringBuilder columns = new StringBuilder();
 			bool first = true;
-			foreach (ISelectable col in val.ColumnCollection)
+			foreach (ISelectable col in val.ColumnIterator)
 			{
 				if (first)
 					first = false;
@@ -932,6 +932,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				foreach (XmlNode columnElement in node.SelectNodes(HbmConstants.nsColumn, namespaceManager))
 				{
 					Column col = new Column(model.Type, count++);
+					col.Value = model;
+					col.TypeIndex = count++;
 					BindColumn(columnElement, col, isNullable);
 
 					string name = columnElement.Attributes["name"].Value;
@@ -953,6 +955,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else
 			{
 				Column col = new Column(model.Type, 0);
+				col.Value = model;
 				BindColumn(node, col, isNullable);
 				col.Name = mappings.NamingStrategy.ColumnName(columnAttribute.Value);
 				if (table != null)
@@ -966,6 +969,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (autoColumn && model.ColumnSpan == 0)
 			{
 				Column col = new Column(model.Type, 0);
+				col.Value = model;
 				BindColumn(node, col, isNullable);
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
 				model.Table.AddColumn(col);

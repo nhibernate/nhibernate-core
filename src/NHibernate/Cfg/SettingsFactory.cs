@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using log4net;
 using NHibernate.Cache;
@@ -29,7 +30,7 @@ namespace NHibernate.Cfg
 				dialect = Dialect.Dialect.GetDialect(properties);
 				IDictionary temp = new Hashtable();
 
-				foreach (DictionaryEntry de in dialect.DefaultProperties)
+				foreach (KeyValuePair<string, string> de in dialect.DefaultProperties)
 				{
 					temp[de.Key] = de.Value;
 				}

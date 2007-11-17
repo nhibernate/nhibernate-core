@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -59,17 +59,9 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override IList ConstraintColumns
+		public override IList<ISelectable> ConstraintColumns
 		{
-			get
-			{
-				ArrayList list = new ArrayList();
-				foreach (object obj in identifier.ColumnCollection)
-				{
-					list.Add(obj);
-				}
-				return list;
-			}
+			get { return new List<ISelectable>(identifier.ColumnIterator); }
 		}
 
 		/// <summary></summary>

@@ -20,10 +20,10 @@ namespace NHibernate.Mapping
 		{
 			StringBuilder buf = new StringBuilder("primary key (");
 			int i = 0;
-			foreach (Column col in ColumnCollection)
+			foreach (Column col in ColumnIterator)
 			{
 				buf.Append(col.GetQuotedName(d));
-				if (i < ColumnCollection.Count - 1)
+				if (i < ColumnSpan - 1)
 				{
 					buf.Append(StringHelper.CommaSpace);
 				}
@@ -47,10 +47,10 @@ namespace NHibernate.Mapping
 				d.GetAddPrimaryKeyConstraintString(constraintName))
 				.Append('(');
 			int i = 0;
-			foreach (Column col in ColumnCollection)
+			foreach (Column col in ColumnIterator)
 			{
 				buf.Append(col.GetQuotedName(d));
-				if (i < ColumnCollection.Count - 1)
+				if (i < ColumnSpan - 1)
 				{
 					buf.Append(StringHelper.CommaSpace);
 				}

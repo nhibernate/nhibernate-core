@@ -43,14 +43,14 @@ namespace NHibernate.Dialect
 			Types.TINYINT, "TINYINT" );
 			Types.INTEGER, "INT" );
 			Types.CHAR, "CHAR(1)" );
-			Types.VARCHAR, "VARCHAR($1)" );
+			Types.VARCHAR, "VARCHAR($l)" );
 			Types.FLOAT, "FLOAT" );
 			Types.DOUBLE, "DOUBLE PRECISION"
 			Types.DATE, "DATETIME" );
 			Types.TIME, "DATETIME" );
 			Types.TIMESTAMP, "DATETIME" );
-			Types.VARBINARY, "VARBINARY($1)"
-			Types.NUMERIC, "NUMERIC(19,$1)" 
+			Types.VARBINARY, "VARBINARY($l)"
+			Types.NUMERIC, "NUMERIC(19,$l)" 
 			Types.BLOB, "IMAGE" );
 			Types.CLOB, "TEXT" );
 			*/

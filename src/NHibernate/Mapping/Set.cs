@@ -61,13 +61,13 @@ namespace NHibernate.Mapping
 			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				foreach (Column col in Key.ColumnCollection)
+				foreach (Column col in Key.ColumnIterator)
 				{
 					pk.AddColumn(col);
 				}
 
 				bool nullable = false;
-				foreach (Column col in Element.ColumnCollection)
+				foreach (Column col in Element.ColumnIterator)
 				{
 					if (col.IsNullable)
 					{

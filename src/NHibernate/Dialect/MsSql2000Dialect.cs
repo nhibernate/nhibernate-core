@@ -44,12 +44,12 @@ namespace NHibernate.Dialect
 		public MsSql2000Dialect()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
-			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
-			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($1)");
+			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "TEXT");
 			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
-			RegisterColumnType(DbType.Binary, 8000, "VARBINARY($1)");
+			RegisterColumnType(DbType.Binary, 8000, "VARBINARY($l)");
 			RegisterColumnType(DbType.Binary, 2147483647, "IMAGE");
 			RegisterColumnType(DbType.Boolean, "BIT");
 			RegisterColumnType(DbType.Byte, "TINYINT");
@@ -64,7 +64,7 @@ namespace NHibernate.Dialect
 			// sql-type="decimal(20,5)" if they need to do that.  The Decimal parameter and ddl will get generated
 			// correctly with minimal work.
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $1)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -72,9 +72,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Int64, "BIGINT");
 			RegisterColumnType(DbType.Single, "REAL"); //synonym for FLOAT(24) 
 			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
-			RegisterColumnType(DbType.StringFixedLength, 4000, "NCHAR($1)");
+			RegisterColumnType(DbType.StringFixedLength, 4000, "NCHAR($l)");
 			RegisterColumnType(DbType.String, "NVARCHAR(255)");
-			RegisterColumnType(DbType.String, 4000, "NVARCHAR($1)");
+			RegisterColumnType(DbType.String, 4000, "NVARCHAR($l)");
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
 

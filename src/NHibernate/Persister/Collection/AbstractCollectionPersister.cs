@@ -166,7 +166,7 @@ namespace NHibernate.Persister.Collection
 			keyColumnNames = new string[keySpan];
 			string[] keyAliases = new string[keySpan];
 			int k = 0;
-			foreach (Column col in collection.Key.ColumnCollection)
+			foreach (Column col in collection.Key.ColumnIterator)
 			{
 				keyColumnNames[k] = col.GetQuotedName(dialect);
 				keyAliases[k] = col.GetAlias(dialect);
@@ -175,7 +175,7 @@ namespace NHibernate.Persister.Collection
 			keyColumnAliases = alias.ToAliasStrings(keyAliases, dialect);
 			//unquotedKeyColumnNames = StringHelper.Unquote( keyColumnAliases );
 			ISet distinctColumns = new HashedSet();
-			CheckColumnDuplication(distinctColumns, collection.Key.ColumnCollection);
+			CheckColumnDuplication(distinctColumns, collection.Key.ColumnIterator);
 
 			//isSet = collection.IsSet;
 			//isSorted = collection.IsSorted;
@@ -191,7 +191,7 @@ namespace NHibernate.Persister.Collection
 
 			if (!collection.IsOneToMany)
 			{
-				CheckColumnDuplication(distinctColumns, element.ColumnCollection);
+				CheckColumnDuplication(distinctColumns, element.ColumnIterator);
 			}
 
 			if (elementType.IsEntityType)
@@ -211,7 +211,7 @@ namespace NHibernate.Persister.Collection
 			elementColumnIsSettable = new bool[elementSpan];
 			elementColumnIsInPrimaryKey = new bool[elementSpan];
 			int j = 0;
-			foreach (ISelectable selectable in element.ColumnCollection)
+			foreach (ISelectable selectable in element.ColumnIterator)
 			{
 				elementColumnAliases[j] = selectable.GetAlias(dialect);
 				if (selectable.IsFormula)
@@ -242,7 +242,7 @@ namespace NHibernate.Persister.Collection
 
 				string[] indexAliases = new string[indexSpan];
 				int i = 0;
-				foreach (Column indexCol in indexedCollection.Index.ColumnCollection)
+				foreach (Column indexCol in indexedCollection.Index.ColumnIterator)
 				{
 					indexAliases[i] = indexCol.GetAlias(dialect);
 					indexColumnNames[i] = indexCol.GetQuotedName(dialect);
@@ -250,7 +250,7 @@ namespace NHibernate.Persister.Collection
 				}
 				indexColumnAliases = alias.ToAliasStrings(indexAliases, dialect);
 				baseIndex = indexedCollection.IsList ? ((List)indexedCollection).BaseIndex : 0;
-				CheckColumnDuplication(distinctColumns, indexedCollection.Index.ColumnCollection);
+				CheckColumnDuplication(distinctColumns, indexedCollection.Index.ColumnIterator);
 			}
 			else
 			{
@@ -272,7 +272,7 @@ namespace NHibernate.Persister.Collection
 				identifierType = idColl.Identifier.Type;
 
 				Column col = null;
-				foreach (Column column in idColl.Identifier.ColumnCollection)
+				foreach (Column column in idColl.Identifier.ColumnIterator)
 				{
 					col = column;
 					break;
@@ -281,7 +281,7 @@ namespace NHibernate.Persister.Collection
 				identifierColumnName = col.GetQuotedName(dialect);
 				identifierColumnAlias = alias.ToAliasString(col.GetAlias(dialect), dialect);
 				identifierGenerator = idColl.Identifier.CreateIdentifierGenerator(dialect);
-				CheckColumnDuplication(distinctColumns, idColl.Identifier.ColumnCollection);
+				CheckColumnDuplication(distinctColumns, idColl.Identifier.ColumnIterator);
 			}
 			else
 			{
@@ -1223,7 +1223,7 @@ namespace NHibernate.Persister.Collection
 			get { return hasOrphanDelete; }
 		}
 
-		private void CheckColumnDuplication(ISet distinctColumns, ICollection columns)
+		private void CheckColumnDuplication(ISet distinctColumns, IEnumerable<ISelectable> columns)
 		{
 			foreach (ISelectable sel in columns)
 			{

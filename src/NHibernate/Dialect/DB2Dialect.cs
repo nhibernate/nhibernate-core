@@ -28,9 +28,9 @@ namespace NHibernate.Dialect
 		public DB2Dialect()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(254)");
-			RegisterColumnType(DbType.AnsiStringFixedLength, 254, "CHAR($1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 254, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(254)");
-			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($1)");
+			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB");
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
 			RegisterColumnType(DbType.Boolean, "SMALLINT");
@@ -39,16 +39,16 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $1)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");
 			RegisterColumnType(DbType.Int64, "BIGINT");
 			RegisterColumnType(DbType.Single, "REAL");
 			RegisterColumnType(DbType.StringFixedLength, "CHAR(254)");
-			RegisterColumnType(DbType.StringFixedLength, 254, "CHAR($1)");
+			RegisterColumnType(DbType.StringFixedLength, 254, "CHAR($l)");
 			RegisterColumnType(DbType.String, "VARCHAR(254)");
-			RegisterColumnType(DbType.String, 8000, "VARCHAR($1)");
+			RegisterColumnType(DbType.String, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.String, 2147483647, "CLOB");
 			RegisterColumnType(DbType.Time, "TIME");
 

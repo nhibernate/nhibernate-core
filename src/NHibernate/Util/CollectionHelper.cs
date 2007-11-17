@@ -335,9 +335,9 @@ namespace NHibernate.Util
 		/// This is different from the method in <see cref="System.Collections.Specialized.CollectionsUtil" />
 		/// in that the latter uses the current culture and is thus vulnerable to the "Turkish I" problem.
 		/// </remarks>
-		public static Hashtable CreateCaseInsensitiveHashtable()
+		public static IDictionary<string, T> CreateCaseInsensitiveHashtable<T>()
 		{
-			return new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+			return new Dictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);
 		}
 
 		/// <summary>
@@ -348,9 +348,9 @@ namespace NHibernate.Util
 		/// This is different from the method in <see cref="System.Collections.Specialized.CollectionsUtil" />
 		/// in that the latter uses the current culture and is thus vulnerable to the "Turkish I" problem.
 		/// </remarks>
-		public static Hashtable CreateCaseInsensitiveHashtable(IDictionary dictionary)
+		public static IDictionary<string, T> CreateCaseInsensitiveHashtable<T>(IDictionary<string, T> dictionary)
 		{
-			return new Hashtable(dictionary,StringComparer.InvariantCultureIgnoreCase);
+			return new Dictionary<string, T>(dictionary, StringComparer.InvariantCultureIgnoreCase);
 		}
 
 		private CollectionHelper()

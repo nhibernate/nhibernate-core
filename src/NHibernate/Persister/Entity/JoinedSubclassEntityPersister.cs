@@ -241,9 +241,9 @@ namespace NHibernate.Persister.Entity
 				if (!tabname.Equals(qualifiedTableName))
 				{
 					tables.Add(tabname);
-					string[] key = new string[tab.PrimaryKey.ColumnCollection.Count];
+					string[] key = new string[tab.PrimaryKey.ColumnSpan];
 					int k = 0;
-					foreach (Column col in tab.PrimaryKey.ColumnCollection)
+					foreach (Column col in tab.PrimaryKey.ColumnIterator)
 					{
 						key[k++] = col.GetQuotedName(Dialect);
 					}
@@ -265,9 +265,9 @@ namespace NHibernate.Persister.Entity
 				if (!tabname.Equals(qualifiedTableName))
 				{
 					subtables.Add(tabname);
-					string[] key = new string[tab.PrimaryKey.ColumnCollection.Count];
+					string[] key = new string[tab.PrimaryKey.ColumnSpan];
 					int k = 0;
-					foreach (Column col in tab.PrimaryKey.ColumnCollection)
+					foreach (Column col in tab.PrimaryKey.ColumnIterator)
 					{
 						key[k++] = col.GetQuotedName(Dialect);
 					}
@@ -363,7 +363,7 @@ namespace NHibernate.Persister.Entity
 				int tabnum = GetTableId(tabname, subclassTableNameClosure);
 				propTableNumbers.Add(tabnum);
 
-				foreach (ISelectable thing in prop.ColumnCollection)
+				foreach (ISelectable thing in prop.ColumnIterator)
 				{
 					if (thing.IsFormula)
 					{
@@ -409,7 +409,7 @@ namespace NHibernate.Persister.Entity
 				this.notNullColumns = new string[subclassSpan];
 				this.notNullColumns[subclassSpan - 1] = subclassTableKeyColumns[id][0];
 				/*
-				foreach( Column col in model.Table.PrimaryKey.ColumnCollection )
+				foreach( Column col in model.Table.PrimaryKey.ColumnIterator )
 				{
 					notNullColumns[ subclassSpan - 1 ] = col.GetQuotedName( Dialect ); //only once
 				}
@@ -439,7 +439,7 @@ namespace NHibernate.Persister.Entity
 						tableNumbers[p] = id;
 						notNullColumns[p] = subclassTableKeyColumns[id][0];
 						/*
-						foreach( Column col in sc.Table.PrimaryKey.ColumnCollection )
+						foreach( Column col in sc.Table.PrimaryKey.ColumnIterator )
 						{
 							notNullColumns[ p ] = col.GetQuotedName( Dialect ); //only once;
 						}

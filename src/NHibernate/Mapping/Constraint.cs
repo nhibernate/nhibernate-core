@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Mapping
@@ -9,7 +10,7 @@ namespace NHibernate.Mapping
 	public abstract class Constraint : IRelationalModel
 	{
 		private string name;
-		private readonly ArrayList columns = new ArrayList();
+		private readonly List<Column> columns = new List<Column>();
 		private Table table;
 
 		/// <summary>
@@ -28,7 +29,7 @@ namespace NHibernate.Mapping
 		/// <value>
 		/// An <see cref="ICollection"/> of <see cref="Column"/> objects that are part of the constraint.
 		/// </value>
-		public ICollection ColumnCollection
+		public IEnumerable<Column> ColumnIterator
 		{
 			get { return columns; }
 		}
@@ -46,16 +47,19 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public void AddColumns(IEnumerator columnIterator)
+		public void AddColumns(IEnumerable<ISelectable> columnIterator)
 		{
-			while (columnIterator.MoveNext())
+			foreach (ISelectable col in columnIterator)
 			{
-				ISelectable col = (ISelectable)columnIterator.Current;
 				if (!col.IsFormula)
-				{
 					AddColumn((Column)col);
-				}
 			}
+		}
+
+		public void AddColumns(IEnumerable<Column> columnIterator)
+		{
+			foreach (Column col in columnIterator)
+				AddColumn(col);
 		}
 
 		/// <summary>
@@ -69,7 +73,7 @@ namespace NHibernate.Mapping
 			get { return columns.Count; }
 		}
 
-		public IList Columns
+		public IList<Column> Columns
 		{
 			get{return columns;}
 		}

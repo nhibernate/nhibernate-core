@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -19,10 +19,10 @@ namespace NHibernate.Mapping
 		int ColumnSpan { get; }
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="Column"/> objects
+		/// Gets an <see cref="IEnumerable{ISelectable}"/> of <see cref="Column"/> objects
 		/// that this value is stored in.
 		/// </summary>
-		ICollection ColumnCollection { get; }
+		IEnumerable<ISelectable> ColumnIterator { get; }
 
 		/// <summary>
 		/// Gets the <see cref="IType"/> to read/write the Values.

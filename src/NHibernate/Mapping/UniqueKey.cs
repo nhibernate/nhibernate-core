@@ -20,7 +20,7 @@ namespace NHibernate.Mapping
 			StringBuilder buf = new StringBuilder(" unique (");
 			bool commaNeeded = false;
 
-			foreach (Column col in ColumnCollection)
+			foreach (Column col in ColumnIterator)
 			{
 				if (commaNeeded)
 				{
@@ -51,7 +51,7 @@ namespace NHibernate.Mapping
 
 			bool commaNeeded = false;
 
-			foreach (Column col in ColumnCollection)
+			foreach (Column col in ColumnIterator)
 			{
 				if (commaNeeded)
 				{

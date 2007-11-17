@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -32,9 +32,9 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public ICollection ColumnCollection
+		public IEnumerable<ISelectable> ColumnIterator
 		{
-			get { return associatedClass.Key.ColumnCollection; }
+			get { return associatedClass.Key.ColumnIterator; }
 		}
 
 		/// <summary></summary>

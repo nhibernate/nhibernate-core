@@ -53,9 +53,9 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets an <see cref="ICollection"/> of <see cref="Column"/>s.
 		/// </summary>
-		public ICollection ColumnCollection
+		public IEnumerable<ISelectable> ColumnIterator
 		{
-			get { return propertyValue.ColumnCollection; }
+			get { return propertyValue.ColumnIterator; }
 		}
 
 		/// <summary>

@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
-using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -12,22 +11,48 @@ namespace NHibernate.Mapping
 	/// Represents the mapping to a column in a database.
 	/// </summary>
 	[Serializable]
-	public class Column : ISelectable
+	public class Column : ISelectable, ICloneable
 	{
-		private static readonly int DefaultPropertyLength = -1;
+		public const int DefaultLength = 255;
+		public const int DefaultPrecision = 19;
+		public const int DefaultScale = 2;
 
-		private int length = DefaultPropertyLength;
+		private int length = DefaultLength;
+		private int precision = DefaultPrecision;
+		private int scale = DefaultScale;
+		private IValue _value;
 		private IType type;
 		private int typeIndex = 0;
 		private string name;
 		private bool nullable = true;
 		private bool unique = false;
 		private string sqlType;
+		private SqlType sqlTypeCode;
 		private bool quoted = false;
-		private string checkConstraint;
-
-		/// <summary></summary>
 		internal int uniqueInteger;
+		private string checkConstraint;
+		private string comment;
+		private string defaultValue;
+
+		public Column()
+		{
+		}
+
+		public Column(string columnName)
+		{
+			Name = columnName;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of <see cref="Column"/>.
+		/// </summary>
+		/// <param name="type">The NHibernate <see cref="IType"/> that reads from and writes to the column.</param>
+		/// <param name="typeIndex">The index of the column in the <see cref="IType"/>.</param>
+		public Column(IType type, int typeIndex)
+		{
+			this.type = type;
+			this.typeIndex = typeIndex;
+		}
 
 		/// <summary>
 		/// Gets or sets the length of the datatype in the database.
@@ -104,9 +129,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string GetQuotedName(Dialect.Dialect d)
 		{
-			return IsQuoted ?
-			       d.QuoteForColumnName(name) :
-			       name;
+			return IsQuoted ? d.QuoteForColumnName(name) : name;
 		}
 
 		/**
@@ -118,7 +141,7 @@ namespace NHibernate.Mapping
 		public string GetAlias(Dialect.Dialect dialect)
 		{
 			string alias = name;
-			string unique = uniqueInteger.ToString() + '_';
+			string _unique = uniqueInteger.ToString() + '_';
 			int lastLetter = StringHelper.LastIndexOfLetter(name);
 			if (lastLetter == -1)
 			{
@@ -130,7 +153,7 @@ namespace NHibernate.Mapping
 			}
 			if (alias.Length > dialect.MaxAliasLength)
 			{
-				alias = alias.Substring(0, dialect.MaxAliasLength - unique.Length);
+				alias = alias.Substring(0, dialect.MaxAliasLength - _unique.Length);
 			}
 			bool useRawName = name.Equals(alias) &&
 			                  !quoted &&
@@ -142,39 +165,15 @@ namespace NHibernate.Mapping
 			}
 			else
 			{
-				return alias + unique;
+				return alias + _unique;
 			}
 		}
 
 		public string GetAlias(Dialect.Dialect dialect, Table table)
 		{
-			return GetAlias(dialect) + table.UniqueInteger + '_';
+			return GetAlias(dialect) + table.UniqueInteger + StringHelper.Underscore;
 		}
 
-		/// <summary>
-		/// Gets an Alias for the column name.
-		/// </summary>
-		/// <param name="d">The <see cref="Dialect.Dialect"/> that contains the rules for Aliasing.</param>
-		/// <param name="suffix">A string to use as the suffix for the Alias.</param>
-		/// <returns>
-		/// A string that can be used as the alias for this Column.
-		/// </returns>
-		public string GetAlias(Dialect.Dialect d, string suffix)
-		{
-			if (quoted || name[0] == StringHelper.SingleQuote || char.IsDigit(name, 0))
-			{
-				return "y" + uniqueInteger.ToString() + StringHelper.Underscore + suffix;
-			}
-
-			if ((name.Length + suffix.Length) < 11)
-			{
-				return name + suffix;
-			}
-			else
-			{
-				return (new Alias(10, uniqueInteger.ToString() + StringHelper.Underscore + suffix)).ToAliasString(name, d);
-			}
-		}
 
 		/// <summary>
 		/// Gets or sets if the column can have null values in it.
@@ -184,17 +183,6 @@ namespace NHibernate.Mapping
 		{
 			get { return nullable; }
 			set { nullable = value; }
-		}
-
-		/// <summary>
-		/// Initializes a new instance of <see cref="Column"/>.
-		/// </summary>
-		/// <param name="type">The NHibernate <see cref="IType"/> that reads from and writes to the column.</param>
-		/// <param name="typeIndex">The index of the column in the <see cref="IType"/>.</param>
-		public Column(IType type, int typeIndex)
-		{
-			this.type = type;
-			this.typeIndex = typeIndex;
 		}
 
 		/// <summary>
@@ -262,9 +250,9 @@ namespace NHibernate.Mapping
 			if (sqlType == null)
 			{
 				SqlType sqlTypeObject = GetAutoSqlType(mapping);
-				if (Length != DefaultPropertyLength)
+				if (Length != DefaultLength)
 				{
-					return dialect.GetTypeName(sqlTypeObject, Length);
+					return dialect.GetTypeName(sqlTypeObject, Length, Precision, Scale);
 				}
 				else
 				{
@@ -392,6 +380,51 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
+		public int Precision
+		{
+			get { return precision; }
+			set { precision = value; }
+		}
+
+		public int Scale
+		{
+			get { return scale; }
+			set { scale = value; }
+		}
+
+		public IValue Value
+		{
+			get { return _value; }
+			set { _value = value; }
+		}
+
+		/// <summary> 
+		/// The underlying columns SqlType.
+		/// </summary>
+		/// <remarks>
+		/// If null, it is because the sqltype code is unknown.
+		/// 
+		/// Use <see cref="GetSqlTypeCode(IMapping)"/> to retreive the sqltypecode used
+		/// for the columns associated Value/Type.
+		/// </remarks>
+		public SqlType SqlTypeCode
+		{
+			get { return sqlTypeCode; }
+			set { sqlTypeCode = value; }
+		}
+
+		public string Comment
+		{
+			get { return comment; }
+			set { comment = value; }
+		}
+
+		public string DefaultValue
+		{
+			get { return defaultValue; }
+			set { defaultValue = value; }
+		}
+
 		public string GetTemplate(Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
 		{
 			return GetQuotedName(dialect);
@@ -401,5 +434,54 @@ namespace NHibernate.Mapping
 		{
 			return GetType().FullName + "( " + name + " )";
 		}
+
+		public SqlType GetSqlTypeCode(IMapping mapping)
+		{
+			IType _type = Value.Type;
+			try
+			{
+				SqlType _sqlTypeCode = _type.SqlTypes(mapping)[TypeIndex];
+				if (SqlTypeCode != null && SqlTypeCode != _sqlTypeCode)
+				{
+					throw new MappingException(string.Format("SQLType code's does not match. mapped as {0} but is {1}", sqlTypeCode, SqlTypeCode));
+				}
+				return _sqlTypeCode;
+			}
+			catch (Exception e)
+			{
+				throw new MappingException(string.Format("Could not determine type for column {0} of type {1}: {2}", 
+					name, type.GetType().FullName, e.GetType().FullName), e);
+			}
+		}
+
+		/// <summary>returns quoted name as it would be in the mapping file. </summary>
+		public string GetQuotedName()
+		{
+			return quoted ? '`' + name + '`' : name;
+		}
+
+		#region ICloneable Members
+		/// <summary> Shallow copy, the value is not copied</summary>
+		public object Clone()
+		{
+			Column copy = new Column();
+			copy.Length = length;
+			copy.Scale = scale;
+			copy.Value = _value;
+			copy.TypeIndex = typeIndex;
+			copy.Name = GetQuotedName();
+			copy.IsNullable = nullable;
+			copy.Precision = precision;
+			copy.Unique = unique;
+			copy.SqlType=sqlType;
+			copy.SqlTypeCode = sqlTypeCode;
+			copy.uniqueInteger = uniqueInteger; //usually useless
+			copy.CheckConstraint = checkConstraint;
+			copy.Comment = comment;
+			copy.DefaultValue = defaultValue;
+			return copy;
+		}
+
+		#endregion
 	}
 }

@@ -26,9 +26,9 @@ namespace NHibernate.Dialect
 		{
 //		registerFunction( "concat", new VarArgsSQLFunction( Hibernate.STRING, "(", "||", ")" ) );
 
-			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR($1)");
-			RegisterColumnType(DbType.AnsiString, 255, "VARCHAR($1)");
-			RegisterColumnType(DbType.AnsiString, 32739, "LVARCHAR($1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR($l)");
+			RegisterColumnType(DbType.AnsiString, 255, "VARCHAR($l)");
+			RegisterColumnType(DbType.AnsiString, 32739, "LVARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
@@ -37,16 +37,16 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "datetime year to fraction(5)");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $1)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");
 			RegisterColumnType(DbType.Int64, "BIGINT");
 			RegisterColumnType(DbType.Single, "SmallFloat");
 			RegisterColumnType(DbType.Time, "datetime hour to second");
-			RegisterColumnType(DbType.StringFixedLength, "CHAR($1)");
-			RegisterColumnType(DbType.String, 255, "VARCHAR($1)");
-			RegisterColumnType(DbType.String, 32739, "LVARCHAR($1)");
+			RegisterColumnType(DbType.StringFixedLength, "CHAR($l)");
+			RegisterColumnType(DbType.String, 255, "VARCHAR($l)");
+			RegisterColumnType(DbType.String, 32739, "LVARCHAR($l)");
 			RegisterColumnType(DbType.String, 2147483647, "CLOB");
 			RegisterColumnType(DbType.String, "VARCHAR(255)");
 

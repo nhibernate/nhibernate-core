@@ -13,6 +13,7 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
+using System.Collections.Generic;
 
 namespace NHibernate.Dialect
 {
@@ -28,11 +29,12 @@ namespace NHibernate.Dialect
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(Dialect));
 
-		private TypeNames typeNames = new TypeNames("$1");
-		private IDictionary properties = new Hashtable();
-		private IDictionary sqlFunctions;
+		private readonly TypeNames typeNames = new TypeNames();
+		private readonly IDictionary<string, string> properties = new Dictionary<string, string>();
+		private readonly IDictionary<string, ISQLFunction> sqlFunctions;
 
-		private static readonly IDictionary standardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable();
+		private static readonly IDictionary<string, ISQLFunction> standardAggregateFunctions =
+			CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
 
 		/// <summary></summary>
 		protected const string DefaultBatchSize = "15";
@@ -120,7 +122,7 @@ namespace NHibernate.Dialect
 		{
 			if (sqlType.LengthDefined)
 			{
-				string resultWithLength = typeNames.Get(sqlType.DbType, sqlType.Length);
+				string resultWithLength = typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 				if (resultWithLength != null) return resultWithLength;
 			}
 
@@ -138,11 +140,13 @@ namespace NHibernate.Dialect
 		/// <see cref="SqlType"/>.
 		/// </summary>
 		/// <param name="sqlType">The SqlType </param>
-		/// <param name="length">The length of the SqlType</param>
+		/// <param name="length">The datatype length </param>
+		/// <param name="precision">The datatype precision </param>
+		/// <param name="scale">The datatype scale </param>
 		/// <returns>The database type name used by ddl.</returns>
-		public virtual string GetTypeName(SqlType sqlType, int length)
+		public virtual string GetTypeName(SqlType sqlType, int length, int precision, int scale)
 		{
-			string result = typeNames.Get(sqlType.DbType, length);
+			string result = typeNames.Get(sqlType.DbType, length, precision, scale);
 			if (result == null)
 			{
 				throw new HibernateException(string.Format("No type mapping for SqlType {0} of length {1}", sqlType, length));
@@ -152,7 +156,7 @@ namespace NHibernate.Dialect
 
 		public virtual string GetCastTypeName(SqlType sqlType)
 		{
-			return GetTypeName(sqlType);
+			return GetTypeName(sqlType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
 		}
 
 		/// <summary>
@@ -167,7 +171,7 @@ namespace NHibernate.Dialect
 
 		/// <summary>
 		/// Subclasses register a typename for the given type code and maximum
-		/// column length. <c>$1</c> in the type name will be replaced by the column
+		/// column length. <c>$l</c> in the type name will be replaced by the column
 		/// length (if appropriate)
 		/// </summary>
 		/// <param name="code">The typecode</param>
@@ -179,7 +183,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Suclasses register a typename for the given type code. <c>$1</c> in the 
+		/// Suclasses register a typename for the given type code. <c>$l</c> in the 
 		/// typename will be replaced by the column length (if appropriate).
 		/// </summary>
 		/// <param name="code">The typecode</param>
@@ -613,12 +617,12 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Get de <see cref="Dialect"/> from a property bag (prop name <see cref="F:Environment.Dialect"/>)
+		/// Get de <see cref="Dialect"/> from a property bag (prop name <see cref="Environment.Dialect"/>)
 		/// </summary>
 		/// <param name="props">The property bag.</param>
 		/// <returns>An instance of <see cref="Dialect"/>.</returns>
 		/// <exception cref="ArgumentNullException">When <paramref name="props"/> is null.</exception>
-		/// <exception cref="HibernateException">When the property bag don't contains de property <see cref="F:Environment.Dialect"/>.</exception>
+		/// <exception cref="HibernateException">When the property bag don't contains de property <see cref="Environment.Dialect"/>.</exception>
 		public static Dialect GetDialect(IDictionary props)
 		{
 			if (props == null)
@@ -635,7 +639,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Retrieve a set of default Hibernate properties for this database.
 		/// </summary>
-		public IDictionary DefaultProperties
+		public IDictionary<string, string> DefaultProperties
 		{
 			get { return properties; }
 		}
@@ -808,7 +812,7 @@ namespace NHibernate.Dialect
 		/// The results of this method should be integrated with the 
 		/// specialization's data.
 		/// </remarks>
-		public virtual IDictionary Functions
+		public virtual IDictionary<string, ISQLFunction> Functions
 		{
 			get { return sqlFunctions; }
 		}

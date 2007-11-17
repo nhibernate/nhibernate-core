@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
@@ -237,7 +238,7 @@ namespace NHibernate.Tool.hbm2ddl
 			IConnectionProvider connectionProvider = null;
 
 			IDictionary props = new Hashtable();
-			foreach (DictionaryEntry de in dialect.DefaultProperties)
+			foreach (KeyValuePair<string, string> de in dialect.DefaultProperties)
 			{
 				props[de.Key] = de.Value;
 			}

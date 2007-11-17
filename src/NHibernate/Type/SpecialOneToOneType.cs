@@ -1,9 +1,12 @@
+using System;
+
 namespace NHibernate.Type
 {
 	/// <summary> 
 	/// A one-to-one association that maps to specific formula(s)
 	/// instead of the primary key column of the owning entity. 
 	/// </summary>
+	[Serializable]
 	public class SpecialOneToOneType : OneToOneType
 	{
 		public SpecialOneToOneType(System.Type referencedEntityName, ForeignKeyDirection foreignKeyType, 

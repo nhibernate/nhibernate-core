@@ -126,7 +126,7 @@ namespace NHibernate.Persister.Entity
 						tableNames.Add(tName);
 						string[] key = new string[idColumnSpan];
 						int k = 0;
-						foreach (Column col in tab.PrimaryKey.ColumnCollection)
+						foreach (Column col in tab.PrimaryKey.ColumnIterator)
 						{
 							key[k++] = col.GetQuotedName(factory.Dialect);
 							if(k>idColumnSpan) break;

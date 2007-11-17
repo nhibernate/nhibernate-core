@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -64,16 +64,16 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override ICollection ColumnCollection
+		public override IEnumerable<ISelectable> ColumnIterator
 		{
 			get
 			{
-				ArrayList retVal = new ArrayList();
-				foreach (Property prop in PropertyIterator)
+				List<IEnumerable<ISelectable>> iters = new List<IEnumerable<ISelectable>>();
+				foreach (Property property in PropertyIterator)
 				{
-					retVal.AddRange(prop.ColumnCollection);
+					iters.Add(property.ColumnIterator);
 				}
-				return retVal;
+				return new JoinedEnumerable<ISelectable>(iters);
 			}
 		}
 

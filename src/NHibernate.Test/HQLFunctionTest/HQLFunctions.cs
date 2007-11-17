@@ -722,7 +722,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		[Test]
 		public void Iif()
 		{
-			if (!Dialect.Functions.Contains("iif"))
+			if (!Dialect.Functions.ContainsKey("iif"))
 				Assert.Ignore(Dialect + "doesn't support iif function.");
 			using (ISession s = OpenSession())
 			{

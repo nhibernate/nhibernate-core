@@ -620,7 +620,7 @@ namespace NHibernate.Mapping
 			pk.Name = PKAlias.ToAliasString(table.Name, dialect);
 			table.PrimaryKey = pk;
 
-			foreach (Column col in Key.ColumnCollection)
+			foreach (Column col in Key.ColumnIterator)
 			{
 				pk.AddColumn(col);
 			}

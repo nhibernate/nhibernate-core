@@ -130,7 +130,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			results.Add("target_table", id.Table.GetQuotedName(dialect));
 
-			foreach (Column col in id.ColumnCollection)
+			foreach (Column col in id.ColumnIterator)
 			{
 				results.Add("target_column", col);
 				break;

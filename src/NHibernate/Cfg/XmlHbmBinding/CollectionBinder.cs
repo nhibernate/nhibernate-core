@@ -455,9 +455,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			BindSimpleValue(node, model, isNullable, defaultColumnName);
 
-			if (model.ColumnCollection.Count > 1)
+			if (model.ColumnSpan > 1)
 				log.Error("This shouldn't happen, check BindIntegerValue");
-			foreach (Column col in model.ColumnCollection)
+			foreach (Column col in model.ColumnIterator)
 			{
 				col.Type = NHibernateUtil.Int32;
 				col.TypeIndex = 0;
