@@ -15,6 +15,7 @@ namespace NHibernate.Cache
 		private object key;
 		private IType type;
 		private string entityOrRoleName;
+		private ISessionFactoryImplementor factory;
 		private int hashCode;
 
 		/// <summary>
@@ -27,13 +28,17 @@ namespace NHibernate.Cache
 			key = id;
 			this.type = type;
 			this.entityOrRoleName = entityOrRoleName;
+			this.factory = factory;
 			hashCode = type.GetHashCode(key, factory);
 		}
 
-		//Mainly for SysCache
+		//Mainly for SysCache and Memcache
 		public override String ToString()
 		{
-			return entityOrRoleName + '#' + key.ToString(); //"CacheKey#" + type.toString(key, sf);
+			if (type is ComponentType)
+				return entityOrRoleName + '#' + type.ToLoggableString(key, factory);
+			else
+				return entityOrRoleName + '#' + key.ToString();
 		}
 
 		public override bool Equals(Object other)
