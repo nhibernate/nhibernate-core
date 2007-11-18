@@ -295,5 +295,23 @@ namespace NHibernate.Util
 			}
 			return result;
 		}
+
+		public static bool ArrayEquals(SqlType[] a, SqlType[] b)
+		{
+			if (a.Length != b.Length)
+			{
+				return false;
+			}
+
+			for(int i = 0; i < a.Length; i++)
+			{
+				if (!Equals(a[i], b[i]))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 }
