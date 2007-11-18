@@ -9,6 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
@@ -31,6 +32,7 @@ namespace NHibernate.Impl
 		// just update.  However I haven't seen this being used with read statements...
 		private IDbCommand batchCommand;
 		private SqlString batchCommandSql;
+		private SqlType[] batchCommandParameterTypes;
 
 		private ISet commandsToClose = new HashedSet();
 		private ISet readersToClose = new HashedSet();
@@ -114,17 +116,19 @@ namespace NHibernate.Impl
 
 		public IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
-			if (!sql.Equals(batchCommandSql))
-			{
-				batchCommand = PrepareCommand(type, sql, parameterTypes); // calls ExecuteBatch()
-				batchCommandSql = sql;
-			}
-			else
+			if (sql.Equals(batchCommandSql) &&
+				ArrayHelper.ArrayEquals(parameterTypes, batchCommandParameterTypes))
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("reusing command " + batchCommand.CommandText);
 				}
+			}
+			else
+			{
+				batchCommand = PrepareCommand(type, sql, parameterTypes); // calls ExecuteBatch()
+				batchCommandSql = sql;
+				batchCommandParameterTypes = parameterTypes;
 			}
 
 			return batchCommand;
@@ -159,6 +163,7 @@ namespace NHibernate.Impl
 			IDbCommand cmd = batchCommand;
 			batchCommand = null;
 			batchCommandSql = null;
+			batchCommandParameterTypes = null;
 			// close the statement closeStatement(cmd)
 			if (cmd != null)
 			{
@@ -307,6 +312,7 @@ namespace NHibernate.Impl
 				IDbCommand ps = batchCommand;
 				batchCommand = null;
 				batchCommandSql = null;
+				batchCommandParameterTypes = null;
 				try
 				{
 					DoExecuteBatch(ps);
