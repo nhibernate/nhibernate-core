@@ -153,6 +153,24 @@ namespace NHibernate.SqlCommand
 				lastOrderByPartIndex = builder.Count - 1;
 				lastOrderByIndex = index;
 			}
+			
+			IgnoreOrderByInSubselect(partString);
+		}
+
+		private void IgnoreOrderByInSubselect(string partString)
+		{
+			int index;
+			index = StringHelper.LastIndexOfCaseInsensitive(partString, ")");
+			if (index >= 0 && ParenIsAfterLastOrderBy(index))
+			{
+				lastOrderByPartIndex = -1;
+				lastOrderByIndex = -1;
+			}
+		}
+
+		private bool ParenIsAfterLastOrderBy(int index)
+		{
+			return (builder.Count - 1) > lastOrderByPartIndex || index > lastOrderByIndex;
 		}
 
 		private void RemoveLastOrderByClause()
