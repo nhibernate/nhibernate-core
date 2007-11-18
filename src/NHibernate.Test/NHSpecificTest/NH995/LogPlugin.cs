@@ -1,3 +1,4 @@
+#if NET_2_0
 using log4net.Plugin;
 using log4net.Repository;
 
@@ -21,3 +22,4 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 		}
 	}
 }
+#endif

@@ -1,7 +1,6 @@
 using Iesi.Collections;
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1064

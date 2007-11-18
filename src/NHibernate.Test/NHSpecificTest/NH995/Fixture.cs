@@ -1,3 +1,4 @@
+#if NET_2_0
 using System.Collections;
 using NUnit.Framework;
 
@@ -89,3 +90,4 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 		}
 	}
 }
+#endif

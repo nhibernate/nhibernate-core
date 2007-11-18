@@ -1,3 +1,4 @@
+#if NET_2_0
 using System.Collections;
 using log4net.Config;
 using NHibernate.Cache;
@@ -66,3 +67,4 @@ namespace NHibernate.Caches.MemCache.Tests.NH1086
 		}
 	}
 }
+#endif
