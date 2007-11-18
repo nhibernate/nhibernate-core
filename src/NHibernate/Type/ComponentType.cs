@@ -22,9 +22,9 @@ namespace NHibernate.Type
 		private readonly int propertySpan;
 		private readonly Cascades.CascadeStyle[] cascade;
 		private readonly FetchMode[] joinedFetch;
-		private ISetter parentSetter;
-		private IGetter parentGetter;
-		private IReflectionOptimizer optimizer = null;
+		private readonly ISetter parentSetter;
+		private readonly IGetter parentGetter;
+		private readonly IReflectionOptimizer optimizer;
 
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
