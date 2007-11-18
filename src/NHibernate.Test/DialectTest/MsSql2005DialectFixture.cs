@@ -12,14 +12,19 @@ namespace NHibernate.Test.DialectTest
 		{
 			MsSql2005Dialect d = new MsSql2005Dialect();
 
-			SqlString str = d.GetLimitString(new SqlString("SELECT * FROM fish"), 0, 10);
+			SqlString str = d.GetLimitString(new SqlString("SELECT fish.id FROM fish"), 0, 10);
 			Assert.AreEqual(
-				"SELECT TOP 10 * FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.* FROM (SELECT *, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 0",
+				"SELECT TOP 10 id FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.id FROM (SELECT fish.id, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 0",
 				str.ToString());
 
-			str = d.GetLimitString(new SqlString("SELECT DISTINCT * FROM fish"), 0, 10);
+			str = d.GetLimitString(new SqlString("SELECT DISTINCT fish_.id FROM fish fish_"), 0, 10);
 			Assert.AreEqual(
-				"SELECT TOP 10 * FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.* FROM (SELECT DISTINCT *, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 0",
+				"SELECT TOP 10 id FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.id FROM (SELECT DISTINCT fish_.id, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish fish_) query ) page WHERE page.row > 0",
+				str.ToString());
+
+			str = d.GetLimitString(new SqlString("SELECT DISTINCT fish_.id as ixx9_ FROM fish fish_"), 0, 10);
+			Assert.AreEqual(
+				"SELECT TOP 10 ixx9_ FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.ixx9_ FROM (SELECT DISTINCT fish_.id as ixx9_, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish fish_) query ) page WHERE page.row > 0",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT * FROM fish ORDER BY name"), 5, 15);
@@ -27,9 +32,9 @@ namespace NHibernate.Test.DialectTest
 				"SELECT TOP 15 * FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.* FROM (SELECT *, name as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 5",
 				str.ToString());
 
-			str = d.GetLimitString(new SqlString("SELECT * FROM fish ORDER BY name DESC"), 7, 28);
+			str = d.GetLimitString(new SqlString("SELECT fish.id, fish.name FROM fish ORDER BY name DESC"), 7, 28);
 			Assert.AreEqual(
-				"SELECT TOP 28 * FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__ DESC) as row, query.* FROM (SELECT *, name as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 7",
+				"SELECT TOP 28 id, name FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__ DESC) as row, query.id, query.name FROM (SELECT fish.id, fish.name, name as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 7",
 				str.ToString());
 
 			str =
