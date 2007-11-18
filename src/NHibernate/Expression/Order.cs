@@ -11,7 +11,14 @@ namespace NHibernate.Expression
 	[Serializable]
 	public class Order
 	{
+#if !NET_2_0
+		[CLSCompliant(false)]
+#endif
 		protected bool _ascending;
+
+#if !NET_2_0
+		[CLSCompliant(false)]
+#endif
 		protected string _propertyName;
 
 		/// <summary>
