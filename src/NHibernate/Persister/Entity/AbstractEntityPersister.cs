@@ -661,7 +661,7 @@ namespace NHibernate.Persister.Entity
 		/// <remarks>This is not a NHibernate Command because the SQL contains no parameters.</remarks>
 		public string SqlIdentitySelect(string identityColumn, string tableName)
 		{
-			return factory.Dialect.GetIdentitySelectString(identityColumn, tableName);
+			return factory.Dialect.IdentitySelectString;
 		}
 
 		public virtual IIdentifierGenerator IdentifierGenerator

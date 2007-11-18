@@ -46,7 +46,7 @@ namespace NHibernate.Mapping
 			}
 
 			return
-				d.GetAddForeignKeyConstraintString(this.Table.GetQualifiedName(d, defaultSchema), constraintName, cols, referencedTable.GetQualifiedName(d, defaultSchema), refcols);
+				d.GetAddForeignKeyConstraintString(constraintName, cols, referencedTable.GetQualifiedName(d, defaultSchema), refcols, false);
 		}
 
 		/// <summary>

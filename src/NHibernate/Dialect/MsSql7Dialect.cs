@@ -19,9 +19,9 @@ namespace NHibernate.Dialect
 		/// rows into other tables that also use an identity column.  The only way I know
 		/// of to get around this problem is to upgrade your database server to Ms Sql 2000.
 		/// </remarks>
-		public override string GetIdentitySelectString(string identityColumn, string tableName)
+		public override string IdentitySelectString
 		{
-			return "select @@identity";
+			get { return "select @@identity"; }
 		}
 	}
 }

@@ -72,7 +72,7 @@ using System.Data;
 				.Add(StringHelper.Join(", ", columnsOrAliases))
 				.Add(" FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
 
-			appendSortExpressions(sortExpressions, result);
+			AppendSortExpressions(sortExpressions, result);
 
 			result.Add(") as row, ");
 
@@ -118,12 +118,12 @@ using System.Data;
 				.Add(offset.ToString())
 				.Add(" ORDER BY ");
 
-			appendSortExpressions(sortExpressions, result);
+			AppendSortExpressions(sortExpressions, result);
 
 			return result.ToSqlString();
 		}
 
-		private void appendSortExpressions(string[] sortExpressions, SqlStringBuilder result)
+		private void AppendSortExpressions(string[] sortExpressions, SqlStringBuilder result)
 		{
 			for (int i = 1; i <= sortExpressions.Length; i++)
 			{
@@ -235,7 +235,7 @@ using System.Data;
 
 		protected override string GetSelectExistingObject(string name, Table table)
 		{
-			string objName = table.GetQuotedSchemaName(this) + this.Quote(name);
+			string objName = table.GetQuotedSchemaName(this) + Quote(name);
 			return string.Format("select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')",
 								 objName, table.GetQuotedName(this));
 		}
@@ -285,7 +285,7 @@ using System.Data;
 							{
 								state = TokenizerState.Quoted;
 								currentToken.Append(ch);
-}
+							}
 							else if (ch == ',')
 							{
 								yield return ",";

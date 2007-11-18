@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -89,17 +90,14 @@ namespace NHibernate.Dialect
 		/// Call <c>lastval()</c> if <c>nextval()</c> has not yet been called in the current
 		/// session throw an exception.
 		/// </summary>
-		/// <param name="identityColumn">not used</param>
-		/// <param name="tableName">not used</param>
-		/// <returns></returns>
-		public override string GetIdentitySelectString(string identityColumn, string tableName)
+		public override string IdentitySelectString
 		{
-			return "select lastval()";
+			get { return "select lastval()"; }
 		}
 
 		public override SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
 		{
-			return insertSql.Append("; " + GetIdentitySelectString(identityColumn, tableName));
+			return insertSql.Append("; " + IdentitySelectString);
 		}
 	}
 }

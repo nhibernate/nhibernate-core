@@ -90,9 +90,9 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string GetIdentitySelectString(string identityColumn, string tableName)
+		public override string IdentitySelectString
 		{
-			return "select @@identity";
+			get { return "select @@identity"; }
 		}
 
 		/// <summary></summary>

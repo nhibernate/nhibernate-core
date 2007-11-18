@@ -69,12 +69,12 @@ namespace NHibernate.Dialect
 		/// The syntax that returns the identity value of the last insert, if native
 		/// key generation is supported
 		/// </summary>
-		public override string GetIdentitySelectString(string identityColumn, string tableName)
+		public override string IdentitySelectString
 		{
 //			return type==Types.BIGINT ?
 //				"select dbinfo('serial8') from systables where tabid=1" :
 //				"select dbinfo('sqlca.sqlerrd1') from systables where tabid=1";
-			return "select dbinfo('sqlca.sqlerrd1') from systables where tabid=1";
+			get { return "select dbinfo('sqlca.sqlerrd1') from systables where tabid=1"; }
 		}
 
 

@@ -89,9 +89,9 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override string GetIdentitySelectString(string identityColumn, string tableName)
+		public override string IdentitySelectString
 		{
-			return "SELECT LAST_INSERT_ID()";
+			get { return "SELECT LAST_INSERT_ID()"; }
 		}
 
 		/// <summary></summary>
@@ -145,16 +145,8 @@ namespace NHibernate.Dialect
 			return pagingBuilder.ToSqlString();
 		}
 
-		/// <summary>
-		/// </summary>
-		/// <param name="parentTable"></param>
-		/// <param name="constraintName"></param>
-		/// <param name="foreignKey"></param>
-		/// <param name="referencedTable"></param>
-		/// <param name="primaryKey"></param>
-		/// <returns></returns>
-		public override string GetAddForeignKeyConstraintString(string parentTable, string constraintName, string[] foreignKey,
-		                                                        string referencedTable, string[] primaryKey)
+		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
+			string referencedTable, string[] primaryKey, bool referencesPrimaryKey)
 		{
 			string cols = String.Join(StringHelper.CommaSpace, foreignKey);
 			return new StringBuilder(30)

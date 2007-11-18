@@ -709,6 +709,10 @@
     <Compile Include="Event\RefreshEvent.cs" />
     <Compile Include="Event\ReplicateEvent.cs" />
     <Compile Include="Event\SaveOrUpdateEvent.cs" />
+    <Compile Include="Exceptions\GenericADOException.cs" />
+    <Compile Include="Exceptions\ISQLExceptionConverter.cs" />
+    <Compile Include="Exceptions\IViolatedConstraintNameExtracter.cs" />
+    <Compile Include="Exceptions\SQLStateConverter.cs" />
     <Compile Include="Impl\AbstractDetachedQuery.cs" />
     <Compile Include="Hql\Classic\FunctionStack.cs" />
     <Compile Include="Impl\AbstractSessionImpl.cs" />

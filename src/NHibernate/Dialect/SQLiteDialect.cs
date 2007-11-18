@@ -46,14 +46,14 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// 
 		/// </summary>
-		public override string GetIdentitySelectString(string identityColumn, string tableName)
+		public override string IdentitySelectString
 		{
-			return "select last_insert_rowid()";
+			get { return "select last_insert_rowid()"; }
 		}
 
 		public override SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
 		{
-			return insertSql.Append("; " + GetIdentitySelectString(identityColumn, tableName));
+			return insertSql.Append("; " + IdentitySelectString);
 		}
 
 		public override bool HasAlterTable

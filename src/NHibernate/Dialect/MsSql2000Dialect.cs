@@ -202,7 +202,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
 		{
-			return insertSql.Append("; " + GetIdentitySelectString(identityColumn, tableName));
+			return insertSql.Append("; " + IdentitySelectString);
 		}
 
 		/// <summary></summary>
@@ -211,10 +211,9 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary></summary>
-		public override string GetIdentitySelectString(string identityColumn, string tableName)
+		public override string IdentitySelectString
 		{
-			return "select SCOPE_IDENTITY()";
+			get { return "select SCOPE_IDENTITY()"; }
 		}
 
 		/// <summary></summary>
