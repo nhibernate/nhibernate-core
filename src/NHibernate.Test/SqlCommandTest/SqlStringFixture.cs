@@ -351,5 +351,13 @@ namespace NHibernate.Test.SqlCommandTest
 					"select (select foo from bar where foo=col order by foo), (select foo from bar where foo=col order by foo) from table where col = ? order by col");
 			Assert.AreEqual(" from table where col = ? ", sql.GetSubselectString().ToString());
 		}
+
+		[Test]
+		public void GetSubselectStringWithOrderByInSubselect()
+		{
+			SqlString sql = SqlString.Parse("select col from table where (col = test) and id in (select id from foo order by bar)");
+			Assert.AreEqual(" from table where (col = test) and id in (select id from foo order by bar)", sql.GetSubselectString().ToString());
+		}
+
 	}
 }

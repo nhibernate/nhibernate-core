@@ -40,7 +40,7 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
 		{
-			int fromIndex = querySqlString.IndexOfCaseInsensitive(" from ");
+			int fromIndex = GetFromIndex(querySqlString);
 			SqlString select = querySqlString.Substring(0, fromIndex);
 			ArrayList columnsOrAliases;
 			Hashtable aliasToColumn;
@@ -69,18 +69,7 @@ namespace NHibernate.Dialect
 				.Add(StringHelper.Join(", ", columnsOrAliases))
 				.Add(" FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
 
-			for (int i = 1; i <= sortExpressions.Length; i++)
-			{
-				if (i > 1)
-					result.Add(", ");
-
-				result.Add("__hibernate_sort_expr_")
-					.Add(i.ToString())
-					.Add("__");
-
-				if (sortExpressions[i - 1].Trim().ToLower().EndsWith("desc"))
-					result.Add(" DESC");
-			}
+			AppendSortExpressions(sortExpressions, result);
 
 			result.Add(") as row, ");
 
@@ -90,6 +79,13 @@ namespace NHibernate.Dialect
 				bool notLastColumn = i != columnsOrAliases.Count-1;
 				if (notLastColumn)
 					result.Add(", ");
+			}
+
+			for (int i = 1; i <= sortExpressions.Length; ++i)
+			{
+					result.Add(", query.__hibernate_sort_expr_")
+						.Add(i.ToString())
+						.Add("__");
 			}
 
 			result.Add(" FROM (")
@@ -121,7 +117,10 @@ namespace NHibernate.Dialect
 			result.Add(" ")
 				.Add(from)
 				.Add(") query ) page WHERE page.row > ")
-				.Add(offset.ToString());
+				.Add(offset.ToString())
+				.Add(" ORDER BY ");
+
+			AppendSortExpressions(sortExpressions, result);
 
 			return result.ToSqlString();
 		}
@@ -138,7 +137,7 @@ namespace NHibernate.Dialect
 			while ((currentIndex = selectString.IndexOf(",", lastIndex)) != -1)
 			{
 				string columnAndAlias = selectString.Substring(lastIndex, currentIndex - lastIndex);
-				int seperatorPosition = columnAndAlias.IndexOf(" as ");
+				int seperatorPosition = columnAndAlias.IndexOf(" as ", StringComparison.InvariantCultureIgnoreCase);
 				string columnOrAliasName;
 				if (seperatorPosition != -1)
 				{
@@ -156,6 +155,33 @@ namespace NHibernate.Dialect
 				columnsOrAliases.Add(columnOrAliasName);
 				lastIndex = currentIndex + 1;
 			}
+		}
+
+		private static void AppendSortExpressions(string[] sortExpressions, SqlStringBuilder result)
+		{
+			for (int i = 1; i <= sortExpressions.Length; i++)
+			{
+				if (i > 1)
+					result.Add(", ");
+
+				result.Add("__hibernate_sort_expr_")
+					.Add(i.ToString())
+					.Add("__");
+
+				if (sortExpressions[i - 1].Trim().ToLower().EndsWith("desc"))
+					result.Add(" DESC");
+			}
+		}
+
+		private static int GetFromIndex(SqlString querySqlString)
+		{
+			string subselect = querySqlString.GetSubselectString().ToString();
+			int fromIndex = querySqlString.IndexOfCaseInsensitive(subselect);
+			if (fromIndex == -1)
+			{
+				fromIndex = querySqlString.ToString().ToLowerInvariant().IndexOf(subselect.ToLowerInvariant());
+			}
+			return fromIndex;
 		}
 
 		/// <summary>
