@@ -1698,14 +1698,14 @@ namespace NHibernate.Persister.Entity
 
 			if (IsVersioned)
 			{
-				builder.AddColumn(VersionColumnName);
+				builder.AddColumn(versionColumnName);
 			}
 			else
 			{
-				builder.AddColumns(IdentifierColumnNames);
+				builder.AddColumns(rootTableKeyColumnNames);
 			}
 
-			builder.AddWhereFragment(IdentifierColumnNames, IdentifierType, " = ");
+			builder.AddWhereFragment(rootTableKeyColumnNames, IdentifierType, " = ");
 
 			return builder.ToSqlString();
 		}
