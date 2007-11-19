@@ -18,7 +18,7 @@ namespace NHibernate.Expression
 	public class InExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;
-		private readonly object[] _values;
+		private object[] _values;
 
 		/// <summary>
 		/// 
@@ -111,6 +111,12 @@ namespace NHibernate.Expression
 
 			return (TypedValue[]) list.ToArray(typeof(TypedValue));
 		}
+
+        public object[] Values
+        {
+            get { return _values; }
+            protected set { _values = value; }
+        }
 
 		/// <summary></summary>
 		public override string ToString()

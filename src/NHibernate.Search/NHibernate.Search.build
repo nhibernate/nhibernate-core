@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project
+		name="NHibernate.Search"
+		default="build"
+		description="NHibernate Search - Integration with Lucene.NET"
+		xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
+
+	<property name="root.dir" value="..\.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+		<property name="assembly.description" value="NHibernate Search - Integration with Lucene.NET" />
+		<property name="clover.instrument" value="true" />
+
+		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="System.dll" />
+			<include name="System.Data.dll" />
+			<include name="System.Web.dll" />
+			<include name="System.XML.dll" />
+			<include name="NHibernate.dll" />
+			<include name="log4net.dll" />
+			<include name="Iesi.Collections.dll" />
+			<include name="Lucene.Net.dll"/>
+		</assemblyfileset>
+	</target>
+
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
+	<target name="build" depends="init generate-assemblyinfo common.compile-dll" />
+
+</project>

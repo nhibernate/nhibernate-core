@@ -200,7 +200,7 @@ namespace NHibernate.Test
 			new SchemaExport(cfg).Drop(OutputDdl, true);
 		}
 
-		private void BuildSessionFactory()
+		protected virtual void BuildSessionFactory()
 		{
 			sessions = cfg.BuildSessionFactory();
 			connectionProvider = sessions.ConnectionProvider as DebugConnectionProvider;
@@ -246,7 +246,7 @@ namespace NHibernate.Test
 			}
 		}
 
-		protected ISession OpenSession()
+		protected virtual ISession OpenSession()
 		{
 			lastOpenedSession = sessions.OpenSession();
 			return lastOpenedSession;

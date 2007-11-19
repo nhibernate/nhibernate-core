@@ -37,6 +37,8 @@
 		<include name="NHibernate.Mapping.Attributes/NHibernate.Mapping.Attributes.build" />
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
 		<include name="NHibernate.Tasks/NHibernate.Tasks.build" />
+		<include name="NHibernate.Search/NHibernate.Search.build" />
+		<include name="NHibernate.Search.Tests/NHibernate.Search.Tests.build" />
 		<include name="NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />
 		<include name="NHibernate.Tool.hbm2net.Console/NHibernate.Tool.hbm2net.Console.build" />
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
@@ -56,6 +58,7 @@
 		<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />
 		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" />
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
+		<include name="NHibernate.Search.Tests/NHibernate.Search.Tests.build" />
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
 		<include name="Nullables.Tests/Nullables.Tests.build" />
