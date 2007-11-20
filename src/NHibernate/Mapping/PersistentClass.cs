@@ -159,7 +159,7 @@ namespace NHibernate.Mapping
 		/// Iterate over subclasses in a special 'order', most derived subclasses first.
 		/// </summary>
 		/// <value>
-		/// It will recursively go through Subclasses so that if a Subclass has Subclasses
+		/// It will recursively go through Subclasses so that if a SubclassType has Subclasses
 		/// it will pick those up also.
 		/// </value>
 		public virtual IEnumerable<Subclass> SubclassIterator

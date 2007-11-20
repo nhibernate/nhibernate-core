@@ -213,7 +213,7 @@
     <Compile Include="AdoNet\OracleDataClientBatchingBatcher.cs" />
     <Compile Include="AdoNet\SqlClientBatchingBatcher.cs" />
     <Compile Include="Cache\Entry\CacheEntry.cs" />
-    <Compile Include="Cache\Entry\CollectionEntry.cs" />
+    <Compile Include="Engine\CollectionEntry.cs" />
     <Compile Include="Engine\CollectionKey.cs" />
     <Compile Include="Impl\CriteriaImpl.cs" />
     <Compile Include="Engine\EntityEntry.cs" />
@@ -472,6 +472,12 @@
     <Compile Include="Bytecode\EmitUtil.cs" />
     <Compile Include="CacheMode.cs" />
     <Compile Include="Cache\CacheKey.cs" />
+    <Compile Include="Cache\Entry\CollectionCacheEntry.cs" />
+    <Compile Include="Cache\Entry\ICacheEntryStructure.cs" />
+    <Compile Include="Cache\Entry\StructuredCacheEntry.cs" />
+    <Compile Include="Cache\Entry\StructuredCollectionCacheEntry.cs" />
+    <Compile Include="Cache\Entry\StructuredMapCacheEntry.cs" />
+    <Compile Include="Cache\Entry\UnstructuredCacheEntry.cs" />
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />
     <Compile Include="Cache\NoCachingEnabledException.cs" />

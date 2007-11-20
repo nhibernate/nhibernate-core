@@ -7,7 +7,6 @@ using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 using log4net;
-using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;

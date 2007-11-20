@@ -74,7 +74,7 @@ namespace NHibernate.Persister.Entity
 		// subclass discrimination works by assigning particular values to certain 
 		// combinations of null primary key values in the outer join using an SQL CASE
 
-		// key = DiscrimatorValue, value = Subclass Type
+		// key = DiscrimatorValue, value = SubclassType Type
 		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
 		private readonly string[] discriminatorValues;
 		private readonly string[] notNullColumns;

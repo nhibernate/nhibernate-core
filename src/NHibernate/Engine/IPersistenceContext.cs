@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections;
-using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Persister.Collection;

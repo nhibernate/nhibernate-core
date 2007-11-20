@@ -4,7 +4,6 @@ using System.Data;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cache;
-using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;

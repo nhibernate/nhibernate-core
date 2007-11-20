@@ -7,7 +7,6 @@ using System.Security.Permissions;
 using Iesi.Collections;
 using log4net;
 using NHibernate.AdoNet;
-using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;

@@ -297,7 +297,7 @@ namespace NHibernate.Mapping
 		/// </value>
 		/// <exception cref="InvalidOperationException">
 		/// Thrown when the setter is called.  The Superclass can not be set on the 
-		/// RootClass, only the Subclass can have a Superclass set.
+		/// RootClass, only the SubclassType can have a Superclass set.
 		/// </exception>
 		public override PersistentClass Superclass
 		{

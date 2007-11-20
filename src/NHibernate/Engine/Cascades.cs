@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using log4net;
-using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;

@@ -147,7 +147,7 @@ namespace NHibernate.Mapping
 		/// Gets a boolean indicating if this mapped class is inherited from another. 
 		/// </summary>
 		/// <value>
-		/// <see langword="true" /> because this is a Subclass.
+		/// <see langword="true" /> because this is a SubclassType.
 		/// </value>
 		public override bool IsInherited
 		{
@@ -181,7 +181,7 @@ namespace NHibernate.Mapping
 		/// <param name="p">The <see cref="Property"/> to add.</param>
 		/// <remarks>
 		/// This also adds the <see cref="Property"/> to the Superclass' collection
-		/// of Subclass Properties.
+		/// of SubclassType Properties.
 		/// </remarks>
 		public override void AddProperty(Property p)
 		{
@@ -201,7 +201,7 @@ namespace NHibernate.Mapping
 		/// <value>The <see cref="Table"/> this class is stored in.</value>
 		/// <remarks>
 		/// This also adds the <see cref="Table"/> to the Superclass' collection
-		/// of Subclass Tables.
+		/// of SubclassType Tables.
 		/// </remarks>
 		public override Table Table
 		{
@@ -247,7 +247,7 @@ namespace NHibernate.Mapping
 		/// <param name="p">The <see cref="Property"/> implemented by a subclass.</param>
 		/// <remarks>
 		/// This also adds the <see cref="Property"/> to the Superclass' collection
-		/// of Subclass Properties.
+		/// of SubclassType Properties.
 		/// </remarks>
 		public override void AddSubclassProperty(Property p)
 		{
@@ -267,7 +267,7 @@ namespace NHibernate.Mapping
 		/// <param name="table">The <see cref="Table"/> the subclass is stored in.</param>
 		/// <remarks>
 		/// This also adds the <see cref="Table"/> to the Superclass' collection
-		/// of Subclass Tables.
+		/// of SubclassType Tables.
 		/// </remarks>
 		public override void AddSubclassTable(Table table)
 		{
@@ -362,12 +362,12 @@ namespace NHibernate.Mapping
 		/// </value>
 		/// <exception cref="InvalidOperationException">
 		/// Thrown when the setter is called.  The where clause can not be set on the 
-		/// Subclass, only the RootClass.
+		/// SubclassType, only the RootClass.
 		/// </exception>
 		public override string Where
 		{
 			get { return Superclass.Where; }
-			set { throw new InvalidOperationException("The Where string can not be set on the Subclass - use the RootClass instead."); }
+			set { throw new InvalidOperationException("The Where string can not be set on the SubclassType - use the RootClass instead."); }
 		}
 
 		/// <summary>
@@ -387,7 +387,7 @@ namespace NHibernate.Mapping
 			set
 			{
 				throw new InvalidOperationException(
-					"The DiscriminatorInsertable property can not be set on the Subclass - use the Superclass instead.");
+					"The DiscriminatorInsertable property can not be set on the SubclassType - use the Superclass instead.");
 			}
 		}
 

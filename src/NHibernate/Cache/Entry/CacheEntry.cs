@@ -13,13 +13,11 @@ namespace NHibernate.Cache.Entry
 	public sealed class CacheEntry
 	{
 		private readonly object[] state;
-		private readonly System.Type subclass;
-
-		/// <summary></summary>
-		public System.Type Subclass
-		{
-			get { return subclass; }
-		}
+		private readonly System.Type subclassType;
+		private readonly object[] disassembledState;
+		private readonly string subclass;
+		private readonly bool lazyPropertiesAreUnfetched;
+		private readonly object version;
 
 		/// <summary>
 		/// 
@@ -30,7 +28,47 @@ namespace NHibernate.Cache.Entry
 		public CacheEntry(object obj, IEntityPersister persister, ISessionImplementor session)
 		{
 			state = Disassemble(obj, persister, session);
-			subclass = obj.GetType();
+			subclassType = obj.GetType();
+		}
+
+		internal CacheEntry(object[] state, string subclass, bool unfetched, object version)
+		{
+			disassembledState = state;
+			this.subclass = subclass;
+			lazyPropertiesAreUnfetched = unfetched;
+			this.version = version;
+		}
+
+		/// <summary></summary>
+		public System.Type SubclassType
+		{
+			get { return subclassType; }
+		}
+
+		public object Version
+		{
+			get{return version;}
+		}
+
+		public string Subclass
+		{
+			get { return subclass; }
+		}
+
+		public bool AreLazyPropertiesUnfetched
+		{
+			get { return lazyPropertiesAreUnfetched; }
+		}
+
+		public object[] DisassembledState
+		{
+			get
+			{
+				// todo: this was added to support initializing an entity's EntityEntry snapshot during reattach;
+				// this should be refactored to instead expose a method to assemble a EntityEntry based on this
+				// state for return.
+				return disassembledState;
+			}
 		}
 
 		/// <summary>
@@ -54,7 +92,7 @@ namespace NHibernate.Cache.Entry
 		public object[] Assemble(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
 		                         ISessionImplementor session)
 		{
-			if (subclass != persister.MappedClass)
+			if (subclassType != persister.MappedClass)
 			{
 				throw new AssertionFailure("Tried to assemble a different subclass instance");
 			}

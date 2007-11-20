@@ -408,7 +408,7 @@ namespace NHibernate.Event.Default
 				{
 					// todo-events different behaviour
 					CacheEntry entry = (CacheEntry) ce;
-					if (persister.MappedClass.IsAssignableFrom(entry.Subclass))
+					if (persister.MappedClass.IsAssignableFrom(entry.SubclassType))
 					{
 						return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
 					}
@@ -418,7 +418,7 @@ namespace NHibernate.Event.Default
 						{
 							log.DebugFormat(
 								"load request for {0} found matching entity in context, but the matched entity was of an inconsistent return type ({1}); returning null",
-								MessageHelper.InfoString(persister, @event.EntityId), entry.Subclass);
+								MessageHelper.InfoString(persister, @event.EntityId), entry.SubclassType);
 						}
 						return null;
 					}
@@ -442,7 +442,7 @@ namespace NHibernate.Event.Default
 				log.Debug("assembling entity from second-level cache: " + MessageHelper.InfoString(persister, id, factory));
 			}
 
-			IEntityPersister subclassPersister = factory.GetEntityPersister(entry.Subclass);
+			IEntityPersister subclassPersister = factory.GetEntityPersister(entry.SubclassType);
 			object result = optionalObject ?? session.Instantiate(subclassPersister, id);
 
 			// make it circular-reference safe
