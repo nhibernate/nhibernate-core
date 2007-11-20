@@ -713,6 +713,27 @@
     <Compile Include="Exceptions\ISQLExceptionConverter.cs" />
     <Compile Include="Exceptions\IViolatedConstraintNameExtracter.cs" />
     <Compile Include="Exceptions\SQLStateConverter.cs" />
+    <Compile Include="Id\Insert\AbstractReturningDelegate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\AbstractSelectingDelegate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\IBinder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\IdentifierGeneratingInsert.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\IInsertGeneratedIdentifierDelegate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\InsertSelectIdentityInsert.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\IPostInsertIdentityPersister.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Impl\AbstractDetachedQuery.cs" />
     <Compile Include="Hql\Classic\FunctionStack.cs" />
     <Compile Include="Impl\AbstractSessionImpl.cs" />

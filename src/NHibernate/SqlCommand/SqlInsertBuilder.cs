@@ -102,7 +102,7 @@ namespace NHibernate.SqlCommand
 		#region ISqlStringBuilder Members
 
 		/// <summary></summary>
-		public SqlString ToSqlString()
+		public virtual SqlString ToSqlString()
 		{
 			// 5 = "INSERT INTO", tableName, " (" , ") VALUES (", and ")"
 			int initialCapacity = 5;
