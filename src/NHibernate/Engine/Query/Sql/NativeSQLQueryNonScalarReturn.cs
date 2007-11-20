@@ -21,11 +21,10 @@ namespace NHibernate.Engine.Query.Sql
 		/// <param name="lockMode">The lock mode to apply to the return. </param>
 		protected internal NativeSQLQueryNonScalarReturn(string alias, IDictionary propertyResults, LockMode lockMode)
 		{
+			if (string.IsNullOrEmpty(alias))
+				throw new ArgumentNullException("alias", "A valid scalar alias must be specified.");
+
 			this.alias = alias;
-			if (alias == null)
-			{
-				throw new HibernateException("alias must be specified");
-			}
 			this.lockMode = lockMode;
 			
 			if (propertyResults != null)

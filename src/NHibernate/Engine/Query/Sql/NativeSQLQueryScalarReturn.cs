@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Type;
 
 namespace NHibernate.Engine.Query.Sql
@@ -10,6 +11,9 @@ namespace NHibernate.Engine.Query.Sql
 
 		public NativeSQLQueryScalarReturn(string alias, IType type)
 		{
+			if (string.IsNullOrEmpty(alias))
+				throw new ArgumentNullException("alias","A valid scalar alias must be specified.");
+
 			columnAlias = alias;
 			this.type = type;
 		}
