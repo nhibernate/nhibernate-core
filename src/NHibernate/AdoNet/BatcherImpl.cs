@@ -1,16 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
-using NHibernate.AdoNet;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
-using Iesi.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
