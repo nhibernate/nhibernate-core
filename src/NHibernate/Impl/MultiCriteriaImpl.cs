@@ -181,7 +181,7 @@ namespace NHibernate.Impl
 						int entitySpan = loader.EntityPersisters.Length;
 						hydratedObjects[i] = entitySpan == 0 ? null : new ArrayList(entitySpan);
 						EntityKey[] keys = new EntityKey[entitySpan];
-						QueryParameters queryParameters = loader.Translator.GetQueryParameters();
+						QueryParameters queryParameters = this.parameters[i];
 						IList tmpResults = new ArrayList();
 						RowSelection selection = parameters[i].RowSelection;
 						createSubselects[i] = loader.IsSubselectLoadingEnabled;
@@ -200,6 +200,7 @@ namespace NHibernate.Impl
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
+								keys = new EntityKey[entitySpan]; //can't reuse in this case
 							}
 							tmpResults.Add(o);
 						}
@@ -223,7 +224,7 @@ namespace NHibernate.Impl
 
 					if (createSubselects[i])
 					{
-						loader.CreateSubselects(subselectResultKeys, loader.Translator.GetQueryParameters(), session);
+						loader.CreateSubselects(subselectResultKeys[i], this.parameters[i], session);
 					}
 				}
 			}
@@ -298,7 +299,7 @@ namespace NHibernate.Impl
 		{
 			for (int i = 0; i < loaders.Count; i++)
 			{
-				QueryParameters parameter = (QueryParameters) parameters[i];
+				QueryParameters parameter =  parameters[i];
 				RowSelection selection = parameter.RowSelection;
 				if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
 				{
