@@ -133,10 +133,14 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-			if (resultTransformer == null)
-				return results;
-
-			return resultTransformer.TransformList(results);
+			if (resultTransformer != null)
+			{
+				for (int i = 0, len = results.Count; i < len; ++i)
+				{
+					results[i] = resultTransformer.TransformList((IList)results[i]);
+				}
+			}
+			return results;
 		}
 
 		private IList DoList()
