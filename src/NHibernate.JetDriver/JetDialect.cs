@@ -206,7 +206,7 @@ namespace NHibernate.JetDriver
 		}
 
 		/// <summary></summary>
-		public override string GetIdentitySelectString(string identityColumn, string tableName)
+		public override string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return "select @@identity";
 		}
