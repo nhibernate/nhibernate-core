@@ -18,7 +18,7 @@ namespace NHibernate.Driver
 	/// </p>
 	/// <p>
 	/// The homepage for the .NET DataProvider is: 
-	/// <a href="http://gborg.postgresql.org/project/npgsql/projdisplay.php">http://gborg.postgresql.org/project/npgsql/projdisplay.php</a>. 
+    /// <a href="http://pgfoundry.org/projects/npgsql">http://pgfoundry.org/projects/npgsql</a>. 
 	/// </p>
 	/// </remarks>
 	public class NpgsqlDriver : ReflectionBasedDriver
@@ -58,11 +58,15 @@ namespace NHibernate.Driver
 
 		protected override bool SupportsPreparingCommands
 		{
-			// NOTE: Npgsql actually supports this feature but there a bug that results in 
-			// NotSupportedException("Backend sent unrecognized response type") being thrown on insert statements
-			// this should be fixed with Npgsql post 0.7beta1 (GBorg Bug ID 952) so we need to re-evaluate this override then
-
+			// NOTE: Npgsql1.0 and 2.0-preview apparently doesn't correctly  support prepared commands.
+			// The following exception is thrown on insert statements:
+			// Npgsql.NpgsqlException : ERROR: 42601: cannot insert multiple commands into a prepared statement
 			get { return false; }
+		}
+
+		public override bool SupportsMultipleQueries
+		{
+			get { return true; }
 		}
 	}
 }
