@@ -53,6 +53,7 @@
     <Compile Include="AttributeUtil.cs" />
     <Compile Include="Backend\Impl\Lucene\LuceneBackendQueueProcessor.cs" />
     <Compile Include="Backend\Impl\Lucene\LuceneBackendQueueProcessorFactory.cs" />
+    <Compile Include="Backend\OptimizeLuceneWork.cs" />
     <Compile Include="Backend\PurgeAllLuceneWork.cs" />
     <Compile Include="Query\FullTextSearchHelper.cs" />
     <Compile Include="LuceneQueryExpression.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="Bridge\TwoWayString2FieldBridgeAdaptor.cs" />
     <Compile Include="Bridge\Builtin\ValueTypeBridge.cs" />
     <Compile Include="Backend\Work.cs" />
-    <Compile Include="Backend\LuceneWorkspace.cs" />
+    <Compile Include="Backend\Workspace.cs" />
     <Compile Include="Backend\WorkType.cs" />
     <Compile Include="Bridge\IStringBridge.cs" />
     <Compile Include="Bridge\ITwoWayFieldBridge.cs" />

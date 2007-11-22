@@ -19,15 +19,15 @@ namespace NHibernate.Search.Impl
 	/// The recommended approach is to execute all the modifications on the IndexReaders, {@link #Dispose()} }, and acquire the
 	/// index writers
 	/// </summary>
-	public class LuceneWorkspace : IDisposable
+	public class Workspace : IDisposable
 	{
-		private static ILog log = LogManager.GetLogger(typeof (LuceneWorkspace));
+		private static ILog log = LogManager.GetLogger(typeof(Workspace));
 		private Dictionary<IDirectoryProvider, IndexReader> readers = new Dictionary<IDirectoryProvider, IndexReader>();
 		private Dictionary<IDirectoryProvider, IndexWriter> writers = new Dictionary<IDirectoryProvider, IndexWriter>();
 		private List<IDirectoryProvider> lockedProviders = new List<IDirectoryProvider>();
 		private SearchFactory searchFactory;
 
-		public LuceneWorkspace(SearchFactory searchFactory)
+		public Workspace(SearchFactory searchFactory)
 		{
 			this.searchFactory = searchFactory;
 		}

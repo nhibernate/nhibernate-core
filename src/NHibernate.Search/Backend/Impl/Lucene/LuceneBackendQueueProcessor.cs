@@ -24,7 +24,7 @@ namespace NHibernate.Search.Backend.Impl.Lucene
         /// We rely on the both the DocumentBuilder.GetHashCode() and the GetWorkHashCode() to 
         /// sort them by predictive order at all times, and to put deletes before adds
         /// </summary>
-        private static void SortQueueToAvoidDeadLocks(List<LuceneWork> queue, LuceneWorkspace luceneWorkspace)
+        private static void SortQueueToAvoidDeadLocks(List<LuceneWork> queue, Workspace luceneWorkspace)
         {
             queue.Sort(delegate(LuceneWork x, LuceneWork y)
                            {
@@ -38,7 +38,7 @@ namespace NHibernate.Search.Backend.Impl.Lucene
                            });
         }
 
-        private static long GetWorkHashCode(LuceneWork luceneWork, LuceneWorkspace luceneWorkspace)
+        private static long GetWorkHashCode(LuceneWork luceneWork, Workspace luceneWorkspace)
         {
             long h = luceneWorkspace.GetDocumentBuilder(luceneWork.EntityClass).GetHashCode()*2;
             if (luceneWork is AddLuceneWork)
@@ -46,21 +46,25 @@ namespace NHibernate.Search.Backend.Impl.Lucene
             return h;
         }
 
-        public void Run(object ignored)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ignore">Ignored, used to keep the delegate signature that WaitWithCallback requires</param>
+        public void Run(object ignore)
         {
-            LuceneWorkspace luceneWorkspace = new LuceneWorkspace(searchFactory);
-            LuceneWorker worker = new LuceneWorker(luceneWorkspace);
+            Workspace workspace = new Workspace(searchFactory);
+            LuceneWorker worker = new LuceneWorker(workspace);
             try
             {
-                SortQueueToAvoidDeadLocks(queue, luceneWorkspace);
+                SortQueueToAvoidDeadLocks(queue, workspace);
                 foreach (LuceneWork luceneWork in queue)
                 {
-                    worker.PerformWork(luceneWork);
+                    worker.PerformWork(new LuceneWorker.WorkWithPayload(luceneWork, null));
                 }
             }
             finally
             {
-                luceneWorkspace.Dispose();
+                workspace.Dispose();
                 queue.Clear();
             }
         }
