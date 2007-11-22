@@ -4,16 +4,8 @@ namespace NHibernate.Search.Backend
 {
     public class AddLuceneWork : LuceneWork
     {
-        private readonly Document document;
-
-        public AddLuceneWork(object id, System.Type entityClass, Document document) : base(id, entityClass)
+        public AddLuceneWork(object id, string idInString, System.Type entityClass, Document document) : base(id, idInString, entityClass, document)
         {
-            this.document = document;
-        }
-
-        public Document Document
-        {
-            get { return document; }
         }
     }
 }

@@ -21,41 +21,8 @@ namespace NHibernate.Search.Impl
 			this.session = session;
 		}
 
-
-		public IQuery CreateFullTextQuery<TEntity>(string defaultField, string queryString)
-		{
-			QueryParser queryParser = new QueryParser(defaultField, new StandardAnalyzer());
-			Query query = queryParser.Parse(queryString);
-			return CreateFullTextQuery(query, typeof (TEntity));
-		}
-
-		public IQuery CreateFullTextQuery<TEntity>(string queryString)
-		{
-			QueryParser queryParser = new QueryParser("",new StandardAnalyzer());
-			Query query = queryParser.Parse(queryString);
-			return CreateFullTextQuery(query, typeof (TEntity));
-		}
-
-		public IQuery CreateFullTextQuery(Query luceneQuery, params System.Type[] entities)
-		{
-			return new FullTextQueryImpl(luceneQuery, entities, (ISessionImplementor)session);
-		}
-
-		public IFullTextSession Index(object entity)
-		{
-			SearchFactory searchFactory = SearchFactory.GetSearchFactory(session);
-			object id = session.GetIdentifier(entity);
-			searchFactory.PerformWork(entity, id, session, WorkType.Update);
-			return this;
-		}
-
-		public void Dispose()
-		{
-			session.Dispose();
-		}
-
-
 		#region Delegating to Inner Session
+
 		public void Flush()
 		{
 			session.Flush();
@@ -400,5 +367,61 @@ namespace NHibernate.Search.Impl
 
 
 		#endregion
+
+        public IQuery CreateFullTextQuery<TEntity>(string defaultField, string queryString)
+        {
+            QueryParser queryParser = new QueryParser(defaultField, new StandardAnalyzer());
+            Query query = queryParser.Parse(queryString);
+            return CreateFullTextQuery(query, typeof(TEntity));
+        }
+
+        public IQuery CreateFullTextQuery<TEntity>(string queryString)
+        {
+            QueryParser queryParser = new QueryParser("", new StandardAnalyzer());
+            Query query = queryParser.Parse(queryString);
+            return CreateFullTextQuery(query, typeof(TEntity));
+        }
+
+        public IQuery CreateFullTextQuery(Query luceneQuery, params System.Type[] entities)
+        {
+            return new FullTextQueryImpl(luceneQuery, entities, (ISessionImplementor)session);
+        }
+
+        public IFullTextSession Index(object entity)
+        {
+            SearchFactory searchFactory = SearchFactory.GetSearchFactory(session);
+
+            // TODO: Check to see this entity type is indexed
+            object id = session.GetIdentifier(entity);
+            searchFactory.PerformWork(entity, id, session, WorkType.Update);
+            
+            // TODO: Why do we return this?
+            return this;
+        }
+
+        public void PurgeAll(System.Type entity)
+        {
+            Purge(entity, null);
+        }
+
+        public void Purge(System.Type entity, object id)
+        {
+            if (entity == null) return;
+            WorkType workType;
+
+            // TODO: Check to see this entity type is indexed
+            SearchFactory searchFactory = SearchFactory.GetSearchFactory(session);
+            if (id == null)
+                workType = WorkType.PurgeAll;
+            else
+                workType = WorkType.Purge;
+
+            searchFactory.PerformWork(entity, id, session, workType);
+        }
+
+        public void Dispose()
+        {
+            session.Dispose();
+        }
 	}
 }

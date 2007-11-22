@@ -4,6 +4,18 @@ namespace NHibernate.Search.Backend
     {
         Add,
         Delete,
-        Update
+        Update,
+        /// <summary>
+        /// Used to remove a specific instance of a class from an index.
+        /// </summary>
+        Purge,
+        /// <summary>
+        /// Used to remove all instances of a class from an index.
+        /// </summary>
+        PurgeAll,
+        /// <summary>
+        /// Used for batch indexing.
+        /// </summary>
+        Index
     }
 }

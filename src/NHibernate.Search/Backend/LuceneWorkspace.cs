@@ -9,7 +9,7 @@ using NHibernate.Search.Storage;
 
 namespace NHibernate.Search.Impl
 {
-//TODO introduce the notion of read only IndexReader? We cannot enforce it because Lucene use abstract classes, not interfaces
+    //TODO introduce the notion of read only IndexReader? We cannot enforce it because Lucene use abstract classes, not interfaces
 	/// <summary>
 	/// Lucene workspace
 	/// This is not intended to be used in a multithreaded environment

@@ -178,45 +178,50 @@ namespace NHibernate.Search.Engine
                     return;
             }
             /*bool searchForContainers = false;*/
-            if (workType == WorkType.Add)
+            string idString = idBridge.ObjectToString(id);
+
+            switch (workType)
             {
-                Document doc = GetDocument(entity, id);
-                queue.Add(new AddLuceneWork(id, entityClass, doc));
-                /*searchForContainers = true;*/
-            }
-            else if (workType == WorkType.Delete)
-            {
-                queue.Add(new DeleteLuceneWork(id, entityClass));
-            }
-            else if (workType == WorkType.Update)
-            {
-                Document doc = GetDocument(entity, id);
-                /**
-			 * even with Lucene 2.1, use of indexWriter to update is not an option
-			 * We can only delete by term, and the index doesn't have a term that
-			 * uniquely identify the entry.
-			 * But essentially the optimization we are doing is the same Lucene is doing, the only extra cost is the
-			 * double file opening.
-			 */
-                queue.Add(new DeleteLuceneWork(id, entityClass));
-                queue.Add(new AddLuceneWork(id, entityClass, doc));
-                /*searchForContainers = true;*/
-            }
-            else
-            {
-                throw new AssertionFailure("Unknown WorkType: " + workType);
+                case WorkType.Add:
+                    queue.Add(new AddLuceneWork(id, idString, entityClass, GetDocument(entity, id)));
+                    /*searchForContainers = true;*/
+                    break;
+
+                case WorkType.Delete:
+                case WorkType.Purge:
+                    queue.Add(new DeleteLuceneWork(id, idString, entityClass));
+                    break;
+
+                case WorkType.PurgeAll:
+                    queue.Add(new PurgeAllLuceneWork(entityClass));
+                    break;
+
+                case WorkType.Update:
+                    /**
+                     * even with Lucene 2.1, use of indexWriter to update is not an option
+                     * We can only delete by term, and the index doesn't have a term that
+                     * uniquely identify the entry.
+                     * But essentially the optimization we are doing is the same Lucene is doing, the only extra cost is the
+                     * double file opening.
+                    */
+                    queue.Add(new DeleteLuceneWork(id, idString, entityClass));
+                    queue.Add(new AddLuceneWork(id, idString, entityClass, GetDocument(entity, id)));
+                    /*searchForContainers = true;*/
+                    break;
+
+                default:
+                    throw new AssertionFailure("Unknown WorkType: " + workType);
             }
 
             /**
-		 * When references are changed, either null or another one, we expect dirty checking to be triggered (both sides
-		 * have to be updated)
-		 * When the internal object is changed, we apply the {Add|Update}Work on containedIns
-		
-			if (searchForContainers)
-			{
-				processContainedIn(entity, queue, rootPropertiesMetadata, searchFactory);
-			}
-		 **/
+		     * When references are changed, either null or another one, we expect dirty checking to be triggered (both sides
+		     * have to be updated)
+		     * When the internal object is changed, we apply the {Add|Update}Work on containedIns
+		    */
+            /*
+		    if (searchForContainers)
+			    processContainedIn(entity, queue, rootPropertiesMetadata, searchFactory);
+		    */
         }
 
         /*
@@ -224,15 +229,13 @@ namespace NHibernate.Search.Engine
 		{
 			not supported
 		}
-
-		private void processContainedInValue(
-			Object value, List<LuceneWork> queue, Class valueClass,
-			DocumentBuilder builder, SearchFactory searchFactory)
-		{
-			Serializable id = (Serializable) builder.GetMemberValue(value, builder.idGetter);
-			builder.AddToWorkQueue(value, id, WorkType.UPDATE, queue, searchFactory);
-		}
 	    */
+
+        private void ProcessContainedInValue(object value, List<LuceneWork> queue, System.Type valueClass, DocumentBuilder builder, SearchFactory searchFactory)
+		{
+            object id = DocumentBuilder.GetMemberValue(value, builder.idGetter);
+			builder.AddToWorkQueue(value, id, WorkType.Update, queue, searchFactory);
+		}
 
         public Document GetDocument(object instance, object id)
         {

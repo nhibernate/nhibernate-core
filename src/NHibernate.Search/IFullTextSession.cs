@@ -16,5 +16,18 @@ namespace NHibernate.Search
 		/// Indexation is batched per transaction</summary>
 		/// <param name="entity"></param>
 		IFullTextSession Index(Object entity);
+
+        /// <summary>
+        /// Purge the instance with the specified identity from the index, but not the database.
+        /// </summary>
+        /// <param name="clazz"></param>
+        /// <param name="id"></param>
+        void Purge(System.Type clazz, object id);
+
+        /// <summary>
+        /// Purge all instances from the index, but not the database.
+        /// </summary>
+        /// <param name="clazz"></param>
+        void PurgeAll(System.Type clazz);
 	}
 }
