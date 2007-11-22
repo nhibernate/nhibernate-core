@@ -25,6 +25,7 @@ namespace NHibernate.Search.Tests.Workers
 			}
 			BuildSessionFactory(); //we need a fresh one per test
 		}
+
 		protected override void OnTearDown()
 		{
 			BaseIndexDir.Delete(true);
