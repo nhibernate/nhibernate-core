@@ -41,12 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\AnalyzerAttribute.cs" />
     <Compile Include="Attributes\BoostAttribute.cs" />
     <Compile Include="Attributes\DateBridgeAttribute.cs" />
     <Compile Include="Attributes\DocumentIdAttribute.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\FieldBridgeAttribute.cs" />
     <Compile Include="Attributes\Indexed.cs" />
+    <Compile Include="Attributes\IndexedEmbedded.cs" />
     <Compile Include="Attributes\Resolution.cs" />
     <Compile Include="AttributeUtil.cs" />
     <Compile Include="Impl\FullTextSearchHelper.cs" />
