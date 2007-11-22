@@ -68,21 +68,21 @@
     <Compile Include="Bridge\BridgeFactory.cs" />
     <Compile Include="Bridge\Builtin\DateBridge.cs" />
     <Compile Include="Backend\DeleteLuceneWork.cs" />
-    <Compile Include="Impl\DocumentBuilder.cs" />
+    <Compile Include="Engine\DocumentBuilder.cs" />
     <Compile Include="Bridge\Builtin\EnumBridge.cs" />
     <Compile Include="Query\FullTextQueryImpl.cs" />
     <Compile Include="Backend\IBackendQueueProcessorFactory.cs" />
     <Compile Include="Bridge\IParameterizedBridge.cs" />
     <Compile Include="Backend\IQueueingProcessor.cs" />
-    <Compile Include="Impl\LuceneBackendQueueProcessor.cs" />
-    <Compile Include="Impl\LuceneBackendQueueProcessorFactory.cs" />
+    <Compile Include="Backend\Impl\Lucene\LuceneBackendQueueProcessor.cs" />
+    <Compile Include="Backend\Impl\Lucene\LuceneBackendQueueProcessorFactory.cs" />
     <Compile Include="Bridge\Builtin\StringBridge.cs" />
     <Compile Include="Impl\Environment.cs" />
     <Compile Include="Query\FullTextSessionImpl.cs" />
     <Compile Include="Impl\Index.cs" />
     <Compile Include="Backend\LuceneWork.cs" />
     <Compile Include="Impl\SearchException.cs" />
-    <Compile Include="Impl\SearchFactory.cs" />
+    <Compile Include="Engine\SearchFactory.cs" />
     <Compile Include="Impl\SearchInterceptor.cs" />
     <Compile Include="Bridge\Builtin\SimpleBridge.cs" />
     <Compile Include="Impl\Store.cs" />
@@ -109,8 +109,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Backend\Impl\Lucene\" />
-    <Folder Include="Engine\" />
     <Folder Include="Event\" />
     <Folder Include="Filter\" />
     <Folder Include="Properties\" />
