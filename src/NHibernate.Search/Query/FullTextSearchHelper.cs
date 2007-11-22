@@ -3,7 +3,7 @@ using System.IO;
 using Iesi.Collections.Generic;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using NHibernate.Search.Impl;
+using NHibernate.Search.Engine;
 using Directory=Lucene.Net.Store.Directory;
 
 namespace NHibernate.Search

@@ -1,9 +1,7 @@
-using System.Collections;
-
-namespace NHibernate.Search
+namespace NHibernate.Search.Bridge
 {
-	public interface IParameterizedBridge
-	{
-		void SetParameterValues(object [] parameters);
-	}
+    public interface IParameterizedBridge
+    {
+        void SetParameterValues(object[] parameters);
+    }
 }

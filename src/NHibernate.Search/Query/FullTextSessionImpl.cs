@@ -7,6 +7,7 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using NHibernate.Engine;
+using NHibernate.Search.Backend;
 using NHibernate.Type;
 
 namespace NHibernate.Search.Impl

@@ -1,9 +1,9 @@
-namespace NHibernate.Search
+namespace NHibernate.Search.Backend
 {
-	public enum WorkType
-	{
-		Add,
-		Delete,
-		Update
-	}
+    public enum WorkType
+    {
+        Add,
+        Delete,
+        Update
+    }
 }

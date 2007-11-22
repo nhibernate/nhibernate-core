@@ -7,6 +7,9 @@ using Lucene.Net.Analysis.Standard;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
+using NHibernate.Search.Backend;
+using NHibernate.Search.Backend.Impl;
+using NHibernate.Search.Engine;
 using NHibernate.Search.Impl;
 using NHibernate.Search.Storage;
 using NHibernate.Util;
@@ -15,17 +18,16 @@ namespace NHibernate.Search
 {
     public class SearchFactory
     {
-        private static WeakHashtable sessionFactory2SearchFactory = new WeakHashtable();
+        private static readonly WeakHashtable sessionFactory2SearchFactory = new WeakHashtable();
+        private static readonly object searchFactoryKey = new object();
 
         /// <summary>
         /// Note that we will lock on the values in this dictionary
         /// </summary>
-        private Dictionary<IDirectoryProvider, object> lockableDirectoryProviders = new Dictionary<IDirectoryProvider, object>();
-
-        private Dictionary<System.Type, DocumentBuilder> documentBuilders = new Dictionary<System.Type, DocumentBuilder>();
+        private readonly Dictionary<IDirectoryProvider, object> lockableDirectoryProviders = new Dictionary<IDirectoryProvider, object>();
+        private readonly Dictionary<System.Type, DocumentBuilder> documentBuilders = new Dictionary<System.Type, DocumentBuilder>();
+        private readonly IQueueingProcessor queueingProcessor;
         private IBackendQueueProcessorFactory backendQueueProcessorFactory;
-        private IQueueingProcessor queueingProcessor;
-        private static object searchFactoryKey = new object();
 
         public Dictionary<System.Type, DocumentBuilder> DocumentBuilders
         {

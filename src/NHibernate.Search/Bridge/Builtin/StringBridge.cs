@@ -1,14 +1,10 @@
-using System;
-using System.Reflection;
-using NHibernate.Util;
-
-namespace NHibernate.Search
+namespace NHibernate.Search.Bridge.Builtin
 {
-	public class StringBridge : SimpleBridge
-	{
-		public override object StringToObject(string stringValue)
-		{
-			return stringValue;
-		}
-	}
+    public class StringBridge : SimpleBridge
+    {
+        public override object StringToObject(string stringValue)
+        {
+            return stringValue;
+        }
+    }
 }

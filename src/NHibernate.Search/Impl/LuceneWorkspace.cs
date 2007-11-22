@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using log4net;
 using Lucene.Net.Index;
+using NHibernate.Search.Engine;
 using NHibernate.Search.Storage;
 
 namespace NHibernate.Search.Impl

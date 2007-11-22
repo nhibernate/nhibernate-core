@@ -10,6 +10,7 @@ using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.Impl;
 using System.Collections;
+using NHibernate.Search.Engine;
 using NHibernate.Search.Impl;
 using Directory = Lucene.Net.Store.Directory;
 
