@@ -688,5 +688,19 @@ namespace NHibernate.Util
 
 			return str;
 		}
+
+		public static string CollectionToString(ICollection keys)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach (object o in keys)
+			{
+				sb.Append(o);
+				sb.Append(", ");
+			}
+			if (sb.Length != 0)//remove last ", "
+				sb.Remove(sb.Length - 2, 2);
+			return sb.ToString();
+
+		}
 	}
 }

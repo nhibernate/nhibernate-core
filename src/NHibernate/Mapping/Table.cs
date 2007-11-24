@@ -7,6 +7,11 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
+	using System;
+	using Dialect;
+	using System.Collections.Generic;
+	using NHibernate.Tool.hbm2ddl;
+
 	/// <summary>
 	/// Represents a Table in a database that an object gets mapped against.
 	/// </summary>
@@ -26,6 +31,7 @@ namespace NHibernate.Mapping
 		private readonly IList checkConstraints = new ArrayList();
 		private bool isAbstract;
 		private bool hasDenormalizedTables = false;
+		private string comment;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Table"/>.
@@ -35,32 +41,41 @@ namespace NHibernate.Mapping
 			uniqueInteger = tableCounter++;
 		}
 
+		public Table(string name) : this()
+		{
+			Name = name;
+		}
+
 		/// <summary>
 		/// Gets the schema qualified name of the Table.
 		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that knows how to Quote the Table name.</param>
+		/// <param name="dialect">The <see cref="Dialect"/> that knows how to Quote the Table name.</param>
 		/// <returns>The name of the table qualified with the schema if one is specified.</returns>
-		public string GetQualifiedName(Dialect.Dialect dialect)
+		public string GetQualifiedName(Dialect dialect)
 		{
 			string quotedName = GetQuotedName(dialect);
-			return schema == null ? quotedName :
-			       GetQuotedSchemaName(dialect) + StringHelper.Dot + quotedName;
+			return schema == null
+			       	? quotedName
+			       	:
+			       		GetQuotedSchemaName(dialect) + StringHelper.Dot + quotedName;
 		}
 
 
 		/// <summary>
 		/// Gets the schema qualified name of the Table using the specified qualifier
 		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that knows how to Quote the Table name.</param>
+		/// <param name="dialect">The <see cref="Dialect"/> that knows how to Quote the Table name.</param>
 		/// <param name="defaultQualifier">The Qualifier to use when accessing the table.</param>
 		/// <returns>A String representing the Qualified name.</returns>
 		/// <remarks>If this were used with MSSQL it would return a dbo.table_name.</remarks>
-		public string GetQualifiedName(Dialect.Dialect dialect, string defaultQualifier)
+		public string GetQualifiedName(Dialect dialect, string defaultQualifier)
 		{
 			string quotedName = GetQuotedName(dialect);
-			return schema == null ?
-			       ((defaultQualifier == null) ? quotedName : defaultQualifier + StringHelper.Dot + quotedName) :
-			       GetQualifiedName(dialect);
+			return schema == null
+			       	?
+			       		((defaultQualifier == null) ? quotedName : defaultQualifier + StringHelper.Dot + quotedName)
+			       	:
+			       		GetQualifiedName(dialect);
 		}
 
 		/// <summary>
@@ -78,7 +93,7 @@ namespace NHibernate.Mapping
 		/// </p>
 		/// <p>
 		/// The value returned by the getter is not Quoted.  To get the
-		/// column name in quoted form use <see cref="GetQuotedName(Dialect.Dialect)"/>.
+		/// column name in quoted form use <see cref="GetQuotedName(Dialect)"/>.
 		/// </p>
 		/// </remarks>
 		public string Name
@@ -102,30 +117,32 @@ namespace NHibernate.Mapping
 		/// Gets the name of this Table in quoted form if it is necessary.
 		/// </summary>
 		/// <param name="dialect">
-		/// The <see cref="Dialect.Dialect"/> that knows how to quote the Table name.
+		/// The <see cref="Dialect"/> that knows how to quote the Table name.
 		/// </param>
 		/// <returns>
 		/// The Table name in a form that is safe to use inside of a SQL statement.
 		/// Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
-		public string GetQuotedName(Dialect.Dialect dialect)
+		public string GetQuotedName(Dialect dialect)
 		{
-			return IsQuoted ?
-			       dialect.QuoteForTableName(name) :
-			       name;
+			return IsQuoted
+			       	?
+			       		dialect.QuoteForTableName(name)
+			       	:
+			       		name;
 		}
 
 		/// <summary>
 		/// Gets the schema for this table in quoted form if it is necessary.
 		/// </summary>
 		/// <param name="dialect">
-		/// The <see cref="Dialect.Dialect" /> that knows how to quote the table name.
+		/// The <see cref="Dialect" /> that knows how to quote the table name.
 		/// </param>
 		/// <returns>
 		/// The schema name for this table in a form that is safe to use inside
 		/// of a SQL statement. Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
-		public string GetQuotedSchemaName(Dialect.Dialect dialect)
+		public string GetQuotedSchemaName(Dialect dialect)
 		{
 			if (schema == null)
 			{
@@ -239,59 +256,70 @@ namespace NHibernate.Mapping
 			get { return uniqueKeys.Values; }
 		}
 
-		/// <summary>
-		/// Not supported
-		/// </summary>
-		public IList SqlAlterStrings(Dialect.Dialect dialect, IMapping p, DataTable tableInfo, string defaultSchema)
+		public string[] SqlAlterStrings(Dialect dialect, IMapping p, TableMetadata tableInfo, string defaultSchema)
 		{
 			StringBuilder root = new StringBuilder("alter table ")
-				.Append(GetQualifiedName(dialect,defaultSchema))
+				.Append(GetQualifiedName(dialect, defaultSchema))
 				.Append(" ")
 				.Append(dialect.AddColumnString);
 
-			IList results = new ArrayList(ColumnCollection.Count);
+			ArrayList results = new ArrayList(ColumnCollection.Count);
 
 			foreach (Column col in ColumnCollection)
 			{
-				DataColumn columnInfo = tableInfo.Columns[col.Name];
+				if (tableInfo.GetColumnMetadata(col.Name) != null)
+					continue;
 
-				if (columnInfo == null)
+				StringBuilder alter = new StringBuilder(root.ToString())
+					.Append(" ")
+					.Append(col.GetQuotedName(dialect))
+					.Append(" ")
+					.Append(col.GetSqlType(dialect, p));
+				if (string.IsNullOrEmpty(col.DefaultValue) == false)
 				{
-					StringBuilder alter = new StringBuilder(root.ToString())
-						.Append(" ")
-						.Append(col.GetQuotedName(dialect))
-						.Append(" ")
-						.Append(col.GetSqlType(dialect, p));
-
-					if (col.IsUnique && dialect.SupportsUnique)
-					{
-						alter.Append(" unique");
-					}
-
-					results.Add(alter.ToString());
+					alter.Append(" default ").Append(col.DefaultValue).Append(" ");
+					if (col.IsNullable)
+						alter.Append(dialect.NullColumnString);
+					else
+						alter.Append(" not null ");
 				}
+				if (col.IsUnique && dialect.SupportsUnique)
+				{
+					alter.Append(" unique");
+				}
+
+				if (col.HasCheckConstraint && dialect.SupportsColumnCheck)
+				{
+					alter.Append(" check(")
+						.Append(col.CheckConstraint)
+						.Append(") ");
+				}
+
+				results.Add(alter.ToString());
 			}
 
-			return results;
+			return (string[]) results.ToArray(typeof (string));
 		}
 
 		/// <summary>
 		/// Generates the SQL string to create this Table in the database.
 		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="dialect">The <see cref="Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create this Table, Primary Key Constraints
 		/// , and Unique Key Constraints.
 		/// </returns>
-		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
+		public string SqlCreateString(Dialect dialect, IMapping p, string defaultSchema)
 		{
-			StringBuilder buf = new StringBuilder(HasPrimaryKey ? 
-				dialect.CreateTableString : dialect.CreateMultisetTableString)
-					.Append(' ')
-					.Append(GetQualifiedName(dialect, defaultSchema))
-					.Append(" (");
+			StringBuilder buf = new StringBuilder(HasPrimaryKey
+			                                      	?
+			                                      		dialect.CreateTableString
+			                                      	: dialect.CreateMultisetTableString)
+				.Append(' ')
+				.Append(GetQualifiedName(dialect, defaultSchema))
+				.Append(" (");
 
 			bool identityColumn = idValue != null && idValue.CreateIdentifierGenerator(dialect) is IdentityGenerator;
 
@@ -326,6 +354,12 @@ namespace NHibernate.Mapping
 				else
 				{
 					buf.Append(col.GetSqlType(dialect, p));
+
+					if(string.IsNullOrEmpty(col.DefaultValue)==false)
+					{
+						buf.Append(" default ").Append(col.DefaultValue).Append(" ");
+					}
+
 					if (col.IsNullable)
 					{
 						buf.Append(dialect.NullColumnString);
@@ -348,6 +382,19 @@ namespace NHibernate.Mapping
 						uk.AddColumn(col);
 					}
 				}
+
+				if(col.HasCheckConstraint && dialect.SupportsColumnCheck)
+				{
+					buf.Append(" check( ")
+						.Append(col.CheckConstraint)
+						.Append(") ");
+				}
+
+				if(string.IsNullOrEmpty(col.Comment)==false)
+				{
+					buf.Append(dialect.getColumnComment(col.Comment));
+				}
+
 				if (i < ColumnCollection.Count)
 				{
 					buf.Append(StringHelper.CommaSpace);
@@ -362,8 +409,23 @@ namespace NHibernate.Mapping
 			{
 				buf.Append(',').Append(uk.SqlConstraintString(dialect));
 			}
+			
+			if(dialect.SupportsTableCheck)
+			{
+				foreach (string checkConstraint in checkConstraints)
+				{
+					buf.Append(", check (")
+						.Append(checkConstraint)
+						.Append(") ");
+				}
+			}
 
 			buf.Append(StringHelper.ClosedParen);
+
+			if(string.IsNullOrEmpty(comment)==false)
+			{
+				buf.Append(dialect.GetTableComment(comment));
+			}
 
 			return buf.ToString();
 		}
@@ -371,13 +433,13 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Generates the SQL string to drop this Table in the database.
 		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="dialect">The <see cref="Dialect"/> to use for SQL rules.</param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to drop this Table and to cascade the drop to 
 		/// the constraints if the database supports it.
 		/// </returns>
-		public string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
+		public string SqlDropString(Dialect dialect, string defaultSchema)
 		{
 			return dialect.GetDropTableString(GetQualifiedName(dialect, defaultSchema));
 		}
@@ -571,7 +633,7 @@ namespace NHibernate.Mapping
 			get { return HasDenormalizedTables && isAbstract; }
 		}
 
-		private bool HasDenormalizedTables
+		public bool HasDenormalizedTables
 		{
 			get { return hasDenormalizedTables; }
 		}
@@ -605,7 +667,7 @@ namespace NHibernate.Mapping
 				return null;
 			}
 
-			Column myColumn = (Column)columns[column.CanonicalName];
+			Column myColumn = (Column) columns[column.CanonicalName];
 
 			return column.Equals(myColumn) ? myColumn : null;
 		}
@@ -631,5 +693,52 @@ namespace NHibernate.Mapping
 			get { return PrimaryKey != null; }
 		}
 
+		public bool IsPhysicalTable
+		{
+			get { return IsAbstractUnionTable == false /* && IsSuselect == false */; }
+		}
+
+		public string[] SqlCommentStrings(Dialect dialect, string defaultSchema)
+		{
+			List<string> comments = new List<string>();
+			if (dialect.SupportsCommentOn)
+			{
+				String tableName = GetQualifiedName(dialect, defaultSchema);
+				if (comment != null)
+				{
+					StringBuilder buf = new StringBuilder()
+						.Append("comment on table ")
+						.Append(tableName)
+						.Append(" is '")
+						.Append(comment)
+						.Append("'");
+					comments.Add(buf.ToString());
+				}
+				foreach (Column column in columns.Values)
+				{
+					String columnComment = column.Comment;
+					if (columnComment != null)
+					{
+						StringBuilder buf = new StringBuilder()
+							.Append("comment on column ")
+							.Append(tableName)
+							.Append('.')
+							.Append(column.GetQuotedName(dialect))
+							.Append(" is '")
+							.Append(columnComment)
+							.Append("'");
+						comments.Add(buf.ToString());
+					}
+				}
+			}
+			return comments.ToArray();
+		}
+
+
+		public string Comment
+		{
+			get { return comment; }
+			set { comment = value; }
+		}
 	}
 }

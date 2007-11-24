@@ -113,5 +113,14 @@ namespace NHibernate.Mapping
 		}
 
 		#endregion
+
+		public bool IsPhysicalConstraint
+		{
+			get
+			{
+				return referencedTable.IsPhysicalTable && Table.IsPhysicalTable && 
+					!referencedTable.HasDenormalizedTables;
+			}
+		}
 	}
 }

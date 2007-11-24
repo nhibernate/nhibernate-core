@@ -24,6 +24,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
+	using Dialect;
+	using Tool.hbm2ddl;
+
 	/// <summary>
 	/// Allows the application to specify properties and mapping documents to be used when creating
 	/// a <see cref="ISessionFactory" />.
@@ -386,7 +389,7 @@ namespace NHibernate.Cfg
 				XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.Document.NameTable);
 				namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
 
-				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
+				Dialect dialect = Dialect.GetDialect(properties);
 				Mappings mappings = CreateMappings();
 
 				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(doc.Document.DocumentElement);
@@ -508,7 +511,8 @@ namespace NHibernate.Cfg
 			}
 			finally
 			{
-				rsrc.Close();
+				if (rsrc != null)
+					rsrc.Close();
 			}
 		}
 
@@ -609,7 +613,7 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		private ICollection CollectionGenerators(Dialect.Dialect dialect)
+		private ICollection CollectionGenerators(Dialect dialect)
 		{
 			Hashtable generators = new Hashtable();
 			foreach (PersistentClass clazz in classes.Values)
@@ -642,7 +646,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for droping tables
 		/// </summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaExport" />
-		public string[] GenerateDropSchemaScript(Dialect.Dialect dialect)
+		public string[] GenerateDropSchemaScript(Dialect dialect)
 		{
 			SecondPassCompile();
 
@@ -692,7 +696,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for creating tables
 		/// </summary>
 		/// <param name="dialect"></param>
-		public string[] GenerateSchemaCreationScript(Dialect.Dialect dialect)
+		public string[] GenerateSchemaCreationScript(Dialect dialect)
 		{
 			SecondPassCompile();
 
@@ -785,7 +789,7 @@ namespace NHibernate.Cfg
 				{
 					foreach(ForeignKey fk in table.ForeignKeyCollection)
 					{
-						bool create = tableInfo == null || ( tableInfo.getForeignKeyMetadata( fk.Name ) == null && (
+						bool create = tableInfo == null || ( tableInfo.GetForeignKeyMetadata( fk.Name ) == null && (
 							// Icky workaround for MySQL bug:
 							!( dialect is NHibernate.Dialect.MySQLDialect ) || table.GetIndex( fk.Name ) == null )
 						);
@@ -986,9 +990,9 @@ namespace NHibernate.Cfg
 
 		private EventListeners GetInitializedEventListeners()
 		{
-				EventListeners result = eventListeners.ShallowCopy();
-				result.InitializeListeners(this);
-				return result;
+			EventListeners result = eventListeners.ShallowCopy();
+			result.InitializeListeners(this);
+			return result;
 		}
 
 		/// <summary> 
@@ -1367,7 +1371,7 @@ namespace NHibernate.Cfg
 			foreach (EventConfiguration ec in hc.SessionFactory.Events)
 			{
 				string[] listenerClasses = new string[ec.Listeners.Count];
-				for(int i=0;i< ec.Listeners.Count;i++)
+				for (int i = 0; i < ec.Listeners.Count; i++)
 				{
 					listenerClasses[i] = ec.Listeners[i].Class;
 				}
@@ -1691,11 +1695,11 @@ namespace NHibernate.Cfg
 				case ListenerType.Autoflush:
 					if (listeners == null)
 					{
-						eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] {};
+						eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] { };
 					}
 					else
 					{
-						eventListeners.AutoFlushEventListeners = (IAutoFlushEventListener[]) listeners;
+						eventListeners.AutoFlushEventListeners = (IAutoFlushEventListener[])listeners;
 					}
 					break;
 				case ListenerType.Merge:
@@ -1706,7 +1710,7 @@ namespace NHibernate.Cfg
 					else
 					{
 						eventListeners.MergeEventListeners = (IMergeEventListener[])listeners;
-					} 
+					}
 					break;
 				case ListenerType.Create:
 					if (listeners == null)
@@ -1973,5 +1977,172 @@ namespace NHibernate.Cfg
 					break;
 			}
 		}
+
+		/**
+	 * Generate DDL for altering tables
+	 *
+	 * @see org.hibernate.tool.hbm2ddl.SchemaUpdate
+	 */
+		public String[] GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+		{
+			SecondPassCompile();
+
+			String defaultSchema = (string)properties[Environment.DefaultSchema];
+
+			ArrayList script = new ArrayList(50);
+			foreach (Table table in tables.Values)
+			{
+				if (table.IsPhysicalTable)
+				{
+
+					TableMetadata tableInfo = databaseMetadata.GetTableMetadata(
+							table.Name,
+							table.Schema ?? defaultSchema
+						);
+					if (tableInfo == null)
+					{
+						script.Add(
+								table.SqlCreateString(
+										dialect,
+										mapping,
+										defaultSchema
+									)
+							);
+					}
+					else
+					{
+						string[] alterDDL = table.SqlAlterStrings(
+								dialect,
+								mapping,
+								tableInfo,
+								defaultSchema
+							);
+						script.AddRange(alterDDL);
+					}
+
+					string[] comments = table.SqlCommentStrings(dialect, defaultSchema);
+					script.AddRange(comments);
+
+				}
+			}
+
+			foreach (Table table in tables.Values)
+			{
+				if (table.IsPhysicalTable)
+				{
+
+					TableMetadata tableInfo = databaseMetadata.GetTableMetadata(
+							table.Name,
+							table.Schema
+						);
+
+					if (dialect.HasAlterTable)
+					{
+						foreach (ForeignKey fk in table.ForeignKeyCollection)
+						{
+							if (fk.IsPhysicalConstraint)
+							{
+								bool create = tableInfo == null || (
+										tableInfo.GetForeignKeyMetadata(fk.Name) == null && (
+									//Icky workaround for MySQL bug:
+												!(dialect is MySQLDialect) ||
+														tableInfo.GetIndexMetadata(fk.Name) == null
+											)
+									);
+								if (create)
+								{
+									script.Add(
+											fk.SqlCreateString(
+													dialect,
+													mapping,
+													defaultSchema
+												)
+										);
+								}
+							}
+						}
+					}
+
+				}
+
+				/*//broken, 'cos we don't generate these with names in SchemaExport
+				subIter = table.getIndexIterator();
+				while ( subIter.hasNext() ) {
+					Index index = (Index) subIter.next();
+					if ( !index.isForeignKey() || !dialect.hasImplicitIndexForForeignKey() ) {
+						if ( tableInfo==null || tableInfo.GetIndexMetadata( index.getFilterName() ) == null ) {
+							script.add( index.sqlCreateString(dialect, mapping) );
+						}
+					}
+				}
+				//broken, 'cos we don't generate these with names in SchemaExport
+				subIter = table.getUniqueKeyIterator();
+				while ( subIter.hasNext() ) {
+					UniqueKey uk = (UniqueKey) subIter.next();
+					if ( tableInfo==null || tableInfo.GetIndexMetadata( uk.getFilterName() ) == null ) {
+						script.add( uk.sqlCreateString(dialect, mapping) );
+					}
+				}*/
+			}
+
+			foreach (IPersistentIdentifierGenerator generator in IterateGenerators(dialect))
+			{
+				Object key = generator.GeneratorKey();
+				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
+				{
+					String[] lines = generator.SqlCreateStrings(dialect);
+					for (int i = 0; i < lines.Length; i++)
+					{
+						script.Add(lines[i]);
+					}
+				}
+			}
+
+			return ArrayHelper.ToStringArray(script);
+		}
+
+		private IEnumerable IterateGenerators(Dialect dialect)
+		{
+
+			Hashtable generators = new Hashtable();
+
+			foreach (PersistentClass pc in classes.Values)
+			{
+
+				if (!pc.IsInherited)
+				{
+
+					IIdentifierGenerator ig = pc.Identifier
+							.CreateIdentifierGenerator(dialect);
+
+					if (ig is IPersistentIdentifierGenerator)
+					{
+						generators.Add(((IPersistentIdentifierGenerator)ig).GeneratorKey(), ig);
+					}
+
+				}
+			}
+
+			foreach (NHibernate.Mapping.Collection collection in collections.Values)
+			{
+				if (collection.IsIdentified)
+				{
+
+					IIdentifierGenerator ig = ((IdentifierCollection)collection).Identifier
+							.CreateIdentifierGenerator(
+									dialect
+								);
+
+					if (ig is IPersistentIdentifierGenerator)
+					{
+						generators.Add(((IPersistentIdentifierGenerator)ig).GeneratorKey(), ig);
+					}
+
+				}
+			}
+
+			return generators.Values;
+		}
+
 	}
 }
