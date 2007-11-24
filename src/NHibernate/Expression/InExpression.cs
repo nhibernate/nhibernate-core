@@ -112,11 +112,14 @@ namespace NHibernate.Expression
 			return (TypedValue[]) list.ToArray(typeof(TypedValue));
 		}
 
-        public object[] Values
-        {
-            get { return _values; }
-            protected set { _values = value; }
-        }
+		public object[] Values
+		{
+			get { return _values; }
+#if NET_2_0
+			protected
+#endif
+			set { _values = value; }
+		}
 
 		/// <summary></summary>
 		public override string ToString()

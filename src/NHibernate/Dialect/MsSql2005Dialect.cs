@@ -137,7 +137,11 @@ namespace NHibernate.Dialect
 			while ((currentIndex = selectString.IndexOf(",", lastIndex)) != -1)
 			{
 				string columnAndAlias = selectString.Substring(lastIndex, currentIndex - lastIndex);
+#if NET_2_0
 				int seperatorPosition = columnAndAlias.IndexOf(" as ", StringComparison.InvariantCultureIgnoreCase);
+#else
+				int seperatorPosition = columnAndAlias.ToLower(System.Globalization.CultureInfo.InvariantCulture).IndexOf(" as ");
+#endif
 				string columnOrAliasName;
 				if (seperatorPosition != -1)
 				{
@@ -179,7 +183,12 @@ namespace NHibernate.Dialect
 			int fromIndex = querySqlString.IndexOfCaseInsensitive(subselect);
 			if (fromIndex == -1)
 			{
-				fromIndex = querySqlString.ToString().ToLowerInvariant().IndexOf(subselect.ToLowerInvariant());
+#if NET_2_0
+				fromIndex = querySqlString.ToString().IndexOf(subselect, StringComparison.InvariantCultureIgnoreCase);
+#else
+				fromIndex = querySqlString.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture)
+					.IndexOf(subselect.ToLower(System.Globalization.CultureInfo.InvariantCulture));
+#endif
 			}
 			return fromIndex;
 		}
