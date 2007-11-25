@@ -270,6 +270,7 @@
                     HttpContext</literal>. You are responsible to bind and unbind an <literal>ISession
                     </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
+            </listitem>
         </itemizedlist>
 
         <para>
