@@ -100,13 +100,13 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "NHibernate.DomainModel-1.1"
-                    Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
+                    Name = "NHibernate.Test-1.1"
+                    Project = "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "NHibernate.Test-1.1"
-                    Project = "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
+                    Name = "NHibernate.DomainModel-1.1"
+                    Project = "{E3482030-5828-4112-9906-D4C5153DCE3F}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>

@@ -1,6 +1,6 @@
 namespace NHibernate.Search
 {
-	public static class Environment
+	public class Environment
 	{
 		public const string AnalyzerClass = "hibernate.search.analyzer";
 		public const string WorkerExecution ="hibernate.search.worker.execution"; 

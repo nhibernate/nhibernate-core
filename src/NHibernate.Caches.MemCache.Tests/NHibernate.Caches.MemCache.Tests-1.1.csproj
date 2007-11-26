@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}"
     >
@@ -80,11 +80,6 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "NHibernate.Caches.MemCache-1.1"
-                    Project = "{FD03BBC3-FED0-415B-B905-E9FCAFBA3E70}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\lib\net\nunit.framework.dll"
@@ -97,6 +92,11 @@
                 <Reference
                     Name = "NHibernate-1.1"
                     Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "NHibernate.Caches.MemCache-1.1"
+                    Project = "{FD03BBC3-FED0-415B-B905-E9FCAFBA3E70}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>

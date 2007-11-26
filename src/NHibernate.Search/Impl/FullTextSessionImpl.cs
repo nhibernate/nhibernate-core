@@ -83,6 +83,7 @@ namespace NHibernate.Search.Impl
 			return session.Load(theType, id);
 		}
 
+#if NET_2_0
 		public T Load<T>(object id, LockMode lockMode)
 		{
 			return session.Load<T>(id, lockMode);
@@ -92,6 +93,7 @@ namespace NHibernate.Search.Impl
 		{
 			return session.Load<T>(id);
 		}
+#endif
 
 		public void Load(object obj, object id)
 		{
@@ -288,6 +290,7 @@ namespace NHibernate.Search.Impl
 			return session.Get(clazz, id, lockMode);
 		}
 
+#if NET_2_0
 		public T Get<T>(object id)
 		{
 			return session.Get<T>(id);
@@ -297,6 +300,7 @@ namespace NHibernate.Search.Impl
 		{
 			return session.Get<T>(id, lockMode);
 		}
+#endif
 
 		public IFilter EnableFilter(string filterName)
 		{
@@ -368,6 +372,7 @@ namespace NHibernate.Search.Impl
 
 		#endregion
 
+#if NET_2_0
         public IQuery CreateFullTextQuery<TEntity>(string defaultField, string queryString)
         {
             QueryParser queryParser = new QueryParser(defaultField, new StandardAnalyzer());
@@ -381,6 +386,7 @@ namespace NHibernate.Search.Impl
             Query query = queryParser.Parse(queryString);
             return CreateFullTextQuery(query, typeof(TEntity));
         }
+#endif
 
         public IQuery CreateFullTextQuery(Query luceneQuery, params System.Type[] entities)
         {

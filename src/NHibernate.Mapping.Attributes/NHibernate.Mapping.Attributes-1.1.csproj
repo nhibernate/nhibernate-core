@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{AE0F3023-0ED6-45BE-8995-8C3B2E585A20}"
     >
@@ -450,6 +450,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "PropertyGeneration.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QueryAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -556,6 +561,11 @@
                 />
                 <File
                     RelPath = "VersionAttribute.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "VersionGeneration.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

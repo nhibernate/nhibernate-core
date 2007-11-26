@@ -1,6 +1,6 @@
 namespace NHibernate.Search.Impl
 {
-	[global::System.Serializable]
+	[System.Serializable]
 	public class SearchException : System.Exception
 	{
 		//

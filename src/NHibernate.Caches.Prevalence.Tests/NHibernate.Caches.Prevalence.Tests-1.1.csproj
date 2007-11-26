@@ -80,11 +80,6 @@
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "NHibernate.Caches.Prevalence-1.1"
-                    Project = "{51179C23-5555-45A4-9BBB-8F6E24D05C2B}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "NHibernate-1.1"
                     Project = "{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -98,6 +93,11 @@
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\lib\net\1.1\nunit.framework.dll"
+                />
+                <Reference
+                    Name = "NHibernate.Caches.Prevalence-1.1"
+                    Project = "{51179C23-5555-45A4-9BBB-8F6E24D05C2B}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>

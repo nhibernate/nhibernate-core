@@ -4,7 +4,7 @@ using NHibernate.Search.Attributes;
 
 namespace NHibernate.Search
 {
-	public static class AttributeUtil
+	public class AttributeUtil
 	{
 		public static bool IsIndexed(System.Type type)
 		{
@@ -33,7 +33,12 @@ namespace NHibernate.Search
 			if (objects.Length == 0)
 				return null;
 			DocumentIdAttribute documentIdAttribute = (DocumentIdAttribute) objects[0];
+#if NET_2_0
 			documentIdAttribute.Name = documentIdAttribute.Name ?? member.Name;
+#else
+			if (documentIdAttribute.Name == null)
+				docuementIdAttribute.Name = member.Name;
+#endif
 			return documentIdAttribute;
 		}
 
@@ -43,7 +48,12 @@ namespace NHibernate.Search
 			if (objects.Length == 0)
 				return null;
 			FieldAttribute fieldAttribute = (FieldAttribute) objects[0];
+#if NET_2_0
 			fieldAttribute.Name = fieldAttribute.Name ?? member.Name;
+#else
+			if (fieldAttribute.Name == null)
+				fieldAttribute.Name = member.Name;
+#endif
 			return fieldAttribute;
 		}
 

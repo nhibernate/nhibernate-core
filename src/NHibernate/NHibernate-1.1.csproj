@@ -529,7 +529,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Cfg\AssemblyHbmOrderer.cs"
+                    RelPath = "Cfg\ClassExtractor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -594,7 +594,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Cfg\MappingsQueue.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cfg\MappingsQueueEntry.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Cfg\NamedSQLQuerySecondPass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cfg\NamedXmlDocument.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -699,12 +714,37 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Context\CallSessionContext.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Context\CurrentSessionContext.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Context\ICurrentSessionContext.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Context\ManagedWebSessionContext.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Context\MapBasedSessionContext.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Context\ThreadStaticSessionContext.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Context\WebSessionContext.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -800,6 +840,11 @@
                 />
                 <File
                     RelPath = "Dialect\SQLiteDialect.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialect\Sybase11Dialect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1845,10 +1890,12 @@
                 />
                 <File
                     RelPath = "Impl\SqlClientBatchingBatcher.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Impl\SqlClientSqlCommandSet.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

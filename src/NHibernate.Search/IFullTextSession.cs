@@ -5,11 +5,13 @@ namespace NHibernate.Search
 {
 	public interface IFullTextSession : ISession
 	{
-		IQuery CreateFullTextQuery(Query luceneQuery, params System.Type[] entities);
-
+#if NET_2_0
 		IQuery CreateFullTextQuery<TEntity>(string defaultField, string query);
 
 		IQuery CreateFullTextQuery<TEntity>(string query);
+#endif
+
+		IQuery CreateFullTextQuery(Query luceneQuery, params System.Type[] entities);
 
 		/// <summary>
 		/// Force the (re)indexing of a given <b>managed</b> object.

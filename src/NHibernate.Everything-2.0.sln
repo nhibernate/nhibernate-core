@@ -168,7 +168,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\default.build = ..\default.build
 	EndProjectSection
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "C:\...\NHibernate.Example.Web\", "NHibernate.Example.Web\", "{C5D6EE68-1760-4F97-AD31-42343593D8C1}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "C:\...\NHibernate.Example.Web\", "NHibernate.Example.Web", "{C5D6EE68-1760-4F97-AD31-42343593D8C1}"
 	ProjectSection(WebsiteProperties) = preProject
 		ProjectReferences = "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}|NHibernate.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/NHibernate.Example.Web"
@@ -195,13 +195,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache2
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Search", "NHibernate.Search\NHibernate.Search.csproj", "{CC25D767-990D-4CE0-9F64-3426E244403B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Search-2.0", "NHibernate.Search\NHibernate.Search-2.0.csproj", "{CC25D767-990D-4CE0-9F64-3426E244403B}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Search.Tests", "NHibernate.Search.Tests\NHibernate.Search.Tests.csproj", "{71560152-A693-4F66-99CF-570685A33169}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Search.Tests-2.0", "NHibernate.Search.Tests\NHibernate.Search.Tests-2.0.csproj", "{71560152-A693-4F66-99CF-570685A33169}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"

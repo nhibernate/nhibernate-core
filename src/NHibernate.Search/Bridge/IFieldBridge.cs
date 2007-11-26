@@ -9,6 +9,10 @@ namespace NHibernate.Search.Bridge
     /// </summary>
     public interface IFieldBridge
     {
-        void Set(string idKeywordName, object id, Document doc, Field.Store store, Field.Index index, float? boost);
+#if NET_2_0
+		void Set(string idKeywordName, object id, Document doc, Field.Store store, Field.Index index, float? boost);
+#else
+		void Set(string idKeywordName, object id, Document doc, Field.Store store, Field.Index index, float boost);
+#endif
     }
 }

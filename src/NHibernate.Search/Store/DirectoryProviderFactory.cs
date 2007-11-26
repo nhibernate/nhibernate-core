@@ -14,7 +14,11 @@ namespace NHibernate.Search.Storage
 		private const String LUCENE_DEFAULT = LUCENE_PREFIX + "default.";
 		private const string DEFAULT_DIRECTORY_PROVIDER = "NHibernate.Search.Storage.FSDirectoryProvider, NHibernate.Search";
 
+#if NET_2_0
 		public List<IDirectoryProvider> providers = new List<IDirectoryProvider>();
+#else
+		public List providers = new ArrayList();
+#endif
 
 		public IDirectoryProvider CreateDirectoryProvider(System.Type entity, Configuration cfg, SearchFactory searchFactory)
 		{

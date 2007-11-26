@@ -24,12 +24,21 @@ namespace NHibernate.Search
         /// <summary>
         /// Note that we will lock on the values in this dictionary
         /// </summary>
+#if NET_2_0
         private readonly Dictionary<IDirectoryProvider, object> lockableDirectoryProviders = new Dictionary<IDirectoryProvider, object>();
         private readonly Dictionary<System.Type, DocumentBuilder> documentBuilders = new Dictionary<System.Type, DocumentBuilder>();
+#else
+		private readonly Hashtable lockableDirectoryProviders = new Hashtable();
+		private readonly Hashtable documentBuilders = new Hashtable();
+#endif
         private readonly IQueueingProcessor queueingProcessor;
         private IBackendQueueProcessorFactory backendQueueProcessorFactory;
 
+#if NET_2_0
         public Dictionary<System.Type, DocumentBuilder> DocumentBuilders
+#else
+		public Hashtable DocumentBuilders
+#endif
         {
             get { return documentBuilders; }
         }
@@ -118,14 +127,22 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
                     documentBuilders.Add(mappedClass, documentBuilder);
                 }
             }
+#if NET_2_0
             ISet<System.Type> classes = new HashedSet<System.Type>(documentBuilders.Keys);
+#else
+            ISet classes = new HashedSet(documentBuilders.Keys);
+#endif
             foreach (DocumentBuilder documentBuilder in documentBuilders.Values)
             {
                 documentBuilder.PostInitialize(classes);
             }
         }
 
+#if NET_2_0
         public void ExecuteQueue(List<LuceneWork> luceneWork, ISession session)
+#else
+		public void ExecuteQueue(List luceneWork, ISession session)
+#endif
         {
             if (session.Transaction.IsActive)
             {
@@ -138,11 +155,14 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
             }
         }
 
+#if NET_2_0
         public void ExecuteQueueImmediate(List<LuceneWork> luceneWork)
+#else
+		public void ExecuteQueueImmediate(List luceneWork)
+#endif
         {
             queueingProcessor.PerformWork(luceneWork);
         }
-
 
         public DocumentBuilder GetDocumentBuilder(object entity)
         {
@@ -172,7 +192,11 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
             DocumentBuilder documentBuilder = GetDocumentBuilder(entity);
             if (documentBuilder == null)
                 return;
+#if NET_2_0
             List<LuceneWork> queue = new List<LuceneWork>();
+#else
+			List queue = new List();
+#endif
             documentBuilder.AddToWorkQueue(entity, id, workType, queue, this);
             ExecuteQueue(queue, session);
         }

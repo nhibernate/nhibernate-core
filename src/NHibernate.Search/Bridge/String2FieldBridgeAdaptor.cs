@@ -14,14 +14,22 @@ namespace NHibernate.Search.Bridge
             this.stringBridge = stringBridge;
         }
 
-        public void Set(String name, Object value, Document document, Field.Store store, Field.Index index, float? boost)
+#if NET_2_0
+		public void Set(String name, Object value, Document document, Field.Store store, Field.Index index, float? boost)
+#else
+        public void Set(String name, Object value, Document document, Field.Store store, Field.Index index, float boost)
+#endif
         {
             String indexedString = stringBridge.ObjectToString(value);
             //Do not add fields on empty strings, seems a sensible default in most situations
             if (StringHelper.IsNotEmpty(indexedString))
             {
                 Field field = new Field(name, indexedString, store, index);
-                if (boost != null) 
+#if NET_2_0
+                if (boost != null)
+#else
+				if (boost != 0F)
+#endif
                     field.SetBoost(boost.Value);
                 document.Add(field);
             }

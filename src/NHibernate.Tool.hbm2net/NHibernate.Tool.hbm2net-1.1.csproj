@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{136FFE16-EE3B-4556-90FB-E265113CB13F}"
     >
@@ -158,7 +158,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "JavaTool.cs"
+                    RelPath = "LanguageTool.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

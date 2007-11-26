@@ -21,7 +21,11 @@ namespace NHibernate.Search.Impl
 		private static ILog log = LogManager.GetLogger(typeof (FullTextQueryImpl));
 		private Query luceneQuery;
 		private System.Type[] classes;
+#if NET_2_0
 		private ISet<System.Type> classesAndSubclasses;
+#else
+		private ISet classesAndSubclasses;
+#endif
 		private int resultSize;
 		private int batchSize = 1;
 
@@ -35,6 +39,7 @@ namespace NHibernate.Search.Impl
 			this.classes = classes;
 		}
 
+#if NET_2_0
 		public override IEnumerable Enumerable()
 		{
 			return Enumerable<object>();
@@ -123,6 +128,7 @@ namespace NHibernate.Search.Impl
 			List(arrayList);
 			return (T[]) arrayList.ToArray(typeof (T));
 		}
+#endif
 
 
 		public override IList List()

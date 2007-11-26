@@ -8,8 +8,13 @@ namespace NHibernate.Search.Impl
 {
     public class SearchInterceptor : EmptyInterceptor
     {
+#if NET_2_0
         private readonly Dictionary<ITransaction, List<LuceneWork>> syncronizations = new Dictionary<ITransaction, List<LuceneWork>>();
         private readonly List<object> entitiesToAddOnPostFlush = new List<object>();
+#else
+		private readonly Hashtable syncronizations = new Hashtable();
+		private readonly List entitiesToAddOnPostFlush = new List();
+#endif
         private ISession session;
         private SearchFactory searchFactory;
 
@@ -89,10 +94,18 @@ namespace NHibernate.Search.Impl
             searchFactory.PerformWork(entity, id, session, workType);
         }
 
+#if NET_2_0
         public void RegisterSyncronization(ITransaction transaction, List<LuceneWork> work)
+#else
+		public void RegisterSyncronization(ITransaction transaction, List work)
+#endif
         {
             if (syncronizations.ContainsKey(transaction) == false)
+#if NET_2_0
                 syncronizations.Add(transaction, new List<LuceneWork>());
+#else
+				syncronizations.Add(transaction, new List());
+#endif
             syncronizations[transaction].AddRange(work);
         }
 

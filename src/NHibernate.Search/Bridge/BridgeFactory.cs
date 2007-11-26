@@ -9,7 +9,11 @@ namespace NHibernate.Search.Bridge
 {
     public class BridgeFactory
     {
-        private static readonly Dictionary<String, IFieldBridge> builtInBridges = new Dictionary<String, IFieldBridge>();
+#if NET_2_0
+		private static readonly Dictionary<String, IFieldBridge> builtInBridges = new Dictionary<String, IFieldBridge>();
+#else
+		private static readonly Hashtable builtInBridges = new Hashtable();
+#endif
 
         private BridgeFactory()
         {
