@@ -90,7 +90,7 @@ namespace NHibernate.Search.Tests.Sessions
 
 		protected override IList Mappings
 		{
-			get { return new string[] {"Sessions.Email.hbm.xml"}; }
+			get { return new string[] {"Session.Email.hbm.xml"}; }
 		}
 	}
 }
