@@ -47,11 +47,11 @@ namespace NHibernate.Cache
 		public ISoftLock Lock(CacheKey key, object version)
 		{
 			log.Error("Application attempted to edit read only item: " + key);
-			throw new InvalidOperationException("Can't write to a readonly object");
+			throw new InvalidOperationException("ReadOnlyCache: Can't write to a readonly object " + key.EntityOrRoleName);
 		}
 
 		public bool Put(CacheKey key, object value, long timestamp, object version, IComparer versionComparator,
-		                bool minimalPut)
+						bool minimalPut)
 		{
 			if (timestamp == long.MinValue)
 			{
@@ -84,7 +84,6 @@ namespace NHibernate.Cache
 		public void Release(CacheKey key, ISoftLock @lock)
 		{
 			log.Error("Application attempted to edit read only item: " + key);
-			//throw new InvalidOperationException( "Can't write to a readonly object" );
 		}
 
 		public void Clear()
@@ -115,7 +114,7 @@ namespace NHibernate.Cache
 		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock @lock)
 		{
 			log.Error("Application attempted to edit read only item: " + key);
-			throw new InvalidOperationException("Can't write to a readonly object");
+			throw new InvalidOperationException("ReadOnlyCache: Can't write to a readonly object " + key.EntityOrRoleName);
 		}
 
 		/// <summary>
@@ -149,7 +148,7 @@ namespace NHibernate.Cache
 		public bool Update(CacheKey key, object value, object currentVersion, object previousVersion)
 		{
 			log.Error("Application attempted to edit read only item: " + key);
-			throw new InvalidOperationException("Can't write to a readonly object");
+			throw new InvalidOperationException("ReadOnlyCache: Can't write to a readonly object " + key.EntityOrRoleName);
 		}
 	}
 }

@@ -312,7 +312,7 @@ namespace NHibernate.Engine
 		{
 			EntityKey key = new EntityKey(id, persister);
 			object cached;
-			if (entitySnapshotsByKey.TryGetValue(key,out cached))
+			if (entitySnapshotsByKey.TryGetValue(key, out cached))
 			{
 				return cached == NoRow ? null : (object[])cached;
 			}
@@ -1065,7 +1065,7 @@ namespace NHibernate.Engine
 			EntityEntry entry = GetEntry(entity);
 			if (entry == null)
 			{
-				throw new TransientObjectException("Instance was not associated with the session");
+				throw new TransientObjectException("Instance of" + entity.GetType() + " was not associated with the session");
 			}
 			entry.SetReadOnly(readOnly, entity);
 			hasNonReadOnlyEntities |= !readOnly;
@@ -1131,7 +1131,7 @@ namespace NHibernate.Engine
 			List<EntityKey> keysToRemove = new List<EntityKey>();
 			foreach (KeyValuePair<EntityKey, INHibernateProxy> p in proxiesByKey)
 			{
-				if (p.Value !=null)
+				if (p.Value != null)
 				{
 					(p.Value).HibernateLazyInitializer.Session = session;
 				}
@@ -1162,16 +1162,16 @@ namespace NHibernate.Engine
 		#region ISerializable Members
 		internal StatefulPersistenceContext(SerializationInfo info, StreamingContext context)
 		{
-			entitiesByKey =(Dictionary<EntityKey, object>) info.GetValue("context.entitiesByKey", typeof (Dictionary<EntityKey, object>));
-			entitiesByUniqueKey =(Dictionary<EntityUniqueKey, object>)info.GetValue("context.entitiesByUniqueKey", typeof (Dictionary<EntityUniqueKey, object>));
-			entityEntries = (IdentityMap) info.GetValue("context.entityEntries", typeof (IdentityMap));
-			proxiesByKey =(Dictionary<EntityKey, INHibernateProxy>)info.GetValue("context.proxiesByKey", typeof (Dictionary<EntityKey, INHibernateProxy>));
-			entitySnapshotsByKey =(Dictionary<EntityKey, object>)info.GetValue("context.entitySnapshotsByKey", typeof (Dictionary<EntityKey, object>));
-			arrayHolders = (IdentityMap) info.GetValue("context.arrayHolders", typeof (IdentityMap));
-			collectionEntries = (IdentityMap) info.GetValue("context.collectionEntries", typeof (IdentityMap));
-			collectionsByKey =(Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.collectionsByKey", typeof (Dictionary<CollectionKey, IPersistentCollection>));
-			nullifiableEntityKeys =(HashedSet<EntityKey>) info.GetValue("context.nullifiableEntityKeys", typeof (HashedSet<EntityKey>));
-			unownedCollections =(Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.unownedCollections", typeof (Dictionary<CollectionKey, IPersistentCollection>));
+			entitiesByKey = (Dictionary<EntityKey, object>)info.GetValue("context.entitiesByKey", typeof(Dictionary<EntityKey, object>));
+			entitiesByUniqueKey = (Dictionary<EntityUniqueKey, object>)info.GetValue("context.entitiesByUniqueKey", typeof(Dictionary<EntityUniqueKey, object>));
+			entityEntries = (IdentityMap)info.GetValue("context.entityEntries", typeof(IdentityMap));
+			proxiesByKey = (Dictionary<EntityKey, INHibernateProxy>)info.GetValue("context.proxiesByKey", typeof(Dictionary<EntityKey, INHibernateProxy>));
+			entitySnapshotsByKey = (Dictionary<EntityKey, object>)info.GetValue("context.entitySnapshotsByKey", typeof(Dictionary<EntityKey, object>));
+			arrayHolders = (IdentityMap)info.GetValue("context.arrayHolders", typeof(IdentityMap));
+			collectionEntries = (IdentityMap)info.GetValue("context.collectionEntries", typeof(IdentityMap));
+			collectionsByKey = (Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.collectionsByKey", typeof(Dictionary<CollectionKey, IPersistentCollection>));
+			nullifiableEntityKeys = (HashedSet<EntityKey>)info.GetValue("context.nullifiableEntityKeys", typeof(HashedSet<EntityKey>));
+			unownedCollections = (Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.unownedCollections", typeof(Dictionary<CollectionKey, IPersistentCollection>));
 			hasNonReadOnlyEntities = info.GetBoolean("context.hasNonReadOnlyEntities");
 			InitTransientState();
 		}
