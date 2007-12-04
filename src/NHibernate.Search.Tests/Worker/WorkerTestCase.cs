@@ -41,8 +41,8 @@ namespace NHibernate.Search.Tests.Workers
 			{
 				return new string[]
 					{
-						"Workers.Employee.hbm.xml",
-						"Workers.Employer.hbm.xml",
+						"Worker.Employee.hbm.xml",
+						"Worker.Employer.hbm.xml",
 					};
 			}
 		}

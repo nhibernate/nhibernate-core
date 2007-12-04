@@ -14,7 +14,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug-2.0\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -22,7 +22,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release-2.0\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -52,13 +52,7 @@
     <Compile Include="Impl\FullTextSearchHelper.cs" />
     <Compile Include="LuceneQueryExpression.cs" />
     <Compile Include="Impl\LuceneWorker.cs" />
-    <Compile Include="Storage\DirectoryProviderFactory.cs" />
     <Compile Include="DirectoryProviderHelper.cs" />
-    <Compile Include="Storage\FileHelper.cs" />
-    <Compile Include="Storage\FSDirectoryProvider.cs" />
-    <Compile Include="Storage\FSMasterDirectoryProvider.cs" />
-    <Compile Include="Storage\FSSlaveDirectoryProvider.cs" />
-    <Compile Include="Storage\IDirectoryProvider.cs" />
     <Compile Include="IFieldBridge.cs" />
     <Compile Include="IFullTextSession.cs" />
     <Compile Include="Impl\AddLuceneWork.cs" />
@@ -92,8 +86,14 @@
     <Compile Include="IStringBridge.cs" />
     <Compile Include="ITwoWayFieldBridge.cs" />
     <Compile Include="ITwoWayStringBridge.cs" />
-    <Compile Include="Storage\RAMDirectoryProvider.cs" />
     <Compile Include="Search.cs" />
+    <Compile Include="Store\DirectoryProviderFactory.cs" />
+    <Compile Include="Store\FileHelper.cs" />
+    <Compile Include="Store\FSDirectoryProvider.cs" />
+    <Compile Include="Store\FSMasterDirectoryProvider.cs" />
+    <Compile Include="Store\FSSlaveDirectoryProvider.cs" />
+    <Compile Include="Store\IDirectoryProvider.cs" />
+    <Compile Include="Store\RAMDirectoryProvider.cs" />
     <Compile Include="String2FieldBridgeAdaptor.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -107,7 +107,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Backend\Impl\" />
+    <Folder Include="Bridge\Builtin\" />
+    <Folder Include="Engine\" />
+    <Folder Include="Event\" />
+    <Folder Include="Filter\" />
     <Folder Include="Properties\" />
+    <Folder Include="Query\" />
+    <Folder Include="Reader\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

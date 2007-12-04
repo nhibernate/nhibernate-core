@@ -14,7 +14,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug-2.0\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -22,7 +22,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release-2.0\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -54,16 +54,16 @@
     <Compile Include="Inheritance\Animal.cs" />
     <Compile Include="Inheritance\InheritanceTest.cs" />
     <Compile Include="Inheritance\Mammal.cs" />
-    <Compile Include="Queries\AlternateBook.cs" />
-    <Compile Include="Queries\Book.cs" />
-    <Compile Include="Queries\Clock.cs" />
-    <Compile Include="Queries\LuceneQueryTest.cs" />
+    <Compile Include="Query\AlternateBook.cs" />
+    <Compile Include="Query\Book.cs" />
+    <Compile Include="Query\Clock.cs" />
+    <Compile Include="Query\LuceneQueryTest.cs" />
     <Compile Include="SearchTestCase.cs" />
-    <Compile Include="Sessions\Email.cs" />
-    <Compile Include="Sessions\MassIndexTest.cs" />
-    <Compile Include="Workers\Employee.cs" />
-    <Compile Include="Workers\Employer.cs" />
-    <Compile Include="Workers\WorkerTestCase.cs" />
+    <Compile Include="Session\Email.cs" />
+    <Compile Include="Session\MassIndexTest.cs" />
+    <Compile Include="Worker\Employee.cs" />
+    <Compile Include="Worker\Employer.cs" />
+    <Compile Include="Worker\WorkerTestCase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test-2.0.csproj">
@@ -98,25 +98,30 @@
     <EmbeddedResource Include="Inheritance\Mammal.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Queries\AlternateBook.hbm.xml" />
+    <EmbeddedResource Include="Query\AlternateBook.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Queries\Book.hbm.xml" />
+    <EmbeddedResource Include="Query\Book.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Queries\Clock.hbm.xml" />
+    <EmbeddedResource Include="Query\Clock.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sessions\Email.hbm.xml" />
+    <EmbeddedResource Include="Session\Email.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Workers\Employee.hbm.xml" />
+    <EmbeddedResource Include="Worker\Employee.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Workers\Employer.hbm.xml" />
+    <EmbeddedResource Include="Worker\Employer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Analyzer\" />
+    <Folder Include="IndexingStrategy\" />
+    <Folder Include="Optimizer\" />
     <Folder Include="Properties\" />
+    <Folder Include="Reader\" />
+    <Folder Include="Shards\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

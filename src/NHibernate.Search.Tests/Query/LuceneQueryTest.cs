@@ -230,9 +230,9 @@ namespace NHibernate.Search.Tests.Queries
 			{
 				return new string[]
 					{
-						"Queries.Book.hbm.xml",
-						"Queries.AlternateBook.hbm.xml",
-						"Queries.Clock.hbm.xml"
+						"Query.Book.hbm.xml",
+						"Query.AlternateBook.hbm.xml",
+						"Query.Clock.hbm.xml"
 					};
 			}
 		}
