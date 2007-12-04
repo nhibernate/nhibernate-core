@@ -5,6 +5,10 @@ using NHibernate.Util;
 
 namespace NHibernate.Search.Bridge
 {
+#if NET_2_0
+#else
+	[CLSCompliant(false)]
+#endif
     public class String2FieldBridgeAdaptor : IFieldBridge
     {
         private readonly IStringBridge stringBridge;
@@ -27,11 +31,12 @@ namespace NHibernate.Search.Bridge
                 Field field = new Field(name, indexedString, store, index);
 #if NET_2_0
                 if (boost != null)
+                    field.SetBoost(boost.Value);
 #else
 				if (boost != 0F)
+                    field.SetBoost(boost);
 #endif
-                    field.SetBoost(boost.Value);
-                document.Add(field);
+                    document.Add(field);
             }
         }
     }

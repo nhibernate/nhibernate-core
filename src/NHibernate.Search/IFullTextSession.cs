@@ -3,6 +3,10 @@ using Lucene.Net.Search;
 
 namespace NHibernate.Search
 {
+#if NET_2_0
+#else
+	[CLSCompliant(false)]
+#endif
 	public interface IFullTextSession : ISession
 	{
 #if NET_2_0

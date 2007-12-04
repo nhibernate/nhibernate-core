@@ -1,4 +1,9 @@
+using System;
+#if NET_2_0
 using System.Collections.Generic;
+#else
+using System.Collections;
+#endif
 using NHibernate.Search.Impl;
 
 namespace NHibernate.Search.Backend.Impl.Lucene
@@ -8,8 +13,10 @@ namespace NHibernate.Search.Backend.Impl.Lucene
     /// </summary>
     public class LuceneBackendQueueProcessor
     {
+		private readonly SearchFactory searchFactory;
+
+#if NET_2_0
         private readonly List<LuceneWork> queue;
-        private readonly SearchFactory searchFactory;
 
         public LuceneBackendQueueProcessor(List<LuceneWork> queue, SearchFactory searchFactory)
         {
@@ -37,6 +44,27 @@ namespace NHibernate.Search.Backend.Impl.Lucene
                                else return 1;
                            });
         }
+#else
+        private readonly IList queue;
+
+        public LuceneBackendQueueProcessor(IList queue, SearchFactory searchFactory)
+        {
+            this.queue = queue;
+            this.searchFactory = searchFactory;
+        }
+
+        /// <summary>
+        /// one must lock the directory providers in the exact same order to avoid
+        /// dead lock between concurrent threads or processes
+        /// To achieve that, the work will be done per directory provider
+        /// We rely on the both the DocumentBuilder.GetHashCode() and the GetWorkHashCode() to 
+        /// sort them by predictive order at all times, and to put deletes before adds
+        /// </summary>
+        private static void SortQueueToAvoidDeadLocks(IList queue, Workspace luceneWorkspace)
+        {
+			throw new NotImplementedException("Need to sort this");
+        }
+#endif
 
         private static long GetWorkHashCode(LuceneWork luceneWork, Workspace luceneWorkspace)
         {
@@ -49,7 +77,7 @@ namespace NHibernate.Search.Backend.Impl.Lucene
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ignore">Ignored, used to keep the delegate signature that WaitWithCallback requires</param>
+        /// <param name="ignore">Ignored, used to keep the delegate signature that WaitCallback requires</param>
         public void Run(object ignore)
         {
             Workspace workspace = new Workspace(searchFactory);

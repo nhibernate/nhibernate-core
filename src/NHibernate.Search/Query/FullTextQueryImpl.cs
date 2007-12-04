@@ -1,7 +1,12 @@
 using System;
+using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
-using System.IO;
 using Iesi.Collections.Generic;
+#else
+using Iesi.Collections;
+#endif
+using System.IO;
 using log4net;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -9,13 +14,16 @@ using Lucene.Net.Search;
 using NHibernate.Engine;
 using NHibernate.Expression;
 using NHibernate.Impl;
-using System.Collections;
 using NHibernate.Search.Engine;
 using NHibernate.Search.Impl;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace NHibernate.Search.Impl
 {
+#if NET_2_0
+#else
+	[CLSCompliant(false)]
+#endif
 	public class FullTextQueryImpl : AbstractQueryImpl
 	{
 		private static ILog log = LogManager.GetLogger(typeof (FullTextQueryImpl));
@@ -128,8 +136,12 @@ namespace NHibernate.Search.Impl
 			List(arrayList);
 			return (T[]) arrayList.ToArray(typeof (T));
 		}
+#else
+		public override IEnumerable Enumerable()
+		{
+			throw new NotImplementedException("Enumerator not implemented");
+		}
 #endif
-
 
 		public override IList List()
 		{

@@ -43,7 +43,11 @@ namespace NHibernate.Search.Storage
 			log.Debug("Source directory: " + source);
 			DirectoryInfo indexDir = DirectoryProviderHelper.DetermineIndexDir(directoryProviderName, properties);
 			log.Debug("Index directory: " + indexDir.FullName);
-			String refreshPeriod = (string)(properties[Environment.Refresh] ?? "3600");
+#if NET_2_0
+			string refreshPeriod = (string)(properties[Environment.Refresh] ?? "3600");
+#else
+			string refreshPeriod = (string)(properties[Environment.Refresh] != null ? properties[Environment.Refresh] : "3600");
+#endif
 			long period = long.Parse(refreshPeriod);
 			log.Debug("Refresh period " + period + " seconds");
 			period *= 1000; //per second
@@ -116,9 +120,14 @@ namespace NHibernate.Search.Storage
 							throw new HibernateException("Umable to synchonize directory: " + indexName, e);
 						}
 					}
+
 					try
 					{
+#if NET_2_0
 						File.Create(current1Master).Dispose();
+#else
+						File.Create(current1Master);
+#endif
 					}
 					catch (IOException e)
 					{
@@ -132,10 +141,14 @@ namespace NHibernate.Search.Storage
 				throw new HibernateException("Unable to initialize index: " + directoryProviderName, e);
 			}
 			searchFactory.RegisterDirectoryProviderForLocks(this);
+#if NET_2_0
 			timer = new Timer(
 				new CopyDirectory(this, source, indexName).Run
 				);
 			timer.Change(period, period);
+#else
+			timer = new Timer(new TimerCallback(new CopyDirectory(this, source, indexName).Run), null, period, period);
+#endif
 		}
 
 		public Directory Directory
@@ -232,6 +245,7 @@ namespace NHibernate.Search.Storage
 						inProgress = false;
 						return;
 					}
+
 					try
 					{
 						File.Delete(Path.Combine(parent.indexName, "current" + oldIndex));
@@ -240,9 +254,14 @@ namespace NHibernate.Search.Storage
 					{
 						log.Warn("Unable to remove previous marker file in " + parent.indexName, e);
 					}
+
 					try
 					{
+#if NET_2_0
 						File.Create(Path.Combine(parent.indexName, "current" + index)).Dispose();
+#else
+						File.Create(Path.Combine(parent.indexName, "current" + index));
+#endif
 					}
 					catch (IOException e)
 					{

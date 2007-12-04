@@ -95,10 +95,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache.
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Search-1.1", "NHibernate.Search\NHibernate.Search-1.1.csproj", "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Search.Tests-1.1", "NHibernate.Search.Tests\NHibernate.Search.Tests-1.1.csproj", "{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F} = {F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{0D8B57B0-1310-4EF0-B50C-DD22F37310C7}.Debug.ActiveCfg = Debug|.NET
@@ -197,6 +208,14 @@ Global
 		{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}.Debug.Build.0 = Debug|.NET
 		{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}.Release.ActiveCfg = Release|.NET
 		{94E1F299-E404-4DDE-BFCE-A3E4F5AD3D41}.Release.Build.0 = Release|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.ActiveCfg = Debug|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.Build.0 = Debug|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.ActiveCfg = Release|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.Build.0 = Release|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.ActiveCfg = Debug|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Debug.Build.0 = Debug|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.ActiveCfg = Release|.NET
+		{F6CDD71A-FDCA-43F1-A5FF-B2941224A66F}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		..\NHibernateSolution.build = ..\NHibernateSolution.build

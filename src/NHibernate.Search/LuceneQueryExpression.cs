@@ -1,6 +1,11 @@
 using System;
+#if NET_2_0
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
+#else
+using System.Collections;
+using Iesi.Collections;
+#endif
 using Lucene.Net.Search;
 using NHibernate.Expression;
 using NHibernate.Impl;
@@ -22,15 +27,22 @@ namespace NHibernate.Search
 
 		public override NHibernate.SqlCommand.SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, System.Collections.IDictionary enabledFilters)
 		{
+#if NET_2_0
+			ISet<System.Type> types;
+			List<object> ids = new List<object>();
+#else
+			ISet types;
+			ArrayList ids = new ArrayList();
+#endif
+
 			System.Type type = GetCriteriaClass(criteria);
 			SearchFactory searchFactory = SearchFactory.GetSearchFactory(GetSession(criteria));
-			ISet<System.Type> types;
 			Searcher searcher = FullTextSearchHelper.BuildSearcher(searchFactory, out types, type);
 			if (searcher == null)
 				throw new SearchException("Could not find a searcher for class: " + type.FullName);
 			Query query = FullTextSearchHelper.FilterQueryByClasses(types, luceneQuery);
 			Hits hits = searcher.Search(query);
-			List<object> ids = new List<object>();
+
 			for (int i = 0; i < hits.Length(); i++)
 			{
 				object id = DocumentBuilder.GetDocumentId(searchFactory,hits.Doc(i));

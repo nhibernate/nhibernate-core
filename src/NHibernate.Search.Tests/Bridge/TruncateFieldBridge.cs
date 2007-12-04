@@ -14,7 +14,11 @@ namespace NHibernate.Search.Tests.Bridge
 			return field.StringValue();
 		}
 
+#if NET_2_0
 		public void Set(String name, Object value, Document document, Field.Store store, Field.Index index, float? boost)
+#else
+		public void Set(String name, Object value, Document document, Field.Store store, Field.Index index, float boost)
+#endif
 		{
 			String indexedString = (String) value;
 			//Do not add fields on empty strings, seems a sensible default in most situations

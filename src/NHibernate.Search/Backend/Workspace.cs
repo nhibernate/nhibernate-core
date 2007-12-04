@@ -1,5 +1,9 @@
 using System;
+#if NET_2_0
 using System.Collections.Generic;
+#else
+using System.Collections;
+#endif
 using System.IO;
 using System.Threading;
 using log4net;
@@ -22,9 +26,15 @@ namespace NHibernate.Search.Impl
 	public class Workspace : IDisposable
 	{
 		private static ILog log = LogManager.GetLogger(typeof(Workspace));
+#if NET_2_0
 		private Dictionary<IDirectoryProvider, IndexReader> readers = new Dictionary<IDirectoryProvider, IndexReader>();
 		private Dictionary<IDirectoryProvider, IndexWriter> writers = new Dictionary<IDirectoryProvider, IndexWriter>();
 		private List<IDirectoryProvider> lockedProviders = new List<IDirectoryProvider>();
+#else
+		private Hashtable readers = new Hashtable();
+		private Hashtable writers = new Hashtable();
+		private IList lockedProviders = new ArrayList();
+#endif
 		private SearchFactory searchFactory;
 
 		public Workspace(SearchFactory searchFactory)
@@ -45,8 +55,13 @@ namespace NHibernate.Search.Impl
 			//one cannot access a reader for update after a writer has been accessed
 			if (writers.ContainsKey(provider))
 				throw new AssertionFailure("Tries to read for update a index while a writer is accessed" + entity);
-			IndexReader reader;
+			IndexReader reader = null;
+#if NET_2_0
 			readers.TryGetValue(provider, out reader);
+#else
+			if (readers.ContainsKey(provider))
+				reader = (IndexReader) readers[provider];
+#endif
 			if (reader != null) return reader;
 			LockProvider(provider);
 			try
@@ -65,8 +80,13 @@ namespace NHibernate.Search.Impl
 		{
 			IDirectoryProvider provider = searchFactory.GetDirectoryProvider(entity);
 			//one has to close a reader for update before a writer is accessed
-			IndexReader reader;
+			IndexReader reader = null;
+#if NET_2_0
 			readers.TryGetValue(provider, out reader);
+#else
+			if (readers.ContainsKey(provider))
+				reader = (IndexReader) readers[provider];
+#endif
 			if (reader != null)
 			{
 				try
@@ -79,8 +99,13 @@ namespace NHibernate.Search.Impl
 				}
 				readers.Remove(provider);
 			}
-			IndexWriter writer;
+			IndexWriter writer = null;
+#if NET_2_0
 			writers.TryGetValue(provider, out writer);
+#else
+			if (writers.ContainsKey(provider))
+				writer = (IndexWriter) writers[provider];
+#endif
 			if (writer != null) return writer;
 			LockProvider(provider);
 			try

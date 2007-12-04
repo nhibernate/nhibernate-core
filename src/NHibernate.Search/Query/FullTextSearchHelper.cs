@@ -1,6 +1,11 @@
-using System.Collections.Generic;
 using System.IO;
+#if NET_2_0
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
+#else
+using System.Collections;
+using Iesi.Collections;
+#endif
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using NHibernate.Search.Engine;
@@ -8,9 +13,13 @@ using Directory=Lucene.Net.Store.Directory;
 
 namespace NHibernate.Search
 {
-	public static class FullTextSearchHelper
+	public class FullTextSearchHelper
 	{
+#if NET_2_0
 		public static Query FilterQueryByClasses(ISet<System.Type> classesAndSubclasses, Query luceneQuery)
+#else
+		public static Query FilterQueryByClasses(ISet classesAndSubclasses, Query luceneQuery)
+#endif
 		{
 			//A query filter is more practical than a manual class filtering post query (esp on scrollable resultsets)
 			//it also probably minimise the memory footprint
@@ -36,10 +45,17 @@ namespace NHibernate.Search
 			}
 		}
 
+#if NET_2_0
 		public static Searcher BuildSearcher(SearchFactory searchFactory, out ISet<System.Type> classesAndSubclasses, params System.Type[] classes)
 		{
 			Dictionary<System.Type, DocumentBuilder> builders = searchFactory.DocumentBuilders;
 			ISet<Directory> directories = new HashedSet<Directory>();
+#else
+		public static Searcher BuildSearcher(SearchFactory searchFactory, out ISet classesAndSubclasses, params System.Type[] classes)
+		{
+			Hashtable builders = searchFactory.DocumentBuilders;
+			ISet directories = new HashedSet();
+#endif
 			if (classes == null || classes.Length == 0)
 			{
 				//no class means all classes
@@ -51,18 +67,30 @@ namespace NHibernate.Search
 			}
 			else
 			{
+#if NET_2_0
 				ISet<System.Type> involvedClasses = new HashedSet<System.Type>();
+#else
+				ISet involvedClasses = new HashedSet();
+#endif
 				involvedClasses.AddAll(classes);
 				foreach (System.Type clazz in classes)
 				{
 					DocumentBuilder builder;
+#if NET_2_0
 					builders.TryGetValue(clazz, out builder);
+#else
+					builder = (DocumentBuilder) (builders.ContainsKey(clazz.Name) ? builders[clazz.Name] : null);
+#endif
 					if (builder != null) involvedClasses.AddAll(builder.MappedSubclasses);
 				}
 				foreach (System.Type clazz in involvedClasses)
 				{
 					DocumentBuilder builder;
+#if NET_2_0
 					builders.TryGetValue(clazz, out builder);
+#else
+					builder = (DocumentBuilder) (builders.ContainsKey(clazz.Name) ? builders[clazz.Name] : null);
+#endif
 					//TODO should we rather choose a polymorphic path and allow non mapped entities
 					if (builder == null) throw new HibernateException("Not a mapped entity: " + clazz);
 					directories.Add(builder.DirectoryProvider.Directory);
@@ -73,7 +101,11 @@ namespace NHibernate.Search
 			return GetSearcher(directories);
 		}
 
+#if NET_2_0
 		public static Searcher GetSearcher(ISet<Directory> directories)
+#else
+		public static Searcher GetSearcher(ISet directories)
+#endif
 		{
 			if (directories.Count == 0)
 				return null;

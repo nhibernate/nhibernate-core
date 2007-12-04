@@ -1,4 +1,8 @@
+#if NET_2_0
 using System.Collections.Generic;
+#else
+using System.Collections;
+#endif
 
 namespace NHibernate.Search.Backend
 {
@@ -9,6 +13,7 @@ namespace NHibernate.Search.Backend
     /// </summary>
     public interface IQueueingProcessor
     {
+#if NET_2_0
         /// <summary>
         /// Performs all the work in the queue
         /// </summary>
@@ -20,5 +25,18 @@ namespace NHibernate.Search.Backend
         /// </summary>
         /// <param name="queue"></param>
         void CancelWork(List<LuceneWork> queue);
+#else
+		/// <summary>
+		/// Performs all the work in the queue
+		/// </summary>
+		/// <param name="queue">The queue.</param>
+		void PerformWork(IList queue);
+
+		/// <summary>
+		/// Rollback 
+		/// </summary>
+		/// <param name="queue"></param>
+		void CancelWork(IList queue);
+#endif
     }
 }

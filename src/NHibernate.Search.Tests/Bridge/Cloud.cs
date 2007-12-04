@@ -7,15 +7,18 @@ namespace NHibernate.Search.Tests.Bridge
 	public class Cloud
 	{
 		private int id;
+#if NET_2_0
 		private long? long1;
-		private long long2;
 		private int? int1;
-		private int int2;
 		private double? double1;
-		private double double2;
 		private float? float1;
+#endif
+		private long long2;
+		private double double2;
 		private float float2;
+		private int int2;
 		private string string1;
+#if NET_2_0
 		private DateTime? dateTime;
 		private DateTime? dateTimeYear;
 		private DateTime? dateTimeMonth;
@@ -24,6 +27,7 @@ namespace NHibernate.Search.Tests.Bridge
 		private DateTime? dateTimeMinute;
 		private DateTime? dateTimeSecond;
 		private DateTime? dateTimeMillisecond;
+#endif
 		private String customFieldBridge;
 		private String customStringBridge;
 		private CloudType type;
@@ -52,18 +56,12 @@ namespace NHibernate.Search.Tests.Bridge
 			set { this.id = value; }
 		}
 
+#if NET_2_0
 		[Field(Index.UnTokenized, Store = Store.Yes)]
 		public virtual  long? Long1
 		{
 			get { return long1; }
 			set { this.long1 = value; }
-		}
-
-		[Field(Index.UnTokenized, Store = Store.Yes)]
-		public virtual  long Long2
-		{
-			get { return long2; }
-			set { this.long2 = value; }
 		}
 
 		[Field(Index.UnTokenized, Store = Store.Yes)]
@@ -74,13 +72,6 @@ namespace NHibernate.Search.Tests.Bridge
 		}
 
 		[Field(Index.UnTokenized, Store = Store.Yes)]
-		public virtual  int Int2
-		{
-			get { return int2; }
-			set { this.int2 = value; }
-		}
-
-		[Field(Index.UnTokenized, Store = Store.Yes)]
 		public virtual  double? Double1
 		{
 			get { return double1; }
@@ -88,17 +79,32 @@ namespace NHibernate.Search.Tests.Bridge
 		}
 
 		[Field(Index.UnTokenized, Store = Store.Yes)]
-		public virtual  double Double2
-		{
-			get { return double2; }
-			set { this.double2 = value; }
-		}
-
-		[Field(Index.UnTokenized, Store = Store.Yes)]
 		public virtual  float? Float1
 		{
 			get { return float1; }
 			set { this.float1 = value; }
+		}
+#endif
+
+		[Field(Index.UnTokenized, Store = Store.Yes)]
+		public virtual  long Long2
+		{
+			get { return long2; }
+			set { this.long2 = value; }
+		}
+
+		[Field(Index.UnTokenized, Store = Store.Yes)]
+		public virtual  int Int2
+		{
+			get { return int2; }
+			set { this.int2 = value; }
+		}
+
+		[Field(Index.UnTokenized, Store = Store.Yes)]
+		public virtual  double Double2
+		{
+			get { return double2; }
+			set { this.double2 = value; }
 		}
 
 		[Field(Index.UnTokenized, Store = Store.Yes)]
@@ -115,6 +121,7 @@ namespace NHibernate.Search.Tests.Bridge
 			set { this.string1 = value; }
 		}
 
+#if NET_2_0
 		[Field(Index.UnTokenized, Store = Store.Yes)]
 		public virtual  DateTime? DateTime
 		{
@@ -183,6 +190,7 @@ namespace NHibernate.Search.Tests.Bridge
 			get { return dateTimeMillisecond; }
 			set { this.dateTimeMillisecond = value; }
 		}
+#endif
 
 		[Field(Index.Tokenized)]
 		public virtual  CloudType Type

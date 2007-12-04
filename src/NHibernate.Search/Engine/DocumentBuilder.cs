@@ -1,7 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
+#if NET_2_0
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
+#else
+using System.Collections;
+using Iesi.Collections;
+#endif
 using log4net;
 using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
@@ -20,6 +25,10 @@ namespace NHibernate.Search.Engine
     /// <summary>
     /// Set up and provide a manager for indexes classes
     /// </summary>
+#if NET_2_0
+#else
+	[CLSCompliant(false)]
+#endif
     public class DocumentBuilder
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(DocumentBuilder));
@@ -55,7 +64,11 @@ namespace NHibernate.Search.Engine
             if (clazz == null) throw new AssertionFailure("Unable to build a DocumemntBuilder with a null class");
 
             rootPropertiesMetadata.boost = GetBoost(clazz);
+#if NET_2_0
             Set<System.Type> processedClasses = new HashedSet<System.Type>();
+#else
+            ISet processedClasses = new HashedSet();
+#endif
             processedClasses.Add(clazz);
             InitializeMembers(clazz, rootPropertiesMetadata, true, "", processedClasses);
             //processedClasses.remove( clazz ); for the sake of completness
@@ -73,7 +86,7 @@ namespace NHibernate.Search.Engine
 #else
 		private void InitializeMembers(
 			System.Type clazz, PropertiesMetadata propertiesMetadata, bool isRoot, String prefix,
-			Set processedClasses)
+			ISet processedClasses)
 #endif
         {
             PropertyInfo[] propertyInfos = clazz.GetProperties();
@@ -201,7 +214,7 @@ namespace NHibernate.Search.Engine
 #if NET_2_0
 		public void AddToWorkQueue(object entity, object id, WorkType workType, List<LuceneWork> queue, SearchFactory searchFactory)
 #else
-		public void AddToWorkQueue(object entity, object id, WorkType workType, List queue, SearchFactory searchFactory)
+		public void AddToWorkQueue(object entity, object id, WorkType workType, IList queue, SearchFactory searchFactory)
 #endif
         {
             System.Type entityClass = NHibernateUtil.GetClass(entity);
@@ -267,7 +280,7 @@ namespace NHibernate.Search.Engine
 #if NET_2_0
 		private void ProcessContainedInValue(object value, List<LuceneWork> queue, System.Type valueClass, DocumentBuilder builder, SearchFactory searchFactory)
 #else
-		private void ProcessContainedInValue(object value, List queue, System.Type valueClass, DocumentBuilder builder, SearchFactory searchFactory)
+		private void ProcessContainedInValue(object value, IList queue, System.Type valueClass, DocumentBuilder builder, SearchFactory searchFactory)
 #endif
 		{
             object id = DocumentBuilder.GetMemberValue(value, builder.idGetter);
@@ -278,10 +291,16 @@ namespace NHibernate.Search.Engine
         {
             Document doc = new Document();
             System.Type instanceClass = instance.GetType();
+#if NET_2_0
             if (rootPropertiesMetadata.boost != null)
             {
                 doc.SetBoost(rootPropertiesMetadata.boost.Value);
             }
+#else
+			if (rootPropertiesMetadata.boost != 0)
+				doc.SetBoost(rootPropertiesMetadata.boost);
+#endif
+			// TODO: Check if that should be an else?
             {
                 Field classField =
                     new Field(CLASS_FIELDNAME, instanceClass.AssemblyQualifiedName, Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -296,6 +315,7 @@ namespace NHibernate.Search.Engine
         {
             if (instance == null) return;
 
+#if NET_2_0
             for (int i = 0; i < propertiesMetadata.keywordNames.Count; i++)
             {
                 MemberInfo member = propertiesMetadata.keywordGetters[i];
@@ -340,6 +360,63 @@ namespace NHibernate.Search.Engine
                 //TODO handle boost at embedded level: already stored in propertiesMedatada.boost
                 BuildDocumentFields(value, doc, propertiesMetadata.embeddedPropertiesMetadata[i]);
             }
+#else
+			for (int i = 0; i < propertiesMetadata.keywordNames.Count; i++)
+			{
+				MemberInfo member = (MemberInfo) propertiesMetadata.keywordGetters[i];
+				IFieldBridge bridge = (IFieldBridge) propertiesMetadata.keywordBridges[i];
+
+				Object value = GetMemberValue(instance, member);
+
+				bridge.Set(
+					(string) propertiesMetadata.keywordNames[i], value, doc, Field.Store.YES,
+					Field.Index.UN_TOKENIZED, GetBoost(member)
+					);
+			}
+			for (int i = 0; i < propertiesMetadata.textNames.Count; i++)
+			{
+				MemberInfo member = (MemberInfo) propertiesMetadata.textGetters[i];
+				IFieldBridge bridge = (IFieldBridge) propertiesMetadata.textBridges[i];
+
+				Object value = GetMemberValue(instance, member);
+				bridge.Set(
+					(string) propertiesMetadata.textNames[i], value, doc, Field.Store.YES,
+					Field.Index.TOKENIZED, GetBoost(member)
+					);
+			}
+			for (int i = 0; i < propertiesMetadata.unstoredNames.Count; i++)
+			{
+				MemberInfo member = (MemberInfo) propertiesMetadata.unstoredGetters[i];
+				IFieldBridge bridge = (IFieldBridge) propertiesMetadata.unstoredBridges[i];
+
+				Object value = GetMemberValue(instance, member);
+				bridge.Set(
+					(string) propertiesMetadata.unstoredNames[i], value, doc, Field.Store.NO,
+					Field.Index.TOKENIZED, GetBoost(member)
+					);
+			}
+			for (int i = 0; i < propertiesMetadata.fieldNames.Count; i++)
+			{
+				MemberInfo member = (MemberInfo) propertiesMetadata.fieldGetters[i];
+				IFieldBridge bridge = (IFieldBridge) propertiesMetadata.fieldBridges[i];
+
+				Object value = GetMemberValue(instance, member);
+				bridge.Set(
+					(string) propertiesMetadata.fieldNames[i], value, doc, (Field.Store) propertiesMetadata.fieldStore[i],
+					(Field.Index) propertiesMetadata.fieldIndex[i], GetBoost(member)
+					);
+			}
+			for (int i = 0; i < propertiesMetadata.embeddedGetters.Count; i++)
+			{
+				MemberInfo member = (MemberInfo) propertiesMetadata.embeddedGetters[i];
+				PropertiesMetadata md = (PropertiesMetadata) propertiesMetadata.embeddedPropertiesMetadata[i];
+
+				Object value = GetMemberValue(instance, member);
+				//if ( ! Hibernate.isInitialized( value ) ) continue; //this sounds like a bad idea 
+				//TODO handle boost at embedded level: already stored in propertiesMedatada.boost
+				BuildDocumentFields(value, doc, md);
+			}
+#endif
         }
 
         public Term GetTerm(object id)
@@ -384,7 +461,7 @@ namespace NHibernate.Search.Engine
         public static object GetDocumentId(SearchFactory searchFactory, Document document)
         {
             System.Type clazz = GetDocumentClass(document);
-            DocumentBuilder builder = searchFactory.DocumentBuilders[clazz];
+            DocumentBuilder builder = (DocumentBuilder) searchFactory.DocumentBuilders[clazz];
             if (builder == null) throw new SearchException("No Lucene configuration set up for: " + clazz.Name);
             return builder.IdBridge.Get(builder.getIdKeywordName(), document);
         }
@@ -437,7 +514,11 @@ namespace NHibernate.Search.Engine
         {
             //this method does not requires synchronization
             System.Type plainClass = beanClass;
+#if NET_2_0
             ISet tempMappedSubclasses = new HashedSet<System.Type>();
+#else
+            ISet tempMappedSubclasses = new HashedSet();
+#endif
             //together with the caller this creates a o(2), but I think it's still faster than create the up hierarchy for each class
             foreach (System.Type currentClass in indexedClasses)
             {
@@ -455,23 +536,23 @@ namespace NHibernate.Search.Engine
 		private class PropertiesMetadata
 		{
 			public float boost = 0;
-			public readonly List keywordGetters = new List();
-			public readonly List keywordNames = new List();
-			public readonly List keywordBridges = new List();
-			public readonly List unstoredGetters = new List();
-			public readonly List unstoredNames = new List();
-			public readonly List unstoredBridges = new List();
-			public readonly List textGetters = new List();
-			public readonly List textNames = new List();
-			public readonly List textBridges = new List();
-			public readonly List fieldNames = new List();
-			public readonly List fieldGetters = new List();
-			public readonly List fieldBridges = new List();
-			public readonly List fieldStore = new List();
-			public readonly List fieldIndex = new List();
-			public readonly List embeddedGetters = new List();
-			public readonly List embeddedPropertiesMetadata = new List();
-			public readonly List containedInGetters = new List();
+			public readonly IList keywordGetters = new ArrayList();
+			public readonly IList keywordNames = new ArrayList();
+			public readonly IList keywordBridges = new ArrayList();
+			public readonly IList unstoredGetters = new ArrayList();
+			public readonly IList unstoredNames = new ArrayList();
+			public readonly IList unstoredBridges = new ArrayList();
+			public readonly IList textGetters = new ArrayList();
+			public readonly IList textNames = new ArrayList();
+			public readonly IList textBridges = new ArrayList();
+			public readonly IList fieldNames = new ArrayList();
+			public readonly IList fieldGetters = new ArrayList();
+			public readonly IList fieldBridges = new ArrayList();
+			public readonly IList fieldStore = new ArrayList();
+			public readonly IList fieldIndex = new ArrayList();
+			public readonly IList embeddedGetters = new ArrayList();
+			public readonly IList embeddedPropertiesMetadata = new ArrayList();
+			public readonly IList containedInGetters = new ArrayList();
 		}
 #endif
     }

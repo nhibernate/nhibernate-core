@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 using NHibernate.Search.Backend;
 using NHibernate.Type;
 
@@ -13,7 +15,7 @@ namespace NHibernate.Search.Impl
         private readonly List<object> entitiesToAddOnPostFlush = new List<object>();
 #else
 		private readonly Hashtable syncronizations = new Hashtable();
-		private readonly List entitiesToAddOnPostFlush = new List();
+		private readonly IList entitiesToAddOnPostFlush = new ArrayList();
 #endif
         private ISession session;
         private SearchFactory searchFactory;
@@ -97,24 +99,33 @@ namespace NHibernate.Search.Impl
 #if NET_2_0
         public void RegisterSyncronization(ITransaction transaction, List<LuceneWork> work)
 #else
-		public void RegisterSyncronization(ITransaction transaction, List work)
+		public void RegisterSyncronization(ITransaction transaction, IList work)
 #endif
         {
-            if (syncronizations.ContainsKey(transaction) == false)
 #if NET_2_0
+            if (syncronizations.ContainsKey(transaction) == false)
                 syncronizations.Add(transaction, new List<LuceneWork>());
-#else
-				syncronizations.Add(transaction, new List());
-#endif
             syncronizations[transaction].AddRange(work);
+#else
+			if (syncronizations.ContainsKey(transaction) == false)
+				syncronizations.Add(transaction, new ArrayList());
+
+			((ArrayList) syncronizations[transaction]).AddRange(work);
+#endif
         }
 
         public override void AfterTransactionCompletion(ITransaction tx)
         {
             base.AfterTransactionCompletion(tx);
+#if NET_2_0
             List<LuceneWork> queue;
             if (syncronizations.TryGetValue(tx, out queue) == false)
                 return;
+#else
+			IList queue = (IList) (syncronizations.ContainsKey(tx) ? syncronizations[tx] : null);
+			if (queue == null)
+				return;
+#endif
             if (tx.WasCommitted)
             {
                 SearchFactory.GetSearchFactory(session)

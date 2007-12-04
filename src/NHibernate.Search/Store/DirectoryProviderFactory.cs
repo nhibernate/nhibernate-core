@@ -1,6 +1,11 @@
 using System;
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
+#else
+using Iesi.Collections;
+#endif
 using NHibernate.Cfg;
 using NHibernate.Mapping;
 using NHibernate.Search.Attributes;
@@ -17,7 +22,7 @@ namespace NHibernate.Search.Storage
 #if NET_2_0
 		public List<IDirectoryProvider> providers = new List<IDirectoryProvider>();
 #else
-		public List providers = new ArrayList();
+		public IList providers = new ArrayList();
 #endif
 
 		public IDirectoryProvider CreateDirectoryProvider(System.Type entity, Configuration cfg, SearchFactory searchFactory)
@@ -54,7 +59,7 @@ namespace NHibernate.Search.Storage
 			if (index != -1)
 			{
 				//share the same Directory provider for the same underlying store
-				return providers[index];
+				return (IDirectoryProvider) providers[index];
 			}
 			else
 			{
@@ -99,7 +104,11 @@ namespace NHibernate.Search.Storage
 				IndexedAttribute indexAnn = AttributeUtil.GetIndexed(pc.MappedClass);
 				if (indexAnn != null)
 				{
+#if NET_2_0
 					if (string.IsNullOrEmpty(indexAnn.Index)==false)
+#else
+					if (indexAnn.Index != null && indexAnn.Index != string.Empty)
+#endif
 					{
 						return indexAnn.Index;
 					}

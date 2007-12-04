@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.IO;
+#if NET_2_0
 using System.Security.AccessControl;
+#endif
 using log4net;
 using NHibernate.Search.Impl;
 using NHibernate.Util;
@@ -68,10 +70,23 @@ namespace NHibernate.Search
 
 		public static DirectoryInfo DetermineIndexDir(String directoryProviderName, IDictionary properties)
 		{
-			String indexBase = (string) properties["indexBase"] ?? ".";
 			bool createIfMissing;
+#if NET_2_0
+			string indexBase = (string) properties["indexBase"] ?? ".";
 			string shouldCreate = (string)properties["indexBase.create"] ?? "false";
 			bool.TryParse(shouldCreate, out createIfMissing);
+#else
+			string indexBase = (string) properties["indexBase"] != null ? (string) properties["indexBase"] : ".";
+			string shouldCreate = (string) properties["indexBase.create"] != null ? (string) properties["indexBase.create"] : "false";
+			try
+			{
+				createIfMissing = bool.Parse(shouldCreate);
+			}
+			catch
+			{
+				createIfMissing = false;
+			}
+#endif
 			//We need this to allow using the search from the web, where the "." directory is 
 			//somewhere in the system root.
 			indexBase = indexBase.Replace("~", AppDomain.CurrentDomain.BaseDirectory);

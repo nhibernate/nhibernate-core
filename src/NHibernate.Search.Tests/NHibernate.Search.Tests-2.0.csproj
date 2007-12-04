@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug-2.0\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -66,6 +66,10 @@
     <Compile Include="Worker\WorkerTestCase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NHibernate.Search\NHibernate.Search-2.0.csproj">
+      <Project>{CC25D767-990D-4CE0-9F64-3426E244403B}</Project>
+      <Name>NHibernate.Search-2.0</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test-2.0.csproj">
       <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
       <Name>NHibernate.Test-2.0</Name>
@@ -73,10 +77,6 @@
     <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-2.0</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NHibernate.Search\NHibernate.Search-2.0.csproj">
-      <Project>{CC25D767-990D-4CE0-9F64-3426E244403B}</Project>
-      <Name>NHibernate.Search</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

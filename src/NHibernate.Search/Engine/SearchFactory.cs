@@ -1,7 +1,11 @@
 using System;
-using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
+#else
+using System.Collections;
+using Iesi.Collections;
+#endif
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using NHibernate.Cfg;
@@ -16,6 +20,10 @@ using NHibernate.Util;
 
 namespace NHibernate.Search
 {
+#if NET_2_0
+#else
+	[CLSCompliant(false)]
+#endif
     public class SearchFactory
     {
         private static readonly WeakHashtable sessionFactory2SearchFactory = new WeakHashtable();
@@ -141,7 +149,7 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
 #if NET_2_0
         public void ExecuteQueue(List<LuceneWork> luceneWork, ISession session)
 #else
-		public void ExecuteQueue(List luceneWork, ISession session)
+		public void ExecuteQueue(IList luceneWork, ISession session)
 #endif
         {
             if (session.Transaction.IsActive)
@@ -158,7 +166,7 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
 #if NET_2_0
         public void ExecuteQueueImmediate(List<LuceneWork> luceneWork)
 #else
-		public void ExecuteQueueImmediate(List luceneWork)
+		public void ExecuteQueueImmediate(IList luceneWork)
 #endif
         {
             queueingProcessor.PerformWork(luceneWork);
@@ -172,9 +180,13 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
 
         public DocumentBuilder GetDocumentBuilder(System.Type type)
         {
+#if NET_2_0
             DocumentBuilder builder;
             DocumentBuilders.TryGetValue(type, out builder);
             return builder;
+#else
+			return (DocumentBuilder) (DocumentBuilders.ContainsKey(type.Name) ? DocumentBuilders[type.Name] : null);
+#endif
         }
 
         public IDirectoryProvider GetDirectoryProvider(System.Type entity)
@@ -195,7 +207,7 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
 #if NET_2_0
             List<LuceneWork> queue = new List<LuceneWork>();
 #else
-			List queue = new List();
+			IList queue = new ArrayList();
 #endif
             documentBuilder.AddToWorkQueue(entity, id, workType, queue, this);
             ExecuteQueue(queue, session);

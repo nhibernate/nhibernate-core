@@ -1,10 +1,16 @@
 using System;
 using System.IO;
+#if NET_2_0
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
+#else
+using System.Collections;
+using Iesi.Collections;
+#endif
 
 namespace NHibernate.Search.Storage
 {
-	public static class FileHelper
+	public class FileHelper
 	{
 		private const int LastWriteTimePrecision = 2000;
 
@@ -15,7 +21,11 @@ namespace NHibernate.Search.Storage
 				destination.Create();
 			}
 			FileInfo[] sources = source.GetFiles();
+#if NET_2_0
 			ISet<string> srcNames = new HashedSet<string>();
+#else
+			ISet srcNames = new HashedSet();
+#endif
 			foreach (FileInfo fileInfo in sources)
 			{
 				srcNames.Add(fileInfo.Name);

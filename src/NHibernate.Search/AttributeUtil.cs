@@ -37,7 +37,7 @@ namespace NHibernate.Search
 			documentIdAttribute.Name = documentIdAttribute.Name ?? member.Name;
 #else
 			if (documentIdAttribute.Name == null)
-				docuementIdAttribute.Name = member.Name;
+				documentIdAttribute.Name = member.Name;
 #endif
 			return documentIdAttribute;
 		}

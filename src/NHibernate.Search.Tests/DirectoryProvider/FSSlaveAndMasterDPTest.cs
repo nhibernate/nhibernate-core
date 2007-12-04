@@ -106,7 +106,11 @@ namespace NHibernate.Search.Tests.DirectoryProvider
 			Directory.Delete("./lucenedirs/",true);
 		}
 
+#if NET_2_0
 		protected override void Configure(IList<Configuration> cfg)
+#else
+		protected override void Configure(IList cfg)
+#endif
 		{
 			//master
 			cfg[0].SetProperty("hibernate.search.default.sourceBase", "./lucenedirs/master/copy");

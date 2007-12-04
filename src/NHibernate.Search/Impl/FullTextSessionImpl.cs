@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 using System.Data;
 using System.Text;
 using Lucene.Net.Analysis.Standard;
@@ -12,6 +14,10 @@ using NHibernate.Type;
 
 namespace NHibernate.Search.Impl
 {
+#if NET_2_0
+#else
+	[CLSCompliant(false)]
+#endif
 	public class FullTextSessionImpl : IFullTextSession
 	{
 		private readonly ISession session;

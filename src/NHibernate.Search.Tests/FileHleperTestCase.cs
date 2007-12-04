@@ -1,5 +1,7 @@
 using System;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 using System.IO;
 using System.Text;
 using System.Threading;
