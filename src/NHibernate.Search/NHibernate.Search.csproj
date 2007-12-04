@@ -49,43 +49,43 @@
     <Compile Include="Attributes\Indexed.cs" />
     <Compile Include="Attributes\Resolution.cs" />
     <Compile Include="AttributeUtil.cs" />
-    <Compile Include="Impl\FullTextSearchHelper.cs" />
+    <Compile Include="Query\FullTextSearchHelper.cs" />
     <Compile Include="LuceneQueryExpression.cs" />
-    <Compile Include="Impl\LuceneWorker.cs" />
+    <Compile Include="Backend\Impl\Lucene\LuceneWorker.cs" />
     <Compile Include="DirectoryProviderHelper.cs" />
-    <Compile Include="IFieldBridge.cs" />
+    <Compile Include="Bridge\IFieldBridge.cs" />
     <Compile Include="IFullTextSession.cs" />
-    <Compile Include="Impl\AddLuceneWork.cs" />
-    <Compile Include="Impl\BatchedQueueingProcessor.cs" />
-    <Compile Include="Impl\BridgeFactory.cs" />
-    <Compile Include="Impl\DateBridge.cs" />
-    <Compile Include="Impl\DeleteLuceneWork.cs" />
-    <Compile Include="Impl\DocumentBuilder.cs" />
-    <Compile Include="Impl\EnumBridge.cs" />
-    <Compile Include="Impl\FullTextQueryImpl.cs" />
-    <Compile Include="Impl\IBackendQueueProcessorFactory.cs" />
-    <Compile Include="Impl\IParameterizedBridge.cs" />
-    <Compile Include="Impl\IQueueingProcessor.cs" />
-    <Compile Include="Impl\LuceneBackendQueueProcessor.cs" />
-    <Compile Include="Impl\LuceneBackendQueueProcessorFactory.cs" />
-    <Compile Include="Impl\StringBridge.cs" />
-    <Compile Include="Impl\Environment.cs" />
+    <Compile Include="Backend\AddLuceneWork.cs" />
+    <Compile Include="Backend\Impl\BatchedQueueingProcessor.cs" />
+    <Compile Include="Bridge\BridgeFactory.cs" />
+    <Compile Include="Bridge\Builtin\DateBridge.cs" />
+    <Compile Include="Backend\DeleteLuceneWork.cs" />
+    <Compile Include="Engine\DocumentBuilder.cs" />
+    <Compile Include="Bridge\Builtin\EnumBridge.cs" />
+    <Compile Include="Query\FullTextQueryImpl.cs" />
+    <Compile Include="Backend\IBackendQueueProcessorFactory.cs" />
+    <Compile Include="Bridge\IParameterizedBridge.cs" />
+    <Compile Include="Backend\IQueueingProcessor.cs" />
+    <Compile Include="Backend\Impl\Lucene\LuceneBackendQueueProcessor.cs" />
+    <Compile Include="Backend\Impl\Lucene\LuceneBackendQueueProcessorFactory.cs" />
+    <Compile Include="Bridge\Builtin\StringBridge.cs" />
+    <Compile Include="Environment.cs" />
     <Compile Include="Impl\FullTextSessionImpl.cs" />
-    <Compile Include="Impl\Index.cs" />
-    <Compile Include="Impl\LuceneWork.cs" />
-    <Compile Include="Impl\SearchException.cs" />
-    <Compile Include="Impl\SearchFactory.cs" />
+    <Compile Include="Index.cs" />
+    <Compile Include="Backend\LuceneWork.cs" />
+    <Compile Include="SearchException.cs" />
+    <Compile Include="Engine\SearchFactory.cs" />
     <Compile Include="Impl\SearchInterceptor.cs" />
-    <Compile Include="Impl\SimpleBridge.cs" />
-    <Compile Include="Impl\Store.cs" />
-    <Compile Include="Impl\TwoWayString2FieldBridgeAdaptor.cs" />
-    <Compile Include="Impl\ValueTypeBridge.cs" />
-    <Compile Include="Impl\Work.cs" />
-    <Compile Include="Impl\LuceneWorkspace.cs" />
-    <Compile Include="Impl\WorkType.cs" />
-    <Compile Include="IStringBridge.cs" />
-    <Compile Include="ITwoWayFieldBridge.cs" />
-    <Compile Include="ITwoWayStringBridge.cs" />
+    <Compile Include="Bridge\Builtin\SimpleBridge.cs" />
+    <Compile Include="Store.cs" />
+    <Compile Include="Bridge\TwoWayString2FieldBridgeAdaptor.cs" />
+    <Compile Include="Bridge\Builtin\ValueTypeBridge.cs" />
+    <Compile Include="Backend\Work.cs" />
+    <Compile Include="Backend\LuceneWorkspace.cs" />
+    <Compile Include="Backend\WorkType.cs" />
+    <Compile Include="Bridge\IStringBridge.cs" />
+    <Compile Include="Bridge\ITwoWayFieldBridge.cs" />
+    <Compile Include="Bridge\ITwoWayStringBridge.cs" />
     <Compile Include="Search.cs" />
     <Compile Include="Store\DirectoryProviderFactory.cs" />
     <Compile Include="Store\FileHelper.cs" />
@@ -94,7 +94,7 @@
     <Compile Include="Store\FSSlaveDirectoryProvider.cs" />
     <Compile Include="Store\IDirectoryProvider.cs" />
     <Compile Include="Store\RAMDirectoryProvider.cs" />
-    <Compile Include="String2FieldBridgeAdaptor.cs" />
+    <Compile Include="Bridge\String2FieldBridgeAdaptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Iesi.Collections\Iesi.Collections-2.0.csproj">
@@ -107,14 +107,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Backend\Impl\" />
-    <Folder Include="Bridge\Builtin\" />
-    <Folder Include="Engine\" />
     <Folder Include="Event\" />
     <Folder Include="Filter\" />
     <Folder Include="Properties\" />
-    <Folder Include="Query\" />
     <Folder Include="Reader\" />
+    <Folder Include="Util\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
