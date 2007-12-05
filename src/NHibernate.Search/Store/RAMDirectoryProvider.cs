@@ -4,6 +4,7 @@ using System.IO;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
+using NHibernate.Search.Engine;
 using NHibernate.Search.Impl;
 
 namespace NHibernate.Search.Storage

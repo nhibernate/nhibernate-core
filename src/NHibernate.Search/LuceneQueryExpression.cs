@@ -4,6 +4,7 @@ using Iesi.Collections.Generic;
 using Lucene.Net.Search;
 using NHibernate.Expression;
 using NHibernate.Impl;
+using NHibernate.Search.Engine;
 using NHibernate.Search.Impl;
 using NHibernate.SqlCommand;
 
@@ -11,9 +12,9 @@ namespace NHibernate.Search
 {
 	public class LuceneQueryExpression : InExpression
 	{
-		private readonly Query luceneQuery;
+        private readonly Lucene.Net.Search.Query luceneQuery;
 
-		public LuceneQueryExpression(Query luceneQuery)
+        public LuceneQueryExpression(Lucene.Net.Search.Query luceneQuery)
 			: base("id", new object[0])
 		{
 			this.luceneQuery = luceneQuery;
@@ -27,7 +28,7 @@ namespace NHibernate.Search
 			Searcher searcher = FullTextSearchHelper.BuildSearcher(searchFactory, out types, type);
 			if (searcher == null)
 				throw new SearchException("Could not find a searcher for class: " + type.FullName);
-			Query query = FullTextSearchHelper.FilterQueryByClasses(types, luceneQuery);
+            Lucene.Net.Search.Query query = FullTextSearchHelper.FilterQueryByClasses(types, luceneQuery);
 			Hits hits = searcher.Search(query);
 			List<object> ids = new List<object>();
 			for (int i = 0; i < hits.Length(); i++)
@@ -39,7 +40,7 @@ namespace NHibernate.Search
 			return base.ToSqlString(criteria, criteriaQuery, enabledFilters);
 		}
 
-		private System.Type GetCriteriaClass(ICriteria criteria)
+		private static System.Type GetCriteriaClass(ICriteria criteria)
 		{
 			CriteriaImpl impl = criteria as CriteriaImpl;
 			if (impl != null)

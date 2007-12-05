@@ -1,5 +1,7 @@
 using System;
 using Lucene.Net.Documents;
+using NHibernate.Search.Bridge;
+using NHibernate.Search.Bridge.Builtin;
 using NHibernate.Util;
 
 namespace NHibernate.Search.Tests.Bridge

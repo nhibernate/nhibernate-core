@@ -1,16 +1,16 @@
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using NHibernate.Search.Impl;
+using NHibernate.Search.Engine;
 using Directory=Lucene.Net.Store.Directory;
 
 namespace NHibernate.Search
 {
-	public static class FullTextSearchHelper
+	public class FullTextSearchHelper
 	{
-		public static Query FilterQueryByClasses(ISet<System.Type> classesAndSubclasses, Query luceneQuery)
+        public static Lucene.Net.Search.Query FilterQueryByClasses(ISet<System.Type> classesAndSubclasses, Lucene.Net.Search.Query luceneQuery)
 		{
 			//A query filter is more practical than a manual class filtering post query (esp on scrollable resultsets)
 			//it also probably minimise the memory footprint

@@ -41,14 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\AnalyzerAttribute.cs" />
     <Compile Include="Attributes\BoostAttribute.cs" />
     <Compile Include="Attributes\DateBridgeAttribute.cs" />
     <Compile Include="Attributes\DocumentIdAttribute.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\FieldBridgeAttribute.cs" />
     <Compile Include="Attributes\Indexed.cs" />
+    <Compile Include="Attributes\IndexedEmbedded.cs" />
     <Compile Include="Attributes\Resolution.cs" />
     <Compile Include="AttributeUtil.cs" />
+    <Compile Include="Backend\OptimizeLuceneWork.cs" />
+    <Compile Include="Backend\PurgeAllLuceneWork.cs" />
     <Compile Include="Query\FullTextSearchHelper.cs" />
     <Compile Include="LuceneQueryExpression.cs" />
     <Compile Include="Backend\Impl\Lucene\LuceneWorker.cs" />
@@ -81,7 +85,7 @@
     <Compile Include="Bridge\TwoWayString2FieldBridgeAdaptor.cs" />
     <Compile Include="Bridge\Builtin\ValueTypeBridge.cs" />
     <Compile Include="Backend\Work.cs" />
-    <Compile Include="Backend\LuceneWorkspace.cs" />
+    <Compile Include="Backend\Workspace.cs" />
     <Compile Include="Backend\WorkType.cs" />
     <Compile Include="Bridge\IStringBridge.cs" />
     <Compile Include="Bridge\ITwoWayFieldBridge.cs" />
@@ -111,6 +115,7 @@
     <Folder Include="Filter\" />
     <Folder Include="Properties\" />
     <Folder Include="Reader\" />
+    <Folder Include="Store\Optimization\" />
     <Folder Include="Util\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

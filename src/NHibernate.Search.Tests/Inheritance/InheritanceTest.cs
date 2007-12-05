@@ -29,7 +29,7 @@ namespace NHibernate.Search.Tests.Inheritance
 			tx = s.BeginTransaction();
 			QueryParser parser = new QueryParser("Name", new StopAnalyzer());
 
-			Query query;
+            Lucene.Net.Search.Query query;
 			IQuery hibQuery;
 
 			query = parser.Parse("Elephant");

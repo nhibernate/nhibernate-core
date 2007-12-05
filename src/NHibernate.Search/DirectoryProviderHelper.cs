@@ -68,8 +68,8 @@ namespace NHibernate.Search
 
 		public static DirectoryInfo DetermineIndexDir(String directoryProviderName, IDictionary properties)
 		{
-			String indexBase = (string) properties["indexBase"] ?? ".";
 			bool createIfMissing;
+			string indexBase = (string) properties["indexBase"] ?? ".";
 			string shouldCreate = (string)properties["indexBase.create"] ?? "false";
 			bool.TryParse(shouldCreate, out createIfMissing);
 			//We need this to allow using the search from the web, where the "." directory is 

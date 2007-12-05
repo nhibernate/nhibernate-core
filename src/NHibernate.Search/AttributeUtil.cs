@@ -4,7 +4,7 @@ using NHibernate.Search.Attributes;
 
 namespace NHibernate.Search
 {
-	public static class AttributeUtil
+	public class AttributeUtil
 	{
 		public static bool IsIndexed(System.Type type)
 		{

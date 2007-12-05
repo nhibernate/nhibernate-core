@@ -37,7 +37,7 @@ namespace NHibernate.Search.Tests.Bridge
 			tx = s.BeginTransaction();
 			IFullTextSession session = Search.CreateFullTextSession(s);
 			QueryParser parser = new QueryParser("id", new StandardAnalyzer());
-			Query query;
+            Lucene.Net.Search.Query query;
 			IList result;
 
 			query = parser.Parse("Double2:[2 TO 2.1] AND Float2:[2  TO 2.1] " +
@@ -70,7 +70,7 @@ namespace NHibernate.Search.Tests.Bridge
 			tx = s.BeginTransaction();
 			IFullTextSession session = Search.CreateFullTextSession(s);
 			QueryParser parser = new QueryParser("id", new SimpleAnalyzer());
-			Query query;
+            Lucene.Net.Search.Query query;
 			IList result;
 
 			query = parser.Parse("CustomFieldBridge:This AND CustomStringBridge:This");
@@ -110,7 +110,7 @@ namespace NHibernate.Search.Tests.Bridge
 			tx = s.BeginTransaction();
 			IFullTextSession session = Search.CreateFullTextSession(s);
 			QueryParser parser = new QueryParser("id", new StandardAnalyzer());
-			Query query;
+            Lucene.Net.Search.Query query;
 			IList result;
 
 			query = parser.Parse("DateTime:[19900101 TO 20060101]"

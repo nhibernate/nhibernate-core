@@ -49,7 +49,7 @@ namespace NHibernate.Search.Tests.Queries
 			tx = s.BeginTransaction();
 			QueryParser parser = new QueryParser("title", new StopAnalyzer());
 
-			Query query = parser.Parse("Summary:noword");
+            Lucene.Net.Search.Query query = parser.Parse("Summary:noword");
 			IQuery hibQuery = s.CreateFullTextQuery(query, typeof(Clock), typeof(Book));
 			IList result = hibQuery.List();
 			Assert.AreEqual(0, result.Count);
@@ -101,7 +101,7 @@ namespace NHibernate.Search.Tests.Queries
 			tx = s.BeginTransaction();
 			QueryParser parser = new QueryParser("title", new StopAnalyzer());
 
-			Query query = parser.Parse("Summary:Festina Or Brand:Seiko");
+            Lucene.Net.Search.Query query = parser.Parse("Summary:Festina Or Brand:Seiko");
 			IQuery hibQuery = s.CreateFullTextQuery(query, typeof(Clock), typeof(Book));
 			hibQuery.SetFirstResult(1);
 			IList result = hibQuery.List();
@@ -145,7 +145,7 @@ namespace NHibernate.Search.Tests.Queries
 			tx = s.BeginTransaction();
 			QueryParser parser = new QueryParser("title", new StopAnalyzer());
 
-			Query query = parser.Parse("Summary:noword");
+            Lucene.Net.Search.Query query = parser.Parse("Summary:noword");
 			IQuery hibQuery = s.CreateFullTextQuery(query, typeof(Clock), typeof(Book));
 			IEnumerator result = hibQuery.Enumerable().GetEnumerator();
 			Assert.IsFalse(result.MoveNext());
@@ -190,7 +190,7 @@ namespace NHibernate.Search.Tests.Queries
 			tx = s.BeginTransaction();
 			QueryParser parser = new QueryParser("Title", new StopAnalyzer());
 
-			Query query = parser.Parse("Summary:Festina");
+            Lucene.Net.Search.Query query = parser.Parse("Summary:Festina");
 			IQuery hibQuery = s.CreateFullTextQuery(query, typeof(Clock), typeof(Book));
 			IList result = hibQuery.List();
 

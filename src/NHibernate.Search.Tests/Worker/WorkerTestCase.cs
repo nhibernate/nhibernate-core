@@ -100,7 +100,7 @@ namespace NHibernate.Search.Tests.Workers
 				tx = s.BeginTransaction();
 				IFullTextSession fts = new FullTextSessionImpl(s);
 				QueryParser parser = new QueryParser("id", new StopAnalyzer());
-				Query query;
+                Lucene.Net.Search.Query query;
 				query = parser.Parse("name:emmanuel2");
 
 				bool results = fts.CreateFullTextQuery(query).List().Count > 0;

@@ -7,6 +7,7 @@ using log4net;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
+using NHibernate.Search.Engine;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace NHibernate.Search.Storage

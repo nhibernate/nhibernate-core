@@ -24,7 +24,7 @@ sessionFactory.OpenSession(new SearchInterceptor());
 			return new FullTextSessionImpl(session);
 		}
 
-		public static ICriterion Query(Query luecneQuery)
+        public static ICriterion Query(Lucene.Net.Search.Query luecneQuery)
 		{
 			return new LuceneQueryExpression(luecneQuery);
 		}
@@ -32,7 +32,7 @@ sessionFactory.OpenSession(new SearchInterceptor());
 		public static ICriterion Query(string luceneQuery)
 		{
 			QueryParser parser = new QueryParser("",new StandardAnalyzer());
-			Query query = parser.Parse(luceneQuery);
+            Lucene.Net.Search.Query query = parser.Parse(luceneQuery);
 			return Query(query);
 		}
 	}

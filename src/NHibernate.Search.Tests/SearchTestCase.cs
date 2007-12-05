@@ -1,6 +1,7 @@
 using Lucene.Net.Analysis;
 using Lucene.Net.Store;
 using NHibernate.Cfg;
+using NHibernate.Search.Engine;
 using NHibernate.Search.Impl;
 using NHibernate.Search.Storage;
 using NUnit.Framework;

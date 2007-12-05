@@ -5,8 +5,8 @@ namespace NHibernate.Search.Attributes
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
 	public class FieldBridgeAttribute : Attribute
 	{
-		private System.Type impl;
-		private object[] parameters;
+		private readonly System.Type impl;
+		private readonly object[] parameters;
 
 		public FieldBridgeAttribute(System.Type impl, params object[] parameters)
 		{

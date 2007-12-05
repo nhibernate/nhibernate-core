@@ -7,6 +7,7 @@ using log4net;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
+using NHibernate.Search.Engine;
 using Directory = Lucene.Net.Store.Directory;
 
 namespace NHibernate.Search.Storage
@@ -43,7 +44,7 @@ namespace NHibernate.Search.Storage
 			log.Debug("Source directory: " + source);
 			DirectoryInfo indexDir = DirectoryProviderHelper.DetermineIndexDir(directoryProviderName, properties);
 			log.Debug("Index directory: " + indexDir.FullName);
-			String refreshPeriod = (string)(properties[Environment.Refresh] ?? "3600");
+			string refreshPeriod = (string)(properties[Environment.Refresh] ?? "3600");
 			long period = long.Parse(refreshPeriod);
 			log.Debug("Refresh period " + period + " seconds");
 			period *= 1000; //per second
@@ -116,6 +117,7 @@ namespace NHibernate.Search.Storage
 							throw new HibernateException("Umable to synchonize directory: " + indexName, e);
 						}
 					}
+
 					try
 					{
 						File.Create(current1Master).Dispose();
@@ -232,6 +234,7 @@ namespace NHibernate.Search.Storage
 						inProgress = false;
 						return;
 					}
+
 					try
 					{
 						File.Delete(Path.Combine(parent.indexName, "current" + oldIndex));
@@ -240,6 +243,7 @@ namespace NHibernate.Search.Storage
 					{
 						log.Warn("Unable to remove previous marker file in " + parent.indexName, e);
 					}
+
 					try
 					{
 						File.Create(Path.Combine(parent.indexName, "current" + index)).Dispose();

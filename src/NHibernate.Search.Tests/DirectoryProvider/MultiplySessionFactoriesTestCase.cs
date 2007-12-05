@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Cfg;
+using NHibernate.Search.Engine;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
