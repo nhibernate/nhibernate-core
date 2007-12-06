@@ -10,7 +10,7 @@ namespace NHibernate.Test.SchemaUpdate
 	[TestFixture]
 	public class MigrationFixture
 	{
-		[Test]
+		[Test, Ignore("Not supported yet")]
 		public void SimpleColumnAddition()
 		{
 			String resource2 = "NHibernate.Test.SchemaUpdate.2_Version.hbm.xml";
