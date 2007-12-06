@@ -55,7 +55,7 @@ namespace NHibernate.Action
 			IDictionary acmd = factory.GetAllClassMetadata();
 			foreach (DictionaryEntry entry in acmd)
 			{
-				string entityName = (string) entry.Key;
+				string entityName = ((System.Type) entry.Key).FullName;
 				IEntityPersister persister = factory.GetEntityPersister(entityName);
 				object[] entitySpaces = persister.QuerySpaces;
 

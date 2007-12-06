@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Text;
 using log4net;
 using NHibernate.Action;
 using NHibernate.Engine.Query.Sql;
@@ -11,6 +8,7 @@ using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -80,7 +78,7 @@ namespace NHibernate.Engine.Query
 		/// empty implementation on this superclass and should be implemented by
 		/// subclasses (queries) which allow named parameters.
 		/// </summary>
-		private int BindNamedParameters(IDbCommand ps, IDictionary namedParams, int start, ISessionImplementor session)
+		private void BindNamedParameters(IDbCommand ps, IDictionary namedParams, int start, ISessionImplementor session)
 		{
 			if (namedParams != null)
 			{
@@ -102,11 +100,11 @@ namespace NHibernate.Engine.Query
 					}
 					result += locs.Length;
 				}
-				return result;
+				return;
 			}
 			else
 			{
-				return 0;
+				return;
 			}
 		}
 
@@ -122,7 +120,7 @@ namespace NHibernate.Engine.Query
 			}
 		}
 
-		// TODO : H3.2 Executable query (now can be supported for named SQL query/ storedProcedure)
+		// DONE : H3.2 Executable query (now can be supported for named SQL query/ storedProcedure)
 		public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			CoordinateSharedCacheCleanup(session);
@@ -132,38 +130,86 @@ namespace NHibernate.Engine.Query
 				throw new ArgumentException("callable not yet supported for native queries");
 			}
 
-			int result = 0;
-			//try
-			//{
-			//  queryParameters.ProcessFilters(customQuery.SQL, session);
-			//  SqlString sql = queryParameters.FilteredSQL;
+			int result;
+			try
+			{
+				queryParameters.ProcessFilters(customQuery.SQL, session);
+				SqlString sql = queryParameters.FilteredSQL;
+				SqlType[] sqlTypes = GetParameterTypes(queryParameters, session);
+				
+				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
 
-			//  IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql);
+				try
+				{
+					int col = 0; // NH Different (initialized to 1 in JAVA)
+					col += BindPositionalParameters(ps, queryParameters, col, session);
+					BindNamedParameters(ps, queryParameters.NamedParameters, col, session);
+					result = session.Batcher.ExecuteNonQuery(ps);
+				}
+				finally
+				{
+					if (ps != null)
+					{
+						session.Batcher.CloseCommand(ps, null);
+					}
+				}
+			}
+			catch (HibernateException)
+			{
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(sqle, "could not execute native bulk manipulation query:" + sourceQuery);
+				//throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not execute native bulk manipulation query", this.sourceQuery);
+			}
 
-			//  try
-			//  {
-			//    int col = 1;
-			//    col += BindPositionalParameters(ps, queryParameters, col, session);
-			//    BindNamedParameters(ps, queryParameters.NamedParameters, col, session);
-			//    result =  TransactionManager.manager.ExecuteUpdate(ps);
-			//  }
-			//  finally
-			//  {
-			//    if (ps != null)
-			//    {
-			//      session.Batcher.CloseCommand(ps);
-			//    }
-			//  }
-			//}
-			//catch (HibernateException)
-			//{
-			//  throw;
-			//}
-			//catch (Exception sqle)
-			//{
-			//  throw ADOExceptionHelper.Convert(sqle, "could not execute native bulk manipulation query:"+ sourceQuery);
-			//  //throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not execute native bulk manipulation query", this.sourceQuery);
-			//}
+			return result;
+		}
+
+		private SqlType[] GetParameterTypes(QueryParameters parameters, ISessionImplementor session)
+		{
+			ArrayList paramTypeList = new ArrayList();
+			int span = 0;
+
+			foreach (IType type in parameters.FilteredPositionalParameterTypes)
+			{
+				paramTypeList.Add(type);
+				span += type.GetColumnSpan(session.Factory);
+			}
+
+			if (parameters.NamedParameters != null && parameters.NamedParameters.Count > 0)
+			{
+				int offset = paramTypeList.Count;
+
+				// convert the named parameters to an array of types
+				foreach (DictionaryEntry e in parameters.NamedParameters)
+				{
+					string name = (string)e.Key;
+					TypedValue typedval = (TypedValue)e.Value;
+					int[] locs = GetNamedParameterLocs(name);
+					span += typedval.Type.GetColumnSpan(session.Factory) * locs.Length;
+
+					for (int i = 0; i < locs.Length; i++)
+					{
+						ArrayHelper.SafeSetValue(paramTypeList, locs[i] + offset, typedval.Type);
+					}
+				}
+			}
+			return ConvertITypesToSqlTypes(paramTypeList, span, session);
+		}
+
+		private SqlType[] ConvertITypesToSqlTypes(ArrayList nhTypes, int totalSpan, ISessionImplementor session)
+		{
+			SqlType[] result = new SqlType[totalSpan];
+
+			int index = 0;
+			foreach (IType type in nhTypes)
+			{
+				int span = type.SqlTypes(session.Factory).Length;
+				Array.Copy(type.SqlTypes(session.Factory), 0, result, index, span);
+				index += span;
+			}
 
 			return result;
 		}

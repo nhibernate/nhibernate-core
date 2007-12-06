@@ -106,6 +106,8 @@ namespace NHibernate.Impl
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
 		public abstract IDbConnection Connection { get; }
+		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
+		public abstract int ExecuteUpdate(string query, QueryParameters queryParameters);
 
 		public virtual IQuery GetNamedQuery(string queryName)
 		{

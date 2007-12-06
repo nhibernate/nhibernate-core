@@ -785,5 +785,46 @@ namespace NHibernate.Impl
 			// TODO: Verify the use of this method in NH.Search and remove it
 			throw new NotSupportedException();
 		}
+
+		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters)
+		{
+			ErrorIfClosed();
+			queryParameters.ValidateParameters();
+			NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeSQLQuerySpecification);
+
+			bool success = false;
+			int result;
+			try
+			{
+				result = plan.PerformExecuteUpdate(queryParameters, this);
+				success = true;
+			}
+			finally
+			{
+				AfterOperation(success);
+			}
+			temporaryPersistenceContext.Clear();
+			return result;
+		}
+
+		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
+		{
+			ErrorIfClosed();
+			queryParameters.ValidateParameters();
+			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+			bool success = false;
+			int result;
+			try
+			{
+				result = plan.PerformExecuteUpdate(queryParameters, this);
+				success = true;
+			}
+			finally
+			{
+				AfterOperation(success);
+			}
+			temporaryPersistenceContext.Clear();
+			return result;
+		}
 	}
 }

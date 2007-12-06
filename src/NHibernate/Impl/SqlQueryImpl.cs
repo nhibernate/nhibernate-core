@@ -298,5 +298,19 @@ namespace NHibernate.Impl
 		{
 			throw new NotSupportedException("cannot set the lock mode for a native SQL query");
 		}
+
+		public override int ExecuteUpdate()
+		{
+			IDictionary namedParams = NamedParams;
+			Before();
+			try
+			{
+				return Session.ExecuteNativeUpdate(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
+		}
 	}
 }

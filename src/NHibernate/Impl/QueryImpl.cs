@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using System;
 
 namespace NHibernate.Impl
 {
@@ -108,6 +109,21 @@ namespace NHibernate.Impl
 		protected internal override IDictionary LockModes
 		{
 			get { return lockModes; }
+		}
+
+		public override int ExecuteUpdate()
+		{
+			VerifyParameters();
+			IDictionary namedParams = NamedParams;
+			Before();
+			try
+			{
+				return Session.ExecuteUpdate(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
 		}
 	}
 }

@@ -551,5 +551,11 @@ namespace NHibernate
 		/// <param name="cacheMode">The cache mode to use. </param>
 		/// <returns> this (for method chaining) </returns>
 		IQuery SetCacheMode(CacheMode cacheMode);
+
+		/// <summary> 
+		/// Execute the update or delete statement.
+		/// </summary>
+		/// <returns> The number of entities updated or deleted. </returns>
+		int ExecuteUpdate();
 	}
 }

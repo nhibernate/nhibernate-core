@@ -2063,5 +2063,48 @@ namespace NHibernate.Impl
 				updateEventListener[i].OnSaveOrUpdate(@event);
 			}
 		}
+
+		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters)
+		{
+			ErrorIfClosed();
+			queryParameters.ValidateParameters();
+			NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeQuerySpecification);
+
+			AutoFlushIfRequired(plan.CustomQuery.QuerySpaces);
+
+			bool success = false;
+			int result;
+			try
+			{
+				result = plan.PerformExecuteUpdate(queryParameters, this);
+				success = true;
+			}
+			finally
+			{
+				AfterOperation(success);
+			}
+			return result;
+		}
+
+		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
+		{
+			ErrorIfClosed();
+			queryParameters.ValidateParameters();
+			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+			AutoFlushIfRequired(plan.QuerySpaces);
+
+			bool success = false;
+			int result;
+			try
+			{
+				result = plan.PerformExecuteUpdate(queryParameters, this);
+				success = true;
+			}
+			finally
+			{
+				AfterOperation(success);
+			}
+			return result;
+		}
 	}
 }

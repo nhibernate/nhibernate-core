@@ -184,6 +184,8 @@
     <Compile Include="HQLFunctionTest\Name.cs" />
     <Compile Include="HQLFunctionTest\SimpleFunctionsTest.cs" />
     <Compile Include="HQLFunctionTest\SQLFunctionTemplateTest.cs" />
+    <Compile Include="BulkManipulation\NativeSQLBulkOperations.cs" />
+    <Compile Include="BulkManipulation\Vehicles.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
     <Compile Include="IdTest\HiLoInt32Class.cs" />
     <Compile Include="IdTest\HiLoInt64Class.cs" />
@@ -1076,6 +1078,9 @@
   <ItemGroup>
     <EmbeddedResource Include="SchemaUpdate\1_Version.hbm.xml" />
     <EmbeddedResource Include="SchemaUpdate\2_Version.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BulkManipulation\Vehicle.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
