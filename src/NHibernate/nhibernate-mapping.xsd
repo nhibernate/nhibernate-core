@@ -588,6 +588,9 @@
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="property" />
 					<xs:element ref="many-to-one" />
+					<xs:element ref="component" />
+					<xs:element ref="dynamic-component" />
+					<xs:element ref="any" />
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="table" type="xs:string">
