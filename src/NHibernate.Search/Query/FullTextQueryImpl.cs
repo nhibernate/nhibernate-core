@@ -239,5 +239,11 @@ namespace NHibernate.Search.Query
             public System.Type clazz;
             public object id;
         }
+
+    	public override int ExecuteUpdate()
+    	{
+			// TODO: Implement FullTextQueryImpl.ExecuteUpdate()
+			throw new NotImplementedException("Implement FullTextQueryImpl.ExecuteUpdate()");
+    	}
     }
 }
