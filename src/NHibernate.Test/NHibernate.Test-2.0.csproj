@@ -592,6 +592,7 @@
     <Compile Include="SubselectFetchTest\Parent.cs" />
     <Compile Include="SubselectFetchTest\SubselectFetchFixture.cs" />
     <Compile Include="TestCase.cs" />
+    <Compile Include="TestConfigurationHelper.cs" />
     <Compile Include="TestTestCase.cs" />
     <Compile Include="TransactionTest\TransactionFixture.cs" />
     <Compile Include="TransactionTest\TransactionNotificationFixture.cs" />

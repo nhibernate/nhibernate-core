@@ -1,13 +1,14 @@
-﻿namespace NHibernate.Tool.hbm2ddl
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using NHibernate.Cfg;
+using log4net;
+using NHibernate.Util;
+
+namespace NHibernate.Tool.hbm2ddl
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
-	using System.Data;
-	using System.Data.Common;
-	using Cfg;
-	using log4net;
-	using Util;
 
 	public class SchemaUpdate
 	{
@@ -192,9 +193,9 @@
 		///  Returns a List of all Exceptions which occured during the export.
 		/// </summary>
 		/// <returns></returns>
-		public IList getExceptions()
+		public IList Exceptions
 		{
-			return exceptions;
+			get { return exceptions; }
 		}
 	}
 }

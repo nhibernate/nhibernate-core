@@ -30,8 +30,6 @@ namespace NHibernate.Test
 			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
 		}
 
-		private static readonly string hibernateConfigFile;
-
 		protected ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
 
@@ -52,18 +50,6 @@ namespace NHibernate.Test
 		{
 			// Configure log4net here since configuration through an attribute doesn't always work.
 			XmlConfigurator.Configure();
-
-			// Verify if hibernate.cfg.xml exists
-			hibernateConfigFile = GetDefaultConfigurationFilePath();
-		}
-
-		private static string GetDefaultConfigurationFilePath()
-		{
-			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
-			string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
-			string fullPath = Path.Combine(binPath, Cfg.Configuration.DefaultHibernateCfgFileName);
-			return File.Exists(fullPath) ? fullPath : null;
 		}
 
 		/// <summary>
@@ -197,8 +183,8 @@ namespace NHibernate.Test
 		private void Configure()
 		{
 			cfg = new Configuration();
-			if (hibernateConfigFile != null)
-				cfg.Configure(hibernateConfigFile);
+			if (TestConfigurationHelper.hibernateConfigFile != null)
+				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
 
 			Assembly assembly = Assembly.Load(MappingsAssembly);
 
@@ -210,18 +196,6 @@ namespace NHibernate.Test
 			Configure(cfg);
 
 			ApplyCacheSettings(cfg);
-		}
-
-		/// <summary>
-		/// Standar Configuration for tests.
-		/// </summary>
-		/// <returns>The configuration using merge between App.Config and hibernate.cfg.xml if present.</returns>
-		public static Configuration GetDefaultConfiguration()
-		{
-			Configuration result = new Configuration();
-			if (hibernateConfigFile != null)
-				result.Configure(hibernateConfigFile);
-			return result;
 		}
 
 		private void CreateSchema()
