@@ -1051,7 +1051,7 @@ namespace NHibernate.Hql.Classic
 					throw new QueryException(string.Format("The function {0} have not supported parameters list. The parameter is {1}"
 						, funcName, tokens[tokenIdx].GetType().AssemblyQualifiedName), new NotSupportedException());
 				}
-				if (tokens[tokenIdx].ToString().StartsWith(StringHelper.NamePrefix) || tokens[tokenIdx].ToString().Equals(StringHelper.SqlParameter))
+				if (tokens[tokenIdx].ToString().StartsWith(ParserHelper.HqlVariablePrefix) || tokens[tokenIdx].ToString().Equals(StringHelper.SqlParameter))
 				{
 					throw new QueryException(string.Format("Parameters inside function are not supported (function '{0}').", funcName),
 						new NotSupportedException());

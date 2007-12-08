@@ -265,7 +265,7 @@ namespace NHibernate.Hql.Classic
 			return Regex.IsMatch(token, @"\A(?:[-+]?(\d+\.\d+)|(\.\d+))\z", RegexOptions.Singleline);
 		}
 
-		private static readonly string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", StringHelper.NamePrefix, StringHelper.SqlParameter);
+		private static readonly string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", ParserHelper.HqlVariablePrefix, StringHelper.SqlParameter);
 		private static bool IsParameter(string token)
 		{
 			return Regex.IsMatch(token, paramMatcher, RegexOptions.Singleline);

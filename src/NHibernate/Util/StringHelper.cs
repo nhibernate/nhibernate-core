@@ -36,10 +36,6 @@ namespace NHibernate.Util
 		/// <summary></summary>
 		public const char SingleQuote = '\'';
 
-		// TODO: Semantically these belong elsewhere as they are NHibernate specific
-		/// <summary></summary>
-		public const string NamePrefix = ":";
-
 		/// <summary></summary>
 		public const string SqlParameter = "?";
 
@@ -419,7 +415,7 @@ namespace NHibernate.Util
 		{
 			if (SingleQuote == character)
 			{
-				throw new ArgumentOutOfRangeException("Unquoted count of quotes is invalid");
+				throw new ArgumentOutOfRangeException("character", "Unquoted count of quotes is invalid");
 			}
 
 			// Impl note: takes advantage of the fact that an escaped single quote
@@ -427,7 +423,7 @@ namespace NHibernate.Util
 			// quote-blocks for the purposes of this method...
 			int count = 0;
 			char[] chars = str.ToCharArray();
-			int stringLength = str == null ? 0 : chars.Length;
+			int stringLength = string.IsNullOrEmpty(str) ? 0 : chars.Length;
 			bool inQuote = false;
 			for (int indx = 0; indx < stringLength; indx++)
 			{
@@ -585,7 +581,7 @@ namespace NHibernate.Util
 		public static string GenerateAlias(string description, int unique)
 		{
 			return GenerateAliasRoot(description) +
-				   unique.ToString() +
+				   unique +
 				   Underscore;
 		}
 
