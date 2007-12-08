@@ -118,7 +118,7 @@ namespace NHibernate.Type
 				return "null";
 			}
 			StringBuilder result = new StringBuilder();
-			result.Append(StringHelper.Unqualify(NHibernateProxyHelper.GetClass(value).FullName));
+			result.Append(StringHelper.Unqualify(NHibernateProxyHelper.GetClassWithoutInitializingProxy(value).FullName));
 			if (persister.HasIdentifierProperty)
 			{
 				result.Append('#')

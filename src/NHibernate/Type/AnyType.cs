@@ -405,7 +405,7 @@ namespace NHibernate.Type
 				return true;
 			}
 
-			return (NHibernateProxyHelper.GetClass(old) != NHibernateProxyHelper.GuessClass(current)) ||
+			return (NHibernateProxyHelper.GetClassWithoutInitializingProxy(old) != NHibernateProxyHelper.GuessClass(current)) ||
 				   identifierType.IsDirty(Id(old, session), Id(current, session), session);
 		}
 
@@ -423,7 +423,7 @@ namespace NHibernate.Type
 
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
-			return (checkable[0] && NHibernateProxyHelper.GetClass(old) != NHibernateProxyHelper.GuessClass(current)) ||
+			return (checkable[0] && NHibernateProxyHelper.GetClassWithoutInitializingProxy(old) != NHibernateProxyHelper.GuessClass(current)) ||
 				   identifierType.IsDirty(Id(old, session), Id(current, session), idcheckable, session);
 		}
 

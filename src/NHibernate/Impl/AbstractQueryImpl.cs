@@ -183,7 +183,7 @@ namespace NHibernate.Impl
 				throw new ArgumentNullException("param", "The IType can not be guessed for a null value.");
 			}
 
-			System.Type clazz = NHibernateProxyHelper.GuessClass(param);
+			System.Type clazz = NHibernateProxyHelper.GetClassWithoutInitializingProxy(param);
 			return GuessType(clazz);
 		}
 

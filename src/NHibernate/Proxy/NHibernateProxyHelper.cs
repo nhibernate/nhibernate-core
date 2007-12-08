@@ -14,13 +14,13 @@ namespace NHibernate.Proxy
 			//can't instantiate
 		}
 
-		/// <summary>
-		/// Convenience method to figure out the underlying type for the object regardless of it
-		/// is a Proxied object or the real object.
+		/// <summary> 
+		/// Get the class of an instance or the underlying class of a proxy (without initializing the proxy!). 
+		/// It is almost always better to use the entity name!
 		/// </summary>
 		/// <param name="obj">The object to get the type of.</param>
 		/// <returns>The Underlying Type for the object regardless of if it is a Proxy.</returns>
-		public static System.Type GetClass(object obj)
+		public static System.Type GetClassWithoutInitializingProxy(object obj)
 		{
 			INHibernateProxy proxy = obj as INHibernateProxy;
 			if (proxy != null)
