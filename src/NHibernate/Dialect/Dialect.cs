@@ -1104,25 +1104,19 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary>
-		/// Generate SQL to get the identifier of an inserted row.
-		/// If the returned value is not null, the caller will prepare a statement from it,
-		/// set SQL parameters just as it would for insertSQL, and execute it as a query
-		/// which is expected to return the identifier of the inserted row.
-		/// If the returned value is null, the caller will execute insertSQL as an update
-		/// and then execute IdentitySelectString as a query.
-		/// The default implementation (in this class) returns <see langword="null" />.
+		/// <summary> 
+		/// Provided we <see cref="SupportsInsertSelectIdentity"/>, then attch the
+		/// "select identity" clause to the  insert statement.
 		/// </summary>
-		/// <param name="insertSql">a parameterized SQL statement to insert a row into a table.</param>
-		/// <param name="identityColumn">The column for which the identity generator was specified.</param>
-		/// <param name="tableName">The name of the table the row is being inserted in.</param>
-		/// <returns>a SQL statement that has the same effect as insertSQL
-		/// and also gets the identifier of the inserted row.
-		/// Return <see langword="null" /> if this dialect doesn't support this feature.
+		/// <param name="insertString">The insert command </param>
+		/// <returns> 
+		/// The insert command with any necessary identity select clause attached.
+		/// Note, if <see cref="SupportsInsertSelectIdentity"/> == false then
+		/// the insert-string should be returned without modification.
 		/// </returns>
-		public virtual SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
+		public virtual SqlString AppendIdentitySelectToInsert(SqlString insertString)
 		{
-			return null;
+			return insertString;
 		}
 
 		/// <summary> 

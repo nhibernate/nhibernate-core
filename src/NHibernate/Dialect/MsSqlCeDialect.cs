@@ -63,11 +63,6 @@ namespace NHibernate.Dialect
 			get { return string.Empty; }
 		}
 
-		public override SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
-		{
-			return null;
-		}
-
 		public override bool SupportsIdentityColumns
 		{
 			get { return true; }

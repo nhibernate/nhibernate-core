@@ -2279,15 +2279,9 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
-				SqlString insertSelectSQL = null;
-
-				if (sql.CommandType == CommandType.Text)
+				if (Dialect.SupportsInsertSelectIdentity && sql.CommandType == CommandType.Text)
 				{
-					insertSelectSQL = Dialect.AddIdentitySelectToInsert(sql.Text, GetKeyColumns(0)[0], GetTableName(0));
-				}
-
-				if (insertSelectSQL != null)
-				{
+					SqlString insertSelectSQL = Dialect.AppendIdentitySelectToInsert(sql.Text);
 					// Use one statement to insert the row and get the generated id
 					IDbCommand insertSelect = session.Batcher.PrepareCommand(CommandType.Text, insertSelectSQL, sql.ParameterTypes);
 					IDataReader rs = null;
