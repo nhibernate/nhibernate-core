@@ -11,6 +11,7 @@ namespace NHibernate.Tuple.Component
 		private readonly int propertySpan;
 		private readonly StandardProperty[] properties;
 		private readonly Dictionary<string, int> propertyIndexes;
+		private readonly ComponentEntityModeToTuplizerMapping tuplizerMapping;
 
 		public ComponentMetamodel(Mapping.Component component)
 		{
@@ -26,6 +27,7 @@ namespace NHibernate.Tuple.Component
 				propertyIndexes[property.Name] = i;
 				i++;
 			}
+			tuplizerMapping = new ComponentEntityModeToTuplizerMapping(component);
 		}
 
 		public string Role
@@ -46,6 +48,11 @@ namespace NHibernate.Tuple.Component
 		public StandardProperty[] Properties
 		{
 			get { return properties; }
+		}
+
+		public ComponentEntityModeToTuplizerMapping TuplizerMapping
+		{
+			get { return tuplizerMapping; }
 		}
 
 		public StandardProperty GetProperty(int index)

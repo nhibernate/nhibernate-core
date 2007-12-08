@@ -41,11 +41,11 @@ namespace NHibernate.Tuple.Entity
 			if (!userSuppliedTuplizerImpls.TryGetValue(EntityMode.Map, out tuplizerImpl))
 			{
 				dynamicMapTuplizer = new DynamicMapEntityTuplizer(em, mappedEntity);
-				userSuppliedTuplizerImpls.Remove(EntityMode.Map);
 			}
 			else
 			{
 				dynamicMapTuplizer = BuildEntityTuplizer(tuplizerImpl, mappedEntity, em);
+				userSuppliedTuplizerImpls.Remove(EntityMode.Map);
 			}
 
 			// then the pojo tuplizer, using the dynamic-map tuplizer if no pojo representation is available

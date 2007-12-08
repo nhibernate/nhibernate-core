@@ -18,6 +18,7 @@ namespace NHibernate.Mapping
 		private bool dynamic;
 		private bool isKey;
 		private string roleName;
+		private Dictionary<EntityMode, string> tuplizerImpls;
 
 		/// <summary></summary>
 		public int PropertySpan
@@ -210,5 +211,40 @@ namespace NHibernate.Mapping
 			}
 			throw new MappingException("component property not found: " + propertyName);
 		}
+
+		public virtual void AddTuplizer(EntityMode entityMode, string implClassName)
+		{
+			if (tuplizerImpls == null)
+				tuplizerImpls = new Dictionary<EntityMode, string>();
+
+			tuplizerImpls[entityMode] = implClassName;
+		}
+
+		public virtual string GetTuplizerImplClassName(EntityMode mode)
+		{
+			// todo : remove this once ComponentMetamodel is complete and merged
+			if (tuplizerImpls == null)
+			{
+				return null;
+			}
+			return tuplizerImpls[mode];
+		}
+
+		public virtual IDictionary<EntityMode, string> TuplizerMap
+		{
+			get
+			{
+				if (tuplizerImpls == null)
+					return null;
+
+				return tuplizerImpls;
+			}
+		}
+
+		public bool HasPojoRepresentation
+		{
+			get { return componentClass != null; }
+		}
+
 	}
 }

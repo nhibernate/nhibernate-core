@@ -972,7 +972,12 @@ namespace NHibernate.Mapping
 
 				return new Dictionary<EntityMode, System.Type>(tuplizerImpls);
 			}
-
 		}
+
+		public bool HasPojoRepresentation
+		{
+			get { return MappedClass != null; }
+		}
+
 	}
 }

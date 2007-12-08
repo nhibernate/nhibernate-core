@@ -963,6 +963,7 @@
     <Compile Include="Transform\PassThroughResultTransformer.cs" />
     <Compile Include="Transform\Transformers.cs" />
     <Compile Include="Tuple\Component\AbstractComponentTuplizer.cs" />
+    <Compile Include="Tuple\Component\ComponentEntityModeToTuplizerMapping.cs" />
     <Compile Include="Tuple\Component\ComponentMetamodel.cs" />
     <Compile Include="Tuple\Component\DynamicMapComponentTuplizer.cs" />
     <Compile Include="Tuple\Component\IComponentTuplizer.cs" />
