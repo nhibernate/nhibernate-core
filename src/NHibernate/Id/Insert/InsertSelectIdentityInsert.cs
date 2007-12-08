@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -18,8 +17,7 @@ namespace NHibernate.Id.Insert
 
 		public override SqlString ToSqlString()
 		{
-			//return Dialect.AppendIdentitySelectToInsert(base.ToSqlString());
-			throw new NotImplementedException();
+			return Dialect.AppendIdentitySelectToInsert(base.ToSqlString());
 		}
 	}
 }

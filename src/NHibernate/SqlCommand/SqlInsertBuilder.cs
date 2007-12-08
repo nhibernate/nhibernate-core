@@ -43,6 +43,12 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		protected internal Dialect.Dialect Dialect
+		{
+			get{return factory.Dialect;}
+		}
+
+
 		/// <summary>
 		/// Adds the Property's columns to the INSERT sql
 		/// </summary>
