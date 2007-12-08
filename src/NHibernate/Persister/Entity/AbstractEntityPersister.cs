@@ -45,7 +45,6 @@ namespace NHibernate.Persister.Entity
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractEntityPersister));
 
-		public const string EntityID = "id";
 		public const string EntityClass = "class";
 
 		private readonly Dialect.Dialect dialect;
@@ -720,7 +719,7 @@ namespace NHibernate.Persister.Entity
 			{
 				propertyMapping.InitPropertyPaths(null, IdentifierType, IdentifierColumnNames, null, mapping);
 			}
-			propertyMapping.InitPropertyPaths(EntityID, IdentifierType, IdentifierColumnNames, null, mapping);
+			propertyMapping.InitPropertyPaths(EntityPersister.EntityID, IdentifierType, IdentifierColumnNames, null, mapping);
 		}
 
 		private void InitDiscriminatorPropertyPath(IMapping mapping)
@@ -1138,7 +1137,7 @@ namespace NHibernate.Persister.Entity
 			if (HasIdentifierProperty)
 			{
 				subclassPropertyAliases[IdentifierPropertyName] = identifierAliases;
-				subclassPropertyAliases[EntityID] = identifierAliases;
+				subclassPropertyAliases[EntityPersister.EntityID] = identifierAliases;
 			}
 
 			if (HasEmbeddedIdentifier)

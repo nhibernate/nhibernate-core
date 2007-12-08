@@ -39,7 +39,7 @@ namespace NHibernate.Loader
 			if (keyColumnsCandidates == null)
 			{
 				suffixedKeyColumns = GetUserProvidedAliases(
-					AbstractEntityPersister.EntityID,
+					EntityPersister.EntityID,
 					GetIdentifierAliases(persister, suffix)
 					);
 			}

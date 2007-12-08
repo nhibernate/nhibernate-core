@@ -6,6 +6,12 @@ using NHibernate.Type;
 
 namespace NHibernate.Persister.Entity
 {
+	public struct EntityPersister
+	{
+		/// <summary> The property name of the "special" identifier property in HQL</summary>
+		public readonly static string EntityID = "id";
+	}
+
 	/// <summary>
 	/// Concrete <c>IEntityPersister</c>s implement mapping and persistence logic for a particular class.
 	/// </summary>
