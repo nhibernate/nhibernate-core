@@ -1017,6 +1017,7 @@
     <Compile Include="UserTypes\IUserVersionType.cs" />
     <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Util\CollectionHelper.cs" />
+    <Compile Include="Util\EqualsHelper.cs" />
     <Compile Include="Util\FilterHelper.cs" />
     <Compile Include="Util\IdentitySet.cs" />
     <Compile Include="Util\LRUMap.cs" />

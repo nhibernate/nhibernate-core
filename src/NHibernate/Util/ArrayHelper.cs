@@ -19,6 +19,9 @@ namespace NHibernate.Util
 		public static readonly int[] EmptyIntArray = new int[0];
 		public static readonly bool[] EmptyBoolArray = new bool[0];
 
+		public static readonly bool[] True = new bool[] { true };
+		public static readonly bool[] False = new bool[] { false };
+
 		private ArrayHelper()
 		{
 		}
