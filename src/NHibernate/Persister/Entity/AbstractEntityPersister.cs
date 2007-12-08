@@ -524,7 +524,7 @@ namespace NHibernate.Persister.Entity
 		{
 			get { return entityMetamodel.IsVersioned; }
 		}
-
+		
 		public bool IsBatchable
 		{
 			get { return /* jdbcBatchVersionedData || */ !IsVersioned; }
@@ -3687,6 +3687,20 @@ namespace NHibernate.Persister.Entity
 		{
 			return GetTuplizer(entityMode).ConcreteProxyClass;
 		}
+
+		#region IOptimisticCacheSource Members
+
+		bool IOptimisticCacheSource.IsVersioned
+		{
+			get { return IsVersioned; }
+		}
+
+		public IComparer VersionComparator
+		{
+			get { return IsVersioned ? VersionType.Comparator : null; }
+		}
+
+		#endregion
 
 	}
 }

@@ -201,6 +201,11 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
+		public IComparer VersionComparator
+		{
+			get { return null; }
+		}
+
 		public bool IsUnsavedVersion(object[] values)
 		{
 			return false;

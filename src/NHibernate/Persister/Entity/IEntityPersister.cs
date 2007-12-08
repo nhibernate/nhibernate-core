@@ -19,7 +19,7 @@ namespace NHibernate.Persister.Entity
 	/// Implementors must be threadsafe (preferrably immutable) and must provide a constructor of type
 	/// (PersistentClass, SessionFactoryImplementor)
 	/// </remarks>
-	public interface IEntityPersister
+	public interface IEntityPersister : IOptimisticCacheSource
 	{
 		/// <summary>
 		/// Finish the initialization of this object, once all <c>ClassPersisters</c> have been
@@ -217,7 +217,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Are instances of this class versioned by a timestamp or version number column?
 		/// </summary>
-		bool IsVersioned { get; }
+		new bool IsVersioned { get; }
 
 		/// <summary>
 		/// Get the type of versioning (optional operation)

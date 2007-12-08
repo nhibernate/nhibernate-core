@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Engine;
@@ -255,6 +256,11 @@ namespace NHibernate.Test.NHSpecificTest
 				// TODO:  Add TestingClassPersister.IsVersioned getter implementation
 				return false;
 			}
+		}
+
+		public IComparer VersionComparator
+		{
+			get { return null; }
 		}
 
 		public bool HasProxy

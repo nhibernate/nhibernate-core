@@ -479,6 +479,7 @@
     <Compile Include="Cache\Entry\StructuredMapCacheEntry.cs" />
     <Compile Include="Cache\Entry\UnstructuredCacheEntry.cs" />
     <Compile Include="Cache\FilterKey.cs" />
+    <Compile Include="Cache\IOptimisticCacheSource.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />
     <Compile Include="Cache\NoCachingEnabledException.cs" />
     <Compile Include="Cfg\ClassExtractor.cs" />
