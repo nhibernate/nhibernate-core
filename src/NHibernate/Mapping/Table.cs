@@ -306,12 +306,13 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
+		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create this Table, Primary Key Constraints
 		/// , and Unique Key Constraints.
 		/// </returns>
-		public string SqlCreateString(Dialect dialect, IMapping p, string defaultSchema)
+		public string SqlCreateString(Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
 			StringBuilder buf = new StringBuilder(HasPrimaryKey
 			                                      	?
@@ -434,12 +435,13 @@ namespace NHibernate.Mapping
 		/// Generates the SQL string to drop this Table in the database.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect"/> to use for SQL rules.</param>
+		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to drop this Table and to cascade the drop to 
 		/// the constraints if the database supports it.
 		/// </returns>
-		public string SqlDropString(Dialect dialect, string defaultSchema)
+		public string SqlDropString(Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
 			return dialect.GetDropTableString(GetQualifiedName(dialect, defaultSchema));
 		}

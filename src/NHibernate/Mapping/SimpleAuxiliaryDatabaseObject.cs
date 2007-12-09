@@ -23,15 +23,12 @@ namespace NHibernate.Mapping
 			this.sqlDropString = sqlDropString;
 		}
 
-		public override string SqlCreateString(
-			Dialect.Dialect dialect,
-			IMapping p,
-			string defaultSchema)
+		public override string SqlCreateString(Dialect.Dialect dialect,IMapping p, string defaultCatalog, string defaultSchema)
 		{
 			return InjectCatalogAndSchema(sqlCreateString, defaultSchema);
 		}
 
-		public override string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
+		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
 			return InjectCatalogAndSchema(sqlDropString, defaultSchema);
 		}

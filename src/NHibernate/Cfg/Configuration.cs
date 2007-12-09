@@ -650,6 +650,7 @@ namespace NHibernate.Cfg
 		{
 			SecondPassCompile();
 
+			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
 			ArrayList script = new ArrayList(50);
@@ -660,7 +661,7 @@ namespace NHibernate.Cfg
 				IAuxiliaryDatabaseObject auxDbObj = auxiliaryDatabaseObjects[i];
 				if (auxDbObj.AppliesToDialect(dialect))
 				{
-					script.Add(auxDbObj.SqlDropString(dialect, defaultSchema));
+					script.Add(auxDbObj.SqlDropString(dialect, defaultCatalog, defaultSchema));
 				}
 			}
 
@@ -670,14 +671,14 @@ namespace NHibernate.Cfg
 				{
 					foreach (ForeignKey fk in table.ForeignKeyCollection)
 					{
-						script.Add(fk.SqlDropString(dialect, defaultSchema));
+						script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
 					}
 				}
 			}
 
 			foreach (Table table in TableMappings)
 			{
-				script.Add(table.SqlDropString(dialect, defaultSchema));
+				script.Add(table.SqlDropString(dialect, defaultCatalog, defaultSchema));
 			}
 
 			foreach (IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect))
@@ -700,13 +701,14 @@ namespace NHibernate.Cfg
 		{
 			SecondPassCompile();
 
+			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
 			ArrayList script = new ArrayList(50);
 
 			foreach (Table table in TableMappings)
 			{
-				script.Add(table.SqlCreateString(dialect, mapping, defaultSchema));
+				script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 			}
 
 			foreach (Table table in TableMappings)
@@ -726,14 +728,14 @@ namespace NHibernate.Cfg
 
 				foreach (Index index in table.IndexCollection)
 				{
-					script.Add(index.SqlCreateString(dialect, mapping, defaultSchema));
+					script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 				}
 
 				if (dialect.HasAlterTable)
 				{
 					foreach (ForeignKey fk in table.ForeignKeyCollection)
 					{
-						script.Add(fk.SqlCreateString(dialect, mapping, defaultSchema));
+						script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					}
 				}
 			}
@@ -748,7 +750,7 @@ namespace NHibernate.Cfg
 			{
 				if (auxDbObj.AppliesToDialect(dialect))
 				{
-					script.Add(auxDbObj.SqlCreateString(dialect, mapping, defaultSchema));
+					script.Add(auxDbObj.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 				}
 			}
 
@@ -1987,7 +1989,8 @@ namespace NHibernate.Cfg
 		{
 			SecondPassCompile();
 
-			String defaultSchema = (string)properties[Environment.DefaultSchema];
+			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
+			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
 			ArrayList script = new ArrayList(50);
 			foreach (Table table in tables.Values)
@@ -2001,13 +2004,7 @@ namespace NHibernate.Cfg
 						);
 					if (tableInfo == null)
 					{
-						script.Add(
-								table.SqlCreateString(
-										dialect,
-										mapping,
-										defaultSchema
-									)
-							);
+						script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					}
 					else
 					{
@@ -2051,13 +2048,7 @@ namespace NHibernate.Cfg
 									);
 								if (create)
 								{
-									script.Add(
-											fk.SqlCreateString(
-													dialect,
-													mapping,
-													defaultSchema
-												)
-										);
+									script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 								}
 							}
 						}

@@ -19,11 +19,12 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
+		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create this Index.
 		/// </returns>
-		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultSchema)
+		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
 			StringBuilder buf =
 				new StringBuilder("create index ")
@@ -57,11 +58,12 @@ namespace NHibernate.Mapping
 		/// Generates the SQL string to drop this Index in the database.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to drop this Index.
 		/// </returns>
-		public string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
+		public string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
 			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
 			string drop = string.Format("drop index {0}.{1}", table.GetQualifiedName(dialect, defaultSchema), name);

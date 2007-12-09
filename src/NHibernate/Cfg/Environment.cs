@@ -80,7 +80,11 @@ namespace NHibernate.Cfg
 		public const string SessionFactoryName = "session_factory_name";
 
 		public const string Dialect = "dialect";
+		/// <summary> A default database schema (owner) name to use for unqualified tablenames</summary>
 		public const string DefaultSchema = "default_schema";
+		/// <summary> A default database catalog name to use for unqualified tablenames</summary>
+		public const string DefaultCatalog = "default_catalog";
+
 		public const string ShowSql = "show_sql";
 		public const string MaxFetchDepth = "max_fetch_depth";
 		public const string CurrentSessionContextClass = "current_session_context_class";

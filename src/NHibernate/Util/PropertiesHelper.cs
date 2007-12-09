@@ -77,7 +77,7 @@ namespace NHibernate.Util
 		public static string GetString(string property, IDictionary properties, string defaultValue)
 		{
 			string propValue = properties[property] as string;
-			return (propValue == null) ? defaultValue : propValue;
+			return propValue ?? defaultValue;
 		}
 
 		/// <summary>

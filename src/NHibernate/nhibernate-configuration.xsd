@@ -93,6 +93,7 @@
 								<xs:enumeration value="xml.output_stylesheet" />
 								<xs:enumeration value="generate_statistics" />
 								<xs:enumeration value="query.startup_check" />
+								<xs:enumeration value="default_catalog" />
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

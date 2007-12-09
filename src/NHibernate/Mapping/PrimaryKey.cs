@@ -65,11 +65,12 @@ namespace NHibernate.Mapping
 		/// Get the SQL string to drop this Constraint in the database.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to drop this Constraint.
 		/// </returns>
-		public override string SqlDropString(Dialect.Dialect dialect, string defaultSchema)
+		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
 			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
 			string drop = string.Format("alter table {0}{1}", Table.GetQualifiedName(dialect, defaultSchema), dialect.GetDropPrimaryKeyConstraintString(Name));
