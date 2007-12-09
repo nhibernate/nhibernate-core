@@ -277,6 +277,20 @@ namespace NHibernate.Mapping
 			set { fetchMode = value; }
 		}
 
+		#region IValue Members
+
+		public bool IsAlternateUniqueKey
+		{
+			get { return false; }
+		}
+
+
+		public void SetTypeUsingReflection(string className, string propertyName, string accesorName)
+		{
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Gets or sets a <see cref="Boolean"/> indicating if this is a 
 		/// mapping for a generic collection.

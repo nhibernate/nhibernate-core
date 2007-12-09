@@ -141,6 +141,26 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Get the <see cref="System.Type" /> for the named property of a type.
+		/// </summary>
+		/// <param name="className">The FullName to find the property in.</param>
+		/// <param name="name">The name of the property/field to find in the class.</param>
+		/// <param name="accessorName">The name of the property accessor for the property.</param>
+		/// <returns>The <see cref="System.Type" /> for the named property.</returns>
+		public static System.Type ReflectedPropertyClass(string className, string name, string accessorName)
+		{
+			try
+			{
+				System.Type clazz = ClassForName(className);
+				return GetGetter(clazz, name, accessorName).ReturnType;
+			}
+			catch (Exception cnfe)
+			{
+				throw new MappingException(string.Format("class {0} not found while looking for property: {1}", className, name), cnfe);
+			}
+		}
+
+		/// <summary>
 		/// Returns a reference to the Type.
 		/// </summary>
 		/// <param name="name">The name of the class or a fully qualified name.</param>

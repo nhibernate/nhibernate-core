@@ -23,6 +23,8 @@ namespace NHibernate.Mapping
 		private string foreignKeyName;
 		private bool unique;
 		private IIdentifierGenerator uniqueIdentifierGenerator;
+		private bool isAlternateUniqueKey;
+		private string typeName;
 
 		public SimpleValue()
 		{
@@ -33,54 +35,15 @@ namespace NHibernate.Mapping
 			this.table = table;
 		}
 
-		public virtual void AddColumn(Column column)
-		{
-			if (!columns.Contains(column))
-			{
-				columns.Add(column);
-			}
-			column.Value = this;
-			column.TypeIndex = columns.Count - 1;
-		}
-
-		public virtual void AddFormula(Formula formula)
-		{
-			columns.Add(formula);
-		}
-
-		public virtual int ColumnSpan
-		{
-			get { return columns.Count; }
-		}
-
-		public virtual IEnumerable<ISelectable> ColumnIterator
-		{
-			get { return columns; }
-		}
-
 		public virtual IList<ISelectable> ConstraintColumns
 		{
 			get { return columns; }
 		}
 
-		public virtual IType Type
+		public string TypeName
 		{
-			get { return type; }
-			set
-			{
-				this.type = value;
-				int count = 0;
-
-				foreach (ISelectable sel in ColumnIterator)
-				{
-					if (sel is Column)
-					{
-						Column col = (Column)sel;
-						col.Type = type;
-						col.TypeIndex = count++;
-					}
-				}
-			}
+			get { return typeName; }
+			set { typeName = value; }
 		}
 
 		public string ForeignKeyName
@@ -95,24 +58,186 @@ namespace NHibernate.Mapping
 			set { table = value; }
 		}
 
-		public virtual void CreateForeignKey()
+		public IDictionary IdentifierGeneratorProperties
 		{
+			get { return identifierGeneratorProperties; }
+			set { identifierGeneratorProperties = value; }
 		}
+
+		public string IdentifierGeneratorStrategy
+		{
+			get { return identifierGeneratorStrategy; }
+			set { identifierGeneratorStrategy = value; }
+		}
+
+		public virtual bool IsComposite
+		{
+			get { return false; }
+		}
+
+		#region IKeyValue Members
 
 		public void CreateForeignKeyOfClass(System.Type persistentClass)
 		{
 			table.CreateForeignKey(ForeignKeyName, ConstraintColumns, persistentClass);
 		}
 
-		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect)
+		public string NullValue
 		{
-			if (uniqueIdentifierGenerator == null)
-			{
-				uniqueIdentifierGenerator =
-					IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
-			}
+			get { return nullValue; }
+			set { nullValue = value; }
+		}
 
-			return uniqueIdentifierGenerator;
+		#endregion
+
+		#region IValue Members
+
+		public virtual int ColumnSpan
+		{
+			get { return columns.Count; }
+		}
+
+		public virtual IEnumerable<ISelectable> ColumnIterator
+		{
+			get { return columns; }
+		}
+
+		public virtual IType Type
+		{
+			get { return type; }
+			set
+			{
+				type = value;
+				int count = 0;
+
+				foreach (ISelectable sel in ColumnIterator)
+				{
+					if (sel is Column)
+					{
+						Column col = (Column)sel;
+						col.Type = type;
+						col.TypeIndex = count++;
+					}
+				}
+			}
+		}
+
+		public bool HasFormula
+		{
+			get
+			{
+				foreach (ISelectable s in ColumnIterator)
+				{
+					if (s.IsFormula)
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+
+		public bool IsUnique
+		{
+			get { return unique; }
+			set { unique = value; }
+		}
+
+		public virtual bool IsNullable
+		{
+			get
+			{
+				if (HasFormula)
+				{
+					return true;
+				}
+
+				bool nullable = true;
+				foreach (Column col in ColumnIterator)
+				{
+					if (!col.IsNullable)
+					{
+						nullable = false;
+					}
+				}
+
+				return nullable;
+			}
+		}
+
+		public virtual bool[] ColumnUpdateability
+		{
+			get { return ColumnInsertability; }
+		}
+
+		public virtual bool[] ColumnInsertability
+		{
+			get
+			{
+				bool[] result = new bool[ColumnSpan];
+				int i = 0;
+				foreach (ISelectable s in ColumnIterator)
+				{
+					result[i++] = !s.IsFormula;
+				}
+				return result;
+			}
+		}
+
+		public bool IsSimpleValue
+		{
+			get { return true; }
+		}
+
+		public bool IsValid(IMapping mapping)
+		{
+			return ColumnSpan == Type.GetColumnSpan(mapping);
+		}
+
+		public virtual void CreateForeignKey()
+		{
+		}
+
+		public virtual FetchMode FetchMode
+		{
+			get { return FetchMode.Select; }
+			// Needed so that subclasses have something to override
+			set { throw new NotSupportedException(); }
+		}
+
+		public bool IsAlternateUniqueKey
+		{
+			get { return isAlternateUniqueKey; }
+			set { isAlternateUniqueKey = value; }
+		}
+
+		public virtual void SetTypeUsingReflection(string className, string propertyName, string accesorName)
+		{
+			if (typeName == null)
+			{
+				if (className == null)
+				{
+					throw new MappingException("you must specify types for a dynamic entity: " + propertyName);
+				}
+				typeName = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName).FullName;
+			}
+		}
+
+		#endregion
+
+		public virtual void AddColumn(Column column)
+		{
+			if (!columns.Contains(column))
+			{
+				columns.Add(column);
+			}
+			column.Value = this;
+			column.TypeIndex = columns.Count - 1;
+		}
+
+		public virtual void AddFormula(Formula formula)
+		{
+			columns.Add(formula);
 		}
 
 		public void SetTypeByReflection(System.Type propertyClass, string propertyName)
@@ -145,106 +270,20 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public virtual FetchMode FetchMode
+		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect)
 		{
-			get { return FetchMode.Select; }
-			// Needed so that subclasses have something to override
-			set { throw new NotSupportedException(); }
-		}
-
-		public IDictionary IdentifierGeneratorProperties
-		{
-			get { return identifierGeneratorProperties; }
-			set { identifierGeneratorProperties = value; }
-		}
-
-		public string IdentifierGeneratorStrategy
-		{
-			get { return identifierGeneratorStrategy; }
-			set { identifierGeneratorStrategy = value; }
-		}
-
-		public virtual bool IsComposite
-		{
-			get { return false; }
-		}
-
-		public bool IsSimpleValue
-		{
-			get { return true; }
-		}
-
-		public bool IsUnique
-		{
-			get { return unique; }
-			set { unique = value; }
-		}
-
-		public virtual bool IsNullable
-		{
-			get
+			if (uniqueIdentifierGenerator == null)
 			{
-				if (HasFormula)
-				{
-					return true;
-				}
-
-				bool nullable = true;
-				foreach (Column col in ColumnIterator)
-				{
-					if (!col.IsNullable)
-					{
-						nullable = false;
-					}
-				}
-
-				return nullable;
+				uniqueIdentifierGenerator =
+					IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
 			}
+
+			return uniqueIdentifierGenerator;
 		}
 
-		public string NullValue
+		public override string ToString()
 		{
-			get { return nullValue; }
-			set { nullValue = value; }
-		}
-
-		public bool IsValid(IMapping mapping)
-		{
-			return ColumnSpan == Type.GetColumnSpan(mapping);
-		}
-
-		public virtual bool[] ColumnInsertability
-		{
-			get
-			{
-				bool[] result = new bool[ColumnSpan];
-				int i = 0;
-				foreach (ISelectable s in ColumnIterator)
-				{
-					result[i++] = !s.IsFormula;
-				}
-				return result;
-			}
-		}
-
-		public virtual bool[] ColumnUpdateability
-		{
-			get { return ColumnInsertability; }
-		}
-
-		public bool HasFormula
-		{
-			get
-			{
-				foreach (ISelectable s in ColumnIterator)
-				{
-					if (s.IsFormula)
-					{
-						return true;
-					}
-				}
-				return false;
-			}
+			return string.Format("{0}({1})", GetType().FullName, StringHelper.CollectionToString(columns));
 		}
 	}
 }

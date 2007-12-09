@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Mapping
 {
 	/// <summary>
@@ -7,9 +5,6 @@ namespace NHibernate.Mapping
 	/// of an entity, or a foreign key of a collection or join table or
 	/// joined subclass table.
 	/// </summary>
-	/// <remarks>
-	/// Author: Gavin King
-	/// </remarks>
 	public interface IKeyValue : IValue
 	{
 		void CreateForeignKeyOfClass(System.Type persistentClass);

@@ -113,6 +113,19 @@ namespace NHibernate.Mapping
 			get { return FetchMode.Join; }
 		}
 
+		#region IValue Members
+
+		public bool IsAlternateUniqueKey
+		{
+			get { return false; }
+		}
+
+		public void SetTypeUsingReflection(string className, string propertyName, string accesorName)
+		{
+		}
+
+		#endregion
+
 		/// <summary>
 		/// 
 		/// </summary>

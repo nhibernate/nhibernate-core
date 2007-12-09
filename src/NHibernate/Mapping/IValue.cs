@@ -77,5 +77,9 @@ namespace NHibernate.Mapping
 		bool IsValid(IMapping mapping);
 
 		FetchMode FetchMode { get; }
+
+		bool IsAlternateUniqueKey { get;}
+
+		void SetTypeUsingReflection(string className, string propertyName, string accesorName);
 	}
 }
