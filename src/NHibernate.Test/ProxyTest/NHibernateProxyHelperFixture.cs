@@ -44,13 +44,13 @@ namespace NHibernate.Test.ProxyTest
 			try
 			{
 				s = OpenSession();
-				System.Type type = NHibernateProxyHelper.GetClass(a);
+				System.Type type = NHibernateProxyHelper.GetClassWithoutInitializingProxy(a);
 				Assert.AreEqual(typeof(AProxy), type, "Should have returned 'A' for a non-proxy");
 
 				AProxy aProxied = (AProxy) s.Load(typeof(AProxy), a.Id);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(aProxied), "should be a proxy");
 
-				type = NHibernateProxyHelper.GetClass(aProxied);
+				type = NHibernateProxyHelper.GetClassWithoutInitializingProxy(aProxied);
 				Assert.AreEqual(typeof(AProxy), type, "even though aProxied was a Proxy it should have returned the correct type.");
 				s.Delete(aProxied);
 				s.Flush();
