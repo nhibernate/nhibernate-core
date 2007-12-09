@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Reflection;
+using NHibernate.Engine;
 
 namespace NHibernate.Property
 {
@@ -46,5 +48,12 @@ namespace NHibernate.Property
 		/// identifier property.
 		/// </remarks>
 		MethodInfo Method { get; }
+
+		/// <summary> Get the property value from the given owner instance. </summary>
+		/// <param name="owner">The instance containing the value to be retreived. </param>
+		/// <param name="mergeMap">a map of merged persistent instances to detached instances </param>
+		/// <param name="session">The session from which this request originated. </param>
+		/// <returns> The extracted value. </returns>
+		object GetForInsert(object owner, IDictionary mergeMap, ISessionImplementor session);
 	}
 }

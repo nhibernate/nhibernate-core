@@ -16,14 +16,12 @@ namespace NHibernate.Property
 
 		public IGetter GetGetter(System.Type theClass, string propertyName)
 		{
-			IGetter result = null;
 			for (int i = 0; i < chain.Length; i++)
 			{
 				IPropertyAccessor candidate = chain[i];
 				try
 				{
-					result = candidate.GetGetter(theClass, propertyName);
-					return result;
+					return candidate.GetGetter(theClass, propertyName);
 				}
 				catch (PropertyNotFoundException)
 				{
@@ -35,14 +33,12 @@ namespace NHibernate.Property
 
 		public ISetter GetSetter(System.Type theClass, string propertyName)
 		{
-			ISetter result = null;
 			for (int i = 0; i < chain.Length; i++)
 			{
 				IPropertyAccessor candidate = chain[i];
 				try
 				{
-					result = candidate.GetSetter(theClass, propertyName);
-					return result;
+					return candidate.GetSetter(theClass, propertyName);
 				}
 				catch (PropertyNotFoundException)
 				{

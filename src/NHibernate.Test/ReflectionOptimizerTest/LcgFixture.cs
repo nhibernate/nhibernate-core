@@ -21,11 +21,11 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 		{
 			IGetter[] getters = new IGetter[]
 				{
-					new BasicGetter(typeof (NoSetterClass), typeof (NoSetterClass).GetProperty("Property"), "Property")
+					new BasicPropertyAccessor.BasicGetter(typeof (NoSetterClass), typeof (NoSetterClass).GetProperty("Property"), "Property")
 				};
 			ISetter[] setters = new ISetter[]
 				{
-					new BasicSetter(typeof (NoSetterClass), typeof (NoSetterClass).GetProperty("Property"), "Property")
+					new BasicPropertyAccessor.BasicSetter(typeof (NoSetterClass), typeof (NoSetterClass).GetProperty("Property"), "Property")
 				};
 
 			new ReflectionOptimizer(typeof (NoSetterClass), getters, setters);
@@ -44,11 +44,11 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 		{
 			IGetter[] getters = new IGetter[]
 				{
-					new BasicGetter(typeof (NoGetterClass), typeof (NoGetterClass).GetProperty("Property"), "Property")
+					new BasicPropertyAccessor.BasicGetter(typeof (NoGetterClass), typeof (NoGetterClass).GetProperty("Property"), "Property")
 				};
 			ISetter[] setters = new ISetter[]
 				{
-					new BasicSetter(typeof (NoGetterClass), typeof (NoGetterClass).GetProperty("Property"), "Property")
+					new BasicPropertyAccessor.BasicSetter(typeof (NoGetterClass), typeof (NoGetterClass).GetProperty("Property"), "Property")
 				};
 
 			new ReflectionOptimizer(typeof (NoGetterClass), getters, setters);

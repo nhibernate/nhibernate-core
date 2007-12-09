@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Reflection;
-using log4net;
+using System.Reflection.Emit;
+using NHibernate.Engine;
 
 namespace NHibernate.Property
 {
@@ -11,8 +13,6 @@ namespace NHibernate.Property
 	[Serializable]
 	public class BasicPropertyAccessor : IPropertyAccessor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(BasicPropertyAccessor));
-
 		#region IPropertyAccessor Members
 
 		/// <summary>
@@ -149,6 +149,200 @@ namespace NHibernate.Property
 					}
 				}
 				return setter;
+			}
+		}
+
+		/// <summary>
+		/// An <see cref="IGetter"/> for a Property <c>get</c>.
+		/// </summary>
+		public sealed class BasicGetter : IGetter, IOptimizableGetter
+		{
+			private readonly System.Type clazz;
+			private readonly PropertyInfo property;
+			private readonly string propertyName;
+
+			/// <summary>
+			/// Initializes a new instance of <see cref="BasicGetter"/>.
+			/// </summary>
+			/// <param name="clazz">The <see cref="System.Type"/> that contains the Property <c>get</c>.</param>
+			/// <param name="property">The <see cref="PropertyInfo"/> for reflection.</param>
+			/// <param name="propertyName">The name of the Property.</param>
+			public BasicGetter(System.Type clazz, PropertyInfo property, string propertyName)
+			{
+				this.clazz = clazz;
+				this.property = property;
+				this.propertyName = propertyName;
+			}
+
+			public PropertyInfo Property
+			{
+				get { return property; }
+			}
+
+			#region IGetter Members
+
+			/// <summary>
+			/// Gets the value of the Property from the object.
+			/// </summary>
+			/// <param name="target">The object to get the Property value from.</param>
+			/// <returns>
+			/// The value of the Property for the target.
+			/// </returns>
+			public object Get(object target)
+			{
+				try
+				{
+					return property.GetValue(target, new object[0]);
+				}
+				catch (Exception e)
+				{
+					throw new PropertyAccessException(e, "Exception occurred", false, clazz, propertyName);
+				}
+			}
+
+			/// <summary>
+			/// Gets the <see cref="System.Type"/> that the Property returns.
+			/// </summary>
+			/// <value>The <see cref="System.Type"/> that the Property returns.</value>
+			public System.Type ReturnType
+			{
+				get { return property.PropertyType; }
+			}
+
+			/// <summary>
+			/// Gets the name of the Property.
+			/// </summary>
+			/// <value>The name of the Property.</value>
+			public string PropertyName
+			{
+				get { return property.Name; }
+			}
+
+			/// <summary>
+			/// Gets the <see cref="PropertyInfo"/> for the Property.
+			/// </summary>
+			/// <value>
+			/// The <see cref="PropertyInfo"/> for the Property.
+			/// </value>
+			public MethodInfo Method
+			{
+				get { return property.GetGetMethod(true); }
+			}
+
+			public object GetForInsert(object owner, IDictionary mergeMap, ISessionImplementor session)
+			{
+				return Get(owner);
+			}
+
+			#endregion
+
+			public void Emit(ILGenerator il)
+			{
+				MethodInfo method = Method;
+				if (method == null)
+				{
+					throw new PropertyNotFoundException(clazz, property.Name, "getter");
+				}
+				il.EmitCall(OpCodes.Callvirt, method, null);
+			}
+		}
+
+		/// <summary>
+		/// An <see cref="ISetter"/> for a Property <c>set</c>.
+		/// </summary>
+		public sealed class BasicSetter : ISetter, IOptimizableSetter
+		{
+			private readonly System.Type clazz;
+			private readonly PropertyInfo property;
+			private readonly string propertyName;
+
+			/// <summary>
+			/// Initializes a new instance of <see cref="BasicSetter"/>.
+			/// </summary>
+			/// <param name="clazz">The <see cref="System.Type"/> that contains the Property <c>set</c>.</param>
+			/// <param name="property">The <see cref="PropertyInfo"/> for reflection.</param>
+			/// <param name="propertyName">The name of the mapped Property.</param>
+			public BasicSetter(System.Type clazz, PropertyInfo property, string propertyName)
+			{
+				this.clazz = clazz;
+				this.property = property;
+				this.propertyName = propertyName;
+			}
+
+			public PropertyInfo Property
+			{
+				get { return property; }
+			}
+
+			#region ISetter Members
+
+			/// <summary>
+			/// Sets the value of the Property on the object.
+			/// </summary>
+			/// <param name="target">The object to set the Property value in.</param>
+			/// <param name="value">The value to set the Property to.</param>
+			/// <exception cref="PropertyAccessException">
+			/// Thrown when there is a problem setting the value in the target.
+			/// </exception>
+			public void Set(object target, object value)
+			{
+				try
+				{
+					property.SetValue(target, value, new object[0]);
+				}
+				catch (ArgumentException ae)
+				{
+					// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
+					// would be thrown, but it doesn't hurt to make sure.
+					if (property.PropertyType.IsAssignableFrom(value.GetType()) == false)
+					{
+						// add some details to the error message - there have been a few forum posts an they are 
+						// all related to an ISet and IDictionary mixups.
+						string msg =
+							String.Format("The type {0} can not be assigned to a property of type {1}", value.GetType(),
+														property.PropertyType);
+						throw new PropertyAccessException(ae, msg, true, clazz, propertyName);
+					}
+					else
+					{
+						throw new PropertyAccessException(ae, "ArgumentException while setting the property value by reflection", true,
+																							clazz, propertyName);
+					}
+				}
+				catch (Exception e)
+				{
+					throw new PropertyAccessException(e, "could not set a property value by reflection", true, clazz, propertyName);
+				}
+			}
+
+			/// <summary>
+			/// Gets the name of the mapped Property.
+			/// </summary>
+			/// <value>The name of the mapped Property or <see langword="null" />.</value>
+			public string PropertyName
+			{
+				get { return property.Name; }
+			}
+
+			/// <summary>
+			/// Gets the <see cref="PropertyInfo"/> for the mapped Property.
+			/// </summary>
+			/// <value>The <see cref="PropertyInfo"/> for the mapped Property.</value>
+			public MethodInfo Method
+			{
+				get { return property.GetSetMethod(true); }
+			}
+
+			#endregion
+
+			public void Emit(ILGenerator il)
+			{
+				MethodInfo method = Method;
+				if (method == null)
+				{
+					throw new PropertyNotFoundException(clazz, property.Name, "setter");
+				}
+				il.EmitCall(OpCodes.Callvirt, method, null);
 			}
 		}
 	}

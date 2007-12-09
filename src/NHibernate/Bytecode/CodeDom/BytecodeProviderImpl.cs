@@ -228,7 +228,7 @@ namespace NHibernate.Bytecode.CodeDom
 				{
 					ISetter setter = setters[i];
 
-					if (setter is BasicSetter && IsPublic(setter.PropertyName))
+					if (setter is BasicPropertyAccessor.BasicSetter && IsPublic(setter.PropertyName))
 					{
 						System.Type type = getters[i].ReturnType;
 
@@ -259,7 +259,7 @@ namespace NHibernate.Bytecode.CodeDom
 				for (int i = 0; i < getters.Length; i++)
 				{
 					IGetter getter = getters[i];
-					if (getter is BasicGetter && IsPublic(getter.PropertyName))
+					if (getter is BasicPropertyAccessor.BasicGetter && IsPublic(getter.PropertyName))
 					{
 						sb.AppendFormat("  ret[{0}] = t.{1};\n", i, getter.PropertyName);
 					}

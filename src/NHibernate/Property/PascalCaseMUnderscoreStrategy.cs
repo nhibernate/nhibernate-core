@@ -1,4 +1,3 @@
-
 namespace NHibernate.Property
 {
 	/// <summary>

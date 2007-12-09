@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Reflection;
+using NHibernate.Engine;
 
 namespace NHibernate.Property
 {
@@ -56,6 +57,11 @@ namespace NHibernate.Property
 			public MethodInfo Method
 			{
 				get { return null; }
+			}
+
+			public object GetForInsert(object owner, IDictionary mergeMap, ISessionImplementor session)
+			{
+				return Get(owner);
 			}
 
 			public string PropertyName

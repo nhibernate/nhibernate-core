@@ -285,14 +285,10 @@
     <Compile Include="PropertyAccessException.cs" />
     <Compile Include="PropertyNotFoundException.cs" />
     <Compile Include="PropertyValueException.cs" />
-    <Compile Include="Property\BasicGetter.cs" />
     <Compile Include="Property\BasicPropertyAccessor.cs" />
-    <Compile Include="Property\BasicSetter.cs" />
     <Compile Include="Property\CamelCaseStrategy.cs" />
     <Compile Include="Property\CamelCaseUnderscoreStrategy.cs" />
     <Compile Include="Property\FieldAccessor.cs" />
-    <Compile Include="Property\FieldGetter.cs" />
-    <Compile Include="Property\FieldSetter.cs" />
     <Compile Include="Property\IFieldNamingStrategy.cs" />
     <Compile Include="Property\IGetter.cs" />
     <Compile Include="Property\IPropertyAccessor.cs" />
@@ -765,7 +761,11 @@
     <Compile Include="Mapping\UnionSubclass.cs" />
     <Compile Include="Persister\Entity\ILockable.cs" />
     <Compile Include="Persister\Entity\UnionSubclassEntityPersister.cs" />
+    <Compile Include="Property\BackrefPropertyAccessor.cs" />
+    <Compile Include="Property\EmbeddedPropertyAccessor.cs" />
+    <Compile Include="Property\IndexPropertyAccessor.cs" />
     <Compile Include="Property\MapAccessor.cs" />
+    <Compile Include="Property\NoopAccessor.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
     <Compile Include="Proxy\ILazyInitializer.cs" />
     <Compile Include="Proxy\Map\MapLazyInitializer.cs" />

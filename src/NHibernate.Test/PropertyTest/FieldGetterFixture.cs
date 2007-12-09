@@ -20,7 +20,7 @@ namespace NHibernate.Test.PropertyTest
 			IGetter fieldGetter = ReflectHelper.GetGetter(typeof(FieldGetterClass), "Id", "field");
 
 			Assert.IsNotNull(fieldGetter, "should have found getter");
-			Assert.AreEqual(typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
+			Assert.AreEqual(typeof(FieldAccessor.FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
 			Assert.AreEqual(typeof(Int32), fieldGetter.ReturnType, "returns Int32.");
 			Assert.IsNull(fieldGetter.Method, "no MethodInfo for fields.");
 			Assert.IsNull(fieldGetter.PropertyName, "no Property Names for fields.");
@@ -33,7 +33,7 @@ namespace NHibernate.Test.PropertyTest
 			IGetter fieldGetter = ReflectHelper.GetGetter(typeof(FieldGetterClass), "PropertyOne", "field.camelcase");
 
 			Assert.IsNotNull(fieldGetter, "should have found getter");
-			Assert.AreEqual(typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
+			Assert.AreEqual(typeof(FieldAccessor.FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
 			Assert.AreEqual(typeof(DateTime), fieldGetter.ReturnType, "returns DateTime.");
 			Assert.IsNull(fieldGetter.Method, "no MethodInfo for fields.");
 			Assert.IsNull(fieldGetter.PropertyName, "no Property Names for fields.");
@@ -46,7 +46,7 @@ namespace NHibernate.Test.PropertyTest
 			IGetter fieldGetter = ReflectHelper.GetGetter(typeof(FieldGetterClass), "PropertyTwo", "field.camelcase-underscore");
 
 			Assert.IsNotNull(fieldGetter, "should have found getter");
-			Assert.AreEqual(typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
+			Assert.AreEqual(typeof(FieldAccessor.FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
 			Assert.AreEqual(typeof(Boolean), fieldGetter.ReturnType, "returns Boolean.");
 			Assert.IsNull(fieldGetter.Method, "no MethodInfo for fields.");
 			Assert.IsNull(fieldGetter.PropertyName, "no Property Names for fields.");
@@ -59,7 +59,7 @@ namespace NHibernate.Test.PropertyTest
 			IGetter fieldGetter = ReflectHelper.GetGetter(typeof(FieldGetterClass), "PropertyFour", "field.lowercase-underscore");
 
 			Assert.IsNotNull(fieldGetter, "should have found getter");
-			Assert.AreEqual(typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
+			Assert.AreEqual(typeof(FieldAccessor.FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
 			Assert.AreEqual(typeof(Int64), fieldGetter.ReturnType, "returns Int64.");
 			Assert.IsNull(fieldGetter.Method, "no MethodInfo for fields.");
 			Assert.IsNull(fieldGetter.PropertyName, "no Property Names for fields.");
@@ -73,7 +73,7 @@ namespace NHibernate.Test.PropertyTest
 				ReflectHelper.GetGetter(typeof(FieldGetterClass), "PropertyThree", "field.pascalcase-m-underscore");
 
 			Assert.IsNotNull(fieldGetter, "should have found getter");
-			Assert.AreEqual(typeof(FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
+			Assert.AreEqual(typeof(FieldAccessor.FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
 			Assert.AreEqual(typeof(TimeSpan), fieldGetter.ReturnType, "returns DateTime.");
 			Assert.IsNull(fieldGetter.Method, "no MethodInfo for fields.");
 			Assert.IsNull(fieldGetter.PropertyName, "no Property Names for fields.");

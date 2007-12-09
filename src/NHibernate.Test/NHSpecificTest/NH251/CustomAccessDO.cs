@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Property;
 
 namespace NHibernate.Test.NHSpecificTest.NH251
@@ -80,7 +81,14 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 			public MethodInfo Method
 			{
 				get { return null; }
-			} // Optional operation (return null)
+			}
+
+			public object GetForInsert(object owner, IDictionary mergeMap, ISessionImplementor session)
+			{
+				return Get(owner);
+			}
+
+// Optional operation (return null)
 		}
 
 		public class CustomSetter : ISetter

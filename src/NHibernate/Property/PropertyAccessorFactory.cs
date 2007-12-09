@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Property
@@ -9,14 +9,15 @@ namespace NHibernate.Property
 	/// </summary>
 	public sealed class PropertyAccessorFactory
 	{
-		private static readonly IDictionary accessors;
+		private static readonly IDictionary<string, IPropertyAccessor> accessors;
+		private const string DefaultAccessorName = "property";
 
 		/// <summary>
 		/// Initializes the static members in <see cref="PropertyAccessorFactory"/>.
 		/// </summary>
 		static PropertyAccessorFactory()
 		{
-			accessors = new Hashtable(13);
+			accessors = new Dictionary<string, IPropertyAccessor>(19);
 			accessors["property"] = new BasicPropertyAccessor();
 			accessors["field"] = new FieldAccessor();
 			accessors["field.camelcase"] = new FieldAccessor(new CamelCaseStrategy());
@@ -33,11 +34,12 @@ namespace NHibernate.Property
 			accessors["nosetter.pascalcase-underscore"] = new NoSetterAccessor(new PascalCaseUnderscoreStrategy());
 			accessors["nosetter.pascalcase-m-underscore"] = new NoSetterAccessor(new PascalCaseMUnderscoreStrategy());
 			accessors["nosetter.pascalcase-m"] = new NoSetterAccessor(new PascalCaseMStrategy());
+			accessors["embedded"] = new EmbeddedPropertyAccessor();
+			accessors["noop"] = new NoopAccessor();
 		}
 
 		private PropertyAccessorFactory()
 		{
-			throw new NotSupportedException("Should not be creating a PropertyAccessorFactory - only use the static methods.");
 		}
 
 		/// <summary>
@@ -167,39 +169,70 @@ namespace NHibernate.Property
 		{
 			// if not type is specified then fall back to the default of using
 			// the property.
-			if (type == null)
+			if (string.IsNullOrEmpty(type))
 			{
-				type = "property";
+				type = DefaultAccessorName;
 			}
 
 			// attempt to find it in the built in types
-			IPropertyAccessor accessor = accessors[type] as IPropertyAccessor;
+			IPropertyAccessor accessor;
+			accessors.TryGetValue(type, out accessor);
 			if (accessor != null)
 			{
 				return accessor;
 			}
 
-			// was not a built in type so now check to see if it is custom
-			// accessor.
+			return ResolveCustomAccessor(type);
+		}
+
+		public static IPropertyAccessor GetPropertyAccessor(Mapping.Property property, EntityMode? mode)
+		{
+			//TODO: this is temporary in that the end result will probably not take a Property reference per-se.
+			EntityMode modeToUse = mode.HasValue ? mode.Value : EntityMode.Poco;
+			switch(modeToUse)
+			{
+				case EntityMode.Poco:
+					return GetPocoPropertyAccessor(property.PropertyAccessorName);
+				case EntityMode.Map:
+					return DynamicMapPropertyAccessor;
+				default:
+					throw new MappingException("Unknown entity mode [" + mode + "]");
+			}
+		}
+
+		private static IPropertyAccessor GetPocoPropertyAccessor(string accessorName)
+		{
+			string accName = string.IsNullOrEmpty(accessorName) ? DefaultAccessorName : accessorName;
+
+			IPropertyAccessor accessor;
+			accessors.TryGetValue(accName, out accessor);
+			if (accessor != null)
+				return accessor;
+
+			return ResolveCustomAccessor(accName);
+		}
+
+		private static IPropertyAccessor ResolveCustomAccessor(string accessorName)
+		{
 			System.Type accessorClass;
 			try
 			{
-				accessorClass = ReflectHelper.ClassForName(type);
+				accessorClass = ReflectHelper.ClassForName(accessorName);
 			}
 			catch (TypeLoadException tle)
 			{
-				throw new MappingException("could not find PropertyAccessor type: " + type, tle);
+				throw new MappingException("could not find PropertyAccessor type: " + accessorName, tle);
 			}
 
 			try
 			{
-				accessor = (IPropertyAccessor) Activator.CreateInstance(accessorClass);
-				accessors[type] = accessor;
-				return accessor;
+				IPropertyAccessor result = (IPropertyAccessor)Activator.CreateInstance(accessorClass);
+				accessors[accessorName] = result;
+				return result;
 			}
 			catch (Exception e)
 			{
-				throw new MappingException("could not instantiate PropertyAccessor type: " + type, e);
+				throw new MappingException("could not instantiate PropertyAccessor class: " + accessorName, e);
 			}
 		}
 
