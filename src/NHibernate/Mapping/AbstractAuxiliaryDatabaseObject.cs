@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections;
 using NHibernate.Engine;
 
@@ -37,8 +37,6 @@ namespace NHibernate.Mapping
 		public abstract string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema);
 		public abstract string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema);
 
-		public virtual void SetParameterValues(IDictionary parameters)
-		{
-		}
+		public virtual void SetParameterValues(IDictionary<string, string> parameters) {}
 	}
 }

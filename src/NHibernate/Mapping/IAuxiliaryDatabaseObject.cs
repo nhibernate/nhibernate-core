@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -8,9 +7,8 @@ namespace NHibernate.Mapping
 		void AddDialectScope(string dialectName);
 		bool AppliesToDialect(Dialect.Dialect dialect);
 		/// <summary>
-		/// Gets called by NHibernate to pass the configured type parameters to 
-		/// the implementation.
+		/// Gets called by NHibernate to pass the configured type parameters to the implementation.
 		/// </summary>
-		void SetParameterValues(IDictionary parameters);
+		void SetParameterValues(IDictionary<string, string> parameters);
 	}
 }
