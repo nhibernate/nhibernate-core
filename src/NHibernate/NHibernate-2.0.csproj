@@ -1012,6 +1012,7 @@
     <Compile Include="Type\SpecialOneToOneType.cs" />
     <Compile Include="UserTypes\ICompositeUserType.cs" />
     <Compile Include="UserTypes\IEnhancedUserType.cs" />
+    <Compile Include="UserTypes\ILoggableUserType.cs" />
     <Compile Include="UserTypes\INullableUserType.cs" />
     <Compile Include="UserTypes\IParameterizedType.cs" />
     <Compile Include="UserTypes\IUserCollectionType.cs" />

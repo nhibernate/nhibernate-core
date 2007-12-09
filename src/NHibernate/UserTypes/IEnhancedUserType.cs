@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.UserTypes
 {
 	/// <summary>
@@ -18,5 +16,11 @@ namespace NHibernate.UserTypes
 		/// Return an SQL literal representation of the value
 		/// </summary>
 		string ObjectToSQLString(object value);
+
+		/// <summary> 
+		/// Return a string representation of this value, as it
+		/// should appear in an XML document
+		/// </summary>
+		string ToXMLString(object value);
 	}
 }

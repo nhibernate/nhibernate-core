@@ -111,6 +111,11 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 			return "'" + value.ToString() + "'";
 		}
 
+		public string ToXMLString(object value)
+		{
+			return value.ToString();
+		}
+
 		public object Replace(object original, object target, object owner)
 		{
 			return original;
