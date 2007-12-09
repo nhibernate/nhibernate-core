@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NUnit.Framework;

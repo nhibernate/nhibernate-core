@@ -37,11 +37,12 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="constraintName">The name to use as the identifier of the constraint in the database.</param>
+		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the named Primary Key Constraint.
 		/// </returns>
-		public override string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultSchema)
+		public override string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultCatalog, string defaultSchema)
 		{
 			StringBuilder buf = new StringBuilder(
 				d.GetAddPrimaryKeyConstraintString(constraintName))

@@ -39,11 +39,12 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="constraintName"></param>
+		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the Unique Key Constraint.
 		/// </returns>
-		public override string SqlConstraintString(Dialect.Dialect dialect, string constraintName, string defaultSchema)
+		public override string SqlConstraintString(Dialect.Dialect dialect, string constraintName, string defaultCatalog, string defaultSchema)
 		{
 			StringBuilder buf = new StringBuilder(
 				dialect.GetAddPrimaryKeyConstraintString(constraintName))

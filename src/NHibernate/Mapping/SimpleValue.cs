@@ -82,6 +82,12 @@ namespace NHibernate.Mapping
 			table.CreateForeignKey(ForeignKeyName, ConstraintColumns, persistentClass);
 		}
 
+		public bool IsIdentityColumn(Dialect.Dialect dialect)
+		{
+			return IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect)
+				.Equals(typeof(IdentityGenerator));
+		}
+
 		public string NullValue
 		{
 			get { return nullValue; }

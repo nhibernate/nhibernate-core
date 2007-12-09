@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -9,24 +10,21 @@ namespace NHibernate.Mapping
 	{
 		private Table referencedTable;
 		private System.Type referencedClass;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ForeignKey"/> class.
-		/// </summary>
-		public ForeignKey()
-		{
-		}
+		private string referencedEntityName;
+		private bool cascadeDeleteEnabled;
+		private List<Column> referencedColumns = new List<Column>();
 
 		/// <summary>
 		/// Generates the SQL string to create the named Foreign Key Constraint in the database.
 		/// </summary>
 		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="constraintName">The name to use as the identifier of the constraint in the database.</param>
+		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the named Foreign Key Constraint.
 		/// </returns>
-		public override string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultSchema)
+		public override string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultCatalog, string defaultSchema)
 		{
 			string[] cols = new string[ColumnSpan];
 			string[] refcols = new string[ColumnSpan];

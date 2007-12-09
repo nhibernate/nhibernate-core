@@ -12,8 +12,7 @@ namespace NHibernate.Mapping
 		// TODO H3:
 		//bool IsCascadeDeleteEnabled { get; }
 
-		// TODO H3:
-		//bool IsIdentityColumn(Dialect.Dialect dialect);
+		bool IsIdentityColumn(Dialect.Dialect dialect);
 
 		string NullValue { get; }
 

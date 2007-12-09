@@ -83,7 +83,7 @@
 
 		private static string Identifier(String schema, String name)
 		{
-			return Table.Qualify(schema, name);
+			return Table.Qualify(null, schema, name);
 		}
 
 

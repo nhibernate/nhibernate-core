@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -42,9 +43,7 @@ namespace NHibernate.Mapping
 		public void AddColumn(Column column)
 		{
 			if (!columns.Contains(column))
-			{
 				columns.Add(column);
-			}
 		}
 
 		public void AddColumns(IEnumerable<ISelectable> columnIterator)
@@ -96,18 +95,26 @@ namespace NHibernate.Mapping
 		/// Generates the SQL string to drop this Constraint in the database.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
+		/// <param name="defaultCatalog"></param>
 		/// <returns>
 		/// A string that contains the SQL to drop this Constraint.
 		/// </returns>
 		public virtual string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-			string drop = string.Format("alter table {0} drop constraint {1}", Table.GetQualifiedName(dialect, defaultSchema), Name);
-			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
+			if (IsGenerated(dialect))
+			{
+				string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
+				string drop =
+					string.Format("alter table {0} drop constraint {1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), Name);
+				string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
 
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+				return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -115,19 +122,27 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="p"></param>
-		/// <param name="defaultCatalog"></param>
 		/// <param name="defaultSchema"></param>
+		/// <param name="defaultCatalog"></param>
 		/// <returns>
 		/// A string that contains the SQL to create this Constraint.
 		/// </returns>
-		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
+		public virtual string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfNotExistsCreateConstraint(Table, Name);
-			string create =string.Format("alter table {0} {1} ", Table.GetQualifiedName(dialect, defaultSchema),
-				              SqlConstraintString(dialect, Name, defaultSchema));
-			string end = dialect.GetIfNotExistsCreateConstraintEnd(Table, Name);
+			if (IsGenerated(dialect))
+			{
+				string ifExists = dialect.GetIfNotExistsCreateConstraint(Table, Name);
+				string create =
+					string.Format("alter table {0} {1} ", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema),
+												SqlConstraintString(dialect, Name, defaultCatalog, defaultSchema));
+				string end = dialect.GetIfNotExistsCreateConstraintEnd(Table, Name);
 
-			return ifExists + System.Environment.NewLine + create + System.Environment.NewLine + end;
+				return ifExists + System.Environment.NewLine + create + System.Environment.NewLine + end;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		#endregion
@@ -139,9 +154,22 @@ namespace NHibernate.Mapping
 		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
 		/// <param name="constraintName">The name to use as the identifier of the constraint in the database.</param>
 		/// <param name="defaultSchema"></param>
+		/// <param name="defaultCatalog"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the named Constraint.
 		/// </returns>
-		public abstract string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultSchema);
+		public abstract string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultCatalog, string defaultSchema);
+
+		public virtual bool IsGenerated(Dialect.Dialect dialect)
+		{
+			return true;
+		}
+
+		public override System.String ToString()
+		{
+			return
+				string.Format("{0}({1}{2}) as {3}", GetType().FullName, Table.Name,
+				              StringHelper.CollectionToString((ICollection) Columns), name);
+		}
 	}
 }

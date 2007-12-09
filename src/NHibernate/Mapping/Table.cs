@@ -1,34 +1,80 @@
+using System;
 using System.Collections;
-using System.Data;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
-using NHibernate.Id;
+using NHibernate.Tool.hbm2ddl;
 using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
-	using System;
-	using Dialect;
-	using System.Collections.Generic;
-	using NHibernate.Tool.hbm2ddl;
-
 	/// <summary>
 	/// Represents a Table in a database that an object gets mapped against.
 	/// </summary>
 	public class Table : IRelationalModel
 	{
+		internal class ForeignKeyKey: IEqualityComparer<ForeignKeyKey>
+		{
+			internal string referencedClassName;
+			internal List<ISelectable> columns;
+			internal List<Column> referencedColumns;
+
+			internal ForeignKeyKey(IEnumerable<ISelectable> columns, string referencedClassName, IEnumerable<Column> referencedColumns)
+			{
+				this.referencedClassName = referencedClassName;
+				this.columns = new List<ISelectable>(columns);
+				if (referencedColumns != null)
+					this.referencedColumns = new List<Column>(referencedColumns);
+				else
+					this.referencedColumns = new List<Column>();
+			}
+
+			public override int GetHashCode()
+			{
+				return GetHashCode(this);
+			}
+
+			public override bool Equals(object other)
+			{
+				ForeignKeyKey that = other as ForeignKeyKey;
+				if (that != null)
+					return Equals(this, that);
+				else
+					return false;
+			}
+
+			#region IEqualityComparer<ForeignKeyKey> Members
+
+			public bool Equals(ForeignKeyKey x, ForeignKeyKey y)
+			{
+				return y.referencedClassName.Equals(x.referencedClassName) &&
+					CollectionHelper.CollectionEquals(y.columns, x.columns) &&
+					CollectionHelper.CollectionEquals(y.referencedColumns, x.referencedColumns);
+			}
+
+			public int GetHashCode(ForeignKeyKey obj)
+			{
+				return obj.columns.GetHashCode() + obj.referencedColumns.GetHashCode();
+			}
+
+			#endregion
+		}
+
 		private string name;
 		private string schema;
+		private string catalog;
 		private readonly SequencedHashMap columns = new SequencedHashMap();
-		private SimpleValue idValue;
+		private IKeyValue idValue;
 		private PrimaryKey primaryKey;
 		private readonly IDictionary indexes = new Hashtable();
 		private readonly IDictionary foreignKeys = new Hashtable();
 		private readonly IDictionary uniqueKeys = new Hashtable();
 		private readonly int uniqueInteger;
 		private bool quoted;
+		private bool isSchemaQuoted;
 		private static int tableCounter = 0;
 		private readonly IList checkConstraints = new ArrayList();
+		private string subselect;
 		private bool isAbstract;
 		private bool hasDenormalizedTables = false;
 		private string comment;
@@ -51,15 +97,10 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect"/> that knows how to Quote the Table name.</param>
 		/// <returns>The name of the table qualified with the schema if one is specified.</returns>
-		public string GetQualifiedName(Dialect dialect)
+		public string GetQualifiedName(Dialect.Dialect dialect)
 		{
-			string quotedName = GetQuotedName(dialect);
-			return schema == null
-			       	? quotedName
-			       	:
-			       		GetQuotedSchemaName(dialect) + StringHelper.Dot + quotedName;
+			return GetQualifiedName(dialect, null, null);
 		}
-
 
 		/// <summary>
 		/// Gets the schema qualified name of the Table using the specified qualifier
@@ -68,14 +109,21 @@ namespace NHibernate.Mapping
 		/// <param name="defaultQualifier">The Qualifier to use when accessing the table.</param>
 		/// <returns>A String representing the Qualified name.</returns>
 		/// <remarks>If this were used with MSSQL it would return a dbo.table_name.</remarks>
-		public string GetQualifiedName(Dialect dialect, string defaultQualifier)
+		public string GetQualifiedName(Dialect.Dialect dialect, string defaultQualifier)
 		{
+			return GetQualifiedName(dialect, null, defaultQualifier);
+		}
+
+		public virtual string GetQualifiedName(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
+		{
+			if (!string.IsNullOrEmpty(subselect))
+			{
+				return "( " + subselect + " )";
+			}
 			string quotedName = GetQuotedName(dialect);
-			return schema == null
-			       	?
-			       		((defaultQualifier == null) ? quotedName : defaultQualifier + StringHelper.Dot + quotedName)
-			       	:
-			       		GetQualifiedName(dialect);
+			string usedSchema = schema == null ? defaultSchema : GetQuotedSchema(dialect);
+			string usedCatalog = catalog ?? defaultCatalog;
+			return Qualify(usedCatalog, usedSchema, quotedName);
 		}
 
 		/// <summary>
@@ -93,7 +141,7 @@ namespace NHibernate.Mapping
 		/// </p>
 		/// <p>
 		/// The value returned by the getter is not Quoted.  To get the
-		/// column name in quoted form use <see cref="GetQuotedName(Dialect)"/>.
+		/// column name in quoted form use <see cref="GetQuotedName(NHibernate.Dialect.Dialect)"/>.
 		/// </p>
 		/// </remarks>
 		public string Name
@@ -123,7 +171,7 @@ namespace NHibernate.Mapping
 		/// The Table name in a form that is safe to use inside of a SQL statement.
 		/// Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
-		public string GetQuotedName(Dialect dialect)
+		public string GetQuotedName(Dialect.Dialect dialect)
 		{
 			return IsQuoted
 			       	?
@@ -142,7 +190,7 @@ namespace NHibernate.Mapping
 		/// The schema name for this table in a form that is safe to use inside
 		/// of a SQL statement. Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
-		public string GetQuotedSchemaName(Dialect dialect)
+		public string GetQuotedSchemaName(Dialect.Dialect dialect)
 		{
 			if (schema == null)
 			{
@@ -155,6 +203,11 @@ namespace NHibernate.Mapping
 			}
 
 			return schema;
+		}
+
+		public string GetQuotedSchema(Dialect.Dialect dialect)
+		{
+			return isSchemaQuoted ? dialect.OpenQuote + schema + dialect.CloseQuote : schema;
 		}
 
 		/// <summary>
@@ -256,7 +309,7 @@ namespace NHibernate.Mapping
 			get { return uniqueKeys.Values; }
 		}
 
-		public string[] SqlAlterStrings(Dialect dialect, IMapping p, TableMetadata tableInfo, string defaultSchema)
+		public string[] SqlAlterStrings(Dialect.Dialect dialect, IMapping p, TableMetadata tableInfo, string defaultSchema)
 		{
 			StringBuilder root = new StringBuilder("alter table ")
 				.Append(GetQualifiedName(dialect, defaultSchema))
@@ -312,7 +365,7 @@ namespace NHibernate.Mapping
 		/// A string that contains the SQL to create this Table, Primary Key Constraints
 		/// , and Unique Key Constraints.
 		/// </returns>
-		public string SqlCreateString(Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
+		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
 			StringBuilder buf = new StringBuilder(HasPrimaryKey
 			                                      	?
@@ -322,7 +375,7 @@ namespace NHibernate.Mapping
 				.Append(GetQualifiedName(dialect, defaultSchema))
 				.Append(" (");
 
-			bool identityColumn = idValue != null && idValue.CreateIdentifierGenerator(dialect) is IdentityGenerator;
+			bool identityColumn = idValue != null && idValue.IsIdentityColumn(dialect);
 
 			// try to find out the name of the pk to create it as identity if the 
 			// identitygenerator is used
@@ -441,7 +494,7 @@ namespace NHibernate.Mapping
 		/// A string that contains the SQL to drop this Table and to cascade the drop to 
 		/// the constraints if the database supports it.
 		/// </returns>
-		public string SqlDropString(Dialect dialect, string defaultCatalog, string defaultSchema)
+		public string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
 			return dialect.GetDropTableString(GetQualifiedName(dialect, defaultSchema));
 		}
@@ -589,8 +642,19 @@ namespace NHibernate.Mapping
 		/// </value>
 		public string Schema
 		{
-			get { return schema; }
-			set { schema = value; }
+			get{return schema;}
+			set
+			{
+				if (value != null && value[0] == '`')
+				{
+					isSchemaQuoted = true;
+					schema = value.Substring(1, value.Length - 2);
+				}
+				else
+				{
+					schema = value;
+				}
+			}
 		}
 
 		/// <summary>
@@ -680,13 +744,16 @@ namespace NHibernate.Mapping
 			get { return uniqueKeys; }
 		}
 
-		public static string Qualify(string schema, string table)
+		public static string Qualify(string catalog, string schema, string table)
 		{
 			StringBuilder qualifiedName = new StringBuilder();
+
+			if (!string.IsNullOrEmpty(catalog))
+				qualifiedName.Append(catalog).Append('.');
+
 			if (!string.IsNullOrEmpty(schema))
-			{
 				qualifiedName.Append(schema).Append('.');
-			}
+
 			return qualifiedName.Append(table).ToString();
 		}
 
@@ -695,12 +762,41 @@ namespace NHibernate.Mapping
 			get { return PrimaryKey != null; }
 		}
 
-		public bool IsPhysicalTable
+		public string Catalog
 		{
-			get { return IsAbstractUnionTable == false /* && IsSuselect == false */; }
+			get { return catalog; }
+			set { catalog = value; }
 		}
 
-		public string[] SqlCommentStrings(Dialect dialect, string defaultSchema)
+		public string Comment
+		{
+			get { return comment; }
+			set { comment = value; }
+		}
+
+		public string Subselect
+		{
+			get { return subselect; }
+			set { subselect = value; }
+		}
+
+		public IKeyValue IdentifierValue
+		{
+			get { return idValue; }
+			set { idValue = value; }
+		}
+
+		public bool IsSubselect
+		{
+			get { return !string.IsNullOrEmpty(subselect); }
+		}
+
+		public bool IsPhysicalTable
+		{
+			get { return !IsSubselect && !IsAbstractUnionTable; }
+		}
+
+		public string[] SqlCommentStrings(Dialect.Dialect dialect, string defaultSchema)
 		{
 			List<string> comments = new List<string>();
 			if (dialect.SupportsCommentOn)
@@ -734,13 +830,6 @@ namespace NHibernate.Mapping
 				}
 			}
 			return comments.ToArray();
-		}
-
-
-		public string Comment
-		{
-			get { return comment; }
-			set { comment = value; }
 		}
 	}
 }

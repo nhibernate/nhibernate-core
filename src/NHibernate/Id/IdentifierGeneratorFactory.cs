@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -106,7 +107,7 @@ namespace NHibernate.Id
 		/// An <see cref="Hashtable"/> where the <c>key</c> is the strategy and 
 		/// the <c>value</c> is the <see cref="System.Type"/> for the strategy.
 		/// </summary>
-		private static readonly Hashtable idgenerators = new Hashtable();
+		private static readonly Dictionary<string, System.Type> idgenerators = new Dictionary<string, System.Type>();
 
 		/// <summary>
 		/// When this is returned by <c>Generate()</c> it indicates that the object
@@ -168,46 +169,20 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				System.Type clazz = (System.Type) idgenerators[strategy];
-				if ("native".Equals(strategy))
-				{
-					if (dialect.SupportsIdentityColumns)
-					{
-						clazz = typeof(IdentityGenerator);
-					}
-					else if (dialect.SupportsSequences)
-					{
-						clazz = typeof(SequenceGenerator);
-					}
-					else
-					{
-						clazz = typeof(TableHiLoGenerator);
-					}
-				}
-				if (clazz == null)
-				{
-					clazz = ReflectHelper.ClassForName(strategy);
-				}
-
+				System.Type clazz = GetIdentifierGeneratorClass(strategy, dialect);
 				IIdentifierGenerator idgen = (IIdentifierGenerator) Activator.CreateInstance(clazz);
-
-				// configure if the generator supports it.
-				IConfigurable configurable = idgen as IConfigurable;
-				if (configurable != null)
-				{
-					configurable.Configure(type, parms, dialect);
-				}
-
+				IConfigurable conf = idgen as IConfigurable;
+				if (conf != null)
+					conf.Configure(type, parms, dialect);
 				return idgen;
+			}
+			catch (IdentifierGenerationException)
+			{
+				throw;
 			}
 			catch (Exception e)
 			{
-				string message = "could not instantiate id generator";
-				if (strategy != null)
-				{
-					message += " for strategy '" + strategy + "'";
-				}
-				throw new MappingException(message, e);
+				throw new MappingException("could not instantiate id generator", e);
 			}
 		}
 
@@ -254,7 +229,7 @@ namespace NHibernate.Id
 			}
 			else if (type == typeof(long))
 			{
-				return (long) value;
+				return value;
 			}
 			else if (type == typeof(ulong))
 			{
@@ -275,6 +250,24 @@ namespace NHibernate.Id
 					throw new IdentifierGenerationException("could not convert generated value to type " + type, e);
 				}
 			}
+		}
+
+		public static System.Type GetIdentifierGeneratorClass(string strategy, Dialect.Dialect dialect)
+		{
+			System.Type clazz;
+			idgenerators.TryGetValue(strategy, out clazz);
+			if ("native".Equals(strategy))
+				clazz = dialect.NativeIdentifierGeneratorClass;
+			try
+			{
+				if (clazz == null)
+					clazz = ReflectHelper.ClassForName(strategy);
+			}
+			catch (Exception)
+			{
+				throw new IdentifierGenerationException("Could not interpret id generator strategy: " + strategy);
+			}
+			return clazz;
 		}
 	}
 }

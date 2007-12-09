@@ -191,7 +191,7 @@ namespace NHibernate.Cfg
 
 		public Table AddTable(string schema, string name, bool isAbstract)
 		{
-			string key = Table.Qualify(schema, name);
+			string key = Table.Qualify(null, schema, name);
 			//string key = subselect ?? Table.Qualify(schema, name);
 			Table table;
 			if (!tables.TryGetValue(key, out table))
@@ -212,7 +212,7 @@ namespace NHibernate.Cfg
 
 		public Table AddDenormalizedTable(string schema, System.String name, bool isAbstract, Table includedTable)
 		{
-			string key = Table.Qualify(schema, name);
+			string key = Table.Qualify(null, schema, name);
 			//string key = subselect ?? Table.Qualify(schema, name);
 			if (tables.ContainsKey(key))
 			{
