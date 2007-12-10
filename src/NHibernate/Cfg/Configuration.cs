@@ -677,7 +677,7 @@ namespace NHibernate.Cfg
 			{
 				foreach (Table table in TableMappings)
 				{
-					foreach (ForeignKey fk in table.ForeignKeyCollection)
+					foreach (ForeignKey fk in table.ForeignKeyIterator)
 					{
 						script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
 					}
@@ -727,21 +727,21 @@ namespace NHibernate.Cfg
 
 				if( !dialect.SupportsUniqueConstraintInCreateAlterTable )
 				{
-					foreach( UniqueKey uk in table.UniqueKeyCollection )
+					foreach( UniqueKey uk in table.UniqueKeyIterator )
 					{
 						script.Add( uk.SqlCreateString( dialect, mapping, defaultSchema ) );
 					}
 				}
 				*/
 
-				foreach (Index index in table.IndexCollection)
+				foreach (Index index in table.IndexIterator)
 				{
 					script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 				}
 
 				if (dialect.HasAlterTable)
 				{
-					foreach (ForeignKey fk in table.ForeignKeyCollection)
+					foreach (ForeignKey fk in table.ForeignKeyIterator)
 					{
 						script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					}
@@ -865,7 +865,7 @@ namespace NHibernate.Cfg
 		{
 			table.CreateForeignKeys();
 
-			foreach (ForeignKey fk in table.ForeignKeyCollection)
+			foreach (ForeignKey fk in table.ForeignKeyIterator)
 			{
 				if (!done.Contains(fk))
 				{
@@ -1964,7 +1964,7 @@ namespace NHibernate.Cfg
 
 					if (dialect.HasAlterTable)
 					{
-						foreach (ForeignKey fk in table.ForeignKeyCollection)
+						foreach (ForeignKey fk in table.ForeignKeyIterator)
 						{
 							if (fk.IsPhysicalConstraint)
 							{

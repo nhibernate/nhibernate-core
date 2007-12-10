@@ -265,7 +265,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="Column"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public virtual ICollection ColumnCollection
+		public virtual ICollection ColumnIterator
 		{
 			get { return columns.Values; }
 		}
@@ -278,7 +278,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="Index"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public virtual ICollection IndexCollection
+		public virtual ICollection IndexIterator
 		{
 			get { return indexes.Values; }
 		}
@@ -291,7 +291,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="ForeignKey"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public ICollection ForeignKeyCollection
+		public ICollection ForeignKeyIterator
 		{
 			get { return foreignKeys.Values; }
 		}
@@ -304,7 +304,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="UniqueKey"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public virtual ICollection UniqueKeyCollection
+		public virtual ICollection UniqueKeyIterator
 		{
 			get { return uniqueKeys.Values; }
 		}
@@ -316,9 +316,9 @@ namespace NHibernate.Mapping
 				.Append(" ")
 				.Append(dialect.AddColumnString);
 
-			ArrayList results = new ArrayList(ColumnCollection.Count);
+			ArrayList results = new ArrayList(ColumnIterator.Count);
 
-			foreach (Column col in ColumnCollection)
+			foreach (Column col in ColumnIterator)
 			{
 				if (tableInfo.GetColumnMetadata(col.Name) != null)
 					continue;
@@ -389,7 +389,7 @@ namespace NHibernate.Mapping
 			}
 
 			int i = 0;
-			foreach (Column col in ColumnCollection)
+			foreach (Column col in ColumnIterator)
 			{
 				i++;
 				buf.Append(col.GetQuotedName(dialect))
@@ -449,7 +449,7 @@ namespace NHibernate.Mapping
 					buf.Append(dialect.getColumnComment(col.Comment));
 				}
 
-				if (i < ColumnCollection.Count)
+				if (i < ColumnIterator.Count)
 				{
 					buf.Append(StringHelper.CommaSpace);
 				}
@@ -459,7 +459,7 @@ namespace NHibernate.Mapping
 				buf.Append(", ").Append(PrimaryKey.SqlConstraintString(dialect, defaultSchema));
 			}
 
-			foreach (UniqueKey uk in UniqueKeyCollection)
+			foreach (UniqueKey uk in UniqueKeyIterator)
 			{
 				buf.Append(',').Append(uk.SqlConstraintString(dialect));
 			}

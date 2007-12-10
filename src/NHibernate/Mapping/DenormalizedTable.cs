@@ -14,17 +14,17 @@ namespace NHibernate.Mapping
 			includedTable.SetHasDenormalizedTables();
 		}
 
-		public override ICollection ColumnCollection
+		public override ICollection ColumnIterator
 		{
 			get
 			{
-				ArrayList result = new ArrayList(includedTable.ColumnCollection);
-				result.AddRange(base.ColumnCollection);
+				ArrayList result = new ArrayList(includedTable.ColumnIterator);
+				result.AddRange(base.ColumnIterator);
 				return result;
 			}
 		}
 
-		public override ICollection UniqueKeyCollection
+		public override ICollection UniqueKeyIterator
 		{
 			get
 			{
@@ -38,12 +38,12 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public override ICollection IndexCollection
+		public override ICollection IndexIterator
 		{
 			get
 			{
 				ArrayList indexes = new ArrayList();
-				ICollection includedIdxs = includedTable.IndexCollection;
+				ICollection includedIdxs = includedTable.IndexIterator;
 				foreach (Index parentIndex in includedIdxs)
 				{
 					Index index = new Index();
@@ -52,7 +52,7 @@ namespace NHibernate.Mapping
 					index.AddColumns(parentIndex.ColumnCollection);
 					indexes.Add(index);
 				}
-				indexes.AddRange(base.IndexCollection);
+				indexes.AddRange(base.IndexIterator);
 				return indexes;
 			}
 		}
@@ -60,7 +60,7 @@ namespace NHibernate.Mapping
 		public override void CreateForeignKeys()
 		{
 			includedTable.CreateForeignKeys();
-			ICollection includedFks = includedTable.ForeignKeyCollection;
+			ICollection includedFks = includedTable.ForeignKeyIterator;
 			foreach (ForeignKey fk in includedFks)
 			{
 				// NH Different behaviour 

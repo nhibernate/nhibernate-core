@@ -165,7 +165,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (!table.IsAbstractUnionTable)
 				{
-					foreach (Column column in table.ColumnCollection)
+					foreach (Column column in table.ColumnIterator)
 					{
 						columns.Add(column);
 					}
