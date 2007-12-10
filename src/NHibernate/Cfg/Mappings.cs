@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Mapping;
-using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
@@ -11,7 +10,7 @@ namespace NHibernate.Cfg
 	/// <remarks>Represents a single <c>&lt;hibernate-mapping&gt;</c> element.</remarks>
 	public class Mappings
 	{
-		private readonly IDictionary<System.Type, PersistentClass> classes;
+		private readonly IDictionary<string, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;
 		private readonly IDictionary<string, Table> tables;
 		private readonly IDictionary<string, NamedQueryDefinition> queries;
@@ -39,7 +38,7 @@ namespace NHibernate.Cfg
 		}
 
 		internal Mappings(
-			IDictionary<System.Type, PersistentClass> classes,
+			IDictionary<string, PersistentClass> classes,
 			IDictionary<string, Mapping.Collection> collections,
 			IDictionary<string, Table> tables,
 			IDictionary<string, NamedQueryDefinition> queries,
@@ -77,12 +76,12 @@ namespace NHibernate.Cfg
 		/// <param name="persistentClass"></param>
 		public void AddClass(PersistentClass persistentClass)
 		{
-			if (classes.ContainsKey(persistentClass.MappedClass))
+			if (classes.ContainsKey(persistentClass.EntityName))
 			{
 				throw new DuplicateMappingException("class/entity", persistentClass.MappedClass.Name);
 			}
 
-			classes[persistentClass.MappedClass] = persistentClass;
+			classes[persistentClass.EntityName] = persistentClass;
 		}
 
 		/// <summary>
@@ -119,12 +118,13 @@ namespace NHibernate.Cfg
 		/// <returns></returns>
 		public PersistentClass GetClass(System.Type type)
 		{
-			return classes[type];
+			// TODO NH: Remove this method
+			return GetClass(type.FullName);
 		}
 
 		public PersistentClass GetClass(string className)
 		{
-			return classes[ReflectHelper.ClassForName(className)];
+			return classes[className];
 		}
 
 		/// <summary>
@@ -346,5 +346,5 @@ namespace NHibernate.Cfg
 		}
 	}
 
-	internal delegate void SecondPassCommand(IDictionary<System.Type, PersistentClass> persistentClasses);
+	internal delegate void SecondPassCommand(IDictionary<string, PersistentClass> persistentClasses);
 }

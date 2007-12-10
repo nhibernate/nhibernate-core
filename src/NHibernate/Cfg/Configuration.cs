@@ -52,7 +52,7 @@ namespace NHibernate.Cfg
 
 		private string currentDocumentName;
 
-		private IDictionary<System.Type, PersistentClass> classes;
+		private IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
 		private IDictionary<string, string> imports;
 		private IDictionary<string, NHibernate.Mapping.Collection> collections;
 		private IDictionary<string, Table> tables;
@@ -80,7 +80,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		private void Reset()
 		{
-			classes = new Dictionary<System.Type, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
+			classes = new Dictionary<string, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
 			imports = new Dictionary<string, string>();
 			collections = new Dictionary<string, NHibernate.Mapping.Collection>();
 			tables = new Dictionary<string, Table>();
@@ -110,7 +110,7 @@ namespace NHibernate.Cfg
 
 			private PersistentClass GetPersistentClass(System.Type type)
 			{
-				PersistentClass pc = configuration.classes[type];
+				PersistentClass pc = configuration.classes[type.FullName];
 				if (pc == null)
 				{
 					throw new MappingException("persistent class not known: " + type.FullName);
@@ -185,10 +185,18 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public PersistentClass GetClassMapping(System.Type persistentClass)
 		{
-			if (classes.ContainsKey(persistentClass))
-				return classes[persistentClass];
-			else
-				return null;
+			// TODO NH: Remove this method
+			return GetClassMapping(persistentClass.FullName);
+		}
+
+		/// <summary> Get the mapping for a particular entity </summary>
+		/// <param name="entityName">An entity name. </param>
+		/// <returns> the entity mapping information </returns>
+		public PersistentClass GetClassMapping(string entityName)
+		{
+			PersistentClass result;
+			classes.TryGetValue(entityName, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -868,7 +876,7 @@ namespace NHibernate.Cfg
 						log.Debug("resolving reference to class: " + fk.ReferencedClass.Name);
 					}
 
-					if (!classes.ContainsKey(fk.ReferencedClass))
+					if (!classes.ContainsKey(fk.ReferencedClass.FullName))
 					{
 						string messageTemplate = "An association from the table {0} refers to an unmapped class: {1}";
 						string message = string.Format(messageTemplate, fk.Table.Name, fk.ReferencedClass.Name);
@@ -877,7 +885,7 @@ namespace NHibernate.Cfg
 					}
 					else
 					{
-						PersistentClass referencedClass = classes[fk.ReferencedClass];
+						PersistentClass referencedClass = classes[fk.ReferencedClass.FullName];
 
 						if (referencedClass.IsJoinedSubclass)
 						{

@@ -308,7 +308,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddListSecondPass(XmlNode node, List model)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<System.Type, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindListSecondPass(node, model, persistentClasses);
@@ -318,7 +318,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddMapSecondPass(XmlNode node, Map model)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<System.Type, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindMapSecondPass(node, model, persistentClasses);
@@ -328,7 +328,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddSetSecondPass(XmlNode node, Set model)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<System.Type, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindSetSecondPass(node, model, persistentClasses);
@@ -338,7 +338,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<System.Type, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindIdentifierCollectionSecondPass(node, model, persistentClasses);
@@ -348,7 +348,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddCollectionSecondPass(XmlNode node, Mapping.Collection model)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<System.Type, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindCollectionSecondPass(node, model, persistentClasses);
@@ -415,7 +415,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void BindListSecondPass(XmlNode node, List model,
-			IDictionary<System.Type, PersistentClass> persistentClasses)
+			IDictionary<string, PersistentClass> persistentClasses)
 		{
 			BindCollectionSecondPass(node, model, persistentClasses);
 
@@ -439,7 +439,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void BindIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model,
-			IDictionary<System.Type, PersistentClass> persitentClasses)
+			IDictionary<string, PersistentClass> persitentClasses)
 		{
 			BindCollectionSecondPass(node, model, persitentClasses);
 
@@ -466,7 +466,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void BindSetSecondPass(XmlNode node, Set model,
-			IDictionary<System.Type, PersistentClass> persistentClasses)
+			IDictionary<string, PersistentClass> persistentClasses)
 		{
 			BindCollectionSecondPass(node, model, persistentClasses);
 
@@ -481,7 +481,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		/// <param name="model"></param>
 		/// <param name="persistentClasses"></param>
 		private void BindMapSecondPass(XmlNode node, Map model,
-			IDictionary<System.Type, PersistentClass> persistentClasses)
+			IDictionary<string, PersistentClass> persistentClasses)
 		{
 			BindCollectionSecondPass(node, model, persistentClasses);
 
@@ -526,15 +526,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		/// Called for all collections
 		/// </remarks>
 		private void BindCollectionSecondPass(XmlNode node, Mapping.Collection model,
-			IDictionary<System.Type, PersistentClass> persistentClasses)
+			IDictionary<string, PersistentClass> persistentClasses)
 		{
 			if (model.IsOneToMany)
 			{
 				OneToMany oneToMany = (OneToMany) model.Element;
-				System.Type assocClass = oneToMany.EntityType.AssociatedClass;
-				PersistentClass persistentClass = persistentClasses[assocClass];
+				string associatedEntityName = oneToMany.EntityType.GetAssociatedEntityName();
+				PersistentClass persistentClass = persistentClasses[associatedEntityName];
 				if (persistentClass == null)
-					throw new MappingException("Association references unmapped class: " + assocClass.Name);
+					throw new MappingException("Association references unmapped class: " + associatedEntityName);
 				oneToMany.AssociatedClass = persistentClass;
 				model.CollectionTable = persistentClass.Table;
 
