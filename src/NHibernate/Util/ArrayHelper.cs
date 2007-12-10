@@ -203,6 +203,15 @@ namespace NHibernate.Util
 			}
 		}
 
+		// NH-specific
+		public static void AddAll<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
+		{
+			foreach (KeyValuePair<TKey, TValue> de in from)
+			{
+				to.Add(de.Key, de.Value);
+			}
+		}
+
 		public static int[] GetBatchSizes(int maxBatchSize)
 		{
 			int batchSize = maxBatchSize;

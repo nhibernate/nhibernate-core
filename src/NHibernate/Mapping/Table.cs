@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Tool.hbm2ddl;
@@ -54,7 +55,7 @@ namespace NHibernate.Mapping
 
 			public int GetHashCode(ForeignKeyKey obj)
 			{
-				return obj.columns.GetHashCode() + obj.referencedColumns.GetHashCode();
+				return obj.columns.GetHashCode() ^ obj.referencedColumns.GetHashCode();
 			}
 
 			#endregion
@@ -63,21 +64,23 @@ namespace NHibernate.Mapping
 		private string name;
 		private string schema;
 		private string catalog;
+
 		private readonly SequencedHashMap columns = new SequencedHashMap();
 		private IKeyValue idValue;
 		private PrimaryKey primaryKey;
-		private readonly IDictionary indexes = new Hashtable();
+		private readonly Dictionary<string, Index> indexes = new Dictionary<string, Index>();
 		private readonly IDictionary foreignKeys = new Hashtable();
-		private readonly IDictionary uniqueKeys = new Hashtable();
+		private readonly Dictionary<string, UniqueKey> uniqueKeys = new Dictionary<string, UniqueKey>();
 		private readonly int uniqueInteger;
 		private bool quoted;
-		private bool isSchemaQuoted;
 		private static int tableCounter = 0;
-		private readonly IList checkConstraints = new ArrayList();
-		private string subselect;
+		private readonly List<string> checkConstraints = new List<string>();
 		private bool isAbstract;
 		private bool hasDenormalizedTables = false;
 		private string comment;
+		private string subselect;
+		private string rowId;
+		private bool isSchemaQuoted;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Table"/>.
@@ -87,7 +90,8 @@ namespace NHibernate.Mapping
 			uniqueInteger = tableCounter++;
 		}
 
-		public Table(string name) : this()
+		public Table(string name)
+			: this()
 		{
 			Name = name;
 		}
@@ -141,7 +145,7 @@ namespace NHibernate.Mapping
 		/// </p>
 		/// <p>
 		/// The value returned by the getter is not Quoted.  To get the
-		/// column name in quoted form use <see cref="GetQuotedName(NHibernate.Dialect.Dialect)"/>.
+		/// column name in quoted form use <see cref="GetQuotedName(Dialect.Dialect)"/>.
 		/// </p>
 		/// </remarks>
 		public string Name
@@ -165,7 +169,7 @@ namespace NHibernate.Mapping
 		/// Gets the name of this Table in quoted form if it is necessary.
 		/// </summary>
 		/// <param name="dialect">
-		/// The <see cref="Dialect"/> that knows how to quote the Table name.
+		/// The <see cref="Dialect.Dialect"/> that knows how to quote the Table name.
 		/// </param>
 		/// <returns>
 		/// The Table name in a form that is safe to use inside of a SQL statement.
@@ -173,18 +177,21 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string GetQuotedName(Dialect.Dialect dialect)
 		{
-			return IsQuoted
-			       	?
-			       		dialect.QuoteForTableName(name)
-			       	:
-			       		name;
+			return IsQuoted ?
+			       dialect.QuoteForTableName(name) :
+			       name;
+		}
+
+		public string GetQuotedSchema(Dialect.Dialect dialect)
+		{
+			return IsSchemaQuoted ? dialect.OpenQuote + schema + dialect.CloseQuote : schema;
 		}
 
 		/// <summary>
 		/// Gets the schema for this table in quoted form if it is necessary.
 		/// </summary>
 		/// <param name="dialect">
-		/// The <see cref="Dialect" /> that knows how to quote the table name.
+		/// The <see cref="Dialect.Dialect" /> that knows how to quote the table name.
 		/// </param>
 		/// <returns>
 		/// The schema name for this table in a form that is safe to use inside
@@ -203,11 +210,6 @@ namespace NHibernate.Mapping
 			}
 
 			return schema;
-		}
-
-		public string GetQuotedSchema(Dialect.Dialect dialect)
-		{
-			return isSchemaQuoted ? dialect.OpenQuote + schema + dialect.CloseQuote : schema;
 		}
 
 		/// <summary>
@@ -258,14 +260,14 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="Column"/> objects that 
+		/// Gets an <see cref="IEnumerable"/> of <see cref="Column"/> objects that 
 		/// are part of the Table.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Column"/> objects that are 
+		/// An <see cref="IEnumerable"/> of <see cref="Column"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public virtual ICollection ColumnIterator
+		public virtual IEnumerable ColumnIterator
 		{
 			get { return columns.Values; }
 		}
@@ -278,33 +280,33 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="Index"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public virtual ICollection IndexIterator
+		public virtual IEnumerable<Index> IndexIterator
 		{
 			get { return indexes.Values; }
 		}
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="ForeignKey"/> objects that 
+		/// Gets an <see cref="IEnumerable"/> of <see cref="ForeignKey"/> objects that 
 		/// are part of the Table.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="ForeignKey"/> objects that are 
+		/// An <see cref="IEnumerable"/> of <see cref="ForeignKey"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public ICollection ForeignKeyIterator
+		public IEnumerable ForeignKeyIterator
 		{
 			get { return foreignKeys.Values; }
 		}
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="UniqueKey"/> objects that 
+		/// Gets an <see cref="IEnumerable"/> of <see cref="UniqueKey"/> objects that 
 		/// are part of the Table.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="UniqueKey"/> objects that are 
+		/// An <see cref="IEnumerable"/> of <see cref="UniqueKey"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public virtual ICollection UniqueKeyIterator
+		public virtual IEnumerable<UniqueKey> UniqueKeyIterator
 		{
 			get { return uniqueKeys.Values; }
 		}
@@ -316,7 +318,7 @@ namespace NHibernate.Mapping
 				.Append(" ")
 				.Append(dialect.AddColumnString);
 
-			ArrayList results = new ArrayList(ColumnIterator.Count);
+			ArrayList results = new ArrayList(ColumnSpan);
 
 			foreach (Column col in ColumnIterator)
 			{
@@ -388,10 +390,15 @@ namespace NHibernate.Mapping
 				}
 			}
 
-			int i = 0;
+			bool commaNeeded = false;
 			foreach (Column col in ColumnIterator)
 			{
-				i++;
+				if (commaNeeded)
+				{
+					buf.Append(StringHelper.CommaSpace);
+				}
+				commaNeeded = true;
+
 				buf.Append(col.GetQuotedName(dialect))
 					.Append(' ');
 
@@ -448,15 +455,10 @@ namespace NHibernate.Mapping
 				{
 					buf.Append(dialect.getColumnComment(col.Comment));
 				}
-
-				if (i < ColumnIterator.Count)
-				{
-					buf.Append(StringHelper.CommaSpace);
-				}
 			}
 			if (HasPrimaryKey)
 			{
-				buf.Append(", ").Append(PrimaryKey.SqlConstraintString(dialect, defaultSchema));
+				buf.Append(StringHelper.CommaSpace).Append(PrimaryKey.SqlConstraintString(dialect, defaultSchema));
 			}
 
 			foreach (UniqueKey uk in UniqueKeyIterator)
@@ -496,7 +498,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			return dialect.GetDropTableString(GetQualifiedName(dialect, defaultSchema));
+			return dialect.GetDropTableString(GetQualifiedName(dialect, defaultCatalog, defaultSchema));
 		}
 
 		/// <summary>
@@ -519,16 +521,32 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public Index GetIndex(string name)
 		{
-			Index index = (Index) indexes[name];
+			Index result;
+			indexes.TryGetValue(name, out result);
+			return result;
+		}
 
+		public Index AddIndex(Index index)
+		{
+			Index current = GetIndex(index.Name);
+			if (current != null)
+			{
+				throw new MappingException("Index " + index.Name + " already exists!");
+			}
+			indexes[index.Name] = index;
+			return index;
+		}
+
+		public Index GetOrCreateIndex(string indexName)
+		{
+			Index index = GetIndex(indexName);
 			if (index == null)
 			{
 				index = new Index();
-				index.Name = name;
+				index.Name = indexName;
 				index.Table = this;
-				indexes.Add(name, index);
+				indexes[indexName] = index;
 			}
-
 			return index;
 		}
 
@@ -542,14 +560,32 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public UniqueKey GetUniqueKey(string name)
 		{
-			UniqueKey uk = (UniqueKey) uniqueKeys[name];
+			UniqueKey result;
+			uniqueKeys.TryGetValue(name, out result);
+			return result;
+		}
+
+		public UniqueKey AddUniqueKey(UniqueKey uniqueKey)
+		{
+			UniqueKey current = GetUniqueKey(uniqueKey.Name);
+			if (current != null)
+			{
+				throw new MappingException("UniqueKey " + uniqueKey.Name + " already exists!");
+			}
+			uniqueKeys[uniqueKey.Name] = uniqueKey;
+			return uniqueKey;
+		}
+
+		public UniqueKey GetOrCreateUniqueKey(string keyName)
+		{
+			UniqueKey uk = GetUniqueKey(keyName);
 
 			if (uk == null)
 			{
 				uk = new UniqueKey();
-				uk.Name = name;
+				uk.Name = keyName;
 				uk.Table = this;
-				uniqueKeys.Add(name, uk);
+				uniqueKeys[keyName] = uk;
 			}
 
 			return uk;
@@ -738,10 +774,59 @@ namespace NHibernate.Mapping
 			return column.Equals(myColumn) ? myColumn : null;
 		}
 
-		internal IDictionary UniqueKeys
+		internal IDictionary<string, UniqueKey> UniqueKeys
 		{
-			// NH : Different behavior
-			get { return uniqueKeys; }
+			get
+			{
+				if (uniqueKeys.Count > 1)
+				{
+					//deduplicate unique constraints sharing the same columns
+					//this is needed by Hibernate Annotations since it creates automagically
+					// unique constraints for the user
+					Dictionary<string, UniqueKey> finalUniqueKeys = new Dictionary<string, UniqueKey>(uniqueKeys.Count);
+					foreach (KeyValuePair<string, UniqueKey> entry in uniqueKeys)
+					{
+						UniqueKey uk = entry.Value;
+						IList<Column> _columns = uk.Columns;
+						bool skip = false;
+						Dictionary<string, UniqueKey> tempUks = new Dictionary<string, UniqueKey>(finalUniqueKeys);
+						foreach (KeyValuePair<string, UniqueKey> tUk in tempUks)
+						{
+							UniqueKey currentUk = tUk.Value;
+							if (AreSameColumns(currentUk.Columns, _columns))
+							{
+								skip = true;
+								break;
+							}
+						}
+						if (!skip)
+							finalUniqueKeys[entry.Key] = uk;
+					}
+					return finalUniqueKeys;
+				}
+				else
+				{
+					return uniqueKeys;
+				}
+			}
+		}
+
+		private static bool AreSameColumns(ICollection<Column> col1, ICollection<Column> col2)
+		{
+			if(col1.Count!=col2.Count)
+				return false;
+			bool result= true;
+			foreach (Column column in col1)
+			{
+				if(!col2.Contains(column))
+					return false;
+			}
+			foreach (Column column in col2)
+			{
+				if (!col1.Contains(column))
+					return false;
+			}
+			return result;
 		}
 
 		public static string Qualify(string catalog, string schema, string table)
@@ -749,11 +834,13 @@ namespace NHibernate.Mapping
 			StringBuilder qualifiedName = new StringBuilder();
 
 			if (!string.IsNullOrEmpty(catalog))
-				qualifiedName.Append(catalog).Append('.');
-
+			{
+				qualifiedName.Append(catalog).Append(StringHelper.Dot);
+			}
 			if (!string.IsNullOrEmpty(schema))
-				qualifiedName.Append(schema).Append('.');
-
+			{
+				qualifiedName.Append(schema).Append(StringHelper.Dot);
+			}
 			return qualifiedName.Append(table).ToString();
 		}
 
@@ -796,13 +883,24 @@ namespace NHibernate.Mapping
 			get { return !IsSubselect && !IsAbstractUnionTable; }
 		}
 
-		public string[] SqlCommentStrings(Dialect.Dialect dialect, string defaultSchema)
+		public string RowId
+		{
+			get { return rowId; }
+			set { rowId = value; }
+		}
+
+		public bool IsSchemaQuoted
+		{
+			get { return isSchemaQuoted; }
+		}
+
+		public virtual string[] SqlCommentStrings(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
 			List<string> comments = new List<string>();
 			if (dialect.SupportsCommentOn)
 			{
-				String tableName = GetQualifiedName(dialect, defaultSchema);
-				if (comment != null)
+				string tableName = GetQualifiedName(dialect, defaultCatalog, defaultSchema);
+				if (!string.IsNullOrEmpty(comment))
 				{
 					StringBuilder buf = new StringBuilder()
 						.Append("comment on table ")
@@ -812,9 +910,9 @@ namespace NHibernate.Mapping
 						.Append("'");
 					comments.Add(buf.ToString());
 				}
-				foreach (Column column in columns.Values)
+				foreach (Column column in ColumnIterator)
 				{
-					String columnComment = column.Comment;
+					string columnComment = column.Comment;
 					if (columnComment != null)
 					{
 						StringBuilder buf = new StringBuilder()
@@ -823,13 +921,66 @@ namespace NHibernate.Mapping
 							.Append('.')
 							.Append(column.GetQuotedName(dialect))
 							.Append(" is '")
-							.Append(columnComment)
-							.Append("'");
+							.Append(columnComment).Append("'");
 						comments.Add(buf.ToString());
 					}
 				}
 			}
 			return comments.ToArray();
+		}
+
+		public virtual string SqlTemporaryTableCreateString(Dialect.Dialect dialect, IMapping mapping)
+		{
+			StringBuilder buffer = new StringBuilder(dialect.CreateTemporaryTableString)
+				.Append(' ')
+				.Append(name)
+				.Append(" (");
+			bool commaNeeded = false;
+			foreach (Column column in ColumnIterator)
+			{
+				buffer.Append(column.GetQuotedName(dialect))
+					.Append(' ');
+				buffer.Append(column.GetSqlType(dialect, mapping));
+
+				if (commaNeeded)
+					buffer.Append(StringHelper.CommaSpace);
+				commaNeeded = true;
+
+				if (column.IsNullable)
+				{
+					buffer.Append(dialect.NullColumnString);
+				}
+				else
+				{
+					buffer.Append(" not null");
+				}
+			}
+
+			buffer.Append(") ");
+			buffer.Append(dialect.CreateTemporaryTablePostfix);
+			return buffer.ToString();
+		}
+
+		public override string ToString()
+		{
+			StringBuilder buf = new StringBuilder()
+				.Append(GetType().FullName)
+				.Append('(');
+			if (Catalog != null)
+			{
+				buf.Append(Catalog + ".");
+			}
+			if (Schema != null)
+			{
+				buf.Append(Schema + ".");
+			}
+			buf.Append(Name).Append(')');
+			return buf.ToString();
+		}
+
+		public void ValidateColumns(Dialect.Dialect dialect, IMapping mapping, DataTable tableInfo)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

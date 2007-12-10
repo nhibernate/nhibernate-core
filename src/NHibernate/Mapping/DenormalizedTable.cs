@@ -14,36 +14,31 @@ namespace NHibernate.Mapping
 			includedTable.SetHasDenormalizedTables();
 		}
 
-		public override ICollection ColumnIterator
+		public override IEnumerable ColumnIterator
 		{
-			get
-			{
-				ArrayList result = new ArrayList(includedTable.ColumnIterator);
-				result.AddRange(base.ColumnIterator);
-				return result;
-			}
+			get { return new JoinedEnumerable(includedTable.ColumnIterator, base.ColumnIterator); }
 		}
 
-		public override ICollection UniqueKeyIterator
+		public override IEnumerable<UniqueKey> UniqueKeyIterator
 		{
 			get
 			{
 				//wierd implementation because of hacky behavior
 				//of Table.SqlCreateString() which modifies the
 				//list of unique keys by side-effect on some dialects
-				IDictionary uks = new Hashtable();
+				Dictionary<string, UniqueKey> uks = new Dictionary<string, UniqueKey>();
 				ArrayHelper.AddAll(uks, UniqueKeys);
 				ArrayHelper.AddAll(uks, includedTable.UniqueKeys);
 				return uks.Values;
 			}
 		}
 
-		public override ICollection IndexIterator
+		public override IEnumerable<Index> IndexIterator
 		{
 			get
 			{
-				ArrayList indexes = new ArrayList();
-				ICollection includedIdxs = includedTable.IndexIterator;
+				List<Index> indexes = new List<Index>();
+				IEnumerable<Index> includedIdxs = includedTable.IndexIterator;
 				foreach (Index parentIndex in includedIdxs)
 				{
 					Index index = new Index();
@@ -52,15 +47,14 @@ namespace NHibernate.Mapping
 					index.AddColumns(parentIndex.ColumnCollection);
 					indexes.Add(index);
 				}
-				indexes.AddRange(base.IndexIterator);
-				return indexes;
+				return new JoinedEnumerable<Index>(indexes, base.IndexIterator);
 			}
 		}
 
 		public override void CreateForeignKeys()
 		{
 			includedTable.CreateForeignKeys();
-			ICollection includedFks = includedTable.ForeignKeyIterator;
+			IEnumerable includedFks = includedTable.ForeignKeyIterator;
 			foreach (ForeignKey fk in includedFks)
 			{
 				// NH Different behaviour 
@@ -70,7 +64,7 @@ namespace NHibernate.Mapping
 
 		private string GetForeignKeyName(ForeignKey fk)
 		{
-			// (the FKName length, of H3.2 implementation, may be to long for some RDBMS so we implement something different) 
+			// (the FKName length, of H3.2 implementation, may be too long for some RDBMS so we implement something different) 
 			int hash = fk.Name.GetHashCode() ^ Name.GetHashCode();
 			return string.Format("KF{0}", hash.ToString("X"));
 		}

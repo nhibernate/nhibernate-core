@@ -1946,7 +1946,7 @@ namespace NHibernate.Cfg
 						script.AddRange(alterDDL);
 					}
 
-					string[] comments = table.SqlCommentStrings(dialect, defaultSchema);
+					string[] comments = table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema);
 					script.AddRange(comments);
 
 				}

@@ -1005,7 +1005,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				StringTokenizer tokens = new StringTokenizer(indexAttribute.Value, ", ");
 				foreach (string token in tokens)
-					table.GetIndex(token).AddColumn(column);
+					table.GetOrCreateIndex(token).AddColumn(column);
 			}
 		}
 
@@ -1015,7 +1015,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				StringTokenizer tokens = new StringTokenizer(uniqueKeyAttribute.Value, ", ");
 				foreach (string token in tokens)
-					table.GetUniqueKey(token).AddColumn(column);
+					table.GetOrCreateUniqueKey(token).AddColumn(column);
 			}
 		}
 
@@ -1187,7 +1187,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				StringTokenizer tokens = new StringTokenizer(indexAttribute, ", ");
 				foreach (string token in tokens)
-					table.GetIndex(token).AddColumn(column);
+					table.GetOrCreateIndex(token).AddColumn(column);
 			}
 		}
 
@@ -1197,7 +1197,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				StringTokenizer tokens = new StringTokenizer(uniqueKeyAttribute, ", ");
 				foreach (string token in tokens)
-					table.GetUniqueKey(token).AddColumn(column);
+					table.GetOrCreateUniqueKey(token).AddColumn(column);
 			}
 		}
 
