@@ -757,84 +757,6 @@ namespace NHibernate.Cfg
 			return ArrayHelper.ToStringArray(script);
 		}
 
-		/*
-		///<summary>
-		/// Generate DDL for altering tables
-		///</summary>
-		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata) 
-		{
-			secondPassCompile();
-				
-			ArrayList script = new ArrayList(50);
-		
-			foreach(Table table in TableMappings)
-			{
-				TableMetadata tableInfo = databaseMetadata.GetTableMetadata( table.Name, table.Schema, null );
-				if (tableInfo == null) 
-				{
-					script.Add( table.SqlCreateString( dialect, this ) );
-				}
-				else 
-				{
-					foreach(string alterString in table.SqlAlterStrings(dialect, this, tableInfo))
-					{
-						script.Add( alterString );
-					}
-				}
-			}
-				
-			foreach(Table table in TableMappings)
-			{
-				TableMetadata tableInfo = databaseMetadata.GetTableMetadata( table.Name, table.Schema, null );
-					
-				if ( dialect.HasAlterTable)
-				{
-					foreach(ForeignKey fk in table.ForeignKeyCollection)
-					{
-						bool create = tableInfo == null || ( tableInfo.GetForeignKeyMetadata( fk.Name ) == null && (
-							// Icky workaround for MySQL bug:
-							!( dialect is NHibernate.Dialect.MySQLDialect ) || table.GetIndex( fk.Name ) == null )
-						);
-						if ( create ) 
-						{
-							script.Add( fk.SqlCreateString(dialect, mapping) );
-						}
-					}
-				}
-
-				// Broken 'cos we don't generate these with names in SchemaExport
-				foreach(Index index in table.IndexCollection)
-				{
-					if ( tableInfo == null || tableInfo.GetIndexMetadata( index.Name ) == null ) 
-					{
-						script.Add( index.SqlCreateString( dialect, mapping ) );
-					}
-				}
-
-				// Broken 'cos we don't generate these with names in SchemaExport
-				foreach(UniqueKey uk in table.UniqueKeyCollection)
-				{
-					if ( tableInfo == null || tableInfo.GetIndexMetadata( uk.Name ) == null ) 
-					{
-						script.Add( uk.SqlCreateString( dialect, mapping ) );
-					}
-				}
-			}
-		
-			foreach(IPersistentIdentifierGenerator generator in CollectionGenerators(dialect))
-			{
-				object key = generator.GeneratorKey();
-				if ( !databaseMetadata.IsSequence( key ) && !databaseMetadata.IsTable(key) ) 
-				{
-					string[] lines = generator.SqlCreateStrings( dialect );
-					for (int i = 0; i < lines.Length; i++) script.Add( lines[i] );
-				}
-			}
-				
-			return ArrayHelper.ToStringArray(script);
-		}
-		*/
-
 		private void Validate()
 		{
 			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
@@ -1980,11 +1902,10 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		/**
-	 * Generate DDL for altering tables
-	 *
-	 * @see org.hibernate.tool.hbm2ddl.SchemaUpdate
-	 */
+		///<summary>
+		/// Generate DDL for altering tables
+		///</summary>
+		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
 		public String[] GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
