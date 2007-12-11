@@ -1,18 +1,23 @@
-using NHibernate.Type;
 using System;
+using NHibernate.Type;
 
 namespace NHibernate.Mapping
 {
+	/// <summary> 
+	/// A value which is "typed" by reference to some other value 
+	/// (for example, a foreign key is typed by the referenced primary key). 
+	/// </summary>
+	[Serializable]
 	public class DependentValue : SimpleValue
 	{
-		private IKeyValue wrappedValue;
+		private readonly IKeyValue wrappedValue;
 		private bool isNullable;
 		private bool isUpdateable;
 
 		public DependentValue(Table table, IKeyValue prototype)
 			: base(table)
 		{
-			this.wrappedValue = prototype;
+			wrappedValue = prototype;
 		}
 
 		public override IType Type
@@ -27,20 +32,19 @@ namespace NHibernate.Mapping
 			get { return isNullable; }
 		}
 
-		// SimpleValue does not have a setter for IsNullable. We cannot add
-		// a setter here with the "override" keyword on the IsNullable property.
-		// Therefore, we need to create this method to set IsNullable.
-		// This is a limitation on .NET 2.0 and before.
 		public void SetNullable(bool nullable)
 		{
 			isNullable = nullable;
 		}
 
-		public virtual bool IsUpdateable
+		public override bool IsUpdateable
 		{
 			get { return isUpdateable; }
-			set { isUpdateable = value; }
 		}
 
+		public virtual void SetUpdateable(bool updateable)
+		{
+			isUpdateable = updateable;
+		}
 	}
 }

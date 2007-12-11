@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using log4net;
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -38,17 +39,18 @@ namespace NHibernate.Id
 		/// <summary>
 		/// The name of the column parameter.
 		/// </summary>
-		public const string Column = "column";
+		public const string ColumnParamName = "column";
 
 		/// <summary>
 		/// The name of the table parameter.
 		/// </summary>
-		public const string Table = "table";
+		public const string TableParamName = "table";
 
-		/// <summary>
-		/// The name of the schema parameter.
-		/// </summary>
-		public const string Schema = "schema";
+		/// <summary>Default column name </summary>
+		public const string DefaultColumnName = "next_hi";
+
+		/// <summary>Default table name </summary>
+		public const string DefaultTableName = "hibernate_unique_key";
 
 		private string tableName;
 		private string columnName;
@@ -71,20 +73,19 @@ namespace NHibernate.Id
 		/// <param name="dialect">The <see cref="Dialect"/> to help with Configuration.</param>
 		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
-			tableName = PropertiesHelper.GetString(Table, parms, "hibernate_unique_key");
-			columnName = PropertiesHelper.GetString(Column, parms, "next_hi");
-			string schemaName = (string) parms[Schema];
-			if (schemaName != null && tableName.IndexOf(StringHelper.Dot) < 0)
+
+			tableName = PropertiesHelper.GetString(TableParamName, parms, DefaultTableName);
+			columnName = PropertiesHelper.GetString(ColumnParamName, parms, DefaultColumnName);
+			string schemaName = (string)parms[PersistentIdGeneratorParmsNames.Schema];
+			string catalogName = (string)parms[PersistentIdGeneratorParmsNames.Catalog];
+
+			if (tableName.IndexOf('.') < 0)
 			{
-				tableName = schemaName + "." + tableName;
+				tableName = Table.Qualify(catalogName, schemaName, tableName);
 			}
 
-			query =
-				"select " +
-				columnName +
-				" from " +
-				dialect.AppendLockHint(LockMode.Upgrade, tableName) +
-				dialect.ForUpdateString;
+			query = "select " + columnName + " from " + dialect.AppendLockHint(LockMode.Upgrade, tableName)
+			        + dialect.ForUpdateString;
 
 			columnType = type as ValueTypeType;
 			if (columnType == null)
@@ -282,7 +283,7 @@ namespace NHibernate.Id
 		/// <returns>
 		/// The configured table name.
 		/// </returns>
-		public object GeneratorKey()
+		public string GeneratorKey()
 		{
 			return tableName;
 		}

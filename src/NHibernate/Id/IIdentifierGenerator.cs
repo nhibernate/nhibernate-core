@@ -2,6 +2,13 @@ using NHibernate.Engine;
 
 namespace NHibernate.Id
 {
+	public struct IdGeneratorParmsNames
+	{
+		/// <summary> The configuration parameter holding the entity name</summary>
+		public readonly static string EntityName = "entity_name";
+	}
+
+
 	/// <summary>
 	/// The general contract between a class that generates unique
 	/// identifiers and the <see cref="ISession"/>.

@@ -21,6 +21,7 @@ namespace NHibernate.Cfg
 		private bool scrollableResultSetsEnabled;
 		private bool getGeneratedKeysEnabled;
 		private string _defaultSchemaName;
+		private string _defaultCatalogName;
 		private int statementFetchSize;
 		private IConnectionProvider _connectionProvider;
 		private ITransactionFactory _transactionFactory;
@@ -212,6 +213,12 @@ namespace NHibernate.Cfg
 		{
 			get { return _wrapResultSetsEnabled; }
 			set { _wrapResultSetsEnabled = value; }
+		}
+
+		public string DefaultCatalogName
+		{
+			get { return _defaultCatalogName; }
+			set { _defaultCatalogName = value; }
 		}
 	}
 }

@@ -84,10 +84,13 @@ namespace NHibernate.Cfg
 			settings.ConnectionReleaseMode = releaseMode;
 
 			string defaultSchema = properties[Environment.DefaultSchema] as string;
+			string defaultCatalog = properties[Environment.DefaultCatalog] as string;
 			if (defaultSchema != null)
-			{
-				log.Info("Default schema set to: " + defaultSchema);
-			}
+				log.Info("Default schema: " + defaultSchema);
+			if (defaultCatalog != null)
+				log.Info("Default catalog: " + defaultCatalog);
+			settings.DefaultSchemaName=defaultSchema;
+			settings.DefaultCatalogName=defaultCatalog;
 
 			//Statistics and logging:
 
@@ -197,7 +200,6 @@ namespace NHibernate.Cfg
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled
-			settings.DefaultSchemaName = defaultSchema;
 			settings.IsShowSqlEnabled = showSql;
 			settings.Dialect = dialect;
 			settings.ConnectionProvider = connectionProvider;

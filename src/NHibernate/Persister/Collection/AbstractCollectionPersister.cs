@@ -280,7 +280,10 @@ namespace NHibernate.Persister.Collection
 
 				identifierColumnName = col.GetQuotedName(dialect);
 				identifierColumnAlias = alias.ToAliasString(col.GetAlias(dialect), dialect);
-				identifierGenerator = idColl.Identifier.CreateIdentifierGenerator(dialect);
+				identifierGenerator =
+					idColl.Identifier.CreateIdentifierGenerator(factory.Dialect, factory.Settings.DefaultCatalogName,
+					                                            factory.Settings.DefaultSchemaName, null);
+
 				CheckColumnDuplication(distinctColumns, idColl.Identifier.ColumnIterator);
 			}
 			else

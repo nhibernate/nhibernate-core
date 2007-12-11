@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Text;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Type;
@@ -16,7 +17,7 @@ namespace NHibernate.Mapping
 		private readonly List<ISelectable> columns = new List<ISelectable>();
 		private IType type;
 
-		private IDictionary identifierGeneratorProperties;
+		private IDictionary<string, string> identifierGeneratorProperties;
 		private string identifierGeneratorStrategy = "assigned";
 		private string nullValue;
 		private Table table;
@@ -59,7 +60,7 @@ namespace NHibernate.Mapping
 			set { table = value; }
 		}
 
-		public IDictionary IdentifierGeneratorProperties
+		public IDictionary<string, string> IdentifierGeneratorProperties
 		{
 			get { return identifierGeneratorProperties; }
 			set { identifierGeneratorProperties = value; }
@@ -95,14 +96,84 @@ namespace NHibernate.Mapping
 
 		public bool IsIdentityColumn(Dialect.Dialect dialect)
 		{
-			return IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect)
-				.Equals(typeof(IdentityGenerator));
+			return
+				IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect).Equals(
+					typeof (IdentityGenerator));
 		}
 
 		public string NullValue
 		{
 			get { return nullValue; }
 			set { nullValue = value; }
+		}
+
+		public virtual bool IsUpdateable
+		{
+			get { return true; } //needed to satisfy IKeyValue
+		}
+
+		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect, string defaultCatalog,
+		                                                      string defaultSchema, RootClass rootClass)
+		{
+			Dictionary<string, string> @params = new Dictionary<string, string>();
+
+			//if the hibernate-mapping did not specify a schema/catalog, use the defaults
+			//specified by properties - but note that if the schema/catalog were specified
+			//in hibernate-mapping, or as params, they will already be initialized and
+			//will override the values set here (they are in identifierGeneratorProperties)
+			if (!string.IsNullOrEmpty(defaultSchema))
+			{
+				@params[PersistentIdGeneratorParmsNames.Schema] = defaultSchema;
+			}
+			if (!string.IsNullOrEmpty(defaultCatalog))
+			{
+				@params[PersistentIdGeneratorParmsNames.Catalog] = defaultCatalog;
+			}
+
+			//pass the entity-name, if not a collection-id
+			if (rootClass != null)
+			{
+				@params[IdGeneratorParmsNames.EntityName] = rootClass.EntityName;
+			}
+
+			//init the table here instead of earlier, so that we can get a quoted table name
+			//TODO: would it be better to simply pass the qualified table name, instead of
+			//      splitting it up into schema/catalog/table names
+			string tableName = Table.GetQuotedName(dialect);
+
+			@params[PersistentIdGeneratorParmsNames.Table] = tableName;
+
+			//pass the column name (a generated id almost always has a single column and is not a formula)
+			IEnumerator enu = ColumnIterator.GetEnumerator();
+			enu.MoveNext();
+			string columnName = ((Column)enu.Current).GetQuotedName(dialect);
+
+			@params[PersistentIdGeneratorParmsNames.PK] = columnName;
+
+			if (rootClass != null)
+			{
+				StringBuilder tables = new StringBuilder();
+				bool commaNeeded = false;
+				foreach (Table identityTable in rootClass.IdentityTables)
+				{
+					if (commaNeeded)
+						tables.Append(StringHelper.CommaSpace);
+					commaNeeded = true;
+					tables.Append(identityTable.GetQuotedName(dialect));
+				}
+				@params[PersistentIdGeneratorParmsNames.Tables] = tables.ToString();
+			}
+			else
+			{
+				@params[PersistentIdGeneratorParmsNames.Tables] = tableName;
+			}
+
+			if (identifierGeneratorProperties != null)
+			{
+				ArrayHelper.AddAll(@params, identifierGeneratorProperties);
+			}
+
+			return IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, Type, @params, dialect);
 		}
 
 		#endregion
@@ -286,17 +357,6 @@ namespace NHibernate.Mapping
 			{
 				throw new MappingException("Problem trying to set property type by reflection", he);
 			}
-		}
-
-		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect)
-		{
-			if (uniqueIdentifierGenerator == null)
-			{
-				uniqueIdentifierGenerator =
-					IdentifierGeneratorFactory.Create(identifierGeneratorStrategy, type, identifierGeneratorProperties, dialect);
-			}
-
-			return uniqueIdentifierGenerator;
 		}
 
 		public override string ToString()

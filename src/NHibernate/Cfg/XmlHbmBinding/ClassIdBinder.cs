@@ -119,22 +119,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private IDictionary GetGeneratorProperties(HbmId idSchema, IValue id)
+		private IDictionary<string,string> GetGeneratorProperties(HbmId idSchema, IValue id)
 		{
-			IDictionary results = new Hashtable();
+			Dictionary<string, string> results = new Dictionary<string, string>();
 
 			if (id.Table.Schema != null)
-				results.Add("schema", id.Table.Schema);
+				results.Add(Id.PersistentIdGeneratorParmsNames.Schema, id.Table.Schema);
 			else if (mappings.SchemaName != null)
-				results.Add("schema", dialect.QuoteForSchemaName(mappings.SchemaName));
-
-			results.Add("target_table", id.Table.GetQuotedName(dialect));
-
-			foreach (Column col in id.ColumnIterator)
-			{
-				results.Add("target_column", col);
-				break;
-			}
+				results.Add(Id.PersistentIdGeneratorParmsNames.Schema, dialect.QuoteForSchemaName(mappings.SchemaName));
 
 			foreach (HbmParam paramSchema in idSchema.generator.param ?? new HbmParam[0])
 				results.Add(paramSchema.name, paramSchema.GetText());

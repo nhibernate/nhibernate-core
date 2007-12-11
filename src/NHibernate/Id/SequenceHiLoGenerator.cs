@@ -77,12 +77,22 @@ namespace NHibernate.Id
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public override object Generate(ISessionImplementor session, object obj)
 		{
+			if (maxLo < 1)
+			{
+				//keep the behavior consistent even for boundary usages
+				long val = Convert.ToInt64(base.Generate(session, obj));
+				if (val == 0)
+					val = Convert.ToInt64(base.Generate(session, obj));
+				return IdentifierGeneratorFactory.CreateNumber(val, returnClass);
+			}
+
 			if (lo > maxLo)
 			{
 				long hival = Convert.ToInt64(base.Generate(session, obj));
 				lo = 1;
 				hi = hival * (maxLo + 1);
-				log.Debug("new hi value: " + hival);
+				if (log.IsDebugEnabled)
+					log.Debug("new hi value: " + hival);
 			}
 			return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
 		}

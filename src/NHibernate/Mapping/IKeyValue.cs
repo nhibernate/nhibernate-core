@@ -1,3 +1,5 @@
+using NHibernate.Id;
+
 namespace NHibernate.Mapping
 {
 	/// <summary>
@@ -9,21 +11,14 @@ namespace NHibernate.Mapping
 	{
 		void CreateForeignKeyOfEntity(string entityName);
 
-		// TODO H3:
-		//bool IsCascadeDeleteEnabled { get; }
+		bool IsCascadeDeleteEnabled { get; }
 
 		bool IsIdentityColumn(Dialect.Dialect dialect);
 
 		string NullValue { get; }
 
-		// TODO H3:
-		//bool IsUpdateable { get; }
+		bool IsUpdateable { get; }
 
-		// TODO H3:
-		//IIdentifierGenerator CreateIdentifierGenerator(
-		//	Dialect.Dialect dialect, 
-		//	string defaultCatalog, 
-		//	string defaultSchema, 
-		//	RootClass rootClass );
+		IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema, RootClass rootClass);
 	}
 }

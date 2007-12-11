@@ -295,7 +295,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="IEnumerable"/> of <see cref="ForeignKey"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public IEnumerable ForeignKeyIterator
+		public IEnumerable<ForeignKey> ForeignKeyIterator
 		{
 			get { return foreignKeys.Values; }
 		}

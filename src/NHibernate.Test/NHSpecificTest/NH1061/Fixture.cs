@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1061
 		[Test]
 		public void IncrementGeneratorShouldIncludeClassLevelSchemaWhenGettingNextId()
 		{
-			System.Type thisType = this.GetType();
+			System.Type thisType = GetType();
 			Assembly thisAssembly = thisType.Assembly;
 
 			Configuration cfg = new Configuration();
@@ -21,7 +21,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1061
 			PersistentClass persistentClass = cfg.GetClassMapping(typeof(TestNH1061));
 			// We know the ID generator is an IncrementGenerator.  The dialect does
 			// not play a big role here, so just use the MsSql2000Dialect.
-			IncrementGenerator generator = (IncrementGenerator)persistentClass.Identifier.CreateIdentifierGenerator(new NHibernate.Dialect.MsSql2000Dialect());
+			IncrementGenerator generator =
+				(IncrementGenerator)
+				persistentClass.Identifier.CreateIdentifierGenerator(new Dialect.MsSql2000Dialect(), null, null, null);
 
 			// I could not find a good seam to crack to test this.
 			// This is not ideal as we are reflecting into a private variable to test.

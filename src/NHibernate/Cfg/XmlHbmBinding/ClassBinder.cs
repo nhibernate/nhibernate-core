@@ -408,7 +408,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				model.IdentifierGeneratorStrategy = subnode.Attributes["class"].Value;
 
-				IDictionary parms = new Hashtable();
+				Dictionary<string, string> parms = new Dictionary<string, string>();
 
 				// NOTE: While fixing NH-1061, a couple of lines similar to the following
 				// were added to ClassIdBinder.GetGeneratorProperties().  It looks like
@@ -417,15 +417,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				    parms.Add("schema", model.Table.Schema);
 				else */
 				if (mappings.SchemaName != null)
-					parms.Add("schema", dialect.QuoteForSchemaName(mappings.SchemaName));
-
-				parms.Add("target_table", model.Table.GetQuotedName(dialect));
-
-				foreach (Column col in model.ColumnIterator)
-				{
-					parms.Add("target_column", col);
-					break;
-				}
+					parms.Add(Id.PersistentIdGeneratorParmsNames.Schema, dialect.QuoteForSchemaName(mappings.SchemaName));
 
 				foreach (XmlNode childNode in subnode.SelectNodes(HbmConstants.nsParam, namespaceManager))
 					parms.Add(

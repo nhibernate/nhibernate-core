@@ -53,7 +53,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				throw new MappingException(
 					"composite-id class must override GetHashCode(): " + compIdClass.FullName
 					);
-
 			// Serializability check not ported
 		}
 

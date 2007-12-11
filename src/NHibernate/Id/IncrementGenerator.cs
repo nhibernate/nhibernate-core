@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Runtime.CompilerServices;
+using System.Text;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -23,20 +25,10 @@ namespace NHibernate.Id
 	/// Mapping parameters supported, but not usually needed: table, column.
 	/// </para>
 	/// </remarks>
-	public class IncrementGenerator : IPersistentIdentifierGenerator, IConfigurable
+	public class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(IncrementGenerator));
 
-		/// <summary></summary>
-		public const string Column = "target_column";
-
-		/// <summary></summary>
-		public const string Table = "target_table";
-
-		/// <summary></summary>
-		public const string Schema = "schema";
-
-		private string tableName;
 		private long next;
 		private string sql;
 		private System.Type returnClass;
@@ -49,17 +41,35 @@ namespace NHibernate.Id
 		/// <param name="d"></param>
 		public void Configure(IType type, IDictionary parms, Dialect.Dialect d)
 		{
-			tableName = parms[Table] as string;
-			string columnName = ((Column) parms[Column]).GetQuotedName(d);
-
-			string schemaName = parms[Schema] as string;
-			if (schemaName != null && tableName.IndexOf(StringHelper.Dot) < 0)
-			{
-				tableName = schemaName + "." + tableName;
-			}
+			string tableList = (string)parms["tables"];
+			if (tableList == null)
+				tableList = (string)parms[PersistentIdGeneratorParmsNames.Tables];
+			string[] tables = StringHelper.Split(", ", tableList);
+			string column = (string)parms["column"];
+			if (column == null)
+				column = (string)parms[PersistentIdGeneratorParmsNames.PK];
+			string schema = (string)parms[PersistentIdGeneratorParmsNames.Schema];
+			string catalog = (string)parms[PersistentIdGeneratorParmsNames.Catalog];
 			returnClass = type.ReturnedClass;
 
-			sql = "select max(" + columnName + ") from " + tableName;
+			StringBuilder buf = new StringBuilder();
+			for (int i = 0; i < tables.Length; i++)
+			{
+				if (tables.Length > 1)
+				{
+					buf.Append("select ").Append(column).Append(" from ");
+				}
+				buf.Append(Table.Qualify(catalog, schema, tables[i]));
+				if (i < tables.Length - 1)
+					buf.Append(" union ");
+			}
+			if (tables.Length > 1)
+			{
+				buf.Insert(0, "( ").Append(" ) ids_");
+				column = "ids_." + column;
+			}
+
+			sql = "select max(" + column + ") from " + buf;
 		}
 
 		/// <summary>
@@ -73,75 +83,52 @@ namespace NHibernate.Id
 		{
 			if (sql != null)
 			{
-				getNext(session);
+				GetNext(session);
 			}
 			return IdentifierGeneratorFactory.CreateNumber(next++, returnClass);
 		}
 
-		private void getNext(ISessionImplementor session)
+		private void GetNext(ISessionImplementor session)
 		{
 			log.Debug("fetching initial value: " + sql);
 
-			IDbConnection conn = session.Factory.OpenConnection();
-			IDbCommand qps = conn.CreateCommand();
-			qps.CommandText = sql;
-			qps.CommandType = CommandType.Text;
 			try
 			{
-				IDataReader rs = qps.ExecuteReader();
-				if (rs.Read())
+				IDbConnection conn = session.Factory.OpenConnection();
+				IDbCommand qps = conn.CreateCommand();
+				qps.CommandText = sql;
+				qps.CommandType = CommandType.Text;
+				try
 				{
-					if (!rs.IsDBNull(0))
+					IDataReader rs = qps.ExecuteReader();
+					try
 					{
-						next = Convert.ToInt64(rs.GetValue(0)) + 1;
+						if (rs.Read())
+						{
+							next = !rs.IsDBNull(0) ? Convert.ToInt64(rs.GetValue(0)) + 1: 1L;
+						}
+						else
+						{
+							next = 1L;
+						}
+						sql = null;
+						log.Debug("first free id: " + next);
 					}
-					else
+					finally
 					{
-						next = 1L;
+						rs.Close();
 					}
 				}
-				else
+				finally
 				{
-					next = 1L;
+					session.Factory.CloseConnection(conn);
 				}
-				sql = null;
-				log.Debug("first free id: " + next);
 			}
-			catch (Exception e)
+			catch (Exception sqle)
 			{
-				log.Error("could not get increment value", e);
-				throw;
+				log.Error("could not get increment value", sqle);
+				throw ADOExceptionHelper.Convert(sqle, "could not fetch initial value for increment generator");
 			}
-			finally
-			{
-				session.Factory.CloseConnection(conn);
-			}
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
-		public string[] SqlCreateStrings(Dialect.Dialect dialect)
-		{
-			return new string[0];
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="dialect"></param>
-		/// <returns></returns>
-		public string SqlDropString(Dialect.Dialect dialect)
-		{
-			return null;
-		}
-
-		/// <summary></summary>
-		public object GeneratorKey()
-		{
-			return tableName;
 		}
 	}
 }

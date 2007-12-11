@@ -200,15 +200,10 @@ namespace NHibernate.Impl
 			{
 				if (!model.IsInherited)
 				{
-					// TODO H3:
-					IIdentifierGenerator generator = model.Identifier.CreateIdentifierGenerator(
-						settings.Dialect);
-					//					IIdentifierGenerator generator = model.Identifier.CreateIdentifierGenerator(
-					//						settings.Dialect,
-					//						settings.DefaultCatalogName,
-					//						settings.DefaultSchemaName,
-					//						(RootClass) model
-					//						);
+					IIdentifierGenerator generator =
+						model.Identifier.CreateIdentifierGenerator(settings.Dialect, settings.DefaultCatalogName,
+						                                           settings.DefaultSchemaName, (RootClass) model);
+
 					identifierGenerators[model.MappedClass] = generator;
 				}
 			}

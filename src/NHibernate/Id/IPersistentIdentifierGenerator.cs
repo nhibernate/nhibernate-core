@@ -2,6 +2,33 @@ using System;
 
 namespace NHibernate.Id
 {
+	public struct PersistentIdGeneratorParmsNames
+	{
+		/// <summary> The configuration parameter holding the schema name</summary>
+		public readonly static string Schema = "schema";
+
+		/// <summary> 
+		/// The configuration parameter holding the table name for the
+		/// generated id
+		/// </summary>
+		public readonly static string Table = "target_table";
+
+		/// <summary> 
+		/// The configuration parameter holding the table names for all
+		/// tables for which the id must be unique
+		/// </summary>
+		public readonly static string Tables = "identity_tables";
+
+		/// <summary> 
+		/// The configuration parameter holding the primary key column
+		/// name of the generated id
+		/// </summary>
+		public readonly static string PK = "target_column";
+
+		/// <summary> The configuration parameter holding the catalog name</summary>
+		public readonly static string Catalog = "catalog";
+	}
+
 	/// <summary>
 	/// An <see cref="IIdentifierGenerator" /> that requires creation of database objects
 	/// All <see cref="IPersistentIdentifierGenerator"/>s that also implement 
@@ -37,6 +64,6 @@ namespace NHibernate.Id
 		/// <remarks>
 		/// Prevents us from trying to create/remove them multiple times
 		/// </remarks>
-		object GeneratorKey();
+		string GeneratorKey();
 	}
 }

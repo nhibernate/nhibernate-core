@@ -623,35 +623,6 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		private ICollection CollectionGenerators(Dialect dialect)
-		{
-			Hashtable generators = new Hashtable();
-			foreach (PersistentClass clazz in classes.Values)
-			{
-				IIdentifierGenerator ig = clazz.Identifier.CreateIdentifierGenerator(dialect);
-				if (ig is IPersistentIdentifierGenerator)
-				{
-					generators[((IPersistentIdentifierGenerator)ig).GeneratorKey()] = ig;
-				}
-			}
-
-			foreach (NHibernate.Mapping.Collection collection in collections.Values)
-			{
-				if (collection is IdentifierCollection)
-				{
-					IIdentifierGenerator ig = ((IdentifierCollection)collection)
-						.Identifier
-						.CreateIdentifierGenerator(dialect);
-
-					if (ig is IPersistentIdentifierGenerator)
-					{
-						generators[((IPersistentIdentifierGenerator)ig).GeneratorKey()] = ig;
-					}
-				}
-			}
-			return generators.Values;
-		}
-
 		/// <summary>
 		/// Generate DDL for droping tables
 		/// </summary>
@@ -663,7 +634,7 @@ namespace NHibernate.Cfg
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			ArrayList script = new ArrayList(50);
+			List<string> script = new List<string>();
 
 			// drop them in reverse order in case db needs it done that way...
 			for (int i = auxiliaryDatabaseObjects.Count - 1; i >= 0; i--)
@@ -679,28 +650,32 @@ namespace NHibernate.Cfg
 			{
 				foreach (Table table in TableMappings)
 				{
-					foreach (ForeignKey fk in table.ForeignKeyIterator)
+					if (table.IsPhysicalTable)
 					{
-						script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
+						foreach (ForeignKey fk in table.ForeignKeyIterator)
+						{
+							if (fk.HasPhysicalConstraint)
+								script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
+						}
 					}
 				}
 			}
 
 			foreach (Table table in TableMappings)
 			{
-				script.Add(table.SqlDropString(dialect, defaultCatalog, defaultSchema));
+				if (table.IsPhysicalTable)
+					script.Add(table.SqlDropString(dialect, defaultCatalog, defaultSchema));
 			}
 
-			foreach (IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect))
+			IEnumerable<IPersistentIdentifierGenerator> pIDg = IterateGenerators(dialect);
+			foreach (IPersistentIdentifierGenerator idGen in pIDg)
 			{
 				string dropString = idGen.SqlDropString(dialect);
 				if (dropString != null)
-				{
 					script.Add(dropString);
-				}
 			}
 
-			return ArrayHelper.ToStringArray(script);
+			return script.ToArray();
 		}
 
 		/// <summary>
@@ -714,47 +689,48 @@ namespace NHibernate.Cfg
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			ArrayList script = new ArrayList(50);
+			List<string> script = new List<string>();
 
 			foreach (Table table in TableMappings)
 			{
-				script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+				if (table.IsPhysicalTable)
+				{
+					script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+					script.AddRange(table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema));
+				}
 			}
 
 			foreach (Table table in TableMappings)
 			{
-				/*
-				TODO: H2.1.8 has the code below, but only TimesTen dialect ever
-				enters the if, so I don't want to add this to Dialect right now
-
-				if( !dialect.SupportsUniqueConstraintInCreateAlterTable )
+				if (table.IsPhysicalTable)
 				{
-					foreach( UniqueKey uk in table.UniqueKeyIterator )
+					if (!dialect.SupportsUniqueConstraintInCreateAlterTable)
 					{
-						script.Add( uk.SqlCreateString( dialect, mapping, defaultSchema ) );
+						foreach (UniqueKey uk in table.UniqueKeyIterator)
+						{
+							string constraintString = uk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+							if (constraintString != null)
+								script.Add(constraintString);
+						}
 					}
-				}
-				*/
 
-				foreach (Index index in table.IndexIterator)
-				{
-					script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
-				}
+					foreach (Index index in table.IndexIterator)
+						script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 
-				if (dialect.HasAlterTable)
-				{
-					foreach (ForeignKey fk in table.ForeignKeyIterator)
+					if (dialect.HasAlterTable)
 					{
-						script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+						foreach (ForeignKey fk in table.ForeignKeyIterator)
+						{
+							if (fk.HasPhysicalConstraint)
+								script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+						}
 					}
 				}
 			}
 
-			foreach (IPersistentIdentifierGenerator idGen in CollectionGenerators(dialect))
-			{
-				string[] lines = idGen.SqlCreateStrings(dialect);
-				script.AddRange(lines);
-			}
+			IEnumerable<IPersistentIdentifierGenerator> pIDg = IterateGenerators(dialect);
+			foreach (IPersistentIdentifierGenerator idGen in pIDg)
+				script.AddRange(idGen.SqlCreateStrings(dialect));
 
 			foreach (IAuxiliaryDatabaseObject auxDbObj in auxiliaryDatabaseObjects)
 			{
@@ -764,7 +740,7 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			return ArrayHelper.ToStringArray(script);
+			return script.ToArray();
 		}
 
 		private void Validate()
@@ -1628,11 +1604,11 @@ namespace NHibernate.Cfg
 				case ListenerType.Autoflush:
 					if (listeners == null)
 					{
-						eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] { };
+						eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] {};
 					}
 					else
 					{
-						eventListeners.AutoFlushEventListeners = (IAutoFlushEventListener[])listeners;
+						eventListeners.AutoFlushEventListeners = (IAutoFlushEventListener[]) listeners;
 					}
 					break;
 				case ListenerType.Merge:
@@ -2022,25 +1998,23 @@ namespace NHibernate.Cfg
 			return ArrayHelper.ToStringArray(script);
 		}
 
-		private IEnumerable IterateGenerators(Dialect dialect)
+		private IEnumerable<IPersistentIdentifierGenerator> IterateGenerators(Dialect dialect)
 		{
-
-			Hashtable generators = new Hashtable();
+			Dictionary<string, IPersistentIdentifierGenerator> generators =
+				new Dictionary<string, IPersistentIdentifierGenerator>();
+			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
+			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
 			foreach (PersistentClass pc in classes.Values)
 			{
-
 				if (!pc.IsInherited)
 				{
+					IPersistentIdentifierGenerator ig =
+						pc.Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, (RootClass) pc) as
+						IPersistentIdentifierGenerator;
 
-					IIdentifierGenerator ig = pc.Identifier
-							.CreateIdentifierGenerator(dialect);
-
-					if (ig is IPersistentIdentifierGenerator)
-					{
-						generators.Add(((IPersistentIdentifierGenerator)ig).GeneratorKey(), ig);
-					}
-
+					if (ig != null)
+						generators[ig.GeneratorKey()] = ig;
 				}
 			}
 
@@ -2048,22 +2022,16 @@ namespace NHibernate.Cfg
 			{
 				if (collection.IsIdentified)
 				{
+					IPersistentIdentifierGenerator ig =
+						((IdentifierCollection) collection).Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema,
+						                                                                         null) as IPersistentIdentifierGenerator;
 
-					IIdentifierGenerator ig = ((IdentifierCollection)collection).Identifier
-							.CreateIdentifierGenerator(
-									dialect
-								);
-
-					if (ig is IPersistentIdentifierGenerator)
-					{
-						generators.Add(((IPersistentIdentifierGenerator)ig).GeneratorKey(), ig);
-					}
-
+					if (ig != null)
+						generators[ig.GeneratorKey()] = ig;
 				}
 			}
 
 			return generators.Values;
 		}
-
 	}
 }

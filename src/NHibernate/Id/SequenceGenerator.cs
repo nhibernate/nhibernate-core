@@ -3,6 +3,8 @@ using System.Collections;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
+using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -38,14 +40,16 @@ namespace NHibernate.Id
 		/// </summary>
 		public const string Sequence = "sequence";
 
-		/// <summary>
-		/// The name of the schema parameter.
+		/// <summary> 
+		/// The parameters parameter, appended to the create sequence DDL.
+		/// For example (Oracle): <tt>INCREMENT BY 1 START WITH 1 MAXVALUE 100 NOCACHE</tt>.
 		/// </summary>
-		public const string Schema = "schema";
+		public const string Parameters = "parameters";
 
 		private string sequenceName;
-		private IType type;
+		private IType identifierType;
 		private SqlString sql;
+		private string parameters;
 
 		#region IConfigurable Members
 
@@ -58,13 +62,17 @@ namespace NHibernate.Id
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
 		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
-			this.sequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
-			string schemaName = (string) parms[Schema];
-			if (schemaName != null && sequenceName.IndexOf(StringHelper.Dot) < 0)
+			sequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
+			parameters = (string)parms[Parameters];
+			string schemaName = (string)parms[PersistentIdGeneratorParmsNames.Schema];
+			string catalogName = (string)parms[PersistentIdGeneratorParmsNames.Catalog];
+
+			if (sequenceName.IndexOf('.') < 0)
 			{
-				sequenceName = schemaName + '.' + sequenceName;
+				sequenceName = Table.Qualify(catalogName, schemaName, sequenceName);
 			}
-			this.type = type;
+
+			identifierType = type;
 			sql = new SqlString(dialect.GetSequenceNextValString(sequenceName));
 		}
 
@@ -81,27 +89,37 @@ namespace NHibernate.Id
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			IDbCommand cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
-			IDataReader reader = null;
 			try
 			{
-				reader = session.Batcher.ExecuteReader(cmd);
-				reader.Read();
-				object result = IdentifierGeneratorFactory.Get(reader, type, session);
-
-				log.Debug("sequence ID generated: " + result);
-				return result;
-			} 
-				// TODO: change to SQLException
-			catch (Exception e)
-			{
-				// TODO: add code to log the sql exception
-				log.Error("error generating sequence", e);
-				throw;
+				IDbCommand cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				IDataReader reader = null;
+				try
+				{
+					reader = session.Batcher.ExecuteReader(cmd);
+					try
+					{
+						reader.Read();
+						object result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
+						if (log.IsDebugEnabled)
+						{
+							log.Debug("Sequence identifier generated: " + result);
+						}
+						return result;
+					}
+					finally
+					{
+						reader.Close();
+					}
+				}
+				finally
+				{
+					session.Batcher.CloseCommand(cmd, reader);
+				}
 			}
-			finally
+			catch (Exception sqle)
 			{
-				session.Batcher.CloseCommand(cmd, reader);
+				log.Error("error generating sequence", sqle);
+				throw ADOExceptionHelper.Convert(sqle, "could not get next sequence value");
 			}
 		}
 
@@ -119,10 +137,13 @@ namespace NHibernate.Id
 		/// </returns>
 		public string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
-			return new string[]
-				{
-					dialect.GetCreateSequenceString(sequenceName)
-				};
+			string baseDDL = dialect.GetCreateSequenceString(sequenceName);
+			string paramsDDL = null;
+			if (parameters != null)
+			{
+				paramsDDL = ' ' + parameters;
+			}
+			return new string[] { string.Concat(baseDDL,paramsDDL) };
 		}
 
 		/// <summary>
@@ -143,7 +164,7 @@ namespace NHibernate.Id
 		/// <returns>
 		/// The configured sequence name.
 		/// </returns>
-		public object GeneratorKey()
+		public string GeneratorKey()
 		{
 			return sequenceName;
 		}
