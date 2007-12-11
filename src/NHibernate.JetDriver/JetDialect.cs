@@ -188,17 +188,6 @@ namespace NHibernate.JetDriver
 			get { return string.Empty; }
 		}
 
-		/// <summary>
-		/// Add the Identity Select string to the Insert Sql.
-		/// Not supported by Access.
-		/// </summary>
-		/// <param name="insertSql">The SqlString that contains the INSERT sql.</param>
-		/// <returns>null.</returns>
-		public override SqlString AddIdentitySelectToInsert(SqlString insertSql, string identityColumn, string tableName)
-		{
-			return null;
-		}
-
 		/// <summary></summary>
 		public override bool SupportsIdentityColumns
 		{
