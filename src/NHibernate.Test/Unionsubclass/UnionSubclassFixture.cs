@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Unionsubclass
 {
-	[TestFixture]
+	[TestFixture, Ignore("Not completly ported yet.")]
 	public class UnionSubclassFixture : TestCase
 	{
 		protected override string MappingsAssembly
@@ -16,7 +16,7 @@ namespace NHibernate.Test.Unionsubclass
 			get { return new string[] { "Unionsubclass.Beings.hbm.xml" }; }
 		}
 
-		[Test, Ignore("Not completly ported yet.")]
+		[Test]
 		public void UnionSubclassCollection()
 		{
 			using (ISession s = OpenSession())

@@ -91,5 +91,17 @@ namespace NHibernate.Mapping
 		}
 
 		#endregion
+
+		public override bool IsGenerated(Dialect.Dialect dialect)
+		{
+			if (dialect.SupportsNotNullUnique)
+				return true;
+			foreach (Column column in ColumnIterator)
+			{
+				if(column.IsNullable)
+					return false;
+			}
+			return true;
+		}
 	}
 }

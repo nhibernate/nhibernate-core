@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using NHibernate.Type;
 using NHibernate.Util;
+using System;
 
 namespace NHibernate.Mapping
 {
@@ -26,9 +28,9 @@ namespace NHibernate.Mapping
 			{
 				if (Type == null)
 				{
-					Type = TypeFactory.ManyToOne(
-						ReflectHelper.ReflectedPropertyClass(propertyClass, propertyName, propertyAccess),
-						ReferencedPropertyName, IsLazy, isIgnoreNotFound);
+					System.Type refClass = ReflectHelper.ReflectedPropertyClass(propertyClass, propertyName, propertyAccess);
+					ReferencedEntityName = refClass.FullName;
+					Type = TypeFactory.ManyToOne(refClass, ReferencedPropertyName, IsLazy, isIgnoreNotFound);
 				}
 			}
 			catch (HibernateException he)
@@ -40,11 +42,10 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override void CreateForeignKey()
 		{
-			// TODO: Handle the case of a foreign key to something other than the pk
-			// NH-268 isIgnoreNotFound work with <not-found> tag to determine the cration of FK
-			if (ReferencedPropertyName == null && !isIgnoreNotFound)
+			// the case of a foreign key to something other than the pk is handled in createPropertyRefConstraints
+			if (referencedPropertyName == null && !HasFormula && !isIgnoreNotFound)
 			{
-				CreateForeignKeyOfClass(((EntityType) Type).AssociatedClass);
+				CreateForeignKeyOfEntity(((EntityType)Type).GetAssociatedEntityName());
 			}
 		}
 
@@ -54,6 +55,42 @@ namespace NHibernate.Mapping
 		{
 			get { return isIgnoreNotFound; }
 			set { isIgnoreNotFound = value; }
+		}
+
+		public void CreatePropertyRefConstraints(IDictionary<string, PersistentClass> persistentClasses)
+		{
+			if (!string.IsNullOrEmpty(referencedPropertyName))
+			{
+				if (string.IsNullOrEmpty(ReferencedEntityName))
+					throw new MappingException(
+						string.Format("ReferencedEntityName not specified for property '{0}' on entity {1}", ReferencedPropertyName, this));
+
+				PersistentClass pc;
+				persistentClasses.TryGetValue(ReferencedEntityName, out pc);
+				if (pc == null)
+					throw new MappingException(string.Format("Could not find referenced entity '{0}' on {1}", ReferencedEntityName, this));
+
+				Property property = pc.GetReferencedProperty(ReferencedPropertyName);
+				if (property == null)
+					throw new MappingException("Could not find property " + ReferencedPropertyName + " on " + ReferencedEntityName);
+
+				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
+				{
+
+					IEnumerable<Column> ce = new SafetyEnumerable<Column>(property.ColumnIterator);
+
+					// NH : The four lines below was added to ensure that related columns have same length,
+					// like ForeignKey.AlignColumns() do
+					IEnumerator<Column> fkCols = ConstraintColumns.GetEnumerator();
+					IEnumerator<Column> pkCols = ce.GetEnumerator();
+					while (fkCols.MoveNext() && pkCols.MoveNext())
+						fkCols.Current.Length = pkCols.Current.Length;
+
+					ForeignKey fk =
+						Table.CreateForeignKey(ForeignKeyName, ConstraintColumns, ((EntityType) Type).GetAssociatedEntityName(), ce);
+					fk.CascadeDeleteEnabled = IsCascadeDeleteEnabled;
+				}
+			}
 		}
 	}
 }

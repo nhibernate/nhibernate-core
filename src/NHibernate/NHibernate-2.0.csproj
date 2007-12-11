@@ -716,6 +716,7 @@
     <Compile Include="Exceptions\ISQLExceptionConverter.cs" />
     <Compile Include="Exceptions\IViolatedConstraintNameExtracter.cs" />
     <Compile Include="Exceptions\SQLStateConverter.cs" />
+    <Compile Include="FKUnmatchingColumnsException.cs" />
     <Compile Include="Id\Insert\AbstractReturningDelegate.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1024,6 +1025,7 @@
     <Compile Include="Util\FilterHelper.cs" />
     <Compile Include="Util\IdentitySet.cs" />
     <Compile Include="Util\LRUMap.cs" />
+    <Compile Include="Util\SafetyEnumerable.cs" />
     <Compile Include="Util\SerializationHelper.cs" />
     <Compile Include="Util\SimpleMRUCache.cs" />
     <Compile Include="Util\SingletonEnumerable.cs" />

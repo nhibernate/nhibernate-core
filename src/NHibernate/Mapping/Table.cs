@@ -17,13 +17,13 @@ namespace NHibernate.Mapping
 		internal class ForeignKeyKey: IEqualityComparer<ForeignKeyKey>
 		{
 			internal string referencedClassName;
-			internal List<ISelectable> columns;
+			internal List<Column> columns;
 			internal List<Column> referencedColumns;
 
-			internal ForeignKeyKey(IEnumerable<ISelectable> columns, string referencedClassName, IEnumerable<Column> referencedColumns)
+			internal ForeignKeyKey(IEnumerable<Column> columns, string referencedClassName, IEnumerable<Column> referencedColumns)
 			{
 				this.referencedClassName = referencedClassName;
-				this.columns = new List<ISelectable>(columns);
+				this.columns = new List<Column>(columns);
 				if (referencedColumns != null)
 					this.referencedColumns = new List<Column>(referencedColumns);
 				else
@@ -48,14 +48,16 @@ namespace NHibernate.Mapping
 
 			public bool Equals(ForeignKeyKey x, ForeignKeyKey y)
 			{
-				return y.referencedClassName.Equals(x.referencedClassName) &&
+				// NH : Different implementation to prevent NH930 (look test)
+				return //y.referencedClassName.Equals(x.referencedClassName) &&
 					CollectionHelper.CollectionEquals(y.columns, x.columns) &&
 					CollectionHelper.CollectionEquals(y.referencedColumns, x.referencedColumns);
 			}
 
 			public int GetHashCode(ForeignKeyKey obj)
 			{
-				return obj.columns.GetHashCode() ^ obj.referencedColumns.GetHashCode();
+				int result = CollectionHelper.GetHashCode(obj.columns) ^ CollectionHelper.GetHashCode(obj.referencedColumns);
+				return result;
 			}
 
 			#endregion
@@ -69,7 +71,7 @@ namespace NHibernate.Mapping
 		private IKeyValue idValue;
 		private PrimaryKey primaryKey;
 		private readonly Dictionary<string, Index> indexes = new Dictionary<string, Index>();
-		private readonly IDictionary foreignKeys = new Hashtable();
+		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
 		private readonly Dictionary<string, UniqueKey> uniqueKeys = new Dictionary<string, UniqueKey>();
 		private readonly int uniqueInteger;
 		private bool quoted;
@@ -587,16 +589,25 @@ namespace NHibernate.Mapping
 				uk.Table = this;
 				uniqueKeys[keyName] = uk;
 			}
-
 			return uk;
+		}
+
+		public virtual void CreateForeignKeys()
+		{
+		}
+
+		public virtual ForeignKey CreateForeignKey(string keyName, IEnumerable<Column> keyColumns, string referencedEntityName)
+		{
+			return CreateForeignKey(keyName, keyColumns, referencedEntityName, null);
 		}
 
 		/// <summary>
 		/// Create a <see cref="ForeignKey"/> for the columns in the Table.
 		/// </summary>
 		/// <param name="keyName"></param>
-		/// <param name="columns">An <see cref="IList"/> of <see cref="Column"/> objects.</param>
-		/// <param name="referencedClass"></param>
+		/// <param name="keyColumns">An <see cref="IList"/> of <see cref="Column"/> objects.</param>
+		/// <param name="referencedEntityName"></param>
+		/// <param name="referencedColumns"></param>
 		/// <returns>
 		/// A <see cref="ForeignKey"/> for the columns in the Table.  
 		/// </returns>
@@ -605,57 +616,75 @@ namespace NHibernate.Mapping
 		/// one already exists for the columns then it will return an 
 		/// existing <see cref="ForeignKey"/>.
 		/// </remarks>
-		public virtual ForeignKey CreateForeignKey(string keyName, IEnumerable columns, System.Type referencedClass)
+		public virtual ForeignKey CreateForeignKey(string keyName, IEnumerable<Column> keyColumns,
+			string referencedEntityName, IEnumerable<Column> referencedColumns)
 		{
-			// TODO NH: columns may have formulas
-			if (keyName == null)
-			{
-				keyName = "FK" + UniqueColumnString(columns);
-			}
-			ForeignKey fk = (ForeignKey) foreignKeys[keyName];
+			IEnumerable<Column> kCols = keyColumns;
+			IEnumerable<Column> refCols = referencedColumns;
+
+			ForeignKeyKey key = new ForeignKeyKey(kCols, referencedEntityName, refCols);
+
+			ForeignKey fk;
+			foreignKeys.TryGetValue(key, out fk);
 
 			if (fk == null)
 			{
 				fk = new ForeignKey();
-				fk.Name = keyName;
+				if (!string.IsNullOrEmpty(keyName))
+				{
+					fk.Name = keyName;
+				}
+				else
+				{
+					fk.Name = "FK" + UniqueColumnString(kCols, referencedEntityName);
+					//TODO: add referencedClass to disambiguate to FKs on the same columns, pointing to different tables
+				}
 				fk.Table = this;
-				fk.ReferencedClass = referencedClass;
-				foreignKeys.Add(keyName, fk);
-				foreach (Column col in columns)
+				foreignKeys.Add(key, fk);
+				fk.ReferencedEntityName = referencedEntityName;
+				fk.AddColumns(kCols);
+				if (referencedColumns != null)
 				{
-					fk.AddColumn(col);
+					fk.AddReferencedColumns(refCols);
 				}
 			}
-			else
+
+			if (!string.IsNullOrEmpty(keyName))
 			{
-				// "X"= hexadecimal format
-				if (fk.ReferencedClass != referencedClass)
-				{
-					foreignKeys.Remove(keyName);
-					keyName += referencedClass.Name.GetHashCode().ToString("X").ToUpperInvariant();
-					return CreateForeignKey(keyName, columns, referencedClass);
-				}
+				fk.Name = keyName;
 			}
+
 			return fk;
 		}
 
-		public virtual void CreateForeignKeys()
+		public virtual UniqueKey CreateUniqueKey(IList<Column> keyColumns)
 		{
+			string keyName = "UK" + UniqueColumnString(keyColumns);
+			UniqueKey uk = GetOrCreateUniqueKey(keyName);
+			uk.AddColumns(keyColumns);
+			return uk;
 		}
 
 		/// <summary>
 		/// Generates a unique string for an <see cref="ICollection"/> of 
 		/// <see cref="Column"/> objects.
 		/// </summary>
-		/// <param name="col">An <see cref="ICollection"/> of <see cref="Column"/> objects.</param>
+		/// <param name="columns">An <see cref="ICollection"/> of <see cref="Column"/> objects.</param>
 		/// <returns>
 		/// An unique string for the <see cref="Column"/> objects.
 		/// </returns>
-		public string UniqueColumnString(IEnumerable col)
+		public string UniqueColumnString(IEnumerable columns)
+		{
+			return UniqueColumnString(columns, null);
+		}
+
+		public string UniqueColumnString(IEnumerable iterator, string referencedEntityName)
 		{
 			int result = 0;
+			if (referencedEntityName != null)
+				result += referencedEntityName.GetHashCode();
 
-			foreach (object obj in col)
+			foreach (object o in iterator)
 			{
 				// this is marked as unchecked because the GetHashCode could potentially
 				// cause an integer overflow.  This way if there is an overflow it will
@@ -663,10 +692,9 @@ namespace NHibernate.Mapping
 				// on this number then a rollover is no big deal.
 				unchecked
 				{
-					result += obj.GetHashCode();
+					result += o.GetHashCode();
 				}
 			}
-			// "X"= hexadecimal format
 			return (name.GetHashCode().ToString("X") + result.GetHashCode().ToString("X"));
 		}
 
@@ -728,6 +756,11 @@ namespace NHibernate.Mapping
 		public void AddCheckConstraint(string constraint)
 		{
 			checkConstraints.Add(constraint);
+		}
+
+		public IEnumerable<string> CheckConstraintsIterator
+		{
+			get { return checkConstraints; }
 		}
 
 		public bool IsAbstractUnionTable

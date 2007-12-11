@@ -230,7 +230,9 @@ namespace NHibernate.Cfg
 
 		private static void LogAndThrow(Exception exception)
 		{
-			log.Error(exception.Message, exception);
+			if (log.IsErrorEnabled)
+				log.Error(exception.Message, exception);
+
 			throw exception;
 		}
 
@@ -871,22 +873,27 @@ namespace NHibernate.Cfg
 				{
 					done.Add(fk);
 
-					if (log.IsDebugEnabled)
+					string referencedEntityName = fk.ReferencedEntityName;
+					if (string.IsNullOrEmpty(referencedEntityName))
 					{
-						log.Debug("resolving reference to class: " + fk.ReferencedClass.Name);
+						throw new MappingException(string.Format("An association from the table {0} does not specify the referenced entity", fk.Table.Name));
 					}
 
-					if (!classes.ContainsKey(fk.ReferencedClass.FullName))
+					if (log.IsDebugEnabled)
 					{
-						string messageTemplate = "An association from the table {0} refers to an unmapped class: {1}";
-						string message = string.Format(messageTemplate, fk.Table.Name, fk.ReferencedClass.Name);
+						log.Debug("resolving reference to class: " + referencedEntityName);
+					}
+
+					PersistentClass referencedClass;
+					if (!classes.TryGetValue(referencedEntityName, out referencedClass))
+					{
+						string message = string.Format("An association from the table {0} refers to an unmapped class: {1}",
+							fk.Table.Name, referencedEntityName);
 
 						LogAndThrow(new MappingException(message));
 					}
 					else
 					{
-						PersistentClass referencedClass = classes[fk.ReferencedClass.FullName];
-
 						if (referencedClass.IsJoinedSubclass)
 						{
 							SecondPassCompileForeignKeys(referencedClass.Superclass.Table, done);
@@ -895,18 +902,12 @@ namespace NHibernate.Cfg
 						try
 						{
 							fk.ReferencedTable = referencedClass.Table;
+							fk.AlignColumns();
 						}
 						catch (MappingException me)
 						{
-							if (log.IsErrorEnabled)
-							{
-								log.Error(me);
-							}
-
-							// rethrow the error - only caught it for logging purposes
-							throw;
+							LogAndThrow(me);
 						}
-
 					}
 				}
 			}
@@ -1966,7 +1967,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (ForeignKey fk in table.ForeignKeyIterator)
 						{
-							if (fk.IsPhysicalConstraint)
+							if (fk.HasPhysicalConstraint)
 							{
 								bool create = tableInfo == null || (
 										tableInfo.GetForeignKeyMetadata(fk.Name) == null && (

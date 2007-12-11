@@ -274,20 +274,7 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
 		{
-			bool? many;
-			IEnumerable[] results;
-			IEnumerable result;
-
-			DoIterate(queryParameters, session, out many, out results, out result);
-
-			// NH Different behavior (we need to implement the translators.GetEnumerable<T>)
-			if (many.HasValue && many.Value)
-				return new JoinedEnumerable<T>(results);
-			else
-			{
-				results = new IEnumerable[] { result };
-				return new JoinedEnumerable<T>(results);
-			}
+			return new SafetyEnumerable<T>(PerformIterate(queryParameters, session));
 		}
 
 		private void DoIterate(QueryParameters queryParameters, IEventSource session, out bool? isMany,

@@ -23,6 +23,7 @@ namespace NHibernate.Mapping
 		private string foreignKeyName;
 		private bool unique;
 		private IIdentifierGenerator uniqueIdentifierGenerator;
+		private bool cascadeDeleteEnabled;
 		private bool isAlternateUniqueKey;
 		private string typeName;
 
@@ -35,9 +36,9 @@ namespace NHibernate.Mapping
 			this.table = table;
 		}
 
-		public virtual IList<ISelectable> ConstraintColumns
+		public virtual IEnumerable<Column> ConstraintColumns
 		{
-			get { return columns; }
+			get { return new SafetyEnumerable<Column>(columns); }
 		}
 
 		public string TypeName
@@ -79,7 +80,22 @@ namespace NHibernate.Mapping
 
 		public void CreateForeignKeyOfClass(System.Type persistentClass)
 		{
-			table.CreateForeignKey(ForeignKeyName, ConstraintColumns, persistentClass);
+			CreateForeignKeyOfEntity(persistentClass.FullName);
+		}
+
+		public void CreateForeignKeyOfEntity(string entityName)
+		{
+			if (!HasFormula && ! "none".Equals(ForeignKeyName))
+			{
+				ForeignKey fk = table.CreateForeignKey(ForeignKeyName, ConstraintColumns, entityName);
+				fk.CascadeDeleteEnabled = cascadeDeleteEnabled;
+			}
+		}
+
+		public bool IsCascadeDeleteEnabled
+		{
+			get { return cascadeDeleteEnabled; }
+			set { cascadeDeleteEnabled = value; }
 		}
 
 		public bool IsIdentityColumn(Dialect.Dialect dialect)
@@ -113,6 +129,7 @@ namespace NHibernate.Mapping
 			get { return type; }
 			set
 			{
+				// TODO NH: Remove this method and implement only the getter
 				type = value;
 				int count = 0;
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -88,7 +89,7 @@ namespace NHibernate.Mapping
 			pk.Name = PK_ALIAS.ToAliasString(table.Name, dialect);
 			table.PrimaryKey = pk;
 
-			pk.AddColumns(Key.ColumnIterator);
+			pk.AddColumns(new SafetyEnumerable<Column>(Key.ColumnIterator));
 		}
 
 		public int PropertySpan

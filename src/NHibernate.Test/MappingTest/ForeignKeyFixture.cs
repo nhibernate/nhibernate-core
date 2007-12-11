@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
@@ -8,8 +7,7 @@ namespace NHibernate.Test.MappingTest
 	public class ForeignKeyFixture
 	{
 		[Test]
-		[ExpectedException(typeof(MappingException),
-			"Foreign key in table fktable must have same number of columns as referenced primary key in table pktable")]
+		[ExpectedException(typeof(FKUnmatchingColumnsException))]
 		public void UnmatchingColumns()
 		{
 			Table primaryTable = new Table();
@@ -36,6 +34,7 @@ namespace NHibernate.Test.MappingTest
 			fk.Table = fkTable;
 
 			fk.ReferencedTable = primaryTable;
+			fk.AlignColumns();
 		}
 	}
 }

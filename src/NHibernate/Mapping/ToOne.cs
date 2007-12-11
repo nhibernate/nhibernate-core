@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Mapping
@@ -10,8 +11,10 @@ namespace NHibernate.Mapping
 	{
 		private FetchMode fetchMode;
 		private bool lazy = true;
-		private string referencedPropertyName;
+		protected internal string referencedPropertyName;
 		private string referencedEntityName;
+		private bool embedded;
+		private bool unwrapProxy;
 
 		/// <summary>
 		/// 
@@ -31,7 +34,7 @@ namespace NHibernate.Mapping
 		public string ReferencedPropertyName
 		{
 			get { return referencedPropertyName; }
-			set { referencedPropertyName = value; }
+			set { referencedPropertyName = StringHelper.InternedIfPossible(value); }
 		}
 
 		public string ReferencedEntityName
@@ -46,18 +49,29 @@ namespace NHibernate.Mapping
 			set { lazy = value; }
 		}
 
+		public bool Embedded
+		{
+			get { return embedded; }
+			set { embedded = value; }
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
 		public abstract override void CreateForeignKey();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyClass"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="propertyAccess"></param>
-		public abstract override void SetTypeByReflection(System.Type propertyClass, string propertyName,
-		                                                  string propertyAccess);
+		public override void SetTypeUsingReflection(string className, string propertyName, string accesorName)
+		{
+			if (referencedEntityName == null)
+			{
+				referencedEntityName = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName).FullName;
+			}
+		}
+
+		public bool UnwrapProxy
+		{
+			get { return unwrapProxy; }
+			set { unwrapProxy = value; }
+		}
 	}
 }

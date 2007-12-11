@@ -309,7 +309,7 @@ namespace NHibernate.Util
 		/// individual elements, so that the value is independent of the
 		/// collection iteration order.
 		/// </remarks>
-		public static int GetHashCode(ICollection coll)
+		public static int GetHashCode(IEnumerable coll)
 		{
 			unchecked
 			{
@@ -516,7 +516,7 @@ namespace NHibernate.Util
 		/// individual elements, so that the value is independent of the
 		/// collection iteration order.
 		/// </remarks>
-		public static int GetHashCode<T>(ICollection<T> coll)
+		public static int GetHashCode<T>(IEnumerable<T> coll)
 		{
 			unchecked
 			{

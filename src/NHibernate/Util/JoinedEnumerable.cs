@@ -72,6 +72,7 @@ namespace NHibernate.Util
 			{
 				_enumerators[i].Reset();
 			}
+			_current = 0;
 		}
 
 		/// <summary></summary>
@@ -162,16 +163,13 @@ namespace NHibernate.Util
 		#endregion
 	}
 
-	public class JoinedEnumerable<T> : JoinedEnumerable, IEnumerable<T>, IEnumerator<T>
+	public class JoinedEnumerable<T> : IEnumerable<T>
 	{
-		public JoinedEnumerable(IEnumerable[] enumerables)
-			: base(enumerables)
-		{
-		}
+		private readonly IEnumerable<T>[] enumerables;
 
 		public JoinedEnumerable(IEnumerable<T>[] enumerables)
-			: base(enumerables)
 		{
+			this.enumerables = enumerables;
 		}
 
 		public JoinedEnumerable(List<IEnumerable<T>> enumerables)
@@ -184,15 +182,26 @@ namespace NHibernate.Util
 		{
 		}
 
+		#region IEnumerable<T> Members
+
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
-			Reset();
-			return this;
+			foreach (IEnumerable<T> enumerable in enumerables)
+			{
+				foreach (T t in enumerable)
+					yield return t;
+			}
 		}
 
-		T IEnumerator<T>.Current
+		#endregion
+
+		#region IEnumerable Members
+
+		public IEnumerator GetEnumerator()
 		{
-			get { return (T) Current; }
+			return ((IEnumerable<T>) this).GetEnumerator();
 		}
+
+		#endregion
 	}
 }

@@ -57,8 +57,8 @@ namespace NHibernate.Mapping
 			IEnumerable includedFks = includedTable.ForeignKeyIterator;
 			foreach (ForeignKey fk in includedFks)
 			{
-				// NH Different behaviour 
-				CreateForeignKey(GetForeignKeyName(fk), fk.Columns, fk.ReferencedClass);
+				// NH Different behaviour (fk name)
+				CreateForeignKey(GetForeignKeyName(fk), fk.Columns, fk.ReferencedEntityName);
 			}
 		}
 

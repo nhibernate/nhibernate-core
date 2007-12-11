@@ -46,19 +46,13 @@ namespace NHibernate.Mapping
 				columns.Add(column);
 		}
 
-		public void AddColumns(IEnumerable<ISelectable> columnIterator)
-		{
-			foreach (ISelectable col in columnIterator)
-			{
-				if (!col.IsFormula)
-					AddColumn((Column)col);
-			}
-		}
-
 		public void AddColumns(IEnumerable<Column> columnIterator)
 		{
 			foreach (Column col in columnIterator)
-				AddColumn(col);
+			{
+				if (!col.IsFormula)
+					AddColumn(col);
+			}
 		}
 
 		/// <summary>

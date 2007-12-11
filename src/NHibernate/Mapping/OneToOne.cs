@@ -35,8 +35,10 @@ namespace NHibernate.Mapping
 			{
 				if (Type == null)
 				{
+					System.Type refClass = ReflectHelper.ReflectedPropertyClass(propertyClass, propertyName, propertyAccess);
+					ReferencedEntityName = refClass.FullName;
 					Type = TypeFactory.OneToOne(
-						ReflectHelper.ReflectedPropertyClass(propertyClass, propertyName, propertyAccess),
+						refClass,
 						foreignKeyDirection,
 						ReferencedPropertyName,
 						IsLazy, propertyName);
@@ -51,17 +53,17 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public override void CreateForeignKey()
 		{
-			if (constrained && ReferencedPropertyName == null)
+			if (constrained && referencedPropertyName == null)
 			{
-				// TODO: 2.1+ handle the case of a foreign key to something other than the pk
-				CreateForeignKeyOfClass(((EntityType) Type).AssociatedClass);
+				//TODO: handle the case of a foreign key to something other than the pk
+				CreateForeignKeyOfEntity(((EntityType)Type).GetAssociatedEntityName());
 			}
 		}
 
 		/// <summary></summary>
-		public override IList<ISelectable> ConstraintColumns
+		public override IEnumerable<Column> ConstraintColumns
 		{
-			get { return new List<ISelectable>(identifier.ColumnIterator); }
+			get { return new SafetyEnumerable<Column>(identifier.ColumnIterator); }
 		}
 
 		/// <summary></summary>

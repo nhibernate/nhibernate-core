@@ -736,6 +736,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ForeignKeyName = fkNode.Value;
 		}
 
+		private void AddManyToOneSecondPass(ManyToOne manyToOne)
+		{
+			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
+			                       	{ manyToOne.CreatePropertyRefConstraints(persistentClasses); });
+		}
+
 		protected void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable)
 		{
 			BindColumns(node, model, isNullable, true, defaultColumnName);
@@ -746,11 +752,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (ukName != null)
 				model.ReferencedPropertyName = ukName.Value;
 
-			// TODO NH: this is sort of redundant with the code below
 			model.ReferencedEntityName = GetEntityName(node, mappings);
 
 			string notFound = XmlHelper.GetAttributeValue(node, "not-found");
 			model.IsIgnoreNotFound = "ignore".Equals(notFound);
+
+			if (ukName != null && !model.IsIgnoreNotFound)
+			{
+				if (!"many-to-many".Equals(node.Name))
+				{
+					AddManyToOneSecondPass(model);
+				}
+			}
 
 			XmlAttribute typeNode = node.Attributes["class"];
 
