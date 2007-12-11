@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -340,7 +339,7 @@ namespace NHibernate.Mapping
 			if (!IsInverse && referencedPropertyName == null)
 			{
 				Element.CreateForeignKey();
-				Key.CreateForeignKeyOfClass(Owner.MappedClass);
+				Key.CreateForeignKeyOfEntity(Owner.EntityName);
 			}
 		}
 

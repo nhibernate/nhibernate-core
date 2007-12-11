@@ -77,7 +77,7 @@ namespace NHibernate.Mapping
 			// on how this should behave.
 			if (!IsInverse)
 			{
-				Key.CreateForeignKeyOfClass(persistentClass.MappedClass);
+				Key.CreateForeignKeyOfEntity(persistentClass.EntityName);
 			}
 		}
 

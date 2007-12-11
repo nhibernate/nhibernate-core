@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public interface IKeyValue : IValue
 	{
-		void CreateForeignKeyOfClass(System.Type persistentClass);
+		void CreateForeignKeyOfEntity(string entityName);
 
 		// TODO H3:
 		//bool IsCascadeDeleteEnabled { get; }

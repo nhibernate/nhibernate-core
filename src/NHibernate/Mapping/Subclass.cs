@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
-using NHibernate.Engine;
 using System.Collections.Generic;
-using NHibernate.Util;
 using Iesi.Collections.Generic;
+using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -26,7 +25,7 @@ namespace NHibernate.Mapping
 		public Subclass(PersistentClass superclass)
 		{
 			this.superclass = superclass;
-			this.subclassId = NextSubclassId();
+			subclassId = NextSubclassId();
 		}
 
 		internal override int NextSubclassId()
@@ -70,7 +69,7 @@ namespace NHibernate.Mapping
 		public override PersistentClass Superclass
 		{
 			get { return superclass; }
-			set { this.superclass = value; }
+			set { superclass = value; }
 		}
 
 		/// <summary>
@@ -415,7 +414,7 @@ namespace NHibernate.Mapping
 				throw new AssertionFailure("Not a joined-subclass");
 			}
 
-			Key.CreateForeignKeyOfClass(Superclass.MappedClass);
+			Key.CreateForeignKeyOfEntity(Superclass.EntityName);
 		}
 
 		public override int JoinClosureSpan

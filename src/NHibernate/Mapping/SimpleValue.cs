@@ -78,14 +78,9 @@ namespace NHibernate.Mapping
 
 		#region IKeyValue Members
 
-		public void CreateForeignKeyOfClass(System.Type persistentClass)
-		{
-			CreateForeignKeyOfEntity(persistentClass.FullName);
-		}
-
 		public void CreateForeignKeyOfEntity(string entityName)
 		{
-			if (!HasFormula && ! "none".Equals(ForeignKeyName))
+			if (!HasFormula && ! "none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
 			{
 				ForeignKey fk = table.CreateForeignKey(ForeignKeyName, ConstraintColumns, entityName);
 				fk.CascadeDeleteEnabled = cascadeDeleteEnabled;
