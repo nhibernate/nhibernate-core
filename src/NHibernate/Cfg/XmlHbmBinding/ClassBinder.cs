@@ -216,12 +216,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// TABLENAME
 
 			XmlAttribute schemaNode = node.Attributes["schema"];
-			string schema = schemaNode == null
-				?
-					mappings.SchemaName
-				: schemaNode.Value;
+			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
+			XmlAttribute catalogNode = node.Attributes["catalog"];
+			string catalog = catalogNode == null ? mappings.CatalogName : catalogNode.Value;
 
-			Table table = mappings.AddTable(schema, GetClassTableName(persistentClass, node), false);
+			Table table = mappings.AddTable(schema, catalog, GetClassTableName(persistentClass, node), null, false);
 			join.Table = table;
 
 			XmlAttribute fetchNode = node.Attributes["fetch"];
@@ -598,7 +597,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				ToOne toOne = (ToOne) value;
 				string propertyRef = toOne.ReferencedPropertyName;
 				if (propertyRef != null)
-					mappings.AddUniquePropertyReference(((EntityType) value.Type).AssociatedClass, propertyRef);
+					mappings.AddUniquePropertyReference(toOne.ReferencedEntityName, propertyRef);
 			}
 
 			value.CreateForeignKey();

@@ -26,6 +26,7 @@ namespace NHibernate.Cfg
 {
 	using Dialect;
 	using Tool.hbm2ddl;
+	using Iesi.Collections.Generic;
 
 	/// <summary>
 	/// Allows the application to specify properties and mapping documents to be used when creating
@@ -60,7 +61,7 @@ namespace NHibernate.Cfg
 		private IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
 		private IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 		private IList<SecondPassCommand> secondPasses;
-		private IList<Mappings.UniquePropertyReference> propertyReferences;
+		private IList<Mappings.PropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary properties;
 		private IDictionary<string, FilterDefinition> filterDefinitions;
@@ -72,6 +73,10 @@ namespace NHibernate.Cfg
 		private MappingsQueue mappingsQueue;
 
 		private EventListeners eventListeners;
+		private IDictionary<string, TypeDef> typeDefs;
+		private ISet<ExtendsQueueEntry> extendsQueue;
+		private IDictionary<string, Mappings.TableDescription> tableNameBinding;
+		private IDictionary<Table, Mappings.ColumnNames> columnNameBindingPerTable;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(Configuration));
 
@@ -88,7 +93,7 @@ namespace NHibernate.Cfg
 			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>();
 			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>();
 			secondPasses = new List<SecondPassCommand>();
-			propertyReferences = new List<Mappings.UniquePropertyReference>();
+			propertyReferences = new List<Mappings.PropertyReference>();
 			filterDefinitions = new Dictionary<string, FilterDefinition>();
 			interceptor = emptyInterceptor;
 			mapping = new Mapping(this);
@@ -97,6 +102,10 @@ namespace NHibernate.Cfg
 			sqlFunctions = new Dictionary<string, ISQLFunction>();
 			mappingsQueue = new MappingsQueue();
 			eventListeners = new EventListeners();
+			typeDefs = new Dictionary<string, TypeDef>();
+			extendsQueue = new HashedSet<ExtendsQueueEntry>();
+			tableNameBinding = new Dictionary<string, Mappings.TableDescription>();
+			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
 		}
 
 		private class Mapping : IMapping
@@ -417,22 +426,42 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public Mappings CreateMappings()
 		{
-			return new Mappings(
-				classes,
-				collections,
-				tables,
-				namedQueries,
-				namedSqlQueries,
-				sqlResultSetMappings,
-				imports,
-				secondPasses,
-				propertyReferences,
-				namingStrategy,
-				filterDefinitions,
-				auxiliaryDatabaseObjects,
+			return new Mappings(classes, 
+				collections, 
+				tables, 
+				namedQueries, 
+				namedSqlQueries, 
+				sqlResultSetMappings, 
+				imports, 
+				secondPasses, 
+				propertyReferences, 
+				namingStrategy, 
+				typeDefs, 
+				filterDefinitions, 
+				extendsQueue, 
+				auxiliaryDatabaseObjects, 
+				tableNameBinding, 
+				columnNameBindingPerTable,
 				defaultAssembly,
 				defaultNamespace
 				);
+
+			//return new Mappings(
+			//  classes,
+			//  collections,
+			//  tables,
+			//  namedQueries,
+			//  namedSqlQueries,
+			//  sqlResultSetMappings,
+			//  imports,
+			//  secondPasses,
+			//  propertyReferences,
+			//  namingStrategy,
+			//  filterDefinitions,
+			//  auxiliaryDatabaseObjects,
+			//  defaultAssembly,
+			//  defaultNamespace
+			//  );
 		}
 
 		/// <summary>
@@ -816,15 +845,15 @@ namespace NHibernate.Cfg
 
 			log.Info("processing one-to-one association property references");
 
-			foreach (Mappings.UniquePropertyReference upr in propertyReferences)
+			foreach (Mappings.PropertyReference upr in propertyReferences)
 			{
-				PersistentClass clazz = GetClassMapping(upr.ReferencedClass);
+				PersistentClass clazz = GetClassMapping(upr.referencedClass);
 				if (clazz == null)
 				{
-					throw new MappingException("property-ref to unmapped class: " + upr.ReferencedClass);
+					throw new MappingException("property-ref to unmapped class: " + upr.referencedClass);
 				}
 
-				NHibernate.Mapping.Property prop = clazz.GetReferencedProperty(upr.PropertyName);
+				NHibernate.Mapping.Property prop = clazz.GetReferencedProperty(upr.propertyName);
 				((SimpleValue)prop.Value).IsUnique = true;
 			}
 

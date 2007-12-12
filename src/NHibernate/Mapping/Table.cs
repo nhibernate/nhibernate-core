@@ -167,6 +167,12 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		/// <summary> returns quoted name as it would be in the mapping file.</summary>
+		public string GetQuotedName()
+		{
+			return quoted ? "`" + name + "`" : name;
+		}
+
 		/// <summary>
 		/// Gets the name of this Table in quoted form if it is necessary.
 		/// </summary>
@@ -184,6 +190,12 @@ namespace NHibernate.Mapping
 			       name;
 		}
 
+		/// <summary> returns quoted name as it is in the mapping file.</summary>
+		public string GetQuotedSchema()
+		{
+			return IsSchemaQuoted ? "`" + schema + "`" : schema;
+		}
+		
 		public string GetQuotedSchema(Dialect.Dialect dialect)
 		{
 			return IsSchemaQuoted ? dialect.OpenQuote + schema + dialect.CloseQuote : schema;

@@ -214,7 +214,7 @@ namespace NHibernate.Loader.Custom
 				string role = collRtn.OwnerEntityName + "." + collRtn.OwnerProperty;
 				ICollectionPersister persister = Factory.GetCollectionPersister(role);
 				EntityType ownerType = (EntityType) persister.ElementType;
-				entityName = ownerType.GetAssociatedClass(Factory).AssemblyQualifiedName;
+				entityName = ownerType.GetAssociatedEntityName(Factory);
 			}
 			else if (ownerDescriptor is FetchReturn)
 			{
@@ -223,14 +223,14 @@ namespace NHibernate.Loader.Custom
 				IType ownerType = persister.GetPropertyType(fetchRtn.OwnerProperty);
 				if (ownerType.IsEntityType)
 				{
-					entityName = ((EntityType) ownerType).GetAssociatedClass(Factory).AssemblyQualifiedName;
+					entityName = ((EntityType)ownerType).GetAssociatedEntityName(Factory);
 				}
 				else if (ownerType.IsCollectionType)
 				{
 					IType ownerCollectionElementType = ((CollectionType) ownerType).GetElementType(Factory);
 					if (ownerCollectionElementType.IsEntityType)
 					{
-						entityName = ((EntityType) ownerCollectionElementType).GetAssociatedClass(Factory).AssemblyQualifiedName;
+						entityName = ((EntityType) ownerCollectionElementType).GetAssociatedEntityName(Factory);
 					}
 				}
 			}

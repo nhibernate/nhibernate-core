@@ -85,7 +85,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected static string GetClassName(string unqualifiedName, Mappings mappings)
 		{
-			return ClassForNameChecked(unqualifiedName, mappings, "unknown class {0}").AssemblyQualifiedName;
+			return ClassForNameChecked(unqualifiedName, mappings, "unknown class {0}").FullName;
 			//return TypeNameParser.Parse(unqualifiedName, mappings.DefaultNamespace, mappings.DefaultAssembly).ToString();
 		}
 

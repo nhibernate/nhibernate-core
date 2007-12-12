@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
+using Iesi.Collections.Generic;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 
@@ -8,8 +12,43 @@ namespace NHibernate.Cfg
 	/// A collection of mappings from classes and collections to relational database tables.
 	/// </summary>
 	/// <remarks>Represents a single <c>&lt;hibernate-mapping&gt;</c> element.</remarks>
+	[Serializable]
 	public class Mappings
 	{
+		#region Utility classes
+
+		[Serializable]
+		protected internal class ColumnNames
+		{
+			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>();
+			public readonly IDictionary<string, string> physicalToLogical = new Dictionary<string, string>();
+		}
+
+		[Serializable]
+		protected internal class TableDescription
+		{
+			public readonly string logicalName;
+			public readonly Table denormalizedSupertable;
+
+			public TableDescription(string logicalName, Table denormalizedSupertable)
+			{
+				this.logicalName = logicalName;
+				this.denormalizedSupertable = denormalizedSupertable;
+			}
+		}
+
+		[Serializable]
+		internal class PropertyReference
+		{
+			public string referencedClass;
+			public string propertyName;
+			public bool unique;
+		}
+
+		#endregion
+
+		private static readonly ILog log = LogManager.GetLogger(typeof(Mappings));
+
 		private readonly IDictionary<string, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;
 		private readonly IDictionary<string, Table> tables;
@@ -19,23 +58,35 @@ namespace NHibernate.Cfg
 		private readonly IList<SecondPassCommand> secondPasses;
 		private readonly IDictionary<string, string> imports;
 		private string schemaName;
+		private string catalogName;
 		private string defaultCascade;
 		private string defaultNamespace;
 		private string defaultAssembly;
 		private string defaultAccess;
 		private bool autoImport;
 		private bool defaultLazy;
-		private readonly IList<UniquePropertyReference> propertyReferences;
+		private readonly IList<PropertyReference> propertyReferences;
 		private readonly IDictionary<string, FilterDefinition> filterDefinitions;
 		private readonly IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 
 		private readonly INamingStrategy namingStrategy;
 
-		internal class UniquePropertyReference
-		{
-			public System.Type ReferencedClass;
-			public string PropertyName;
-		}
+		protected internal IDictionary<string, TypeDef> typeDefs;
+		protected internal ISet<ExtendsQueueEntry> extendsQueue;
+
+		/// <summary> 
+		/// Binding table between the logical column name and the name out of the naming strategy
+		/// for each table.
+		/// According that when the column name is not set, the property name is considered as such
+		/// This means that while theorically possible through the naming strategy contract, it is
+		/// forbidden to have 2 real columns having the same logical name
+		/// </summary>
+		protected internal IDictionary<Table, ColumnNames> columnNameBindingPerTable;
+
+		/// <summary> 
+		/// Binding between logical table name and physical one (ie after the naming strategy has been applied)
+		/// </summary>
+		protected internal IDictionary<string, TableDescription> tableNameBinding;
 
 		internal Mappings(
 			IDictionary<string, PersistentClass> classes,
@@ -46,13 +97,16 @@ namespace NHibernate.Cfg
 			IDictionary<string, ResultSetMappingDefinition> resultSetMappings,
 			IDictionary<string, string> imports,
 			IList<SecondPassCommand> secondPasses,
-			IList<UniquePropertyReference> propertyReferences,
+			IList<PropertyReference> propertyReferences,
 			INamingStrategy namingStrategy,
+			IDictionary<string, TypeDef> typeDefs,
 			IDictionary<string, FilterDefinition> filterDefinitions,
+			ISet<ExtendsQueueEntry> extendsQueue,
 			IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects,
+			IDictionary<string, TableDescription> tableNameBinding,
+			IDictionary<Table, ColumnNames> columnNameBindingPerTable,
 			string defaultAssembly,
-			string defaultNamespace
-			)
+			string defaultNamespace)
 		{
 			this.classes = classes;
 			this.collections = collections;
@@ -64,8 +118,12 @@ namespace NHibernate.Cfg
 			this.secondPasses = secondPasses;
 			this.propertyReferences = propertyReferences;
 			this.namingStrategy = namingStrategy;
+			this.typeDefs = typeDefs;
 			this.filterDefinitions = filterDefinitions;
+			this.extendsQueue = extendsQueue;
 			this.auxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
+			this.tableNameBinding = tableNameBinding;
+			this.columnNameBindingPerTable = columnNameBindingPerTable;
 			this.defaultAssembly = defaultAssembly;
 			this.defaultNamespace = defaultNamespace;
 		}
@@ -77,9 +135,7 @@ namespace NHibernate.Cfg
 		public void AddClass(PersistentClass persistentClass)
 		{
 			if (classes.ContainsKey(persistentClass.EntityName))
-			{
-				throw new DuplicateMappingException("class/entity", persistentClass.MappedClass.Name);
-			}
+				throw new DuplicateMappingException("class/entity", persistentClass.EntityName);
 
 			classes[persistentClass.EntityName] = persistentClass;
 		}
@@ -97,17 +153,20 @@ namespace NHibernate.Cfg
 			collections[collection.Role] = collection;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="referencedClass"></param>
-		/// <param name="propertyName"></param>
-		public void AddUniquePropertyReference(System.Type referencedClass, string propertyName)
+		internal void AddUniquePropertyReference(string referencedClass, string propertyName)
 		{
-			UniquePropertyReference upr = new UniquePropertyReference();
-			upr.ReferencedClass = referencedClass;
-			upr.PropertyName = propertyName;
+			PropertyReference upr = new PropertyReference();
+			upr.referencedClass = referencedClass;
+			upr.propertyName = propertyName;
+			upr.unique = true;
+			propertyReferences.Add(upr);
+		}
 
+		internal void AddPropertyReference(string referencedClass, string propertyName)
+		{
+			PropertyReference upr = new PropertyReference();
+			upr.referencedClass = referencedClass;
+			upr.propertyName = propertyName;
 			propertyReferences.Add(upr);
 		}
 
@@ -189,10 +248,9 @@ namespace NHibernate.Cfg
 			imports[rename] = className;
 		}
 
-		public Table AddTable(string schema, string name, bool isAbstract)
+		public Table AddTable(string schema, string catalog, string name, string subselect, bool isAbstract)
 		{
-			string key = Table.Qualify(null, schema, name);
-			//string key = subselect ?? Table.Qualify(schema, name);
+			string key = subselect ?? Table.Qualify(catalog, schema, name);
 			Table table;
 			if (!tables.TryGetValue(key, out table))
 			{
@@ -200,6 +258,8 @@ namespace NHibernate.Cfg
 				table.IsAbstract = isAbstract;
 				table.Name = name;
 				table.Schema = schema;
+				table.Catalog = catalog;
+				table.Subselect = subselect;
 				tables[key] = table;
 			}
 			else
@@ -207,13 +267,13 @@ namespace NHibernate.Cfg
 				if (!isAbstract)
 					table.IsAbstract = false;
 			}
+
 			return table;
 		}
 
-		public Table AddDenormalizedTable(string schema, System.String name, bool isAbstract, Table includedTable)
+		public Table AddDenormalizedTable(string schema, string catalog, string name, bool isAbstract, string subselect, Table includedTable)
 		{
-			string key = Table.Qualify(null, schema, name);
-			//string key = subselect ?? Table.Qualify(schema, name);
+			string key = subselect ?? Table.Qualify(schema, catalog, name);
 			if (tables.ContainsKey(key))
 			{
 				throw new DuplicateMappingException("table", name);
@@ -223,28 +283,42 @@ namespace NHibernate.Cfg
 			table.IsAbstract = isAbstract;
 			table.Name = name;
 			table.Schema = schema;
-			//table.Subselect= subselect;
+			table.Subselect = subselect;
 			tables[key] = table;
 			return table;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="schema"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public Table GetTable(string schema, string name)
+		public void AddTableBinding(string schema, string catalog, string logicalName, string physicalName, Table denormalizedSuperTable)
 		{
-			string key = schema != null ? schema + "." + name : name;
+			string key = BuildTableNameKey(schema, catalog, physicalName);
+			TableDescription tableDescription = new TableDescription(logicalName, denormalizedSuperTable);
+			TableDescription oldDescriptor;
+			tableNameBinding.TryGetValue(key, out oldDescriptor);
+			tableNameBinding[key] = tableDescription;
+			if (oldDescriptor != null && !oldDescriptor.logicalName.Equals(logicalName))
+			{
+				//TODO possibly relax that
+				throw new MappingException("Same physical table name reference several logical table names: " + physicalName
+				                           + " => " + "'" + oldDescriptor.logicalName + "' and '" + logicalName + "'");
+			}
+		}
+
+		public Table GetTable(string schema, string catalog, string name)
+		{
+			string key = Table.Qualify(catalog, schema, name);
 			return tables[key];
 		}
 
-		/// <summary></summary>
 		public string SchemaName
 		{
 			get { return schemaName; }
 			set { schemaName = value; }
+		}
+
+		public string CatalogName
+		{
+			get { return catalogName; }
+			set { catalogName = value; }
 		}
 
 		/// <summary></summary>
@@ -286,9 +360,17 @@ namespace NHibernate.Cfg
 			return queries[name];
 		}
 
-		internal void AddSecondPass(SecondPassCommand command)
+		public void AddSecondPass(SecondPassCommand command)
 		{
 			secondPasses.Add(command);
+		}
+
+		public void AddSecondPass(SecondPassCommand command, bool onTopOfTheQueue)
+		{
+			if (onTopOfTheQueue)
+				secondPasses.Insert(0, command);
+			else
+				secondPasses.Add(command);
 		}
 
 		/// <summary>
@@ -344,7 +426,167 @@ namespace NHibernate.Cfg
 			}
 			resultSetMappings[name] = sqlResultSetMapping;
 		}
+
+		public void AddToExtendsQueue(ExtendsQueueEntry entry)
+		{
+			if (!extendsQueue.Contains(entry))
+				extendsQueue.Add(entry);
+		}
+
+		public void AddTypeDef(string typeName, string typeClass, IDictionary<string, string> paramMap)
+		{
+			TypeDef def = new TypeDef(typeClass, paramMap);
+			typeDefs[typeName] = def;
+			log.Debug("Added " + typeName + " with class " + typeClass);
+		}
+
+		public TypeDef GetTypeDef(string typeName)
+		{
+			TypeDef result;
+			typeDefs.TryGetValue(typeName, out result);
+			return result;
+		}
+
+		#region Column Name Binding
+
+		public void AddColumnBinding(string logicalName, Column finalColumn, Table table)
+		{
+			ColumnNames binding;
+			if (!columnNameBindingPerTable.TryGetValue(table, out binding))
+			{
+				binding = new ColumnNames();
+				columnNameBindingPerTable[table] = binding;
+			}
+
+			string oldFinalName;
+			binding.logicalToPhysical.TryGetValue(logicalName.ToLowerInvariant(), out oldFinalName);
+			binding.logicalToPhysical[logicalName.ToLowerInvariant()] = finalColumn.GetQuotedName();
+			if (oldFinalName != null &&
+			    !(finalColumn.IsQuoted
+			      	? oldFinalName.Equals(finalColumn.GetQuotedName())
+			      	: oldFinalName.Equals(finalColumn.GetQuotedName(), StringComparison.InvariantCultureIgnoreCase)))
+			{
+				//TODO possibly relax that
+				throw new MappingException("Same logical column name referenced by different physical ones: " + table.Name + "."
+				                           + logicalName + " => '" + oldFinalName + "' and '" + finalColumn.GetQuotedName() + "'");
+			}
+
+			string oldLogicalName;
+			binding.physicalToLogical.TryGetValue(finalColumn.GetQuotedName(), out oldLogicalName);
+			binding.physicalToLogical[finalColumn.GetQuotedName()] = logicalName;
+			if (oldLogicalName != null && !oldLogicalName.Equals(logicalName))
+			{
+				//TODO possibly relax that
+				throw new MappingException("Same physical column represented by different logical column names: " + table.Name + "."
+				                           + finalColumn.GetQuotedName() + " => '" + oldLogicalName + "' and '" + logicalName + "'");
+			}
+		}
+
+		public string GetLogicalColumnName(string physicalName, Table table)
+		{
+			string logical = null;
+			Table currentTable = table;
+			TableDescription description;
+			do
+			{
+				ColumnNames binding;
+				if (columnNameBindingPerTable.TryGetValue(currentTable, out binding))
+					binding.physicalToLogical.TryGetValue(physicalName, out logical);
+
+				string key = BuildTableNameKey(currentTable.Schema, currentTable.Catalog, currentTable.Name);
+				if (tableNameBinding.TryGetValue(key, out description))
+					currentTable = description.denormalizedSupertable;
+			}
+			while (logical == null && currentTable != null && description != null);
+			if (logical == null)
+			{
+				throw new MappingException("Unable to find logical column name from physical name " + physicalName + " in table " + table.Name);
+			}
+			return logical;
+		}
+
+		public string GetPhysicalColumnName(string logicalName, Table table)
+		{
+			logicalName = logicalName.ToLowerInvariant();
+			string finalName = null;
+			Table currentTable = table;
+			do
+			{
+				ColumnNames binding;
+				if (columnNameBindingPerTable.TryGetValue(currentTable, out binding))
+					finalName = binding.logicalToPhysical[logicalName];
+
+				string key = BuildTableNameKey(currentTable.Schema, currentTable.Catalog, currentTable.Name);
+				TableDescription description;
+				if (tableNameBinding.TryGetValue(key, out description))
+					currentTable = description.denormalizedSupertable;
+			}
+			while (finalName == null && currentTable != null);
+			if (finalName == null)
+				throw new MappingException("Unable to find column with logical name " + logicalName + " in table " + table.Name);
+
+			return finalName;
+		}
+
+		private static string BuildTableNameKey(string schema, string catalog, string name)
+		{
+			StringBuilder keyBuilder = new StringBuilder();
+			if (schema != null)
+				keyBuilder.Append(schema);
+			keyBuilder.Append(".");
+			if (catalog != null)
+				keyBuilder.Append(catalog);
+			keyBuilder.Append(".");
+			keyBuilder.Append(name);
+			return keyBuilder.ToString();
+		}
+
+		#endregion
+
+		private string GetLogicalTableName(string schema, string catalog, string physicalName)
+		{
+			string key = BuildTableNameKey(schema, catalog, physicalName);
+			TableDescription descriptor;
+			if (!tableNameBinding.TryGetValue(key, out descriptor))
+			{
+				throw new MappingException("Unable to find physical table: " + physicalName);
+			}
+			return descriptor.logicalName;
+		}
+
+		public string GetLogicalTableName(Table table)
+		{
+			return GetLogicalTableName(table.GetQuotedSchema(), table.Catalog, table.GetQuotedName());
+		}
+
+		public ResultSetMappingDefinition GetResultSetMapping(string name)
+		{
+			return resultSetMappings[name];
+		}
+
+		public IEnumerable<Mapping.Collection> IterateCollections
+		{
+			get { return collections.Values; }
+		}
+
+		public IEnumerable<Table> IterateTables
+		{
+			get { return tables.Values; }
+		}
+
+		public PersistentClass LocatePersistentClassByEntityName(string entityName)
+		{
+			PersistentClass persistentClass;
+			if (!classes.TryGetValue(entityName, out persistentClass))
+			{
+				string actualEntityName;
+				if (imports.TryGetValue(entityName, out actualEntityName))
+					classes.TryGetValue(actualEntityName, out persistentClass);
+			}
+			return persistentClass;
+		}
+
 	}
 
-	internal delegate void SecondPassCommand(IDictionary<string, PersistentClass> persistentClasses);
+	public delegate void SecondPassCommand(IDictionary<string, PersistentClass> persistentClasses);
 }

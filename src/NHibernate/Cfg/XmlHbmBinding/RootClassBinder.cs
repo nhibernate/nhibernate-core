@@ -21,9 +21,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			//TABLENAME
 			string schema = classSchema.schema ?? mappings.SchemaName;
+			string catalog = mappings.CatalogName; //string catalog = classSchema.catalog ?? mappings.CatalogName;
 			string tableName = GetClassTableName(rootClass, classSchema);
 
-			Table table = mappings.AddTable(schema, tableName, rootClass.IsAbstract.GetValueOrDefault());
+			Table table = mappings.AddTable(schema, catalog, tableName, null, rootClass.IsAbstract.GetValueOrDefault());
 			((ITableOwner) rootClass).Table = table;
 
 			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.Name, rootClass.Table.Name);

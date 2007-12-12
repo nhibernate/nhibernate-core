@@ -487,6 +487,7 @@
     <Compile Include="Cfg\ConfigurationSchema\ListenerConfiguration.cs" />
     <Compile Include="Cfg\ConfigurationSchema\MappingConfiguration.cs" />
     <Compile Include="Cfg\ConfigurationSchema\SessionFactoryConfiguration.cs" />
+    <Compile Include="Cfg\ExtendsQueueEntry.cs" />
     <Compile Include="Cfg\HbmConstants.cs" />
     <Compile Include="Cfg\HibernateConfigException.cs" />
     <Compile Include="Cfg\IHibernateConfiguration.cs" />

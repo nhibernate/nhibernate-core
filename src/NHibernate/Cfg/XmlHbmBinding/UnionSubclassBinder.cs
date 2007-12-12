@@ -35,10 +35,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//table + schema names
 			XmlAttribute schemaNode = subnode.Attributes["schema"];
 			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
-			
+			XmlAttribute catalogNode = subnode.Attributes["catalog"];
+			string catalog = catalogNode == null ? mappings.CatalogName : catalogNode.Value;
+
 			Table denormalizedSuperTable = unionSubclass.Superclass.Table;
-			Table mytable = mappings.AddDenormalizedTable(schema, GetClassTableName(unionSubclass, subnode),
-				unionSubclass.IsAbstract.GetValueOrDefault(), denormalizedSuperTable);
+			Table mytable =
+				mappings.AddDenormalizedTable(schema, catalog, GetClassTableName(unionSubclass, subnode),
+				                              unionSubclass.IsAbstract.GetValueOrDefault(), null, denormalizedSuperTable);
 			((ITableOwner)unionSubclass).Table = mytable;
 
 			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.Name, unionSubclass.Table.Name);

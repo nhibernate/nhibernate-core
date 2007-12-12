@@ -25,7 +25,7 @@ namespace NHibernate.Test.MappingExceptions
 					"Could not compile the mapping document: NHibernate.Test.MappingExceptions.DuplicateClassMapping.hbm.xml",
 					me.Message);
 				Assert.IsTrue(me.InnerException.GetType() == typeof(DuplicateMappingException));
-				Assert.AreEqual("Duplicate class/entity mapping A", me.InnerException.Message);
+				Assert.AreEqual("Duplicate class/entity mapping NHibernate.Test.MappingExceptions.A", me.InnerException.Message);
 			}
 		}
 

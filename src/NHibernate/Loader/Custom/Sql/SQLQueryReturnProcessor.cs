@@ -278,7 +278,7 @@ namespace NHibernate.Loader.Custom.Sql
 			else if (returnType.IsEntityType)
 			{
 				EntityType eType = (EntityType) returnType;
-				string returnEntityName = eType.AssociatedClass.AssemblyQualifiedName;
+				string returnEntityName = eType.GetAssociatedEntityName();
 				ISqlLoadable persister = GetSQLLoadable(returnEntityName);
 				AddPersister(alias, fetchReturn.PropertyResultsMap, persister);
 			}

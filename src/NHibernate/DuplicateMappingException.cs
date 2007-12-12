@@ -6,8 +6,8 @@ namespace NHibernate
 	[Serializable]
 	public class DuplicateMappingException : MappingException
 	{
-		private string type;
-		private string name;
+		private readonly string type;
+		private readonly string name;
 
 		/// <summary>
 		/// The type of the duplicated object
@@ -31,7 +31,7 @@ namespace NHibernate
 		/// <param name="customMessage">The message that describes the error. </param>
 		/// <param name="name">The name of the duplicate object</param>
 		/// <param name="type">The type of the duplicate object</param>
-		public DuplicateMappingException(String customMessage, String type, String name)
+		public DuplicateMappingException(string customMessage, string type, string name)
 			: base(customMessage)
 		{
 			this.type = type;
@@ -43,7 +43,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the duplicate object</param>
 		/// <param name="type">The type of the duplicate object</param>
-		public DuplicateMappingException(String type, String name)
+		public DuplicateMappingException(string type, string name)
 			: this(string.Format("Duplicate {0} mapping {1}", type, name), type, name)
 		{
 		}

@@ -295,7 +295,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			string propertyRef = value.ReferencedPropertyName;
 			if (propertyRef != null)
-				mappings.AddUniquePropertyReference(((EntityType) value.Type).AssociatedClass, propertyRef);
+				mappings.AddUniquePropertyReference(value.ReferencedEntityName, propertyRef);
 
 			value.CreateForeignKey();
 			Mapping.Property prop = new Mapping.Property();
@@ -415,7 +415,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				ToOne toOne = (ToOne) value;
 				string propertyRef = toOne.ReferencedPropertyName;
 				if (propertyRef != null)
-					mappings.AddUniquePropertyReference(((EntityType) value.Type).AssociatedClass, propertyRef);
+					mappings.AddUniquePropertyReference(toOne.ReferencedEntityName, propertyRef);
 			}
 
 			value.CreateForeignKey();

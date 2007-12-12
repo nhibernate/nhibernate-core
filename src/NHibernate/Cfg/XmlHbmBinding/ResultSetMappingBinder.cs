@@ -97,7 +97,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			LockMode lockMode = GetLockMode(returnSchema.lockmode);
 
-			PersistentClass pc = mappings.GetClass(ReflectHelper.ClassForName(entityName));
+			PersistentClass pc = mappings.GetClass(entityName);
 			IDictionary propertyResults =
 				BindPropertyResults(alias, returnSchema.returndiscriminator, returnSchema.returnproperty, pc);
 
