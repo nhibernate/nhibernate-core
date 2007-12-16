@@ -16,45 +16,37 @@ namespace NHibernate.Mapping
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyClass"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="propertyAccess"></param>
-		public override void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
-		{
-			try
-			{
-				if (Type == null)
-				{
-					System.Type refClass = ReflectHelper.ReflectedPropertyClass(propertyClass, propertyName, propertyAccess);
-					ReferencedEntityName = refClass.FullName;
-					Type = TypeFactory.ManyToOne(refClass, ReferencedPropertyName, IsLazy, isIgnoreNotFound);
-				}
-			}
-			catch (HibernateException he)
-			{
-				throw new MappingException("Problem trying to set association type by reflection", he);
-			}
-		}
-
 		/// <summary></summary>
 		public override void CreateForeignKey()
 		{
 			// the case of a foreign key to something other than the pk is handled in createPropertyRefConstraints
-			if (referencedPropertyName == null && !HasFormula && !isIgnoreNotFound)
+			if (ReferencedPropertyName == null && !HasFormula && !IsIgnoreNotFound)
 			{
 				CreateForeignKeyOfEntity(((EntityType)Type).GetAssociatedEntityName());
 			}
 		}
 
-		private bool isIgnoreNotFound = false; // NH-268
+		private bool isIgnoreNotFound = false;
 
 		public bool IsIgnoreNotFound
 		{
 			get { return isIgnoreNotFound; }
 			set { isIgnoreNotFound = value; }
+		}
+
+		private IType type;
+		public override IType Type
+		{
+			get
+			{
+				if (type == null)
+				{
+					type =
+						TypeFactory.ManyToOne(ReflectHelper.ClassForName(ReferencedTypeName), ReferencedPropertyName, IsLazy,
+						                      IsIgnoreNotFound);
+				}
+				return type;
+			}
 		}
 
 		public void CreatePropertyRefConstraints(IDictionary<string, PersistentClass> persistentClasses)

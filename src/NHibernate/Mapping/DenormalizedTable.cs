@@ -44,7 +44,7 @@ namespace NHibernate.Mapping
 					Index index = new Index();
 					index.Name = Name + parentIndex.Name;
 					index.Table = this;
-					index.AddColumns(parentIndex.ColumnCollection);
+					index.AddColumns(parentIndex.ColumnIterator);
 					indexes.Add(index);
 				}
 				return new JoinedEnumerable<Index>(indexes, base.IndexIterator);

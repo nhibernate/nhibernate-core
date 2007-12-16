@@ -1,4 +1,5 @@
 using System.Text;
+using NHibernate.Engine;
 using NHibernate.Util;
 
 namespace NHibernate.Mapping
@@ -11,27 +12,25 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Generates the SQL string to create the Unique Key Constraint in the database.
 		/// </summary>
-		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <returns>
-		/// A string that contains the SQL to create the Unique Key Constraint.
-		/// </returns>
-		public string SqlConstraintString(Dialect.Dialect d)
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+		/// <returns> A string that contains the SQL to create the Unique Key Constraint. </returns>
+		public string SqlConstraintString(Dialect.Dialect dialect)
 		{
-			StringBuilder buf = new StringBuilder(" unique (");
+			StringBuilder buf = new StringBuilder("unique (");
 			bool commaNeeded = false;
-
-			foreach (Column col in ColumnIterator)
+			bool nullable = false;
+			foreach (Column column in ColumnIterator)
 			{
+				if (!nullable && column.IsNullable)
+					nullable = true;
+
 				if (commaNeeded)
-				{
 					buf.Append(StringHelper.CommaSpace);
-				}
 				commaNeeded = true;
-
-				buf.Append(col.GetQuotedName(d));
+				buf.Append(column.GetQuotedName(dialect));
 			}
-
-			return buf.Append(StringHelper.ClosedParen).ToString();
+			//do not add unique constraint on DB not supporting unique and nullable columns
+			return !nullable || dialect.SupportsNotNullUnique ? buf.Append(StringHelper.ClosedParen).ToString() : null;
 		}
 
 		/// <summary>
@@ -46,28 +45,37 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public override string SqlConstraintString(Dialect.Dialect dialect, string constraintName, string defaultCatalog, string defaultSchema)
 		{
-			StringBuilder buf = new StringBuilder(
-				dialect.GetAddPrimaryKeyConstraintString(constraintName))
-				.Append('(');
+			StringBuilder buf = new StringBuilder(dialect.GetAddPrimaryKeyConstraintString(constraintName))
+				.Append(StringHelper.OpenParen);
 
 			bool commaNeeded = false;
-
-			foreach (Column col in ColumnIterator)
+			bool nullable = false;
+			foreach (Column column in ColumnIterator)
 			{
+				if (!nullable && column.IsNullable)
+					nullable = true;
 				if (commaNeeded)
-				{
 					buf.Append(StringHelper.CommaSpace);
-				}
 				commaNeeded = true;
-
-				buf.Append(col.GetQuotedName(dialect));
+				buf.Append(column.GetQuotedName(dialect));
 			}
 
-			string ifExists = dialect.GetIfNotExistsCreateConstraint(Table, Name);
-			string create = StringHelper.Replace(buf.Append(StringHelper.ClosedParen).ToString(), "primary key", "unique");
-			string end = dialect.GetIfNotExistsCreateConstraintEnd(Table, Name);
+			return
+				!nullable || dialect.SupportsNotNullUnique
+					? StringHelper.Replace(buf.Append(StringHelper.ClosedParen).ToString(), "primary key", "unique")
+					: null;
+		}
 
-			return ifExists + System.Environment.NewLine + create + System.Environment.NewLine + end;
+		public override string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
+		{
+			if (dialect.SupportsUniqueConstraintInCreateAlterTable)
+			{
+				return base.SqlCreateString(dialect, p, defaultCatalog, defaultSchema);
+			}
+			else
+			{
+				return Index.BuildSqlCreateIndexString(dialect, Name, Table, ColumnIterator, true, defaultCatalog, defaultSchema);
+			}
 		}
 
 		#region IRelationalModel Members
@@ -83,11 +91,10 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-			string drop = "alter table " + Table.GetQualifiedName(dialect, defaultSchema) + dialect.GetDropIndexConstraintString(Name);
-			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+			if (dialect.SupportsUniqueConstraintInCreateAlterTable)
+				return base.SqlDropString(dialect, defaultCatalog, defaultSchema);
+			else
+				return Index.BuildSqlDropIndexString(dialect, Table, Name, defaultCatalog, defaultSchema);
 		}
 
 		#endregion

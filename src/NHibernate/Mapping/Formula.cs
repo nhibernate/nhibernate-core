@@ -13,7 +13,7 @@ namespace NHibernate.Mapping
 		private static int formulaUniqueInteger = 0;
 
 		private string formula;
-		private int uniqueInteger;
+		private readonly int uniqueInteger;
 
 		/// <summary></summary>
 		public Formula()
@@ -36,7 +36,7 @@ namespace NHibernate.Mapping
 		public string FormulaString
 		{
 			get { return formula; }
-			set { this.formula = value; }
+			set { formula = value; }
 		}
 
 		public string GetText(Dialect.Dialect dialect)
@@ -51,7 +51,7 @@ namespace NHibernate.Mapping
 
 		public string GetAlias(Dialect.Dialect dialect)
 		{
-			return "formula" + uniqueInteger.ToString() + '_';
+			return string.Format("formula{0}{1}", uniqueInteger, '_');
 		}
 
 		public string GetAlias(Dialect.Dialect dialect, Table table)

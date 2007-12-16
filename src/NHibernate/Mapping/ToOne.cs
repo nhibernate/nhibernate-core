@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -13,6 +12,7 @@ namespace NHibernate.Mapping
 		private bool lazy = true;
 		protected internal string referencedPropertyName;
 		private string referencedEntityName;
+		private string referencedTypeName;
 		private bool embedded;
 		private bool unwrapProxy;
 
@@ -43,6 +43,12 @@ namespace NHibernate.Mapping
 			set { referencedEntityName = StringHelper.InternedIfPossible(value); }
 		}
 
+		public string ReferencedTypeName
+		{
+			get { return referencedTypeName; }
+			set { referencedTypeName = StringHelper.InternedIfPossible(value); }
+		}
+
 		public bool IsLazy
 		{
 			get { return lazy; }
@@ -62,10 +68,28 @@ namespace NHibernate.Mapping
 
 		public override void SetTypeUsingReflection(string className, string propertyName, string accesorName)
 		{
+			if (referencedEntityName == null || referencedTypeName == null)
+			{
+				System.Type refType = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName);
+				referencedEntityName = refType.FullName;
+				referencedTypeName = refType.AssemblyQualifiedName;
+			}
+		}
+
+		public override bool IsValid(Engine.IMapping mapping)
+		{
 			if (referencedEntityName == null)
 			{
-				referencedEntityName = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName).FullName;
+				throw new MappingException("association must specify the referenced entity");
 			}
+			return base.IsValid(mapping);
+		}
+
+		public override abstract IType Type { get;}
+
+		public override bool IsTypeSpecified
+		{
+			get { return referencedEntityName != null; }
 		}
 
 		public bool UnwrapProxy

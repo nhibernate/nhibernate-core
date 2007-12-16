@@ -445,23 +445,6 @@ namespace NHibernate.Cfg
 				defaultAssembly,
 				defaultNamespace
 				);
-
-			//return new Mappings(
-			//  classes,
-			//  collections,
-			//  tables,
-			//  namedQueries,
-			//  namedSqlQueries,
-			//  sqlResultSetMappings,
-			//  imports,
-			//  secondPasses,
-			//  propertyReferences,
-			//  namingStrategy,
-			//  filterDefinitions,
-			//  auxiliaryDatabaseObjects,
-			//  defaultAssembly,
-			//  defaultNamespace
-			//  );
 		}
 
 		/// <summary>
@@ -854,7 +837,7 @@ namespace NHibernate.Cfg
 				}
 
 				NHibernate.Mapping.Property prop = clazz.GetReferencedProperty(upr.propertyName);
-				((SimpleValue)prop.Value).IsUnique = true;
+				((SimpleValue)prop.Value).IsAlternateUniqueKey = true;
 			}
 
 			//TODO: Somehow add the newly created foreign keys to the internal collection

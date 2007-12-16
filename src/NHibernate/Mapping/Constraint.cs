@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -125,13 +126,11 @@ namespace NHibernate.Mapping
 		{
 			if (IsGenerated(dialect))
 			{
-				string ifExists = dialect.GetIfNotExistsCreateConstraint(Table, Name);
-				string create =
-					string.Format("alter table {0} {1} ", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema),
-												SqlConstraintString(dialect, Name, defaultCatalog, defaultSchema));
-				string end = dialect.GetIfNotExistsCreateConstraintEnd(Table, Name);
-
-				return ifExists + System.Environment.NewLine + create + System.Environment.NewLine + end;
+				string constraintString = SqlConstraintString(dialect, Name, defaultCatalog, defaultSchema);
+				StringBuilder buf = new StringBuilder("alter table ")
+					.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+					.Append(constraintString);
+				return buf.ToString();
 			}
 			else
 			{

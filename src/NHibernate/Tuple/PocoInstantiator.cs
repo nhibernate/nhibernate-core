@@ -85,6 +85,10 @@ namespace NHibernate.Tuple
 			{
 				return optimizer.CreateInstance();
 			}
+			else if (mappedClass.IsValueType)
+			{
+				return Activator.CreateInstance(mappedClass, true);
+			}
 			else if (constructor == null)
 			{
 				throw new InstantiationException("No default constructor for entity: ", mappedClass);

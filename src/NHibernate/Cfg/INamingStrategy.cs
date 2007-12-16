@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Cfg
 {
 	/// <summary>
@@ -43,5 +41,15 @@ namespace NHibernate.Cfg
 		/// <param name="propertyName">a property path</param>
 		/// <returns>a table name</returns>
 		string PropertyToTableName(string className, string propertyName);
+
+		/// <summary> 
+		/// Return the logical column name used to refer to a column in the metadata
+		/// (like index, unique constraints etc)
+		/// A full bijection is required between logicalNames and physical ones
+		/// logicalName have to be case insersitively unique for a given table 
+		/// </summary>
+		/// <param name="columnName">given column name if any </param>
+		/// <param name="propertyName">property name of this column </param>
+		string LogicalColumnName(string columnName, string propertyName);
 	}
 }

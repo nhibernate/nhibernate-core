@@ -17,9 +17,9 @@ namespace NHibernate.Mapping
 		public const int DefaultPrecision = 19;
 		public const int DefaultScale = 2;
 
-		private int length = DefaultLength;
-		private int precision = DefaultPrecision;
-		private int scale = DefaultScale;
+		private int? length;
+		private int? precision;
+		private int? scale;
 		private IValue _value;
 		private IType type;
 		private int typeIndex = 0;
@@ -60,7 +60,7 @@ namespace NHibernate.Mapping
 		/// <value>The length of the datatype in the database.</value>
 		public int Length
 		{
-			get { return length; }
+			get { return length.GetValueOrDefault(DefaultLength); }
 			set { length = value; }
 		}
 
@@ -198,31 +198,6 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets the <see cref="SqlType"/> of the column based on the <see cref="IType"/>.
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns>
-		/// The <see cref="SqlType"/> of the column based on the <see cref="IType"/>.
-		/// </returns>
-		public SqlType GetAutoSqlType(IMapping mapping)
-		{
-			try
-			{
-				return Type.SqlTypes(mapping)[TypeIndex];
-			}
-			catch (Exception e)
-			{
-				throw new MappingException(
-					"GetAutoSqlType - Could not determine type for column " +
-					name +
-					" of type " +
-					type.GetType().FullName +
-					": " +
-					e.GetType().FullName, e);
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets if the column contains unique values.
 		/// </summary>
 		/// <value><see langword="true" /> if the column contains unique values.</value>
@@ -247,22 +222,15 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public string GetSqlType(Dialect.Dialect dialect, IMapping mapping)
 		{
-			if (sqlType == null)
-			{
-				SqlType sqlTypeObject = GetAutoSqlType(mapping);
-				if (Length != DefaultLength)
-				{
-					return dialect.GetTypeName(sqlTypeObject, Length, Precision, Scale);
-				}
-				else
-				{
-					return dialect.GetTypeName(sqlTypeObject);
-				}
-			}
+			return sqlType ?? GetDialectTypeName(dialect, mapping);
+		}
+
+		private string GetDialectTypeName(Dialect.Dialect dialect, IMapping mapping)
+		{
+			if (IsCaracteristicsDefined())
+				return dialect.GetTypeName(GetSqlTypeCode(mapping), Length, Precision, Scale);
 			else
-			{
-				return sqlType;
-			}
+				return dialect.GetTypeName(GetSqlTypeCode(mapping));
 		}
 
 		#region System.Object Members
@@ -382,13 +350,13 @@ namespace NHibernate.Mapping
 
 		public int Precision
 		{
-			get { return precision; }
+			get { return precision.GetValueOrDefault(DefaultPrecision); }
 			set { precision = value; }
 		}
 
 		public int Scale
 		{
-			get { return scale; }
+			get { return scale.GetValueOrDefault(DefaultScale); }
 			set { scale = value; }
 		}
 
@@ -460,20 +428,25 @@ namespace NHibernate.Mapping
 			return quoted ? '`' + name + '`' : name;
 		}
 
+		private bool IsCaracteristicsDefined()
+		{
+			return length.HasValue || precision.HasValue || scale.HasValue;
+		}
+
 		#region ICloneable Members
 		/// <summary> Shallow copy, the value is not copied</summary>
 		public object Clone()
 		{
 			Column copy = new Column();
-			copy.Length = length;
-			copy.Scale = scale;
+			copy.Length = Length;
+			copy.Scale = Scale;
 			copy.Value = _value;
 			copy.TypeIndex = typeIndex;
 			copy.Name = GetQuotedName();
 			copy.IsNullable = nullable;
-			copy.Precision = precision;
+			copy.Precision = Precision;
 			copy.Unique = unique;
-			copy.SqlType=sqlType;
+			copy.SqlType = sqlType;
 			copy.SqlTypeCode = sqlTypeCode;
 			copy.uniqueInteger = uniqueInteger; //usually useless
 			copy.CheckConstraint = checkConstraint;

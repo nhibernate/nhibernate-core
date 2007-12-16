@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
@@ -16,14 +16,13 @@ namespace NHibernate.Mapping
 	{
 		private readonly List<ISelectable> columns = new List<ISelectable>();
 		private IType type;
+		private IDictionary<string, string> typeParameters;
 
 		private IDictionary<string, string> identifierGeneratorProperties;
 		private string identifierGeneratorStrategy = "assigned";
 		private string nullValue;
 		private Table table;
 		private string foreignKeyName;
-		private bool unique;
-		private IIdentifierGenerator uniqueIdentifierGenerator;
 		private bool cascadeDeleteEnabled;
 		private bool isAlternateUniqueKey;
 		private string typeName;
@@ -40,12 +39,6 @@ namespace NHibernate.Mapping
 		public virtual IEnumerable<Column> ConstraintColumns
 		{
 			get { return new SafetyEnumerable<Column>(columns); }
-		}
-
-		public string TypeName
-		{
-			get { return typeName; }
-			set { typeName = value; }
 		}
 
 		public string ForeignKeyName
@@ -109,7 +102,39 @@ namespace NHibernate.Mapping
 
 		public virtual bool IsUpdateable
 		{
-			get { return true; } //needed to satisfy IKeyValue
+			get { return true; }//needed to satisfy IKeyValue
+		}
+
+		public virtual bool IsTypeSpecified
+		{
+			get { return typeName != null; }
+		}
+
+		public IDictionary<string, string> TypeParameters
+		{
+			get { return typeParameters; }
+			set
+			{
+				if (!CollectionHelper.DictionaryEquals((IDictionary)typeParameters, (IDictionary)value))
+				{
+					typeParameters = value;
+					type = null; // invalidate type
+				}
+			}
+		}
+
+		public string TypeName
+		{
+			get { return typeName; }
+			set
+			{
+				if ((typeName == null && value != null) || (typeName != null && !typeName.Equals(value)))
+				{
+					// the property change
+					typeName = value;
+					type = null; // invalidate type
+				}
+			}
 		}
 
 		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect, string defaultCatalog,
@@ -192,7 +217,29 @@ namespace NHibernate.Mapping
 
 		public virtual IType Type
 		{
-			get { return type; }
+			get
+			{
+				// NH: Different implementation
+				// we use the internal instance of IType to have better performance
+				if (type == null)
+				{
+					if (string.IsNullOrEmpty(typeName))
+					{
+						throw new MappingException("No type name specified");
+					}
+					type = TypeFactory.HeuristicType(typeName, (IDictionary)typeParameters);
+					if (type == null)
+					{
+						string msg = "Could not determine type for: " + typeName;
+						if (columns != null && columns.Count > 0)
+						{
+							msg += (", for columns: " + StringHelper.CollectionToString(columns));
+						}
+						throw new MappingException(msg);
+					}
+				}
+				return type;
+			}
 			set
 			{
 				// TODO NH: Remove this method and implement only the getter
@@ -204,6 +251,7 @@ namespace NHibernate.Mapping
 					if (sel is Column)
 					{
 						Column col = (Column)sel;
+						col.Value = this;
 						col.Type = type;
 						col.TypeIndex = count++;
 					}
@@ -218,39 +266,25 @@ namespace NHibernate.Mapping
 				foreach (ISelectable s in ColumnIterator)
 				{
 					if (s.IsFormula)
-					{
 						return true;
-					}
 				}
 				return false;
 			}
-		}
-
-		public bool IsUnique
-		{
-			get { return unique; }
-			set { unique = value; }
 		}
 
 		public virtual bool IsNullable
 		{
 			get
 			{
-				if (HasFormula)
+				// NH : Different implementation (to iterate the collection only one time)
+				foreach (ISelectable selectable in ColumnIterator)
 				{
-					return true;
+					if (selectable.IsFormula)
+						return true;
+					if (!((Column)selectable).IsNullable)
+						return false;
 				}
-
-				bool nullable = true;
-				foreach (Column col in ColumnIterator)
-				{
-					if (!col.IsNullable)
-					{
-						nullable = false;
-					}
-				}
-
-				return nullable;
+				return true;
 			}
 		}
 
@@ -278,7 +312,7 @@ namespace NHibernate.Mapping
 			get { return true; }
 		}
 
-		public bool IsValid(IMapping mapping)
+		public virtual bool IsValid(IMapping mapping)
 		{
 			return ColumnSpan == Type.GetColumnSpan(mapping);
 		}
@@ -308,7 +342,14 @@ namespace NHibernate.Mapping
 				{
 					throw new MappingException("you must specify types for a dynamic entity: " + propertyName);
 				}
-				typeName = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName).FullName;
+				try
+				{
+					typeName = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName).AssemblyQualifiedName;
+				}
+				catch (HibernateException he)
+				{
+					throw new MappingException("Problem trying to set property type by reflection", he);
+				}
 			}
 		}
 
@@ -317,9 +358,8 @@ namespace NHibernate.Mapping
 		public virtual void AddColumn(Column column)
 		{
 			if (!columns.Contains(column))
-			{
 				columns.Add(column);
-			}
+
 			column.Value = this;
 			column.TypeIndex = columns.Count - 1;
 		}
@@ -327,36 +367,6 @@ namespace NHibernate.Mapping
 		public virtual void AddFormula(Formula formula)
 		{
 			columns.Add(formula);
-		}
-
-		public void SetTypeByReflection(System.Type propertyClass, string propertyName)
-		{
-			SetTypeByReflection(propertyClass, propertyName, "property");
-		}
-
-		public virtual void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
-		{
-			try
-			{
-				if (type == null)
-				{
-					type = ReflectHelper.ReflectedPropertyType(propertyClass, propertyName, propertyAccess);
-					int count = 0;
-					foreach (ISelectable thing in ColumnIterator)
-					{
-						Column col = thing as Column;
-						if (col != null)
-						{
-							col.Type = type;
-							col.TypeIndex = count++;
-						}
-					}
-				}
-			}
-			catch (HibernateException he)
-			{
-				throw new MappingException("Problem trying to set property type by reflection", he);
-			}
 		}
 
 		public override string ToString()

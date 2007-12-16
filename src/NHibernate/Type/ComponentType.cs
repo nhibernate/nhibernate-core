@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
 using System.Data;
-using NHibernate.Bytecode;
 using NHibernate.Engine;
-using NHibernate.Property;
 using NHibernate.SqlTypes;
+using NHibernate.Tuple;
+using NHibernate.Tuple.Component;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Type
 {
@@ -15,16 +14,13 @@ namespace NHibernate.Type
 	{
 		private readonly System.Type componentClass;
 		private readonly IType[] propertyTypes;
-		private readonly IGetter[] getters;
-		private readonly ISetter[] setters;
 		private readonly string[] propertyNames;
 		private readonly bool[] propertyNullability;
 		private readonly int propertySpan;
 		private readonly Cascades.CascadeStyle[] cascade;
-		private readonly FetchMode[] joinedFetch;
-		private ISetter parentSetter;
-		private IGetter parentGetter;
-		private IReflectionOptimizer optimizer = null;
+		private readonly FetchMode?[] joinedFetch;
+		private bool isKey;
+		protected internal EntityModeToTuplizerMapping tuplizerMapping;
 
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
@@ -52,54 +48,29 @@ namespace NHibernate.Type
 			return span;
 		}
 
-		public ComponentType(System.Type componentClass,
-		                     string[] propertyNames,
-		                     IGetter[] propertyGetters,
-		                     ISetter[] propertySetters,
-		                     // currently not used, see the comment near the end of the method body
-		                     bool foundCustomAcessor,
-		                     IType[] propertyTypes,
-		                     bool[] nullabilities,
-		                     FetchMode[] joinedFetch,
-		                     Cascades.CascadeStyle[] cascade,
-		                     string parentProperty)
+		public ComponentType(ComponentMetamodel metamodel)
 		{
-			this.componentClass = componentClass;
-			this.propertyTypes = propertyTypes;
-			this.propertyNullability = nullabilities;
-			propertySpan = propertyNames.Length;
-			getters = propertyGetters;
-			setters = propertySetters;
-			string[] getterNames = new string[propertySpan];
-			string[] setterNames = new string[propertySpan];
-			System.Type[] propTypes = new System.Type[propertySpan];
+			// "re-flatting" metamodel
+			isKey = metamodel.IsKey;
+			propertySpan = metamodel.PropertySpan;
+			propertyNames = new string[propertySpan];
+			propertyTypes = new IType[propertySpan];
+			propertyNullability = new bool[propertySpan];
+			cascade = new Cascades.CascadeStyle[propertySpan];
+			joinedFetch = new FetchMode?[propertySpan];
+
 			for (int i = 0; i < propertySpan; i++)
 			{
-				getterNames[i] = getters[i].PropertyName;
-				setterNames[i] = setters[i].PropertyName;
-				propTypes[i] = getters[i].ReturnType;
+				StandardProperty prop = metamodel.GetProperty(i);
+				propertyNames[i] = prop.Name;
+				propertyTypes[i] = prop.Type;
+				propertyNullability[i] = prop.IsNullable;
+				cascade[i] = prop.CascadeStyle;
+				joinedFetch[i] = prop.FetchMode;
 			}
 
-			if (parentProperty == null)
-			{
-				parentSetter = null;
-				parentGetter = null;
-			}
-			else
-			{
-				IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor(null);
-				parentSetter = pa.GetSetter(componentClass, parentProperty);
-				parentGetter = pa.GetGetter(componentClass, parentProperty);
-			}
-			this.propertyNames = propertyNames;
-			this.cascade = cascade;
-			this.joinedFetch = joinedFetch;
-
-			if (Environment.UseReflectionOptimizer)
-			{
-				// NH: reflection optimizer works with custom accessors
-				this.optimizer = Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
-			}
+			tuplizerMapping = metamodel.TuplizerMapping;
+			componentClass = tuplizerMapping.GetTuplizer(EntityMode.Poco).MappedClass;
 		}
 
 		/// <summary></summary>
@@ -134,6 +105,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override bool Equals(object x, object y)
 		{
+
 			if (x == y)
 			{
 				return true;
@@ -142,9 +114,11 @@ namespace NHibernate.Type
 			{
 				return false;
 			}
+			object[] xvalues = GetPropertyValues(x);
+			object[] yvalues = GetPropertyValues(y);
 			for (int i = 0; i < propertySpan; i++)
 			{
-				if (!propertyTypes[i].Equals(getters[i].Get(x), getters[i].Get(y)))
+				if (!propertyTypes[i].Equals(xvalues[i], yvalues[i]))
 				{
 					return false;
 				}
@@ -366,7 +340,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public object GetPropertyValue(object component, int i)
 		{
-			return getters[i].Get(component);
+			return tuplizerMapping.GetTuplizer(EntityMode.Poco).GetPropertyValue(component, i);
 		}
 
 		/// <summary>
@@ -385,19 +359,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public object[] GetPropertyValues(object component)
 		{
-			if (optimizer != null && optimizer.AccessOptimizer != null)
-			{
-				return optimizer.AccessOptimizer.GetPropertyValues(component);
-			}
-			else
-			{
-				object[] values = new object[propertySpan];
-				for (int i = 0; i < propertySpan; i++)
-				{
-					values[i] = GetPropertyValue(component, i);
-				}
-				return values;
-			}
+			return tuplizerMapping.GetTuplizer(EntityMode.Poco).GetPropertyValues(component);
 		}
 
 		/// <remarks>
@@ -405,27 +367,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public void SetPropertyValues(object component, object[] values)
 		{
-			if (optimizer != null && optimizer.AccessOptimizer != null)
-			{
-				try
-				{
-					optimizer.AccessOptimizer.SetPropertyValues(component, values);
-				}
-				catch (InvalidCastException e)
-				{
-					throw new MappingException(
-						"Invalid mapping information specified for type " + component.GetType()
-						+ ", check your mapping file for property type mismatches",
-						e);
-				}
-			}
-			else
-			{
-				for (int i = 0; i < propertySpan; i++)
-				{
-					setters[i].Set(component, values[i]);
-				}
-			}
+			tuplizerMapping.GetTuplizer(EntityMode.Poco).SetPropertyValues(component, values);
 		}
 
 		/// <summary></summary>
@@ -500,18 +442,6 @@ namespace NHibernate.Type
 			object result = Instantiate();
 			SetPropertyValues(result, values);
 
-			// TODO NH: The code below is present in H2.1, but it breaks some
-			// tests in NH because FooComponent.Parent setter throws
-			// an exception if setting parent to null.
-			//
-			// not absolutely necessary, but helps for some
-			// Equals/GetHashCode implementations
-			//
-			if (parentGetter != null)
-			{
-				parentSetter.Set(result, parentGetter.Get(component));
-			}
-
 			return result;
 		}
 
@@ -562,16 +492,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				object result;
-				if (optimizer != null && optimizer.InstantiationOptimizer != null)
-				{
-					result = optimizer.InstantiationOptimizer.CreateInstance();
-				}
-				else
-				{
-					result = Activator.CreateInstance(componentClass, true);
-				}
-				return result;
+				return Instantiate(EntityMode.Poco);
 			}
 			catch (Exception e)
 			{
@@ -579,21 +500,23 @@ namespace NHibernate.Type
 			}
 		}
 
+		public object Instantiate(EntityMode entityMode)
+		{
+			return tuplizerMapping.GetTuplizer(entityMode).Instantiate();
+		}
+
 		public object Instantiate(object parent, ISessionImplementor session)
 		{
-			object result = Instantiate();
-			try
+
+			object result = Instantiate(session.EntityMode);
+
+			IComponentTuplizer ct = (IComponentTuplizer)tuplizerMapping.GetTuplizer(session.EntityMode);
+			if (ct.HasParentProperty && parent != null)
 			{
-				if (parentSetter != null && parent != null)
-				{
-					parentSetter.Set(result, session.PersistenceContext.ProxyFor(parent));
-				}
-				return result;
+				ct.SetParent(result, session.PersistenceContext.ProxyFor(parent), session.Factory);
 			}
-			catch (Exception e)
-			{
-				throw new InstantiationException("Could not set component parent for: ", e, componentClass);
-			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -650,14 +573,14 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				object[] values = (object[]) obj;
+				object[] values = (object[])obj;
 				object[] assembled = new object[values.Length];
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
 					assembled[i] = propertyTypes[i].Assemble(values[i], session, owner);
 				}
 				object result = Instantiate(owner, session);
-				SetPropertyValues(result, assembled);
+				SetPropertyValues(result, assembled, session.EntityMode);
 				return result;
 			}
 		}
@@ -675,7 +598,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public FetchMode GetFetchMode(int i)
 		{
-			return joinedFetch[i];
+			return joinedFetch[i].GetValueOrDefault();
 		}
 
 		/// <summary>
@@ -696,7 +619,14 @@ namespace NHibernate.Type
 				int length = propertyTypes[i].GetColumnSpan(session.Factory);
 				string[] range = ArrayHelper.Slice(names, begin, length); //cache this
 				object val = propertyTypes[i].Hydrate(rs, range, session, owner);
-				if (val != null)
+				if(val==null)
+				{
+					if (isKey)
+					{
+						return null; //different nullability rules for pk/fk
+					}
+				}
+				else
 				{
 					notNull = true;
 				}
@@ -704,7 +634,7 @@ namespace NHibernate.Type
 				begin += length;
 			}
 
-			if (this.componentClass.IsValueType)
+			if (componentClass.IsValueType)
 				return values;
 			else
 				return notNull ? values : null;
@@ -766,5 +696,16 @@ namespace NHibernate.Type
 		{
 			get { return propertyNullability; }
 		}
+
+		public virtual object[] GetPropertyValues(object component, EntityMode entityMode)
+		{
+			return tuplizerMapping.GetTuplizer(entityMode).GetPropertyValues(component);
+		}
+
+		public virtual void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		{
+			tuplizerMapping.GetTuplizer(entityMode).SetPropertyValues(component, values);
+		}
+
 	}
 }

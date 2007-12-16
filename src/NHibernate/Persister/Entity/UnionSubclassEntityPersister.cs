@@ -185,7 +185,7 @@ namespace NHibernate.Persister.Entity
 					{
 						if (!table.ContainsColumn(col))
 						{
-							SqlType sqlType = col.GetAutoSqlType(mapping);
+							SqlType sqlType = col.GetSqlTypeCode(mapping);
 							buf.Append(dialect.GetSelectClauseNullString(sqlType)).Append(" as ");
 						}
 						buf.Append(col.Name);

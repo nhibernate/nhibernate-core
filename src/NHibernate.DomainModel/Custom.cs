@@ -7,10 +7,10 @@ namespace NHibernate.DomainModel
 	/// </summary>
 	public class Custom : ICloneable
 	{
-		private long _id;
+		private string _id;
 		private string _name;
 
-		public long Id
+		public string Id
 		{
 			get { return _id; }
 			set { _id = value; }

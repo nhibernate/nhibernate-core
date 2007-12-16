@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -23,12 +24,15 @@ namespace NHibernate.Mapping
 		public const string DefaultElementColumnName = "elt";
 		public const string DefaultKeyColumnName = "id";
 
-		private SimpleValue key;
+		private IKeyValue key;
 		private IValue element;
+		private string elementNodeName;
 		private Table collectionTable;
 		private string role;
 		private bool lazy;
+		private bool extraLazy;
 		private bool inverse;
+		private bool mutable = true;
 		private string cacheConcurrencyStrategy;
 		private String cacheRegionName;
 		private string orderBy;
@@ -42,6 +46,8 @@ namespace NHibernate.Mapping
 		private System.Type collectionPersisterClass;
 		private string referencedPropertyName;
 		private string typeName;
+		private bool embedded = true;
+		private string nodeName;
 
 		private string loaderName;
 
@@ -69,6 +75,9 @@ namespace NHibernate.Mapping
 		private string manyToManyWhere;
 		private string manyToManyOrderBy;
 		private bool optimisticLocked;
+		private readonly HashedSet<string> synchronizedTables = new HashedSet<string>();
+		private IDictionary<string, string> typeParameters;
+
 
 		protected Collection(PersistentClass owner)
 		{
@@ -85,7 +94,7 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
-		public SimpleValue Key
+		public IKeyValue Key
 		{
 			get { return key; }
 			set { key = value; }
@@ -121,7 +130,7 @@ namespace NHibernate.Mapping
 
 		public bool HasOrder
 		{
-			get { return orderBy != null; }
+			get { return orderBy != null || manyToManyOrderBy != null; }
 		}
 
 		public PersistentClass Owner
@@ -153,7 +162,7 @@ namespace NHibernate.Mapping
 		public string Role
 		{
 			get { return role; }
-			set { role = value; }
+			set { role = StringHelper.InternedIfPossible(value); }
 		}
 
 		public IEnumerable<ISelectable> ColumnIterator
@@ -186,6 +195,7 @@ namespace NHibernate.Mapping
 				}
 				else
 				{
+					// TODO NH: Add support for embedded collections <embed-xml>
 					return TypeFactory.CustomCollection(typeName, Role, ReferencedPropertyName);
 				}
 			}
@@ -231,7 +241,7 @@ namespace NHibernate.Mapping
 
 		public string CacheRegionName
 		{
-			get { return cacheRegionName == null ? Role : cacheRegionName; }
+			get { return cacheRegionName ?? Role; }
 			set { cacheRegionName = value; }
 		}
 
@@ -241,9 +251,9 @@ namespace NHibernate.Mapping
 			set { inverse = value; }
 		}
 
-		public System.Type OwnerClass
+		public string OwnerEntityName
 		{
-			get { return owner.MappedClass; }
+			get { return owner.EntityName; }
 		}
 
 		public string OrderBy
@@ -258,7 +268,7 @@ namespace NHibernate.Mapping
 			set { where = value; }
 		}
 
-		public bool OrphanDelete
+		public bool HasOrphanDelete
 		{
 			get { return orphanDelete; }
 			set { orphanDelete = value; }
@@ -275,20 +285,6 @@ namespace NHibernate.Mapping
 			get { return fetchMode; }
 			set { fetchMode = value; }
 		}
-
-		#region IValue Members
-
-		public bool IsAlternateUniqueKey
-		{
-			get { return false; }
-		}
-
-
-		public void SetTypeUsingReflection(string className, string propertyName, string accesorName)
-		{
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Gets or sets a <see cref="Boolean"/> indicating if this is a 
@@ -335,12 +331,13 @@ namespace NHibernate.Mapping
 
 		private void CreateForeignKeys()
 		{
-			// for inverse collections, let the "other end" hanlde it
-			if (!IsInverse && referencedPropertyName == null)
+			// if ( !IsInverse() ) { // for inverse collections, let the "other end" handle it
+			if (string.IsNullOrEmpty(referencedPropertyName))
 			{
 				Element.CreateForeignKey();
-				Key.CreateForeignKeyOfEntity(Owner.EntityName);
+				key.CreateForeignKeyOfEntity(Owner.EntityName);
 			}
+			// }
 		}
 
 		public abstract void CreatePrimaryKey();
@@ -349,9 +346,7 @@ namespace NHibernate.Mapping
 		{
 			CreateForeignKeys();
 			if (!IsInverse)
-			{
 				CreatePrimaryKey();
-			}
 		}
 
 		public bool IsSimpleValue
@@ -372,16 +367,32 @@ namespace NHibernate.Mapping
 
 		public virtual void Validate(IMapping mapping)
 		{
+			if (Key.IsCascadeDeleteEnabled && (!IsInverse || !IsOneToMany))
+			{
+				throw new MappingException(string.Format("only inverse one-to-many associations may use on-delete=\"cascade\": {0}", Role));
+			}
 			if (!Key.IsValid(mapping))
 			{
-				throw new MappingException(
-					string.Format("collection foreign key mapping has wrong number of columns: {0} type: {1}", Role, Key.Type.Name));
+				throw new MappingException(string.Format("collection foreign key mapping has wrong number of columns: {0} type: {1}", Role, Key.Type.Name));
 			}
-
 			if (!Element.IsValid(mapping))
 			{
-				throw new MappingException(
-					string.Format("collection element key mapping has wrong number of columns: {0} type: {1}", Role, Element.Type.Name));
+				throw new MappingException(string.Format("collection element mapping has wrong number of columns: {0} type: {1}", Role, Element.Type.Name));
+			}
+
+			CheckColumnDuplication();
+
+			if (elementNodeName != null && elementNodeName.StartsWith("@"))
+			{
+				throw new MappingException(string.Format("element node must not be an attribute: {0}", elementNodeName));
+			}
+			if (elementNodeName != null && elementNodeName.Equals("."))
+			{
+				throw new MappingException(string.Format("element node must not be the parent: {0}", elementNodeName));
+			}
+			if (nodeName != null && nodeName.IndexOf('@') > -1)
+			{
+				throw new MappingException(string.Format("collection node must not be an attribute: {0}", elementNodeName));
 			}
 		}
 
@@ -491,7 +502,7 @@ namespace NHibernate.Mapping
 
 		public void AddFilter(string name, string condition)
 		{
-			filters.Add(name, condition);
+			filters[name] = condition;
 		}
 
 		public IDictionary<string,string> FilterMap
@@ -501,7 +512,7 @@ namespace NHibernate.Mapping
 
 		public void AddManyToManyFilter(string name, string condition)
 		{
-			manyToManyFilters.Add(name, condition);
+			manyToManyFilters[name] = condition;
 		}
 
 		public IDictionary<string, string> ManyToManyFilterMap
@@ -537,6 +548,99 @@ namespace NHibernate.Mapping
 		{
 			get { return optimisticLocked; }
 			set { optimisticLocked = value; }
+		}
+
+		public string ElementNodeName
+		{
+			get { return elementNodeName; }
+			set { elementNodeName = value; }
+		}
+
+		public bool Embedded
+		{
+			get { return embedded; }
+			set { embedded = value; }
+		}
+
+		public bool ExtraLazy
+		{
+			get { return extraLazy; }
+			set { extraLazy = value; }
+		}
+
+		private void CheckColumnDuplication()
+		{
+			HashedSet<string> cols = new HashedSet<string>();
+			CheckColumnDuplication(cols, Key.ColumnIterator);
+			if (IsIndexed)
+			{
+				CheckColumnDuplication(cols, ((IndexedCollection)this).Index.ColumnIterator);
+			}
+			if (IsIdentified)
+			{
+				CheckColumnDuplication(cols, ((IdentifierCollection)this).Identifier.ColumnIterator);
+			}
+			if (!IsOneToMany)
+			{
+				CheckColumnDuplication(cols, Element.ColumnIterator);
+			}
+		}
+
+		private void CheckColumnDuplication(ISet<string> distinctColumns, IEnumerable<ISelectable> columns)
+		{
+			foreach (ISelectable s in columns)
+			{
+				if(!s.IsFormula)
+				{
+					Column col = (Column)s;
+					if (!distinctColumns.Add(col.Name))
+					{
+						throw new MappingException(string.Format("Repeated column in mapping for collection: {0} column: {1}", Role, col.Name));
+					}					
+				}
+			}
+		}
+
+		public virtual bool IsAlternateUniqueKey
+		{
+			get { return false; }
+		}
+
+		public void SetTypeUsingReflection(string className, string propertyName, string access)
+		{
+		}
+
+		public virtual bool IsMap
+		{
+			get { return false; }
+		}
+
+		public bool IsMutable
+		{
+			get { return mutable; }
+			set { mutable = value; }
+		}
+
+		public string NodeName
+		{
+			get { return nodeName; }
+			set { nodeName = value; }
+		}
+
+		public ISet<string> SynchronizedTables
+		{
+			get { return synchronizedTables; }
+		}
+
+		public IDictionary<string, string> TypeParameters
+		{
+			get { return typeParameters; }
+			set { typeParameters = value; }
+		}
+
+		public override string ToString()
+		{
+			return GetType().FullName + '(' + Role + ')';
 		}
 	}
 }

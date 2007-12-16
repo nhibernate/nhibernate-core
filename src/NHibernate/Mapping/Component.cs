@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Tuple.Component;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Mapping
@@ -17,8 +19,10 @@ namespace NHibernate.Mapping
 		private PersistentClass owner;
 		private bool dynamic;
 		private bool isKey;
+		private string nodeName;
 		private string roleName;
 		private Dictionary<EntityMode, string> tuplizerImpls;
+		private string componentClassName;
 
 		/// <summary></summary>
 		public int PropertySpan
@@ -57,9 +61,8 @@ namespace NHibernate.Mapping
 			{
 				int n = 0;
 				foreach (Property p in PropertyIterator)
-				{
 					n += p.ColumnSpan;
-				}
+
 				return n;
 			}
 		}
@@ -88,29 +91,25 @@ namespace NHibernate.Mapping
 			this.owner = owner;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="table"></param>
-		public Component(Table table)
-			: base(table)
+		public Component(Collection collection)
+			: base(collection.CollectionTable)
 		{
-			this.owner = null;
+			owner = collection.Owner;
 		}
 
 		public Component(Join join)
 			: base(join.Table)
 		{
-			this.owner = join.PersistentClass;
+			owner = join.PersistentClass;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyClass"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="propertyAccess"></param>
-		public override void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
+		public Component(Component component)
+			: base(component.Table)
+		{
+			owner = component.Owner;
+		}
+
+		public override void SetTypeUsingReflection(string className, string propertyName, string accesorName)
 		{
 		}
 
@@ -131,8 +130,30 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public System.Type ComponentClass
 		{
-			get { return componentClass; }
-			set { componentClass = value; }
+			get
+			{
+				// NH Different implementation (we use reflection only when needed)
+				if (componentClass == null)
+				{
+					try
+					{
+						componentClass = ReflectHelper.ClassForName(componentClassName);
+					}
+					catch (Exception cnfe)
+					{
+						if (!IsDynamic) // TODO remove this if leave the Exception
+							throw new MappingException("component class not found: " + componentClassName, cnfe);
+						return null;
+					}
+				}
+				return componentClass;
+			}
+			set // TODO NH: Remove the setter
+			{
+				componentClass = value;
+				if (componentClass != null)
+					componentClassName = componentClass.AssemblyQualifiedName;
+			} 
 		}
 
 		/// <summary></summary>
@@ -187,10 +208,29 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		public string ComponentClassName
+		{
+			get { return componentClassName; }
+			set
+			{
+				if ((componentClassName == null && value != null) || (componentClassName != null && !componentClassName.Equals(value)))
+				{
+					componentClass = null;
+					componentClassName = value;
+				}
+			}
+		}
+
 		public bool IsKey
 		{
 			get { return isKey; }
 			set { isKey = value; }
+		}
+
+		public string NodeName
+		{
+			get { return nodeName; }
+			set { nodeName = value; }
 		}
 
 		public string RoleName
@@ -243,8 +283,41 @@ namespace NHibernate.Mapping
 
 		public bool HasPojoRepresentation
 		{
-			get { return componentClass != null; }
+			get { return componentClassName != null; }
 		}
 
+		public override IType Type
+		{
+			get
+			{
+				if (type == null)
+					type = BuildType();
+
+				return type;
+			}
+		}
+		public void	SetType(IType value)
+		{ type = value; } // TODO NH: remove this method
+
+		private IType type;
+
+		private IType BuildType()
+		{
+			// TODO : temporary initial step towards HHH-1907
+			ComponentMetamodel metamodel = new ComponentMetamodel(this);
+			//if (isEmbedded)
+			//{
+			//  return new EmbeddedComponentType(metamodel);
+			//}
+			//else
+			//{
+			return new ComponentType(metamodel);
+			//}
+		}
+
+		public override string ToString()
+		{
+			return GetType().FullName + '(' + StringHelper.CollectionToString(properties) + ')';
+		}
 	}
 }

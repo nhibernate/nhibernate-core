@@ -3,22 +3,23 @@ using System.Collections;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
 	[Serializable]
 	public class MetaType : AbstractType
 	{
-		private readonly IDictionary values;
-		private readonly IDictionary keys;
+		private readonly IDictionary<object, System.Type> values;
+		private readonly IDictionary<System.Type, object> keys;
 		private readonly IType baseType;
 
-		public MetaType(IDictionary values, IType baseType)
+		public MetaType(IDictionary<object, System.Type> values, IType baseType)
 		{
 			this.baseType = baseType;
 			this.values = values;
-			this.keys = new Hashtable();
-			foreach (DictionaryEntry me in values)
+			keys = new Dictionary<System.Type, object>();
+			foreach (KeyValuePair<object, System.Type> me in values)
 			{
 				keys[me.Value] = me.Key;
 			}
@@ -75,7 +76,7 @@ namespace NHibernate.Type
 			int index,
 			ISessionImplementor session)
 		{
-			baseType.NullSafeSet(st, value == null ? null : keys[value], index, session);
+			baseType.NullSafeSet(st, value == null ? null : keys[(System.Type)value], index, session);
 		}
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)

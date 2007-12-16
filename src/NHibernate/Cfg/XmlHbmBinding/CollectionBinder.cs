@@ -209,7 +209,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//ORPHAN DELETE (used for programmer error detection)
 			XmlAttribute cascadeAtt = node.Attributes["cascade"];
 			if (cascadeAtt != null && cascadeAtt.Value.Equals("all-delete-orphan"))
-				model.OrphanDelete = true;
+				model.HasOrphanDelete = true;
 
 			bool? isGeneric = null;
 
@@ -512,7 +512,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ("composite-index".Equals(name))
 				{
-					Component component = new Component(model.CollectionTable);
+					Component component = new Component(model);
 					BindComponent(subnode, component, null, model.Role, "index", model.IsOneToMany);
 					model.Index = component;
 				}
@@ -534,7 +534,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (model.IsOneToMany)
 			{
 				OneToMany oneToMany = (OneToMany) model.Element;
-				string associatedEntityName = oneToMany.EntityType.GetAssociatedEntityName();
+				string associatedEntityName = oneToMany.ReferencedEntityName.FullName;
 				PersistentClass persistentClass = persistentClasses[associatedEntityName];
 				if (persistentClass == null)
 					throw new MappingException("Association references unmapped class: " + associatedEntityName);
@@ -593,7 +593,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ("composite-element".Equals(name))
 				{
-					Component element = new Component(model.CollectionTable);
+					Component element = new Component(model);
 					model.Element = element;
 					BindComponent(subnode, element, null, model.Role, "element", true);
 				}

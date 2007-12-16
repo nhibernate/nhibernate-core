@@ -178,11 +178,6 @@ namespace NHibernate.Persister.Collection
 		IEntityPersister OwnerEntityPersister { get;}
 
 		/// <summary>
-		/// Get the entity class that "owns" this collection
-		/// </summary>
-		System.Type OwnerClass { get; }
-
-		/// <summary>
 		/// Get the surrogate key generation strategy (optional operation)
 		/// </summary>
 		IIdentifierGenerator IdentifierGenerator { get; }

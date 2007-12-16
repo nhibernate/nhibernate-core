@@ -23,7 +23,7 @@ namespace NHibernate.Tuple.Component
 			int i = 0;
 			foreach (Mapping.Property property in component.PropertyIterator)
 			{
-				properties[i]=PropertyFactory.BuildStandardProperty(property, false);
+				properties[i] = PropertyFactory.BuildStandardProperty(property, false);
 				propertyIndexes[property.Name] = i;
 				i++;
 			}

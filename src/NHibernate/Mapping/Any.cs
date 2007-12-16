@@ -1,4 +1,5 @@
-using System;
+using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping
@@ -11,50 +12,61 @@ namespace NHibernate.Mapping
 	/// </remarks>
 	public class Any : SimpleValue
 	{
-		private IType identifierType;
-		private IType metaType = NHibernateUtil.Class;
+		private string identifierTypeName;
+		private string metaTypeName = NHibernateUtil.Class.Name;
+		private IDictionary<object, System.Type> metaValues;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="table"></param>
 		public Any(Table table) : base(table)
 		{
 		}
 
 		/// <summary>
-		/// Get or set the identifier type 
+		/// Get or set the identifier type name
 		/// </summary>
-		public virtual IType IdentifierType
+		public virtual string IdentifierTypeName
 		{
-			get { return identifierType; }
-			set { this.identifierType = value; }
+			get { return identifierTypeName; }
+			set { identifierTypeName = value; }
 		}
 
-		/// <summary></summary>
+		private IType type;
 		public override IType Type
 		{
-			get { return new AnyType(metaType, identifierType); }
-			set { throw new NotSupportedException("cannot set type of an Any"); }
+			get
+			{
+				if (type == null)
+				{
+					type =
+						new AnyType(
+							metaValues == null
+								? TypeFactory.HeuristicType(metaTypeName)
+								: new MetaType(metaValues, TypeFactory.HeuristicType(metaTypeName)),
+							TypeFactory.HeuristicType(identifierTypeName));
+				}
+				return type;
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyClass"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="propertyAccess"></param>
-		public override void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
+		public override void SetTypeUsingReflection(string className, string propertyName, string access)
 		{
 		}
 
 		/// <summary>
 		/// Get or set the metatype 
 		/// </summary>
-		public virtual IType MetaType
+		public virtual string MetaType
 		{
-			get { return metaType; }
-			set { metaType = value; }
+			get { return metaTypeName; }
+			set { metaTypeName = value; }
+		}
+
+		/// <summary>
+		/// Represent the relation between a meta-value and the related entityName
+		/// </summary>
+		public IDictionary<object, System.Type> MetaValues
+		{
+			get { return metaValues; }
+			set { metaValues = value; }
 		}
 	}
 }

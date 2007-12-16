@@ -17,20 +17,21 @@ namespace NHibernate.Test.MappingExceptions
 			Configuration cfg = new Configuration();
 			try
 			{
-				cfg.AddResource(resource, this.GetType().Assembly);
+				cfg.AddResource(resource, GetType().Assembly);
 				cfg.BuildSessionFactory();
 			}
 			catch (MappingException me)
 			{
-				//"Problem trying to set property type by reflection"
-				// "Could not find a getter for property 'Naame' in class 'NHibernate.Test.MappingExceptions.A'"
-				Assert.IsTrue(me.InnerException is MappingException);
-				Assert.IsTrue(me.InnerException.InnerException is PropertyNotFoundException);
-
-				Exception inner = me.InnerException.InnerException;
-				Assert.IsTrue(inner.Message.IndexOf("Naame") > 0, "should contain name of missing property 'Naame' in exception");
-				Assert.IsTrue(inner.Message.IndexOf("NHibernate.Test.MappingExceptions.A") > 0,
-				              "should contain name of class that is missing the property");
+				PropertyNotFoundException found = null;
+				Exception find = me;
+				while (find != null)
+				{
+					found = find as PropertyNotFoundException;
+					find = find.InnerException;
+				}
+				Assert.IsNotNull(found, "The PropertyNotFoundException is not present in the Exception tree.");
+				Assert.AreEqual("Naame", found.PropertyName, "should contain name of missing property 'Naame' in exception");
+				Assert.AreEqual(typeof(A), found.TargetType, "should contain name of class that is missing the property");
 				excCaught = true;
 			}
 

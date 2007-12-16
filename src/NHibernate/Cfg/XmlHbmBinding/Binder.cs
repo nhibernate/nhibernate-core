@@ -89,6 +89,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//return TypeNameParser.Parse(unqualifiedName, mappings.DefaultNamespace, mappings.DefaultAssembly).ToString();
 		}
 
+		protected static string GetQualifiedClassName(string unqualifiedName, Mappings mappings)
+		{
+			return ClassForNameChecked(unqualifiedName, mappings, "unknown class {0}").AssemblyQualifiedName;
+		}
+
 		protected static T Deserialize<T>(XmlNode node)
 		{
 			using (StringReader reader = new StringReader(node.OuterXml))

@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using NHibernate.Util;
 
@@ -69,6 +68,11 @@ namespace NHibernate.Cfg
 		public string PropertyToTableName(string className, string propertyName)
 		{
 			return AddUnderscores(StringHelper.Unqualify(propertyName));
+		}
+
+		public string LogicalColumnName(string columnName, string propertyName)
+		{
+			return StringHelper.IsNotEmpty(columnName) ? columnName : StringHelper.Unqualify(propertyName);
 		}
 
 		#endregion

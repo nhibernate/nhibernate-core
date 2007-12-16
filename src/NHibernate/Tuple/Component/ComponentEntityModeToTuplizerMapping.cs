@@ -27,7 +27,6 @@ namespace NHibernate.Tuple.Component
 			else
 				userSuppliedTuplizerImpls = new Dictionary<EntityMode, string>();
 
-
 			// Build the dynamic-map tuplizer...
 			ITuplizer dynamicMapTuplizer;
 			string tuplizerImpl;
@@ -51,7 +50,7 @@ namespace NHibernate.Tuple.Component
 			{
 				if (tuplizerImpl == null)
 				{
-					pojoTuplizer = new PojoComponentTuplizer(component);
+					pojoTuplizer = new PocoComponentTuplizer(component);
 				}
 				else
 				{

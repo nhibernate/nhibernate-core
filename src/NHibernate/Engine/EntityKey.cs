@@ -32,9 +32,12 @@ namespace NHibernate.Engine
 				throw new ArgumentNullException("id");
 			}
 
-			if (!identifierType.ReturnedClass.IsAssignableFrom(id.GetType()))
+			System.Type expected = id.GetType();
+			System.Type found = identifierType.ReturnedClass;
+			if (!found.IsAssignableFrom(expected))
 			{
-				throw new ArgumentException("identifier type mismatch", "id");
+				throw new ArgumentException(string.Format("Identifier type mismatch; Found:<{0}> Expected:<{1}>", found, expected),
+				                            "id");
 			}
 
 			this.identifier = id;

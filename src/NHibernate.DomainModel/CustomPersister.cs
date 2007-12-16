@@ -19,7 +19,7 @@ namespace NHibernate.DomainModel
 	public class CustomPersister : IEntityPersister
 	{
 		private static readonly Hashtable Instances = new Hashtable();
-		private static readonly IIdentifierGenerator Generator = new CounterGenerator();
+		private static readonly IIdentifierGenerator Generator = new UUIDHexGenerator();
 
 		private static readonly IType[] Types = new IType[] {NHibernateUtil.String};
 		private static readonly string[] Names = new string[] {"name"};
@@ -101,7 +101,7 @@ namespace NHibernate.DomainModel
 		public object Instantiate(object id)
 		{
 			Custom c = new Custom();
-			c.Id = (long) id;
+			c.Id = (string) id;
 			return c;
 		}
 
@@ -137,7 +137,7 @@ namespace NHibernate.DomainModel
 
 		public bool IsUnsaved(object id)
 		{
-			return (long) id == 0;
+			return id == null;
 		}
 
 		public bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier
@@ -183,7 +183,7 @@ namespace NHibernate.DomainModel
 
 		public object GetIdentifier(object obj)
 		{
-			return (long) ((Custom) obj).Id;
+			return ((Custom) obj).Id;
 		}
 
 		public object GetPropertyValue(object obj, int i)
@@ -218,7 +218,7 @@ namespace NHibernate.DomainModel
 
 		public void SetIdentifier(object obj, object id)
 		{
-			((Custom) obj).Id = (long) id;
+			((Custom) obj).Id = (string) id;
 		}
 
 		public bool ImplementsLifecycle
@@ -259,7 +259,7 @@ namespace NHibernate.DomainModel
 
 		public IType IdentifierType
 		{
-			get { return NHibernateUtil.Int64; }
+			get { return NHibernateUtil.String; }
 		}
 
 		public PropertyInfo ProxyIdentifierProperty

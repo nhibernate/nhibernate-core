@@ -1,5 +1,6 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -8,15 +9,12 @@ namespace NHibernate.Mapping
 	/// </summary>
 	public class MetaAttribute
 	{
-		private string name;
-		private IList values;
+		private readonly string name;
+		private readonly List<string> values= new List<string>();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public MetaAttribute()
+		public MetaAttribute(string name)
 		{
-			values = new ArrayList();
+			this.name = name;
 		}
 
 		/// <summary>
@@ -25,15 +23,14 @@ namespace NHibernate.Mapping
 		public string Name
 		{
 			get { return name; }
-			set { name = value; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public IList Values
+		public IList<string> Values
 		{
-			get { return values; }
+			get { return values.AsReadOnly(); }
 		}
 
 		/// <summary>
@@ -44,10 +41,9 @@ namespace NHibernate.Mapping
 			get
 			{
 				if (values.Count != 1)
-				{
 					throw new ArgumentException("No unique value");
-				}
-				return (string) values[0];
+
+				return values[0];
 			}
 		}
 
@@ -66,6 +62,11 @@ namespace NHibernate.Mapping
 		public void AddValue(string value)
 		{
 			values.Add(value);
+		}
+
+		public override string ToString()
+		{
+			return string.Format("[{0}={1}]", name, CollectionPrinter.ToString(values));
 		}
 	}
 }

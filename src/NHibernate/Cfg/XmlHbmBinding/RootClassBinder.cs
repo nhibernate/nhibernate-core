@@ -62,16 +62,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (timestampSchema == null)
 				return;
 
-			IType versioningPropertyType = NHibernateUtil.Timestamp;
-
 			string propertyName = timestampSchema.name;
 			SimpleValue simpleValue = new SimpleValue(table);
 
 			simpleValue.Type = null;
 			BindColumns(timestampSchema, simpleValue, propertyName);
 
-			if (simpleValue.Type == null)
-				simpleValue.Type = simpleValue.Type ?? versioningPropertyType;
+			if (!simpleValue.IsTypeSpecified)
+				simpleValue.TypeName = NHibernateUtil.Timestamp.Name;
 
 			Mapping.Property property = new Mapping.Property(simpleValue);
 			BindProperty(timestampSchema, property);
@@ -94,7 +92,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (timestampSchema.column != null)
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
+				col.Value = model;
 				BindColumn(col, false);
 				col.Name = mappings.NamingStrategy.ColumnName(timestampSchema.column);
 
@@ -106,7 +105,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (model.ColumnSpan == 0)
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
+				col.Value = model;
 				BindColumn(col, false);
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
 				model.Table.AddColumn(col);
@@ -174,19 +174,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindVersion(HbmVersion versionSchema, PersistentClass rootClass, Table table)
 		{
-			IType versioningPropertyType = NHibernateUtil.Int32;
-
 			if (versionSchema == null)
 				return;
+
+			string versioningPropertyType = NHibernateUtil.Int32.Name;
 
 			string propertyName = versionSchema.name;
 			SimpleValue simpleValue = new SimpleValue(table);
 
-			simpleValue.Type = GetType(versionSchema);
+			simpleValue.TypeName = GetType(versionSchema).Name;
 			BindColumns(versionSchema, simpleValue, false, propertyName);
-
-			if (simpleValue.Type == null)
-				simpleValue.Type = simpleValue.Type ?? versioningPropertyType;
+			if (!simpleValue.IsTypeSpecified)
+				simpleValue.TypeName = versioningPropertyType;
 
 			Mapping.Property property = new Mapping.Property(simpleValue);
 			BindProperty(versionSchema, property);

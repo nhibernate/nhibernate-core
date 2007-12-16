@@ -772,8 +772,8 @@ namespace NHibernate.Persister.Entity
 			// a mapping exception if the default ctor is missing.
 			if (!entityMetamodel.IsAbstract && constructor == null)
 			{
-				throw new MappingException("The mapped class " + mappedClass.FullName +
-				                           " must declare a default (no-arg) constructor.");
+				throw new InstantiationException(
+					"Object class " + mappedClass + " must declare a default (no-argument) constructor", mappedClass);
 			}
 
 			propertyMapping = new BasicEntityPropertyMapping(this);
@@ -926,7 +926,7 @@ namespace NHibernate.Persister.Entity
 				propertyColumnAliases[i] = colAliases;
 				propertyColumnInsertable[i] = prop.Value.ColumnInsertability;
 				propertyColumnUpdateable[i] = prop.Value.ColumnUpdateability;
-				propertyUniqueness[i] = prop.Value.IsUnique;
+				propertyUniqueness[i] = prop.Value.IsAlternateUniqueKey;
 
 				i++;
 			}

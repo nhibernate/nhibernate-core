@@ -366,7 +366,7 @@ namespace NHibernate.Mapping
 		public override string Where
 		{
 			get { return Superclass.Where; }
-			set { throw new InvalidOperationException("The Where string can not be set on the SubclassType - use the RootClass instead."); }
+			set { throw new InvalidOperationException("The Where string can not be set on the Subclass - use the RootClass instead."); }
 		}
 
 		/// <summary>
@@ -386,7 +386,7 @@ namespace NHibernate.Mapping
 			set
 			{
 				throw new InvalidOperationException(
-					"The DiscriminatorInsertable property can not be set on the SubclassType - use the Superclass instead.");
+					"The DiscriminatorInsertable property can not be set on the Subclass - use the Superclass instead.");
 			}
 		}
 

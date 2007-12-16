@@ -83,14 +83,14 @@ namespace NHibernate.Bytecode.Lightweight
 				ConstructorInfo constructor = ReflectHelper.GetDefaultConstructor(type);
 				if (constructor == null)
 				{
-					throw new MappingException("Object class " + type + " must declare a default (no-argument) constructor");
+					throw new InstantiationException("Object class " + type + " must declare a default (no-argument) constructor", type);
 				}
 				il.Emit(OpCodes.Newobj, constructor);
 			}
 
 			il.Emit(OpCodes.Ret);
 
-			return (CreateInstanceInvoker) method.CreateDelegate(typeof(CreateInstanceInvoker));
+			return (CreateInstanceInvoker)method.CreateDelegate(typeof(CreateInstanceInvoker));
 		}
 
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
@@ -117,7 +117,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// </summary>
 		private GetPropertyValuesInvoker GenerateGetPropertyValuesMethod(IGetter[] getters)
 		{
-			System.Type[] methodArguments = new System.Type[] {typeof(object), typeof(GetterCallback)};
+			System.Type[] methodArguments = new System.Type[] { typeof(object), typeof(GetterCallback) };
 			DynamicMethod method = CreateDynamicMethod(typeof(object[]), methodArguments);
 
 			ILGenerator il = method.GetILGenerator();
@@ -159,7 +159,7 @@ namespace NHibernate.Bytecode.Lightweight
 					// using the getter itself via a callback
 					MethodInfo invokeMethod =
 						typeof(GetterCallback).GetMethod(
-							"Invoke", new System.Type[] {typeof(object), typeof(int)});
+							"Invoke", new System.Type[] { typeof(object), typeof(int) });
 					il.Emit(OpCodes.Ldarg_1);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldc_I4, i);
@@ -174,7 +174,7 @@ namespace NHibernate.Bytecode.Lightweight
 			il.Emit(OpCodes.Ldloc, dataLocal.LocalIndex);
 			il.Emit(OpCodes.Ret);
 
-			return (GetPropertyValuesInvoker) method.CreateDelegate(typeof(GetPropertyValuesInvoker));
+			return (GetPropertyValuesInvoker)method.CreateDelegate(typeof(GetPropertyValuesInvoker));
 		}
 
 		/// <summary>
@@ -183,7 +183,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <returns></returns>
 		private SetPropertyValuesInvoker GenerateSetPropertyValuesMethod(IGetter[] getters, ISetter[] setters)
 		{
-			System.Type[] methodArguments = new System.Type[] {typeof(object), typeof(object[]), typeof(SetterCallback)};
+			System.Type[] methodArguments = new System.Type[] { typeof(object), typeof(object[]), typeof(SetterCallback) };
 			DynamicMethod method = CreateDynamicMethod(null, methodArguments);
 
 			ILGenerator il = method.GetILGenerator();
@@ -222,7 +222,7 @@ namespace NHibernate.Bytecode.Lightweight
 					// using the setter itself via a callback
 					MethodInfo invokeMethod =
 						typeof(SetterCallback).GetMethod(
-							"Invoke", new System.Type[] {typeof(object), typeof(int), typeof(object)});
+							"Invoke", new System.Type[] { typeof(object), typeof(int), typeof(object) });
 					il.Emit(OpCodes.Ldarg_2);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldc_I4, i);
@@ -239,7 +239,7 @@ namespace NHibernate.Bytecode.Lightweight
 			// Setup the return
 			il.Emit(OpCodes.Ret);
 
-			return (SetPropertyValuesInvoker) method.CreateDelegate(typeof(SetPropertyValuesInvoker));
+			return (SetPropertyValuesInvoker)method.CreateDelegate(typeof(SetPropertyValuesInvoker));
 		}
 	}
 }

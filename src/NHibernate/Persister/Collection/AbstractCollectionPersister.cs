@@ -93,7 +93,7 @@ namespace NHibernate.Persister.Collection
 		private readonly ICacheConcurrencyStrategy cache;
 		private readonly CollectionType collectionType;
 		private readonly FetchMode fetchMode;
-		private readonly System.Type ownerClass;
+		private string ownerEntityName;
 		//private readonly bool isSorted;
 		private readonly IIdentifierGenerator identifierGenerator;
 		protected readonly bool hasIdentifier;
@@ -139,8 +139,8 @@ namespace NHibernate.Persister.Collection
 			//sqlExceptionConverter = factory.SQLExceptionConverter;
 			collectionType = collection.CollectionType;
 			role = collection.Role;
-			ownerClass = collection.OwnerClass;
-			ownerPersister = factory.GetEntityPersister(ownerClass);
+			ownerEntityName = collection.OwnerEntityName;
+			ownerPersister = factory.GetEntityPersister(ownerEntityName);
 			queryLoaderName = collection.LoaderName;
 			Alias alias = new Alias("__");
 
@@ -156,7 +156,7 @@ namespace NHibernate.Persister.Collection
 			                         	? Template.RenderWhereStringTemplate(sqlWhereString, dialect, factory.SQLFunctionRegistry)
 			                         	: null;
 
-			hasOrphanDelete = collection.OrphanDelete;
+			hasOrphanDelete = collection.HasOrphanDelete;
 
 			batchSize = collection.BatchSize;
 			isVersioned = collection.IsOptimisticLocked;
@@ -1206,9 +1206,9 @@ namespace NHibernate.Persister.Collection
 			get { return role; }
 		}
 
-		public System.Type OwnerClass
+		public virtual string OwnerEntityName
 		{
-			get { return ownerClass; }
+			get { return ownerEntityName; }
 		}
 
 		public IIdentifierGenerator IdentifierGenerator

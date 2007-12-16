@@ -75,7 +75,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (idSchema.name != null)
 			{
 				string access = idSchema.access ?? mappings.DefaultAccess;
-				id.SetTypeByReflection(rootClass.MappedClass, idSchema.name, access);
+				id.SetTypeUsingReflection(rootClass.MappedClass.AssemblyQualifiedName, idSchema.name, access);
 
 				Mapping.Property property = new Mapping.Property(id);
 				property.Name = idSchema.name;
@@ -150,7 +150,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddColumnFromAttribute(HbmId idSchema, SimpleValue id)
 		{
-			Column column = CreateColumn(idSchema, id.Type);
+			Column column = CreateColumn(idSchema);
+			column.Value = id;
 			column.Name = mappings.NamingStrategy.ColumnName(idSchema.column1);
 
 			if (id.Table != null)
@@ -165,7 +166,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			foreach (HbmColumn columnSchema in idSchema.column ?? new HbmColumn[0])
 			{
-				Column column = CreateColumn(columnSchema, id.Type, count++);
+				Column column = CreateColumn(columnSchema, id, count++);
 				column.Name = mappings.NamingStrategy.ColumnName(columnSchema.name);
 
 				if (id.Table != null)
@@ -192,7 +193,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddDefaultColumn(HbmId idSchema, SimpleValue id)
 		{
-			Column column = CreateColumn(idSchema, id.Type);
+			Column column = CreateColumn(idSchema);
+			column.Value = id;
 			string propertyName = idSchema.name ?? RootClass.DefaultIdentifierColumnName;
 			column.Name = mappings.NamingStrategy.PropertyToColumnName(propertyName);
 
@@ -209,7 +211,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				MetaAttribute meta;
 				if (!map.TryGetValue(metaSchema.attribute, out meta))
 				{
-					meta = new MetaAttribute();
+					meta = new MetaAttribute(metaSchema.attribute);
 					map[metaSchema.attribute] = meta;
 				}
 
@@ -219,9 +221,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return map;
 		}
 
-		private static Column CreateColumn(HbmId idSchema, IType type)
+		private static Column CreateColumn(HbmId idSchema)
 		{
-			Column column = new Column(type, 0);
+			Column column = new Column();
 
 			if (idSchema.length != null)
 				column.Length = int.Parse(idSchema.length);
@@ -234,9 +236,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return column;
 		}
 
-		private static Column CreateColumn(HbmColumn columnSchema, IType type, int index)
+		private static Column CreateColumn(HbmColumn columnSchema, IValue type, int index)
 		{
-			Column column = new Column(type, index);
+			Column column = new Column();
+			column.Value = type;
+			column.TypeIndex = index;
 
 			if (columnSchema.length != null)
 				column.Length = int.Parse(columnSchema.length);

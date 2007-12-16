@@ -243,6 +243,23 @@ namespace NHibernate.Util
 			}
 		}
 
+		public static bool TryLoadAssembly(string assemblyName)
+		{
+			if(string.IsNullOrEmpty(assemblyName))
+				return false;
+
+			bool result= true;
+			try
+			{
+				Assembly.Load(assemblyName);
+			}
+			catch(Exception)
+			{
+				result = false;
+			}
+			return result;
+		}
+
 		/// <summary>
 		/// Returns the value of the static field <paramref name="fieldName"/> of <paramref name="type"/>.
 		/// </summary>

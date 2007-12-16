@@ -8,14 +8,14 @@ namespace NHibernate.Tuple.Component
 	/// A <see cref="IComponentTuplizer"/> specific to the POCO entity mode. 
 	/// </summary>
 	[Serializable]
-	public class PojoComponentTuplizer : AbstractComponentTuplizer
+	public class PocoComponentTuplizer : AbstractComponentTuplizer
 	{
 		private readonly System.Type componentClass;
 		private readonly ISetter parentSetter;
 		private readonly IGetter parentGetter;
 		private readonly IReflectionOptimizer optimizer;
 
-		public PojoComponentTuplizer(Mapping.Component component) : base(component)
+		public PocoComponentTuplizer(Mapping.Component component) : base(component)
 		{
 			componentClass = component.ComponentClass;
 

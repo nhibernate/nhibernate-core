@@ -70,6 +70,11 @@ namespace NHibernate.Cfg
 			return StringHelper.Unqualify(propertyName);
 		}
 
+		public string LogicalColumnName(string columnName, string propertyName)
+		{
+			return StringHelper.IsNotEmpty(columnName) ? columnName : StringHelper.Unqualify(propertyName);
+		}
+
 		#endregion
 	}
 }

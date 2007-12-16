@@ -11,18 +11,19 @@ namespace NHibernate.Mapping
 	public class OneToMany : IValue
 	{
 		private System.Type referencedEntityName;
-		private Table referencingTable;
+		private readonly Table referencingTable;
 		private PersistentClass associatedClass;
 		private bool ignoreNotFound;
+		private bool embedded;
 
 		public OneToMany(PersistentClass owner)
 		{
-			this.referencingTable = (owner == null) ? null : owner.Table;
+			referencingTable = (owner == null) ? null : owner.Table;
 		}
 
-		public EntityType EntityType
+		private EntityType EntityType
 		{
-			get { return TypeFactory.ManyToOne(referencedEntityName, null, false, ignoreNotFound); }
+			get { return TypeFactory.ManyToOne(ReferencedEntityName, null, false, IsIgnoreNotFound); }
 		}
 
 		public bool IsIgnoreNotFound
@@ -104,6 +105,10 @@ namespace NHibernate.Mapping
 		/// <summary></summary>
 		public bool IsValid(IMapping mapping)
 		{
+			if (referencedEntityName == null)
+			{
+				throw new MappingException("one to many association must specify the referenced entity");
+			}
 			return true;
 		}
 
@@ -142,6 +147,12 @@ namespace NHibernate.Mapping
 		public bool[] ColumnUpdateability
 		{
 			get { throw new InvalidOperationException(); }
+		}
+
+		public bool IsEmbedded
+		{
+			get { return embedded; }
+			set { embedded = value; }
 		}
 	}
 }

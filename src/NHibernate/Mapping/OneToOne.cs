@@ -10,44 +10,21 @@ namespace NHibernate.Mapping
 	public class OneToOne : ToOne
 	{
 		private bool constrained;
-		private ForeignKeyDirection foreignKeyDirection;
-		private SimpleValue identifier;
+		private ForeignKeyDirection foreignKeyType;
+		private IKeyValue identifier;
+		private string propertyName;
+		private string entityName;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="table"></param>
-		/// <param name="identifier"></param>
-		public OneToOne(Table table, SimpleValue identifier) : base(table)
+		/// <param name="owner"></param>
+		public OneToOne(Table table, PersistentClass owner)
+			: base(table)
 		{
-			this.identifier = identifier;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyClass"></param>
-		/// <param name="propertyName"></param>
-		/// <param name="propertyAccess"></param>
-		public override void SetTypeByReflection(System.Type propertyClass, string propertyName, string propertyAccess)
-		{
-			try
-			{
-				if (Type == null)
-				{
-					System.Type refClass = ReflectHelper.ReflectedPropertyClass(propertyClass, propertyName, propertyAccess);
-					ReferencedEntityName = refClass.FullName;
-					Type = TypeFactory.OneToOne(
-						refClass,
-						foreignKeyDirection,
-						ReferencedPropertyName,
-						IsLazy, propertyName);
-				}
-			}
-			catch (HibernateException he)
-			{
-				throw new MappingException("Problem trying to set association type by reflection", he);
-			}
+			identifier = owner.Key;
+			entityName = owner.EntityName;
 		}
 
 		/// <summary></summary>
@@ -74,23 +51,50 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public ForeignKeyDirection ForeignKeyDirection
+		public ForeignKeyDirection ForeignKeyType
 		{
-			get { return foreignKeyDirection; }
-			set { foreignKeyDirection = value; }
+			get { return foreignKeyType; }
+			set { foreignKeyType = value; }
 		}
 
 		/// <summary></summary>
-		public IValue Identifier
+		public IKeyValue Identifier
 		{
 			get { return identifier; }
-			set { identifier = (SimpleValue) value; }
+			set { identifier = value; }
 		}
 
 		/// <summary></summary>
 		public override bool IsNullable
 		{
-			get { return !IsConstrained; }
+			get { return !constrained; }
+		}
+
+		public string EntityName
+		{
+			get { return entityName; }
+			set { entityName = StringHelper.InternedIfPossible(value); }
+		}
+
+		public string PropertyName
+		{
+			get { return propertyName; }
+			set { propertyName = StringHelper.InternedIfPossible(value); }
+		}
+
+		public override IType Type
+		{
+			get
+			{
+				if (ColumnSpan > 0)
+				{
+					return new SpecialOneToOneType(ReflectHelper.ClassForName(ReferencedTypeName), foreignKeyType, referencedPropertyName, IsLazy, UnwrapProxy, entityName, propertyName);
+				}
+				else
+				{
+					return TypeFactory.OneToOne(ReflectHelper.ClassForName(ReferencedTypeName), foreignKeyType, referencedPropertyName, IsLazy, propertyName);
+				}
+			}
 		}
 	}
 }

@@ -15,6 +15,9 @@ namespace NHibernate
 		public InstantiationException(string message, System.Type type)
 			: base(message)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+
 			this.type = type;
 		}
 
@@ -31,6 +34,9 @@ namespace NHibernate
 		public InstantiationException(string message, Exception innerException, System.Type type)
 			: base(message, innerException)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+
 			this.type = type;
 		}
 

@@ -1102,8 +1102,8 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			Custom c = new Custom();
 			c.Name = "foo";
-			c.Id = 100;
-			long id = (long) s.Save(c);
+			c.Id = "100";
+			string id = (string)s.Save(c);
 			Assert.AreSame(c, s.Load(typeof(Custom), id));
 			s.Flush();
 			s.Close();

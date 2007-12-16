@@ -6,7 +6,7 @@
 	>
 		<id
 			type="String"
-			name="key"
+			name="Id"
 			column="id_"
 			length="64"
 			unsaved-value="null"

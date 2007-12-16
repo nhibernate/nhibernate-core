@@ -9,31 +9,40 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyNotFoundException : MappingException
 	{
+		private readonly System.Type targetType;
+		private readonly string propertyName;
+		private readonly string accessorType;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PropertyNotFoundException" /> class,
 		/// used when a property get/set accessor is missing.
 		/// </summary>
-		/// <param name="type">The <see cref="System.Type" /> that is missing the property</param>
+		/// <param name="targetType">The <see cref="System.Type" /> that is missing the property</param>
 		/// <param name="propertyName">The name of the missing property</param>
 		/// <param name="accessorType">The type of the missing accessor
 		/// ("getter" or "setter")</param>
-		public PropertyNotFoundException(System.Type type, string propertyName, string accessorType)
+		public PropertyNotFoundException(System.Type targetType, string propertyName, string accessorType)
 			: base(String.Format("Could not find a {0} for property '{1}' in class '{2}'",
-			                     accessorType, propertyName, type
+													 accessorType, propertyName, targetType
 			       	))
 		{
+			this.targetType = targetType;
+			this.propertyName = propertyName;
+			this.accessorType = accessorType;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PropertyNotFoundException" /> class,
 		/// used when a field is missing.
 		/// </summary>
-		/// <param name="type">The <see cref="System.Type" /> that is missing the field</param>
-		/// <param name="fieldName">The name of the missing property</param>
-		public PropertyNotFoundException(System.Type type, string fieldName)
+		/// <param name="targetType">The <see cref="System.Type" /> that is missing the field</param>
+		/// <param name="propertyName">The name of the missing property</param>
+		public PropertyNotFoundException(System.Type targetType, string propertyName)
 			: base(String.Format("Could not find field '{0}' in class '{1}'",
-			                     fieldName, type))
+													 propertyName, targetType))
 		{
+			this.targetType = targetType;
+			this.propertyName = propertyName;
 		}
 
 		/// <summary>
@@ -49,6 +58,21 @@ namespace NHibernate
 		/// </param>
 		protected PropertyNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
+		}
+
+		public System.Type TargetType
+		{
+			get { return targetType; }
+		}
+
+		public string PropertyName
+		{
+			get { return propertyName; }
+		}
+
+		public string AccessorType
+		{
+			get { return accessorType; }
 		}
 	}
 }

@@ -39,7 +39,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if this Value is unique.
 		/// </summary>
-		bool IsUnique { get; }
+		bool IsAlternateUniqueKey { get;}
 
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if this Value can have
@@ -77,8 +77,6 @@ namespace NHibernate.Mapping
 		bool IsValid(IMapping mapping);
 
 		FetchMode FetchMode { get; }
-
-		bool IsAlternateUniqueKey { get;}
 
 		void SetTypeUsingReflection(string className, string propertyName, string accesorName);
 	}

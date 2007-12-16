@@ -42,7 +42,6 @@ namespace NHibernate.Mapping
 		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
 		private Component identifierMapper;
 
-
 		private SqlString customSQLInsert;
 		private bool customInsertCallable;
 		private ExecuteUpdateResultCheckStyle insertCheckStyle;
@@ -64,6 +63,8 @@ namespace NHibernate.Mapping
 		private string entityName;
 
 		private IDictionary<EntityMode, System.Type> tuplizerImpls;
+		private string className;
+		private string nodeName;
 
 		/// <summary>
 		/// Gets or Sets if the Insert Sql is built dynamically.
@@ -269,8 +270,35 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public virtual System.Type MappedClass
 		{
-			get { return mappedClass; }
-			set { mappedClass = value; }
+			get
+			{
+				if (mappedClass == null)
+				{
+					if (className == null)
+						return null;
+					try
+					{
+						mappedClass= ReflectHelper.ClassForName(className);
+					}
+					catch (Exception cnfe)
+					{
+						throw new MappingException("entity class not found: " + className, cnfe);
+					}
+				}
+				return mappedClass;
+			}
+			set
+			{
+				mappedClass = value;
+				if (mappedClass != null)
+					className = mappedClass.AssemblyQualifiedName;
+			}
+		}
+
+		public string NodeName
+		{
+			get { return nodeName; }
+			set { nodeName = value; }
 		}
 
 		/// <summary>
@@ -979,5 +1007,10 @@ namespace NHibernate.Mapping
 			get { return MappedClass != null; }
 		}
 
+		public string ClassName
+		{
+			get { return className; }
+			set { className = value == null ? null : string.Intern(value); }
+		}
 	}
 }

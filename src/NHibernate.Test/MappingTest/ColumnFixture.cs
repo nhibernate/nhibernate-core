@@ -19,7 +19,10 @@ namespace NHibernate.Test.MappingTest
 		[Test]
 		public void YesNoSqlType()
 		{
-			Column column = new Column(NHibernateUtil.YesNo, 0);
+			SimpleValue sv = new SimpleValue();
+			sv.TypeName = NHibernateUtil.YesNo.Name;
+			Column column = new Column();
+			column.Value = sv;
 			string type = column.GetSqlType(_dialect, null);
 			Assert.AreEqual("CHAR(1)", type);
 		}
@@ -27,7 +30,10 @@ namespace NHibernate.Test.MappingTest
 		[Test]
 		public void StringSqlType()
 		{
-			Column column = new Column(NHibernateUtil.String, 0);
+			SimpleValue sv = new SimpleValue();
+			sv.TypeName = NHibernateUtil.String.Name;
+			Column column = new Column();
+			column.Value = sv;
 			Assert.AreEqual("NVARCHAR(255)", column.GetSqlType(_dialect, null));
 
 			column.Length = 100;

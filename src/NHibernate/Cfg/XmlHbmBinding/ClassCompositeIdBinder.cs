@@ -15,17 +15,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
+		private Component compositeId;
 		public void BindCompositeId(HbmCompositeId idSchema, PersistentClass rootClass)
 		{
 			if (idSchema == null)
 				return;
 
-			Component compositeId = new Component(rootClass);
+			compositeId = new Component(rootClass);
 			rootClass.Identifier = compositeId;
 
 			if (idSchema.name == null)
 			{
-				BindComponent(compositeId, null, "id", idSchema);
+				BindComponent(null, "id", idSchema);
 				rootClass.HasEmbeddedIdentifier = compositeId.IsEmbedded;
 			}
 			else
@@ -33,7 +34,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				System.Type reflectedClass = GetPropertyType(rootClass.MappedClass,
 					idSchema.name, idSchema);
 
-				BindComponent(compositeId, reflectedClass, idSchema.name, idSchema);
+				BindComponent(reflectedClass, idSchema.name, idSchema);
 
 				Mapping.Property prop = new Mapping.Property(compositeId);
 				BindProperty(prop, idSchema);
@@ -56,7 +57,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// Serializability check not ported
 		}
 
-		private void BindComponent(Component compositeId, System.Type reflectedClass, string path,
+		private void BindComponent(System.Type reflectedClass, string path,
 			HbmCompositeId idSchema)
 		{
 			if (idSchema.@class != null)
@@ -133,31 +134,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				i++;
 			}
 
-			IType componentType;
+			IType componentType = null;
 
 			if (compositeId.IsDynamic)
 				componentType = new DynamicComponentType(names, types, nullabilities, joinedFetch, cascade);
-			else
-			{
-				IGetter[] getters = new IGetter[span];
-				ISetter[] setters = new ISetter[span];
-				bool foundCustomAccessor = false;
-				i = 0;
-				foreach (Mapping.Property prop in compositeId.PropertyIterator)
-				{
-					setters[i] = prop.GetSetter(compositeId.ComponentClass);
-					getters[i] = prop.GetGetter(compositeId.ComponentClass);
-					if (!prop.IsBasicPropertyAccessor)
-						foundCustomAccessor = true;
-					i++;
-				}
 
-				componentType = new ComponentType(compositeId.ComponentClass, names, getters, setters,
-					foundCustomAccessor, types, nullabilities, joinedFetch, cascade,
-					compositeId.ParentProperty);
-			}
-
-			compositeId.Type = componentType;
+			compositeId.SetType(componentType);
 		}
 
 		private void BindProperty(Mapping.Property property, HbmCompositeId idSchema)
@@ -204,12 +186,21 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				? manyToOne.IsLazy
 				: keyManyToOneSchema.lazy == HbmRestrictedLaziness.Proxy;
 
-			// TODO NH: this is sort of redundant with the code below
-			manyToOne.ReferencedEntityName = GetEntityName(keyManyToOneSchema, mappings);
+			string typeNode = keyManyToOneSchema.@class;
+			if (typeNode != null)
+			{
+				manyToOne.ReferencedEntityName = GetClassName(typeNode, mappings);
+				manyToOne.ReferencedTypeName = GetQualifiedClassName(typeNode, mappings);
+			}
+			else
+			{
+				manyToOne.ReferencedEntityName = null;
+				manyToOne.ReferencedTypeName = null;
+			}
+
 			manyToOne.IsIgnoreNotFound = false;
 
-			string typeNode = keyManyToOneSchema.@class;
-
+			// TODO NH: this is sort of redundant
 			if (typeNode != null)
 				manyToOne.Type = TypeFactory.ManyToOne(ClassForNameChecked(typeNode, mappings,
 					"could not find class: {0}"),
@@ -219,14 +210,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (keyManyToOneSchema.foreignkey != null)
 				manyToOne.ForeignKeyName = keyManyToOneSchema.foreignkey;
-		}
-
-		private static string GetEntityName(HbmKeyManyToOne keyManyToOneSchema, Mappings mappings)
-		{
-			if (keyManyToOneSchema.@class == null)
-				return null;
-
-			return GetClassName(keyManyToOneSchema.@class, mappings);
 		}
 
 		private void BindColumns(HbmKeyManyToOne keyManyToOneSchema, SimpleValue model, bool isNullable,
@@ -240,7 +223,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				foreach (HbmColumn columnSchema in keyManyToOneSchema.column ?? new HbmColumn[0])
 				{
-					Column col = new Column(model.Type, count++);
+					Column col = new Column();
+					col.Value = model;
+					col.TypeIndex = count++;
 					BindColumn(columnSchema, col, isNullable);
 
 					string name = columnSchema.name;
@@ -259,7 +244,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			else
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
+				col.Value = compositeId;
 				BindColumn(col, isNullable);
 				col.Name = mappings.NamingStrategy.ColumnName(keyManyToOneSchema.column1);
 				if (table != null)
@@ -270,7 +256,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (autoColumn && model.ColumnSpan == 0)
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
+				col.Value = model;
 				BindColumn(col, isNullable);
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
 				model.Table.AddColumn(col);
@@ -291,7 +278,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HbmKeyManyToOne keyManyToOneSchema)
 		{
 			if (parentClass != null && value.IsSimpleValue)
-				value.SetTypeByReflection(parentClass, propertyName, keyManyToOneSchema.access ?? mappings.DefaultAccess);
+				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName, keyManyToOneSchema.access ?? mappings.DefaultAccess);
 
 			string propertyRef = value.ReferencedPropertyName;
 			if (propertyRef != null)
@@ -354,7 +341,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				foreach (HbmColumn columnSchema in keyPropertySchema.column ?? new HbmColumn[0])
 				{
-					Column col = new Column(model.Type, count++);
+					Column col = new Column();
+					col.Value = model;
+					col.TypeIndex = count++;
 					BindColumn(columnSchema, col, isNullable);
 
 					col.Name = mappings.NamingStrategy.ColumnName(columnSchema.name);
@@ -372,7 +361,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			else
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
+				col.Value = compositeId;
 				BindColumn(keyPropertySchema, col, isNullable);
 				col.Name = mappings.NamingStrategy.ColumnName(keyPropertySchema.column1);
 				if (table != null)
@@ -383,7 +373,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (autoColumn && model.ColumnSpan == 0)
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
+				col.Value = model;
 				BindColumn(keyPropertySchema, col, isNullable);
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
 				model.Table.AddColumn(col);
@@ -407,7 +398,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HbmKeyProperty keyPropertySchema)
 		{
 			if (parentClass != null && value.IsSimpleValue)
-				value.SetTypeByReflection(parentClass, propertyName, keyPropertySchema.access ?? mappings.DefaultAccess);
+				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName, keyPropertySchema.access ?? mappings.DefaultAccess);
 
 			// This is done here 'cos we might only know the type here (ugly!)
 			if (value is ToOne)

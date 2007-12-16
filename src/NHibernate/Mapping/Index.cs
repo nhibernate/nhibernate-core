@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -11,8 +12,41 @@ namespace NHibernate.Mapping
 	public class Index : IRelationalModel
 	{
 		private Table table;
-		private ArrayList columns = new ArrayList();
+		private readonly List<Column> columns = new List<Column>();
 		private string name;
+
+		public static string BuildSqlCreateIndexString(Dialect.Dialect dialect, string name, Table table,
+			IEnumerable<Column> columns, bool unique, string defaultCatalog, string defaultSchema)
+		{
+			//TODO handle supportsNotNullUnique=false, but such a case does not exist in the wild so far
+			StringBuilder buf = new StringBuilder("create")
+				.Append(unique ? " unique" : "")
+				.Append(" index ")
+				.Append(dialect.QualifyIndexName ? name : StringHelper.Unqualify(name))
+				.Append(" on ")
+				.Append(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+				.Append(" (");
+			bool commaNeeded = false;
+			foreach (Column column in columns)
+			{
+				if (commaNeeded)
+					buf.Append(StringHelper.CommaSpace);
+				commaNeeded = true;
+
+				buf.Append(column.GetQuotedName(dialect));
+			}
+			buf.Append(")");
+
+			return buf.ToString();
+		}
+
+		public static string BuildSqlDropIndexString(Dialect.Dialect dialect, Table table, string name, string defaultCatalog, string defaultSchema)
+		{
+			string ifExists = dialect.GetIfExistsDropConstraint(table, name);
+			string drop = string.Format("drop index {0}", StringHelper.Qualify(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), name));
+			string end = dialect.GetIfExistsDropConstraintEnd(table, name);
+			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+		}
 
 		/// <summary>
 		/// Generates the SQL string to create this Index in the database.
@@ -26,32 +60,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
-			StringBuilder buf =
-				new StringBuilder("create index ")
-				.Append(dialect.QualifyIndexName ? name : StringHelper.Unqualify(name))
-				.Append(" on ")
-				.Append(table.GetQualifiedName(dialect, defaultSchema))
-				.Append(" (");
-
-			bool commaNeeded = false;
-			for (int i = 0; i < columns.Count; i++)
-			{
-				if (commaNeeded)
-				{
-					buf.Append(StringHelper.CommaSpace);
-				}
-				commaNeeded = true;
-
-				buf.Append(((Column) columns[i]).GetQuotedName(dialect));
-			}
-
-			buf.Append(StringHelper.ClosedParen);
-
-			string ifExists = dialect.GetIfNotExistsCreateConstraint(Table, Name);
-			string create = buf.ToString();
-			string end = dialect.GetIfNotExistsCreateConstraintEnd(Table, Name);
-
-			return ifExists + System.Environment.NewLine + create + System.Environment.NewLine + end;
+			return BuildSqlCreateIndexString(dialect, Name, Table, ColumnIterator, false, defaultCatalog, defaultSchema);
 		}
 
 		/// <summary>
@@ -65,10 +74,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-			string drop = string.Format("drop index {0}.{1}", table.GetQualifiedName(dialect, defaultSchema), name);
-			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+			return BuildSqlDropIndexString(dialect, Table, Name, defaultCatalog, defaultSchema);
 		}
 
 		/// <summary>
@@ -91,9 +97,14 @@ namespace NHibernate.Mapping
 		/// An <see cref="ICollection"/> of <see cref="Column"/> objects that are 
 		/// part of the Index.
 		/// </value>
-		public ICollection ColumnCollection
+		public IEnumerable<Column> ColumnIterator
 		{
 			get { return columns; }
+		}
+
+		public int ColumnSpan
+		{
+			get { return columns.Count; }
 		}
 
 		/// <summary>
@@ -109,12 +120,10 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public void AddColumns(IEnumerable extraColumns)
+		public void AddColumns(IEnumerable<Column> extraColumns)
 		{
 			foreach (Column column in extraColumns)
-			{
 				AddColumn(column);
-			}
 		}
 
 		/// <summary>
@@ -125,6 +134,16 @@ namespace NHibernate.Mapping
 		{
 			get { return name; }
 			set { name = value; }
+		}
+
+		public bool ContainsColumn(Column column)
+		{
+			return columns.Contains(column);
+		}
+
+		public override System.String ToString()
+		{
+			return GetType().FullName + "(" + Name + ")";
 		}
 	}
 }

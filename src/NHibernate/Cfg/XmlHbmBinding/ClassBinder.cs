@@ -67,7 +67,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ("one-to-one".Equals(name))
 				{
-					value = new OneToOne(table, model.Identifier);
+					value = new OneToOne(table, model);
 					BindOneToOne(subnode, (OneToOne) value);
 				}
 				else if ("property".Equals(name))
@@ -457,6 +457,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ComponentClass = ClassForNameChecked(
 					classNode.Value, mappings,
 					"component class not found: {0}");
+				model.ComponentClassName = FullClassName(classNode.Value, mappings);
 				model.IsEmbedded = false;
 			}
 			else if (reflectedClass != null)
@@ -500,7 +501,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ("one-to-one".Equals(name))
 				{
-					value = new OneToOne(model.Table, model.Owner.Identifier);
+					value = new OneToOne(model.Table, model.Owner);
 					BindOneToOne(subnode, (OneToOne) value);
 				}
 				else if ("any".Equals(name))
@@ -520,11 +521,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							null
 						:
 							GetPropertyType(subnode, model.ComponentClass, propertyName);
-					value = (model.Owner != null)
-						?
-							new Component(model.Owner)
-						: // a class component
-						new Component(model.Table); // a composite element
+					value = new Component(model);
 					BindComponent(subnode, (Component) value, subreflectedClass, className, subpath, isNullable);
 				}
 				else if ("parent".Equals(name))
@@ -552,44 +549,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				i++;
 			}
 
-			IType componentType;
+			IType componentType = null;
 			if (model.IsDynamic)
 				componentType = new DynamicComponentType(names, types, nullabilities, joinedFetch, cascade);
-			else
-			{
-				IGetter[] getters = new IGetter[span];
-				ISetter[] setters = new ISetter[span];
-				bool foundCustomAccessor = false;
-				i = 0;
-				foreach (Mapping.Property prop in model.PropertyIterator)
-				{
-					setters[i] = prop.GetSetter(model.ComponentClass);
-					getters[i] = prop.GetGetter(model.ComponentClass);
-					if (!prop.IsBasicPropertyAccessor)
-						foundCustomAccessor = true;
-					i++;
-				}
-
-				componentType = new ComponentType(
-					model.ComponentClass,
-					names,
-					getters,
-					setters,
-					foundCustomAccessor,
-					types,
-					nullabilities,
-					joinedFetch,
-					cascade,
-					model.ParentProperty);
-			}
-			model.Type = componentType;
+			model.SetType(componentType);
 		}
 
 		protected Mapping.Property CreateProperty(IValue value, string propertyName, System.Type parentClass,
 			XmlNode subnode)
 		{
 			if (parentClass != null && value.IsSimpleValue)
-				((SimpleValue) value).SetTypeByReflection(parentClass, propertyName, PropertyAccess(subnode));
+				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName, PropertyAccess(subnode));
 
 			// This is done here 'cos we might only know the type here (ugly!)
 			if (value is ToOne)
@@ -612,9 +582,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			string propName = XmlHelper.GetAttributeValue(node, "name");
 			property.Name = propName;
-			IType type = property.Value.Type;
-			if (type == null)
-				throw new MappingException("could not determine a property type for: " + property.Name);
+			//IType type = property.Value.Type;
+			//if (type == null)
+			//  throw new MappingException("could not determine a property type for: " + property.Name);
 
 			property.PropertyAccessorName = PropertyAccess(node);
 
@@ -744,6 +714,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ReferencedPropertyName = ukName.Value;
 
 			model.ReferencedEntityName = GetEntityName(node, mappings);
+			model.ReferencedTypeName = GetQualifiedClassName(node, mappings);
 
 			string notFound = XmlHelper.GetAttributeValue(node, "not-found");
 			model.IsIgnoreNotFound = "ignore".Equals(notFound);
@@ -773,7 +744,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected void BindAny(XmlNode node, Any model, bool isNullable)
 		{
-			model.IdentifierType = GetTypeFromXML(node);
+			IType idt = GetTypeFromXML(node);
+			if (idt != null)
+				model.IdentifierTypeName = idt.Name;
 
 			XmlAttribute metaAttribute = node.Attributes["meta-type"];
 			if (metaAttribute != null)
@@ -781,13 +754,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				IType metaType = TypeFactory.HeuristicType(metaAttribute.Value);
 				if (metaType == null)
 					throw new MappingException("could not interpret meta-type");
-				model.MetaType = metaType;
+				model.MetaType = metaType.Name;
 
-				Hashtable values = new Hashtable();
+				IDictionary<object, System.Type> values = new Dictionary<object, System.Type>();
 				foreach (XmlNode metaValue in node.SelectNodes(HbmConstants.nsMetaValue, namespaceManager))
 					try
 					{
-						object value = model.MetaType.FromString(metaValue.Attributes["value"].Value);
+						object value = metaType.FromString(metaValue.Attributes["value"].Value);
 						System.Type clazz = ReflectHelper.ClassForName(FullClassName(metaValue.Attributes["class"].Value, mappings));
 						values[value] = clazz;
 					}
@@ -805,7 +778,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					}
 
 				if (values.Count > 0)
-					model.MetaType = new MetaType(values, model.MetaType);
+				{
+					model.MetaValues = values;
+				}
+				else
+				{
+					model.MetaValues = null;
+				}
 			}
 
 			BindColumns(node, model, isNullable, false, null);
@@ -821,7 +800,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			bool constrained = constrNode != null && constrNode.Value.Equals("true");
 			model.IsConstrained = constrained;
 
-			model.ForeignKeyDirection = (constrained
+			model.ForeignKeyType = (constrained
 				? ForeignKeyDirection.ForeignKeyFromParent
 				: ForeignKeyDirection.ForeignKeyToParent);
 
@@ -833,15 +812,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (ukName != null)
 				model.ReferencedPropertyName = ukName.Value;
 
-			// TODO NH: this is sort of redundant with the code below
 			model.ReferencedEntityName = GetEntityName(node, mappings);
+			model.ReferencedTypeName = GetQualifiedClassName(node, mappings);
+			model.PropertyName = node.Attributes["name"].Value;
 
+			// TODO NH: remove the code below
 			XmlAttribute classNode = node.Attributes["class"];
 			XmlAttribute nameNode = node.Attributes["name"];
 			if (classNode != null && nameNode != null)
 				model.Type = TypeFactory.OneToOne(
 					ClassForNameChecked(classNode.Value, mappings, "could not find class: {0}"),
-					model.ForeignKeyDirection,
+					model.ForeignKeyType,
 					model.ReferencedPropertyName,
 					model.IsLazy,
 					nameNode.Value
@@ -858,7 +839,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				MetaAttribute meta;
 				if (!map.TryGetValue(name, out meta))
 				{
-					meta = new MetaAttribute();
+					meta = new MetaAttribute(name);
 					map[name] = meta;
 				}
 				meta.AddValue(metaNode.InnerText);
@@ -935,7 +916,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				foreach (XmlNode columnElement in node.SelectNodes(HbmConstants.nsColumn, namespaceManager))
 				{
-					Column col = new Column(model.Type, count++);
+					Column col = new Column();
 					col.Value = model;
 					col.TypeIndex = count++;
 					BindColumn(columnElement, col, isNullable);
@@ -958,7 +939,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			else
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
 				col.Value = model;
 				BindColumn(node, col, isNullable);
 				col.Name = mappings.NamingStrategy.ColumnName(columnAttribute.Value);
@@ -972,7 +953,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (autoColumn && model.ColumnSpan == 0)
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
 				col.Value = model;
 				BindColumn(node, col, isNullable);
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
@@ -1151,6 +1132,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return null;
 
 			return GetClassName(att.Value, model);
+		}
+
+		private static string GetQualifiedClassName(XmlNode elem, Mappings model)
+		{
+			XmlAttribute att = elem.Attributes["class"];
+
+			if (att == null)
+				return null;
+
+			return GetQualifiedClassName(att.Value, model);
 		}
 
 		protected XmlNodeList SelectNodes(XmlNode node, string xpath)

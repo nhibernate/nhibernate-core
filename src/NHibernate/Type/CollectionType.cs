@@ -169,9 +169,7 @@ namespace NHibernate.Type
 
 		private bool IsOwnerVersioned(ISessionImplementor session)
 		{
-			System.Type ownerClass = GetPersister(session).OwnerClass;
-
-			return session.Factory.GetEntityPersister(ownerClass).IsVersioned;
+			return GetPersister(session).OwnerEntityPersister.IsVersioned;
 		}
 
 		private ICollectionPersister GetPersister(ISessionImplementor session)
