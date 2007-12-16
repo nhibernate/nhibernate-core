@@ -39,24 +39,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private static SimpleValue CreateIdentifier(HbmId idSchema, PersistentClass rootClass, Table table)
 		{
 			rootClass.Identifier = new SimpleValue(table);
-			rootClass.Identifier.Type = GetType(idSchema);
+			rootClass.Identifier.TypeName = idSchema.type;
 
 			return rootClass.Identifier;
-		}
-
-		private static IType GetType(HbmId idSchema)
-		{
-			if (idSchema.type != null)
-			{
-				IType type = TypeFactory.HeuristicType(idSchema.type, null);
-
-				if (type == null)
-					throw new MappingException("could not interpret type: " + idSchema.type);
-
-				return type;
-			}
-			else
-				return null; //we will have to use reflection
 		}
 
 		private void AddColumns(HbmId idSchema, SimpleValue id)

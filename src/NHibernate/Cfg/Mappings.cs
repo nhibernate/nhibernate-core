@@ -442,6 +442,8 @@ namespace NHibernate.Cfg
 
 		public TypeDef GetTypeDef(string typeName)
 		{
+			if(string.IsNullOrEmpty(typeName)) 
+				return null;
 			TypeDef result;
 			typeDefs.TryGetValue(typeName, out result);
 			return result;

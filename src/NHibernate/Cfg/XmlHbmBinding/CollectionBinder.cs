@@ -460,12 +460,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (model.ColumnSpan > 1)
 				log.Error("This shouldn't happen, check BindIntegerValue");
-			foreach (Column col in model.ColumnIterator)
-			{
-				col.Type = NHibernateUtil.Int32;
-				col.TypeIndex = 0;
-				break;
-			}
+			model.TypeName = NHibernateUtil.Int32.Name;
 		}
 
 		private void BindSetSecondPass(XmlNode node, Set model,
@@ -572,8 +567,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						keyValue = (IKeyValue)model.Owner.GetProperty(propRef).Value;
 					}
 					SimpleValue key = new DependentValue(model.CollectionTable, keyValue);
+					if (subnode.Attributes["on-delete"] != null)
+						key.IsCascadeDeleteEnabled = "cascade".Equals(subnode.Attributes["on-delete"].Value);
 					BindSimpleValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName);
-					key.Type = keyValue.Type;
 					if (key.Type.ReturnedClass.IsArray)
 						throw new MappingException("illegal use of an array as an identifier (arrays don't reimplement Equals)");
 					model.Key = key;

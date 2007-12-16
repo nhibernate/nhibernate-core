@@ -65,7 +65,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string propertyName = timestampSchema.name;
 			SimpleValue simpleValue = new SimpleValue(table);
 
-			simpleValue.Type = null;
 			BindColumns(timestampSchema, simpleValue, propertyName);
 
 			if (!simpleValue.IsTypeSpecified)

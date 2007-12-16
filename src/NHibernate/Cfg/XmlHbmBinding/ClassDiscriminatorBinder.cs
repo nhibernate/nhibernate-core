@@ -24,12 +24,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (discriminator.Type == null)
 			{
-				discriminator.Type = NHibernateUtil.String;
-				foreach (Column col in discriminator.ColumnIterator)
-				{
-					col.Type = NHibernateUtil.String;
-					break;
-				}
+				discriminator.TypeName = NHibernateUtil.String.Name;
 			}
 
 			rootClass.IsPolymorphic = true;
@@ -43,7 +38,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindSimpleValue(HbmDiscriminator discriminatorSchema, SimpleValue discriminator)
 		{
-			discriminator.Type = GetType(discriminatorSchema);
+			if (discriminatorSchema.type != null)
+				discriminator.TypeName = discriminatorSchema.type;
 
 			if (discriminatorSchema.formula != null)
 			{
@@ -113,19 +109,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			column.IsUnique = false;
 			column.CheckConstraint = string.Empty;
 			column.SqlType = null;
-		}
-
-		private static IType GetType(HbmDiscriminator discriminatorSchema)
-		{
-			if (discriminatorSchema.type == null)
-				return null;
-
-			IType type = TypeFactory.HeuristicType(discriminatorSchema.type, null);
-
-			if (type == null)
-				throw new MappingException("could not interpret type: " + discriminatorSchema.type);
-
-			return type;
 		}
 	}
 }

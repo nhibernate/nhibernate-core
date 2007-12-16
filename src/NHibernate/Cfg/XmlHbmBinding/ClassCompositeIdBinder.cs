@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Engine;
 using NHibernate.Mapping;
-using NHibernate.Property;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
@@ -115,31 +112,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					compositeId.AddProperty(property);
 				}
 			}
-
-			int span = compositeId.PropertySpan;
-			string[] names = new string[span];
-			IType[] types = new IType[span];
-			bool[] nullabilities = new bool[span];
-			Cascades.CascadeStyle[] cascade = new Cascades.CascadeStyle[span];
-			FetchMode[] joinedFetch = new FetchMode[span];
-
-			int i = 0;
-			foreach (Mapping.Property prop in compositeId.PropertyIterator)
-			{
-				names[i] = prop.Name;
-				types[i] = prop.Type;
-				nullabilities[i] = prop.IsNullable;
-				cascade[i] = prop.CascadeStyle;
-				joinedFetch[i] = prop.Value.FetchMode;
-				i++;
-			}
-
-			IType componentType = null;
-
-			if (compositeId.IsDynamic)
-				componentType = new DynamicComponentType(names, types, nullabilities, joinedFetch, cascade);
-
-			compositeId.SetType(componentType);
 		}
 
 		private void BindProperty(Mapping.Property property, HbmCompositeId idSchema)
@@ -199,14 +171,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			manyToOne.IsIgnoreNotFound = false;
-
-			// TODO NH: this is sort of redundant
-			if (typeNode != null)
-				manyToOne.Type = TypeFactory.ManyToOne(ClassForNameChecked(typeNode, mappings,
-					"could not find class: {0}"),
-					manyToOne.ReferencedPropertyName,
-					manyToOne.IsLazy,
-					manyToOne.IsIgnoreNotFound);
 
 			if (keyManyToOneSchema.foreignkey != null)
 				manyToOne.ForeignKeyName = keyManyToOneSchema.foreignkey;
@@ -312,22 +276,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindSimpleValue(HbmKeyProperty keyPropertySchema, SimpleValue model, bool isNullable, string path)
 		{
-			model.Type = GetType(keyPropertySchema);
+			if (keyPropertySchema.type != null)
+				model.TypeName = keyPropertySchema.type;
 			BindColumns(keyPropertySchema, model, isNullable, true, path);
-		}
-
-		private static IType GetType(HbmKeyProperty keyPropertySchema)
-		{
-			if (keyPropertySchema.type == null)
-				return null;
-
-			string typeName = keyPropertySchema.type;
-			IType type = TypeFactory.HeuristicType(typeName, null);
-
-			if (type == null)
-				throw new MappingException("could not interpret type: " + keyPropertySchema.type);
-
-			return type;
 		}
 
 		private void BindColumns(HbmKeyProperty keyPropertySchema, SimpleValue model, bool isNullable, bool autoColumn,

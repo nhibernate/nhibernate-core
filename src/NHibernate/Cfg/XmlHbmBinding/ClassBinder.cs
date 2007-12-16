@@ -1,15 +1,13 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
-using NHibernate.Property;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -241,11 +239,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependentValue(table, persistentClass.Identifier);
 			join.Key = key;
-			// key.SetCascadeDeleteEnabled("cascade".Equals(keyNode.Attributes["on-delete"].Value));
+			if (keyNode.Attributes["on-delete"] != null)
+				key.IsCascadeDeleteEnabled = "cascade".Equals(keyNode.Attributes["on-delete"].Value);
 			BindSimpleValue(keyNode, key, false, persistentClass.Name);
-			// TODO: not sure if the following if-block is correct
-			if (key.Type == null)
-				key.Type = persistentClass.Identifier.Type;
 
 			join.CreatePrimaryKey(dialect);
 			join.CreateForeignKey();
@@ -530,29 +526,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if (value != null)
 					model.AddProperty(CreateProperty(value, propertyName, model.ComponentClass, subnode));
 			}
-
-			int span = model.PropertySpan;
-			string[] names = new string[span];
-			IType[] types = new IType[span];
-			bool[] nullabilities = new bool[span];
-			Cascades.CascadeStyle[] cascade = new Cascades.CascadeStyle[span];
-			FetchMode[] joinedFetch = new FetchMode[span];
-
-			int i = 0;
-			foreach (Mapping.Property prop in model.PropertyIterator)
-			{
-				names[i] = prop.Name;
-				types[i] = prop.Type;
-				nullabilities[i] = prop.IsNullable;
-				cascade[i] = prop.CascadeStyle;
-				joinedFetch[i] = prop.Value.FetchMode;
-				i++;
-			}
-
-			IType componentType = null;
-			if (model.IsDynamic)
-				componentType = new DynamicComponentType(names, types, nullabilities, joinedFetch, cascade);
-			model.SetType(componentType);
 		}
 
 		protected Mapping.Property CreateProperty(IValue value, string propertyName, System.Type parentClass,
@@ -679,22 +652,64 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		//automatically makes a column with the default name if none is specifed by XML
 		protected void BindSimpleValue(XmlNode node, SimpleValue model, bool isNullable, string path)
 		{
-			model.Type = GetTypeFromXML(node);
-			//BindSimpleValueType(node, model, mappings);
+			BindSimpleValueType(node, model);
 
+			BindColumnsOrFormula(node, model, path, isNullable);
+
+			XmlAttribute fkNode = node.Attributes["foreign-key"];
+			if (fkNode != null)
+				model.ForeignKeyName = fkNode.Value;
+		}
+
+		private void BindSimpleValueType(XmlNode node, SimpleValue simpleValue)
+		{
+			string typeName = null;
+
+			Dictionary<string, string> parameters = new Dictionary<string, string>();
+
+			XmlAttribute typeNode = node.Attributes["type"];
+			if (typeNode == null)
+				typeNode = node.Attributes["id-type"]; //for an any
+			if (typeNode != null)
+				typeName = typeNode.Value;
+
+			XmlNode typeChild = node.SelectSingleNode(HbmConstants.nsType, namespaceManager);
+			if (typeName == null && typeChild != null)
+			{
+				typeName = typeChild.Attributes["name"].Value;
+				foreach (XmlNode childNode in typeChild.ChildNodes)
+					parameters.Add(childNode.Attributes["name"].Value, childNode.InnerText.Trim());
+			}
+
+			TypeDef typeDef = mappings.GetTypeDef(typeName);
+			if (typeDef != null)
+			{
+				typeName = typeDef.TypeClass;
+				// parameters on the property mapping should
+				// override parameters in the typedef
+				Dictionary<string, string> allParameters = new Dictionary<string, string>(typeDef.Parameters);
+				ArrayHelper.AddAll<string, string>(allParameters, parameters);
+				parameters = allParameters;
+			}
+
+			if (!(parameters.Count == 0))
+				simpleValue.TypeParameters = parameters;
+
+			if (typeName != null)
+				simpleValue.TypeName = typeName;
+		}
+
+		private void BindColumnsOrFormula(XmlNode node, SimpleValue simpleValue, string path, bool isNullable)
+		{
 			XmlAttribute formulaNode = node.Attributes["formula"];
 			if (formulaNode != null)
 			{
 				Formula f = new Formula();
 				f.FormulaString = formulaNode.InnerText;
-				model.AddFormula(f);
+				simpleValue.AddFormula(f);
 			}
 			else
-				BindColumns(node, model, isNullable, true, path);
-
-			XmlAttribute fkNode = node.Attributes["foreign-key"];
-			if (fkNode != null)
-				model.ForeignKeyName = fkNode.Value;
+				BindColumns(node, simpleValue, isNullable, true, path);
 		}
 
 		private void AddManyToOneSecondPass(ManyToOne manyToOne)
@@ -726,16 +741,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					AddManyToOneSecondPass(model);
 				}
 			}
-
-			XmlAttribute typeNode = node.Attributes["class"];
-
-			if (typeNode != null)
-				model.Type = TypeFactory.ManyToOne(
-					ClassForNameChecked(typeNode.Value, mappings,
-						"could not find class: {0}"),
-					model.ReferencedPropertyName,
-					model.IsLazy,
-					model.IsIgnoreNotFound);
 
 			XmlAttribute fkNode = node.Attributes["foreign-key"];
 			if (fkNode != null)
@@ -815,18 +820,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.ReferencedEntityName = GetEntityName(node, mappings);
 			model.ReferencedTypeName = GetQualifiedClassName(node, mappings);
 			model.PropertyName = node.Attributes["name"].Value;
-
-			// TODO NH: remove the code below
-			XmlAttribute classNode = node.Attributes["class"];
-			XmlAttribute nameNode = node.Attributes["name"];
-			if (classNode != null && nameNode != null)
-				model.Type = TypeFactory.OneToOne(
-					ClassForNameChecked(classNode.Value, mappings, "could not find class: {0}"),
-					model.ForeignKeyType,
-					model.ReferencedPropertyName,
-					model.IsLazy,
-					nameNode.Value
-					);
 		}
 
 		protected IDictionary<string, MetaAttribute> GetMetas(XmlNode node)

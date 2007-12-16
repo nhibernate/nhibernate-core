@@ -240,23 +240,6 @@ namespace NHibernate.Mapping
 				}
 				return type;
 			}
-			set
-			{
-				// TODO NH: Remove this method and implement only the getter
-				type = value;
-				int count = 0;
-
-				foreach (ISelectable sel in ColumnIterator)
-				{
-					if (sel is Column)
-					{
-						Column col = (Column)sel;
-						col.Value = this;
-						col.Type = type;
-						col.TypeIndex = count++;
-					}
-				}
-			}
 		}
 
 		public bool HasFormula

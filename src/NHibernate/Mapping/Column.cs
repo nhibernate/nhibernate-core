@@ -61,18 +61,6 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets or sets the NHibernate <see cref="IType"/> of the column.
-		/// </summary>
-		/// <value>
-		/// The NHibernate <see cref="IType"/> of the column.
-		/// </value>
-		public IType Type
-		{
-			get { return type; }
-			set { type = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the name of the column in the database.
 		/// </summary>
 		/// <value>
@@ -258,13 +246,11 @@ namespace NHibernate.Mapping
 		public bool Equals(Column column)
 		{
 			if (null == column)
-			{
 				return false;
-			}
+
 			if (this == column)
-			{
 				return true;
-			}
+
 			return IsQuoted ? name.Equals(column.name) : name.ToLowerInvariant().Equals(column.name.ToLowerInvariant());
 		}
 
@@ -326,7 +312,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public bool HasCheckConstraint
 		{
-			get { return checkConstraint != null && checkConstraint.Length > 0; }
+			get { return !string.IsNullOrEmpty(checkConstraint); }
 		}
 
 		public string Text
@@ -396,7 +382,7 @@ namespace NHibernate.Mapping
 
 		public override string ToString()
 		{
-			return GetType().FullName + "( " + name + " )";
+			return string.Format("{0}({1})", GetType().FullName, name);
 		}
 
 		public SqlType GetSqlTypeCode(IMapping mapping)
@@ -434,13 +420,16 @@ namespace NHibernate.Mapping
 		public object Clone()
 		{
 			Column copy = new Column();
-			copy.Length = Length;
-			copy.Scale = Scale;
+			if (length.HasValue)
+				copy.Length = Length;
+			if (precision.HasValue)
+				copy.Precision = Precision;
+			if (scale.HasValue)
+				copy.Scale = Scale;
 			copy.Value = _value;
 			copy.TypeIndex = typeIndex;
 			copy.Name = GetQuotedName();
 			copy.IsNullable = nullable;
-			copy.Precision = Precision;
 			copy.Unique = unique;
 			copy.SqlType = sqlType;
 			copy.SqlTypeCode = sqlTypeCode;

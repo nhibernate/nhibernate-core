@@ -48,7 +48,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			SimpleValue key = new DependentValue(mytable, subclass.Identifier);
 			subclass.Key = key;
 			BindSimpleValue(keyNode, key, false, subclass.Name);
-			key.Type = subclass.Identifier.Type;
 
 			subclass.CreatePrimaryKey(dialect);
 
