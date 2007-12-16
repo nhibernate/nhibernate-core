@@ -34,24 +34,20 @@ namespace NHibernate.Mapping
 		private string comment;
 		private string defaultValue;
 
+		/// <summary>
+		/// Initializes a new instance of <see cref="Column"/>.
+		/// </summary>
 		public Column()
 		{
-		}
-
-		public Column(string columnName)
-		{
-			Name = columnName;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Column"/>.
 		/// </summary>
-		/// <param name="type">The NHibernate <see cref="IType"/> that reads from and writes to the column.</param>
-		/// <param name="typeIndex">The index of the column in the <see cref="IType"/>.</param>
-		public Column(IType type, int typeIndex)
+		/// <param name="columnName">The name of the column.</param>
+		public Column(string columnName)
 		{
-			this.type = type;
-			this.typeIndex = typeIndex;
+			Name = columnName;
 		}
 
 		/// <summary>

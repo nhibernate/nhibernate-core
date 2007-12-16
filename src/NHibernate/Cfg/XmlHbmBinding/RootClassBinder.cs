@@ -221,7 +221,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (versionSchema.column != null)
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
+				col.Value = model;
 				BindColumn(col, isNullable);
 				col.Name = mappings.NamingStrategy.ColumnName(versionSchema.column);
 
@@ -233,7 +234,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (model.ColumnSpan == 0)
 			{
-				Column col = new Column(model.Type, 0);
+				Column col = new Column();
+				col.Value = model;
 				BindColumn(col, isNullable);
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
 				model.Table.AddColumn(col);

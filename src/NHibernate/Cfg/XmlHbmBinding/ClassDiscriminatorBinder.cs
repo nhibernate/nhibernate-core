@@ -62,7 +62,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//COLUMN(S)
 			if (discriminatorSchema.column1 != null)
 			{
-				Column col = new Column(discriminator.Type, 0);
+				Column col = new Column();
+				col.Value = discriminator;
 				BindColumn(discriminatorSchema, col);
 				col.Name = mappings.NamingStrategy.ColumnName(discriminatorSchema.column1);
 
@@ -73,7 +74,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			else if (discriminatorSchema.column != null)
 			{
-				Column col = new Column(discriminator.Type, 0);
+				Column col = new Column();
+				col.Value = discriminator;
 				BindColumn(discriminatorSchema.column, col, false);
 
 				col.Name = mappings.NamingStrategy.ColumnName(discriminatorSchema.column.name);
@@ -90,7 +92,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (discriminator.ColumnSpan == 0)
 			{
-				Column col = new Column(discriminator.Type, 0);
+				Column col = new Column();
+				col.Value = discriminator;
 				BindColumn(discriminatorSchema, col);
 
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(

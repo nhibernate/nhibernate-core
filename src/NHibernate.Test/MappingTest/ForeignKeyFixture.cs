@@ -10,23 +10,27 @@ namespace NHibernate.Test.MappingTest
 		[ExpectedException(typeof(FKUnmatchingColumnsException))]
 		public void UnmatchingColumns()
 		{
-			Table primaryTable = new Table();
-			primaryTable.Name = "pktable";
+			Table primaryTable = new Table("pktable");
 			primaryTable.PrimaryKey = new PrimaryKey();
-			Column pkColumn = new Column(NHibernateUtil.Int16, 0);
-			pkColumn.Name = "pk_column";
+			SimpleValue sv = new SimpleValue();
+			sv.TypeName = NHibernateUtil.Int16.Name;
+			Column pkColumn = new Column("pk_column");
+			pkColumn.Value = sv;
 
 			primaryTable.PrimaryKey.AddColumn(pkColumn);
 
-			Table fkTable = new Table();
-			fkTable.Name = "fktable";
+			Table fkTable = new Table("fktable");
 
 			ForeignKey fk = new ForeignKey();
-			Column fkColumn1 = new Column(NHibernateUtil.Int16, 0);
-			fkColumn1.Name = "col1";
+			sv = new SimpleValue();
+			sv.TypeName = NHibernateUtil.Int16.Name;
+			Column fkColumn1 = new Column("col1");
+			fkColumn1.Value = sv;
 
-			Column fkColumn2 = new Column(NHibernateUtil.Int16, 0);
-			fkColumn2.Name = "col2";
+			sv = new SimpleValue();
+			sv.TypeName = NHibernateUtil.Int16.Name;
+			Column fkColumn2 = new Column("col2");
+			fkColumn2.Value = sv;
 
 			fk.AddColumn(fkColumn1);
 			fk.AddColumn(fkColumn2);

@@ -26,10 +26,10 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="Column"/> objects that are part of the constraint.
+		/// Gets an <see cref="IEnumerable{Column}"/> of <see cref="Column"/> objects that are part of the constraint.
 		/// </summary>
 		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Column"/> objects that are part of the constraint.
+		/// An <see cref="IEnumerable{Column}"/> of <see cref="Column"/> objects that are part of the constraint.
 		/// </value>
 		public IEnumerable<Column> ColumnIterator
 		{
