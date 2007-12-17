@@ -1,9 +1,5 @@
 using System;
-#if NET_2_0
 using System.Collections.Generic;
-#else
-using System.Collections;
-#endif
 using System.Reflection;
 using Lucene.Net.Documents;
 using NHibernate.Search.Attributes;
@@ -11,37 +7,20 @@ using NHibernate.Search.Bridge.Builtin;
 
 namespace NHibernate.Search.Bridge
 {
-#if NET_2_0
-#else
-	[CLSCompliant(false)]
-#endif
 	public class BridgeFactory
     {
-#if NET_2_0
 		private static readonly Dictionary<String, IFieldBridge> builtInBridges = new Dictionary<String, IFieldBridge>();
-#else
-		private static readonly Hashtable builtInBridges = new Hashtable();
-#endif
 
         private BridgeFactory()
         {
         }
 
-#if NET_2_0
         public static readonly ITwoWayFieldBridge DOUBLE = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<double>());
         public static readonly ITwoWayFieldBridge FLOAT = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<float>());
         public static readonly ITwoWayFieldBridge SHORT = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<short>());
         public static readonly ITwoWayFieldBridge INTEGER = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<int>());
         public static readonly ITwoWayFieldBridge LONG = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<long>());
         public static readonly ITwoWayFieldBridge BOOLEAN = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<bool>());
-#else
-		public static readonly ITwoWayFieldBridge DOUBLE = new TwoWayString2FieldBridgeAdaptor(new DoubleBridge());
-		public static readonly ITwoWayFieldBridge FLOAT = new TwoWayString2FieldBridgeAdaptor(new FloatBridge());
-		public static readonly ITwoWayFieldBridge SHORT = new TwoWayString2FieldBridgeAdaptor(new ShortBridge());
-		public static readonly ITwoWayFieldBridge INTEGER = new TwoWayString2FieldBridgeAdaptor(new IntBridge());
-		public static readonly ITwoWayFieldBridge LONG = new TwoWayString2FieldBridgeAdaptor(new LongBridge());
-		public static readonly ITwoWayFieldBridge BOOLEAN = new TwoWayString2FieldBridgeAdaptor(new BoolBridge());
-#endif
 		public static readonly ITwoWayFieldBridge STRING = new TwoWayString2FieldBridgeAdaptor(new StringBridge());
 
         public static readonly IFieldBridge DATE_YEAR = new String2FieldBridgeAdaptor(DateBridge.DATE_YEAR);
@@ -111,13 +90,9 @@ namespace NHibernate.Search.Bridge
             {
                 //find in built-ins
                 System.Type returnType = GetMemberType(member);
-#if NET_2_0
                 if (IsNullable(returnType))
                     returnType = returnType.GetGenericArguments()[0];
                 builtInBridges.TryGetValue(returnType.Name, out bridge);
-#else
-				bridge = (IFieldBridge) (builtInBridges.ContainsKey(returnType.Name) ? builtInBridges[returnType.Name] : null);
-#endif
                 if (bridge == null && returnType.IsEnum)
                 {
                     bridge = new TwoWayString2FieldBridgeAdaptor(
@@ -132,12 +107,7 @@ namespace NHibernate.Search.Bridge
 
         private static bool IsNullable(System.Type returnType)
         {
-#if NET_2_0
             return returnType.IsGenericType && typeof(Nullable<>) == returnType.GetGenericTypeDefinition();
-#else
-			// TODO: Work out if this is adequate
-            return returnType.IsClass;
-#endif
         }
 
         private static System.Type GetMemberType(MemberInfo member)

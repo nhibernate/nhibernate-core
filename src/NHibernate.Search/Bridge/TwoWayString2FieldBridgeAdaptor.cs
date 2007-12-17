@@ -3,10 +3,6 @@ using Lucene.Net.Documents;
 
 namespace NHibernate.Search.Bridge
 {
-#if NET_2_0
-#else
-	[CLSCompliant(false)]
-#endif
     public class TwoWayString2FieldBridgeAdaptor : String2FieldBridgeAdaptor, ITwoWayFieldBridge
     {
         private readonly ITwoWayStringBridge stringBridge;
