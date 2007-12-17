@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +10,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// An Index in the database.
 	/// </summary>
+	[Serializable]
 	public class Index : IRelationalModel
 	{
 		private Table table;
@@ -45,7 +47,7 @@ namespace NHibernate.Mapping
 			string ifExists = dialect.GetIfExistsDropConstraint(table, name);
 			string drop = string.Format("drop index {0}", StringHelper.Qualify(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), name));
 			string end = dialect.GetIfExistsDropConstraintEnd(table, name);
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+			return ifExists + Environment.NewLine + drop + Environment.NewLine + end;
 		}
 
 		/// <summary>
@@ -141,7 +143,7 @@ namespace NHibernate.Mapping
 			return columns.Contains(column);
 		}
 
-		public override System.String ToString()
+		public override string ToString()
 		{
 			return GetType().FullName + "(" + Name + ")";
 		}

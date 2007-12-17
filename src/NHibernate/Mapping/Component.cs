@@ -10,6 +10,7 @@ namespace NHibernate.Mapping
 	/// The mapping for a component, composite element, composite identifier,
 	/// etc.
 	/// </summary>
+	[Serializable]
 	public class Component : SimpleValue
 	{
 		private readonly List<Property> properties = new List<Property>();

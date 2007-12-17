@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-
 using NHibernate.Engine;
 
 namespace NHibernate.Mapping
 {
+	[Serializable]
 	public class JoinedSubclass : Subclass, ITableOwner
 	{
 		private Table table;

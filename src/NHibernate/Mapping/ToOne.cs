@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -6,6 +7,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// A simple-point association (ie. a reference to another entity).
 	/// </summary>
+	[Serializable]
 	public abstract class ToOne : SimpleValue, IFetchable
 	{
 		private FetchMode fetchMode;

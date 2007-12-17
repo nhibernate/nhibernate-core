@@ -1,14 +1,17 @@
+using System;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
 	/// <summary>
 	/// A collection with a synthetic "identifier" column.
 	/// </summary>
+	[Serializable]
 	public abstract class IdentifierCollection : Collection
 	{
 		public const string DefaultIdentifierColumnName = "id";
-		private SimpleValue identifier;
+		private IKeyValue identifier;
 
 		/// <summary>
 		/// 
@@ -19,7 +22,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public SimpleValue Identifier
+		public IKeyValue Identifier
 		{
 			get { return identifier; }
 			set { identifier = value; }
@@ -37,10 +40,7 @@ namespace NHibernate.Mapping
 			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				foreach (Column col in Identifier.ColumnIterator)
-				{
-					pk.AddColumn(col);
-				}
+				pk.AddColumns(new SafetyEnumerable<Column>(Identifier.ColumnIterator));
 				CollectionTable.PrimaryKey = pk;
 			}
 			//else  // Create an index on the key columns?

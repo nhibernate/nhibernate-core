@@ -1,10 +1,12 @@
+using System;
 using System.Collections;
 using NHibernate.Util;
 using System.Collections.Generic;
 
 namespace NHibernate.Mapping
 {
-	public class DenormalizedTable: Table
+	[Serializable]
+	public class DenormalizedTable : Table
 	{
 		private readonly Table includedTable;
 

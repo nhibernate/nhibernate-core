@@ -11,12 +11,13 @@ namespace NHibernate.Mapping
 	/// Declaration of a System.Type mapped with the <c>&lt;subclass&gt;</c> or 
 	/// <c>&lt;joined-subclass&gt;</c> element.
 	/// </summary>
+	[Serializable]
 	public class Subclass : PersistentClass
 	{
 		private PersistentClass superclass;
 		private IKeyValue key;
 		private System.Type classPersisterClass;
-		private int subclassId;
+		private readonly int subclassId;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Subclass"/> class.

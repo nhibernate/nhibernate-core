@@ -1,19 +1,29 @@
+using System;
 using System.Collections.Generic;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Mapping
 {
+	/// <summary> 
+	/// Convenience base class for <see cref="IAuxiliaryDatabaseObject">AuxiliaryDatabaseObjects</see>.
+	/// </summary>
+	/// <remarks>
+	/// This implementation performs dialect scoping checks strictly based on
+	/// dialect name comparisons.  Custom implementations might want to do
+	/// instanceof-type checks. 
+	/// </remarks>
+	[Serializable]
 	public abstract class AbstractAuxiliaryDatabaseObject : IAuxiliaryDatabaseObject
 	{
-		private readonly HashedSet dialectScopes;
+		private readonly HashedSet<string> dialectScopes;
 
 		protected AbstractAuxiliaryDatabaseObject()
 		{
-			dialectScopes = new HashedSet();
+			dialectScopes = new HashedSet<string>();
 		}
 
-		protected AbstractAuxiliaryDatabaseObject(HashedSet dialectScopes)
+		protected AbstractAuxiliaryDatabaseObject(HashedSet<string> dialectScopes)
 		{
 			this.dialectScopes = dialectScopes;
 		}
@@ -23,7 +33,7 @@ namespace NHibernate.Mapping
 			dialectScopes.Add(dialectName);
 		}
 
-		public HashedSet DialectScopes
+		public HashedSet<string> DialectScopes
 		{
 			get { return dialectScopes; }
 		}
@@ -37,6 +47,6 @@ namespace NHibernate.Mapping
 		public abstract string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema);
 		public abstract string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema);
 
-		public virtual void SetParameterValues(IDictionary<string, string> parameters) {}
+		public void SetParameterValues(IDictionary<string, string> parameters) {}
 	}
 }

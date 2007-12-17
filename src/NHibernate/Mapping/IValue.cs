@@ -79,5 +79,7 @@ namespace NHibernate.Mapping
 		FetchMode FetchMode { get; }
 
 		void SetTypeUsingReflection(string className, string propertyName, string accesorName);
+
+		object Accept(IValueVisitor visitor);
 	}
 }

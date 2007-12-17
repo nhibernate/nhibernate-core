@@ -237,7 +237,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			// KEY
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
-			SimpleValue key = new DependentValue(table, persistentClass.Identifier);
+			SimpleValue key = new DependantValue(table, persistentClass.Identifier);
 			join.Key = key;
 			if (keyNode.Attributes["on-delete"] != null)
 				key.IsCascadeDeleteEnabled = "cascade".Equals(keyNode.Attributes["on-delete"].Value);

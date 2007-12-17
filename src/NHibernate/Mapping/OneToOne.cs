@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -7,6 +8,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// A mapping for a <c>one-to-one</c> association.
 	/// </summary>
+	[Serializable]
 	public class OneToOne : ToOne
 	{
 		private bool constrained;

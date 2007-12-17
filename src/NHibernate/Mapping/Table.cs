@@ -12,6 +12,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// Represents a Table in a database that an object gets mapped against.
 	/// </summary>
+	[Serializable]
 	public class Table : IRelationalModel
 	{
 		internal class ForeignKeyKey: IEqualityComparer<ForeignKeyKey>

@@ -13,6 +13,7 @@ namespace NHibernate.Mapping
 	/// is the root class of a table-per-sublcass, or table-per-concrete-class 
 	/// inheritance heirarchy.
 	/// </summary>
+	[Serializable]
 	public class RootClass : PersistentClass, ITableOwner
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(RootClass));

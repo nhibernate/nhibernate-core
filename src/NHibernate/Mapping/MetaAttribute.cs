@@ -7,6 +7,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// A meta attribute is a named value or values.
 	/// </summary>
+	[Serializable]
 	public class MetaAttribute
 	{
 		private readonly string name;
@@ -17,25 +18,16 @@ namespace NHibernate.Mapping
 			this.name = name;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public string Name
 		{
 			get { return name; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public IList<string> Values
 		{
 			get { return values.AsReadOnly(); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public string Value
 		{
 			get
@@ -47,18 +39,11 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public bool IsMultiValued
 		{
 			get { return values.Count > 1; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
 		public void AddValue(string value)
 		{
 			values.Add(value);

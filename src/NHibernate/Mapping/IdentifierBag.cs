@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping
@@ -6,6 +7,7 @@ namespace NHibernate.Mapping
 	/// An <c>PersistentIdentifierBag</c> has a primary key consistenting of just
 	/// the identifier column.
 	/// </summary>
+	[Serializable]
 	public class IdentifierBag : IdentifierCollection
 	{
 		public IdentifierBag(PersistentClass owner) : base(owner)
@@ -16,7 +18,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if (this.IsGeneric)
+				if (IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);
 					return TypeFactory.GenericIdBag(Role, ReferencedPropertyName, GenericArguments[0]);

@@ -21,7 +21,6 @@ namespace NHibernate.Mapping
 		private int? precision;
 		private int? scale;
 		private IValue _value;
-		private IType type;
 		private int typeIndex = 0;
 		private string name;
 		private bool nullable = true;
@@ -400,7 +399,7 @@ namespace NHibernate.Mapping
 			catch (Exception e)
 			{
 				throw new MappingException(string.Format("Could not determine type for column {0} of type {1}: {2}", 
-					name, type.GetType().FullName, e.GetType().FullName), e);
+					name, _type.GetType().FullName, e.GetType().FullName), e);
 			}
 		}
 

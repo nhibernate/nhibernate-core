@@ -45,7 +45,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.Name, subclass.Table.Name);
 
 			XmlNode keyNode = subnode.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
-			SimpleValue key = new DependentValue(mytable, subclass.Identifier);
+			SimpleValue key = new DependantValue(mytable, subclass.Identifier);
 			subclass.Key = key;
 			BindSimpleValue(keyNode, key, false, subclass.Name);
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Type;
 
@@ -8,6 +9,7 @@ namespace NHibernate.Mapping
 	/// key consisting of all table columns (ie - key columns + 
 	/// element columns).
 	/// </summary>
+	[Serializable]
 	public class Set : Collection
 	{
 		public Set(PersistentClass owner) : base(owner)

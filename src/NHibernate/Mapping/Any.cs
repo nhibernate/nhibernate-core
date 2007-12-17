@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Type;
 
@@ -9,6 +10,7 @@ namespace NHibernate.Mapping
 	/// <remarks>
 	/// Polymorphic association to one of several tables.
 	/// </remarks>
+	[Serializable]
 	public class Any : SimpleValue
 	{
 		private string identifierTypeName;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
@@ -11,7 +12,8 @@ namespace NHibernate.Mapping
 	/// Mapping for a property of a .NET class (entity
 	/// or component).
 	/// </summary>
-	public class Property: IMetaAttributable
+	[Serializable]
+	public class Property : IMetaAttributable
 	{
 		private string name;
 		private IValue propertyValue;
@@ -193,12 +195,12 @@ namespace NHibernate.Mapping
 			return PropertyAccessor.GetSetter(clazz, name);
 		}
 
-		protected IPropertyAccessor PropertyAccessor
+		protected virtual IPropertyAccessor PropertyAccessor
 		{
 			get { return PropertyAccessorFactory.GetPropertyAccessor(PropertyAccessorName); }
 		}
 
-		public bool IsBasicPropertyAccessor
+		public virtual bool IsBasicPropertyAccessor
 		{
 			get { return propertyAccessorName == null || propertyAccessorName.Equals("property"); }
 		}

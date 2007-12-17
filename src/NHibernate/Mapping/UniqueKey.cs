@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -7,6 +8,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// An Unique Key constraint in the database.
 	/// </summary>
+	[Serializable]
 	public class UniqueKey : Constraint
 	{
 		/// <summary>

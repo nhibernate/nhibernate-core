@@ -8,6 +8,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// A mapping for a <c>one-to-many</c> association.
 	/// </summary>
+	[Serializable]
 	public class OneToMany : IValue
 	{
 		private System.Type referencedEntityName;
@@ -127,6 +128,11 @@ namespace NHibernate.Mapping
 
 		public void SetTypeUsingReflection(string className, string propertyName, string accesorName)
 		{
+		}
+
+		public object Accept(IValueVisitor visitor)
+		{
+			return visitor.Accept(this);
 		}
 
 		#endregion

@@ -5,7 +5,8 @@ using System;
 
 namespace NHibernate.Mapping
 {
-	/// <summary></summary>
+	/// <summary> A many-to-one association mapping</summary>
+	[Serializable]
 	public class ManyToOne : ToOne
 	{
 		/// <summary>

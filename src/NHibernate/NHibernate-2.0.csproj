@@ -253,7 +253,6 @@
     <Compile Include="Mapping\IFetchable.cs" />
     <Compile Include="Mapping\Index.cs" />
     <Compile Include="Mapping\IndexedCollection.cs" />
-    <Compile Include="Mapping\IntegerValue.cs" />
     <Compile Include="Mapping\IRelationalModel.cs" />
     <Compile Include="Mapping\IValue.cs" />
     <Compile Include="Mapping\List.cs" />
@@ -756,8 +755,12 @@
     <Compile Include="Intercept\IFieldInterceptor.cs" />
     <Compile Include="Intercept\ILazyPropertyInitializer.cs" />
     <Compile Include="IStatelessSession.cs" />
+    <Compile Include="Mapping\Backref.cs" />
     <Compile Include="Mapping\DenormalizedTable.cs" />
     <Compile Include="Mapping\IMetaAttributable.cs" />
+    <Compile Include="Mapping\IndexBackref.cs" />
+    <Compile Include="Mapping\IPersistentClassVisitor.cs" />
+    <Compile Include="Mapping\IValueVisitor.cs" />
     <Compile Include="Mapping\PropertyGeneration.cs" />
     <Compile Include="Mapping\TypeDef.cs" />
     <Compile Include="Mapping\UnionSubclass.cs" />
@@ -895,7 +898,7 @@
     <Compile Include="Loader\JoinWalker.cs" />
     <Compile Include="Loader\OuterJoinableAssociation.cs" />
     <Compile Include="Mapping\AbstractAuxiliaryDatabaseObject.cs" />
-    <Compile Include="Mapping\DependentValue.cs" />
+    <Compile Include="Mapping\DependantValue.cs" />
     <Compile Include="Mapping\IAuxiliaryDatabaseObject.cs" />
     <Compile Include="Mapping\IFilterable.cs" />
     <Compile Include="Mapping\IKeyValue.cs" />

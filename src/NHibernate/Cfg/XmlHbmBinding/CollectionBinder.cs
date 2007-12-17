@@ -278,35 +278,40 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlAttribute att = node.Attributes["element-class"];
 
 			if (att != null)
-				model.ElementClass = ClassForNameChecked(att.Value, mappings,
-					"could not find element class: {0}");
+				model.ElementClassName= GetQualifiedClassName(att.Value, mappings);
 			else
-				foreach (XmlNode subnode in node.ChildNodes)
-				{
-					string name = subnode.LocalName; //.Name;
+			  foreach (XmlNode subnode in node.ChildNodes)
+			  {
+					// TODO NH: mmm.... the code below, maybe, must be resolved by SecondPass (not here)
+			    string name = subnode.LocalName; //.Name;
 
-					//I am only concerned with elements that are from the nhibernate namespace
-					if (subnode.NamespaceURI != Configuration.MappingSchemaXMLNS)
-						continue;
+			    //I am only concerned with elements that are from the nhibernate namespace
+			    if (subnode.NamespaceURI != Configuration.MappingSchemaXMLNS)
+			      continue;
 
-					switch (name)
-					{
-						case "element":
-							IType type = GetTypeFromXML(subnode);
+			    switch (name)
+			    {
+			      case "element":
+							string typeName;
+							XmlAttribute typeAttribute = subnode.Attributes["type"];
+							if (typeAttribute != null)
+								typeName = typeAttribute.Value;
+							else
+								throw new MappingException("type for <element> was not defined");
+							IType type = TypeFactory.HeuristicType(typeName, null);
+							if (type == null)
+								throw new MappingException("could not interpret type: " + typeName);
 
-							model.ElementClass = type.ReturnedClass;
+			    		model.ElementClassName = type.ReturnedClass.AssemblyQualifiedName;
+			        break;
 
-							break;
-
-						case "one-to-many":
-						case "many-to-many":
-						case "composite-element":
-							model.ElementClass = ClassForNameChecked(
-								subnode.Attributes["class"].Value, mappings,
-								"element class not found: {0}");
-							break;
-					}
-				}
+			      case "one-to-many":
+			      case "many-to-many":
+			      case "composite-element":
+			        model.ElementClassName = GetQualifiedClassName(subnode.Attributes["class"].Value, mappings);
+			        break;
+			    }
+			  }
 		}
 
 		private void AddListSecondPass(XmlNode node, List model)
@@ -424,7 +429,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsListIndex, namespaceManager);
 			if (subnode == null) { subnode = node.SelectSingleNode(HbmConstants.nsIndex, namespaceManager); }
-			IntegerValue iv = new IntegerValue(model.CollectionTable);
+			SimpleValue iv = new SimpleValue(model.CollectionTable);
 			BindIntegerValue(subnode, iv, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
 			model.Index = iv;
 
@@ -453,7 +458,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			MakeIdentifier(subnode, id);
 		}
 
-		private void BindIntegerValue(XmlNode node, IntegerValue model, string defaultColumnName,
+		private void BindIntegerValue(XmlNode node, SimpleValue model, string defaultColumnName,
 			bool isNullable)
 		{
 			BindSimpleValue(node, model, isNullable, defaultColumnName);
@@ -566,7 +571,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					{
 						keyValue = (IKeyValue)model.Owner.GetProperty(propRef).Value;
 					}
-					SimpleValue key = new DependentValue(model.CollectionTable, keyValue);
+					SimpleValue key = new DependantValue(model.CollectionTable, keyValue);
 					if (subnode.Attributes["on-delete"] != null)
 						key.IsCascadeDeleteEnabled = "cascade".Equals(subnode.Attributes["on-delete"].Value);
 					BindSimpleValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName);

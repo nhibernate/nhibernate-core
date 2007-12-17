@@ -12,6 +12,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// Any value that maps to columns.
 	/// </summary>
+	[Serializable]
 	public class SimpleValue : IKeyValue
 	{
 		private readonly List<ISelectable> columns = new List<ISelectable>();
@@ -334,6 +335,11 @@ namespace NHibernate.Mapping
 					throw new MappingException("Problem trying to set property type by reflection", he);
 				}
 			}
+		}
+
+		public virtual object Accept(IValueVisitor visitor)
+		{
+			return visitor.Accept(this);
 		}
 
 		#endregion

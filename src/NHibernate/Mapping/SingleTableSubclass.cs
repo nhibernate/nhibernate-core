@@ -1,14 +1,14 @@
 using System;
-using System.Text;
 
 namespace NHibernate.Mapping
 {
+	[Serializable]
 	public class SingleTableSubclass : Subclass
 	{
 		public SingleTableSubclass(PersistentClass superclass)
 			: base(superclass) { }
 
-		public override void Validate(NHibernate.Engine.IMapping mapping)
+		public override void Validate(Engine.IMapping mapping)
 		{
 			if (Discriminator == null)
 			{

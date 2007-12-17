@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -14,6 +14,7 @@ namespace NHibernate.Mapping
 	/// names into the provided strings.
 	/// This is the form created when the mapping documents use &lt;create/&gt; and &lt;drop/&gt;.
 	/// </remarks>
+	[Serializable]
 	public class SimpleAuxiliaryDatabaseObject : AbstractAuxiliaryDatabaseObject
 	{
 		private readonly string sqlCreateString;
@@ -25,7 +26,7 @@ namespace NHibernate.Mapping
 			this.sqlDropString = sqlDropString;
 		}
 
-		public SimpleAuxiliaryDatabaseObject(String sqlCreateString, String sqlDropString, HashedSet dialectScopes)
+		public SimpleAuxiliaryDatabaseObject(String sqlCreateString, String sqlDropString, HashedSet<string> dialectScopes)
 			: base(dialectScopes)
 		{
 			this.sqlCreateString = sqlCreateString;

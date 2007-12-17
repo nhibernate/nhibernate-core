@@ -8,6 +8,7 @@ namespace NHibernate.Mapping
 	/// A map has a primary key consisting of the key columns 
 	/// + index columns.
 	/// </summary>
+	[Serializable]
 	public class Map : IndexedCollection
 	{
 		/// <summary>
@@ -27,13 +28,14 @@ namespace NHibernate.Mapping
 					CheckGenericArgumentsLength(2);
 					if (TypeName == "sorted-list")
 					{
-						return TypeFactory.GenericSortedList(Role, ReferencedPropertyName, Comparer,
-						                                     GenericArguments[0], GenericArguments[1]);
+						return
+							TypeFactory.GenericSortedList(Role, ReferencedPropertyName, Comparer, GenericArguments[0], GenericArguments[1]);
 					}
 					else if (TypeName == "sorted-dictionary")
 					{
-						return TypeFactory.GenericSortedDictionary(Role, ReferencedPropertyName, Comparer,
-						                                           GenericArguments[0], GenericArguments[1]);
+						return
+							TypeFactory.GenericSortedDictionary(Role, ReferencedPropertyName, Comparer, GenericArguments[0],
+							                                    GenericArguments[1]);
 					}
 					else
 					{
@@ -53,7 +55,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if (this.IsGeneric)
+				if (IsGeneric)
 				{
 					if (HasOrder)
 					{
@@ -70,13 +72,15 @@ namespace NHibernate.Mapping
 						return TypeFactory.GenericMap(Role, ReferencedPropertyName, GenericArguments[0], GenericArguments[1]);
 					}
 				}
-				if (HasOrder)
+
+				// No Generic behavior
+				if (IsSorted)
+				{
+					return TypeFactory.SortedMap(Role, ReferencedPropertyName, (IComparer)Comparer);
+				}
+				else if (HasOrder)
 				{
 					return TypeFactory.OrderedMap(Role, ReferencedPropertyName);
-				}
-				else if (IsSorted)
-				{
-					return TypeFactory.SortedMap(Role, ReferencedPropertyName, (IComparer) Comparer);
 				}
 				else
 				{
@@ -89,9 +93,7 @@ namespace NHibernate.Mapping
 		{
 			base.CreateAllKeys();
 			if (!IsInverse)
-			{
 				Index.CreateForeignKey();
-			}
 		}
 	}
 }

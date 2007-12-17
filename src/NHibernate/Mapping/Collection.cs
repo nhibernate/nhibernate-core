@@ -17,6 +17,7 @@ namespace NHibernate.Mapping
 	/// Subclasses are responsible for the specialization required for the particular
 	/// collection style.
 	/// </remarks>
+	[Serializable]
 	public abstract class Collection : IFetchable, IValue, IFilterable
 	{
 		private static readonly IEnumerable<ISelectable> EmptyColumns = new ISelectable[0];
@@ -608,6 +609,11 @@ namespace NHibernate.Mapping
 
 		public void SetTypeUsingReflection(string className, string propertyName, string access)
 		{
+		}
+
+		public object Accept(IValueVisitor visitor)
+		{
+			return visitor.Accept(this);
 		}
 
 		public virtual bool IsMap

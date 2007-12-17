@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping
@@ -5,10 +6,11 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// A bag permits duplicates, so it has no primary key
 	/// </summary>
+	[Serializable]
 	public class Bag : Collection
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Bag" /> class.
+		/// A bag permits duplicates, so it has no primary key.
 		/// </summary>
 		/// <param name="owner">The <see cref="PersistentClass"/> that contains this bag mapping.</param>
 		public Bag(PersistentClass owner) : base(owner)
@@ -23,10 +25,10 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if (this.IsGeneric)
+				if (IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);
-					return TypeFactory.GenericBag(Role, ReferencedPropertyName, this.GenericArguments[0]);
+					return TypeFactory.GenericBag(Role, ReferencedPropertyName, GenericArguments[0]);
 				}
 				else
 				{
@@ -35,12 +37,9 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <remarks>Should we create an index on the key columns?</remarks>
 		public override void CreatePrimaryKey()
 		{
+			//create an index on the key columns??
 		}
 	}
 }

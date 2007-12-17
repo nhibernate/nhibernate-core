@@ -59,5 +59,10 @@ namespace NHibernate.Type
 		/// <param name="val">The object to convert to a string for the SQL statement.</param>
 		/// <returns>A string that containts a well formed SQL Statement.</returns>
 		public abstract string ObjectToSQLString(object val);
+
+		public virtual System.Type PrimitiveClass
+		{
+			get { return ReturnedClass; }
+		}
 	}
 }
