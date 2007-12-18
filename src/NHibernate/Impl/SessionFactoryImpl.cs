@@ -237,7 +237,7 @@ namespace NHibernate.Impl
 				// Most of the internals of NHibernate use this method to get to the Persister since
 				// Model.Name is used in so many places.  It would be nice to fix it up to be Model.TypeName
 				// instead of just FullClassname
-				classPersistersByName[model.Name] = cp;
+				classPersistersByName[model.EntityName] = cp;
 
 				// Add in the AssemblyQualifiedName (includes version) as a lookup to get to the Persister.  
 				// In HQL the Imports are used to get from the Classname to the Persister.  The

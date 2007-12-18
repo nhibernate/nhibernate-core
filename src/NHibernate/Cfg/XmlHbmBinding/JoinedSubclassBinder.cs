@@ -30,8 +30,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindClass(subnode, subclass);
 
 			// joined subclass
-			if (subclass.ClassPersisterClass == null)
-				subclass.RootClazz.ClassPersisterClass = typeof(JoinedSubclassEntityPersister);
+			if (subclass.EntityPersisterClass == null)
+				subclass.RootClazz.EntityPersisterClass = typeof(JoinedSubclassEntityPersister);
 
 			//table + schema names
 			XmlAttribute schemaNode = subnode.Attributes["schema"];
@@ -42,18 +42,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, subnode), null, false);
 			((ITableOwner)subclass).Table = mytable;
 
-			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.Name, subclass.Table.Name);
+			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			XmlNode keyNode = subnode.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependantValue(mytable, subclass.Identifier);
 			subclass.Key = key;
-			BindSimpleValue(keyNode, key, false, subclass.Name);
+			BindSimpleValue(keyNode, key, false, subclass.EntityName);
 
 			subclass.CreatePrimaryKey(dialect);
 
 			if (!subclass.IsJoinedSubclass)
 				throw new MappingException(
-					"Cannot map joined-subclass " + subclass.Name + " to table " +
+					"Cannot map joined-subclass " + subclass.EntityName + " to table " +
 						subclass.Table.Name + ", the same table as its base class.");
 
 			subclass.CreateForeignKey();

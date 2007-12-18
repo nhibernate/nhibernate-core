@@ -185,6 +185,23 @@ namespace NHibernate.Property
 			return ResolveCustomAccessor(type);
 		}
 
+		//TODO: ideally we need the construction of PropertyAccessor to take the following:
+		//      1) EntityMode
+		//      2) EntityMode-specific data (i.e., the classname for pojo entities)
+		//      3) Property-specific data based on the EntityMode (i.e., property-name or dom4j-node-name)
+		// The easiest way, with the introduction of the new runtime-metamodel classes, would be the
+		// the following predicates:
+		//      1) PropertyAccessorFactory.getPropertyAccessor() takes references to both a
+		//          org.hibernate.metadata.EntityModeMetadata and org.hibernate.metadata.Property
+		//      2) What is now termed a "PropertyAccessor" stores any values needed from those two
+		//          pieces of information
+		//      3) Code can then simply call PropertyAccess.getGetter() with no parameters; likewise with
+		//          PropertyAccessor.getSetter()
+
+		/// <summary> Retrieves a PropertyAccessor instance based on the given property definition and entity mode. </summary>
+		/// <param name="property">The property for which to retrieve an accessor. </param>
+		/// <param name="mode">The mode for the resulting entity. </param>
+		/// <returns> An appropriate accessor. </returns>
 		public static IPropertyAccessor GetPropertyAccessor(Mapping.Property property, EntityMode? mode)
 		{
 			//TODO: this is temporary in that the end result will probably not take a Property reference per-se.

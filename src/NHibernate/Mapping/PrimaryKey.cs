@@ -78,7 +78,7 @@ namespace NHibernate.Mapping
 			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
 			string drop = string.Format("alter table {0}{1}", Table.GetQualifiedName(dialect, defaultSchema), dialect.GetDropPrimaryKeyConstraintString(Name));
 			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+			return ifExists + Environment.NewLine + drop + Environment.NewLine + end;
 		}
 
 		#endregion

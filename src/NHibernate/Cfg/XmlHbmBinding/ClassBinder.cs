@@ -47,7 +47,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				CollectionBinder collectionBinder = new CollectionBinder(this);
 				if (collectionBinder.CanCreate(name))
 				{
-					Mapping.Collection collection = collectionBinder.Create(name, subnode, model.Name,
+					Mapping.Collection collection = collectionBinder.Create(name, subnode, model.EntityName,
 						propertyName, model, model.MappedClass);
 
 					mappings.AddCollection(collection);
@@ -78,7 +78,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
 					System.Type reflectedClass = GetPropertyType(subnode, model.MappedClass, propertyName);
 					value = new Component(model);
-					BindComponent(subnode, (Component) value, reflectedClass, model.Name, propertyName, true);
+					BindComponent(subnode, (Component) value, reflectedClass, model.EntityName, propertyName, true);
 				}
 				else if ("join".Equals(name))
 				{
@@ -109,7 +109,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string className = node.Attributes["name"] == null ? null : FullClassName(node.Attributes["name"].Value, mappings);
 
 			// CLASS
-			model.MappedClass = ClassForFullNameChecked(className, "persistent class {0} not found");
+			model.ClassName = ClassForFullNameChecked(className, "persistent class {0} not found").AssemblyQualifiedName;
 
 			string entityName = node.Attributes["entity-name"] == null ? null : node.Attributes["name"].Value;
 			if (entityName == null)
@@ -130,15 +130,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (proxyNode != null)
 			{
-				model.ProxyInterface = ClassForNameChecked(proxyNode.Value, mappings, "proxy class not found: {0}");
+				model.ProxyInterfaceName = ClassForNameChecked(proxyNode.Value, mappings, "proxy class not found: {0}").AssemblyQualifiedName;
 				model.IsLazy = true;
 			}
 			else if (model.IsLazy)
-				model.ProxyInterface = model.MappedClass;
+				model.ProxyInterfaceName = model.MappedClass.AssemblyQualifiedName;
 
 			// DISCRIMINATOR
 			XmlAttribute discriminatorNode = node.Attributes["discriminator-value"];
-			model.DiscriminatorValue = (discriminatorNode == null) ? model.Name : discriminatorNode.Value;
+			model.DiscriminatorValue = (discriminatorNode == null) ? model.EntityName : discriminatorNode.Value;
 
 			// DYNAMIC UPDATE
 			XmlAttribute dynamicNode = node.Attributes["dynamic-update"];
@@ -185,7 +185,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				//persister = typeof( EntityPersister );
 			}
 			else
-				model.ClassPersisterClass =
+				model.EntityPersisterClass =
 					ClassForNameChecked(persisterNode.Value, mappings, "could not instantiate persister class: {0}");
 
 			// CUSTOM SQL
@@ -209,7 +209,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindJoin(XmlNode node, Join join)
 		{
 			PersistentClass persistentClass = join.PersistentClass;
-			String path = persistentClass.Name;
+			String path = persistentClass.EntityName;
 
 			// TABLENAME
 
@@ -233,7 +233,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (nullNode != null)
 				join.IsOptional = "true".Equals(nullNode.Value);
 
-			log.InfoFormat("Mapping class join: {0} -> {1}", persistentClass.Name, join.Table.Name);
+			log.InfoFormat("Mapping class join: {0} -> {1}", persistentClass.EntityName, join.Table.Name);
 
 			// KEY
 			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
@@ -241,7 +241,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			join.Key = key;
 			if (keyNode.Attributes["on-delete"] != null)
 				key.IsCascadeDeleteEnabled = "cascade".Equals(keyNode.Attributes["on-delete"].Value);
-			BindSimpleValue(keyNode, key, false, persistentClass.Name);
+			BindSimpleValue(keyNode, key, false, persistentClass.EntityName);
 
 			join.CreatePrimaryKey(dialect);
 			join.CreateForeignKey();
@@ -386,7 +386,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			XmlAttribute tableNameNode = node.Attributes["table"];
 			if (tableNameNode == null)
-				return mappings.NamingStrategy.ClassToTableName(model.Name);
+				return mappings.NamingStrategy.ClassToTableName(model.EntityName);
 			else
 				return mappings.NamingStrategy.TableName(tableNameNode.Value);
 		}

@@ -282,7 +282,7 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public bool HasPojoRepresentation
+		public bool HasPocoRepresentation
 		{
 			get { return componentClassName != null; }
 		}

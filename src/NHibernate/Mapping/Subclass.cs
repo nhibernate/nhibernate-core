@@ -15,7 +15,6 @@ namespace NHibernate.Mapping
 	public class Subclass : PersistentClass
 	{
 		private PersistentClass superclass;
-		private IKeyValue key;
 		private System.Type classPersisterClass;
 		private readonly int subclassId;
 
@@ -26,121 +25,12 @@ namespace NHibernate.Mapping
 		public Subclass(PersistentClass superclass)
 		{
 			this.superclass = superclass;
-			subclassId = NextSubclassId();
-		}
-
-		internal override int NextSubclassId()
-		{
-			return Superclass.NextSubclassId();
+			subclassId = superclass.NextSubclassId();
 		}
 
 		public override int SubclassId
 		{
 			get { return subclassId; }
-		}
-
-		/// <summary>
-		/// Gets or sets the CacheConcurrencyStrategy
-		/// to use to read/write instances of the persistent class to the Cache.
-		/// </summary>
-		/// <value>The CacheConcurrencyStrategy used with the Cache.</value>
-		public override string CacheConcurrencyStrategy
-		{
-			get { return Superclass.CacheConcurrencyStrategy; }
-			set { Superclass.CacheConcurrencyStrategy = value; }
-		}
-
-		/// <summary>
-		/// Gets the <see cref="RootClass"/> of the class that is mapped in the <c>class</c> element.
-		/// </summary>
-		/// <value>
-		/// The <see cref="RootClass"/> of the Superclass that is mapped in the <c>class</c> element.
-		/// </value>
-		public override RootClass RootClazz
-		{
-			get { return Superclass.RootClazz; }
-		}
-
-		/// <summary>
-		/// Gets or sets the <see cref="PersistentClass"/> that this mapped class is extending.
-		/// </summary>
-		/// <value>
-		/// The <see cref="PersistentClass"/> that this mapped class is extending.
-		/// </value>
-		public override PersistentClass Superclass
-		{
-			get { return superclass; }
-			set { superclass = value; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public override System.Type ClassPersisterClass
-		{
-			get
-			{
-				if (classPersisterClass == null)
-				{
-					return Superclass.ClassPersisterClass;
-				}
-				else
-				{
-					return classPersisterClass;
-				}
-			}
-			set { classPersisterClass = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the <see cref="Property"/> that is used as the <c>id</c>.
-		/// </summary>
-		/// <value>
-		/// The <see cref="Property"/> from the Superclass that is used as the <c>id</c>.
-		/// </value>
-		public override Property IdentifierProperty
-		{
-			get { return Superclass.IdentifierProperty; }
-			set { Superclass.IdentifierProperty = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the identifier.
-		/// </summary>
-		/// <value>The <see cref="SimpleValue"/> from the Superclass that contains information about the identifier.</value>
-		public override SimpleValue Identifier
-		{
-			get { return Superclass.Identifier; }
-			set { Superclass.Identifier = value; }
-		}
-
-		/// <summary>
-		/// Gets a boolean indicating if the mapped class has a Property for the <c>id</c>.
-		/// </summary>
-		/// <value><see langword="true" /> if in the Superclass there is a Property for the <c>id</c>.</value>
-		public override bool HasIdentifierProperty
-		{
-			get { return Superclass.HasIdentifierProperty; }
-		}
-
-		/// <summary>
-		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the discriminator.
-		/// </summary>
-		/// <value>The <see cref="SimpleValue"/> from the Superclass that contains information about the discriminator.</value>
-		public override SimpleValue Discriminator
-		{
-			get { return Superclass.Discriminator; }
-			set { Superclass.Discriminator = value; }
-		}
-
-		/// <summary>
-		/// Gets or set a boolean indicating if the mapped class has properties that can be changed.
-		/// </summary>
-		/// <value><see langword="true" /> if the Superclass is mutable.</value>
-		public override bool IsMutable
-		{
-			get { return Superclass.IsMutable; }
-			set { Superclass.IsMutable = value; }
 		}
 
 		/// <summary>
@@ -152,60 +42,6 @@ namespace NHibernate.Mapping
 		public override bool IsInherited
 		{
 			get { return true; }
-		}
-
-		/// <summary>
-		/// Gets or sets if the mapped class is a subclass.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> since this mapped class is a subclass.
-		/// </value>
-		/// <remarks>
-		/// The setter should not be used to set the value to anything but <see langword="true" />.  
-		/// </remarks>
-		public override bool IsPolymorphic
-		{
-			get { return true; }
-			set
-			{
-				if (value != true)
-				{
-					throw new AssertionFailure("IsPolymorphic has to be true for subclasses.  There is a bug in NHibernate somewhere.");
-				}
-			}
-		}
-
-		/// <summary>
-		/// Add the <see cref="Property"/> to this PersistentClass.
-		/// </summary>
-		/// <param name="p">The <see cref="Property"/> to add.</param>
-		/// <remarks>
-		/// This also adds the <see cref="Property"/> to the Superclass' collection
-		/// of SubclassType Properties.
-		/// </remarks>
-		public override void AddProperty(Property p)
-		{
-			base.AddProperty(p);
-			Superclass.AddSubclassProperty(p);
-		}
-
-		public override void AddJoin(Join join)
-		{
-			base.AddJoin(join);
-			Superclass.AddSubclassJoin(join);
-		}
-
-		/// <summary>
-		/// Gets or Sets the <see cref="Table"/> that this class is stored in.
-		/// </summary>
-		/// <value>The <see cref="Table"/> this class is stored in.</value>
-		/// <remarks>
-		/// This also adds the <see cref="Table"/> to the Superclass' collection
-		/// of SubclassType Tables.
-		/// </remarks>
-		public override Table Table
-		{
-			get { return Superclass.Table; }
 		}
 
 		/// <summary>
@@ -239,6 +75,241 @@ namespace NHibernate.Mapping
 		public override IEnumerable<Table> TableClosureIterator
 		{
 			get { return new JoinedEnumerable<Table>(Superclass.TableClosureIterator, new SingletonEnumerable<Table>(Table)); }
+		}
+
+		public override IEnumerable<IKeyValue> KeyClosureIterator
+		{
+			get { return new JoinedEnumerable<IKeyValue>(Superclass.KeyClosureIterator, new SingletonEnumerable<IKeyValue>(Key)); }
+		}
+
+		/// <summary>
+		/// Gets a boolean indicating if the mapped class has a version property.
+		/// </summary>
+		/// <value><see langword="true" /> if for the Superclass there is a Property for a <c>version</c>.</value>
+		public override bool IsVersioned
+		{
+			get { return Superclass.IsVersioned; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public override System.Type EntityPersisterClass
+		{
+			get
+			{
+				if (classPersisterClass == null)
+				{
+					return Superclass.EntityPersisterClass;
+				}
+				else
+				{
+					return classPersisterClass;
+				}
+			}
+			set { classPersisterClass = value; }
+		}
+
+		/// <summary>
+		/// Gets the <see cref="Table"/> of the class
+		/// that is mapped in the <c>class</c> element.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Table"/> of the Superclass that is mapped in the <c>class</c> element.
+		/// </value>
+		public override Table RootTable
+		{
+			get { return Superclass.RootTable; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public override bool IsJoinedSubclass
+		{
+			get { return Table != RootTable; }
+		}
+
+		public override int JoinClosureSpan
+		{
+			get { return Superclass.JoinClosureSpan + base.JoinClosureSpan; }
+		}
+
+		public override int PropertyClosureSpan
+		{
+			get { return Superclass.PropertyClosureSpan + base.PropertyClosureSpan; }
+		}
+
+		public override IEnumerable<Join> JoinClosureIterator
+		{
+			get { return new JoinedEnumerable<Join>(Superclass.JoinClosureIterator, base.JoinClosureIterator); }
+		}
+
+		public override ISet<string> SynchronizedTables
+		{
+			get
+			{
+				HashedSet<string> result = new HashedSet<string>();
+				result.AddAll(synchronizedTables);
+				result.AddAll(Superclass.SynchronizedTables);
+				return result;
+			}
+		}
+
+		public override IDictionary<string, string> FilterMap
+		{
+			get { return Superclass.FilterMap; }
+		}
+
+		public override IDictionary<EntityMode, System.Type> TuplizerMap
+		{
+			get
+			{
+				IDictionary<EntityMode, System.Type> specificTuplizerDefs = base.TuplizerMap;
+				IDictionary<EntityMode, System.Type> superclassTuplizerDefs = Superclass.TuplizerMap;
+				if (specificTuplizerDefs == null && superclassTuplizerDefs == null)
+				{
+					return null;
+				}
+				else
+				{
+					IDictionary<EntityMode, System.Type> combined = new Dictionary<EntityMode, System.Type>();
+					if (superclassTuplizerDefs != null)
+					{
+						ArrayHelper.AddAll(combined, superclassTuplizerDefs);
+					}
+					if (specificTuplizerDefs != null)
+					{
+						ArrayHelper.AddAll(combined, specificTuplizerDefs);
+					}
+					return combined;
+				}
+			}
+		}
+
+		internal override int NextSubclassId()
+		{
+			return Superclass.NextSubclassId();
+		}
+
+		/// <summary>
+		/// Gets or sets the CacheConcurrencyStrategy
+		/// to use to read/write instances of the persistent class to the Cache.
+		/// </summary>
+		/// <value>The CacheConcurrencyStrategy used with the Cache.</value>
+		public override string CacheConcurrencyStrategy
+		{
+			get { return Superclass.CacheConcurrencyStrategy; }
+			set { /* Don't change the SuperClass */ }
+		}
+
+		/// <summary>
+		/// Gets the <see cref="RootClazz"/> of the class that is mapped in the <c>class</c> element.
+		/// </summary>
+		/// <value>
+		/// The <see cref="RootClazz"/> of the Superclass that is mapped in the <c>class</c> element.
+		/// </value>
+		public override RootClass RootClazz
+		{
+			get { return Superclass.RootClazz; }
+		}
+
+		/// <summary>
+		/// Gets or sets the <see cref="PersistentClass"/> that this mapped class is extending.
+		/// </summary>
+		/// <value>
+		/// The <see cref="PersistentClass"/> that this mapped class is extending.
+		/// </value>
+		public override PersistentClass Superclass
+		{
+			get { return superclass; }
+			set { superclass = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the <see cref="Property"/> that is used as the <c>id</c>.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Property"/> from the Superclass that is used as the <c>id</c>.
+		/// </value>
+		public override Property IdentifierProperty
+		{
+			get { return Superclass.IdentifierProperty; }
+			set { /* Don't change the SuperClass */ }
+		}
+
+		/// <summary>
+		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the identifier.
+		/// </summary>
+		/// <value>The <see cref="SimpleValue"/> from the Superclass that contains information about the identifier.</value>
+		public override IKeyValue Identifier
+		{
+			get { return Superclass.Identifier; }
+			set { /* Don't change the SuperClass */ }
+		}
+
+		/// <summary>
+		/// Gets a boolean indicating if the mapped class has a Property for the <c>id</c>.
+		/// </summary>
+		/// <value><see langword="true" /> if in the Superclass there is a Property for the <c>id</c>.</value>
+		public override bool HasIdentifierProperty
+		{
+			get { return Superclass.HasIdentifierProperty; }
+		}
+
+		/// <summary>
+		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the discriminator.
+		/// </summary>
+		/// <value>The <see cref="SimpleValue"/> from the Superclass that contains information about the discriminator.</value>
+		public override IValue Discriminator
+		{
+			get { return Superclass.Discriminator; }
+			set { /* Don't change the SuperClass */ }
+		}
+
+		/// <summary>
+		/// Gets or set a boolean indicating if the mapped class has properties that can be changed.
+		/// </summary>
+		/// <value><see langword="true" /> if the Superclass is mutable.</value>
+		public override bool IsMutable
+		{
+			get { return Superclass.IsMutable; }
+			set { /* Don't change the SuperClass */ }
+		}
+
+		/// <summary>
+		/// Gets or sets if the mapped class is a subclass.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> since this mapped class is a subclass.
+		/// </value>
+		/// <remarks>
+		/// The setter should not be used to set the value to anything but <see langword="true" />.  
+		/// </remarks>
+		public override bool IsPolymorphic
+		{
+			get { return true; }
+			set { /* Don't change the SuperClass */ }
+		}
+
+		/// <summary>
+		/// Add the <see cref="Property"/> to this PersistentClass.
+		/// </summary>
+		/// <param name="p">The <see cref="Property"/> to add.</param>
+		/// <remarks>
+		/// This also adds the <see cref="Property"/> to the Superclass' collection
+		/// of SubclassType Properties.
+		/// </remarks>
+		public override void AddProperty(Property p)
+		{
+			base.AddProperty(p);
+			Superclass.AddSubclassProperty(p);
+		}
+
+		public override void AddJoin(Join join)
+		{
+			base.AddJoin(join);
+			Superclass.AddSubclassJoin(join);
 		}
 
 		/// <summary>
@@ -276,22 +347,13 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets a boolean indicating if the mapped class has a version property.
-		/// </summary>
-		/// <value><see langword="true" /> if for the Superclass there is a Property for a <c>version</c>.</value>
-		public override bool IsVersioned
-		{
-			get { return Superclass.IsVersioned; }
-		}
-
-		/// <summary>
 		/// Gets or sets the <see cref="Property"/> that is used as the version.
 		/// </summary>
 		/// <value>The <see cref="Property"/> from the Superclass that is used as the version.</value>
 		public override Property Version
 		{
 			get { return Superclass.Version; }
-			set { Superclass.Version = value; }
+			set { /* Don't change the SuperClass */ }
 		}
 
 		/// <summary>
@@ -307,19 +369,7 @@ namespace NHibernate.Mapping
 		public override bool HasEmbeddedIdentifier
 		{
 			get { return Superclass.HasEmbeddedIdentifier; }
-			set { Superclass.HasEmbeddedIdentifier = value; }
-		}
-
-		/// <summary>
-		/// Gets the <see cref="Table"/> of the class
-		/// that is mapped in the <c>class</c> element.
-		/// </summary>
-		/// <value>
-		/// The <see cref="Table"/> of the Superclass that is mapped in the <c>class</c> element.
-		/// </value>
-		public override Table RootTable
-		{
-			get { return Superclass.RootTable; }
+			set { /* Don't change the SuperClass */ }
 		}
 
 		/// <summary>
@@ -328,18 +378,8 @@ namespace NHibernate.Mapping
 		/// <value>The <see cref="SimpleValue"/> that contains information about the Key.</value>
 		public override IKeyValue Key
 		{
-			get
-			{
-				if (key == null)
-				{
-					return Identifier;
-				}
-				else
-				{
-					return key;
-				}
-			}
-			set { key = value; }
+			get { return Superclass.Identifier; }
+			set { /* Don't change the SuperClass */ }
 		}
 
 		/// <summary>
@@ -351,7 +391,7 @@ namespace NHibernate.Mapping
 		public override bool IsExplicitPolymorphism
 		{
 			get { return Superclass.IsExplicitPolymorphism; }
-			set { Superclass.IsExplicitPolymorphism = value; }
+			set { /* Don't change the SuperClass */ }
 		}
 
 		/// <summary>
@@ -373,9 +413,47 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		public override bool IsJoinedSubclass
+		public void CreateForeignKey()
 		{
-			get { return Table != RootTable; }
+			if (!IsJoinedSubclass)
+			{
+				throw new AssertionFailure("Not a joined-subclass");
+			}
+
+			Key.CreateForeignKeyOfEntity(Superclass.EntityName);
+		}
+
+		public override bool IsLazyPropertiesCacheable
+		{
+			get { return Superclass.IsLazyPropertiesCacheable; }
+		}
+
+		public override bool IsClassOrSuperclassJoin(Join join)
+		{
+			return base.IsClassOrSuperclassJoin(join) || Superclass.IsClassOrSuperclassJoin(join);
+		}
+
+		public override bool IsClassOrSuperclassTable(Table closureTable)
+		{
+			return base.IsClassOrSuperclassTable(closureTable) || Superclass.IsClassOrSuperclassTable(closureTable);
+		}
+
+		/// <summary>
+		/// Gets or Sets the <see cref="Table"/> that this class is stored in.
+		/// </summary>
+		/// <value>The <see cref="Table"/> this class is stored in.</value>
+		/// <remarks>
+		/// This also adds the <see cref="Table"/> to the Superclass' collection
+		/// of SubclassType Tables.
+		/// </remarks>
+		public override Table Table
+		{
+			get { return Superclass.Table; }
+		}
+
+		public override bool IsForceDiscriminator
+		{
+			get { return Superclass.IsForceDiscriminator; }
 		}
 
 		/// <summary>
@@ -391,70 +469,9 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		public override void Validate(IMapping mapping)
+		public override object Accept(IPersistentClassVisitor mv)
 		{
-			base.Validate(mapping);
-			if (Key != null && !Key.IsValid(mapping))
-			{
-				throw new MappingException(
-					string.Format("subclass key has wrong number of columns: {0} type: {1}", MappedClass.Name, Key.Type.Name));
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public void CreateForeignKey()
-		{
-			if (!IsJoinedSubclass)
-			{
-				throw new AssertionFailure("Not a joined-subclass");
-			}
-
-			Key.CreateForeignKeyOfEntity(Superclass.EntityName);
-		}
-
-		public override int JoinClosureSpan
-		{
-			get { return Superclass.JoinClosureSpan + base.JoinClosureSpan; }
-		}
-
-		public override int PropertyClosureSpan
-		{
-			get { return Superclass.PropertyClosureSpan + base.PropertyClosureSpan; }
-		}
-
-		public override IEnumerable<Join> JoinClosureIterator
-		{
-			get
-			{
-				return new JoinedEnumerable<Join>(Superclass.JoinClosureIterator, base.JoinClosureIterator);
-			}
-		}
-
-		public override bool IsClassOrSuperclassJoin(Join join)
-		{
-			return base.IsClassOrSuperclassJoin(join) || Superclass.IsClassOrSuperclassJoin(join);
-		}
-
-		public override bool IsClassOrSuperclassTable(Table closureTable)
-		{
-			return base.IsClassOrSuperclassTable(closureTable) || Superclass.IsClassOrSuperclassTable(closureTable);
-		}
-
-		public override ISet<string> SynchronizedTables
-		{
-			get
-			{
-				HashedSet<string> result = new HashedSet<string>();
-				result.AddAll(synchronizedTables);
-				result.AddAll(Superclass.SynchronizedTables);
-				return result;
-			}
+			return mv.Accept(this);
 		}
 
 		public override bool HasSubselectLoadableCollections
@@ -463,14 +480,23 @@ namespace NHibernate.Mapping
 			set { base.HasSubselectLoadableCollections = value; }
 		}
 
-		public override IDictionary<string, string> FilterMap
+		public override string GetTuplizerImplClassName(EntityMode mode)
 		{
-			get { return Superclass.FilterMap; }
+			string impl = base.GetTuplizerImplClassName(mode);
+			if (impl == null)
+				impl = Superclass.GetTuplizerImplClassName(mode);
+
+			return impl;
 		}
 
-		public override bool IsLazyPropertiesCacheable
+		public override Component IdentifierMapper
 		{
-			get { return Superclass.IsLazyPropertiesCacheable; }
+			get { return superclass.IdentifierMapper; }
+		}
+
+		public override OptimisticLockMode OptimisticLockMode
+		{
+			get { return superclass.OptimisticLockMode; }
 		}
 	}
 }

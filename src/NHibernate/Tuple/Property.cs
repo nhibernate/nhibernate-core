@@ -6,15 +6,12 @@ namespace NHibernate.Tuple
 	/// <summary>
 	/// Defines the basic contract of a Property within the runtime metamodel.
 	/// </summary>
-	/// <remarks>
-	/// Author: Steve Ebersole
-	/// </remarks>
 	[Serializable]
 	public abstract class Property
 	{
-		private string name;
-		private string node;
-		private IType type;
+		private readonly string name;
+		private readonly string node;
+		private readonly IType type;
 
 		/// <summary>
 		/// Constructor for Property instances.

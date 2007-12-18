@@ -31,30 +31,157 @@ namespace NHibernate.Mapping
 		public const string DefaultDiscriminatorColumnName = "class";
 
 		private Property identifierProperty;
-		private SimpleValue identifier;
+		private IKeyValue identifier;
 		private Property version;
 		private bool polymorphic;
 		private string cacheConcurrencyStrategy;
 		private string cacheRegionName;
-		private SimpleValue discriminator;
+		private bool lazyPropertiesCacheable = true;
+		private IValue discriminator;
 		private bool mutable;
 		private bool embeddedIdentifier = false;
 		private bool explicitPolymorphism;
-		private System.Type classPersisterClass;
+		private System.Type entityPersisterClass;
 		private bool forceDiscriminator;
 		private string where;
 		private Table table;
 		private bool discriminatorInsertable = true;
 		private int nextSubclassId = 0;
 
-		internal override int NextSubclassId()
-		{
-			return ++nextSubclassId;
-		}
-
 		public override int SubclassId
 		{
 			get { return 0; }
+		}
+
+		/// <summary>
+		/// Gets a boolean indicating if this mapped class is inherited from another. 
+		/// </summary>
+		/// <value>
+		/// <see langword="false" /> because this is the root mapped class.
+		/// </value>
+		public override bool IsInherited
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Property"/> objects that this mapped class contains.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Property"/> objects that 
+		/// this mapped class contains.
+		/// </value>
+		public override IEnumerable<Property> PropertyClosureIterator
+		{
+			get { return PropertyIterator; }
+		}
+
+		/// <summary>
+		/// Gets an <see cref="ICollection"/> of <see cref="Table"/> objects that this 
+		/// mapped class reads from and writes to.
+		/// </summary>
+		/// <value>
+		/// An <see cref="ICollection"/> of <see cref="Table"/> objects that 
+		/// this mapped class reads from and writes to.
+		/// </value>
+		/// <remarks>
+		/// There is only one <see cref="Table"/> in the <see cref="ICollection"/> since
+		/// this is the root class.
+		/// </remarks>
+		public override IEnumerable<Table> TableClosureIterator
+		{
+			get { return new SingletonEnumerable<Table>(Table); }
+		}
+
+		public override IEnumerable<IKeyValue> KeyClosureIterator
+		{
+			get { return new SingletonEnumerable<IKeyValue>(Key); }
+		}
+
+		/// <summary>
+		/// Gets a boolean indicating if the mapped class has a version property.
+		/// </summary>
+		/// <value><see langword="true" /> if there is a Property for a <c>version</c>.</value>
+		public override bool IsVersioned
+		{
+			get { return version != null; }
+		}
+
+		public override System.Type EntityPersisterClass
+		{
+			get { return entityPersisterClass; }
+			set { entityPersisterClass = value; }
+		}
+
+		/// <summary>
+		/// Gets the <see cref="Table"/> of the class
+		/// that is mapped in the <c>class</c> element.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Table"/> of the class this mapped class.
+		/// </value>
+		public override Table RootTable
+		{
+			get { return Table; }
+		}
+
+		/// <summary>
+		/// Gets or sets a boolean indicating if the identifier is 
+		/// embedded in the class.
+		/// </summary>
+		/// <value><see langword="true" /> if the class identifies itself.</value>
+		/// <remarks>
+		/// An embedded identifier is true when using a <c>composite-id</c> specifying
+		/// properties of the class as the <c>key-property</c> instead of using a class
+		/// as the <c>composite-id</c>.
+		/// </remarks>
+		public override bool HasEmbeddedIdentifier
+		{
+			get { return embeddedIdentifier; }
+			set { embeddedIdentifier = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the cache region name.
+		/// </summary>
+		/// <value>The region name used with the Cache.</value>
+		public string CacheRegionName
+		{
+			get { return cacheRegionName ?? EntityName; }
+			set { cacheRegionName = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public override bool IsJoinedSubclass
+		{
+			get { return false; }
+		}
+
+		public override ISet<string> SynchronizedTables
+		{
+			get { return synchronizedTables; }
+		}
+
+		public virtual ISet<Table> IdentityTables
+		{
+			get
+			{
+				ISet<Table> tables = new HashedSet<Table>();
+				foreach (PersistentClass clazz in SubclassClosureIterator)
+				{
+					if (!clazz.IsAbstract.GetValueOrDefault())
+						tables.Add(clazz.IdentityTable);
+				}
+				return tables;
+			}
+
+		}
+
+		internal override int NextSubclassId()
+		{
+			return ++nextSubclassId;
 		}
 
 		public override Table Table
@@ -87,7 +214,7 @@ namespace NHibernate.Mapping
 		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the identifier.
 		/// </summary>
 		/// <value>The <see cref="SimpleValue"/> that contains information about the identifier.</value>
-		public override SimpleValue Identifier
+		public override IKeyValue Identifier
 		{
 			get { return identifier; }
 			set { identifier = value; }
@@ -106,21 +233,10 @@ namespace NHibernate.Mapping
 		/// Gets or sets the <see cref="SimpleValue"/> that contains information about the discriminator.
 		/// </summary>
 		/// <value>The <see cref="SimpleValue"/> that contains information about the discriminator.</value>
-		public override SimpleValue Discriminator
+		public override IValue Discriminator
 		{
 			get { return discriminator; }
 			set { discriminator = value; }
-		}
-
-		/// <summary>
-		/// Gets a boolean indicating if this mapped class is inherited from another. 
-		/// </summary>
-		/// <value>
-		/// <see langword="false" /> because this is the root mapped class.
-		/// </value>
-		public override bool IsInherited
-		{
-			get { return false; }
 		}
 
 		/// <summary>
@@ -136,7 +252,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets the <see cref="RootClass"/> of the class that is mapped in the <c>class</c> element.
+		/// Gets the <see cref="RootClazz"/> of the class that is mapped in the <c>class</c> element.
 		/// </summary>
 		/// <value>
 		/// <c>this</c> since this is the root mapped class.
@@ -144,35 +260,6 @@ namespace NHibernate.Mapping
 		public override RootClass RootClazz
 		{
 			get { return this; }
-		}
-
-		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="Property"/> objects that this mapped class contains.
-		/// </summary>
-		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Property"/> objects that 
-		/// this mapped class contains.
-		/// </value>
-		public override IEnumerable<Property> PropertyClosureIterator
-		{
-			get { return PropertyIterator; }
-		}
-
-		/// <summary>
-		/// Gets an <see cref="ICollection"/> of <see cref="Table"/> objects that this 
-		/// mapped class reads from and writes to.
-		/// </summary>
-		/// <value>
-		/// An <see cref="ICollection"/> of <see cref="Table"/> objects that 
-		/// this mapped class reads from and writes to.
-		/// </value>
-		/// <remarks>
-		/// There is only one <see cref="Table"/> in the <see cref="ICollection"/> since
-		/// this is the root class.
-		/// </remarks>
-		public override IEnumerable<Table> TableClosureIterator
-		{
-			get { return new SingletonEnumerable<Table>(Table); }
 		}
 
 		/// <summary>
@@ -213,36 +300,6 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
-		/// Gets a boolean indicating if the mapped class has a version property.
-		/// </summary>
-		/// <value><see langword="true" /> if there is a Property for a <c>version</c>.</value>
-		public override bool IsVersioned
-		{
-			get { return version != null; }
-		}
-
-		/// <summary>
-		/// Gets or sets the CacheConcurrencyStrategy
-		/// to use to read/write instances of the persistent class to the Cache.
-		/// </summary>
-		/// <value>The CacheConcurrencyStrategy used with the Cache.</value>
-		public override string CacheConcurrencyStrategy
-		{
-			get { return cacheConcurrencyStrategy; }
-			set { cacheConcurrencyStrategy = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the cache region name.
-		/// </summary>
-		/// <value>The region name used with the Cache.</value>
-		public string CacheRegionName
-		{
-			get { return cacheRegionName == null ? Name : cacheRegionName; }
-			set { cacheRegionName = value; }
-		}
-
-		/// <summary>
 		/// Gets or set a boolean indicating if the mapped class has properties that can be changed.
 		/// </summary>
 		/// <value><see langword="true" /> if the object is mutable.</value>
@@ -250,44 +307,6 @@ namespace NHibernate.Mapping
 		{
 			get { return mutable; }
 			set { mutable = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a boolean indicating if the identifier is 
-		/// embedded in the class.
-		/// </summary>
-		/// <value><see langword="true" /> if the class identifies itself.</value>
-		/// <remarks>
-		/// An embedded identifier is true when using a <c>composite-id</c> specifying
-		/// properties of the class as the <c>key-property</c> instead of using a class
-		/// as the <c>composite-id</c>.
-		/// </remarks>
-		public override bool HasEmbeddedIdentifier
-		{
-			get { return embeddedIdentifier; }
-			set { embeddedIdentifier = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the <see cref="System.Type"/> of the Persister.
-		/// </summary>
-		/// <value>The <see cref="System.Type"/> of the Persister.</value>
-		public override System.Type ClassPersisterClass
-		{
-			get { return classPersisterClass; }
-			set { classPersisterClass = value; }
-		}
-
-		/// <summary>
-		/// Gets the <see cref="Table"/> of the class
-		/// that is mapped in the <c>class</c> element.
-		/// </summary>
-		/// <value>
-		/// The <see cref="Table"/> of the class this mapped class.
-		/// </value>
-		public override Table RootTable
-		{
-			get { return Table; }
 		}
 
 		/// <summary>
@@ -317,6 +336,15 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		public override bool IsDiscriminatorInsertable
+		{
+			get { return discriminatorInsertable; }
+			set { discriminatorInsertable = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets a boolean indicating if only values in the discriminator column that
 		/// are mapped will be included in the sql.
 		/// </summary>
@@ -324,7 +352,7 @@ namespace NHibernate.Mapping
 		public override bool IsForceDiscriminator
 		{
 			get { return forceDiscriminator; }
-			set { this.forceDiscriminator = value; }
+			set { forceDiscriminator = value; }
 		}
 
 		/// <summary>
@@ -342,23 +370,6 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		public override bool IsJoinedSubclass
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public override bool IsDiscriminatorInsertable
-		{
-			get { return discriminatorInsertable; }
-			set { discriminatorInsertable = value; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="mapping"></param>
 		public override void Validate(IMapping mapping)
 		{
@@ -366,17 +377,48 @@ namespace NHibernate.Mapping
 			if (!Identifier.IsValid(mapping))
 			{
 				throw new MappingException(
-					string.Format("identifier mapping has wrong number of columns: {0} type: {1}", MappedClass.Name,
+					string.Format("identifier mapping has wrong number of columns: {0} type: {1}", EntityName,
 					              Identifier.Type.Name));
+			}
+			CheckCompositeIdentifier();
+		}
+
+		private void CheckCompositeIdentifier()
+		{
+			Component id = Identifier as Component;
+			if (id!=null)
+			{
+				if (!id.IsDynamic)
+				{
+					System.Type idClass = id.ComponentClass;
+					if (idClass != null && !ReflectHelper.OverridesEquals(idClass))
+					{
+						log.Warn("composite-id class does not override Equals(): " + id.ComponentClass.FullName);
+					}
+					if (!ReflectHelper.OverridesGetHashCode(idClass))
+					{
+						log.Warn("composite-id class does not override GetHashCode(): " + id.ComponentClass.FullName);
+					}
+					// NH: Not ported
+					//if (!typeof(System.Runtime.Serialization.ISerializable).IsAssignableFrom(idClass))
+					//{
+					//  throw new MappingException("composite-id class must implement Serializable: " + id.ComponentClass.FullName);
+					//}
+				}
 			}
 		}
 
-		public override ISet<string> SynchronizedTables
+		/// <summary>
+		/// Gets or sets the CacheConcurrencyStrategy
+		/// to use to read/write instances of the persistent class to the Cache.
+		/// </summary>
+		/// <value>The CacheConcurrencyStrategy used with the Cache.</value>
+		public override string CacheConcurrencyStrategy
 		{
-			get { return synchronizedTables; }
+			get { return cacheConcurrencyStrategy; }
+			set { cacheConcurrencyStrategy = value; }
 		}
 
-		private bool lazyPropertiesCacheable = true;
 		public override bool IsLazyPropertiesCacheable
 		{
 			get { return lazyPropertiesCacheable; }
@@ -387,19 +429,9 @@ namespace NHibernate.Mapping
 			lazyPropertiesCacheable = isLazyPropertiesCacheable;
 		}
 
-		public virtual ISet<Table> IdentityTables
+		public override object Accept(IPersistentClassVisitor mv)
 		{
-			get
-			{
-				ISet<Table> tables = new HashedSet<Table>();
-				foreach (PersistentClass clazz in SubclassClosureIterator)
-				{
-					if (!clazz.IsAbstract.GetValueOrDefault())
-						tables.Add(clazz.IdentityTable);
-				}
-				return tables;
-			}
-
+			return mv.Accept(this);
 		}
 	}
 }

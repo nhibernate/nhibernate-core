@@ -38,10 +38,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private static SimpleValue CreateIdentifier(HbmId idSchema, PersistentClass rootClass, Table table)
 		{
-			rootClass.Identifier = new SimpleValue(table);
-			rootClass.Identifier.TypeName = idSchema.type;
+			SimpleValue iv = new SimpleValue(table);
+			iv.TypeName = idSchema.type;
+			rootClass.Identifier = iv;
 
-			return rootClass.Identifier;
+			return iv;
 		}
 
 		private void AddColumns(HbmId idSchema, SimpleValue id)

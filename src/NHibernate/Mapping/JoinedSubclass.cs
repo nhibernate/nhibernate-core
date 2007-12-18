@@ -33,10 +33,6 @@ namespace NHibernate.Mapping
 			set { key = value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
 		public override void Validate(IMapping mapping)
 		{
 			base.Validate(mapping);

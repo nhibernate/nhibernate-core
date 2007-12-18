@@ -15,11 +15,13 @@ namespace NHibernate.Tuple
 	[Serializable]
 	public class IdentifierProperty : Property
 	{
-		private bool isVirtual;
-		private bool embedded;
-		private IdentifierValue unsavedValue;
-		private IIdentifierGenerator identifierGenerator;
-		private bool identifierAssignedByInsert;
+		private readonly bool isVirtual;
+		private readonly bool embedded;
+		private readonly IdentifierValue unsavedValue;
+		private readonly IIdentifierGenerator identifierGenerator;
+		private readonly bool identifierAssignedByInsert;
+		private readonly bool hasIdentifierMapper;
+
 
 		/// <summary>
 		/// Construct a non-virtual identifier property. 
@@ -42,12 +44,13 @@ namespace NHibernate.Tuple
 			IIdentifierGenerator identifierGenerator)
 			: base(name, node, type)
 		{
-			this.isVirtual = false;
+			isVirtual = false;
 			this.embedded = embedded;
+			hasIdentifierMapper = false;
 			this.unsavedValue = unsavedValue;
 			this.identifierGenerator = identifierGenerator;
-			this.identifierAssignedByInsert = identifierGenerator is IdentityGenerator;
-			// TODO H3: identifierGenerator is PostInsertIdentifierGenerator;
+			// TODO H3 identifierAssignedByInsert = identifierGenerator is IPostInsertIdentifierGenerator;
+			identifierAssignedByInsert = identifierGenerator is IdentityGenerator;
 		}
 
 		/// <summary>
@@ -58,19 +61,17 @@ namespace NHibernate.Tuple
 		/// <param name="unsavedValue">The value which, if found as the value on the identifier
 		/// property, represents new (i.e., un-saved) instances of the owning entity.</param>
 		/// <param name="identifierGenerator">The generator to use for id value generation.</param>
-		public IdentifierProperty(
-			IType type,
-			bool embedded,
-			IdentifierValue unsavedValue,
-			IIdentifierGenerator identifierGenerator)
+		/// <param name="hasIdentifierMapper"></param>
+		public IdentifierProperty(IType type, bool embedded, bool hasIdentifierMapper, IdentifierValue unsavedValue, IIdentifierGenerator identifierGenerator)
 			: base(null, null, type)
 		{
-			this.isVirtual = true;
+			isVirtual = true;
 			this.embedded = embedded;
+			this.hasIdentifierMapper = hasIdentifierMapper;
 			this.unsavedValue = unsavedValue;
 			this.identifierGenerator = identifierGenerator;
-			this.identifierAssignedByInsert = identifierGenerator is IdentityGenerator;
-			// TODO H3: identifierGenerator is PostInsertIdentifierGenerator;
+			// TODO H3 identifierAssignedByInsert = identifierGenerator is IPostInsertIdentifierGenerator;
+			identifierAssignedByInsert = identifierGenerator is IdentityGenerator;
 		}
 
 		public bool IsVirtual
@@ -96,6 +97,11 @@ namespace NHibernate.Tuple
 		public bool IsIdentifierAssignedByInsert
 		{
 			get { return identifierAssignedByInsert; }
+		}
+
+		public bool HasIdentifierMapper
+		{
+			get { return hasIdentifierMapper; }
 		}
 	}
 }

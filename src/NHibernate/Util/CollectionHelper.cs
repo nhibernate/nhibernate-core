@@ -404,6 +404,65 @@ namespace NHibernate.Util
 			#endregion
 		}
 
+		public class EmptyEnumerableClass<T> : IEnumerable<T>
+		{
+			#region IEnumerable<T> Members
+
+			IEnumerator<T> IEnumerable<T>.GetEnumerator()
+			{
+				return new EmptyEnumerator<T>();
+			}
+
+			#endregion
+
+			#region IEnumerable Members
+
+			public IEnumerator GetEnumerator()
+			{
+				return ((IEnumerable<T>)this).GetEnumerator();
+			}
+
+			#endregion
+		}
+
+		private class EmptyEnumerator<T>: IEnumerator<T> 
+		{
+			#region IEnumerator<T> Members
+
+			T IEnumerator<T>.Current
+			{
+				get { throw new InvalidOperationException("EmptyEnumerator.get_Current"); }
+			}
+
+			#endregion
+
+			#region IDisposable Members
+
+			public void Dispose()
+			{
+			}
+
+			#endregion
+
+			#region IEnumerator Members
+
+			public bool MoveNext()
+			{
+				return false;
+			}
+
+			public void Reset()
+			{
+			}
+
+			public object Current
+			{
+				get { throw new InvalidOperationException("EmptyEnumerator.get_Current"); }
+			}
+
+			#endregion
+		}
+
 		/// <summary>
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>

@@ -23,6 +23,7 @@ namespace NHibernate.Mapping
 		private bool selectable = true;
 		private string propertyAccessorName;
 		private bool optional;
+		private string nodeName;
 		private IDictionary<string, MetaAttribute> metaAttributes;
 		private PersistentClass persistentClass;
 		private bool isOptimisticLocked;
@@ -282,7 +283,7 @@ namespace NHibernate.Mapping
 					// needs to change as well.  Partially, this is an issue with
 					// the overloading of the term "lazy" here...
 					ToOne toOneValue = (ToOne)propertyValue;
-					return toOneValue.IsLazy; //TODO H3.2 && toOneValue.UnwrapProxy;
+					return toOneValue.IsLazy && toOneValue.UnwrapProxy;
 				}
 				return isLazy;
 			}
@@ -298,6 +299,12 @@ namespace NHibernate.Mapping
 		{
 			get { return isNaturalIdentifier; }
 			set { isNaturalIdentifier = value; }
+		}
+
+		public string NodeName
+		{
+			get { return nodeName; }
+			set { nodeName = value; }
 		}
 	}
 }

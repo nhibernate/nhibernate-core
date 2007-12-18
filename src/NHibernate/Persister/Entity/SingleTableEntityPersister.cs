@@ -393,7 +393,7 @@ namespace NHibernate.Persister.Entity
 				IValue d = model.Discriminator;
 				if (d == null)
 				{
-					throw new MappingException("A discriminator mapping required for polymorphic persistence of " + model.Name);
+					throw new MappingException("A discriminator mapping required for polymorphic persistence of entity " + model.EntityName);
 				}
 				forceDiscriminator = model.IsForceDiscriminator;
 

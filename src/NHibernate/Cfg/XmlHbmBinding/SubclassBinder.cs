@@ -29,10 +29,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			BindClass(subnode, subclass);
 
-			if (subclass.ClassPersisterClass == null)
-				subclass.RootClazz.ClassPersisterClass = typeof(SingleTableEntityPersister);
+			if (subclass.EntityPersisterClass == null)
+				subclass.RootClazz.EntityPersisterClass = typeof(SingleTableEntityPersister);
 
-			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.Name, subclass.Table.Name);
+			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// properties
 			PropertiesFromXML(subnode, subclass);

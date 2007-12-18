@@ -30,33 +30,17 @@ namespace NHibernate.Tuple
 			IType type = mappedEntity.Identifier.Type;
 			Mapping.Property property = mappedEntity.IdentifierProperty;
 
-			IdentifierValue unsavedValue = UnsavedValueFactory.GetUnsavedIdentifierValue(
-				mappedUnsavedValue,
-				GetGetter(property),
-				type,
-				GetConstructor(mappedEntity)
-				);
+			IdentifierValue unsavedValue = UnsavedValueFactory.GetUnsavedIdentifierValue(mappedUnsavedValue, GetGetter(property), type, GetConstructor(mappedEntity));
 
 			if (property == null)
 			{
 				// this is a virtual id property...
-				return new IdentifierProperty(
-					type,
-					mappedEntity.HasEmbeddedIdentifier,
-					unsavedValue,
-					generator
-					);
+				return new IdentifierProperty(type, mappedEntity.HasEmbeddedIdentifier,
+					mappedEntity.HasIdentifierMapper, unsavedValue, generator);
 			}
 			else
 			{
-				return new IdentifierProperty(
-					property.Name,
-					null, // TODO H3: property.NodeName,
-					type,
-					mappedEntity.HasEmbeddedIdentifier,
-					unsavedValue,
-					generator
-					);
+				return new IdentifierProperty(property.Name, property.NodeName, type, mappedEntity.HasEmbeddedIdentifier, unsavedValue, generator);
 			}
 		}
 
@@ -78,13 +62,11 @@ namespace NHibernate.Tuple
 				GetConstructor(property.PersistentClass)
 				);
 
-			// TODO H3:
-			//bool lazy = lazyAvailable && property.IsLazy;
-			bool lazy = false;
+			bool lazy = lazyAvailable && property.IsLazy;
 
 			return new VersionProperty(
 				property.Name,
-				null, // TODO H3: property.NodeName,
+				property.NodeName,
 				property.Value.Type,
 				lazy,
 				property.IsInsertable,
@@ -122,9 +104,9 @@ namespace NHibernate.Tuple
 
 			return new StandardProperty(
 				property.Name,
-				null, // TODO H3: property.NodeName,
+				property.NodeName,
 				type,
-				false, // TODO H3: lazyAvailable && property.IsLazy,
+				lazyAvailable && property.IsLazy,
 				property.IsInsertable,
 				property.IsUpdateable,
 				property.Generation == PropertyGeneration.Insert || property.Generation == PropertyGeneration.Always,
@@ -139,9 +121,7 @@ namespace NHibernate.Tuple
 
 		private static ConstructorInfo GetConstructor(PersistentClass persistentClass)
 		{
-			if (persistentClass == null
-				// TODO H3: || !persistentClass.hasPojoRepresentation()
-				)
+			if (persistentClass == null || !persistentClass.HasPocoRepresentation)
 			{
 				return null;
 			}
@@ -158,16 +138,12 @@ namespace NHibernate.Tuple
 
 		private static IGetter GetGetter(Mapping.Property mappingProperty)
 		{
-			if (mappingProperty == null
-				// TODO H3: || !mappingProperty.PersistentClass.hasPojoRepresentation()
-				)
+			if (mappingProperty == null || !mappingProperty.PersistentClass.HasPocoRepresentation)
 			{
 				return null;
 			}
 
-			// TODO H3:
-			//IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor(mappingProperty, EntityMode.POJO);
-			IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor(mappingProperty.PropertyAccessorName);
+			IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor(mappingProperty, EntityMode.Poco);
 			return pa.GetGetter(mappingProperty.PersistentClass.MappedClass, mappingProperty.Name);
 		}
 	}

@@ -29,8 +29,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindClass(subnode, unionSubclass);
 
 			// union subclass
-			if (unionSubclass.ClassPersisterClass == null)
-				unionSubclass.RootClazz.ClassPersisterClass = typeof(UnionSubclassEntityPersister);
+			if (unionSubclass.EntityPersisterClass == null)
+				unionSubclass.RootClazz.EntityPersisterClass = typeof(UnionSubclassEntityPersister);
 
 			//table + schema names
 			XmlAttribute schemaNode = subnode.Attributes["schema"];
@@ -44,7 +44,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				                              unionSubclass.IsAbstract.GetValueOrDefault(), null, denormalizedSuperTable);
 			((ITableOwner)unionSubclass).Table = mytable;
 
-			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.Name, unionSubclass.Table.Name);
+			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
 
 			// properties
 			PropertiesFromXML(subnode, unionSubclass);

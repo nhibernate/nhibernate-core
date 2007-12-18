@@ -27,7 +27,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table table = mappings.AddTable(schema, catalog, tableName, null, rootClass.IsAbstract.GetValueOrDefault());
 			((ITableOwner) rootClass).Table = table;
 
-			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.Name, rootClass.Table.Name);
+			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.EntityName, rootClass.Table.Name);
 
 			rootClass.IsMutable = classSchema.mutable;
 			rootClass.Where = classSchema.where ?? rootClass.Where;
@@ -52,7 +52,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private string GetClassTableName(PersistentClass model, HbmClass classSchema)
 		{
 			if (classSchema.table == null)
-				return mappings.NamingStrategy.ClassToTableName(model.Name);
+				return mappings.NamingStrategy.ClassToTableName(model.EntityName);
 			else
 				return mappings.NamingStrategy.TableName(classSchema.table);
 		}

@@ -43,7 +43,7 @@ namespace NHibernate.Persister
 		public static IEntityPersister CreateClassPersister(PersistentClass model, ICacheConcurrencyStrategy cache,
 		                                                    ISessionFactoryImplementor factory, IMapping cfg)
 		{
-			System.Type persisterClass = model.ClassPersisterClass;
+			System.Type persisterClass = model.EntityPersisterClass;
 
 			if (persisterClass == null || persisterClass == typeof(SingleTableEntityPersister))
 			{

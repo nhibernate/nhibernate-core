@@ -735,6 +735,7 @@
     <Compile Include="Id\Insert\InsertSelectIdentityInsert.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Id\IPostInsertIdentifierGenerator.cs" />
     <Compile Include="Id\IPostInsertIdentityPersister.cs">
       <SubType>Code</SubType>
     </Compile>
