@@ -1,4 +1,4 @@
-namespace NHibernate.Search
+namespace NHibernate.Search.Attributes
 {
 	public enum Index
 	{

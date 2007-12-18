@@ -11,14 +11,14 @@ namespace NHibernate.Search.Tests.FieldAccess
 		[DocumentId]
 		private int id;
 
-		[Field(Index.Tokenized, Store = Store.Yes)]
+		[Field(Index.Tokenized, Store= Attributes.Store.Yes)]
 		[Boost(2)]
 		private string title;
 
-		[Field(Index.Tokenized, Name = "Abstract", Store = Store.No)]
+		[Field(Index.Tokenized, Name = "Abstract", Store= Attributes.Store.No)]
 		private string summary;
 		
-		[Field(Index.Tokenized, Store = Store.No)]
+		[Field(Index.Tokenized, Store= Attributes.Store.No)]
 		private string text;
 
 		public virtual int Id

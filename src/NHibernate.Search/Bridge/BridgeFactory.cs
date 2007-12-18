@@ -1,39 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Lucene.Net.Documents;
 using NHibernate.Search.Attributes;
-using NHibernate.Search.Bridge;
 using NHibernate.Search.Bridge.Builtin;
 
 namespace NHibernate.Search.Bridge
 {
-    public class BridgeFactory
+	public class BridgeFactory
     {
-        private static readonly Dictionary<string, IFieldBridge> builtInBridges = new Dictionary<string, IFieldBridge>();
+		private static readonly Dictionary<String, IFieldBridge> builtInBridges = new Dictionary<String, IFieldBridge>();
 
         private BridgeFactory()
         {
         }
 
-        public static readonly ITwoWayFieldBridge DOUBLE =
-            new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<double>());
-
-        public static readonly ITwoWayFieldBridge FLOAT =
-            new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<float>());
-
-        public static readonly ITwoWayFieldBridge SHORT =
-            new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<short>());
-
-        public static readonly ITwoWayFieldBridge INTEGER =
-            new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<int>());
-
-        public static readonly ITwoWayFieldBridge LONG =
-            new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<long>());
-
-        public static readonly ITwoWayFieldBridge STRING = new TwoWayString2FieldBridgeAdaptor(new StringBridge());
-
-        public static readonly ITwoWayFieldBridge BOOLEAN =
-            new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<bool>());
+        public static readonly ITwoWayFieldBridge DOUBLE = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<double>());
+        public static readonly ITwoWayFieldBridge FLOAT = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<float>());
+        public static readonly ITwoWayFieldBridge SHORT = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<short>());
+        public static readonly ITwoWayFieldBridge INTEGER = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<int>());
+        public static readonly ITwoWayFieldBridge LONG = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<long>());
+        public static readonly ITwoWayFieldBridge BOOLEAN = new TwoWayString2FieldBridgeAdaptor(new ValueTypeBridge<bool>());
+		public static readonly ITwoWayFieldBridge STRING = new TwoWayString2FieldBridgeAdaptor(new StringBridge());
 
         public static readonly IFieldBridge DATE_YEAR = new String2FieldBridgeAdaptor(DateBridge.DATE_YEAR);
         public static readonly IFieldBridge DATE_MONTH = new String2FieldBridgeAdaptor(DateBridge.DATE_MONTH);
@@ -47,15 +35,15 @@ namespace NHibernate.Search.Bridge
 
         static BridgeFactory()
         {
-            builtInBridges.Add(typeof(double).Name, DOUBLE);
-            builtInBridges.Add(typeof(float).Name, FLOAT);
-            builtInBridges.Add(typeof(short).Name, SHORT);
-            builtInBridges.Add(typeof(int).Name, INTEGER);
-            builtInBridges.Add(typeof(long).Name, LONG);
-            builtInBridges.Add(typeof(String).Name, STRING);
-            builtInBridges.Add(typeof(Boolean).Name, BOOLEAN);
+            builtInBridges.Add(typeof (double).Name, DOUBLE);
+            builtInBridges.Add(typeof (float).Name, FLOAT);
+            builtInBridges.Add(typeof (short).Name, SHORT);
+            builtInBridges.Add(typeof (int).Name, INTEGER);
+            builtInBridges.Add(typeof (long).Name, LONG);
+            builtInBridges.Add(typeof (String).Name, STRING);
+            builtInBridges.Add(typeof (Boolean).Name, BOOLEAN);
 
-            builtInBridges.Add(typeof(DateTime).Name, DATE_MILLISECOND);
+            builtInBridges.Add(typeof (DateTime).Name, DATE_MILLISECOND);
         }
 
         public static IFieldBridge GuessType(MemberInfo member)
@@ -68,16 +56,16 @@ namespace NHibernate.Search.Bridge
                 try
                 {
                     Object instance = Activator.CreateInstance(impl);
-                    if (typeof(IFieldBridge).IsAssignableFrom(impl))
+                    if (typeof (IFieldBridge).IsAssignableFrom(impl))
                     {
                         bridge = (IFieldBridge) instance;
                     }
-                    else if (typeof(ITwoWayStringBridge).IsAssignableFrom(impl))
+                    else if (typeof (ITwoWayStringBridge).IsAssignableFrom(impl))
                     {
                         bridge = new TwoWayString2FieldBridgeAdaptor(
                             (ITwoWayStringBridge) instance);
                     }
-                    else if (typeof(StringBridge).IsAssignableFrom(impl))
+                    else if (typeof (StringBridge).IsAssignableFrom(impl))
                     {
                         bridge = new String2FieldBridgeAdaptor((StringBridge) instance);
                     }

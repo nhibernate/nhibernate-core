@@ -1,6 +1,5 @@
 using System;
 using Lucene.Net.Documents;
-using NHibernate.Search.Bridge;
 using NHibernate.Util;
 
 namespace NHibernate.Search.Bridge
@@ -14,7 +13,7 @@ namespace NHibernate.Search.Bridge
             this.stringBridge = stringBridge;
         }
 
-		public void Set(String name, Object value, Document document, Field.Store store, Field.Index index, float? boost)
+        public void Set(String name, Object value, Document document, Field.Store store, Field.Index index, float? boost)
         {
             String indexedString = stringBridge.ObjectToString(value);
             //Do not add fields on empty strings, seems a sensible default in most situations

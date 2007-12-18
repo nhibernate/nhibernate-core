@@ -1,3 +1,6 @@
+using System;
+using System.Text;
+
 namespace NHibernate.Search.Backend
 {
     public class OptimizeLuceneWork : LuceneWork

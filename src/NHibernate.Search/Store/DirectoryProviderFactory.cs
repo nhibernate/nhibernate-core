@@ -5,7 +5,6 @@ using NHibernate.Cfg;
 using NHibernate.Mapping;
 using NHibernate.Search.Attributes;
 using NHibernate.Search.Engine;
-using NHibernate.Search.Storage;
 using NHibernate.Util;
 
 namespace NHibernate.Search.Storage
@@ -33,7 +32,7 @@ namespace NHibernate.Search.Storage
             {
                 className = DEFAULT_DIRECTORY_PROVIDER;
             }
-            IDirectoryProvider provider = null;
+            IDirectoryProvider provider;
             try
             {
                 System.Type directoryClass = ReflectHelper.ClassForName(className);

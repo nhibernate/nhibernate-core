@@ -25,7 +25,7 @@ namespace NHibernate.Search.Tests.Queries
 			set { id = value; }
 		}
 
-		[Field(Index.Tokenized, Store=Store.Yes)]
+		[Field(Index.Tokenized, Store=Attributes.Store.Yes)]
 		public virtual string Brand
 		{
 			get { return brand; }

@@ -5,11 +5,11 @@ using System.Threading;
 using log4net;
 using Lucene.Net.Index;
 using NHibernate.Search.Engine;
-using NHibernate.Search.Impl;
 using NHibernate.Search.Storage;
 
-namespace NHibernate.Search.Backend
+namespace NHibernate.Search.Impl
 {
+    //TODO introduce the notion of read only IndexReader? We cannot enforce it because Lucene use abstract classes, not interfaces
     /// <summary>
     /// Lucene workspace
     /// This is not intended to be used in a multithreaded environment
@@ -22,6 +22,7 @@ namespace NHibernate.Search.Backend
     public class Workspace : IDisposable
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Workspace));
+
         private readonly Dictionary<IDirectoryProvider, IndexReader> readers = new Dictionary<IDirectoryProvider, IndexReader>();
         private readonly Dictionary<IDirectoryProvider, IndexWriter> writers = new Dictionary<IDirectoryProvider, IndexWriter>();
         private readonly List<IDirectoryProvider> lockedProviders = new List<IDirectoryProvider>();
@@ -46,6 +47,7 @@ namespace NHibernate.Search.Backend
                 throw new AssertionFailure("Tries to read for update a index while a writer is accessed" + entity);
             IndexReader reader = null;
             readers.TryGetValue(provider, out reader);
+
             if (reader != null) return reader;
             LockProvider(provider);
             try
@@ -66,6 +68,7 @@ namespace NHibernate.Search.Backend
             //one has to close a reader for update before a writer is accessed
             IndexReader reader = null;
             readers.TryGetValue(provider, out reader);
+
             if (reader != null)
             {
                 try
@@ -78,8 +81,9 @@ namespace NHibernate.Search.Backend
                 }
                 readers.Remove(provider);
             }
-            IndexWriter writer = null;
+            IndexWriter writer;
             writers.TryGetValue(provider, out writer);
+
             if (writer != null) return writer;
             LockProvider(provider);
             try

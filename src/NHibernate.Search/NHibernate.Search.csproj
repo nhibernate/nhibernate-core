@@ -43,16 +43,26 @@
   <ItemGroup>
     <Compile Include="Attributes\AnalyzerAttribute.cs" />
     <Compile Include="Attributes\BoostAttribute.cs" />
+    <Compile Include="Attributes\ClassBridgeAttribute.cs" />
+    <Compile Include="Attributes\ContainedInAttribute.cs" />
     <Compile Include="Attributes\DateBridgeAttribute.cs" />
     <Compile Include="Attributes\DocumentIdAttribute.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\FieldBridgeAttribute.cs" />
+    <Compile Include="Attributes\Index.cs" />
     <Compile Include="Attributes\Indexed.cs" />
     <Compile Include="Attributes\IndexedEmbedded.cs" />
     <Compile Include="Attributes\Resolution.cs" />
+    <Compile Include="Attributes\Store.cs" />
     <Compile Include="AttributeUtil.cs" />
+    <Compile Include="Backend\IWorker.cs" />
+    <Compile Include="Backend\LuceneIndexingParameters.cs" />
     <Compile Include="Backend\OptimizeLuceneWork.cs" />
     <Compile Include="Backend\PurgeAllLuceneWork.cs" />
+    <Compile Include="Engine\ISearchFactoryImplementor.cs" />
+    <Compile Include="Filter\FilterKey.cs" />
+    <Compile Include="Filter\IFilterCachingStrategy.cs" />
+    <Compile Include="ISearchFactory.cs" />
     <Compile Include="Query\FullTextSearchHelper.cs" />
     <Compile Include="LuceneQueryExpression.cs" />
     <Compile Include="Backend\Impl\Lucene\LuceneWorker.cs" />
@@ -75,13 +85,12 @@
     <Compile Include="Bridge\Builtin\StringBridge.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Impl\FullTextSessionImpl.cs" />
-    <Compile Include="Index.cs" />
     <Compile Include="Backend\LuceneWork.cs" />
+    <Compile Include="Reader\IReaderProvider.cs" />
     <Compile Include="SearchException.cs" />
     <Compile Include="Engine\SearchFactory.cs" />
     <Compile Include="Impl\SearchInterceptor.cs" />
     <Compile Include="Bridge\Builtin\SimpleBridge.cs" />
-    <Compile Include="Store.cs" />
     <Compile Include="Bridge\TwoWayString2FieldBridgeAdaptor.cs" />
     <Compile Include="Bridge\Builtin\ValueTypeBridge.cs" />
     <Compile Include="Backend\Work.cs" />
@@ -97,6 +106,7 @@
     <Compile Include="Store\FSMasterDirectoryProvider.cs" />
     <Compile Include="Store\FSSlaveDirectoryProvider.cs" />
     <Compile Include="Store\IDirectoryProvider.cs" />
+    <Compile Include="Store\Optimization\IOptimizerStrategy.cs" />
     <Compile Include="Store\RAMDirectoryProvider.cs" />
     <Compile Include="Bridge\String2FieldBridgeAdaptor.cs" />
   </ItemGroup>
@@ -112,10 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Event\" />
-    <Folder Include="Filter\" />
     <Folder Include="Properties\" />
-    <Folder Include="Reader\" />
-    <Folder Include="Store\Optimization\" />
     <Folder Include="Util\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

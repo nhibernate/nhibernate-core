@@ -59,7 +59,7 @@ namespace NHibernate.Search.Engine
 
         private void InitializeMembers(
             System.Type clazz, PropertiesMetadata propertiesMetadata, bool isRoot, String prefix,
-            Set<System.Type> processedClasses)
+            ISet<System.Type> processedClasses)
         {
             PropertyInfo[] propertyInfos = clazz.GetProperties();
             foreach (PropertyInfo propertyInfo in propertyInfos)
@@ -114,15 +114,16 @@ namespace NHibernate.Search.Engine
             }
         }
 
-        private static Field.Store GetStore(Store store)
+
+        private static Field.Store GetStore(Attributes.Store store)
         {
             switch (store)
             {
-                case Store.No:
+                case Attributes.Store.No:
                     return Field.Store.NO;
-                case Store.Yes:
+                case Attributes.Store.Yes:
                     return Field.Store.YES;
-                case Store.Compress:
+                case Attributes.Store.Compress:
                     return Field.Store.COMPRESS;
                 default:
                     throw new AssertionFailure("Unexpected Store: " + store);
@@ -176,20 +177,19 @@ namespace NHibernate.Search.Engine
                 if (luceneWork.EntityClass == entityClass && luceneWork.Id.Equals(id))
                     return;
             }
-            bool searchForContainers = false;
-            Document doc;
-            string idInString = idBridge.ObjectToString(id);
+            /*bool searchForContainers = false;*/
+            string idString = idBridge.ObjectToString(id);
+
             switch (workType)
             {
                 case WorkType.Add:
-                    doc = GetDocument(entity, id);
-                    queue.Add(new AddLuceneWork(id, idInString, entityClass, doc));
-                    searchForContainers = true;
+                    queue.Add(new AddLuceneWork(id, idString, entityClass, GetDocument(entity, id)));
+                    /*searchForContainers = true;*/
                     break;
 
                 case WorkType.Delete:
                 case WorkType.Purge:
-                    queue.Add(new DeleteLuceneWork(id, idInString, entityClass));
+                    queue.Add(new DeleteLuceneWork(id, idString, entityClass));
                     break;
 
                 case WorkType.PurgeAll:
@@ -197,32 +197,20 @@ namespace NHibernate.Search.Engine
                     break;
 
                 case WorkType.Update:
-                    doc = GetDocument(entity, id);
                     /**
                      * even with Lucene 2.1, use of indexWriter to update is not an option
                      * We can only delete by term, and the index doesn't have a term that
                      * uniquely identify the entry.
                      * But essentially the optimization we are doing is the same Lucene is doing, the only extra cost is the
                      * double file opening.
-                     */
-                    queue.Add(new DeleteLuceneWork(id, idInString, entityClass));
-                    queue.Add(new AddLuceneWork(id, idInString, entityClass, doc));
-                    searchForContainers = true;
-                    break;
-
-                case WorkType.Index:
-                    doc = GetDocument(entity, id);
-                    queue.Add(new DeleteLuceneWork(id, idInString, entityClass));
-                    // TODO: Support the SetBatch
-                    //LuceneWork work = new AddLuceneWork(id, idInString, entityClass, doc);
-                    //work.SetBatch(true);
-                    //queue.Add(work);
-                    queue.Add(new AddLuceneWork(id, idInString, entityClass, doc));
-                    searchForContainers = true;
+                    */
+                    queue.Add(new DeleteLuceneWork(id, idString, entityClass));
+                    queue.Add(new AddLuceneWork(id, idString, entityClass, GetDocument(entity, id)));
+                    /*searchForContainers = true;*/
                     break;
 
                 default:
-                    throw new NotSupportedException(string.Format("Unknown work type - {0}", workType));
+                    throw new AssertionFailure("Unknown WorkType: " + workType);
             }
 
             /**
@@ -230,32 +218,21 @@ namespace NHibernate.Search.Engine
 		     * have to be updated)
 		     * When the internal object is changed, we apply the {Add|Update}Work on containedIns
 		    */
-            if (searchForContainers)
-                ProcessContainedIn(entity, queue, rootPropertiesMetadata, searchFactory);
+            /*
+		    if (searchForContainers)
+			    processContainedIn(entity, queue, rootPropertiesMetadata, searchFactory);
+		    */
         }
 
-        private static void ProcessContainedIn(Object instance, List<LuceneWork> queue, PropertiesMetadata metadata,
-                                               SearchFactory searchFactory)
-        {
-            for (int i = 0; i < metadata.containedInGetters.Count; i++)
-            {
-                MemberInfo member = metadata.containedInGetters[i];
-                object value = GetMemberValue(instance, member);
-                if (value == null) continue;
+        /*
+		private void processContainedIn(Object instance, List<LuceneWork> queue, PropertiesMetadata metadata, SearchFactory searchFactory)
+		{
+			not supported
+		}
+	    */
 
-                // TODO: Handle arrays and collections
-
-                // Single value
-                System.Type valueClass = instance.GetType();
-                DocumentBuilder builder = searchFactory.GetDocumentBuilder(valueClass);
-                if (builder == null) continue;
-                ProcessContainedInValue(value, queue, valueClass, builder, searchFactory);
-            }
-        }
-
-        private static void ProcessContainedInValue(
-            Object value, List<LuceneWork> queue, System.Type valueClass,
-            DocumentBuilder builder, SearchFactory searchFactory)
+        private void ProcessContainedInValue(object value, List<LuceneWork> queue, System.Type valueClass,
+                                             DocumentBuilder builder, SearchFactory searchFactory)
         {
             object id = GetMemberValue(value, builder.idGetter);
             builder.AddToWorkQueue(value, id, WorkType.Update, queue, searchFactory);
@@ -269,6 +246,7 @@ namespace NHibernate.Search.Engine
             {
                 doc.SetBoost(rootPropertiesMetadata.boost.Value);
             }
+            // TODO: Check if that should be an else?
             {
                 Field classField =
                     new Field(CLASS_FIELDNAME, instanceClass.AssemblyQualifiedName, Field.Store.YES,
@@ -284,33 +262,6 @@ namespace NHibernate.Search.Engine
         {
             if (instance == null) return;
 
-            for (int i = 0; i < propertiesMetadata.keywordNames.Count; i++)
-            {
-                MemberInfo member = propertiesMetadata.keywordGetters[i];
-                Object value = GetMemberValue(instance, member);
-                propertiesMetadata.keywordBridges[i].Set(
-                    propertiesMetadata.keywordNames[i], value, doc, Field.Store.YES,
-                    Field.Index.UN_TOKENIZED, GetBoost(member)
-                    );
-            }
-            for (int i = 0; i < propertiesMetadata.textNames.Count; i++)
-            {
-                MemberInfo member = propertiesMetadata.textGetters[i];
-                Object value = GetMemberValue(instance, member);
-                propertiesMetadata.textBridges[i].Set(
-                    propertiesMetadata.textNames[i], value, doc, Field.Store.YES,
-                    Field.Index.TOKENIZED, GetBoost(member)
-                    );
-            }
-            for (int i = 0; i < propertiesMetadata.unstoredNames.Count; i++)
-            {
-                MemberInfo member = propertiesMetadata.unstoredGetters[i];
-                Object value = GetMemberValue(instance, member);
-                propertiesMetadata.unstoredBridges[i].Set(
-                    propertiesMetadata.unstoredNames[i], value, doc, Field.Store.NO,
-                    Field.Index.TOKENIZED, GetBoost(member)
-                    );
-            }
             for (int i = 0; i < propertiesMetadata.fieldNames.Count; i++)
             {
                 MemberInfo member = propertiesMetadata.fieldGetters[i];
@@ -320,6 +271,7 @@ namespace NHibernate.Search.Engine
                     propertiesMetadata.fieldIndex[i], GetBoost(member)
                     );
             }
+
             for (int i = 0; i < propertiesMetadata.embeddedGetters.Count; i++)
             {
                 MemberInfo member = propertiesMetadata.embeddedGetters[i];
@@ -391,24 +343,15 @@ namespace NHibernate.Search.Engine
             mappedSubclasses = tempMappedSubclasses;
         }
 
-
         public ISet<System.Type> MappedSubclasses
         {
             get { return mappedSubclasses; }
         }
 
+
         private class PropertiesMetadata
         {
             public float? boost = null;
-            public readonly List<MemberInfo> keywordGetters = new List<MemberInfo>();
-            public readonly List<String> keywordNames = new List<String>();
-            public readonly List<IFieldBridge> keywordBridges = new List<IFieldBridge>();
-            public readonly List<MemberInfo> unstoredGetters = new List<MemberInfo>();
-            public readonly List<String> unstoredNames = new List<String>();
-            public readonly List<IFieldBridge> unstoredBridges = new List<IFieldBridge>();
-            public readonly List<MemberInfo> textGetters = new List<MemberInfo>();
-            public readonly List<String> textNames = new List<String>();
-            public readonly List<IFieldBridge> textBridges = new List<IFieldBridge>();
             public readonly List<String> fieldNames = new List<String>();
             public readonly List<MemberInfo> fieldGetters = new List<MemberInfo>();
             public readonly List<IFieldBridge> fieldBridges = new List<IFieldBridge>();

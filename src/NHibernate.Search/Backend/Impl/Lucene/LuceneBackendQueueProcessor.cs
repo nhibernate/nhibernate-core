@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Search.Engine;
+using NHibernate.Search.Impl;
 
 namespace NHibernate.Search.Backend.Impl.Lucene
 {
@@ -8,7 +10,7 @@ namespace NHibernate.Search.Backend.Impl.Lucene
     /// </summary>
     public class LuceneBackendQueueProcessor
     {
-        private readonly SearchFactory searchFactory;
+		private readonly SearchFactory searchFactory;
 
         private readonly List<LuceneWork> queue;
 

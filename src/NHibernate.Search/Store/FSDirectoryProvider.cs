@@ -6,16 +6,14 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
 using NHibernate.Search.Engine;
-using NHibernate.Search.Impl;
-using NHibernate.Search.Storage;
-using NHibernate.Util;
+using Directory=Lucene.Net.Store.Directory;
 
 namespace NHibernate.Search.Storage
 {
     public class FSDirectoryProvider : IDirectoryProvider
     {
         private FSDirectory directory;
-        private static ILog log = LogManager.GetLogger(typeof (FSDirectoryProvider));
+        private static ILog log = LogManager.GetLogger(typeof(FSDirectoryProvider));
         private String indexName;
 
         public void Initialize(String directoryProviderName, IDictionary properties, SearchFactory searchFactory)
@@ -39,7 +37,7 @@ namespace NHibernate.Search.Storage
             }
         }
 
-        public Lucene.Net.Store.Directory Directory
+        public Directory Directory
         {
             get { return directory; }
         }

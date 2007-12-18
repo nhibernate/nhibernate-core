@@ -6,7 +6,7 @@ namespace NHibernate.Search.Tests.Inheritance
 	{
 		private int numberOfLegs;
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual int NumberOfLegs
 		{
 			get { return numberOfLegs; }

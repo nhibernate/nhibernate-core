@@ -19,14 +19,14 @@ namespace NHibernate.Search.Tests.Queries
 			set { id = value; }
 		}
 
-		[Field(Index.Tokenized,Store=Store.No)]
+		[Field(Index.Tokenized,Store=Attributes.Store.No)]
 		public virtual string Body
 		{
 			get { return body; }
 			set { body = value; }
 		}
 
-		[Field(Index.Tokenized, Store=Store.Yes)]
+		[Field(Index.Tokenized, Store=Attributes.Store.Yes)]
 		public virtual string Summary
 		{
 			get { return summary; }

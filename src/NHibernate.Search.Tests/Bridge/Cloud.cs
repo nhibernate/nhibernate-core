@@ -29,7 +29,7 @@ namespace NHibernate.Search.Tests.Bridge
 		private CloudType type;
 		private bool storm;
 
-		[Field(Index.Tokenized, Store = Store.Yes)]
+		[Field(Index.Tokenized, Store = Attributes.Store.Yes)]
 		[FieldBridge(typeof (TruncateFieldBridge))]
 		public virtual  string CustomFieldBridge
 		{
@@ -37,7 +37,7 @@ namespace NHibernate.Search.Tests.Bridge
 			set { this.customFieldBridge = value; }
 		}
 
-		[Field(Index.Tokenized, Store = Store.Yes)]
+		[Field(Index.Tokenized, Store= Attributes.Store.Yes)]
 		[FieldBridge(typeof (TruncateStringBridge), 4)]
 		public virtual  string CustomStringBridge
 		{
@@ -52,77 +52,77 @@ namespace NHibernate.Search.Tests.Bridge
 			set { this.id = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  long? Long1
 		{
 			get { return long1; }
 			set { this.long1 = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  long Long2
 		{
 			get { return long2; }
 			set { this.long2 = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  int? Int1
 		{
 			get { return int1; }
 			set { this.int1 = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  int Int2
 		{
 			get { return int2; }
 			set { this.int2 = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  double? Double1
 		{
 			get { return double1; }
 			set { this.double1 = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  double Double2
 		{
 			get { return double2; }
 			set { this.double2 = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  float? Float1
 		{
 			get { return float1; }
 			set { this.float1 = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  float Float2
 		{
 			get { return float2; }
 			set { this.float2 = value; }
 		}
 
-		[Field(Index.Tokenized, Store = Store.Yes)]
+		[Field(Index.Tokenized, Store= Attributes.Store.Yes)]
 		public virtual  string String1
 		{
 			get { return string1; }
 			set { this.string1 = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		public virtual  DateTime? DateTime
 		{
 			get { return dateTime; }
 			set { this.dateTime = value; }
 		}
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		[DateBridge(Resolution.Year)]
 		public virtual  DateTime? DateTimeYear
 		{
@@ -131,7 +131,7 @@ namespace NHibernate.Search.Tests.Bridge
 		}
 
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		[DateBridge(Resolution.Month)]
 		public virtual  DateTime? DateTimeMonth
 		{
@@ -140,7 +140,7 @@ namespace NHibernate.Search.Tests.Bridge
 		}
 
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		[DateBridge(Resolution.Day)]
 		public virtual  DateTime? DateTimeDay
 		{
@@ -149,7 +149,7 @@ namespace NHibernate.Search.Tests.Bridge
 		}
 
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		[DateBridge(Resolution.Hour)]
 		public virtual  DateTime? DateTimeHour
 		{
@@ -158,7 +158,7 @@ namespace NHibernate.Search.Tests.Bridge
 		}
 
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		[DateBridge(Resolution.Minute)]
 		public virtual  DateTime? DateTimeMinute
 		{
@@ -167,7 +167,7 @@ namespace NHibernate.Search.Tests.Bridge
 		}
 
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		[DateBridge(Resolution.Second)]
 		public virtual  DateTime? DateTimeSecond
 		{
@@ -176,7 +176,7 @@ namespace NHibernate.Search.Tests.Bridge
 		}
 
 
-		[Field(Index.UnTokenized, Store = Store.Yes)]
+		[Field(Index.UnTokenized, Store= Attributes.Store.Yes)]
 		[DateBridge(Resolution.Millisecond)]
 		public virtual  DateTime? DateTimeMillisecond
 		{
