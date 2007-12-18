@@ -1,5 +1,7 @@
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
@@ -9,12 +11,21 @@ namespace NHibernate.Search.Tests.DirectoryProvider
 {
 	public abstract class MultiplySessionFactoriesTestCase
 	{
-		private readonly List<ISessionFactory> sessionFactories = new List<ISessionFactory>();
+#if NET_2_0
+		private List<ISessionFactory> sessionFactories = new List<ISessionFactory>();
 		private List<Configuration> configurations;
+#else
+		private IList sessionFactories = new ArrayList();
+		private IList configurations;
+#endif
 
 		protected abstract int NumberOfSessionFactories { get; }
 
+#if NET_2_0
 		protected IList<ISessionFactory> SessionFactories
+#else
+		protected IList SessionFactories
+#endif
 		{
 			get { return sessionFactories; }
 		}
@@ -47,7 +58,11 @@ namespace NHibernate.Search.Tests.DirectoryProvider
 
 		private void Configure()
 		{
+#if NET_2_0
 			configurations = new List<Configuration>();
+#else
+			configurations = new ArrayList();
+#endif
 			for (int i = 0; i < NumberOfSessionFactories; i++)
 			{
 				configurations.Add(CreateConfiguration());
@@ -67,7 +82,11 @@ namespace NHibernate.Search.Tests.DirectoryProvider
 			return cfg;
 		}
 
+#if NET_2_0
 		protected abstract void Configure(IList<Configuration> cfg);
+#else
+		protected abstract void Configure(IList cfg);
+#endif
 
 		protected abstract IList Mappings
 		{

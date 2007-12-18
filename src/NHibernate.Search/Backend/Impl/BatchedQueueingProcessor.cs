@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+#if NET_2_0
 using System.Collections.Generic;
+#endif
 using System.Threading;
 using NHibernate.Search.Backend.Impl.Lucene;
 using NHibernate.Search.Impl;
@@ -23,12 +25,19 @@ namespace NHibernate.Search.Backend.Impl
         {
             this.searchFactory = searchFactory;
             //default to sync if none defined
+#if NET_2_0
             sync =
                 !"async".Equals((string) properties[Environment.WorkerExecution],
                                 StringComparison.InvariantCultureIgnoreCase);
 
             string backend = (string) properties[Environment.WorkerBackend];
             if (StringHelper.IsEmpty(backend) || "lucene".Equals(backend, StringComparison.InvariantCultureIgnoreCase))
+#else
+			sync = !"async".Equals(((string) properties[Environment.WorkerExecution]).ToLower());
+
+			string backend = (string) properties[Environment.WorkerBackend];
+			if (StringHelper.IsEmpty(backend) || "lucene".Equals(backend.ToLower()))
+#endif
             {
                 backendQueueProcessorFactory = new LuceneBackendQueueProcessorFactory();
             }
@@ -51,7 +60,11 @@ namespace NHibernate.Search.Backend.Impl
 
 
         //TODO implements parallel batchWorkers (one per Directory)
+#if NET_2_0
         public void PerformWork(List<LuceneWork> luceneQueue)
+#else
+		public void PerformWork(IList luceneQueue)
+#endif
         {
             WaitCallback processor = backendQueueProcessorFactory.GetProcessor(luceneQueue);
             if (sync)
@@ -64,7 +77,11 @@ namespace NHibernate.Search.Backend.Impl
             }
         }
 
+#if NET_2_0
         public void CancelWork(List<LuceneWork> queue)
+#else
+		public void CancelWork(IList queue)
+#endif
         {
             queue.Clear();
         }

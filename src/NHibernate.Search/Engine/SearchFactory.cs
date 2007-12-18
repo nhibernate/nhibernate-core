@@ -1,6 +1,11 @@
 using System;
+#if NET_2_0
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
+#else
+using System.Collections;
+using Iesi.Collections;
+#endif
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using NHibernate.Cfg;
@@ -15,6 +20,10 @@ using NHibernate.Util;
 
 namespace NHibernate.Search
 {
+#if NET_2_0
+#else
+	[CLSCompliant(false)]
+#endif
     public class SearchFactory
     {
         private static readonly WeakHashtable sessionFactory2SearchFactory = new WeakHashtable();
@@ -23,23 +32,28 @@ namespace NHibernate.Search
         /// <summary>
         /// Note that we will lock on the values in this dictionary
         /// </summary>
-        private readonly Dictionary<IDirectoryProvider, object> lockableDirectoryProviders =
-            new Dictionary<IDirectoryProvider, object>();
-
-        private readonly Dictionary<System.Type, DocumentBuilder> documentBuilders =
-            new Dictionary<System.Type, DocumentBuilder>();
-
+#if NET_2_0
+        private readonly Dictionary<IDirectoryProvider, object> lockableDirectoryProviders = new Dictionary<IDirectoryProvider, object>();
+        private readonly Dictionary<System.Type, DocumentBuilder> documentBuilders = new Dictionary<System.Type, DocumentBuilder>();
+#else
+		private readonly Hashtable lockableDirectoryProviders = new Hashtable();
+		private readonly Hashtable documentBuilders = new Hashtable();
+#endif
         private readonly IQueueingProcessor queueingProcessor;
         private IBackendQueueProcessorFactory backendQueueProcessorFactory;
 
+#if NET_2_0
         public Dictionary<System.Type, DocumentBuilder> DocumentBuilders
+#else
+		public Hashtable DocumentBuilders
+#endif
         {
             get { return documentBuilders; }
         }
 
         public static SearchFactory GetSearchFactory(ISession session)
         {
-            SearchFactory searchFactory = (SearchFactory) sessionFactory2SearchFactory[session.SessionFactory];
+            SearchFactory searchFactory = (SearchFactory)sessionFactory2SearchFactory[session.SessionFactory];
             if (searchFactory == null)
             {
                 throw new HibernateException(
@@ -51,7 +65,7 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
 
         public static SearchFactory GetSearchFactory(ISessionFactory sessionFactory)
         {
-            return (SearchFactory) sessionFactory2SearchFactory[sessionFactory];
+            return (SearchFactory)sessionFactory2SearchFactory[sessionFactory];
         }
 
         public static void Initialize(Configuration cfg, ISessionFactory sessionFactory)
@@ -80,8 +94,7 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
                 catch (Exception e)
                 {
                     throw new SearchException(
-                        string.Format("Lucene analyzer class '{0}' defined in property '{1}' could not be found.",
-                                      analyzerClassName, Environment.AnalyzerClass),
+                        string.Format("Lucene analyzer class '{0}' defined in property '{1}' could not be found.", analyzerClassName, Environment.AnalyzerClass),
                         e
                         );
                 }
@@ -94,20 +107,19 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
             Analyzer analyzer;
             try
             {
-                analyzer = (Analyzer) Activator.CreateInstance(analyzerClass);
+                analyzer = (Analyzer)Activator.CreateInstance(analyzerClass);
             }
             catch (InvalidCastException e)
             {
                 throw new SearchException(
-                    string.Format("Lucene analyzer does not implement {0}: {1}", typeof(Analyzer).FullName,
-                                  analyzerClassName)
+                    string.Format("Lucene analyzer does not implement {0}: {1}", typeof(Analyzer).FullName, analyzerClassName)
                     );
             }
             catch (Exception e)
             {
                 throw new SearchException("Failed to instantiate lucene analyzer with type " + analyzerClassName);
             }
-            queueingProcessor = new BatchedQueueingProcessor(this, cfg.Properties);
+            this.queueingProcessor = new BatchedQueueingProcessor(this, cfg.Properties);
 
             DirectoryProviderFactory factory = new DirectoryProviderFactory();
 
@@ -123,19 +135,27 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
                     documentBuilders.Add(mappedClass, documentBuilder);
                 }
             }
+#if NET_2_0
             ISet<System.Type> classes = new HashedSet<System.Type>(documentBuilders.Keys);
+#else
+            ISet classes = new HashedSet(documentBuilders.Keys);
+#endif
             foreach (DocumentBuilder documentBuilder in documentBuilders.Values)
             {
                 documentBuilder.PostInitialize(classes);
             }
         }
 
+#if NET_2_0
         public void ExecuteQueue(List<LuceneWork> luceneWork, ISession session)
+#else
+		public void ExecuteQueue(IList luceneWork, ISession session)
+#endif
         {
             if (session.Transaction.IsActive)
             {
-                ISessionImplementor si = (ISessionImplementor) session;
-                ((SearchInterceptor) si.Interceptor).RegisterSyncronization(si.Transaction, luceneWork);
+                ISessionImplementor si = (ISessionImplementor)session;
+                ((SearchInterceptor)si.Interceptor).RegisterSyncronization(si.Transaction, luceneWork);
             }
             else
             {
@@ -143,7 +163,11 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
             }
         }
 
+#if NET_2_0
         public void ExecuteQueueImmediate(List<LuceneWork> luceneWork)
+#else
+		public void ExecuteQueueImmediate(IList luceneWork)
+#endif
         {
             queueingProcessor.PerformWork(luceneWork);
         }
@@ -156,9 +180,13 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
 
         public DocumentBuilder GetDocumentBuilder(System.Type type)
         {
+#if NET_2_0
             DocumentBuilder builder;
             DocumentBuilders.TryGetValue(type, out builder);
             return builder;
+#else
+			return (DocumentBuilder) (DocumentBuilders.ContainsKey(type.Name) ? DocumentBuilders[type.Name] : null);
+#endif
         }
 
         public IDirectoryProvider GetDirectoryProvider(System.Type entity)
@@ -176,7 +204,11 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
             DocumentBuilder documentBuilder = GetDocumentBuilder(entity);
             if (documentBuilder == null)
                 return;
+#if NET_2_0
             List<LuceneWork> queue = new List<LuceneWork>();
+#else
+			IList queue = new ArrayList();
+#endif
             documentBuilder.AddToWorkQueue(entity, id, workType, queue, this);
             ExecuteQueue(queue, session);
         }
