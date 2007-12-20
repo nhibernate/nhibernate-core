@@ -50,11 +50,6 @@
     <Compile Include="NotEmptyAttribute.cs" />
     <Compile Include="NotEmptyNotNullPropertyConstraint.cs" />
     <Compile Include="NotEmptyValidator.cs" />
-    <Compile Include="Resources\DefaultValidatorMessages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DefaultValidatorMessages.resx</DependentUpon>
-    </Compile>
     <Compile Include="Event\ValidatePreUpdateEventListener.cs" />
     <Compile Include="Event\ValidateEventListener.cs" />
     <Compile Include="Event\ValidatePreInsertEventListener.cs" />
@@ -72,6 +67,11 @@
     <Compile Include="NotNullAttribute.cs" />
     <Compile Include="NotNullValidator.cs" />
     <Compile Include="IPersistentClassConstraint.cs" />
+    <Compile Include="Resources\DefaultValidatorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DefaultValidatorMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="ValidatorClassAttribute.cs" />
     <Compile Include="ValidAttribute.cs" />
   </ItemGroup>

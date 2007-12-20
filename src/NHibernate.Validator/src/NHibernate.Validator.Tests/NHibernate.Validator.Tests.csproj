@@ -63,6 +63,7 @@
     <Compile Include="Inheritance\Animal.cs" />
     <Compile Include="Inheritance\IName.cs" />
     <Compile Include="Inheritance\InheritanceFixture.cs" />
+    <Compile Include="Resources\ResourcesTest.cs" />
     <Compile Include="Validators\FooLength.cs" />
     <Compile Include="Validators\FooNotEmpty.cs" />
     <Compile Include="Validators\ValidatorsFixture.cs" />

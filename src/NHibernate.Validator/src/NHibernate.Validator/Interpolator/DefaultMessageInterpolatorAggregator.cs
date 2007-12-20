@@ -1,62 +1,72 @@
 namespace NHibernate.Validator.Interpolator
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Resources;
+	using System;
+	using System.Collections.Generic;
+	using System.Resources;
 
-    [Serializable]
-    public class DefaultMessageInterpolatorAggregator : IMessageInterpolator
-    {
-        private IDictionary<IValidator, DefaultMessageInterpolator> interpolators = new Dictionary<IValidator, DefaultMessageInterpolator>();
-        
-        //transient but repopulated by the object owing a reference to the interpolator
-	    [NonSerialized] private  ResourceManager messageBundle;
-	    
-        //transient but repopulated by the object owing a reference to the interpolator
-	    [NonSerialized] private ResourceManager defaultMessageBundle;
+	[Serializable]
+	public class DefaultMessageInterpolatorAggregator : IMessageInterpolator
+	{
+		private IDictionary<IValidator, DefaultMessageInterpolator> interpolators =
+			new Dictionary<IValidator, DefaultMessageInterpolator>();
 
-        public void Initialize(ResourceManager messageBundle, ResourceManager defaultMessageBundle)
-        {
-           	this.messageBundle = messageBundle;
-	        this.defaultMessageBundle = defaultMessageBundle;
+		//transient but repopulated by the object owing a reference to the interpolator
+		[NonSerialized] private ResourceManager messageBundle;
 
-	        //useful when we deserialize
-            foreach(DefaultMessageInterpolator interpolator in interpolators.Values)
-            {
-                interpolator.Initialize( messageBundle, defaultMessageBundle );
-            }
-        }
+		//transient but repopulated by the object owing a reference to the interpolator
+		[NonSerialized] private ResourceManager defaultMessageBundle;
 
-        public string Interpolate<A>(string message, IValidator<A> validator, IMessageInterpolator defaultInterpolator)
-            where A : Attribute
-        {
-            return Interpolate(message, (IValidator)validator, defaultInterpolator);
-        }
+		public void Initialize(ResourceManager messageBundle, ResourceManager defaultMessageBundle)
+		{
+			this.messageBundle = messageBundle;
+			this.defaultMessageBundle = defaultMessageBundle;
 
-        public string Interpolate(string message, IValidator validator, IMessageInterpolator defaultInterpolator)
-        {
-            DefaultMessageInterpolator defaultMessageInterpolator = interpolators[validator];
-            
-            if (defaultMessageInterpolator == null) return message;
+			//useful when we deserialize
+			foreach(DefaultMessageInterpolator interpolator in interpolators.Values)
+			{
+				interpolator.Initialize(messageBundle, defaultMessageBundle);
+			}
+		}
 
-            return defaultMessageInterpolator.Interpolate(message, validator, defaultInterpolator);
-        }
+		public string Interpolate<A>(string message, IValidator<A> validator, IMessageInterpolator defaultInterpolator)
+			where A : Attribute
+		{
+			return Interpolate(message, (IValidator) validator, defaultInterpolator);
+		}
 
-        public void AddInterpolator(Attribute attribute, IValidator validator)
-        {
-            
-        }
+		public string Interpolate(string message, IValidator validator, IMessageInterpolator defaultInterpolator)
+		{
+			DefaultMessageInterpolator defaultMessageInterpolator = interpolators[validator];
 
-        public string GetAttributeMessage(IValidator validator)
-        {
-            DefaultMessageInterpolator defaultMessageInterpolator = interpolators[validator];
+			if (defaultMessageInterpolator == null)
+			{
+				return message;
+			}
 
-            string message = defaultMessageInterpolator != null
-                                 ? defaultMessageInterpolator.GetAttributeMessage()
-                                 : null;
+			return defaultMessageInterpolator.Interpolate(message, validator, defaultInterpolator);
+		}
 
-            if (message == null) throw new AssertionFailure("Validator not registred to the messageInterceptorAggregator");
-            return message;
-        }
-    }
+		public void AddInterpolator(Attribute attribute, IValidator validator)
+		{
+			DefaultMessageInterpolator interpolator = new DefaultMessageInterpolator();
+			interpolator.Initialize(messageBundle, defaultMessageBundle);
+			interpolator.Initialize(attribute, null);
+			interpolators.Add(validator, interpolator);
+		}
+
+		public string GetAttributeMessage(IValidator validator)
+		{
+			DefaultMessageInterpolator defaultMessageInterpolator = interpolators[validator];
+
+			string message = defaultMessageInterpolator != null
+			                 	? defaultMessageInterpolator.GetAttributeMessage()
+			                 	: null;
+
+			if (message == null)
+			{
+				throw new AssertionFailure("Validator not registred to the messageInterceptorAggregator");
+			}
+			return message;
+		}
+	}
 }

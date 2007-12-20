@@ -7,7 +7,6 @@ namespace NHibernate.Validator
     using Iesi.Collections;
     using Iesi.Collections.Generic;
     using Interpolator;
-    using Resources;
     using Util;
 
     [Serializable]
@@ -73,21 +72,19 @@ namespace NHibernate.Validator
         /// Not a public API
         /// </summary>
         /// <param name="clazz"></param>
-        /// <param name="resourceBundle"></param>
+        /// <param name="resourceManager"></param>
         /// <param name="userInterpolator"></param>
         /// <param name="childClassValidators"></param>
         internal ClassValidator(
             Type clazz,
-            ResourceManager resourceBundle,
+            ResourceManager resourceManager,
             IMessageInterpolator userInterpolator,
             Dictionary<Type, ClassValidator> childClassValidators)
         {
-            //TODO: internacionalization
-
             this.beanClass = clazz;
-            this.messageBundle = resourceBundle ?? GetDefaultResourceManager();
-            //TODO
-            //this.defaultMessageBundle = ResourceBundle.getBundle(DEFAULT_VALIDATOR_MESSAGE);
+            
+			this.messageBundle = resourceManager ?? GetDefaultResourceManager();
+			this.defaultMessageBundle = GetDefaultResourceManager();
             this.userInterpolator = userInterpolator;
             this.childClassValidators = childClassValidators;
 
@@ -97,8 +94,8 @@ namespace NHibernate.Validator
 
         private ResourceManager GetDefaultResourceManager()
         {
-            return new ResourceManager(typeof(DefaultValidatorMessages));
-            throw new NotImplementedException();
+        	return new ResourceManager("NHibernate.Validator.Resources.DefaultValidatorMessages", 
+				Assembly.GetExecutingAssembly());
         }
 
         /// <summary>
@@ -266,8 +263,13 @@ namespace NHibernate.Validator
 
         private string Interpolate(IValidator validator)
         {
-            //TODO
-            return string.Empty;
+			String message = defaultInterpolator.GetAttributeMessage(validator);
+
+			if (userInterpolator != null) 
+				return userInterpolator.Interpolate(message, validator, defaultInterpolator);
+			else 
+				return defaultInterpolator.Interpolate(message, validator, null);
+			
         }
 
         /// <summary>

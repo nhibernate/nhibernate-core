@@ -63,144 +63,144 @@ namespace NHibernate.Validator.Resources {
         /// <summary>
         ///   Looks up a localized string similar to assertion failed.
         /// </summary>
-        internal static string assertFalse {
+        internal static string validator_assertFalse {
             get {
-                return ResourceManager.GetString("assertFalse", resourceCulture);
+                return ResourceManager.GetString("validator.assertFalse", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to assertion failed.
         /// </summary>
-        internal static string assertTrue {
+        internal static string validator_assertTrue {
             get {
-                return ResourceManager.GetString("assertTrue", resourceCulture);
+                return ResourceManager.GetString("validator.assertTrue", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid credit card number.
         /// </summary>
-        internal static string creditCard {
+        internal static string validator_creditCard {
             get {
-                return ResourceManager.GetString("creditCard", resourceCulture);
+                return ResourceManager.GetString("validator.creditCard", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Numeric value out of bounds (&lt;{integerDigits} digits&gt;.&lt;{fractionalDigits} digits&gt; expected).
         /// </summary>
-        internal static string digits {
+        internal static string validator_digits {
             get {
-                return ResourceManager.GetString("digits", resourceCulture);
+                return ResourceManager.GetString("validator.digits", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid EAN.
         /// </summary>
-        internal static string ean {
+        internal static string validator_ean {
             get {
-                return ResourceManager.GetString("ean", resourceCulture);
+                return ResourceManager.GetString("validator.ean", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to not a well-formed email address.
         /// </summary>
-        internal static string email {
+        internal static string validator_email {
             get {
-                return ResourceManager.GetString("email", resourceCulture);
+                return ResourceManager.GetString("validator.email", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to must be a future date.
         /// </summary>
-        internal static string future {
+        internal static string validator_future {
             get {
-                return ResourceManager.GetString("future", resourceCulture);
+                return ResourceManager.GetString("validator.future", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to length must be between {min} and {max}.
+        ///   Looks up a localized string similar to length must be between {Min} and {Max}.
         /// </summary>
-        internal static string lengh {
+        internal static string validator_length {
             get {
-                return ResourceManager.GetString("lengh", resourceCulture);
+                return ResourceManager.GetString("validator.length", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to must be less than or equal to {value}.
+        ///   Looks up a localized string similar to must be less than or equal to {Value}.
         /// </summary>
-        internal static string max {
+        internal static string validator_max {
             get {
-                return ResourceManager.GetString("max", resourceCulture);
+                return ResourceManager.GetString("validator.max", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to must be greater than or equal to {value}.
+        ///   Looks up a localized string similar to must be greater than or equal to {Value}.
         /// </summary>
-        internal static string min {
+        internal static string validator_min {
             get {
-                return ResourceManager.GetString("min", resourceCulture);
+                return ResourceManager.GetString("validator.min", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to may not be null or empty.
         /// </summary>
-        internal static string notEmpty {
+        internal static string validator_notEmpty {
             get {
-                return ResourceManager.GetString("notEmpty", resourceCulture);
+                return ResourceManager.GetString("validator.notEmpty", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to may not be null.
         /// </summary>
-        internal static string notNull {
+        internal static string validator_notNull {
             get {
-                return ResourceManager.GetString("notNull", resourceCulture);
+                return ResourceManager.GetString("validator.notNull", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to must be a past date.
         /// </summary>
-        internal static string past {
+        internal static string validator_past {
             get {
-                return ResourceManager.GetString("past", resourceCulture);
+                return ResourceManager.GetString("validator.past", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to must match &quot;{regex}&quot;.
+        ///   Looks up a localized string similar to must match &quot;{Regex}&quot;.
         /// </summary>
-        internal static string pattern {
+        internal static string validator_pattern {
             get {
-                return ResourceManager.GetString("pattern", resourceCulture);
+                return ResourceManager.GetString("validator.pattern", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to must be between {min} and {max}.
+        ///   Looks up a localized string similar to must be between {Min} and {Max}.
         /// </summary>
-        internal static string range {
+        internal static string validator_range {
             get {
-                return ResourceManager.GetString("range", resourceCulture);
+                return ResourceManager.GetString("validator.range", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to size must be between {min} and {max}.
+        ///   Looks up a localized string similar to size must be between {Min} and {Max}.
         /// </summary>
-        internal static string size {
+        internal static string validator_size {
             get {
-                return ResourceManager.GetString("size", resourceCulture);
+                return ResourceManager.GetString("validator.size", resourceCulture);
             }
         }
     }
