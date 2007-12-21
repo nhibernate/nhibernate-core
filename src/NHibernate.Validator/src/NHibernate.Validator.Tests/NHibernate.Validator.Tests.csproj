@@ -57,6 +57,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\CollectionFixture.cs" />
+    <Compile Include="Collections\Movie.cs" />
+    <Compile Include="Collections\Presenter.cs" />
+    <Compile Include="Collections\Show.cs" />
+    <Compile Include="Collections\Tv.cs" />
     <Compile Include="Inheritance\Dog.cs" />
     <Compile Include="Inheritance\IBoneEater.cs" />
     <Compile Include="Inheritance\IEater.cs" />

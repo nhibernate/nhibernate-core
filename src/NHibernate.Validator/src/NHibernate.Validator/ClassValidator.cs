@@ -1,6 +1,7 @@
 namespace NHibernate.Validator
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Reflection;
     using System.Resources;
@@ -176,9 +177,7 @@ namespace NHibernate.Validator
             foreach(IValidator validator in beanValidators)
             {
                 if (!validator.IsValid(bean))
-                {
-                    results.Add(new InvalidValue(Interpolate(validator), beanClass, null, bean, bean));
-                }
+					results.Add(new InvalidValue(Interpolate(validator), beanClass, null, bean, bean));
             }
 
             //Property & Field Validation
@@ -208,16 +207,34 @@ namespace NHibernate.Validator
 
                     if (value != null && NHibernateUtil.IsInitialized(value))
                     {
-                        if(IsCollection(member))
+						//Collection
+                        if( value is IEnumerable )
                         {
-                            //Todo
-                        }
+                        	int index = 0;
+                        	foreach(object item in (IEnumerable)value)
+                        	{
+								if(item == null)
+								{
+									index++;
+									continue;
+								}
 
-                        if(IsArray(member))
+                        		InvalidValue[] invalidValues = GetClassValidator(item).GetInvalidValues(item,circularityState);
+																
+                        		String indexedPropName = string.Format("{0}[{1}]", member.Name, index);
+                        		
+								index++;
+
+								foreach (InvalidValue invalidValue in invalidValues ) 
+								{
+									invalidValue.AddParentBean( bean, indexedPropName );
+									results.Add( invalidValue );
+								}
+                        	}
+                        }
+                        else
                         {
-                            //Todo
-                        }else
-                        {
+							//Simple Value, Not a Collection
                             InvalidValue[] invalidValues = GetClassValidator(value)
                                 .GetInvalidValues(value, circularityState);
 
@@ -233,6 +250,13 @@ namespace NHibernate.Validator
             return results.ToArray();
         }
 
+		/// <summary>
+		/// Get the ClassValidator for the <see cref="Type"/> of the <see cref="value"/>
+		/// parametter  from <see cref="childClassValidators"/>. If doesn't exist, a 
+		/// new <see cref="ClassValidator"/> is returned.
+		/// </summary>
+		/// <param name="value">object to get type</param>
+		/// <returns></returns>
         private ClassValidator GetClassValidator(object value)
         {
             Type clazz = value.GetType();
@@ -242,25 +266,18 @@ namespace NHibernate.Validator
             return classValidator ?? new ClassValidator(clazz);
         }
 
-        private bool IsArray(MemberInfo member)
-        {
-            //TODO
-            //member.MemberType
-            return false;
-        }
-
-        private bool IsCollection(MemberInfo member)
-        {
-            //TODO
-            return false;
-        }
-
         private bool IsPropertyInitialized(object bean, string propertyName)
         {
-            //TODO
+			//TODO: This method maybe need to be at NHibernate.Util
             return true;
         }
 
+		/// <summary>
+		/// Get the message of the <see cref="IValidator"/> and 
+		/// interpolate it.
+		/// </summary>
+		/// <param name="validator"></param>
+		/// <returns></returns>
         private string Interpolate(IValidator validator)
         {
 			String message = defaultInterpolator.GetAttributeMessage(validator);
@@ -306,8 +323,11 @@ namespace NHibernate.Validator
             }
         }
 
-
-        public void CreateMemberValidator(MemberInfo member)
+		/// <summary>
+		/// Create a Validator from a property or field.
+		/// </summary>
+		/// <param name="member"></param>
+		private void CreateMemberValidator(MemberInfo member)
         {
             //TODO: Agregate Annotations
             //bool validatorPresent = false;
@@ -336,32 +356,60 @@ namespace NHibernate.Validator
         /// <param name="member"></param>
         public void CreateChildValidator(MemberInfo member)
         {
-            if (!member.IsDefined(typeof(ValidAttribute), false))
-            {
-                return;
-            }
+            if (!member.IsDefined(typeof(ValidAttribute), false)) return;
 
             childGetters.Add(member);
 
             Type clazz = GetTypeOfMember(member);
-            
+
             if (!childClassValidators.ContainsKey(clazz))
             {
                 new ClassValidator(clazz, messageBundle, userInterpolator, childClassValidators);
             }
         }
 
+		/// <summary>
+		/// Get the type of the a Field or Property. If is a collection return the type of the elements.
+		/// TODO: Refactor this method to some Utils.
+		/// </summary>
+		/// <param name="member">MemberInfo, represent a property or field</param>
+		/// <returns></returns>
         Type GetTypeOfMember(MemberInfo member)
         {
+			//Is a property ?
             PropertyInfo pi = member as PropertyInfo;
-            if (pi != null) return pi.PropertyType;
+            if (pi != null)
+            {
+				if(pi.PropertyType.IsArray) //Is Array ?
+					return pi.PropertyType.GetElementType();
+				//else if (fi.PropertyType.IsGenericType) //Is Generic Type ? 
+				//	return GetGenericType(fi.PropertyType);
+				
+            	return pi.PropertyType; //Single type, not a collection/array
+            }
 
+			//Is a field ?
             FieldInfo fi = member as FieldInfo;
-            if (fi != null) return fi.FieldType;
+            if (fi != null) 
+			{
+				if (fi.FieldType.IsArray) //Is Array ?
+					return fi.FieldType.GetElementType();
+				//else if (fi.FieldType.IsGenericType) //Is Generic Type ? 
+				//	return GetGenericType(fi.FieldType);
+
+				return fi.FieldType; //Single type, not a collection/array
+			}
 
             throw new ArgumentException("could not get the type, the argument must be a property or field");
         }
 
+		/// <summary>
+		/// Get the value of some Property or Field.
+		/// TODO: refactor this to some Utils.
+		/// </summary>
+		/// <param name="bean"></param>
+		/// <param name="member"></param>
+		/// <returns></returns>
         public object GetMemberValue(object bean, MemberInfo member)
         {
             FieldInfo fi = member as FieldInfo;
