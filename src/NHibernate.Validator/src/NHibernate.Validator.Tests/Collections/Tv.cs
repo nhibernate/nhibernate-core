@@ -8,7 +8,7 @@ namespace NHibernate.Validator.Tests.Collections
 		[NotNull] 
 		public String name;
 
-		//[Valid] 
+		[Valid] 
 		public IList<Presenter> presenters = new List<Presenter>();
 
 		//[Valid] 
