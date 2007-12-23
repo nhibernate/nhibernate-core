@@ -456,6 +456,7 @@
     <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />
     <Compile Include="Bytecode\IBytecodeProvider.cs" />
+    <Compile Include="Bytecode\IInjectableProxyFactoryFactory.cs" />
     <Compile Include="Bytecode\IInstantiationOptimizer.cs" />
     <Compile Include="Bytecode\IProxyFactoryFactory.cs" />
     <Compile Include="Bytecode\IReflectionOptimizer.cs" />

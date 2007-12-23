@@ -191,12 +191,6 @@ namespace NHibernate.Engine
 			IDbConnection connection,
 			ConnectionReleaseMode connectionReleaseMode);
 
-		/// <summary>
-		/// Creates the proxy factory.
-		/// </summary>
-		/// <returns></returns>
-		IProxyFactory CreateProxyFactory();
-
 		/// <summary> 
 		/// Retrieves a set of all the collection roles in which the given entity
 		/// is a participant, as either an index or an element.

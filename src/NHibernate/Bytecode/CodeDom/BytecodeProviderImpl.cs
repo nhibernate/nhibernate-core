@@ -20,10 +20,8 @@ namespace NHibernate.Bytecode.CodeDom
 		public IProxyFactoryFactory ProxyFactoryFactory
 		{
 			get { return new DefaultProxyFactoryFactory(); }
-			set { throw new NotSupportedException(); }
 		}
 
-		#endregion
 
 		public IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters)
 		{
@@ -35,6 +33,8 @@ namespace NHibernate.Bytecode.CodeDom
 			}
 			return new Generator(clazz, getters, setters).CreateReflectionOptimizer();
 		}
+
+		#endregion
 
 		public class Generator
 		{

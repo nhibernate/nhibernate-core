@@ -9,6 +9,7 @@ using System.Xml;
 using System.Xml.Schema;
 using Iesi.Collections;
 using log4net;
+using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Dialect.Function;
@@ -947,6 +948,18 @@ namespace NHibernate.Cfg
 		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
 		public ISessionFactory BuildSessionFactory()
 		{
+			#region Way for the user to specify their own ProxyFactory
+			//http://jira.nhibernate.org/browse/NH-975
+
+			IInjectableProxyFactoryFactory ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
+			string pffClassName = (string)properties[Environment.ProxyFactoryFactoryClass];
+			if (ipff != null && !string.IsNullOrEmpty(pffClassName))
+			{
+				ipff.SetProxyFactoryFactory(pffClassName);
+			}
+
+			#endregion
+
 			SecondPassCompile();
 			Validate();
 			Environment.VerifyProperties(properties);
@@ -1408,25 +1421,6 @@ namespace NHibernate.Cfg
 		public INamingStrategy NamingStrategy
 		{
 			get { return namingStrategy; }
-		}
-
-		public System.Type ProxyFactoryClass
-		{
-			get { return proxyFactoryClass; }
-		}
-
-		public Configuration SetProxyFactoryClass(System.Type newProxyFactoryClass)
-		{
-			if (typeof(IProxyFactory).IsAssignableFrom(newProxyFactoryClass) == false)
-			{
-				HibernateException he =
-					new HibernateException(newProxyFactoryClass.FullName + " does not implement " +
-						typeof(IProxyFactory).FullName);
-				log.Error(he);
-				throw he;
-			}
-			proxyFactoryClass = newProxyFactoryClass;
-			return this;
 		}
 
 		/// <summary>

@@ -141,6 +141,7 @@ namespace NHibernate.Cfg
 		public const string PropertyUseReflectionOptimizer = "use_reflection_optimizer";
 
 		public const string UseProxyValidator = "use_proxy_validator";
+		public const string ProxyFactoryFactoryClass = "proxyfactory.factory_class";
 
 		private static readonly Dictionary<string, string> GlobalProperties;
 

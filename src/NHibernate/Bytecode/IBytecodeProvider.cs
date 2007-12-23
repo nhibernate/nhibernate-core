@@ -8,9 +8,7 @@ namespace NHibernate.Bytecode
 		/// The specific factory for this provider capable of
 		/// generating run-time proxies for lazy-loading purposes.
 		///  </summary>
-		IProxyFactoryFactory ProxyFactoryFactory { get; set;}
-		// NH specific: we add the set method because NH-975; the responsability of
-		// ProxyFactory is of BytecodeProvider like H3.2
+		IProxyFactoryFactory ProxyFactoryFactory { get;}
 
 		/// <summary>
 		/// Retrieve the <see cref="IReflectionOptimizer" /> delegate for this provider

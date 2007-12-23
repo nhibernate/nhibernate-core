@@ -1,6 +1,6 @@
 using System;
-using NHibernate.Persister.Entity;
 using NHibernate.Property;
+using NHibernate.Util;
 
 namespace NHibernate.Bytecode.Lightweight
 {
@@ -9,20 +9,34 @@ namespace NHibernate.Bytecode.Lightweight
 	/// of reflection.
 	/// </summary>
 	/// <remarks>
-	/// Used in <see cref="AbstractEntityPersister"/> and
+	/// Used in <see cref="NHibernate.Persister.Entity.AbstractEntityPersister"/> and
 	/// <see cref="NHibernate.Type.ComponentType"/>
 	/// </remarks>
-	public class BytecodeProviderImpl : IBytecodeProvider
+	public class BytecodeProviderImpl : IBytecodeProvider, IInjectableProxyFactoryFactory
 	{
+		System.Type proxyFactoryFactory;
+
 		#region IBytecodeProvider Members
 
 		public virtual IProxyFactoryFactory ProxyFactoryFactory
 		{
-			get { return new DefaultProxyFactoryFactory(); }
-			set { throw new NotSupportedException(); }
+			get
+			{
+				if (proxyFactoryFactory != null)
+				{
+					try
+					{
+						return (IProxyFactoryFactory) Activator.CreateInstance(proxyFactoryFactory);
+					}
+					catch (Exception e)
+					{
+						throw new HibernateException("Failed to create an instance of '" + proxyFactoryFactory.FullName + "'!", e);
+					}
+				}
+				return new DefaultProxyFactoryFactory();
+			}
 		}
 
-		#endregion
 
 		/// <summary>
 		/// Generate the IReflectionOptimizer object
@@ -36,6 +50,35 @@ namespace NHibernate.Bytecode.Lightweight
 		{
 			return new ReflectionOptimizer(mappedClass, getters, setters);
 		}
+
+		#endregion
+
+		#region IInjectableProxyFactoryFactory Members
+
+		public void SetProxyFactoryFactory(string typeName)
+		{
+			System.Type pffc;
+			try
+			{
+				pffc = ReflectHelper.ClassForName(typeName);
+			}
+			catch(HibernateException he)
+			{
+				throw new HibernateException("Unable to load type '" + typeName + "' during configuration of proxy factory class.",
+				                             he); 
+			}
+
+			if (typeof(IProxyFactoryFactory).IsAssignableFrom(pffc) == false)
+			{
+				HibernateException he =
+					new HibernateException(pffc.FullName + " does not implement " +
+						typeof(IProxyFactoryFactory).FullName);
+				throw he;
+			}
+			proxyFactoryFactory = pffc;
+		}
+
+		#endregion
 	}
 }
 

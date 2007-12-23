@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 using Castle.DynamicProxy;
+using NHibernate.Bytecode;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using NHibernate.Proxy.Poco.Castle;
@@ -25,10 +26,10 @@ namespace NHibernate.Test.ProxyInterface
 			get { return new string[] { "ExpressionTest.SubQueries.Mappings.hbm.xml" }; }
 		}
 
-		protected override void BuildSessionFactory()
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			cfg.SetProxyFactoryClass(typeof(DataBindingProxyFactory));
-			base.BuildSessionFactory();
+			configuration.Properties[NHibernate.Cfg.Environment.ProxyFactoryFactoryClass] =
+				typeof(CustomProxyFactoryFactory).AssemblyQualifiedName;
 		}
 
 		[Test]
@@ -60,6 +61,18 @@ namespace NHibernate.Test.ProxyInterface
 				s.Flush();
 			}
 		}
+	}
+
+	public class CustomProxyFactoryFactory : IProxyFactoryFactory
+	{
+		#region IProxyFactoryFactory Members
+
+		public IProxyFactory BuildProxyFactory()
+		{
+			return new DataBindingProxyFactory();
+		}
+
+		#endregion
 	}
 
 	public class DataBindingProxyFactory : CastleProxyFactory

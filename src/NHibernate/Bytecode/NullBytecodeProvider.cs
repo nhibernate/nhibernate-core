@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Property;
 
 namespace NHibernate.Bytecode
@@ -14,7 +13,6 @@ namespace NHibernate.Bytecode
 		public IProxyFactoryFactory ProxyFactoryFactory
 		{
 			get { return new DefaultProxyFactoryFactory(); }
-			set { throw new NotSupportedException(); }
 		}
 
 		#endregion

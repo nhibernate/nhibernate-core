@@ -181,7 +181,6 @@ namespace NHibernate.Impl
 
 			this.properties = cfg.Properties;
 			this.interceptor = cfg.Interceptor;
-			this.proxyFactoryClass = cfg.ProxyFactoryClass;
 			this.settings = settings;
 			this.sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 			eventListeners = listeners;
@@ -469,9 +468,6 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private int strongRefIndex = 0;
 
-		[NonSerialized]
-		private System.Type proxyFactoryClass;
-
 		// both keys and values may be soft since value keeps a hard ref to the key (and there is a hard ref to MRU values)
 		[NonSerialized]
 		private readonly IDictionary softQueryCache = new WeakHashtable();
@@ -735,23 +731,6 @@ namespace NHibernate.Impl
 		public ISession OpenSession(IDbConnection connection, ConnectionReleaseMode connectionReleaseMode)
 		{
 			return OpenSession(connection, Timestamper.Next(), interceptor, connectionReleaseMode);
-		}
-
-
-		public IProxyFactory CreateProxyFactory()
-		{
-			if (proxyFactoryClass == typeof(CastleProxyFactory))
-			{
-				return Environment.BytecodeProvider.ProxyFactoryFactory.BuildProxyFactory();
-			}
-			try
-			{
-				return (IProxyFactory)Activator.CreateInstance(proxyFactoryClass);
-			}
-			catch(Exception e)
-			{
-				throw new HibernateException("Failed to create an instance of '" + proxyFactoryClass.FullName + "'!", e);
-			}
 		}
 
 		public IEntityPersister GetEntityPersister(string entityName)

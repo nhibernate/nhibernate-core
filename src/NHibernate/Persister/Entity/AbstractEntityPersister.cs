@@ -1121,7 +1121,7 @@ namespace NHibernate.Persister.Entity
 
 		protected virtual IProxyFactory CreateProxyFactory()
 		{
-			return factory.CreateProxyFactory();
+			return Environment.BytecodeProvider.ProxyFactoryFactory.BuildProxyFactory();
 		}
 
 		/// <summary>
