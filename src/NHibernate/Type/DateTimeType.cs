@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	/// or the <see cref="TicksType"/>
 	/// </remarks>
 	[Serializable]
-	public class DateTimeType : ValueTypeType, IIdentifierType, ILiteralType, IVersionType
+	public class DateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 		/// <summary></summary>
 		internal DateTimeType() : base(SqlTypeFactory.DateTime)

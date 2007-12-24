@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// <see cref="DbType.Date"/> column
 	/// </summary>
 	[Serializable]
-	public class DateType : ValueTypeType, IIdentifierType, ILiteralType
+	public class DateType : PrimitiveType, IIdentifierType, ILiteralType
 	{
 		/// <summary></summary>
 		internal DateType() : base(SqlTypeFactory.Date)

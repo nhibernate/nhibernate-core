@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Boolean"/> column.
 	/// </summary>
 	[Serializable]
-	public class BooleanType : ValueTypeType, IDiscriminatorType
+	public class BooleanType : PrimitiveType, IDiscriminatorType
 	{
 		private const string TRUE = "1";
 		private const string FALSE = "0";

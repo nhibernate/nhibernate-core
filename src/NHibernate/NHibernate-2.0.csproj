@@ -415,7 +415,7 @@
     <Compile Include="Type\UInt16Type.cs" />
     <Compile Include="Type\UInt32Type.cs" />
     <Compile Include="Type\UInt64Type.cs" />
-    <Compile Include="Type\ValueTypeType.cs" />
+    <Compile Include="Type\PrimitiveType.cs" />
     <Compile Include="Type\YesNoType.cs" />
     <Compile Include="UnresolvableObjectException.cs" />
     <Compile Include="Util\ADOExceptionReporter.cs" />

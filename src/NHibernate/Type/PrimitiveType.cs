@@ -8,14 +8,14 @@ namespace NHibernate.Type
 	/// Superclass of <see cref="ValueType"/> types.
 	/// </summary>
 	[Serializable]
-	public abstract class ValueTypeType : ImmutableType, ILiteralType
+	public abstract class PrimitiveType : ImmutableType, ILiteralType
 	{
 		/// <summary>
 		/// Initialize a new instance of the ValueTypeType class using a 
 		/// <see cref="SqlType"/>. 
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		protected ValueTypeType(SqlType sqlType) : base(sqlType)
+		protected PrimitiveType(SqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -30,8 +30,6 @@ namespace NHibernate.Type
 		{
 			return ObjectUtils.Equals(x, y);
 		}
-
-		// <see cref="PrimitiveType"/>
 
 		/// <summary>
 		/// A representation of the value to be embedded in an XML element 

@@ -26,7 +26,7 @@ namespace NHibernate.Mapping
 					if (elementClassName == null)
 					{
 						IType elementType = Element.Type;
-						elementClass = IsPrimitiveArray ? ((ValueTypeType) elementType).PrimitiveClass : elementType.ReturnedClass;
+						elementClass = IsPrimitiveArray ? ((PrimitiveType) elementType).PrimitiveClass : elementType.ReturnedClass;
 					}
 					else
 					{

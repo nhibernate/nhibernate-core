@@ -57,7 +57,7 @@ namespace NHibernate.Id
 		private string query;
 
 		protected SqlType columnSqlType;
-		protected ValueTypeType columnType;
+		protected PrimitiveType columnType;
 
 		private SqlString updateSql;
 		private SqlType[] parameterTypes;
@@ -87,7 +87,7 @@ namespace NHibernate.Id
 			query = "select " + columnName + " from " + dialect.AppendLockHint(LockMode.Upgrade, tableName)
 			        + dialect.ForUpdateString;
 
-			columnType = type as ValueTypeType;
+			columnType = type as PrimitiveType;
 			if (columnType == null)
 			{
 				log.Error("Column type for TableGenerator is not a value type");

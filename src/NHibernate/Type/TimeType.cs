@@ -20,7 +20,7 @@ namespace NHibernate.Type
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class TimeType : ValueTypeType, IIdentifierType, ILiteralType
+	public class TimeType : PrimitiveType, IIdentifierType, ILiteralType
 	{
 		private static DateTime BaseDateValue = new DateTime(1753, 01, 01);
 

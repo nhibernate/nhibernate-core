@@ -28,7 +28,7 @@ namespace NHibernate.Type
 	/// </p>
 	/// </remarks>
 	[Serializable]
-	public class TimestampType : ValueTypeType, IVersionType, ILiteralType
+	public class TimestampType : PrimitiveType, IVersionType, ILiteralType
 	{
 		public TimestampType() : base(SqlTypeFactory.DateTime)
 		{

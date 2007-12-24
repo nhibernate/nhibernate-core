@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// PersistentEnumType
 	/// </summary>
 	[Serializable]
-	public class PersistentEnumType : ValueTypeType, ILiteralType
+	public class PersistentEnumType : PrimitiveType, ILiteralType
 	{
 		private readonly System.Type enumClass;
 

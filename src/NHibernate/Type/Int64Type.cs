@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Int64"/> column.
 	/// </summary>
 	[Serializable]
-	public class Int64Type : ValueTypeType, IDiscriminatorType, IVersionType
+	public class Int64Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
 		internal Int64Type() : base(SqlTypeFactory.Int64)

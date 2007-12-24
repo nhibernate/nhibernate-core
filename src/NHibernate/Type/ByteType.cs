@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Byte"/> column.
 	/// </summary>
 	[Serializable]
-	public class ByteType : ValueTypeType, IDiscriminatorType, IVersionType
+	public class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		internal ByteType() : base(SqlTypeFactory.Byte)
 		{

@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.SByte"/> column.
 	/// </summary>
 	[Serializable]
-	public class SByteType : ValueTypeType, IDiscriminatorType
+	public class SByteType : PrimitiveType, IDiscriminatorType
 	{
 		/// <summary></summary>
 		internal SByteType() : base(SqlTypeFactory.SByte)

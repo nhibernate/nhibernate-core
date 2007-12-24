@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// is accurate to 100-nanosecond intervals. 
 	/// </remarks>
 	[Serializable]
-	public class TicksType : ValueTypeType, IVersionType, ILiteralType
+	public class TicksType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
 		internal TicksType() : base(SqlTypeFactory.Int64)

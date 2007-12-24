@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Int16"/> column.
 	/// </summary>
 	[Serializable]
-	public class Int16Type : ValueTypeType, IDiscriminatorType, IVersionType
+	public class Int16Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
 		internal Int16Type() : base(SqlTypeFactory.Int16)
