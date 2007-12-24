@@ -27,10 +27,10 @@ namespace NHibernate.Validator.Tests.Collections
 		}
 
 		/// <summary>
-		/// TODO: Validate Dictionaries. Not supported yet
+		/// Validate Generic Dictionaries
 		/// </summary>
-		[Test,Ignore]
-		public void TestMap()
+		[Test]
+		public void TestDictionary()
 		{
 			Tv tv = new Tv();
 			tv.name = "France 2";
@@ -43,7 +43,8 @@ namespace NHibernate.Validator.Tests.Collections
 			ClassValidator validator = new ClassValidator(typeof(Tv));
 			InvalidValue[] values = validator.GetInvalidValues(tv);
 			Assert.AreEqual(1, values.Length);
-			Assert.AreEqual("shows['Primetime'].Name", values[0].PropertyPath);
+			Assert.AreEqual("shows[1].name", values[0].PropertyPath);
+			//Assert.AreEqual("shows['Primetime'].name", values[0].PropertyPath);
 		}
 
 		/// <summary>

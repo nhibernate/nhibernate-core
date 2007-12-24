@@ -11,7 +11,7 @@ namespace NHibernate.Validator.Tests.Collections
 		[Valid] 
 		public IList<Presenter> presenters = new List<Presenter>();
 
-		//[Valid] 
+		[Valid] 
 		public IDictionary<String, Show> shows = new Dictionary<String, Show>();
 
 		[Valid]

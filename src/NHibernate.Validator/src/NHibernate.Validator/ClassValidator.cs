@@ -8,6 +8,7 @@ namespace NHibernate.Validator
 	using Iesi.Collections;
 	using Iesi.Collections.Generic;
 	using Interpolator;
+	using Property;
 	using Util;
 
 	[Serializable]
@@ -256,24 +257,63 @@ namespace NHibernate.Validator
 		/// <param name="results"></param>
 		public void MakeChildValidation(IEnumerable value, object bean, MemberInfo member,ISet circularityState, List<InvalidValue> results)
 		{
-			int index = 0;
-			foreach (object item in value) 
+			if(IsGenericDictionary(value.GetType())) //Generic Dictionary
 			{
-				if (item == null)
+				int index = 0;
+				foreach (object item in value) 
 				{
+					if (item == null) 
+					{
+						index++;
+						continue;
+					}
+
+					IGetter ValueProperty = new BasicPropertyAccessor().GetGetter(item.GetType(), "Value");
+					IGetter KeyProperty = new BasicPropertyAccessor().GetGetter(item.GetType(), "Key");
+
+					InvalidValue[] invalidValuesKey = GetClassValidator(ValueProperty.Get(item)).GetInvalidValues(ValueProperty.Get(item), circularityState);
+					String indexedPropName = string.Format("{0}[{1}]", member.Name, index);
+					
+					foreach (InvalidValue invalidValue in invalidValuesKey) 
+					{
+						invalidValue.AddParentBean(bean, indexedPropName);
+						results.Add(invalidValue);
+					}
+
+					InvalidValue[] invalidValuesValue = GetClassValidator(KeyProperty.Get(item)).GetInvalidValues(KeyProperty.Get(item), circularityState);
+					indexedPropName = string.Format("{0}[{1}]", member.Name, index);
+
+					foreach (InvalidValue invalidValue in invalidValuesValue) 
+					{
+						invalidValue.AddParentBean(bean, indexedPropName);
+						results.Add(invalidValue);
+					}
+
 					index++;
-					continue;
 				}
+			}
+			else //Generic collection
+			{
+				int index = 0;
+				foreach(object item in value)
+				{
+					if (item == null)
+					{
+						index++;
+						continue;
+					}
 
-				InvalidValue[] invalidValues = GetClassValidator(item).GetInvalidValues(item, circularityState);
+					InvalidValue[] invalidValues = GetClassValidator(item).GetInvalidValues(item, circularityState);
 
-				String indexedPropName = string.Format("{0}[{1}]", member.Name, index);
+					String indexedPropName = string.Format("{0}[{1}]", member.Name, index);
 
-				index++;
+					index++;
 
-				foreach (InvalidValue invalidValue in invalidValues) {
-					invalidValue.AddParentBean(bean, indexedPropName);
-					results.Add(invalidValue);
+					foreach(InvalidValue invalidValue in invalidValues)
+					{
+						invalidValue.AddParentBean(bean, indexedPropName);
+						results.Add(invalidValue);
+					}
 				}
 			}
 		}
@@ -401,12 +441,14 @@ namespace NHibernate.Validator
 					new ClassValidator(clazzDictionary.Key, messageBundle, userInterpolator, childClassValidators);
 				if (!childClassValidators.ContainsKey(clazzDictionary.Value))
 					new ClassValidator(clazzDictionary.Value, messageBundle, userInterpolator, childClassValidators);
+
+				return;
 			}
 			else
 			{
 				clazz = GetTypeOfMember(member);
-			}
-
+			} 
+			
 			if (!childClassValidators.ContainsKey(clazz))
 			{
 				new ClassValidator(clazz, messageBundle, userInterpolator, childClassValidators);
@@ -460,7 +502,10 @@ namespace NHibernate.Validator
 
 		private bool IsGenericDictionary(Type clazz)
 		{
-			return clazz.GetInterface(typeof(IDictionary<,>).FullName) == null ? false : true;
+			if(clazz.IsInterface&&clazz.IsGenericType)
+				return typeof(IDictionary<,>).Equals(clazz.GetGenericTypeDefinition());
+			else 
+				return clazz.GetInterface(typeof(IDictionary<,>).Name) == null ? false : true;
 		}
 
 		/// <summary>
