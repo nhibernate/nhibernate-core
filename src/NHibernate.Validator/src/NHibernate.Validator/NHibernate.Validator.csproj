@@ -45,6 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertTrueAttribute.cs" />
+    <Compile Include="AssertTrueValidator.cs" />
+    <Compile Include="FutureAttribute.cs" />
+    <Compile Include="FutureValidator.cs" />
     <Compile Include="MinAttribute.cs" />
     <Compile Include="MinValidator.cs" />
     <Compile Include="NotEmptyAttribute.cs" />
@@ -67,6 +71,11 @@
     <Compile Include="NotNullAttribute.cs" />
     <Compile Include="NotNullValidator.cs" />
     <Compile Include="IPersistentClassConstraint.cs" />
+    <Compile Include="PatternAttribute.cs" />
+    <Compile Include="PatternsAttribute.cs" />
+    <Compile Include="PatternValidator.cs" />
+    <Compile Include="RangeAttribute.cs" />
+    <Compile Include="RangeValidator.cs" />
     <Compile Include="Resources\DefaultValidatorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

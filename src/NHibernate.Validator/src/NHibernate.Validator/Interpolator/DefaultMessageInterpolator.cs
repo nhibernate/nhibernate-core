@@ -3,6 +3,7 @@ namespace NHibernate.Validator.Interpolator
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Reflection;
 	using System.Resources;
 	using System.Text;
@@ -12,6 +13,8 @@ namespace NHibernate.Validator.Interpolator
 	{
 		//TODO: Log !
 		//private static Log log = LogFactory.getLog( DefaultMessageInterpolator.class );
+
+		private CultureInfo culture = null;
 
 		private Dictionary<string, object> attributeParameters = new Dictionary<string, object>();
 
@@ -23,8 +26,9 @@ namespace NHibernate.Validator.Interpolator
 
 		private string interpolateMessage;
 
-		public void Initialize(ResourceManager messageBundle, ResourceManager defaultMessageBundle)
+		public void Initialize(ResourceManager messageBundle, ResourceManager defaultMessageBundle, CultureInfo culture)
 		{
+			this.culture = culture;
 			this.messageBundle = messageBundle;
 			this.defaultMessageBundle = defaultMessageBundle;
 		}
@@ -101,7 +105,10 @@ namespace NHibernate.Validator.Interpolator
 							//Diferent behavior that Hibernate.Validator
 							//Try first with the current Culture in the Custom ResourceManager
 							//Else trywith the default Culture in the Custom ResourceManager
-							_string = messageBundle != null ? messageBundle.GetString(token) : null;
+							if (culture == null)
+								_string = messageBundle != null ? messageBundle.GetString(token) : null;
+							else
+								_string = messageBundle != null ? messageBundle.GetString(token,culture) : null;
 						}
 						catch(MissingManifestResourceException e)
 						{
@@ -118,7 +125,10 @@ namespace NHibernate.Validator.Interpolator
 							{
 								//Try first with the current Culture in the Default ResourceManager
 								//Else trywith the default Culture in the Default ResourceManager
-								_string = defaultMessageBundle.GetString(token);
+								if(culture == null)
+									_string = defaultMessageBundle.GetString(token);
+								else
+									_string = defaultMessageBundle.GetString(token,culture);
 							}
 							catch(MissingManifestResourceException e)
 							{

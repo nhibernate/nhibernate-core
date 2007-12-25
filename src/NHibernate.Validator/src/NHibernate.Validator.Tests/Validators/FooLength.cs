@@ -1,8 +1,6 @@
 namespace NHibernate.Validator.Tests.Validators
 {
-    using Validator;
-
-    public class FooLength
+	public class FooLength
     {
         private int id;
 

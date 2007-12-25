@@ -6,7 +6,7 @@ namespace NHibernate.Validator.Tests.Valid
     public class ValidTest
     {
         [Test]
-        public void testDeepValid()
+        public void TestDeepValid()
         {
             ClassValidator formValidator = new ClassValidator(typeof(Form));
 
@@ -22,5 +22,15 @@ namespace NHibernate.Validator.Tests.Valid
             InvalidValue[] values2 = formValidator.GetInvalidValues(f);
             Assert.AreEqual(0, values2.Length);
         }
+
+		[Test]
+		public void OneToOneValid()
+		{
+			ClassValidator vtor = new ClassValidator(typeof(Blog));
+			Blog b = new Blog();
+			b.Author = new Author();
+			InvalidValue[] values = vtor.GetInvalidValues(b);
+			Assert.AreEqual(2,values.Length);
+		}
     }
 }

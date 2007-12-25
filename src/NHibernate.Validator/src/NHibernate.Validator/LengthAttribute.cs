@@ -1,9 +1,8 @@
 namespace NHibernate.Validator
 {
     using System;
-    using Validator;
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     [ValidatorClass(typeof(LengthValidator))]
     public class LengthAttribute : Attribute
     {

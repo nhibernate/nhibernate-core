@@ -1,9 +1,8 @@
 namespace NHibernate.Validator
 {
     using System;
-    using Validator;
 
-    public class InvalidStateException : Exception
+	public class InvalidStateException : Exception
     {
         private static InvalidValue[] _invalidValues;
 

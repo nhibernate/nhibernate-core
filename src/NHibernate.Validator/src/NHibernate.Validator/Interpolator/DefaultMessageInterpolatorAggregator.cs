@@ -2,6 +2,7 @@ namespace NHibernate.Validator.Interpolator
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Resources;
 
 	[Serializable]
@@ -16,15 +17,18 @@ namespace NHibernate.Validator.Interpolator
 		//transient but repopulated by the object owing a reference to the interpolator
 		[NonSerialized] private ResourceManager defaultMessageBundle;
 
-		public void Initialize(ResourceManager messageBundle, ResourceManager defaultMessageBundle)
+		private CultureInfo culture;
+
+		public void Initialize(ResourceManager messageBundle, ResourceManager defaultMessageBundle, CultureInfo culture)
 		{
+			this.culture = culture;
 			this.messageBundle = messageBundle;
 			this.defaultMessageBundle = defaultMessageBundle;
 
 			//useful when we deserialize
 			foreach(DefaultMessageInterpolator interpolator in interpolators.Values)
 			{
-				interpolator.Initialize(messageBundle, defaultMessageBundle);
+				interpolator.Initialize(messageBundle, defaultMessageBundle,culture);
 			}
 		}
 
@@ -49,7 +53,7 @@ namespace NHibernate.Validator.Interpolator
 		public void AddInterpolator(Attribute attribute, IValidator validator)
 		{
 			DefaultMessageInterpolator interpolator = new DefaultMessageInterpolator();
-			interpolator.Initialize(messageBundle, defaultMessageBundle);
+			interpolator.Initialize(messageBundle, defaultMessageBundle, culture);
 			interpolator.Initialize(attribute, null);
 			interpolators.Add(validator, interpolator);
 		}

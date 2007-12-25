@@ -1,38 +1,38 @@
-namespace NHibernate.Validator.Validator
+namespace NHibernate.Validator
 {
-    using System;
-    using Mapping;
+	using System;
+	using Mapping;
 
-    public class LengthValidator : IValidator<LengthAttribute>, IPropertyConstraint
-    {
-        private int min;
-        private int max;
+	public class LengthValidator : IValidator<LengthAttribute>, IPropertyConstraint
+	{
+		private int min;
+		private int max;
 
-        public bool IsValid(object value)
-        {
-            if(value == null) return true;
-            if (!(value is string)) return false;
+		public bool IsValid(object value)
+		{
+			if(value == null) return true;
+			if (!(value is string)) return false;
 
-            string @string = (string) value;
-            int length = @string.Length;
+			string @string = (string) value;
+			int length = @string.Length;
 
-            return length >= min && length <= max;
-        }
+			return length >= min && length <= max;
+		}
 
 
-        public void Initialize(LengthAttribute parameters)
-        {
-            min = parameters.Min;
-            max = parameters.Max;
-        }
+		public void Initialize(LengthAttribute parameters)
+		{
+			min = parameters.Min;
+			max = parameters.Max;
+		}
 
-        public void Initialize(Attribute parameters) 
-        {
-            Initialize((LengthAttribute)parameters);
-        }
+		public void Initialize(Attribute parameters) 
+		{
+			Initialize((LengthAttribute)parameters);
+		}
 
-        public void apply(Property property)
-        {
-        }
-    }
+		public void apply(Property property)
+		{
+		}
+	}
 }

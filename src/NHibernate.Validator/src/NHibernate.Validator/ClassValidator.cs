@@ -3,6 +3,7 @@ namespace NHibernate.Validator
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Reflection;
 	using System.Resources;
 	using Iesi.Collections;
@@ -16,6 +17,8 @@ namespace NHibernate.Validator
 	{
 		//TODO: Logging
 		//private static Log log = LogFactory.getLog( ClassValidator.class );
+
+		public BindingFlags AnyVisibilityInstance = (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 
 		private Type beanClass;
 
@@ -38,13 +41,14 @@ namespace NHibernate.Validator
 		private List<MemberInfo> childGetters;
 
 		private static readonly InvalidValue[] EMPTY_INVALID_VALUE_ARRAY = new InvalidValue[] {};
+		private CultureInfo culture;
 
 		/// <summary>
 		/// Create the validator engine for this bean type
 		/// </summary>
 		/// <param name="beanClass"></param>
 		public ClassValidator(Type beanClass)
-			: this(beanClass, (ResourceManager) null)
+			: this(beanClass, (ResourceManager) null,(CultureInfo)null)
 		{
 		}
 
@@ -54,8 +58,8 @@ namespace NHibernate.Validator
 		/// </summary>
 		/// <param name="beanClass">bean type</param>
 		/// <param name="resourceManager"></param>
-		public ClassValidator(Type beanClass, ResourceManager resourceManager)
-			: this(beanClass, resourceManager, null, new Dictionary<Type, ClassValidator>())
+		public ClassValidator(Type beanClass, ResourceManager resourceManager, CultureInfo culture)
+			: this(beanClass, resourceManager, culture, null, new Dictionary<Type, ClassValidator>())
 		{
 		}
 
@@ -66,7 +70,7 @@ namespace NHibernate.Validator
 		/// <param name="beanClass"></param>
 		/// <param name="interpolator"></param>
 		public ClassValidator(Type beanClass, IMessageInterpolator interpolator)
-			: this(beanClass, null, interpolator, new Dictionary<Type, ClassValidator>())
+			: this(beanClass, null,null, interpolator, new Dictionary<Type, ClassValidator>())
 		{
 		}
 
@@ -75,11 +79,13 @@ namespace NHibernate.Validator
 		/// </summary>
 		/// <param name="clazz"></param>
 		/// <param name="resourceManager"></param>
+		/// <param name="culture"></param>
 		/// <param name="userInterpolator"></param>
 		/// <param name="childClassValidators"></param>
 		internal ClassValidator(
 			Type clazz,
 			ResourceManager resourceManager,
+			CultureInfo culture,
 			IMessageInterpolator userInterpolator,
 			Dictionary<Type, ClassValidator> childClassValidators)
 		{
@@ -87,11 +93,18 @@ namespace NHibernate.Validator
 
 			this.messageBundle = resourceManager ?? GetDefaultResourceManager();
 			this.defaultMessageBundle = GetDefaultResourceManager();
+			this.culture = culture;
 			this.userInterpolator = userInterpolator;
 			this.childClassValidators = childClassValidators;
 
 			//Initialize the ClassValidator
 			InitValidator(beanClass, childClassValidators);
+		}
+
+		public ClassValidator(Type type, CultureInfo culture)
+			: this(type)
+		{
+			this.culture = culture;
 		}
 
 		private ResourceManager GetDefaultResourceManager()
@@ -112,7 +125,7 @@ namespace NHibernate.Validator
 			this.memberGetters = new List<MemberInfo>();
 			this.childGetters = new List<MemberInfo>();
 			this.defaultInterpolator = new DefaultMessageInterpolatorAggregator();
-			this.defaultInterpolator.Initialize(messageBundle, defaultMessageBundle);
+			this.defaultInterpolator.Initialize(messageBundle, defaultMessageBundle, culture);
 
 			//build the class hierarchy to look for members in
 			childClassValidators.Add(clazz, this);
@@ -143,7 +156,7 @@ namespace NHibernate.Validator
 					CreateChildValidator(currentProperty);
 				}
 
-				foreach(FieldInfo currentField in currentClass.GetFields(ReflectHelper.AnyVisibilityInstance))
+				foreach(FieldInfo currentField in currentClass.GetFields(AnyVisibilityInstance))
 				{
 					CreateMemberValidator(currentField);
 					CreateChildValidator(currentField);
@@ -438,9 +451,9 @@ namespace NHibernate.Validator
 			{
 				clazzDictionary = GetGenericTypesOfDictionary(member);
 				if(!childClassValidators.ContainsKey(clazzDictionary.Key))
-					new ClassValidator(clazzDictionary.Key, messageBundle, userInterpolator, childClassValidators);
+					new ClassValidator(clazzDictionary.Key, messageBundle, culture, userInterpolator, childClassValidators);
 				if (!childClassValidators.ContainsKey(clazzDictionary.Value))
-					new ClassValidator(clazzDictionary.Value, messageBundle, userInterpolator, childClassValidators);
+					new ClassValidator(clazzDictionary.Value, messageBundle, culture, userInterpolator, childClassValidators);
 
 				return;
 			}
@@ -451,7 +464,7 @@ namespace NHibernate.Validator
 			
 			if (!childClassValidators.ContainsKey(clazz))
 			{
-				new ClassValidator(clazz, messageBundle, userInterpolator, childClassValidators);
+				new ClassValidator(clazz, messageBundle, culture, userInterpolator, childClassValidators);
 			}
 		}
 
