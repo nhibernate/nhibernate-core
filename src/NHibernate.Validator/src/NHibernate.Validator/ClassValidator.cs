@@ -10,6 +10,7 @@ namespace NHibernate.Validator
 	using Iesi.Collections.Generic;
 	using Interpolator;
 	using Property;
+	using Proxy;
 	using Util;
 
 	[Serializable]
@@ -18,7 +19,7 @@ namespace NHibernate.Validator
 		//TODO: Logging
 		//private static Log log = LogFactory.getLog( ClassValidator.class );
 
-		public BindingFlags AnyVisibilityInstance = (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+		public BindingFlags AnyVisibilityInstanceAndStatic = (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 
 		private Type beanClass;
 
@@ -41,7 +42,9 @@ namespace NHibernate.Validator
 		private List<MemberInfo> childGetters;
 
 		private static readonly InvalidValue[] EMPTY_INVALID_VALUE_ARRAY = new InvalidValue[] {};
+
 		private CultureInfo culture;
+		
 
 		/// <summary>
 		/// Create the validator engine for this bean type
@@ -70,7 +73,7 @@ namespace NHibernate.Validator
 		/// <param name="beanClass"></param>
 		/// <param name="interpolator"></param>
 		public ClassValidator(Type beanClass, IMessageInterpolator interpolator)
-			: this(beanClass, null,null, interpolator, new Dictionary<Type, ClassValidator>())
+			: this(beanClass, null, null, interpolator, new Dictionary<Type, ClassValidator>())
 		{
 		}
 
@@ -105,6 +108,14 @@ namespace NHibernate.Validator
 			: this(type)
 		{
 			this.culture = culture;
+		}
+
+		public bool HasValidationRules
+		{
+			get
+			{
+				return beanValidators.Count != 0 || memberValidators.Count != 0;
+			}
 		}
 
 		private ResourceManager GetDefaultResourceManager()
@@ -156,7 +167,7 @@ namespace NHibernate.Validator
 					CreateChildValidator(currentProperty);
 				}
 
-				foreach(FieldInfo currentField in currentClass.GetFields(AnyVisibilityInstance))
+				foreach(FieldInfo currentField in currentClass.GetFields(AnyVisibilityInstanceAndStatic))
 				{
 					CreateMemberValidator(currentField);
 					CreateChildValidator(currentField);
@@ -347,9 +358,43 @@ namespace NHibernate.Validator
 			return classValidator ?? new ClassValidator(clazz);
 		}
 
-		private bool IsPropertyInitialized(object bean, string propertyName)
+		/// <summary>
+		/// Check if the property is initialized. If the named property does not exist
+		/// or is not persistent, this method always return <value>true</value>
+		/// </summary>
+		/// <param name="proxy">proxy The potential proxy</param>
+		/// <param name="propertyName">the name of a persistent attribute of the object</param>
+		/// <returns>
+		/// true if the named property of the object is not listed as uninitialized
+		/// false if the object is an uninitialized proxy, or the named property is uninitialized
+		/// </returns>
+		private bool IsPropertyInitialized(object proxy, string propertyName)
 		{
-			//TODO: This method maybe need to be at NHibernate.Util
+			object entity;
+			if ( proxy is INHibernateProxy ) 
+			{
+				ILazyInitializer li = ((INHibernateProxy)proxy).HibernateLazyInitializer;
+				if ( li.IsUninitialized ) 
+					return false;
+				else 
+					entity = li.GetImplementation();
+			}
+			else 
+			{
+				entity = proxy;
+			}
+
+			//Note: Always true at NHibernate implementation
+			//if (FieldInterceptionHelper.IsInstrumented(entity)) 
+			//{
+			//    IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
+			//    return interceptor == null || interceptor.IsInitializedField(propertyName);
+			//} 
+			//else
+			//{
+			//    return true;
+			//}
+
 			return true;
 		}
 
@@ -612,6 +657,30 @@ namespace NHibernate.Validator
 			{
 				throw new InvalidStateException(values);
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public InvalidValue[] GetPotentialInvalidValues(string propertyName, object value)
+		{
+			List<InvalidValue> results = new List<InvalidValue>();
+
+			for (int i = 0; i < memberValidators.Count; i++) 
+			{
+				MemberInfo getter = memberGetters[i];
+				if (getter.Name.Equals(propertyName)) 
+				{
+					IValidator validator = memberValidators[i];
+					if (!validator.IsValid(value)) 
+						results.Add(new InvalidValue(Interpolate(validator), beanClass, propertyName, value, null));
+				}
+			}
+
+			return results.ToArray();
 		}
 	}
 }

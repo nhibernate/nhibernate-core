@@ -1,9 +1,9 @@
 namespace NHibernate.Validator.Tests
 {
+	using System.Collections.Generic;
 	using System.Globalization;
 	using System.Reflection;
 	using System.Resources;
-	using System.Text.RegularExpressions;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -96,31 +96,53 @@ namespace NHibernate.Validator.Tests
 			Assert.AreEqual(1, invalidValues.Length);
 		}
 
+		[Test]
+		public void BeanValidator()
+		{
+			Suricato s = new Suricato();
+			
+			ClassValidator vtor = new ClassValidator(typeof(Suricato));
+
+			Assert.IsTrue(vtor.HasValidationRules);
+			Assert.AreEqual(1,vtor.GetInvalidValues(s).Length);
+		}
+
 		/// <summary>
-		/// Test aggregate annotations (Array of Attributes)
+		/// Test duplicates annotations.
+		/// Hibernate.Validator has diferent behavior: Aggregate Annotations
 		/// <example>
-		/// For example: 
+		/// example for the field 'info'.
 		/// </example>
 		/// <code>
-		/// [Patterns(new Pattern[]
-		///	{
-		///		Pattern(Regex = "^[A-Z0-9-]+$", Message = "must contain alphabetical characters only"),
-		///		Pattern(Regex = "^....-....-....$", Message = "must match ....-....-....")
-		///	})] 
+		/// [Pattern(Regex = "^[A-Z0-9-]+$", Message = "must contain alphabetical characters only")]
+		///	[Pattern(Regex = "^....-....-....$", Message = "must match ....-....-....")]
+		/// private string info;
 		/// </code> 
 		/// </summary>
-		[Test,Ignore("Aggregate Attributes not supported yet")]
-		public void AggregationAnnotations() 
+		[Test]
+		public void DuplicateAnnotations()
 		{
 			Engine eng = new Engine();
 			eng.HorsePower = 23;
 			eng.SerialNumber = "23-43###4";
-			ClassValidator classValidator = new ClassValidator( typeof(Engine));
-			InvalidValue[] invalidValues = classValidator.GetInvalidValues( eng );
+			ClassValidator classValidator = new ClassValidator(typeof(Engine));
+			InvalidValue[] invalidValues = classValidator.GetInvalidValues(eng);
 			Assert.AreEqual( 2, invalidValues.Length);
+
+			//This cannot be tested, the order is random
+			//Assert.AreEqual("must contain alphabetical characters only", invalidValues[0].Message);
+			//Assert.AreEqual("must match ....-....-....", invalidValues[1].Message);
+			//Instead of that, I do this:
+			List<string> list_invalidValues = new List<string>();
+			list_invalidValues.Add(invalidValues[0].Message);
+			list_invalidValues.Add(invalidValues[1].Message);
+			Assert.IsTrue(list_invalidValues.Contains("must contain alphabetical characters only"));
+			Assert.IsTrue(list_invalidValues.Contains("must match ....-....-...."));
+
+			
 			eng.SerialNumber =  "1234-5678-9012";
-			invalidValues = classValidator.GetInvalidValues( eng );
-			Assert.AreEqual( 0, invalidValues.Length );
+			invalidValues = classValidator.GetInvalidValues(eng);
+			Assert.AreEqual(0, invalidValues.Length);
 		}
 	}
 }

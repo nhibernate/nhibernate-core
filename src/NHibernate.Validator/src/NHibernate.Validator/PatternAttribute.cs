@@ -3,7 +3,7 @@ namespace NHibernate.Validator
 	using System;
 	using System.Text.RegularExpressions;
 
-	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property,AllowMultiple = true)]
 	[ValidatorClass(typeof(PatternValidator))]
 	public class PatternAttribute : Attribute
 	{
@@ -28,5 +28,7 @@ namespace NHibernate.Validator
 			get { return message; }
 			set { message = value; }
 		}
+
+		
 	}
 }

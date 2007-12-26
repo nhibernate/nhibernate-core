@@ -44,12 +44,11 @@ namespace NHibernate.Validator.Interpolator
 				attributeParameters.Add(property.Name, property.GetValue(attribute, null));
 			}
 
-			attributeMessage = (string) attributeParameters["Message"];
-
-			if (attributeMessage == null)
-			{
+			if (attributeParameters.ContainsKey("Message"))
+				attributeMessage = (string) attributeParameters["Message"];
+			else 
 				throw new ArgumentException("Attribute " + clazz + " does not have an (accessible) Message attribute");
-			}
+			
 		}
 
 		/// <summary>
