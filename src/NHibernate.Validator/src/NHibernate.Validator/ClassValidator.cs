@@ -9,6 +9,7 @@ namespace NHibernate.Validator
 	using Iesi.Collections;
 	using Iesi.Collections.Generic;
 	using Interpolator;
+	using Mapping;
 	using Property;
 	using Proxy;
 	using Util;
@@ -681,6 +682,79 @@ namespace NHibernate.Validator
 			}
 
 			return results.ToArray();
+		}
+
+		/// <summary>
+		/// Apply the registred constraints rules on the hibernate metadata (to be applied on DB schema)
+		/// </summary>
+		/// <param name="persistentClass">hibernate metadata</param>
+		public void Apply(PersistentClass persistentClass)
+		{
+			foreach (IValidator validator in beanValidators)
+			{
+				if (validator is IPersistentClassConstraint)
+					((IPersistentClassConstraint)validator).Apply(persistentClass);
+			}
+
+			for (int i = 0; i < memberValidators.Count;i++ ) 
+			{
+				IValidator validator = memberValidators[i];
+				MemberInfo getter = memberGetters[i];
+
+				string propertyName = getter.Name;
+
+				if(	validator is IPropertyConstraint )
+				{
+					try
+					{
+						Property property = FindPropertyByName(persistentClass, propertyName);
+						if(property != null)
+							((IPropertyConstraint)validator).Apply(property);
+					}
+					catch(MappingException ex)
+					{
+					}
+				}
+			}
+		}
+
+		private Property FindPropertyByName(PersistentClass associatedClass, string propertyName)
+		{
+			Property property = null;
+			Property idProperty = associatedClass.IdentifierProperty;
+			string idName = idProperty != null ? idProperty.Name : null;
+			try
+			{
+				//if it's a Id
+				if (propertyName == null || propertyName.Length == 0 || propertyName.Equals(idName))
+					property = idProperty;
+				else //if it's a property
+				{
+					if (propertyName.IndexOf(idName + ".") == 0) 
+					{
+						property = idProperty;
+						propertyName = propertyName.Substring(idName.Length + 1);
+					}
+					
+					foreach(string element in new StringTokenizer(propertyName, ".", false))
+					{
+						if (property == null)
+							property = associatedClass.GetProperty(element);
+						else
+						{
+							if (property.IsComposite) 
+								property = ((Component) property.Value).GetProperty(element);
+							else
+								return null;
+						}
+					}
+				}
+			}
+			catch(MappingException ex)
+			{
+			}
+
+			return property;
 		}
 	}
 }

@@ -44,6 +44,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\net\2.0\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="NHibernate, Version=2.0.0.1001, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\build\NHibernate-2.0.0.Alpha1-debug\bin\net-2.0\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate.Test, Version=2.0.0.1001, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\build\NHibernate-2.0.0.Alpha1-debug\bin\net-2.0\NHibernate.Test.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.core, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\net\2.0\nunit.core.dll</HintPath>
@@ -76,6 +84,14 @@
     <Compile Include="Inheritance\Animal.cs" />
     <Compile Include="Inheritance\IName.cs" />
     <Compile Include="Inheritance\InheritanceFixture.cs" />
+    <Compile Include="Integration\CreditCard.cs" />
+    <Compile Include="Integration\MarsAddress.cs" />
+    <Compile Include="Integration\Martian.cs" />
+    <Compile Include="Integration\MartianPk.cs" />
+    <Compile Include="Integration\Music.cs" />
+    <Compile Include="Integration\HibernateAnnotationIntegrationFixture.cs" />
+    <Compile Include="Integration\PrefixMessageInterpolator.cs" />
+    <Compile Include="Integration\Rock.cs" />
     <Compile Include="ResourceFixture\ResourcesTest.cs" />
     <Compile Include="Suricato.cs" />
     <Compile Include="Tv.cs" />
@@ -105,6 +121,22 @@
     <EmbeddedResource Include="Resource\Messages.en.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Integration\Address.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Integration\Tv.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Integration\TvOwner.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Integration\Music.hbm.xml" />
+    <EmbeddedResource Include="Integration\Rock.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Integration\Martian.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

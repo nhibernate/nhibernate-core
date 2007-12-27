@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Validator.Tests"
+				   assembly="NHibernate.Validator.Tests"
+				   default-lazy="false">
+
+  <class name="Address">
+    
+    <id name="Id" type="long">
+      <generator class="assigned"/>
+    </id>
+
+    <property name="State" />
+    <property name="Country" />
+    <property name="Zip" />
+    <property name="Line1" />
+    <property name="Line2" />
+
+  </class>
+</hibernate-mapping>

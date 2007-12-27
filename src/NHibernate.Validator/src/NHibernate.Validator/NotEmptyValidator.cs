@@ -19,7 +19,7 @@ namespace NHibernate.Validator
             throw new ArgumentException("the object to validate must be a string or a collection", "value");
         }
         
-        public void apply(Property property)
+        public void Apply(Property property)
         {
             
         }

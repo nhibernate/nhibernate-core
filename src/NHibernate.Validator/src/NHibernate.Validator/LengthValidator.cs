@@ -1,6 +1,7 @@
 namespace NHibernate.Validator
 {
 	using System;
+	using System.Collections;
 	using Mapping;
 
 	public class LengthValidator : IValidator<LengthAttribute>, IPropertyConstraint
@@ -31,8 +32,14 @@ namespace NHibernate.Validator
 			Initialize((LengthAttribute)parameters);
 		}
 
-		public void apply(Property property)
+		public void Apply(Property property)
 		{
+			IEnumerator ie =  property.ColumnIterator.GetEnumerator();
+			ie.MoveNext();
+			Column col = (Column) ie.Current;
+						
+			if (max < int.MaxValue) 
+				col.Length = max;
 		}
 	}
 }

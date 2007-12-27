@@ -24,6 +24,8 @@
 		</assemblyfileset>
 		
 		<resourcefileset id="project.resources" prefix="NHibernate.Validator.Tests" dynamicprefix="true">
+			<include name="**/*.xml" />
+			<exclude name="bin/**/*.xml" />
 			<include name="**/*.resx" />
 			<exclude name="obj/**" />
 		</resourcefileset>

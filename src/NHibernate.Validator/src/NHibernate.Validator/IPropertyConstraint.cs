@@ -9,6 +9,6 @@ namespace NHibernate.Validator
     /// </summary>
     public interface IPropertyConstraint
     {
-        void apply(Property property);
+        void Apply(Property property);
     }
 }

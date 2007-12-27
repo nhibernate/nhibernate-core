@@ -5,7 +5,7 @@ namespace NHibernate.Validator.Tests
 		[NotNull]
 		public static string blacklistedZipCode;
 
-		[Length(Max = 20), NotNull] 
+		[Length(Max = 20), NotNull]
 		private string country;
 
 		[Range(Min = -2, Max = 50, Message = "{floor.out.of.range} (escaping #{el})")] 

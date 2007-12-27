@@ -1,24 +1,20 @@
 namespace NHibernate.Validator
 {
     using System;
+    using System.Collections;
     using Mapping;
 
     public class MinValidator : IValidator<MinAttribute>, IPropertyConstraint
     {
         private long min;
 
-        #region IPropertyConstraint Members
-
-        public void apply(Property property)
+        public void Apply(Property property)
         {
-            throw new NotImplementedException();
-            //Column col = (Column)property.getColumnIterator().next();
-            //col.setCheckConstraint(col.getName() + ">=" + min);
+        	IEnumerator ie = property.ColumnIterator.GetEnumerator();
+        	ie.MoveNext();
+        	Column col = (Column) ie.Current;
+        	col.CheckConstraint = col.Name + ">=" + min;
         }
-
-        #endregion
-
-        #region IValidator<MinAttribute> Members
 
         public bool IsValid(object value)
         {
@@ -59,7 +55,5 @@ namespace NHibernate.Validator
         {
             min = ((MinAttribute) parameters).Value;
         }
-
-        #endregion
     }
 }

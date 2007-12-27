@@ -33,7 +33,8 @@ namespace NHibernate.Validator.Event
 			foreach(PersistentClass clazz in classes)
 			{
 				Type mappedClass = clazz.MappedClass;
-				ClassValidator validator = new ClassValidator(mappedClass, null, null, interpolator, null);
+				ClassValidator validator = new ClassValidator(mappedClass, null, null, interpolator, new Dictionary<Type, ClassValidator>());
+
 				ValidatableElement element = new ValidatableElement(mappedClass, validator);
 				AddSubElement(clazz.IdentifierProperty, element);
 				

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Validator.Tests"
+				   assembly="NHibernate.Validator.Tests"
+				   default-lazy="false"
+           default-access="field">
+
+  <class name="Tv">
+    <id name="serial" type="string">
+      <generator class="assigned"/>
+    </id>
+
+    <property name="expDate" />
+    <property name="lifetime" />
+    <property name="name" />
+    <property name="size" />
+
+  </class>
+</hibernate-mapping>

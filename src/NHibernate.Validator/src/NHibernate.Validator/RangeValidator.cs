@@ -54,7 +54,7 @@ namespace NHibernate.Validator
 			return false;
 		}
 
-		public void apply(Property property)
+		public void Apply(Property property)
 		{
 			new NotImplementedException();
 
