@@ -71,6 +71,9 @@
     <Compile Include="Brother.cs" />
     <Compile Include="Building.cs" />
     <Compile Include="Collections\CollectionFixture.cs" />
+    <Compile Include="Collections\HasArrayWithValid.cs" />
+    <Compile Include="Collections\HasCollection.cs" />
+    <Compile Include="Collections\HasShowCollection.cs" />
     <Compile Include="Collections\Movie.cs" />
     <Compile Include="Collections\Presenter.cs" />
     <Compile Include="Collections\Show.cs" />

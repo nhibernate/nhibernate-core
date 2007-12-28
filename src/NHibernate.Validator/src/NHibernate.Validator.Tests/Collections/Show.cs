@@ -5,5 +5,14 @@ namespace NHibernate.Validator.Tests.Collections
 	public class Show
 	{
 		[NotNull] public String name;
+
+		public Show()
+		{
+		}
+
+		public Show(string name)
+		{
+			this.name = name;
+		}
 	}
 }
