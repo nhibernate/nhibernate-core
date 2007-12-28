@@ -4,7 +4,7 @@ namespace NHibernate.Validator
     using System.Collections;
     using Mapping;
 
-    public class MinValidator : IValidator<MinAttribute>, IPropertyConstraint
+    public class MinValidator : Validator<MinAttribute>, IPropertyConstraint
     {
         private long min;
 
@@ -16,7 +16,7 @@ namespace NHibernate.Validator
         	col.CheckConstraint = col.Name + ">=" + min;
         }
 
-        public bool IsValid(object value)
+        public override bool IsValid(object value)
         {
             if (value == null)
             {
@@ -51,9 +51,9 @@ namespace NHibernate.Validator
             return false;
         }
 
-        public void Initialize(Attribute parameters)
+		public override void Initialize(MinAttribute parameters)
         {
-            min = ((MinAttribute) parameters).Value;
+			min = parameters.Value;
         }
     }
 }

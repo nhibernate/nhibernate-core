@@ -3,20 +3,20 @@ namespace NHibernate.Validator
 	using System;
 	using Mapping;
 
-	public class RangeValidator : IValidator<RangeAttribute>, IPropertyConstraint
+	public class RangeValidator : Validator<RangeAttribute>, IPropertyConstraint
 	{
 		private int min;
 		private int max;
 
-		public void Initialize(Attribute parameters) 
+		public override void Initialize(RangeAttribute parameters) 
 		{
-			RangeAttribute @param = (RangeAttribute) parameters;
+			RangeAttribute @param = parameters;
 
 			max = @param.Max;
 			min = @param.Min;
 		}
 
-		public bool IsValid(object value)
+		public override bool IsValid(object value)
 		{
 			if (value == null) 
 			{

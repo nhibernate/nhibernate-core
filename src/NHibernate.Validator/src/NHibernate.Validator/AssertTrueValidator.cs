@@ -2,14 +2,14 @@ namespace NHibernate.Validator
 {
 	using System;
 
-	public class AssertTrueValidator : IValidator<AssertTrueAttribute>
+	public class AssertTrueValidator : Validator<AssertTrueAttribute>
 	{
-		public bool IsValid(Object value)
+		public override bool IsValid(Object value)
 		{
 			return (bool) value;
 		}
 
-		public void Initialize(Attribute parameters)
+		public override void Initialize(AssertTrueAttribute parameters)
 		{
 		}
 	}

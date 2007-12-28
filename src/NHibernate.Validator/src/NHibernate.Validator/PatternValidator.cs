@@ -3,11 +3,11 @@ namespace NHibernate.Validator
 	using System;
 	using System.Text.RegularExpressions;
 
-	public class PatternValidator : IValidator<PatternAttribute>
+	public class PatternValidator : Validator<PatternAttribute>
 	{
 		private Regex regex;
 
-		public bool IsValid(object value)
+		public override bool IsValid(object value)
 		{
 			if (value == null) return true;
 
@@ -16,7 +16,7 @@ namespace NHibernate.Validator
 			return regex.IsMatch((string) value);
 		}
 
-		public void Initialize(Attribute parameters)
+		public override void Initialize(PatternAttribute parameters)
 		{
 			PatternAttribute @param =(PatternAttribute)parameters;
 			regex = new Regex(@param.Regex,@param.Flags);

@@ -7,7 +7,6 @@ namespace NHibernate.Validator.Event
 	using NHibernate.Mapping;
     using Property;
 	using Util;
-	using Validator;
 
 	/// <summary>
 	/// Before insert and update, executes the validator framework

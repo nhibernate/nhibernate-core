@@ -86,6 +86,8 @@
     </Compile>
     <Compile Include="SizeAttribute.cs" />
     <Compile Include="SizeValidator.cs" />
+    <Compile Include="Validator.cs" />
+    <Compile Include="Validator.Generic.cs" />
     <Compile Include="ValidatorClassAttribute.cs" />
     <Compile Include="ValidAttribute.cs" />
   </ItemGroup>

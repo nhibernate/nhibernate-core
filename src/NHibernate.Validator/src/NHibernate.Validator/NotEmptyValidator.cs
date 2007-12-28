@@ -4,9 +4,9 @@ namespace NHibernate.Validator
     using System.Collections;
     using Mapping;
 
-    public class NotEmptyValidator : IValidator<NotEmptyAttribute>, IPropertyConstraint
+    public class NotEmptyValidator : Validator<NotEmptyAttribute>, IPropertyConstraint
     {
-        public bool IsValid(object value) 
+        public override bool IsValid(object value) 
         {
             if (value == null) return false;
             
@@ -21,17 +21,18 @@ namespace NHibernate.Validator
         
         public void Apply(Property property)
         {
-            
+			//single table should not be forced to null
+			if (property is SingleTableSubclass) return;
+
+			if (!property.IsComposite)
+				foreach (Column column in property.ColumnIterator)
+					column.IsNullable = false;
         }
-        
-        public void Initialize(Attribute parameters)
+
+		public override void Initialize(NotEmptyAttribute parameters)
         {
             
         }
 
-        public void Initialize(NotEmptyAttribute parameters) 
-        {
-            Initialize((Attribute)parameters);
-        }
     }
 }

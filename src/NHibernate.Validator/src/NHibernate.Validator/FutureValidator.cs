@@ -3,13 +3,16 @@ namespace NHibernate.Validator
 	using System;
 
 	[Serializable]
-	public class FutureValidator : IValidator<FutureAttribute>
+	public class FutureValidator : Validator<FutureAttribute>
 	{
-		public bool IsValid(object value)
+		public override bool IsValid(object value)
 		{
-			if (value == null) return true;
+			if (value == null)
+			{
+				return true;
+			}
 
-			if(value is DateTime)
+			if (value is DateTime)
 			{
 				DateTime date = (DateTime) value;
 				return date.CompareTo(DateTime.Now) >= 0;
@@ -23,7 +26,7 @@ namespace NHibernate.Validator
 			return false;
 		}
 
-		public void Initialize(Attribute parameters)
+		public override void Initialize(FutureAttribute parameters)
 		{
 		}
 	}
