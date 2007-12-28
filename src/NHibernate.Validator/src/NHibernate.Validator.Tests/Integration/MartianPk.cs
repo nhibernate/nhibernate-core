@@ -5,6 +5,16 @@ namespace NHibernate.Validator.Tests.Integration
 		private string colony;
 		private string name;
 
+		public MartianPk()
+		{
+		}
+
+		public MartianPk(string colony, string name)
+		{
+			this.colony = colony;
+			this.name = name;
+		}
+
 		public string Name
 		{
 			get { return name; }

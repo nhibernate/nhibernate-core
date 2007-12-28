@@ -52,6 +52,7 @@
     <Compile Include="Environment.cs" />
     <Compile Include="FutureAttribute.cs" />
     <Compile Include="FutureValidator.cs" />
+    <Compile Include="IClassValidator.cs" />
     <Compile Include="MinAttribute.cs" />
     <Compile Include="MinValidator.cs" />
     <Compile Include="NotEmptyAttribute.cs" />
@@ -83,11 +84,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DefaultValidatorMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="SizeAttribute.cs" />
+    <Compile Include="SizeValidator.cs" />
     <Compile Include="ValidatorClassAttribute.cs" />
     <Compile Include="ValidAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\DefaultValidatorMessages.es.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DefaultValidatorMessages.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DefaultValidatorMessages.it.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\DefaultValidatorMessages.resx">

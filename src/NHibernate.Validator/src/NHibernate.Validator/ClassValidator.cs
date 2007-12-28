@@ -14,13 +14,16 @@ namespace NHibernate.Validator
 	using Proxy;
 	using Util;
 
+	/// <summary>
+	/// Engine that take a object and check every expressed attribute restrictions
+	/// </summary>
 	[Serializable]
-	public class ClassValidator
+	public class ClassValidator : IClassValidator
 	{
 		//TODO: Logging
 		//private static Log log = LogFactory.getLog( ClassValidator.class );
 
-		public BindingFlags AnyVisibilityInstanceAndStatic = (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+		private BindingFlags AnyVisibilityInstanceAndStatic = (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 
 		private Type beanClass;
 
@@ -111,6 +114,9 @@ namespace NHibernate.Validator
 			this.culture = culture;
 		}
 
+		/// <summary>
+		/// Return true if this <see cref="ClassValidator"/> contains rules for apply, false in other case. 
+		/// </summary>
 		public bool HasValidationRules
 		{
 			get
@@ -155,7 +161,8 @@ namespace NHibernate.Validator
 						beanValidators.Add(validator);
 					}
 
-					HandleAggregateAnnotations(classAttribute, null);
+					//Note: No need to handle Aggregate annotations, c# use Multiple Attribute declaration.
+					//HandleAggregateAnnotations(classAttribute, null);
 				}
 			}
 
@@ -176,11 +183,23 @@ namespace NHibernate.Validator
 			}
 		}
 
+		/// <summary>
+		/// apply constraints on a bean instance and return all the failures.
+		/// if <see cref="bean"/> is null, an empty array is returned 
+		/// </summary>
+		/// <param name="bean">object to apply the constraints</param>
+		/// <returns></returns>
 		public InvalidValue[] GetInvalidValues(object bean)
 		{
 			return this.GetInvalidValues(bean, new IdentitySet());
 		}
 
+		/// <summary>
+		/// Not a public API
+		/// </summary>
+		/// <param name="bean"></param>
+		/// <param name="circularityState"></param>
+		/// <returns></returns>
 		private InvalidValue[] GetInvalidValues(object bean, ISet circularityState)
 		{
 			if (bean == null || circularityState.Contains(bean))
@@ -252,7 +271,7 @@ namespace NHibernate.Validator
 		/// <param name="member"></param>
 		/// <param name="circularityState"></param>
 		/// <param name="results"></param>
-		public void MakeChildValidation(object value, object bean, MemberInfo member,ISet circularityState, List<InvalidValue> results)
+		private void MakeChildValidation(object value, object bean, MemberInfo member,ISet circularityState, List<InvalidValue> results)
 		{
 			if (value is IEnumerable)
 			{
@@ -280,7 +299,7 @@ namespace NHibernate.Validator
 		/// <param name="member"></param>
 		/// <param name="circularityState"></param>
 		/// <param name="results"></param>
-		public void MakeChildValidation(IEnumerable value, object bean, MemberInfo member,ISet circularityState, List<InvalidValue> results)
+		private void MakeChildValidation(IEnumerable value, object bean, MemberInfo member,ISet circularityState, List<InvalidValue> results)
 		{
 			if(IsGenericDictionary(value.GetType())) //Generic Dictionary
 			{
@@ -459,9 +478,6 @@ namespace NHibernate.Validator
 		/// <param name="member"></param>
 		private void CreateMemberValidator(MemberInfo member)
 		{
-			//TODO: Agregate Annotations
-			//bool validatorPresent = false;
-
 			object[] memberAttributes = member.GetCustomAttributes(false);
 
 			foreach(Attribute memberAttribute in memberAttributes)
@@ -472,10 +488,7 @@ namespace NHibernate.Validator
 				{
 					memberValidators.Add(propertyValidator);
 					memberGetters.Add(member);
-					//validatorPresent = true;
 				}
-				//bool agrValidPresent = HandleAggregateAnnotations(memberAttribute, member);
-				//validatorPresent = validatorPresent || agrValidPresent;
 			}
 		}
 
@@ -484,7 +497,7 @@ namespace NHibernate.Validator
 		/// on the fields or properties
 		/// </summary>
 		/// <param name="member"></param>
-		public void CreateChildValidator(MemberInfo member)
+		private void CreateChildValidator(MemberInfo member)
 		{
 			if (!member.IsDefined(typeof(ValidAttribute), false)) return;
 
@@ -573,7 +586,7 @@ namespace NHibernate.Validator
 		/// </summary>
 		/// <param name="member"></param>
 		/// <returns></returns>
-		public Type GetType(MemberInfo member)
+		private Type GetType(MemberInfo member)
 		{
 			switch(member.MemberType)
 			{
@@ -595,7 +608,7 @@ namespace NHibernate.Validator
 		/// <param name="bean"></param>
 		/// <param name="member"></param>
 		/// <returns></returns>
-		public object GetMemberValue(object bean, MemberInfo member)
+		private object GetMemberValue(object bean, MemberInfo member)
 		{
 			FieldInfo fi = member as FieldInfo;
 			if (fi != null)
@@ -606,19 +619,6 @@ namespace NHibernate.Validator
 				return pi.GetValue(bean, ReflectHelper.AnyVisibilityInstance | BindingFlags.GetProperty, null, null, null);
 			
 			return null;
-		}
-
-		/// <summary>
-		/// Aggregate annotations are like the composite validator in EntLib.
-		/// </summary>
-		/// <param name="attribute"></param>
-		/// <param name="member"></param>
-		/// <returns></returns>
-		private bool HandleAggregateAnnotations(Attribute attribute, MemberInfo member)
-		{
-			//PropertyInfo propertyValue =  attribute.GetType().GetProperty("Value");
-			//TODO: handle with another more elegant way the composite validator attributes
-			return false;
 		}
 
 		/// <summary>
@@ -661,7 +661,9 @@ namespace NHibernate.Validator
 		}
 
 		/// <summary>
-		/// 
+		/// Apply constraints of a particular property value of a bean type and return all the failures.
+		/// The InvalidValue objects returns return null for InvalidValue#getBean() and InvalidValue#getRootBean()
+		/// Note: this is not recursive.
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <param name="value"></param>
@@ -752,6 +754,32 @@ namespace NHibernate.Validator
 			}
 			catch(MappingException ex)
 			{
+				try 
+				{
+					//if we do not find it try to check the identifier mapper
+					if (associatedClass.IdentifierMapper == null) return null;
+					StringTokenizer st = new StringTokenizer(propertyName, ".", false);
+
+					foreach(string element in st)
+					{
+						if (property == null) 
+						{
+							property = associatedClass.IdentifierMapper.GetProperty(element);
+						} 
+						else 
+						{
+							if (property.IsComposite) 
+								property = ((Component)property.Value).GetProperty(element);
+							else
+								return null;
+						}
+					}
+				} 
+				catch (MappingException ee) 
+				{
+					return null;
+				}
+				
 			}
 
 			return property;

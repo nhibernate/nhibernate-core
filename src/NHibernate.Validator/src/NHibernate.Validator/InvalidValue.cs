@@ -2,6 +2,9 @@ namespace NHibernate.Validator
 {
     using System;
 
+	/// <summary>
+	/// A single violation of a class level or method level constraint.
+	/// </summary>
     [Serializable]
     public class InvalidValue
     {

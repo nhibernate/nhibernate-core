@@ -25,8 +25,7 @@ namespace NHibernate.Validator.Tests.Integration
 						"Integration.Address.hbm.xml",
 						"Integration.Tv.hbm.xml",
 						"Integration.TvOwner.hbm.xml",
-						// "Integration.Martian.hbm.xml",
-						// "Integration.Venusian.hbm.xml",
+						"Integration.Martian.hbm.xml",
 						"Integration.Music.hbm.xml",
 						"Integration.Rock.hbm.xml"
 					};
@@ -100,6 +99,9 @@ namespace NHibernate.Validator.Tests.Integration
 			Assert.IsTrue(serialColumn.IsNullable, "Notnull should not be applised on single tables");
 		}
 
+		/// <summary>
+		/// Test pre-update/save events and custom interpolator
+		/// </summary>
 		[Test]
 		public void Events()
 		{
@@ -114,9 +116,10 @@ namespace NHibernate.Validator.Tests.Integration
 			a.State = "NY";
 			s = OpenSession();
 			tx = s.BeginTransaction();
+			s.Save(a);
 			try
 			{
-				s.Save(a);
+				
 				tx.Commit();
 				Assert.Fail("bean should have been validated");
 			}
@@ -157,6 +160,36 @@ namespace NHibernate.Validator.Tests.Integration
 				if (tx != null && !tx.WasCommitted) 
 					tx.Rollback();
 				
+				s.Close();
+			}
+		}
+
+		/// <summary>
+		/// Test components and composite-id on validation
+		/// </summary>
+		[Test]
+		public void Components()
+		{
+			ISession s;
+			ITransaction tx;
+			s = OpenSession();
+			tx = s.BeginTransaction();
+			Martian martian = new Martian();
+			martian.Id = new MartianPk("Liberal", "Biboudie");
+			martian.Address = new MarsAddress("Plus","cont");
+			s.Save(martian);
+			try 
+			{
+				s.Flush();
+				Assert.Fail("Components are not validated");
+			}
+			catch (InvalidStateException e) 
+			{
+				Assert.AreEqual(2, e.GetInvalidValues().Length );
+			}
+			finally 
+			{
+				tx.Rollback();
 				s.Close();
 			}
 		}

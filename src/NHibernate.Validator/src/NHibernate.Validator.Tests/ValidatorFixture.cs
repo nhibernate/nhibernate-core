@@ -100,7 +100,6 @@ namespace NHibernate.Validator.Tests
 		public void BeanValidator()
 		{
 			Suricato s = new Suricato();
-			
 			ClassValidator vtor = new ClassValidator(typeof(Suricato));
 
 			Assert.IsTrue(vtor.HasValidationRules);
