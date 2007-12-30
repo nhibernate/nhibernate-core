@@ -134,7 +134,10 @@ namespace NHibernate.Util
 
 		public virtual void Add(TKey key, TValue value)
 		{
-			this[key] = value;
+			Entry<TKey, TValue> e = new Entry<TKey, TValue>(key, value);
+			entries.Add(key, e);
+			version++;
+			InsertEntry(e);
 		}
 
 		public virtual bool Remove(TKey key)
@@ -162,21 +165,20 @@ namespace NHibernate.Util
 			}
 			set
 			{
-				version++;
 				Entry<TKey, TValue> e;
 				if (entries.TryGetValue(key, out e))
-				{
-					RemoveEntry(e);
-					e.Value = value;
-				}
+					OverrideEntry(e, value);
 				else
-				{
-					e = new Entry<TKey, TValue>(key, value);
-					entries[key] = e;
-				}
-
-				InsertEntry(e);
+					Add(key, value);
 			}
+		}
+
+		private void OverrideEntry(Entry<TKey, TValue> e, TValue value)
+		{
+			version++;
+			RemoveEntry(e);
+			e.Value = value;
+			InsertEntry(e);
 		}
 
 		public virtual ICollection<TKey> Keys
