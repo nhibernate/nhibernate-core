@@ -68,7 +68,7 @@ namespace NHibernate.Mapping
 		private string schema;
 		private string catalog;
 
-		private readonly SequencedHashMap columns = new SequencedHashMap();
+		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
 		private IKeyValue idValue;
 		private PrimaryKey primaryKey;
 		private readonly Dictionary<string, Index> indexes = new Dictionary<string, Index>();
@@ -236,12 +236,12 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public Column GetColumn(int n)
 		{
-			IEnumerator iter = columns.Values.GetEnumerator();
+			IEnumerator<Column> iter = columns.Values.GetEnumerator();
 			for (int i = 0; i < n; i++)
 			{
 				iter.MoveNext();
 			}
-			return (Column) iter.Current;
+			return iter.Current;
 		}
 
 		/// <summary>
@@ -282,7 +282,7 @@ namespace NHibernate.Mapping
 		/// An <see cref="IEnumerable"/> of <see cref="Column"/> objects that are 
 		/// part of the Table.
 		/// </value>
-		public virtual IEnumerable ColumnIterator
+		public virtual IEnumerable<Column> ColumnIterator
 		{
 			get { return columns.Values; }
 		}
@@ -811,13 +811,12 @@ namespace NHibernate.Mapping
 		public virtual Column GetColumn(Column column)
 		{
 			if (column == null)
-			{
 				return null;
-			}
 
-			Column myColumn = (Column) columns[column.CanonicalName];
+			Column result;
+			columns.TryGetValue(column.CanonicalName, out result);
 
-			return column.Equals(myColumn) ? myColumn : null;
+			return column.Equals(result) ? result : null;
 		}
 
 		internal IDictionary<string, UniqueKey> UniqueKeys

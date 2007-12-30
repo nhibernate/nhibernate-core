@@ -16,9 +16,9 @@ namespace NHibernate.Mapping
 			includedTable.SetHasDenormalizedTables();
 		}
 
-		public override IEnumerable ColumnIterator
+		public override IEnumerable<Column> ColumnIterator
 		{
-			get { return new JoinedEnumerable(includedTable.ColumnIterator, base.ColumnIterator); }
+			get { return new JoinedEnumerable<Column>(includedTable.ColumnIterator, base.ColumnIterator); }
 		}
 
 		public override IEnumerable<UniqueKey> UniqueKeyIterator
