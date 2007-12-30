@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Tuple
@@ -9,7 +9,7 @@ namespace NHibernate.Tuple
 	public abstract class EntityModeToTuplizerMapping
 	{
 		// map of EntityMode -> Tuplizer
-		private readonly IDictionary tuplizers = new SequencedHashMap();
+		private readonly IDictionary<EntityMode, ITuplizer> tuplizers = new LinkedHashMap<EntityMode, ITuplizer>();
 
 		protected internal void AddTuplizer(EntityMode entityMode, ITuplizer tuplizer)
 		{
@@ -21,12 +21,12 @@ namespace NHibernate.Tuple
 		/// <returns> The guessed entity mode. </returns>
 		public virtual EntityMode? GuessEntityMode(object obj)
 		{
-			foreach (DictionaryEntry entry in tuplizers)
+			foreach (KeyValuePair<EntityMode, ITuplizer> entry in tuplizers)
 			{
-				ITuplizer tuplizer = (ITuplizer)entry.Value;
+				ITuplizer tuplizer = entry.Value;
 				if (tuplizer.IsInstance(obj))
 				{
-					return (EntityMode)entry.Key;
+					return entry.Key;
 				}
 			}
 			return null;
@@ -36,13 +36,13 @@ namespace NHibernate.Tuple
 		/// Locate the contained tuplizer responsible for the given entity-mode.  If
 		/// no such tuplizer is defined on this mapping, then return null. 
 		/// </summary>
-		/// <param name="entityMode">The entity-mode for which the caller wants a tuplizer.
-		/// </param>
-		/// <returns> The tuplizer, or null if not found.
-		/// </returns>
+		/// <param name="entityMode">The entity-mode for which the caller wants a tuplizer. </param>
+		/// <returns> The tuplizer, or null if not found. </returns>
 		public virtual ITuplizer GetTuplizerOrNull(EntityMode entityMode)
 		{
-			return (ITuplizer)tuplizers[entityMode];
+			ITuplizer result;
+			tuplizers.TryGetValue(entityMode, out result);
+			return result;
 		}
 
 		/// <summary> Locate the tuplizer contained within this mapping which is responsible
