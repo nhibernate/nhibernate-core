@@ -327,7 +327,7 @@ namespace NHibernate.Expression
 				{
 					if (propertyTypes[i].IsComponentType)
 					{
-						AddComponentTypedValues(name, value, (IAbstractComponentType) type, list);
+						AddComponentTypedValues(name, value, (IAbstractComponentType) type, list, criteria, criteriaQuery);
 					}
 					else
 					{
@@ -337,6 +337,18 @@ namespace NHibernate.Expression
 			}
 
 			return (TypedValue[]) list.ToArray(typeof(TypedValue));
+		}
+
+		private EntityMode GetEntityMode(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			//IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
+			//EntityMode result = meta.GuessEntityMode(_entity);
+			//if (result == null)
+			//{
+			//  throw new InvalidCastException(_entity.GetType().FullName);
+			//}
+			//return result;
+			return EntityMode.Poco;
 		}
 
 		/// <summary>
@@ -374,13 +386,14 @@ namespace NHibernate.Expression
 			}
 		}
 
-		protected void AddComponentTypedValues(string path, object component, IAbstractComponentType type, IList list)
+		protected void AddComponentTypedValues(string path, object component, IAbstractComponentType type, IList list, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			if (component != null)
 			{
 				string[] propertyNames = type.PropertyNames;
 				IType[] subtypes = type.Subtypes;
-				object[] values = type.GetPropertyValues(component);
+				object[] values = type.GetPropertyValues(component, GetEntityMode(criteria, criteriaQuery));
+
 				for (int i = 0; i < propertyNames.Length; i++)
 				{
 					object value = values[i];
@@ -390,7 +403,7 @@ namespace NHibernate.Expression
 					{
 						if (subtype.IsComponentType)
 						{
-							AddComponentTypedValues(subpath, value, (IAbstractComponentType) subtype, list);
+							AddComponentTypedValues(subpath, value, (IAbstractComponentType) subtype, list, criteria, criteriaQuery);
 						}
 						else
 						{

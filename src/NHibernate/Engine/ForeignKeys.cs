@@ -80,7 +80,7 @@ namespace NHibernate.Engine
 						}
 					}
 					if (substitute)
-						actype.SetPropertyValues(value, subvalues);
+						actype.SetPropertyValues(value, subvalues, session.EntityMode);
 					return value;
 				}
 				else

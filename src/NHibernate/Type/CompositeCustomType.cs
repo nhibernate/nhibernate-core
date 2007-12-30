@@ -69,18 +69,23 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public virtual object[] GetPropertyValues(object component, ISessionImplementor session)
 		{
-			return GetPropertyValues(component);
+			return GetPropertyValues(component, session.EntityMode);
 		}
 
-		public object[] GetPropertyValues(object component)
+		public object[] GetPropertyValues(object component, EntityMode entityMode)
 		{
 			int len = Subtypes.Length;
 			object[] result = new object[len];
 			for (int i = 0; i < len; i++)
-			{
 				result[i] = GetPropertyValue(component, i);
-			}
+
 			return result;
+		}
+
+		public void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		{
+			for (int i = 0; i < values.Length; i++)
+				userType.SetPropertyValue(component, i, values[i]);
 		}
 
 		/// <summary>
@@ -132,6 +137,16 @@ namespace NHibernate.Type
 		public virtual FetchMode GetFetchMode(int i)
 		{
 			return FetchMode.Default;
+		}
+
+		public bool IsEmbedded
+		{
+			get { return false; }
+		}
+
+		public bool IsMethodOf(MethodInfo method)
+		{
+			return false;
 		}
 
 		/// <summary></summary>

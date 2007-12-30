@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -46,6 +47,16 @@ namespace NHibernate.Type
 			return joinedFetch[i];
 		}
 
+		public bool IsEmbedded
+		{
+			get { return false; }
+		}
+
+		public bool IsMethodOf(MethodInfo method)
+		{
+			return false;
+		}
+
 		public string[] PropertyNames
 		{
 			get { return propertyNames; }
@@ -58,7 +69,27 @@ namespace NHibernate.Type
 
 		public object[] GetPropertyValues(object component, ISessionImplementor session)
 		{
-			return GetPropertyValues(component);
+			return GetPropertyValues(component, session.EntityMode);
+		}
+
+		public object[] GetPropertyValues(object component, EntityMode entityMode)
+		{
+			IDictionary bean = (IDictionary)component;
+			object[] result = new object[propertySpan];
+			for (int i = 0; i < propertySpan; i++)
+			{
+				result[i] = bean[propertyNames[i]];
+			}
+			return result;
+		}
+
+		public void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		{
+			IDictionary map = (IDictionary)component;
+			for (int i = 0; i < propertySpan; i++)
+			{
+				map[propertyNames[i]] = values[i];
+			}
 		}
 
 		public object GetPropertyValue(object component, int i)

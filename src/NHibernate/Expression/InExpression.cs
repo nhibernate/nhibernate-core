@@ -97,7 +97,7 @@ namespace NHibernate.Expression
 					{
 						object subval = _values[j] == null ?
 						                null :
-						                actype.GetPropertyValues(_values[j])[i];
+						                actype.GetPropertyValues(_values[j], EntityMode.Poco)[i];
 						list.Add(new TypedValue(types[i], subval));
 					}
 				}

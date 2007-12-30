@@ -124,7 +124,7 @@ namespace NHibernate.Tuple.Entity
 					{
 						ComponentType copier = (ComponentType)entityMetamodel.IdentifierProperty.Type;
 						id = copier.Instantiate();
-						copier.SetPropertyValues(id, identifierMapperType.GetPropertyValues(entity));
+						copier.SetPropertyValues(id, identifierMapperType.GetPropertyValues(entity, EntityMode), EntityMode);
 					}
 				}
 				else
@@ -143,7 +143,7 @@ namespace NHibernate.Tuple.Entity
 				if (entity != id)
 				{
 					IAbstractComponentType copier = (IAbstractComponentType)entityMetamodel.IdentifierProperty.Type;
-					copier.SetPropertyValues(entity, copier.GetPropertyValues(id));
+					copier.SetPropertyValues(entity, copier.GetPropertyValues(id, EntityMode), EntityMode);
 				}
 			}
 			else if (idSetter != null)

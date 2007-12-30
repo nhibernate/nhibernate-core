@@ -121,7 +121,7 @@ namespace NHibernate.Engine
 			if (nullability != null)
 			{
 				//do the test
-				object[] values = compType.GetPropertyValues(value);
+				object[] values = compType.GetPropertyValues(value, session.EntityMode);
 				IType[] propertyTypes = compType.Subtypes;
 				for (int i = 0; i < values.Length; i++)
 				{

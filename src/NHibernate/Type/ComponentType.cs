@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Tuple;
@@ -599,6 +600,16 @@ namespace NHibernate.Type
 		public FetchMode GetFetchMode(int i)
 		{
 			return joinedFetch[i].GetValueOrDefault();
+		}
+
+		public bool IsEmbedded
+		{
+			get { return false; }
+		}
+
+		public bool IsMethodOf(MethodInfo method)
+		{
+			return false;
 		}
 
 		/// <summary>

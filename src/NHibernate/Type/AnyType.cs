@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -275,6 +276,16 @@ namespace NHibernate.Type
 			return FetchMode.Select;
 		}
 
+		public bool IsEmbedded
+		{
+			get { return false; }
+		}
+
+		public bool IsMethodOf(MethodInfo method)
+		{
+			return false;
+		}
+
 		private static readonly string[] PROPERTY_NAMES = new string[] {"class", "id"};
 
 		public string[] PropertyNames
@@ -286,15 +297,25 @@ namespace NHibernate.Type
 		{
 			return (i == 0) ?
 			       NHibernateProxyHelper.GuessClass(component) :
-			       Id(component, session);
+			       GetIdentifier(component, session);
 		}
 
 		public object[] GetPropertyValues(Object component, ISessionImplementor session)
 		{
-			return new object[] {NHibernateProxyHelper.GuessClass(component), Id(component, session)};
+			return new object[] { session.BestGuessEntityName(component), GetIdentifier(component, session) };
 		}
 
-		private object Id(object component, ISessionImplementor session)
+		public object[] GetPropertyValues(object component, EntityMode entityMode)
+		{
+			throw new NotSupportedException();
+		}
+
+		public void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		{
+			throw new NotSupportedException();
+		}
+
+		private object GetIdentifier(object component, ISessionImplementor session)
 		{
 			try
 			{
@@ -312,11 +333,6 @@ namespace NHibernate.Type
 		}
 
 		public void SetPropertyValues(object component, object[] values)
-		{
-			throw new NotSupportedException();
-		}
-
-		public object[] GetPropertyValues(object component)
 		{
 			throw new NotSupportedException();
 		}
@@ -406,7 +422,7 @@ namespace NHibernate.Type
 			}
 
 			return (NHibernateProxyHelper.GetClassWithoutInitializingProxy(old) != NHibernateProxyHelper.GuessClass(current)) ||
-				   identifierType.IsDirty(Id(old, session), Id(current, session), session);
+				   identifierType.IsDirty(GetIdentifier(old, session), GetIdentifier(current, session), session);
 		}
 
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
@@ -424,7 +440,7 @@ namespace NHibernate.Type
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
 			return (checkable[0] && NHibernateProxyHelper.GetClassWithoutInitializingProxy(old) != NHibernateProxyHelper.GuessClass(current)) ||
-				   identifierType.IsDirty(Id(old, session), Id(current, session), idcheckable, session);
+				   identifierType.IsDirty(GetIdentifier(old, session), GetIdentifier(current, session), idcheckable, session);
 		}
 
 		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
@@ -441,7 +457,7 @@ namespace NHibernate.Type
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
 			return (checkable[0] && holder.clazz != NHibernateProxyHelper.GuessClass(current)) ||
-			       identifierType.IsModified(holder.id, Id(current, session), idcheckable, session);
+			       identifierType.IsModified(holder.id, GetIdentifier(current, session), idcheckable, session);
 		}
 
 		public bool[] PropertyNullability

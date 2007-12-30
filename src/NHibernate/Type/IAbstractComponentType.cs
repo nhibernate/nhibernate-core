@@ -1,3 +1,4 @@
+using System.Reflection;
 using NHibernate.Engine;
 
 namespace NHibernate.Type
@@ -28,17 +29,21 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Optional Operation
 		/// </summary>
-		object[] GetPropertyValues(object component);
+		object[] GetPropertyValues(object component, EntityMode entityMode);
 
 		/// <summary>
 		/// Optional operation
 		/// </summary>
-		void SetPropertyValues(object component, object[] values);
+		void SetPropertyValues(object component, object[] values, EntityMode entityMode);
 
 		object GetPropertyValue(object component, int i, ISessionImplementor session);
 
 		Cascades.CascadeStyle GetCascadeStyle(int i);
 
 		FetchMode GetFetchMode(int i);
+
+		bool IsEmbedded { get;}
+
+		bool IsMethodOf(MethodInfo method);
 	}
 }

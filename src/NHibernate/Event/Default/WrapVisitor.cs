@@ -121,7 +121,7 @@ namespace NHibernate.Event.Default
 				}
 				if (substituteComponent)
 				{
-					componentType.SetPropertyValues(component, values);
+					componentType.SetPropertyValues(component, values, Session.EntityMode);
 				}
 			}
 
