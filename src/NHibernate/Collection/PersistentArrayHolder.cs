@@ -67,7 +67,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		public override ICollection GetOrphans(object snapshot, System.Type entityName)
+		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			object[] sn = (object[]) snapshot;
 			object[] arr = (object[]) array;

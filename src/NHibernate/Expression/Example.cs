@@ -3,6 +3,7 @@ using System.Collections;
 using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Metadata;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -259,7 +260,7 @@ namespace NHibernate.Expression
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add(StringHelper.OpenParen);
 
-			IClassMetadata meta = criteriaQuery.Factory.GetClassMetadata(criteriaQuery.GetEntityName(criteria));
+			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
 			String[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
 			object[] propertyValues = meta.GetPropertyValues(_entity);
@@ -308,7 +309,7 @@ namespace NHibernate.Expression
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			IClassMetadata meta = criteriaQuery.Factory.GetClassMetadata(criteriaQuery.GetEntityName(criteria));
+			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
 			string[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
 			object[] values = meta.GetPropertyValues(_entity);

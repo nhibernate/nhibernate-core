@@ -375,7 +375,7 @@ namespace NHibernate.Engine
 			set { processed = value; }
 		}
 
-		public ICollection GetOrphans(System.Type entityName, IPersistentCollection collection)
+		public ICollection GetOrphans(string entityName, IPersistentCollection collection)
 		{
 			if (snapshot == null)
 			{

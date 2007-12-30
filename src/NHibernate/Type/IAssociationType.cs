@@ -42,13 +42,6 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		IJoinable GetAssociatedJoinable(ISessionFactoryImplementor factory);
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		System.Type GetAssociatedClass(ISessionFactoryImplementor factory);
-
 		/// <summary> Get the entity name of the associated entity</summary>
 		string GetAssociatedEntityName(ISessionFactoryImplementor factory);
 
@@ -63,5 +56,7 @@ namespace NHibernate.Type
 		/// SQL on clause, in addition to the usual join condition.
 		/// </summary>
 		string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters);
+
+		bool IsEmbeddedInXML { get;}
 	}
 }

@@ -604,29 +604,36 @@ namespace NHibernate.Engine
 				// We can do the cast since orphan-delete does not apply to:
 				// 1. newly instatiated collections
 				// 2. arrays ( we can't track orphans for detached arrays)
-				System.Type entityName = collectionType.GetAssociatedClass(eventSource.Factory);
-				DeleteOrphans(entityName, child as IPersistentCollection, eventSource);
+				string entityName = collectionType.GetAssociatedEntityName(eventSource.Factory);
+				DeleteOrphans(entityName, (IPersistentCollection)child, eventSource);
+
+				if (log.IsInfoEnabled)
+				{
+					log.Info("done deleting orphans for collection: " + collectionType.Role);
+				}
 			}
 		}
 
-		private static void DeleteOrphans(System.Type entityName, IPersistentCollection pc, IEventSource eventSource)
+		private static void DeleteOrphans(string entityName, IPersistentCollection pc, IEventSource eventSource)
 		{
+			//TODO: suck this logic into the collection!
 			ICollection orphans;
-			if (pc.WasInitialized) // can't be any orphans if it was not initialized
+			if (pc.WasInitialized)
 			{
 				CollectionEntry ce = eventSource.PersistenceContext.GetCollectionEntry(pc);
-				orphans = ce == null ? CollectionHelper.EmptyCollection :
-				          ce.GetOrphans(entityName, pc);
+				orphans = ce == null ? CollectionHelper.EmptyCollection : ce.GetOrphans(entityName, pc);
 			}
 			else
 			{
-				orphans = CollectionHelper.EmptyCollection;
+				orphans = CollectionHelper.EmptyCollection; // TODO NH: Different pc.GetQueuedOrphans(entityName);
 			}
-
 			foreach (object orphan in orphans)
 			{
 				if (orphan != null)
 				{
+					if (log.IsInfoEnabled)
+						log.Info("deleting orphaned entity instance: " + entityName);
+
 					eventSource.Delete(orphan);
 				}
 			}

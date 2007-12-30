@@ -187,7 +187,7 @@ namespace NHibernate.Collection.Generic
 			return map == collection;
 		}
 
-		public override ICollection GetOrphans(object snapshot, System.Type entityName)
+		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>) snapshot;
 			List<TValue> result = new List<TValue>(sn.Values.Count);

@@ -1030,6 +1030,7 @@
     <Compile Include="Util\EqualsHelper.cs" />
     <Compile Include="Util\FilterHelper.cs" />
     <Compile Include="Util\IdentitySet.cs" />
+    <Compile Include="Util\LinkedHashMap.cs" />
     <Compile Include="Util\LRUMap.cs" />
     <Compile Include="Util\SafetyEnumerable.cs" />
     <Compile Include="Util\SerializationHelper.cs" />

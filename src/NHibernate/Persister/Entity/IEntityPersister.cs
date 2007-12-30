@@ -418,6 +418,9 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		bool IsVersionPropertyGenerated { get; }
 
+		/// <summary> Has the class actually been bytecode instrumented?</summary>
+		bool IsInstrumented(EntityMode entityMode);
+
 		/// <summary>
 		/// Does this entity define any properties as being database-generated on insert?
 		/// </summary>

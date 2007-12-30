@@ -19,9 +19,9 @@ namespace NHibernate.Expression
 
 		TypedValue GetTypedValue(ICriteria criteria, string propertyPath, object value);
 
-		System.Type GetEntityName(ICriteria criteria);
+		string GetEntityName(ICriteria criteria);
 
-		System.Type GetEntityName(ICriteria criteria, string propertyPath);
+		string GetEntityName(ICriteria criteria, string propertyPath);
 
 		string GetSQLAlias(ICriteria subcriteria);
 

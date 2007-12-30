@@ -571,9 +571,9 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all "orphaned" elements
 		/// </summary>
-		public abstract ICollection GetOrphans(object snapshot, System.Type entityName);
+		public abstract ICollection GetOrphans(object snapshot, string entityName);
 
-		public static void IdentityRemoveAll(IList list, ICollection collection, System.Type entityName,
+		public static void IdentityRemoveAll(IList list, ICollection collection, string entityName,
 		                                     ISessionImplementor session)
 		{
 			IEnumerator enumer = collection.GetEnumerator();
@@ -632,7 +632,7 @@ namespace NHibernate.Collection
 			throw new NotSupportedException();
 		}
 
-		public static void IdentityRemove(IList list, object obj, System.Type entityName, ISessionImplementor session)
+		public static void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
 			int indexOfEntityToRemove = -1;
 
@@ -640,11 +640,10 @@ namespace NHibernate.Collection
 
 			if (session.IsSaved(obj))
 			{
-				// todo entityName
-				object idOfCurrent = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName.FullName, obj, session);
+				object idOfCurrent = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, obj, session);
 				for (int i = 0; i < list.Count; i++)
 				{
-					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName.FullName, list[i], session);
+					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, list[i], session);
 					if (idType.Equals(idOfOld, idOfCurrent))
 					{
 						// in hibernate this used the Iterator to remove the item - since in .NET

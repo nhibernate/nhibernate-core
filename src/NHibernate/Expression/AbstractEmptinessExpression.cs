@@ -35,15 +35,15 @@ namespace NHibernate.Expression
 
 		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			System.Type entityType = criteriaQuery.GetEntityName(criteria, propertyName);
+			string entityName = criteriaQuery.GetEntityName(criteria, propertyName);
 			string actualPropertyName = criteriaQuery.GetPropertyName(propertyName);
 			string sqlAlias = criteriaQuery.GetSQLAlias(criteria, propertyName);
 
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
-			IQueryableCollection collectionPersister = GetQueryableCollection(entityType, actualPropertyName, factory);
+			IQueryableCollection collectionPersister = GetQueryableCollection(entityName, actualPropertyName, factory);
 
 			string[] collectionKeys = collectionPersister.KeyColumnNames;
-			string[] ownerKeys = ((ILoadable) factory.GetEntityPersister(entityType)).IdentifierColumnNames;
+			string[] ownerKeys = ((ILoadable)factory.GetEntityPersister(entityName)).IdentifierColumnNames;
 
 			StringBuilder innerSelect = new StringBuilder();
 			innerSelect.Append("(select 1 from ")
@@ -64,15 +64,15 @@ namespace NHibernate.Expression
 		}
 
 
-		protected IQueryableCollection GetQueryableCollection(System.Type entityType, string actualPropertyName,
+		protected IQueryableCollection GetQueryableCollection(string entityName, string actualPropertyName,
 		                                                      ISessionFactoryImplementor factory)
 		{
-			IPropertyMapping ownerMapping = (IPropertyMapping) factory.GetEntityPersister(entityType);
+			IPropertyMapping ownerMapping = (IPropertyMapping) factory.GetEntityPersister(entityName);
 			IType type = ownerMapping.ToType(actualPropertyName);
 			if (!type.IsCollectionType)
 			{
 				throw new MappingException(
-					"Property path [" + entityType + "." + actualPropertyName + "] does not reference a collection"
+					"Property path [" + entityName + "." + actualPropertyName + "] does not reference a collection"
 					);
 			}
 

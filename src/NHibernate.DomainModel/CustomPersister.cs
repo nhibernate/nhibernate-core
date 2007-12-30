@@ -438,6 +438,11 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
+		public bool IsInstrumented(EntityMode entityMode)
+		{
+			return false;
+		}
+
 		public bool HasInsertGeneratedProperties
 		{
 			get { return false; }

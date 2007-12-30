@@ -18,10 +18,14 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class CollectionType : AbstractType, IAssociationType
 	{
+		private static readonly object NotNullCollection = new object();
+		public static readonly object UnfetchedCollection = new object();
+
 		private readonly string role;
 		private readonly string foreignKeyPropertyName;
 
 		private static readonly SqlType[] NoSqlTypes = {};
+		private readonly bool isEmbeddedInXML;
 
 		/// <summary>
 		/// Initializes a new instance of a <see cref="CollectionType"/> class for
@@ -32,9 +36,13 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		protected CollectionType(string role, string foreignKeyPropertyName)
+			: this(role, foreignKeyPropertyName, false) {} // TODO NH: Remove this ctor
+
+		public CollectionType(string role, string foreignKeyPropertyName, bool isEmbeddedInXML)
 		{
 			this.role = role;
 			this.foreignKeyPropertyName = foreignKeyPropertyName;
+			this.isEmbeddedInXML = isEmbeddedInXML;
 		}
 
 		public virtual string Role
@@ -232,11 +240,12 @@ namespace NHibernate.Type
 		{
 			ICollectionPersister persister = GetPersister(session);
 			IPersistenceContext persistenceContext = session.PersistenceContext;
+			EntityMode entityMode = session.EntityMode;
 
-			//if (!isEmbeddedInXML)
-			//{
-			//  return UNFETCHED_COLLECTION;
-			//}
+			if (entityMode == EntityMode.Xml && !isEmbeddedInXML)
+			{
+				return UnfetchedCollection;
+			}
 
 			// check if collection is currently being loaded
 			IPersistentCollection collection = persistenceContext.LoadContexts.LocateLoadingCollection(persister, key);
@@ -500,6 +509,11 @@ namespace NHibernate.Type
 		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
+		}
+
+		public bool IsEmbeddedInXML
+		{
+			get { return isEmbeddedInXML; }
 		}
 	}
 }

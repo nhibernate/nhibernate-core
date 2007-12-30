@@ -400,7 +400,7 @@ namespace NHibernate.Collection.Generic
 			return bag == collection;
 		}
 
-		public override ICollection GetOrphans(object snapshot, System.Type entityName)
+		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			IList sn = (IList) snapshot;
 			ArrayList result = new ArrayList();

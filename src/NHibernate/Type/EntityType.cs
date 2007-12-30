@@ -20,7 +20,10 @@ namespace NHibernate.Type
 		private readonly System.Type associatedClass;
 		private readonly bool niceEquals;
 		protected readonly string uniqueKeyPropertyName;
-		private bool eager;
+		private readonly bool eager;
+		protected internal bool isEmbeddedInXML;
+		private readonly string associatedEntityName;
+		private readonly bool unwrapProxy;
 
 		public override sealed bool IsEntityType
 		{
@@ -69,6 +72,27 @@ namespace NHibernate.Type
 			this.niceEquals = !ReflectHelper.OverridesEquals(persistentClass);
 			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
 			this.eager = eager;
+		}
+
+		/// <summary> Constructs the requested entity type mapping. </summary>
+		/// <param name="entityName">The name of the associated entity. </param>
+		/// <param name="uniqueKeyPropertyName">
+		/// The property-ref name, or null if we reference the PK of the associated entity.
+		/// </param>
+		/// <param name="eager">Is eager fetching enabled. </param>
+		/// <param name="isEmbeddedInXML">Should values of this mapping be embedded in XML modes? </param>
+		/// <param name="unwrapProxy">
+		/// Is unwrapping of proxies allowed for this association; unwrapping
+		/// says to return the "implementation target" of lazy prooxies; typically only possible
+		/// with lazy="no-proxy".
+		/// </param>
+		protected internal EntityType(string entityName, string uniqueKeyPropertyName, bool eager, bool isEmbeddedInXML, bool unwrapProxy)
+		{
+			associatedEntityName = entityName;
+			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
+			this.isEmbeddedInXML = isEmbeddedInXML;
+			this.eager = eager;
+			this.unwrapProxy = unwrapProxy;
 		}
 
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
@@ -276,7 +300,15 @@ namespace NHibernate.Type
 		/// </summary>
 		protected object ResolveIdentifier(object id, ISessionImplementor session)
 		{
-			object proxyOrEntity = session.InternalLoad(AssociatedClass.FullName, id, eager, IsNullable);
+			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory.GetEntityPersister(AssociatedEntityName).IsInstrumented(session.EntityMode);
+
+			object proxyOrEntity = session.InternalLoad(AssociatedEntityName, id, eager, IsNullable && !isProxyUnwrapEnabled);
+
+			if (proxyOrEntity is INHibernateProxy)
+			{
+				((INHibernateProxy)proxyOrEntity).HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
+			}
+
 			return proxyOrEntity;
 		}
 
@@ -387,6 +419,16 @@ namespace NHibernate.Type
 			{
 				return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
 			}
+		}
+
+		public bool IsEmbeddedInXML
+		{
+			get { return isEmbeddedInXML; }
+		}
+
+		public string AssociatedEntityName
+		{
+			get { return AssociatedClass.FullName; }
 		}
 
 		/// <summary> 

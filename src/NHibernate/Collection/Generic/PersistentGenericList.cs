@@ -352,7 +352,7 @@ namespace NHibernate.Collection.Generic
 		/// An <see cref="System.Collections.ICollection"/> that contains all of the elements
 		/// that have been orphaned.
 		/// </returns>
-		public override ICollection GetOrphans(object snapshot, System.Type entityName)
+		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			IList<T> sn = (IList<T>) snapshot;
 			List<T> result = new List<T>(sn.Count);

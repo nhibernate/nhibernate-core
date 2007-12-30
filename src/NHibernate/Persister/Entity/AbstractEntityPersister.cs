@@ -3505,6 +3505,12 @@ namespace NHibernate.Persister.Entity
 			get { return IsVersioned && PropertyUpdateGenerationInclusions[VersionProperty] != ValueInclusion.None; }
 		}
 
+		public bool IsInstrumented(EntityMode entityMode)
+		{
+			IEntityTuplizer tuplizer = entityMetamodel.GetTuplizerOrNull(entityMode);
+			return tuplizer != null && tuplizer.IsInstrumented;
+		}
+
 		public bool HasInsertGeneratedProperties
 		{
 			get { return entityMetamodel.HasInsertGeneratedValues; }

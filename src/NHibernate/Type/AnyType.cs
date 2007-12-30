@@ -453,5 +453,11 @@ namespace NHibernate.Type
 		{
 			throw new NotSupportedException();
 		}
+
+		public bool IsEmbeddedInXML
+		{
+			get { return false; }
+		}
+
 	}
 }

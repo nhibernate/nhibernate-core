@@ -30,7 +30,7 @@ namespace NHibernate.Collection
 			return clonedMap;
 		}
 
-		public override ICollection GetOrphans(object snapshot, System.Type entityName)
+		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			IDictionary sn = (IDictionary) snapshot;
 			ArrayList result = new ArrayList(sn.Values.Count);

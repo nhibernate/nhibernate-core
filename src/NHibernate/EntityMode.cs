@@ -4,7 +4,8 @@ namespace NHibernate
 	public enum EntityMode
 	{
 		Poco,
-		Map
+		Map,
+		Xml
 	}
 
 	public static class EntityModeHelper
@@ -17,6 +18,8 @@ namespace NHibernate
 					return "poco";
 				case EntityMode.Map:
 					return "dynamic-map";
+				case EntityMode.Xml:
+					return "xml";
 			}
 			return null;
 		}
@@ -27,9 +30,11 @@ namespace NHibernate
 			switch (n)
 			{
 				case "poco":
-					return EntityMode.Map;
+					return EntityMode.Poco;
 				case "dynamic-map":
 					return EntityMode.Map;
+				case "xml":
+					return EntityMode.Xml;
 				default:
 					return EntityMode.Poco;
 			}

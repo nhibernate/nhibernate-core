@@ -499,6 +499,11 @@ namespace NHibernate.Test.NHSpecificTest
 			get { throw new NotImplementedException(); }
 		}
 
+		public bool IsInstrumented(EntityMode entityMode)
+		{
+			return false;
+		}
+
 		public bool HasInsertGeneratedProperties
 		{
 			get { throw new NotImplementedException(); }

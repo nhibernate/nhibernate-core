@@ -4,6 +4,7 @@ using log4net;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
 using NHibernate.Engine;
+using NHibernate.Intercept;
 using NHibernate.Mapping;
 using NHibernate.Property;
 using NHibernate.Proxy;
@@ -53,10 +54,7 @@ namespace NHibernate.Tuple.Entity
 
 		public override bool IsInstrumented
 		{
-			get 
-			{
-				return false;// FieldInterceptionHelper.IsInstrumented(MappedClass); 
-			}
+			get { return FieldInterceptionHelper.IsInstrumented(MappedClass); }
 		}
 
 		public override System.Type MappedClass

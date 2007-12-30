@@ -285,8 +285,7 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 
-		//[Test]
-		// User should uncomment if they want to see the Performance Comparison
+		[Test, Explicit]
 		public void Performance()
 		{
 			// set the hashtable and SequencedHashMap to be the 
@@ -294,7 +293,7 @@ namespace NHibernate.Test.UtilityTest
 			IDictionary sequenced;
 			IDictionary list;
 
-			int numOfRuns = 1;
+			int numOfRuns = 4;
 
 			int numOfEntries = Int16.MaxValue;
 
