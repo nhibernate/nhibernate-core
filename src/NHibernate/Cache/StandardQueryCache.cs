@@ -60,7 +60,7 @@ namespace NHibernate.Cache
 			{
 				if (returnTypes.Length == 1)
 				{
-					cacheable.Add(returnTypes[0].Disassemble(result[i], session));
+					cacheable.Add(returnTypes[0].Disassemble(result[i], session, null));
 				}
 				else
 				{

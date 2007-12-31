@@ -286,7 +286,7 @@ namespace NHibernate.Collection
 			object[] result = new object[length];
 			for (int i = 0; i < length; i++)
 			{
-				result[i] = persister.ElementType.Disassemble(list[i], Session);
+				result[i] = persister.ElementType.Disassemble(list[i], Session, null);
 			}
 			return result;
 		}

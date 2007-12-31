@@ -262,8 +262,8 @@ namespace NHibernate.Collection
 			int i = 0;
 			foreach (DictionaryEntry e in map)
 			{
-				result[i++] = persister.IndexType.Disassemble(e.Key, Session);
-				result[i++] = persister.ElementType.Disassemble(e.Value, Session);
+				result[i++] = persister.IndexType.Disassemble(e.Key, Session, null);
+				result[i++] = persister.ElementType.Disassemble(e.Value, Session, null);
 			}
 			return result;
 		}

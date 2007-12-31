@@ -237,7 +237,7 @@ namespace NHibernate.Type
 			return (cached == null) ? null : session.InternalLoad(e.clazz.FullName, e.id, false, false);
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session)
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			return (value == null) ?
 			       null :

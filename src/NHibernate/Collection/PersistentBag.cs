@@ -137,7 +137,7 @@ namespace NHibernate.Collection
 
 			for (int i = 0; i < length; i++)
 			{
-				result[i] = persister.ElementType.Disassemble(bag[i], Session);
+				result[i] = persister.ElementType.Disassemble(bag[i], Session, null);
 			}
 
 			return result;

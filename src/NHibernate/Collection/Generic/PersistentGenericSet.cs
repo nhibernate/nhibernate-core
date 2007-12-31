@@ -368,7 +368,7 @@ namespace NHibernate.Collection.Generic
 
 			foreach (object obj in internalSet)
 			{
-				result[i++] = persister.ElementType.Disassemble(obj, Session);
+				result[i++] = persister.ElementType.Disassemble(obj, Session, null);
 			}
 			return result;
 		}

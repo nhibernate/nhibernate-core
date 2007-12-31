@@ -536,13 +536,7 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override object Disassemble(object value, ISessionImplementor session)
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			if (value == null)
 			{
@@ -553,7 +547,7 @@ namespace NHibernate.Type
 				object[] values = GetPropertyValues(value);
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
-					values[i] = propertyTypes[i].Disassemble(values[i], session);
+					values[i] = propertyTypes[i].Disassemble(values[i], session, owner);
 				}
 				return values;
 			}

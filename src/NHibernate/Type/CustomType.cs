@@ -293,7 +293,7 @@ namespace NHibernate.Type
 			return userType.Assemble(cached, owner);
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session)
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			return userType.Disassemble(value);
 		}

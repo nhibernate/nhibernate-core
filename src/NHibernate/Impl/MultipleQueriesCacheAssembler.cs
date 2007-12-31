@@ -15,7 +15,7 @@ namespace NHibernate.Impl
 			assemblersList = assemblers;
 		}
 
-		public object Disassemble(object value, ISessionImplementor session)
+		public object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			IList srcList = (IList)value;
 			ArrayList cacheable = new ArrayList();
@@ -28,7 +28,7 @@ namespace NHibernate.Impl
 				{
 					if (assemblers.Length == 1)
 					{
-						singleQueryCached.Add(assemblers[0].Disassemble(objToCache, session));
+						singleQueryCached.Add(assemblers[0].Disassemble(objToCache, session, owner));
 					}
 					else
 					{
@@ -63,6 +63,10 @@ namespace NHibernate.Impl
 				result.Add(queryResults);
 			}
 			return result;
+		}
+
+		public void BeforeAssemble(object cached, ISessionImplementor session)
+		{
 		}
 
 		public IList GetResultFromQueryCache(

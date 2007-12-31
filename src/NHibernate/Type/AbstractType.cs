@@ -54,11 +54,12 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value">The value to disassemble.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
+		/// <param name="owner">optional parent entity object (needed for collections) </param>
 		/// <returns>The disassembled, deep cloned state of the object</returns>
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual object Disassemble(object value, ISessionImplementor session)
+		public virtual object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			if (value == null)
 			{
@@ -68,6 +69,10 @@ namespace NHibernate.Type
 			{
 				return DeepCopy(value);
 			}
+		}
+
+		public virtual void BeforeAssemble(object cached, ISessionImplementor session)
+		{
 		}
 
 		/// <summary>
@@ -185,7 +190,7 @@ namespace NHibernate.Type
 			{
 				return null;
 			}
-			return Assemble(Disassemble(original, session), session, owner);
+			return Assemble(Disassemble(original, session, owner), session, owner);
 		}
 
 		public override bool Equals(object obj)

@@ -221,8 +221,8 @@ namespace NHibernate.Collection
 			for (int j = 0; j < values.Count; j++)
 			{
 				object val = values[j];
-				result[i++] = persister.IdentifierType.Disassemble(identifiers[j], Session);
-				result[i++] = persister.ElementType.Disassemble(val, Session);
+				result[i++] = persister.IdentifierType.Disassemble(identifiers[j], Session, null);
+				result[i++] = persister.ElementType.Disassemble(val, Session, null);
 			}
 
 			return result;

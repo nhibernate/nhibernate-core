@@ -84,7 +84,7 @@ namespace NHibernate.Cache.Entry
 			IType[] propertyTypes = persister.PropertyTypes;
 			for (int i = 0; i < values.Length; i++)
 			{
-				values[i] = propertyTypes[i].Disassemble(values[i], session);
+				values[i] = propertyTypes[i].Disassemble(values[i], session, null);
 			}
 			return values;
 		}

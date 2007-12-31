@@ -312,7 +312,7 @@ namespace NHibernate.Collection.Generic
 			int i = 0;
 			foreach (T item in bag)
 			{
-				result[i] = persister.ElementType.Disassemble(item, Session);
+				result[i] = persister.ElementType.Disassemble(item, Session, null);
 				i++;
 			}
 

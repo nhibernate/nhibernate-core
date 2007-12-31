@@ -159,7 +159,7 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session)
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			return null;
 		}

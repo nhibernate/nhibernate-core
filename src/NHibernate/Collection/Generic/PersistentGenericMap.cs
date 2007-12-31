@@ -140,8 +140,8 @@ namespace NHibernate.Collection.Generic
 			int i = 0;
 			foreach (KeyValuePair<TKey, TValue> e in map)
 			{
-				result[i++] = persister.IndexType.Disassemble(e.Key, Session);
-				result[i++] = persister.ElementType.Disassemble(e.Value, Session);
+				result[i++] = persister.IndexType.Disassemble(e.Key, Session, null);
+				result[i++] = persister.ElementType.Disassemble(e.Value, Session, null);
 			}
 
 			return result;

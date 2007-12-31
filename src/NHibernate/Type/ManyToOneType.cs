@@ -130,7 +130,7 @@ namespace NHibernate.Type
 			return GetIdentifierOrUniqueKeyType(session.Factory).IsDirty(old, GetIdentifier(current, session), session);
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session)
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			if (value == null)
 			{
@@ -145,7 +145,7 @@ namespace NHibernate.Type
 				{
 					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + AssociatedClass.Name);
 				}
-				return GetIdentifierType(session).Disassemble(id, session);
+				return GetIdentifierType(session).Disassemble(id, session, owner);
 			}
 		}
 
@@ -160,6 +160,17 @@ namespace NHibernate.Type
 			{
 				return ResolveIdentifier(id, session);
 			}
+		}
+
+		private object AssembleId(object oid, ISessionImplementor session)
+		{
+			//the owner of the association is not the owner of the id
+			return GetIdentifierType(session).Assemble(oid, session, null);
+		}
+
+		public override void BeforeAssemble(object oid, ISessionImplementor session)
+		{
+			ScheduleBatchLoadIfNeeded(AssembleId(oid, session), session);
 		}
 
 		public override bool IsAlwaysDirtyChecked

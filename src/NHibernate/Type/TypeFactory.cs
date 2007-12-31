@@ -1086,7 +1086,7 @@ namespace NHibernate.Type
 			object[] disassembled = new object[row.Length];
 			for (int i = 0; i < row.Length; i++)
 			{
-				disassembled[i] = types[i].Disassemble(row[i], session);
+				disassembled[i] = types[i].Disassemble(row[i], session, null);
 			}
 			return disassembled;
 		}

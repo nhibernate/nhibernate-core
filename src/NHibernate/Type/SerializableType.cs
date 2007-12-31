@@ -166,13 +166,7 @@ namespace NHibernate.Type
 			return (cached == null) ? null : FromBytes((byte[]) cached);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public override object Disassemble(object value, ISessionImplementor session)
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			return (value == null) ? null : ToBytes(value);
 		}
