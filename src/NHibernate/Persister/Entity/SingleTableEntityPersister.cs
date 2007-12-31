@@ -180,7 +180,7 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		protected virtual SqlString GenerateSelectString(string forUpdateFragment)
 		{
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory);
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, Factory);
 
 			// set the table name and add the columns to select
 			builder.SetTableName(TableName)
@@ -438,7 +438,7 @@ namespace NHibernate.Persister.Entity
 					{
 						IDiscriminatorType dtype = (IDiscriminatorType) discriminatorType;
 						discriminatorValue = dtype.StringToObject(model.DiscriminatorValue);
-						discriminatorSQLValue = dtype.ObjectToSQLString(discriminatorValue);
+						discriminatorSQLValue = dtype.ObjectToSQLString(discriminatorValue, Dialect);
 					}
 					catch (InvalidCastException)
 					{

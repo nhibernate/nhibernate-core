@@ -21,7 +21,7 @@ namespace NHibernate.Test.SqlCommandTest
 			ISessionFactory factory = cfg.BuildSessionFactory();
 
 			ISessionFactoryImplementor factoryImpl = (ISessionFactoryImplementor) factory;
-			SqlDeleteBuilder delete = new SqlDeleteBuilder(factoryImpl);
+			SqlDeleteBuilder delete = new SqlDeleteBuilder(factoryImpl.Dialect, factoryImpl);
 
 			delete.SetTableName("test_delete_builder");
 

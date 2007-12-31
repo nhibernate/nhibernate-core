@@ -22,12 +22,8 @@ namespace NHibernate.SqlCommand
 		private string groupByClause;
 		private LockMode lockMode;
 
-		public readonly Dialect.Dialect dialect;
-
-		public SqlSelectBuilder(ISessionFactoryImplementor factory) : base(factory)
-		{
-			this.dialect = factory.Dialect;
-		}
+		public SqlSelectBuilder(ISessionFactoryImplementor factory)
+			: base(factory.Dialect, factory) {}
 
 		/// <summary>
 		/// Sets the text that should appear after the FROM 
@@ -213,7 +209,7 @@ namespace NHibernate.SqlCommand
 
 			if (lockMode != null)
 			{
-				sqlBuilder.Add(dialect.GetForUpdateString(lockMode));
+				sqlBuilder.Add(Dialect.GetForUpdateString(lockMode));
 			}
 
 			if (log.IsDebugEnabled)

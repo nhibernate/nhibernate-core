@@ -67,14 +67,9 @@ namespace NHibernate.Type
 			((IDataParameter) cmd.Parameters[index]).Value = (((bool) value) ? TrueString : FalseString);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public override string ObjectToSQLString(object value)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "'" + (((bool) value) ? TrueString : FalseString) + "'";
+			return '\'' + (((bool)value) ? TrueString : FalseString) + '\'';
 		}
 
 		/// <summary>

@@ -55,8 +55,9 @@ namespace NHibernate.Type
 		/// of the value, suitable for embedding in an SQL statement
 		/// </summary>
 		/// <param name="val">The object to convert to a string for the SQL statement.</param>
+		/// <param name="dialect"></param>
 		/// <returns>A string that containts a well formed SQL Statement.</returns>
-		public abstract string ObjectToSQLString(object val);
+		public abstract string ObjectToSQLString(object val, Dialect.Dialect dialect);
 
 		public virtual System.Type PrimitiveClass
 		{

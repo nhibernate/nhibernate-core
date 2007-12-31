@@ -193,7 +193,7 @@ namespace NHibernate.Type
 			return (value == null) ? null : GetValue(value);
 		}
 
-		public override string ObjectToSQLString(object value)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return GetValue(value).ToString();
 		}

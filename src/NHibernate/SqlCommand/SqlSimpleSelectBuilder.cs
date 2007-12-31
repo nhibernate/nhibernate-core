@@ -20,7 +20,6 @@ namespace NHibernate.SqlCommand
 		private int identityFragmentIndex = -1; // not used !?!
 
 		private IList whereStrings = new ArrayList();
-		private Dialect.Dialect dialect;
 
 		//these can be plain strings because a forUpdate and orderBy will have
 		// no parameters so using a SqlString will only complicate matters - or 
@@ -28,14 +27,8 @@ namespace NHibernate.SqlCommand
 		private string forUpdateFragment;
 		private string orderBy;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		public SqlSimpleSelectBuilder(ISessionFactoryImplementor factory) : base(factory)
-		{
-			this.dialect = factory.Dialect;
-		}
+		public SqlSimpleSelectBuilder(Dialect.Dialect dialect, ISessionFactoryImplementor factory)
+			: base(dialect, factory) {}
 
 		/// <summary>
 		/// 
@@ -212,7 +205,7 @@ namespace NHibernate.SqlCommand
 
 
 			sqlBuilder.Add(" FROM ")
-				.Add(dialect.AppendLockHint(lockMode, tableName));
+				.Add(Dialect.AppendLockHint(lockMode, tableName));
 
 			sqlBuilder.Add(" WHERE ");
 

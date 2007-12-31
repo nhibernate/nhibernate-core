@@ -144,7 +144,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public override string ObjectToSQLString(object value)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return "'" + ((DateTime) value).ToShortTimeString() + "'";
 		}

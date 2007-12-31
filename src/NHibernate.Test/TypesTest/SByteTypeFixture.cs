@@ -1,4 +1,4 @@
-using System;
+using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -23,7 +23,7 @@ namespace NHibernate.Test.TypesTest
 		public void ObjectToSQLString()
 		{
 			SByteType type = (SByteType) NHibernateUtil.SByte;
-			Assert.AreEqual("-1", type.ObjectToSQLString((sbyte) -1));
+			Assert.AreEqual("-1", type.ObjectToSQLString((sbyte) -1, new MsSql2000Dialect()));
 		}
 
 		[Test]

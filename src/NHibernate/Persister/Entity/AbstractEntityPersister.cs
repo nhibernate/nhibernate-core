@@ -1585,7 +1585,7 @@ namespace NHibernate.Persister.Entity
 
 		private SqlCommandInfo GenerateVersionIncrementUpdateString()
 		{
-			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory);
+			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory);
 			update.SetTableName(GetTableName(0));
 			//if (Factory.Settings.IsCommentsEnabled)
 			//{
@@ -1692,7 +1692,7 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		protected SqlString GenerateSelectVersionString()
 		{
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(factory);
+			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(factory.Dialect, factory);
 			builder.SetTableName(VersionedTableName);
 
 			if (IsVersioned)
@@ -3094,7 +3094,7 @@ namespace NHibernate.Persister.Entity
 
 		protected virtual SqlCommandInfo GenerateUpdateString(bool[] includeProperty, int j, object[] oldFields)
 		{
-			SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder(Factory)
+			SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder(Factory.Dialect, Factory)
 				.SetTableName(GetTableName(j))
 				.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
 
@@ -3293,7 +3293,7 @@ namespace NHibernate.Persister.Entity
 
 			for (int j = span - 1; j >= 0; j--)
 			{
-				SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory)
+				SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory)
 					.SetTableName(GetTableName(j))
 					.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
 
@@ -3438,7 +3438,7 @@ namespace NHibernate.Persister.Entity
 
 		protected SqlCommandInfo GenerateDeleteString(int j)
 		{
-			SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder(Factory);
+			SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder(Factory.Dialect, Factory);
 
 			deleteBuilder
 				.SetTableName(GetTableName(j))

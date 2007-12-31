@@ -50,7 +50,7 @@ namespace NHibernate.Dialect.Lock
 		private SqlString GenerateLockString()
 		{
 			ISessionFactoryImplementor factory = lockable.Factory;
-			SqlUpdateBuilder update = new SqlUpdateBuilder(factory);
+			SqlUpdateBuilder update = new SqlUpdateBuilder(factory.Dialect, factory);
 			update.SetTableName(lockable.RootTableName);
 			update.SetIdentityColumn(lockable.RootTableIdentifierColumnNames, lockable.IdentifierType);
 			update.SetVersionColumn(new string[] { lockable.VersionColumnName }, lockable.VersionType);

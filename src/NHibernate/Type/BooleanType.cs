@@ -11,9 +11,6 @@ namespace NHibernate.Type
 	[Serializable]
 	public class BooleanType : PrimitiveType, IDiscriminatorType
 	{
-		private const string TRUE = "1";
-		private const string FALSE = "0";
-
 		/// <summary>
 		/// Initialize a new instance of the BooleanType
 		/// </summary>
@@ -65,9 +62,9 @@ namespace NHibernate.Type
 			get { return "Boolean"; }
 		}
 
-		public override string ObjectToSQLString(object value)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return ((bool) value) ? TRUE : FALSE;
+			return dialect.ToBooleanValueString(((bool)value));
 		}
 
 		public virtual object StringToObject(string xml)

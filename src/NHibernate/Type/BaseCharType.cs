@@ -42,7 +42,7 @@ namespace NHibernate.Type
 			((IDataParameter) cmd.Parameters[index]).Value = (char) value;
 		}
 
-		public override string ObjectToSQLString(object value)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return '\'' + value.ToString() + '\'';
 		}

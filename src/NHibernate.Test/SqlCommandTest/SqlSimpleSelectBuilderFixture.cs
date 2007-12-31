@@ -21,7 +21,7 @@ namespace NHibernate.Test.SqlCommandTest
 			ISessionFactory factory = cfg.BuildSessionFactory();
 
 			ISessionFactoryImplementor factoryImpl = (ISessionFactoryImplementor) factory;
-			SqlSimpleSelectBuilder select = new SqlSimpleSelectBuilder(factoryImpl);
+			SqlSimpleSelectBuilder select = new SqlSimpleSelectBuilder(factoryImpl.Dialect, factoryImpl);
 
 			select.SetTableName("test_simple_select_builder");
 			select.AddColumn("column_no_alias");

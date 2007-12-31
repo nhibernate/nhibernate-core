@@ -10,7 +10,8 @@ namespace NHibernate.Type
 		/// of the value, suitable for embedding in an SQL statement
 		/// </summary>
 		/// <param name="value">The object to convert to a string for the SQL statement.</param>
+		/// <param name="dialect"></param>
 		/// <returns>A string that containts a well formed SQL Statement.</returns>
-		string ObjectToSQLString(object value);
+		string ObjectToSQLString(object value, Dialect.Dialect dialect);
 	}
 }

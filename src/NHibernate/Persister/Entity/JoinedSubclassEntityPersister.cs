@@ -203,9 +203,9 @@ namespace NHibernate.Persister.Entity
 
 				try
 				{
-					this.discriminatorType = (IDiscriminatorType) NHibernateUtil.Int32;
+					discriminatorType = (IDiscriminatorType) NHibernateUtil.Int32;
 					discriminatorValue = model.SubclassId;
-					this.discriminatorSQLString = this.discriminatorType.ObjectToSQLString(discriminatorValue);
+					discriminatorSQLString = discriminatorType.ObjectToSQLString(discriminatorValue, Dialect);
 				}
 				catch (Exception e)
 				{

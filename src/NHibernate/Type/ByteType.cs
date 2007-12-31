@@ -42,7 +42,7 @@ namespace NHibernate.Type
 			get { return "Byte"; }
 		}
 
-		public override string ObjectToSQLString(object value)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return value.ToString();
 		}

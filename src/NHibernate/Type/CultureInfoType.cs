@@ -105,14 +105,9 @@ namespace NHibernate.Type
 			get { return "CultureInfo"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public string ObjectToSQLString(object value)
+		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return ((ILiteralType) NHibernateUtil.String).ObjectToSQLString(value.ToString());
+			return ((ILiteralType) NHibernateUtil.String).ObjectToSQLString(value.ToString(), dialect);
 		}
 	}
 }

@@ -250,7 +250,7 @@ namespace NHibernate.Type
 			return ((IEnhancedUserType) userType).FromXMLString(xml);
 		}
 
-		public string ObjectToSQLString(object value)
+		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return ((IEnhancedUserType) userType).ObjectToSQLString(value);
 		}

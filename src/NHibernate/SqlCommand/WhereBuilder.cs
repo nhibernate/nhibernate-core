@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -9,9 +8,8 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class WhereBuilder : SqlBaseBuilder
 	{
-		public WhereBuilder(ISessionFactoryImplementor factory) : base(factory)
-		{
-		}
+		public WhereBuilder(Dialect.Dialect dialect, ISessionFactoryImplementor factory)
+			: base(dialect, factory) {}
 
 		public SqlString WhereClause(string alias, string[] columnNames, IType whereType)
 		{

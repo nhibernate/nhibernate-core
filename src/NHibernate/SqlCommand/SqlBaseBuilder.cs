@@ -8,16 +8,23 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public abstract class SqlBaseBuilder
 	{
-		private IMapping mapping;
+		private readonly Dialect.Dialect dialect;
+		private readonly IMapping mapping;
 
-		protected SqlBaseBuilder(IMapping mapping)
+		protected SqlBaseBuilder(Dialect.Dialect dialect, IMapping mapping)
 		{
+			this.dialect = dialect;
 			this.mapping = mapping;
 		}
 
 		protected IMapping Mapping
 		{
 			get { return mapping; }
+		}
+
+		public Dialect.Dialect Dialect
+		{
+			get { return dialect; }
 		}
 
 		/// <summary>

@@ -24,9 +24,8 @@ namespace NHibernate.SqlCommand
 		private ArrayList columnValuesParameterTypes = new ArrayList();
 		private ArrayList whereParameterTypes = new ArrayList();
 
-		public SqlUpdateBuilder(IMapping mapping) : base(mapping)
-		{
-		}
+		public SqlUpdateBuilder(Dialect.Dialect dialect, IMapping mapping)
+			: base(dialect, mapping) {}
 
 		/// <summary>
 		/// 
@@ -49,7 +48,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder AddColumn(string columnName, object val, ILiteralType literalType)
 		{
-			return AddColumn(columnName, literalType.ObjectToSQLString(val));
+			return AddColumn(columnName, literalType.ObjectToSQLString(val, Dialect));
 		}
 
 

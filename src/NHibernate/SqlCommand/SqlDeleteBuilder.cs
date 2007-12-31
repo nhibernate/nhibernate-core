@@ -17,9 +17,8 @@ namespace NHibernate.SqlCommand
 		private ArrayList whereStrings = new ArrayList();
 		private ArrayList parameterTypes = new ArrayList();
 
-		public SqlDeleteBuilder(IMapping mapping) : base(mapping)
-		{
-		}
+		public SqlDeleteBuilder(Dialect.Dialect dialect, IMapping mapping)
+			: base(dialect, mapping) {}
 
 		public SqlDeleteBuilder SetTableName(string tableName)
 		{

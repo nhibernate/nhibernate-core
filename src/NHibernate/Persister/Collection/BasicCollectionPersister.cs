@@ -34,7 +34,7 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateDeleteString()
 		{
-			SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory)
+			SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory)
 				.SetTableName(qualifiedTableName)
 				.SetIdentityColumn(KeyColumnNames, KeyType);
 			if (HasWhere)
@@ -72,7 +72,7 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateUpdateRowString()
 		{
-			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory)
+			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory)
 				.SetTableName(qualifiedTableName)
 				.AddColumns(ElementColumnNames, elementColumnIsSettable, ElementType);
 			if (hasIdentifier)
@@ -99,7 +99,7 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateDeleteRowString()
 		{
-			SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory);
+			SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory);
 			delete.SetTableName(qualifiedTableName);
 			if (hasIdentifier)
 			{

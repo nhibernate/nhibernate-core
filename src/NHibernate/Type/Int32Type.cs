@@ -78,12 +78,7 @@ namespace NHibernate.Type
 			get { return "Int32"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public override string ObjectToSQLString(object value)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return value.ToString();
 		}

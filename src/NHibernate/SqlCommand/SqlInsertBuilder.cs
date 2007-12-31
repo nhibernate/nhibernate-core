@@ -71,7 +71,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlInsertBuilder.</returns>
 		public SqlInsertBuilder AddColumn(string columnName, object val, ILiteralType literalType)
 		{
-			return AddColumn(columnName, literalType.ObjectToSQLString(val));
+			return AddColumn(columnName, literalType.ObjectToSQLString(val, Dialect));
 		}
 
 

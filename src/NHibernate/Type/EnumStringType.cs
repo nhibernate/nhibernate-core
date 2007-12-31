@@ -253,12 +253,7 @@ namespace NHibernate.Type
 			return (value == null) ? null : GetValue(value);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public string ObjectToSQLString(object value)
+		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return GetValue(value).ToString();
 		}

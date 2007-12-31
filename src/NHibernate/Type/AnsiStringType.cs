@@ -71,14 +71,9 @@ namespace NHibernate.Type
 			get { return "AnsiString"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public string ObjectToSQLString(object value)
+		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "'" + (string) value + "'";
+			return '\'' + (string) value + '\'';
 		}
 
 		/// <summary>

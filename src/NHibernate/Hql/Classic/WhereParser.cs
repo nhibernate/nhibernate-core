@@ -535,7 +535,7 @@ namespace NHibernate.Hql.Classic
 
 						try
 						{
-							AppendToken(q, ((ILiteralType) type).ObjectToSQLString(constant));
+							AppendToken(q, ((ILiteralType) type).ObjectToSQLString(constant, q.Factory.Dialect));
 						}
 						catch (Exception e)
 						{

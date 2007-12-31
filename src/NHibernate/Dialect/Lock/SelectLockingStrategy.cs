@@ -33,7 +33,7 @@ namespace NHibernate.Dialect.Lock
 		private SqlString GenerateLockString()
 		{
 			ISessionFactoryImplementor factory = lockable.Factory;
-			SqlSimpleSelectBuilder select = new SqlSimpleSelectBuilder(factory)
+			SqlSimpleSelectBuilder select = new SqlSimpleSelectBuilder(factory.Dialect, factory)
 				.SetLockMode(lockMode)
 				.SetTableName(lockable.RootTableName)
 				.AddColumn(lockable.RootTableIdentifierColumnNames[0])

@@ -135,9 +135,9 @@ namespace NHibernate.Type
 			return DateTime.Parse(xml);
 		}
 
-		public override string ObjectToSQLString(object value)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "'" + value.ToString() + "'";
+			return '\'' + value.ToString() + '\'';
 		}
 	}
 }
