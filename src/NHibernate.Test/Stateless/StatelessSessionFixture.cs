@@ -92,34 +92,34 @@ namespace NHibernate.Test.Stateless
 		[Test, Ignore("Not supported yet")]
 		public void HqlBulk()
 		{
-			//IStatelessSession ss = sessions.OpenStatelessSession();
-			//ITransaction tx = ss.BeginTransaction();
-			//Document doc = new Document("blah blah blah", "Blahs");
-			//ss.Insert(doc);
-			//Paper paper = new Paper();
-			//paper.Color="White";
-			//ss.Insert(paper);
-			//tx.Commit();
+			IStatelessSession ss = sessions.OpenStatelessSession();
+			ITransaction tx = ss.BeginTransaction();
+			Document doc = new Document("blah blah blah", "Blahs");
+			ss.Insert(doc);
+			Paper paper = new Paper();
+			paper.Color = "White";
+			ss.Insert(paper);
+			tx.Commit();
 
-			//tx = ss.BeginTransaction();
-			//int count = ss.CreateQuery("update Document set name = :newName where name = :oldName")
-			//    .SetString("newName", "Foos")
-			//    .SetString("oldName", "Blahs")
-			//    .ExecuteUpdate();
-			//Assert.AreEqual(1, count, "hql-delete on stateless session");
-			//count = ss.CreateQuery("update Paper set color = :newColor")
-			//    .SetString("newColor", "Goldenrod")
-			//    .ExecuteUpdate();
-			//Assert.AreEqual(1, count, "hql-delete on stateless session");
-			//tx.Commit();
+			tx = ss.BeginTransaction();
+			int count = ss.CreateQuery("update Document set name = :newName where name = :oldName")
+					.SetString("newName", "Foos")
+					.SetString("oldName", "Blahs")
+					.ExecuteUpdate();
+			Assert.AreEqual(1, count, "hql-delete on stateless session");
+			count = ss.CreateQuery("update Paper set color = :newColor")
+					.SetString("newColor", "Goldenrod")
+					.ExecuteUpdate();
+			Assert.AreEqual(1, count, "hql-delete on stateless session");
+			tx.Commit();
 
-			//tx = ss.BeginTransaction();
-			//count = ss.CreateQuery("delete Document").ExecuteUpdate();
-			//Assert.AreEqual(1, count, "hql-delete on stateless session");
-			//count = ss.CreateQuery("delete Paper").ExecuteUpdate();
-			//Assert.AreEqual(1, count, "hql-delete on stateless session");
-			//tx.Commit();
-			//ss.Close();
+			tx = ss.BeginTransaction();
+			count = ss.CreateQuery("delete Document").ExecuteUpdate();
+			Assert.AreEqual(1, count, "hql-delete on stateless session");
+			count = ss.CreateQuery("delete Paper").ExecuteUpdate();
+			Assert.AreEqual(1, count, "hql-delete on stateless session");
+			tx.Commit();
+			ss.Close();
 		}
 
 		[Test]
