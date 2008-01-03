@@ -418,7 +418,7 @@ namespace NHibernate.Collection.Generic
 				object key = identifiers[i++];
 				if (key != null)
 				{
-					map[key] = persister.ElementType.DeepCopy(obj);
+					map[key] = persister.ElementType.DeepCopy(obj, EntityMode.Poco, Session.Factory);
 				}
 			}
 

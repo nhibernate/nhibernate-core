@@ -196,7 +196,7 @@ namespace NHibernate.Persister.Collection
 
 			if (elementType.IsEntityType)
 			{
-				elementPersister = factory.GetEntityPersister(((EntityType) elementType).AssociatedClass);
+				elementPersister = factory.GetEntityPersister(((EntityType) elementType).GetAssociatedEntityName());
 			}
 			else
 			{
@@ -378,7 +378,7 @@ namespace NHibernate.Persister.Collection
 			}
 			else
 			{
-				IEntityPersister persister = factory.GetEntityPersister(((EntityType) elementType).AssociatedClass);
+				IEntityPersister persister = factory.GetEntityPersister(((EntityType) elementType).GetAssociatedEntityName());
 				// Not all classpersisters implement IPropertyMapping!
 				if (persister is IPropertyMapping)
 				{

@@ -8,10 +8,14 @@ namespace NHibernate.Type
 	/// Common base class for <see cref="CharType" /> and <see cref="AnsiCharType" />.
 	/// </summary>
 	[Serializable]
-	public abstract class BaseCharType : PrimitiveType, IDiscriminatorType
+	public abstract class AbstractCharType : PrimitiveType, IDiscriminatorType
 	{
-		public BaseCharType(SqlType sqlType) : base(sqlType)
+		public AbstractCharType(SqlType sqlType)
+			: base(sqlType) {}
+
+		public override object DefaultValue
 		{
+			get { throw new NotSupportedException("not a valid id type"); }
 		}
 
 		public override object Get(IDataReader rs, int index)
@@ -32,6 +36,11 @@ namespace NHibernate.Type
 			return Get(rs, rs.GetOrdinal(name));
 		}
 
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(char); }
+		}
+
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(char); }
@@ -39,7 +48,7 @@ namespace NHibernate.Type
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			((IDataParameter) cmd.Parameters[index]).Value = (char) value;
+			((IDataParameter)cmd.Parameters[index]).Value = (char)value;
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
@@ -50,9 +59,8 @@ namespace NHibernate.Type
 		public virtual object StringToObject(string xml)
 		{
 			if (xml.Length != 1)
-			{
 				throw new MappingException("multiple or zero characters found parsing string");
-			}
+
 			return xml[0];
 		}
 

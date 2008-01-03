@@ -1,8 +1,10 @@
 using System;
 using System.Data;
+using System.Xml;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -30,7 +32,7 @@ namespace NHibernate.Type
 			get { return LogManager.GetLogger(GetType()); }
 		}
 
-		private SqlType _sqlType;
+		private readonly SqlType _sqlType;
 
 		/// <summary>
 		/// Initialize a new instance of the NullableType class using a 
@@ -114,25 +116,6 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public abstract object FromStringValue(string xml);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
-		/// /> 
-		/// <remarks>
-		/// <para>
-		/// This implementation forwards the call to <see cref="FromStringValue"/> if the parameter
-		/// value is not empty.
-		/// </para>
-		/// <para>
-		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
-		/// do not need and should not override this method.  All of their implementation
-		/// should be in <see cref="FromStringValue"/>.
-		/// </para>
-		/// </remarks>
-		public override sealed object FromString(string xml)
-		{
-			return (xml == null || xml.Length == 0) ? null : FromStringValue(xml);
-		}
-
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			if (settable[0]) NullSafeSet(st, value, index);
@@ -178,7 +161,7 @@ namespace NHibernate.Type
 			{
 				if (IsDebugEnabled)
 				{
-					Log.Debug("binding null to parameter: " + index.ToString());
+					Log.Debug("binding null to parameter: " + index);
 				}
 
 				//Do we check IsNullable?
@@ -264,7 +247,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				object val = null;
+				object val;
 				try
 				{
 					val = Get(rs, index);
@@ -272,10 +255,9 @@ namespace NHibernate.Type
 				catch (InvalidCastException ice)
 				{
 					throw new ADOException(
-						"Could not cast the value in field " + name + " of type " + rs[index].GetType().Name + " to the Type " +
-						this.GetType().Name +
-						".  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.",
-						ice);
+						string.Format(
+							"Could not cast the value in field {0} of type {1} to the Type {2}.  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.",
+							name, rs[index].GetType().Name, GetType().Name), ice);
 				}
 
 				if (IsDebugEnabled)
@@ -351,42 +333,39 @@ namespace NHibernate.Type
 			return 1;
 		}
 
-
-		/* <see cref="NullableTypes"/> */
-
-		/// <summary>
-		/// When implemented by a class, returns a deep copy of the persistent state.
-		/// </summary>
-		/// <param name="val">The value to deep copy.</param>
-		/// <returns>A deep copy of the object.</returns>
-		/// <remarks>
-		/// Most of the built in NullableTypes will just return the same object
-		/// passed into it.
-		/// </remarks>
-		public abstract object DeepCopyNotNull(object val);
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
-		/// /> 
-		/// <remarks>
-		/// <para>
-		/// This implemenation forwards the call to <see cref="DeepCopyNotNull(Object)"/> if the parameter 
-		/// value is not null.
-		/// </para>
-		/// <para>
-		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
-		/// do not need and should not override this method.  All of their implementation
-		/// should be in <see cref="DeepCopyNotNull(Object)"/>.
-		/// </para>
-		/// </remarks>
-		public override sealed object DeepCopy(object val)
-		{
-			return (val == null) ? null : DeepCopyNotNull(val);
-		}
-
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			return checkable[0] && IsDirty(old, current, session);
+		}
+
+		public override bool[] ToColumnNullness(object value, IMapping mapping)
+		{
+			return value == null ? ArrayHelper.False : ArrayHelper.True;
+		}
+
+		public override object FromXMLNode(XmlNode xml, IMapping factory)
+		{
+			return FromXMLString(xml.Value, factory);
+		}
+
+		public override void SetToXMLNode(XmlNode xml, object value, ISessionFactoryImplementor factory)
+		{
+			xml.Value = ToXMLString(value, factory);
+		}
+
+		public string ToXMLString(object value, ISessionFactoryImplementor pc)
+		{
+			return ToString(value);
+		}
+
+		public object FromXMLString(string xml, IMapping factory)
+		{
+			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
+		}
+
+		public virtual bool IsEqual(object x, object y)
+		{
+			return EqualsHelper.Equals(x, y);
 		}
 
 		#region override of System.Object Members
@@ -409,22 +388,15 @@ namespace NHibernate.Type
 			 */
 
 			if (this == obj)
-			{
 				return true;
-			}
 
 			NullableType rhsType = obj as NullableType;
 
 			if (rhsType == null)
-			{
 				return false;
-			}
 
-			if (this.Name.Equals(rhsType.Name)
-			    && this.SqlType.Equals(rhsType.SqlType))
-			{
+			if (Name.Equals(rhsType.Name) && SqlType.Equals(rhsType.SqlType))
 				return true;
-			}
 
 			return false;
 		}

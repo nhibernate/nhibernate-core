@@ -15,8 +15,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
 		/// <param name="propertyRef"></param>
-		public OrderedSetType(string role, string propertyRef)
-			: base(role, propertyRef)
+		/// <param name="isEmbeddedInXML"></param>
+		public OrderedSetType(string role, string propertyRef, bool isEmbeddedInXML)
+			: base(role, propertyRef, isEmbeddedInXML)
 		{
 		}
 

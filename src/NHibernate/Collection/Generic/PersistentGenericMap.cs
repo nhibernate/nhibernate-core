@@ -128,7 +128,7 @@ namespace NHibernate.Collection.Generic
 			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(map.Count);
 			foreach (KeyValuePair<TKey, TValue> e in map)
 			{
-				object copy = persister.ElementType.DeepCopy(e.Value);
+				object copy = persister.ElementType.DeepCopy(e.Value, EntityMode.Poco, Session.Factory);
 				clonedMap[e.Key] = (copy == null ? default(TValue) : (TValue) copy);
 			}
 			return clonedMap;

@@ -46,7 +46,7 @@ namespace NHibernate.Mapping
 
 		public override CollectionType DefaultCollectionType
 		{
-			get { return TypeFactory.Array(Role, ReferencedPropertyName, ElementClass); }
+			get { return TypeFactory.Array(Role, ReferencedPropertyName, Embedded, ElementClass); }
 		}
 
 		public override bool IsArray

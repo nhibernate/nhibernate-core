@@ -43,8 +43,7 @@ namespace NHibernate.Mapping
 				if (type == null)
 				{
 					type =
-						TypeFactory.ManyToOne(ReflectHelper.ClassForName(ReferencedTypeName), ReferencedPropertyName, IsLazy,
-						                      IsIgnoreNotFound);
+						TypeFactory.ManyToOne(ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy, Embedded, IsIgnoreNotFound);
 				}
 				return type;
 			}

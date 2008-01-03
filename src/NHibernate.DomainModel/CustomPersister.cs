@@ -140,7 +140,7 @@ namespace NHibernate.DomainModel
 			return id == null;
 		}
 
-		public bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier
+		public bool CanExtractIdOutOfEntity
 		{
 			get { return true; }
 		}

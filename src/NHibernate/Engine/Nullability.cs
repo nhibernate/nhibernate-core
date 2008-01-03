@@ -96,7 +96,7 @@ namespace NHibernate.Engine
 				{
 					//check for all components values in the collection
 					IAbstractComponentType componentType = (IAbstractComponentType)collectionElementType;
-					ICollection ec = Cascades.GetLoadedElementsCollection(collectionType, value);
+					IEnumerable ec = Cascades.GetLoadedElementsIterator(collectionType, value);
 					foreach (object compValue in ec)
 					{
 						if (compValue != null)

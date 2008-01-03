@@ -22,68 +22,46 @@ namespace NHibernate.Type
 	[Serializable]
 	public class TimeType : PrimitiveType, IIdentifierType, ILiteralType
 	{
-		private static DateTime BaseDateValue = new DateTime(1753, 01, 01);
+		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
 
-		/// <summary></summary>
 		internal TimeType() : base(SqlTypeFactory.Time)
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		public override object Get(IDataReader rs, int index)
+		public override string Name
 		{
-			DateTime dbValue = Convert.ToDateTime(rs[index]);
-			return new DateTime(1753, 01, 01, dbValue.Hour, dbValue.Minute, dbValue.Second);
+			get { return "Time"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		public override object Get(IDataReader rs, int index)
+		{
+			try
+			{
+				DateTime dbValue = Convert.ToDateTime(rs[index]);
+				return new DateTime(1753, 01, 01, dbValue.Hour, dbValue.Minute, dbValue.Second);
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+			}
+		}
+
 		public override object Get(IDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
 
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(DateTime); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
 		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			if ((DateTime) value < BaseDateValue)
-			{
-				parm.Value = DBNull.Value;
-			}
-			else
-			{
-				parm.Value = value;
-			}
+			((IDataParameter)st.Parameters[index]).Value = ((DateTime)value >= BaseDateValue) ? value : DBNull.Value;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
+		public override bool IsEqual(object x, object y)
 		{
 			if (x == y)
 			{
@@ -94,44 +72,37 @@ namespace NHibernate.Type
 				return false;
 			}
 
-			DateTime date1 = (DateTime) x;
-			DateTime date2 = (DateTime) y;
+			DateTime date1 = (DateTime)x;
+			DateTime date2 = (DateTime)y;
+			if(date1.Equals(date2)) 
+				return true;
 
 			return date1.Hour == date2.Hour
-			       && date1.Minute == date2.Minute
-			       && date1.Second == date2.Second;
+						 && date1.Minute == date2.Minute
+						 && date1.Second == date2.Second;
 		}
 
-		/// <summary></summary>
-		public override string Name
+		public override int GetHashCode(object x, EntityMode entityMode)
 		{
-			get { return "Time"; }
+			DateTime date = (DateTime)x;
+			int hashCode = 1;
+			unchecked
+			{
+				hashCode = 31 * hashCode + date.Second;
+				hashCode = 31 * hashCode + date.Minute;
+				hashCode = 31 * hashCode + date.Hour;
+			}
+			return hashCode;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="val"></param>
-		/// <returns></returns>
 		public override string ToString(object val)
 		{
 			return ((DateTime) val).ToShortTimeString();
 		}
 
-		/// <summary></summary>
-		public override bool HasNiceEquals
-		{
-			get { return true; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public object StringToObject(string xml)
 		{
-			return FromString(xml);
+			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
 		}
 
 		public override object FromStringValue(string xml)
@@ -139,14 +110,19 @@ namespace NHibernate.Type
 			return DateTime.Parse(xml);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(DateTime); }
+		}
+
+		public override object DefaultValue
+		{
+			get { return BaseDateValue; }
+		}
+
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "'" + ((DateTime) value).ToShortTimeString() + "'";
+			return "'" + ((DateTime)value).ToShortTimeString() + "'";
 		}
 	}
 }

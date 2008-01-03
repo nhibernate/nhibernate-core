@@ -29,11 +29,11 @@ namespace NHibernate.Test.GeneratedTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 			entity = (GeneratedPropertyEntity) s.Get(typeof(GeneratedPropertyEntity), entity.Id);
-			Assert.IsTrue(NHibernateUtil.Binary.Equals(bytes, entity.LastModified));
+			Assert.IsTrue(NHibernateUtil.Binary.IsEqual(bytes, entity.LastModified));
 			t.Commit();
 			s.Close();
 
-			Assert.IsTrue(NHibernateUtil.Binary.Equals(bytes, entity.LastModified));
+			Assert.IsTrue(NHibernateUtil.Binary.IsEqual(bytes, entity.LastModified));
 
 			s = OpenSession();
 			t = s.BeginTransaction();

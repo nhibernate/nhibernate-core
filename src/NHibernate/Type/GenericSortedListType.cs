@@ -6,7 +6,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class GenericSortedListType<TKey, TValue> : GenericMapType<TKey, TValue>
 	{
-		private IComparer<TKey> comparer;
+		private readonly IComparer<TKey> comparer;
 
 		public GenericSortedListType(string role, string propertyRef, IComparer<TKey> comparer)
 			: base(role, propertyRef)

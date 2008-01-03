@@ -24,16 +24,15 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		public GenericSetType(string role, string propertyRef)
-			: base(role, propertyRef)
-		{
-		}
+			: base(role, propertyRef, false) {}
 
 		/// <summary>
 		/// Instantiates a new <see cref="IPersistentCollection"/> for the set.
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the set.</param>
 		/// <param name="persister">The current <see cref="ICollectionPersister" /> for the set.</param>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		/// <param name="key"></param>
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return new PersistentGenericSet<T>(session);
 		}

@@ -9,9 +9,8 @@ namespace NHibernate.Type
 	[Serializable]
 	public class SpecialOneToOneType : OneToOneType
 	{
-		public SpecialOneToOneType(System.Type referencedEntityName, ForeignKeyDirection foreignKeyType, 
-			string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
-			: base(referencedEntityName, foreignKeyType, uniqueKeyPropertyName, lazy, propertyName)
+		public SpecialOneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
+			: base(referencedEntityName, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, true, entityName, propertyName)
 		{
 		}
 

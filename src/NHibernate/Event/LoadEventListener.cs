@@ -16,13 +16,15 @@ namespace NHibernate.Event
 				.SetAllowNulls(false)
 				.SetAllowProxyCreation(false)
 				.SetCheckDeleted(true)
-				.SetNakedEntityReturned(false);
+				.SetNakedEntityReturned(false)
+				.SetExactPersister(true); // NH: Different behavior to pass NH-295
 
 			Get = new LoadType("Get")
 				.SetAllowNulls(true)
 				.SetAllowProxyCreation(false)
 				.SetCheckDeleted(true)
-				.SetNakedEntityReturned(false);
+				.SetNakedEntityReturned(false)
+				.SetExactPersister(true); // NH: Different behavior to pass NH-295
 
 			Load = new LoadType("Load")
 				.SetAllowNulls(false)

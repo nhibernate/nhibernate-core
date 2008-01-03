@@ -79,7 +79,7 @@ namespace NHibernate.Action
 				// get the updated snapshot of the entity state by cloning current state;
 				// it is safe to copy in place, since by this time no-one else (should have)
 				// has a reference  to the array
-				TypeFactory.DeepCopy(state, persister.PropertyTypes, persister.PropertyCheckability, state);
+				TypeFactory.DeepCopy(state, persister.PropertyTypes, persister.PropertyCheckability, state, Session);
 				if (persister.HasUpdateGeneratedProperties)
 				{
 					// this entity defines proeprty generation, so process those generated
@@ -103,11 +103,12 @@ namespace NHibernate.Action
 				}
 				else
 				{
+					CacheEntry ce = new CacheEntry(state, persister, false, nextVersion, Session, instance);
+					cacheEntry = ce;
 					// TODO H3.2 Different behaviour
 					//CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), nextVersion, Session, instance);
 					//cacheEntry = persister.CacheEntryStructure.structure(ce);
-					//persister.Cache.Update(ck, cacheEntry, nextVersion, previousVersion);
-					cacheEntry = new CacheEntry(instance, persister, Session);
+
 					bool put = persister.Cache.Update(ck, cacheEntry, nextVersion, previousVersion);
 
 					if (put && factory.Statistics.IsStatisticsEnabled)

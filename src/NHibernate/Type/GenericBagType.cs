@@ -23,7 +23,7 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		public GenericBagType(string role, string propertyRef)
-			: base(role, propertyRef)
+			: base(role, propertyRef, false)
 		{
 		}
 
@@ -32,7 +32,8 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister">The current <see cref="ICollectionPersister" /> for the bag.</param>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		/// <param name="key"></param>
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return new PersistentGenericBag<T>(session);
 		}

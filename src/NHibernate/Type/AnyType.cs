@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Reflection;
+using System.Xml;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -58,54 +59,23 @@ namespace NHibernate.Type
 
 		/// <summary></summary>
 		internal AnyType()
-			: this(NHibernateUtil.Class, NHibernateUtil.Serializable)
+			: this(NHibernateUtil.String, NHibernateUtil.Serializable)
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public override object DeepCopy(object value)
+		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
-		{
-			return x == y;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public override int GetColumnSpan(IMapping session)
 		{
-			/*
-			 * This is set at 2 in Hibernate to support the old depreciated
-			 * version of using type="object".  We are removing that support so
-			 * I don't know if we need to keep this in.
-			 */
 			return 2;
 		}
 
 		public override string Name
 		{
 			get { return "Object"; }
-		}
-
-		public override bool HasNiceEquals
-		{
-			get { return false; }
 		}
 
 		public override bool IsMutable
@@ -120,23 +90,21 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return Resolve(
-				(System.Type) metaType.NullSafeGet(rs, names[0], session, owner),
-				identifierType.NullSafeGet(rs, names[1], session, owner),
-				session);
+			return ResolveAny((string)metaType.NullSafeGet(rs, names[0], session, owner), 
+				identifierType.NullSafeGet(rs, names[1], session, owner), session);
 		}
 
 		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			System.Type clazz = (System.Type) metaType.NullSafeGet(rs, names[0], session, owner);
+			string entityName = (string)metaType.NullSafeGet(rs, names[0], session, owner);
 			object id = identifierType.NullSafeGet(rs, names[1], session, owner);
-			return new ObjectTypeCacheEntry(clazz, id);
+			return new ObjectTypeCacheEntry(entityName, id);
 		}
 
 		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
 			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) value;
-			return Resolve(holder.clazz, holder.id, session);
+			return ResolveAny(holder.entityName, holder.id, session);
 		}
 
 		public override object SemiResolve(object value, ISessionImplementor session, object owner)
@@ -144,38 +112,26 @@ namespace NHibernate.Type
 			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
-		private object Resolve(System.Type clazz, object id, ISessionImplementor session)
-		{
-			return (clazz == null || id == null) ?
-			       null :
-			       session.InternalLoad(clazz.FullName, id, false, false);
-		}
-
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			object id;
 			string entityName;
-			System.Type clazz; // TODO entityName : remove 
-
 			if (value == null)
 			{
 				id = null;
 				entityName = null;
-				clazz = null;
 			}
 			else
 			{
 				entityName = session.BestGuessEntityName(value);
 				id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, value, session);
-				clazz = NHibernateProxyHelper.GuessClass(value);
 			}
 
 			// metaType is assumed to be single-column type
 			if (settable == null || settable[0])
 			{
-				metaType.NullSafeSet(st, clazz, index, session);
+				metaType.NullSafeSet(st, entityName, index, session);
 			}
-
 			if (settable == null)
 			{
 				identifierType.NullSafeSet(st, id, index + 1, session);
@@ -200,50 +156,44 @@ namespace NHibernate.Type
 
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return ArrayHelper.Join(
-				metaType.SqlTypes(mapping),
-				identifierType.SqlTypes(mapping));
+			return ArrayHelper.Join(metaType.SqlTypes(mapping), identifierType.SqlTypes(mapping));
 		}
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return value == null ?
-			       "null" :
-			       NHibernateUtil.Entity(NHibernateProxyHelper.GuessClass(value))
-			       	.ToLoggableString(value, factory);
+			return value == null ? "null" :
+				NHibernateUtil.Entity(NHibernateProxyHelper.GetClassWithoutInitializingProxy(value)).ToLoggableString(value, factory);
 		}
 
-		public override object FromString(string xml)
+		public override object FromXMLNode(XmlNode xml, IMapping factory)
 		{
+			// TODO NH: We can implement this method if the XML is the result of a serialization in XML
 			throw new NotSupportedException(); //TODO: is this right??
 		}
 
 		[Serializable]
 		public sealed class ObjectTypeCacheEntry
 		{
-			public System.Type clazz;
-			public object id;
-
-			public ObjectTypeCacheEntry(System.Type clazz, object id)
+			internal string entityName;
+			internal object id;
+			internal ObjectTypeCacheEntry(string entityName, object id)
 			{
-				this.clazz = clazz;
+				this.entityName = entityName;
 				this.id = id;
 			}
 		}
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			ObjectTypeCacheEntry e = (ObjectTypeCacheEntry) cached;
-			return (cached == null) ? null : session.InternalLoad(e.clazz.FullName, e.id, false, false);
+			ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
+			return (e == null) ? null : session.InternalLoad(e.entityName, e.id, false, false);
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return (value == null) ?
-			       null :
-			       new ObjectTypeCacheEntry(
-			       	NHibernateProxyHelper.GuessClass(value),
-			       	session.GetContextEntityIdentifier(value));
+			return value == null ? null : 
+				new ObjectTypeCacheEntry(session.BestGuessEntityName(value), 
+				ForeignKeys.GetEntityIdentifierIfNotUnsaved(session.BestGuessEntityName(value), value, session));
 		}
 
 		public override object Replace(object original, object current, ISessionImplementor session, object owner,
@@ -281,12 +231,12 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public bool IsMethodOf(MethodInfo method)
+		public virtual bool IsEmbeddedInXML
 		{
-			return false;
+			get { return false; }
 		}
 
-		private static readonly string[] PROPERTY_NAMES = new string[] {"class", "id"};
+		private static readonly string[] PROPERTY_NAMES = new string[] { "class", "id" };
 
 		public string[] PropertyNames
 		{
@@ -295,27 +245,20 @@ namespace NHibernate.Type
 
 		public object GetPropertyValue(Object component, int i, ISessionImplementor session)
 		{
-			return (i == 0) ?
-			       NHibernateProxyHelper.GuessClass(component) :
-			       GetIdentifier(component, session);
+			return i == 0 ? session.BestGuessEntityName(component) : Id(component, session);
 		}
 
-		public object[] GetPropertyValues(Object component, ISessionImplementor session)
-		{
-			return new object[] { session.BestGuessEntityName(component), GetIdentifier(component, session) };
-		}
-
-		public object[] GetPropertyValues(object component, EntityMode entityMode)
+		public object[] GetPropertyValues(Object component, EntityMode entityMode)
 		{
 			throw new NotSupportedException();
 		}
 
-		public void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		public object[] GetPropertyValues(object component, ISessionImplementor session)
 		{
-			throw new NotSupportedException();
+			return new object[] { session.BestGuessEntityName(component), Id(component, session) };
 		}
 
-		private object GetIdentifier(object component, ISessionImplementor session)
+		private static object Id(object component, ISessionImplementor session)
 		{
 			try
 			{
@@ -332,7 +275,7 @@ namespace NHibernate.Type
 			get { return new IType[] {metaType, identifierType}; }
 		}
 
-		public void SetPropertyValues(object component, object[] values)
+		public void SetPropertyValues(object component, object[] values, EntityMode entityMode)
 		{
 			throw new NotSupportedException();
 		}
@@ -374,11 +317,6 @@ namespace NHibernate.Type
 			throw new InvalidOperationException("any types do not have unique referenced columns");
 		}
 
-		public System.Type GetAssociatedClass(ISessionFactoryImplementor factory)
-		{
-			throw new InvalidOperationException("any types do not have a unique referenced persister");
-		}
-
 		public string GetAssociatedEntityName(ISessionFactoryImplementor factory)
 		{
 			throw new InvalidOperationException("any types do not have a unique referenced persister");
@@ -394,11 +332,6 @@ namespace NHibernate.Type
 			get { return null; }
 		}
 
-		public override bool Equals(object obj)
-		{
-			return this == obj;
-		}
-
 		public override int GetHashCode()
 		{
 			return 1; // Originally: System.identityHashCode(this);
@@ -409,55 +342,23 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override bool IsDirty(object old, object current, ISessionImplementor session)
-		{
-			if (current == null)
-			{
-				return old != null;
-			}
-
-			if (old == null)
-			{
-				return true;
-			}
-
-			return (NHibernateProxyHelper.GetClassWithoutInitializingProxy(old) != NHibernateProxyHelper.GuessClass(current)) ||
-				   identifierType.IsDirty(GetIdentifier(old, session), GetIdentifier(current, session), session);
-		}
-
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			if (current == null)
-			{
-				return old != null;
-			}
-			
-			if (old == null)
-			{
-				return true;
-			}
-
-			bool[] idcheckable = new bool[checkable.Length - 1];
-			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
-			return (checkable[0] && NHibernateProxyHelper.GetClassWithoutInitializingProxy(old) != NHibernateProxyHelper.GuessClass(current)) ||
-				   identifierType.IsDirty(GetIdentifier(old, session), GetIdentifier(current, session), idcheckable, session);
+			//TODO!!!
+			return IsDirty(old, current, session);
 		}
 
 		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			if (current == null)
-			{
 				return old != null;
-			}
 			if (old == null)
-			{
-				return true;
-			}
-			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
+				return current != null;
+			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry)old;
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
-			return (checkable[0] && holder.clazz != NHibernateProxyHelper.GuessClass(current)) ||
-			       identifierType.IsModified(holder.id, GetIdentifier(current, session), idcheckable, session);
+			return (checkable[0] && !holder.entityName.Equals(session.BestGuessEntityName(current))) || 
+				identifierType.IsModified(holder.id, Id(current, session), idcheckable, session);
 		}
 
 		public bool[] PropertyNullability
@@ -470,9 +371,42 @@ namespace NHibernate.Type
 			throw new NotSupportedException();
 		}
 
-		public bool IsEmbeddedInXML
+		public override int Compare(object x, object y, EntityMode? entityMode)
 		{
-			get { return false; }
+			return 0; //TODO: entities CAN be compared, by PK and entity name, fix this!
+		}
+
+		public virtual bool IsMethodOf(MethodInfo method)
+		{
+			return false;
+		}
+
+		public override bool IsSame(object x, object y, EntityMode entityMode)
+		{
+			return x == y;
+		}
+
+		public bool ReferenceToPrimaryKey
+		{
+			get { return true; }
+		}
+
+		private object ResolveAny(string entityName, object id, ISessionImplementor session)
+		{
+			return entityName == null || id == null ? null : session.InternalLoad(entityName, id, false, false);
+		}
+
+		public override void SetToXMLNode(XmlNode xml, object value, ISessionFactoryImplementor factory)
+		{
+			throw new NotSupportedException("any types cannot be stringified");
+		}
+
+		public override bool[] ToColumnNullness(object value, IMapping mapping)
+		{
+			bool[] result = new bool[GetColumnSpan(mapping)];
+			if (value != null)
+				ArrayHelper.Fill(result, true);
+			return result;
 		}
 
 	}

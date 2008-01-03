@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Reflection;
+using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Tuple;
@@ -13,19 +14,18 @@ namespace NHibernate.Type
 	[Serializable]
 	public class ComponentType : AbstractType, IAbstractComponentType
 	{
-		private readonly System.Type componentClass;
 		private readonly IType[] propertyTypes;
 		private readonly string[] propertyNames;
 		private readonly bool[] propertyNullability;
 		private readonly int propertySpan;
 		private readonly Cascades.CascadeStyle[] cascade;
 		private readonly FetchMode?[] joinedFetch;
-		private bool isKey;
+		private readonly bool isKey;
 		protected internal EntityModeToTuplizerMapping tuplizerMapping;
 
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			//not called at runtime so doesn't matter if its slow :)
+			//Not called at runtime so doesn't matter if its slow :)
 			SqlType[] sqlTypes = new SqlType[GetColumnSpan(mapping)];
 			int n = 0;
 			for (int i = 0; i < propertySpan; i++)
@@ -51,7 +51,7 @@ namespace NHibernate.Type
 
 		public ComponentType(ComponentMetamodel metamodel)
 		{
-			// "re-flatting" metamodel
+			// for now, just "re-flatten" the metamodel since this is temporary stuff anyway (HHH-1907)
 			isKey = metamodel.IsKey;
 			propertySpan = metamodel.PropertySpan;
 			propertyNames = new string[propertySpan];
@@ -71,7 +71,6 @@ namespace NHibernate.Type
 			}
 
 			tuplizerMapping = metamodel.TuplizerMapping;
-			componentClass = tuplizerMapping.GetTuplizer(EntityMode.Poco).MappedClass;
 		}
 
 		/// <summary></summary>
@@ -95,55 +94,29 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
-			get { return componentClass; }
+			get { return tuplizerMapping.GetTuplizer(EntityMode.Poco).MappedClass; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
+		public override int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
-
-			if (x == y)
-			{
-				return true;
-			}
-			if (x == null || y == null)
-			{
-				return false;
-			}
-			object[] xvalues = GetPropertyValues(x);
-			object[] yvalues = GetPropertyValues(y);
-			for (int i = 0; i < propertySpan; i++)
-			{
-				if (!propertyTypes[i].Equals(xvalues[i], yvalues[i]))
-				{
-					return false;
-				}
-			}
-			return true;
+			return GetHashCode(x, entityMode);
 		}
 
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		public override int GetHashCode(object x, EntityMode entityMode)
 		{
+			int result = 17;
+			object[] values = GetPropertyValues(x, entityMode);
 			unchecked
 			{
-				int result = 17;
-				object[] values = GetPropertyValues(x);
 				for (int i = 0; i < propertySpan; i++)
 				{
 					object y = values[i];
 					result *= 37;
 					if (y != null)
-					{
-						result += propertyTypes[i].GetHashCode(y, factory);
-					}
+						result += propertyTypes[i].GetHashCode(y, entityMode);
 				}
-				return result;
 			}
+			return result;
 		}
 
 		public override bool IsDirty(object x, object y, ISessionImplementor session)
@@ -156,8 +129,9 @@ namespace NHibernate.Type
 			{
 				return true;
 			}
-			object[] xvalues = GetPropertyValues(x);
-			object[] yvalues = GetPropertyValues(y);
+			EntityMode entityMode = session.EntityMode;
+			object[] xvalues = GetPropertyValues(x, entityMode);
+			object[] yvalues = GetPropertyValues(y, entityMode);
 			for (int i = 0; i < xvalues.Length; i++)
 			{
 				if (propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session))
@@ -178,9 +152,9 @@ namespace NHibernate.Type
 			{
 				return true;
 			}
-
-			object[] xvalues = GetPropertyValues(x);
-			object[] yvalues = GetPropertyValues(y);
+			EntityMode entityMode = session.EntityMode;
+			object[] xvalues = GetPropertyValues(x, entityMode);
+			object[] yvalues = GetPropertyValues(y, entityMode);
 			int loc = 0;
 			for (int i = 0; i < xvalues.Length; i++)
 			{
@@ -212,38 +186,6 @@ namespace NHibernate.Type
 		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
-
-			/*
-			int begin = 0;
-			bool notNull = false;
-			object[ ] values = new object[propertySpan];
-			for( int i = 0; i < propertySpan; i++ )
-			{
-				int length = propertyTypes[ i ].GetColumnSpan( session.Factory );
-				string[ ] range = ArrayHelper.Slice( names, begin, length );
-				object val = propertyTypes[ i ].NullSafeGet( rs, range, session, owner );
-				if( val != null )
-				{
-					notNull = true;
-				}
-				values[ i ] = val;
-				begin += length;
-			}
-
-			if( notNull )
-			{
-				object result = Instantiate( owner, session );
-				for( int i = 0; i < propertySpan; i++ )
-				{
-					setters[ i ].Set( result, values[ i ] );
-				}
-				return result;
-			}
-			else
-			{
-				return null;
-			}
-			*/
 		}
 
 		/// <summary>
@@ -255,7 +197,7 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		public override void NullSafeSet(IDbCommand st, object value, int begin, ISessionImplementor session)
 		{
-			object[] subvalues = NullSafeGetValues(value);
+			object[] subvalues = NullSafeGetValues(value, session.EntityMode);
 
 			for (int i = 0; i < propertySpan; i++)
 			{
@@ -266,37 +208,36 @@ namespace NHibernate.Type
 
 		public override void NullSafeSet(IDbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
 		{
-			object[] subvalues = NullSafeGetValues(value);
+			object[] subvalues = NullSafeGetValues(value, session.EntityMode);
 
-			int sqlParamIndex = begin;
 			int loc = 0;
 			for (int i = 0; i < propertySpan; i++)
 			{
 				int len = propertyTypes[i].GetColumnSpan(session.Factory);
 				if (len == 0)
 				{
-					// noop
+					//noop
 				}
 				else if (len == 1)
 				{
 					if (settable[loc])
 					{
-						propertyTypes[i].NullSafeSet(st, subvalues[i], sqlParamIndex, session);
-						sqlParamIndex++;
+						propertyTypes[i].NullSafeSet(st, subvalues[i], begin, session);
+						begin++;
 					}
 				}
 				else
 				{
 					bool[] subsettable = new bool[len];
 					Array.Copy(settable, loc, subsettable, 0, len);
-					propertyTypes[i].NullSafeSet(st, subvalues[i], sqlParamIndex, subsettable, session);
-					sqlParamIndex += ArrayHelper.CountTrue(subsettable);
+					propertyTypes[i].NullSafeSet(st, subvalues[i], begin, subsettable, session);
+					begin += ArrayHelper.CountTrue(subsettable);
 				}
 				loc += len;
 			}
 		}
 
-		private object[] NullSafeGetValues(object value)
+		private object[] NullSafeGetValues(object value, EntityMode entityMode)
 		{
 			if (value == null)
 			{
@@ -304,71 +245,38 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return GetPropertyValues(value);
+				return GetPropertyValues(value, entityMode);
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="i"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
+		public object GetPropertyValue(object component, int i, EntityMode entityMode)
+		{
+			return tuplizerMapping.GetTuplizer(entityMode).GetPropertyValue(component, i);
+		}
+
 		public object GetPropertyValue(object component, int i, ISessionImplementor session)
 		{
-			return GetPropertyValue(component, i);
+			return GetPropertyValue(component, i, session.EntityMode);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public object GetPropertyValue(object component, int i)
+		public object[] GetPropertyValues(object component, EntityMode entityMode)
 		{
-			return tuplizerMapping.GetTuplizer(EntityMode.Poco).GetPropertyValue(component, i);
+			return tuplizerMapping.GetTuplizer(entityMode).GetPropertyValues(component);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public object[] GetPropertyValues(object component, ISessionImplementor session)
 		{
-			return GetPropertyValues(component);
+			return GetPropertyValues(component, session.EntityMode);
 		}
 
-		/// <remarks>
-		/// Use the access optimizer if available
-		/// </remarks>
-		public object[] GetPropertyValues(object component)
+		public virtual void SetPropertyValues(object component, object[] values, EntityMode entityMode)
 		{
-			return tuplizerMapping.GetTuplizer(EntityMode.Poco).GetPropertyValues(component);
-		}
-
-		/// <remarks>
-		/// Use the access optimizer if available
-		/// </remarks>
-		public void SetPropertyValues(object component, object[] values)
-		{
-			tuplizerMapping.GetTuplizer(EntityMode.Poco).SetPropertyValues(component, values);
+			tuplizerMapping.GetTuplizer(entityMode).SetPropertyValues(component, values);
 		}
 
 		/// <summary></summary>
@@ -380,7 +288,7 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		public override string Name
 		{
-			get { return componentClass.Name; }
+			get { return "component" + ArrayHelper.ToString(propertyNames); }
 		}
 
 		/// <summary>
@@ -396,24 +304,17 @@ namespace NHibernate.Type
 				return "null";
 			}
 			IDictionary result = new Hashtable();
-			object[] values = GetPropertyValues(value);
-
+			EntityMode? entityMode = tuplizerMapping.GuessEntityMode(value);
+			if (!entityMode.HasValue)
+			{
+				throw new InvalidCastException(value.GetType().FullName);
+			}
+			object[] values = GetPropertyValues(value, entityMode.Value);
 			for (int i = 0; i < propertyTypes.Length; i++)
 			{
 				result[propertyNames[i]] = propertyTypes[i].ToLoggableString(values[i], factory);
 			}
-
 			return StringHelper.Unqualify(Name) + CollectionPrinter.ToString(result);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		public override object FromString(string xml)
-		{
-			throw new NotSupportedException();
 		}
 
 		/// <summary></summary>
@@ -422,26 +323,29 @@ namespace NHibernate.Type
 			get { return propertyNames; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <returns></returns>
-		public override object DeepCopy(object component)
+		public override object DeepCopy(object component, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
 			if (component == null)
 			{
 				return null;
 			}
 
-			object[] values = GetPropertyValues(component);
+			object[] values = GetPropertyValues(component, entityMode);
 			for (int i = 0; i < propertySpan; i++)
 			{
-				values[i] = propertyTypes[i].DeepCopy(values[i]);
+				values[i] = propertyTypes[i].DeepCopy(values[i], entityMode, factory);
 			}
 
-			object result = Instantiate();
-			SetPropertyValues(result, values);
+			object result = Instantiate(entityMode);
+			SetPropertyValues(result, values, entityMode);
+
+			//not absolutely necessary, but helps for some
+			//equals()/hashCode() implementations
+			IComponentTuplizer ct = (IComponentTuplizer)tuplizerMapping.GetTuplizer(entityMode);
+			if (ct.HasParentProperty)
+			{
+				ct.SetParent(result, ct.GetParent(component), factory);
+			}
 
 			return result;
 		}
@@ -450,65 +354,39 @@ namespace NHibernate.Type
 		                               IDictionary copiedAlready)
 		{
 			if (original == null)
-			{
 				return null;
-			}
-
-			if (original == target)
-			{
-				return target;
-			}
 
 			object result = target ?? Instantiate(owner, session);
 
-			object[] values = TypeFactory.Replace(
-				GetPropertyValues(original), GetPropertyValues(result),
-				propertyTypes, session, owner, copiedAlready);
+			EntityMode entityMode = session.EntityMode;
+			object[] values = TypeFactory.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copiedAlready);
 
-			SetPropertyValues(result, values);
+			SetPropertyValues(result, values, entityMode);
 			return result;
 		}
 
 		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			if (original == null)
-			{
 				return null;
-			}
-			//if ( original == target ) return target;
 
 			object result = target ?? Instantiate(owner, session);
 
-			object[] values = TypeFactory.Replace(GetPropertyValues(original), GetPropertyValues(result), 
-				propertyTypes, session, owner, copyCache, foreignKeyDirection);
+			EntityMode entityMode = session.EntityMode;
+			object[] values = TypeFactory.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copyCache, foreignKeyDirection);
 
-			SetPropertyValues(result, values);
+			SetPropertyValues(result, values, entityMode);
 			return result;
 		}
 
-		/// <remarks>
-		/// This method does not populate the component parent
-		/// </remarks>
-		public object Instantiate()
-		{
-			try
-			{
-				return Instantiate(EntityMode.Poco);
-			}
-			catch (Exception e)
-			{
-				throw new InstantiationException("Could not instantiate component: ", e, componentClass);
-			}
-		}
-
+		/// <summary> This method does not populate the component parent</summary>
 		public object Instantiate(EntityMode entityMode)
 		{
 			return tuplizerMapping.GetTuplizer(entityMode).Instantiate();
 		}
 
-		public object Instantiate(object parent, ISessionImplementor session)
+		public virtual object Instantiate(object parent, ISessionImplementor session)
 		{
-
 			object result = Instantiate(session.EntityMode);
 
 			IComponentTuplizer ct = (IComponentTuplizer)tuplizerMapping.GetTuplizer(session.EntityMode);
@@ -544,7 +422,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				object[] values = GetPropertyValues(value);
+				object[] values = GetPropertyValues(value, session.EntityMode);
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
 					values[i] = propertyTypes[i].Disassemble(values[i], session, owner);
@@ -553,13 +431,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object Assemble(object obj, ISessionImplementor session, object owner)
 		{
 			if (obj == null)
@@ -568,7 +439,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				object[] values = (object[])obj;
+				object[] values = (object[]) obj;
 				object[] assembled = new object[values.Length];
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
@@ -580,40 +451,16 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary></summary>
-		public override bool HasNiceEquals
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public FetchMode GetFetchMode(int i)
 		{
 			return joinedFetch[i].GetValueOrDefault();
 		}
 
-		public bool IsEmbedded
+		public virtual bool IsEmbedded
 		{
 			get { return false; }
 		}
 
-		public bool IsMethodOf(MethodInfo method)
-		{
-			return false;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="names"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			int begin = 0;
@@ -624,7 +471,7 @@ namespace NHibernate.Type
 				int length = propertyTypes[i].GetColumnSpan(session.Factory);
 				string[] range = ArrayHelper.Slice(names, begin, length); //cache this
 				object val = propertyTypes[i].Hydrate(rs, range, session, owner);
-				if(val==null)
+				if (val == null)
 				{
 					if (isKey)
 					{
@@ -639,7 +486,7 @@ namespace NHibernate.Type
 				begin += length;
 			}
 
-			if (componentClass.IsValueType)
+			if (ReturnedClass.IsValueType)
 				return values;
 			else
 				return notNull ? values : null;
@@ -650,13 +497,13 @@ namespace NHibernate.Type
 			if (value != null)
 			{
 				object result = Instantiate(owner, session);
-				object[] values = (object[]) value;
+				object[] values = (object[])value;
 				object[] resolvedValues = new object[values.Length]; //only really need new array during semiresolve!
 				for (int i = 0; i < values.Length; i++)
 				{
 					resolvedValues[i] = propertyTypes[i].ResolveIdentifier(values[i], session, owner);
 				}
-				SetPropertyValues(result, resolvedValues);
+				SetPropertyValues(result, resolvedValues, session.EntityMode);
 				return result;
 			}
 			else
@@ -667,6 +514,8 @@ namespace NHibernate.Type
 
 		public override object SemiResolve(object value, ISessionImplementor session, object owner)
 		{
+			//note that this implementation is kinda broken
+			//for components with many-to-one associations
 			return ResolveIdentifier(value, session, owner);
 		}
 
@@ -702,15 +551,125 @@ namespace NHibernate.Type
 			get { return propertyNullability; }
 		}
 
-		public virtual object[] GetPropertyValues(object component, EntityMode entityMode)
+		public override int Compare(object x, object y, EntityMode? entityMode)
 		{
-			return tuplizerMapping.GetTuplizer(entityMode).GetPropertyValues(component);
+			if (x == y)
+			{
+				return 0;
+			}
+			object[] xvalues = GetPropertyValues(x, entityMode.GetValueOrDefault());
+			object[] yvalues = GetPropertyValues(y, entityMode.GetValueOrDefault());
+			for (int i = 0; i < propertySpan; i++)
+			{
+				int propertyCompare = propertyTypes[i].Compare(xvalues[i], yvalues[i], entityMode);
+				if (propertyCompare != 0)
+					return propertyCompare;
+			}
+			return 0;
 		}
 
-		public virtual void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		public override object FromXMLNode(XmlNode xml, IMapping factory)
 		{
-			tuplizerMapping.GetTuplizer(entityMode).SetPropertyValues(component, values);
+			return xml;
 		}
 
+		public override bool IsEqual(object x, object y, EntityMode entityMode)
+		{
+			if (x == y)
+			{
+				return true;
+			}
+			if (x == null || y == null)
+			{
+				return false;
+			}
+			object[] xvalues = GetPropertyValues(x, entityMode);
+			object[] yvalues = GetPropertyValues(y, entityMode);
+			for (int i = 0; i < propertySpan; i++)
+			{
+				if (!propertyTypes[i].IsEqual(xvalues[i], yvalues[i], entityMode))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public override bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
+		{
+			if (x == y)
+			{
+				return true;
+			}
+			if (x == null || y == null)
+			{
+				return false;
+			}
+			object[] xvalues = GetPropertyValues(x, entityMode);
+			object[] yvalues = GetPropertyValues(y, entityMode);
+			for (int i = 0; i < propertySpan; i++)
+			{
+				if (!propertyTypes[i].IsEqual(xvalues[i], yvalues[i], entityMode, factory))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public virtual bool IsMethodOf(MethodInfo method)
+		{
+			return false;
+		}
+
+		public override bool IsSame(object x, object y, EntityMode entityMode)
+		{
+			if (x == y)
+			{
+				return true;
+			}
+			if (x == null || y == null)
+			{
+				return false;
+			}
+			object[] xvalues = GetPropertyValues(x, entityMode);
+			object[] yvalues = GetPropertyValues(y, entityMode);
+			for (int i = 0; i < propertySpan; i++)
+			{
+				if (!propertyTypes[i].IsSame(xvalues[i], yvalues[i], entityMode))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
+		{
+			ReplaceNode(node, (XmlNode)value);
+		}
+
+		public override bool[] ToColumnNullness(object value, IMapping mapping)
+		{
+			bool[] result = new bool[GetColumnSpan(mapping)];
+			if (value == null)
+			{
+				return result;
+			}
+			object[] values = GetPropertyValues(value, EntityMode.Poco);
+			int loc = 0;
+			for (int i = 0; i < propertyTypes.Length; i++)
+			{
+				bool[] propertyNullness = propertyTypes[i].ToColumnNullness(values[i], mapping);
+				Array.Copy(propertyNullness, 0, result, loc, propertyNullness.Length);
+				loc += propertyNullness.Length;
+			}
+			return result;
+		}
+
+		public override bool IsXMLElement
+		{
+			get { return true; }
+		}
 	}
 }

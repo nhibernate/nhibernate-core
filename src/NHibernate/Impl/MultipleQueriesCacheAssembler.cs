@@ -32,7 +32,7 @@ namespace NHibernate.Impl
 					}
 					else
 					{
-						singleQueryCached.Add(TypeFactory.Disassemble((object[])objToCache, assemblers, session));
+						singleQueryCached.Add(TypeFactory.Disassemble((object[]) objToCache, assemblers, null, session, null));
 					}
 				}
 				cacheable.Add(singleQueryCached);

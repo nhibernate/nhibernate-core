@@ -304,32 +304,10 @@ namespace NHibernate.Mapping
 		{
 			// TODO : temporary initial step towards HHH-1907
 			ComponentMetamodel metamodel = new ComponentMetamodel(this);
-			if(IsDynamic)
+			if (IsEmbedded)
 			{
-				// TODO NH: Remove this block when tuplizer is full working
-				int span = PropertySpan;
-				string[] names = new string[span];
-				IType[] types = new IType[span];
-				bool[] nullabilities = new bool[span];
-				Engine.Cascades.CascadeStyle[] cascade = new Engine.Cascades.CascadeStyle[span];
-				FetchMode[] joinedFetch = new FetchMode[span];
-
-				int i = 0;
-				foreach (Property prop in PropertyIterator)
-				{
-					names[i] = prop.Name;
-					types[i] = prop.Type;
-					nullabilities[i] = prop.IsNullable;
-					cascade[i] = prop.CascadeStyle;
-					joinedFetch[i] = prop.Value.FetchMode;
-					i++;
-				}
-				return new DynamicComponentType(names, types, nullabilities, joinedFetch, cascade);
+				return new EmbeddedComponentType(metamodel);
 			}
-			//if (isEmbedded)
-			//{
-			//  return new EmbeddedComponentType(metamodel);
-			//}
 			else
 			{
 				return new ComponentType(metamodel);

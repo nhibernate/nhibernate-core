@@ -193,18 +193,23 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		bool HasIdentifierProperty { get; }
 
-		/// <summary>
-		/// Gets if the Type has a Property for the &lt;id&gt; or uses a &lt;composite-id&gt;
-		/// to store the id.
+		/// <summary> 
+		/// Determine whether detahced instances of this entity carry their own
+		/// identifier value.
 		/// </summary>
-		/// <returns><c>true if there is a Identifier Property or Composite Identifier.</c></returns>
-		bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier { get; }
+		/// <returns> 
+		/// True if either (1) <see cref="HasIdentifierProperty"/> or
+		/// (2) the identifier is an embedded composite identifier; false otherwise.
+		/// </returns>
+		/// <remarks>
+		/// The other option is the deperecated feature where users could supply
+		/// the id during session calls.
+		/// </remarks>
+		bool CanExtractIdOutOfEntity { get; }
 
 		/// <summary>
 		/// Get the identifier of an instance ( throw an exception if no identifier property)
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
 		object GetIdentifier(object obj);
 
 		/// <summary>

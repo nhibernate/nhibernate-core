@@ -32,7 +32,7 @@ namespace NHibernate.Mapping
 				}
 				else
 				{
-					return TypeFactory.Bag(Role, ReferencedPropertyName);
+					return TypeFactory.Bag(Role, ReferencedPropertyName, Embedded);
 				}
 			}
 		}

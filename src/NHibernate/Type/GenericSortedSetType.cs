@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class GenericSortedSetType<T> : GenericSetType<T>
 	{
-		private IComparer<T> comparer;
+		private readonly IComparer<T> comparer;
 
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericSortedSetType{T}"/> class for

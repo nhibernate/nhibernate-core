@@ -108,7 +108,7 @@ namespace NHibernate.Engine
 					Object defaultValue = versionGetter.Get(Instantiate(constructor));
 					// if the version of a newly instantiated object is not the same
 					// as the version seed value, use that as the unsaved-value
-					return versionType.Equals(versionType.Seed(null), defaultValue) ?
+					return versionType.IsEqual(versionType.Seed(null), defaultValue, EntityMode.Poco) ?
 					       VersionValue.VersionUndefined :
 					       new VersionValue(defaultValue);
 				}
@@ -134,7 +134,7 @@ namespace NHibernate.Engine
 				// NHibernate-specific
 				try
 				{
-					return new VersionValue(versionType.StringToObject(versionUnsavedValue));
+					return new VersionValue(versionType.FromStringValue(versionUnsavedValue));
 				}
 				catch (InvalidCastException ice)
 				{

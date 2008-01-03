@@ -4,6 +4,7 @@ using System.Data;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -26,11 +27,12 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">The <see cref="System.Type"/> of the element contained in the array.</param>
+		/// <param name="isEmbeddedInXML"></param>
 		/// <remarks>
 		/// This creates a bag that is non-generic.
 		/// </remarks>
-		public ArrayType(string role, string propertyRef, System.Type elementClass)
-			: base(role, propertyRef)
+		public ArrayType(string role, string propertyRef, System.Type elementClass, bool isEmbeddedInXML)
+			: base(role, propertyRef, isEmbeddedInXML)
 		{
 			this.elementClass = elementClass;
 			arrayClass = Array.CreateInstance(elementClass, 0).GetType();
@@ -44,13 +46,7 @@ namespace NHibernate.Type
 			get { return arrayClass; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="session"></param>
-		/// <param name="persister"></param>
-		/// <returns></returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return new PersistentArrayHolder(session, persister);
 		}
@@ -67,22 +63,9 @@ namespace NHibernate.Type
 			base.NullSafeSet(st, session.PersistenceContext.GetCollectionHolder(value), index, session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
-		public override ICollection GetElementsCollection(object collection)
+		public override IEnumerable GetElementsIterator(object collection)
 		{
-			return (Array) collection;
-		}
-
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
-		{
-			if (value == null)
-				return null;
-			IPersistenceContext pc = session.PersistenceContext;
-			return pc.GetCollectionEntry(pc.GetCollectionHolder(value)).LoadedKey;
+			return (Array)collection;
 		}
 
 		/// <summary>
@@ -140,6 +123,66 @@ namespace NHibernate.Type
 		public override object Instantiate()
 		{
 			throw new NotSupportedException("ArrayType.Instantiate()");
+		}
+
+		public override bool HasHolder(EntityMode entityMode)
+		{
+			return true;
+		}
+
+		public override object IndexOf(object collection, object element)
+		{
+			Array array = (Array) collection;
+			int length = array.Length;
+			for (int i = 0; i < length; i++)
+			{
+				//TODO: proxies!
+				if (array.GetValue(i) == element)
+					return i;
+			}
+			return null;
+		}
+
+		protected internal override bool InitializeImmediately(EntityMode entityMode)
+		{
+			return true;
+		}
+
+		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
+		{
+			Array org = (Array) original;
+			Array targ = (Array)target;
+			int length = org.Length;
+			if (length != targ.Length)
+			{
+				//note: this affects the return value!
+				target = InstantiateResult(original);
+			}
+
+			IType elemType = GetElementType(session.Factory);
+			for (int i = 0; i < length; i++)
+			{
+				targ.SetValue(elemType.Replace(org.GetValue(i), null, session, owner, copyCache), i);
+			}
+
+			return target;
+		}
+
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			if (value == null)
+			{
+				return "null";
+			}
+			Array array = (Array) value;
+			int length = array.Length;
+			IList list = new ArrayList(length);
+			IType elemType = GetElementType(factory);
+			for (int i = 0; i < length; i++)
+			{
+				list.Add(elemType.ToLoggableString(array.GetValue(i), factory));
+			}
+			return CollectionPrinter.ToString(list);
 		}
 	}
 }

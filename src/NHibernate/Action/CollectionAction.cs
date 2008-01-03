@@ -160,8 +160,7 @@ namespace NHibernate.Action
 			else
 			{
 				//then by fk
-				// TODO: H3.2 Different behaviour (Equals instead Compare)
-				return persister.KeyType.Equals(key, other.key) ? 0 : -1;
+				return persister.KeyType.Compare(key, other.key, EntityMode.Poco);
 			}
 		}
 

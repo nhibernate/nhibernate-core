@@ -24,9 +24,9 @@ namespace NHibernate.Test.TypesTest
 		{
 			BooleanType type = (BooleanType) NHibernateUtil.Boolean;
 
-			Assert.IsTrue(type.Equals(true, true));
-			Assert.IsTrue(type.Equals(false, false));
-			Assert.IsFalse(type.Equals(true, false));
+			Assert.IsTrue(type.IsEqual(true, true));
+			Assert.IsTrue(type.IsEqual(false, false));
+			Assert.IsFalse(type.IsEqual(true, false));
 		}
 
 		[Test]

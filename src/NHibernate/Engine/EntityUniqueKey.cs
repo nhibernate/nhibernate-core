@@ -18,11 +18,10 @@ namespace NHibernate.Engine
 		private readonly string uniqueKeyName;
 		private readonly object key;
 		private readonly IType keyType;
-		private readonly ISessionFactoryImplementor factory;
 		private readonly int hashCode;
+		private readonly EntityMode entityMode;
 
-		public EntityUniqueKey(string entityName, string uniqueKeyName, object semiResolvedKey, 
-			IType keyType, ISessionFactoryImplementor factory)
+		public EntityUniqueKey(string entityName, string uniqueKeyName, object semiResolvedKey, IType keyType, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
 			if (string.IsNullOrEmpty(entityName))
 				throw new ArgumentNullException("entityName");
@@ -36,15 +35,21 @@ namespace NHibernate.Engine
 			this.entityName = entityName;
 			this.uniqueKeyName = uniqueKeyName;
 			key = semiResolvedKey;
-			this.keyType = keyType;
-			this.factory = factory;			
+			this.keyType = keyType.GetSemiResolvedType(factory);
+			this.entityMode = entityMode;
+			hashCode = GenerateHashCode(factory);
+		}
+
+		public int GenerateHashCode(ISessionFactoryImplementor factory)
+		{
+			int result = 17;
 			unchecked
 			{
-				hashCode = 17;
-				hashCode = 37 * hashCode + this.entityName.GetHashCode();
-				hashCode = 37 * hashCode + this.uniqueKeyName.GetHashCode();
-				hashCode = 37 * hashCode + this.keyType.GetHashCode(key, this.factory);
+				result = 37 * result + entityName.GetHashCode();
+				result = 37 * result + uniqueKeyName.GetHashCode();
+				result = 37 * result + keyType.GetHashCode(key, entityMode, factory);
 			}
+			return result;
 		}
 
 		public string EntityName
@@ -75,10 +80,8 @@ namespace NHibernate.Engine
 
 		public bool Equals(EntityUniqueKey that)
 		{
-			return that == null ? false : 
-				that.EntityName.Equals(EntityName) && 
-				that.UniqueKeyName.Equals(UniqueKeyName) && 
-				keyType.Equals(that.Key, Key);
+			return that == null ? false :
+				that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) && keyType.IsEqual(that.key, key, entityMode);
 		}
 
 		public override string ToString()

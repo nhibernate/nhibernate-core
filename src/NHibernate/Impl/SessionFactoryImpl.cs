@@ -918,24 +918,14 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="objectClass"></param>
-		/// <returns></returns>
-		public IType GetIdentifierType(System.Type objectClass)
+		public IType GetIdentifierType(string className)
 		{
-			return GetEntityPersister(objectClass).IdentifierType;
+			return GetEntityPersister(className).IdentifierType;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="objectClass"></param>
-		/// <returns></returns>
-		public string GetIdentifierPropertyName(System.Type objectClass)
+		public string GetIdentifierPropertyName(string className)
 		{
-			return GetEntityPersister(objectClass).IdentifierPropertyName;
+			return GetEntityPersister(className).IdentifierPropertyName;
 		}
 
 		public IType[] GetReturnTypes(String queryString)
@@ -1210,9 +1200,9 @@ namespace NHibernate.Impl
 			get { return settings.MaximumFetchDepth; }
 		}
 
-		public IType GetPropertyType(System.Type persistentClass, string propertyName)
+		public IType GetReferencedPropertyType(string className, string propertyName)
 		{
-			return GetEntityPersister(persistentClass).GetPropertyType(propertyName);
+			return GetEntityPersister(className).GetPropertyType(propertyName);
 		}
 
 		/// <summary></summary>

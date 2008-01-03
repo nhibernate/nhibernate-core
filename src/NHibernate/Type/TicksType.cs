@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -11,16 +12,15 @@ namespace NHibernate.Type
 	/// that stores the DateTime using the Ticks property.
 	/// </summary>
 	/// <remarks>
-	/// This is the recommended way to "timestamp" a column.  The System.DateTime.Ticks 
-	/// is accurate to 100-nanosecond intervals. 
+	/// This is the recommended way to "timestamp" a column.  
+	/// The System.DateTime.Ticks is accurate to 100-nanosecond intervals. 
 	/// </remarks>
 	[Serializable]
 	public class TicksType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
-		internal TicksType() : base(SqlTypeFactory.Int64)
-		{
-		}
+		internal TicksType()
+			: base(SqlTypeFactory.Int64) {}
 
 		/// <summary>
 		/// 
@@ -58,8 +58,7 @@ namespace NHibernate.Type
 		/// <param name="index"></param>
 		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.Value = ((DateTime) value).Ticks;
+			((IDataParameter)st.Parameters[index]).Value = ((DateTime)value).Ticks;
 		}
 
 		/// <summary></summary>
@@ -68,52 +67,14 @@ namespace NHibernate.Type
 			get { return "Ticks"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="val"></param>
-		/// <returns></returns>
 		public override string ToString(object val)
 		{
-			return ((DateTime) val).Ticks.ToString();
+			return ((DateTime)val).Ticks.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
-			return new DateTime(long.Parse(xml));
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
-		{
-			if (x == y)
-			{
-				return true;
-			}
-			if (x == null || y == null)
-			{
-				return false;
-			}
-
-			long xTime = ((DateTime) x).Ticks;
-			long yTime = ((DateTime) y).Ticks;
-			return xTime == yTime;
-		}
-
-		/// <summary></summary>
-		public override bool HasNiceEquals
-		{
-			get { return true; }
+			return new DateTime(Int64.Parse(xml));
 		}
 
 		#region IVersionType Members
@@ -128,26 +89,31 @@ namespace NHibernate.Type
 			return DateTime.Now;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public object StringToObject(string xml)
 		{
-			return long.Parse(xml);
+			return Int64.Parse(xml);
 		}
 
 		public IComparer Comparator
 		{
-			get { return Comparer.DefaultInvariant; }
+			get { return Comparer<Int64>.Default; }
 		}
 
 		#endregion
 
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(DateTime); }
+		}
+
+		public override object DefaultValue
+		{
+			get { return DateTime.MinValue; }
+		}
+
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return '\'' + ((DateTime) value).Ticks.ToString() + '\'';
+			return '\'' + ((DateTime)value).Ticks.ToString() + '\'';
 		}
 	}
 }

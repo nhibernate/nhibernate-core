@@ -90,11 +90,15 @@ namespace NHibernate.Mapping
 			{
 				if (ColumnSpan > 0)
 				{
-					return new SpecialOneToOneType(ReflectHelper.ClassForName(ReferencedTypeName), foreignKeyType, referencedPropertyName, IsLazy, UnwrapProxy, entityName, propertyName);
+					return
+						new SpecialOneToOneType(ReferencedEntityName, foreignKeyType, referencedPropertyName, IsLazy, UnwrapProxy,
+						                        entityName, propertyName);
 				}
 				else
 				{
-					return TypeFactory.OneToOne(ReflectHelper.ClassForName(ReferencedTypeName), foreignKeyType, referencedPropertyName, IsLazy, propertyName);
+					return
+						TypeFactory.OneToOne(ReferencedEntityName, foreignKeyType, referencedPropertyName, IsLazy, UnwrapProxy, Embedded,
+						                     entityName, propertyName);
 				}
 			}
 		}

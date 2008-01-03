@@ -46,7 +46,7 @@ namespace NHibernate.Test.TypesTest
 			A lhs = A.One;
 			A rhs = A.One;
 
-			Assert.IsTrue(type.Equals(lhs, rhs));
+			Assert.IsTrue(type.IsEqual(lhs, rhs, EntityMode.Poco));
 		}
 
 		/// <summary>
@@ -61,7 +61,7 @@ namespace NHibernate.Test.TypesTest
 			A lhs = A.One;
 			B rhs = B.One;
 
-			Assert.IsFalse(type.Equals(lhs, rhs));
+			Assert.IsFalse(type.IsEqual(lhs, rhs, EntityMode.Poco));
 		}
 
 		[Test]
@@ -72,7 +72,7 @@ namespace NHibernate.Test.TypesTest
 			A lhs = A.One;
 			A rhs = A.Two;
 
-			Assert.IsFalse(type.Equals(lhs, rhs));
+			Assert.IsFalse(type.IsEqual(lhs, rhs, EntityMode.Poco));
 		}
 
 		[Test]

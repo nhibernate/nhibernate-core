@@ -33,8 +33,8 @@ namespace NHibernate.Hql.Classic
 		private readonly string queryIdentifier;
 		private readonly string queryString;
 
-		private readonly IDictionary typeMap = new SequencedHashMap();
-		private readonly IDictionary collections = new SequencedHashMap();
+		private readonly IDictionary<string, string> typeMap = new LinkedHashMap<string, string>();
+		private readonly IDictionary<string, string> collections = new LinkedHashMap<string, string>();
 		private IList returnedTypes = new ArrayList();
 		private readonly IList fromTypes = new ArrayList();
 		private readonly IList scalarTypes = new ArrayList();
@@ -254,10 +254,10 @@ namespace NHibernate.Hql.Classic
 		/// <param name="superquery"></param>
 		protected internal void Compile(QueryTranslator superquery)
 		{
-			this.tokenReplacements = superquery.tokenReplacements;
-			this.superQuery = superquery;
-			this.shallowQuery = true;
-			this.enabledFilters = superquery.EnabledFilters;
+			tokenReplacements = superquery.tokenReplacements;
+			superQuery = superquery;
+			shallowQuery = true;
+			enabledFilters = superquery.EnabledFilters;
 
 			Compile();
 		}
@@ -271,8 +271,8 @@ namespace NHibernate.Hql.Classic
 		{
 			if (!Compiled)
 			{
-				this.tokenReplacements = replacements;
-				this.shallowQuery = scalar;
+				tokenReplacements = replacements;
+				shallowQuery = scalar;
 
 				Compile();
 			}
@@ -440,9 +440,10 @@ namespace NHibernate.Hql.Classic
 			return (superQuery == null) ? nameCount++ : superQuery.nameCount++;
 		}
 
-		internal string CreateNameFor(System.Type type)
+		internal string CreateNameFor(string type)
 		{
-			return StringHelper.GenerateAlias(type.Name, NextCount());
+			string name = StringHelper.UnqualifyEntityName(type); // NH: the default EntityName is the FullName of the class
+			return StringHelper.GenerateAlias(name, NextCount());
 		}
 
 		internal string CreateNameForCollection(string role)
@@ -450,10 +451,10 @@ namespace NHibernate.Hql.Classic
 			return StringHelper.GenerateAlias(role, NextCount());
 		}
 
-		internal System.Type GetType(string name)
+		internal string GetType(string name)
 		{
-			System.Type type = (System.Type) typeMap[name];
-			if (type == null && superQuery != null)
+			string type;
+			if (!typeMap.TryGetValue(name, out type) && superQuery != null)
 			{
 				type = superQuery.GetType(name);
 			}
@@ -462,8 +463,8 @@ namespace NHibernate.Hql.Classic
 
 		internal string GetRole(string name)
 		{
-			string role = (string) collections[name];
-			if (role == null && superQuery != null)
+			string role;
+			if (!collections.TryGetValue(name, out role) && superQuery != null)
 			{
 				role = superQuery.GetRole(name);
 			}
@@ -473,8 +474,8 @@ namespace NHibernate.Hql.Classic
 		internal bool IsName(string name)
 		{
 			return aliasNames.Contains(name) ||
-			       typeMap.Contains(name) ||
-			       collections.Contains(name) ||
+			       typeMap.ContainsKey(name) ||
+			       collections.ContainsKey(name) ||
 			       (superQuery != null && superQuery.IsName(name));
 		}
 
@@ -486,7 +487,7 @@ namespace NHibernate.Hql.Classic
 				return decorator;
 			}
 
-			System.Type type = GetType(name);
+			string type = GetType(name);
 			if (type == null)
 			{
 				string role = GetRole(name);
@@ -501,7 +502,7 @@ namespace NHibernate.Hql.Classic
 				IQueryable persister = GetPersister(type);
 				if (persister == null)
 				{
-					throw new QueryException(string.Format("persistent class not found: {0}", type.Name));
+					throw new QueryException(string.Format("Persistent class not found for entity named: {0}", type));
 				}
 				return persister;
 			}
@@ -519,11 +520,11 @@ namespace NHibernate.Hql.Classic
 
 		internal IQueryable GetPersisterForName(string name)
 		{
-			System.Type type = GetType(name);
+			string type = GetType(name);
 			IQueryable persister = GetPersister(type);
 			if (persister == null)
 			{
-				throw new QueryException("persistent class not found: " + type.Name);
+				throw new QueryException("Persistent class not found for entity named: " + type);
 			}
 
 			return persister;
@@ -534,7 +535,7 @@ namespace NHibernate.Hql.Classic
 			return SessionFactoryHelper.FindQueryableUsingImports(Factory, className);
 		}
 
-		internal IQueryable GetPersister(System.Type clazz)
+		internal IQueryable GetPersister(string clazz)
 		{
 			try
 			{
@@ -542,7 +543,7 @@ namespace NHibernate.Hql.Classic
 			}
 			catch (Exception)
 			{
-				throw new QueryException("persistent class not found: " + clazz.Name);
+				throw new QueryException("Persistent class not found for entity named: " + clazz);
 			}
 		}
 
@@ -562,17 +563,17 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
-		internal void AddType(string name, System.Type type)
+		internal void AddType(string name, string type)
 		{
-			typeMap.Add(name, type);
+			typeMap[name] = type;
 		}
 
 		internal void AddCollection(string name, string role)
 		{
-			collections.Add(name, role);
+			collections[name]= role;
 		}
 
-		internal void AddFrom(string name, System.Type type, JoinSequence joinSequence)
+		internal void AddFrom(string name, string type, JoinSequence joinSequence)
 		{
 			AddType(name, type);
 			AddFrom(name, joinSequence);
@@ -595,7 +596,7 @@ namespace NHibernate.Hql.Classic
 		{
 			JoinSequence joinSequence = new JoinSequence(Factory)
 				.SetRoot(classPersister, name);
-			AddFrom(name, classPersister.MappedClass, joinSequence);
+			AddFrom(name, classPersister.EntityName, joinSequence);
 		}
 
 		internal void AddSelectClass(string name)
@@ -889,15 +890,15 @@ namespace NHibernate.Hql.Classic
 				{
 					scalarTypes.Add(NHibernateUtil.Entity(persisters[k].MappedClass));
 
-					string[] names = persisters[k].IdentifierColumnNames;
-					for (int i = 0; i < names.Length; i++)
+					string[] _names = persisters[k].IdentifierColumnNames;
+					for (int i = 0; i < _names.Length; i++)
 					{
-						buf.Append(returnedTypes[k]).Append(StringHelper.Dot).Append(names[i]);
+						buf.Append(returnedTypes[k]).Append(StringHelper.Dot).Append(_names[i]);
 						if (!isSubselect)
 						{
 							buf.Append(" as ").Append(ScalarName(k, i));
 						}
-						if (i != names.Length - 1 || k != size - 1)
+						if (i != _names.Length - 1 || k != size - 1)
 						{
 							buf.Append(StringHelper.CommaSpace);
 						}
@@ -1168,11 +1169,11 @@ namespace NHibernate.Hql.Classic
 				JoinSequence join = (JoinSequence) de.Value;
 				join.SetSelector(new Selector(this));
 
-				if (typeMap.Contains(name))
+				if (typeMap.ContainsKey(name))
 				{
 					ojf.AddFragment(join.ToJoinFragment(enabledFilters, true));
 				}
-				else if (collections.Contains(name))
+				else if (collections.ContainsKey(name))
 				{
 					ojf.AddFragment(join.ToJoinFragment(enabledFilters, true));
 				}
@@ -1276,7 +1277,7 @@ namespace NHibernate.Hql.Classic
 			}
 			join.AddCondition(collectionName, keyColumnNames, " = ", true);
 			EntityType elmType = (EntityType) collectionElementType;
-			AddFrom(elementName, elmType.AssociatedClass, join);
+			AddFrom(elementName, elmType.GetAssociatedEntityName(), join);
 		}
 
 		internal string GetPathAlias(string path)
@@ -1438,23 +1439,23 @@ namespace NHibernate.Hql.Classic
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
 		                                               ISessionImplementor session)
 		{
-			IType[] returnTypes = ReturnTypes;
+			IType[] _returnTypes = ReturnTypes;
 			row = ToResultRow(row);
 			bool hasTransform = holderClass != null || resultTransformer != null;
 			if (hasScalars)
 			{
-				string[][] names = ScalarColumnNames;
-				int queryCols = returnTypes.Length;
+				string[][] _names = ScalarColumnNames;
+				int queryCols = _returnTypes.Length;
 				if (holderClass == null && queryCols == 1)
 				{
-					return returnTypes[0].NullSafeGet(rs, names[0], session, null);
+					return _returnTypes[0].NullSafeGet(rs, _names[0], session, null);
 				}
 				else
 				{
 					row = new object[queryCols];
 					for (int i = 0; i < queryCols; i++)
 					{
-						row[i] = returnTypes[i].NullSafeGet(rs, names[i], session, null);
+						row[i] = _returnTypes[i].NullSafeGet(rs, _names[i], session, null);
 					}
 					return row;
 				}

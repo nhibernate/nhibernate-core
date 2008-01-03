@@ -24,8 +24,8 @@ namespace NHibernate.Test.TypesTest
 		{
 			ByteType type = (ByteType) NHibernateUtil.Byte;
 
-			Assert.IsTrue(type.Equals((byte) 5, (byte) 5));
-			Assert.IsFalse(type.Equals((byte) 5, (byte) 6));
+			Assert.IsTrue(type.IsEqual((byte)5, (byte)5));
+			Assert.IsFalse(type.IsEqual((byte)5, (byte)6));
 		}
 
 		[Test]

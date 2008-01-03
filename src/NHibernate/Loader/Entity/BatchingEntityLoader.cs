@@ -32,9 +32,7 @@ namespace NHibernate.Loader.Entity
 			// get the right object from the list ... would it be easier to just call getEntity() ??
 			foreach (object obj in results)
 			{
-				bool equal = idType.Equals(
-					id,
-					session.GetContextEntityIdentifier(obj));
+				bool equal = idType.IsEqual(id, session.GetContextEntityIdentifier(obj), EntityMode.Poco);
 
 				if (equal)
 				{

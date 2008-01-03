@@ -406,25 +406,21 @@ namespace NHibernate.Event.Default
 
 				if (ce != null)
 				{
+
+					CacheEntry entry = (CacheEntry)ce;
 					// todo-events different behaviour
-					CacheEntry entry = (CacheEntry) ce;
-					if (persister.MappedClass.IsAssignableFrom(entry.SubclassType))
+					//CacheEntry entry = (CacheEntry)persister.CacheEntryStructure.destructure(ce, factory);
+
+					// Entity was found in second-level cache...
+
+					// NH: Different behavior (take a look to options.ExactPersister)
+					if (options.ExactPersister)
 					{
-						return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
+						if (entry.Subclass.Equals(persister.EntityName))
+							return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
 					}
 					else
-					{
-						if (log.IsDebugEnabled)
-						{
-							log.DebugFormat(
-								"load request for {0} found matching entity in context, but the matched entity was of an inconsistent return type ({1}); returning null",
-								MessageHelper.InfoString(persister, @event.EntityId), entry.SubclassType);
-						}
-						return null;
-					}
-					//CacheEntry entry = (CacheEntry)persister.CacheEntryStructure.destructure(ce, factory);
-					//// Entity was found in second-level cache...
-					//return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
+						return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
 				}
 			}
 
@@ -442,16 +438,15 @@ namespace NHibernate.Event.Default
 				log.Debug("assembling entity from second-level cache: " + MessageHelper.InfoString(persister, id, factory));
 			}
 
-			IEntityPersister subclassPersister = factory.GetEntityPersister(entry.SubclassType);
+			IEntityPersister subclassPersister = factory.GetEntityPersister(entry.Subclass);
 			object result = optionalObject ?? session.Instantiate(subclassPersister, id);
 
 			// make it circular-reference safe
-			// TODO H3.2 Different behaviour property lazyness  (version=null instead CacheEntry.Version)
-			TwoPhaseLoad.AddUninitializedCachedEntity(new EntityKey(id, subclassPersister), result, subclassPersister, LockMode.None, false, null, session);
+			TwoPhaseLoad.AddUninitializedCachedEntity(new EntityKey(id, subclassPersister), result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = entry.Assemble(result, id, subclassPersister, session.Interceptor, session); // intializes result by side-effect
-			TypeFactory.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values);
+			TypeFactory.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
 
 			object version = Versioning.GetVersion(values, subclassPersister);
 			if (log.IsDebugEnabled)
@@ -460,11 +455,9 @@ namespace NHibernate.Event.Default
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
-
-			// TODO H3.2 property lazynes
-			//session.AddEntry(result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister, false, entry.AreLazyPropertiesUnfetched());
-			//subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched(), session);
-			persistenceContext.AddEntry(result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister, false, false);
+			
+			persistenceContext.AddEntry(result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister, false, entry.AreLazyPropertiesUnfetched);
+			// TODO H3.2 subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
 
 			persistenceContext.InitializeNonLazyCollections();
 			// upgrade the lock if necessary:

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Reflection;
+using System.Xml;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -20,7 +21,7 @@ namespace NHibernate.Type
 
 		public CompositeCustomType(System.Type userTypeClass, IDictionary parameters)
 		{
-			name = userTypeClass.Name;
+			name = userTypeClass.FullName;
 
 			try
 			{
@@ -72,42 +73,23 @@ namespace NHibernate.Type
 			return GetPropertyValues(component, session.EntityMode);
 		}
 
-		public object[] GetPropertyValues(object component, EntityMode entityMode)
+		public virtual object[] GetPropertyValues(object component, EntityMode entityMode)
 		{
 			int len = Subtypes.Length;
 			object[] result = new object[len];
 			for (int i = 0; i < len; i++)
+			{
 				result[i] = GetPropertyValue(component, i);
-
+			}
 			return result;
 		}
 
-		public void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		public virtual void SetPropertyValues(object component, object[] values, EntityMode entityMode)
 		{
 			for (int i = 0; i < values.Length; i++)
 				userType.SetPropertyValue(component, i, values[i]);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="values"></param>
-		public virtual void SetPropertyValues(Object component, Object[] values)
-		{
-			for (int i = 0; i < values.Length; i++)
-			{
-				userType.SetPropertyValue(component, i, values[i]);
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="i"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public virtual object GetPropertyValue(object component, int i, ISessionImplementor session)
 		{
 			return GetPropertyValue(component, i);
@@ -128,12 +110,6 @@ namespace NHibernate.Type
 			return Cascades.CascadeStyle.StyleNone;
 		}
 
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public virtual FetchMode GetFetchMode(int i)
 		{
 			return FetchMode.Default;
@@ -142,11 +118,6 @@ namespace NHibernate.Type
 		public bool IsEmbedded
 		{
 			get { return false; }
-		}
-
-		public bool IsMethodOf(MethodInfo method)
-		{
-			return false;
 		}
 
 		/// <summary></summary>
@@ -168,12 +139,7 @@ namespace NHibernate.Type
 			return userType.Assemble(cached, session, owner);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public override object DeepCopy(object value)
+		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
 			return userType.DeepCopy(value);
 		}
@@ -181,22 +147,6 @@ namespace NHibernate.Type
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			return userType.Disassemble(value, session);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
-		{
-			return userType.Equals(x, y);
-		}
-
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
-		{
-			return userType.GetHashCode(x);
 		}
 
 		/// <summary>
@@ -225,12 +175,6 @@ namespace NHibernate.Type
 		public override System.Type ReturnedClass
 		{
 			get { return userType.ReturnedClass; }
-		}
-
-		/// <summary></summary>
-		public override bool HasNiceEquals
-		{
-			get { return false; }
 		}
 
 		/// <summary></summary>
@@ -270,18 +214,7 @@ namespace NHibernate.Type
 			userType.NullSafeSet(st, value, index, session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		/// <param name="session"></param>
-		public override void NullSafeSet(
-			IDbCommand cmd,
-			object value,
-			int index,
-			ISessionImplementor session)
+		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			userType.NullSafeSet(cmd, value, index, session);
 		}
@@ -318,16 +251,6 @@ namespace NHibernate.Type
 			return value == null ? "null" : value.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		public override object FromString(string xml)
-		{
-			throw new NotSupportedException();
-		}
-
 		public override bool Equals(object obj)
 		{
 			if (!base.Equals(obj))
@@ -358,5 +281,43 @@ namespace NHibernate.Type
 		{
 			return userType.Replace(original, current, session, owner);
 		}
+
+		public override object FromXMLNode(XmlNode xml, IMapping factory)
+		{
+			return xml;
+		}
+
+		public override bool IsEqual(object x, object y, EntityMode entityMode)
+		{
+			return userType.Equals(x, y);
+		}
+
+		public virtual bool IsMethodOf(MethodInfo method)
+		{
+			return false;
+		}
+
+		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
+		{
+			ReplaceNode(node, (XmlNode)value);
+		}
+
+		public override bool[] ToColumnNullness(object value, IMapping mapping)
+		{
+			bool[] result = new bool[GetColumnSpan(mapping)];
+			if (value == null)
+				return result;
+			object[] values = GetPropertyValues(value, EntityMode.Poco);
+			int loc = 0;
+			IType[] propertyTypes = Subtypes;
+			for (int i = 0; i < propertyTypes.Length; i++)
+			{
+				bool[] propertyNullness = propertyTypes[i].ToColumnNullness(values[i], mapping);
+				Array.Copy(propertyNullness, 0, result, loc, propertyNullness.Length);
+				loc += propertyNullness.Length;
+			}
+			return result;
+		}
+
 	}
 }

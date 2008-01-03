@@ -42,7 +42,7 @@ namespace NHibernate.Type
 			return Convert.ToBoolean(rs[name]);
 		}
 
-		public System.Type PrimitiveClass
+		public override System.Type PrimitiveClass
 		{
 			get { return typeof(bool); }
 		}
@@ -62,14 +62,19 @@ namespace NHibernate.Type
 			get { return "Boolean"; }
 		}
 
+		public override object DefaultValue
+		{
+			get { return false; }
+		}
+
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return dialect.ToBooleanValueString(((bool)value));
+			return dialect.ToBooleanValueString((bool)value);
 		}
 
 		public virtual object StringToObject(string xml)
 		{
-			return FromString(xml);
+			return FromStringValue(xml);
 		}
 
 		public override object FromStringValue(string xml)

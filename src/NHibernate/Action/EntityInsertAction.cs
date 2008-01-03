@@ -72,10 +72,11 @@ namespace NHibernate.Action
 
 			if (IsCachePutEnabled(persister))
 			{
+				CacheEntry ce = new CacheEntry(state, persister, false, version, Session, instance);
+				cacheEntry = ce;
 				// TODO H3.2 Different behaviour
 				//CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance), version, session, instance);
 				//cacheEntry = persister.CacheEntryStructure.structure(ce);
-				cacheEntry = new CacheEntry(instance, persister, Session);
 
 				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, Session.Factory);
 				bool put = persister.Cache.Insert(ck, cacheEntry, version);

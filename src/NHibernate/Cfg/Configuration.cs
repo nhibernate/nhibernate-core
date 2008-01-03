@@ -8,10 +8,12 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Cfg.XmlHbmBinding;
+using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -19,16 +21,12 @@ using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Mapping;
 using NHibernate.Proxy;
-using NHibernate.Proxy.Poco.Castle;
+using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
-	using Dialect;
-	using Tool.hbm2ddl;
-	using Iesi.Collections.Generic;
-
 	/// <summary>
 	/// Allows the application to specify properties and mapping documents to be used when creating
 	/// a <see cref="ISessionFactory" />.
@@ -70,7 +68,6 @@ namespace NHibernate.Cfg
 		private IDictionary<string, ISQLFunction> sqlFunctions;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
-		private System.Type proxyFactoryClass = typeof(CastleProxyFactory);
 		private MappingsQueue mappingsQueue;
 
 		private EventListeners eventListeners;
@@ -118,24 +115,24 @@ namespace NHibernate.Cfg
 				this.configuration = configuration;
 			}
 
-			private PersistentClass GetPersistentClass(System.Type type)
+			private PersistentClass GetPersistentClass(string className)
 			{
-				PersistentClass pc = configuration.classes[type.FullName];
+				PersistentClass pc = configuration.classes[className];
 				if (pc == null)
 				{
-					throw new MappingException("persistent class not known: " + type.FullName);
+					throw new MappingException("persistent class not known: " + className);
 				}
 				return pc;
 			}
 
-			public IType GetIdentifierType(System.Type persistentClass)
+			public IType GetIdentifierType(string className)
 			{
-				return GetPersistentClass(persistentClass).Identifier.Type;
+				return GetPersistentClass(className).Identifier.Type;
 			}
 
-			public string GetIdentifierPropertyName(System.Type persistentClass)
+			public string GetIdentifierPropertyName(string className)
 			{
-				PersistentClass pc = GetPersistentClass(persistentClass);
+				PersistentClass pc = GetPersistentClass(className);
 				if (!pc.HasIdentifierProperty)
 				{
 					return null;
@@ -143,14 +140,14 @@ namespace NHibernate.Cfg
 				return pc.IdentifierProperty.Name;
 			}
 
-			public IType GetPropertyType(System.Type persistentClass, string propertyName)
+			public IType GetReferencedPropertyType(string className, string propertyName)
 			{
-				PersistentClass pc = GetPersistentClass(persistentClass);
+				PersistentClass pc = GetPersistentClass(className);
 				NHibernate.Mapping.Property prop = pc.GetProperty(propertyName);
 
 				if (prop == null)
 				{
-					throw new MappingException("property not known: " + persistentClass.FullName + '.' + propertyName);
+					throw new MappingException("property not known: " + pc.MappedClass.FullName + '.' + propertyName);
 				}
 				return prop.Type;
 			}
@@ -409,7 +406,7 @@ namespace NHibernate.Cfg
 				XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.Document.NameTable);
 				namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
 
-				Dialect dialect = Dialect.GetDialect(properties);
+				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
 				Mappings mappings = CreateMappings();
 
 				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(doc.Document.DocumentElement);
@@ -640,7 +637,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for droping tables
 		/// </summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaExport" />
-		public string[] GenerateDropSchemaScript(Dialect dialect)
+		public string[] GenerateDropSchemaScript(Dialect.Dialect dialect)
 		{
 			SecondPassCompile();
 
@@ -695,7 +692,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for creating tables
 		/// </summary>
 		/// <param name="dialect"></param>
-		public string[] GenerateSchemaCreationScript(Dialect dialect)
+		public string[] GenerateSchemaCreationScript(Dialect.Dialect dialect)
 		{
 			SecondPassCompile();
 
@@ -1897,7 +1894,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for altering tables
 		///</summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
-		public String[] GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+		public String[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 
@@ -2004,7 +2001,7 @@ namespace NHibernate.Cfg
 			return ArrayHelper.ToStringArray(script);
 		}
 
-		private IEnumerable<IPersistentIdentifierGenerator> IterateGenerators(Dialect dialect)
+		private IEnumerable<IPersistentIdentifierGenerator> IterateGenerators(Dialect.Dialect dialect)
 		{
 			Dictionary<string, IPersistentIdentifierGenerator> generators =
 				new Dictionary<string, IPersistentIdentifierGenerator>();

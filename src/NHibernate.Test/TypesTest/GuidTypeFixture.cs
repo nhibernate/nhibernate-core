@@ -26,11 +26,11 @@ namespace NHibernate.Test.TypesTest
 
 			Guid lhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
 			Guid rhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
-			Assert.IsTrue(type.Equals(lhs, rhs));
+			Assert.IsTrue(type.IsEqual(lhs, rhs));
 
 			rhs = new Guid("{11234567-abcd-abcd-abcd-0123456789ab}");
 
-			Assert.IsFalse(type.Equals(lhs, rhs));
+			Assert.IsFalse(type.IsEqual(lhs, rhs));
 		}
 
 		[Test]

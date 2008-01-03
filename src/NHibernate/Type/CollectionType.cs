@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Xml;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
@@ -18,31 +20,31 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class CollectionType : AbstractType, IAssociationType
 	{
-		private static readonly object NotNullCollection = new object();
-		public static readonly object UnfetchedCollection = new object();
+		private static readonly object NotNullCollection = new object(); // place holder
+		public static readonly object UnfetchedCollection = new object(); // place holder
 
 		private readonly string role;
 		private readonly string foreignKeyPropertyName;
+		private readonly bool isEmbeddedInXML;
 
 		private static readonly SqlType[] NoSqlTypes = {};
-		private readonly bool isEmbeddedInXML;
 
 		/// <summary>
 		/// Initializes a new instance of a <see cref="CollectionType"/> class for
 		/// a specific role.
 		/// </summary>
 		/// <param name="role">The role the persistent collection is in.</param>
-		/// <param name="foreignKeyPropertyName">The name of the property in the
+		/// <param name="foreignKeyPropertyName">
+		/// The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		protected CollectionType(string role, string foreignKeyPropertyName)
-			: this(role, foreignKeyPropertyName, false) {} // TODO NH: Remove this ctor
-
-		public CollectionType(string role, string foreignKeyPropertyName, bool isEmbeddedInXML)
+		/// the primary key.
+		/// </param>
+		/// <param name="isEmbeddedInXML"></param>
+		protected CollectionType(string role, string foreignKeyPropertyName, bool isEmbeddedInXML)
 		{
 			this.role = role;
-			this.foreignKeyPropertyName = foreignKeyPropertyName;
 			this.isEmbeddedInXML = isEmbeddedInXML;
+			this.foreignKeyPropertyName = foreignKeyPropertyName;
 		}
 
 		public virtual string Role
@@ -55,28 +57,36 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override sealed bool Equals(object x, object y)
+		public override bool IsEqual(object x, object y, EntityMode entityMode)
 		{
-			return x == y ||
-			       (x is IPersistentCollection && ((IPersistentCollection) x).IsWrapper(y)) ||
-			       (y is IPersistentCollection && ((IPersistentCollection) y).IsWrapper(x));
+			return x == y || 
+				(x is IPersistentCollection && ((IPersistentCollection)x).IsWrapper(y)) || 
+				(y is IPersistentCollection && ((IPersistentCollection)y).IsWrapper(x));
 		}
 
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		public override int GetHashCode(object x, EntityMode entityMode)
 		{
 			throw new InvalidOperationException("cannot perform lookups on collections");
 		}
 
-		public abstract IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister);
+		/// <summary> 
+		/// Instantiate an uninitialized collection wrapper or holder. Callers MUST add the holder to the
+		/// persistence context! 
+		/// </summary>
+		/// <param name="session">The session from which the request is originating. </param>
+		/// <param name="persister">The underlying collection persister (metadata) </param>
+		/// <param name="key">The owner key. </param>
+		/// <returns> The instantiated collection. </returns>
+		public abstract IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key);
 
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			throw new AssertionFailure("bug in CollectionType");
+			return NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
 		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
-			return ResolveIdentifier(Hydrate(rs, name, session, owner), session, owner);
+			return ResolveIdentifier(null, session, owner);
 		}
 
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
@@ -104,54 +114,24 @@ namespace NHibernate.Type
 			{
 				return "null";
 			}
-
-			IType elemType = GetElementType(factory);
-			if (NHibernateUtil.IsInitialized(value))
+			else if (!NHibernateUtil.IsInitialized(value))
 			{
-				IList list = new ArrayList();
-				ICollection elements = GetElementsCollection(value);
-				foreach (object element in elements)
-				{
-					list.Add(elemType.ToLoggableString(element, factory));
-				}
-				return CollectionPrinter.ToString(list);
+				return "<uninitialized>";
 			}
 			else
 			{
-				return "uninitialized";
+				return RenderLoggableString(value, factory);
 			}
 		}
 
-		public override object FromString(string xml)
-		{
-			throw new NotSupportedException();
-		}
-
-
-		public override object DeepCopy(object value)
+		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}
 
 		public override string Name
 		{
-			get { return ReturnedClass.Name; }
-		}
-
-
-		/// <summary>
-		/// Returns a reference to the elements in the collection.  
-		/// </summary>
-		/// <param name="collection">The object that holds the ICollection.</param>
-		/// <returns>An ICollection of the Elements(classes) in the Collection.</returns>
-		/// <remarks>
-		/// By default the parameter <c>collection</c> is just cast to an ICollection.  Collections
-		/// such as Maps and Sets should override this so that the Elements are returned - not a
-		/// DictionaryEntry.
-		/// </remarks>
-		public virtual ICollection GetElementsCollection(object collection)
-		{
-			return ((ICollection) collection);
+			get { return ReturnedClass.FullName + '(' + Role + ')'; }
 		}
 
 		public override bool IsMutable
@@ -161,18 +141,36 @@ namespace NHibernate.Type
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return null;
+			//remember the uk value
+
+			//This solution would allow us to eliminate the owner arg to disassemble(), but
+			//what if the collection was null, and then later had elements added? seems unsafe
+			//session.getPersistenceContext().getCollectionEntry( (PersistentCollection) value ).getKey();
+
+			object key = GetKeyOfOwner(owner, session);
+			if (key == null)
+			{
+				return null;
+			}
+			else
+			{
+				return GetPersister(session).KeyType.Disassemble(key, session, owner);
+			}
 		}
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			//NH Different behavior
-			object id = session.GetContextEntityIdentifier(owner);
-			if (id == null)
+			//we must use the "remembered" uk value, since it is 
+			//not available from the EntityEntry during assembly
+			if (cached == null)
 			{
-				throw new AssertionFailure("owner id unknown when re-assembling collection reference");
+				return null;
 			}
-			return ResolveIdentifier(id, session, owner);
+			else
+			{
+				object key = GetPersister(session).KeyType.Assemble(cached, session, owner);
+				return ResolveKey(key, session, owner);
+			}
 		}
 
 		private bool IsOwnerVersioned(ISessionImplementor session)
@@ -180,6 +178,7 @@ namespace NHibernate.Type
 			return GetPersister(session).OwnerEntityPersister.IsVersioned;
 		}
 
+		// Get our underlying collection persister (using the session to access the factory). 
 		private ICollectionPersister GetPersister(ISessionImplementor session)
 		{
 			return session.Factory.GetCollectionPersister(role);
@@ -193,17 +192,12 @@ namespace NHibernate.Type
 			return IsOwnerVersioned(session) && base.IsDirty(old, current, session);
 		}
 
-		public override bool HasNiceEquals
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// Wraps a collection from System.Collections or Iesi.Collections inside one of the 
-		/// NHibernate collections.
-		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
-		/// <param name="collection">The unwrapped collection.</param>
+		/// <summary> 
+		/// Wrap the naked collection instance in a wrapper, or instantiate a
+		/// holder. Callers <b>MUST</b> add the holder to the persistence context!
+		///  </summary>
+		/// <param name="session">The session from which the request is originating. </param>
+		/// <param name="collection">The bare collection to be wrapped. </param>
 		/// <returns>
 		/// A subclass of <see cref="IPersistentCollection"/> that wraps the non NHibernate collection.
 		/// </returns>
@@ -223,12 +217,14 @@ namespace NHibernate.Type
 
 		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
-			return session.GetContextEntityIdentifier(owner);
+			// can't just return null here, since that would
+			// cause an owning component to become null
+			return NotNullCollection;
 		}
 
 		public override object ResolveIdentifier(object key, ISessionImplementor session, object owner)
 		{
-			return key == null ? null : ResolveKey(GetKeyOfOwner(owner, session), session, owner);
+			return ResolveKey(GetKeyOfOwner(owner, session), session, owner);
 		}
 
 		private object ResolveKey(object key, ISessionImplementor session, object owner)
@@ -242,11 +238,6 @@ namespace NHibernate.Type
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			EntityMode entityMode = session.EntityMode;
 
-			if (entityMode == EntityMode.Xml && !isEmbeddedInXML)
-			{
-				return UnfetchedCollection;
-			}
-
 			// check if collection is currently being loaded
 			IPersistentCollection collection = persistenceContext.LoadContexts.LocateLoadingCollection(persister, key);
 			if (collection == null)
@@ -256,20 +247,24 @@ namespace NHibernate.Type
 				if (collection == null)
 				{
 					// create a new collection wrapper, to be initialized later
-					collection = Instantiate(session, persister);
+					collection = Instantiate(session, persister, key);
 					collection.Owner = owner;
 
 					persistenceContext.AddUninitializedCollection(persister, collection, key);
 
-					// NH Different behavior
-					if (IsArrayType)
+					// some collections are not lazy:
+					if (InitializeImmediately(entityMode))
 					{
 						session.InitializeCollection(collection, false);
-						persistenceContext.AddCollectionHolder(collection);
 					}
 					else if (!persister.IsLazy)
 					{
 						persistenceContext.AddNonLazyCollection(collection);
+					}
+
+					if (HasHolder(entityMode))
+					{
+						session.PersistenceContext.AddCollectionHolder(collection);
 					}
 				}
 			}
@@ -289,7 +284,7 @@ namespace NHibernate.Type
 
 		public bool UseLHSPrimaryKey
 		{
-			get { return foreignKeyPropertyName == null; }
+			get { return string.IsNullOrEmpty(foreignKeyPropertyName); }
 		}
 
 		public IJoinable GetAssociatedJoinable(ISessionFactoryImplementor factory)
@@ -304,28 +299,10 @@ namespace NHibernate.Type
 			return GetAssociatedJoinable(factory).KeyColumnNames;
 		}
 
-		public System.Type GetAssociatedClass(ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				IQueryableCollection collectionPersister = (IQueryableCollection) factory.GetCollectionPersister(role);
-				if (!collectionPersister.ElementType.IsEntityType)
-				{
-					throw new MappingException(string.Format("collection was not an association: {0}", collectionPersister.Role));
-				}
-				return collectionPersister.ElementPersister.MappedClass;
-			}
-			catch (InvalidCastException ice)
-			{
-				throw new MappingException("collection role is not queryable " + role, ice);
-			}
-		}
-
 		public string GetAssociatedEntityName(ISessionFactoryImplementor factory)
 		{
 			try
 			{
-
 				IQueryableCollection collectionPersister = (IQueryableCollection)factory.GetCollectionPersister(role);
 
 				if (!collectionPersister.ElementType.IsEntityType)
@@ -340,7 +317,6 @@ namespace NHibernate.Type
 				throw new MappingException("collection role is not queryable " + role, cce);
 			}
 		}
-
 
 		public virtual object InstantiateResult(object original)
 		{
@@ -383,14 +359,30 @@ namespace NHibernate.Type
 		public virtual object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
 		                                      ISessionImplementor session)
 		{
+			// TODO: does not work for EntityMode.DOM4J yet!
 			object result = target;
 			Clear(result);
 
 			// copy elements into newly empty target collection
-			ICollectionPersister cp = session.Factory.GetCollectionPersister(role);
-			foreach (object obj in (IEnumerable) original)
+			IType elemType = GetElementType(session.Factory);
+			IEnumerable iter = (IEnumerable)original;
+			foreach (object obj in iter)
 			{
-				Add(result, CopyElement(cp, obj, session, owner, copyCache));
+				Add(result, elemType.Replace(obj, null, session, owner, copyCache));
+			}
+
+			// if the original is a PersistentCollection, and that original
+			// was not flagged as dirty, then reset the target's dirty flag
+			// here after the copy operation.
+			// One thing to be careful of here is a "bare" original collection
+			// in which case we should never ever ever reset the dirty flag
+			// on the target because we simply do not know...
+			IPersistentCollection originalPc = original as IPersistentCollection;
+			IPersistentCollection resultPc = result as IPersistentCollection;
+			if(originalPc != null && resultPc!=null)
+			{
+				if (!originalPc.IsDirty)
+					resultPc.ClearDirty();
 			}
 
 			return result;
@@ -403,10 +395,11 @@ namespace NHibernate.Type
 
 		public override string ToString()
 		{
-			return base.ToString() + " for " + Role;
+			return GetType().FullName + '(' + Role + ')';
 		}
 
-		// Methods added in NH
+
+		#region Methods added in NH
 
 		protected virtual void Clear(object collection)
 		{
@@ -422,11 +415,7 @@ namespace NHibernate.Type
 				+ GetType().FullName);
 		}
 
-		protected virtual object CopyElement(ICollectionPersister persister, object element, ISessionImplementor session,
-		                                     object owner, IDictionary copiedAlready)
-		{
-			return persister.ElementType.Replace(element, null, session, owner, copiedAlready);
-		}
+		#endregion
 
 		public string LHSPropertyName
 		{
@@ -448,6 +437,11 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
+		public bool IsEmbeddedInXML
+		{
+			get { return isEmbeddedInXML; }
+		}
+
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			return IsDirty(old, current, session);
@@ -467,11 +461,8 @@ namespace NHibernate.Type
 		{
 			EntityEntry entityEntry = session.PersistenceContext.GetEntry(owner);
 			if (entityEntry == null)
-			{
-				// This just handles a particular case of component
-				// projection, perhaps get rid of it and throw an exception
-				return null;
-			}
+				return null; // This just handles a particular case of component
+			// projection, perhaps get rid of it and throw an exception
 
 			if (foreignKeyPropertyName == null)
 			{
@@ -484,26 +475,34 @@ namespace NHibernate.Type
 				// later in the mapping document) - now, we could try and use e.getStatus()
 				// to decide to semiResolve(), trouble is that initializeEntity() reuses
 				// the same array for resolved and hydrated values
-				object id = entityEntry.GetLoadedValue(foreignKeyPropertyName);
+				object id;
+				if (entityEntry.LoadedState != null)
+				{
+					id = entityEntry.GetLoadedValue(foreignKeyPropertyName);
+				}
+				else
+				{
+					id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName);
+					//id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName, session.EntityMode);
+				}
 
 				// NOTE VERY HACKISH WORKAROUND!!
 				IType keyType = GetPersister(session).KeyType;
 				if (!keyType.ReturnedClass.IsInstanceOfType(id))
 				{
-					id = keyType.SemiResolve(
-						entityEntry.GetLoadedValue(foreignKeyPropertyName),
-						session,
-						owner
-						);
+					id = keyType.SemiResolve(entityEntry.GetLoadedValue(foreignKeyPropertyName), session, owner);
 				}
 
 				return id;
 			}
 		}
 
-		/// <summary>
-		/// Instantiate an empty instance of the "underlying" collection (not a wrapper)
+		/// <summary> 
+		/// Instantiate an empty instance of the "underlying" collection (not a wrapper),
+		/// but with the given anticipated size (i.e. accounting for initial capacity
+		/// and perhaps load factor).
 		/// </summary>
+		/// <returns> A newly instantiated collection to be wrapped. </returns>
 		public abstract object Instantiate();
 
 		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
@@ -511,9 +510,95 @@ namespace NHibernate.Type
 			return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
 		}
 
-		public bool IsEmbeddedInXML
+		public override object FromXMLNode(XmlNode xml, IMapping factory)
 		{
-			get { return isEmbeddedInXML; }
+			return xml;
+		}
+
+		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
+		{
+			if (isEmbeddedInXML)
+				ReplaceNode(node, (XmlNode)value);
+		}
+
+		public override bool[] ToColumnNullness(object value, IMapping mapping)
+		{
+			return ArrayHelper.EmptyBoolArray;
+		}
+
+		public override int Compare(object x, object y, EntityMode? entityMode)
+		{
+			return 0; // collections cannot be compared
+		}
+
+		public virtual bool Contains(object collection, object childObject, ISessionImplementor session)
+		{
+			// we do not have to worry about queued additions to uninitialized
+			// collections, since they can only occur for inverse collections!
+			IEnumerable elems = GetElementsIterator(collection, session);
+			foreach (object elem in elems)
+			{
+				object element = elem;
+				// worrying about proxies is perhaps a little bit of overkill here...
+				INHibernateProxy proxy = element as INHibernateProxy;
+				if (proxy != null)
+				{
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
+					if (!li.IsUninitialized)
+						element = li.GetImplementation();
+				}
+
+				if (element == childObject)
+					return true;				
+			}
+			return false;
+		}
+
+		/// <summary> 
+		/// Get an iterator over the element set of the collection, which may not yet be wrapped 
+		/// </summary>
+		/// <param name="collection">The collection to be iterated </param>
+		/// <param name="session">The session from which the request is originating. </param>
+		/// <returns> The iterator. </returns>
+		public virtual IEnumerable GetElementsIterator(object collection, ISessionImplementor session)
+		{
+			return GetElementsIterator(collection);
+		}
+
+		/// <summary> 
+		/// Get an iterator over the element set of the collection in POCO mode 
+		/// </summary>
+		/// <param name="collection">The collection to be iterated </param>
+		/// <returns> The iterator. </returns>
+		public virtual IEnumerable GetElementsIterator(object collection)
+		{
+			return ((IEnumerable)collection);
+		}
+
+		public virtual bool HasHolder(EntityMode entityMode)
+		{
+			return false;// entityMode == EntityMode.DOM4J;
+		}
+
+		protected internal virtual bool InitializeImmediately(EntityMode entityMode)
+		{
+			return false;// entityMode == EntityMode.DOM4J;
+		}
+
+		public virtual object IndexOf(object collection, object element)
+		{
+			throw new NotSupportedException("generic collections don't have indexes");
+		}
+
+		protected internal virtual string RenderLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			IList list = new ArrayList();
+			IType elemType = GetElementType(factory);
+			IEnumerable iter = GetElementsIterator(value);
+			foreach (object o in iter)
+				list.Add(elemType.ToLoggableString(o, factory));
+
+			return CollectionPrinter.ToString(list);
 		}
 	}
 }

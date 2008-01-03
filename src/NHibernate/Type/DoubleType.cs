@@ -62,14 +62,24 @@ namespace NHibernate.Type
 			get { return "Double"; }
 		}
 
-		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return value.ToString();
-		}
-
 		public override object FromStringValue(string xml)
 		{
 			return double.Parse(xml);
+		}
+
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(double); }
+		}
+
+		public override object DefaultValue
+		{
+			get { return 0D; }
+		}
+
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		{
+			return value.ToString();
 		}
 	}
 }

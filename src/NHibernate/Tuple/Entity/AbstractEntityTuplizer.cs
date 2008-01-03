@@ -123,7 +123,7 @@ namespace NHibernate.Tuple.Entity
 					else
 					{
 						ComponentType copier = (ComponentType)entityMetamodel.IdentifierProperty.Type;
-						id = copier.Instantiate();
+						id = copier.Instantiate(EntityMode);
 						copier.SetPropertyValues(id, identifierMapperType.GetPropertyValues(entity, EntityMode), EntityMode);
 					}
 				}
@@ -363,7 +363,7 @@ namespace NHibernate.Tuple.Entity
 				throw new MappingException("component property not found: " + basePropertyName);
 			}
 
-			object baseValue = type.GetPropertyValue(component, index);
+			object baseValue = type.GetPropertyValue(component, index, EntityMode);
 
 			if (loc > 0)
 			{

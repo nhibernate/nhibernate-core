@@ -91,7 +91,8 @@ namespace NHibernate.Engine
 				return false;
 			}
 			return
-				otherKey.identifierSpace.Equals(this.identifierSpace) && identifierType.Equals(otherKey.Identifier, this.identifier);
+				otherKey.identifierSpace.Equals(this.identifierSpace)
+				&& identifierType.IsEqual(otherKey.Identifier, this.identifier, EntityMode.Poco);
 		}
 
 		public override int GetHashCode()
@@ -105,7 +106,7 @@ namespace NHibernate.Engine
 			{
 				int result = 17;
 				result = 37 * result + identifierSpace.GetHashCode();
-				result = 37 * result + identifierType.GetHashCode(identifier, factory);
+				result = 37 * result + identifierType.GetHashCode(identifier, EntityMode.Poco, factory);
 				return result;
 			}
 		}

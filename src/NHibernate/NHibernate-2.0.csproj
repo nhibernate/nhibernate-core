@@ -372,7 +372,6 @@
     <Compile Include="Type\DateType.cs" />
     <Compile Include="Type\DecimalType.cs" />
     <Compile Include="Type\DoubleType.cs" />
-    <Compile Include="Type\DynamicComponentType.cs" />
     <Compile Include="Type\EntityType.cs" />
     <Compile Include="Type\EnumStringType.cs" />
     <Compile Include="Type\GuidType.cs" />
@@ -993,11 +992,14 @@
     <Compile Include="Tuple\StandardProperty.cs" />
     <Compile Include="Tuple\VersionProperty.cs" />
     <Compile Include="TypeMismatchException.cs" />
+    <Compile Include="Type\AbstractBynaryType.cs" />
+    <Compile Include="Type\AbstractStringType.cs" />
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\AnyType.cs" />
-    <Compile Include="Type\BaseCharType.cs" />
+    <Compile Include="Type\AbstractCharType.cs" />
     <Compile Include="Type\CollectionType.cs" />
     <Compile Include="Type\CustomCollectionType.cs" />
+    <Compile Include="Type\EmbeddedComponentType.cs" />
     <Compile Include="Type\ICacheAssembler.cs" />
     <Compile Include="Type\OrderedSetType.cs" />
     <Compile Include="Type\OrderedMapType.cs" />

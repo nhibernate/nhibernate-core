@@ -103,7 +103,7 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					if (!entityEntry.Persister.IdentifierType.Equals(requestedId, entityEntry.Id))
+					if (!entityEntry.Persister.IdentifierType.IsEqual(requestedId, entityEntry.Id, EntityMode.Poco))
 					{
 						throw new PersistentObjectException("object passed to save() was already persistent: " + 
 							MessageHelper.InfoString(entityEntry.Persister, requestedId, factory));

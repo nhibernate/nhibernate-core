@@ -123,7 +123,7 @@ namespace NHibernate.Loader.Custom
 					lockModes.Add(fetchRtn.LockMode);
 					IQueryable ownerPersister = DetermineAppropriateOwnerPersister(ownerDescriptor);
 					EntityType fetchedType = (EntityType) ownerPersister.GetPropertyType(fetchRtn.OwnerProperty);
-					System.Type entityName = fetchedType.GetAssociatedClass(Factory);
+					string entityName = fetchedType.GetAssociatedEntityName(Factory);
 					IQueryable persister = (IQueryable) factory.GetEntityPersister(entityName);
 					entityPersisters.Add(persister);
 					nonScalarReturnList.Add(rtn);

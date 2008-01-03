@@ -8,26 +8,10 @@ namespace NHibernate.Engine
 	/// </summary>
 	public interface IMapping
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
-		IType GetIdentifierType(System.Type persistentClass);
+		IType GetIdentifierType(string className);
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <returns></returns>
-		string GetIdentifierPropertyName(System.Type persistentClass);
+		string GetIdentifierPropertyName(string className);
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persistentClass"></param>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
-		IType GetPropertyType(System.Type persistentClass, string propertyName);
+		IType GetReferencedPropertyType(string className, string propertyName);
 	}
 }

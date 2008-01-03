@@ -226,7 +226,7 @@ namespace NHibernate.Hql.Classic
 						{
 							throw new QueryException("outer or full join must be followed by path expression");
 						}
-						entityName = q.CreateNameFor(p.MappedClass);
+						entityName = q.CreateNameFor(p.EntityName);
 						q.AddFromClass(entityName, p);
 						expectingAs = true;
 					}

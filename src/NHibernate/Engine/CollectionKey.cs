@@ -31,8 +31,7 @@ namespace NHibernate.Engine
 		public override bool Equals(object obj)
 		{
 			CollectionKey that = (CollectionKey) obj;
-			return keyType.Equals(key, that.key)
-			       && Equals(role, that.role);
+			return keyType.IsEqual(key, that.key, EntityMode.Poco) && Equals(role, that.role);
 		}
 
 		public override int GetHashCode()
@@ -46,7 +45,7 @@ namespace NHibernate.Engine
 			unchecked
 			{
 				result = 37 * result + role.GetHashCode();
-				result = 37 * result + keyType.GetHashCode(key, factory);
+				result = 37 * result + keyType.GetHashCode(key, EntityMode.Poco, factory);
 			}
 			return result;
 		}

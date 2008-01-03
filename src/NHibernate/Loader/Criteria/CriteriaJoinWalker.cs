@@ -64,7 +64,7 @@ namespace NHibernate.Loader.Criteria
 			}
 			else
 			{
-				resultTypes = new IType[] {TypeFactory.ManyToOne(persister.MappedClass)};
+				resultTypes = new IType[] {TypeFactory.ManyToOne(persister.EntityName)};
 
 				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None);
 			}

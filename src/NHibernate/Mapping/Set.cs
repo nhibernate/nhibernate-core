@@ -45,15 +45,15 @@ namespace NHibernate.Mapping
 				// Non-generic
 				if (IsSorted)
 				{
-					return TypeFactory.SortedSet(Role, ReferencedPropertyName, (IComparer) Comparer);
+					return TypeFactory.SortedSet(Role, ReferencedPropertyName, Embedded, (IComparer) Comparer);
 				}
 				else if (HasOrder)
 				{
-					return TypeFactory.OrderedSet(Role, ReferencedPropertyName);
+					return TypeFactory.OrderedSet(Role, ReferencedPropertyName, Embedded);
 				}
 				else
 				{
-					return TypeFactory.Set(Role, ReferencedPropertyName);
+					return TypeFactory.Set(Role, ReferencedPropertyName, Embedded);
 				}
 			}
 		}

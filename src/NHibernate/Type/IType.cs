@@ -1,6 +1,6 @@
-using System;
 using System.Collections;
 using System.Data;
+using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -13,12 +13,28 @@ namespace NHibernate.Type
 	{
 		// QUESTION:
 		// How do we implement Serializable interface? Standard .NET pattern or other?
-		// Can we mark this interface with the Serializable attribute?
+
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'
+		/// /> 
+		string Name { get; }
+
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'
+		/// /> 
+		System.Type ReturnedClass { get; }
+
+		/// <include file='IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
+		/// /> 
+		bool IsMutable { get; }
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsAssociationType"]/*'
 		/// /> 
 		bool IsAssociationType { get; }
+
+		bool IsXMLElement { get;}
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsCollectionType"]/*'
@@ -49,21 +65,6 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.GetColumnSpan"]/*'
 		/// /> 
 		int GetColumnSpan(IMapping mapping);
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'
-		/// /> 
-		System.Type ReturnedClass { get; }
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
-		/// /> 
-		bool Equals(object x, object y);
-
-		/// <summary>
-		/// Get a hashcode, consistent with persistence "equality"
-		/// </summary>
-		int GetHashCode(object x, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.IsDirty"]/*'
@@ -100,29 +101,9 @@ namespace NHibernate.Type
 		string ToLoggableString(object value, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
-		/// /> 
-		object FromString(string xml);
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'
-		/// /> 
-		string Name { get; }
-
-		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
 		/// /> 
-		object DeepCopy(object val);
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
-		/// /> 
-		bool IsMutable { get; }
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.HasNiceEquals"]/*'
-		/// /> 
-		bool HasNiceEquals { get; }
+		object DeepCopy(object val, EntityMode entityMode, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
@@ -145,16 +126,6 @@ namespace NHibernate.Type
 		/// /> 
 		object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready);
 
-		/// <summary>
-		/// Determines whether the specified value is represented as <see langword="null" /> in the database.
-		/// </summary>
-		/// <param name="value">The value, may be <see langword="null" />.</param>
-		/// <returns>
-		/// <see langword="true" /> if the specified value is represented as <see langword="null" /> in the database;
-		/// otherwise, <see langword="false" />.
-		/// </returns>
-		bool IsDatabaseNull(object value);
-
 		/// <summary> 
 		/// During merge, replace the existing (target) value in the entity we are merging to
 		/// with a new (original) value from the detached entity we are merging. For immutable
@@ -170,5 +141,87 @@ namespace NHibernate.Type
 		/// <param name="foreignKeyDirection"></param>
 		/// <returns> the value to be merged </returns>
 		object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection);
+
+		/// <summary>
+		/// Determines whether the specified value is represented as <see langword="null" /> in the database.
+		/// </summary>
+		/// <param name="value">The value, may be <see langword="null" />.</param>
+		/// <returns>
+		/// <see langword="true" /> if the specified value is represented as <see langword="null" /> in the database;
+		/// otherwise, <see langword="false" />.
+		/// </returns>
+		bool IsDatabaseNull(object value);
+
+		/// <summary> 
+		/// Compare two instances of the class mapped by this type for persistence
+		/// "equality" - equality of persistent state - taking a shortcut for
+		/// entity references.
+		/// </summary>
+		/// <param name="x"> </param>
+		/// <param name="y"> </param>
+		/// <param name="entityMode"> </param>
+		/// <returns> boolean </returns>
+		bool IsSame(object x, object y, EntityMode entityMode);
+
+		/// <summary> 
+		/// Compare two instances of the class mapped by this type for persistence
+		/// "equality" - equality of persistent state.
+		/// </summary>
+		/// <param name="x"> </param>
+		/// <param name="y"> </param>
+		/// <param name="entityMode"> </param>
+		/// <returns> boolean </returns>
+		bool IsEqual(object x, object y, EntityMode entityMode);
+
+		/// <summary> 
+		/// Compare two instances of the class mapped by this type for persistence
+		/// "equality" - equality of persistent state.
+		/// </summary>
+		/// <param name="x"> </param>
+		/// <param name="y"> </param>
+		/// <param name="entityMode"> </param>
+		/// <param name="factory"></param>
+		/// <returns> boolean </returns>
+		bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory);
+
+		/// <summary> Get a hashcode, consistent with persistence "equality"</summary>
+		/// <param name="x"> </param>
+		/// <param name="entityMode"> </param>
+		int GetHashCode(object x, EntityMode entityMode);
+
+		/// <summary> Get a hashcode, consistent with persistence "equality"</summary>
+		/// <param name="x"> </param>
+		/// <param name="entityMode"> </param>
+		/// <param name="factory"> </param>
+		int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory);
+
+		/// <summary> compare two instances of the type</summary>
+		/// <param name="x"> </param>
+		/// <param name="y"> </param>
+		/// <param name="entityMode"> </param>
+		int Compare(object x, object y, EntityMode? entityMode);
+
+		/// <summary> Get the type of a semi-resolved value.</summary>
+		IType GetSemiResolvedType(ISessionFactoryImplementor factory);
+
+		/// <summary> A representation of the value to be embedded in an XML element. </summary>
+		/// <param name="node"></param>
+		/// <param name="value"> </param>
+		/// <param name="factory"> </param>
+		void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory);
+
+		/// <summary> Parse the XML representation of an instance.</summary>
+		/// <param name="xml"> </param>
+		/// <param name="factory"> </param>
+		/// <returns> an instance of the type </returns>
+		object FromXMLNode(XmlNode xml, IMapping factory);
+
+		/// <summary> 
+		/// Given an instance of the type, return an array of boolean, indicating
+		/// which mapped columns would be null. 
+		/// </summary>
+		/// <param name="value">an instance of the type </param>
+		/// <param name="mapping"></param>
+		bool[] ToColumnNullness(object value, IMapping mapping);
 	}
 }

@@ -18,8 +18,8 @@ namespace NHibernate.Type
 	{
 		private readonly IUserCollectionType userType;
 
-		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName)
-			: base(role, foreignKeyPropertyName)
+		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName, bool isEmbeddedInXML)
+			: base(role, foreignKeyPropertyName, isEmbeddedInXML)
 		{
 			if (!typeof(IUserCollectionType).IsAssignableFrom(userTypeClass))
 			{
@@ -40,7 +40,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public IUserCollectionType UserType
+		{
+			get { return userType; }
+		}
+
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return userType.Instantiate(session, persister);
 		}
@@ -60,17 +65,17 @@ namespace NHibernate.Type
 			return userType.Instantiate();
 		}
 
-		public IEnumerable GetElements(object collection)
+		public override IEnumerable GetElementsIterator(object collection)
 		{
 			return userType.GetElements(collection);
 		}
 
-		public bool Contains(object collection, object entity, ISessionImplementor session)
+		public override bool Contains(object collection, object entity, ISessionImplementor session)
 		{
 			return userType.Contains(collection, entity);
 		}
 
-		public object IndexOf(object collection, object entity)
+		public override object IndexOf(object collection, object entity)
 		{
 			return userType.IndexOf(collection, entity);
 		}

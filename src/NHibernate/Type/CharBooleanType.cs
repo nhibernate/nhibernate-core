@@ -64,12 +64,17 @@ namespace NHibernate.Type
 		/// <param name="index"></param>
 		public override void Set(IDbCommand cmd, Object value, int index)
 		{
-			((IDataParameter) cmd.Parameters[index]).Value = (((bool) value) ? TrueString : FalseString);
+			((IDataParameter) cmd.Parameters[index]).Value = ToCharacter(value);
+		}
+
+		private string ToCharacter(object value)
+		{
+			return ((bool) value) ? TrueString : FalseString;
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return '\'' + (((bool)value) ? TrueString : FalseString) + '\'';
+			return "'" + ToCharacter(value) + "'";
 		}
 
 		/// <summary>

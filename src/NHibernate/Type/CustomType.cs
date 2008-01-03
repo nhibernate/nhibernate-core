@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Reflection;
+using System.Xml;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -14,7 +16,7 @@ namespace NHibernate.Type
 	/// <seealso cref="IUserType"/>
 	/// </summary>
 	[Serializable]
-	public class CustomType : AbstractType, IIdentifierType, IDiscriminatorType, IVersionType
+	public class CustomType : AbstractType, IDiscriminatorType, IVersionType
 	{
 		private readonly IUserType userType;
 		private readonly INullableUserType userTypeAsNullable;
@@ -94,84 +96,23 @@ namespace NHibernate.Type
 			get { return userType.ReturnedType; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
-		{
-			return userType.Equals(x, y);
-		}
-
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
-		{
-			return userType.GetHashCode(x);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="names"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object NullSafeGet(
-			IDataReader rs,
-			string[] names,
-			ISessionImplementor session,
-			object owner
-			)
+		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return userType.NullSafeGet(rs, names, owner);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object NullSafeGet(
-			IDataReader rs,
-			string name,
-			ISessionImplementor session,
-			object owner
-			)
+		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		/// <param name="settable"></param>
-		/// <param name="session"></param>
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) userType.NullSafeSet(st, value, index);
+			if (settable[0]) 
+				userType.NullSafeSet(st, value, index);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		/// <param name="session"></param>
-		public override void NullSafeSet(
-			IDbCommand cmd,
-			object value,
-			int index,
-			ISessionImplementor session
-			)
+		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			userType.NullSafeSet(cmd, value, index);
 		}
@@ -184,17 +125,14 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return value == null ? "null" : value.ToString();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		public override object FromString(string xml)
-		{
-			throw new NotSupportedException("not yet implemented!"); //TODO: look for constructor
+			if (value == null)
+			{
+				return "null";
+			}
+			else
+			{
+				return ToXMLString(value, factory);
+			}
 		}
 
 		/// <summary></summary>
@@ -203,12 +141,7 @@ namespace NHibernate.Type
 			get { return name; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public override object DeepCopy(object value)
+		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
 			return userType.DeepCopy(value);
 		}
@@ -217,12 +150,6 @@ namespace NHibernate.Type
 		public override bool IsMutable
 		{
 			get { return userType.IsMutable; }
-		}
-
-		/// <summary></summary>
-		public override bool HasNiceEquals
-		{
-			get { return false; }
 		}
 
 		public override bool Equals(object obj)
@@ -235,9 +162,9 @@ namespace NHibernate.Type
 			return ((CustomType) obj).userType.GetType() == userType.GetType();
 		}
 
-		public override int GetHashCode()
+		public override int GetHashCode(object x, EntityMode entityMode)
 		{
-			return userType.GetHashCode();
+			return userType.GetHashCode(x);
 		}
 
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
@@ -249,10 +176,15 @@ namespace NHibernate.Type
 		{
 			return ((IEnhancedUserType) userType).FromXMLString(xml);
 		}
-
-		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		
+		public object FromStringValue(string xml)
 		{
-			return ((IEnhancedUserType) userType).ObjectToSQLString(value);
+			return ((IEnhancedUserType)userType).FromXMLString(xml);
+		}
+
+		public virtual string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		{
+			return ((IEnhancedUserType)userType).ObjectToSQLString(value);
 		}
 
 		public object Next(object current, ISessionImplementor session)
@@ -296,6 +228,54 @@ namespace NHibernate.Type
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			return userType.Disassemble(value);
+		}
+
+		public override object FromXMLNode(XmlNode xml, IMapping factory)
+		{
+			return FromXMLString(xml.Value, factory);
+		}
+
+		public virtual object FromXMLString(string xml, IMapping factory)
+		{
+			return ((IEnhancedUserType)userType).FromXMLString(xml);
+		}
+
+		public virtual bool IsEqual(object x, object y)
+		{
+			return userType.Equals(x, y);
+		}
+
+		public override bool IsEqual(object x, object y, EntityMode entityMode)
+		{
+			return IsEqual(x, y);
+		}
+
+		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
+		{
+			node.Value= ToXMLString(value, factory);
+		}
+
+		public override bool[] ToColumnNullness(object value, IMapping mapping)
+		{
+			bool[] result = new bool[GetColumnSpan(mapping)];
+			if (value != null)
+				ArrayHelper.Fill(result, true);
+			return result;
+		}
+
+		public virtual string ToXMLString(object value, ISessionFactoryImplementor factory)
+		{
+			if (value == null)
+				return null;
+			IEnhancedUserType eut = userType as IEnhancedUserType;
+			if (eut != null)
+			{
+				return eut.ToXMLString(value);
+			}
+			else
+			{
+				return value.ToString();
+			}
 		}
 	}
 }

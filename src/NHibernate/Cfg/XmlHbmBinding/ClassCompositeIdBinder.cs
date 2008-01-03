@@ -162,12 +162,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (typeNode != null)
 			{
 				manyToOne.ReferencedEntityName = GetClassName(typeNode, mappings);
-				manyToOne.ReferencedTypeName = GetQualifiedClassName(typeNode, mappings);
 			}
 			else
 			{
 				manyToOne.ReferencedEntityName = null;
-				manyToOne.ReferencedTypeName = null;
 			}
 
 			manyToOne.IsIgnoreNotFound = false;

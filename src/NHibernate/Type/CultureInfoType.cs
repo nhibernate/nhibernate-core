@@ -88,17 +88,6 @@ namespace NHibernate.Type
 			get { return typeof(CultureInfo); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
-		{
-			return (x == y); //???
-		}
-
 		/// <summary></summary>
 		public override string Name
 		{

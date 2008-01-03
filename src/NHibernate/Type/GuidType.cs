@@ -44,16 +44,9 @@ namespace NHibernate.Type
 			get { return typeof(Guid); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			IDataParameter parm = cmd.Parameters[index] as IDataParameter;
-			parm.Value = value;
+			((IDataParameter)cmd.Parameters[index]).Value = value;
 		}
 
 		/// <summary></summary>
@@ -62,24 +55,29 @@ namespace NHibernate.Type
 			get { return "Guid"; }
 		}
 
-		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return '\'' + value.ToString() + '\'';
-		}
-
 		public override object FromStringValue(string xml)
 		{
 			return new Guid(xml);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public object StringToObject(string xml)
 		{
-			return FromString(xml);
+			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
+		}
+
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(Guid); }
+		}
+
+		public override object DefaultValue
+		{
+			get { return Guid.Empty; }
+		}
+
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		{
+			return "'" + value + "'";
 		}
 	}
 }

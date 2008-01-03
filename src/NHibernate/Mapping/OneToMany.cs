@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class OneToMany : IValue
 	{
-		private System.Type referencedEntityName;
+		private string referencedEntityName;
 		private readonly Table referencingTable;
 		private PersistentClass associatedClass;
 		private bool ignoreNotFound;
@@ -24,7 +24,7 @@ namespace NHibernate.Mapping
 
 		private EntityType EntityType
 		{
-			get { return TypeFactory.ManyToOne(ReferencedEntityName, null, false, IsIgnoreNotFound); }
+			get { return TypeFactory.ManyToOne(ReferencedEntityName, null, false, false, IsEmbedded, IsIgnoreNotFound); }
 		}
 
 		public bool IsIgnoreNotFound
@@ -45,10 +45,10 @@ namespace NHibernate.Mapping
 			get { return associatedClass.Key.ColumnSpan; }
 		}
 
-		public System.Type ReferencedEntityName
+		public string ReferencedEntityName
 		{
 			get { return referencedEntityName; }
-			set { referencedEntityName = value; }
+			set { referencedEntityName = value == null ? null : string.Intern(value); }
 		}
 
 		public Table ReferencingTable

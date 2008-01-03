@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using NHibernate.Classic;
 using NHibernate.Engine;
+using NHibernate.Intercept;
+using NHibernate.Property;
 using NHibernate.SqlTypes;
 using NHibernate.Tuple;
 using NHibernate.UserTypes;
@@ -231,7 +234,7 @@ namespace NHibernate.Type
 
 			// Use the basic name (such as String or String(255)) to get the
 			// instance of the IType object.
-			IType returnType = null;
+			IType returnType;
 			returnType = (IType) typeByTypeOfName[name];
 			if (returnType != null)
 			{
@@ -613,10 +616,12 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A one-to-one association type for the given class and cascade style.
 		/// </summary>
-		public static IType OneToOne(System.Type persistentClass, ForeignKeyDirection foreignKeyDirection,
-																 string uniqueKeyPropertyName, bool lazy, string propertyName)
+		public static EntityType OneToOne(string persistentClass, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, 
+			bool lazy, bool unwrapProxy, bool isEmbeddedInXML, string entityName, string propertyName)
 		{
-			return new OneToOneType(persistentClass, foreignKeyDirection, uniqueKeyPropertyName, lazy, propertyName);
+			return
+				new OneToOneType(persistentClass, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML,
+				                 entityName, propertyName);
 		}
 
 		/// <summary>
@@ -624,7 +629,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <returns></returns>
-		public static EntityType ManyToOne(System.Type persistentClass)
+		public static EntityType ManyToOne(string persistentClass)
 		{
 			return new ManyToOneType(persistentClass);
 		}
@@ -632,7 +637,7 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
-		public static EntityType ManyToOne(System.Type persistentClass, bool lazy)
+		public static EntityType ManyToOne(string persistentClass, bool lazy)
 		{
 			return new ManyToOneType(persistentClass, lazy);
 		}
@@ -640,13 +645,10 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
-		public static EntityType ManyToOne(
-			System.Type persistentClass,
-			string uniqueKeyPropertyName,
-			bool lazy,
-			bool ignoreNotFound)
+		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, 
+			bool isEmbeddedInXML, bool ignoreNotFound)
 		{
-			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, ignoreNotFound);
+			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML, ignoreNotFound);
 		}
 
 		/// <summary>
@@ -657,12 +659,13 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">The <see cref="System.Type"/> to use to create the array.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// An <see cref="ArrayType"/> for the specified role.
 		/// </returns>
-		public static CollectionType Array(string role, string propertyRef, System.Type elementClass)
+		public static CollectionType Array(string role, string propertyRef, bool embedded, System.Type elementClass)
 		{
-			return new ArrayType(role, propertyRef, elementClass);
+			return new ArrayType(role, propertyRef, elementClass, embedded);
 		}
 
 		/// <summary>
@@ -672,12 +675,13 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// A <see cref="ListType"/> for the specified role.
 		/// </returns>
-		public static CollectionType List(string role, string propertyRef)
+		public static CollectionType List(string role, string propertyRef, bool embedded)
 		{
-			return new ListType(role, propertyRef);
+			return new ListType(role, propertyRef, embedded);
 		}
 
 		/// <summary>
@@ -688,12 +692,13 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// A <see cref="BagType"/> for the specified role.
 		/// </returns>
-		public static CollectionType Bag(string role, string propertyRef)
+		public static CollectionType Bag(string role, string propertyRef, bool embedded)
 		{
-			return new BagType(role, propertyRef);
+			return new BagType(role, propertyRef, embedded);
 		}
 
 		/// <summary>
@@ -704,12 +709,13 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// A <see cref="IdentifierBagType"/> for the specified role.
 		/// </returns>
-		public static CollectionType IdBag(string role, string propertyRef)
+		public static CollectionType IdBag(string role, string propertyRef, bool embedded)
 		{
-			return new IdentifierBagType(role, propertyRef);
+			return new IdentifierBagType(role, propertyRef, embedded);
 		}
 
 		/// <summary>
@@ -719,12 +725,13 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
-		public static CollectionType Map(string role, string propertyRef)
+		public static CollectionType Map(string role, string propertyRef, bool embedded)
 		{
-			return new MapType(role, propertyRef);
+			return new MapType(role, propertyRef, embedded);
 		}
 
 		/// <summary>
@@ -734,12 +741,13 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// A <see cref="SetType"/> for the specified role.
 		/// </returns>
-		public static CollectionType Set(string role, string propertyRef)
+		public static CollectionType Set(string role, string propertyRef, bool embedded)
 		{
-			return new SetType(role, propertyRef);
+			return new SetType(role, propertyRef, embedded);
 		}
 
 		/// <summary>
@@ -751,12 +759,13 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// A <see cref="SortedMapType"/> for the specified role.
 		/// </returns>
-		public static CollectionType SortedMap(string role, string propertyRef, IComparer comparer)
+		public static CollectionType SortedMap(string role, string propertyRef, bool embedded, IComparer comparer)
 		{
-			return new SortedMapType(role, propertyRef, comparer);
+			return new SortedMapType(role, propertyRef, comparer, embedded);
 		}
 
 		/// <summary>
@@ -767,12 +776,13 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// A <see cref="OrderedMapType"/> for the specified role.
 		/// </returns>
-		public static CollectionType OrderedMap(string role, string propertyRef)
+		public static CollectionType OrderedMap(string role, string propertyRef, bool embedded)
 		{
-			return new OrderedMapType(role, propertyRef);
+			return new OrderedMapType(role, propertyRef, embedded);
 		}
 
 		/// <summary>
@@ -784,17 +794,18 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
+		/// <param name="embedded"></param>
 		/// <returns>
 		/// A <see cref="SortedSetType"/> for the specified role.
 		/// </returns>
-		public static CollectionType SortedSet(string role, string propertyRef, IComparer comparer)
+		public static CollectionType SortedSet(string role, string propertyRef, bool embedded, IComparer comparer)
 		{
-			return new SortedSetType(role, propertyRef, comparer);
+			return new SortedSetType(role, propertyRef, comparer, embedded);
 		}
 
-		public static CollectionType OrderedSet(string role, string propertyRef)
+		public static CollectionType OrderedSet(string role, string propertyRef, bool embedded)
 		{
-			return new OrderedSetType(role, propertyRef);
+			return new OrderedSetType(role, propertyRef, embedded);
 		}
 
 		private static CollectionType CreateCollectionType(
@@ -952,16 +963,26 @@ namespace NHibernate.Type
 			return CreateSortedCollectionType(typeof(GenericSortedSetType<>), role, propertyRef, comparer, elementType);
 		}
 
-		/// <summary>
-		/// Deep copy values in the first array into the second
-		/// </summary>
-		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target)
+		/// <summary> Deep copy a series of values from one array to another... </summary>
+		/// <param name="values">The values to copy (the source) </param>
+		/// <param name="types">The value types </param>
+		/// <param name="copy">an array indicating which values to include in the copy </param>
+		/// <param name="target">The array into which to copy the values </param>
+		/// <param name="session">The orginating session </param>
+		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target, ISessionImplementor session)
 		{
 			for (int i = 0; i < types.Length; i++)
 			{
 				if (copy[i])
 				{
-					target[i] = types[i].DeepCopy(values[i]);
+					if (values[i] == LazyPropertyInitializer.UnfetchedProperty || values[i] == BackrefPropertyAccessor.Unknown)
+					{
+						target[i] = values[i];
+					}
+					else
+					{
+						target[i] = types[i].DeepCopy(values[i], session.EntityMode, session.Factory);
+					}
 				}
 			}
 		}
@@ -1074,25 +1095,37 @@ namespace NHibernate.Type
 			return assembled;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="row"></param>
-		/// <param name="types"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		public static object[] Disassemble(object[] row, ICacheAssembler[] types, ISessionImplementor session)
+		/// <summary> Apply the {@link Type#disassemble} operation across a series of values. </summary>
+		/// <param name="row">The values </param>
+		/// <param name="types">The value types </param>
+		/// <param name="nonCacheable">An array indicating which values to include in the disassemled state </param>
+		/// <param name="session">The orginating session </param>
+		/// <param name="owner">The entity "owning" the values </param>
+		/// <returns> The disassembled state </returns>
+		public static object[] Disassemble(object[] row, ICacheAssembler[] types, bool[] nonCacheable, ISessionImplementor session, object owner)
 		{
 			object[] disassembled = new object[row.Length];
 			for (int i = 0; i < row.Length; i++)
 			{
-				disassembled[i] = types[i].Disassemble(row[i], session, null);
+				if (nonCacheable != null && nonCacheable[i])
+				{
+					disassembled[i] = LazyPropertyInitializer.UnfetchedProperty;
+				}
+				else if (row[i] == LazyPropertyInitializer.UnfetchedProperty || row[i] == BackrefPropertyAccessor.Unknown)
+				{
+					disassembled[i] = row[i];
+				}
+				else
+				{
+					disassembled[i] = types[i].Disassemble(row[i], session, owner);
+				}
 			}
 			return disassembled;
 		}
 
+
 		/// <summary>
-		///  Apply the <see cref="IType.Replace"/> operation across a series of values.
+		///  Apply the <see cref="IType.Replace(object, object, ISessionImplementor, object, IDictionary)"/> operation across a series of values.
 		/// </summary>
 		/// <param name="original">The source of the state </param>
 		/// <param name="target">The target into which to replace the source values. </param>
@@ -1113,7 +1146,8 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		///  Apply the <see cref="IType.Replace"/> operation across a series of values.
+		/// Apply the <see cref="IType.Replace(object, object, ISessionImplementor, object, IDictionary, ForeignKeyDirection)"/> 
+		/// operation across a series of values.
 		/// </summary>
 		/// <param name="original">The source of the state </param>
 		/// <param name="target">The target into which to replace the source values. </param>
@@ -1129,19 +1163,19 @@ namespace NHibernate.Type
 			object[] copied = new object[original.Length];
 			for (int i = 0; i < types.Length; i++)
 			{
-				// TODO H3.2 Not ported
-				//if (original[i] == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY || original[i] == BackrefPropertyAccessor.UNKNOWN)
-				//{
-				//  copied[i] = target[i];
-				//}
-				//else
-				copied[i] = types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection);
+				if (original[i] == LazyPropertyInitializer.UnfetchedProperty || original[i] == BackrefPropertyAccessor.Unknown)
+				{
+					copied[i] = target[i];
+				}
+				else
+					copied[i] = types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection);
 			}
 			return copied;
 		}
 
 		/// <summary> 
-		/// Apply the <see cref="IType.Replace"/> operation across a series of values, as
+		/// Apply the <see cref="IType.Replace(object, object, ISessionImplementor, object, IDictionary, ForeignKeyDirection)"/> 
+		/// operation across a series of values, as
 		/// long as the corresponding <see cref="IType"/> is an association.
 		/// </summary>
 		/// <param name="original">The source of the state </param>
@@ -1162,20 +1196,21 @@ namespace NHibernate.Type
 			object[] copied = new object[original.Length];
 			for (int i = 0; i < types.Length; i++)
 			{
-				// TODO H3.2 Not ported
-				//if (original[i] == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY || original[i] == BackrefPropertyAccessor.UNKNOWN)
-				//{
-				//  copied[i] = target[i];
-				//}
-				//else 
-				if (types[i].IsComponentType)
+				if (original[i] == LazyPropertyInitializer.UnfetchedProperty || original[i] == BackrefPropertyAccessor.Unknown)
+				{
+					copied[i] = target[i];
+				}
+				else if (types[i].IsComponentType)
 				{
 					// need to extract the component values and check for subtype replacements...
-					IAbstractComponentType componentType = (IAbstractComponentType)types[i];
+					IAbstractComponentType componentType = (IAbstractComponentType) types[i];
 					IType[] subtypes = componentType.Subtypes;
-					object[] origComponentValues = original[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(original[i], session);
+					object[] origComponentValues = original[i] == null
+					                               	? new object[subtypes.Length]
+					                               	: componentType.GetPropertyValues(original[i], session);
 					object[] targetComponentValues = componentType.GetPropertyValues(target[i], session);
-					ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache, foreignKeyDirection);
+					ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache,
+					                    foreignKeyDirection);
 					copied[i] = target[i];
 				}
 				else if (!types[i].IsAssociationType)
@@ -1190,27 +1225,24 @@ namespace NHibernate.Type
 			return copied;
 		}
 
-		public static CollectionType CustomCollection(string typeName, string role, string referencedPropertyName)
+		public static CollectionType CustomCollection(string typeName, IDictionary<string, string> typeParameters,
+			string role, string propertyRef, bool embedded)
 		{
 			System.Type typeClass;
 			try
 			{
 				typeClass = ReflectHelper.ClassForName(typeName);
 			}
-			catch (TypeLoadException tle)
+			catch (Exception cnfe)
 			{
-				throw new MappingException("user collection type class not found: " + typeName, tle);
+				throw new MappingException("user collection type class not found: " + typeName, cnfe);
 			}
-
-			if (typeof(CollectionType).IsAssignableFrom(typeClass))
+			CustomCollectionType result = new CustomCollectionType(typeClass, role, propertyRef, embedded);
+			if (typeParameters != null)
 			{
-				// If a type derives from CollectionType, use it unwrapped (changed compared to H3).
-				return (CollectionType) Activator.CreateInstance(typeClass);
+				InjectParameters(result.UserType, (IDictionary) typeParameters);
 			}
-			else
-			{
-				return new CustomCollectionType(typeClass, role, referencedPropertyName);
-			}
+			return result;
 		}
 
 		public static void InjectParameters(Object type, IDictionary parameters)
@@ -1221,10 +1253,7 @@ namespace NHibernate.Type
 			}
 			else if (parameters != null && !(parameters.Count == 0))
 			{
-				throw new MappingException(
-					"type is not parameterized: " +
-					type.GetType().Name
-					);
+				throw new MappingException("type is not parameterized: " + type.GetType().Name);
 			}
 		}
 	}

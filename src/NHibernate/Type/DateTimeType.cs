@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
@@ -18,61 +19,62 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
+		private static readonly DateTime BaseDateValue = DateTime.MinValue;
+
 		/// <summary></summary>
 		internal DateTimeType() : base(SqlTypeFactory.DateTime)
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
+		/// <summary></summary>
+		public override string Name
+		{
+			get { return "DateTime"; }
+		}
+
 		public override object Get(IDataReader rs, int index)
 		{
-			DateTime dbValue = Convert.ToDateTime(rs[index]);
-			return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second);
+			try
+			{
+				DateTime dbValue = Convert.ToDateTime(rs[index]);
+				return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second);
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		public override object Get(IDataReader rs, string name)
 		{
-			return Get(rs, rs.GetOrdinal(name)); // rs.[name];
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(DateTime); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
 		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
 			DateTime dateValue = (DateTime) value;
-			parm.Value =
+			((IDataParameter)st.Parameters[index]).Value =
 				new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
+		#region IVersionType Members
+
+		public object Next(object current, ISessionImplementor session)
+		{
+			return Seed(session);
+		}
+
+		public object Seed(ISessionImplementor session)
+		{
+			return TimestampType.Round(DateTime.Now, TimeSpan.TicksPerSecond);
+		}
+
+		public override bool IsEqual(object x, object y)
 		{
 			if (x == y)
 			{
@@ -87,6 +89,9 @@ namespace NHibernate.Type
 			DateTime date1 = (DateTime) x;
 			DateTime date2 = (DateTime) y;
 
+			if(date1.Equals(date2))
+				return true;
+
 			return (date1.Year == date2.Year &&
 			        date1.Month == date2.Month &&
 			        date1.Day == date2.Day &&
@@ -95,80 +100,59 @@ namespace NHibernate.Type
 			        date1.Second == date2.Second);
 		}
 
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		public IComparer Comparator
+		{
+			get { return Comparer<DateTime>.Default; }
+		}
+
+		#endregion
+
+		public override int GetHashCode(object x, EntityMode entityMode)
 		{
 			// Custom hash code implementation because DateTimeType is only accurate
 			// up to seconds.
 			DateTime date = (DateTime) x;
 			int hashCode = 1;
-			hashCode = 31 * hashCode + date.Second;
-			hashCode = 31 * hashCode + date.Minute;
-			hashCode = 31 * hashCode + date.Hour;
-			hashCode = 31 * hashCode + date.Day;
-			hashCode = 31 * hashCode + date.Month;
-			hashCode = 31 * hashCode + date.Year;
+			unchecked
+			{
+				hashCode = 31 * hashCode + date.Second;
+				hashCode = 31 * hashCode + date.Minute;
+				hashCode = 31 * hashCode + date.Hour;
+				hashCode = 31 * hashCode + date.Day;
+				hashCode = 31 * hashCode + date.Month;
+				hashCode = 31 * hashCode + date.Year;
+			}
 			return hashCode;
 		}
 
-		/// <summary></summary>
-		public override string Name
-		{
-			get { return "DateTime"; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="val"></param>
-		/// <returns></returns>
 		public override string ToString(object val)
 		{
 			return ((DateTime) val).ToShortDateString();
 		}
 
-		/// <summary></summary>
-		public override bool HasNiceEquals
-		{
-			get { return true; }
-		}
-
 		public object StringToObject(string xml)
 		{
-			return FromString(xml);
+			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
 			return DateTime.Parse(xml);
 		}
 
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(DateTime); }
+		}
+
+		public override object DefaultValue
+		{
+			get { return BaseDateValue; }
+		}
+
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return '\'' + value.ToString() + '\'';
+			return "'" + ((DateTime)value).ToShortDateString() + "'";
 		}
-
-		#region IVersionType Members
-
-		public object Next(object current, ISessionImplementor session)
-		{
-			return Seed(session);
-		}
-
-		public virtual object Seed(ISessionImplementor session)
-		{
-			return TimestampType.Round(DateTime.Now, TimeSpan.TicksPerSecond);
-		}
-
-		public IComparer Comparator
-		{
-			get { return Comparer.DefaultInvariant; }
-		}
-
-		#endregion
 	}
 }

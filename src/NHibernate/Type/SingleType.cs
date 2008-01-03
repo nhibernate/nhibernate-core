@@ -20,60 +20,70 @@ namespace NHibernate.Type
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		public override object Get(IDataReader rs, int index)
-		{
-			return Convert.ToSingle(rs[index]);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override object Get(IDataReader rs, string name)
-		{
-			return Convert.ToSingle(rs[name]);
-		}
-
-		/// <summary></summary>
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(Single); }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		public override void Set(IDbCommand st, object value, int index)
-		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.Value = value;
-		}
-
 		/// <summary></summary>
 		public override string Name
 		{
 			get { return "Single"; }
 		}
 
-		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		private static readonly Single ZERO = 0;
+		public override object Get(IDataReader rs, int index)
 		{
-			return value.ToString();
+			try
+			{
+				return Convert.ToSingle(rs[index]);
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+			}
+		}
+
+		public override object Get(IDataReader rs, string name)
+		{
+			try
+			{
+				return Convert.ToSingle(rs[name]);
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[name]), ex);
+			}
+		}
+
+		public override System.Type ReturnedClass
+		{
+			get { return typeof(Single); }
+		}
+
+		public override void Set(IDbCommand rs, object value, int index)
+		{
+			((IDataParameter)rs.Parameters[index]).Value = value;
+		}
+
+		public object StringToObject(string xml)
+		{
+			return FromStringValue(xml);
 		}
 
 		public override object FromStringValue(string xml)
 		{
-			return float.Parse(xml);
+			return Single.Parse(xml);
+		}
+
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(Single); }
+		}
+
+		public override object DefaultValue
+		{
+			get { return ZERO; }
+		}
+
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		{
+			return value.ToString();
 		}
 	}
 }

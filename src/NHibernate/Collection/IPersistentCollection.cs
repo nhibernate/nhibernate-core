@@ -255,7 +255,7 @@ namespace NHibernate.Collection
 		bool HasQueuedAdds { get; }
 
 		/// <summary></summary>
-		ICollection QueuedAddsCollection { get; }
+		IEnumerable QueuedAdditionIterator { get; }
 
 		/// <summary></summary>
 		ICollectionSnapshot CollectionSnapshot { get; set; }

@@ -122,8 +122,7 @@ namespace NHibernate.Action
 			else
 			{
 				//then by id
-				// TODO: H3.2 Different behaviour (Equals instead Compare)
-				return persister.IdentifierType.Equals(id, other.id) ? 0 : -1;
+				return persister.IdentifierType.Compare(id, other.id, session.EntityMode);
 			}
 		}
 

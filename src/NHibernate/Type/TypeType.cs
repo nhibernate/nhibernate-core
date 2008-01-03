@@ -13,17 +13,20 @@ namespace NHibernate.Type
 	public class TypeType : ImmutableType
 	{
 		/// <summary></summary>
-		internal TypeType() : base(new StringSqlType())
-		{
-		}
+		internal TypeType()
+			: base(new StringSqlType()) {}
 
 		/// <summary>
 		/// Initialize a new instance of the TypeType class using a 
 		/// <see cref="SqlType"/>. 
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		internal TypeType(StringSqlType sqlType) : base(sqlType)
+		internal TypeType(StringSqlType sqlType)
+			: base(sqlType) {}
+
+		public override SqlType SqlType
 		{
+			get { return NHibernateUtil.String.SqlType; }
 		}
 
 		/// <summary>
@@ -37,8 +40,8 @@ namespace NHibernate.Type
 		/// </exception>
 		public override object Get(IDataReader rs, int index)
 		{
-			string str = (string) NHibernateUtil.String.Get(rs, index);
-			if (str == null)
+			string str = (string)NHibernateUtil.String.Get(rs, index);
+			if (string.IsNullOrEmpty(str))
 			{
 				return null;
 			}
@@ -46,15 +49,14 @@ namespace NHibernate.Type
 			{
 				try
 				{
-					return ReflectHelper.ClassForName(str);
+					return ReflectHelper.ClassForFullName(str);
 				}
-				catch (TypeLoadException cnfe)
+				catch (Exception cnfe)
 				{
 					throw new HibernateException("Class not found: " + str, cnfe);
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Gets the <see cref="System.Type"/> in the <see cref="IDataReader"/> for the Property.
@@ -88,7 +90,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			NHibernateUtil.String.Set(cmd, ((System.Type) value).AssemblyQualifiedName, index);
+			NHibernateUtil.String.Set(cmd, ((System.Type)value).FullName, index);
 		}
 
 		/// <summary>
@@ -99,7 +101,7 @@ namespace NHibernate.Type
 		/// <returns>An Xml formatted string that contains the Assembly Qualified Name.</returns>
 		public override string ToString(object value)
 		{
-			return ((System.Type) value).AssemblyQualifiedName;
+			return ((System.Type)value).FullName;
 		}
 
 		/// <summary>
@@ -114,17 +116,6 @@ namespace NHibernate.Type
 			get { return typeof(System.Type); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
-		{
-			return ObjectUtils.Equals(x, y);
-		}
-
 		/// <summary></summary>
 		public override string Name
 		{
@@ -135,11 +126,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return ReflectHelper.ClassForName(xml);
+				return ReflectHelper.ClassForFullName(xml);
 			}
-			catch (TypeLoadException tle)
+			catch (Exception tle)
 			{
-				throw new HibernateException("could not parse xml", tle);
+				throw new HibernateException("could not parse xml:" + xml, tle);
 			}
 		}
 	}

@@ -78,8 +78,6 @@ namespace NHibernate.Metadata
 		/// <summary>
 		/// Get the identifier of an instance (throw an exception if no identifier property)
 		/// </summary>
-		/// <param name="entity"></param>
-		/// <returns></returns>
 		object GetIdentifier(object entity);
 
 		/// <summary>

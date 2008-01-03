@@ -40,7 +40,7 @@ namespace NHibernate.Event.Default
 
 			//get a snapshot
 			object[] values = persister.GetPropertyValues(entity);
-			TypeFactory.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values);
+			TypeFactory.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values, source);
 			object version = Versioning.GetVersion(values, persister);
 
 			EntityEntry newEntry = source.PersistenceContext.AddEntity(entity, Status.Loaded, values, key, version, LockMode.None, true, persister, false, true);

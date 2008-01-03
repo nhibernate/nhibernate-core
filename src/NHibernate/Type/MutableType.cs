@@ -33,29 +33,20 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-
-		///	<summary>
-		///	Gets whether or not this IType contains 
-		///	<see cref="System.Type"/>s that implement well-behaived <c>Equals()</c> method.
-		///	</summary>
-		/// <value>
-		/// false - it is assumed that a MutableType does not implement a 
-		/// well-behaved <c>Equals()</c>.
-		/// </value>
-		/// <remarks>
-		/// There is no concrete rule that <see cref="MutableType"/>s don't implement
-		/// a well-behaved <c>Equals()</c>.  If the <see cref="MutableType"/> does implement
-		/// the <c>Equals()</c> then set this to <see langword="true" />.
-		/// </remarks>
-		public override bool HasNiceEquals
-		{
-			get { return false; } //default ... may be overridden
-		}
-
-		public override object Replace(object original, object current, ISessionImplementor session, object owner,
+		public override object Replace(object original, object target, ISessionImplementor session, object owner,
 		                               IDictionary copiedAlready)
 		{
-			return DeepCopy(original);
+			if (IsEqual(original, target, session.EntityMode))
+				return original;
+			return DeepCopy(original, session.EntityMode, session.Factory);
 		}
+
+		public abstract object DeepCopyNotNull(object value);
+
+		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null : DeepCopyNotNull(value);
+		}
+
 	}
 }

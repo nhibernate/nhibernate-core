@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Iesi.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -22,8 +21,9 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
-		public SetType(string role, string propertyRef)
-			: base(role, propertyRef)
+		/// <param name="isEmbeddedInXML"></param>
+		public SetType(string role, string propertyRef, bool isEmbeddedInXML)
+			: base(role, propertyRef, isEmbeddedInXML)
 		{
 		}
 
@@ -32,8 +32,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the set.</param>
 		/// <param name="persister"></param>
+		/// <param name="key"></param>
 		/// <returns></returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return new PersistentSet(session);
 		}
@@ -57,16 +58,6 @@ namespace NHibernate.Type
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
 			return new PersistentSet(session, (ISet) collection);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
-		public override ICollection GetElementsCollection(object collection)
-		{
-			return (ICollection) collection;
 		}
 
 		protected override void Add(object collection, object element)

@@ -13,6 +13,8 @@ namespace NHibernate.Type
 	[Serializable]
 	public class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
 	{
+		private static readonly byte ZERO = 0;
+
 		internal ByteType() : base(SqlTypeFactory.Byte)
 		{
 		}
@@ -32,6 +34,11 @@ namespace NHibernate.Type
 			get { return typeof(byte); }
 		}
 
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof (byte); }
+		}
+
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
 			((IDataParameter) cmd.Parameters[index]).Value = (byte) value;
@@ -49,7 +56,7 @@ namespace NHibernate.Type
 
 		public virtual object StringToObject(string xml)
 		{
-			return FromString(xml);
+			return Byte.Parse(xml);
 		}
 
 		public override object FromStringValue(string xml)
@@ -59,17 +66,22 @@ namespace NHibernate.Type
 
 		public virtual object Next(object current, ISessionImplementor session)
 		{
-			return (byte) ((byte) current + (byte) 1);
+			return (byte) ((byte) current + 1);
 		}
 
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return (byte) 1;
+			return ZERO;
 		}
 
 		public IComparer Comparator
 		{
 			get { return Comparer.DefaultInvariant; }
+		}
+
+		public override object DefaultValue
+		{
+			get { return ZERO; }
 		}
 	}
 }

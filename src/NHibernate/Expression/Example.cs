@@ -454,7 +454,7 @@ namespace NHibernate.Expression
 			if (component != null)
 			{
 				String[] propertyNames = type.PropertyNames;
-				object[] values = type.GetPropertyValues(component, null);
+				object[] values = type.GetPropertyValues(component, GetEntityMode(criteria, criteriaQuery));
 				IType[] subtypes = type.Subtypes;
 				for (int i = 0; i < propertyNames.Length; i++)
 				{

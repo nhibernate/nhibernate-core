@@ -105,8 +105,8 @@ namespace NHibernate.Engine
 			if (loadedPersister != null || currentPersister != null)
 			{
 				// it is or was referenced _somewhere_
-				bool ownerChanged = loadedPersister != currentPersister || 
-					!currentPersister.KeyType.Equals(entry.LoadedKey, entry.CurrentKey);
+				bool ownerChanged = loadedPersister != currentPersister ||
+					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, EntityMode.Poco);
 
 				if (ownerChanged)
 				{

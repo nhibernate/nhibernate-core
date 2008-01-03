@@ -32,10 +32,12 @@ namespace NHibernate.Collection
 		/// </returns>
 		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
+			EntityMode entityMode = Session.EntityMode;
+
 			ArrayList clonedList = new ArrayList(list.Count);
 			foreach (object obj in list)
 			{
-				clonedList.Add(persister.ElementType.DeepCopy(obj));
+				clonedList.Add(persister.ElementType.DeepCopy(obj,entityMode, persister.Factory));
 			}
 			return clonedList;
 		}

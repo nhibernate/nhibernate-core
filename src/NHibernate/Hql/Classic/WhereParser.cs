@@ -179,12 +179,12 @@ namespace NHibernate.Hql.Classic
 			else
 			{
 				IType type = element.Type;
-				System.Type clazz;
+				string clazz;
 
 				if (type.IsEntityType)
 				{
 					//ie. a many-to-many
-					clazz = ((EntityType) type).AssociatedClass;
+					clazz = ((EntityType) type).GetAssociatedEntityName();
 					name = pathExpressionParser.ContinueFromManyToMany(clazz, element.ElementColumns, q);
 				}
 				else

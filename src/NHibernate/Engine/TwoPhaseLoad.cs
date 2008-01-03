@@ -3,8 +3,10 @@ using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Event;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using NHibernate.Property;
 
 namespace NHibernate.Engine
 {
@@ -61,13 +63,11 @@ namespace NHibernate.Engine
 			IType[] types = persister.PropertyTypes;
 			for (int i = 0; i < hydratedState.Length; i++)
 			{
-				hydratedState[i] = types[i].ResolveIdentifier(hydratedState[i], session, entity);
-
-				//object value = hydratedState[i];
-				//if (value != org.hibernate.intercept.LazyPropertyInitializer.UNFETCHED_PROPERTY && value != BackrefPropertyAccessor.UNKNOWN)
-				//{
-				//hydratedState[i] = types[i].ResolveIdentifier(value, session, entity);
-				//}
+				object value = hydratedState[i];
+				if (value != LazyPropertyInitializer.UnfetchedProperty && value != BackrefPropertyAccessor.Unknown)
+				{
+					hydratedState[i] = types[i].ResolveIdentifier(value, session, entity);
+				}
 			}
 
 			//Must occur after resolving identifiers!
@@ -95,13 +95,13 @@ namespace NHibernate.Engine
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
-					new CacheEntry(entity, persister, session);
-				CacheKey cacheKey =
-					new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.Factory);
-				bool put = persister.Cache.Put(cacheKey, entry, session.Timestamp, version,
-				                    persister.IsVersioned ? persister.VersionType.Comparator : null,
-				                    UseMinimalPuts(session, entityEntry));
-					//we could use persister.hasLazyProperties() instead of true
+					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
+				CacheKey cacheKey = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.Factory);
+				bool put =
+					persister.Cache.Put(cacheKey, entry, session.Timestamp, version,
+					                    persister.IsVersioned ? persister.VersionType.Comparator : null,
+					                    UseMinimalPuts(session, entityEntry));
+				//we could use persister.hasLazyProperties() instead of true
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{
@@ -120,7 +120,7 @@ namespace NHibernate.Engine
 			else
 			{
 				//take a snapshot
-				TypeFactory.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState);
+				TypeFactory.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState, session);
 				persistenceContext.SetEntryStatus(entityEntry, Status.Loaded);
 			}
 
@@ -152,8 +152,8 @@ namespace NHibernate.Engine
 		{
 			return session.Factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh;
 			// TODO H3.2 Different behaviour property lazyness
-			//return (session.Factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.REFRESH)
-			//|| (entityEntry.Persister.hasLazyProperties() && entityEntry.LoadedWithLazyPropertiesUnfetched && entityEntry.Persister.LazyPropertiesCacheable);
+			//return (session.Factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh)
+			//|| (entityEntry.Persister.HasLazyProperties && entityEntry.LoadedWithLazyPropertiesUnfetched && entityEntry.Persister.LazyPropertiesCacheable);
 		}
 
 		/// <summary> 

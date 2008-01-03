@@ -15,8 +15,8 @@ namespace NHibernate.Test.TypesTest
 		{
 			SByteType type = (SByteType) NHibernateUtil.SByte;
 
-			Assert.IsTrue(type.Equals((sbyte) -1, (sbyte) -1));
-			Assert.IsFalse(type.Equals((sbyte) -2, (sbyte) -1));
+			Assert.IsTrue(type.IsEqual((sbyte) -1, (sbyte) -1));
+			Assert.IsFalse(type.IsEqual((sbyte) -2, (sbyte) -1));
 		}
 
 		[Test]

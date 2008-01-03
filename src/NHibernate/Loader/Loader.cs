@@ -876,7 +876,7 @@ namespace NHibernate.Loader
 			{
 				IType versionType = persister.VersionType;
 				object currentVersion = versionType.NullSafeGet(rs, EntityAliases[i].SuffixedVersionAliases, session, null);
-				if (!versionType.Equals(version, currentVersion))
+				if (!versionType.IsEqual(version, currentVersion, EntityMode.Poco))
 				{
 					if (session.Factory.Statistics.IsStatisticsEnabled)
 					{

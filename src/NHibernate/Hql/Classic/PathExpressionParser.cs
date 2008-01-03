@@ -84,7 +84,7 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
-		public string ContinueFromManyToMany(System.Type clazz, string[] joinColumns, QueryTranslator q)
+		public string ContinueFromManyToMany(string clazz, string[] joinColumns, QueryTranslator q)
 		{
 			Start(q);
 			continuation = true;
@@ -229,8 +229,8 @@ namespace NHibernate.Hql.Classic
 			}
 			else
 			{
-				System.Type entityClass = propertyType.AssociatedClass;
-				String name = q.CreateNameFor(entityClass);
+				string entityClass = propertyType.GetAssociatedEntityName();
+				string name = q.CreateNameFor(entityClass);
 				q.AddType(name, entityClass);
 				//String[] keyColNames = memberPersister.getIdentifierColumnNames();
 				AddJoin(name, propertyType);
@@ -598,7 +598,7 @@ namespace NHibernate.Hql.Classic
 				// an association
 				IQueryableCollection collectionPersister = q.GetCollectionPersister(collectionRole);
 				IQueryable entityPersister = (IQueryable) collectionPersister.ElementPersister;
-				System.Type clazz = entityPersister.MappedClass;
+				string clazz = entityPersister.EntityName;
 
 				string elementName;
 				if (collectionPersister.IsOneToMany)

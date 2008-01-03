@@ -196,8 +196,7 @@ namespace NHibernate.Mapping
 				}
 				else
 				{
-					// TODO NH: Add support for embedded collections <embed-xml>
-					return TypeFactory.CustomCollection(typeName, Role, ReferencedPropertyName);
+					return TypeFactory.CustomCollection(typeName, typeParameters, role, referencedPropertyName, Embedded);
 				}
 			}
 		}

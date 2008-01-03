@@ -49,6 +49,8 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
+			EntityMode entityMode = Session.EntityMode;
+
 			int length = /*(array==null) ? temp.Count :*/ array.Length;
 			Array result = System.Array.CreateInstance(persister.ElementClass, length);
 			for (int i = 0; i < length; i++)
@@ -56,7 +58,7 @@ namespace NHibernate.Collection
 				object elt = /*(array==null) ? temp[i] :*/ array.GetValue(i);
 				try
 				{
-					result.SetValue(persister.ElementType.DeepCopy(elt), i);
+					result.SetValue(persister.ElementType.DeepCopy(elt, entityMode, persister.Factory), i);
 				}
 				catch (Exception e)
 				{

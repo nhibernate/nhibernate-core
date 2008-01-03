@@ -109,7 +109,7 @@ namespace NHibernate.Engine.Loading
 						{
 							log.Debug("instantiating new collection [key=" + key + ", rs=" + resultSet + "]");
 						}
-						collection = persister.CollectionType.Instantiate(loadContext.PersistenceContext.Session, persister);
+						collection = persister.CollectionType.Instantiate(loadContext.PersistenceContext.Session, persister, key);
 					}
 				}
 				collection.BeforeInitialize(persister);

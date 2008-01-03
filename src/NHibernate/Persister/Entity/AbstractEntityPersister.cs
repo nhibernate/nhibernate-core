@@ -407,7 +407,7 @@ namespace NHibernate.Persister.Entity
 			if (HasEmbeddedIdentifier)
 			{
 				ComponentType copier = (ComponentType) entityMetamodel.IdentifierProperty.Type;
-				copier.SetPropertyValues(obj, copier.GetPropertyValues(id));
+				copier.SetPropertyValues(obj, copier.GetPropertyValues(id, EntityMode.Poco), EntityMode.Poco);
 			}
 			else if (identifierSetter != null)
 			{
@@ -538,7 +538,7 @@ namespace NHibernate.Persister.Entity
 		public bool IsUnsaved(object obj)
 		{
 			object id;
-			if (HasIdentifierPropertyOrEmbeddedCompositeIdentifier)
+			if (CanExtractIdOutOfEntity)
 			{
 				id = GetIdentifier(obj);
 			}
@@ -1313,7 +1313,7 @@ namespace NHibernate.Persister.Entity
 			get { return (sqlWhereString != null && sqlWhereString.Length > 0); }
 		}
 
-		public virtual bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier
+		public virtual bool CanExtractIdOutOfEntity
 		{
 			get { return HasIdentifierProperty || HasEmbeddedIdentifier; }
 		}
@@ -1369,7 +1369,7 @@ namespace NHibernate.Persister.Entity
 		{
 			if (uniqueKeyType.IsEntityType)
 			{
-				System.Type type = ((EntityType) uniqueKeyType).AssociatedClass;
+				string type = ((EntityType) uniqueKeyType).GetAssociatedEntityName();
 				uniqueKeyType = Factory.GetEntityPersister(type).IdentifierType;
 			}
 

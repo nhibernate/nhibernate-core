@@ -172,6 +172,46 @@ namespace NHibernate.Util
 			return result;
 		}
 
+		/// <summary>
+		/// Load a System.Type given is't name.
+		/// </summary>
+		/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
+		/// <returns>The System.Type</returns>
+		/// <remarks>
+		/// If the <paramref name="classFullName"/> don't represent an <see cref="System.Type.AssemblyQualifiedName"/>
+		/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
+		/// </remarks>
+		/// <exception cref="TypeLoadException">If no System.Type was found for <paramref name="classFullName"/>.</exception>
+		public static System.Type ClassForFullName(string classFullName)
+		{
+			System.Type result = null;
+			AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(classFullName);
+			if (!string.IsNullOrEmpty(parsedName.Assembly))
+			{
+				result = TypeFromAssembly(parsedName, false);
+			}
+			else
+			{
+				if (classFullName != null && classFullName.Length > 0)
+				{
+					Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
+					foreach (Assembly a in ass)
+					{
+						result = a.GetType(classFullName, false, false);
+						if (result != null)
+							break; //<<<<<================
+					}
+				}
+			}
+			if (result == null)
+			{
+				string message = "Could not load type " + classFullName + ". Possible cause: the assembly was not loaded or not specified.";
+				throw new TypeLoadException(message);
+			}
+
+			return result;
+		}
+
 		public static System.Type TypeFromAssembly(string type, string assembly, bool throwIfError)
 		{
 			return TypeFromAssembly(new AssemblyQualifiedTypeName(type, assembly), throwIfError);

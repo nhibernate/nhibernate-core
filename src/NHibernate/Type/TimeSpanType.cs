@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
@@ -13,30 +14,39 @@ namespace NHibernate.Type
 	public class TimeSpanType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
-		internal TimeSpanType() : base(SqlTypeFactory.Int64)
+		internal TimeSpanType()
+			: base(SqlTypeFactory.Int64)
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
+		/// <summary></summary>
+		public override string Name
+		{
+			get { return "TimeSpan"; }
+		}
+
 		public override object Get(IDataReader rs, int index)
 		{
-			return new TimeSpan(Convert.ToInt64(rs[index]));
+			try
+			{
+				return new TimeSpan(Convert.ToInt64(rs[index]));
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		public override object Get(IDataReader rs, string name)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			try
+			{
+				return new TimeSpan(Convert.ToInt64(rs[name]));
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[name]), ex);
+			}
 		}
 
 		/// <summary></summary>
@@ -53,35 +63,12 @@ namespace NHibernate.Type
 		/// <param name="index"></param>
 		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.Value = ((TimeSpan) value).Ticks;
-		}
-
-		/// <summary></summary>
-		public override string Name
-		{
-			get { return "TimeSpan"; }
+			((IDataParameter)st.Parameters[index]).Value = ((TimeSpan)value).Ticks;
 		}
 
 		public override string ToString(object val)
 		{
-			return ((TimeSpan) val).Ticks.ToString();
-		}
-
-		public override bool Equals(object x, object y)
-		{
-			return object.Equals(x, y);
-		}
-
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
-		{
-			return x.GetHashCode();
-		}
-
-		/// <summary></summary>
-		public override bool HasNiceEquals
-		{
-			get { return true; }
+			return ((TimeSpan)val).Ticks.ToString();
 		}
 
 		#region IVersionType Members
@@ -97,11 +84,6 @@ namespace NHibernate.Type
 			return new TimeSpan(DateTime.Now.Ticks);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public object StringToObject(string xml)
 		{
 			return TimeSpan.Parse(xml);
@@ -109,24 +91,29 @@ namespace NHibernate.Type
 
 		public IComparer Comparator
 		{
-			get { return Comparer.DefaultInvariant; }
+			get { return Comparer<TimeSpan>.Default; }
 		}
 
 		#endregion
 
-		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return '\'' + ((TimeSpan) value).Ticks.ToString() + '\'';
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
 			return TimeSpan.Parse(xml);
+		}
+
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(TimeSpan); }
+		}
+
+		public override object DefaultValue
+		{
+			get { return TimeSpan.Zero; }
+		}
+
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		{
+			return '\'' + ((TimeSpan)value).Ticks.ToString() + '\'';
 		}
 	}
 }

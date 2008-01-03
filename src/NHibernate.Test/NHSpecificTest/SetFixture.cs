@@ -186,7 +186,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		private CollectionType collectionType = new SetType(null, null);
+		private CollectionType collectionType = new SetType(null, null, false);
 
 		public CollectionType CollectionType
 		{
@@ -385,29 +385,38 @@ namespace NHibernate.Test.NHSpecificTest
 	}
 
 	[TestFixture]
-	public class SetFixture
+	public class SetFixture: TestCase
 	{
 		[Test]
 		public void DisassembleAndAssemble()
 		{
-			PersistentSet set = new PersistentSet(null, new ListSet());
+			using (ISession s = OpenSession())
+			{
+				ISessionImplementor si = (ISessionImplementor) s;
+				PersistentSet set = new PersistentSet(si, new ListSet());
 
-			set.CollectionSnapshot = new CollectionSnapshotStub();
+				set.CollectionSnapshot = new CollectionSnapshotStub();
 
-			set.Add(10);
-			set.Add(20);
+				set.Add(10);
+				set.Add(20);
 
-			CollectionPersisterStub collectionPersister = new CollectionPersisterStub();
-			collectionPersister.ElementType = NHibernateUtil.Int32;
+				CollectionPersisterStub collectionPersister = new CollectionPersisterStub();
+				collectionPersister.ElementType = NHibernateUtil.Int32;
 
-			object disassembled = set.Disassemble(collectionPersister);
+				object disassembled = set.Disassemble(collectionPersister);
 
-			PersistentSet assembledSet = new PersistentSet(null);
-			assembledSet.InitializeFromCache(collectionPersister, disassembled, null);
+				PersistentSet assembledSet = new PersistentSet(si);
+				assembledSet.InitializeFromCache(collectionPersister, disassembled, null);
 
-			Assert.AreEqual(2, assembledSet.Count);
-			Assert.IsTrue(assembledSet.Contains(10));
-			Assert.IsTrue(assembledSet.Contains(20));
+				Assert.AreEqual(2, assembledSet.Count);
+				Assert.IsTrue(assembledSet.Contains(10));
+				Assert.IsTrue(assembledSet.Contains(20));
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get { return new List<string>(); }
 		}
 	}
 }

@@ -345,6 +345,8 @@ namespace NHibernate.Collection
 
 		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
+			EntityMode entityMode = Session.EntityMode;
+
 			IDictionary map = new Hashtable(values.Count);
 
 			int i = 0;
@@ -353,7 +355,7 @@ namespace NHibernate.Collection
 				object key = identifiers[i++];
 				if (key != null)
 				{
-					map[key] = persister.ElementType.DeepCopy(obj);
+					map[key] = persister.ElementType.DeepCopy(obj, entityMode, persister.Factory);
 				}
 			}
 

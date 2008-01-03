@@ -275,7 +275,7 @@ namespace NHibernate.Collection.Generic
 			List<T> clonedList = new List<T>(list.Count);
 			foreach (T obj in list)
 			{
-				clonedList.Add((T) persister.ElementType.DeepCopy(obj));
+				clonedList.Add((T) persister.ElementType.DeepCopy(obj, EntityMode.Poco, Session.Factory));
 			}
 			return clonedList;
 		}

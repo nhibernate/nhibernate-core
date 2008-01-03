@@ -25,7 +25,7 @@ namespace NHibernate.Collection
 			Hashtable clonedMap = new Hashtable(map.Count);
 			foreach (DictionaryEntry e in map)
 			{
-				clonedMap[e.Key] = persister.ElementType.DeepCopy(e.Value);
+				clonedMap[e.Key] = persister.ElementType.DeepCopy(e.Value, EntityMode.Poco, persister.Factory);
 			}
 			return clonedMap;
 		}

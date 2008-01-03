@@ -1,7 +1,9 @@
 using System;
 using System.Data;
 using NHibernate.Engine;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -15,6 +17,7 @@ namespace NHibernate.Type
 
 		private readonly ForeignKeyDirection foreignKeyDirection;
 		private readonly string propertyName;
+		private readonly string entityName;
 
 		public override int GetColumnSpan(IMapping session)
 		{
@@ -26,19 +29,12 @@ namespace NHibernate.Type
 			return NoSqlTypes;
 		}
 
-		public OneToOneType(
-			System.Type persistentClass,
-			ForeignKeyDirection foreignKeyDirection,
-			string uniqueKeyPropertyName,
-			bool lazy,
-			string propertyName)
-			: base(
-				persistentClass,
-				uniqueKeyPropertyName,
-				!lazy)
+		public OneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, string entityName, string propertyName)
+			: base(referencedEntityName, uniqueKeyPropertyName, !lazy, isEmbeddedInXML, unwrapProxy)
 		{
-			this.foreignKeyDirection = foreignKeyDirection;
+			foreignKeyDirection = foreignKeyType;
 			this.propertyName = propertyName;
+			this.entityName = entityName;
 		}
 
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
@@ -59,6 +55,33 @@ namespace NHibernate.Type
 		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
 			return false;
+		}
+
+		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return false;
+		}
+
+		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return false;
+		}
+
+		public override bool IsNull(object owner, ISessionImplementor session)
+		{
+			if (propertyName != null)
+			{
+				IEntityPersister ownerPersister = session.Factory.GetEntityPersister(entityName);
+				object id = session.GetContextEntityIdentifier(owner);
+
+				EntityKey entityKey = new EntityKey(id, ownerPersister);
+
+				return session.PersistenceContext.IsPropertyNull(entityKey, PropertyName);
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		public override ForeignKeyDirection ForeignKeyDirection
@@ -88,6 +111,9 @@ namespace NHibernate.Type
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
+			//this should be a call to resolve(), not resolveIdentifier(), 
+			//'cos it might be a property-ref, and we did not cache the
+			//referenced value
 			return ResolveIdentifier(session.GetContextEntityIdentifier(owner), session, owner);
 		}
 
@@ -98,7 +124,7 @@ namespace NHibernate.Type
 		/// </summary>
 		public override bool IsAlwaysDirtyChecked
 		{
-			get { return false; }
+			get { return false; } //TODO: this is kinda inconsistent with CollectionType
 		}
 
 		public override string PropertyName
@@ -106,9 +132,9 @@ namespace NHibernate.Type
 			get { return propertyName; }
 		}
 
-		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			return false;
+			return ArrayHelper.EmptyBoolArray;
 		}
 	}
 }

@@ -160,11 +160,11 @@ namespace NHibernate.Test.NHSpecificTest
 			return false;
 		}
 
-		public bool HasIdentifierPropertyOrEmbeddedCompositeIdentifier
+		public bool CanExtractIdOutOfEntity
 		{
 			get
 			{
-				// TODO:  Add TestingClassPersister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier getter implementation
+				// TODO:  Add TestingClassPersister.CanExtractIdOutOfEntity getter implementation
 				return false;
 			}
 		}

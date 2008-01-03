@@ -26,12 +26,12 @@ namespace NHibernate.Test.TypesTest
 			decimal rhs = 5.64351M;
 
 			DecimalType type = (DecimalType) NHibernateUtil.Decimal;
-			Assert.IsTrue(type.Equals(lhs, rhs));
+			Assert.IsTrue(type.IsEqual(lhs, rhs));
 
 			// Test that two decimal fields that are equal except one has a higher precision than
 			// the other one are returned as Equal by the DecimalType.
 			rhs = 5.643510M;
-			Assert.IsTrue(type.Equals(lhs, rhs));
+			Assert.IsTrue(type.IsEqual(lhs, rhs));
 		}
 
 		[Test]
@@ -65,7 +65,7 @@ namespace NHibernate.Test.TypesTest
 			DecimalType type = (DecimalType) NHibernateUtil.Decimal;
 			object mappedValue = type.StringToObject("0");
 			Assert.AreEqual(0m, mappedValue);
-			Assert.IsTrue(type.Equals(mappedValue, 0m), "'0' in the mapping file should have been converted to a 0m");
+			Assert.IsTrue(type.IsEqual(mappedValue, 0m), "'0' in the mapping file should have been converted to a 0m");
 		}
 	}
 }

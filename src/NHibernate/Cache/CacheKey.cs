@@ -12,11 +12,11 @@ namespace NHibernate.Cache
 	[Serializable]
 	public class CacheKey
 	{
-		private object key;
-		private IType type;
-		private string entityOrRoleName;
-		private ISessionFactoryImplementor factory;
-		private int hashCode;
+		private readonly object key;
+		private readonly IType type;
+		private readonly string entityOrRoleName;
+		private readonly ISessionFactoryImplementor factory;
+		private readonly int hashCode;
 
 		/// <summary>
 		/// Construct a new key for a collection or entity instance.
@@ -29,7 +29,7 @@ namespace NHibernate.Cache
 			this.type = type;
 			this.entityOrRoleName = entityOrRoleName;
 			this.factory = factory;
-			hashCode = type.GetHashCode(key, factory);
+			hashCode = type.GetHashCode(key, EntityMode.Poco, factory);
 		}
 
 		//Mainly for SysCache and Memcache
@@ -38,14 +38,14 @@ namespace NHibernate.Cache
 			if (type is ComponentType)
 				return entityOrRoleName + '#' + type.ToLoggableString(key, factory);
 			else
-				return entityOrRoleName + '#' + key.ToString();
+				return entityOrRoleName + '#' + key;
 		}
 
 		public override bool Equals(Object other)
 		{
 			if (!(other is CacheKey)) return false;
 			CacheKey that = (CacheKey) other;
-			return type.Equals(key, that.key) && entityOrRoleName.Equals(that.entityOrRoleName);
+			return entityOrRoleName.Equals(that.entityOrRoleName) && type.IsEqual(key, that.key, EntityMode.Poco);
 		}
 
 		public override int GetHashCode()

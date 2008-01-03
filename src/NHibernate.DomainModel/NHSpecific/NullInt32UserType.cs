@@ -27,7 +27,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			int lhs = (x == null) ? 0 : (int) x;
 			int rhs = (y == null) ? 0 : (int) y;
 
-			return _int32Type.Equals(lhs, rhs);
+			return _int32Type.IsEqual(lhs, rhs);
 		}
 
 		public int GetHashCode(object x)

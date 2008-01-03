@@ -27,12 +27,12 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if (this.IsGeneric)
+				if (IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);
-					return TypeFactory.GenericList(Role, ReferencedPropertyName, this.GenericArguments[0]);
+					return TypeFactory.GenericList(Role, ReferencedPropertyName, GenericArguments[0]);
 				}
-				return TypeFactory.List(Role, ReferencedPropertyName);
+				return TypeFactory.List(Role, ReferencedPropertyName, Embedded);;
 			}
 		}
         

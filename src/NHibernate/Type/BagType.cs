@@ -21,8 +21,9 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
-		public BagType(string role, string propertyRef)
-			: base(role, propertyRef)
+		/// <param name="isEmbeddedInXML"></param>
+		public BagType(string role, string propertyRef, bool isEmbeddedInXML)
+			: base(role, propertyRef, isEmbeddedInXML)
 		{
 		}
 
@@ -31,8 +32,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the bag.</param>
 		/// <param name="persister"></param>
+		/// <param name="key"></param>
 		/// <returns>A new <see cref="NHibernate.Collection.PersistentBag"/>.</returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return new PersistentBag(session);
 		}

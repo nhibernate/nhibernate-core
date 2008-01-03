@@ -8,6 +8,7 @@ namespace NHibernate.Event
 		private bool allowNulls;
 		private bool checkDeleted;
 		private bool allowProxyCreation;
+		private bool exactPersister;
 
 		internal LoadType(string name)
 		{
@@ -63,6 +64,17 @@ namespace NHibernate.Event
 		internal LoadType SetAllowProxyCreation(bool allowProxyCreation)
 		{
 			this.allowProxyCreation = allowProxyCreation;
+			return this;
+		}
+
+		public bool ExactPersister
+		{
+			get { return exactPersister; }
+		}
+
+		internal LoadType SetExactPersister(bool exactPersister)
+		{
+			this.exactPersister = exactPersister;
 			return this;
 		}
 

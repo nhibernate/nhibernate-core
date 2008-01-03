@@ -20,67 +20,41 @@ namespace NHibernate.Type
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
 		public override object Get(IDataReader rs, int index)
 		{
 			return Convert.ToDecimal(rs[index]);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
 		public override object Get(IDataReader rs, string name)
 		{
 			return Convert.ToDecimal(rs[name]);
 		}
 
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(Decimal); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
 		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.Value = value;
+			((IDataParameter) st.Parameters[index]).Value = value;
 		}
 
-		/// <summary></summary>
 		public override string Name
 		{
 			get { return "Decimal"; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		public object StringToObject(string xml)
+		public override System.Type PrimitiveClass
 		{
-			return FromString(xml);
+			get { return typeof (Decimal); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
+		public override object DefaultValue
+		{
+			get { return 0m; }
+		}
+
 		public override object FromStringValue(string xml)
 		{
 			return Decimal.Parse(xml);
@@ -89,6 +63,11 @@ namespace NHibernate.Type
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return value.ToString();
+		}
+
+		public object StringToObject(string xml)
+		{
+			return FromStringValue(xml);
 		}
 	}
 }

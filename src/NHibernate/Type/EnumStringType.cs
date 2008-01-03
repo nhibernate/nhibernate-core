@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -134,17 +135,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
-		public override bool Equals(object x, object y)
-		{
-			return (x == y) || (x != null && y != null && x.Equals(y));
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		public override System.Type ReturnedClass
 		{
 			get { return enumClass; }
@@ -247,11 +237,6 @@ namespace NHibernate.Type
 			return (value == null) ? null : GetValue(value);
 		}
 
-		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return GetValue(value).ToString();
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -259,12 +244,17 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public object StringToObject(string xml)
 		{
-			return FromString(xml);
+			return (string.IsNullOrEmpty(xml)) ? null : FromStringValue(xml);
 		}
 
 		public override object FromStringValue(string xml)
 		{
 			return GetInstance(xml);
+		}
+
+		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		{
+			return GetValue(value).ToString();
 		}
 	}
 }

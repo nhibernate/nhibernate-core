@@ -528,7 +528,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		public ICollection QueuedAddsCollection
+		public IEnumerable QueuedAdditionIterator
 		{
 			get
 			{
@@ -644,7 +644,7 @@ namespace NHibernate.Collection
 				for (int i = 0; i < list.Count; i++)
 				{
 					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, list[i], session);
-					if (idType.Equals(idOfOld, idOfCurrent))
+					if (idType.IsEqual(idOfOld, idOfCurrent, EntityMode.Poco))
 					{
 						// in hibernate this used the Iterator to remove the item - since in .NET
 						// the Enumerator is read only we have to change the implementation slightly. 

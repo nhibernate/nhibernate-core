@@ -729,7 +729,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ReferencedPropertyName = ukName.Value;
 
 			model.ReferencedEntityName = GetEntityName(node, mappings);
-			model.ReferencedTypeName = GetQualifiedClassName(node, mappings);
 
 			string notFound = XmlHelper.GetAttributeValue(node, "not-found");
 			model.IsIgnoreNotFound = "ignore".Equals(notFound);
@@ -761,13 +760,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					throw new MappingException("could not interpret meta-type");
 				model.MetaType = metaType.Name;
 
-				IDictionary<object, System.Type> values = new Dictionary<object, System.Type>();
+				IDictionary<object, string> values = new Dictionary<object, string>();
 				foreach (XmlNode metaValue in node.SelectNodes(HbmConstants.nsMetaValue, namespaceManager))
 					try
 					{
-						object value = metaType.FromString(metaValue.Attributes["value"].Value);
-						System.Type clazz = ReflectHelper.ClassForName(FullClassName(metaValue.Attributes["class"].Value, mappings));
-						values[value] = clazz;
+						object value = ((IDiscriminatorType) metaType).StringToObject(metaValue.Attributes["value"].Value);
+						string entityName = GetClassName(metaValue.Attributes["class"].Value, mappings);
+						values[value] = entityName;
 					}
 					catch (InvalidCastException)
 					{
@@ -818,7 +817,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ReferencedPropertyName = ukName.Value;
 
 			model.ReferencedEntityName = GetEntityName(node, mappings);
-			model.ReferencedTypeName = GetQualifiedClassName(node, mappings);
 			model.PropertyName = node.Attributes["name"].Value;
 		}
 

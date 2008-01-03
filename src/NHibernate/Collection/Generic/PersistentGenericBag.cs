@@ -284,7 +284,7 @@ namespace NHibernate.Collection.Generic
 			int result = 0;
 			foreach (T obj in list)
 			{
-				if (elementType.Equals(element, obj))
+				if (elementType.IsEqual(element, obj, EntityMode.Poco))
 				{
 					result++;
 				}
@@ -298,7 +298,7 @@ namespace NHibernate.Collection.Generic
 			List<T> clonedList = new List<T>();
 			foreach (T obj in bag)
 			{
-				clonedList.Add((T) persister.ElementType.DeepCopy(obj));
+				clonedList.Add((T) persister.ElementType.DeepCopy(obj, EntityMode.Poco, persister.Factory));
 			}
 
 			return clonedList;
@@ -327,7 +327,7 @@ namespace NHibernate.Collection.Generic
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
 			IList sn = (IList) GetSnapshot();
-			if (sn.Count > i && elemType.Equals(sn[i], entry))
+			if (sn.Count > i && elemType.IsEqual(sn[i], entry, EntityMode.Poco))
 			{
 				// a shortcut if its location didn't change
 				return false;
@@ -337,7 +337,7 @@ namespace NHibernate.Collection.Generic
 				//search for it
 				foreach (object oldObject in sn)
 				{
-					if (elemType.Equals(oldObject, entry))
+					if (elemType.IsEqual(oldObject, entry, EntityMode.Poco))
 					{
 						return false;
 					}
@@ -361,7 +361,7 @@ namespace NHibernate.Collection.Generic
 			foreach (object oldObject in sn)
 			{
 				bool found = false;
-				if (bag.Count > i && elemType.Equals(oldObject, bag[i++]))
+				if (bag.Count > i && elemType.IsEqual(oldObject, bag[i++], EntityMode.Poco))
 				{
 					//a shortcut if its location didn't change!
 					found = true;
@@ -371,7 +371,7 @@ namespace NHibernate.Collection.Generic
 					//search for it
 					foreach (object newObject in bag)
 					{
-						if (elemType.Equals(oldObject, newObject))
+						if (elemType.IsEqual(oldObject, newObject, EntityMode.Poco))
 						{
 							found = true;
 							break;

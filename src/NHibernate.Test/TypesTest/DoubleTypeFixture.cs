@@ -42,8 +42,8 @@ namespace NHibernate.Test.TypesTest
 		{
 			DoubleType type = (DoubleType) NHibernateUtil.Double;
 
-			Assert.IsTrue(type.Equals(1.5e20, 1.5e20));
-			Assert.IsFalse(type.Equals(1.5e20, 1.4e20));
+			Assert.IsTrue(type.IsEqual(1.5e20, 1.5e20));
+			Assert.IsFalse(type.IsEqual(1.5e20, 1.4e20));
 		}
 
 		[Test]

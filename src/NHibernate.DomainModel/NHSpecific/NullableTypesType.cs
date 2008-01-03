@@ -44,9 +44,9 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return ReturnedClass.Name; }
 		}
 
-		public override bool Equals(object x, object y)
+		public override bool IsEqual(object x, object y)
 		{
-			return object.Equals(x, y);
+			return Equals(x, y);
 		}
 
 		public abstract object NullValue { get; }

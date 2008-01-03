@@ -31,9 +31,9 @@ namespace NHibernate.Test.TypesTest
 			byte[] expected = Encoding.UTF8.GetBytes("ghij1`23%$");
 			byte[] expectedClone = Encoding.UTF8.GetBytes("ghij1`23%$");
 
-			Assert.IsTrue(type.Equals(expected, expected));
-			Assert.IsTrue(type.Equals(expected, expectedClone));
-			Assert.IsFalse(type.Equals(expected, GetByteArray(15)));
+			Assert.IsTrue(type.IsEqual(expected, expected));
+			Assert.IsTrue(type.IsEqual(expected, expectedClone));
+			Assert.IsFalse(type.IsEqual(expected, GetByteArray(15)));
 		}
 
 		/// <summary>

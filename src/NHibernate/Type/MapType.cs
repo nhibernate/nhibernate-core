@@ -21,8 +21,9 @@ namespace NHibernate.Type
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
-		public MapType(string role, string propertyRef)
-			: base(role, propertyRef)
+		/// <param name="isEmbeddedInXML"></param>
+		public MapType(string role, string propertyRef, bool isEmbeddedInXML)
+			: base(role, propertyRef, isEmbeddedInXML)
 		{
 		}
 
@@ -31,8 +32,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the map.</param>
 		/// <param name="persister"></param>
+		/// <param name="key"></param>
 		/// <returns></returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return new PersistentMap(session);
 		}
@@ -43,14 +45,9 @@ namespace NHibernate.Type
 			get { return typeof(IDictionary); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
-		public override ICollection GetElementsCollection(object collection)
+		public override IEnumerable GetElementsIterator(object collection)
 		{
-			return ((IDictionary) collection).Values;
+			return ((IDictionary)collection).Values;
 		}
 
 		/// <summary>
@@ -77,18 +74,38 @@ namespace NHibernate.Type
 			((IDictionary) collection).Clear();
 		}
 
-		protected override object CopyElement(ICollectionPersister persister, object element, ISessionImplementor session,
-		                                      object owner, IDictionary copiedAlready)
+		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
-			DictionaryEntry de = (DictionaryEntry) element;
-			return new DictionaryEntry(
-				persister.IndexType.Replace(de.Key, null, session, owner, copiedAlready),
-				persister.ElementType.Replace(de.Value, null, session, owner, copiedAlready));
+			ICollectionPersister cp = session.Factory.GetCollectionPersister(Role);
+
+			IDictionary result = (IDictionary)target;
+			result.Clear();
+
+			IEnumerable iter = (IDictionary)original;
+			foreach (DictionaryEntry me in iter)
+			{
+				object key = cp.IndexType.Replace(me.Key, null, session, owner, copyCache);
+				object value = cp.ElementType.Replace(me.Value, null, session, owner, copyCache);
+				result[key] = value;
+			}
+
+			return result;
 		}
 
 		public override object Instantiate()
 		{
 			return new Hashtable();
+		}
+
+		public override object IndexOf(object collection, object element)
+		{
+			IEnumerable iter = (IDictionary)collection;
+			foreach (DictionaryEntry me in iter)
+			{
+				if (me.Value == element)
+					return me.Key;				
+			}
+			return null;
 		}
 	}
 }

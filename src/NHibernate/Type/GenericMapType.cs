@@ -24,7 +24,7 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		public GenericMapType(string role, string propertyRef)
-			: base(role, propertyRef)
+			: base(role, propertyRef, false)
 		{
 		}
 
@@ -34,7 +34,7 @@ namespace NHibernate.Type
 		/// <param name="session">The current <see cref="ISessionImplementor"/> for the map.</param>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return new PersistentGenericMap<TKey, TValue>(session);
 		}
@@ -63,13 +63,22 @@ namespace NHibernate.Type
 			((IDictionary<TKey, TValue>) collection).Add((KeyValuePair<TKey, TValue>) element);
 		}
 
-		protected override object CopyElement(ICollectionPersister persister, object element, ISessionImplementor session,
-		                                      object owner, IDictionary copiedAlready)
+		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
-			KeyValuePair<TKey, TValue> pair = (KeyValuePair<TKey, TValue>) element;
-			return new KeyValuePair<TKey, TValue>(
-				(TKey) persister.IndexType.Replace(pair.Key, null, session, owner, copiedAlready),
-				(TValue) persister.ElementType.Replace(pair.Value, null, session, owner, copiedAlready));
+			ICollectionPersister cp = session.Factory.GetCollectionPersister(Role);
+
+			IDictionary<TKey, TValue> result = (IDictionary<TKey, TValue>)target;
+			result.Clear();
+
+			IEnumerable iter = (IDictionary)original;
+			foreach (KeyValuePair<TKey, TValue> me in iter)
+			{
+				TKey key = (TKey)cp.IndexType.Replace(me.Key, null, session, owner, copyCache);
+				TValue value = (TValue)cp.ElementType.Replace(me.Value, null, session, owner, copyCache);
+				result[key] = value;
+			}
+
+			return result;
 		}
 
 		public override object Instantiate()

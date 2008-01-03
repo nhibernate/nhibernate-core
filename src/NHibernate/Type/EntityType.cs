@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Text;
+using System.Xml;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Persister.Entity;
@@ -17,67 +18,18 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class EntityType : AbstractType, IAssociationType
 	{
-		private readonly System.Type associatedClass;
-		private readonly bool niceEquals;
 		protected readonly string uniqueKeyPropertyName;
 		private readonly bool eager;
 		protected internal bool isEmbeddedInXML;
 		private readonly string associatedEntityName;
 		private readonly bool unwrapProxy;
-
-		public override sealed bool IsEntityType
-		{
-			get { return true; }
-		}
-
-		public System.Type AssociatedClass
-		{
-			get { return associatedClass; }
-		}
-
-		public override sealed bool Equals(object x, object y)
-		{
-			if (x == y)
-				return true;
-			else if (x != null)
-				return x.Equals(y);
-			else
-				return y.Equals(x);
-		}
-
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
-		{
-			IEntityPersister persister = factory.GetEntityPersister(associatedClass);
-			if (!persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier)
-			{
-				return base.GetHashCode(x, factory);
-			}
-
-			object id;
-			INHibernateProxy proxy = x as INHibernateProxy;
-			if (proxy!=null)
-			{
-				id = proxy.HibernateLazyInitializer.Identifier;
-			}
-			else
-			{
-				id = persister.GetIdentifier(x);
-			}
-			return persister.IdentifierType.GetHashCode(id, factory);
-		}
-
-		protected EntityType(System.Type persistentClass, string uniqueKeyPropertyName, bool eager)
-		{
-			this.associatedClass = persistentClass;
-			this.niceEquals = !ReflectHelper.OverridesEquals(persistentClass);
-			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
-			this.eager = eager;
-		}
+		private System.Type returnedClass;
 
 		/// <summary> Constructs the requested entity type mapping. </summary>
 		/// <param name="entityName">The name of the associated entity. </param>
 		/// <param name="uniqueKeyPropertyName">
-		/// The property-ref name, or null if we reference the PK of the associated entity.
+		/// The property-ref name, or null if we
+		/// reference the PK of the associated entity.
 		/// </param>
 		/// <param name="eager">Is eager fetching enabled. </param>
 		/// <param name="isEmbeddedInXML">Should values of this mapping be embedded in XML modes? </param>
@@ -95,20 +47,117 @@ namespace NHibernate.Type
 			this.unwrapProxy = unwrapProxy;
 		}
 
+		/// <summary> Explicitly, an entity type is an entity type </summary>
+		/// <value> True. </value>
+		public override sealed bool IsEntityType
+		{
+			get { return true; }
+		}
+
+		public override bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
+		{
+			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
+			if (!persister.CanExtractIdOutOfEntity)
+			{
+				return base.IsEqual(x, y, entityMode);
+			}
+
+			object xid;
+			INHibernateProxy proxy = x as INHibernateProxy;
+			if (proxy!=null)
+			{
+				xid = proxy.HibernateLazyInitializer.Identifier;
+			}
+			else
+			{
+				xid = persister.GetIdentifier(x); // TODO NH: persister.GetIdentifier(x, entityMode);
+			}
+
+			object yid;
+			proxy = y as INHibernateProxy;
+			if (proxy != null)
+			{
+				yid = proxy.HibernateLazyInitializer.Identifier;
+			}
+			else
+			{
+				yid = persister.GetIdentifier(x); // TODO NH: persister.GetIdentifier(x, entityMode);
+			}
+
+			return persister.IdentifierType.IsEqual(xid, yid, entityMode, factory);
+		}
+
+		public virtual bool IsNull(object owner, ISessionImplementor session)
+		{
+			return false;
+		}
+
+		/// <summary> Two entities are considered the same when their instances are the same. </summary>
+		/// <param name="x">One entity instance </param>
+		/// <param name="y">Another entity instance </param>
+		/// <param name="entityMode">The entity mode. </param>
+		/// <returns> True if x == y; false otherwise. </returns>
+		public override bool IsSame(object x, object y, EntityMode entityMode)
+		{
+			return ReferenceEquals(x, y);
+		}
+
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
-		// This returns the wrong class for an entity with a proxy. Theoretically
-		// it should return the proxy class, but it doesn't.
-		public override sealed System.Type ReturnedClass
+		/// <summary> 
+		/// This returns the wrong class for an entity with a proxy, or for a named
+		/// entity.  Theoretically it should return the proxy class, but it doesn't.
+		/// <p/>
+		/// The problem here is that we do not necessarily have a ref to the associated
+		/// entity persister (nor to the session factory, to look it up) which is really
+		/// needed to "do the right thing" here...
+		///  </summary>
+		override public System.Type ReturnedClass
 		{
-			get { return associatedClass; }
+			get
+			{
+				if (returnedClass == null)
+				{
+					returnedClass = DetermineAssociatedEntityClass();
+				}
+				return returnedClass;
+			}
+
+		}
+
+		/// <summary> 
+		/// Get the identifier value of an instance or proxy.
+		/// <p/>
+		/// Intended only for loggin purposes!!!
+		/// </summary>
+		/// <param name="obj">The object from which to extract the identifier.</param>
+		/// <param name="persister">The entity persister </param>
+		/// <param name="entityMode">The entity mode </param>
+		/// <returns> The extracted identifier. </returns>
+		private static object GetIdentifier(object obj, IEntityPersister persister, EntityMode entityMode)
+		{
+			INHibernateProxy proxy = obj as INHibernateProxy;
+			if (proxy != null)
+			{
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
+				return li.Identifier;
+			}
+			else
+			{
+				return persister.GetIdentifier(obj); // TODO NH:persister.GetIdentifier(obj, entityMode);
+			}
 		}
 
 		protected internal object GetIdentifier(object value, ISessionImplementor session)
 		{
+			if (IsNotEmbedded(session))
+			{
+				return value;
+			}
+
 			if (IsReferenceToPrimaryKey)
 			{
 				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
@@ -121,6 +170,8 @@ namespace NHibernate.Type
 			{
 				IEntityPersister entityPersister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
 				object propertyValue = entityPersister.GetPropertyValue(value, uniqueKeyPropertyName);
+				 // TODO NH: entityPersister.GetPropertyValue(value, uniqueKeyPropertyName, session.EntityMode);
+
 				// We now have the value of the property-ref we reference.  However,
 				// we need to dig a little deeper, as that property might also be
 				// an entity type, in which case we need to resolve its identitifier
@@ -134,35 +185,61 @@ namespace NHibernate.Type
 			}
 		}
 
+		protected internal virtual bool IsNotEmbedded(ISessionImplementor session)
+		{
+			return !isEmbeddedInXML && false; //session.EntityMode == EntityMode.DOM4J;
+		}
+
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			IEntityPersister persister = factory.GetEntityPersister(associatedClass);
 			if (value == null)
 			{
 				return "null";
 			}
-			StringBuilder result = new StringBuilder();
-			result.Append(StringHelper.Unqualify(NHibernateProxyHelper.GetClassWithoutInitializingProxy(value).FullName));
+
+			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
+			StringBuilder result = new StringBuilder().Append(associatedEntityName);
+
 			if (persister.HasIdentifierProperty)
 			{
-				result.Append('#')
-					.Append(persister.IdentifierType.ToLoggableString(NHibernateProxyHelper.GetIdentifier(value, persister), factory));
+				EntityMode? entityMode = EntityMode.Poco; //TODO NH: persister.GuessEntityMode(value);
+				object id;
+				if (!entityMode.HasValue)
+				{
+					if (isEmbeddedInXML)
+						throw new InvalidCastException(value.GetType().FullName);
+
+					id = value;
+				}
+				else
+				{
+					id = GetIdentifier(value, persister, entityMode.Value);
+				}
+
+				result.Append('#').Append(persister.IdentifierType.ToLoggableString(id, factory));
 			}
 
 			return result.ToString();
 		}
 
-		public override object FromString(string xml)
+		public override object FromXMLNode(XmlNode xml, IMapping factory)
 		{
-			throw new NotSupportedException(); //TODO: is this correct???
+			if (!isEmbeddedInXML)
+			{
+				return GetIdentifierType(factory).FromXMLNode(xml, factory);
+			}
+			else
+			{
+				return xml;
+			}
 		}
 
 		public override string Name
 		{
-			get { return associatedClass.Name; }
+			get { return associatedEntityName; }
 		}
 
-		public override object DeepCopy(object value)
+		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
 			return value; //special case ... this is the leaf of the containment graph, even though not immutable
 		}
@@ -182,7 +259,6 @@ namespace NHibernate.Type
 			{
 				return null;
 			}
-
 			object cached = copyCache[original];
 			if (cached != null)
 			{
@@ -194,29 +270,14 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-
-				IType idType = GetIdentifierOrUniqueKeyType(session.Factory);
 				object id = GetIdentifier(original, session);
 				if (id == null)
 				{
 					throw new AssertionFailure("cannot copy a reference to an object with a null id");
 				}
-
-				id = idType.Replace(id, null, session, owner, copyCache);
-
-				// Replace a property-ref'ed entity by its id
-				if (IsUniqueKeyReference && idType.IsEntityType)
-				{
-					id = ((EntityType) idType).GetIdentifier(id, session);
-				}
+				id = GetIdentifierOrUniqueKeyType(session.Factory).Replace(id, null, session, owner, copyCache);
 				return ResolveIdentifier(id, session, owner);
 			}
-		}
-
-		/// <summary></summary>
-		public override bool HasNiceEquals
-		{
-			get { return niceEquals; }
 		}
 
 		/// <summary></summary>
@@ -242,18 +303,6 @@ namespace NHibernate.Type
 
 		public abstract override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
-		public override bool IsDirty(object old, object current, ISessionImplementor session)
-		{
-			if (Equals(old, current))
-			{
-				return false;
-			}
-
-			object oldid = GetIdentifier(old, session);
-			object newid = GetIdentifier(current, session);
-			return !GetIdentifierType(session).Equals(oldid, newid);
-		}
-
 		public bool IsUniqueKeyReference
 		{
 			get { return uniqueKeyPropertyName != null; }
@@ -261,33 +310,48 @@ namespace NHibernate.Type
 
 		public abstract bool IsNullable { get; }
 
+		/// <summary> Retrieves the {@link Joinable} defining the associated entity. </summary>
+		/// <param name="factory">The session factory. </param>
+		/// <returns> The associated joinable </returns>
 		public IJoinable GetAssociatedJoinable(ISessionFactoryImplementor factory)
 		{
-			return (IJoinable) factory.GetEntityPersister(associatedClass);
+			return (IJoinable)factory.GetEntityPersister(associatedEntityName);
 		}
 
-		protected IType GetIdentifierType(ISessionImplementor session)
-		{
-			return session.Factory.GetIdentifierType(associatedClass);
-		}
-
+		/// <summary> 
+		/// Determine the type of either (1) the identifier if we reference the
+		/// associated entity's PK or (2) the unique key to which we refer (i.e.
+		/// the property-ref). 
+		/// </summary>
+		/// <param name="factory">The mappings... </param>
+		/// <returns> The appropriate type. </returns>
 		public IType GetIdentifierOrUniqueKeyType(IMapping factory)
 		{
 			if (IsReferenceToPrimaryKey)
 			{
-				return factory.GetIdentifierType(associatedClass);
+				return GetIdentifierType(factory);
 			}
 			else
 			{
-				return factory.GetPropertyType(associatedClass, uniqueKeyPropertyName);
+				IType type = factory.GetReferencedPropertyType(GetAssociatedEntityName(), uniqueKeyPropertyName);
+				if (type.IsEntityType)
+				{
+					type = ((EntityType)type).GetIdentifierOrUniqueKeyType(factory);
+				}
+				return type;
 			}
 		}
 
+		/// <summary> 
+		/// The name of the property on the associated entity to which our FK refers 
+		/// </summary>
+		/// <param name="factory">The mappings... </param>
+		/// <returns> The appropriate property name. </returns>
 		public string GetIdentifierOrUniqueKeyPropertyName(IMapping factory)
 		{
 			if (IsReferenceToPrimaryKey)
 			{
-				return factory.GetIdentifierPropertyName(associatedClass);
+				return factory.GetIdentifierPropertyName(GetAssociatedEntityName());
 			}
 			else
 			{
@@ -295,18 +359,37 @@ namespace NHibernate.Type
 			}
 		}
 
+		/// <summary> Convenience method to locate the identifier type of the associated entity. </summary>
+		/// <param name="factory">The mappings... </param>
+		/// <returns> The identifier type </returns>
+		internal virtual IType GetIdentifierType(IMapping factory)
+		{
+			return factory.GetIdentifierType(GetAssociatedEntityName());
+		}
+
+		/// <summary> Convenience method to locate the identifier type of the associated entity. </summary>
+		/// <param name="session">The originating session </param>
+		/// <returns> The identifier type </returns>
+		internal virtual IType GetIdentifierType(ISessionImplementor session)
+		{
+			return GetIdentifierType(session.Factory);
+		}
+
 		/// <summary>
 		/// Resolves the identifier to the actual object.
 		/// </summary>
 		protected object ResolveIdentifier(object id, ISessionImplementor session)
 		{
-			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory.GetEntityPersister(AssociatedEntityName).IsInstrumented(session.EntityMode);
+			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory
+				.GetEntityPersister(GetAssociatedEntityName())
+				.IsInstrumented(session.EntityMode);
 
-			object proxyOrEntity = session.InternalLoad(AssociatedEntityName, id, eager, IsNullable && !isProxyUnwrapEnabled);
+			object proxyOrEntity = session.InternalLoad(GetAssociatedEntityName(), id, eager, IsNullable && !isProxyUnwrapEnabled);
 
-			if (proxyOrEntity is INHibernateProxy)
+			INHibernateProxy proxy = proxyOrEntity as INHibernateProxy;
+			if (proxy!=null)
 			{
-				((INHibernateProxy)proxyOrEntity).HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
+				proxy.HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
 			}
 
 			return proxyOrEntity;
@@ -321,12 +404,22 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
+			if (IsNotEmbedded(session))
+			{
+				return value;
+			}
+
 			if (value == null)
 			{
 				return null;
 			}
 			else
 			{
+				if (IsNull(owner, session))
+				{
+					return null; //EARLY EXIT!
+				}
+
 				if (IsReferenceToPrimaryKey)
 				{
 					return ResolveIdentifier(value, session);
@@ -338,25 +431,19 @@ namespace NHibernate.Type
 			}
 		}
 
-		public System.Type GetAssociatedClass(ISessionFactoryImplementor factory)
-		{
-			return associatedClass;
-		}
-
-		/// <summary> 
-		/// The name of the associated entity.
-		/// </summary>
-		/// <returns> The associated entity name.
-		/// </returns>
-		public System.String GetAssociatedEntityName()
-		{
-			// TODO H3: Until we don't implements EntityName this method have the same behaviour of AbstractEntityPersister
-			return associatedClass.FullName;
-		}
-
-		public string GetAssociatedEntityName(ISessionFactoryImplementor factory)
+		/// <summary> The name of the associated entity. </summary>
+		/// <param name="factory">The session factory, for resolution. </param>
+		/// <returns> The associated entity name. </returns>
+		public virtual string GetAssociatedEntityName(ISessionFactoryImplementor factory)
 		{
 			return GetAssociatedEntityName();
+		}
+
+		/// <summary> The name of the associated entity. </summary>
+		/// <returns> The associated entity name.</returns>
+		public string GetAssociatedEntityName()
+		{
+			return associatedEntityName;
 		}
 
 		/// <summary>
@@ -386,39 +473,32 @@ namespace NHibernate.Type
 			get { return null; }
 		}
 
-		public override bool Equals(object obj)
+		public override int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
-			if (!base.Equals(obj))
+			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
+			if (!persister.CanExtractIdOutOfEntity)
 			{
-				return false;
+				return base.GetHashCode(x, entityMode);
 			}
 
-			return ((EntityType) obj).associatedClass == associatedClass;
-		}
-
-		public override int GetHashCode()
-		{
-			return associatedClass.GetHashCode();
+			object id;
+			INHibernateProxy proxy = x as INHibernateProxy;
+			if (proxy!=null)
+			{
+				id = proxy.HibernateLazyInitializer.Identifier;
+			}
+			else
+			{
+				id = persister.GetIdentifier(x);// TODO NH: persister.GetIdentifier(x, entityMode);
+			}
+			return persister.IdentifierType.GetHashCode(id, entityMode, factory);
 		}
 
 		public abstract bool IsAlwaysDirtyChecked { get; }
 
 		public bool IsReferenceToPrimaryKey
 		{
-			get { return uniqueKeyPropertyName == null; }
-		}
-
-		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
-		{
-			if (IsReferenceToPrimaryKey)
-			{
-				//TODO: this is a bit arbitrary, expose a switch to the user?
-				return "";
-			}
-			else
-			{
-				return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
-			}
+			get { return string.IsNullOrEmpty(uniqueKeyPropertyName); }
 		}
 
 		public bool IsEmbeddedInXML
@@ -426,9 +506,22 @@ namespace NHibernate.Type
 			get { return isEmbeddedInXML; }
 		}
 
-		public string AssociatedEntityName
+		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
-			get { return AssociatedClass.FullName; }
+			if (IsReferenceToPrimaryKey)
+			{
+				//TODO: this is a bit arbitrary, expose a switch to the user?
+				return string.Empty;
+			}
+			else
+			{
+				return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
+			}
+		}
+
+		public override IType GetSemiResolvedType(ISessionFactoryImplementor factory)
+		{
+			return factory.GetEntityPersister(associatedEntityName).IdentifierType;
 		}
 
 		/// <summary> 
@@ -441,20 +534,24 @@ namespace NHibernate.Type
 		/// <returns> The loaded entity </returns>
 		public object LoadByUniqueKey(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session)
 		{
+
 			ISessionFactoryImplementor factory = session.Factory;
 			IUniqueKeyLoadable persister = (IUniqueKeyLoadable)factory.GetEntityPersister(entityName);
-			IPersistenceContext persistenceContext = session.PersistenceContext;
 
 			//TODO: implement caching?! proxies?!
+
+			EntityUniqueKey euk =
+				new EntityUniqueKey(entityName, uniqueKeyPropertyName, key, GetIdentifierOrUniqueKeyType(factory),
+				                    session.EntityMode, session.Factory);
+
+			IPersistenceContext persistenceContext = session.PersistenceContext;
 			try
 			{
-				object result;
-				// NH Different behavior
-				//EntityUniqueKey euk = new EntityUniqueKey(entityName, uniqueKeyPropertyName, key, GetIdentifierOrUniqueKeyType(factory), session.Factory);
-				//result = persistenceContext.GetEntity(euk);
-				//if (result == null)
+				object result = persistenceContext.GetEntity(euk);
+				if (result == null)
+				{
 					result = persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session);
-
+				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}
 			catch (HibernateException)
@@ -467,5 +564,53 @@ namespace NHibernate.Type
 				throw ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqle, "Error performing LoadByUniqueKey");
 			}
 		}
+
+		public override int Compare(object x, object y, EntityMode? entityMode)
+		{
+			IComparable xComp = x as IComparable;
+			IComparable yComp = x as IComparable;
+			if (xComp != null)
+				return xComp.CompareTo(y);
+			if (yComp != null)
+				return yComp.CompareTo(x);
+
+			return 0; //TODO: entities CAN be compared, by PK, fix this! -> only if/when we can extract the id values....
+		}
+
+		private System.Type DetermineAssociatedEntityClass()
+		{
+			try
+			{
+				return ReflectHelper.ClassForFullName(GetAssociatedEntityName());
+			}
+			catch (Exception)
+			{
+				return typeof(IDictionary);
+			}
+		}
+
+		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
+		{
+			if (!isEmbeddedInXML)
+			{
+				GetIdentifierType(factory).SetToXMLNode(node, value, factory);
+			}
+			else
+			{
+				XmlNode elt = (XmlNode)value;
+				ReplaceNode(node, elt); // NH different behavior (we don't use Wrapper)
+			}
+		}
+
+		public override string ToString()
+		{
+			return GetType().FullName + '(' + GetAssociatedEntityName() + ')';
+		}
+
+		public override bool IsXMLElement
+		{
+			get { return isEmbeddedInXML; }
+		}
+
 	}
 }

@@ -12,23 +12,19 @@ namespace NHibernate.Cache.Entry
 	[Serializable]
 	public sealed class CacheEntry
 	{
-		private readonly object[] state;
-		private readonly System.Type subclassType;
 		private readonly object[] disassembledState;
 		private readonly string subclass;
 		private readonly bool lazyPropertiesAreUnfetched;
 		private readonly object version;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="persister"></param>
-		/// <param name="session"></param>
-		public CacheEntry(object obj, IEntityPersister persister, ISessionImplementor session)
+
+		public CacheEntry(object[] state, IEntityPersister persister, bool unfetched, object version, ISessionImplementor session, object owner)
 		{
-			state = Disassemble(obj, persister, session);
-			subclassType = obj.GetType();
+			//disassembled state gets put in a new array (we write to cache by value!)
+			disassembledState = TypeFactory.Disassemble(state, persister.PropertyTypes, null, session, owner);
+			subclass = persister.EntityName;
+			lazyPropertiesAreUnfetched = unfetched || !persister.IsLazyPropertiesCacheable;
+			this.version = version;
 		}
 
 		internal CacheEntry(object[] state, string subclass, bool unfetched, object version)
@@ -37,12 +33,6 @@ namespace NHibernate.Cache.Entry
 			this.subclass = subclass;
 			lazyPropertiesAreUnfetched = unfetched;
 			this.version = version;
-		}
-
-		/// <summary></summary>
-		public System.Type SubclassType
-		{
-			get { return subclassType; }
 		}
 
 		public object Version
@@ -71,33 +61,15 @@ namespace NHibernate.Cache.Entry
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="persister"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		private static object[] Disassemble(object obj, IEntityPersister persister, ISessionImplementor session)
-		{
-			object[] values = persister.GetPropertyValues(obj);
-			IType[] propertyTypes = persister.PropertyTypes;
-			for (int i = 0; i < values.Length; i++)
-			{
-				values[i] = propertyTypes[i].Disassemble(values[i], session, null);
-			}
-			return values;
-		}
-
 		public object[] Assemble(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
 		                         ISessionImplementor session)
 		{
-			if (subclassType != persister.MappedClass)
+			if (!persister.EntityName.Equals(subclass))
 			{
 				throw new AssertionFailure("Tried to assemble a different subclass instance");
 			}
 
-			return Assemble(state, instance, id, persister, interceptor, session);
+			return Assemble(disassembledState, instance, id, persister, interceptor, session);
 		}
 
 		private static object[] Assemble(object[] values, object result, object id, IEntityPersister persister,

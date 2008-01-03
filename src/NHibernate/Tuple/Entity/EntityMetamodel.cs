@@ -88,12 +88,10 @@ namespace NHibernate.Tuple.Entity
 
 			name = persistentClass.EntityName;
 			rootName = persistentClass.RootClazz.EntityName;
-			// TODO H3:
-			//entityType = TypeFactory.ManyToOne(name);
+			entityType = TypeFactory.ManyToOne(name);
 			type = persistentClass.MappedClass;
 			rootType = persistentClass.RootClazz.MappedClass;
 			rootTypeAssemblyQualifiedName = rootType.AssemblyQualifiedName;
-			entityType = TypeFactory.ManyToOne(type);
 
 			identifierProperty =
 				PropertyFactory.BuildIdentifierProperty(persistentClass, sessionFactory.GetIdentifierGenerator(rootType));

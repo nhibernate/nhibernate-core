@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class PersistentEnumType : PrimitiveType, ILiteralType
 	{
 		private readonly System.Type enumClass;
-
+		private readonly object defaultValue;
 		/// <summary>
 		/// 
 		/// </summary>
@@ -22,6 +22,7 @@ namespace NHibernate.Type
 			if (enumClass.IsEnum)
 			{
 				this.enumClass = enumClass;
+				defaultValue = Enum.GetValues(enumClass).GetValue(0);
 			}
 			else
 			{
@@ -132,11 +133,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override bool Equals(object x, object y)
-		{
-			return (x == y) || (x != null && y != null && x.Equals(y));
-		}
-
 		public override System.Type ReturnedClass
 		{
 			get { return enumClass; }
@@ -211,6 +207,16 @@ namespace NHibernate.Type
 		public override int GetHashCode()
 		{
 			return enumClass.GetHashCode();
+		}
+
+		public override System.Type PrimitiveClass
+		{
+			get { return enumClass; }
+		}
+
+		public override object DefaultValue
+		{
+			get { return defaultValue; }
 		}
 	}
 }

@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using NHibernate.Collection;
+using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 
 namespace NHibernate.Type
 {
@@ -20,11 +23,12 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="comparer">The <see cref="IComparer"/> to use for the sorting.</param>
-		public SortedMapType(string role, string propertyRef, IComparer comparer)
-			: base(role, propertyRef)
+		public SortedMapType(string role, string propertyRef, IComparer comparer, bool isEmbeddedInXML)
+			: base(role, propertyRef, isEmbeddedInXML)
 		{
 			this.comparer = comparer;
 		}
+
 
 		public IComparer Comparer
 		{
@@ -34,6 +38,11 @@ namespace NHibernate.Type
 		public override object Instantiate()
 		{
 			return new SortedList(comparer);
+		}
+
+		public override System.Type ReturnedClass
+		{
+			get { return typeof (SortedList); }
 		}
 	}
 }

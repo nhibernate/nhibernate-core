@@ -1,5 +1,4 @@
 using System;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
@@ -14,19 +13,6 @@ namespace NHibernate.Type
 	[Serializable]
 	public class BinaryBlobType : BinaryType
 	{
-		/// <summary></summary>
-		internal BinaryBlobType() : base(new BinaryBlobSqlType())
-		{
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sqlType"></param>
-		internal BinaryBlobType(BinarySqlType sqlType) : base(sqlType)
-		{
-		}
-
 		/// <summary></summary>
 		public override string Name
 		{

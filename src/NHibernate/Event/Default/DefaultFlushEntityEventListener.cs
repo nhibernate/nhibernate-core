@@ -102,14 +102,14 @@ namespace NHibernate.Event.Default
 				return;
 			}
 
-			if (persister.HasIdentifierPropertyOrEmbeddedCompositeIdentifier)
+			if (persister.CanExtractIdOutOfEntity)
 			{
 				object oid = persister.GetIdentifier(obj);
 				if (id == null)
 				{
 					throw new AssertionFailure("null id in " + persister.EntityName + " entry (don't flush the Session after an exception occurs)");
 				}
-				if (!persister.IdentifierType.Equals(id, oid))
+				if (!persister.IdentifierType.IsEqual(id, oid, EntityMode.Poco))
 				{
 					throw new HibernateException("identifier of an instance of " + persister.EntityName + " was altered from " + id + " to " + oid);
 				}
@@ -118,7 +118,7 @@ namespace NHibernate.Event.Default
 
 		private void CheckNaturalId(IEntityPersister persister, object identifier, object[] current, object[] loaded, ISessionImplementor session)
 		{
-			// todo Natural Identifier
+			// TODO NH: Natural Identifier
 			//if (persister.HasNaturalIdentifier)
 			//{
 			//  if (loaded == null)

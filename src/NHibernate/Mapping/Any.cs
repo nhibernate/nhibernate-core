@@ -14,8 +14,8 @@ namespace NHibernate.Mapping
 	public class Any : SimpleValue
 	{
 		private string identifierTypeName;
-		private string metaTypeName = NHibernateUtil.Class.Name;
-		private IDictionary<object, System.Type> metaValues;
+		private string metaTypeName = NHibernateUtil.String.Name;
+		private IDictionary<object, string> metaValues;
 
 		public Any(Table table) : base(table)
 		{
@@ -64,7 +64,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Represent the relation between a meta-value and the related entityName
 		/// </summary>
-		public IDictionary<object, System.Type> MetaValues
+		public IDictionary<object, string> MetaValues
 		{
 			get { return metaValues; }
 			set { metaValues = value; }

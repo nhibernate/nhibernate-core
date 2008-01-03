@@ -440,7 +440,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindOneToMany(XmlNode node, OneToMany model)
 		{
 			model.ReferencedEntityName = ClassForNameChecked(node.Attributes["class"].Value, mappings,
-				"associated class not found: {0}");
+				"associated class not found: {0}").FullName;
 
 			string notFound = XmlHelper.GetAttributeValue(node, "not-found");
 			model.IsIgnoreNotFound = "ignore".Equals(notFound);
@@ -534,7 +534,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (model.IsOneToMany)
 			{
 				OneToMany oneToMany = (OneToMany) model.Element;
-				string associatedEntityName = oneToMany.ReferencedEntityName.FullName;
+				string associatedEntityName = oneToMany.ReferencedEntityName;
 				PersistentClass persistentClass = persistentClasses[associatedEntityName];
 				if (persistentClass == null)
 					throw new MappingException("Association references unmapped class: " + associatedEntityName);

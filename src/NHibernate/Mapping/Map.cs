@@ -76,15 +76,15 @@ namespace NHibernate.Mapping
 				// No Generic behavior
 				if (IsSorted)
 				{
-					return TypeFactory.SortedMap(Role, ReferencedPropertyName, (IComparer)Comparer);
+					return TypeFactory.SortedMap(Role, ReferencedPropertyName, Embedded, (IComparer)Comparer);
 				}
 				else if (HasOrder)
 				{
-					return TypeFactory.OrderedMap(Role, ReferencedPropertyName);
+					return TypeFactory.OrderedMap(Role, ReferencedPropertyName, Embedded);
 				}
 				else
 				{
-					return TypeFactory.Map(Role, ReferencedPropertyName);
+					return TypeFactory.Map(Role, ReferencedPropertyName, Embedded);
 				}
 			}
 		}

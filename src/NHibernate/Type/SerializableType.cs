@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -25,8 +26,8 @@ namespace NHibernate.Type
 	[Serializable]
 	public class SerializableType : MutableType
 	{
-		private System.Type serializableClass;
-		private BinaryType binaryType;
+		private readonly System.Type serializableClass;
+		private readonly BinaryType binaryType;
 
 		internal SerializableType() : this(typeof(Object))
 		{
@@ -35,7 +36,7 @@ namespace NHibernate.Type
 		internal SerializableType(System.Type serializableClass) : base(new BinarySqlType())
 		{
 			this.serializableClass = serializableClass;
-			this.binaryType = (BinaryType) NHibernateUtil.Binary;
+			binaryType = (BinaryType) NHibernateUtil.Binary;
 		}
 
 		internal SerializableType(System.Type serializableClass, BinarySqlType sqlType) : base(sqlType)
@@ -72,22 +73,20 @@ namespace NHibernate.Type
 			get { return serializableClass; }
 		}
 
-		public override bool Equals(object x, object y)
+		public override bool IsEqual(object x, object y)
 		{
 			if (x == y)
-			{
 				return true;
-			}
+
 			if (x == null || y == null)
-			{
 				return false;
-			}
-			return binaryType.Equals(ToBytes(x), ToBytes(y));
+
+			return x.Equals(y) || binaryType.IsEqual(ToBytes(x), ToBytes(y));
 		}
 
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
+		public override int GetHashCode(Object x, EntityMode entityMode)
 		{
-			return NHibernateUtil.Binary.GetHashCode(ToBytes(x), factory);
+			return binaryType.GetHashCode(ToBytes(x), entityMode);
 		}
 
 		public override string ToString(object value)
@@ -95,20 +94,18 @@ namespace NHibernate.Type
 			return binaryType.ToString(ToBytes(value));
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
-			return FromBytes((byte[]) binaryType.FromString(xml));
+			return FromBytes((byte[])binaryType.FromStringValue(xml));
 		}
 
 		/// <summary></summary>
 		public override string Name
 		{
-			get { return "serializable - " + serializableClass.FullName; }
+			get
+			{
+				return serializableClass == typeof(ISerializable) ? "serializable" : serializableClass.FullName;
+			} 
 		}
 
 		/// <summary>
@@ -154,13 +151,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cached"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			return (cached == null) ? null : FromBytes((byte[]) cached);

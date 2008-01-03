@@ -13,11 +13,11 @@ namespace NHibernate.Type
 	public class GenericIdentifierBagType<T> : IdentifierBagType
 	{
 		public GenericIdentifierBagType(string role, string propertyRef)
-			: base(role, propertyRef)
+			: base(role, propertyRef, false)
 		{
 		}
 
-		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
+		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
 			return new PersistentIdentifierBag<T>(session);
 		}

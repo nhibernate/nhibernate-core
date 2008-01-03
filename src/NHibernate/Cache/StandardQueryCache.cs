@@ -64,7 +64,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					cacheable.Add(TypeFactory.Disassemble((object[]) result[i], returnTypes, session));
+					cacheable.Add(TypeFactory.Disassemble((object[])result[i], returnTypes, null, session, null));
 				}
 			}
 			queryCache.Put(key, cacheable);

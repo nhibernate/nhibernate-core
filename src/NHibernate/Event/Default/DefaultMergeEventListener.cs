@@ -203,7 +203,7 @@ namespace NHibernate.Event.Default
 			{
 				// check that entity id = requestedId
 				object entityId = persister.GetIdentifier(entity);
-				if (!persister.IdentifierType.Equals(id, entityId))
+				if (!persister.IdentifierType.IsEqual(id, entityId, EntityMode.Poco))
 				{
 					throw new HibernateException("merge requested with id not matching id of passed entity");
 				}
@@ -215,7 +215,7 @@ namespace NHibernate.Event.Default
 
 			//we must clone embedded composite identifiers, or 
 			//we will get back the same instance that we pass in
-			object clonedIdentifier = persister.IdentifierType.DeepCopy(id);
+			object clonedIdentifier = persister.IdentifierType.DeepCopy(id, source.EntityMode, source.Factory);
 			object result = source.Get(persister.MappedClass, clonedIdentifier);
 
 			//source.FetchProfile = previousFetchProfile;
@@ -295,7 +295,7 @@ namespace NHibernate.Event.Default
 			// (though during a seperate operation) in which it was
 			// originally persisted/saved
 			// todo-events Verify if "IsEquals" in NH work like "IsSame" in H3.2
-			bool changed = !persister.VersionType.Equals(persister.GetVersion(target), persister.GetVersion(entity));
+			bool changed = !persister.VersionType.IsEqual(persister.GetVersion(target), persister.GetVersion(entity), EntityMode.Poco);
 
 			// TODO : perhaps we should additionally require that the incoming entity
 			// version be equivalent to the defined unsaved-value?

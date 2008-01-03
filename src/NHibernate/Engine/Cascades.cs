@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using log4net;
 using NHibernate.Collection;
@@ -89,7 +88,7 @@ namespace NHibernate.Engine
 			/// <summary>
 			/// The children to whom we should cascade.
 			/// </summary>
-			public abstract ICollection CascadableChildrenCollection(CollectionType collectionType, object collection);
+			public abstract IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection);
 
 			/// <summary>
 			/// Do we need to handle orphan delete for this action?
@@ -110,9 +109,9 @@ namespace NHibernate.Engine
 					}
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetAllElementsCollection(collectionType, collection);
+					return GetAllElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -132,9 +131,9 @@ namespace NHibernate.Engine
 					eventSource.Lock(child, (LockMode) anything);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -154,9 +153,9 @@ namespace NHibernate.Engine
 					eventSource.Evict(child);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -176,9 +175,9 @@ namespace NHibernate.Engine
 					eventSource.SaveOrUpdate(child);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -198,10 +197,10 @@ namespace NHibernate.Engine
 					eventSource.Copy(child, (IDictionary)anything);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
 					// saves / updates don't cascade to uninitialized collections
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -222,9 +221,9 @@ namespace NHibernate.Engine
 					eventSource.Replicate(child, (ReplicationMode)anything);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -246,9 +245,9 @@ namespace NHibernate.Engine
 					eventSource.Persist(null, child, (IDictionary)anything); // todo-events session.persist(entityName, child, (System.Collections.IDictionary) anything);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -270,9 +269,9 @@ namespace NHibernate.Engine
 					eventSource.PersistOnFlush(null, child, (IDictionary)anything); // todo-events session.persistOnFlush(entityName, child, (System.Collections.IDictionary) anything);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -294,9 +293,9 @@ namespace NHibernate.Engine
 					eventSource.Refresh(child, (IDictionary)anything);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -318,9 +317,9 @@ namespace NHibernate.Engine
 					eventSource.SaveOrUpdateCopy(null, child, (IDictionary)anything); //todo-events source.SaveOrUpdateCopy(entityName, child, (System.Collections.IDictionary)anything);
 				}
 
-				public override ICollection CascadableChildrenCollection(CollectionType collectionType, object collection)
+				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
 				{
-					return GetLoadedElementsCollection(collectionType, collection);
+					return GetLoadedElementsIterator(collectionType, collection);
 				}
 
 				public override bool DeleteOrphans()
@@ -592,7 +591,7 @@ namespace NHibernate.Engine
 			{
 				log.Debug("cascading to collection: " + collectionType.Role);
 			}
-			ICollection iter = action.CascadableChildrenCollection(collectionType, child);
+			IEnumerable iter = action.CascadableChildrenIterator(collectionType, child);
 			foreach (object obj in iter)
 			{
 				Cascade(eventSource, obj, elemType, action, style, cascadeVia, anything);
@@ -639,24 +638,24 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public static ICollection GetLoadedElementsCollection(CollectionType collectionType, object collection)
+		public static IEnumerable GetLoadedElementsIterator(CollectionType collectionType, object collection)
 		{
 			if (CollectionIsInitialized(collection))
 			{
 				// handles arrays and newly instantiated collections
-				return collectionType.GetElementsCollection(collection);
+				return collectionType.GetElementsIterator(collection);
 			}
 			else
 			{
 				// does not handle arrays (that's ok, cos they can't be lazy)
 				// or newly instantiated collections so we can do the cast
-				return ((IPersistentCollection) collection).QueuedAddsCollection;
+				return ((IPersistentCollection) collection).QueuedAdditionIterator;
 			}
 		}
 
-		private static ICollection GetAllElementsCollection(CollectionType collectionType, object collection)
+		private static IEnumerable GetAllElementsIterator(CollectionType collectionType, object collection)
 		{
-			return collectionType.GetElementsCollection(collection);
+			return collectionType.GetElementsIterator(collection);
 		}
 	}
 }

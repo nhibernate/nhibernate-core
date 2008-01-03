@@ -23,7 +23,7 @@ namespace NHibernate.Mapping
 					CheckGenericArgumentsLength(1);
 					return TypeFactory.GenericIdBag(Role, ReferencedPropertyName, GenericArguments[0]);
 				}
-				return TypeFactory.IdBag(Role, ReferencedPropertyName);
+				return TypeFactory.IdBag(Role, ReferencedPropertyName, Embedded);
 			}
 		}
 	}

@@ -50,10 +50,12 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		protected override ICollection Snapshot(ICollectionPersister persister)
 		{
+			EntityMode entityMode = Session.EntityMode;
+
 			Hashtable clonedMap = new Hashtable(internalSet.Count);
 			foreach (object obj in internalSet)
 			{
-				object copied = persister.ElementType.DeepCopy(obj);
+				object copied = persister.ElementType.DeepCopy(obj, entityMode, persister.Factory);
 				clonedMap[copied] = copied;
 			}
 			return clonedMap;

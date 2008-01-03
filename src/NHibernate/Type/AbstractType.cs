@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -18,6 +20,11 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not an <see cref="IAssociationType"/>.</value>
 		public virtual bool IsAssociationType
+		{
+			get { return false; }
+		}
+
+		public virtual bool IsXMLElement
 		{
 			get { return false; }
 		}
@@ -61,18 +68,10 @@ namespace NHibernate.Type
 		/// </remarks>
 		public virtual object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			if (value == null)
-			{
+			if (value == null) 
 				return null;
-			}
-			else
-			{
-				return DeepCopy(value);
-			}
-		}
 
-		public virtual void BeforeAssemble(object cached, ISessionImplementor session)
-		{
+			return DeepCopy(value, session.EntityMode, session.Factory);
 		}
 
 		/// <summary>
@@ -88,13 +87,13 @@ namespace NHibernate.Type
 		public virtual object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			if (cached == null)
-			{
 				return null;
-			}
-			else
-			{
-				return DeepCopy(cached);
-			}
+
+			return DeepCopy(cached, session.EntityMode, session.Factory);
+		}
+
+		public virtual void BeforeAssemble(object cached, ISessionImplementor session)
+		{
 		}
 
 		/// <summary>
@@ -108,7 +107,7 @@ namespace NHibernate.Type
 		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
 		public virtual bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			return !Equals(old, current);
+			return !IsSame(old, current, session.EntityMode);
 		}
 
 		/// <summary>
@@ -173,26 +172,6 @@ namespace NHibernate.Type
 			return IsDirty(old, current, session);
 		}
 
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="original"></param>
-		/// <param name="current"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <param name="copiedAlready"></param>
-		/// <returns></returns>
-		public virtual object Replace(object original, object current, ISessionImplementor session, object owner,
-		                              IDictionary copiedAlready)
-		{
-			if (original == null)
-			{
-				return null;
-			}
-			return Assemble(Disassemble(original, session, owner), session, owner);
-		}
-
 		public override bool Equals(object obj)
 		{
 			return obj == this || (obj != null && obj.GetType() == GetType());
@@ -206,7 +185,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
 		/// /> 
-		public abstract object DeepCopy(object val);
+		public abstract object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
@@ -217,18 +196,6 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.GetColumnSpan"]/*'
 		/// /> 
 		public abstract int GetColumnSpan(IMapping mapping);
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.Equals"]/*'
-		/// /> 
-		public new abstract bool Equals(object x, object y);
-
-		//We need "new" because object.Equal is not marked as virtual. Is it correct? Or because this is *abstract* so we're not really overriding it?
-
-		public virtual int GetHashCode(object x, ISessionFactoryImplementor factory)
-		{
-			return x.GetHashCode();
-		}
 
 		/// <summary>
 		/// Determines whether the specified value is represented as <see langword="null" /> in the database.
@@ -258,6 +225,66 @@ namespace NHibernate.Type
 			return include ? Replace(original, target, session, owner, copyCache) : target;
 		}
 
+		public virtual bool IsSame(object x, object y, EntityMode entityMode)
+		{
+			return IsEqual(x, y, entityMode);
+		}
+
+		public virtual bool IsEqual(object x, object y, EntityMode entityMode)
+		{
+			return EqualsHelper.Equals(x, y);
+		}
+
+		public virtual bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
+		{
+			return IsEqual(x, y, entityMode);
+		}
+
+		public virtual int GetHashCode(object x, EntityMode entityMode)
+		{
+			return x.GetHashCode();
+		}
+
+		public virtual int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
+		{
+			return GetHashCode(x, entityMode);
+		}
+
+		public virtual int Compare(object x, object y, EntityMode? entityMode)
+		{
+			IComparable xComp = x as IComparable;
+			IComparable yComp = x as IComparable;
+			if (xComp != null)
+				return xComp.CompareTo(y);
+			if (yComp != null)
+				return yComp.CompareTo(x);
+
+			throw new HibernateException(
+				string.Format("Can't compare {0} with {1}; you must implement System.IComparable", x.GetType(), y.GetType()));
+		}
+
+		public virtual IType GetSemiResolvedType(ISessionFactoryImplementor factory)
+		{
+			return this;
+		}
+
+		protected internal static void ReplaceNode(XmlNode container, XmlNode value)
+		{
+			if (container != value)
+			{
+				//not really necessary, I guess...
+				XmlNode parent = container.ParentNode;
+				parent.ReplaceChild(value, container);
+			}
+		}
+
+		public abstract object Replace(object original, object current, ISessionImplementor session, object owner,
+		                               IDictionary copiedAlready);
+
+		public abstract void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory);
+		public abstract object FromXMLNode(XmlNode xml, IMapping factory);
+		public abstract bool[] ToColumnNullness(object value, IMapping mapping);
+
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsMutable"]/*'
 		/// /> 
@@ -267,11 +294,6 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="P:IType.Name"]/*'
 		/// /> 
 		public abstract string Name { get; }
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="P:IType.HasNiceEquals"]/*'
-		/// /> 
-		public abstract bool HasNiceEquals { get; }
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)"]/*'
@@ -302,11 +324,6 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		/// /> 
 		public abstract string ToLoggableString(object value, ISessionFactoryImplementor factory);
-
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.FromString"]/*'
-		/// /> 
-		public abstract object FromString(string xml);
 
 		public abstract bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session);
 	}

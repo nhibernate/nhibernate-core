@@ -60,16 +60,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-
-			if (!(value is DateTime))
-			{
-				parm.Value = DateTime.Now;
-			}
-			else
-			{
-				parm.Value = value;
-			}
+			((IDataParameter)st.Parameters[index]).Value = (value is DateTime) ? value:DateTime.Now;
 		}
 
 		public override string Name
@@ -85,21 +76,6 @@ namespace NHibernate.Type
 		public override object FromStringValue(string xml)
 		{
 			return DateTime.Parse(xml);
-		}
-
-		public override bool Equals(object x, object y)
-		{
-			return object.Equals(x, y);
-		}
-
-		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
-		{
-			return x.GetHashCode();
-		}
-
-		public override bool HasNiceEquals
-		{
-			get { return true; }
 		}
 
 		#region IVersionType Members
@@ -133,6 +109,16 @@ namespace NHibernate.Type
 		public object StringToObject(string xml)
 		{
 			return DateTime.Parse(xml);
+		}
+
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(DateTime); }
+		}
+
+		public override object DefaultValue
+		{
+			get { return DateTime.MinValue; }
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
