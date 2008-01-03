@@ -657,6 +657,7 @@
     <Compile Include="UtilityTest\IdentityMapFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapSequencedFixture.cs" />
     <Compile Include="UtilityTest\JoinedEnumerableFixture.cs" />
+    <Compile Include="UtilityTest\JoinedEnumerableGenericFixture.cs" />
     <Compile Include="UtilityTest\LinkedHashMapFixture.cs" />
     <Compile Include="UtilityTest\LRUMapFixture.cs" />
     <Compile Include="UtilityTest\ReflectHelperFixture.cs" />

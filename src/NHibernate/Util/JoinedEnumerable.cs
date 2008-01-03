@@ -186,11 +186,7 @@ namespace NHibernate.Util
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
-			foreach (IEnumerable<T> enumerable in enumerables)
-			{
-				foreach (T t in enumerable)
-					yield return t;
-			}
+			return new JoinedEnumerator<T>(enumerables);
 		}
 
 		#endregion
@@ -203,5 +199,84 @@ namespace NHibernate.Util
 		}
 
 		#endregion
+
+		private class JoinedEnumerator<T>: IEnumerator<T>
+		{
+			private readonly IEnumerator<T>[] enumerators;
+			private int currentEnumIdx = 0;
+			private bool disposed;
+
+			public JoinedEnumerator(IEnumerable<T>[] enumerables)
+			{
+				enumerators = new IEnumerator<T>[enumerables.Length];
+				for (int i = 0; i < enumerables.Length; i++)
+					enumerators[i] = enumerables[i].GetEnumerator();
+			}
+
+			#region IEnumerator<T> Members
+
+			T IEnumerator<T>.Current
+			{
+				get { return enumerators[currentEnumIdx].Current; }
+			}
+
+			#endregion
+
+			#region IDisposable Members
+
+			public void Dispose()
+			{
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
+
+			private void Dispose(bool disposing)
+			{
+				if (!disposed)
+				{
+					if (disposing)
+						for (; currentEnumIdx < enumerators.Length; currentEnumIdx++)
+							enumerators[currentEnumIdx].Dispose();
+
+					disposed = true;
+				}
+			}
+
+			~JoinedEnumerator()
+			{
+				Dispose(false);
+			}
+
+			#endregion
+
+			#region IEnumerator Members
+
+			public bool MoveNext()
+			{
+				for (; currentEnumIdx < enumerators.Length; currentEnumIdx++)
+				{
+					if (enumerators[currentEnumIdx].MoveNext())
+						return true;
+					else
+						enumerators[currentEnumIdx].Dispose();
+				}
+				return false;
+			}
+
+			public void Reset()
+			{
+				foreach (IEnumerator<T> enumerator in enumerators)
+					enumerator.Reset();
+
+				currentEnumIdx = 0;
+			}
+
+			public object Current
+			{
+				get { return ((IEnumerator<T>) this).Current; }
+			}
+
+			#endregion
+		}
 	}
 }
