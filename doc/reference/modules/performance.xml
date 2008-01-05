@@ -337,7 +337,7 @@ Console.WriteLine( dc.Weight );  // 11.0]]></programlisting>
             </para>
 
             <para>
-                These problems are all due to fundamental limitations in Java's single inheritance model.
+                These problems are all due to fundamental limitations in .NET's single inheritance model.
                 If you wish to avoid these problems your persistent classes must each implement an interface
                 that declares its business methods. You should specify these interfaces in the mapping file. eg.
             </para>
