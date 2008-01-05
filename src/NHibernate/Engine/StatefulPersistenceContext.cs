@@ -310,7 +310,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object[] GetDatabaseSnapshot(object id, IEntityPersister persister)
 		{
-			EntityKey key = new EntityKey(id, persister);
+			EntityKey key = new EntityKey(id, persister, session.EntityMode);
 			object cached;
 			if (entitySnapshotsByKey.TryGetValue(key, out cached))
 			{
@@ -344,7 +344,7 @@ namespace NHibernate.Engine
 
 			if (snapshot == NoRow)
 			{
-				throw new HibernateException("persistence context reported no row snapshot for " + MessageHelper.InfoString(key.MappedClass, key.Identifier));
+				throw new HibernateException("persistence context reported no row snapshot for " + MessageHelper.InfoString(key.EntityName, key.Identifier));
 			}
 			return (object[])snapshot;
 		}
@@ -593,7 +593,7 @@ namespace NHibernate.Engine
 			if (li.Session != Session)
 			{
 				IEntityPersister persister = session.Factory.GetEntityPersister(li.EntityName);
-				EntityKey key = new EntityKey(li.Identifier, persister);
+				EntityKey key = new EntityKey(li.Identifier, persister, session.EntityMode);
 				// any earlier proxy takes precedence
 				if (!proxiesByKey.ContainsKey(key))
 				{
@@ -673,7 +673,7 @@ namespace NHibernate.Engine
 			}
 			if (entity != null)
 			{
-				throw new NonUniqueObjectException(key.Identifier, key.MappedClass);
+				throw new NonUniqueObjectException(key.Identifier, key.EntityName);
 			}
 		}
 
@@ -751,13 +751,13 @@ namespace NHibernate.Engine
 		{
 			EntityEntry e = GetEntry(impl);
 			IEntityPersister p = e.Persister;
-			return ProxyFor(p, new EntityKey(e.Id, p), impl);
+			return ProxyFor(p, new EntityKey(e.Id, p, session.EntityMode), impl);
 		}
 
 		/// <summary> Get the entity that owns this persistent collection</summary>
 		public object GetCollectionOwner(object key, ICollectionPersister collectionPersister)
 		{
-			return GetEntity(new EntityKey(key, collectionPersister.OwnerEntityPersister));
+			return GetEntity(new EntityKey(key, collectionPersister.OwnerEntityPersister, session.EntityMode));
 		}
 
 		/// <summary> add a collection we just loaded up (still needs initializing)</summary>
@@ -1080,7 +1080,7 @@ namespace NHibernate.Engine
 			entityEntries.Remove(entity);
 			EntityEntry oldEntry = (EntityEntry)tempObject2;
 
-			EntityKey newKey = new EntityKey(generatedId, oldEntry.Persister);
+			EntityKey newKey = new EntityKey(generatedId, oldEntry.Persister, Session.EntityMode);
 			AddEntity(newKey, entity);
 			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, generatedId, oldEntry.Version, oldEntry.LockMode,
 							 oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated, oldEntry.LoadedWithLazyPropertiesUnfetched);
@@ -1109,7 +1109,12 @@ namespace NHibernate.Engine
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
 			log.Debug("Deserialization callback persistent-context");
+			// during deserialization, we need to reconnect all proxies and
+			// collections to this session, as well as the EntityEntry and
+			// CollectionEntry instances; these associations are transient
+			// because serialization is used for different things.
 
+			// TODO NH: "reconnect" EntityKey with session.factory and create a test for serialization of StatefulPersistenceContext
 			foreach (DictionaryEntry collectionEntry in collectionEntries)
 			{
 				try

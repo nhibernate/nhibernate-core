@@ -224,7 +224,7 @@ namespace NHibernate.Event.Default
 
 				IEventSource source = @event.Session;
 
-				EntityKey key = new EntityKey(@event.RequestedId, persister);
+				EntityKey key = new EntityKey(@event.RequestedId, persister, source.EntityMode);
 
 				source.PersistenceContext.CheckUniqueness(key, entity);
 

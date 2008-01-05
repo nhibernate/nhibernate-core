@@ -84,7 +84,7 @@ namespace NHibernate.Event.Default
 						object id = persister.GetIdentifier(entity);
 						if (id != null)
 						{
-							EntityKey key = new EntityKey(id, persister);
+							EntityKey key = new EntityKey(id, persister, source.EntityMode);
 							object managedEntity = source.PersistenceContext.GetEntity(key);
 							entry = source.PersistenceContext.GetEntry(managedEntity);
 							if (entry != null)
@@ -310,7 +310,7 @@ namespace NHibernate.Event.Default
 				object id = persister.GetIdentifier(entity);
 				if (id != null)
 				{
-					EntityKey key = new EntityKey(id, persister);
+					EntityKey key = new EntityKey(id, persister, source.EntityMode);
 					object managedEntity = source.PersistenceContext.GetEntity(key);
 					entry = source.PersistenceContext.GetEntry(managedEntity);
 				}

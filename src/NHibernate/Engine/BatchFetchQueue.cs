@@ -208,7 +208,7 @@ namespace NHibernate.Engine
 
 			foreach (EntityKey key in batchLoadableEntityKeys.Keys)
 			{
-				if (key.MappedClass.Equals(persister.MappedClass))
+				if (key.EntityName.Equals(persister.EntityName))
 				{
 					//TODO: this needn't exclude subclasses...
 					if (checkForEnd && i == end)
@@ -247,7 +247,7 @@ namespace NHibernate.Engine
 				CacheKey key = new CacheKey(
 					entityKey.Identifier,
 					persister.IdentifierType,
-					entityKey.MappedClass.FullName,
+					entityKey.EntityName,
 					context.Session.Factory
 					);
 				return persister.Cache.Cache.Get(key) != null;

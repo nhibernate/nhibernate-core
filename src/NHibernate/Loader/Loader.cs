@@ -252,12 +252,7 @@ namespace NHibernate.Loader
 
 			if (optionalObject != null && !string.IsNullOrEmpty(optionalEntityName))
 			{
-				return new EntityKey(
-					optionalId,
-					session.GetEntityPersister(optionalObject)
-					// TODO H3: session.GetEntityPersister( optionalEntityName, optionalObject )
-					// TODO H3: session.getEntityMode()
-					);
+				return new EntityKey(optionalId, session.GetEntityPersister(optionalEntityName, optionalObject), session.EntityMode);
 			}
 			else
 			{
@@ -847,7 +842,7 @@ namespace NHibernate.Loader
 				}
 			}
 
-			return (resultId == null) ? null : new EntityKey(resultId, persister);
+			return resultId == null ? null : new EntityKey(resultId, persister, session.EntityMode);
 		}
 
 		/// <summary>

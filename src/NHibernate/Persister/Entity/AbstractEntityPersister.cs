@@ -107,6 +107,8 @@ namespace NHibernate.Persister.Entity
 
 		private readonly EntityMetamodel entityMetamodel;
 
+		private readonly Dictionary<System.Type, string> entityNameBySubclass = new Dictionary<System.Type, string>();
+
 		//information about properties of this class,
 		//including inherited properties
 		//(only really needed for updatable/insertable properties)
@@ -753,6 +755,14 @@ namespace NHibernate.Persister.Entity
 			//sqlExceptionConverter = factory.SQLExceptionConverter;
 
 			entityMetamodel = new EntityMetamodel(persistentClass, factory);
+			if (persistentClass.HasPocoRepresentation)
+			{
+				//TODO: this is currently specific to pojos, but need to be available for all entity-modes
+				foreach (Subclass subclass in persistentClass.SubclassIterator)
+				{
+					entityNameBySubclass[subclass.MappedClass] = subclass.EntityName;
+				}
+			}
 
 			// CLASS
 			mappedClass = persistentClass.MappedClass;
@@ -3159,7 +3169,7 @@ namespace NHibernate.Persister.Entity
 				// first we need to locate the "loaded" state
 				//
 				// Note, it potentially could be a proxy, so perform the location the safe way...
-				EntityKey key = new EntityKey(id, this);
+				EntityKey key = new EntityKey(id, this, session.EntityMode);
 				object entity = session.PersistenceContext.GetEntity(key);
 				if (entity != null)
 				{
@@ -3542,6 +3552,53 @@ namespace NHibernate.Persister.Entity
 				throw new AssertionFailure("no update-generated properties");
 			}
 			ProcessGeneratedProperties(id, entity, state, session, sqlUpdateGeneratedValuesSelectString, PropertyUpdateGenerationInclusions);
+		}
+
+		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory,
+																											EntityMode entityMode)
+		{
+			if (!HasSubclasses)
+			{
+				return this;
+			}
+			else
+			{
+				// TODO : really need a way to do something like :
+				//      getTuplizer(entityMode).determineConcreteSubclassEntityName(instance)
+				System.Type clazz = instance.GetType();
+				if (clazz == GetMappedClass(entityMode))
+				{
+					return this;
+				}
+				else
+				{
+					string subclassEntityName = GetSubclassEntityName(clazz);
+					if (subclassEntityName == null)
+					{
+						throw new HibernateException("instance not of expected entity type: " + clazz.FullName + " is not a: "
+						                             + EntityName);
+					}
+					else
+					{
+						return factory.GetEntityPersister(subclassEntityName);
+					}
+				}
+			}
+		}
+
+		public System.Type GetMappedClass(EntityMode entityMode)
+		{
+			return MappedClass;
+			// TODO H3.2
+			//Tuplizer tup = entityMetamodel.getTuplizerOrNull(entityMode);
+			//return tup == null ? null : tup.MappedClass;
+		}
+
+		private string GetSubclassEntityName(System.Type clazz)
+		{
+			string result;
+			entityNameBySubclass.TryGetValue(clazz, out result);
+			return result;
 		}
 
 		private void ProcessGeneratedProperties(

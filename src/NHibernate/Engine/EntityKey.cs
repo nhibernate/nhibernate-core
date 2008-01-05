@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
@@ -12,87 +13,86 @@ namespace NHibernate.Engine
 	public sealed class EntityKey
 	{
 		private readonly object identifier;
-		private readonly object identifierSpace;
-		private readonly System.Type clazz;
+		private readonly string rootEntityName;
+		private readonly string entityName;
 		private readonly IType identifierType;
 		private readonly bool isBatchLoadable;
-		private readonly ISessionFactoryImplementor factory;
-		private readonly int hashCode;
 
-		private EntityKey(
-			object id,
-			object identifierSpace,
-			System.Type clazz,
-			IType identifierType,
-			bool isBatchLoadable,
-			ISessionFactoryImplementor factory)
+		[NonSerialized]
+		private ISessionFactoryImplementor factory;
+		private int hashCode;
+
+		private readonly EntityMode entityMode;
+
+		/// <summary> Construct a unique identifier for an entity class instance</summary>
+		public EntityKey(object id, IEntityPersister persister, EntityMode entityMode)
+			: this(id, persister.RootEntityName, persister.EntityName, persister.IdentifierType, persister.IsBatchLoadable, persister.Factory, entityMode) {}
+
+		/// <summary> Used to reconstruct an EntityKey during deserialization. </summary>
+		/// <param name="identifier">The identifier value </param>
+		/// <param name="rootEntityName">The root entity name </param>
+		/// <param name="entityName">The specific entity name </param>
+		/// <param name="identifierType">The type of the identifier value </param>
+		/// <param name="batchLoadable">Whether represented entity is eligible for batch loading </param>
+		/// <param name="factory">The session factory </param>
+		/// <param name="entityMode">The entity's entity mode </param>
+		private EntityKey(object identifier, string rootEntityName, string entityName, IType identifierType, bool batchLoadable, ISessionFactoryImplementor factory, EntityMode entityMode)
 		{
-			if (id == null)
-			{
-				throw new ArgumentNullException("id");
-			}
+			if (identifier == null)
+				throw new AssertionFailure("null identifier");
 
-			System.Type expected = id.GetType();
+			System.Type expected = identifier.GetType();
 			System.Type found = identifierType.ReturnedClass;
 			if (!found.IsAssignableFrom(expected))
 			{
 				throw new ArgumentException(string.Format("Identifier type mismatch; Found:<{0}> Expected:<{1}>", found, expected),
-				                            "id");
+																		"identifier");
 			}
 
-			this.identifier = id;
-			this.identifierSpace = identifierSpace;
-			this.clazz = clazz;
+			this.identifier = identifier;
+			this.rootEntityName = rootEntityName;
+			this.entityName = entityName;
 			this.identifierType = identifierType;
-			this.isBatchLoadable = isBatchLoadable;
+			isBatchLoadable = batchLoadable;
 			this.factory = factory;
-			this.hashCode = GenerateHashCode();
+			this.entityMode = entityMode;
+			hashCode = GenerateHashCode();
 		}
 
-		/// <summary>
-		/// Construct a unique identifier for an entity class instance
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="p"></param>
-		public EntityKey(object id, IEntityPersister p)
-			: this(id, p.IdentifierSpace, p.MappedClass, p.IdentifierType, p.IsBatchLoadable, p.Factory)
-		{
-		}
-
-		/// <summary>
-		/// The user-visible identifier
-		/// </summary>
-		public object Identifier
-		{
-			get { return identifier; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public System.Type MappedClass
-		{
-			get { return clazz; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		public bool IsBatchLoadable
 		{
 			get { return isBatchLoadable; }
 		}
 
+		public object Identifier
+		{
+			get { return identifier; }
+		}
+
+		public string EntityName
+		{
+			get { return entityName; }
+		}
+
 		public override bool Equals(object other)
 		{
 			EntityKey otherKey = other as EntityKey;
-			if (otherKey == null)
-			{
-				return false;
-			}
+			if(otherKey==null) return false;
+
 			return
-				otherKey.identifierSpace.Equals(this.identifierSpace)
-				&& identifierType.IsEqual(otherKey.Identifier, this.identifier, EntityMode.Poco);
+				otherKey.rootEntityName.Equals(rootEntityName)
+				&& identifierType.IsEqual(otherKey.Identifier, Identifier, entityMode, factory);
+		}
+
+		private int GenerateHashCode()
+		{
+			int result = 17;
+			unchecked
+			{
+				result = 37 * result + rootEntityName.GetHashCode();
+				result = 37 * result + identifierType.GetHashCode(identifier, entityMode, factory);
+			}
+			return result;
 		}
 
 		public override int GetHashCode()
@@ -100,21 +100,19 @@ namespace NHibernate.Engine
 			return hashCode;
 		}
 
-		private int GenerateHashCode()
-		{
-			unchecked
-			{
-				int result = 17;
-				result = 37 * result + identifierSpace.GetHashCode();
-				result = 37 * result + identifierType.GetHashCode(identifier, EntityMode.Poco, factory);
-				return result;
-			}
-		}
-
-		/// <summary></summary>
 		public override string ToString()
 		{
-			return identifier.ToString();
+			return "EntityKey" + MessageHelper.InfoString(factory.GetEntityPersister(EntityName), Identifier, factory);
+		}
+
+		/// <summary>
+		/// To use in deserialization callback
+		/// </summary>
+		/// <param name="factory"></param>
+		internal void SetSessionFactory(ISessionFactoryImplementor factory)
+		{
+			this.factory = factory;
+			hashCode = GetHashCode();
 		}
 	}
 }

@@ -168,7 +168,7 @@ namespace NHibernate.Proxy
 		/// <returns>The Persistent Object this proxy is Proxying, or <see langword="null" />.</returns>
 		public object GetImplementation(ISessionImplementor s)
 		{
-			EntityKey key = new EntityKey(Identifier, s.Factory.GetEntityPersister(PersistentClass));
+			EntityKey key = new EntityKey(Identifier, s.Factory.GetEntityPersister(EntityName), s.EntityMode);
 			return s.PersistenceContext.GetEntity(key);
 		}
 

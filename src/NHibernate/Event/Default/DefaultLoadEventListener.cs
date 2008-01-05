@@ -57,7 +57,7 @@ namespace NHibernate.Event.Default
 				}
 			}
 
-			EntityKey keyToLoad = new EntityKey(@event.EntityId, persister);
+			EntityKey keyToLoad = new EntityKey(@event.EntityId, persister, source.EntityMode);
 			try
 			{
 				if (loadType.IsNakedEntityReturned)
@@ -113,7 +113,7 @@ namespace NHibernate.Event.Default
 
 			if (isOptionalInstance && entity != @event.InstanceToLoad)
 			{
-				throw new NonUniqueObjectException(@event.EntityId, persister.MappedClass);
+				throw new NonUniqueObjectException(@event.EntityId, @event.EntityClassName);
 			}
 
 			return entity;
@@ -442,7 +442,7 @@ namespace NHibernate.Event.Default
 			object result = optionalObject ?? session.Instantiate(subclassPersister, id);
 
 			// make it circular-reference safe
-			TwoPhaseLoad.AddUninitializedCachedEntity(new EntityKey(id, subclassPersister), result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
+			TwoPhaseLoad.AddUninitializedCachedEntity(new EntityKey(id, subclassPersister, session.EntityMode), result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = entry.Assemble(result, id, subclassPersister, session.Interceptor, session); // intializes result by side-effect

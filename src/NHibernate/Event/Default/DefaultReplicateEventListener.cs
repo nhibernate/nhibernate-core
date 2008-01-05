@@ -92,7 +92,7 @@ namespace NHibernate.Event.Default
 				}
 
 				bool regenerate = persister.IsIdentifierAssignedByInsert; // prefer re-generation of identity!
-				EntityKey key = regenerate ? null : new EntityKey(id, persister);
+				EntityKey key = regenerate ? null : new EntityKey(id, persister, source.EntityMode);
 
 				PerformSaveOrReplicate(entity, key, persister, regenerate, replicationMode, source, true);
 			}
@@ -107,7 +107,7 @@ namespace NHibernate.Event.Default
 
 			new OnReplicateVisitor(source, id, entity, true).Process(entity, persister);
 
-			source.PersistenceContext.AddEntity(entity, Status.Loaded, null, new EntityKey(id, persister), version, LockMode.None, true, persister, true, false);
+			source.PersistenceContext.AddEntity(entity, Status.Loaded, null, new EntityKey(id, persister, source.EntityMode), version, LockMode.None, true, persister, true, false);
 
 			CascadeAfterReplicate(entity, persister, replicationMode, source);
 		}

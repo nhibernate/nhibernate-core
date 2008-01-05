@@ -58,6 +58,7 @@ namespace NHibernate.Impl
 		public abstract IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
+		public abstract IEntityPersister GetEntityPersister(string entityName, object obj);
 		public abstract IEntityPersister GetEntityPersister(object obj);
 		public abstract void AfterTransactionBegin(ITransaction tx);
 		public abstract void BeforeTransactionCompletion(ITransaction tx);

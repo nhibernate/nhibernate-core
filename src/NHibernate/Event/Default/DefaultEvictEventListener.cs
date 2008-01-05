@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 				{
 					throw new ArgumentException("null identifier");
 				}
-				EntityKey key = new EntityKey(id, persister);
+				EntityKey key = new EntityKey(id, persister, source.EntityMode);
 				persistenceContext.RemoveProxy(key);
 				if (!li.IsUninitialized)
 				{
@@ -51,7 +51,7 @@ namespace NHibernate.Event.Default
 				EntityEntry e = persistenceContext.RemoveEntry(obj);
 				if (e != null)
 				{
-					EntityKey key = new EntityKey(e.Id, e.Persister);
+					EntityKey key = new EntityKey(e.Id, e.Persister, source.EntityMode);
 					persistenceContext.RemoveEntity(key);
 					DoEvict(obj, key, e.Persister, source);
 				}

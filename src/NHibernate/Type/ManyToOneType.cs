@@ -92,7 +92,7 @@ namespace NHibernate.Type
 			if (uniqueKeyPropertyName == null && id != null)
 			{
 				IEntityPersister persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				EntityKey entityKey = new EntityKey(id, persister);
+				EntityKey entityKey = new EntityKey(id, persister, session.EntityMode);
 				if (!session.PersistenceContext.ContainsEntity(entityKey))
 				{
 					session.PersistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);

@@ -74,7 +74,7 @@ namespace NHibernate.Type
 				IEntityPersister ownerPersister = session.Factory.GetEntityPersister(entityName);
 				object id = session.GetContextEntityIdentifier(owner);
 
-				EntityKey entityKey = new EntityKey(id, ownerPersister);
+				EntityKey entityKey = new EntityKey(id, ownerPersister, session.EntityMode);
 
 				return session.PersistenceContext.IsPropertyNull(entityKey, PropertyName);
 			}

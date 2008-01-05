@@ -318,7 +318,7 @@ namespace NHibernate.DomainModel
 			{
 				clone = (Custom)obj.Clone();
 				TwoPhaseLoad.AddUninitializedEntity(
-						new EntityKey(id, this),
+						new EntityKey(id, this, session.EntityMode),
 						clone,
 						this,
 						LockMode.None,
@@ -464,6 +464,12 @@ namespace NHibernate.DomainModel
 		}
 
 		public void ProcessUpdateGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory,
+		                                                   EntityMode entityMode)
 		{
 			throw new NotImplementedException();
 		}

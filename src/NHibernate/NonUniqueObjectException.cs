@@ -15,28 +15,28 @@ namespace NHibernate
 	public class NonUniqueObjectException : HibernateException
 	{
 		private readonly object identifier;
-		private readonly System.Type clazz;
+		private readonly string entityName;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonUniqueObjectException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
 		/// <param name="id">The identifier of the object that caused the exception.</param>
-		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
-		public NonUniqueObjectException(String message, object id, System.Type clazz)
+		/// <param name="entityName">The EntityName of the object attempted to be loaded.</param>
+		public NonUniqueObjectException(String message, object id, string entityName)
 			: base(message)
 		{
-			this.clazz = clazz;
-			this.identifier = id;
+			this.entityName = entityName;
+			identifier = id;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonUniqueObjectException"/> class.
 		/// </summary>
 		/// <param name="id">The identifier of the object that caused the exception.</param>
-		/// <param name="clazz">The <see cref="System.Type"/> of the object attempted to be loaded.</param>
-		public NonUniqueObjectException(object id, System.Type clazz)
-			: this("a different object with the same identifier value was already associated with the session", id, clazz)
+		/// <param name="entityName">The EntityName of the object attempted to be loaded.</param>
+		public NonUniqueObjectException(object id, string entityName)
+			: this("a different object with the same identifier value was already associated with the session", id, entityName)
 		{
 		}
 
@@ -47,12 +47,12 @@ namespace NHibernate
 
 		public override string Message
 		{
-			get { return base.Message + ": " + identifier + ", of class: " + clazz.FullName; }
+			get { return base.Message + ": " + identifier + ", of entity: " + entityName; }
 		}
 
-		public System.Type PersistentClass
+		public string EntityName
 		{
-			get { return clazz; }
+			get { return entityName; }
 		}
 
 		#region ISerializable Members
@@ -64,7 +64,7 @@ namespace NHibernate
 			: base(info, context)
 		{
 			identifier = info.GetValue("identifier", typeof(Object));
-			clazz = info.GetValue("clazz", typeof(System.Type)) as System.Type;
+			entityName = info.GetValue("entityName", typeof(string)) as string;
 		}
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace NHibernate
 		{
 			base.GetObjectData(info, context);
 			info.AddValue("identifier", identifier, typeof(Object));
-			info.AddValue("clazz", clazz, typeof(System.Type));
+			info.AddValue("entityName", entityName, typeof(string));
 		}
 
 		#endregion

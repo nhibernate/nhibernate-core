@@ -529,6 +529,12 @@ namespace NHibernate.Test.NHSpecificTest
 			throw new NotImplementedException();
 		}
 
+		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory,
+		                                                   EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
 		public bool IsLazyPropertiesCacheable
 		{
 			get { return true; }
@@ -548,7 +554,7 @@ namespace NHibernate.Test.NHSpecificTest
 		public void CreateWithWrongTypeOfId()
 		{
 			IEntityPersister persister = new TestingClassPersister();
-			EntityKey key = new EntityKey(1L, persister);
+			EntityKey key = new EntityKey(1L, persister, EntityMode.Poco);
 		}
 	}
 }

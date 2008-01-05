@@ -508,5 +508,8 @@ namespace NHibernate.Persister.Entity
 		/// <param name="state">The entity state (at the time of Save).</param>
 		/// <param name="session">The session.</param>
 		void ProcessUpdateGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session);
+
+		/// <summary> Get the persister for an instance of this class or a subclass</summary>
+		IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory, EntityMode entityMode);
 	}
 }

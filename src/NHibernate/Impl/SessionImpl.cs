@@ -755,7 +755,7 @@ namespace NHibernate.Impl
 
 			if (result == null)
 			{
-				object newObject = interceptor.GetEntity(key.MappedClass.FullName, key.Identifier);
+				object newObject = interceptor.GetEntity(key.EntityName, key.Identifier);
 				if (newObject != null)
 				{
 					Lock(newObject, LockMode.None);
@@ -2105,6 +2105,38 @@ namespace NHibernate.Impl
 				AfterOperation(success);
 			}
 			return result;
+		}
+
+		public override IEntityPersister GetEntityPersister(string entityName, object obj)
+		{
+			ErrorIfClosed();
+			if (entityName == null)
+			{
+				return factory.GetEntityPersister(GuessEntityName(obj));
+			}
+			else
+			{
+				// try block is a hack around fact that currently tuplizers are not
+				// given the opportunity to resolve a subclass entity name.  this
+				// allows the (we assume custom) interceptor the ability to
+				// influence this decision if we were not able to based on the
+				// given entityName
+				try
+				{
+					return factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, entityMode);
+				}
+				catch (HibernateException e)
+				{
+					try
+					{
+						return GetEntityPersister(null, obj);
+					}
+					catch (HibernateException e2)
+					{
+						throw e;
+					}
+				}
+			}
 		}
 	}
 }

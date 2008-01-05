@@ -465,7 +465,7 @@ namespace NHibernate.Persister.Collection
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 
-			SubselectFetch subselect = persistenceContext.BatchFetchQueue.GetSubselect(new EntityKey(key, OwnerEntityPersister));
+			SubselectFetch subselect = persistenceContext.BatchFetchQueue.GetSubselect(new EntityKey(key, OwnerEntityPersister, session.EntityMode));
 
 			if (subselect == null)
 			{

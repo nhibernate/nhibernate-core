@@ -159,7 +159,7 @@ namespace NHibernate.Event.Default
 			EntityKey key;
 			if (!useIdentityColumn)
 			{
-				key = new EntityKey(id, persister);
+				key = new EntityKey(id, persister, source.EntityMode);
 				object old = source.PersistenceContext.GetEntity(key);
 				if (old != null)
 				{
@@ -169,7 +169,7 @@ namespace NHibernate.Event.Default
 					}
 					else
 					{
-						throw new NonUniqueObjectException(id, persister.MappedClass);
+						throw new NonUniqueObjectException(id, persister.EntityName);
 					}
 				}
 				persister.SetIdentifier(entity, id);
@@ -261,7 +261,7 @@ namespace NHibernate.Event.Default
 					id = insert.GeneratedId;
 					//now done in EntityIdentityInsertAction
 					//persister.setIdentifier( entity, id, source.getEntityMode() );
-					key = new EntityKey(id, persister);
+					key = new EntityKey(id, persister, source.EntityMode);
 					source.PersistenceContext.CheckUniqueness(key, entity);
 					//source.getBatcher().executeBatch(); //found another way to ensure that all batched joined inserts have been executed
 				}

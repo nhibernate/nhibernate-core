@@ -74,7 +74,7 @@ namespace NHibernate.Action
 			}
 			entry.PostDelete();
 
-			EntityKey key = new EntityKey(entry.Id, entry.Persister);
+			EntityKey key = new EntityKey(entry.Id, entry.Persister, session.EntityMode);
 			persistenceContext.RemoveEntity(key);
 			persistenceContext.RemoveProxy(key);
 

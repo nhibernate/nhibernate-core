@@ -59,7 +59,7 @@ namespace NHibernate.Impl
 			{
 				return persister.CreateProxy(id, this);
 			}
-			object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister));
+			object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister, EntityMode.Poco));
 			//TODO: if not loaded, throw an exception
 			return loaded ?? Get(entityName, id);
 		}
@@ -825,6 +825,19 @@ namespace NHibernate.Impl
 			}
 			temporaryPersistenceContext.Clear();
 			return result;
+		}
+
+		public override IEntityPersister GetEntityPersister(string entityName, object obj)
+		{
+			ErrorIfClosed();
+			if (entityName == null)
+			{
+				return factory.GetEntityPersister(GuessEntityName(obj));
+			}
+			else
+			{
+				return factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, EntityMode.Poco);
+			}
 		}
 	}
 }

@@ -123,6 +123,11 @@ namespace NHibernate.Engine
 		/// </summary>
 		IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
 
+		/// <summary> Get the <see cref="IEntityPersister"/> for any instance</summary>
+		/// <param name="entityName">optional entity name </param>
+		/// <param name="obj">the entity instance </param>
+		IEntityPersister GetEntityPersister(string entityName, object obj);
+
 		/// <summary>
 		/// Get the <c>IEntityPersister</c> for an object
 		/// </summary>
