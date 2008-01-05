@@ -53,6 +53,8 @@
     <Compile Include="FutureAttribute.cs" />
     <Compile Include="FutureValidator.cs" />
     <Compile Include="IClassValidator.cs" />
+    <Compile Include="MaxAttribute.cs" />
+    <Compile Include="MaxValidator.cs" />
     <Compile Include="MinAttribute.cs" />
     <Compile Include="MinValidator.cs" />
     <Compile Include="NotEmptyAttribute.cs" />
