@@ -162,6 +162,9 @@
     <Compile Include="GenericTest\BagGeneric\A.cs" />
     <Compile Include="GenericTest\BagGeneric\B.cs" />
     <Compile Include="GenericTest\BagGeneric\BagGenericFixture.cs" />
+    <Compile Include="GenericTest\EnumGeneric\A.cs" />
+    <Compile Include="GenericTest\EnumGeneric\B.cs" />
+    <Compile Include="GenericTest\EnumGeneric\EnumGenericFixture.cs" />
     <Compile Include="GenericTest\IdBagGeneric\A.cs" />
     <Compile Include="GenericTest\IdBagGeneric\IdBagGenericFixture.cs" />
     <Compile Include="GenericTest\ListGeneric\A.cs" />
@@ -1092,6 +1095,9 @@
   <ItemGroup>
     <EmbeddedResource Include="BulkManipulation\Vehicle.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1028\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GenericTest\EnumGeneric\EnumGenericFixture.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

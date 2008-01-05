@@ -425,6 +425,10 @@ namespace NHibernate.Type
 					{
 						type = NHibernateUtil.Enum(typeClass);
 					}
+					else if (IsNullableEnum(typeClass))
+					{
+						type = NHibernateUtil.Enum(typeClass.GetGenericArguments()[0]);
+					}
 					else if (typeClass.IsSerializable)
 					{
 						if (typeClassification == TypeClassification.Length)
@@ -439,6 +443,16 @@ namespace NHibernate.Type
 				}
 			}
 			return type;
+		}
+
+		private static Boolean IsNullableEnum(System.Type typeClass)
+		{
+			if (!typeClass.IsGenericType) return false;
+			System.Type nullable = typeof (Nullable<>);
+			if (!nullable.Equals(typeClass.GetGenericTypeDefinition())) return false;
+
+			System.Type genericClass = typeClass.GetGenericArguments()[0];
+			return genericClass.IsSubclassOf(typeof (Enum));
 		}
 
 		/// <summary>
