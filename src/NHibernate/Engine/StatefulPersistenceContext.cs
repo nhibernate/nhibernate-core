@@ -798,7 +798,7 @@ namespace NHibernate.Engine
 		private void AddCollection(IPersistentCollection coll, CollectionEntry entry, object key)
 		{
 			collectionEntries[coll] = entry;
-			CollectionKey collectionKey = new CollectionKey(entry.LoadedPersister, key);
+			CollectionKey collectionKey = new CollectionKey(entry.LoadedPersister, key, session.EntityMode);
 			IPersistentCollection tempObject;
 			collectionsByKey.TryGetValue(collectionKey, out tempObject);
 			collectionsByKey[collectionKey] = coll;

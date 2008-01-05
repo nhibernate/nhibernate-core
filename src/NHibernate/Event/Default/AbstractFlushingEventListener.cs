@@ -281,7 +281,7 @@ namespace NHibernate.Event.Default
 				else
 				{
 					//otherwise recreate the mapping between the collection and its key
-					CollectionKey collectionKey = new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey);
+					CollectionKey collectionKey = new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey, session.EntityMode);
 					persistenceContext.CollectionsByKey[collectionKey] = persistentCollection;
 				}
 			}

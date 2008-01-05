@@ -163,7 +163,7 @@ namespace NHibernate.Engine.Loading
 		/// <returns> The loading collection, or null if not found. </returns>
 		public IPersistentCollection LocateLoadingCollection(ICollectionPersister persister, object ownerKey)
 		{
-			LoadingCollectionEntry lce = LocateLoadingCollectionEntry(new CollectionKey(persister, ownerKey));
+			LoadingCollectionEntry lce = LocateLoadingCollectionEntry(new CollectionKey(persister, ownerKey, Session.EntityMode));
 			if (lce != null)
 			{
 				if (log.IsDebugEnabled)

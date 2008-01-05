@@ -56,7 +56,7 @@ namespace NHibernate.Event.Default
 			if (ce.LoadedPersister != null && ce.LoadedKey != null)
 			{
 				//TODO: is this 100% correct?
-				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey));
+				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey, Session.EntityMode));
 			}
 		}
 	}

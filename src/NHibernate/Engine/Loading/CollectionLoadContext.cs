@@ -21,7 +21,7 @@ namespace NHibernate.Engine.Loading
 	public class CollectionLoadContext
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(CollectionLoadContext));
-		private readonly LoadContexts loadContext;
+		private readonly LoadContexts loadContexts;
 		private readonly IDataReader resultSet;
 		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashedSet<CollectionKey>();
 
@@ -32,13 +32,13 @@ namespace NHibernate.Engine.Loading
 		/// <param name="resultSet">The result set this is "wrapping".</param>
 		public CollectionLoadContext(LoadContexts loadContexts, IDataReader resultSet)
 		{
-			loadContext = loadContexts;
+			this.loadContexts = loadContexts;
 			this.resultSet = resultSet;
 		}
 
 		public LoadContexts LoadContext
 		{
-			get { return loadContext; }
+			get { return loadContexts; }
 		}
 
 		public IDataReader ResultSet
@@ -68,16 +68,18 @@ namespace NHibernate.Engine.Loading
 		/// </remarks>
 		public IPersistentCollection GetLoadingCollection(ICollectionPersister persister, object key)
 		{
-			CollectionKey collectionKey = new CollectionKey(persister, key);
+			EntityMode em = loadContexts.PersistenceContext.Session.EntityMode;
+
+			CollectionKey collectionKey = new CollectionKey(persister, key, em);
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("starting attempt to find loading collection [" + MessageHelper.InfoString(persister.Role, key) + "]");
 			}
-			LoadingCollectionEntry loadingCollectionEntry = loadContext.LocateLoadingCollectionEntry(collectionKey);
+			LoadingCollectionEntry loadingCollectionEntry = loadContexts.LocateLoadingCollectionEntry(collectionKey);
 			if (loadingCollectionEntry == null)
 			{
 				// look for existing collection as part of the persistence context
-				IPersistentCollection collection = loadContext.PersistenceContext.GetCollection(collectionKey);
+				IPersistentCollection collection = loadContexts.PersistenceContext.GetCollection(collectionKey);
 				if (collection != null)
 				{
 					if (collection.WasInitialized)
@@ -93,8 +95,8 @@ namespace NHibernate.Engine.Loading
 				}
 				else
 				{
-					object owner = loadContext.PersistenceContext.GetCollectionOwner(key, persister);
-					bool newlySavedEntity = owner != null && loadContext.PersistenceContext.GetEntry(owner).Status != Status.Loading;
+					object owner = loadContexts.PersistenceContext.GetCollectionOwner(key, persister);
+					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading;
 					if (newlySavedEntity)
 					{
 						// important, to account for newly saved entities in query
@@ -109,13 +111,13 @@ namespace NHibernate.Engine.Loading
 						{
 							log.Debug("instantiating new collection [key=" + key + ", rs=" + resultSet + "]");
 						}
-						collection = persister.CollectionType.Instantiate(loadContext.PersistenceContext.Session, persister, key);
+						collection = persister.CollectionType.Instantiate(loadContexts.PersistenceContext.Session, persister, key);
 					}
 				}
 				collection.BeforeInitialize(persister);
 				collection.BeginRead();
 				localLoadingCollectionKeys.Add(collectionKey);
-				loadContext.RegisterLoadingCollectionXRef(collectionKey, new LoadingCollectionEntry(resultSet, persister, key, collection));
+				loadContexts.RegisterLoadingCollectionXRef(collectionKey, new LoadingCollectionEntry(resultSet, persister, key, collection));
 				return collection;
 			}
 			else
@@ -143,7 +145,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister for which to complete loading. </param>
 		public void EndLoadingCollections(ICollectionPersister persister)
 		{
-			if (!loadContext.HasLoadingCollectionEntries || (localLoadingCollectionKeys.Count == 0))
+			if (!loadContexts.HasLoadingCollectionEntries || (localLoadingCollectionKeys.Count == 0))
 			{
 				return;
 			}
@@ -160,7 +162,7 @@ namespace NHibernate.Engine.Loading
 			{
 				ISessionImplementor session = LoadContext.PersistenceContext.Session;
 
-				LoadingCollectionEntry lce = loadContext.LocateLoadingCollectionEntry(collectionKey);
+				LoadingCollectionEntry lce = loadContexts.LocateLoadingCollectionEntry(collectionKey);
 				if (lce == null)
 				{
 					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [" + collectionKey + "], but no LoadingCollectionEntry was found in loadContexts");
@@ -170,7 +172,7 @@ namespace NHibernate.Engine.Loading
 					matches.Add(lce);
 					if (lce.Collection.Owner == null)
 					{
-						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
+						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key, session.EntityMode),
 						                                                lce.Collection);
 					}
 					if (log.IsDebugEnabled)
@@ -179,7 +181,7 @@ namespace NHibernate.Engine.Loading
 					}
 
 					// todo : i'd much rather have this done from #endLoadingCollection(CollectionPersister,LoadingCollectionEntry)...
-					loadContext.UnregisterLoadingCollectionXRef(collectionKey);
+					loadContexts.UnregisterLoadingCollectionXRef(collectionKey);
 					toRemove.Add(collectionKey);
 				}
 			}
@@ -194,7 +196,7 @@ namespace NHibernate.Engine.Loading
 				// only the collection load contexts are implemented.  Long term,
 				// this cleanup should become part of the "close result set"
 				// processing from the (sandbox/jdbc) jdbc-container code.
-				loadContext.Cleanup(resultSet);
+				loadContexts.Cleanup(resultSet);
 			}
 		}
 

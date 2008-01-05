@@ -238,12 +238,17 @@ namespace NHibernate.Type
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			EntityMode entityMode = session.EntityMode;
 
+			if (entityMode == EntityMode.Xml && !isEmbeddedInXML)
+			{
+				return UnfetchedCollection;
+			}
+
 			// check if collection is currently being loaded
 			IPersistentCollection collection = persistenceContext.LoadContexts.LocateLoadingCollection(persister, key);
 			if (collection == null)
 			{
 				// check if it is already completely loaded, but unowned
-				collection = persistenceContext.UseUnownedCollection(new CollectionKey(persister, key));
+				collection = persistenceContext.UseUnownedCollection(new CollectionKey(persister, key, entityMode));
 				if (collection == null)
 				{
 					// create a new collection wrapper, to be initialized later
