@@ -53,7 +53,7 @@ namespace NHibernate.UserTypes.Oracle
 
 		public int GetHashCode(object x)
 		{
-			return NHibernateUtil.BinaryBlob.GetHashCode(((BFileType) x).Binary, null);
+			return NHibernateUtil.BinaryBlob.GetHashCode(((BFileType) x).Binary, 0);
 		}
 
 		public object NullSafeGet(IDataReader rs, string[] names, object owner)

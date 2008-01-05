@@ -44,11 +44,6 @@ namespace NHibernate.UserTypes
 			get { return ReturnedClass.Name; }
 		}
 
-		public override bool Equals(object x, object y)
-		{
-			return object.Equals(x, y);
-		}
-
 		public abstract object NullValue { get; }
 	}
 }

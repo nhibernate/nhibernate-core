@@ -775,13 +775,16 @@ namespace NHibernate.Loader
 		protected static int CountCollectionPersisters(IList associations)
 		{
 			int result = 0;
+			int index = 0;
 
 			foreach (OuterJoinableAssociation oj in associations)
 			{
-				if (oj.JoinType == JoinType.LeftOuterJoin && oj.Joinable.IsCollection)
-				{
-					result++;
+				if (oj.Joinable.IsCollection) {
+					if ((oj.JoinType == JoinType.LeftOuterJoin) || (index == 0 & oj.JoinType == JoinType.InnerJoin)) {
+						result++;
+					}
 				}
+				index++;
 			}
 			return result;
 		}
@@ -915,11 +918,11 @@ namespace NHibernate.Loader
 				{
 					IQueryableCollection collPersister = (IQueryableCollection) oj.Joinable;
 
-					if (oj.JoinType == JoinType.LeftOuterJoin)
+					if ((oj.JoinType == JoinType.LeftOuterJoin) || (i == 0 & j == 0 & oj.JoinType == JoinType.InnerJoin))
 					{
 						//it must be a collection fetch
 						collectionPersisters[j] = collPersister;
-						collectionOwners[j] = oj.GetOwner(associations);
+						collectionOwners[j] = oj.GetOwner (associations);
 						j++;
 					}
 
@@ -975,13 +978,15 @@ namespace NHibernate.Loader
 					                          	? null
 					                          	: collectionSuffixes[collectionAliasCount];
 
+					bool includeCollectionColumns = (join.JoinType == JoinType.LeftOuterJoin) | (i == 0 & join.JoinType == JoinType.InnerJoin);
+
 					string selectFragment = joinable.SelectFragment(
 						next == null ? null : next.Joinable,
 						next == null ? null : next.RHSAlias,
 						join.RHSAlias,
 						entitySuffix,
 						collectionSuffix,
-						join.JoinType == JoinType.LeftOuterJoin
+						includeCollectionColumns
 						);
 
 					buf.Add(selectFragment);
@@ -991,7 +996,7 @@ namespace NHibernate.Loader
 						entityAliasCount++;
 					}
 
-					if (joinable.ConsumesCollectionAlias() && join.JoinType == JoinType.LeftOuterJoin)
+					if (joinable.ConsumesCollectionAlias() && includeCollectionColumns)
 					{
 						collectionAliasCount++;
 					}

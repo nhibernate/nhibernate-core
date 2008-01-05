@@ -259,6 +259,12 @@
     <Compile Include="NHSpecificTest\NH1001\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1027\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1027\ManyToManyAssoc.cs" />
+    <Compile Include="NHSpecificTest\NH1028\Fixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NHSpecificTest\NH1028\ManyToManyAssoc.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="NHSpecificTest\NH1039\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1039\Model.cs" />
     <Compile Include="NHSpecificTest\NH1061\Fixture.cs" />
@@ -1085,6 +1091,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BulkManipulation\Vehicle.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1028\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
