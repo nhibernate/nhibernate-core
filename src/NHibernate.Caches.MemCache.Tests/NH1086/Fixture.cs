@@ -53,6 +53,7 @@ namespace NHibernate.Caches.MemCache.Tests.NH1086
 			CacheKey key = new CacheKey(obj.ID,
 										classMetadata.IdentifierType,
 										typeof(ClassWithCompId).FullName,
+										EntityMode.Poco,
 										sessions);
 
 			// Put the object into cache; mainly to test Serialization goes okay
