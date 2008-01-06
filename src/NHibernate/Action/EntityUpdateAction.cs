@@ -41,12 +41,14 @@ namespace NHibernate.Action
 
 		public override void Execute()
 		{
-			ISessionFactoryImplementor factory = Session.Factory;
+			ISessionImplementor session = Session;
 			object id = Id;
 			IEntityPersister persister = Persister;
 			object instance = Instance;
 
 			bool veto = PreUpdate();
+
+			ISessionFactoryImplementor factory = Session.Factory;
 
 			if (persister.IsVersionPropertyGenerated)
 			{
@@ -59,7 +61,7 @@ namespace NHibernate.Action
 			CacheKey ck = null;
 			if (persister.HasCache)
 			{
-				ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, factory);
+				ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.EntityMode, factory);
 				slock = persister.Cache.Lock(ck, previousVersion);
 			}
 
@@ -131,7 +133,7 @@ namespace NHibernate.Action
 			IEntityPersister persister = Persister;
 			if (persister.HasCache)
 			{
-				CacheKey ck = new CacheKey(Id, persister.IdentifierType, persister.RootEntityName, Session.Factory);
+				CacheKey ck = new CacheKey(Id, persister.IdentifierType, persister.RootEntityName, Session.EntityMode, Session.Factory);
 
 				if (success && cacheEntry != null)
 				{

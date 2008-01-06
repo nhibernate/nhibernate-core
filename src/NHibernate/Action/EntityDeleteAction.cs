@@ -48,7 +48,7 @@ namespace NHibernate.Action
 			CacheKey ck;
 			if (persister.HasCache)
 			{
-				ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.Factory);
+				ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.EntityMode, session.Factory);
 				sLock = persister.Cache.Lock(ck, version);
 			}
 			else
@@ -121,7 +121,7 @@ namespace NHibernate.Action
 		{
 			if (Persister.HasCache)
 			{
-				CacheKey ck = new CacheKey(Id, Persister.IdentifierType, Persister.RootEntityName, Session.Factory);
+				CacheKey ck = new CacheKey(Id, Persister.IdentifierType, Persister.RootEntityName, Session.EntityMode, Session.Factory);
 				Persister.Cache.Release(ck, sLock);
 			}
 			PostCommitDelete();

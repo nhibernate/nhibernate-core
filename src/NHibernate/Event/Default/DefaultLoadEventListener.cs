@@ -230,7 +230,7 @@ namespace NHibernate.Event.Default
 			CacheKey ck;
 			if (persister.HasCache)
 			{
-				ck = new CacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName, source.Factory);
+				ck = new CacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName, source.EntityMode, source.Factory);
 				sLock = persister.Cache.Lock(ck, null);
 			}
 			else
@@ -393,7 +393,7 @@ namespace NHibernate.Event.Default
 			{
 				ISessionFactoryImplementor factory = source.Factory;
 
-				CacheKey ck = new CacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName, factory);
+				CacheKey ck = new CacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName, source.EntityMode, factory);
 				object ce = persister.Cache.Get(ck, source.Timestamp);
 
 				if (factory.Statistics.IsStatisticsEnabled)

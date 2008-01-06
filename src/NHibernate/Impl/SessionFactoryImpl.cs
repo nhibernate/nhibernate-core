@@ -1136,7 +1136,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				CacheKey ck = new CacheKey(id, p.IdentifierType, p.RootEntityName, this);
+				CacheKey ck = new CacheKey(id, p.IdentifierType, p.RootEntityName, EntityMode.Poco, this);
 				p.Cache.Remove(ck);
 			}
 		}
@@ -1176,7 +1176,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				CacheKey ck = new CacheKey(id, p.KeyType, p.Role, this);
+				CacheKey ck = new CacheKey(id, p.KeyType, p.Role, EntityMode.Poco, this);
 				p.Cache.Remove(ck);
 			}
 		}

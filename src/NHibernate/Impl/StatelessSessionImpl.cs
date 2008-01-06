@@ -668,7 +668,7 @@ namespace NHibernate.Impl
 
 			if (persister.HasCache)
 			{
-				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, Factory);
+				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, EntityMode, Factory);
 				persister.Cache.Remove(ck);
 			}
 

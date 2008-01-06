@@ -89,7 +89,7 @@ namespace NHibernate.Event.Default
 
 			if (persister.HasCache)
 			{
-				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, source.Factory);
+				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, source.EntityMode, source.Factory);
 				persister.Cache.Remove(ck);
 			}
 

@@ -248,6 +248,7 @@ namespace NHibernate.Engine
 					entityKey.Identifier,
 					persister.IdentifierType,
 					entityKey.EntityName,
+					EntityMode.Poco,
 					context.Session.Factory
 					);
 				return persister.Cache.Cache.Get(key) != null;
@@ -265,6 +266,7 @@ namespace NHibernate.Engine
 					collectionKey,
 					persister.KeyType,
 					persister.Role,
+					EntityMode.Poco,
 					context.Session.Factory
 					);
 				return persister.Cache.Cache.Get(cacheKey) != null;

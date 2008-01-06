@@ -46,7 +46,7 @@ namespace NHibernate.Event.Default
 				CacheKey ck;
 				if (persister.HasCache)
 				{
-					ck = new CacheKey(entry.Id, persister.IdentifierType, persister.RootEntityName, source.Factory);
+					ck = new CacheKey(entry.Id, persister.IdentifierType, persister.RootEntityName, source.EntityMode, source.Factory);
 					slock = persister.Cache.Lock(ck, entry.Version);
 				}
 				else

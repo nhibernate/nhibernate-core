@@ -33,7 +33,7 @@ namespace NHibernate.Test.FilterTest
 				.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
 			CacheKey cacheKey =
-				new CacheKey(testData.steveId, persister.KeyType, persister.Role, (ISessionFactoryImplementor) sessions);
+				new CacheKey(testData.steveId, persister.KeyType, persister.Role, EntityMode.Poco, (ISessionFactoryImplementor) sessions);
 			object[] cachedData = (object[]) persister.Cache.Cache.Get(cacheKey);
 			Assert.IsNotNull(cachedData, "collection was not in cache");
 
