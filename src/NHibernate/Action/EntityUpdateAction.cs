@@ -193,10 +193,5 @@ namespace NHibernate.Action
 			}
 			return veto;
 		}
-
-		public override int CompareTo(EntityAction other)
-		{
-			return 0;
-		}
 	}
 }

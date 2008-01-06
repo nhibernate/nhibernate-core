@@ -63,10 +63,5 @@ namespace NHibernate.Action
 				Session.Factory.StatisticsImplementor.UpdateCollection(Persister.Role);
 			}
 		}
-
-		public override int CompareTo(CollectionAction other)
-		{
-			return 0;
-		}
 	}
 }

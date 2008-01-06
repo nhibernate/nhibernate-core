@@ -3,6 +3,8 @@ using System.IO;
 using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
+using NHibernate.Util;
+using NHibernate.Impl;
 
 namespace NHibernate.Action
 {
@@ -95,7 +97,7 @@ namespace NHibernate.Action
 
 		public void BeforeExecutions()
 		{
-			throw new HibernateException("BeforeExecutions() called for non-collection action");
+			throw new AssertionFailure("BeforeExecutions() called for non-collection action");
 		}
 
 		public abstract void Execute();
@@ -143,5 +145,10 @@ namespace NHibernate.Action
 		}
 
 		#endregion
+
+		public override string ToString()
+		{
+			return StringHelper.Unqualify(GetType().FullName) + MessageHelper.InfoString(entityName, id);
+		}
 	}
 }

@@ -160,7 +160,7 @@ namespace NHibernate.Action
 			else
 			{
 				//then by fk
-				return persister.KeyType.Compare(key, other.key, EntityMode.Poco);
+				return persister.KeyType.Compare(key, other.key, session.EntityMode);
 			}
 		}
 
@@ -168,8 +168,7 @@ namespace NHibernate.Action
 
 		public override string ToString()
 		{
-			// TODO: H3.2 Different behaviour (use persister istead collectionRole)
-			return StringHelper.Unqualify(GetType().FullName) + MessageHelper.InfoString(persister, key);
+			return StringHelper.Unqualify(GetType().FullName) + MessageHelper.InfoString(collectionRole, key);
 		}
 
 		#region IDeserializationCallback Members
