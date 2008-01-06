@@ -44,7 +44,7 @@ namespace NHibernate.Driver
 		public override IBatcher CreateBatcher(ConnectionManager connectionManager)
 		{
 
-			if (connectionManager.Factory.IsBatchUpdateEnabled)
+			if (connectionManager.Factory.Settings.AdoBatchSize > 0)
 				return new SqlClientBatchingBatcher(connectionManager);
 			else
 				return new NonBatchingBatcher(connectionManager);

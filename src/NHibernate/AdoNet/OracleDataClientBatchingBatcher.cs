@@ -22,7 +22,7 @@ namespace NHibernate.AdoNet
 		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager)
 			: base(connectionManager)
 		{
-			batchSize = Factory.BatchSize;
+			batchSize = Factory.Settings.AdoBatchSize;
 		}
 
 		public override void AddToBatch(IExpectation expectation)

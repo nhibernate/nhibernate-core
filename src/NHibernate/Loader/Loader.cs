@@ -1385,7 +1385,7 @@ namespace NHibernate.Loader
 		{
 			// synchronized to avoid multi-thread access issues; defined as method synch to avoid
 			// potential deadlock issues due to nature of code.
-			if (session.Factory.Settings.WrapResultSetsEnabled)
+			if (session.Factory.Settings.IsWrapResultSetsEnabled)
 			{
 				try
 				{

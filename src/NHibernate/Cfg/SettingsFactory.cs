@@ -170,10 +170,10 @@ namespace NHibernate.Cfg
 			//ADO.NET and connection settings:
 
 			// TODO: Environment.BatchVersionedData
-			settings.BatchSize = PropertiesHelper.GetInt32(Environment.BatchSize, properties, 0);
+			settings.AdoBatchSize = PropertiesHelper.GetInt32(Environment.BatchSize, properties, 0);
 			bool wrapResultSets = PropertiesHelper.GetBoolean(Environment.WrapResultSets, properties, false);
 			log.Debug("Wrap result sets: " + EnabledDisabled(wrapResultSets));
-			settings.WrapResultSetsEnabled = wrapResultSets;
+			settings.IsWrapResultSetsEnabled = wrapResultSets;
 
 			string isolationString = PropertiesHelper.GetString(Environment.Isolation, properties, String.Empty);
 			IsolationLevel isolation = IsolationLevel.Unspecified;

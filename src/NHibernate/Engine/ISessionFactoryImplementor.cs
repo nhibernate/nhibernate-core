@@ -97,24 +97,9 @@ namespace NHibernate.Engine
 		string GetImportedClassName(string name);
 
 		/// <summary>
-		/// 
-		/// </summary>
-		int BatchSize { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		int FetchSize { get; }
-
-		/// <summary>
 		/// Maximum depth of outer join fetching
 		/// </summary>
 		int MaximumFetchDepth { get; }
-
-		/// <summary>
-		/// Are we logging SQL to the console?
-		/// </summary>
-		bool IsShowSqlEnabled { get; }
 
 		/// <summary>
 		/// Get the default query cache
@@ -154,12 +139,6 @@ namespace NHibernate.Engine
 		/// This is only applicable to manually controlled NHibernate Transactions.
 		/// </remarks>
 		IsolationLevel Isolation { get; }
-
-		/// <summary>
-		/// Gets a boolean indicating if the sql statement should be prepared.  The value
-		/// is calculated from <c>adonet.batch_size</c> if the value exists and greater than 0.
-		/// </summary>
-		bool IsBatchUpdateEnabled { get; }
 
 		/// <summary>
 		/// Get the identifier generator for the hierarchy

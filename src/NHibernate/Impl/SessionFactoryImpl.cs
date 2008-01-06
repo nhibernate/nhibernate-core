@@ -862,18 +862,6 @@ namespace NHibernate.Impl
 		#endregion
 
 		/// <summary></summary>
-		public bool IsBatchUpdateEnabled
-		{
-			get { return settings.BatchSize > 0; }
-		}
-
-		/// <summary></summary>
-		public int BatchSize
-		{
-			get { return settings.BatchSize; }
-		}
-
-		/// <summary></summary>
 		public bool IsScrollableResultSetsEnabled
 		{
 			get { return settings.IsScrollableResultSetsEnabled; }
@@ -1203,18 +1191,6 @@ namespace NHibernate.Impl
 		public IType GetReferencedPropertyType(string className, string propertyName)
 		{
 			return GetEntityPersister(className).GetPropertyType(propertyName);
-		}
-
-		/// <summary></summary>
-		public bool IsShowSqlEnabled
-		{
-			get { return settings.IsShowSqlEnabled; }
-		}
-
-		/// <summary></summary>
-		public int FetchSize
-		{
-			get { return settings.StatementFetchSize; }
 		}
 
 		/// <summary></summary>

@@ -22,28 +22,29 @@ namespace NHibernate.Driver
 		/// <exception cref="HibernateException">
 		/// Thrown when the <c>Oracle.DataAccess</c> assembly can not be loaded.
 		/// </exception>
-		public OracleDataClientDriver() : base(
+		public OracleDataClientDriver()
+			: base(
 			"Oracle.DataAccess",
 			"Oracle.DataAccess.Client.OracleConnection",
 			"Oracle.DataAccess.Client.OracleCommand")
 		{
 		}
 
-        /// <summary>
-        /// Create an instance of <see cref="IBatcher"/> according to the configuration 
-        /// and the capabilities of the driver
-        /// </summary>
-        /// <remarks>
-        /// By default, .Net doesn't have any batching capabilities, drivers that does have
-        /// batching support need to override this method and return their own batcher.
-        /// </remarks>
-        public override IBatcher CreateBatcher(ConnectionManager connectionManager)
-        {
-            if (connectionManager.Factory.IsBatchUpdateEnabled)
-                return new OracleDataClientBatchingBatcher(connectionManager);
-            else
-                return new NonBatchingBatcher(connectionManager);
-        }
+		/// <summary>
+		/// Create an instance of <see cref="IBatcher"/> according to the configuration 
+		/// and the capabilities of the driver
+		/// </summary>
+		/// <remarks>
+		/// By default, .Net doesn't have any batching capabilities, drivers that does have
+		/// batching support need to override this method and return their own batcher.
+		/// </remarks>
+		public override IBatcher CreateBatcher(ConnectionManager connectionManager)
+		{
+			if (connectionManager.Factory.Settings.AdoBatchSize > 0)
+				return new OracleDataClientBatchingBatcher(connectionManager);
+			else
+				return new NonBatchingBatcher(connectionManager);
+		}
 
 		/// <summary></summary>
 		public override bool UseNamedPrefixInSql

@@ -375,12 +375,12 @@ namespace NHibernate.AdoNet
 
 		protected void LogCommand(IDbCommand command)
 		{
-			if (logSql.IsDebugEnabled || factory.IsShowSqlEnabled)
+			if (logSql.IsDebugEnabled || factory.Settings.IsShowSqlEnabled)
 			{
 				string outputText = GetCommandLogString(command);
 				logSql.Debug(outputText);
 
-				if (factory.IsShowSqlEnabled)
+				if (factory.Settings.IsShowSqlEnabled)
 				{
 					Console.Out.Write("NHibernate: ");
 					Console.Out.WriteLine(outputText);

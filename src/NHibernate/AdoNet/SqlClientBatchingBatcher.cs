@@ -16,7 +16,7 @@ namespace NHibernate.AdoNet
 		public SqlClientBatchingBatcher(ConnectionManager connectionManager)
 			: base(connectionManager)
 		{
-			batchSize = Factory.BatchSize;
+			batchSize = Factory.Settings.AdoBatchSize;
 			currentBatch = new SqlClientSqlCommandSet();
 		}
 
