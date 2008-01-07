@@ -1,63 +1,16 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
 {
-	/// <summary>
-	/// Represents an SQL decode(pkvalue, key1, 1, key2, 2, ..., 0)
-	/// </summary>
+	/// <summary>An Oracle-style DECODE function. </summary>
+	/// <example>
+	/// <code>decode(pkvalue, key1, 1, key2, 2, ..., 0)</code>
+	/// </example>
 	public class DecodeCaseFragment : CaseFragment
 	{
-		private Dialect.Dialect dialect;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dialect"></param>
-		public DecodeCaseFragment(Dialect.Dialect dialect)
-		{
-			this.dialect = dialect;
-		}
-
-		private string returnColumnName;
-		private IDictionary cases = new SequencedHashMap();
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="returnColumnName"></param>
-		/// <returns></returns>
-		public override CaseFragment SetReturnColumnName(string returnColumnName)
-		{
-			this.returnColumnName = returnColumnName;
-			return this;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="returnColumnName"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
-		public override CaseFragment SetReturnColumnName(string returnColumnName, string suffix)
-		{
-			return SetReturnColumnName(new Alias(suffix).ToAliasString(returnColumnName, dialect));
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="columnName"></param>
-		/// <param name="columnValue"></param>
-		/// <returns></returns>
-		public override CaseFragment AddWhenColumnNotNull(string alias, string columnName, string columnValue)
-		{
-			string key = alias + StringHelper.Dot + columnName;
-			cases.Add(key, columnValue);
-			return this;
-		}
+		public DecodeCaseFragment(Dialect.Dialect dialect) : base(dialect) {}
 
 		/// <summary></summary>
 		public override string ToSqlStringFragment()
@@ -66,25 +19,30 @@ namespace NHibernate.SqlCommand
 				.Append("decode(");
 
 			int number = 0;
-			foreach (DictionaryEntry de in cases)
+			foreach (KeyValuePair<string, string> de in cases)
 			{
 				if (number < cases.Count - 1)
 				{
-					buf.Append(", ")
+					buf.Append(StringHelper.CommaSpace)
 						.Append(de.Key)
-						.Append(", ")
+						.Append(StringHelper.CommaSpace)
 						.Append(de.Value);
 				}
 				else
 				{
 					buf.Insert(7, de.Key)
-						.Append(", ")
+						.Append(StringHelper.CommaSpace)
 						.Append(de.Value);
 				}
 				number++;
 			}
+			buf.Append(StringHelper.ClosedParen);
 
-			buf.Append(')');
+			if (returnColumnName != null)
+			{
+				buf.Append(" as ").Append(returnColumnName);
+			}
+
 			return buf.ToString();
 		}
 	}
