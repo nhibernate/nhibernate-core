@@ -47,7 +47,7 @@ namespace NHibernate.Hql.Classic
 		private readonly IList scalarSelectTokens = new ArrayList(); // contains a List of strings
 		private readonly IList whereTokens = new ArrayList(); // contains a List of strings containing Sql or SqlStrings
 		private readonly IList havingTokens = new ArrayList();
-		private readonly IDictionary joins = new SequencedHashMap();
+		private readonly IDictionary<string, JoinSequence> joins = new LinkedHashMap<string, JoinSequence>();
 		private readonly IList orderByTokens = new ArrayList();
 		private readonly IList groupByTokens = new ArrayList();
 		private readonly ISet querySpaces = new HashedSet();
@@ -646,7 +646,7 @@ namespace NHibernate.Hql.Classic
 
 		internal void AddJoin(string name, JoinSequence joinSequence)
 		{
-			if (!joins.Contains(name))
+			if (!joins.ContainsKey(name))
 			{
 				joins.Add(name, joinSequence);
 			}
@@ -1163,10 +1163,10 @@ namespace NHibernate.Hql.Classic
 
 		private void MergeJoins(JoinFragment ojf)
 		{
-			foreach (DictionaryEntry de in joins)
+			foreach (KeyValuePair<string, JoinSequence> de in joins)
 			{
-				string name = (string) de.Key;
-				JoinSequence join = (JoinSequence) de.Value;
+				string name = de.Key;
+				JoinSequence join = de.Value;
 				join.SetSelector(new Selector(this));
 
 				if (typeMap.ContainsKey(name))
