@@ -1048,6 +1048,9 @@
 	</xs:element>
 	<xs:element name="query">
 		<xs:complexType mixed="true">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="query-param" />
+			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
 			<xs:attribute name="cache-mode" type="cacheMode" />
@@ -1127,9 +1130,9 @@
 				<xs:element ref="return-join" />
 				<xs:element ref="load-collection" />
 				<xs:element ref="synchronize" />
+				<xs:element ref="query-param" />
 			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required" />
-			<!-- <xs:attribute name="callable" type="xs:boolean" use="optional" default="false" /> -->
 			<xs:attribute name="resultset-ref" type="xs:string" use="optional" />
 			<xs:attribute name="flush-mode" type="flushMode" use="optional" />
 			<xs:attribute name="cache-mode" type="cacheMode" />
@@ -1298,6 +1301,12 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="check" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="query-param">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="type" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
