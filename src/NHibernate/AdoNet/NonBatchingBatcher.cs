@@ -9,14 +9,15 @@ namespace NHibernate.AdoNet
 	/// An implementation of the <see cref="IBatcher" /> 
 	/// interface that does no batching.
 	/// </summary>
-	internal class NonBatchingBatcher : BatcherImpl
+	internal class NonBatchingBatcher : AbstractBatcher
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonBatchingBatcher"/> class.
 		/// </summary>
 		/// <param name="connectionManager">The <see cref="ConnectionManager"/> for this batcher.</param>
-		public NonBatchingBatcher(ConnectionManager connectionManager)
-			: base(connectionManager)
+		/// <param name="interceptor"></param>
+		public NonBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+			: base(connectionManager, interceptor)
 		{
 		}
 

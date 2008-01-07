@@ -132,6 +132,7 @@ namespace NHibernate.Cfg
 
 		public const string WrapResultSets = "adonet.wrap_result_sets";
 		public const string BatchSize = "adonet.batch_size";
+		public const string BatchStrategy = "adonet.factory_class";
 
 		// NHibernate-specific properties
 		public const string PrepareSql = "prepare_sql";

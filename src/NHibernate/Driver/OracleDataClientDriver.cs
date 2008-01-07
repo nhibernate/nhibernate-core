@@ -1,8 +1,6 @@
-using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.SqlTypes;
-using NHibernate.Engine;
 
 namespace NHibernate.Driver
 {
@@ -14,7 +12,7 @@ namespace NHibernate.Driver
 	/// on the NHibernate forums in this 
 	/// <a href="http://sourceforge.net/forum/message.php?msg_id=2952662">post</a>.
 	/// </remarks>
-	public class OracleDataClientDriver : ReflectionBasedDriver
+	public class OracleDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
 		/// <summary>
 		/// Initializes a new instance of <see cref="OracleDataClientDriver"/>.
@@ -28,22 +26,6 @@ namespace NHibernate.Driver
 			"Oracle.DataAccess.Client.OracleConnection",
 			"Oracle.DataAccess.Client.OracleCommand")
 		{
-		}
-
-		/// <summary>
-		/// Create an instance of <see cref="IBatcher"/> according to the configuration 
-		/// and the capabilities of the driver
-		/// </summary>
-		/// <remarks>
-		/// By default, .Net doesn't have any batching capabilities, drivers that does have
-		/// batching support need to override this method and return their own batcher.
-		/// </remarks>
-		public override IBatcher CreateBatcher(ConnectionManager connectionManager)
-		{
-			if (connectionManager.Factory.Settings.AdoBatchSize > 0)
-				return new OracleDataClientBatchingBatcher(connectionManager);
-			else
-				return new NonBatchingBatcher(connectionManager);
 		}
 
 		/// <summary></summary>
@@ -78,5 +60,14 @@ namespace NHibernate.Driver
 			}
 			base.InitializeParameter(dbParam, name, sqlType);
 		}
+
+		#region IEmbeddedBatcherFactoryProvider Members
+
+		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
+		{
+			get { return typeof (OracleDataClientClientBatchingBatcherFactory); }
+		}
+
+		#endregion
 	}
 }

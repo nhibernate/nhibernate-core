@@ -209,7 +209,7 @@
     <Compile Include="Id\UUIDStringGenerator.cs" />
     <Compile Include="IInterceptor.cs" />
     <Compile Include="Impl\AbstractQueryImpl.cs" />
-    <Compile Include="AdoNet\BatcherImpl.cs" />
+    <Compile Include="AdoNet\AbstractBatcher.cs" />
     <Compile Include="AdoNet\OracleDataClientBatchingBatcher.cs" />
     <Compile Include="AdoNet\SqlClientBatchingBatcher.cs" />
     <Compile Include="Cache\Entry\CacheEntry.cs" />
@@ -446,11 +446,11 @@
     <Compile Include="Action\EntityInsertAction.cs" />
     <Compile Include="Action\EntityUpdateAction.cs" />
     <Compile Include="Action\IExecutable.cs" />
-    <Compile Include="AdoNet\BatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\ColumnNameCache.cs" />
     <Compile Include="AdoNet\Expectations.cs" />
     <Compile Include="AdoNet\IBatcherFactory.cs" />
     <Compile Include="AdoNet\IExpectation.cs" />
+    <Compile Include="AdoNet\NonBatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\ResultSetWrapper.cs" />
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
@@ -584,6 +584,7 @@
     <Compile Include="Dialect\Function\StandardSafeSQLFunction.cs" />
     <Compile Include="Dialect\Function\StandardSQLFunction.cs" />
     <Compile Include="Dialect\Function\VarArgsSQLFunction.cs" />
+    <Compile Include="AdoNet\IEmbeddedBatcherFactoryProvider.cs" />
     <Compile Include="Dialect\InformixDialect.cs" />
     <Compile Include="Dialect\Lock\ILockingStrategy.cs" />
     <Compile Include="Dialect\Lock\SelectLockingStrategy.cs" />

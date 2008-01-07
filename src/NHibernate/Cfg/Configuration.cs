@@ -78,6 +78,8 @@ namespace NHibernate.Cfg
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(Configuration));
 
+		protected internal SettingsFactory settingsFactory;
+
 		/// <summary>
 		/// Clear the internal state of the <see cref="Configuration"/> object.
 		/// </summary>
@@ -94,7 +96,6 @@ namespace NHibernate.Cfg
 			propertyReferences = new List<Mappings.PropertyReference>();
 			filterDefinitions = new Dictionary<string, FilterDefinition>();
 			interceptor = emptyInterceptor;
-			mapping = new Mapping(this);
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
 			sqlFunctions = new Dictionary<string, ISQLFunction>();
@@ -153,14 +154,32 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private Mapping mapping;
+		[NonSerialized]
+		private IMapping mapping;
+
+		protected internal Configuration(SettingsFactory settingsFactory)
+		{
+			InitBlock();
+			this.settingsFactory = settingsFactory;
+			Reset();
+		}
+
+		private void InitBlock()
+		{
+			mapping = BuildMapping();
+		}
+
+		public virtual IMapping BuildMapping()
+		{
+			return new Mapping(this);
+		}
 
 		/// <summary>
 		/// Create a new Configuration object.
 		/// </summary>
 		public Configuration()
+			: this(new SettingsFactory())
 		{
-			Reset();
 		}
 
 		/// <summary>
@@ -1401,7 +1420,7 @@ namespace NHibernate.Cfg
 		//protected Settings BuildSettings()
 		private Settings BuildSettings()
 		{
-			return SettingsFactory.BuildSettings(properties);
+			return settingsFactory.BuildSettings(properties);
 		}
 
 		/// <summary>

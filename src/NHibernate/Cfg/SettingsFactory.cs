@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using log4net;
+using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Dialect;
@@ -20,7 +21,7 @@ namespace NHibernate.Cfg
 		private static readonly ILog log = LogManager.GetLogger(typeof(SettingsFactory));
 		private static readonly string DefaultCacheProvider = typeof(NoCacheProvider).AssemblyQualifiedName;
 
-		public static Settings BuildSettings(IDictionary properties)
+		public Settings BuildSettings(IDictionary properties)
 		{
 			Settings settings = new Settings();
 
@@ -45,6 +46,7 @@ namespace NHibernate.Cfg
 				log.Warn("No dialect set - using GenericDialect: " + he.Message);
 				dialect = new GenericDialect();
 			}
+			settings.Dialect = dialect;
 
 			// TODO: SQLExceptionConverter
 
@@ -174,6 +176,7 @@ namespace NHibernate.Cfg
 			bool wrapResultSets = PropertiesHelper.GetBoolean(Environment.WrapResultSets, properties, false);
 			log.Debug("Wrap result sets: " + EnabledDisabled(wrapResultSets));
 			settings.IsWrapResultSetsEnabled = wrapResultSets;
+			settings.BatcherFactory = CreateBatcherFactory(properties, settings.AdoBatchSize, connectionProvider);
 
 			string isolationString = PropertiesHelper.GetString(Environment.Isolation, properties, String.Empty);
 			IsolationLevel isolation = IsolationLevel.Unspecified;
@@ -201,7 +204,6 @@ namespace NHibernate.Cfg
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled
 			settings.IsShowSqlEnabled = showSql;
-			settings.Dialect = dialect;
 			settings.ConnectionProvider = connectionProvider;
 			settings.QuerySubstitutions = querySubstitutions;
 			settings.TransactionFactory = transactionFactory;
@@ -219,6 +221,35 @@ namespace NHibernate.Cfg
 			settings.IsolationLevel = isolation;
 
 			return settings;
+		}
+
+		private static IBatcherFactory CreateBatcherFactory(IDictionary properties, int batchSize, IConnectionProvider connectionProvider)
+		{
+			System.Type tBatcher = typeof (NonBatchingBatcherFactory);
+			string batcherClass = PropertiesHelper.GetString(Environment.BatchStrategy, properties, null);
+			if (string.IsNullOrEmpty(batcherClass))
+			{
+				if (batchSize > 0)
+				{
+					// try to get the BatcherFactory from the Drive if not available use NonBatchingBatcherFactory
+					IEmbeddedBatcherFactoryProvider ebfp = connectionProvider.Driver as IEmbeddedBatcherFactoryProvider;
+					if (ebfp != null && ebfp.BatcherFactoryClass != null)
+						tBatcher = ebfp.BatcherFactoryClass;
+				}
+			}
+			else
+			{
+				tBatcher = ReflectHelper.ClassForName(batcherClass);
+			}
+			log.Info("Batcher factory: " + tBatcher.AssemblyQualifiedName);
+			try
+			{
+				return (IBatcherFactory) Activator.CreateInstance(tBatcher);
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("Could not instantiate BatcherFactory: " + batcherClass, cnfe);
+			}
 		}
 
 		private static string EnabledDisabled(bool value)
@@ -240,7 +271,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private SettingsFactory()
+		protected internal SettingsFactory()
 		{
 			//should not be publically creatable
 		}

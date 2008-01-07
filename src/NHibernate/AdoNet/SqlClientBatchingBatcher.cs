@@ -1,20 +1,29 @@
 using System.Data;
 using System.Text;
+using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
 {
+	internal class SqlClientBatchingBatcherFactory : IBatcherFactory
+	{
+		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+		{
+			return new SqlClientBatchingBatcher(connectionManager, interceptor);
+		}
+	}
+
 	/// <summary>
 	/// Summary description for SqlClientBatchingBatcher.
 	/// </summary>
-	internal class SqlClientBatchingBatcher : BatcherImpl
+	internal class SqlClientBatchingBatcher : AbstractBatcher
 	{
 		private int batchSize;
 		private int totalExpectedRowsAffected;
 		private SqlClientSqlCommandSet currentBatch;
 		private StringBuilder currentBatchCommandsLog = new StringBuilder();
 
-		public SqlClientBatchingBatcher(ConnectionManager connectionManager)
-			: base(connectionManager)
+		public SqlClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+			: base(connectionManager, interceptor)
 		{
 			batchSize = Factory.Settings.AdoBatchSize;
 			currentBatch = new SqlClientSqlCommandSet();

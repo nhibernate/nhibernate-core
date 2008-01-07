@@ -182,7 +182,6 @@ namespace NHibernate
 		/// <summary> Called when sql string is being prepared. </summary>
 		/// <param name="sql">sql to be prepared </param>
 		/// <returns> original or modified sql </returns>
-		/// <remarks>Not used yet</remarks>
 		SqlString OnPrepareStatement(SqlString sql);
 	}
 }

@@ -2,14 +2,23 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Reflection;
+using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
 {
+	internal class OracleDataClientClientBatchingBatcherFactory : IBatcherFactory
+	{
+		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+		{
+			return new OracleDataClientBatchingBatcher(connectionManager, interceptor);
+		}
+	}
+
 	/// <summary>
 	/// Summary description for OracleDataClientBatchingBatcher.
 	/// By Tomer Avissar
 	/// </summary>
-	internal class OracleDataClientBatchingBatcher : BatcherImpl
+	internal class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 		private int batchSize;
 		private int countOfCommands = 0;
@@ -19,8 +28,8 @@ namespace NHibernate.AdoNet
 		private Hashtable parameterIsAllNullsHashTable;
 
 
-		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager)
-			: base(connectionManager)
+		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+			: base(connectionManager, interceptor)
 		{
 			batchSize = Factory.Settings.AdoBatchSize;
 		}
@@ -60,7 +69,7 @@ namespace NHibernate.AdoNet
 					parameterValueArray = parameterValueArrayHashTable[currentParameter.ParameterName] as ArrayList;
 				}
 
-				if (currentParameter.Value != System.DBNull.Value)
+				if (currentParameter.Value != DBNull.Value)
 				{
 					parameterIsAllNullsHashTable[currentParameter.ParameterName] = false;
 				}

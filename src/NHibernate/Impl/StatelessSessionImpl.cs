@@ -30,20 +30,12 @@ namespace NHibernate.Impl
 		private readonly ConnectionManager connectionManager;
 		[NonSerialized]
 		private readonly StatefulPersistenceContext temporaryPersistenceContext;
-		[NonSerialized]
-		private IBatcher batcher;
 
 		internal StatelessSessionImpl(IDbConnection connection, SessionFactoryImpl factory)
 			: base(factory)
 		{
 			temporaryPersistenceContext = new StatefulPersistenceContext(this);
-			connectionManager = new ConnectionManager(this, connection, ConnectionReleaseMode.AfterTransaction);
-			InitTransientState();
-		}
-
-		private void InitTransientState()
-		{
-			batcher = factory.ConnectionProvider.Driver.CreateBatcher(connectionManager);
+			connectionManager = new ConnectionManager(this, connection, ConnectionReleaseMode.AfterTransaction, new EmptyInterceptor());
 		}
 
 		public override void InitializeCollection(IPersistentCollection coolection, bool writing)
@@ -76,7 +68,11 @@ namespace NHibernate.Impl
 
 		public override IBatcher Batcher
 		{
-			get { return batcher; }
+			get
+			{
+				ErrorIfClosed();
+				return connectionManager.Batcher;
+			}
 		}
 
 		public override IList List(string query, QueryParameters parameters)

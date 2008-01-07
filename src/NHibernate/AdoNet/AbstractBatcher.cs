@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Driver;
@@ -16,9 +15,9 @@ namespace NHibernate.AdoNet
 	/// <summary>
 	/// Manages prepared statements and batching. Class exists to enforce separation of concerns
 	/// </summary>
-	public abstract class BatcherImpl : IBatcher
+	public abstract class AbstractBatcher : IBatcher
 	{
-		protected static readonly ILog log = LogManager.GetLogger(typeof(BatcherImpl));
+		protected static readonly ILog log = LogManager.GetLogger(typeof(AbstractBatcher));
 		protected static readonly ILog logSql = LogManager.GetLogger("NHibernate.SQL");
 
 		private static int openCommandCount;
@@ -34,20 +33,24 @@ namespace NHibernate.AdoNet
 		private SqlString batchCommandSql;
 		private SqlType[] batchCommandParameterTypes;
 
-		private ISet commandsToClose = new HashedSet();
+		private readonly ISet<IDbCommand> commandsToClose = new HashedSet<IDbCommand>();
 		private readonly ISet<IDataReader> readersToClose = new HashedSet<IDataReader>();
 		private IDbCommand lastQuery;
 
 		private bool releasing;
 
+		private readonly IInterceptor interceptor;
+
 		/// <summary>
-		/// Initializes a new instance of the <see cref="BatcherImpl"/> class.
+		/// Initializes a new instance of the <see cref="AbstractBatcher"/> class.
 		/// </summary>
 		/// <param name="connectionManager">The <see cref="ConnectionManager"/> owning this batcher.</param>
-		public BatcherImpl(ConnectionManager connectionManager)
+		/// <param name="interceptor"></param>
+		public AbstractBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 		{
 			this.connectionManager = connectionManager;
-			this.factory = connectionManager.Factory;
+			this.interceptor = interceptor;
+			factory = connectionManager.Factory;
 		}
 
 		private IDriver Driver
@@ -66,11 +69,13 @@ namespace NHibernate.AdoNet
 
 		public IDbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(type, sqlString, parameterTypes);
+			SqlString sql = GetSQL(sqlString);
+
+			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(type, sql, parameterTypes);
 			LogOpenPreparedCommand();
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Building an IDbCommand object for the SqlString: " + sqlString.ToString());
+				log.Debug("Building an IDbCommand object for the SqlString: " + sql);
 			}
 			commandsToClose.Add(cmd);
 			return cmd;
@@ -505,7 +510,7 @@ namespace NHibernate.AdoNet
 		/// <summary>
 		/// Finalizer that ensures the object is correctly disposed of.
 		/// </summary>
-		~BatcherImpl()
+		~AbstractBatcher()
 		{
 			// Don't log in the finalizer, it causes problems
 			// if the output stream is finalized before the batcher.
@@ -556,15 +561,14 @@ namespace NHibernate.AdoNet
 
 		#endregion
 
-		//protected SqlString GetSQL(SqlString sql)
-		//{
-		//  sql = interceptor.OnPrepareStatement(sql);
-		//  if (sql == null || sql.Length == 0)
-		//  {
-		//    throw new AssertionFailure("Interceptor.onPrepareStatement() returned null or empty string.");
-		//  }
-		//  return sql;
-		//}
-
+		protected SqlString GetSQL(SqlString sql)
+		{
+			sql = interceptor.OnPrepareStatement(sql);
+			if (sql == null || sql.Length == 0)
+			{
+				throw new AssertionFailure("Interceptor.OnPrepareStatement(SqlString) returned null or empty SqlString.");
+			}
+			return sql;
+		}
 	}
 }

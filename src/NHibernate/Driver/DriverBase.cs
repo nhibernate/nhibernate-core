@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Data;
 using log4net;
-using NHibernate.AdoNet;
-using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -192,19 +190,6 @@ namespace NHibernate.Driver
 
 			dbParam.ParameterName = FormatNameForParameter(name);
 			dbParam.DbType = sqlType.DbType;
-		}
-
-		/// <summary>
-		/// Create an instance of <see cref="IBatcher"/> according to the configuration 
-		/// and the capabilities of the driver
-		/// </summary>
-		/// <remarks>
-		/// By default, .Net doesn't have any batching capabilities, drivers that does have
-		/// batching support need to override this method and return their own batcher.
-		/// </remarks>
-		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager)
-		{
-			return new NonBatchingBatcher(connectionManager);
 		}
 
 		/// <summary>

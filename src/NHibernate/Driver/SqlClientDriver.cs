@@ -1,7 +1,6 @@
 using System.Data;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
-using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -10,7 +9,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
-	public class SqlClientDriver : DriverBase
+	public class SqlClientDriver : DriverBase, IEmbeddedBatcherFactoryProvider
 	{
 		/// <summary>
 		/// Creates an uninitialized <see cref="IDbConnection" /> object for 
@@ -30,24 +29,6 @@ namespace NHibernate.Driver
 		public override IDbCommand CreateCommand()
 		{
 			return new System.Data.SqlClient.SqlCommand();
-		}
-
-
-		/// <summary>
-		/// Create an instance of <see cref="IBatcher"/> according to the configuration 
-		/// and the capabilities of the driver
-		/// </summary>
-		/// <remarks>
-		/// By default, .Net doesn't have any batching capabilities, drivers that does have
-		/// batching support need to override this method and return their own batcher.
-		/// </remarks>
-		public override IBatcher CreateBatcher(ConnectionManager connectionManager)
-		{
-
-			if (connectionManager.Factory.Settings.AdoBatchSize > 0)
-				return new SqlClientBatchingBatcher(connectionManager);
-			else
-				return new NonBatchingBatcher(connectionManager);
 		}
 
 		/// <summary>
@@ -178,5 +159,14 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+
+		#region IEmbeddedBatcherFactoryProvider Members
+
+		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
+		{
+			get { return typeof(SqlClientBatchingBatcherFactory); }
+		}
+
+		#endregion
 	}
 }

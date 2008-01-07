@@ -46,8 +46,8 @@ namespace NHibernate.Impl
 
 		private readonly IInterceptor interceptor;
 
-		[NonSerialized]
-		private EntityMode entityMode;
+		[NonSerialized] 
+		private EntityMode entityMode = NHibernate.EntityMode.Poco;
 
 		[NonSerialized]
 		private readonly EventListeners listeners;
@@ -59,9 +59,6 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private int dontFlushFromFind = 0;
-
-		[NonSerialized]
-		private IBatcher batcher;
 
 		[NonSerialized]
 		private IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
@@ -151,7 +148,6 @@ namespace NHibernate.Impl
 
 			// don't need any section for IdentityMaps because .net does not have a problem
 			// serializing them like java does.
-			InitTransientState();
 			persistenceContext.SetSession(this);
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
@@ -171,14 +167,12 @@ namespace NHibernate.Impl
 			if (interceptor == null)
 				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
 
-			connectionManager = new ConnectionManager(this, connection, connectionReleaseMode);
+			connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
 			this.interceptor = interceptor;
 			this.timestamp = timestamp;
 			listeners = factory.EventListeners;
 			actionQueue = new ActionQueue(this);
 			persistenceContext = new StatefulPersistenceContext(this);
-
-			InitTransientState();
 
 			if (factory.Statistics.IsStatisticsEnabled)
 			{
@@ -191,7 +185,11 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public override IBatcher Batcher
 		{
-			get { return batcher; }
+			get
+			{
+				ErrorIfClosed();
+				return connectionManager.Batcher;
+			}
 		}
 
 		/// <summary></summary>
@@ -257,11 +255,6 @@ namespace NHibernate.Impl
 
 			//if (autoClear)
 			//	Clear();
-		}
-
-		private void InitTransientState()
-		{
-			batcher = SessionFactory.ConnectionProvider.Driver.CreateBatcher(connectionManager);
 		}
 
 		private void Cleanup()

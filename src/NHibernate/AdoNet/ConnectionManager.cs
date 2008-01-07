@@ -15,7 +15,7 @@ namespace NHibernate.AdoNet
 	/// combined.
 	/// </remarks>
 	[Serializable]
-	public class ConnectionManager : ISerializable
+	public class ConnectionManager : ISerializable, IDeserializationCallback
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionManager));
 
@@ -27,8 +27,12 @@ namespace NHibernate.AdoNet
 		[NonSerialized]
 		private ITransaction transaction;
 
+		[NonSerialized]
+		private IBatcher batcher;
+
 		private readonly ISessionImplementor session;
 		private readonly ConnectionReleaseMode connectionReleaseMode;
+		private readonly IInterceptor interceptor;
 
 		[NonSerialized]
 		private bool isFlushing;
@@ -36,12 +40,17 @@ namespace NHibernate.AdoNet
 		public ConnectionManager(
 			ISessionImplementor session,
 			IDbConnection suppliedConnection,
-			ConnectionReleaseMode connectionReleaseMode)
+			ConnectionReleaseMode connectionReleaseMode, 
+			IInterceptor interceptor)
 		{
 			this.session = session;
-			this.connection = suppliedConnection;
+			connection = suppliedConnection;
 			this.connectionReleaseMode = connectionReleaseMode;
-			this.ownConnection = suppliedConnection == null;
+
+			this.interceptor = interceptor;
+			batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
+
+			ownConnection = suppliedConnection == null;
 		}
 
 		public bool IsInActiveTransaction
@@ -78,9 +87,9 @@ namespace NHibernate.AdoNet
 
 		public IDbConnection Close()
 		{
-			if (session.Batcher != null)
+			if (batcher != null)
 			{
-				session.Batcher.Dispose();
+				batcher.Dispose();
 			}
 
 			if (transaction != null)
@@ -122,9 +131,9 @@ namespace NHibernate.AdoNet
 				return;
 			}
 
-			if (session.Batcher != null)
+			if (batcher != null)
 			{
-				session.Batcher.CloseCommands();
+				batcher.CloseCommands();
 			}
 
 			CloseConnection();
@@ -193,10 +202,10 @@ namespace NHibernate.AdoNet
 			{
 				AggressiveRelease();
 			}
-			else if (IsAggressiveRelease && session.Batcher.HasOpenResources)
+			else if (IsAggressiveRelease && batcher.HasOpenResources)
 			{
 				log.Info("forcing batcher resource cleanup on transaction completion; forgot to close ScrollableResults/Enumerable?");
-				session.Batcher.CloseCommands();
+				batcher.CloseCommands();
 				AggressiveRelease();
 			}
 			else if (IsOnCloseRelease)
@@ -216,7 +225,7 @@ namespace NHibernate.AdoNet
 				{
 					log.Debug("skipping aggressive-release due to flush cycle");
 				}
-				else if (session.Batcher.HasOpenResources)
+				else if (batcher.HasOpenResources)
 				{
 					log.Debug("skipping aggressive-release due to open resources on batcher");
 				}
@@ -261,10 +270,11 @@ namespace NHibernate.AdoNet
 
 		private ConnectionManager(SerializationInfo info, StreamingContext context)
 		{
-			this.ownConnection = info.GetBoolean("ownConnection");
-			this.session = (ISessionImplementor) info.GetValue("session", typeof(ISessionImplementor));
-			this.connectionReleaseMode =
+			ownConnection = info.GetBoolean("ownConnection");
+			session = (ISessionImplementor) info.GetValue("session", typeof(ISessionImplementor));
+			connectionReleaseMode =
 				(ConnectionReleaseMode) info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
+			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 		}
 
 		[SecurityPermission(SecurityAction.LinkDemand,
@@ -274,6 +284,16 @@ namespace NHibernate.AdoNet
 			info.AddValue("ownConnection", ownConnection);
 			info.AddValue("session", session, typeof(ISessionImplementor));
 			info.AddValue("connectionReleaseMode", connectionReleaseMode, typeof(ConnectionReleaseMode));
+			info.AddValue("interceptor", interceptor, typeof (IInterceptor));
+		}
+
+		#endregion
+
+		#region IDeserializationCallback Members
+
+		void IDeserializationCallback.OnDeserialization(object sender)
+		{
+			batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
 		}
 
 		#endregion
@@ -341,13 +361,19 @@ namespace NHibernate.AdoNet
 			{
 				if (ownConnection)
 				{
-					return connection == null && !session.Batcher.HasOpenResources;
+					return connection == null && !batcher.HasOpenResources;
 				}
 				else
 				{
 					return connection == null;
 				}
 			}
+		}
+
+		/// <summary> The batcher managed by this ConnectionManager. </summary>
+		public IBatcher Batcher
+		{
+			get { return batcher; }
 		}
 	}
 }

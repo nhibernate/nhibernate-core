@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Data;
-using NHibernate.AdoNet;
-using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -82,13 +80,5 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="command"></param>
 		void PrepareCommand(IDbCommand command);
-
-		/// <summary>
-		/// Create an instance of <see cref="IBatcher"/> according to the configuration 
-		/// and the capabilities of the driver
-		/// </summary>
-		/// <param name="connectionManager">The connection manager for the batcher.</param>
-		/// <returns></returns>
-		IBatcher CreateBatcher(ConnectionManager connectionManager);
 	}
 }
