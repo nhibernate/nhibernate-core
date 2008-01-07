@@ -4,6 +4,7 @@ using NHibernate.Collection;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -17,17 +18,17 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <remarks>
 		/// Even though this is a map, we only use the keys.  A map was chosen in
-		/// order to utilize a <see cref="SequencedHashMap" /> to maintain sequencing
+		/// order to utilize a <see cref="LinkedHashMap{K, V}" /> to maintain sequencing
 		/// as well as uniqueness.
 		/// </remarks>
-		private readonly IDictionary batchLoadableEntityKeys = new SequencedHashMap(8);
+		private readonly IDictionary<EntityKey, object> batchLoadableEntityKeys = new LinkedHashMap<EntityKey, object>(8);
 
 		/// <summary>
 		/// A map of <see cref="SubselectFetch">subselect-fetch descriptors</see>
 		/// keyed by the <see cref="EntityKey" /> against which the descriptor is
 		/// registered.
 		/// </summary>
-		private readonly IDictionary subselectsByEntityKey = new Hashtable(8);
+		private readonly IDictionary<EntityKey, SubselectFetch> subselectsByEntityKey = new Dictionary<EntityKey, SubselectFetch>(8);
 
 		/// <summary>
 		/// The owning persistence context.
@@ -60,7 +61,9 @@ namespace NHibernate.Engine
 		/// this entity key.</returns>
 		public SubselectFetch GetSubselect(EntityKey key)
 		{
-			return (SubselectFetch) subselectsByEntityKey[key];
+			SubselectFetch result;
+			subselectsByEntityKey.TryGetValue(key, out result);
+			return result;
 		}
 
 		/// <summary>
