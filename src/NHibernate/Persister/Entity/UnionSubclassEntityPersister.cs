@@ -245,7 +245,7 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorValue; }
 		}
 
-		public override object[] PropertySpaces
+		public override string[] PropertySpaces
 		{
 			get { return spaces; }
 		}
@@ -355,7 +355,7 @@ namespace NHibernate.Persister.Entity
 			get { return new int[PropertySpan]; }
 		}
 
-		public override object[] QuerySpaces
+		public override string[] QuerySpaces
 		{
 			get { return subclassSpaces; }
 		}

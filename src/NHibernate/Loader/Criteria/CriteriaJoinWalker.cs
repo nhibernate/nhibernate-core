@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -20,7 +20,7 @@ namespace NHibernate.Loader.Criteria
 		//      this class depends directly upon CriteriaImpl in the impl package...
 
 		private readonly CriteriaQueryTranslator translator;
-		private readonly ISet querySpaces;
+		private readonly ISet<string> querySpaces;
 		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
@@ -162,7 +162,7 @@ namespace NHibernate.Loader.Criteria
 			return base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
 		}
 
-		public ISet QuerySpaces
+		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

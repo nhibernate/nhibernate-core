@@ -106,7 +106,7 @@ namespace NHibernate.Engine.Query
 			get { return sourceQuery; }
 		}
 
-		public ISet QuerySpaces
+		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

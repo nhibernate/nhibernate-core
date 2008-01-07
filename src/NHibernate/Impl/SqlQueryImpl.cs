@@ -25,7 +25,7 @@ namespace NHibernate.Impl
 	public class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
 		private readonly IList<INativeSQLQueryReturn> queryReturns;
-		private readonly ICollection querySpaces;
+		private readonly ICollection<string> querySpaces;
 		private bool callable;
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
@@ -53,7 +53,7 @@ namespace NHibernate.Impl
 			callable = queryDef.IsCallable;
 		}
 
-		internal SqlQueryImpl(string sql, IList<INativeSQLQueryReturn> queryReturns, ICollection querySpaces, FlushMode flushMode, bool callable, ISessionImplementor session, ParameterMetadata parameterMetadata)
+		internal SqlQueryImpl(string sql, IList<INativeSQLQueryReturn> queryReturns, ICollection<string> querySpaces, FlushMode flushMode, bool callable, ISessionImplementor session, ParameterMetadata parameterMetadata)
 			: base(sql, flushMode, session, parameterMetadata)
 		{
 			this.queryReturns = queryReturns;
@@ -61,7 +61,7 @@ namespace NHibernate.Impl
 			this.callable = callable;
 		}
 
-		internal SqlQueryImpl(string sql, string[] returnAliases, System.Type[] returnClasses, LockMode[] lockModes, ISessionImplementor session, ICollection querySpaces, FlushMode flushMode, ParameterMetadata parameterMetadata)
+		internal SqlQueryImpl(string sql, string[] returnAliases, System.Type[] returnClasses, LockMode[] lockModes, ISessionImplementor session, ICollection<string> querySpaces, FlushMode flushMode, ParameterMetadata parameterMetadata)
 			: base(sql, flushMode, session, parameterMetadata)
 		{
 			queryReturns = new List<INativeSQLQueryReturn>(returnAliases.Length);

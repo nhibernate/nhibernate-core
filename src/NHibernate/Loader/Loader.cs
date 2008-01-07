@@ -19,6 +19,7 @@ using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Loader
 {
@@ -1704,7 +1705,7 @@ namespace NHibernate.Loader
 		protected IList List(
 			ISessionImplementor session,
 			QueryParameters queryParameters,
-			ISet querySpaces,
+			ISet<string> querySpaces,
 			IType[] resultTypes)
 		{
 			bool cacheable = factory.IsQueryCacheEnabled &&
@@ -1728,7 +1729,7 @@ namespace NHibernate.Loader
 		private IList ListUsingQueryCache(
 			ISessionImplementor session,
 			QueryParameters queryParameters,
-			ISet querySpaces,
+			ISet<string> querySpaces,
 			IType[] resultTypes)
 		{
 			IQueryCache queryCache = factory.GetQueryCache(queryParameters.CacheRegion);
@@ -1762,7 +1763,7 @@ namespace NHibernate.Loader
 		}
 
 		private IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
-		                                             ISet querySpaces, IType[] resultTypes, IQueryCache queryCache,
+																								 ISet<string> querySpaces, IType[] resultTypes, IQueryCache queryCache,
 		                                             QueryKey key)
 		{
 			IList result = null;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Engine.Query.Sql;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -8,14 +9,14 @@ namespace NHibernate.Engine
 	public class NamedSQLQueryDefinition : NamedQueryDefinition
 	{
 		private readonly INativeSQLQueryReturn[] queryReturns;
-		private readonly IList querySpaces;
+		private readonly IList<string> querySpaces;
 		private readonly bool callable;
 		private readonly string resultSetRef;
 
 		public NamedSQLQueryDefinition(
 			string query,
 			INativeSQLQueryReturn[] queryReturns,
-			IList querySpaces,
+			IList<string> querySpaces,
 			bool cacheable,
 			string cacheRegion,
 			int timeout,
@@ -24,7 +25,7 @@ namespace NHibernate.Engine
 			CacheMode? cacheMode,
 			bool readOnly,
 			string comment,
-			IDictionary parameterTypes,
+			IDictionary<string, string> parameterTypes,
 			bool callable)
 			: base(
 				query.Trim(), /* trim done to workaround stupid oracle bug that cant handle whitespaces before a { in a sp */
@@ -47,7 +48,7 @@ namespace NHibernate.Engine
 		public NamedSQLQueryDefinition(
 			string query,
 			string resultSetRef,
-			IList querySpaces,
+			IList<string> querySpaces,
 			bool cacheable,
 			string cacheRegion,
 			int timeout,
@@ -56,7 +57,7 @@ namespace NHibernate.Engine
 			CacheMode? cacheMode,
 			bool readOnly,
 			string comment,
-			IDictionary parameterTypes,
+			IDictionary<string, string> parameterTypes,
 			bool callable)
 			: base(
 				query.Trim(), /* trim done to workaround stupid oracle bug that cant handle whitespaces before a { in a sp */
@@ -81,7 +82,7 @@ namespace NHibernate.Engine
 			get { return queryReturns; }
 		}
 
-		public IList QuerySpaces
+		public IList<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

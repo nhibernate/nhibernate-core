@@ -617,5 +617,37 @@ namespace NHibernate.Util
 			return true;
 		}
 
+		public static bool CollectionEquals<T>(ICollection<T> c1, ICollection<T> c2)
+		{
+			if (c1 == c2)
+			{
+				return true;
+			}
+
+			if (c1 == null || c2 == null)
+			{
+				return false;
+			}
+
+			if (c1.Count != c2.Count)
+			{
+				return false;
+			}
+
+			IEnumerator e1 = c1.GetEnumerator();
+			IEnumerator e2 = c2.GetEnumerator();
+
+			while (e1.MoveNext())
+			{
+				e2.MoveNext();
+				if (!Equals(e1.Current, e2.Current))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 	}
 }

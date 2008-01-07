@@ -318,7 +318,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		public object CollectionSpace
+		public string CollectionSpace
 		{
 			get
 			{

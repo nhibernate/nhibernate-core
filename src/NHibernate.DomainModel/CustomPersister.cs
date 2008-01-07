@@ -155,7 +155,7 @@ namespace NHibernate.DomainModel
 			get { return null; }
 		}
 
-		public object[] PropertySpaces
+		public string[] PropertySpaces
 		{
 			get { return new string[] {"CUSTOMS"}; }
 		}
@@ -418,7 +418,7 @@ namespace NHibernate.DomainModel
 			throw new NotSupportedException("CustomPersister.CreateProxy is not implemented");
 		}
 
-		public object[] QuerySpaces
+		public string[] QuerySpaces
 		{
 			get { return null; }
 		}

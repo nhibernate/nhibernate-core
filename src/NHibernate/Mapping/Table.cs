@@ -51,8 +51,8 @@ namespace NHibernate.Mapping
 			{
 				// NH : Different implementation to prevent NH930 (look test)
 				return //y.referencedClassName.Equals(x.referencedClassName) &&
-					CollectionHelper.CollectionEquals(y.columns, x.columns) &&
-					CollectionHelper.CollectionEquals(y.referencedColumns, x.referencedColumns);
+					CollectionHelper.CollectionEquals<Column>(y.columns, x.columns) &&
+					CollectionHelper.CollectionEquals<Column>(y.referencedColumns, x.referencedColumns);
 			}
 
 			public int GetHashCode(ForeignKeyKey obj)

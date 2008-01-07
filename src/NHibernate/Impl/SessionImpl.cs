@@ -22,6 +22,7 @@ using NHibernate.Proxy;
 using NHibernate.Stat;
 using NHibernate.Type;
 using NHibernate.Util;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -418,7 +419,7 @@ namespace NHibernate.Impl
 		{
 			// take the union of the query spaces (ie the queried tables)
 			IQueryTranslator[] q = factory.GetQuery(query, scalar, enabledFilters);
-			HashedSet qs = new HashedSet();
+			HashedSet<string> qs = new HashedSet<string>();
 			for (int i = 0; i < q.Length; i++)
 			{
 				qs.AddAll(q[i].QuerySpaces);
@@ -776,7 +777,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="querySpaces"></param>
 		/// <returns></returns>
-		private bool AutoFlushIfRequired(ISet querySpaces)
+		private bool AutoFlushIfRequired(ISet<string> querySpaces)
 		{
 			ErrorIfClosed();
 			// NH different behavior (H3.2 use transaction any way)
@@ -1448,7 +1449,7 @@ namespace NHibernate.Impl
 			int size = implementors.Length;
 
 			CriteriaLoader[] loaders = new CriteriaLoader[size];
-			ISet spaces = new HashedSet();
+			ISet<string> spaces = new HashedSet<string>();
 
 			for (int i = 0; i < size; i++)
 			{

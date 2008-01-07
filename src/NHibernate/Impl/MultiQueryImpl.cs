@@ -13,6 +13,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -613,7 +614,7 @@ namespace NHibernate.Impl
 
 			ISet filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
-			ISet querySpaces = new HashedSet();
+			ISet<string> querySpaces = new HashedSet<string>();
 			ArrayList resultTypesList = new ArrayList();
 			for (int i = 0; i < Translators.Count; i++)
 			{

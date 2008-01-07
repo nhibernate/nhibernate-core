@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cfg;
 
@@ -61,9 +61,9 @@ namespace NHibernate.Cache
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public bool IsUpToDate(ISet spaces, long timestamp /* H2.1 has Long here */)
+		public bool IsUpToDate(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
 		{
-			foreach (object space in spaces)
+			foreach (string space in spaces)
 			{
 				object lastUpdate = updateTimestamps.Get(space);
 				if (lastUpdate == null)

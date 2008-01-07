@@ -8,6 +8,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -21,7 +22,7 @@ namespace NHibernate.Loader.Criteria
 	public class CriteriaLoader : OuterJoinLoader
 	{
 		private readonly CriteriaQueryTranslator translator;
-		private readonly ISet querySpaces;
+		private readonly ISet<string> querySpaces;
 		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
@@ -98,7 +99,7 @@ namespace NHibernate.Loader.Criteria
 			return translator.RootCriteria.ResultTransformer.TransformTuple(result, aliases);
 		}
 
-		public ISet QuerySpaces
+		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

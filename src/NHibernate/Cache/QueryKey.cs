@@ -132,11 +132,11 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			if(!CollectionHelper.CollectionEquals(this.multiQueriesFirstRows, that.multiQueriesFirstRows))
+			if(!CollectionHelper.CollectionEquals<int>(multiQueriesFirstRows, that.multiQueriesFirstRows))
 			{
 				return false;
 			}
-			if(!CollectionHelper.CollectionEquals(this.multiQueriesMaxRows, that.multiQueriesMaxRows))
+			if(!CollectionHelper.CollectionEquals<int>(multiQueriesMaxRows, that.multiQueriesMaxRows))
 			{
 				return false;
 			}

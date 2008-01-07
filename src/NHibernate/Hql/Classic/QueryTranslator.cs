@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
 
 using NHibernate.Engine;
@@ -50,7 +51,7 @@ namespace NHibernate.Hql.Classic
 		private readonly IDictionary<string, JoinSequence> joins = new LinkedHashMap<string, JoinSequence>();
 		private readonly IList orderByTokens = new ArrayList();
 		private readonly IList groupByTokens = new ArrayList();
-		private readonly ISet querySpaces = new HashedSet();
+		private readonly ISet<string> querySpaces = new HashedSet<string>();
 		private readonly ISet entitiesToFetch = new HashedSet();
 
 		private readonly IDictionary pathAliases = new Hashtable();
@@ -810,7 +811,7 @@ namespace NHibernate.Hql.Classic
 			foreach (string name in collections.Values)
 			{
 				ICollectionPersister p = GetCollectionPersister(name);
-				AddQuerySpaces(new object[] { p.CollectionSpace });
+				AddQuerySpaces(new string[] { p.CollectionSpace });
 			}
 			foreach (string name in typeMap.Keys)
 			{
@@ -1184,7 +1185,7 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
-		public ISet QuerySpaces
+		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}
@@ -1748,7 +1749,7 @@ namespace NHibernate.Hql.Classic
 			get { return queryIdentifier; }
 		}
 
-		internal void AddQuerySpaces(object[] spaces)
+		internal void AddQuerySpaces(string[] spaces)
 		{
 			for (int i = 0; i < spaces.Length; i++)
 			{

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Action;
 using NHibernate.Cache;
@@ -209,7 +209,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="tables">The table/query-spaces to check. </param>
 		/// <returns> True if we contain pending actions against any of the given tables; false otherwise.</returns>
-		public virtual bool AreTablesToBeUpdated(ISet tables)
+		public virtual bool AreTablesToBeUpdated(ISet<string> tables)
 		{
 			return AreTablesToUpdated(updates, tables) || 
 				AreTablesToUpdated(insertions, tables) || 
@@ -228,12 +228,12 @@ namespace NHibernate.Engine
 			get { return (insertions.Count > 0 || deletions.Count > 0); }
 		}
 
-		private static bool AreTablesToUpdated(IList executables, ISet tablespaces)
+		private static bool AreTablesToUpdated(IList executables, ISet<string> tablespaces)
 		{
 			foreach (IExecutable exec in executables)
 			{
 				object[] spaces = exec.PropertySpaces;
-				foreach (object o in spaces)
+				foreach (string o in spaces)
 				{
 					if(tablespaces.Contains(o))
 					{

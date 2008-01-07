@@ -7,6 +7,8 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Loader.Custom.Sql
 {
@@ -15,7 +17,7 @@ namespace NHibernate.Loader.Custom.Sql
 		private static readonly ILog log = LogManager.GetLogger(typeof(SQLCustomQuery));
 
 		private readonly SqlString sql;
-		private readonly ISet querySpaces = new HashedSet();
+		private readonly ISet<string> querySpaces = new HashedSet<string>();
 		private readonly IDictionary namedParameterBindPoints = new Hashtable();
 		private readonly IList customQueryReturns = new ArrayList();
 
@@ -29,7 +31,7 @@ namespace NHibernate.Loader.Custom.Sql
 			get { return namedParameterBindPoints; }
 		}
 
-		public ISet QuerySpaces
+		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}
@@ -42,7 +44,7 @@ namespace NHibernate.Loader.Custom.Sql
 		public SQLCustomQuery(
 			INativeSQLQueryReturn[] queryReturns,
 			string sqlQuery,
-			ICollection additionalQuerySpaces,
+			ICollection<string> additionalQuerySpaces,
 			ISessionFactoryImplementor factory)
 		{
 			log.Debug("starting processing of sql query [" + sqlQuery + "]");

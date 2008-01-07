@@ -184,7 +184,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object[] PropertySpaces
+		public string[] PropertySpaces
 		{
 			get
 			{
@@ -479,7 +479,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		public object[] QuerySpaces
+		public string[] QuerySpaces
 		{
 			get { return null; }
 		}

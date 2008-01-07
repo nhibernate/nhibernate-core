@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Persister.Collection;
@@ -18,7 +18,7 @@ namespace NHibernate.Loader.Custom
 		// Currently *not* cachable if autodiscover types is in effect (e.g. "select * ...")
 
 		private readonly SqlString sql;
-		private readonly ISet querySpaces = new HashedSet();
+		private readonly ISet<string> querySpaces = new HashedSet<string>();
 		private readonly IDictionary namedParameterBindPoints;
 
 		private readonly IQueryable[] entityPersisters;
@@ -270,7 +270,7 @@ namespace NHibernate.Loader.Custom
 			get { return collectionOwners; }
 		}
 
-		public ISet QuerySpaces
+		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

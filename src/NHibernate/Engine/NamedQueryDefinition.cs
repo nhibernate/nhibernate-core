@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -12,14 +12,14 @@ namespace NHibernate.Engine
 		private readonly int timeout = -1;
 		private readonly int fetchSize = -1;
 		private readonly FlushMode flushMode = FlushMode.Unspecified;
-		private readonly IDictionary parameterTypes;
+		private readonly IDictionary<string, string> parameterTypes;
 
 		private readonly CacheMode? cacheMode;
 		private readonly bool readOnly;
 		private readonly string comment;
 
 		public NamedQueryDefinition(string query, bool cacheable, string cacheRegion, int timeout,
-			int fetchSize, FlushMode flushMode, bool readOnly, string comment, IDictionary parameterTypes)
+			int fetchSize, FlushMode flushMode, bool readOnly, string comment, IDictionary<string, string> parameterTypes)
 			: this(query,cacheable,cacheRegion,timeout,fetchSize,flushMode,null,readOnly,comment,parameterTypes) 
 		{}
 
@@ -33,7 +33,7 @@ namespace NHibernate.Engine
 			CacheMode? cacheMode,
 			bool readOnly,
 			string comment,
-			IDictionary parameterTypes
+			IDictionary<string,string> parameterTypes
 			)
 		{
 			this.query = query;
@@ -83,7 +83,7 @@ namespace NHibernate.Engine
 			return GetType().FullName + '(' + query + ')';
 		}
 
-		public IDictionary ParameterTypes
+		public IDictionary<string, string> ParameterTypes
 		{
 			get { return parameterTypes; }
 		}

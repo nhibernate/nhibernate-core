@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Text.RegularExpressions;
 using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Engine;
@@ -90,7 +90,7 @@ namespace NHibernate.Impl
 
 			ISet filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
-			ISet querySpaces = new HashedSet();
+			ISet<string> querySpaces = new HashedSet<string>();
 			ArrayList resultTypesList = new ArrayList();
 			int[] maxRows = new int[loaders.Count];
 			int[] firstRows = new int[loaders.Count];
@@ -245,7 +245,7 @@ namespace NHibernate.Impl
 				int size = implementors.Length;
 
 				CriteriaLoader[] tmpLoaders = new CriteriaLoader[size];
-				ISet spaces = new HashedSet();
+				ISet<string> spaces = new HashedSet<string>();
 
 				for (int i = 0; i < size; i++)
 				{

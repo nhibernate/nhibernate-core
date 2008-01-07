@@ -681,7 +681,7 @@ namespace NHibernate.Loader
 			public override bool Equals(object other)
 			{
 				AssociationKey that = (AssociationKey) other;
-				return that.table.Equals(table) && CollectionHelper.CollectionEquals(columns, that.columns);
+				return that.table.Equals(table) && CollectionHelper.CollectionEquals<string>(columns, that.columns);
 			}
 
 			public override int GetHashCode()

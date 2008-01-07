@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Cache;
@@ -11,9 +12,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
 {
-	using NHibernate.Mapping;
-	using System.Collections.Generic;
-
 	/// <summary>
 	/// Default implementation of the <c>ClassPersister</c> interface. Implements the
 	/// "table-per-class hierarchy" mapping strategy for an entity class.
@@ -133,7 +131,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public override object[] PropertySpaces
+		public override string[] PropertySpaces
 		{
 			get { return qualifiedTableNames; }
 		}
@@ -476,7 +474,7 @@ namespace NHibernate.Persister.Entity
 
 			propertyTableNumbers = new int[PropertySpan];
 			i = 0;
-			foreach (Property prop in model.PropertyClosureIterator)
+			foreach (Mapping.Property prop in model.PropertyClosureIterator)
 			{
 				propertyTableNumbers[i++] = model.GetJoinNumber(prop);
 			}
@@ -485,7 +483,7 @@ namespace NHibernate.Persister.Entity
 			ArrayList formulaJoinedNumbers = new ArrayList();
 			ArrayList propertyJoinNumbers = new ArrayList();
 
-			foreach (Property prop in model.SubclassPropertyClosureIterator)
+			foreach (Mapping.Property prop in model.SubclassPropertyClosureIterator)
 			{
 				int joinNumber = model.GetJoinNumber(prop);
 				propertyJoinNumbers.Add(joinNumber);

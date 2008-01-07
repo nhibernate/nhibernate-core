@@ -46,7 +46,7 @@ namespace NHibernate.Type
 			if (x == null || y == null)
 				return false;
 
-			return CollectionHelper.CollectionEquals(ToInternalFormat(x), ToInternalFormat(y));
+			return CollectionHelper.CollectionEquals<byte>(ToInternalFormat(x), ToInternalFormat(y));
 		}
 
 		public IComparer Comparator

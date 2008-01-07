@@ -99,9 +99,9 @@ namespace NHibernate.Loader.Criteria
 			return result;
 		}
 
-		public ISet GetQuerySpaces()
+		public ISet<string> GetQuerySpaces()
 		{
-			ISet result = new HashedSet();
+			ISet<string> result = new HashedSet<string>();
 
 			foreach (string entityName in criteriaEntityNames.Values)
 			{

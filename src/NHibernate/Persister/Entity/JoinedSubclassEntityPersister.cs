@@ -121,7 +121,7 @@ namespace NHibernate.Persister.Entity
 			return (System.Type) subclassesByDiscriminatorValue[value];
 		}
 
-		public override object[] PropertySpaces
+		public override string[] PropertySpaces
 		{
 			get
 			{

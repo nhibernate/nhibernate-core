@@ -1818,7 +1818,7 @@ namespace NHibernate.Persister.Entity
 
 		public abstract object DiscriminatorValue { get; }
 
-		public abstract object[] PropertySpaces { get; }
+		public abstract string[] PropertySpaces { get; }
 
 		/// <summary>
 		/// Decide which tables need to be updated
@@ -2930,7 +2930,7 @@ namespace NHibernate.Persister.Entity
 			loaders.Add(LockMode.UpgradeNoWait, CreateEntityLoader(LockMode.UpgradeNoWait));
 		}
 
-		public virtual object[] QuerySpaces
+		public virtual string[] QuerySpaces
 		{
 			get { return PropertySpaces; }
 		}

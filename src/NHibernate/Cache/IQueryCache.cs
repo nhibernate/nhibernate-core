@@ -1,6 +1,5 @@
-using System;
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -18,7 +17,7 @@ namespace NHibernate.Cache
 
 		void Clear();
 		bool Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, ISessionImplementor session);
-		IList Get(QueryKey key, ICacheAssembler[] returnTypes, ISet spaces, ISessionImplementor session);
+		IList Get(QueryKey key, ICacheAssembler[] returnTypes, ISet<string> spaces, ISessionImplementor session);
 		void Destroy();
 	}
 }

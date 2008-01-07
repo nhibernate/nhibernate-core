@@ -204,7 +204,7 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Get the "space" that holds the persistent state
 		/// </summary>
-		object CollectionSpace { get; }
+		string CollectionSpace { get; }
 
 		ICollectionMetadata CollectionMetadata { get; }
 

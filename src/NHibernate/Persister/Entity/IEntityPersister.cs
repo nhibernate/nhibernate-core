@@ -38,7 +38,7 @@ namespace NHibernate.Persister.Entity
 		/// instance are persisted. eg. table names.
 		/// </summary>
 		/// <returns></returns>
-		object[] PropertySpaces { get; }
+		string[] PropertySpaces { get; }
 
 		/// <summary>
 		/// The persistent class
@@ -410,7 +410,7 @@ namespace NHibernate.Persister.Entity
 		/// Returns an array of objects that identify spaces in which properties of this class are persisted,
 		/// for instances of this class and its subclasses.
 		/// </summary>
-		object[] QuerySpaces { get; }
+		string[] QuerySpaces { get; }
 
 		/// <summary>
 		/// The session factory this instance is associated with.

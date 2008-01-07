@@ -1,5 +1,5 @@
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -72,7 +72,7 @@ namespace NHibernate.Impl
 		public IList GetResultFromQueryCache(
 			ISessionImplementor session,
 			QueryParameters queryParameters,
-			ISet querySpaces,
+			ISet<string> querySpaces,
 			IQueryCache queryCache,
 			QueryKey key)
 		{

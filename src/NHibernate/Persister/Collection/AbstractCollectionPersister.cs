@@ -1302,7 +1302,7 @@ namespace NHibernate.Persister.Collection
 			get { return true; }
 		}
 
-		public object CollectionSpace
+		public string CollectionSpace
 		{
 			get { return TableName; }
 		}
