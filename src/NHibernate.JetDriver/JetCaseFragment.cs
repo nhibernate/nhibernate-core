@@ -16,7 +16,7 @@ namespace NHibernate.JetDriver
 	{
 		private Dialect.Dialect dialect;
 
-		public JetCaseFragment(Dialect.Dialect dialect)
+		public JetCaseFragment(Dialect.Dialect dialect):base(dialect)
 		{
 			this.dialect = dialect;
 		}
