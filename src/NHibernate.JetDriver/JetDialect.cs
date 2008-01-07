@@ -66,7 +66,7 @@ namespace NHibernate.JetDriver
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $1)");
 			RegisterColumnType(DbType.Double, "FLOAT");
-			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+			RegisterColumnType(DbType.Guid, "GUID");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INT");
 			RegisterColumnType(DbType.Int64, "INT"); //this is dangerous, I know
