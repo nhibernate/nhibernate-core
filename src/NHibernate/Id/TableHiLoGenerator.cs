@@ -62,7 +62,7 @@ namespace NHibernate.Id
 		public override void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
 			base.Configure(type, parms, dialect);
-			maxLo = PropertiesHelper.GetInt64(MaxLo, parms, short.MaxValue);
+			maxLo = PropertiesHelper.GetInt64(MaxLo, parms, Int16.MaxValue);
 			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
 		}
@@ -72,19 +72,26 @@ namespace NHibernate.Id
 		#region IIdentifierGenerator Members
 
 		/// <summary>
-		/// Generate a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/> 
-		/// for the identifier by selecting and updating a value in a table.
+		/// Generate a <see cref="Int64"/> for the identifier by selecting and updating a value in a table.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
-		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
+		/// <returns>The new identifier as a <see cref="Int64"/>.</returns>
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public override object Generate(ISessionImplementor session, object obj)
 		{
+			if (maxLo < 1)
+			{
+				//keep the behavior consistent even for boundary usages
+				long val = Convert.ToInt64(base.Generate(session, obj));
+				if (val == 0)
+					val = Convert.ToInt64(base.Generate(session, obj));
+				return IdentifierGeneratorFactory.CreateNumber(val, returnClass);
+			}
 			if (lo > maxLo)
 			{
-				long hival = ((long) base.Generate(session, obj));
-				lo = 1;
+				long hival = Convert.ToInt64(base.Generate(session, obj));
+				lo = (hival == 0) ? 1 : 0;
 				hi = hival * (maxLo + 1);
 				log.Debug("new hi value: " + hival);
 			}
