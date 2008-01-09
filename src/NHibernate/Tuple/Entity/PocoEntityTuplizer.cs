@@ -128,14 +128,15 @@ namespace NHibernate.Tuple.Entity
 			foreach (Mapping.Property property in persistentClass.PropertyIterator)
 			{
 				MethodInfo method = property.GetGetter(clazz).Method;
-				if (method != null && method.IsFinal)
+				// In NET if IsVirtual is false or IsFinal is true, then the method cannot be overridden.
+				if (method != null && (!method.IsVirtual || method.IsFinal))
 				{
-					log.Error(string.Format("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.EntityName, property.Name));
+					log.Error(string.Format("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName, property.Name));
 				}
 				method = property.GetSetter(clazz).Method;
-				if (method != null && method.IsFinal)
+				if (method != null && (!method.IsVirtual || method.IsFinal))
 				{
-					log.Error(string.Format("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.EntityName, property.Name));
+					log.Error(string.Format("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName, property.Name));
 				}
 			}
 
