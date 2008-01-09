@@ -255,10 +255,9 @@ namespace NHibernate.Hql.Classic
 		{
 			if (propertyName != null)
 			{
-				if (componentPath != null && componentPath.Length > 0)
-				{
+				if (componentPath.Length > 0)
 					componentPath.Append(StringHelper.Dot);
-				}
+
 				componentPath.Append(propertyName);
 			}
 		}
@@ -328,15 +327,13 @@ namespace NHibernate.Hql.Classic
 		{
 			get
 			{
-				string path = PropertyPath;
-				IType type = PropertyMapping.ToType(PropertyPath);
-
-				if (type == null)
+				IType t = PropertyMapping.ToType(PropertyPath);
+				if (t == null)
 				{
-					throw new QueryException("could not resolve property type: " + path);
+					throw new QueryException("could not resolve property type: " + PropertyPath);
 				}
 
-				return type;
+				return t;
 			}
 		}
 
@@ -346,11 +343,11 @@ namespace NHibernate.Hql.Classic
 		/// <returns></returns>
 		protected string[] CurrentColumns()
 		{
-			string path = PropertyPath;
-			string[] propertyColumns = PropertyMapping.ToColumns(currentName, path);
+			string p = PropertyPath;
+			string[] propertyColumns = PropertyMapping.ToColumns(currentName, p);
 			if (propertyColumns == null)
 			{
-				throw new QueryException("could not resolve property columns: " + path);
+				throw new QueryException("could not resolve property columns: " + p);
 			}
 			return propertyColumns;
 		}

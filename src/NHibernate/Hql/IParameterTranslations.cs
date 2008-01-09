@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Type;
 
 namespace NHibernate.Hql
@@ -14,7 +13,7 @@ namespace NHibernate.Hql
 
 		IType GetOrdinalParameterExpectedType(int ordinalPosition);
 
-		IList GetNamedParameterNames();
+		IEnumerable<string> GetNamedParameterNames();
 
 		int[] GetNamedParameterSqlLocations(string name);
 

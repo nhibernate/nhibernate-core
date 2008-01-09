@@ -1,6 +1,6 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Classic
@@ -8,13 +8,12 @@ namespace NHibernate.Hql.Classic
 	/// <summary>HQL lexical analyzer (not really a parser)</summary>
 	public class PreprocessingParser : IParser
 	{
-		private static ISet operators;
-		private static IDictionary collectionProps;
+		private static readonly ISet<string> operators;
+		private static readonly IDictionary<string,string> collectionProps;
 
-		/// <summary></summary>
 		static PreprocessingParser()
 		{
-			operators = new HashedSet();
+			operators = new HashedSet<string>();
 			operators.Add("<=");
 			operators.Add(">=");
 			operators.Add("=>");
@@ -31,7 +30,7 @@ namespace NHibernate.Hql.Classic
 			operators.Add("not between");
 			operators.Add("not exists");
 
-			collectionProps = new Hashtable();
+			collectionProps = new Dictionary<string, string>();
 			collectionProps.Add("elements", "elements");
 			collectionProps.Add("indices", "indices");
 			collectionProps.Add("size", "size");
@@ -43,10 +42,10 @@ namespace NHibernate.Hql.Classic
 			collectionProps.Add("index", "index");
 		}
 
-		private IDictionary replacements;
+		private readonly IDictionary<string, string> replacements;
 		private bool quoted;
 		private StringBuilder quotedString;
-		private ClauseParser parser = new ClauseParser();
+		private readonly ClauseParser parser = new ClauseParser();
 		private string lastToken;
 		private string currentCollectionProp;
 
@@ -54,7 +53,7 @@ namespace NHibernate.Hql.Classic
 		/// 
 		/// </summary>
 		/// <param name="replacements"></param>
-		public PreprocessingParser(IDictionary replacements)
+		public PreprocessingParser(IDictionary<string, string> replacements)
 		{
 			this.replacements = replacements;
 		}
@@ -95,8 +94,9 @@ namespace NHibernate.Hql.Classic
 			}
 
 			//do replacements
-			string substoken = (string) replacements[token];
-			token = (substoken == null) ? token : substoken;
+			string substoken;
+			if(replacements.TryGetValue(token, out substoken))
+				token = substoken;
 
 			//handle HQL2 collection syntax
 			if (currentCollectionProp != null)
@@ -117,8 +117,8 @@ namespace NHibernate.Hql.Classic
 			}
 			else
 			{
-				string prop = (string) collectionProps[token.ToLowerInvariant()];
-				if (prop != null)
+				string prop;
+				if (collectionProps.TryGetValue(token.ToLowerInvariant(), out prop))
 				{
 					currentCollectionProp = prop;
 					return;

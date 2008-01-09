@@ -46,7 +46,7 @@ namespace NHibernate.Engine.Query
 			string[] concreteQueryStrings = QuerySplitter.ConcreteQueries(hql, factory);
 			int length = concreteQueryStrings.Length;
 			translators = new IQueryTranslator[length];
-			IList sqlStringList = new ArrayList();
+			List<string> sqlStringList = new List<string>();
 			for (int i = 0; i < length; i++)
 			{
 				if (collectionRole == null)
@@ -67,10 +67,10 @@ namespace NHibernate.Engine.Query
 				{
 					combinedQuerySpaces.Add(qs);	
 				}
-				ArrayHelper.AddAll(sqlStringList, translators[i].CollectSqlStrings);
+				sqlStringList.AddRange(translators[i].CollectSqlStrings);
 			}
 
-			sqlStrings = ArrayHelper.ToStringArray(sqlStringList);
+			sqlStrings = sqlStringList.ToArray();
 			querySpaces = combinedQuerySpaces;
 
 			if (length == 0)

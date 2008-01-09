@@ -10,15 +10,15 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class QuerySelect
 	{
-		private JoinFragment joins;
+		private readonly JoinFragment joins;
 
-		private StringBuilder selectBuilder = new StringBuilder();
-		private SqlStringBuilder whereBuilder = new SqlStringBuilder();
+		private readonly StringBuilder selectBuilder = new StringBuilder();
+		private readonly SqlStringBuilder whereBuilder = new SqlStringBuilder();
 
 		// groupBy, orderBy, and having will for sure have no parameters.
-		private StringBuilder groupBy = new StringBuilder();
-		private SqlStringBuilder orderBy = new SqlStringBuilder();
-		private SqlStringBuilder having = new SqlStringBuilder();
+		private readonly SqlStringBuilder groupBy = new SqlStringBuilder();
+		private readonly SqlStringBuilder orderBy = new SqlStringBuilder();
+		private readonly SqlStringBuilder having = new SqlStringBuilder();
 
 		// false by default
 		private bool distinct;
@@ -253,9 +253,9 @@ namespace NHibernate.SqlCommand
 					builder.Add(")");
 				}
 			}
-			if (groupBy.Length > 0)
+			if (groupBy.Count > 0)
 			{
-				builder.Add(" group by ").Add(groupBy.ToString());
+				builder.Add(" group by ").Add(groupBy.ToSqlString());
 			}
 			if (having.Count > 0)
 			{
@@ -266,35 +266,6 @@ namespace NHibernate.SqlCommand
 				builder.Add(" order by ").Add(orderBy.ToSqlString());
 			}
 			return builder.ToSqlString();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="buf"></param>
-		/// <param name="iter"></param>
-		private void AppendTokens(StringBuilder buf, ICollection iter)
-		{
-			bool lastSpaceable = true;
-			bool lastQuoted = false;
-
-			foreach (string token in iter)
-			{
-				bool spaceable = !dontSpace.Contains(token);
-				bool quoted = token.StartsWith("'");
-
-				if (spaceable && lastSpaceable)
-				{
-					if (!quoted || !lastQuoted)
-					{
-						buf.Append(' ');
-					}
-				}
-
-				lastSpaceable = spaceable;
-				buf.Append(token);
-				lastQuoted = token.EndsWith("'");
-			}
 		}
 
 		/// <summary>

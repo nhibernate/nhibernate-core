@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Hql
 {
@@ -14,6 +14,6 @@ namespace NHibernate.Hql
 		/// <param name="collectionRole">the role name of the collection used as the basis for the filter.</param>
 		/// <param name="replacements">Defined query substitutions.</param>
 		/// <param name="shallow">Does this represent a shallow (scalar or entity-id) select?</param>
-		void Compile(string collectionRole, IDictionary replacements, bool shallow);
+		void Compile(string collectionRole, IDictionary<string, string> replacements, bool shallow);
 	}
 }

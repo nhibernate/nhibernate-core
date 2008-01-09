@@ -25,7 +25,7 @@ namespace NHibernate.Hql
 		/// <param name="shallow">Does this represent a shallow (scalar or entity-id) select?</param>
 		/// <exception cref="NHibernate.QueryException">There was a problem parsing the query string.</exception>
 		/// <exception cref="NHibernate.MappingException">There was a problem querying defined mappings.</exception>
-		void Compile(IDictionary replacements, bool shallow);
+		void Compile(IDictionary<string, string> replacements, bool shallow);
 
 		/// <summary>
 		/// Perform a list operation given the underlying query definition.
@@ -66,7 +66,7 @@ namespace NHibernate.Hql
 		/// </summary>
 		string SQLString { get; }
 
-		IList CollectSqlStrings { get; }
+		IList<string> CollectSqlStrings { get; }
 
 		/// <summary>
 		/// The HQL string processed by the translator.

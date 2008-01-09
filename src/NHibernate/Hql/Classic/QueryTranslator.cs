@@ -36,26 +36,26 @@ namespace NHibernate.Hql.Classic
 
 		private readonly IDictionary<string, string> typeMap = new LinkedHashMap<string, string>();
 		private readonly IDictionary<string, string> collections = new LinkedHashMap<string, string>();
-		private IList returnedTypes = new ArrayList();
-		private readonly IList fromTypes = new ArrayList();
-		private readonly IList scalarTypes = new ArrayList();
-		private readonly IDictionary namedParameters = new Hashtable();
-		private readonly IDictionary aliasNames = new Hashtable();
-		private readonly IDictionary oneToOneOwnerNames = new Hashtable();
-		private readonly IDictionary uniqueKeyOwnerReferences = new Hashtable();
-		private readonly IDictionary decoratedPropertyMappings = new Hashtable();
+		private IList<string> returnedTypes = new List<string>();
+		private readonly IList<string> fromTypes = new List<string>();
+		private readonly IList<IType> scalarTypes = new List<IType>();
+		private readonly IDictionary<string, List<int>> namedParameters = new Dictionary<string, List<int>>();
+		private readonly IDictionary<string, string> aliasNames = new Dictionary<string, string>();
+		private readonly IDictionary<string, string> oneToOneOwnerNames = new Dictionary<string, string>();
+		private readonly IDictionary<string, IAssociationType> uniqueKeyOwnerReferences = new Dictionary<string, IAssociationType>();
+		private readonly IDictionary<string, IPropertyMapping> decoratedPropertyMappings = new Dictionary<string, IPropertyMapping>();
 
 		private readonly IList scalarSelectTokens = new ArrayList(); // contains a List of strings
-		private readonly IList whereTokens = new ArrayList(); // contains a List of strings containing Sql or SqlStrings
-		private readonly IList havingTokens = new ArrayList();
+		private readonly IList<SqlString> whereTokens = new List<SqlString>();
+		private readonly IList<SqlString> havingTokens = new List<SqlString>();
 		private readonly IDictionary<string, JoinSequence> joins = new LinkedHashMap<string, JoinSequence>();
-		private readonly IList orderByTokens = new ArrayList();
-		private readonly IList groupByTokens = new ArrayList();
+		private readonly IList<SqlString> orderByTokens = new List<SqlString>();
+		private readonly IList<SqlString> groupByTokens = new List<SqlString>();
 		private readonly ISet<string> querySpaces = new HashedSet<string>();
-		private readonly ISet entitiesToFetch = new HashedSet();
+		private readonly ISet<string> entitiesToFetch = new HashedSet<string>();
 
-		private readonly IDictionary pathAliases = new Hashtable();
-		private readonly IDictionary pathJoins = new Hashtable();
+		private readonly IDictionary<string, string> pathAliases = new Dictionary<string, string>();
+		private readonly IDictionary<string, JoinSequence> pathJoins = new Dictionary<string, JoinSequence>();
 
 		private IQueryable[] persisters;
 		private int[] owners;
@@ -66,7 +66,7 @@ namespace NHibernate.Hql.Classic
 		private IType[] returnTypes;
 		private IType[] actualReturnTypes;
 		private string[][] scalarColumnNames;
-		private IDictionary tokenReplacements;
+		private IDictionary<string, string> tokenReplacements;
 		private int nameCount = 0;
 		private int parameterCount = 0;
 		private bool distinct = false;
@@ -81,16 +81,16 @@ namespace NHibernate.Hql.Classic
 		private class FetchedCollections
 		{
 			private int count = 0;
-			private ArrayList persisters; // IQueryableCollection
-			private ArrayList names; // string
-			private ArrayList ownerNames; // string
-			private ArrayList suffixes; // string
+			private List<ICollectionPersister> persisters;
+			private List<string> names;
+			private List<string> ownerNames;
+			private List<string> suffixes;
 
 			// True if one of persisters represents a collection that is not safe to use in multiple join scenario.
 			// Currently every collection except bag is safe.
 			private bool hasUnsafeCollection = false;
 
-			private ArrayList ownerColumns; // int
+			private List<int> ownerColumns;
 
 			private static string GenerateSuffix(int count)
 			{
@@ -107,10 +107,10 @@ namespace NHibernate.Hql.Classic
 			{
 				if (persisters == null)
 				{
-					persisters = new ArrayList(2);
-					names = new ArrayList(2);
-					ownerNames = new ArrayList(2);
-					suffixes = new ArrayList(2);
+					persisters = new List<ICollectionPersister>(2);
+					names = new List<string>(2);
+					ownerNames = new List<string>(2);
+					suffixes = new List<string>(2);
 				}
 
 				count++;
@@ -137,7 +137,7 @@ namespace NHibernate.Hql.Classic
 					{
 						return null;
 					}
-					return (int[]) ownerColumns.ToArray(typeof(int));
+					return ownerColumns.ToArray();
 				}
 			}
 
@@ -149,7 +149,7 @@ namespace NHibernate.Hql.Classic
 					{
 						return null;
 					}
-					return (ICollectionPersister[]) persisters.ToArray(typeof(ICollectionPersister));
+					return persisters.ToArray();
 				}
 			}
 
@@ -161,7 +161,7 @@ namespace NHibernate.Hql.Classic
 					{
 						return null;
 					}
-					return (string[]) suffixes.ToArray(typeof(string));
+					return suffixes.ToArray();
 				}
 			}
 
@@ -174,9 +174,7 @@ namespace NHibernate.Hql.Classic
 
 				for (int i = 0; i < count; i++)
 				{
-					sql.AddSelectFragmentString(
-						((IQueryableCollection) persisters[i]).SelectFragment(
-							(string) names[i], (string) suffixes[i]));
+					sql.AddSelectFragmentString(((IQueryableCollection) persisters[i]).SelectFragment(names[i], suffixes[i]));
 				}
 			}
 
@@ -192,22 +190,22 @@ namespace NHibernate.Hql.Classic
 					IQueryableCollection persister = (IQueryableCollection) persisters[i];
 					if (persister.HasOrdering)
 					{
-						sql.AddOrderBy(persister.GetSQLOrderByString((string) names[i]));
+						sql.AddOrderBy(persister.GetSQLOrderByString(names[i]));
 					}
 				}
 			}
 
-			public void InitializeCollectionOwnerColumns(IList returnedTypes)
+			public void InitializeCollectionOwnerColumns(IList<string> returnedTypes)
 			{
 				if (count == 0)
 				{
 					return;
 				}
 
-				ownerColumns = new ArrayList(count);
+				ownerColumns = new List<int>(count);
 				for (int i = 0; i < count; i++)
 				{
-					string ownerName = (string) ownerNames[i];
+					string ownerName = ownerNames[i];
 					// This is quite slow in theory but there should only be a few collections
 					// so it shouldn't be a problem in practice.
 					int ownerIndex = returnedTypes.IndexOf(ownerName);
@@ -268,7 +266,7 @@ namespace NHibernate.Hql.Classic
 		/// times. Subsequent invocations are no-ops.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void Compile(IDictionary replacements, bool scalar)
+		public void Compile(IDictionary<string,string> replacements, bool scalar)
 		{
 			if (!Compiled)
 			{
@@ -284,7 +282,7 @@ namespace NHibernate.Hql.Classic
 		/// times. Subsequent invocations are no-ops.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void Compile(string collectionRole, IDictionary replacements, bool scalar)
+		public void Compile(string collectionRole, IDictionary<string, string> replacements, bool scalar)
 		{
 			if (!Compiled)
 			{
@@ -379,17 +377,13 @@ namespace NHibernate.Hql.Classic
 
 		internal string GetAliasName(string alias)
 		{
-			string name = (string) aliasNames[alias];
-			if (name == null)
+			string name;
+			if (!aliasNames.TryGetValue(alias, out name))
 			{
 				if (superQuery != null)
-				{
 					name = superQuery.GetAliasName(alias);
-				}
 				else
-				{
 					name = alias;
-				}
 			}
 			return name;
 		}
@@ -474,7 +468,7 @@ namespace NHibernate.Hql.Classic
 
 		internal bool IsName(string name)
 		{
-			return aliasNames.Contains(name) ||
+			return aliasNames.ContainsKey(name) ||
 			       typeMap.ContainsKey(name) ||
 			       collections.ContainsKey(name) ||
 			       (superQuery != null && superQuery.IsName(name));
@@ -511,7 +505,9 @@ namespace NHibernate.Hql.Classic
 
 		public IPropertyMapping GetDecoratedPropertyMapping(string name)
 		{
-			return (IPropertyMapping) decoratedPropertyMappings[name];
+			IPropertyMapping result;
+			decoratedPropertyMappings.TryGetValue(name, out result);
+			return result;
 		}
 
 		public void DecoratePropertyMapping(string name, IPropertyMapping mapping)
@@ -622,7 +618,10 @@ namespace NHibernate.Hql.Classic
 
 		internal void AppendOrderByToken(string token)
 		{
-			orderByTokens.Add(token);
+			if (StringHelper.SqlParameter.Equals(token))
+				orderByTokens.Add(SqlString.Parameter);
+			else
+				orderByTokens.Add(new SqlString(token));
 		}
 
 		internal void AppendOrderByParameter()
@@ -632,7 +631,7 @@ namespace NHibernate.Hql.Classic
 
 		internal void AppendGroupByToken(string token)
 		{
-			groupByTokens.Add(token);
+			groupByTokens.Add(new SqlString(token));
 		}
 
 		internal void AppendScalarSelectToken(string token)
@@ -663,41 +662,29 @@ namespace NHibernate.Hql.Classic
 			// want the param index to start at 0 instead of 1
 			//int loc = ++parameterCount;
 			int loc = parameterCount++;
-			object o = namedParameters[name];
-			if (o == null)
+			List<int> o;
+			if (!namedParameters.TryGetValue(name, out o))
 			{
-				namedParameters.Add(name, loc);
-			}
-			else if (o is int)
-			{
-				ArrayList list = new ArrayList(4);
-				list.Add(o);
+				List<int> list = new List<int>(4);
 				list.Add(loc);
 				namedParameters[name] = list;
 			}
 			else
 			{
-				((ArrayList) o).Add(loc);
+				o.Add(loc);
 			}
 		}
 
 		public override int[] GetNamedParameterLocs(string name)
 		{
-			object o = namedParameters[name];
-			if (o == null)
+			List<int> o;
+			if (!namedParameters.TryGetValue(name, out o))
 			{
 				QueryException qe = new QueryException("Named parameter does not appear in Query: " + name);
 				qe.QueryString = queryString;
 				throw qe;
 			}
-			if (o is int)
-			{
-				return new int[] {((int) o)};
-			}
-			else
-			{
-				return ArrayHelper.ToIntArray((ArrayList) o);
-			}
+			return o.ToArray();
 		}
 
 		public static string ScalarName(int x, int y)
@@ -738,7 +725,7 @@ namespace NHibernate.Hql.Classic
 			includeInSelect = new bool[size];
 			for (int i = 0; i < size; i++)
 			{
-				string name = (string) returnedTypes[i];
+				string name = returnedTypes[i];
 				//if ( !IsName(name) ) throw new QueryException("unknown type: " + name);
 				persisters[i] = GetPersisterForName(name);
 				suffixes[i] = (size == 1) ? String.Empty : i.ToString() + StringHelper.Underscore;
@@ -748,9 +735,11 @@ namespace NHibernate.Hql.Classic
 				{
 					selectLength++;
 				}
-				string oneToOneOwner = (string) oneToOneOwnerNames[name];
-				owners[i] = oneToOneOwner == null ? -1 : returnedTypes.IndexOf(oneToOneOwner);
-				ownerAssociationTypes[i] = (EntityType) uniqueKeyOwnerReferences[name];
+				string oneToOneOwner;
+				owners[i] = !oneToOneOwnerNames.TryGetValue(name, out oneToOneOwner) ? -1 : returnedTypes.IndexOf(oneToOneOwner);
+				IAssociationType oat;
+				if (uniqueKeyOwnerReferences.TryGetValue(name, out oat))
+					ownerAssociationTypes[i] = (EntityType) oat;
 			}
 
 			fetchedCollections.InitializeCollectionOwnerColumns(returnedTypes);
@@ -768,7 +757,7 @@ namespace NHibernate.Hql.Classic
 			returnTypes = new IType[scalarSize];
 			for (int i = 0; i < scalarSize; i++)
 			{
-				returnTypes[i] = (IType) scalarTypes[i];
+				returnTypes[i] = scalarTypes[i];
 			}
 
 			QuerySelect sql = new QuerySelect(Factory.Dialect);
@@ -792,16 +781,16 @@ namespace NHibernate.Hql.Classic
 
 			// HQL functions in whereTokens, groupByTokens, havingTokens and orderByTokens aren't rendered
 			RenderFunctions(whereTokens);
-			sql.SetWhereTokens(whereTokens);
+			sql.SetWhereTokens((ICollection)whereTokens);
 
 			RenderFunctions(groupByTokens);
-			sql.SetGroupByTokens(groupByTokens);
+			sql.SetGroupByTokens((ICollection)groupByTokens);
 
 			RenderFunctions(havingTokens);
-			sql.SetHavingTokens(havingTokens);
+			sql.SetHavingTokens((ICollection)havingTokens);
 
 			RenderFunctions(orderByTokens);
-			sql.SetOrderByTokens(orderByTokens);
+			sql.SetOrderByTokens((ICollection)orderByTokens);
 
 			fetchedCollections.AddOrderBy(sql);
 
@@ -857,7 +846,7 @@ namespace NHibernate.Hql.Classic
 
 			for (int k = 0; k < size; k++)
 			{
-				string name = (string) returnedTypes[k];
+				string name = returnedTypes[k];
 				string suffix = size == 1 ? String.Empty : k.ToString() + StringHelper.Underscore;
 				sql.AddSelectFragmentString(persisters[k].IdentifierSelectFragment(name, suffix));
 			}
@@ -869,7 +858,7 @@ namespace NHibernate.Hql.Classic
 			for (int k = 0; k < size; k++)
 			{
 				string suffix = (size == 1) ? String.Empty : k.ToString() + StringHelper.Underscore;
-				string name = (string) returnedTypes[k];
+				string name = returnedTypes[k];
 				sql.AddSelectFragmentString(persisters[k].PropertySelectFragment(name, suffix));
 			}
 		}
@@ -979,28 +968,15 @@ namespace NHibernate.Hql.Classic
 				}
 				if (!isSubselect && !nolast)
 				{
-					buf.Append(" as ").Append(ScalarName(c++, 0));
+					buf.Append(" as ").Append(ScalarName(c, 0));
 				}
 			}
 
 			return buf.ToString();
 		}
 
-		private class FunctionPlaceHolder
-		{
-			public readonly int startToken;
-			public readonly int tokensCount;
-			public readonly string renderedFunction;
-			public FunctionPlaceHolder(int startToken, int tokensCount, string renderedFunction)
-			{
-				this.startToken = startToken;
-				this.tokensCount = tokensCount;
-				this.renderedFunction = renderedFunction;
-			}
-		}
-
 		// Parameters inside function are not supported
-		private void RenderFunctions(IList tokens)
+		private void RenderFunctions(IList<SqlString> tokens)
 		{
 			for (int tokenIdx = 0; tokenIdx < tokens.Count; tokenIdx++)
 			{
@@ -1009,7 +985,7 @@ namespace NHibernate.Hql.Classic
 				if (func != null)
 				{
 					int flTokenIdx = tokenIdx;
-					string renderedFunction = RenderFunctionClause(func, tokens, ref flTokenIdx);
+					string renderedFunction = RenderFunctionClause(func, (IList)tokens, ref flTokenIdx);
 					// At this point we have the trunk that represent the function with it's parameters enclosed
 					// in paren. Now all token in the tokens list can be removed from original list because they must
 					// be replased with the rendered function.
@@ -1017,7 +993,7 @@ namespace NHibernate.Hql.Classic
 					{
 						tokens.RemoveAt(tokenIdx + 1);
 					}
-					tokens[tokenIdx] = renderedFunction;
+					tokens[tokenIdx] = new SqlString(renderedFunction);
 				}
 			}
 		}
@@ -1047,12 +1023,6 @@ namespace NHibernate.Hql.Classic
 			int parenCount = 1;
 			for (; tokenIdx < tokens.Count && parenCount > 0; tokenIdx++)
 			{
-				if (!(tokens[tokenIdx] is string) && !(tokens[tokenIdx] is SqlString))
-				{
-					// Only to protect this method from unmanaged types
-					throw new QueryException(string.Format("The function {0} have not supported parameters list. The parameter is {1}"
-						, funcName, tokens[tokenIdx].GetType().AssemblyQualifiedName), new NotSupportedException());
-				}
 				if (tokens[tokenIdx].ToString().StartsWith(ParserHelper.HqlVariablePrefix) || tokens[tokenIdx].ToString().Equals(StringHelper.SqlParameter))
 				{
 					throw new QueryException(string.Format("Parameters inside function are not supported (function '{0}').", funcName),
@@ -1083,7 +1053,7 @@ namespace NHibernate.Hql.Classic
 			{
 				// The function don't work with arguments.
 				if (func.HasParenthesesIfNoArguments)
-					functionTokens = ExtractFunctionClause(tokens, ref tokenIdx);
+					ExtractFunctionClause(tokens, ref tokenIdx);
 
 				// The function render simply translate is't name for a specific dialect.
 				return func.Render(CollectionHelper.EmptyList, Factory);
@@ -1260,9 +1230,6 @@ namespace NHibernate.Hql.Classic
 				//many-to-many
 				AddCollection(collectionName, collectionRole);
 
-				IQueryable p = (IQueryable) persister.ElementPersister;
-				string[] idColumnNames = p.IdentifierColumnNames;
-				string[] eltColumnNames = persister.ElementColumnNames;
 				try
 				{
 					join.AddJoin(
@@ -1283,12 +1250,16 @@ namespace NHibernate.Hql.Classic
 
 		internal string GetPathAlias(string path)
 		{
-			return (string) pathAliases[path];
+			string result;
+			pathAliases.TryGetValue(path, out result);
+			return result;
 		}
 
 		internal JoinSequence GetPathJoin(string path)
 		{
-			return (JoinSequence) pathJoins[path];
+			JoinSequence result;
+			pathJoins.TryGetValue(path, out result);
+			return result;
 		}
 
 		internal void AddPathAliasAndJoin(string path, string alias, JoinSequence joinSequence)
@@ -1649,11 +1620,11 @@ namespace NHibernate.Hql.Classic
 			get { return sqlString.ToString(); }
 		}
 
-		public IList CollectSqlStrings
+		public IList<string> CollectSqlStrings
 		{
 			get
 			{
-				IList result = new ArrayList(1);
+				IList<string> result = new List<string>(1);
 				result.Add(sqlString.ToString());
 				return result;
 			}
@@ -1726,9 +1697,9 @@ namespace NHibernate.Hql.Classic
 				return null;
 			}
 
-			public IList GetNamedParameterNames()
+			public IEnumerable<string> GetNamedParameterNames()
 			{
-				return new ArrayList(queryTraslator.namedParameters.Keys);
+				return queryTraslator.namedParameters.Keys;
 			}
 
 			public int[] GetNamedParameterSqlLocations(string name)

@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -17,7 +17,7 @@ namespace NHibernate.Cfg
 		private bool isShowSqlEnabled;
 		private bool isFormatSqlEnabled;
 		private int maximumFetchDepth;
-		private IDictionary querySubstitutions;
+		private IDictionary<string, string> querySubstitutions;
 		private Dialect.Dialect dialect;
 		private int adoBatchSize;
 		private int defaultBatchFetchSize;
@@ -88,7 +88,7 @@ namespace NHibernate.Cfg
 			internal set { maximumFetchDepth = value; }
 		}
 
-		public IDictionary QuerySubstitutions
+		public IDictionary<string,string> QuerySubstitutions
 		{
 			get { return querySubstitutions; }
 			internal set { querySubstitutions = value; }

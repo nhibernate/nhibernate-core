@@ -87,9 +87,9 @@ namespace NHibernate.Util
 		/// <param name="delim"></param>
 		/// <param name="properties"></param>
 		/// <returns></returns>
-		public static IDictionary ToDictionary(string property, string delim, IDictionary properties)
+		public static IDictionary<string, string> ToDictionary(string property, string delim, IDictionary properties)
 		{
-			IDictionary map = new Hashtable();
+			IDictionary<string, string> map = new Dictionary<string, string>();
 			string propValue = (string) properties[property];
 			if (propValue != null)
 			{

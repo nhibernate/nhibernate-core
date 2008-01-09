@@ -110,11 +110,11 @@ namespace NHibernate.Cfg
 
 			settings.QueryTranslatorFactory = CreateQueryTranslatorFactory(properties);
 
-			IDictionary querySubstitutions =
+			IDictionary<string, string> querySubstitutions =
 				PropertiesHelper.ToDictionary(Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties);
 			if (log.IsInfoEnabled)
 			{
-				log.Info("Query language substitutions: " + CollectionPrinter.ToString(querySubstitutions));
+				log.Info("Query language substitutions: " + CollectionPrinter.ToString((IDictionary)querySubstitutions));
 			}
 
 			string autoSchemaExport = properties[Environment.Hbm2ddlAuto] as string;

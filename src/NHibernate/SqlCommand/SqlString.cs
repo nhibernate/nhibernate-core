@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// If you need to modify this object pass it to a <c>SqlStringBuilder</c> and
+	/// If you need to modify this object pass it to a <see cref="SqlStringBuilder"/> and
 	/// get a new object back from it.
 	/// </para>
 	/// </remarks>
