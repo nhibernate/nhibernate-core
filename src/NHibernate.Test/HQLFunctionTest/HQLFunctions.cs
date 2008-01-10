@@ -545,21 +545,6 @@ namespace NHibernate.Test.HQLFunctionTest
 				result = (Animal)s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
-				// Rendered in WHERE using a property and named param
-				try
-				{
-					hql = "from Animal a where cast(:aParam+a.BodyWeight as Double)>0";
-					result = (Animal)s.CreateQuery(hql)
-						.SetDouble("aParam", 2D)
-						.UniqueResult();
-					Assert.Fail("Allow parameters in function without exception");
-				}
-				catch (QueryException ex)
-				{
-					if (!(ex.InnerException is NotSupportedException))
-						throw;
-				}
-
 				// Rendered in WHERE using a property and nested functions
 				hql = "from Animal a where cast(cast(cast(a.BodyWeight as string) as double) as int) = 1";
 				result = (Animal)s.CreateQuery(hql).UniqueResult();
@@ -594,19 +579,6 @@ namespace NHibernate.Test.HQLFunctionTest
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
 				Assert.AreEqual(129, l[0]);
-
-				// Rendered in HAVING using a property and named param (NOT SUPPORTED)
-				try
-				{
-					hql = "select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as Double)>0";
-					l = s.CreateQuery(hql).SetInt32("aParam", 10).List();
-					Assert.Fail("Allow parameters in function without exception");
-				}
-				catch (QueryException ex)
-				{
-					if (!(ex.InnerException is NotSupportedException))
-						throw;
-				}
 
 				// Rendered in HAVING using a property and nested functions
 				string castExpr = "cast(cast(cast(a.BodyWeight as string) as double) as int)";
@@ -760,6 +732,40 @@ group by mr.Description";
 			{
 				s.Delete("from MaterialResource");
 				s.Flush();
+			}
+		}
+
+		[Test, Ignore("Not supported yet!")]
+		public void ParameterLikeArgument()
+		{
+			using (ISession s = OpenSession())
+			{
+				Animal a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				string hql;
+				IList l;
+				Animal result;
+
+				// Render in WHERE
+				hql = "from Animal a where cast(:aParam as Double)>0";
+				result = (Animal)s.CreateQuery(hql).SetDouble("aParam", 2D).UniqueResult();
+				Assert.IsNotNull(result);
+
+				// Render in WHERE with math operation
+				hql = "from Animal a where cast(:aParam+a.BodyWeight as Double)>3";
+				result = (Animal) s.CreateQuery(hql).SetDouble("aParam", 2D).UniqueResult();
+				Assert.IsNotNull(result);
+
+				// Render in all clauses
+				hql =
+					"select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as Double)>0";
+				l = s.CreateQuery(hql).SetInt32("aParam", 10).List();
+				Assert.AreEqual(1, l.Count);
 			}
 		}
 	}
