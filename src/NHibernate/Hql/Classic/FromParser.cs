@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -11,7 +12,7 @@ namespace NHibernate.Hql.Classic
 	/// </summary>
 	public class FromParser : IParser
 	{
-		private PathExpressionParser peParser = new FromPathExpressionParser();
+		private readonly PathExpressionParser peParser = new FromPathExpressionParser();
 		private string entityName;
 		private string alias;
 		private bool afterIn;
@@ -24,7 +25,7 @@ namespace NHibernate.Hql.Classic
 		private bool afterFetch;
 		private JoinType joinType = JoinType.None;
 
-		private static IDictionary joinTypes = new Hashtable();
+		private static readonly Dictionary<string, JoinType> joinTypes = new Dictionary<string, JoinType>();
 
 		/// <summary></summary>
 		static FromParser()
@@ -42,20 +43,18 @@ namespace NHibernate.Hql.Classic
 			if (lcToken.Equals(StringHelper.Comma))
 			{
 				if (!(expectingJoin | expectingAs))
-				{
 					throw new QueryException("unexpected token: ,");
-				}
+
 				expectingJoin = false;
 				expectingAs = false;
 			}
-			else if (lcToken.Equals("join"))
+			else if ("join".Equals(lcToken))
 			{
 				if (!afterJoinType)
 				{
 					if (!(expectingJoin | expectingAs))
-					{
 						throw new QueryException("unexpected token: join");
-					}
+
 					// inner joins can be abbreviated to 'join'
 					joinType = JoinType.InnerJoin;
 					expectingJoin = false;
@@ -66,85 +65,71 @@ namespace NHibernate.Hql.Classic
 					afterJoinType = false;
 				}
 			}
-			else if (lcToken.Equals("fetch"))
+			else if ("fetch".Equals(lcToken))
 			{
 				if (q.IsShallowQuery)
-				{
 					throw new QueryException("fetch may not be used with scroll() or iterate()");
-				}
+
 				if (joinType == JoinType.None)
-				{
 					throw new QueryException("unexpected token: fetch");
-				}
+
 				if (joinType == JoinType.FullJoin || joinType == JoinType.RightOuterJoin)
-				{
 					throw new QueryException("fetch may only be used with inner join or left outer join");
-				}
+
 				afterFetch = true;
 			}
-			else if (lcToken.Equals("outer"))
+			else if ("outer".Equals(lcToken))
 			{
 				// 'outer' is optional and is ignored)
 				if (!afterJoinType || (joinType != JoinType.LeftOuterJoin && joinType != JoinType.RightOuterJoin))
-				{
 					throw new QueryException("unexpected token: outer");
-				}
 			}
-			else if (joinTypes.Contains(lcToken))
+			else if (joinTypes.ContainsKey(lcToken))
 			{
 				if (!(expectingJoin | expectingAs))
-				{
 					throw new QueryException("unexpected token: " + token);
-				}
-				joinType = (JoinType) joinTypes[lcToken];
+
+				joinType = joinTypes[lcToken];
 				afterJoinType = true;
 				expectingJoin = false;
 				expectingAs = false;
 			}
-			else if (lcToken.Equals("class"))
+			else if ("class".Equals(lcToken))
 			{
 				if (!afterIn)
-				{
 					throw new QueryException("unexpected token: class");
-				}
+
 				if (joinType != JoinType.None)
-				{
 					throw new QueryException("outer or full join must be followed by path expression");
-				}
+
 				afterClass = true;
 			}
-			else if (lcToken.Equals("in"))
+			else if ("in".Equals(lcToken))
 			{
 				if (!expectingIn)
-				{
 					throw new QueryException("unexpected token: in");
-				}
+
 				afterIn = true;
 				expectingIn = false;
 			}
-			else if (lcToken.Equals("as"))
+			else if ("as".Equals(lcToken))
 			{
 				if (!expectingAs)
-				{
 					throw new QueryException("unexpected token: as");
-				}
+
 				afterAs = true;
 				expectingAs = false;
 			}
 			else
 			{
 				if (afterJoinType)
-				{
 					throw new QueryException("join expected: " + token);
-				}
+
 				if (expectingJoin)
-				{
 					throw new QueryException("unexpected token: " + token);
-				}
+
 				if (expectingIn)
-				{
 					throw new QueryException("in expected: " + token);
-				}
 
 				// now anything that is not a HQL keyword
 
@@ -161,9 +146,8 @@ namespace NHibernate.Hql.Classic
 						q.SetAliasName(token, entityName);
 					}
 					else
-					{
 						throw new QueryException("unexpected: as " + token);
-					}
+
 					afterAs = false;
 					expectingJoin = true;
 					expectingAs = false;
@@ -175,14 +159,10 @@ namespace NHibernate.Hql.Classic
 					// ie using the IN or IN CLASS constructions
 
 					if (alias == null)
-					{
 						throw new QueryException("alias not specified for: " + token);
-					}
 
 					if (joinType != JoinType.None)
-					{
 						throw new QueryException("outer or full join must be followed by path expressions");
-					}
 
 					if (afterClass)
 					{
@@ -223,9 +203,8 @@ namespace NHibernate.Hql.Classic
 					{
 						// starts with the name of a mapped class (new style)
 						if (joinType != JoinType.None)
-						{
 							throw new QueryException("outer or full join must be followed by path expression");
-						}
+
 						entityName = q.CreateNameFor(p.EntityName);
 						q.AddFromClass(entityName, p);
 						expectingAs = true;
@@ -246,13 +225,10 @@ namespace NHibernate.Hql.Classic
 
 						//allow ODMG OQL style: from Person p, p.cars c
 						if (joinType != JoinType.None)
-						{
 							peParser.JoinType = joinType;
-						}
 						else
-						{
 							peParser.JoinType = JoinType.InnerJoin;
-						}
+
 						peParser.UseThetaStyleJoin = q.IsSubquery;
 
 						ParserHelper.Parse(peParser, q.Unalias(token), ParserHelper.PathSeparators, q);

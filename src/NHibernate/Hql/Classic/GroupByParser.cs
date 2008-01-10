@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Classic
 		// The reason for this is SQL doesn't let you sort by an expression you are
 		// not returning in the result set.
 
-		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
+		private readonly PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
 		public void Token(string token, QueryTranslator q)
 		{
@@ -41,7 +41,6 @@ namespace NHibernate.Hql.Classic
 		{
 		}
 
-		/// <summary></summary>
 		public GroupByParser()
 		{
 			pathExpressionParser.UseThetaStyleJoin = true;

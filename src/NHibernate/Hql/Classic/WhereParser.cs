@@ -1,7 +1,7 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Hql.Util;
 using NHibernate.Persister.Entity;
@@ -24,25 +24,24 @@ namespace NHibernate.Hql.Classic
 	// the same thing it does now)
 	public class WhereParser : IParser
 	{
-		private PathExpressionParser pathExpressionParser = new PathExpressionParser();
+		private readonly PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
-		private static ISet expressionTerminators = new HashedSet(); //tokens that close a sub expression
-		private static ISet expressionOpeners = new HashedSet(); //tokens that open a sub expression
+		private static readonly ISet<string> expressionTerminators = new HashedSet<string>(); //tokens that close a sub expression
+		private static readonly ISet<string> expressionOpeners = new HashedSet<string>(); //tokens that open a sub expression
 
-		private static ISet booleanOperators = new HashedSet();
+		private static readonly ISet<string> booleanOperators = new HashedSet<string>();
 		                    //tokens that would indicate a sub expression is a boolean expression
 
-		private static IDictionary negations = new Hashtable();
+		private static readonly Dictionary<string, string> negations = new Dictionary<string, string>();
 
-		/// <summary>
-		/// 
-		/// </summary>
+		// To parse correctly the functions TRIM and EXTRACT (Note subselect inside TRIM is not supported)
+		private static readonly ISet<string> specialFunctions = new HashedSet<string>();
+
 		public WhereParser()
 		{
 			pathExpressionParser.UseThetaStyleJoin = true;
 		}
 
-		/// <summary></summary>
 		static WhereParser()
 		{
 			expressionTerminators.Add("and");
@@ -146,8 +145,6 @@ namespace NHibernate.Hql.Classic
 		private int bracketsSinceSelect = 0;
 		private StringBuilder subselect;
 
-		// To parse correctly the functions TRIM and EXTRACT (Note subselect inside TRIM is not supported)
-		private static ISet specialFunctions = new HashedSet();
 		private bool isInSpecialFunctionClause = false;
 		private int specialFunctionParenCount = 0;
 
@@ -158,16 +155,13 @@ namespace NHibernate.Hql.Classic
 		// in the list of nested subexpressions we are currently processing.
 
 		//were an odd or even number of NOTs encountered
-		// each item in the list is a System.Boolean
-		private ArrayList nots = new ArrayList();
+		private readonly List<bool> nots = new List<bool>();
 
 		//the join string built up by compound paths inside this expression 
-		// each item in the list is a StringBuilder.
-		private ArrayList joins = new ArrayList();
+		private readonly List<SqlStringBuilder> joins = new List<SqlStringBuilder>();
 
 		//a flag indicating if the subexpression is known to be boolean		
-		// each item in the list is a System.Boolean
-		private ArrayList booleanTests = new ArrayList();
+		private readonly List<bool> booleanTests = new List<bool>();
 
 		private string GetElementName(PathExpressionParser.CollectionElement element, QueryTranslator q)
 		{
@@ -179,12 +173,11 @@ namespace NHibernate.Hql.Classic
 			else
 			{
 				IType type = element.Type;
-				string clazz;
 
 				if (type.IsEntityType)
 				{
 					//ie. a many-to-many
-					clazz = ((EntityType) type).GetAssociatedEntityName();
+					string clazz = ((EntityType) type).GetAssociatedEntityName();
 					name = pathExpressionParser.ContinueFromManyToMany(clazz, element.ElementColumns, q);
 				}
 				else
@@ -284,7 +277,7 @@ namespace NHibernate.Hql.Classic
 
 			if (lcToken.Equals("not"))
 			{
-				nots[nots.Count - 1] = !((bool) nots[nots.Count - 1]);
+				nots[nots.Count - 1] = !nots[nots.Count - 1];
 				negated = !negated;
 				return; //NOTE: early return
 			}
@@ -347,7 +340,7 @@ namespace NHibernate.Hql.Classic
 
 		private void CloseExpression(QueryTranslator q, string lcToken)
 		{
-			bool lastBoolTest = (bool) booleanTests[booleanTests.Count - 1];
+			bool lastBoolTest = booleanTests[booleanTests.Count - 1];
 			booleanTests.RemoveAt(booleanTests.Count - 1);
 			if (lastBoolTest)
 			{
@@ -359,19 +352,19 @@ namespace NHibernate.Hql.Classic
 				}
 
 				// Add any joins
-				SqlStringBuilder lastJoin = (SqlStringBuilder) joins[joins.Count - 1];
+				SqlStringBuilder lastJoin = joins[joins.Count - 1];
 				joins.RemoveAt(joins.Count - 1);
 				AppendToken(q, lastJoin.ToSqlString());
 			}
 			else
 			{
 				//unaryCounts.removeLast(); //check that its zero? (As an assertion)
-				SqlStringBuilder join = (SqlStringBuilder) joins[joins.Count - 1];
+				SqlStringBuilder join = joins[joins.Count - 1];
 				joins.RemoveAt(joins.Count - 1);
-				((SqlStringBuilder) joins[joins.Count - 1]).Add(join.ToSqlString());
+				joins[joins.Count - 1].Add(join.ToSqlString());
 			}
 
-			bool lastNots = (bool) nots[nots.Count - 1];
+			bool lastNots = nots[nots.Count - 1];
 			nots.RemoveAt(nots.Count - 1);
 			if (lastNots)
 			{
@@ -492,13 +485,12 @@ namespace NHibernate.Hql.Classic
 					{
 						throw new QueryException("subclass test not allowed for null or not null discriminator");
 					}
-					AppendToken(q, discrim.ToString());
+					AppendToken(q, discrim);
 				}
 				else
 				{
 					object constant;
 					string fieldName = null;
-					string typeName;
 					System.Type importedType = null;
 
 					int indexOfDot = token.IndexOf(StringHelper.Dot);
@@ -509,12 +501,12 @@ namespace NHibernate.Hql.Classic
 					if (indexOfDot > -1)
 					{
 						fieldName = StringHelper.Unqualify(token);
-						typeName = StringHelper.Qualifier(token);
+						string typeName = StringHelper.Qualifier(token);
 						importedType = SessionFactoryHelper.GetImportedClass(q.Factory, typeName);
 					}
 
-					if (indexOfDot > - 1 && importedType != null &&
-					    (constant = ReflectHelper.GetConstantValue(importedType, fieldName)) != null)
+					if (indexOfDot > -1 && importedType != null &&
+							(constant = ReflectHelper.GetConstantValue(importedType, fieldName)) != null)
 					{
 						// need to get the NHibernate Type so we can convert the Enum or field from 
 						// a class into it's string representation for hql.
@@ -535,7 +527,7 @@ namespace NHibernate.Hql.Classic
 
 						try
 						{
-							AppendToken(q, ((ILiteralType) type).ObjectToSQLString(constant, q.Factory.Dialect));
+							AppendToken(q, ((ILiteralType)type).ObjectToSQLString(constant, q.Factory.Dialect));
 						}
 						catch (Exception e)
 						{
@@ -545,8 +537,9 @@ namespace NHibernate.Hql.Classic
 					else
 					{
 						//anything else
-
-						string negatedToken = negated ? (string) negations[token.ToLowerInvariant()] : null;
+						string negatedToken = null;
+						if (negated)
+							negations.TryGetValue(token.ToLowerInvariant(), out negatedToken);
 						if (negatedToken != null && (!betweenSpecialCase || !"or".Equals(negatedToken)))
 						{
 							AppendToken(q, negatedToken);
@@ -562,7 +555,7 @@ namespace NHibernate.Hql.Classic
 
 		private void AddToCurrentJoin(SqlString sql)
 		{
-			((SqlStringBuilder) joins[joins.Count - 1]).Add(sql);
+			joins[joins.Count - 1].Add(sql);
 		}
 
 		private void AddToCurrentJoin(PathExpressionParser.CollectionElement ce)
@@ -579,7 +572,7 @@ namespace NHibernate.Hql.Classic
 
 		private void SpecialCasesBefore(string lcToken)
 		{
-			if (lcToken.Equals("between") || lcToken.Equals("not between"))
+			if ("between".Equals(lcToken) || "not between".Equals(lcToken))
 			{
 				betweenSpecialCase = true;
 			}
@@ -587,17 +580,12 @@ namespace NHibernate.Hql.Classic
 
 		private void SpecialCasesAfter(string lcToken)
 		{
-			if (betweenSpecialCase && lcToken.Equals("and"))
+			if (betweenSpecialCase && "and".Equals(lcToken))
 			{
 				betweenSpecialCase = false;
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
-		/// <param name="token"></param>
 		protected virtual void AppendToken(QueryTranslator q, string token)
 		{
 			if (expectingIndex > 0)
@@ -616,11 +604,6 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
-		/// <param name="token"></param>
 		protected virtual void AppendToken(QueryTranslator q, SqlString token)
 		{
 			if (expectingIndex > 0)

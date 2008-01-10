@@ -39,12 +39,12 @@ namespace NHibernate.Hql.Classic
 			if (first)
 			{
 				first = false;
-				if (lctoken.Equals("distinct"))
+				if ("distinct".Equals(lctoken))
 				{
 					q.Distinct = true;
 					return;
 				}
-				else if (lctoken.Equals("all"))
+				else if ("all".Equals(lctoken))
 				{
 					q.Distinct = false;
 					return;
@@ -228,7 +228,7 @@ namespace NHibernate.Hql.Classic
 					else if (IsFloatingPointConstant(token))
 					{
 						q.AppendScalarSelectToken(token);
-						q.AddSelectScalar(GetFloatingPointConstantType(token));
+						q.AddSelectScalar(GetFloatingPointConstantType());
 					}
 					else if (IsParameter(token))
 					{
@@ -273,10 +273,18 @@ namespace NHibernate.Hql.Classic
 
 		private static IType GetIntegerConstantType(string token)
 		{
-			return NHibernateUtil.Int32;
+			try
+			{
+				Int32.Parse(token);
+				return NHibernateUtil.Int32;
+			}
+			catch(OverflowException)
+			{
+				return NHibernateUtil.Int64;
+			}
 		}
 
-		private static IType GetFloatingPointConstantType(string token)
+		private static IType GetFloatingPointConstantType()
 		{
 			return NHibernateUtil.Double;
 		}

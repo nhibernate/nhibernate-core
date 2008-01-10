@@ -8,10 +8,6 @@ namespace NHibernate.Hql.Classic
 	/// </summary>
 	public class FromPathExpressionParser : PathExpressionParser
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="q"></param>
 		public override void End(QueryTranslator q)
 		{
 			if (!IsCollectionValued)
@@ -33,7 +29,6 @@ namespace NHibernate.Hql.Classic
 			base.End(q);
 		}
 
-		/// <summary></summary>
 		protected override void SetExpectingCollectionIndex()
 		{
 			throw new QueryException("expecting .elements or .indices after collection path expression in from");

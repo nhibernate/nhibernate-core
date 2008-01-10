@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Classic
@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Classic
 	public class ClauseParser : IParser
 	{
 		private IParser child;
-		private IList selectTokens;
+		private IList<string> selectTokens;
 		private bool cacheSelectTokens = false;
 		private bool byExpected = false;
 		private int parenCount = 0;
@@ -27,7 +27,7 @@ namespace NHibernate.Hql.Classic
 				parenCount--;
 			}
 
-			if (byExpected && !lcToken.Equals("by"))
+			if (byExpected && !"by".Equals(lcToken))
 			{
 				throw new QueryException("BY expected after GROUP or ORDER: " + token);
 			}
@@ -36,42 +36,42 @@ namespace NHibernate.Hql.Classic
 
 			if (isClauseStart)
 			{
-				if (lcToken.Equals("select"))
+				if ("select".Equals(lcToken))
 				{
-					selectTokens = new ArrayList();
+					selectTokens = new List<string>();
 					cacheSelectTokens = true;
 				}
-				else if (lcToken.Equals("from"))
+				else if ("from".Equals(lcToken))
 				{
 					child = new FromParser();
 					child.Start(q);
 					cacheSelectTokens = false;
 				}
-				else if (lcToken.Equals("where"))
+				else if ("where".Equals(lcToken))
 				{
 					EndChild(q);
 					child = new WhereParser();
 					child.Start(q);
 				}
-				else if (lcToken.Equals("order"))
+				else if ("order".Equals(lcToken))
 				{
 					EndChild(q);
 					child = new OrderByParser();
 					byExpected = true;
 				}
-				else if (lcToken.Equals("having"))
+				else if ("having".Equals(lcToken))
 				{
 					EndChild(q);
 					child = new HavingParser();
 					child.Start(q);
 				}
-				else if (lcToken.Equals("group"))
+				else if ("group".Equals(lcToken))
 				{
 					EndChild(q);
 					child = new GroupByParser();
 					byExpected = true;
 				}
-				else if (lcToken.Equals("by"))
+				else if ("by".Equals(lcToken))
 				{
 					if (!byExpected)
 					{

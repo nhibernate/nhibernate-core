@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Dialect.Function;
-using NHibernate.Type;
 using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Hql.Classic
 {
@@ -57,7 +57,7 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
-		private Stack stack = new Stack(5);
+		private readonly Stack<FunctionHolder> stack = new Stack<FunctionHolder>(5);
 		private readonly IMapping mapping;
 		
 		public FunctionStack(IMapping mapping)
@@ -80,7 +80,7 @@ namespace NHibernate.Hql.Classic
 
 		private FunctionHolder Peek()
 		{
-			return (FunctionHolder) stack.Peek();
+			return stack.Peek();
 		}
 
 		public void Pop()
