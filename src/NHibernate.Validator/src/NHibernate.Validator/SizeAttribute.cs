@@ -2,6 +2,9 @@ namespace NHibernate.Validator
 {
 	using System;
 
+	/// <summary>
+	/// Size range for Arrays, Collections
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 	[ValidatorClass(typeof(SizeValidator))]
 	public class SizeAttribute : Attribute

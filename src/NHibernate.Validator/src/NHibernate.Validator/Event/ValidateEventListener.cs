@@ -2,8 +2,8 @@ namespace NHibernate.Validator.Event
 {
 	using System;
 	using System.Collections.Generic;
-	using Cfg;
-    using NHibernate.Event;
+	using NHibernate.Cfg;
+	using NHibernate.Event;
 	using NHibernate.Mapping;
     using Property;
 	using Util;

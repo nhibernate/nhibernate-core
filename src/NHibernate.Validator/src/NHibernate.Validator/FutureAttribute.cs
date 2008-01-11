@@ -3,7 +3,7 @@ namespace NHibernate.Validator
 	using System;
 	
 	/// <summary>
-	/// Check that a Date, or a string representation apply in the future
+	/// Check that a Date representation apply in the future
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 	[ValidatorClass(typeof(FutureValidator))]

@@ -2,8 +2,7 @@ namespace NHibernate.Validator
 {
 	using System;
 
-	[Serializable]
-	public class FutureValidator : Validator<FutureAttribute>
+	public class PastValidator : Validator<PastAttribute>
 	{
 		public override bool IsValid(object value)
 		{
@@ -15,7 +14,7 @@ namespace NHibernate.Validator
 			if (value is DateTime)
 			{
 				DateTime date = (DateTime) value;
-				return date.CompareTo(DateTime.Now) > 0;
+				return date.CompareTo(DateTime.Now) < 0;
 			}
 
 			//TODO: Add support to System.Globalization.Calendar ?
@@ -26,7 +25,7 @@ namespace NHibernate.Validator
 			return false;
 		}
 
-		public override void Initialize(FutureAttribute parameters)
+		public override void Initialize(PastAttribute parameters)
 		{
 		}
 	}

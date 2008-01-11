@@ -2,6 +2,9 @@ namespace NHibernate.Validator
 {
 	using System;
 
+	/// <summary>
+	/// Max restriction on a numeric annotated element
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 	[ValidatorClass(typeof(MaxValidator))]
 	public class MaxAttribute : Attribute

@@ -3,16 +3,15 @@ namespace NHibernate.Validator
 	using System;
 
 	/// <summary>
-	/// The string has to be a well-formed email address
+	/// Check that a Date representation apply in the past
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-	[ValidatorClass(typeof(EmailValidator))]
-	public class EmailAttribute : Attribute 
+	[ValidatorClass(typeof(PastValidator))]
+	public class PastAttribute : Attribute
 	{
-		private string message = "{validator.email}";
+		private string message = "{validator.past}";
 
-		public string Message
-		{
+		public string Message {
 			get { return message; }
 			set { message = value; }
 		}

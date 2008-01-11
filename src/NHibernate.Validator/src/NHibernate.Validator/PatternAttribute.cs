@@ -3,6 +3,9 @@ namespace NHibernate.Validator
 	using System;
 	using System.Text.RegularExpressions;
 
+	/// <summary>
+	/// The annotated element must follow the regex pattern
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
 	[ValidatorClass(typeof(PatternValidator))]
 	public class PatternAttribute : Attribute

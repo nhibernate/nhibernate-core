@@ -101,6 +101,7 @@
     <Compile Include="TvOwner.cs" />
     <Compile Include="User.cs" />
     <Compile Include="ValidatorFixture.cs" />
+    <Compile Include="Validators\FooDate.cs" />
     <Compile Include="Validators\FooLength.cs" />
     <Compile Include="Validators\FooNotEmpty.cs" />
     <Compile Include="Validators\ValidatorsFixture.cs" />
@@ -136,7 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Integration\Music.hbm.xml" />
-    <EmbeddedResource Include="Integration\Rock.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Integration\Martian.hbm.xml" />

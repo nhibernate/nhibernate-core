@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="AssertTrueAttribute.cs" />
     <Compile Include="AssertTrueValidator.cs" />
+    <Compile Include="Cfg\ValidatorConfiguration.cs" />
     <Compile Include="EmailAttribute.cs" />
     <Compile Include="EmailValidator.cs" />
     <Compile Include="Environment.cs" />
@@ -77,6 +78,8 @@
     <Compile Include="NotNullAttribute.cs" />
     <Compile Include="NotNullValidator.cs" />
     <Compile Include="IPersistentClassConstraint.cs" />
+    <Compile Include="PastAttribute.cs" />
+    <Compile Include="PastValidator.cs" />
     <Compile Include="PatternAttribute.cs" />
     <Compile Include="PatternValidator.cs" />
     <Compile Include="RangeAttribute.cs" />

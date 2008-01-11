@@ -2,6 +2,9 @@ namespace NHibernate.Validator
 {
     using System;
 
+	/// <summary>
+	/// Not null constraint
+	/// </summary>
     [AttributeUsage(AttributeTargets.Field|AttributeTargets.Property)]
     [ValidatorClass(typeof(NotNullValidator))]
     public class NotNullAttribute : Attribute

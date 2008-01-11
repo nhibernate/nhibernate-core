@@ -1,9 +1,10 @@
 namespace NHibernate.Validator.Tests.Validators
 {
-    using NUnit.Framework;
+	using System;
+	using NUnit.Framework;
 
     /// <summary>
-    /// Fixture to validate the diferent existing validators
+    /// Fixture to validate the existing validators
     /// </summary>
     [TestFixture]
     public class ValidatorsFixture
@@ -41,9 +42,32 @@ namespace NHibernate.Validator.Tests.Validators
             Assert.AreEqual(1, res.Length);
         }
 
-        //[Test]
-        //public void MinTest()
-        //{
-        //}
+		[Test]
+		public void PastAndFuture()
+		{
+			ClassValidator validator = new ClassValidator(typeof(FooDate));
+			FooDate f = new FooDate();
+			
+			f.Past = DateTime.MinValue;
+			f.Future = DateTime.MaxValue;
+			Assert.AreEqual(0, validator.GetInvalidValues(f).Length);
+
+			f.Future = DateTime.Today.AddDays(1); //tomorrow
+			f.Past = DateTime.Today.AddDays(-1); //yesterday
+			Assert.AreEqual(0, validator.GetInvalidValues(f).Length);
+
+			f.Future = DateTime.Today.AddDays(-1); //yesterday
+			Assert.AreEqual(1, validator.GetInvalidValues(f).Length);
+
+			f.Future = DateTime.Today.AddDays(1); //tomorrow
+			f.Past = DateTime.Today.AddDays(1); //tomorrow
+			Assert.AreEqual(1, validator.GetInvalidValues(f).Length);
+
+			f.Future = DateTime.Now;
+			f.Past = DateTime.Now;
+			Assert.AreEqual(2, validator.GetInvalidValues(f).Length);
+		}
+
+
     }
 }

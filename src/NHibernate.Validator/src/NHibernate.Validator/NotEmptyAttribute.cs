@@ -2,6 +2,10 @@ namespace NHibernate.Validator
 {
     using System;
 
+	/// <summary>
+	/// Check that a String is not empty (not null and length > 0)
+	/// or that a Collection (or array) is not empty (not null and length > 0)
+	/// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     [ValidatorClass(typeof(NotEmptyValidator))]
     public class NotEmptyAttribute : Attribute

@@ -2,9 +2,8 @@ namespace NHibernate.Validator.Tests.Integration
 {
 	using System.Collections;
 	using Cfg;
-	using Event;
 	using Mapping;
-	using NHibernate.Event;
+	using NHibernate.Cfg;
 	using NUnit.Framework;
 	using TestCase=NHibernate.Test.TestCase;
 
@@ -26,8 +25,7 @@ namespace NHibernate.Validator.Tests.Integration
 						"Integration.Tv.hbm.xml",
 						"Integration.TvOwner.hbm.xml",
 						"Integration.Martian.hbm.xml",
-						"Integration.Music.hbm.xml",
-						"Integration.Rock.hbm.xml"
+						"Integration.Music.hbm.xml"
 					};
 			}
 		}
@@ -36,7 +34,8 @@ namespace NHibernate.Validator.Tests.Integration
 		{
 			cfg.SetProperty(NHibernate.Validator.Environment.MESSAGE_INTERPOLATOR_CLASS,
 			                typeof(PrefixMessageInterpolator).AssemblyQualifiedName);
-			cfg.SetListener(ListenerType.PreInsert,new ValidatePreInsertEventListener());
+			
+			ValidatorInitializer.Initialize(configuration);
 		}
 
 		public void CleanupData()
@@ -54,7 +53,6 @@ namespace NHibernate.Validator.Tests.Integration
 		public void Apply()
 		{
 			PersistentClass classMapping = cfg.GetClassMapping(typeof(Address));
-			new ClassValidator(typeof(Address)).Apply(classMapping);
 			IEnumerator ie1 = classMapping.GetProperty("State").ColumnIterator.GetEnumerator();
 			ie1.MoveNext();
 			Column stateColumn = (Column) ie1.Current;
@@ -71,7 +69,6 @@ namespace NHibernate.Validator.Tests.Integration
 		public void ApplyOnIdColumn()
 		{
 			PersistentClass classMapping = cfg.GetClassMapping(typeof(Tv));
-			new ClassValidator(typeof(Tv)).Apply(classMapping);
 			IEnumerator ie = classMapping.IdentifierProperty.ColumnIterator.GetEnumerator();
 			ie.MoveNext();
 			Column serialColumn = (Column) ie.Current;
@@ -82,7 +79,6 @@ namespace NHibernate.Validator.Tests.Integration
 		public void ApplyOnManyToOne()
 		{
 			PersistentClass classMapping = cfg.GetClassMapping(typeof(TvOwner));
-			new ClassValidator(typeof(TvOwner)).Apply(classMapping);
 			IEnumerator ie = classMapping.GetProperty("tv").ColumnIterator.GetEnumerator();
 			ie.MoveNext();
 			Column serialColumn = (Column) ie.Current;
@@ -96,7 +92,7 @@ namespace NHibernate.Validator.Tests.Integration
 			IEnumerator ie = classMapping.GetProperty("bit").ColumnIterator.GetEnumerator();
 			ie.MoveNext();
 			Column serialColumn = (Column) ie.Current;
-			Assert.IsTrue(serialColumn.IsNullable, "Notnull should not be applised on single tables");
+			Assert.IsTrue(serialColumn.IsNullable, "Notnull should not be applied on single tables");
 		}
 
 		/// <summary>

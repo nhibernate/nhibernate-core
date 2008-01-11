@@ -10,6 +10,13 @@
     <id name="name" type="string">
       <generator class="assigned"/>
     </id>
+    
+    <discriminator column="type_music" type="string"/>
 
+    <subclass name="Rock" discriminator-value="ROCK">
+      <property name="bit"/>
+    </subclass>
+    
   </class>
+  
 </hibernate-mapping>
