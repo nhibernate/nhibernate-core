@@ -1,8 +1,7 @@
 using System.Collections;
 using NHibernate.DomainModel;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NUnit.Framework;
-using NExpression = NHibernate.Expression.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -26,7 +25,7 @@ namespace NHibernate.Test.ExpressionTest
 			}
 
 			DetachedCriteria detachedCriteria = DetachedCriteria.For(typeof(Componentizable));
-			detachedCriteria.Add(NExpression.Eq("NickName", "master"));
+			detachedCriteria.Add(Expression.Eq("NickName", "master"));
 
 			using (ISession s = OpenSession())
 			{

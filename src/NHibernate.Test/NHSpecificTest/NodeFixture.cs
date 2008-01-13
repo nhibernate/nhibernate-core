@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest
 			ITransaction t2 = s2.BeginTransaction();
 
 			Node startNode2 = (Node) s2.CreateCriteria(typeof(Node))
-			                         	.Add(Expression.Expression.Eq("Id", "start"))
+			                         	.Add(Expressions.Expression.Eq("Id", "start"))
 			                         	.List()[0];
 
 			Assert.AreEqual(1, startNode2.DestinationNodes.Count, "Start Node goes to 1 Node");

@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Type;
 
 namespace NHibernate.Engine

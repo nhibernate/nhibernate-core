@@ -1,4 +1,4 @@
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// Access the mapped property through a Property <c>get</c> to get the value 

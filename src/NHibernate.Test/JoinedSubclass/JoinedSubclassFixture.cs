@@ -243,7 +243,7 @@ namespace NHibernate.Test.JoinedSubclass
 			t = s.BeginTransaction();
 
 			IList results = s.CreateCriteria(typeof(Person))
-				.Add(Expression.Expression.In("Name", new string[] {"Did it get updated", "Updated Employee String"}))
+				.Add(Expressions.Expression.In("Name", new string[] {"Did it get updated", "Updated Employee String"}))
 				.List();
 
 			Assert.AreEqual(2, results.Count);

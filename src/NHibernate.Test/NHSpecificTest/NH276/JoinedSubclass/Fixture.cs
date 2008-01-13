@@ -47,15 +47,15 @@ namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 
 			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof(Request));
-			c.Add(Expression.Expression.Eq("Status.StatusId", 1));
-			c.Add(Expression.Expression.Eq("Office.OrganizationId", 1));
+			c.Add(Expressions.Expression.Eq("Status.StatusId", 1));
+			c.Add(Expressions.Expression.Eq("Office.OrganizationId", 1));
 			IList list = c.List();
 
 			Assert.AreEqual(0, list.Count, "should contain no results");
 
 			c = s.CreateCriteria(typeof(Request));
-			c.Add(Expression.Expression.Eq("Status.StatusId", 4));
-			c.Add(Expression.Expression.Eq("Office.OrganizationId", 5));
+			c.Add(Expressions.Expression.Eq("Status.StatusId", 4));
+			c.Add(Expressions.Expression.Eq("Office.OrganizationId", 5));
 			list = c.List();
 
 			Assert.AreEqual(1, list.Count, "one matching result");

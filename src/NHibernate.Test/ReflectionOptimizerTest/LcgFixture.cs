@@ -1,6 +1,6 @@
 using System;
 using NHibernate.Bytecode.Lightweight;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ReflectionOptimizerTest

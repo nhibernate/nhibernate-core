@@ -2,11 +2,10 @@ using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Engine;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
-using NExpression = NHibernate.Expression;
 using System.Collections.Generic;
 
 namespace NHibernate.Impl

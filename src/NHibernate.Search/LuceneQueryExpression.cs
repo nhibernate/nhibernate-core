@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using Lucene.Net.Search;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Impl;
 using NHibernate.Search.Engine;
 using NHibernate.Search.Impl;

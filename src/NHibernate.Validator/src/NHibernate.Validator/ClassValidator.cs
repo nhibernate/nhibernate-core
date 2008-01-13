@@ -10,7 +10,7 @@ namespace NHibernate.Validator
 	using Iesi.Collections.Generic;
 	using Interpolator;
 	using Mapping;
-	using Property;
+	using Properties;
 	using Proxy;
 	using Util;
 

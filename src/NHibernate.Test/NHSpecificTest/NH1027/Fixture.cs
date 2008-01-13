@@ -26,9 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1027
 	        {
 	            ICriteria criteria = s.CreateCriteria(typeof(Item));
 	            criteria.CreateCriteria("Ships", "s", JoinType.InnerJoin)
-                    .Add(Expression.Expression.Eq("s.Id", 15));
+                    .Add(Expressions.Expression.Eq("s.Id", 15));
                 criteria.CreateCriteria("Containers", "c", JoinType.LeftOuterJoin)
-                 .Add(Expression.Expression.Eq("c.Id", 15));
+                 .Add(Expressions.Expression.Eq("c.Id", 15));
 	            criteria.SetMaxResults(2);
 	            criteria.List();
 	        }

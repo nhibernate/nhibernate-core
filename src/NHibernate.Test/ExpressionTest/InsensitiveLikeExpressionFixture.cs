@@ -2,11 +2,10 @@ using System;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
-using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -21,7 +20,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 
-			ICriterion expression = Expression.Expression.InsensitiveLike("Address", "12 Adress");
+			ICriterion expression = Expression.InsensitiveLike("Address", "12 Adress");
 
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());

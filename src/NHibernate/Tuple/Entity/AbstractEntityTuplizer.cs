@@ -4,7 +4,7 @@ using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Mapping;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
 

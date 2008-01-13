@@ -3,7 +3,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Mapping;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Type;
 using NHibernate.Util;
 

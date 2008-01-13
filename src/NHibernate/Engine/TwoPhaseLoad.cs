@@ -6,7 +6,7 @@ using NHibernate.Impl;
 using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
-using NHibernate.Property;
+using NHibernate.Properties;
 
 namespace NHibernate.Engine
 {

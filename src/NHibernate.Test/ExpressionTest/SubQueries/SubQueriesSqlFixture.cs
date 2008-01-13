@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest.SubQueries
@@ -74,9 +74,9 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		public void CanQueryBlogByItsPosts()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Post), "posts")
-				.SetProjection(Expression.Property.ForName("id"))
-				.Add(Expression.Expression.Eq("id", post1.PostId))
-				.Add(Expression.Property.ForName("posts.Blog.id").EqProperty("blog.id"));
+				.SetProjection(Property.ForName("id"))
+				.Add(Expressions.Expression.Eq("id", post1.PostId))
+				.Add(Property.ForName("posts.Blog.id").EqProperty("blog.id"));
 
 			using (ISession s = sessions.OpenSession())
 			{
@@ -91,9 +91,9 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		public void ComplexSubQuery_QueryingByGrandChildren()
 		{
 			DetachedCriteria comment = DetachedCriteria.For(typeof(Comment), "comment")
-				.SetProjection(Expression.Property.ForName("id"))
-				.Add(Expression.Property.ForName("Post.id").EqProperty("post.id"))
-				.Add(Expression.Expression.Eq("Text", "foo"));
+				.SetProjection(Property.ForName("id"))
+				.Add(Property.ForName("Post.id").EqProperty("post.id"))
+				.Add(Expressions.Expression.Eq("Text", "foo"));
 
 			using (ISession s = OpenSession())
 			{

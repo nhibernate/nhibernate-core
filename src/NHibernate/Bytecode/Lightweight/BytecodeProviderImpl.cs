@@ -1,5 +1,5 @@
 using System;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Util;
 
 namespace NHibernate.Bytecode.Lightweight

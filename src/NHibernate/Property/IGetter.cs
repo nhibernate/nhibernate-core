@@ -2,7 +2,7 @@ using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// Gets values of a particular mapped property.

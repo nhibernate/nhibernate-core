@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using log4net;
 using Microsoft.CSharp;
-using NHibernate.Property;
+using NHibernate.Properties;
 
 namespace NHibernate.Bytecode.CodeDom
 {

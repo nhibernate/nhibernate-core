@@ -5,7 +5,7 @@ namespace NHibernate.Validator.Event
 	using NHibernate.Cfg;
 	using NHibernate.Event;
 	using NHibernate.Mapping;
-    using Property;
+	using Properties;
 	using Util;
 
 	/// <summary>

@@ -1,5 +1,5 @@
 using System;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NUnit.Framework;
 
 namespace NHibernate.Test.PropertyTest

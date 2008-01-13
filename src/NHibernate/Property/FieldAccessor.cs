@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using NHibernate.Engine;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// Access the mapped property by using a Field to <c>get</c> and <c>set</c> the value.

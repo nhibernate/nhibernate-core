@@ -75,7 +75,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				basic = (GuidClass)s.CreateCriteria(typeof(GuidClass))
-														.Add(Expression.Expression.Eq("GuidValue", val))
+														.Add(Expressions.Expression.Eq("GuidValue", val))
 														.UniqueResult();
 
 				Assert.IsNotNull(basic);

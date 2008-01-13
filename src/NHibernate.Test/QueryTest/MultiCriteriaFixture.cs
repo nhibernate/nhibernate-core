@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Test.SecondLevelCacheTests;
@@ -153,7 +153,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = sessions.OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Expression.Gt("id", 50));
+					.Add(Expressions.Expression.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
@@ -175,7 +175,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Expression.Gt("id", 50));
+					.Add(Expressions.Expression.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
@@ -190,7 +190,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Expression.Gt("id", 50));
+					.Add(Expressions.Expression.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(20))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
@@ -222,7 +222,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Expression.Gt("id", 50));
+					.Add(Expressions.Expression.Gt("id", 50));
 
 				IList results = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria)
@@ -253,7 +253,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Expression.In("id", new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
+					.Add(Expressions.Expression.In("id", new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
 				IList results = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria))
 					.Add(CriteriaTransformer.Clone(criteria)
@@ -282,7 +282,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Expression.Gt("id", 50));
+					.Add(Expressions.Expression.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));

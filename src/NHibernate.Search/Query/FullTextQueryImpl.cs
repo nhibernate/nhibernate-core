@@ -8,7 +8,7 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Impl;
 using System.Collections;
 using NHibernate.Search.Engine;

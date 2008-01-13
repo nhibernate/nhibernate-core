@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using NHibernate.Property;
+using NHibernate.Properties;
 
 namespace NHibernate.Transform
 {

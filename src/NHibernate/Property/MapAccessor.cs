@@ -2,7 +2,7 @@ using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	public class MapAccessor : IPropertyAccessor
 	{

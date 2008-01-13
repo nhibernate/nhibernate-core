@@ -6,7 +6,7 @@ using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Mapping;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
 

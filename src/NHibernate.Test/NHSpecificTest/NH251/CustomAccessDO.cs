@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
-using NHibernate.Property;
+using NHibernate.Properties;
 
 namespace NHibernate.Test.NHSpecificTest.NH251
 {

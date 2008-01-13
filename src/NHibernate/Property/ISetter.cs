@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// Sets values of a particular mapped property.

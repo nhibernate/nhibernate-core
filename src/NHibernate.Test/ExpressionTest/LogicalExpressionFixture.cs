@@ -1,10 +1,9 @@
 using System;
 using NHibernate.DomainModel;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
-using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -24,7 +23,7 @@ namespace NHibernate.Test.ExpressionTest
 			ISession session = factory.OpenSession();
 
 			ICriterion orExpression =
-				Expression.Expression.Or(Expression.Expression.IsNull("Address"), Expression.Expression.Between("Count", 5, 10));
+				Expression.Or(Expression.IsNull("Address"), Expression.Between("Count", 5, 10));
 
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = orExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());

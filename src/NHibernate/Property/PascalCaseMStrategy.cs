@@ -1,4 +1,4 @@
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	internal class PascalCaseMStrategy : IFieldNamingStrategy
 	{

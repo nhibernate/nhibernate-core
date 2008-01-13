@@ -69,7 +69,7 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ITransaction t2 = s2.BeginTransaction() )
 			{
 				IList<One> results2 = s2.CreateCriteria( typeof( One ) )
-					.Add( Expression.Expression.Eq( "X", 20 ) )
+					.Add( Expressions.Expression.Eq( "X", 20 ) )
 					.List<One>();
 
 				Assert.AreEqual( 1, results2.Count );

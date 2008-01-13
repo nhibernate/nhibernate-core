@@ -3,7 +3,7 @@ using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary> Represents a "back-reference" to the id of a collection owner. </summary>
 	public class BackrefPropertyAccessor : IPropertyAccessor

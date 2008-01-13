@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
-using NExp = NHibernate.Expression;
+using NExp = NHibernate.Expressions;
 
 namespace NHibernate.Test.NHSpecificTest
 {

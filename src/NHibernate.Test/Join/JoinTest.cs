@@ -356,7 +356,7 @@ namespace NHibernate.Test.Join
 				Person[] people = CreateAndInsertPersons(s, 3);
 
 				ICriteria criteria = s.CreateCriteria(typeof (Person))
-					.Add(Expression.Expression.Eq("Name", people[1].Name));
+					.Add(Expressions.Expression.Eq("Name", people[1].Name));
 				IList list = criteria.List();
 
 				Assert.AreEqual(1, list.Count);

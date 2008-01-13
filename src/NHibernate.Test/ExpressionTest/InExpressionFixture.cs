@@ -1,10 +1,9 @@
 using System;
 using NHibernate.DomainModel;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
-using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -19,7 +18,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 
-			ICriterion inExpression = Expression.Expression.In("Count", new int[] {3, 4, 5});
+			ICriterion inExpression = Expression.In("Count", new int[] {3, 4, 5});
 
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = inExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());

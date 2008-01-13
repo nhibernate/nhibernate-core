@@ -1,4 +1,4 @@
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// A Strategy for converting a mapped property name to a Field name.

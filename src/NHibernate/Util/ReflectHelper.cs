@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Text;
 using log4net;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Type;
 
 namespace NHibernate.Util

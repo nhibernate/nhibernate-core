@@ -1,4 +1,4 @@
-using NHibernate.Property;
+using NHibernate.Properties;
 
 namespace NHibernate.Bytecode
 {

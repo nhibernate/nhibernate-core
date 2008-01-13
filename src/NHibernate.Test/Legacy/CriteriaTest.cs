@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.DomainModel;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -52,7 +52,7 @@ namespace NHibernate.Test.Legacy
 			using (ITransaction t2 = s2.BeginTransaction())
 			{
 				IList results2 = s2.CreateCriteria(typeof(Simple))
-					.Add(Expression.Expression.Eq("Address", "Street 12"))
+					.Add(Expressions.Expression.Eq("Address", "Street 12"))
 					.List();
 
 				Assert.AreEqual(1, results2.Count);
@@ -94,7 +94,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				IList results = s.CreateCriteria(typeof(Simple))
-					.Add(Expression.Expression.Gt("Date", new DateTime(2005, 01, 01)))
+					.Add(Expressions.Expression.Gt("Date", new DateTime(2005, 01, 01)))
 					.AddOrder(Order.Asc("Date"))
 					.List();
 
@@ -103,7 +103,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsTrue(simple.Date > new DateTime(2005, 01, 01), "should have returned dates after 2005");
 
 				results = s.CreateCriteria(typeof(Simple))
-					.Add(Expression.Expression.Lt("Date", new DateTime(2005, 01, 01)))
+					.Add(Expressions.Expression.Lt("Date", new DateTime(2005, 01, 01)))
 					.AddOrder(Order.Asc("Date"))
 					.List();
 
@@ -123,7 +123,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				s.CreateCriteria(typeof(Master))
-					.Add(Expression.Expression.Like("Details", "SomeString"))
+					.Add(Expressions.Expression.Like("Details", "SomeString"))
 					.List();
 			}
 		}
@@ -136,7 +136,7 @@ namespace NHibernate.Test.Legacy
 				Master master = new Master();
 				s.Save(master);
 				s.CreateCriteria(typeof(Detail))
-					.Add(Expression.Expression.Eq("Master", master))
+					.Add(Expressions.Expression.Eq("Master", master))
 					.List();
 				s.Delete(master);
 				s.Flush();
@@ -150,7 +150,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				s.CreateCriteria(typeof(Master))
-					.Add(Expression.Expression.Eq("Details.I", 10))
+					.Add(Expressions.Expression.Eq("Details.I", 10))
 					.List();
 			}
 		}

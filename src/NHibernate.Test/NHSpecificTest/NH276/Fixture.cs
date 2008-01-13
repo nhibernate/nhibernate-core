@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 			s = OpenSession();
 
 			ICriteria c = s.CreateCriteria(typeof(Office));
-			c.Add(Expression.Expression.Eq("Location.Id", madison.Id));
+			c.Add(Expressions.Expression.Eq("Location.Id", madison.Id));
 			IList results = c.List();
 
 			Assert.AreEqual(2, results.Count, "2 objects");
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 			}
 
 			c = s.CreateCriteria(typeof(Office));
-			c.Add(Expression.Expression.Eq("Location.Id", college.Id));
+			c.Add(Expressions.Expression.Eq("Location.Id", college.Id));
 			results = c.List();
 
 			Assert.AreEqual(1, results.Count, "1 objects");

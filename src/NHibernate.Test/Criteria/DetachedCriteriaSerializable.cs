@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -55,71 +55,71 @@ namespace NHibernate.Test.Criteria
 		public void DetachedCriteriaItSelf()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Expression.Eq("Name", "Gavin King"));
+				.Add(Expressions.Expression.Eq("Name", "Gavin King"));
 			SerializeAndList(dc);
 		}
 
 		[Test]
 		public void BasicCriterions()
 		{
-			ICriterion c = Expression.Expression.Eq("Name", "Gavin King");
+			ICriterion c = Expressions.Expression.Eq("Name", "Gavin King");
 			NHAssert.IsSerializable(c);
 			IDictionary nameValue = new Hashtable(1);
 			nameValue.Add("Name", "Ralph");
-			c = Expression.Expression.AllEq(nameValue);
+			c = Expressions.Expression.AllEq(nameValue);
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Between("Name", "aaaaa", "zzzzz");
+			c = Expressions.Expression.Between("Name", "aaaaa", "zzzzz");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.EqProperty("Name", "Name");
+			c = Expressions.Expression.EqProperty("Name", "Name");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Ge("Name", "a");
+			c = Expressions.Expression.Ge("Name", "a");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.GeProperty("Name", "Name");
+			c = Expressions.Expression.GeProperty("Name", "Name");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Gt("Name", "z");
+			c = Expressions.Expression.Gt("Name", "z");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.GtProperty("Name", "Name");
+			c = Expressions.Expression.GtProperty("Name", "Name");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.IdEq(1);
+			c = Expressions.Expression.IdEq(1);
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.In("Name", new string[] { "Gavin", "Ralph" });
+			c = Expressions.Expression.In("Name", new string[] { "Gavin", "Ralph" });
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.InsensitiveLike("Name", "GAVIN");
+			c = Expressions.Expression.InsensitiveLike("Name", "GAVIN");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.IsEmpty("Enrolments");
+			c = Expressions.Expression.IsEmpty("Enrolments");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.IsNotEmpty("Enrolments");
+			c = Expressions.Expression.IsNotEmpty("Enrolments");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.IsNotNull("PreferredCourse");
+			c = Expressions.Expression.IsNotNull("PreferredCourse");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.IsNull("PreferredCourse");
+			c = Expressions.Expression.IsNull("PreferredCourse");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Le("Name", "a");
+			c = Expressions.Expression.Le("Name", "a");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.LeProperty("Name", "Name");
+			c = Expressions.Expression.LeProperty("Name", "Name");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Lt("Name", "z");
+			c = Expressions.Expression.Lt("Name", "z");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.LtProperty("Name", "Name");
+			c = Expressions.Expression.LtProperty("Name", "Name");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Like("Name", "G%");
+			c = Expressions.Expression.Like("Name", "G%");
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Not(Expression.Expression.Eq("Name", "Ralph"));
+			c = Expressions.Expression.Not(Expressions.Expression.Eq("Name", "Ralph"));
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.NotEqProperty("Name", "Name");
+			c = Expressions.Expression.NotEqProperty("Name", "Name");
 			NHAssert.IsSerializable(c);
 		}
 
 		[Test]
 		public void LikeCriterions()
 		{
-			ICriterion c = Expression.Expression.Like("Name", "Gavin", MatchMode.Anywhere);
+			ICriterion c = Expressions.Expression.Like("Name", "Gavin", MatchMode.Anywhere);
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Like("Name", "Gavin", MatchMode.End);
+			c = Expressions.Expression.Like("Name", "Gavin", MatchMode.End);
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Like("Name", "Gavin", MatchMode.Exact);
+			c = Expressions.Expression.Like("Name", "Gavin", MatchMode.Exact);
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Like("Name", "Gavin", MatchMode.Start);
+			c = Expressions.Expression.Like("Name", "Gavin", MatchMode.Start);
 			NHAssert.IsSerializable(c);
 		}
 
@@ -127,11 +127,11 @@ namespace NHibernate.Test.Criteria
 		public void LogicalCriterions()
 		{
 			ICriterion c =
-				Expression.Expression.Or(Expression.Expression.Eq("Name", "Ralph"), Expression.Expression.Eq("Name", "Gavin"));
+				Expressions.Expression.Or(Expressions.Expression.Eq("Name", "Ralph"), Expressions.Expression.Eq("Name", "Gavin"));
 			NHAssert.IsSerializable(c);
 			c =
-				Expression.Expression.And(Expression.Expression.Gt("StudentNumber", 1),
-										  Expression.Expression.Lt("StudentNumber", 10));
+				Expressions.Expression.And(Expressions.Expression.Gt("StudentNumber", 1),
+										  Expressions.Expression.Lt("StudentNumber", 10));
 			NHAssert.IsSerializable(c);
 		}
 
@@ -170,13 +170,13 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void Junctions()
 		{
-			ICriterion c = Expression.Expression.Conjunction()
-				.Add(Expression.Expression.Eq("Name", "Ralph"))
-				.Add(Expression.Expression.Eq("StudentNumber", "1"));
+			ICriterion c = Expressions.Expression.Conjunction()
+				.Add(Expressions.Expression.Eq("Name", "Ralph"))
+				.Add(Expressions.Expression.Eq("StudentNumber", "1"));
 			NHAssert.IsSerializable(c);
-			c = Expression.Expression.Disjunction()
-				.Add(Expression.Expression.Eq("Name", "Ralph"))
-				.Add(Expression.Expression.Eq("Name", "Gavin"));
+			c = Expressions.Expression.Disjunction()
+				.Add(Expressions.Expression.Eq("Name", "Ralph"))
+				.Add(Expressions.Expression.Eq("Name", "Gavin"));
 			NHAssert.IsSerializable(c);
 		}
 
@@ -184,7 +184,7 @@ namespace NHibernate.Test.Criteria
 		public void SubqueriesExpressions()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Expression.Eq("Name", "Gavin King"));
+				.Add(Expressions.Expression.Eq("Name", "Gavin King"));
 			ICriterion c = Subqueries.Eq("Gavin King", dc);
 			NHAssert.IsSerializable(c);
 			c = Subqueries.EqAll("Gavin King", dc);
@@ -262,7 +262,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void SQLCriterion()
 		{
-			ICriterion c = Expression.Expression.Sql("SELECT Name FROM Student");
+			ICriterion c = Expressions.Expression.Sql("SELECT Name FROM Student");
 			NHAssert.IsSerializable(c);
 		}
 
@@ -306,46 +306,46 @@ namespace NHibernate.Test.Criteria
 
 			// Basic criterion
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Expression.Between("Name", "aaaaa", "zzzzz"))
-				.Add(Expression.Expression.EqProperty("Name", "Name"))
-				.Add(Expression.Expression.Ge("Name", "a"))
-				.Add(Expression.Expression.GeProperty("Name", "Name"))
-				.Add(Expression.Expression.Gt("Name", "z"))
-				.Add(Expression.Expression.GtProperty("Name", "Name"))
-				.Add(Expression.Expression.IdEq(1))
-				.Add(Expression.Expression.In("Name", new string[] { "Gavin", "Ralph" }))
-				.Add(Expression.Expression.InsensitiveLike("Name", "GAVIN"))
-				.Add(Expression.Expression.IsEmpty("Enrolments"))
-				.Add(Expression.Expression.IsNotEmpty("Enrolments"))
-				.Add(Expression.Expression.IsNotNull("PreferredCourse"))
-				.Add(Expression.Expression.IsNull("PreferredCourse"))
-				.Add(Expression.Expression.Le("Name", "a"))
-				.Add(Expression.Expression.LeProperty("Name", "Name"))
-				.Add(Expression.Expression.Lt("Name", "z"))
-				.Add(Expression.Expression.LtProperty("Name", "Name"))
-				.Add(Expression.Expression.Like("Name", "G%"))
-				.Add(Expression.Expression.Not(Expression.Expression.Eq("Name", "Ralph")))
-				.Add(Expression.Expression.NotEqProperty("Name", "Name"))
+				.Add(Expressions.Expression.Between("Name", "aaaaa", "zzzzz"))
+				.Add(Expressions.Expression.EqProperty("Name", "Name"))
+				.Add(Expressions.Expression.Ge("Name", "a"))
+				.Add(Expressions.Expression.GeProperty("Name", "Name"))
+				.Add(Expressions.Expression.Gt("Name", "z"))
+				.Add(Expressions.Expression.GtProperty("Name", "Name"))
+				.Add(Expressions.Expression.IdEq(1))
+				.Add(Expressions.Expression.In("Name", new string[] { "Gavin", "Ralph" }))
+				.Add(Expressions.Expression.InsensitiveLike("Name", "GAVIN"))
+				.Add(Expressions.Expression.IsEmpty("Enrolments"))
+				.Add(Expressions.Expression.IsNotEmpty("Enrolments"))
+				.Add(Expressions.Expression.IsNotNull("PreferredCourse"))
+				.Add(Expressions.Expression.IsNull("PreferredCourse"))
+				.Add(Expressions.Expression.Le("Name", "a"))
+				.Add(Expressions.Expression.LeProperty("Name", "Name"))
+				.Add(Expressions.Expression.Lt("Name", "z"))
+				.Add(Expressions.Expression.LtProperty("Name", "Name"))
+				.Add(Expressions.Expression.Like("Name", "G%"))
+				.Add(Expressions.Expression.Not(Expressions.Expression.Eq("Name", "Ralph")))
+				.Add(Expressions.Expression.NotEqProperty("Name", "Name"))
 				.AddOrder(Order.Asc("StudentNumber"))
-				.SetProjection(Expression.Property.ForName("StudentNumber"));
+				.SetProjection(Property.ForName("StudentNumber"));
 
 			SerializeAndList(dc);
 
 			// Like match modes
 			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Expression.Like("Name", "Gavin", MatchMode.Anywhere))
-				.Add(Expression.Expression.Like("Name", "Gavin", MatchMode.End))
-				.Add(Expression.Expression.Like("Name", "Gavin", MatchMode.Exact))
-				.Add(Expression.Expression.Like("Name", "Gavin", MatchMode.Start));
+				.Add(Expressions.Expression.Like("Name", "Gavin", MatchMode.Anywhere))
+				.Add(Expressions.Expression.Like("Name", "Gavin", MatchMode.End))
+				.Add(Expressions.Expression.Like("Name", "Gavin", MatchMode.Exact))
+				.Add(Expressions.Expression.Like("Name", "Gavin", MatchMode.Start));
 
 			SerializeAndList(dc);
 
 			// Logical Expression
 			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Expression.Or(Expression.Expression.Eq("Name", "Ralph"), Expression.Expression.Eq("Name", "Gavin")))
+				.Add(Expressions.Expression.Or(Expressions.Expression.Eq("Name", "Ralph"), Expressions.Expression.Eq("Name", "Gavin")))
 				.Add(
-				Expression.Expression.And(Expression.Expression.Gt("StudentNumber", 1L),
-										  Expression.Expression.Lt("StudentNumber", 10L)));
+				Expressions.Expression.And(Expressions.Expression.Gt("StudentNumber", 1L),
+										  Expressions.Expression.Lt("StudentNumber", 10L)));
 
 			SerializeAndList(dc);
 
@@ -354,7 +354,7 @@ namespace NHibernate.Test.Criteria
 				.SetProjection(Projections.Distinct(Projections.ProjectionList()
 														.Add(Projections.Property("StudentNumber"), "stNumber")
 														.Add(Projections.Property("CourseCode"), "cCode")))
-				.Add(Expression.Expression.Lt("StudentNumber", 668L));
+				.Add(Expressions.Expression.Lt("StudentNumber", 668L));
 			SerializeAndList(dc);
 
 			dc = DetachedCriteria.For(typeof(Enrolment))
@@ -371,18 +371,18 @@ namespace NHibernate.Test.Criteria
 
 			// Junctions
 			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Expression.Conjunction()
-						.Add(Expression.Expression.Eq("Name", "Ralph"))
-						.Add(Expression.Expression.Eq("StudentNumber", 1L)))
-				.Add(Expression.Expression.Disjunction()
-						.Add(Expression.Expression.Eq("Name", "Ralph"))
-						.Add(Expression.Expression.Eq("Name", "Gavin")));
+				.Add(Expressions.Expression.Conjunction()
+						.Add(Expressions.Expression.Eq("Name", "Ralph"))
+						.Add(Expressions.Expression.Eq("StudentNumber", 1L)))
+				.Add(Expressions.Expression.Disjunction()
+						.Add(Expressions.Expression.Eq("Name", "Ralph"))
+						.Add(Expressions.Expression.Eq("Name", "Gavin")));
 			SerializeAndList(dc);
 
 			// Subquery
 			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Property.ForName("StudentNumber").Eq(232L))
-				.SetProjection(Expression.Property.ForName("Name"));
+				.Add(Property.ForName("StudentNumber").Eq(232L))
+				.SetProjection(Property.ForName("Name"));
 
 			DetachedCriteria dcs = DetachedCriteria.For(typeof(Student))
 				.Add(Subqueries.PropertyEqAll("Name", dc));
@@ -390,7 +390,7 @@ namespace NHibernate.Test.Criteria
 
 			// SQLCriterion
 			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Expression.Sql("{alias}.Name = 'Gavin'"));
+				.Add(Expressions.Expression.Sql("{alias}.Name = 'Gavin'"));
 			SerializeAndList(dc);
 
 			// SQLProjection

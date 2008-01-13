@@ -1,7 +1,7 @@
 using System;
 using System.Reflection.Emit;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// An <see cref="ISetter" /> that can emit IL to set the property value.

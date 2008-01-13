@@ -5,7 +5,7 @@ using System.Globalization;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.SqlTypes;
 using NHibernate.Tuple;
 using NHibernate.UserTypes;

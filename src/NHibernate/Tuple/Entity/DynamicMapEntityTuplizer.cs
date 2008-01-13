@@ -3,7 +3,7 @@ using System.Collections;
 using System.Text;
 using log4net;
 using NHibernate.Mapping;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Proxy.Map;
 

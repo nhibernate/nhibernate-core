@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
 using System.Security.Permissions;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Util;
 
 namespace NHibernate.Bytecode.Lightweight

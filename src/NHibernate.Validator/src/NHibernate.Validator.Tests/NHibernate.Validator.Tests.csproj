@@ -44,14 +44,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\net\2.0\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate, Version=2.0.0.1001, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\build\NHibernate-2.0.0.Alpha1-debug\bin\net-2.0\NHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate.Test, Version=2.0.0.1001, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\build\NHibernate-2.0.0.Alpha1-debug\bin\net-2.0\NHibernate.Test.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.core, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\net\2.0\nunit.core.dll</HintPath>
@@ -113,6 +105,14 @@
     <Compile Include="Valid\ValidTestCase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\NHibernate.Test\NHibernate.Test-2.0.csproj">
+      <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
+      <Name>NHibernate.Test-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\NHibernate\NHibernate-2.0.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate-2.0</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHibernate.Validator\NHibernate.Validator.csproj">
       <Project>{599516E0-E10D-4F44-B5E1-B7B67EFC931A}</Project>
       <Name>NHibernate.Validator</Name>

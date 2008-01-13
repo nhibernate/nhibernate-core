@@ -6,7 +6,7 @@ using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Classic;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;

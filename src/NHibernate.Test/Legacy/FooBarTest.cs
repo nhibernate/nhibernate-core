@@ -12,7 +12,7 @@ using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -375,14 +375,14 @@ namespace NHibernate.Test.Legacy
 
 			s.CreateCriteria(typeof(Baz))
 				.CreateCriteria("TopFoos")
-				.Add(Expression.Expression.IsNotNull("id"))
+				.Add(Expressions.Expression.IsNotNull("id"))
 				.List();
 
 			s.CreateCriteria(typeof(Baz))
 				.CreateCriteria("Foo")
 				.CreateCriteria("Component.Glarch")
 				.CreateCriteria("ProxySet")
-				.Add(Expression.Expression.IsNotNull("id"))
+				.Add(Expressions.Expression.IsNotNull("id"))
 				.List();
 
 			s.Close();
@@ -2042,10 +2042,10 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 
 			IList list = s.CreateCriteria(typeof(Foo))
-				.Add(Expression.Expression.Eq("Integer", f.Integer))
-				.Add(Expression.Expression.EqProperty("Integer", "Integer"))
-				.Add(Expression.Expression.Like("String", f.String))
-				.Add(Expression.Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
+				.Add(Expressions.Expression.Eq("Integer", f.Integer))
+				.Add(Expressions.Expression.EqProperty("Integer", "Integer"))
+				.Add(Expressions.Expression.Like("String", f.String))
+				.Add(Expressions.Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
 				.SetFetchMode("TheFoo", FetchMode.Eager)
 				.SetFetchMode("Baz", FetchMode.Lazy)
 				.List();
@@ -2053,12 +2053,12 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(list.Count == 1 && list[0] == f);
 
 			list = s.CreateCriteria(typeof(Foo)).Add(
-				Expression.Expression.Disjunction()
-					.Add(Expression.Expression.Eq("Integer", f.Integer))
-					.Add(Expression.Expression.Like("String", f.String))
-					.Add(Expression.Expression.Eq("Boolean", f.Boolean))
+				Expressions.Expression.Disjunction()
+					.Add(Expressions.Expression.Eq("Integer", f.Integer))
+					.Add(Expressions.Expression.Like("String", f.String))
+					.Add(Expressions.Expression.Eq("Boolean", f.Boolean))
 				)
-				.Add(Expression.Expression.IsNotNull("Boolean"))
+				.Add(Expressions.Expression.IsNotNull("Boolean"))
 				.List();
 
 			Assert.IsTrue(list.Count == 1 && list[0] == f);
@@ -2067,9 +2067,9 @@ namespace NHibernate.Test.Legacy
 			ICriterion orExpression;
 
 			andExpression =
-				Expression.Expression.And(Expression.Expression.Eq("Integer", f.Integer),
-				                          Expression.Expression.Like("String", f.String));
-			orExpression = Expression.Expression.Or(andExpression, Expression.Expression.Eq("Boolean", f.Boolean));
+				Expressions.Expression.And(Expressions.Expression.Eq("Integer", f.Integer),
+				                          Expressions.Expression.Like("String", f.String));
+			orExpression = Expressions.Expression.Or(andExpression, Expressions.Expression.Eq("Boolean", f.Boolean));
 
 			list = s.CreateCriteria(typeof(Foo))
 				.Add(orExpression)
@@ -2103,10 +2103,10 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			list = s.CreateCriteria(typeof(Foo))
-				.Add(Expression.Expression.Eq("Integer", f.Integer))
-				.Add(Expression.Expression.Like("String", f.String))
-				.Add(Expression.Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
-				.Add(Expression.Expression.IsNotNull("TheFoo"))
+				.Add(Expressions.Expression.Eq("Integer", f.Integer))
+				.Add(Expressions.Expression.Like("String", f.String))
+				.Add(Expressions.Expression.In("Boolean", new bool[] {f.Boolean, f.Boolean}))
+				.Add(Expressions.Expression.IsNotNull("TheFoo"))
 				.SetFetchMode("TheFoo", FetchMode.Eager)
 				.SetFetchMode("Baz", FetchMode.Lazy)
 				.SetFetchMode("Component.Glarch", FetchMode.Lazy)

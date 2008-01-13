@@ -1,5 +1,5 @@
 using System;
-using NHibernate.Property;
+using NHibernate.Properties;
 
 namespace NHibernate.Tuple.Component
 {

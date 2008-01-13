@@ -37,9 +37,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item));
 				criteria.CreateCriteria("Ships", "s", JoinType.InnerJoin)
-					 .Add(Expression.Expression.IsNotNull("s.Id"));
+					 .Add(Expressions.Expression.IsNotNull("s.Id"));
 				criteria.CreateCriteria("Containers", "c", JoinType.LeftOuterJoin)
-					.Add(Expression.Expression.IsNull("c.Id"));
+					.Add(Expressions.Expression.IsNull("c.Id"));
 
 				IList<Item> results = criteria.List<Item>();
 				Assert.AreEqual (1, results.Count);

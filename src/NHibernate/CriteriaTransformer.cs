@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Engine;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Impl;
 
 namespace NHibernate

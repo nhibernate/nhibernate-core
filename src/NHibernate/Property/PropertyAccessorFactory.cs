@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Util;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// Factory for creating the various PropertyAccessor strategies.

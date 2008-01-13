@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NHibernate.Type;
 using NHibernate.Util;
 

@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Threading;
 using NHibernate.Cfg;
-using NHibernate.Property;
+using NHibernate.Properties;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH480

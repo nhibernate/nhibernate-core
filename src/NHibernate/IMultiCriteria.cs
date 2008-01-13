@@ -1,5 +1,5 @@
 using System.Collections;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 
 namespace NHibernate
 {

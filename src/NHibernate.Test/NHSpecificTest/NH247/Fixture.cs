@@ -1,6 +1,6 @@
 using System;
 using NHibernate.Dialect;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH247
@@ -102,19 +102,19 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 				Assert.AreEqual(2, c.List().Count);
 
 				c = s.CreateCriteria(typeof(LiteralDescription));
-				c.Add(Expression.Expression.InsensitiveLike("Description", "DeScripTion", MatchMode.Start));
+				c.Add(Expressions.Expression.InsensitiveLike("Description", "DeScripTion", MatchMode.Start));
 				Assert.AreEqual(2, c.List().Count);
 
 				c = s.CreateCriteria(typeof(LiteralDescription));
-				c.Add(Expression.Expression.InsensitiveLike("Description", "DeScripTion", MatchMode.Anywhere));
+				c.Add(Expressions.Expression.InsensitiveLike("Description", "DeScripTion", MatchMode.Anywhere));
 				Assert.AreEqual(4, c.List().Count);
 
 				c = s.CreateCriteria(typeof(LiteralDescription));
-				c.Add(Expression.Expression.InsensitiveLike("Description", "tHeeND", MatchMode.End));
+				c.Add(Expressions.Expression.InsensitiveLike("Description", "tHeeND", MatchMode.End));
 				Assert.AreEqual(1, c.List().Count);
 
 				c = s.CreateCriteria(typeof(LiteralDescription));
-				c.Add(Expression.Expression.InsensitiveLike("Description", "DescRiptioN TheEnd", MatchMode.Exact));
+				c.Add(Expressions.Expression.InsensitiveLike("Description", "DescRiptioN TheEnd", MatchMode.Exact));
 				Assert.AreEqual(1, c.List().Count);
 			}
 		}

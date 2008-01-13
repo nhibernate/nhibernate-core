@@ -849,7 +849,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 
 			IList results = s.CreateCriteria(typeof(BasicClass))
-				.Add(Expression.Expression.Eq("Id", id))
+				.Add(Expressions.Expression.Eq("Id", id))
 				.List();
 
 			Assert.AreEqual(0, results.Count);

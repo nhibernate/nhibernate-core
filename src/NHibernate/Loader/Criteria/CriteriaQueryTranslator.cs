@@ -4,7 +4,7 @@ using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;

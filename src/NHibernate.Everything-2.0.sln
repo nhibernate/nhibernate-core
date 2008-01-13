@@ -233,27 +233,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{28
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NAnt Build", "NAnt Build", "{4CE16C2F-EFF6-48A4-99BC-8984DCC143FA}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(SolutionItems) = preProject
 		..\build-common\common-project.xml = ..\build-common\common-project.xml
 		..\build-common\common.xml = ..\build-common\common.xml
 		..\default.build = ..\default.build
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Information", "Information", "{1631B0BA-59AC-4F0D-B300-3F64CC7579C9}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Information", "Information", "{1631B0BA-59AC-4F0D-B300-3F64CC7579C9}"
 	ProjectSection(SolutionItems) = preProject
 		..\gfdl.txt = ..\gfdl.txt
 		..\lgpl.txt = ..\lgpl.txt
 		..\readme.html = ..\readme.html
 		..\releasenotes.txt = ..\releasenotes.txt
 		..\sample build commands.txt = ..\sample build commands.txt
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.HbmXsd", "NHibernate.Tool.HbmXsd\NHibernate.Tool.HbmXsd.csproj", "{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D}"
@@ -263,10 +263,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.HbmXsd", "N
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration Templates", "Configuration Templates", "{936E50BD-4027-4864-ADE9-423C3FBF7FFB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(SolutionItems) = preProject
 		NHibernate.Config.Templates\FireBird.cfg.xml.tmpl = NHibernate.Config.Templates\FireBird.cfg.xml.tmpl
 		NHibernate.Config.Templates\MSSQL.cfg.xml.tmpl = NHibernate.Config.Templates\MSSQL.cfg.xml.tmpl
@@ -275,6 +271,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration Templates", "
 		NHibernate.Config.Templates\PostgreSQL.cfg.xml.tmpl = NHibernate.Config.Templates\PostgreSQL.cfg.xml.tmpl
 		NHibernate.Config.Templates\SQLite.cfg.xml.tmpl = NHibernate.Config.Templates\SQLite.cfg.xml.tmpl
 	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Validator", "Validator", "{F9D16E7E-9B80-487E-AB51-DC2D88B322FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nHibernate.Validator", "NHibernate.Validator\src\NHibernate.Validator\nHibernate.Validator.csproj", "{599516E0-E10D-4F44-B5E1-B7B67EFC931A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Validator.Tests", "NHibernate.Validator\src\NHibernate.Validator.Tests\NHibernate.Validator.Tests.csproj", "{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -567,6 +573,26 @@ Global
 		{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Release|.NET.ActiveCfg = Release|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Release|.NET.ActiveCfg = Release|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -579,12 +605,12 @@ Global
 		{9F7A6D94-7029-4143-9998-82C0C70D7C15} = {28EA2C84-8295-49ED-BC67-803B7778513E}
 		{C91E7018-3C67-4830-963A-C388C75E1BD5} = {28EA2C84-8295-49ED-BC67-803B7778513E}
 		{65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F} = {28EA2C84-8295-49ED-BC67-803B7778513E}
+		{F9D16E7E-9B80-487E-AB51-DC2D88B322FE} = {28EA2C84-8295-49ED-BC67-803B7778513E}
 		{7AEE5B37-C552-4E59-9B6F-88755BCB5070} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{E3482030-5828-4112-9906-D4C5153DCE3F} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{3905D37C-CA49-4C13-99A4-4D815EFCAA56} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{C6F085E3-17FA-424A-9A09-143F3E177FEB} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
-		{C5D6EE68-1760-4F97-AD31-42343593D8C1} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{5C649B55-1B3F-4C38-9998-1B043E94A244} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{C04709C0-2FF9-424A-82FF-235312877853} = {B86033F7-9D86-4872-9F12-A62E2AD3C5AB}
@@ -610,5 +636,7 @@ Global
 		{936E50BD-4027-4864-ADE9-423C3FBF7FFB} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
 		{71560152-A693-4F66-99CF-570685A33169} = {65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F}
 		{CC25D767-990D-4CE0-9F64-3426E244403B} = {65FBA7B2-5AF7-457A-9FC0-65EBB4CED59F}
+		{599516E0-E10D-4F44-B5E1-B7B67EFC931A} = {F9D16E7E-9B80-487E-AB51-DC2D88B322FE}
+		{3B96A3A6-685A-43CF-B746-4F2EB69D2D49} = {F9D16E7E-9B80-487E-AB51-DC2D88B322FE}
 	EndGlobalSection
 EndGlobal

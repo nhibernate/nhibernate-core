@@ -1,4 +1,4 @@
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// Implementation of <see cref="IFieldNamingStrategy"/> for fields that are prefixed with

@@ -1,10 +1,9 @@
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
-using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -19,7 +18,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 
-			ICriterion notExpression = Expression.Expression.Not(Expression.Expression.Eq("Address", "12 Adress"));
+			ICriterion notExpression = Expression.Not(Expression.Eq("Address", "12 Adress"));
 
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = notExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());

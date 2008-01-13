@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using NUnit.Framework;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Type;
 
 namespace NHibernate.Test.ExpressionTest.Projection

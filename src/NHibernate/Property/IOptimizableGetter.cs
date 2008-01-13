@@ -1,7 +1,7 @@
 using System;
 using System.Reflection.Emit;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// An <see cref="IGetter" /> that can emit IL to get the property value.

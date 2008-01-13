@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	[Serializable]
 	public class ChainedPropertyAccessor : IPropertyAccessor

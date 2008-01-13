@@ -6,7 +6,7 @@ using Iesi.Collections;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.Mapping;
 using NUnit.Framework;
 using Single=NHibernate.DomainModel.Single;
@@ -268,7 +268,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreSame(m1.OtherMaster, m1);
 
 			m1 = (Master) s.CreateCriteria(typeof(Master))
-			              	.Add(Expression.Expression.Eq("Name", "foobar"))
+			              	.Add(Expressions.Expression.Eq("Name", "foobar"))
 			              	.UniqueResult();
 			Assert.IsNull(m1);
 

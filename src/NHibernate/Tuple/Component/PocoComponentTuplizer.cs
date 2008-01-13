@@ -1,6 +1,6 @@
 using System;
 using NHibernate.Bytecode;
-using NHibernate.Property;
+using NHibernate.Properties;
 
 namespace NHibernate.Tuple.Component
 {

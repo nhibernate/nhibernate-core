@@ -3,7 +3,7 @@ using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary> Represents a "back-reference" to the index of a collection. </summary>
 	public class IndexPropertyAccessor : IPropertyAccessor

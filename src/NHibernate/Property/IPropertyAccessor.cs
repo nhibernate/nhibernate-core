@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// Abstracts the notion of a "property". Defines a strategy for accessing the

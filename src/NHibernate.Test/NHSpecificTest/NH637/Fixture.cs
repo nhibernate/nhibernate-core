@@ -63,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 
 				PointHolder result = (PointHolder) s
 				                                   	.CreateCriteria(typeof(PointHolder))
-				                                   	.Add(Expression.Expression.Between("Point", new Point(19, 9), new Point(21, 11)))
+				                                   	.Add(Expressions.Expression.Between("Point", new Point(19, 9), new Point(21, 11)))
 				                                   	.UniqueResult();
 
 				Assert.AreSame(holder, result);

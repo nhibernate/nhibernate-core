@@ -1,11 +1,10 @@
 using System;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
-using NExpression = NHibernate.Expression;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -25,9 +24,9 @@ namespace NHibernate.Test.ExpressionTest
 		public override void SetUp()
 		{
 			base.SetUp();
-			_conjunction = Expression.Expression.Conjunction();
-			_conjunction.Add(Expression.Expression.IsNull("Address"))
-				.Add(Expression.Expression.Between("Count", 5, 10));
+			_conjunction = Expression.Conjunction();
+			_conjunction.Add(Expression.IsNull("Address"))
+				.Add(Expression.Between("Count", 5, 10));
 		}
 
 		[Test]

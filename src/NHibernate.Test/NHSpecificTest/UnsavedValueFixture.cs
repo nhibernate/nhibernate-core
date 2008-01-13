@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest
 			ITransaction t2 = s2.BeginTransaction();
 
 			IList results2 = s2.CreateCriteria(typeof(UnsavedType))
-				.Add(Expression.Expression.Eq("Id", unsavedToSave.Id))
+				.Add(Expressions.Expression.Eq("Id", unsavedToSave.Id))
 				.List();
 
 			Assert.AreEqual(1, results2.Count, "Should have found a match for the new Id");

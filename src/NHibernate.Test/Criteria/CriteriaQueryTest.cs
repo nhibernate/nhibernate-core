@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using NHibernate.Expression;
+using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
@@ -121,8 +121,8 @@ namespace NHibernate.Test.Criteria
 			session.Save(enrolment2);
 
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Property.ForName("StudentNumber").Eq(232L))
-				.SetProjection(Expression.Property.ForName("Name"));
+				.Add(Property.ForName("StudentNumber").Eq(232L))
+				.SetProjection(Property.ForName("Name"));
 
 			session.CreateCriteria(typeof(Student))
 				.Add(Subqueries.PropertyEqAll("Name", dc))
@@ -133,7 +133,7 @@ namespace NHibernate.Test.Criteria
 				.List();
 
 			session.CreateCriteria(typeof(Student))
-				.Add(Expression.Property.ForName("Name").EqAll(dc))
+				.Add(Property.ForName("Name").EqAll(dc))
 				.List();
 
 			session.CreateCriteria(typeof(Student))
@@ -141,8 +141,8 @@ namespace NHibernate.Test.Criteria
 				.List();
 
 			DetachedCriteria dc2 = DetachedCriteria.For(typeof(Student), "st")
-				.Add(Expression.Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
-				.SetProjection(Expression.Property.ForName("Name"));
+				.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
+				.SetProjection(Property.ForName("Name"));
 
 			session.CreateCriteria(typeof(Enrolment), "e")
 				.Add(Subqueries.Eq("Gavin King", dc2))
@@ -151,19 +151,19 @@ namespace NHibernate.Test.Criteria
 			DetachedCriteria dc3 = DetachedCriteria.For(typeof(Student), "st")
 				.CreateCriteria("Enrolments")
 				.CreateCriteria("Course")
-				.Add(Expression.Property.ForName("Description").Eq("Hibernate Training"))
-				.SetProjection(Expression.Property.ForName("st.Name"));
+				.Add(Property.ForName("Description").Eq("Hibernate Training"))
+				.SetProjection(Property.ForName("st.Name"));
 
 			session.CreateCriteria(typeof(Enrolment), "e")
 				.Add(Subqueries.Eq("Gavin King", dc3))
 				.List();
 
 			DetachedCriteria courseCriteria = DetachedCriteria.For(typeof(Course))
-				.Add(Expression.Property.ForName("Description").Eq("Hibernate Training"))
+				.Add(Property.ForName("Description").Eq("Hibernate Training"))
 				.SetProjection(Projections.Property("CourseCode"));
 
 			DetachedCriteria enrolmentCriteria = DetachedCriteria.For(typeof(Enrolment))
-				.Add(Expression.Property.ForName("CourseCode").Eq(courseCriteria))
+				.Add(Property.ForName("CourseCode").Eq(courseCriteria))
 				.SetProjection(Projections.Property("CourseCode"));
 
 			DetachedCriteria studentCriteria = DetachedCriteria.For(typeof(Student))
@@ -188,7 +188,7 @@ namespace NHibernate.Test.Criteria
 			// HQL: from Animal a where a.mother.class = Reptile
 			ICriteria c = s.CreateCriteria(typeof(Animal), "a")
 				.CreateAlias("mother", "m")
-				.Add(Expression.Property.ForName("m.class").Eq(typeof(Reptile)));
+				.Add(Property.ForName("m.class").Eq(typeof(Reptile)));
 			ICriteria cloned = CriteriaTransformer.Clone(c);
 			cloned.List();
 			t.Rollback();
@@ -204,7 +204,7 @@ namespace NHibernate.Test.Criteria
 			// HQL: from Animal a where a.mother.class = Reptile
 			ICriteria c = s.CreateCriteria(typeof(Animal), "a")
 				.CreateAlias("mother", "m")
-				.Add(Expression.Property.ForName("m.class").Eq(typeof(Reptile)))
+				.Add(Property.ForName("m.class").Eq(typeof(Reptile)))
 				.AddOrder(Order.Asc("a.bodyWeight"));
 			ICriteria cloned = CriteriaTransformer.TransformToRowCount(c);
 
@@ -218,9 +218,9 @@ namespace NHibernate.Test.Criteria
 		public void DetachedCriteriaTest()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Property.ForName("Name").Eq("Gavin King"))
+				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"))
-				.SetProjection(Expression.Property.ForName("StudentNumber"));
+				.SetProjection(Property.ForName("StudentNumber"));
 
 			byte[] bytes = SerializationHelper.Serialize(dc);
 
@@ -256,8 +256,8 @@ namespace NHibernate.Test.Criteria
 		public void CloningDetachedCriteriaTest()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Property.ForName("Name").Eq("Gavin King"))
-				.SetProjection(Expression.Property.ForName("StudentNumber"));
+				.Add(Property.ForName("Name").Eq("Gavin King"))
+				.SetProjection(Property.ForName("StudentNumber"));
 
 			ISession session = OpenSession();
 			ITransaction t = session.BeginTransaction();
@@ -337,7 +337,7 @@ namespace NHibernate.Test.Criteria
 			IList list = s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "s")
 				.CreateAlias("Course", "c")
-				.Add(Expression.Expression.IsNotEmpty("s.Enrolments"))
+				.Add(Expressions.Expression.IsNotEmpty("s.Enrolments"))
 				.SetProjection(Projections.ProjectionList()
 								.Add(Projections.Property("s.Name"))
 								.Add(Projections.Property("c.Description")))
@@ -357,7 +357,7 @@ namespace NHibernate.Test.Criteria
 			s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "s")
 				.CreateAlias("Course", "c")
-				.Add(Expression.Expression.IsNotEmpty("s.Enrolments"))
+				.Add(Expressions.Expression.IsNotEmpty("s.Enrolments"))
 				.SetProjection(Projections.ProjectionList()
 								.Add(Projections.Property("s.Name"))
 								.Add(Projections.Property("c.Description")))
@@ -377,7 +377,7 @@ namespace NHibernate.Test.Criteria
 			s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "s")
 				.CreateAlias("Course", "c")
-				.Add(Expression.Expression.IsNotEmpty("s.Enrolments"))
+				.Add(Expressions.Expression.IsNotEmpty("s.Enrolments"))
 				.SetProjection(Projections.ProjectionList()
 								.Add(Projections.Property("s.Name"))
 								.Add(Projections.Property("c.Description")))
@@ -552,8 +552,8 @@ namespace NHibernate.Test.Criteria
 														.Add(Projections.Property("StudentNumber"), "stNumber")
 														.Add(Projections.Property("CourseCode"), "cCode"))
 				)
-				.Add(Expression.Expression.Gt("StudentNumber", 665L))
-				.Add(Expression.Expression.Lt("StudentNumber", 668L))
+				.Add(Expressions.Expression.Gt("StudentNumber", 665L))
+				.Add(Expressions.Expression.Lt("StudentNumber", 668L))
 				.AddOrder(Order.Asc("stNumber"))
 				.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
 				.List();
@@ -596,7 +596,7 @@ namespace NHibernate.Test.Criteria
 			Assert.IsNotNull(dto.Name);
 
 			s.CreateCriteria(typeof(Student))
-				.Add(Expression.Expression.Like("Name", "Gavin", MatchMode.Start))
+				.Add(Expressions.Expression.Like("Name", "Gavin", MatchMode.Start))
 				.AddOrder(Order.Asc("Name"))
 				.CreateCriteria("Enrolments", "e")
 				.AddOrder(Order.Desc("Year"))
@@ -645,7 +645,7 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(2, list.Count);
 
 			object g = s.CreateCriteria(typeof(Student))
-				.Add(Expression.Expression.IdEq(667L))
+				.Add(Expressions.Expression.IdEq(667L))
 				.SetFetchMode("enrolments", FetchMode.Join)
 				//.setFetchMode("enrolments.course", FetchMode.JOIN) //TODO: would love to make that work...
 				.UniqueResult();
@@ -730,8 +730,8 @@ namespace NHibernate.Test.Criteria
 														.Add(Projections.Property("StudentNumber"), "stNumber")
 														.Add(Projections.Property("CourseCode"), "cCode"))
 				)
-				.Add(Expression.Expression.Gt("StudentNumber", 665L))
-				.Add(Expression.Expression.Lt("StudentNumber", 668L))
+				.Add(Expressions.Expression.Gt("StudentNumber", 665L))
+				.Add(Expressions.Expression.Lt("StudentNumber", 668L))
 				.AddOrder(Order.Asc("stNumber"))
 				.SetResultTransformer(CriteriaUtil.AliasToEntityMap);
 			IList resultWithMaps = CriteriaTransformer.Clone(criteriaToClone2)
@@ -777,7 +777,7 @@ namespace NHibernate.Test.Criteria
 			Assert.IsNotNull(dto.Name);
 
 			ICriteria complexCriteriaToBeCloned = s.CreateCriteria(typeof(Student))
-				.Add(Expression.Expression.Like("Name", "Gavin", MatchMode.Start))
+				.Add(Expressions.Expression.Like("Name", "Gavin", MatchMode.Start))
 				.AddOrder(Order.Asc("Name"))
 				.CreateCriteria("Enrolments", "e")
 				.AddOrder(Order.Desc("Year"))
@@ -829,7 +829,7 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(2, list.Count);
 
 			ICriteria criteriaToClone6 = s.CreateCriteria(typeof(Student))
-				.Add(Expression.Expression.IdEq(667L))
+				.Add(Expressions.Expression.IdEq(667L))
 				.SetFetchMode("enrolments", FetchMode.Join);
 			object g = CriteriaTransformer.Clone(criteriaToClone6)
 				.UniqueResult();
@@ -886,16 +886,16 @@ namespace NHibernate.Test.Criteria
 			s.Flush();
 
 			int count = (int)s.CreateCriteria(typeof(Enrolment))
-								.SetProjection(Expression.Property.ForName("StudentNumber").Count().SetDistinct())
+								.SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
 								.UniqueResult();
 			Assert.AreEqual(2, count);
 
 			object obj = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()
-								.Add(Expression.Property.ForName("StudentNumber").Count())
-								.Add(Expression.Property.ForName("StudentNumber").Max())
-								.Add(Expression.Property.ForName("StudentNumber").Min())
-								.Add(Expression.Property.ForName("StudentNumber").Avg())
+								.Add(Property.ForName("StudentNumber").Count())
+								.Add(Property.ForName("StudentNumber").Max())
+								.Add(Property.ForName("StudentNumber").Min())
+								.Add(Property.ForName("StudentNumber").Avg())
 				)
 				.UniqueResult();
 			object[] result = (object[])obj;
@@ -907,21 +907,21 @@ namespace NHibernate.Test.Criteria
 
 
 			s.CreateCriteria(typeof(Enrolment))
-				.Add(Expression.Property.ForName("StudentNumber").Gt(665L))
-				.Add(Expression.Property.ForName("StudentNumber").Lt(668L))
-				.Add(Expression.Property.ForName("CourseCode").Like("HIB", MatchMode.Start))
-				.Add(Expression.Property.ForName("Year").Eq((short)1999))
-				.AddOrder(Expression.Property.ForName("StudentNumber").Asc())
+				.Add(Property.ForName("StudentNumber").Gt(665L))
+				.Add(Property.ForName("StudentNumber").Lt(668L))
+				.Add(Property.ForName("CourseCode").Like("HIB", MatchMode.Start))
+				.Add(Property.ForName("Year").Eq((short)1999))
+				.AddOrder(Property.ForName("StudentNumber").Asc())
 				.UniqueResult();
 
 			IList resultWithMaps = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()
-								.Add(Expression.Property.ForName("StudentNumber").As("stNumber"))
-								.Add(Expression.Property.ForName("CourseCode").As("cCode"))
+								.Add(Property.ForName("StudentNumber").As("stNumber"))
+								.Add(Property.ForName("CourseCode").As("cCode"))
 				)
-				.Add(Expression.Property.ForName("StudentNumber").Gt(665L))
-				.Add(Expression.Property.ForName("StudentNumber").Lt(668L))
-				.AddOrder(Expression.Property.ForName("StudentNumber").Asc())
+				.Add(Property.ForName("StudentNumber").Gt(665L))
+				.Add(Property.ForName("StudentNumber").Lt(668L))
+				.AddOrder(Property.ForName("StudentNumber").Asc())
 				.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
 				.List();
 
@@ -932,7 +932,7 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(course.CourseCode, m1["cCode"]);
 
 			resultWithMaps = s.CreateCriteria(typeof(Enrolment))
-				.SetProjection(Expression.Property.ForName("StudentNumber").As("stNumber"))
+				.SetProjection(Property.ForName("StudentNumber").As("stNumber"))
 				.AddOrder(Order.Desc("stNumber"))
 				.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
 				.List();
@@ -949,8 +949,8 @@ namespace NHibernate.Test.Criteria
 				.CreateAlias("Student", "st")
 				.CreateAlias("Course", "co")
 				.SetProjection(Projections.ProjectionList()
-								.Add(Expression.Property.ForName("st.Name").As("studentName"))
-								.Add(Expression.Property.ForName("co.Description").As("courseDescription"))
+								.Add(Property.ForName("st.Name").As("studentName"))
+								.Add(Property.ForName("co.Description").As("courseDescription"))
 				)
 				.AddOrder(Order.Desc("studentName"))
 				.SetResultTransformer(Transformers.AliasToBean(typeof(StudentDTO)))
@@ -963,7 +963,7 @@ namespace NHibernate.Test.Criteria
 			Assert.IsNotNull(dto.Name);
 
 			s.CreateCriteria(typeof(Student))
-				.Add(Expression.Expression.Like("Name", "Gavin", MatchMode.Start))
+				.Add(Expressions.Expression.Like("Name", "Gavin", MatchMode.Start))
 				.AddOrder(Order.Asc("Name"))
 				.CreateCriteria("Enrolments", "e")
 				.AddOrder(Order.Desc("Year"))
@@ -971,22 +971,22 @@ namespace NHibernate.Test.Criteria
 				.CreateCriteria("Course", "c")
 				.AddOrder(Order.Asc("Description"))
 				.SetProjection(Projections.ProjectionList()
-								.Add(Expression.Property.ForName("this.Name"))
-								.Add(Expression.Property.ForName("e.Year"))
-								.Add(Expression.Property.ForName("e.Semester"))
-								.Add(Expression.Property.ForName("c.CourseCode"))
-								.Add(Expression.Property.ForName("c.Description"))
+								.Add(Property.ForName("this.Name"))
+								.Add(Property.ForName("e.Year"))
+								.Add(Property.ForName("e.Semester"))
+								.Add(Property.ForName("c.CourseCode"))
+								.Add(Property.ForName("c.Description"))
 				)
 				.UniqueResult();
 
 			ProjectionList p1 = Projections.ProjectionList()
-				.Add(Expression.Property.ForName("StudentNumber").Count())
-				.Add(Expression.Property.ForName("StudentNumber").Max())
+				.Add(Property.ForName("StudentNumber").Count())
+				.Add(Property.ForName("StudentNumber").Max())
 				.Add(Projections.RowCount());
 
 			ProjectionList p2 = Projections.ProjectionList()
-				.Add(Expression.Property.ForName("StudentNumber").Min())
-				.Add(Expression.Property.ForName("StudentNumber").Avg())
+				.Add(Property.ForName("StudentNumber").Min())
+				.Add(Property.ForName("StudentNumber").Avg())
 				.Add(Projections.SqlProjection(
 						"1 as constOne, count(*) as countStar",
 						new String[] { "constOne", "countStar" },
@@ -1002,9 +1002,9 @@ namespace NHibernate.Test.Criteria
 				.CreateAlias("Student", "st")
 				.CreateAlias("Course", "co")
 				.SetProjection(Projections.ProjectionList()
-								.Add(Expression.Property.ForName("co.CourseCode").Group())
-								.Add(Expression.Property.ForName("st.StudentNumber").Count().SetDistinct())
-								.Add(Expression.Property.ForName("Year").Group())
+								.Add(Property.ForName("co.CourseCode").Group())
+								.Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
+								.Add(Property.ForName("Year").Group())
 				)
 				.List();
 
@@ -1061,17 +1061,17 @@ namespace NHibernate.Test.Criteria
 			s.Flush();
 
 			int count = (int)CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
-															.SetProjection(Expression.Property.ForName("StudentNumber").Count().SetDistinct())
+															.SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
 								)
 								.UniqueResult();
 			Assert.AreEqual(2, count);
 
 			object obj = CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 													.SetProjection(Projections.ProjectionList()
-																	.Add(Expression.Property.ForName("StudentNumber").Count())
-																	.Add(Expression.Property.ForName("StudentNumber").Max())
-																	.Add(Expression.Property.ForName("StudentNumber").Min())
-																	.Add(Expression.Property.ForName("StudentNumber").Avg())
+																	.Add(Property.ForName("StudentNumber").Count())
+																	.Add(Property.ForName("StudentNumber").Max())
+																	.Add(Property.ForName("StudentNumber").Min())
+																	.Add(Property.ForName("StudentNumber").Avg())
 													)
 				)
 				.UniqueResult();
@@ -1085,22 +1085,22 @@ namespace NHibernate.Test.Criteria
 
 			CriteriaTransformer.Clone(
 				s.CreateCriteria(typeof(Enrolment))
-					.Add(Expression.Property.ForName("StudentNumber").Gt(665L))
-					.Add(Expression.Property.ForName("StudentNumber").Lt(668L))
-					.Add(Expression.Property.ForName("CourseCode").Like("HIB", MatchMode.Start))
-					.Add(Expression.Property.ForName("Year").Eq((short)1999))
-					.AddOrder(Expression.Property.ForName("StudentNumber").Asc())
+					.Add(Property.ForName("StudentNumber").Gt(665L))
+					.Add(Property.ForName("StudentNumber").Lt(668L))
+					.Add(Property.ForName("CourseCode").Like("HIB", MatchMode.Start))
+					.Add(Property.ForName("Year").Eq((short)1999))
+					.AddOrder(Property.ForName("StudentNumber").Asc())
 				)
 				.UniqueResult();
 
 			ICriteria clonedCriteriaProjection = CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 																			.SetProjection(Projections.ProjectionList()
-																							.Add(Expression.Property.ForName("StudentNumber").As("stNumber"))
-																							.Add(Expression.Property.ForName("CourseCode").As("cCode"))
+																							.Add(Property.ForName("StudentNumber").As("stNumber"))
+																							.Add(Property.ForName("CourseCode").As("cCode"))
 																			)
-																			.Add(Expression.Property.ForName("StudentNumber").Gt(665L))
-																			.Add(Expression.Property.ForName("StudentNumber").Lt(668L))
-																			.AddOrder(Expression.Property.ForName("StudentNumber").Asc())
+																			.Add(Property.ForName("StudentNumber").Gt(665L))
+																			.Add(Property.ForName("StudentNumber").Lt(668L))
+																			.AddOrder(Property.ForName("StudentNumber").Asc())
 																			.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
 				);
 			IList resultWithMaps = clonedCriteriaProjection
@@ -1113,7 +1113,7 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(course.CourseCode, m1["cCode"]);
 
 			resultWithMaps = CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
-														.SetProjection(Expression.Property.ForName("StudentNumber").As("stNumber"))
+														.SetProjection(Property.ForName("StudentNumber").As("stNumber"))
 														.AddOrder(Order.Desc("stNumber"))
 														.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
 				)
@@ -1131,8 +1131,8 @@ namespace NHibernate.Test.Criteria
 																		.CreateAlias("Student", "st")
 																		.CreateAlias("Course", "co")
 																		.SetProjection(Projections.ProjectionList()
-																						.Add(Expression.Property.ForName("st.Name").As("studentName"))
-																						.Add(Expression.Property.ForName("co.Description").As("courseDescription"))
+																						.Add(Property.ForName("st.Name").As("studentName"))
+																						.Add(Property.ForName("co.Description").As("courseDescription"))
 																		)
 																		.AddOrder(Order.Desc("studentName"))
 																		.SetResultTransformer(Transformers.AliasToBean(typeof(StudentDTO)))
@@ -1146,7 +1146,7 @@ namespace NHibernate.Test.Criteria
 			Assert.IsNotNull(dto.Name);
 
 			ICriteria complexCriteriaWithProjections = s.CreateCriteria(typeof(Student))
-				.Add(Expression.Expression.Like("Name", "Gavin", MatchMode.Start))
+				.Add(Expressions.Expression.Like("Name", "Gavin", MatchMode.Start))
 				.AddOrder(Order.Asc("Name"))
 				.CreateCriteria("Enrolments", "e")
 				.AddOrder(Order.Desc("Year"))
@@ -1154,23 +1154,23 @@ namespace NHibernate.Test.Criteria
 				.CreateCriteria("Course", "c")
 				.AddOrder(Order.Asc("Description"))
 				.SetProjection(Projections.ProjectionList()
-								.Add(Expression.Property.ForName("this.Name"))
-								.Add(Expression.Property.ForName("e.Year"))
-								.Add(Expression.Property.ForName("e.Semester"))
-								.Add(Expression.Property.ForName("c.CourseCode"))
-								.Add(Expression.Property.ForName("c.Description"))
+								.Add(Property.ForName("this.Name"))
+								.Add(Property.ForName("e.Year"))
+								.Add(Property.ForName("e.Semester"))
+								.Add(Property.ForName("c.CourseCode"))
+								.Add(Property.ForName("c.Description"))
 				);
 			CriteriaTransformer.Clone(complexCriteriaWithProjections)
 				.UniqueResult();
 
 			ProjectionList p1 = Projections.ProjectionList()
-				.Add(Expression.Property.ForName("StudentNumber").Count())
-				.Add(Expression.Property.ForName("StudentNumber").Max())
+				.Add(Property.ForName("StudentNumber").Count())
+				.Add(Property.ForName("StudentNumber").Max())
 				.Add(Projections.RowCount());
 
 			ProjectionList p2 = Projections.ProjectionList()
-				.Add(Expression.Property.ForName("StudentNumber").Min())
-				.Add(Expression.Property.ForName("StudentNumber").Avg())
+				.Add(Property.ForName("StudentNumber").Min())
+				.Add(Property.ForName("StudentNumber").Avg())
 				.Add(Projections.SqlProjection(
 						"1 as constOne, count(*) as countStar",
 						new String[] { "constOne", "countStar" },
@@ -1187,9 +1187,9 @@ namespace NHibernate.Test.Criteria
 													.CreateAlias("Student", "st")
 													.CreateAlias("Course", "co")
 													.SetProjection(Projections.ProjectionList()
-																	.Add(Expression.Property.ForName("co.CourseCode").Group())
-																	.Add(Expression.Property.ForName("st.StudentNumber").Count().SetDistinct())
-																	.Add(Expression.Property.ForName("Year").Group())
+																	.Add(Property.ForName("co.CourseCode").Group())
+																	.Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
+																	.Add(Property.ForName("Year").Group())
 													)
 				)
 				.List();
@@ -1211,11 +1211,11 @@ namespace NHibernate.Test.Criteria
 			ITransaction t = s.BeginTransaction();
 
 			s.CreateCriteria(typeof(Reptile))
-				.Add(Expression.Expression.IsEmpty("offspring"))
+				.Add(Expressions.Expression.IsEmpty("offspring"))
 				.List();
 
 			s.CreateCriteria(typeof(Reptile))
-				.Add(Expression.Expression.IsNotEmpty("offspring"))
+				.Add(Expressions.Expression.IsNotEmpty("offspring"))
 				.List();
 
 			t.Rollback();
@@ -1231,7 +1231,7 @@ namespace NHibernate.Test.Criteria
 			// HQL: from Animal a where a.mother.class = Reptile
 			ICriteria c = s.CreateCriteria(typeof(Animal), "a")
 				.CreateAlias("mother", "m")
-				.Add(Expression.Property.ForName("m.class").Eq(typeof(Reptile)));
+				.Add(Property.ForName("m.class").Eq(typeof(Reptile)));
 			c.List();
 			t.Rollback();
 			s.Close();
@@ -1294,7 +1294,7 @@ namespace NHibernate.Test.Criteria
 			session.Save(johnDoe);
 
 			ICriteria criteria = session.CreateCriteria(typeof(Student))
-				.SetProjection(Expression.Property.ForName("PreferredCourse.CourseCode"))
+				.SetProjection(Property.ForName("PreferredCourse.CourseCode"))
 				.CreateCriteria("PreferredCourse", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("CourseCode"));
 
@@ -1341,7 +1341,7 @@ namespace NHibernate.Test.Criteria
 			session.Save(johnDoe);
 
 			IList result = session.CreateCriteria(typeof(Student))
-				.SetProjection(Expression.Property.ForName("PreferredCourse.CourseCode"))
+				.SetProjection(Property.ForName("PreferredCourse.CourseCode"))
 				.CreateCriteria("PreferredCourse", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("CourseCode"))
 				.List();
@@ -1395,7 +1395,7 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			{
 				session.CreateCriteria(typeof(Enrolment))
-					.Add(Expression.Expression.Eq("Student", 10)) // Type mismatch!
+					.Add(Expressions.Expression.Eq("Student", 10)) // Type mismatch!
 					.List();
 			}
 		}
@@ -1431,7 +1431,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList l = session.CreateCriteria(typeof(MaterialUnit), "mu")
 					.CreateAlias("mu.Material", "ma")
-					.Add(Expression.Property.ForName("ma.class").Eq(typeof(MaterialUnitable)))
+					.Add(Property.ForName("ma.class").Eq(typeof(MaterialUnitable)))
 					.List();
 				Assert.AreEqual(3, l.Count);
 			}
@@ -1475,7 +1475,7 @@ namespace NHibernate.Test.Criteria
 		public void SameColumnAndAliasNames()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
-				.Add(Expression.Property.ForName("Name").Eq("Gavin King"))
+				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"))
 				.SetProjection(
 					Projections.ProjectionList()
@@ -1516,7 +1516,7 @@ namespace NHibernate.Test.Criteria
 						.Add(Projections.Property("StudentNumber"), "StudentNumber")
 						.Add(Projections.Property("Name"), "Name"))
 				.SetResultTransformer(new AliasToBeanResultTransformer(typeof(Student)))
-				.Add(Expression.Property.ForName("Name").Eq("Gavin King"))
+				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"));
 
 

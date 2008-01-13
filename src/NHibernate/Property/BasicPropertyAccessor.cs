@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using NHibernate.Engine;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary>
 	/// Accesses mapped property values via a get/set pair, which may be nonpublic.

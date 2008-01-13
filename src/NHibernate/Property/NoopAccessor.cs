@@ -2,7 +2,7 @@ using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
 
-namespace NHibernate.Property
+namespace NHibernate.Properties
 {
 	/// <summary> Used to declare properties not represented at the pojo level </summary>
 	public class NoopAccessor : IPropertyAccessor
