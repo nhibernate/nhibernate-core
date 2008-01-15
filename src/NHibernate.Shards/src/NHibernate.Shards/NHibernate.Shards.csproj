@@ -53,27 +53,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseHasShardIdList.cs" />
+    <Compile Include="Cfg\IShardConfiguration.cs" />
+    <Compile Include="Cfg\ShardedEnvironment.cs" />
     <Compile Include="Criteria\CriteriaId.cs" />
     <Compile Include="Criteria\ICriteriaFactory.cs" />
     <Compile Include="Criteria\IShardedCriteria.cs" />
+    <Compile Include="CrossShardAssociationException.cs" />
+    <Compile Include="Engine\IShardedSessionFactoryImplementor.cs" />
+    <Compile Include="Engine\IShardedSessionImplementor.cs" />
+    <Compile Include="IHasShardIdList.cs" />
     <Compile Include="IShard.cs" />
+    <Compile Include="IShardedTransaction.cs" />
+    <Compile Include="IShardOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\IQueryEvent.cs" />
     <Compile Include="Query\IQueryFactory.cs" />
     <Compile Include="Query\QueryId.cs" />
     <Compile Include="Query\IShardedQuery.cs" />
     <Compile Include="Session\IOpenSessionEvent.cs" />
+    <Compile Include="Session\IShardedSession.cs" />
+    <Compile Include="Session\IShardedSessionFactory.cs" />
+    <Compile Include="ShardedConfiguration.cs" />
     <Compile Include="ShardId.cs" />
+    <Compile Include="ShardImpl.cs" />
+    <Compile Include="Stat\ShardedSessionStatistics.cs" />
+    <Compile Include="Strategy\Access\IShardAccessStrategy.cs" />
+    <Compile Include="Strategy\Exit\IExitStrategy.cs" />
+    <Compile Include="Strategy\Exit\IExitOperationsCollector.cs" />
+    <Compile Include="Strategy\IShardStrategy.cs" />
+    <Compile Include="Strategy\IShardStrategyFactory.cs" />
+    <Compile Include="Strategy\Resolution\IShardResolutionStrategy.cs" />
+    <Compile Include="Strategy\Selection\IShardSelectionStrategy.cs" />
+    <Compile Include="Strategy\Selection\IShardResolutionStrategyData.cs" />
+    <Compile Include="Util\Preconditions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Cfg\" />
-    <Folder Include="Engine\" />
     <Folder Include="Id\" />
     <Folder Include="LoadBalance\" />
-    <Folder Include="Stat\" />
-    <Folder Include="Strategy\" />
     <Folder Include="Transaction\" />
-    <Folder Include="Util\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
