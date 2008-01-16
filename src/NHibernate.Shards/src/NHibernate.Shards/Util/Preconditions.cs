@@ -20,12 +20,16 @@ namespace NHibernate.Shards.Util
 		}
 
 		/// <summary>
-		/// TODO: doc
+		/// TODO: documentation
 		/// </summary>
 		/// <param name="expression"></param>
 		public static void CheckState(bool expression)
 		{
-			throw new NotImplementedException();
+			if (!expression) 
+			{
+				//TODO: change this exception by another more apropiated
+				throw new Exception("Invalid State Exception");
+			}
 		}
 
 		/// <summary>
