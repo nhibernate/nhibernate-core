@@ -53,11 +53,11 @@ namespace NHibernate.Id
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(UUIDHexGenerator));
 
-		private string format = FormatWithDigitsOnly;
-		private string sep;
+		protected string format = FormatWithDigitsOnly;
+		protected string sep;
 
 		//"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-		private const string FormatWithDigitsOnly = "N";
+		protected const string FormatWithDigitsOnly = "N";
 
 		#region IIdentifierGenerator Members
 
@@ -67,9 +67,9 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="String"/>.</returns>
-		public object Generate(ISessionImplementor session, object obj)
+		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			string guidString = Guid.NewGuid().ToString(format);
+			string guidString = GenerateNewGuid();
 
 			if (format != FormatWithDigitsOnly && sep != null)
 			{
@@ -90,7 +90,7 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
-		public void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
+		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
 		{
 			format = PropertiesHelper.GetString("format", parms, FormatWithDigitsOnly);
 
@@ -101,5 +101,14 @@ namespace NHibernate.Id
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Generate a Guid into a string using the <c>format</c>.
+		/// </summary>
+		/// <returns>A new Guid string</returns>
+		protected virtual string GenerateNewGuid()
+		{
+			return Guid.NewGuid().ToString(format);
+		}
 	}
 }
