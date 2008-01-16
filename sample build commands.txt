@@ -13,3 +13,36 @@ NAnt -D:project.config=release clean build >output-release-build.log
 NAnt clean build >output-debug-build.log
 
 NAnt -D:project.config=release -D:nhibernate.dialect="NHibernate.Dialect.MsSql2000Dialect" -D:nhibernate.connection.driver_class="NHibernate.Driver.SqlClientDriver" -D:nhibernate.connection.connection_string="Server=localhost;initial catalog=nhibernate;User ID=blah;Password=blah;Min Pool Size=2" clean package >output-release-package.log
+
+## You can exclude certain modules from being built by setting following properties to false
+##
+## with.caches (Will disable building all caches)
+## with.syscache
+## with.syscache2
+## with.memcache
+## with.prevalence
+## with.tasks
+## with.mapping
+## with.search
+## with.ora.types
+## with.sql.types
+## with.tools
+## with.jet
+## with.examples
+## with.validator
+##
+## - or -
+## 
+## You can set with.core.only=true and then add the modules you want by
+## specifiy true instead of false.
+##
+
+## Build Everything But Jet
+NAnt -D:with.jet=false
+
+## Build Only The Core
+NAnt -D:with.core.only=true
+
+## Build SysCache2, and Search
+NAnt -D:with.core.only=true -D:with.syscache2=true -D:with.search=true
+
