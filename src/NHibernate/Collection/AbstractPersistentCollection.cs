@@ -579,6 +579,8 @@ namespace NHibernate.Collection
 			IEnumerator enumer = collection.GetEnumerator();
 			while (enumer.MoveNext())
 			{
+                if (enumer.Current==null)
+                    continue;
 				IdentityRemove(list, enumer.Current, entityName, session);
 			}
 		}
