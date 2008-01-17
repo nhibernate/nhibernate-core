@@ -23,6 +23,9 @@ namespace NHibernate.Shards
 			this.shardIds = new List<ShardId>(shardIds);
 		}
 
+		public BaseHasShardIdList()
+		{}
+
 		/// <summary>
 		/// Unmodifiable list of <see cref="ShardId"/>s
 		/// </summary>
