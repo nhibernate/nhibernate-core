@@ -98,6 +98,11 @@
     <Compile Include="Strategy\Selection\RoundRobinShardSelectionStrategy.cs" />
     <Compile Include="Strategy\Selection\ShardResolutionStrategyDataImpl.cs" />
     <Compile Include="Strategy\ShardStrategyImpl.cs" />
+    <Compile Include="Threading\Exception\CancellationException.cs" />
+    <Compile Include="Threading\Exception\ExecutionException.cs" />
+    <Compile Include="Threading\Exception\IllegalStateException.cs" />
+    <Compile Include="Threading\IRunnableFuture.cs" />
+    <Compile Include="Threading\StateTask.cs" />
     <Compile Include="Threading\CountDownLatch.cs" />
     <Compile Include="Threading\FutureTask.cs" />
     <Compile Include="Threading\ICallable.cs" />

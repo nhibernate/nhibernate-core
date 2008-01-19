@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace NHibernate.Shards.Threading
 {
@@ -8,7 +9,7 @@ namespace NHibernate.Shards.Threading
 	/// </summary>
 	public class CountDownLatch
 	{
-		private int count;
+		private volatile int count;
 
 		/// <summary>
 		/// Constructs a <c>CountDownLatch</c> initialized with the given count.
@@ -16,6 +17,8 @@ namespace NHibernate.Shards.Threading
 		/// <param name="count">the number of times CountDown() must be invoked before threads can pass through Await()</param>
 		public CountDownLatch(int count)
 		{
+			if (count < 0) throw new ArgumentException("Must be greater than zero", "count");
+
 			this.count = count;
 		}
 
@@ -24,7 +27,7 @@ namespace NHibernate.Shards.Threading
 		/// </summary>
 		public int Count
 		{
-			get { throw new NotImplementedException(); }
+			get { return count; }
 		}
 
 		/// <summary>
@@ -33,7 +36,13 @@ namespace NHibernate.Shards.Threading
 		/// </summary>
 		public void Await()
 		{
-			throw new NotImplementedException();
+			lock(this)
+			{
+				while(count > 0)
+				{
+					Monitor.Wait(this);
+				}
+			}
 		}
 
 		/// <summary>
@@ -53,7 +62,16 @@ namespace NHibernate.Shards.Threading
 		/// </summary>
 		public void CountDown()
 		{
-			throw new NotImplementedException();
+			lock(this)
+			{
+				if(count != 0)
+				{
+					count--;
+	
+					if(count == 0)
+						Monitor.PulseAll(this);
+				}
+			}
 		}
 
 		/// <summary>
@@ -62,7 +80,7 @@ namespace NHibernate.Shards.Threading
 		/// <returns></returns>
 		public override string ToString()
 		{
-			throw new NotImplementedException();
+			return string.Concat("Count = ", count);
 		}
 	}
 }

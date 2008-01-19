@@ -29,10 +29,11 @@ namespace NHibernate.Shards.Threading
 		bool IsDone { get; }
 
 		/// <summary>
-		///  Attempts to cancel execution of this task.
+		/// Attempts to cancel execution of this task.
 		/// </summary>
 		/// <param name="mayInterruptIfRunning"></param>
-		void Cancel(bool mayInterruptIfRunning);
+		/// <returns></returns>
+		bool Cancel(bool mayInterruptIfRunning);
 
 
 		/// <summary>
