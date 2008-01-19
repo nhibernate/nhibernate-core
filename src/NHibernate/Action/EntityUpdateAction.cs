@@ -137,7 +137,6 @@ namespace NHibernate.Action
 
 				if (success && cacheEntry != null)
 				{
-					persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
 					bool put = persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
 
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
