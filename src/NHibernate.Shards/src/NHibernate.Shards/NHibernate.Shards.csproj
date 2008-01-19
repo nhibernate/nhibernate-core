@@ -98,6 +98,11 @@
     <Compile Include="Strategy\Selection\RoundRobinShardSelectionStrategy.cs" />
     <Compile Include="Strategy\Selection\ShardResolutionStrategyDataImpl.cs" />
     <Compile Include="Strategy\ShardStrategyImpl.cs" />
+    <Compile Include="Threading\CountDownLatch.cs" />
+    <Compile Include="Threading\FutureTask.cs" />
+    <Compile Include="Threading\ICallable.cs" />
+    <Compile Include="Threading\IFuture.cs" />
+    <Compile Include="Threading\IRunnable.cs" />
     <Compile Include="Util\AtomicInteger.cs" />
     <Compile Include="Util\Preconditions.cs" />
   </ItemGroup>
