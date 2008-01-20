@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NHibernate.Shards.Threading {
-	public enum StateTask 
+namespace NHibernate.Shards.Threading
+{
+	public enum StateTask
 	{
-		Running,
-		Canceled,
-		Ran
+		Running = 1,
+		Canceled = 2,
+		Ran = 4
 	}
 }

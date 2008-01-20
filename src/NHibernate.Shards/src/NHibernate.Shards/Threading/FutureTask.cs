@@ -1,5 +1,5 @@
 using System;
-
+using System.Diagnostics;
 using System.Threading;
 using NHibernate.Shards.Threading.Exception;
 
@@ -18,7 +18,20 @@ namespace NHibernate.Shards.Threading
 		private volatile Thread runner;
 		private StateTask state;
 
-		#region IFuture<T> Members
+		public FutureTask(ICallable<T> callable)
+		{
+			if (callable == null)
+				throw new ArgumentNullException("callable", "The callable can't be null");
+			this.callable = callable;
+		}
+
+
+		public FutureTask(IRunnable task, T result) :
+			this(Executors.Callable(task, result))
+		{
+		}
+
+		#region IRunnableFuture<T> Members
 
 		/// <summary>
 		/// Returns true if this task was cancelled before it completed normally.
@@ -33,7 +46,13 @@ namespace NHibernate.Shards.Threading
 		/// </summary>
 		public bool IsDone
 		{
-			get { return state == StateTask.Ran && runner == null ? true : false; }
+			get
+			{
+				lock(this)
+				{
+					return RanOrCancelled(state) && (runner == null) ? true : false;
+				}
+			}
 		}
 
 		/// <summary>
@@ -44,31 +63,28 @@ namespace NHibernate.Shards.Threading
 		{
 			lock(this)
 			{
+				Debug.WriteLine("Cancel");
 				if (RanOrCancelled(state))
 					return false;
 
 				state = StateTask.Canceled;
-				
+
 				if (mayInterruptIfRunning)
 				{
 					try
 					{
-						if(runner != null)
-						{
+						if (runner != null)
 							runner.Interrupt();
-						}
 					}
 					catch(ThreadInterruptedException)
 					{
 						//Do nothing
 					}
-
-					Monitor.PulseAll(this);
+					releaseShared();
 				}
 			}
 
 			Done();
-
 			return true;
 		}
 
@@ -85,9 +101,9 @@ namespace NHibernate.Shards.Threading
 					Monitor.Wait(this);
 				}
 
-				if(state == StateTask.Canceled)
+				if (state == StateTask.Canceled)
 					throw new CancellationException();
-				
+
 				if (exception != null)
 					throw new ExecutionException(exception);
 
@@ -106,10 +122,6 @@ namespace NHibernate.Shards.Threading
 			throw new NotImplementedException();
 		}
 
-		#endregion
-
-		#region IRunnable Members
-
 		/// <summary>
 		/// When an object implementing interface Runnable is used to create a thread, 
 		/// starting the thread causes the object's run method to be called in that 
@@ -119,23 +131,29 @@ namespace NHibernate.Shards.Threading
 		{
 			lock(this)
 			{
+				Debug.WriteLine("Run");
 				if (state != 0) return;
 
 				state = StateTask.Running;
 				runner = Thread.CurrentThread;
-
-				try
-				{
-					this.Set(callable.Call());
-				}
-				catch(System.Exception ex)
-				{
-					SetException(ex);
-				}
+			}
+			try
+			{
+				Set(callable.Call());
+			}
+			catch(System.Exception ex)
+			{
+				SetException(ex);
 			}
 		}
 
 		#endregion
+
+		private void releaseShared()
+		{
+			this.runner = null;
+			Monitor.PulseAll(this);
+		}
 
 		/// <summary>
 		///  Sets the result of this Future to the given value unless this future 
@@ -146,18 +164,19 @@ namespace NHibernate.Shards.Threading
 		{
 			lock(this)
 			{
-				if(state == StateTask.Ran)
+				Debug.WriteLine("Set");
+				if (state == StateTask.Ran)
 					return;
-				
-				if(state == StateTask.Canceled)
+
+				if (state == StateTask.Canceled)
 				{
-					Monitor.PulseAll(this);
+					releaseShared();
 					return;
 				}
 
 				state = StateTask.Ran;
 				result = obj;
-				Monitor.PulseAll(this);
+				releaseShared();
 			}
 			Done();
 		}
@@ -166,20 +185,20 @@ namespace NHibernate.Shards.Threading
 		{
 			lock(this)
 			{
+				Debug.WriteLine("Set Exception");
 				if (state == StateTask.Ran)
 					return;
 
 				if (state == StateTask.Canceled)
 				{
-					Monitor.PulseAll(this);
+					releaseShared();
 					return;
 				}
 
 				state = StateTask.Ran; // the task it's over
 				exception = ex;
 				result = default(T);
-				runner = null;
-				Monitor.PulseAll(this);
+				releaseShared();
 			}
 
 			Done(); //subclasses must override this member in order to use it.
@@ -199,7 +218,7 @@ namespace NHibernate.Shards.Threading
 		/// <returns></returns>
 		public static bool RanOrCancelled(StateTask aState)
 		{
-			return aState == StateTask.Running || aState == StateTask.Canceled;
+			return aState == StateTask.Ran || aState == StateTask.Canceled;
 		}
 	}
 }
