@@ -532,6 +532,10 @@
                                 generates identifiers that are unique only for a particular database. <emphasis>Do not
                                 use this generator with a user-supplied connection.</emphasis>
                             </para>
+                            <para>
+								You can use the "where" parameter to specify the row to use in a table. This is useful
+								if you want to use a single tabel for your identifiers, with different rows for each table.
+                            </para>
                         </listitem>
                         </varlistentry>
                         <varlistentry>

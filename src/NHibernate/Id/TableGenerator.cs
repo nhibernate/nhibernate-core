@@ -35,6 +35,11 @@ namespace NHibernate.Id
 	public class TableGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(TableGenerator));
+		/// <summary>
+		/// An additional where clause that is added to 
+		/// the queries against the table.
+		/// </summary>
+		public const string Where = "where";
 
 		/// <summary>
 		/// The name of the column parameter.
@@ -54,6 +59,7 @@ namespace NHibernate.Id
 
 		private string tableName;
 		private string columnName;
+		private string whereClause;
 		private string query;
 
 		protected SqlType columnSqlType;
@@ -76,6 +82,7 @@ namespace NHibernate.Id
 
 			tableName = PropertiesHelper.GetString(TableParamName, parms, DefaultTableName);
 			columnName = PropertiesHelper.GetString(ColumnParamName, parms, DefaultColumnName);
+			whereClause = PropertiesHelper.GetString(Where, parms, "");
 			string schemaName = (string)parms[PersistentIdGeneratorParmsNames.Schema];
 			string catalogName = (string)parms[PersistentIdGeneratorParmsNames.Catalog];
 
@@ -119,6 +126,11 @@ namespace NHibernate.Id
 				.Add(columnName)
 				.Add(" = ")
 				.Add(Parameter.Placeholder);
+			if (string.IsNullOrEmpty(whereClause) == false)
+			{
+				builder.Add(" and ")
+					.Add(whereClause);
+			}
 
 			updateSql = builder.ToSqlString();
 		}

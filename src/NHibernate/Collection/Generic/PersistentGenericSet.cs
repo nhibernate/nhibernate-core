@@ -331,7 +331,12 @@ namespace NHibernate.Collection.Generic
 		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
-			tempList.Add((T) element);
+			// A set cannot have null values
+			// this is a rare occurances and usually happens when we are eagerly
+			// loading several associations into the same row.
+			// See LoadingNullEntityInSet test for rerproduction
+			if (element != null)
+				tempList.Add((T) element);
 			return element;
 		}
 
