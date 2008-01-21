@@ -85,6 +85,10 @@
     <Compile Include="ShardImpl.cs" />
     <Compile Include="Stat\ShardedSessionStatistics.cs" />
     <Compile Include="Strategy\Access\IShardAccessStrategy.cs" />
+    <Compile Include="Strategy\Access\ParallelShardAccessStrategy.cs" />
+    <Compile Include="Strategy\Access\ParallelShardOperationCallable.cs" />
+    <Compile Include="Strategy\Access\SequentialShardAccessStrategy.cs" />
+    <Compile Include="Strategy\Access\StartAwareFutureTask.cs" />
     <Compile Include="Strategy\Exit\IExitStrategy.cs" />
     <Compile Include="Strategy\Exit\IExitOperationsCollector.cs" />
     <Compile Include="Strategy\IShardStrategy.cs" />
@@ -109,7 +113,7 @@
     <Compile Include="Threading\ICallable.cs" />
     <Compile Include="Threading\IFuture.cs" />
     <Compile Include="Threading\IRunnable.cs" />
-    <Compile Include="Util\AtomicInteger.cs" />
+    <Compile Include="Threading\AtomicInteger.cs" />
     <Compile Include="Util\Preconditions.cs" />
   </ItemGroup>
   <ItemGroup>

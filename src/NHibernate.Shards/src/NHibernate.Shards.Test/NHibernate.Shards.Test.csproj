@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Id\ShardedUUIDGeneratorFixture.cs" />
+    <Compile Include="Threading\AtomicIntegerFixture.cs" />
     <Compile Include="Threading\FooCallable1.cs" />
     <Compile Include="Threading\FooCallable2.cs" />
     <Compile Include="Threading\FutureFixture.cs" />
