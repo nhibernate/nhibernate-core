@@ -94,6 +94,23 @@ namespace NHibernate.Test.Criteria
 			session.Close();
 		}
 
+	    [Test]
+	    public void AllowToSetLimitOnSubqueries()
+	    {
+            using (ISession session = OpenSession())
+            {
+                DetachedCriteria dc = DetachedCriteria.For(typeof (Student))
+                    .Add(Property.ForName("StudentNumber").Eq(232L))
+                    .SetMaxResults(1)
+                    .AddOrder(Order.Asc("Name"))
+                    .SetProjection(Property.ForName("Name"));
+
+                session.CreateCriteria(typeof (Student))
+                    .Add(Subqueries.PropertyEqAll("Name", dc))
+                    .List();
+            }
+	    }
+
 		[Test]
 		public void Subselect()
 		{

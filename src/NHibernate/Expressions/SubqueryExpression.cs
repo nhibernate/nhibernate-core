@@ -56,7 +56,11 @@ namespace NHibernate.Expressions
                 criteriaImpl.CriteriaClass,
                 enabledFilters);
 
+
             SqlString sql = walker.SqlString;
+
+            if (criteriaImpl.FirstResult != 0 || criteriaImpl.MaxResults != RowSelection.NoValue)
+                sql = factory.Dialect.GetLimitString(sql, criteriaImpl.FirstResult, criteriaImpl.MaxResults);
 
             SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));
             if (op != null)
