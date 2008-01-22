@@ -59,7 +59,7 @@ namespace NHibernate.Shards.Threading
 		///  Attempts to cancel execution of this task.
 		/// </summary>
 		/// <param name="mayInterruptIfRunning"></param>
-		public bool Cancel(bool mayInterruptIfRunning)
+		public virtual bool Cancel(bool mayInterruptIfRunning)
 		{
 			lock(this)
 			{
@@ -127,7 +127,7 @@ namespace NHibernate.Shards.Threading
 		/// starting the thread causes the object's run method to be called in that 
 		/// separately executing thread.
 		/// </summary>
-		public void Run()
+		public virtual void Run()
 		{
 			lock(this)
 			{

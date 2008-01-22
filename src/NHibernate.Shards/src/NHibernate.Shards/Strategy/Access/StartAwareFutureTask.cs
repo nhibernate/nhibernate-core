@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using log4net;
 using NHibernate.Shards.Threading;
 
 namespace NHibernate.Shards.Strategy.Access
@@ -23,14 +25,67 @@ namespace NHibernate.Shards.Strategy.Access
 	/// The cancelled flag is set to true, so we return right away.
 	/// cancel() returns the result of super.cancel() because runCalled is guaranteed to be false.
 	/// </summary>
-	public class StartAwareFutureTask : FutureTask<object>
+	public class StartAwareFutureTask<T> : FutureTask<T>
 	{
 		private readonly int id;
 
-		public StartAwareFutureTask(ICallable<object> callable, int id)
+		private readonly ILog log = LogManager.GetLogger(typeof(StartAwareFutureTask<T>));
+
+		private bool cancelled;
+
+		private bool runCalled;
+
+		public StartAwareFutureTask(ICallable<T> callable, int id)
 			: base(callable)
 		{
 			this.id = id;
+		}
+
+		public int Id
+		{
+			get { return id; }
+		}
+
+		public override void Run()
+		{
+			log.DebugFormat("Task {0}: Run invoked", Id);
+			lock(this)
+			{
+				if (cancelled)
+				{
+					log.DebugFormat("Task {0}: Task will not run.", Id);
+					return;
+				}
+				runCalled = true;
+			}
+			log.DebugFormat("Task {0}: Task will run.", Id);
+			base.Run();
+		}
+
+		[MethodImpl(MethodImplOptions.Synchronized)] //Equivalent to syncronized method in Java
+		public override bool Cancel(bool mayInterruptIfRunning)
+		{
+			if (runCalled)
+			{
+				/* If run has already been called we can't call super. That's because
+				super.cancel might be called in between the time we leave the
+				synchronization block in Run() and the time we call base.Run().
+				base.Run() checks the state of the FutureTask before actuall invoking
+				the inner task, and if that check sees that this task is cancelled it
+				won't run.  That leaves us in a position where a task actually has
+				been cancelled but cancel returns true, so we're left with a counter
+				that never gets decremented and everything hangs. */
+				return false;
+			}
+			bool result = superCancel(mayInterruptIfRunning);
+			cancelled = true;
+			log.DebugFormat("Task {0}: Task cancelled.", Id);
+			return result;
+		}
+
+		protected virtual bool superCancel(bool mayInterruptIfRunning)
+		{
+			return base.Cancel(mayInterruptIfRunning);
 		}
 	}
 }
