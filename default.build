@@ -38,6 +38,7 @@
 	<property name="with.jet" value="${not with.core.only}" overwrite="false" />
 	<property name="with.examples" value="${not with.core.only}" overwrite="false" />
 	<property name="with.validator" value="${not with.core.only}" overwrite="false" />
+	<property name="with.shards" value="${not with.core.only}" overwrite="false" />
 	
 	<fileset id="buildfiles.all" basedir="src">
 		<!-- Files have to be in dependency order -->
@@ -71,6 +72,8 @@
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" if="${with.sql.types and not skip.tests}"/>
 		<include name="NHibernate.Validator/src/NHibernate.Validator/NHibernate.Validator.build" if="${with.validator}" />
 		<include name="NHibernate.Validator/src/NHibernate.Validator.Tests/NHibernate.Validator.Tests.build" if="${with.validator and not skip.tests}"/>
+		<include name="NHibernate.Shards/src/NHibernate.Shards/NHibernate.Shards.build" if="${with.shards}" />
+		<include name="NHibernate.Shards/src/NHibernate.Shards.Test/NHibernate.Shards.Test.build" if="${with.shards and not skip.tests}"/>
 	</fileset>
 
 	<fileset id="buildfiles.tests" basedir="src">
@@ -85,6 +88,7 @@
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
 		<include name="NHibernate.Validator/src/NHibernate.Validator.Tests/NHibernate.Validator.Tests.build" />
+		<include name="NHibernate.Shards/src/NHibernate.Shards.Test/NHibernate.Shards.Test.build" />
 	</fileset>
 
 	<target name="init" depends="common.init"
