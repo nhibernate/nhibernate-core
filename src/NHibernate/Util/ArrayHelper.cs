@@ -209,7 +209,8 @@ namespace NHibernate.Util
 		{
 			foreach (KeyValuePair<TKey, TValue> de in from)
 			{
-				to.Add(de.Key, de.Value);
+				// we want to override the values from to if they exists
+				to[de.Key] = de.Value;
 			}
 		}
 
