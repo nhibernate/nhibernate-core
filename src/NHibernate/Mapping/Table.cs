@@ -468,7 +468,7 @@ namespace NHibernate.Mapping
 
 				if(string.IsNullOrEmpty(col.Comment)==false)
 				{
-					buf.Append(dialect.getColumnComment(col.Comment));
+					buf.Append(dialect.GetColumnComment(col.Comment));
 				}
 			}
 			if (HasPrimaryKey)

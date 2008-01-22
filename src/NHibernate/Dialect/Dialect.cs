@@ -659,7 +659,7 @@ namespace NHibernate.Dialect
 			return string.Empty;
 		}
 
-		public virtual string getColumnComment(string comment)
+		public virtual string GetColumnComment(string comment)
 		{
 			return string.Empty;
 		}
