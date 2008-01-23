@@ -24,7 +24,14 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object Get(IDataReader rs, int index)
 		{
-			return new Guid(Convert.ToString(rs[index]));
+            if (rs.GetFieldType(index) == typeof(Guid))
+            {
+                return rs.GetGuid(index);
+            }
+            else
+            {
+                return new Guid(Convert.ToString(rs[index]));
+            }
 		}
 
 		/// <summary>
@@ -35,7 +42,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object Get(IDataReader rs, string name)
 		{
-			return new Guid(Convert.ToString(rs[name]));
+		    return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary></summary>

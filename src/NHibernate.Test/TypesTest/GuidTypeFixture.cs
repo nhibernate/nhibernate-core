@@ -1,4 +1,6 @@
 using System;
+using System.Data;
+using System.Diagnostics;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -86,5 +88,27 @@ namespace NHibernate.Test.TypesTest
 				s.Flush();
 			}
 		}
+
+	    [Test]
+	    public void GetGuidWorksWhenUnderlyingTypeIsRepresentedByString()
+	    {
+            GuidType type = (GuidType)NHibernateUtil.Guid;
+
+	        Guid value = Guid.NewGuid();
+            DataTable data = new DataTable("test");
+            data.Columns.Add("guid", typeof(Guid));
+            data.Columns.Add("varchar", typeof(string));
+            DataRow row = data.NewRow();
+            row["guid"] = value;
+            row["varchar"] = value.ToString();
+            data.Rows.Add(row);
+            IDataReader reader = data.CreateDataReader();
+            reader.Read();
+
+            Assert.AreEqual(value, type.Get(reader, "guid"));
+            Assert.AreEqual(value, type.Get(reader, 0));
+            Assert.AreEqual(value, type.Get(reader, "varchar"));
+            Assert.AreEqual(value, type.Get(reader, 1));
+	    }
 	}
 }
