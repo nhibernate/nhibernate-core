@@ -553,6 +553,7 @@
     <Compile Include="ReflectionOptimizerTest\LcgFixture.cs" />
     <Compile Include="SchemaUpdate\MigrationFixture.cs" />
     <Compile Include="SchemaUpdate\Version.cs" />
+    <Compile Include="SecondLevelCacheTest\AnotherItem.cs" />
     <Compile Include="SecondLevelCacheTest\Item.cs" />
     <Compile Include="SecondLevelCacheTest\SecondLevelCacheTest.cs" />
     <Compile Include="Assertions\HaveSerializableAttributeAsserter.cs" />
@@ -1112,6 +1113,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\LoadingNullEntityInSet\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

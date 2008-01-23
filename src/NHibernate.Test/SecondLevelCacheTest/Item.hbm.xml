@@ -17,4 +17,12 @@
 			<one-to-many class="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test"/>
 		</bag>
 	</class>
+
+	<class name="NHibernate.Test.SecondLevelCacheTests.AnotherItem, NHibernate.Test">
+		<cache usage="read-write"/>
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+		<property name="Name"/>
+	</class>
 </hibernate-mapping>

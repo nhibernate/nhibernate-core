@@ -5,6 +5,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.SecondLevelCacheTests
 {
+	using System.Data;
+	using Expressions;
+
 	[TestFixture]
 	public class SecondLevelCacheTest : TestCase
 	{
@@ -15,7 +18,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 		protected override IList Mappings
 		{
-			get { return new string[] {"SecondLevelCacheTest.Item.hbm.xml"}; }
+			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()
@@ -25,6 +28,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			sessions = cfg.BuildSessionFactory();
 
 			using (ISession session = OpenSession())
+			using(ITransaction tx = session.BeginTransaction())
 			{
 				Item item = new Item();
 				item.Id = 1;
@@ -37,7 +41,15 @@ namespace NHibernate.Test.SecondLevelCacheTests
 					session.Save(child);
 					item.Children.Add(child);
 				}
-				session.Flush();
+
+				for (int i = 0; i < 5; i++)
+				{
+					AnotherItem obj = new AnotherItem("Item #" + i);
+					obj.Id = i+1;
+					session.Save(obj);
+				}
+
+				tx.Commit();
 			}
 
 			sessions.Evict(typeof(Item));
@@ -49,6 +61,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession session = OpenSession())
 			{
 				session.Delete("from Item"); //cleaning up
+				session.Delete("from AnotherItem"); //cleaning up
 				session.Flush();
 			}
 		}
@@ -58,7 +71,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item one = (Item) session.Load(typeof(Item), 1);
+				Item one = (Item)session.Load(typeof(Item), 1);
 				IList results = session.CreateQuery("from Item item where item.Parent = :parent")
 					.SetEntity("parent", one)
 					.SetCacheable(true).List();
@@ -71,7 +84,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 			using (ISession session = OpenSession())
 			{
-				Item two = (Item) session.Load(typeof(Item), 2);
+				Item two = (Item)session.Load(typeof(Item), 2);
 				IList results = session.CreateQuery("from Item item where item.Parent = :parent")
 					.SetEntity("parent", two)
 					.SetCacheable(true).List();
@@ -84,14 +97,14 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item) session.Load(typeof(Item), 1);
+				Item item = (Item)session.Load(typeof(Item), 1);
 				Assert.IsTrue(item.Children.Count == 4); // just force it into the second level cache here
 			}
 			int childId = -1;
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item) session.Load(typeof(Item), 1);
-				Item child = (Item) item.Children[0];
+				Item item = (Item)session.Load(typeof(Item), 1);
+				Item child = (Item)item.Children[0];
 				childId = child.Id;
 				session.Delete(child);
 				item.Children.Remove(child);
@@ -100,7 +113,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item) session.Load(typeof(Item), 1);
+				Item item = (Item)session.Load(typeof(Item), 1);
 				Assert.AreEqual(3, item.Children.Count);
 				foreach (Item child in item.Children)
 				{
@@ -115,7 +128,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item) session.Load(typeof(Item), 1);
+				Item item = (Item)session.Load(typeof(Item), 1);
 				Item child = new Item();
 				child.Id = 6;
 				item.Children.Add(child);
@@ -125,9 +138,121 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item) session.Load(typeof(Item), 1);
+				Item item = (Item)session.Load(typeof(Item), 1);
 				int count = item.Children.Count;
 				Assert.AreEqual(5, count);
+			}
+		}
+
+		[Test]
+		public void SecondLevelCacheWithCriteriaQueries()
+		{
+			using (ISession session = OpenSession())
+			{
+				IList list = session.CreateCriteria(typeof(AnotherItem))
+					.Add(Expression.Gt("Id", 2))
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(3, list.Count);
+
+				using (IDbCommand cmd = session.Connection.CreateCommand())
+				{
+					cmd.CommandText = "DELETE FROM AnotherItem";
+					cmd.ExecuteNonQuery();
+				}
+			}
+
+			using (ISession session = OpenSession())
+			{
+				//should bring from cache
+				IList list = session.CreateCriteria(typeof(AnotherItem))
+					.Add(Expression.Gt("Id", 2))
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(3, list.Count);
+			}
+		}
+
+		[Test]
+		public void SecondLevelCacheWithCriteriaQueriesForItemWithCollections()
+		{
+			using (ISession session = OpenSession())
+			{
+				IList list = session.CreateCriteria(typeof(Item))
+					.Add(Expression.Gt("Id", 2))
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(3, list.Count);
+
+				using (IDbCommand cmd = session.Connection.CreateCommand())
+				{
+					cmd.CommandText = "DELETE FROM Item";
+					cmd.ExecuteNonQuery();
+				}
+			}
+
+			using (ISession session = OpenSession())
+			{
+				//should bring from cache
+				IList list = session.CreateCriteria(typeof(Item))
+					.Add(Expression.Gt("Id", 2))
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(3, list.Count);
+			}
+		}
+
+		[Test]
+		public void SecondLevelCacheWithHqlQueriesForItemWithCollections()
+		{
+			using (ISession session = OpenSession())
+			{
+				IList list = session.CreateQuery("from Item i where i.Id > 2")
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(3, list.Count);
+
+				using (IDbCommand cmd = session.Connection.CreateCommand())
+				{
+					cmd.CommandText = "DELETE FROM Item";
+					cmd.ExecuteNonQuery();
+				}
+			}
+
+			using (ISession session = OpenSession())
+			{
+				//should bring from cache
+				IList list = session.CreateQuery("from Item i where i.Id > 2")
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(3, list.Count);
+			}
+		}
+
+		[Test]
+		public void SecondLevelCacheWithHqlQueries()
+		{
+			using (ISession session = OpenSession())
+			{
+				IList list = session.CreateQuery("from AnotherItem i where i.Id > 2")
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(3, list.Count);
+
+				using (IDbCommand cmd = session.Connection.CreateCommand())
+				{
+					cmd.CommandText = "DELETE FROM AnotherItem";
+					cmd.ExecuteNonQuery();
+				}
+			}
+
+			using (ISession session = OpenSession())
+			{
+				//should bring from cache
+				IList list = session.CreateQuery("from AnotherItem i where i.Id > 2")
+					.SetCacheable(true)
+					.List();
+				Assert.AreEqual(3, list.Count);
 			}
 		}
 	}
