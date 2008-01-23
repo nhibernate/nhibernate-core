@@ -90,7 +90,7 @@ namespace NHibernate.Action
 		}
 
 		/// <summary> Called before executing any actions</summary>
-		public void BeforeExecutions()
+		public virtual void BeforeExecutions()
 		{
 			// we need to obtain the lock before any actions are
 			// executed, since this may be an inverse="true"
@@ -120,7 +120,7 @@ namespace NHibernate.Action
 		}
 
 		/// <summary> Called after the transaction completes</summary>
-		public void AfterTransactionCompletion(bool success)
+		public virtual void AfterTransactionCompletion(bool success)
 		{
 			if (persister.HasCache)
 			{
@@ -130,6 +130,10 @@ namespace NHibernate.Action
 		}
 
 		#endregion
+
+		public ISoftLock Lock {
+			get { return this.softLock; }
+		}
 
 		protected internal void Evict()
 		{
