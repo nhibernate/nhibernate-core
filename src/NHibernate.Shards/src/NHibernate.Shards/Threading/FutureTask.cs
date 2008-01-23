@@ -7,7 +7,6 @@ namespace NHibernate.Shards.Threading
 {
 	/// <summary>
 	/// A cancellable asynchronous computation.
-	/// TODO: Must be tested.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public class FutureTask<T> : IRunnableFuture<T>
@@ -59,11 +58,12 @@ namespace NHibernate.Shards.Threading
 		///  Attempts to cancel execution of this task.
 		/// </summary>
 		/// <param name="mayInterruptIfRunning"></param>
+		/// <returns>false if the task was canceled or 
+		/// ran before the call on this method. true in otherwise.</returns>
 		public virtual bool Cancel(bool mayInterruptIfRunning)
 		{
 			lock(this)
 			{
-				Debug.WriteLine("Cancel");
 				if (RanOrCancelled(state))
 					return false;
 
@@ -131,7 +131,6 @@ namespace NHibernate.Shards.Threading
 		{
 			lock(this)
 			{
-				Debug.WriteLine("Run");
 				if (state != 0) return;
 
 				state = StateTask.Running;
@@ -164,7 +163,6 @@ namespace NHibernate.Shards.Threading
 		{
 			lock(this)
 			{
-				Debug.WriteLine("Set");
 				if (state == StateTask.Ran)
 					return;
 
@@ -185,7 +183,6 @@ namespace NHibernate.Shards.Threading
 		{
 			lock(this)
 			{
-				Debug.WriteLine("Set Exception");
 				if (state == StateTask.Ran)
 					return;
 

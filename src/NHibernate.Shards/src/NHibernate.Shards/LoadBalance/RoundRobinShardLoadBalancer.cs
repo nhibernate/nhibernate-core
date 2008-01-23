@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using NHibernate.Shards.Util;
+using NHibernate.Shards.Threading;
 
 namespace NHibernate.Shards.LoadBalance
 {

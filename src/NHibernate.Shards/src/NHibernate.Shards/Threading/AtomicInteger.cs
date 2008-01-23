@@ -1,4 +1,4 @@
-namespace NHibernate.Shards.Util
+namespace NHibernate.Shards.Threading
 {
 	/// <summary>
 	/// An <c>int</c> value that may be updated atomically

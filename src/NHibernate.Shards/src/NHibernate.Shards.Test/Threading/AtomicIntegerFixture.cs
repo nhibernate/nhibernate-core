@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using NHibernate.Shards.Util;
+using NHibernate.Shards.Threading;
 using NUnit.Framework;
 
 namespace NHibernate.Shards.Test.Threading
