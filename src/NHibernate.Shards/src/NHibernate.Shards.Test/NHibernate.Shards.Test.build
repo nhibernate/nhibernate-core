@@ -16,11 +16,13 @@
 			<include name="System.XML.dll" />
 			<include name="System.web.dll" />
 			<include name="NHibernate.Shards.dll" />
+			<include name="Rhino.Mocks.dll" />
 			<include name="NHibernate.Test.dll" />
 			<include name="Lucene.Net.dll" />
 			<include name="NHibernate.dll" />
 			<include name="nunit.framework.dll" />
 			<include name="log4net.dll" />
+			<include name="Iesi.Collections.dll" />
 		</assemblyfileset>
 		
 		<resourcefileset id="project.resources" prefix="NHibernate.Shards.Test" dynamicprefix="true">

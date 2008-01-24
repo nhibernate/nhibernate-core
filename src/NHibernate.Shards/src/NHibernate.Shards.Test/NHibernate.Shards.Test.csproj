@@ -52,6 +52,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\net\2.0\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Rhino.Mocks, Version=3.3.0.906, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\lib\net\2.0\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -68,6 +72,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Id\ShardedUUIDGeneratorFixture.cs" />
+    <Compile Include="Mock\TestFixtureBaseWithMock.cs" />
+    <Compile Include="Strategy\Access\ParallelShardAccessStrategyFixture.cs" />
+    <Compile Include="Strategy\Access\ParallelShardOperationCallableFixture.cs" />
+    <Compile Include="Strategy\Exit\ExitStrategyDefaultMock.cs" />
     <Compile Include="Threading\AtomicIntegerFixture.cs" />
     <Compile Include="Threading\CountDownLatchFixture.cs" />
     <Compile Include="Threading\FooCallable1.cs" />
@@ -78,6 +86,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Strategy\Resolution\" />
+    <Folder Include="Strategy\Selection\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -7,11 +7,11 @@ namespace NHibernate.Shards
 	public interface IShardOperation<T>
 	{
 		/// <summary>
-		/// The shard to execute against
+		/// The shard to Execute against
 		/// </summary>
 		/// <param name="shard"></param>
 		/// <returns>the result of the operation</returns>
-		T execute(IShard shard);
+		T Execute(IShard shard);
 
 		/// <summary>
 		/// The name of the operation (useful for logging and debugging)

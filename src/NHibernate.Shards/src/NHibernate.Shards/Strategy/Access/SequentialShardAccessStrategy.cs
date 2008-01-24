@@ -15,7 +15,7 @@ namespace NHibernate.Shards.Strategy.Access
 		{
 			foreach(IShard shard in GetNextOrderingOfShards(shards))
 			{
-				if (exitStrategy.AddResult(operation.execute(shard), shard))
+				if (exitStrategy.AddResult(operation.Execute(shard), shard))
 				{
 					log.DebugFormat("Short-circuiting operation {0} after execution against shard {1}",
 					              operation.OperationName, shard);

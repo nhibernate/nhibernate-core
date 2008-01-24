@@ -12,7 +12,7 @@ namespace NHibernate.Shards.Strategy.Access
 	/// Run() invoked in T1
 	/// The task hasn't been cancelled, so runCalled is set
 	/// to true.  This happens in a synchronized block so Cancel() cannot
-	/// execute while the flag is being set.  Once we enter the synchronized
+	/// Execute while the flag is being set.  Once we enter the synchronized
 	/// block and get past the cancelled check we are guaranteed to run, and
 	/// if Cancel() is invoked at any point afterwards runCalled will be true, so
 	/// Cancel() will be unable to return anything other than false, which is what

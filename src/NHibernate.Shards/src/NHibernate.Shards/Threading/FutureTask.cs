@@ -35,7 +35,7 @@ namespace NHibernate.Shards.Threading
 		/// <summary>
 		/// Returns true if this task was cancelled before it completed normally.
 		/// </summary>
-		public bool IsCancelled
+		public virtual bool IsCancelled
 		{
 			get { return state == StateTask.Canceled ? true : false; }
 		}
@@ -43,7 +43,7 @@ namespace NHibernate.Shards.Threading
 		/// <summary>
 		/// Returns true if this task completed.
 		/// </summary>
-		public bool IsDone
+		public virtual bool IsDone
 		{
 			get
 			{
@@ -92,7 +92,7 @@ namespace NHibernate.Shards.Threading
 		/// Waits if necessary for the computation to complete, and then retrieves its result.
 		/// </summary>
 		/// <returns></returns>
-		public T Get()
+		public virtual T Get()
 		{
 			lock(this)
 			{
@@ -117,7 +117,7 @@ namespace NHibernate.Shards.Threading
 		/// </summary>
 		/// <param name="timeout"></param>
 		/// <returns></returns>
-		public T Get(TimeSpan timeout)
+		public virtual T Get(TimeSpan timeout)
 		{
 			throw new NotImplementedException();
 		}
@@ -148,7 +148,7 @@ namespace NHibernate.Shards.Threading
 
 		#endregion
 
-		private void releaseShared()
+		protected virtual void releaseShared()
 		{
 			this.runner = null;
 			Monitor.PulseAll(this);
@@ -159,7 +159,7 @@ namespace NHibernate.Shards.Threading
 		/// has already been set or has been cancelled.
 		/// </summary>
 		/// <param name="obj"></param>
-		protected void Set(T obj)
+		protected virtual void Set(T obj)
 		{
 			lock(this)
 			{
@@ -179,7 +179,7 @@ namespace NHibernate.Shards.Threading
 			Done();
 		}
 
-		private void SetException(System.Exception ex)
+		protected virtual void SetException(System.Exception ex)
 		{
 			lock(this)
 			{

@@ -56,12 +56,12 @@ namespace NHibernate.Shards.Strategy.Access
 			try
 			{
 				WaitForStartSignal();
-				log.DebugFormat("Starting execution of %s against shard %s", operation.OperationName, shard);
+				log.DebugFormat("Starting execution of {0} against shard {1}", operation.OperationName, shard);
 
 				///If addResult() returns true it means there is no more work to be
 				///performed. Cancel all the outstanding tasks.
 
-				if (exitStrategy.AddResult(operation.execute(shard), shard))
+				if (exitStrategy.AddResult(operation.Execute(shard), shard))
 				{
 					log.DebugFormat("Short-circuiting execution of {0} on other threads after execution against shard {1}",
 						operation.OperationName, shard);
