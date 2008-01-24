@@ -184,6 +184,9 @@
             of persistent classes and the mapping of properties (to columns and
             foreign key relationships to other entities) to database tables.
         </para>
+        <para>
+			Please note that the Cat.hbm.xml should be set to an embedded resource.
+        </para>
 
         <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
