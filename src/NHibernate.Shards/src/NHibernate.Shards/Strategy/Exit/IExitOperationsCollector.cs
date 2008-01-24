@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 
@@ -13,7 +14,7 @@ namespace NHibernate.Shards.Strategy.Exit
 	/// </summary>
 	public interface IExitOperationsCollector
 	{
-		IList<object> apply(IList<object> result);
+		IList Apply(IList result);
 
 		void SetSessionFactory(ISessionFactoryImplementor sessionFactoryImplementor);
 	}

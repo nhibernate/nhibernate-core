@@ -14,7 +14,7 @@ namespace NHibernate.Shards.Query
 		/// <summary>
 		/// Apply the event
 		/// </summary>
-		/// <param name="query">the Query to apply the event to</param>
+		/// <param name="query">the Query to Apply the event to</param>
 		void OnEvent(IQuery query);
 	}
 }

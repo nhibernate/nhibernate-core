@@ -46,7 +46,7 @@ namespace NHibernate.Shards
 
 		/// <summary>
 		/// establish a Session using the SessionFactoryImplementor associated
-		/// with this Shard and apply any OpenSessionEvents that have been added.  If
+		/// with this Shard and Apply any OpenSessionEvents that have been added.  If
 		/// the Session has already been established just return it.
 		/// </summary>
 		/// <returns></returns>
