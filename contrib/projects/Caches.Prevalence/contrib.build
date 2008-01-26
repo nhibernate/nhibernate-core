@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+<project 
+	name="NHibernate.Caches.Prevalence" 
+	default="build"
+	xmlns="http://nant.sf.net/release/0.85/nant.xsd"
+>
+	<property name="nh.root.dir" value="${path::get-full-path('../../..')}"/>
+	<property name="project.dir" value="${path::get-full-path('.')}"/>
+
+	<include buildfile="${nh.root.dir}/contrib/build-common/common-project.xml" />
+
+	<fileset id="project.buildfiles" basedir="src">
+		<include name="NHibernate.Caches.Prevalence/NHibernate.Caches.Prevalence.build" />
+		<include name="NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.build" />
+	</fileset>
+
+	<assemblyfileset id="project.references">
+		<include name="${project.dir}/lib/${framework.family}/*.dll"/>
+		<include name="${nh.lib.dir}/*.dll"/>
+		<include name="${nh.lib.family.dir}/*.dll"/>
+		<include name="${nh.lib.framework.dir}/*.dll"/>
+	</assemblyfileset>
+
+	<target name="init">
+		<mkdir dir="${output.dir}"/>
+	</target>
+	
+	<target name="build">
+		<nant target="build">
+			<buildfiles refid="project.buildfiles"/>
+		</nant>
+	</target>
+
+	<target name="clean">
+		<delete dir="${output.dir}"/>
+	</target>
+
+	<target name="test" depends="build">
+		<property name="temp.test.dir" value="tmp_test"/>
+		
+		<copy todir="${temp.test.dir}" flatten="true">
+			<fileset refid="project.references"/>
+		</copy>
+		<copy todir="${temp.test.dir}" flatten="true">
+			<fileset basedir="${output.dir}">
+				<include name="**"/>
+			</fileset>
+		</copy>
+		
+		<nunit2>
+			<formatter type="Xml" 
+					   usefile="true" 
+					   extension=".xml"
+					   outputdir="${contrib.nunit-results.dir}" 
+			/>
+			<test>
+				<assemblies basedir="${temp.test.dir}" >
+					<include name="NHibernate.Caches.Prevalence.Tests.dll"/>
+				</assemblies>
+			</test>
+		</nunit2>
+
+		<delete dir="${temp.test.dir}"/>
+	</target>
+
+	<target name="build-doc">
+		<!-- TODO: -->
+	</target>
+	
+	<target name="copy-dist" description="Copy files for distribution">
+		<copy todir="${contrib.dist.bin.dir}/NHibernate.Caches.Prevalence">
+			<fileset basedir="${output.dir}">
+				<include name="NHibernate.Caches.Prevalence.dll"/>
+				<include name="NHibernate.Caches.Prevalence.Tests.dll"/>
+			</fileset>
+		</copy>
+
+		<copy todir="${contrib.dist.bin.dir}/NHibernate.Caches.Prevalence/lib">
+			<fileset basedir="lib">
+				<include name="**"/>
+			</fileset>
+		</copy>
+	</target>
+</project>

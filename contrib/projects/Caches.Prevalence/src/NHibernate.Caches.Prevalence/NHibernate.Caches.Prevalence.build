@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<project
+		name="NHibernate.Caches.Prevalence"
+		default="build"
+		description="NHibernate pluggable cache provider using Bamboo.Prevalence engine"
+		xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+	<property name="nh.root.dir" value="${path::get-full-path('../../../../..')}" />
+	<property name="project.dir" value="${path::get-full-path('../..')}"/>
+
+	<include buildfile="${nh.root.dir}/contrib/build-common/common-csproj.xml" />
+	
+	<target name="init" depends="common.init">
+		<property name="assembly.description" value="Cache provider for NHibernate ${nh.version} using Bamboo.Prevalence engine." />
+		<property name="assembly.is-cls-compliant" value="true" />
+		
+		<assemblyfileset id="csproj.references">
+			<include name="${project.dir}/lib/${framework.family}/*.dll"/>
+			<include name="${nh.lib.dir}/*.dll"/>
+			<include name="${nh.lib.family.dir}/*.dll"/>
+			<include name="${nh.lib.framework.dir}/*.dll"/>
+		</assemblyfileset>
+	</target>
+
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
+	<target name="build" depends="init generate-assemblyinfo common.compile-dll" />
+
+</project>

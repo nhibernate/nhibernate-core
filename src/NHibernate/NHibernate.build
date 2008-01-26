@@ -39,6 +39,8 @@
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 
 	<target name="build" description="Build NHibernate"
-		depends="generate-assemblyinfo common.compile-dll" />
+		depends="generate-assemblyinfo common.compile-dll">
+		<copy file="${bin.dir}/NHibernate.dll" tofile="${root.dir}/${lib.framework.dir}/NHibernate.dll"/>
+	</target>
 
 </project>

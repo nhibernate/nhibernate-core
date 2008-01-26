@@ -2,6 +2,7 @@
 <project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 
 	<description>
+		<![CDATA[
 		This file contains common tasks tailored specifically for the NHibernate
 		build process. The goal was to define all the actions in this file, so
 		that actual project build files only have to configure a few variables
@@ -9,10 +10,10 @@
 
 		Usage
 
-		&lt;property name="root.dir" value="..\.." /&gt;
-		&lt;include buildfile="${root.dir}/build-common/common-project.xml" /&gt;
+		<property name="root.dir" value="..\.." />;
+		<include buildfile="${root.dir}/build-common/common-project.xml" />;
 
-		These lines should be placed at the top level under the &lt;project&gt;
+		These lines should be placed at the top level under the <project>
 		element. Property root.dir defines a relative path to the root of the
 		distribution, that is, NHibernate directory.
 
@@ -43,7 +44,7 @@
 		with id="project.references" and resource fileset with id="project.resources"
 		to compile the project. The source and resource filesets are optional and
 		default to **/*.cs files and no files respectively.
-
+		]]>
 	</description>
 
 	<include buildfile="common.xml" />
