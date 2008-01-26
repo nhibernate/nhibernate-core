@@ -1,0 +1,104 @@
+<?xml version="1.0" ?>
+<project name="NHibernate.Contrib" 
+		 default="usage" 
+		 xmlns="http://nant.sf.net/release/0.85/nant.xsd"
+>
+	
+	<property name="nh.root.dir" value="${path::get-full-path('..')}"/>
+	<include buildfile="build-common/common.xml"/>
+	
+	<fileset id="contrib.projects.buildfiles" basedir="projects">
+		<include name="*/contrib.build"/>
+	</fileset>
+
+	<property name="contrib.dist.bin.file" value="${contrib.dist.dir}/NHibernate.Contrib.zip"/>
+	<property name="contrib.dist.src.file" value="${contrib.dist.dir}/NHibernate.Contrib-src.zip"/>
+	<property name="contrib.dist.doc.file" value="${contrib.dist.dir}/NHibernate.Contrib-doc.zip"/>
+
+	<target name="usage">
+		<echo>
+			<![CDATA[
+This NAnt build file can be invoked on the following targets:
+
+    build
+        Build all the subprojects in Contrib
+    test
+        Run tests for all subprojects
+    docs
+        Build documentation
+    package
+        Prepare the distribution packages: binaries, 
+        source, and documentation
+    clean
+        Remove all artifacts created by this build script,
+        except any distributable packages
+    cleanall 
+        Remove all artifacts created by this build script, 
+        including any distributable packages
+		
+Customize your build with the following nant options:
+
+    -D:project.config=release
+        Build without debug information
+    -t:net-3.5
+        Target the .NET 3.5 framework
+			]]>
+		</echo>
+	</target>
+	
+	<target name="build">
+		<nant target="build copy-dist">
+			<buildfiles refid="contrib.projects.buildfiles"/>
+		</nant>
+	</target>
+
+	<target name="test">
+		<nant target="build test">
+			<buildfiles refid="contrib.projects.buildfiles"/>
+		</nant>
+	</target>
+
+	<target name="docs">
+		<!-- TODO: -->
+	</target>
+	
+	<target name="clean">
+		<nant target="clean">
+			<buildfiles refid="contrib.projects.buildfiles"/>
+		</nant>
+
+		<delete dir="${contrib.build.dir}"/>
+	</target>
+
+	<target name="cleanall" depends="clean">
+		<delete dir="${contrib.dist.dir}"/>
+	</target>
+	
+	<target name="package" depends="build">
+		<nant target="build copy-dist">
+			<buildfiles refid="contrib.projects.buildfiles"/>
+		</nant>
+
+		<nant target="build-doc">
+			<buildfiles refid="contrib.projects.buildfiles"/>
+		</nant>
+
+		<zip zipfile="${contrib.dist.bin.file}" verbose="true" if="${directory::exists(contrib.dist.bin.dir)}">
+			<fileset basedir="${contrib.dist.bin.dir}">
+				<include name="**"/>
+			</fileset>
+		</zip>
+
+		<zip zipfile="${contrib.dist.src.file}" verbose="true" if="${directory::exists(contrib.dist.src.dir)}">
+			<fileset basedir="${contrib.dist.src.dir}">
+				<include name="**"/>
+			</fileset>
+		</zip>
+
+		<zip zipfile="${contrib.dist.doc.file}" verbose="true" if="${directory::exists(contrib.dist.doc.dir)}">
+			<fileset basedir="${contrib.dist.doc.dir}">
+				<include name="**"/>
+			</fileset>
+		</zip>
+	</target>
+</project>

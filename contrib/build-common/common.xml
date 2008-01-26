@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<project xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+	<!-- Include some properties of the NHibernate Core build -->
+	<include buildfile="nh-build-properties.xml"/>
+
+	<!-- TODO: Add checks for required properties -->
+
+	<!-- 
+		Use this to determine if the key file NHibernate.snk should be used to 
+		sign the assemblies. Defaults to true since private key is present
+		in CVS.
+	-->
+	<property name="sign" value="true" overwrite="false" />
+
+	<!-- The directory in which the contributed projects are kept -->
+	<property name="contrib.dir" value="${nh.root.dir}/contrib"/>
+
+	<!-- Under this directory, each sub-project has its own folder -->
+	<property name="contrib.projects.dir" value="${contrib.dir}/projects"/>
+
+	<!-- Under this directory -->
+	<property name="contrib.build.dir" value="${contrib.dir}/build"/>
+
+	<!-- 
+	Files to be distributed by a sub-project are to be copied here.
+	This directory will be zipped and distributed.
+	-->
+	<property name="contrib.dist.dir" value="${contrib.dir}/dist"/>
+	<property name="contrib.dist.bin.dir" value="${contrib.dist.dir}/bin"/>
+	<property name="contrib.dist.src.dir" value="${contrib.dist.dir}/src"/>
+	<property name="contrib.dist.doc.dir" value="${contrib.dist.dir}/doc"/>
+
+	<property name="contrib.nunit-results.dir" value="${contrib.build.dir}/nunit-results"/>
+
+	<property name="contrib.xmldoc.dir" value="${contrib.build.dir}/xmldoc"/>
+	
+	<!-- debug|release -->
+	<property name="build.defines" value="" />
+
+	<!-- platform specific properties. These are the defaults -->
+	<property name="current.build.defines" value="${build.defines}" />
+
+	<!-- named project configurations -->
+	<target name="set-debug-project-configuration" description="Perform a 'debug' build">
+		<property name="build.debug" value="true" />
+		<property name="build.name" value="NHibernate.Contrib-${nh.version}-${project.config}" />
+	</target>
+
+	<target name="set-release-project-configuration" description="Perform a 'release' build">
+		<property name="build.debug" value="false" />
+		<property name="build.name" value="NHibernate.Contrib-${nh.version}" />
+	</target>
+
+	<target name="set-project-configuration">
+		<property name="project.config" value="debug" overwrite="false" />
+		<if test="${not(target::exists('set-' + project.config + '-project-configuration'))}">
+			<fail message="Unknown configuration: '${project.config}'" />
+		</if>
+
+		<call target="set-${project.config}-project-configuration" />
+	</target>
+
+	<target name="set-framework-configuration">
+		<if test="${not(target::exists('set-'+framework::get-target-framework()+'-framework-configuration'))}">
+			<fail message="The '${framework::get-target-framework()}' framework is not supported by this version of NHibernate." />
+		</if>
+		<call target="set-${framework::get-target-framework()}-framework-configuration" />
+	</target>
+
+	<target name="set-net-2.0-framework-configuration">
+		<property name="nant.settings.currentframework" value="net-2.0" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<property name="merge.targetplatform" value="v2" />
+	</target>
+
+	<target name="set-mono-1.0-framework-configuration">
+		<property name="nant.settings.currentframework" value="mono-1.0" />
+		<property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
+		<property name="link.sdkdoc.version" value="MsdnOnline" />
+	</target>
+
+	<target name="display-current-runtime">
+		<echo message="" />
+		<echo message="----------------------------------------------------------" />
+		<echo message=" ${framework::get-description(framework::get-target-framework())}" />
+		<echo message="----------------------------------------------------------" />
+		<echo message="" />
+		<echo message="framework : ${framework::get-target-framework()}" />
+		<echo message="description : ${framework::get-description(framework::get-target-framework())}" />
+		<echo message="sdk directory : ${framework::get-sdk-directory(framework::get-target-framework())}" />
+		<echo message="framework directory : ${framework::get-framework-directory(framework::get-target-framework())}" />
+		<echo message="assembly directory : ${framework::get-assembly-directory(framework::get-target-framework())}" />
+		<echo message="runtime engine : ${framework::get-runtime-engine(framework::get-target-framework())}" />
+		<echo message="" />
+	</target>
+
+	<target name="common.init"
+			depends="set-framework-configuration set-project-configuration"
+			description="Initializes build properties"
+	>
+		<fileset id="csproj.sources" failonempty="true">
+			<include name="**/*.cs" />
+		</fileset>
+		<resourcefileset id="csproj.resources" />
+	</target>
+	
+</project>

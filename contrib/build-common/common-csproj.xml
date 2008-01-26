@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<project xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+	<include buildfile="common-project.xml"/>
+
+	<!-- TODO: Add checks for required properties -->
+
+	<target name="common.compile-tests"
+			description="Compile NUnit tests and copy App.config file to the output directory, if it exists.">
+
+		<csc
+			target="library"
+			define="${current.build.defines}"
+			debug="${build.debug}"
+			output="${output.dir}/${project::get-name()}.dll"
+		>
+			<sources refid="csproj.sources" />
+			<references refid="csproj.references" />
+			<resources refid="csproj.resources" />
+		</csc>
+
+		<copy
+			file="App.config"
+			tofile="${output.dir}/${project::get-name()}.dll.config"
+			if="${file::exists('App.config')}"
+		/>
+
+	</target>
+
+	<target name="common.compile-dll">
+		<property name="xmldoc.file" value="${output.dir}/${project::get-name()}.xml"/>
+		
+		<csc
+			target="library"
+			define="${current.build.defines}"
+			debug="${build.debug}"
+			output="${output.dir}/${project::get-name()}.dll"
+			doc="${xmldoc.file}"
+		>
+			<nowarn>
+				<warning number="1591" />
+				<!-- No XML comment for publicly visible member -->
+			</nowarn>
+			<sources refid="csproj.sources" />
+			<references refid="csproj.references" />
+			<resources refid="csproj.resources" />
+		</csc>
+
+		<copy file="${xmldoc.file}" todir="${contrib.xmldoc.dir}"/>
+	</target>
+
+	<target name="common.set-assembly-attribute-values">
+		<property overwrite="false" name="assembly.is-cls-compliant" value="true" />
+		<property overwrite="false" name="assembly.allow-partially-trusted-callers" value="false" />
+		<property overwrite="false" name="assembly.description" value="" />
+		<property overwrite="false" name="assembly.product" value="${project::get-name()}" />
+		<property overwrite="false" name="assembly.company" value="${nh.company}" />
+		<property overwrite="false" name="assembly.title" value="${project::get-name()}" />
+		<property overwrite="false" name="assembly.version" value="${nh.version.numeric}" />
+		<property overwrite="false" name="assembly.version.informational" value="${nh.version.numeric}" />
+		<property overwrite="false" name="assembly.version.file" value="${nh.version.numeric}" />
+		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
+		<property overwrite="false" name="assembly.keyfile" value="${key.file}" />
+		<property overwrite="false" name="assembly.sign" value="${sign}" />
+	</target>
+
+	<target name="common.generate-assemblyinfo"
+			depends="common.init common.set-assembly-attribute-values"
+			description="Generate AssemblyInfo.cs using assembly.* properties."
+	>
+		<asminfo output="AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.CompilerServices" />
+				<import namespace="System.Security" if="${assembly.allow-partially-trusted-callers}" />
+			</imports>
+			<attributes>
+				<attribute type="CLSCompliantAttribute" value="${assembly.is-cls-compliant}" />
+				<attribute type="AssemblyTitleAttribute" value="${assembly.title}" />
+				<attribute type="AssemblyDescriptionAttribute" value="${assembly.description}" />
+				<attribute type="AssemblyCompanyAttribute" value="${assembly.company}" />
+				<attribute type="AssemblyProductAttribute" value="${assembly.product}" />
+				<attribute type="AssemblyCopyrightAttribute" value="${assembly.copyright}" />
+				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version.file}" />
+				<attribute type="AssemblyKeyFileAttribute" value="${assembly.keyfile}" if="${assembly.sign}"/>
+				<attribute type="AssemblyDelaySignAttribute" value="false" />
+
+				<!-- For some reason, NAnt doesn't detect that APTCA has a public no-argument constructor -->
+				<attribute asis="true" type="AllowPartiallyTrustedCallersAttribute" if="${assembly.allow-partially-trusted-callers}" />
+			</attributes>
+		</asminfo>
+	</target>
+
+
+</project>
