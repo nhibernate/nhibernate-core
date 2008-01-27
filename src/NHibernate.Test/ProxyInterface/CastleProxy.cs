@@ -10,5 +10,7 @@ namespace NHibernate.Test.ProxyInterface
 		int Id { get; set; }
 
 		string Name { get; set; }
+
+		void ThrowDeepException();
 	}
 }

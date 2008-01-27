@@ -4,6 +4,7 @@ using Castle.Core.Interceptor;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Proxy.Poco.Castle
 {
@@ -73,8 +74,8 @@ namespace NHibernate.Proxy.Poco.Castle
 			catch (TargetInvocationException tie)
 			{
 				// Propagate the inner exception so that the proxy throws the same exception as
-				// the real object would (though of course the stack trace will be probably lost).
-				throw tie.InnerException;
+				// the real object would 
+				throw ReflectHelper.UnwrapTargetInvocationException(tie);
 			}
 		}
 

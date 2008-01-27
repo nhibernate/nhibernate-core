@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.Serialization;
@@ -109,6 +110,42 @@ namespace NHibernate.Test.ProxyInterface
 
 			Assert.IsNotNull(s.Load(typeof(CastleProxyImpl), 5), "should be proxy - even though it doesn't exists in db");
 			s.Close();
+		}
+
+		[Test]
+		public void ExceptionStackTrace()
+		{
+			ISession s = OpenSession();
+			CastleProxy ap = new CastleProxyImpl();
+			ap.Id = 1;
+			ap.Name = "first proxy";
+			s.Save(ap);
+			s.Flush();
+			s.Close();
+
+			s = OpenSession();
+			ap = (CastleProxy) s.Load(typeof (CastleProxyImpl), ap.Id);
+			Assert.IsFalse(NHibernateUtil.IsInitialized(ap), "check we have a proxy");
+
+			try
+			{
+				ap.ThrowDeepException();
+				Assert.Fail("Exception not thrown");
+			}
+			catch (ArgumentException ae)
+			{
+				Assert.AreEqual("thrown from Level2", ae.Message);
+
+				string[] stackTraceLines = ae.StackTrace.Split('\n');
+				Assert.IsTrue(stackTraceLines[0].Contains("Level2"), "top of exception stack is Level2()");
+				Assert.IsTrue(stackTraceLines[1].Contains("Level1"), "next on exception stack is Level1()");
+			}
+			finally
+			{
+				s.Delete(ap);
+				s.Flush();
+				s.Close();
+			}
 		}
 	}
 }

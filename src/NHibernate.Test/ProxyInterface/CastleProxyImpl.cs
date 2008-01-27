@@ -11,6 +11,9 @@ namespace NHibernate.Test.ProxyInterface
 		private int _id;
 		private string _name;
 
+		private void Level1() { Level2(); }
+		private void Level2() { throw new ArgumentException("thrown from Level2"); }
+
 		#region CastleProxy Members
 
 		public int Id
@@ -23,6 +26,11 @@ namespace NHibernate.Test.ProxyInterface
 		{
 			get { return _name; }
 			set { _name = value; }
+		}
+
+		public void ThrowDeepException()
+		{
+			Level1();
 		}
 
 		#endregion

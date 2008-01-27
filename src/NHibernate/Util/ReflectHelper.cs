@@ -24,6 +24,9 @@ namespace NHibernate.Util
 
 		private static System.Type[] NoClasses = System.Type.EmptyTypes;
 
+		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
+			typeof (Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
+
 		/// <summary>
 		/// Determine if the specified <see cref="System.Type"/> overrides the
 		/// implementation of Equals from <see cref="Object"/>
@@ -427,6 +430,20 @@ namespace NHibernate.Util
 		public static bool IsFinalClass(System.Type type)
 		{
 			return type.IsSealed;
+		}
+
+		/// <summary>
+		/// Unwraps the supplied <see cref="System.Reflection.TargetInvocationException"/> 
+		/// and returns the inner exception preserving the stack trace.
+		/// </summary>
+		/// <param name="ex">
+		/// The <see cref="System.Reflection.TargetInvocationException"/> to unwrap.
+		/// </param>
+		/// <returns>The unwrapped exception.</returns>
+		public static Exception UnwrapTargetInvocationException(TargetInvocationException ex)
+		{
+			Exception_InternalPreserveStackTrace.Invoke(ex.InnerException, new Object[] {});
+			return ex.InnerException;
 		}
 	}
 }
