@@ -44,6 +44,8 @@
     <Compile Include="AssertTrueAttribute.cs" />
     <Compile Include="AssertTrueValidator.cs" />
     <Compile Include="Cfg\ValidatorConfiguration.cs" />
+    <Compile Include="DigitsAttribute.cs" />
+    <Compile Include="DigitsValidator.cs" />
     <Compile Include="EmailAttribute.cs" />
     <Compile Include="EmailValidator.cs" />
     <Compile Include="Environment.cs" />
@@ -93,6 +95,9 @@
     <Compile Include="ValidAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\DefaultValidatorMessages.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\DefaultValidatorMessages.es.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
