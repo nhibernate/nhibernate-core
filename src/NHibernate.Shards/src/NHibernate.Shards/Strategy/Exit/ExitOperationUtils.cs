@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Shards.Strategy.Exit
 {
@@ -8,11 +9,17 @@ namespace NHibernate.Shards.Strategy.Exit
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="results"></param>
+		/// <param name="list"></param>
 		/// <returns></returns>
-		public static IList GetNonNullList(IList results)
+		public static IList GetNonNullList(IList list)
 		{
-			throw new System.NotImplementedException();
+			List<object> nonNullList = new List<object>();
+			foreach(object obj in list) 
+			{
+				if(obj != null) 
+					nonNullList.Add(obj);
+			}
+			return nonNullList;
 		}
 
 		/// <summary>

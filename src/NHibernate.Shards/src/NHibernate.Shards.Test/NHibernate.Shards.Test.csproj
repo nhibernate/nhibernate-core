@@ -77,6 +77,7 @@
     <Compile Include="Strategy\Access\ParallelShardOperationCallableFixture.cs" />
     <Compile Include="Strategy\Exit\ExitStrategyDefaultMock.cs" />
     <Compile Include="Strategy\Exit\OrderExitOperationFixture.cs" />
+    <Compile Include="Strategy\Exit\Collections.cs" />
     <Compile Include="Threading\AtomicIntegerFixture.cs" />
     <Compile Include="Threading\CountDownLatchFixture.cs" />
     <Compile Include="Threading\FooCallable1.cs" />

@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Shards.Test.Strategy.Exit
 {
-	[TestFixture,Ignore("test not ready")]
+	[TestFixture]
 	public class OrderExitOperationFixture : TestFixtureBaseWithMock
 	{
 		private List<object> data;
@@ -71,10 +71,12 @@ namespace NHibernate.Shards.Test.Strategy.Exit
 
 			nonNullData = (List<object>) ExitOperationUtils.GetNonNullList(data);
 
-			shuffledList = new List<object>(data);
+			shuffledList = (List<object>) Collections.RandomList(data);
+		}
 
-			//Collections.shuffle(shuffledList);
-			throw new NotImplementedException();
+		[Test]
+		public void test01()
+		{
 		}
 	}
 }
