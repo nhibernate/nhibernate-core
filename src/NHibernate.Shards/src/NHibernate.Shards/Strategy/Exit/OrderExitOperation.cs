@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Expressions;
 using NHibernate.Shards.Util;
 
@@ -7,27 +7,38 @@ namespace NHibernate.Shards.Strategy.Exit
 {
 	public class OrderExitOperation : IExitOperation
 	{
-		private readonly Order order;
-
+		//private readonly Order order;
 		private readonly string propertyName;
+		private bool IsAsc;
+		private bool IsDesc;
 
-		public OrderExitOperation(Order order, string propertyName)
+		public OrderExitOperation(Order order)
 		{
-			Preconditions.CheckState(order.ToString().EndsWith("asc") ||
-			                         order.ToString().EndsWith("desc"));
+			IsAsc = order.ToString().EndsWith("asc");
+			IsDesc = order.ToString().EndsWith("desc");
 
+			Preconditions.CheckState(IsAsc || IsDesc);
 
-			this.order = order;
-			this.propertyName = GetSortingProperty(order);
+			//this.order = order;
+			propertyName = GetSortingProperty(order);
 		}
 
 		#region IExitOperation Members
 
 		public IList Apply(IList results)
 		{
-			//IList nonNullList = ExitOperationUtils.GetNonNullList(results);
-			//IComparer comparer = new Comparer()
-			throw new NotImplementedException();
+			IList nonNullList = ExitOperationUtils.GetNonNullList(results);
+			IComparer<object> comparer = new ExitOperationUtils.PropertyComparer(propertyName);
+
+
+			List<object> sortedList = new List<object>((IEnumerable<object>) nonNullList);
+
+			sortedList.Sort(comparer);
+
+			if (IsDesc)
+				sortedList.Reverse();
+
+			return sortedList;
 		}
 
 		#endregion
