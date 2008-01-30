@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Properties;
 
 namespace NHibernate.Shards.Strategy.Exit
 {
@@ -14,9 +15,9 @@ namespace NHibernate.Shards.Strategy.Exit
 		public static IList GetNonNullList(IList list)
 		{
 			List<object> nonNullList = new List<object>();
-			foreach(object obj in list) 
+			foreach(object obj in list)
 			{
-				if(obj != null) 
+				if (obj != null)
 					nonNullList.Add(obj);
 			}
 			return nonNullList;
@@ -34,10 +35,21 @@ namespace NHibernate.Shards.Strategy.Exit
 			throw new System.NotImplementedException();
 		}
 
+
+		public static IComparable GetPropertyValue(object obj, string propertyName)
+		{
+			//TODO respect the client's choice in how Hibernate accesses property values.
+			IGetter getter = new BasicPropertyAccessor().GetGetter(obj.GetType(), propertyName);
+
+			return (IComparable) getter.Get(obj);
+		}
+
+		#region Nested type: PropertyComparer
+
 		/// <summary>
 		/// Compare the properties of 2 objects. The name of the property must be provided.
 		/// </summary>
-		public class PropertyComparer : System.Collections.Generic.IComparer<object>, IComparer
+		public class PropertyComparer : IComparer<object>, IComparer
 		{
 			private readonly string propertyName;
 
@@ -45,6 +57,8 @@ namespace NHibernate.Shards.Strategy.Exit
 			{
 				this.propertyName = propertyName;
 			}
+
+			#region IComparer<object> Members
 
 			///<summary>
 			///Compares two properties of objects and returns a value indicating whether one is less than, equal to, or greater than the other.
@@ -68,12 +82,10 @@ namespace NHibernate.Shards.Strategy.Exit
 
 				return xValue.CompareTo(yValue);
 			}
+
+			#endregion
 		}
 
-
-		public static IComparable GetPropertyValue(object obj, string propertyName)
-		{
-			throw new NotImplementedException();
-		}
+		#endregion
 	}
 }

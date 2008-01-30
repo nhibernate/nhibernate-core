@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Expressions;
 using NHibernate.Shards.Strategy.Exit;
 using NHibernate.Shards.Test.Mock;
 using NUnit.Framework;
@@ -27,32 +29,31 @@ namespace NHibernate.Shards.Test.Strategy.Exit
 				this.name = name;
 			}
 
-			public MyInt getInnerMyInt()
+			public MyInt InnerMyInt
 			{
-				return innerMyInt;
+				get { return innerMyInt; }
+				set { innerMyInt = value; }
 			}
 
-			public void setInnerMyInt(MyInt innerMyInt)
+			public long Value
 			{
-				this.innerMyInt = innerMyInt;
+				get { return i; }
 			}
 
-			public long getValue()
+			public String Name
 			{
-				return i;
-			}
-
-			public String getName()
-			{
-				return name;
+				get { return name; }
 			}
 
 			public override bool Equals(Object obj)
 			{
 				MyInt myInt = (MyInt) obj;
-				return
-					this.getName().Equals(myInt.getName()) &&
-					this.getValue().Equals(myInt.getValue());
+				return this.Name.Equals(myInt.Name) && this.Value.Equals(myInt.Value);
+			}
+
+			public override int GetHashCode()
+			{
+				return Value.GetHashCode();
 			}
 		}
 
@@ -71,12 +72,27 @@ namespace NHibernate.Shards.Test.Strategy.Exit
 
 			nonNullData = (List<object>) ExitOperationUtils.GetNonNullList(data);
 
-			shuffledList = (List<object>) Collections.RandomList(data);
+			shuffledList = (List<object>) Collections.RandomList(nonNullData);
 		}
 
 		[Test]
-		public void test01()
+		public void Apply()
 		{
+			Order order = Order.Asc("Value");
+			OrderExitOperation oeo = new OrderExitOperation(order);
+			IList unRandomList = oeo.Apply(shuffledList);
+
+			for (int i = 0; i < unRandomList.Count;i++ )
+			{
+				Assert.IsTrue(unRandomList[i].Equals(nonNullData[i]));
+			}
+		}
+
+		[Test,Ignore("implement!!!")]
+		public void MultipleOrderings()
+		{
+			//TODO implement this.
+			throw new NotImplementedException();
 		}
 	}
 }

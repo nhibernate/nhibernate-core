@@ -129,6 +129,7 @@
     <Compile Include="Threading\IRunnable.cs" />
     <Compile Include="Threading\AtomicInteger.cs" />
     <Compile Include="Util\Preconditions.cs" />
+    <Compile Include="Util\StringUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\NHibernate\NHibernate-2.0.csproj">

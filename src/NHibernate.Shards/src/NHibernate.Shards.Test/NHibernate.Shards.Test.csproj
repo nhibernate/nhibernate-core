@@ -75,6 +75,7 @@
     <Compile Include="Mock\TestFixtureBaseWithMock.cs" />
     <Compile Include="Strategy\Access\ParallelShardAccessStrategyFixture.cs" />
     <Compile Include="Strategy\Access\ParallelShardOperationCallableFixture.cs" />
+    <Compile Include="Strategy\Exit\ExitOperationUtilsFixture.cs" />
     <Compile Include="Strategy\Exit\ExitStrategyDefaultMock.cs" />
     <Compile Include="Strategy\Exit\OrderExitOperationFixture.cs" />
     <Compile Include="Strategy\Exit\Collections.cs" />
