@@ -9,8 +9,6 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class ReadOnlyCache : ICacheConcurrencyStrategy
 	{
-		private object lockObject = new object();
-
 		private ICache cache;
 		private static readonly ILog log = LogManager.GetLogger(typeof(ReadOnlyCache));
 
@@ -30,15 +28,12 @@ namespace NHibernate.Cache
 
 		public object Get(CacheKey key, long timestamp)
 		{
-			lock (lockObject)
+			object result = cache.Get(key);
+			if (result != null && log.IsDebugEnabled)
 			{
-				object result = cache.Get(key);
-				if (result != null && log.IsDebugEnabled)
-				{
-					log.Debug("Cache hit: " + key);
-				}
-				return result;
+				log.Debug("Cache hit: " + key);
 			}
+			return result;	
 		}
 
 		/// <summary>
@@ -59,23 +54,20 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			lock (lockObject)
+			if (minimalPut && cache.Get(key) != null)
 			{
-				if (minimalPut && cache.Get(key) != null)
-				{
-					if (log.IsDebugEnabled)
-					{
-						log.Debug("item already cached: " + key);
-					}
-					return false;
-				}
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Caching: " + key);
+					log.Debug("item already cached: " + key);
 				}
-				cache.Put(key, value);
-				return true;
+				return false;
 			}
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("Caching: " + key);
+			}
+			cache.Put(key, value);
+			return true;
 		}
 
 		/// <summary>
