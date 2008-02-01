@@ -82,17 +82,36 @@ namespace NHibernate.Shards.Test.Strategy.Exit
 			OrderExitOperation oeo = new OrderExitOperation(order);
 			IList unRandomList = oeo.Apply(shuffledList);
 
-			for (int i = 0; i < unRandomList.Count;i++ )
+			for(int i = 0; i < unRandomList.Count; i++)
 			{
 				Assert.IsTrue(unRandomList[i].Equals(nonNullData[i]));
 			}
 		}
 
-		[Test,Ignore("implement!!!")]
+		[Test]
 		public void MultipleOrderings()
 		{
-			//TODO implement this.
-			throw new NotImplementedException();
+			Order orderValue = Order.Asc("Value");
+			Order orderName = Order.Desc("Name");
+
+			OrderExitOperation oeoValue = new OrderExitOperation(orderValue);
+			OrderExitOperation oeoName = new OrderExitOperation(orderName);
+
+			List<MyInt> answer = new List<MyInt>(new MyInt[]
+			                                     	{
+			                                     		new MyInt(0, "tomislav"),
+			                                     		new MyInt(1, "max"),
+			                                     		new MyInt(2, "maulik"),
+			                                     		new MyInt(3, "gut"),
+			                                     		new MyInt(5, "bomb")
+			                                     	});
+
+			IList unShuffledList = oeoName.Apply(oeoValue.Apply(shuffledList));
+
+			for(int i=0;i< answer.Count;i++)
+			{
+				Assert.AreEqual(answer[i],unShuffledList[i],"The element {0} of the collecion is not equal",i);
+			}
 		}
 	}
 }
