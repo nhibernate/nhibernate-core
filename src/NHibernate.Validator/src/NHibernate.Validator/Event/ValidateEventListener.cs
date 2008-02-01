@@ -1,27 +1,28 @@
+using System;
+using System.Collections.Generic;
+using NHibernate.Cfg;
+using NHibernate.Event;
+using NHibernate.Mapping;
+using NHibernate.Properties;
+using NHibernate.Util;
+
 namespace NHibernate.Validator.Event
 {
-	using System;
-	using System.Collections.Generic;
-	using NHibernate.Cfg;
-	using NHibernate.Event;
-	using NHibernate.Mapping;
-	using Properties;
-	using Util;
-
 	/// <summary>
 	/// Before insert and update, executes the validator framework
-    /// </summary>
-    public class ValidateEventListener : IPreInsertEventListener, IPreUpdateEventListener, IInitializable
-    {
+	/// </summary>
+	public class ValidateEventListener : IPreInsertEventListener, IPreUpdateEventListener, IInitializable
+	{
 		private bool isInitialized;
-		private Dictionary<Type, ValidatableElement> validators = new Dictionary<Type, ValidatableElement>();
+		private Dictionary<System.Type, ValidatableElement> validators = new Dictionary<System.Type, ValidatableElement>();
 
+		#region IInitializable Members
 
 		/// <summary>
 		/// Initialize the validators, any non significant validators are not kept
 		/// </summary>
 		/// <param name="cfg"></param>
-		public void Initialize(Configuration cfg) 
+		public void Initialize(Configuration cfg)
 		{
 			if (isInitialized) return;
 
@@ -31,25 +32,56 @@ namespace NHibernate.Validator.Event
 
 			foreach(PersistentClass clazz in classes)
 			{
-				Type mappedClass = clazz.MappedClass;
-				ClassValidator validator = new ClassValidator(mappedClass, null, null, interpolator, new Dictionary<Type, ClassValidator>());
+				System.Type mappedClass = clazz.MappedClass;
+				ClassValidator validator =
+					new ClassValidator(mappedClass, null, null, interpolator, new Dictionary<System.Type, ClassValidator>());
 
 				ValidatableElement element = new ValidatableElement(mappedClass, validator);
 				AddSubElement(clazz.IdentifierProperty, element);
-				
+
 				foreach(Property property in clazz.PropertyIterator)
 				{
 					AddSubElement(property, element);
 				}
 
-				if (element.SubElements.Count != 0 || element.Validator.HasValidationRules) 
-				{
+				if (element.SubElements.Count != 0 || element.Validator.HasValidationRules)
 					validators.Add(mappedClass, element);
-				}
 			}
 
 			isInitialized = true;
 		}
+
+		#endregion
+
+		#region IPreInsertEventListener Members
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="event"></param>
+		/// <returns></returns>
+		public bool OnPreInsert(PreInsertEvent @event)
+		{
+			Validate(@event.Entity, @event.Source.EntityMode);
+			return false;
+		}
+
+		#endregion
+
+		#region IPreUpdateEventListener Members
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="event"></param>
+		/// <returns></returns>
+		public bool OnPreUpdate(PreUpdateEvent @event)
+		{
+			Validate(@event.Entity, @event.Source.EntityMode);
+			return false;
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Get the custom <see cref="IMessageInterpolator"/> from the <see cref="Configuration"/>
@@ -61,11 +93,11 @@ namespace NHibernate.Validator.Event
 			string interpolatorString = cfg.GetProperty(NHibernate.Validator.Environment.MESSAGE_INTERPOLATOR_CLASS);
 			IMessageInterpolator interpolator = null;
 
-			if(!string.IsNullOrEmpty(interpolatorString))
+			if (!string.IsNullOrEmpty(interpolatorString))
 			{
 				try
 				{
-					Type interpolatorType = ReflectHelper.ClassForName(interpolatorString);
+					System.Type interpolatorType = ReflectHelper.ClassForName(interpolatorString);
 					interpolator = (IMessageInterpolator) Activator.CreateInstance(interpolatorType);
 				}
 				catch(MissingMethodException ex)
@@ -87,38 +119,16 @@ namespace NHibernate.Validator.Event
 		}
 
 		/// <summary>
-        /// 
-        /// </summary>
-        /// <param name="event"></param>
-        /// <returns></returns>
-        public bool OnPreInsert(PreInsertEvent @event)
-        {
-            Validate( @event.Entity, @event.Source.EntityMode );
-			return false;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="event"></param>
-        /// <returns></returns>
-        public bool OnPreUpdate(PreUpdateEvent @event)
-        {
-			Validate(@event.Entity, @event.Source.EntityMode);
-			return false;
-        }
-
-		/// <summary>
 		/// Add sub elements. Composite Elements.
 		/// </summary>
 		/// <param name="property"></param>
 		/// <param name="element"></param>
 		private void AddSubElement(Property property, ValidatableElement element)
 		{
-			if(property != null && property.IsComposite && !property.BackRef)
+			if (property != null && property.IsComposite && !property.BackRef)
 			{
 				Component component = (Component) property.Value;
-				if(component.IsEmbedded) return;
+				if (component.IsEmbedded) return;
 
 				IPropertyAccessor accesor = PropertyAccessorFactory.GetPropertyAccessor(property, EntityMode.Poco);
 
@@ -130,7 +140,7 @@ namespace NHibernate.Validator.Event
 
 				foreach(Property currentProperty in component.PropertyIterator)
 				{
-					AddSubElement(currentProperty,subElement);
+					AddSubElement(currentProperty, subElement);
 				}
 
 				if (subElement.SubElements.Count != 0 || subElement.Validator.HasValidationRules)
@@ -149,24 +159,26 @@ namespace NHibernate.Validator.Event
 
 			ValidatableElement element;
 
-			if(isInitialized)
-				element = validators[entity.GetType()];
+			if (isInitialized)
+				if (validators.ContainsKey(entity.GetType()))
+					element = validators[entity.GetType()];
+				else
+					return; //no validation to do
 			else
 				throw new AssertionFailure("Validator event not initialized");
-
-			if (element == null) return; //No validation to do 
 
 			List<InvalidValue> consolidatedInvalidValues = new List<InvalidValue>();
 			ValidateSubElements(element, entity, consolidatedInvalidValues);
 			InvalidValue[] invalidValues = element.Validator == null ? null : element.Validator.GetInvalidValues(entity);
-			if (invalidValues != null) 
+			if (invalidValues != null)
 			{
-				foreach (InvalidValue invalidValue in invalidValues) 
-					consolidatedInvalidValues.Add( invalidValue );
+				foreach(InvalidValue invalidValue in invalidValues)
+				{
+					consolidatedInvalidValues.Add(invalidValue);
+				}
 			}
 			if (consolidatedInvalidValues.Count > 0)
-				throw new InvalidStateException(consolidatedInvalidValues.ToArray(),entity.GetType().Name);
-			
+				throw new InvalidStateException(consolidatedInvalidValues.ToArray(), entity.GetType().Name);
 		}
 
 		/// <summary>
@@ -175,23 +187,28 @@ namespace NHibernate.Validator.Event
 		/// <param name="element"></param>
 		/// <param name="entity"></param>
 		/// <param name="consolidatedInvalidValues"></param>
-		private void ValidateSubElements(ValidatableElement element, Object entity, IList<InvalidValue> consolidatedInvalidValues)
+		private void ValidateSubElements(ValidatableElement element, Object entity,
+		                                 IList<InvalidValue> consolidatedInvalidValues)
 		{
-			if ( element != null ) 
+			if (element != null)
 			{
-				foreach (ValidatableElement subElement in element.SubElements)
+				foreach(ValidatableElement subElement in element.SubElements)
 				{
 					Object component = subElement.Getter.Get(entity);
-					
+
 					InvalidValue[] invalidValues = subElement.Validator.GetInvalidValues(component);
-					
-					foreach (InvalidValue invalidValue in invalidValues) 
-						consolidatedInvalidValues.Add( invalidValue );
-					
-					ValidateSubElements( subElement, component, consolidatedInvalidValues );
+
+					foreach(InvalidValue invalidValue in invalidValues)
+					{
+						consolidatedInvalidValues.Add(invalidValue);
+					}
+
+					ValidateSubElements(subElement, component, consolidatedInvalidValues);
 				}
 			}
 		}
+
+		#region Nested type: ValidatableElement
 
 		/// <summary>
 		/// 
@@ -199,34 +216,28 @@ namespace NHibernate.Validator.Event
 		[Serializable]
 		private class ValidatableElement
 		{
-			private Type clazz;
-
-			private ClassValidator validator;
+			private System.Type clazz;
 
 			private IGetter getter;
 
 			private List<ValidatableElement> subElements = new List<ValidatableElement>();
+			private ClassValidator validator;
 
-			public ValidatableElement(Type clazz, ClassValidator validator, IGetter getter)
-				:this(clazz,validator)
+			public ValidatableElement(System.Type clazz, ClassValidator validator, IGetter getter)
+				: this(clazz, validator)
 			{
 				this.getter = getter;
 			}
 
-			public ValidatableElement(Type clazz, ClassValidator validator)
+			public ValidatableElement(System.Type clazz, ClassValidator validator)
 			{
 				this.clazz = clazz;
 				this.validator = validator;
 			}
 
-			public IList<ValidatableElement> SubElements 
+			public IList<ValidatableElement> SubElements
 			{
 				get { return this.subElements; }
-			}
-
-			public void AddSubElement(ValidatableElement subValidatableElement)
-			{
-				subElements.Add(subValidatableElement);
 			}
 
 			public IGetter Getter
@@ -234,7 +245,7 @@ namespace NHibernate.Validator.Event
 				get { return getter; }
 			}
 
-			public Type Clazz
+			public System.Type Clazz
 			{
 				get { return clazz; }
 			}
@@ -243,7 +254,13 @@ namespace NHibernate.Validator.Event
 			{
 				get { return validator; }
 			}
+
+			public void AddSubElement(ValidatableElement subValidatableElement)
+			{
+				subElements.Add(subValidatableElement);
+			}
 		}
 
-    }
+		#endregion
+	}
 }
