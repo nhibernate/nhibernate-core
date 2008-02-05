@@ -2,15 +2,93 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using Iesi.Collections.Generic;
+using log4net;
 using NHibernate.Engine;
+using NHibernate.Id;
+using NHibernate.Proxy;
 using NHibernate.Shards.Engine;
+using NHibernate.Shards.Id;
+using NHibernate.Shards.Strategy;
 using NHibernate.Stat;
 using NHibernate.Type;
 
 namespace NHibernate.Shards.Session
 {
-	public class ShardedSessionImpl : IShardedSession, IShardedSessionImplementor
+	/// <summary>
+	/// Concrete implementation of a ShardedSession, and also the central component of
+	/// Hibernate Shards' internal implementation. This class exposes two interfaces;
+	/// ShardedSession itself, to the application, and ShardedSessionImplementor, to
+	/// other components of Hibernate Shards. This class is not threadsafe.
+	/// </summary>
+	public class ShardedSessionImpl : IShardedSession, IShardedSessionImplementor, IShardIdResolver
 	{
+		[ThreadStatic] private static ShardId currentSubgraphShardId;
+
+		private readonly bool checkAllAssociatedObjectsForDifferentShards;
+		private readonly Set<System.Type> classesWithoutTopLevelSaveSupport;
+		private readonly ILog log = LogManager.GetLogger(typeof (ShardedSessionImpl));
+
+		private readonly IShardedSessionFactoryImplementor shardedSessionFactory;
+
+		private readonly IDictionary<ShardId, IShard> shardIdsToShards;
+		private readonly List<IShard> shards;
+
+		private readonly IShardStrategy shardStrategy;
+
+		private bool closed = false;
+
+		private bool lockedShard = false;
+
+		private ShardId lockedShardId;
+
+		// access to sharded session is single-threaded so we can use a non-atomic
+		// counter for criteria ids or query ids
+		private int nextCriteriaId = 0;
+		private int nextQueryId = 0;
+		private IShardedTransaction transaction;
+
+
+		internal ShardedSessionImpl(
+			IShardedSessionFactoryImplementor shardedSessionFactory,
+			IShardStrategy shardStrategy,
+			Set<System.Type> classesWithoutTopLevelSaveSupport,
+			bool checkAllAssociatedObjectsForDifferentShards)
+			: this(null,
+			       shardedSessionFactory,
+			       shardStrategy,
+			       classesWithoutTopLevelSaveSupport,
+			       checkAllAssociatedObjectsForDifferentShards)
+		{
+		}
+
+
+		internal ShardedSessionImpl(
+			/*@Nullable*/ IInterceptor interceptor,
+			              IShardedSessionFactoryImplementor shardedSessionFactory,
+			              IShardStrategy shardStrategy,
+			              Set<System.Type> classesWithoutTopLevelSaveSupport,
+			              bool checkAllAssociatedObjectsForDifferentShards)
+		{
+			this.shardedSessionFactory = shardedSessionFactory;
+			this.shards =
+				BuildShardListFromSessionFactoryShardIdMap(shardedSessionFactory.GetSessionFactoryShardIdMap(),
+				                                           checkAllAssociatedObjectsForDifferentShards, this, interceptor);
+
+			this.shardIdsToShards = BuildShardIdsToShardsMap();
+			this.shardStrategy = shardStrategy;
+			this.classesWithoutTopLevelSaveSupport = classesWithoutTopLevelSaveSupport;
+			this.checkAllAssociatedObjectsForDifferentShards = checkAllAssociatedObjectsForDifferentShards;
+		}
+
+		public static ShardId CurrentSubgraphShardId
+		{
+			get { return currentSubgraphShardId; }
+			set { currentSubgraphShardId = value; }
+		}
+
+		#region IShardedSession Members
+
 		/// <summary>
 		/// Gets the non-sharded session with which the objects is associated.
 		/// </summary>
@@ -21,7 +99,7 @@ namespace NHibernate.Shards.Session
 		/// </returns>
 		public ISession GetSessionForObject(object obj)
 		{
-			throw new NotImplementedException();
+			return GetSessionForObject(obj, shards);
 		}
 
 		/// <summary>
@@ -35,7 +113,7 @@ namespace NHibernate.Shards.Session
 		/// </returns>
 		public ShardId GetShardIdForObject(object obj)
 		{
-			throw new NotImplementedException();
+			return GetShardIdForObject(obj, shards);
 		}
 
 		/// <summary>
@@ -45,7 +123,7 @@ namespace NHibernate.Shards.Session
 		/// </summary>
 		public void LockShard()
 		{
-			throw new NotImplementedException();
+			lockedShard = true;
 		}
 
 		/// <summary>
@@ -947,8 +1025,23 @@ namespace NHibernate.Shards.Session
 		///<filterpriority>2</filterpriority>
 		public void Dispose()
 		{
-			throw new NotImplementedException();
+			if (!closed)
+			{
+				log.Warn("ShardedSessionImpl is being garbage collected but it was never properly closed.");
+				try
+				{
+					Close();
+				}
+				catch (Exception e)
+				{
+					log.Warn("Caught exception trying to close.", e);
+				}
+			}
 		}
+
+		#endregion
+
+		#region IShardedSessionImplementor Members
 
 		/// <summary>
 		/// Gets all the shards the ShardedSession is spanning.
@@ -959,19 +1052,80 @@ namespace NHibernate.Shards.Session
 			get { throw new NotImplementedException(); }
 		}
 
-		/// <summary>
-		/// TODO: see the equivalence with ThreadLocal in Java.
-		/// </summary>
-		private static ShardId currentSubgraphShardId;
+		#endregion
 
-		/// <summary>
-		/// TODO: documentation 
-		/// </summary>
-		public static ShardId CurrentSubgraphShardId
+		private ISession GetSessionForObject(object obj, List<IShard> shardsToConsider)
 		{
-			get { return currentSubgraphShardId; }
-			set { currentSubgraphShardId = value; }
+			IShard shard = GetShardForObject(obj, shardsToConsider);
+			if (shard == null)
+			{
+				return null;
+			}
+			return shard.Session;
 		}
 
+		private IShard GetShardForObject(object obj, List<IShard> shardsToConsider)
+		{
+			//TODO: optimize this by keeping an identity map of objects to shardId
+
+			foreach (IShard shard in shardsToConsider)
+			{
+				if (shard.Session != null && shard.Session.Contains(obj))
+					return shard;
+			}
+			return null;
+		}
+
+		internal ShardId GetShardIdForObject(object obj, List<IShard> shardsToConsider)
+		{
+			//TODO Also, wouldn't it be faster to first see if there's just a single shard id mapped to the shard?
+
+			IShard shard = GetShardForObject(obj, shardsToConsider);
+
+			if (shard == null)
+			{
+				return null;
+			}
+			else if (shard.ShardIds.Count == 1)
+			{
+				IEnumerator<ShardId> iterator = shard.ShardIds.GetEnumerator();
+				iterator.MoveNext();
+				return iterator.Current;
+			}
+			else
+			{
+				System.Type clazz;
+				if (obj is INHibernateProxy)
+					clazz = ((INHibernateProxy) obj).HibernateLazyInitializer.PersistentClass;
+				else
+					clazz = obj.GetType();
+
+				IIdentifierGenerator idGenerator = shard.SessionFactoryImplementor.GetIdentifierGenerator(clazz);
+
+				if (idGenerator is IShardEncodingIdentifierGenerator)
+				{
+					return ((IShardEncodingIdentifierGenerator) idGenerator).ExtractShardId(GetIdentifier(obj));
+				}
+				else
+				{
+					// TODO: also use shard resolution strategy if it returns only 1 shard; throw this error in config instead of here
+					throw new HibernateException("Can not use virtual sharding with non-shard resolving id gen");
+				}
+			}
+		}
+
+		private IDictionary<ShardId, IShard> BuildShardIdsToShardsMap()
+		{
+			throw new NotImplementedException();
+		}
+
+		private static List<IShard> BuildShardListFromSessionFactoryShardIdMap(
+			IDictionary<ISessionFactoryImplementor, Set<ShardId>> sessionFactoryShardIdMap,
+			bool checkAllAssociatedObjectsForDifferentShards,
+			IShardIdResolver shardIdResolver,
+			IInterceptor interceptor)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

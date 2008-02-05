@@ -74,6 +74,8 @@
     <Compile Include="Query\IQueryFactory.cs" />
     <Compile Include="Query\QueryId.cs" />
     <Compile Include="Query\IShardedQuery.cs" />
+    <Compile Include="Session\BaseStatefulInterceptorFactory.cs" />
+    <Compile Include="Session\CrossShardRelationshipDetectingInterceptor.cs" />
     <Compile Include="Session\DisableFilterOpenSessionEvent.cs" />
     <Compile Include="Session\EnableFilterOpenSessionEvent.cs" />
     <Compile Include="Session\IControlSessionProvider.cs" />
@@ -83,12 +85,15 @@
     <Compile Include="Session\IShardedSession.cs" />
     <Compile Include="Session\IShardedSessionFactory.cs" />
     <Compile Include="Session\IShardIdResolver.cs" />
+    <Compile Include="Session\IStatefulInterceptorFactory.cs" />
     <Compile Include="Session\SetCacheModeOpenSessionEvent.cs" />
     <Compile Include="Session\SetFlushModeOpenSessionEvent.cs" />
     <Compile Include="Session\SetReadOnlyOpenSessionEvent.cs" />
     <Compile Include="Session\SetSessionOnRequiresSessionEvent.cs" />
     <Compile Include="Session\SetupTransactionOpenSessionEvent.cs" />
     <Compile Include="Session\ShardAwareInterceptor.cs" />
+    <Compile Include="Session\ShardedSessionException.cs" />
+    <Compile Include="Session\ShardedSessionFactoryImpl.cs" />
     <Compile Include="Session\ShardedSessionImpl.cs" />
     <Compile Include="ShardedConfiguration.cs" />
     <Compile Include="ShardId.cs" />
