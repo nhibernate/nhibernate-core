@@ -49,8 +49,6 @@
 		<include name="NHibernate.UserTypes.Oracle/NHibernate.UserTypes.Oracle.build" />
 		<include name="NHibernate.UserTypes.SqlTypes/NHibernate.UserTypes.SqlTypes.build" />
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
-		<include name="NHibernate.Validator/src/NHibernate.Validator/NHibernate.Validator.build" />
-		<include name="NHibernate.Validator/src/NHibernate.Validator.Tests/NHibernate.Validator.Tests.build" />
 	</fileset>
 
 	<fileset id="buildfiles.tests" basedir="src">
@@ -63,7 +61,6 @@
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
 		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
 		<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />
-		<include name="NHibernate.Validator/src/NHibernate.Validator.Tests/NHibernate.Validator.Tests.build" />
 	</fileset>
 
 	<target name="init" depends="common.init"
