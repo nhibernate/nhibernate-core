@@ -409,7 +409,7 @@ namespace NHibernate.Loader
 			ArrayList hydratedObjects = entitySpan > 0 ? new ArrayList() : null;
 			IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
 
-			IDataReader rs = GetResultSet(st, selection, session);
+			IDataReader rs = GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, selection, session);
 
 // would be great to move all this below here into another method that could also be used
 // from the new scrolling stuff.
@@ -1353,9 +1353,10 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="st">The <see cref="IDbCommand" /> to execute.</param>
 		/// <param name="selection">The <see cref="RowSelection"/> to apply to the <see cref="IDbCommand"/> and <see cref="IDataReader"/>.</param>
+		/// <param name="autoDiscoverTypes">true if result types need to be auto-discovered by the loader; false otherwise.</param>
 		/// <param name="session">The <see cref="ISession" /> to load in.</param>
 		/// <returns>An IDataReader advanced to the first record in RowSelection.</returns>
-		protected IDataReader GetResultSet(IDbCommand st, RowSelection selection, ISessionImplementor session)
+		protected IDataReader GetResultSet(IDbCommand st, bool autoDiscoverTypes, RowSelection selection, ISessionImplementor session)
 		{
 			IDataReader rs = null;
 			try
@@ -1371,6 +1372,10 @@ namespace NHibernate.Loader
 					Advance(rs, selection);
 				}
 
+				if (autoDiscoverTypes)
+				{
+					AutoDiscoverTypes(rs);
+				}
 				return rs;
 			}
 			catch (Exception sqle)
@@ -1379,6 +1384,11 @@ namespace NHibernate.Loader
 				session.Batcher.CloseCommand(st, rs);
 				throw;
 			}
+		}
+
+		protected virtual void AutoDiscoverTypes(IDataReader rs)
+		{
+			throw new AssertionFailure("Auto discover types not supported in this loader");
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]

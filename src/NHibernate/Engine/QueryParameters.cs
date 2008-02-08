@@ -34,6 +34,7 @@ namespace NHibernate.Engine
 		private bool _isNaturalKeyLookup;
 		private bool _readOnly;
 		private bool _callable;
+		private bool autoDiscoverTypes;
 
 		private SqlString processedSQL;
 		private IType[] processedPositionalParameterTypes;
@@ -375,6 +376,12 @@ namespace NHibernate.Engine
 		public IResultTransformer ResultTransformer
 		{
 			get { return _resultTransformer; }
+		}
+
+		public bool HasAutoDiscoverScalarTypes
+		{
+			get { return autoDiscoverTypes; }
+			set { autoDiscoverTypes = value; }
 		}
 
 		public QueryParameters CreateCopyUsing(RowSelection selection)

@@ -1283,7 +1283,7 @@ namespace NHibernate.Hql.Classic
 			IDbCommand cmd = PrepareQueryCommand(parameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet(cmd, parameters.RowSelection, session);
+			IDataReader rs = GetResultSet(cmd, parameters.HasAutoDiscoverScalarTypes, parameters.RowSelection, session);
 			HolderInstantiator hi =
 				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
 			IEnumerable result =

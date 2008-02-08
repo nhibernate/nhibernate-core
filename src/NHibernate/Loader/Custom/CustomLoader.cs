@@ -32,8 +32,8 @@ namespace NHibernate.Loader.Custom
 		private LockMode[] lockModes;
 		private readonly ResultRowProcessor rowProcessor;
 
-		private readonly IType[] resultTypes;
-		private readonly string[] transformerAliases;
+		private IType[] resultTypes;
+		private string[] transformerAliases;
 
 		public CustomLoader(
 			ICustomQuery customQuery,
@@ -365,10 +365,32 @@ namespace NHibernate.Loader.Custom
 			set { throw new NotSupportedException("CustomLoader.set_SqlString"); }
 		}
 
+		protected override void AutoDiscoverTypes(IDataReader rs)
+		{
+			MetaData metadata = new MetaData(rs);
+			IList aliases = new ArrayList();
+			IList types = new ArrayList();
+
+			rowProcessor.PrepareForAutoDiscovery(metadata);
+
+			for (int i = 0; i < rowProcessor.ColumnProcessors.Length; i++)
+			{
+				rowProcessor.ColumnProcessors[i].PerformDiscovery(metadata, types, aliases);
+			}
+
+			resultTypes = ArrayHelper.ToTypeArray(types);
+			transformerAliases = ArrayHelper.ToStringArray(aliases);
+		}
+
 		public class ResultRowProcessor
 		{
 			private readonly bool hasScalars;
 			private ResultColumnProcessor[] columnProcessors;
+
+			public ResultColumnProcessor[] ColumnProcessors
+			{
+				get { return columnProcessors; }
+			}
 
 			public ResultRowProcessor(bool hasScalars, ResultColumnProcessor[] columnProcessors)
 			{
@@ -405,11 +427,25 @@ namespace NHibernate.Loader.Custom
 				       	  	? resultRow[0]
 				       	  	: resultRow;
 			}
+
+			public void PrepareForAutoDiscovery(MetaData metadata)
+			{
+				if (columnProcessors == null || columnProcessors.Length == 0)
+				{
+					int columns = metadata.GetColumnCount();
+					columnProcessors = new ResultColumnProcessor[columns];
+					for (int i = 0; i < columns; i++)
+					{
+						columnProcessors[i] = new ScalarResultColumnProcessor(i);
+					}
+				}
+			}
 		}
 
 		public interface ResultColumnProcessor
 		{
 			object Extract(object[] data, IDataReader resultSet, ISessionImplementor session);
+			void PerformDiscovery(MetaData metadata, IList types, IList aliases);
 		}
 
 		public class NonScalarResultColumnProcessor : ResultColumnProcessor
@@ -427,6 +463,10 @@ namespace NHibernate.Loader.Custom
 				ISessionImplementor session)
 			{
 				return data[position];
+			}
+
+			public void PerformDiscovery(MetaData metadata, IList types, IList aliases)
+			{
 			}
 		}
 
@@ -454,11 +494,85 @@ namespace NHibernate.Loader.Custom
 			{
 				return type.NullSafeGet(resultSet, alias, session, null);
 			}
+
+			public void PerformDiscovery(MetaData metadata, IList types, IList aliases)
+			{
+				if (alias == null)
+				{
+					alias = metadata.GetColumnName(position);
+				}
+				else if (position < 0)
+				{
+					position = metadata.GetColumnPosition(alias);
+				}
+				if (type == null)
+				{
+					type = metadata.GetHibernateType(position);
+				}
+				types.Add(type);
+				aliases.Add(alias);
+			}
 		}
 
 		public override string QueryIdentifier
 		{
 			get { return sql.ToString(); }
+		}
+
+		/// <summary>
+		/// Encapsulates the metadata available from the database result set.
+		/// </summary>
+		public class MetaData
+		{
+			private readonly IDataReader resultSet;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="MetaData"/> class.
+			/// </summary>
+			/// <param name="resultSet">The result set.</param>
+			public MetaData(IDataReader resultSet)
+			{
+				this.resultSet = resultSet;
+			}
+
+			/// <summary>
+			/// Gets the column count in the result set.
+			/// </summary>
+			/// <returns>The column count.</returns>
+			public int GetColumnCount()
+			{
+				return resultSet.FieldCount;
+			}
+
+			/// <summary>
+			/// Gets the name of the column at the specified position.
+			/// </summary>
+			/// <param name="position">The (zero-based) position.</param>
+			/// <returns>The column name.</returns>
+			public string GetColumnName(int position)
+			{
+				return resultSet.GetName(position);
+			}
+
+			/// <summary>
+			/// Gets the (zero-based) position of the column with the specified name.
+			/// </summary>
+			/// <param name="columnName">Name of the column.</param>
+			/// <returns>The column position.</returns>
+			public int GetColumnPosition(string columnName)
+			{
+				return resultSet.GetOrdinal(columnName);
+			}
+
+			/// <summary>
+			/// Gets the Hibernate type of the specified column.
+			/// </summary>
+			/// <param name="columnPos">The column position.</param>
+			/// <returns>The Hibernate type.</returns>
+			public IType GetHibernateType(int columnPos)
+			{
+				return TypeFactory.Basic(resultSet.GetFieldType(columnPos).Name);
+			}
 		}
 	}
 }

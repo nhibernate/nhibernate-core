@@ -27,6 +27,7 @@ namespace NHibernate.Impl
 		private readonly IList<INativeSQLQueryReturn> queryReturns;
 		private readonly ICollection<string> querySpaces;
 		private bool callable;
+		private bool autoDiscoverTypes;
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
 		/// <param name="queryDef">The representation of the defined sql-query. </param>
@@ -179,6 +180,7 @@ namespace NHibernate.Impl
 		{
 			QueryParameters qp = base.GetQueryParameters(namedParams);
 			qp.Callable = callable;
+			qp.HasAutoDiscoverScalarTypes = autoDiscoverTypes;
 			return qp;
 		}
 
@@ -194,6 +196,7 @@ namespace NHibernate.Impl
 
 		public ISQLQuery AddScalar(string columnAlias, IType type)
 		{
+			autoDiscoverTypes = true;
 			queryReturns.Add(new NativeSQLQueryScalarReturn(columnAlias, type));
 			return this;
 		}
@@ -267,10 +270,9 @@ namespace NHibernate.Impl
 		{
 			base.VerifyParameters();
 			bool noReturns = queryReturns == null || queryReturns.Count == 0;
-			bool autodiscovertypes = false;
 			if (noReturns)
 			{
-				autodiscovertypes = noReturns;
+				autoDiscoverTypes = noReturns;
 			}
 			else
 			{
@@ -281,17 +283,13 @@ namespace NHibernate.Impl
 						NativeSQLQueryScalarReturn scalar = (NativeSQLQueryScalarReturn) rtn;
 						if (scalar.Type == null)
 						{
-							autodiscovertypes = true;
+							autoDiscoverTypes = true;
 							break;
 						}
 					}
 				}
 			}
 
-			if (autodiscovertypes)
-			{
-				throw new QueryException("Return types of SQL query were not specified", QueryString);
-			}
 		}
 
 		public override IQuery SetLockMode(string alias, LockMode lockMode)

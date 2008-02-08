@@ -398,7 +398,7 @@ namespace NHibernate.Test.SqlTest
 			s.Close();
 		}
 
-		[Test, Ignore("Autodetection of result types not supported yet.")]
+		[Test]
 		public void AutoDetectAliasing()
 		{
 			ISession s = OpenSession();
@@ -446,7 +446,7 @@ namespace NHibernate.Test.SqlTest
 			Assert.AreEqual(1, list.Count);
 			m = (IDictionary) list[0];
 			Assert.IsTrue(m.Contains("EMPID"));
-			Assert.IsTrue(m.Contains("VALUE"));
+			Assert.IsTrue(m.Contains("AVALUE"));
 			Assert.IsTrue(m.Contains("ENDDATE"));
 			Assert.AreEqual(8, m.Count);
 
@@ -533,17 +533,7 @@ namespace NHibernate.Test.SqlTest
 			Assert.IsTrue(50d == enterprise.Speed);
 			Assert.IsTrue(450d == ExtractDoubleValue(result[1]));
 			Assert.IsTrue(4500d == ExtractDoubleValue(result[2]));
-			s.Delete(dim);
-			t.Commit();
-			s.Close();
-
-			s = OpenSession();
-			t = s.BeginTransaction();
-			s.Delete(emp2);
-
-			s.Delete(jboss);
-			s.Delete(gavin);
-			s.Delete(ifa);
+			s.Delete(enterprise);
 			t.Commit();
 			s.Close();
 		}
