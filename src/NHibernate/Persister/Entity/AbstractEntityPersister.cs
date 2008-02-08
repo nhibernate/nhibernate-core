@@ -2007,7 +2007,7 @@ namespace NHibernate.Persister.Entity
 
 		public virtual SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return TableSpan == 1
+			return SubclassTableSpan == 1
 				? new SqlString(string.Empty) // just a performance opt!
 				: CreateJoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
 		}

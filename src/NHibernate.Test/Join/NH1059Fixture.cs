@@ -4,7 +4,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Join
 {
 	[TestFixture]
-	[Ignore("NH-1059 not fixed yet")]
 	public class NH1059Fixture : TestCase
 	{
 		protected override string MappingsAssembly
@@ -36,25 +35,22 @@ namespace NHibernate.Test.Join
 		[Test]
 		public void FetchJoin_ForNH1059()
 		{
-			long id;
-
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				PaidWorker p = new PaidWorker();
-				p.Name = "Joe";
-				p.Wage = 10m;
-
-				s.Save(p);
-				id = p.Id;
-
-				tx.Commit();
+				// This line would fail before the fix
+				s.CreateQuery("from Worker").List<Worker>();
 			}
+		}
 
+		[Test]
+		public void FetchJoinWithCriteria_ForNH1059()
+		{
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				s.Get<PaidWorker>(id);
+				// This line would fail before the fix
+				s.CreateCriteria(typeof(Worker)).List<Worker>();
 			}
 		}
 	}
