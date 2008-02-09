@@ -288,6 +288,11 @@
     <Compile Include="NHSpecificTest\NH1119\Model.cs" />
     <Compile Include="NHSpecificTest\NH1179\Classes.cs" />
     <Compile Include="NHSpecificTest\NH1179\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1230\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1230\Foo.cs" />
+    <Compile Include="NHSpecificTest\NH1230\FooAssigned.cs" />
+    <Compile Include="NHSpecificTest\NH1230\FooIdentity.cs" />
+    <Compile Include="NHSpecificTest\NH1230\PreSaveDoVeto.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1116,6 +1121,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1230\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
