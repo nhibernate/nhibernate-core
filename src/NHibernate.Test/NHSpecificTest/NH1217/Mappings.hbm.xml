@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1217">
+  
+  <class name="Root" proxy="IRoot" table="Root">
+    <id column="Id" type="Int32">
+      <generator class="native" />
+    </id>
+    <version name="VersionNumber" />
+    <property name="Name" length="20" not-null="true" unique="true" />
+    <bag name="Nodes" cascade="save-update" inverse="true">
+      <key column="RootId" />
+      <one-to-many class="Node" />
+    </bag>
+    
+  </class>
+  
+  <class name="Node" proxy="INode">
+    <id column="Id" type="Int32">
+      <generator class="native" />
+    </id>
+    <version name="VersionNumber" />
+    <property name="Label" length="20" not-null="true" />
+    <many-to-one name="Root" class="Root" column="RootId" not-null="true" />
+    <set name="FromEdges" cascade="save-update" inverse="true" optimistic-lock="false">
+      <key column="FromNodeId" />
+      <one-to-many class="Edge" />
+    </set>
+    <set name="ToEdges" cascade="save-update" inverse="true">
+      <key column="ToNodeId" />
+      <one-to-many class="Edge" />
+    </set>
+  </class>
+  
+  <class name="Edge" proxy="IEdge">
+    <id column="Id" type="Int32">
+      <generator class="native" />
+    </id>
+    <version name="VersionNumber" />
+    <property name="Label" length="20" not-null="true"/>
+    <many-to-one name="FromNode" class="Node" column="FromNodeId" not-null="true"/>
+    <many-to-one name="ToNode" class="Node" column="ToNodeId" not-null="true"/>    
+  </class>
+  
+</hibernate-mapping>
