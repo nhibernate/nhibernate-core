@@ -286,6 +286,8 @@
     <Compile Include="NHSpecificTest\NH1064\Model.cs" />
     <Compile Include="NHSpecificTest\NH1119\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1119\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1178\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1178\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1179\Classes.cs" />
     <Compile Include="NHSpecificTest\NH1179\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1230\Fixture.cs" />
@@ -1124,6 +1126,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1230\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1178\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
