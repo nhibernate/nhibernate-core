@@ -9,7 +9,7 @@
     </id>
     <version name="VersionNumber" />
     <property name="Name" length="20" not-null="true" unique="true" />
-    <bag name="Nodes" cascade="save-update" inverse="true">
+    <bag name="Nodes" cascade="save-update">
       <key column="RootId" />
       <one-to-many class="Node" />
     </bag>
@@ -23,11 +23,11 @@
     <version name="VersionNumber" />
     <property name="Label" length="20" not-null="true" />
     <many-to-one name="Root" class="Root" column="RootId" not-null="true" />
-    <set name="FromEdges" cascade="save-update" inverse="true" optimistic-lock="false">
+    <set name="FromEdges" cascade="save-update" optimistic-lock="false">
       <key column="FromNodeId" />
       <one-to-many class="Edge" />
     </set>
-    <set name="ToEdges" cascade="save-update" inverse="true">
+    <set name="ToEdges" cascade="save-update">
       <key column="ToNodeId" />
       <one-to-many class="Edge" />
     </set>
