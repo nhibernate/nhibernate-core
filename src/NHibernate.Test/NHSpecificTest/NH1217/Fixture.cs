@@ -2,8 +2,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1217
 {
-	//[TestFixture,Ignore("TODO(Dario): to fix later")]
-	[TestFixture]
+	[TestFixture,Ignore("TODO(Dario): Not fixed yet")]
 	public class Fixture : BugTestCase
 	{
 		public override string BugNumber
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 		///	+--------+          +--------+              +--------+ 
 		/// </summary>
 		[Test]
-		public void NoExceptionMustBeThrown2()
+		public void NoExceptionMustBeThrown()
 		{
 			using (ISession s = OpenSession())
 			{

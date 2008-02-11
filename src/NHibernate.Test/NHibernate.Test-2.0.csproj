@@ -290,6 +290,12 @@
     <Compile Include="NHSpecificTest\NH1178\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1179\Classes.cs" />
     <Compile Include="NHSpecificTest\NH1179\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1217\DomainObjects.cs" />
+    <Compile Include="NHSpecificTest\NH1217\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1217\IDomainBase.cs" />
+    <Compile Include="NHSpecificTest\NH1217\IEdge.cs" />
+    <Compile Include="NHSpecificTest\NH1217\INode.cs" />
+    <Compile Include="NHSpecificTest\NH1217\IRoot.cs" />
     <Compile Include="NHSpecificTest\NH1230\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1230\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1230\FooAssigned.cs" />
@@ -1129,6 +1135,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1178\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1217\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
