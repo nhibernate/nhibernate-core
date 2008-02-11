@@ -265,6 +265,7 @@
     <Compile Include="NHSpecificTest\LoadingNullEntityInSet\PrimaryProfession.cs" />
     <Compile Include="NHSpecificTest\LoadingNullEntityInSet\SecondaryProfession.cs" />
     <Compile Include="NHSpecificTest\LoadingNullEntityInSet\WantedProfession.cs" />
+    <Compile Include="NHSpecificTest\NH1235\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1001\Department.cs" />
     <Compile Include="NHSpecificTest\NH1001\Employee.cs" />
     <Compile Include="NHSpecificTest\NH1001\Fixture.cs" />
@@ -1138,6 +1139,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1217\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1235\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

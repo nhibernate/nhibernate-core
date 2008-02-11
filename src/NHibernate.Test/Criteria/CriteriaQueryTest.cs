@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NHibernate.Expressions;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -418,6 +419,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void NH_1155_ShouldNotLoadAllChildrenInPagedSubSelect()
 		{
+			if (this.Dialect.GetType().Equals((typeof(MsSql2000Dialect))))
+				Assert.Ignore("This is not fixed for SQL 2000 Dialect");
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{

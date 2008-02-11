@@ -1145,7 +1145,12 @@ namespace NHibernate.Loader
 
 		internal static int GetFirstRow(RowSelection selection)
 		{
-			return (selection == null || !selection.DefinesLimits) ? 0 : selection.FirstRow;
+			if (selection == null || !selection.DefinesLimits)
+				return 0;
+			else
+				return selection.FirstRow > 0
+						? selection.FirstRow
+						: 0;
 		}
 
 		/// <summary>
