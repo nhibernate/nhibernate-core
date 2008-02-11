@@ -1,4 +1,3 @@
-using System;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -21,9 +20,16 @@ namespace NHibernate.SqlCommand
 		private string orderByClause;
 		private string groupByClause;
 		private LockMode lockMode;
+		private string comment;
 
 		public SqlSelectBuilder(ISessionFactoryImplementor factory)
 			: base(factory.Dialect, factory) {}
+
+		public SqlSelectBuilder SetComment(string comment)
+		{
+			this.comment = comment;
+			return this;
+		}
 
 		/// <summary>
 		/// Sets the text that should appear after the FROM 
@@ -44,7 +50,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSelectBuilder</returns>
 		public SqlSelectBuilder SetFromClause(string tableName, string alias)
 		{
-			this.fromClause = tableName + " " + alias;
+			fromClause = tableName + " " + alias;
 			return this;
 		}
 
@@ -167,8 +173,12 @@ namespace NHibernate.SqlCommand
 			// 1 = the whereClause
 			// 2 = the "ORDER BY" and orderByClause
 			int initialCapacity = 4 + outerJoinsAfterFrom.Count + 1 + outerJoinsAfterWhere.Count + 1 + 2;
+			if (!string.IsNullOrEmpty(comment))
+				initialCapacity++;
 
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder(initialCapacity + 2);
+			if (!string.IsNullOrEmpty(comment))
+				sqlBuilder.Add("/* " + comment + " */ ");
 
 			sqlBuilder.Add("SELECT ")
 				.Add(selectClause)
