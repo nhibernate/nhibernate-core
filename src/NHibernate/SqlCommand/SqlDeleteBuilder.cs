@@ -1,6 +1,7 @@
-using System.Collections;
+using System.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -14,8 +15,9 @@ namespace NHibernate.SqlCommand
 		private static readonly ILog log = LogManager.GetLogger(typeof(SqlDeleteBuilder));
 		private string tableName;
 
-		private ArrayList whereStrings = new ArrayList();
-		private ArrayList parameterTypes = new ArrayList();
+		private readonly List<SqlString> whereStrings = new List<SqlString>();
+		private readonly List<SqlType> parameterTypes = new List<SqlType>();
+		private string comment;
 
 		public SqlDeleteBuilder(Dialect.Dialect dialect, IMapping mapping)
 			: base(dialect, mapping) {}
@@ -26,6 +28,11 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public SqlDeleteBuilder SetComment(string comment)
+		{
+			this.comment = comment;
+			return this;
+		}
 
 		/// <summary>
 		/// Sets the IdentityColumn for the <c>DELETE</c> sql to use.
@@ -75,15 +82,13 @@ namespace NHibernate.SqlCommand
 		public SqlDeleteBuilder AddWhereFragment(string whereSql)
 		{
 			if (StringHelper.IsNotEmpty(whereSql))
-			{
 				whereStrings.Add(new SqlString(whereSql));
-			}
+
 			return this;
 		}
 
 		#region ISqlStringBuilder Members
 
-		/// <summary></summary>
 		public SqlString ToSqlString()
 		{
 			// will for sure have 3 parts and then each item in the WhereStrings
@@ -93,11 +98,14 @@ namespace NHibernate.SqlCommand
 			initialCapacity += (whereStrings.Count - 1);
 
 			for (int i = 0; i < whereStrings.Count; i++)
-			{
-				initialCapacity += ((SqlString) whereStrings[i]).Count;
-			}
+				initialCapacity += whereStrings[i].Count;
+
+			if (!string.IsNullOrEmpty(comment))
+				initialCapacity++;
 
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder(initialCapacity + 2);
+			if (!string.IsNullOrEmpty(comment))
+				sqlBuilder.Add("/* " + comment + " */ ");
 
 			sqlBuilder.Add("DELETE FROM ")
 				.Add(tableName)
@@ -105,13 +113,11 @@ namespace NHibernate.SqlCommand
 
 			if (whereStrings.Count > 1)
 			{
-				sqlBuilder.Add(
-					(SqlString[]) (whereStrings).ToArray(typeof(SqlString)),
-					null, "AND", null, false);
+				sqlBuilder.Add(whereStrings.ToArray(), null, "AND", null, false);
 			}
 			else
 			{
-				sqlBuilder.Add((SqlString) whereStrings[0]);
+				sqlBuilder.Add(whereStrings[0]);
 			}
 
 			if (log.IsDebugEnabled)
@@ -136,7 +142,7 @@ namespace NHibernate.SqlCommand
 
 		public SqlCommandInfo ToSqlCommandInfo()
 		{
-			return new SqlCommandInfo(ToSqlString(), ArrayHelper.ToSqlTypeArray(parameterTypes));
+			return new SqlCommandInfo(ToSqlString(), parameterTypes.ToArray());
 		}
 	}
 }
