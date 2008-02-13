@@ -6,14 +6,10 @@ using log4net;
 using log4net.Config;
 using NHibernate.Cfg;
 using NHibernate.Connection;
-using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
-
 using NUnit.Framework;
-using System.IO;
 
 namespace NHibernate.Test
 {
