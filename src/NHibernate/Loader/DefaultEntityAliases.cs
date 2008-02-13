@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
@@ -11,13 +10,13 @@ namespace NHibernate.Loader
 	/// </summary>
 	public class DefaultEntityAliases : IEntityAliases
 	{
-		private string[] suffixedKeyColumns;
-		private string[] suffixedVersionColumn;
-		private string[][] suffixedPropertyColumns;
-		private string suffixedDiscriminatorColumn;
-		private string suffix;
-		private string rowIdAlias;
-		private IDictionary userProvidedAliases;
+		private readonly string[] suffixedKeyColumns;
+		private readonly string[] suffixedVersionColumn;
+		private readonly string[][] suffixedPropertyColumns;
+		private readonly string suffixedDiscriminatorColumn;
+		private readonly string suffix;
+		private readonly string rowIdAlias;
+		private readonly IDictionary userProvidedAliases;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
 			: this(CollectionHelper.EmptyMap, persister, suffix)
@@ -32,16 +31,10 @@ namespace NHibernate.Loader
 			this.suffix = suffix;
 			this.userProvidedAliases = userProvidedAliases;
 
-			string[] keyColumnsCandidates = GetUserProvidedAliases(
-				persister.IdentifierPropertyName,
-				(string[]) null
-				);
+			string[] keyColumnsCandidates = GetUserProvidedAliases(persister.IdentifierPropertyName,(string[]) null);
 			if (keyColumnsCandidates == null)
 			{
-				suffixedKeyColumns = GetUserProvidedAliases(
-					EntityPersister.EntityID,
-					GetIdentifierAliases(persister, suffix)
-					);
+				suffixedKeyColumns = GetUserProvidedAliases(EntityPersister.EntityID,GetIdentifierAliases(persister, suffix));
 			}
 			else
 			{
@@ -50,10 +43,7 @@ namespace NHibernate.Loader
 			Intern(suffixedKeyColumns);
 
 			suffixedPropertyColumns = GetSuffixedPropertyAliases(persister);
-			suffixedDiscriminatorColumn = GetUserProvidedAlias(
-				AbstractEntityPersister.EntityClass,
-				GetDiscriminatorAlias(persister, suffix)
-				);
+			suffixedDiscriminatorColumn = GetUserProvidedAlias(AbstractEntityPersister.EntityClass,GetDiscriminatorAlias(persister, suffix));
 			if (persister.IsVersioned)
 			{
 				suffixedVersionColumn = suffixedPropertyColumns[persister.VersionProperty];
@@ -62,7 +52,7 @@ namespace NHibernate.Loader
 			{
 				suffixedVersionColumn = null;
 			}
-			rowIdAlias = LoadableConstants.RowIdAlias + suffix; // TODO: not visible to the user!
+			rowIdAlias = Loadable.RowIdAlias + suffix; // TODO: not visible to the user!
 		}
 
 		protected virtual string GetDiscriminatorAlias(ILoadable persister, string suffix)

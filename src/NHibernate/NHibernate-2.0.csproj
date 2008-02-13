@@ -936,7 +936,6 @@
     <Compile Include="Persister\Entity\ISqlLoadable.cs" />
     <Compile Include="Persister\Entity\IUniqueKeyLoadable.cs" />
     <Compile Include="Persister\Entity\JoinedSubclassEntityPersister.cs" />
-    <Compile Include="Persister\Entity\LoadableConstants.cs" />
     <Compile Include="Persister\Entity\NamedQueryLoader.cs" />
     <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
     <Compile Include="Properties\ChainedPropertyAccessor.cs" />

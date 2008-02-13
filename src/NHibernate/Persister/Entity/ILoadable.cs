@@ -4,6 +4,11 @@ using System.Data;
 
 namespace NHibernate.Persister.Entity
 {
+	public struct Loadable
+	{
+		public readonly static string RowIdAlias = "rowid_";
+	}
+
 	/// <summary>
 	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. There are several optional
 	/// operations used only by loaders that inherit <c>OuterJoinLoader</c>
