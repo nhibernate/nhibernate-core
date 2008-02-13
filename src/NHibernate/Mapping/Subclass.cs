@@ -494,7 +494,7 @@ namespace NHibernate.Mapping
 			get { return superclass.IdentifierMapper; }
 		}
 
-		public override OptimisticLockMode OptimisticLockMode
+		public override Versioning.OptimisticLock OptimisticLockMode
 		{
 			get { return superclass.OptimisticLockMode; }
 		}

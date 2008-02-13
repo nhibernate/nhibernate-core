@@ -67,7 +67,7 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool selectBeforeUpdate;
 		private readonly bool dynamicUpdate;
 		private readonly bool dynamicInsert;
-		private readonly OptimisticLockMode optimisticLockMode;
+		private readonly Versioning.OptimisticLock optimisticLockMode;
 
 		private readonly bool polymorphic;
 		private readonly string superclass;
@@ -258,7 +258,7 @@ namespace NHibernate.Tuple.Entity
 			hasSubclasses = persistentClass.HasSubclasses;
 
 			optimisticLockMode = persistentClass.OptimisticLockMode;
-			if (optimisticLockMode > OptimisticLockMode.Version && !dynamicUpdate)
+			if (optimisticLockMode > Versioning.OptimisticLock.Version && !dynamicUpdate)
 			{
 				throw new MappingException("optimistic-lock setting requires dynamic-update=\"true\": " + type.FullName);
 			}
@@ -512,7 +512,7 @@ namespace NHibernate.Tuple.Entity
 			get { return dynamicInsert; }
 		}
 
-		public OptimisticLockMode OptimisticLockMode
+		public Versioning.OptimisticLock OptimisticLockMode
 		{
 			get { return optimisticLockMode; }
 		}

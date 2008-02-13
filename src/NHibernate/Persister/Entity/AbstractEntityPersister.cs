@@ -1719,7 +1719,7 @@ namespace NHibernate.Persister.Entity
 			return builder.ToSqlString();
 		}
 
-		protected OptimisticLockMode OptimisticLockMode
+		protected Versioning.OptimisticLock OptimisticLockMode
 		{
 			get { return entityMetamodel.OptimisticLockMode; }
 		}
@@ -1938,14 +1938,14 @@ namespace NHibernate.Persister.Entity
 					index = Dehydrate(id, fields, includeProperty, propertyColumnUpdateable, j, statement, session, index);
 
 					// Write any appropriate versioning conditional parameters
-					if (useVersion && OptimisticLockMode == OptimisticLockMode.Version)
+					if (useVersion && OptimisticLockMode == Versioning.OptimisticLock.Version)
 					{
 						VersionType.NullSafeSet(statement, oldVersion, index, session);
 					}
-					else if (OptimisticLockMode.Version < OptimisticLockMode && null != oldFields)
+					else if (Versioning.OptimisticLock.Version < OptimisticLockMode && null != oldFields)
 					{
 						bool[] versionability = PropertyVersionability;
-						bool[] includeOldField = OptimisticLockMode == OptimisticLockMode.All
+						bool[] includeOldField = OptimisticLockMode == Versioning.OptimisticLock.All
 						                         	? PropertyUpdateability
 						                         	: includeProperty;
 
@@ -3118,16 +3118,16 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == OptimisticLockMode.Version)
+			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == Versioning.OptimisticLock.Version)
 			{
 				updateBuilder.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
 				hasColumns = true;
 			}
-			else if (entityMetamodel.OptimisticLockMode > OptimisticLockMode.Version && oldFields != null)
+			else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
 			{
 				bool[] versionability = PropertyVersionability;
 				bool[] includeInWhere =
-					OptimisticLockMode == OptimisticLockMode.All
+					OptimisticLockMode == Versioning.OptimisticLock.All
 						? PropertyUpdateability
 						: includeProperty;
 
@@ -3161,7 +3161,7 @@ namespace NHibernate.Persister.Entity
 		{
 			int span = TableSpan;
 			bool isImpliedOptimisticLocking = !entityMetamodel.IsVersioned &&
-			                                  entityMetamodel.OptimisticLockMode > OptimisticLockMode.Version;
+																				entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version;
 			object[] loadedState = null;
 			if (isImpliedOptimisticLocking)
 			{
@@ -3246,7 +3246,7 @@ namespace NHibernate.Persister.Entity
 					{
 						VersionType.NullSafeSet(statement, version, index, session);
 					}
-					else if (entityMetamodel.OptimisticLockMode > OptimisticLockMode.Version && loadedState != null)
+					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && loadedState != null)
 					{
 						IType[] types = PropertyTypes;
 						bool[] versionability = PropertyVersionability;

@@ -133,7 +133,6 @@
     <Compile Include="Engine\IMapping.cs" />
     <Compile Include="Engine\ISessionFactoryImplementor.cs" />
     <Compile Include="Engine\ISessionImplementor.cs" />
-    <Compile Include="Engine\OptimisticLockMode.cs" />
     <Compile Include="Engine\QueryParameters.cs" />
     <Compile Include="Engine\RowSelection.cs" />
     <Compile Include="Engine\TypedValue.cs" />

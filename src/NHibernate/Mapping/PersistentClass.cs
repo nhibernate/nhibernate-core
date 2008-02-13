@@ -61,7 +61,7 @@ namespace NHibernate.Mapping
 
 		private IDictionary<EntityMode, System.Type> tuplizerImpls;
 
-		private OptimisticLockMode optimisticLockMode;
+		private Versioning.OptimisticLock optimisticLockMode;
 
 		private System.Type mappedClass;
 		private System.Type proxyInterface;
@@ -931,7 +931,7 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public virtual OptimisticLockMode OptimisticLockMode
+		public virtual Versioning.OptimisticLock OptimisticLockMode
 		{
 			get { return optimisticLockMode; }
 			set { optimisticLockMode = value; }

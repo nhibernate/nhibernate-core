@@ -348,21 +348,21 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private static OptimisticLockMode GetOptimisticLockMode(XmlAttribute olAtt)
+		private static Versioning.OptimisticLock GetOptimisticLockMode(XmlAttribute olAtt)
 		{
 			if (olAtt == null)
-				return OptimisticLockMode.Version;
+				return Versioning.OptimisticLock.Version;
 
 			string olMode = olAtt.Value;
 
 			if (olMode == null || "version".Equals(olMode))
-				return OptimisticLockMode.Version;
+				return Versioning.OptimisticLock.Version;
 			else if ("dirty".Equals(olMode))
-				return OptimisticLockMode.Dirty;
+				return Versioning.OptimisticLock.Dirty;
 			else if ("all".Equals(olMode))
-				return OptimisticLockMode.All;
+				return Versioning.OptimisticLock.All;
 			else if ("none".Equals(olMode))
-				return OptimisticLockMode.None;
+				return Versioning.OptimisticLock.None;
 			else
 				throw new MappingException("Unsupported optimistic-lock style: " + olMode);
 		}

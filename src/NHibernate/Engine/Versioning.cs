@@ -10,6 +10,14 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class Versioning
 	{
+		public enum OptimisticLock
+		{
+			None = -1,
+			Version = 0,
+			Dirty = 1,
+			All = 2
+		}
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(Versioning));
 
 		/// <summary>

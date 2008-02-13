@@ -221,7 +221,7 @@ namespace NHibernate.Persister.Entity
 				this.discriminatorSQLString = null;
 			}
 
-			if (OptimisticLockMode != OptimisticLockMode.Version)
+			if (OptimisticLockMode != Versioning.OptimisticLock.Version)
 			{
 				throw new MappingException("optimistic-lock attribute not supported for joined-subclass mappings: " + ClassName);
 			}
