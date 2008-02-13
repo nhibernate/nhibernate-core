@@ -1,4 +1,8 @@
+using System;
+using System.Data;
 using NHibernate.Engine;
+using NHibernate.Id.Insert;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Id
 {
@@ -18,25 +22,106 @@ namespace NHibernate.Id
 	/// the entity is inserted.
 	/// </p>
 	/// </remarks>
-	public class IdentityGenerator : IIdentifierGenerator
+	public class IdentityGenerator : AbstractPostInsertGenerator
 	{
-		#region IIdentifierGenerator Members
-
-		/// <summary>
-		/// The IdentityGenerator for autoincrement/identity key generation.
-		/// 
-		/// </summary>
-		/// <param name="s">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
-		/// <param name="obj">The entity the id is being generated for.</param>
-		/// <returns>
-		/// <c>IdentityColumnIndicator</c> Indicates to the Session that identity (i.e. identity/autoincrement column)
-		/// key generation should be used.
-		/// </returns>
-		public object Generate(ISessionImplementor s, object obj)
+		public override IInsertGeneratedIdentifierDelegate GetInsertGeneratedIdentifierDelegate(
+			IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory, bool isGetGeneratedKeysEnabled)
 		{
-			return IdentifierGeneratorFactory.IdentityColumnIndicator;
+			if (isGetGeneratedKeysEnabled)
+			{
+				throw new NotSupportedException();
+			}
+			else if (factory.Dialect.SupportsInsertSelectIdentity)
+			{
+				return new InsertSelectDelegate(persister, factory);
+			}
+			else
+			{
+				return new BasicDelegate(persister, factory);
+			}
 		}
 
-		#endregion
+		/// <summary> 
+		/// Delegate for dealing with IDENTITY columns where the dialect supports returning
+		/// the generated IDENTITY value directly from the insert statement.
+		/// </summary>
+		public class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
+		{
+			private readonly IPostInsertIdentityPersister persister;
+			private readonly ISessionFactoryImplementor factory;
+
+			public InsertSelectDelegate(IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory)
+				: base(persister)
+			{
+				this.persister = persister;
+				this.factory = factory;
+			}
+
+			public override IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert()
+			{
+				InsertSelectIdentityInsert insert = new InsertSelectIdentityInsert(factory);
+				insert.AddIdentityColumn(persister.RootTableKeyColumnNames[0]);
+				return insert;
+			}
+
+			protected internal override IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
+			{
+				SqlString insertSelectSQL = factory.Dialect.AppendIdentitySelectToInsert(insertSQL.Text);
+				return session.Batcher.PrepareCommand(CommandType.Text, insertSelectSQL, insertSQL.ParameterTypes);
+			}
+
+			public override object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
+			{
+				IDataReader rs = insert.ExecuteReader();
+				try
+				{
+					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
+				}
+				finally
+				{
+					rs.Close();
+				}
+			}
+
+			public object DetermineGeneratedIdentifier(ISessionImplementor session, object entity)
+			{
+				throw new AssertionFailure("insert statement returns generated value");
+			}
+		}
+
+		/// <summary> 
+		/// Delegate for dealing with IDENTITY columns where the dialect requires an
+		/// additional command execution to retrieve the generated IDENTITY value
+		/// </summary>
+		public class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
+		{
+
+			private readonly IPostInsertIdentityPersister persister;
+			private readonly ISessionFactoryImplementor factory;
+
+			public BasicDelegate(IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory)
+				: base(persister)
+			{
+				this.persister = persister;
+				this.factory = factory;
+			}
+
+			protected internal override SqlString SelectSQL
+			{
+				get { return new SqlString(persister.IdentitySelectString); }
+			}
+
+			public override IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert()
+			{
+				IdentifierGeneratingInsert insert = new IdentifierGeneratingInsert(factory);
+				insert.AddIdentityColumn(persister.RootTableKeyColumnNames[0]);
+				return insert;
+			}
+
+			protected internal override object GetResult(ISessionImplementor session, IDataReader rs, object obj)
+			{
+				return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
+			}
+		}
 	}
 }

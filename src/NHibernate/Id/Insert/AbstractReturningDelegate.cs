@@ -31,7 +31,7 @@ namespace NHibernate.Id.Insert
 
 		public abstract IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert();
 
-		public object PerformInsert(SqlString insertSQL, ISessionImplementor session, IBinder binder)
+		public object PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
 		{
 			try
 			{
@@ -40,7 +40,7 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					binder.BindValues(insert);
-					return ExecuteAndExtract(insert);
+					return ExecuteAndExtract(insert, session);
 				}
 				finally
 				{
@@ -49,7 +49,7 @@ namespace NHibernate.Id.Insert
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(sqle, "could not insert: " + MessageHelper.InfoString(persister), insertSQL);
+				throw ADOExceptionHelper.Convert(sqle, "could not insert: " + MessageHelper.InfoString(persister), insertSQL.Text);
 			}
 		}
 
@@ -60,9 +60,9 @@ namespace NHibernate.Id.Insert
 			session.Batcher.CloseCommand(insert, null);
 		}
 
-		protected internal abstract IDbCommand Prepare(SqlString insertSQL, ISessionImplementor session);
+		protected internal abstract IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session);
 
-		public abstract object ExecuteAndExtract(IDbCommand insert);
+		public abstract object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session);
 
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -74,6 +75,29 @@ namespace NHibernate.Id
 	/// </remarks>
 	public sealed class IdentifierGeneratorFactory
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(IdentifierGeneratorFactory));
+
+		/// <summary> Get the generated identifier when using identity columns</summary>
+		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>
+		/// <param name="type">The <see cref="IIdentifierType"/> the value should be converted to.</param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> the value is retrieved in.</param>
+		/// <returns> The value for the identifier. </returns>
+		public static object GetGeneratedIdentity(IDataReader rs, IType type, ISessionImplementor session)
+		{
+			if (!rs.Read())
+			{
+				throw new HibernateException("The database returned no natively generated identity value");
+			}
+			object id = Get(rs, type, session);
+
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("Natively generated identity: " + id);
+			}
+			return id;
+		}
+
+
 		/// <summary>
 		/// Gets the value of the identifier from the <see cref="IDataReader"/> and
 		/// ensures it is the correct <see cref="System.Type"/>.
@@ -121,7 +145,7 @@ namespace NHibernate.Id
 		/// <summary>
 		/// When this is return
 		/// </summary>
-		public static readonly object IdentityColumnIndicator = new object();
+		public static readonly object PostInsertIndicator = new object();
 
 		/// <summary>
 		/// Initializes the static fields in <see cref="IdentifierGeneratorFactory"/>.
@@ -170,7 +194,7 @@ namespace NHibernate.Id
 			try
 			{
 				System.Type clazz = GetIdentifierGeneratorClass(strategy, dialect);
-				IIdentifierGenerator idgen = (IIdentifierGenerator) Activator.CreateInstance(clazz);
+				IIdentifierGenerator idgen = (IIdentifierGenerator)Activator.CreateInstance(clazz);
 				IConfigurable conf = idgen as IConfigurable;
 				if (conf != null)
 					conf.Configure(type, parms, dialect);

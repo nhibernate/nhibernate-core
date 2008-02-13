@@ -26,12 +26,12 @@ namespace NHibernate.Id.Insert
 
 		public abstract IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert();
 
-		public object PerformInsert(SqlString insertSQL, ISessionImplementor session, IBinder binder)
+		public object PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
 		{
 			try
 			{
 				// prepare and execute the insert
-				IDbCommand insert = session.Batcher.PrepareCommand(CommandType.Text, insertSQL, SqlTypeFactory.NoTypes);
+				IDbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
 				try
 				{
 					binder.BindValues(insert);
@@ -44,7 +44,7 @@ namespace NHibernate.Id.Insert
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(sqle, "could not insert: " + MessageHelper.InfoString(persister), insertSQL);
+				throw ADOExceptionHelper.Convert(sqle, "could not insert: " + MessageHelper.InfoString(persister), insertSQL.Text);
 			}
 
 			SqlString selectSQL = SelectSQL;
@@ -72,7 +72,7 @@ namespace NHibernate.Id.Insert
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(sqle, "could not retrieve generated id after insert: " + MessageHelper.InfoString(persister), insertSQL);
+				throw ADOExceptionHelper.Convert(sqle, "could not retrieve generated id after insert: " + MessageHelper.InfoString(persister), insertSQL.Text);
 			}
 		}
 

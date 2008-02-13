@@ -720,6 +720,7 @@
     <Compile Include="Exceptions\IViolatedConstraintNameExtracter.cs" />
     <Compile Include="Exceptions\SQLStateConverter.cs" />
     <Compile Include="FKUnmatchingColumnsException.cs" />
+    <Compile Include="Id\AbstractPostInsertGenerator.cs" />
     <Compile Include="Id\Insert\AbstractReturningDelegate.cs">
       <SubType>Code</SubType>
     </Compile>

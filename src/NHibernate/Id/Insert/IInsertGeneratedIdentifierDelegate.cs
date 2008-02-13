@@ -27,6 +27,6 @@ namespace NHibernate.Id.Insert
 		/// <param name="session"> </param>
 		/// <param name="binder"> </param>
 		/// <returns> The generated identifier value. </returns>
-		object PerformInsert(SqlString insertSQL, ISessionImplementor session, IBinder binder);
+		object PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder);
 	}
 }

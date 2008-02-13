@@ -113,7 +113,7 @@ namespace NHibernate.Event.Default
 			{
 				return source.GetIdentifier(entity);
 			}
-			else if (generatedId == IdentifierGeneratorFactory.IdentityColumnIndicator)
+			else if (generatedId == IdentifierGeneratorFactory.PostInsertIndicator)
 			{
 				return PerformSave(entity, null, persister, true, anything, source, requiresImmediateIdAccess);
 			}

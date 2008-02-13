@@ -502,7 +502,7 @@ namespace NHibernate.Impl
 					persister.SetPropertyValues(entity, state);
 				}
 			}
-			if (id == IdentifierGeneratorFactory.IdentityColumnIndicator)
+			if (id == IdentifierGeneratorFactory.PostInsertIndicator)
 			{
 				id = persister.Insert(state, entity, this);
 			}
