@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Type;
 
 namespace NHibernate.Persister.Entity
@@ -11,10 +10,12 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Returns the column alias names used to persist/query the numbered property of the class or a subclass (optional operation).
 		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
 		string[] GetSubclassPropertyColumnAliases(string propertyName, string suffix);
+
+		/// <summary> 
+		/// Return the column names used to persist/query the named property of the class or a subclass (optional operation).
+		/// </summary>
+		string[] GetSubclassPropertyColumnNames(string propertyName);
 
 		/// <summary>
 		/// All columns to select, when loading.

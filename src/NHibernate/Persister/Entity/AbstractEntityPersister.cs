@@ -1418,6 +1418,12 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
+		public string[] GetSubclassPropertyColumnNames(string propertyName)
+		{
+			//TODO: should we allow suffixes on these ?
+			return (string[])subclassPropertyColumnNames[propertyName];
+		}
+
 		public string[] KeyColumnNames
 		{
 			get { return IdentifierColumnNames; }
