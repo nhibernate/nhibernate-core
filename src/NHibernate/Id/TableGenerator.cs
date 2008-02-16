@@ -190,6 +190,7 @@ namespace NHibernate.Id
 					qps.Transaction = trans;
 					try
 					{
+						log.Debug(string.Format("Reading high value:{0}", qps.CommandText));
 						rs = qps.ExecuteReader();
 						if (!rs.Read())
 						{
@@ -221,6 +222,7 @@ namespace NHibernate.Id
 						columnType.Set(ups, result + 1, 0);
 						columnType.Set(ups, result, 1);
 
+						log.Debug(string.Format("Updating high value:{0}", ups.CommandText));
 						rows = ups.ExecuteNonQuery();
 					} 
 						// TODO: change to SqlException
