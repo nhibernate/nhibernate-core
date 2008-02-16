@@ -13,11 +13,20 @@ namespace NHibernate.Expressions
 	{
 		private readonly string functionName;
 		private readonly object[] args;
+		private readonly ISQLFunction function;
 		private readonly IType returnType;
 
 		public SqlFunctionProjection(string functionName, IType returnType, params object[] args)
 		{
 			this.functionName = functionName;
+			this.returnType = returnType;
+			ValidateArguments(args);
+			this.args = args;
+		}
+
+		public SqlFunctionProjection(ISQLFunction function, IType returnType, params object[] args)
+		{
+			this.function = function;
 			this.returnType = returnType;
 			ValidateArguments(args);
 			this.args = args;
@@ -35,14 +44,14 @@ namespace NHibernate.Expressions
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			ISQLFunction function = GetFunction(criteriaQuery);
+			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
 			List<string> tokens = new List<string>();
-			string replacemenToken = Guid.NewGuid().ToString("n").ToString();
+			string replacemenToken = Guid.NewGuid().ToString("n");
 			for (int i = 0; i < args.Length; i++)
 			{
 				tokens.Add(replacemenToken);
 			}
-			string functionStatement = function.Render(tokens, criteriaQuery.Factory);
+			string functionStatement = sqlFunction.Render(tokens, criteriaQuery.Factory);
 			string[] splitted = functionStatement.Split(new string[] { replacemenToken }, StringSplitOptions.RemoveEmptyEntries);
 
 			SqlStringBuilder sb = new SqlStringBuilder();
@@ -74,6 +83,8 @@ namespace NHibernate.Expressions
 
 		private ISQLFunction GetFunction(ICriteriaQuery criteriaQuery)
 		{
+			if (function != null)
+				return function;
 			Dialect dialect = criteriaQuery.Factory.Dialect;
 			if (dialect.Functions.ContainsKey(functionName) == false)
 			{
