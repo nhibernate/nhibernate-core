@@ -411,11 +411,11 @@ namespace NHibernate.Loader
 
 			IDataReader rs = GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, selection, session);
 
-// would be great to move all this below here into another method that could also be used
-// from the new scrolling stuff.
-//
-// Would need to change the way the max-row stuff is handled (i.e. behind an interface) so
-// that I could do the control breaking at the means to know when to stop
+			// would be great to move all this below here into another method that could also be used
+			// from the new scrolling stuff.
+			//
+			// Would need to change the way the max-row stuff is handled (i.e. behind an interface) so
+			// that I could do the control breaking at the means to know when to stop
 			LockMode[] lockModeArray = GetLockModes(queryParameters.LockModes);
 			EntityKey optionalObjectKey = GetOptionalObjectKey(queryParameters, session);
 

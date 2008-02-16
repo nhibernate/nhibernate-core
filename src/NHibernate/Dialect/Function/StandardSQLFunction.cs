@@ -42,7 +42,7 @@ namespace NHibernate.Dialect.Function
 
 		public virtual IType ReturnType(IType columnType, IMapping mapping)
 		{
-			return (returnType == null) ? columnType : returnType;
+			return returnType ?? columnType;
 		}
 
 		public bool HasArguments

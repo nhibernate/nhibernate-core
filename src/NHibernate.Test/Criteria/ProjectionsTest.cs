@@ -36,7 +36,7 @@ namespace NHibernate.Test.Criteria
 				ITransaction t = session.BeginTransaction();
 
 				Student gavin = new Student();
-				gavin.Name = "Gavin King";
+				gavin.Name = "ayende";
 				gavin.StudentNumber = 27;
 				session.Save(gavin);
 
@@ -50,6 +50,23 @@ namespace NHibernate.Test.Criteria
 			{
 				session.Delete("from System.Object");
 				session.Flush();
+			}
+		}
+
+		[Test]
+		public void UsingSqlFunctions_Concat()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				string result = session.CreateCriteria(typeof(Student))
+					.SetProjection(new SqlFunctionProjection("concat",
+						NHibernateUtil.String,
+						Projections.Property("Name"),
+						new TypedValue(NHibernateUtil.String, " "),
+						Projections.Property("Name")
+					))
+					.UniqueResult<string>();
+				Assert.AreEqual("ayende ayende", result);
 			}
 		}
 
