@@ -2199,7 +2199,6 @@ namespace NHibernate.Persister.Entity
 			bool hasDeferred = rootPersister.HasSequentialSelect;
 			IDbCommand sequentialSelect = null;
 			IDataReader sequentialResultSet = null;
-			bool sequentialSelectEmpty = false;
 			try
 			{
 				if (hasDeferred)

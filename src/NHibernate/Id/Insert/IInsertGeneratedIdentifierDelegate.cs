@@ -7,8 +7,8 @@ namespace NHibernate.Id.Insert
 	/// Responsible for handling delegation relating to variants in how
 	/// insert-generated-identifier generator strategies dictate processing:
 	/// <ul>
-	/// <li>building the sql insert statement
-	/// <li>determination of the generated identifier value
+	/// <li>building the sql insert statement</li>
+	/// <li>determination of the generated identifier value</li>
 	/// </ul> 
 	/// </summary>
 	public interface IInsertGeneratedIdentifierDelegate

@@ -11,8 +11,8 @@ namespace NHibernate.Expressions
 	[Serializable]
 	public class Order
 	{
-		protected bool _ascending;
-		protected string _propertyName;
+		protected bool ascending;
+		protected string propertyName;
 
 		/// <summary>
 		/// Constructor for Order.
@@ -21,8 +21,8 @@ namespace NHibernate.Expressions
 		/// <param name="ascending"></param>
 		public Order(string propertyName, bool ascending)
 		{
-			_propertyName = propertyName;
-			_ascending = ascending;
+			this.propertyName = propertyName;
+			this.ascending = ascending;
 		}
 
 
@@ -31,7 +31,7 @@ namespace NHibernate.Expressions
 		/// </summary>
 		public virtual string ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, _propertyName);
+			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, propertyName);
 
 			StringBuilder fragment = new StringBuilder();
 
@@ -52,7 +52,7 @@ namespace NHibernate.Expressions
 					fragment.Append(')');
 				}
 
-				fragment.Append(_ascending ? " asc" : " desc");
+				fragment.Append(ascending ? " asc" : " desc");
 
 				if (i < columns.Length - 1)
 				{
@@ -65,7 +65,7 @@ namespace NHibernate.Expressions
 
 		public override string ToString()
 		{
-			return _propertyName + (_ascending ? " asc" : " desc");
+			return propertyName + (ascending ? " asc" : " desc");
 		}
 
 		/// <summary>

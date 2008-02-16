@@ -322,6 +322,15 @@ namespace NHibernate.Loader.Criteria
 					types.Add(tv[i].Type);
 				}
 			}
+			if(rootCriteria.Projection!=null)
+			{
+				TypedValue[] tv = rootCriteria.Projection.GetTypedValues(rootCriteria.ProjectionCriteria, this);
+				for (int i = 0; i < tv.Length; i++)
+				{
+					values.Add(tv[i].Value);
+					types.Add(tv[i].Type);
+				}
+			}
 
 			object[] valueArray = values.ToArray();
 			IType[] typeArray = (IType[]) types.ToArray(typeof(IType));

@@ -2125,10 +2125,12 @@ namespace NHibernate.Impl
 					{
 						return GetEntityPersister(null, obj);
 					}
-					catch (HibernateException e2)
+					catch (HibernateException)
 					{
-						throw e;
+						// we ignore this exception and re-throw the 
+						// original one
 					}
+					throw;
 				}
 			}
 		}

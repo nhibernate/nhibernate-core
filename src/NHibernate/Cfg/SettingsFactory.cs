@@ -271,7 +271,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		protected internal SettingsFactory()
+		internal SettingsFactory()
 		{
 			//should not be publically creatable
 		}

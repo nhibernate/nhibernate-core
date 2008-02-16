@@ -1,13 +1,15 @@
 namespace NHibernate.Tuple
 {
 	/// <summary> 
+	/// <para>
 	/// A tuplizer defines the contract for things which know how to manage
 	/// a particular representation of a piece of data, given that
 	/// representation's {@link org.hibernate.EntityMode} (the entity-mode
 	/// essentially defining which representation).
-	/// </p>
+	/// </para>
 	/// If that given piece of data is thought of as a data structure, then a tuplizer
-	/// is the thing which knows how to<ul>
+	/// is the thing which knows how to
+	/// <ul>
 	/// <li>create such a data structure appropriately
 	/// <li>extract values from and inject values into such a data structure
 	/// </ul>

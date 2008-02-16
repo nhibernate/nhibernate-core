@@ -16,7 +16,7 @@ namespace NHibernate.Bytecode
 		/// </summary>
 		/// <returns> The lazy-load proxy factory. </returns>
 		IProxyFactory BuildProxyFactory();
-
+		/*
 		/// <summary> Build a proxy factory for basic proxy concerns.  The return
 		/// should be capable of properly handling newInstance() calls.
 		/// <p/>
@@ -35,5 +35,6 @@ namespace NHibernate.Bytecode
 		/// </returns>
 		// TODO: H3.2
 		//BasicProxyFactory buildBasicProxyFactory(System.Type superClass, System.Type[] interfaces);
+		 */ 
 	}
 }
