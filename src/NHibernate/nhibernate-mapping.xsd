@@ -374,7 +374,7 @@
 						<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 					<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded" />
-					<xs:element ref="union-subclass" maxOccurs="unbounded" minOccurs="0" />
+					<xs:element ref="union-subclass" minOccurs="0" maxOccurs="unbounded" />
 				</xs:choice>
 				<xs:group ref="classCustomSQL" />
 				<xs:element ref="filter" minOccurs="0" maxOccurs="unbounded" />
@@ -1056,8 +1056,8 @@
 			<xs:attribute name="cache-mode" type="cacheMode" />
 			<xs:attribute name="cacheable" type="xs:boolean" />
 			<xs:attribute name="cache-region" type="xs:string" />
-			<xs:attribute name="fetch-size" type="xs:int" />
-			<xs:attribute name="timeout" type="xs:int" />
+			<xs:attribute name="fetch-size" type="xs:positiveInteger" />
+			<xs:attribute name="timeout" type="xs:positiveInteger" />
 			<xs:attribute name="read-only" type="xs:boolean" />
 		</xs:complexType>
 	</xs:element>
@@ -1138,8 +1138,8 @@
 			<xs:attribute name="cache-mode" type="cacheMode" />
 			<xs:attribute name="callable" type="xs:boolean" />
 			<xs:attribute name="read-only" type="xs:boolean" />
-			<xs:attribute name="timeout" type="xs:int" />
-			<xs:attribute name="fetch-size" type="xs:int" />
+			<xs:attribute name="timeout" type="xs:positiveInteger" />
+			<xs:attribute name="fetch-size" type="xs:positiveInteger" />
 			<xs:attribute name="cache-region" type="xs:string" />
 			<xs:attribute name="cacheable" type="xs:boolean" />
 		</xs:complexType>
@@ -1265,7 +1265,7 @@
 	</xs:simpleType>
 	<xs:element name="union-subclass">
 		<xs:annotation>
-			<xs:documentation>Joined subclasses are used for the normalized table-per-subclass mapping strategy</xs:documentation>
+			<xs:documentation>A subclass in a table-per-concrete-class mapping</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -1291,7 +1291,7 @@
 			<xs:attributeGroup ref="baseClassAttributes" />
 			<xs:attribute name="extends" type="xs:string" use="optional">
 				<xs:annotation>
-					<xs:documentation>Name of the root class. Required if the Joined Subclass is declared outside the declaration of its root class</xs:documentation>
+					<xs:documentation>Name of the root class. Required if the subclass is declared outside the declaration of its root class</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="schema" type="xs:string" use="optional" />
