@@ -39,7 +39,21 @@ namespace NHibernate
 		/// <returns></returns>
 		public static IType GuessType(object obj)
 		{
-			System.Type type = obj.GetType();
+			System.Type type = (obj as System.Type) ?? obj.GetType();
+			return GuessType(type);
+		}
+
+		/// <summary>
+		/// Guesses the IType by the type
+		/// </summary>
+		/// <param name="type">The type.</param>
+		/// <returns></returns>
+		public static IType GuessType(System.Type type)
+		{
+			if(type.FullName.StartsWith(typeof(Nullable<>).FullName))
+			{
+				type = type.GetGenericArguments()[0];
+			}
 			if (clrTypeToNHibernateType.ContainsKey(type))
 			{
 				return clrTypeToNHibernateType[type];

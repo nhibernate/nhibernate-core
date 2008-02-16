@@ -250,6 +250,7 @@
     <Compile Include="MultipleCollectionFetchTest\MultipleSetFetchFixture.cs" />
     <Compile Include="MultipleCollectionFetchTest\Person.cs" />
     <Compile Include="NHAssert.cs" />
+    <Compile Include="NHibernateUtilTest.cs" />
     <Compile Include="NHSpecificTest\AliasFixture.cs" />
     <Compile Include="NHSpecificTest\BasicClassFixture.cs" />
     <Compile Include="NHSpecificTest\BasicObjectFixture.cs" />
