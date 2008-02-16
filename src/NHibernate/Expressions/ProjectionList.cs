@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 namespace NHibernate.Expressions
 {
+	using Engine;
+
 	[Serializable]
 	public class ProjectionList : IProjection
 	{
@@ -165,6 +167,22 @@ namespace NHibernate.Expressions
 				}
 				return false;
 			}
+		}
+
+		/// <summary>
+		/// Gets the typed values for parameters in this projection
+		/// </summary>
+		/// <param name="criteria">The criteria.</param>
+		/// <param name="criteriaQuery">The criteria query.</param>
+		/// <returns></returns>
+		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			List<TypedValue> values = new List<TypedValue>();
+			foreach (IProjection element in elements)
+			{
+				values.AddRange(element.GetTypedValues(criteria, criteriaQuery));
+			}
+			return values.ToArray();
 		}
 	}
 }

@@ -4,6 +4,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using Engine;
+
 	/// <summary>
 	/// A single-column projection that may be aliased
 	/// </summary>
@@ -45,7 +47,18 @@ namespace NHibernate.Expressions
 			get { return false; }
 		}
 
-		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery cirteriaQuery);
+		/// <summary>
+		/// Gets the typed values for parameters in this projection
+		/// </summary>
+		/// <param name="criteria">The criteria.</param>
+		/// <param name="criteriaQuery">The criteria query.</param>
+		/// <returns></returns>
+		public virtual TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return new TypedValue[0];
+		}
+
+		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery);
 
 		public abstract IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery);
 	}

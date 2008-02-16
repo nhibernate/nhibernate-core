@@ -5,6 +5,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Expressions
 {
+	using Engine;
+
 	/// <summary>
 	/// A SQL fragment. The string {alias} will be replaced by the alias of the root entity.
 	/// </summary>
@@ -14,9 +16,9 @@ namespace NHibernate.Expressions
 		private readonly string sql;
 		private readonly string groupBy;
 		private readonly IType[] types;
-		private string[] aliases;
-		private string[] columnAliases;
-		private bool grouped;
+		private readonly string[] aliases;
+		private readonly string[] columnAliases;
+		private readonly bool grouped;
 
 		internal SQLProjection(string sql, string[] columnAliases, IType[] types)
 			: this(sql, null, columnAliases, types)
@@ -69,6 +71,17 @@ namespace NHibernate.Expressions
 		public bool IsGrouped
 		{
 			get { return grouped; }
+		}
+
+		/// <summary>
+		/// Gets the typed values for parameters in this projection
+		/// </summary>
+		/// <param name="criteria">The criteria.</param>
+		/// <param name="criteriaQuery">The criteria query.</param>
+		/// <returns></returns>
+		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return new TypedValue[0];
 		}
 
 		public IType[] GetTypes(string alias, ICriteria crit, ICriteriaQuery criteriaQuery)

@@ -56,7 +56,7 @@ namespace NHibernate.Loader
 		}
 
 		protected void InitProjection(
-			string projectionString,
+			SqlString projectionString,
 			SqlString whereString,
 			string orderByString,
 			string groupByString,
@@ -78,7 +78,7 @@ namespace NHibernate.Loader
 		}
 
 		private void InitStatementString(
-			string projection,
+			SqlString projection,
 			SqlString condition,
 			string orderBy,
 			string groupBy,
@@ -89,13 +89,16 @@ namespace NHibernate.Loader
 			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 			JoinFragment ojf = MergeOuterJoins(associations);
 
+			SqlString selectClause = projection;
+			if(selectClause==null)
+			{
+				selectClause = new SqlString(
+					persister.SelectFragment(alias, Suffixes[joins]) + 
+					SelectString(associations));
+			}
 			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
 				.SetLockMode(lockMode)
-				.SetSelectClause(
-				projection == null ?
-				persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations) :
-				projection
-				)
+				.SetSelectClause(selectClause)
 				.SetFromClause(
 				Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +
 				persister.FromJoinFragment(alias, true, true)

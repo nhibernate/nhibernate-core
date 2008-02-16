@@ -4,6 +4,9 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using Engine;
+	using NHibernate.Loader.Criteria;
+
 	public interface IProjection
 	{
 		/// <summary>
@@ -64,5 +67,13 @@ namespace NHibernate.Expressions
 		/// Does this projection specify grouping attributes?
 		/// </summary>
 		bool IsGrouped { get; }
+
+		/// <summary>
+		/// Gets the typed values for parameters in this projection
+		/// </summary>
+		/// <param name="criteria">The criteria.</param>
+		/// <param name="criteriaQuery">The criteria query.</param>
+		/// <returns></returns>
+		TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery);
 	}
 }

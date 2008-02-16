@@ -106,6 +106,7 @@
     <Compile Include="Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Criteria\Enrolment.cs" />
     <Compile Include="Criteria\MaterialResource.cs" />
+    <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
     <Compile Include="Criteria\Student.cs" />
     <Compile Include="Criteria\StudentDTO.cs" />

@@ -4,6 +4,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using Engine;
+
 	[Serializable]
 	public class AliasedProjection : IProjection
 	{
@@ -58,6 +60,17 @@ namespace NHibernate.Expressions
 		public virtual bool IsGrouped
 		{
 			get { return projection.IsGrouped; }
+		}
+
+		/// <summary>
+		/// Gets the typed values for parameters in this projection
+		/// </summary>
+		/// <param name="criteria">The criteria.</param>
+		/// <param name="criteriaQuery">The criteria query.</param>
+		/// <returns></returns>
+		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return projection.GetTypedValues(criteria, criteriaQuery);
 		}
 
 		public override string ToString()

@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SqlSelectBuilder));
 
-		private string selectClause;
+		private SqlString selectClause;
 		private string fromClause;
 		private SqlString outerJoinsAfterFrom;
 		private SqlString whereClause;
@@ -117,9 +117,20 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="selectClause">The selectClause to set</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetSelectClause(string selectClause)
+		public SqlSelectBuilder SetSelectClause(SqlString selectClause)
 		{
 			this.selectClause = selectClause;
+			return this;
+		}
+
+		// <summary>
+		/// Sets the text for the SELECT
+		/// </summary>
+		/// <param name="selectClause">The selectClause to set</param>
+		/// <returns>The SqlSelectBuilder</returns>
+		public SqlSelectBuilder SetSelectClause(string selectClause)
+		{
+			this.selectClause = new SqlString(selectClause);
 			return this;
 		}
 
