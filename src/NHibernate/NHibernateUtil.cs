@@ -8,13 +8,58 @@ using NHibernate.UserTypes;
 
 namespace NHibernate
 {
+	using System.Collections.Generic;
+	using System.Reflection;
+
 	/// <summary>
 	/// Provides access to the full range of NHibernate built-in types.
 	/// IType instances may be used to bind values to query parameters.
 	/// Also a factory for new Blobs and Clobs.
 	/// </summary>
-	public sealed class NHibernateUtil
+	public static class NHibernateUtil
 	{
+		static private readonly Dictionary<System.Type, IType> clrTypeToNHibernateType = new Dictionary<System.Type, IType>();
+
+		static NHibernateUtil()
+		{
+			FieldInfo[] fields = typeof(NHibernateUtil).GetFields();
+			foreach (FieldInfo info in fields)
+			{
+				if (typeof(IType).IsAssignableFrom(info.FieldType) == false)
+					continue;
+				IType type = (IType)info.GetValue(null);
+				clrTypeToNHibernateType[type.ReturnedClass] = type;
+			}
+		}
+
+		/// <summary>
+		/// Guesses the IType of this object
+		/// </summary>
+		/// <param name="obj">The obj.</param>
+		/// <returns></returns>
+		public static IType GuessType(object obj)
+		{
+			System.Type type = obj.GetType();
+			if (clrTypeToNHibernateType.ContainsKey(type))
+			{
+				return clrTypeToNHibernateType[type];
+			}
+			else if (type.IsEnum)
+			{
+				return Enum(type);
+			}
+			else if (
+				typeof(IUserType).IsAssignableFrom(type) ||
+				typeof(ICompositeUserType).IsAssignableFrom(type))
+			{
+				return Custom(type);
+			}
+			else
+			{
+				return Entity(type);
+			}
+		}
+
 		/// <summary>
 		/// NHibernate Ansi String type
 		/// </summary>
@@ -171,21 +216,15 @@ namespace NHibernate
 		public static readonly IType Object = new AnyType();
 
 
-//		/// <summary>
-//		/// NHibernate blob type
-//		/// </summary>
-//		public static readonly NullableType Blob = new BlobType();
-//		/// <summary>
-//		/// NHibernate clob type
-//		/// </summary>
-//		public static readonly NullableType Clob = new ClobType();
-		/// <summary>
-		/// Cannot be instantiated.
-		/// </summary>
-		private NHibernateUtil()
-		{
-			throw new NotSupportedException();
-		}
+		//		/// <summary>
+		//		/// NHibernate blob type
+		//		/// </summary>
+		//		public static readonly NullableType Blob = new BlobType();
+		//		/// <summary>
+		//		/// NHibernate clob type
+		//		/// </summary>
+		//		public static readonly NullableType Clob = new ClobType();
+		
 
 		public static readonly NullableType AnsiChar = new AnsiCharType();
 
@@ -274,11 +313,11 @@ namespace NHibernate
 			}
 			else if (proxy is INHibernateProxy)
 			{
-				((INHibernateProxy) proxy).HibernateLazyInitializer.Initialize();
+				((INHibernateProxy)proxy).HibernateLazyInitializer.Initialize();
 			}
 			else if (proxy is IPersistentCollection)
 			{
-				((IPersistentCollection) proxy).ForceInitialization();
+				((IPersistentCollection)proxy).ForceInitialization();
 			}
 		}
 
@@ -291,11 +330,11 @@ namespace NHibernate
 		{
 			if (proxy is INHibernateProxy)
 			{
-				return !((INHibernateProxy) proxy).HibernateLazyInitializer.IsUninitialized;
+				return !((INHibernateProxy)proxy).HibernateLazyInitializer.IsUninitialized;
 			}
 			else if (proxy is IPersistentCollection)
 			{
-				return ((IPersistentCollection) proxy).WasInitialized;
+				return ((IPersistentCollection)proxy).WasInitialized;
 			}
 			else
 			{
@@ -313,7 +352,7 @@ namespace NHibernate
 		{
 			if (proxy is INHibernateProxy)
 			{
-				return ((INHibernateProxy) proxy).HibernateLazyInitializer.GetImplementation().GetType();
+				return ((INHibernateProxy)proxy).HibernateLazyInitializer.GetImplementation().GetType();
 			}
 			else
 			{

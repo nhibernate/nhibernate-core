@@ -718,6 +718,7 @@
     <Compile Include="Exceptions\ISQLExceptionConverter.cs" />
     <Compile Include="Exceptions\IViolatedConstraintNameExtracter.cs" />
     <Compile Include="Exceptions\SQLStateConverter.cs" />
+    <Compile Include="Expressions\ConstantProjection.cs" />
     <Compile Include="Expressions\SqlFunctionProjection.cs" />
     <Compile Include="FKUnmatchingColumnsException.cs" />
     <Compile Include="Id\AbstractPostInsertGenerator.cs" />

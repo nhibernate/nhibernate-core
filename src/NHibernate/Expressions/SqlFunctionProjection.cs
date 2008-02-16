@@ -12,35 +12,24 @@ namespace NHibernate.Expressions
 	public class SqlFunctionProjection : SimpleProjection
 	{
 		private readonly string functionName;
-		private readonly object[] args;
+		private readonly IProjection[] args;
 		private readonly ISQLFunction function;
 		private readonly IType returnType;
 
-		public SqlFunctionProjection(string functionName, IType returnType, params object[] args)
+		public SqlFunctionProjection(string functionName, IType returnType, params IProjection[] args)
 		{
 			this.functionName = functionName;
 			this.returnType = returnType;
-			ValidateArguments(args);
 			this.args = args;
 		}
 
-		public SqlFunctionProjection(ISQLFunction function, IType returnType, params object[] args)
+		public SqlFunctionProjection(ISQLFunction function, IType returnType, params IProjection[] args)
 		{
 			this.function = function;
 			this.returnType = returnType;
-			ValidateArguments(args);
 			this.args = args;
 		}
 
-		private static void ValidateArguments(object[] argsToValidate)
-		{
-			foreach (object arg in argsToValidate)
-			{
-				if (arg is IProjection || arg is TypedValue)
-					continue;
-				throw new HibernateException("SqlFunctionProjection can only accept an IProjection or TypedValue.");
-			}
-		}
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
@@ -60,20 +49,13 @@ namespace NHibernate.Expressions
 				sb.Add(splitted[i]);
 				if (i < args.Length)
 				{
-					if (args[i] is IProjection)
-					{
-						int loc = (position + 1) * 1000 + i;
-						SqlString projectArg = GetProjectionArgument(
-							criteriaQuery,
-							criteria,
-							(IProjection)args[i],
-							loc);
-						sb.Add(projectArg);
-					}
-					else
-					{
-						sb.AddParameter();
-					}
+					int loc = (position + 1) * 1000 + i;
+					SqlString projectArg = GetProjectionArgument(
+						criteriaQuery,
+						criteria,
+						(IProjection)args[i],
+						loc);
+					sb.Add(projectArg);
 				}
 			}
 			sb.Add(" as ");
@@ -125,26 +107,18 @@ namespace NHibernate.Expressions
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			ISQLFunction function = GetFunction(criteriaQuery);
-			IType type = function.ReturnType(returnType, criteriaQuery.Factory);
+			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
+			IType type = sqlFunction.ReturnType(returnType, criteriaQuery.Factory);
 			return new IType[] { type };
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			List<TypedValue> types = new List<TypedValue>();
-			foreach (object arg in args)
+			foreach (IProjection projection in args)
 			{
-				IProjection projection = arg as IProjection;
-				if (projection == null)
-				{
-					types.Add((TypedValue)arg);
-				}
-				else
-				{
-					TypedValue[] argTypes = projection.GetTypedValues(criteria, criteriaQuery);
-					types.AddRange(argTypes);
-				}
+				TypedValue[] argTypes = projection.GetTypedValues(criteria, criteriaQuery);
+				types.AddRange(argTypes);
 			}
 			return types.ToArray();
 		}

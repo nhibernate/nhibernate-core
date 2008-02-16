@@ -62,7 +62,7 @@ namespace NHibernate.Test.Criteria
 					.SetProjection(new SqlFunctionProjection("concat",
 						NHibernateUtil.String,
 						Projections.Property("Name"),
-						new TypedValue(NHibernateUtil.String, " "),
+						new ConstantProjection(" "),
 						Projections.Property("Name")
 					))
 					.UniqueResult<string>();
