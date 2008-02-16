@@ -144,7 +144,7 @@ namespace NHibernate.Loader.Criteria
 				{
 					associationPathCriteriaMap.Add(wholeAssociationPath, crit);
 				}
-				catch(ArgumentException ae)
+				catch (ArgumentException ae)
 				{
 					throw new QueryException("duplicate association path: " + wholeAssociationPath, ae);
 				}
@@ -197,7 +197,7 @@ namespace NHibernate.Loader.Criteria
 			else
 			{
 				// otherwise, recurse
-				return GetWholeAssociationPath((CriteriaImpl.Subcriteria) parent) + '.' + path;
+				return GetWholeAssociationPath((CriteriaImpl.Subcriteria)parent) + '.' + path;
 			}
 		}
 
@@ -225,8 +225,8 @@ namespace NHibernate.Loader.Criteria
 
 		private IJoinable GetPathJoinable(string path)
 		{
-			IJoinable last = (IJoinable) Factory.GetEntityPersister(rootEntityName);
-			IPropertyMapping lastEntity = (IPropertyMapping) last;
+			IJoinable last = (IJoinable)Factory.GetEntityPersister(rootEntityName);
+			IPropertyMapping lastEntity = (IPropertyMapping)last;
 
 			string componentPath = "";
 
@@ -237,9 +237,9 @@ namespace NHibernate.Loader.Criteria
 				IType type = lastEntity.ToType(componentPath);
 				if (type.IsAssociationType)
 				{
-					IAssociationType atype = (IAssociationType) type;
+					IAssociationType atype = (IAssociationType)type;
 					last = atype.GetAssociatedJoinable(Factory);
-					lastEntity = (IPropertyMapping) Factory.GetEntityPersister(atype.GetAssociatedEntityName(Factory));
+					lastEntity = (IPropertyMapping)Factory.GetEntityPersister(atype.GetAssociatedEntityName(Factory));
 					componentPath = "";
 				}
 				else if (type.IsComponentType)
@@ -322,7 +322,7 @@ namespace NHibernate.Loader.Criteria
 					types.Add(tv[i].Type);
 				}
 			}
-			if(rootCriteria.Projection!=null)
+			if (rootCriteria.Projection != null)
 			{
 				TypedValue[] tv = rootCriteria.Projection.GetTypedValues(rootCriteria.ProjectionCriteria, this);
 				for (int i = 0; i < tv.Length; i++)
@@ -333,7 +333,7 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			object[] valueArray = values.ToArray();
-			IType[] typeArray = (IType[]) types.ToArray(typeof(IType));
+			IType[] typeArray = (IType[])types.ToArray(typeof(IType));
 
 			RowSelection selection = new RowSelection();
 			selection.FirstRow = rootCriteria.FirstResult;
@@ -344,7 +344,7 @@ namespace NHibernate.Loader.Criteria
 			IDictionary lockModes = new Hashtable();
 			foreach (DictionaryEntry me in rootCriteria.LockModes)
 			{
-				ICriteria subcriteria = GetAliasedCriteria((string) me.Key);
+				ICriteria subcriteria = GetAliasedCriteria((string)me.Key);
 				lockModes[GetSQLAlias(subcriteria)] = me.Value;
 			}
 
@@ -380,7 +380,7 @@ namespace NHibernate.Loader.Criteria
 			if (rootCriteria.Projection.IsGrouped)
 			{
 				return rootCriteria.Projection
-					.ToGroupSqlString(rootCriteria.ProjectionCriteria, this);
+					.ToGroupSqlString(rootCriteria.ProjectionCriteria, this, new CollectionHelper.EmptyMapClass<string, IFilter>());
 			}
 			else
 			{
@@ -388,12 +388,13 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		public SqlString GetSelect()
+		public SqlString GetSelect(IDictionary<string, IFilter> enabledFilters)
 		{
 			return rootCriteria.Projection.ToSqlString(
 				rootCriteria.ProjectionCriteria,
 				0,
-				this
+				this,
+                enabledFilters
 				);
 		}
 
@@ -453,7 +454,7 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		[CLSCompliant(false)] // TODO: Why does this cause a problem in 1.1
-			public string RootSQLAlias
+		public string RootSQLAlias
 		{
 			get { return rootSQLAlias; }
 		}
@@ -550,18 +551,18 @@ namespace NHibernate.Loader.Criteria
 		public string[] GetIdentifierColumns(ICriteria subcriteria)
 		{
 			string[] idcols =
-				((ILoadable) GetPropertyMapping(GetEntityName(subcriteria))).IdentifierColumnNames;
+				((ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierColumnNames;
 			return StringHelper.Qualify(GetSQLAlias(subcriteria), idcols);
 		}
 
 		public IType GetIdentifierType(ICriteria subcriteria)
 		{
-			return ((ILoadable) GetPropertyMapping(GetEntityName(subcriteria))).IdentifierType;
+			return ((ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierType;
 		}
 
 		public TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value)
 		{
-			ILoadable loadable = (ILoadable) GetPropertyMapping(GetEntityName(subcriteria));
+			ILoadable loadable = (ILoadable)GetPropertyMapping(GetEntityName(subcriteria));
 			return new TypedValue(
 				loadable.IdentifierType,
 				value
@@ -582,8 +583,8 @@ namespace NHibernate.Loader.Criteria
 			//first look for a reference to a projection alias
 			IProjection projection = rootCriteria.Projection;
 			IType[] projectionTypes = projection == null ?
-			                          null :
-			                          projection.GetTypes(propertyName, subcriteria, this);
+									  null :
+									  projection.GetTypes(propertyName, subcriteria, this);
 
 			if (projectionTypes == null)
 			{
@@ -631,7 +632,7 @@ namespace NHibernate.Loader.Criteria
 			// Detect discriminator values...
 			if (value is System.Type)
 			{
-				System.Type entityClass = (System.Type) value;
+				System.Type entityClass = (System.Type)value;
 				IQueryable q = SessionFactoryHelper.FindQueryableUsingImports(sessionFactory, entityClass.FullName);
 
 				if (q != null)

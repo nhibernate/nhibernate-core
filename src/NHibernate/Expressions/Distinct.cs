@@ -4,6 +4,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
 	using Engine;
 
 	[Serializable]
@@ -16,15 +17,15 @@ namespace NHibernate.Expressions
 			this.projection = proj;
 		}
 
-		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
+		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			return new SqlString("distinct ")
-				.Append(projection.ToSqlString(criteria, position, criteriaQuery));
+				.Append(projection.ToSqlString(criteria, position, criteriaQuery,enabledFilters));
 		}
 
-		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return projection.ToGroupSqlString(criteria, criteriaQuery);
+			return projection.ToGroupSqlString(criteria, criteriaQuery,enabledFilters);
 		}
 
 		public virtual IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

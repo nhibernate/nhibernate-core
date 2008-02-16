@@ -5,6 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
 	using Engine;
 
 	/// <summary>
@@ -35,7 +36,7 @@ namespace NHibernate.Expressions
 			this.groupBy = groupBy;
 		}
 
-		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
+		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			//SqlString result = new SqlString(criteriaQuery.GetSQLAlias(criteria));
 			//result.Replace(sql, "{alias}");
@@ -43,7 +44,7 @@ namespace NHibernate.Expressions
 			return new SqlString(StringHelper.Replace(sql, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}
 
-		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			return new SqlString(StringHelper.Replace(groupBy, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
 		}

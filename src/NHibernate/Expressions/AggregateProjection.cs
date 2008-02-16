@@ -4,6 +4,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
+
 	/// <summary>
 	/// An Aggregation
 	/// </summary>
@@ -29,7 +31,7 @@ namespace NHibernate.Expressions
 			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			return new SqlString(new object[]
 			                     	{

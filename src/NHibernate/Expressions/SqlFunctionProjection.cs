@@ -7,6 +7,7 @@ namespace NHibernate.Expressions
 	using NHibernate.Dialect.Function;
 	using SqlCommand;
 	using Type;
+	using Util;
 
 	[Serializable]
 	public class SqlFunctionProjection : SimpleProjection
@@ -31,7 +32,7 @@ namespace NHibernate.Expressions
 		}
 
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
 			List<string> tokens = new List<string>();
@@ -54,7 +55,8 @@ namespace NHibernate.Expressions
 						criteriaQuery,
 						criteria,
 						(IProjection)args[i],
-						loc);
+						loc,
+						enabledFilters);
 					sb.Add(projectArg);
 				}
 			}
@@ -79,15 +81,11 @@ namespace NHibernate.Expressions
 			ICriteriaQuery criteriaQuery,
 			ICriteria criteria,
 			IProjection projection,
-			int loc)
+			int loc,
+			 IDictionary<string, IFilter> enabledFilters)
 		{
-			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery);
-			return RemoveAliasesFromSql(sql);
-		}
-
-		private static SqlString RemoveAliasesFromSql(SqlString sql)
-		{
-			return sql.Substring(0, sql.LastIndexOfCaseInsensitive(" as "));
+			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery, enabledFilters);
+			return StringHelper.RemoveAsAliasesFromSql(sql);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

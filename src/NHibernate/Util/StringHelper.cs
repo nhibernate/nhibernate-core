@@ -698,5 +698,11 @@ namespace NHibernate.Util
 			return sb.ToString();
 
 		}
+
+		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
+		{
+			return sql.Substring(0, sql.LastIndexOfCaseInsensitive(" as "));
+		}
+
 	}
 }

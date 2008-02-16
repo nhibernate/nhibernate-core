@@ -55,7 +55,7 @@ namespace NHibernate.Loader.Criteria
 				resultTypes = translator.ProjectedTypes;
 
 				InitProjection(
-					translator.GetSelect(),
+					translator.GetSelect(enabledFilters),
 					translator.GetWhereCondition(enabledFilters),
 					translator.GetOrderBy(),
 					translator.GetGroupBy().ToString(),

@@ -4,6 +4,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
 	using Engine;
 
 	[Serializable]
@@ -18,14 +19,14 @@ namespace NHibernate.Expressions
 			this.alias = alias;
 		}
 
-		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
+		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return projection.ToSqlString(criteria, position, criteriaQuery);
+			return projection.ToSqlString(criteria, position, criteriaQuery,enabledFilters);
 		}
 
-		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return projection.ToGroupSqlString(criteria, criteriaQuery);
+			return projection.ToGroupSqlString(criteria, criteriaQuery,enabledFilters);
 		}
 
 		public virtual IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

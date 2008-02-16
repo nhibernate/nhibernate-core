@@ -4,6 +4,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
+
 	/// <summary>
 	/// A Count
 	/// </summary>
@@ -27,7 +29,7 @@ namespace NHibernate.Expressions
 			return (distinct) ? "distinct " + base.ToString() : base.ToString();
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder()
 				.Add("count(");

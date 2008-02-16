@@ -4,6 +4,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
 	using Engine;
 	using NHibernate.Loader.Criteria;
 
@@ -12,19 +13,25 @@ namespace NHibernate.Expressions
 		/// <summary>
 		/// Render the SQL Fragment.
 		/// </summary>
-		/// <param name="criteria"></param>
-		/// <param name="position"></param>
-		/// <param name="criteriaQuery"></param>
+		/// <param name="criteria">The criteria.</param>
+		/// <param name="position">The position.</param>
+		/// <param name="criteriaQuery">The criteria query.</param>
+		/// <param name="enabledFilters">The enabled filters.</param>
 		/// <returns></returns>
-		SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery);
+		SqlString ToSqlString(ICriteria criteria, int position,
+			ICriteriaQuery criteriaQuery, 
+			IDictionary<string, IFilter> enabledFilters);
 
 		/// <summary>
 		/// Render the SQL Fragment to be used in the Group By Clause.
 		/// </summary>
-		/// <param name="criteria"></param>
-		/// <param name="criteriaQuery"></param>
+		/// <param name="criteria">The criteria.</param>
+		/// <param name="criteriaQuery">The criteria query.</param>
+		/// <param name="enabledFilters">The enabled filters.</param>
 		/// <returns></returns>
-		SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery);
+		SqlString ToGroupSqlString(ICriteria criteria, 
+			ICriteriaQuery criteriaQuery,
+			IDictionary<string, IFilter> enabledFilters);
 
 		/// <summary>
 		/// Return types for a particular user-visible alias

@@ -5,6 +5,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
+
 	[Serializable]
 	public class IdentifierProjection : SimpleProjection
 	{
@@ -29,7 +31,7 @@ namespace NHibernate.Expressions
 			return new IType[] {criteriaQuery.GetIdentifierType(criteria)};
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder();
 			string[] cols = criteriaQuery.GetIdentifierColumns(criteria);
@@ -53,11 +55,11 @@ namespace NHibernate.Expressions
 			get { return grouped; }
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			return (grouped) ?
 			       new SqlString(StringHelper.Join(",", criteriaQuery.GetIdentifierColumns(criteria)))
-			       	: base.ToGroupSqlString(criteria, criteriaQuery);
+			       	: base.ToGroupSqlString(criteria, criteriaQuery,enabledFilters);
 		}
 	}
 }

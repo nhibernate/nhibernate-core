@@ -1,10 +1,12 @@
 namespace NHibernate.Expressions
 {
 	using System;
+	using System.Collections.Generic;
 	using Engine;
 	using SqlCommand;
 	using SqlTypes;
 	using Type;
+	using Util;
 
 	/// <summary>
 	/// Casting a value from one type to another, at the database
@@ -22,7 +24,7 @@ namespace NHibernate.Expressions
 			this.projection = projection;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 			SqlType[] sqlTypeCodes = type.SqlTypes(factory);
@@ -32,8 +34,8 @@ namespace NHibernate.Expressions
 			}
 			string sqlType = factory.Dialect.GetCastTypeName(sqlTypeCodes[0]);
 			int loc = position*GetHashCode();
-			SqlString val = projection.ToSqlString(criteria, loc, criteriaQuery);
-			val = RemoveAliasesFromSql(val);
+			SqlString val = projection.ToSqlString(criteria, loc, criteriaQuery,enabledFilters);
+			val = StringHelper.RemoveAsAliasesFromSql(val);
 
 			return new SqlStringBuilder()
 				.Add("cast( ")
@@ -44,11 +46,6 @@ namespace NHibernate.Expressions
 				.Add(" as ")
 				.Add(GetColumnAliases(position)[0])
 				.ToSqlString();
-		}
-
-		private static SqlString RemoveAliasesFromSql(SqlString sql)
-		{
-			return sql.Substring(0, sql.LastIndexOfCaseInsensitive(" as "));
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

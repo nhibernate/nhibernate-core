@@ -47,13 +47,13 @@ namespace NHibernate.Expressions
 			return result;
 		}
 
-		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
+		public SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder();
 			for (int i = 0; i < Length; i++)
 			{
 				IProjection proj = this[i];
-				buf.Add(proj.ToSqlString(criteria, loc, criteriaQuery));
+				buf.Add(proj.ToSqlString(criteria, loc, criteriaQuery,enabledFilters));
 				loc += proj.GetColumnAliases(loc).Length;
 				if (i < elements.Count - 1)
 				{
@@ -63,7 +63,7 @@ namespace NHibernate.Expressions
 			return buf.ToSqlString();
 		}
 
-		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder();
 			for (int i = 0; i < Length; i++)
@@ -71,7 +71,7 @@ namespace NHibernate.Expressions
 				IProjection proj = this[i];
 				if (proj.IsGrouped)
 				{
-					buf.Add(proj.ToGroupSqlString(criteria, criteriaQuery))
+					buf.Add(proj.ToGroupSqlString(criteria, criteriaQuery,enabledFilters))
 						.Add(", ");
 				}
 			}

@@ -4,6 +4,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
 	using Engine;
 
 	/// <summary>
@@ -37,7 +38,7 @@ namespace NHibernate.Expressions
 			get { return new String[1]; }
 		}
 
-		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			throw new InvalidOperationException("not a grouping projection");
 		}
@@ -58,7 +59,7 @@ namespace NHibernate.Expressions
 			return new TypedValue[0];
 		}
 
-		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery);
+		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters);
 
 		public abstract IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery);
 	}

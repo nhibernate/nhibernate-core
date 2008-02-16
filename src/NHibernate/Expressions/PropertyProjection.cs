@@ -4,6 +4,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
+
 	/// <summary>
 	/// A property value, or grouped property value
 	/// </summary>
@@ -44,7 +46,7 @@ namespace NHibernate.Expressions
 			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			return new SqlString(new object[]
 			                     	{
@@ -55,11 +57,11 @@ namespace NHibernate.Expressions
 			                     	});
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			if (!grouped)
 			{
-				return base.ToGroupSqlString(criteria, criteriaQuery);
+				return base.ToGroupSqlString(criteria, criteriaQuery, enabledFilters);
 			}
 			else
 			{

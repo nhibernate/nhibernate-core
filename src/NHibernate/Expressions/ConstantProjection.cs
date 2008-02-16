@@ -1,6 +1,7 @@
 namespace NHibernate.Expressions
 {
 	using System;
+	using System.Collections.Generic;
 	using Engine;
 	using SqlCommand;
 	using Type;
@@ -19,7 +20,7 @@ namespace NHibernate.Expressions
 			this.value = value;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			return new SqlStringBuilder()
 				.AddParameter()

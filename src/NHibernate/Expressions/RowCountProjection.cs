@@ -4,6 +4,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using System.Collections.Generic;
+
 	[Serializable]
 	public class RowCountProjection : SimpleProjection
 	{
@@ -16,7 +18,7 @@ namespace NHibernate.Expressions
 			return new IType[] {NHibernateUtil.Int32};
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder result = new SqlStringBuilder()
 				.Add("count(*) as y")

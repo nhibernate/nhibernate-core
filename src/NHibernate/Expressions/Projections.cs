@@ -220,5 +220,17 @@ namespace NHibernate.Expressions
 		{
 			return new SqlFunctionProjection(function, type, projections);
 		}
+
+		/// <summary>
+		/// Conditionally return the true or false part, dependention on the criterion
+		/// </summary>
+		/// <param name="criterion">The criterion.</param>
+		/// <param name="whenTrue">The when true.</param>
+		/// <param name="whenFalse">The when false.</param>
+		/// <returns></returns>
+		public static IProjection Conditional(ICriterion criterion, IProjection whenTrue, IProjection whenFalse)
+		{
+			return new ConditionalProjection(criterion, whenTrue, whenFalse);
+		}
 	}
 }
