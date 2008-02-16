@@ -2233,7 +2233,6 @@ namespace NHibernate.Persister.Entity
 							// to introduce a new SequentialSelect abstraction that actually gets
 							// generated in the persisters (ok, SingleTable...) and utilized here.
 							// It would encapsulated all this required optional-ality checking...
-							sequentialSelectEmpty = true;
 						}
 					}
 				}
