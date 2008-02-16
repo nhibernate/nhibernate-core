@@ -3,6 +3,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Expressions
 {
+	using NHibernate.Dialect.Function;
+
 	/// <summary>
 	/// The <tt>criterion</tt> package may be used by applications as a framework for building
 	/// new kinds of <tt>Projection</tt>. However, it is intended that most applications will
@@ -169,6 +171,54 @@ namespace NHibernate.Expressions
 		public static IProjection Alias(IProjection projection, string alias)
 		{
 			return new AliasedProjection(projection, alias);
+		}
+
+		/// <summary>
+		/// Casts the projection result to the specified type.
+		/// </summary>
+		/// <param name="type">The type.</param>
+		/// <param name="projection">The projection.</param>
+		/// <returns></returns>
+		public static IProjection Cast(IType type, IProjection projection)
+		{
+			return new CastProjection(type, projection);
+		}
+
+
+		/// <summary>
+		/// Return a constant value
+		/// </summary>
+		/// <param name="obj">The obj.</param>
+		/// <returns></returns>
+		public static IProjection Constant(object obj)
+		{
+			return new ConstantProjection(obj);
+		}
+
+
+
+		/// <summary>
+		/// Calls the named <see cref="ISQLFunction"/>
+		/// </summary>
+		/// <param name="functionName">Name of the function.</param>
+		/// <param name="type">The type.</param>
+		/// <param name="projections">The projections.</param>
+		/// <returns></returns>
+		public static IProjection SqlFunction(string functionName, IType type, params IProjection [] projections)
+		{
+			return new SqlFunctionProjection(functionName, type, projections);
+		}
+
+		/// <summary>
+		/// Calls the specified <see cref="ISQLFunction"/>
+		/// </summary>
+		/// <param name="function">the function.</param>
+		/// <param name="type">The type.</param>
+		/// <param name="projections">The projections.</param>
+		/// <returns></returns>
+		public static IProjection SqlFunction(ISQLFunction function, IType type, params IProjection[] projections)
+		{
+			return new SqlFunctionProjection(function, type, projections);
 		}
 	}
 }

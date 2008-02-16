@@ -87,22 +87,7 @@ namespace NHibernate.Expressions
 
 		private static SqlString RemoveAliasesFromSql(SqlString sql)
 		{
-			SqlStringBuilder sb = new SqlStringBuilder();
-			foreach (object part in sql.Parts)
-			{
-				if (part is string)
-				{
-					string partAsString = (string)part;
-					if (partAsString.Contains(" as "))
-						return sb.ToSqlString();
-					sb.Add(partAsString);
-				}
-				else
-				{
-					sb.Add((Parameter)part);
-				}
-			}
-			return sb.ToSqlString();
+			return sql.Substring(0, sql.LastIndexOfCaseInsensitive(" as "));
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

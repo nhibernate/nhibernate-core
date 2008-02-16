@@ -71,6 +71,23 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
+		public void UsingSqlFunctions_Concat_WithCast()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				string result = session.CreateCriteria(typeof(Student))
+					.SetProjection(Projections.SqlFunction("concat",
+						NHibernateUtil.String,
+						Projections.Cast(NHibernateUtil.String, Projections.Id()),
+						Projections.Constant(" "),
+						Projections.Property("Name")
+					))
+					.UniqueResult<string>();
+				Assert.AreEqual("27 ayende", result);
+			}
+		}
+
+		[Test]
 		public void CanUseParametersWithProjections()
 		{
 			using(ISession session = sessions.OpenSession())
