@@ -69,6 +69,7 @@ namespace NHibernate.Transaction
 						         "Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
 					}
 				}
+				log.Debug("Enlist Command");
 
 				command.Transaction = trans;
 			}
@@ -99,7 +100,7 @@ namespace NHibernate.Transaction
 				throw new TransactionException("Cannot restart transaction after failed commit");
 			}
 
-			log.Debug("begin");
+			log.Debug(string.Format("Begin ({0})", isolationLevel));
 
 			try
 			{
@@ -155,7 +156,7 @@ namespace NHibernate.Transaction
 			CheckNotDisposed();
 			CheckBegun();
 
-			log.Debug("commit");
+			log.Debug("Start Commit");
 
 			if (session.FlushMode != FlushMode.Never)
 			{
@@ -167,6 +168,8 @@ namespace NHibernate.Transaction
 			try
 			{
 				trans.Commit();
+				log.Debug("IDbTransaction Committed");
+
 				committed = true;
 				AfterTransactionCompletion(true);
 				Dispose();
@@ -201,13 +204,14 @@ namespace NHibernate.Transaction
 			CheckNotDisposed();
 			CheckBegun();
 
-			log.Debug("rollback");
+			log.Debug("Rollback");
 
 			if (!commitFailed)
 			{
 				try
 				{
 					trans.Rollback();
+					log.Debug("IDbTransaction RolledBack");
 					rolledBack = true;
 					Dispose();
 				}
@@ -284,7 +288,6 @@ namespace NHibernate.Transaction
 		/// </summary>
 		public void Dispose()
 		{
-			log.Debug("running AdoTransaction.Dispose()");
 			Dispose(true);
 		}
 
@@ -312,6 +315,7 @@ namespace NHibernate.Transaction
 				if (trans != null)
 				{
 					trans.Dispose();
+					log.Debug("IDbTransaction disposed.");
 				}
 
 				if (IsActive && session != null)
