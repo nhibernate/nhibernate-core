@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Expressions
@@ -14,9 +13,16 @@ namespace NHibernate.Expressions
 	[Serializable]
 	public abstract class SimpleExpression : AbstractCriterion
 	{
-		private readonly string _propertyName;
-		private readonly object _value;
-		private bool _ignoreCase;
+		private readonly IProjection projection;
+		private readonly string propertyName;
+		private readonly object value;
+		private bool ignoreCase;
+
+		protected SimpleExpression(IProjection projection, object value)
+		{
+			this.projection = projection;
+			this.value = value;
+		}
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="SimpleExpression" /> class for a named
@@ -26,20 +32,20 @@ namespace NHibernate.Expressions
 		/// <param name="value">The value for the Property.</param>
 		public SimpleExpression(string propertyName, object value)
 		{
-			_propertyName = propertyName;
-			_value = value;
+			this.propertyName = propertyName;
+			this.value = value;
 		}
 
 		public SimpleExpression(string propertyName, object value, bool ignoreCase)
 		{
-			_propertyName = propertyName;
-			_value = value;
-			_ignoreCase = ignoreCase;
+			this.propertyName = propertyName;
+			this.value = value;
+			this.ignoreCase = ignoreCase;
 		}
 
 		public SimpleExpression IgnoreCase()
 		{
-			_ignoreCase = true;
+			ignoreCase = true;
 			return this;
 		}
 
@@ -49,7 +55,7 @@ namespace NHibernate.Expressions
 		/// <value>A string that is the name of the Property.</value>
 		public string PropertyName
 		{
-			get { return _propertyName; }
+			get { return propertyName; }
 		}
 
 		/// <summary>
@@ -58,7 +64,7 @@ namespace NHibernate.Expressions
 		/// <value>An object that is the value for the Expression.</value>
 		public object Value
 		{
-			get { return _value; }
+			get { return value; }
 		}
 
 		/// <summary>
@@ -67,31 +73,18 @@ namespace NHibernate.Expressions
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
-			IType propertyType = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
+			SqlString[] columnNames =
+				CritertionUtil.GetColumnNamesForSimpleExpression(propertyName, projection, criteriaQuery, criteria, enabledFilters,
+				                                                 this, value);
+			
 
-			if (_value != null && !(_value is System.Type) && !propertyType.ReturnedClass.IsInstanceOfType(_value))
-			{
-				throw new QueryException(string.Format(
-				                         	"Type mismatch in {0}: {1} expected type {2}, actual type {3}",
-				                         	GetType(), _propertyName, propertyType.ReturnedClass, _value.GetType()));
-			}
-
-			if (propertyType.IsCollectionType)
-			{
-				throw new QueryException(string.Format(
-				                         	"cannot use collection property ({0}.{1}) directly in a criterion,"
-				                         	+ " use ICriteria.CreateCriteria instead",
-				                         	criteriaQuery.GetEntityName(criteria), _propertyName));
-			}
-
-			if (_ignoreCase)
+			if (ignoreCase)
 			{
 				if (columnNames.Length != 1)
 				{
 					throw new HibernateException(
 						"case insensitive expression may only be applied to single-column properties: " +
-						_propertyName);
+						propertyName);
 				}
 
 				return new SqlStringBuilder(6)
@@ -105,7 +98,6 @@ namespace NHibernate.Expressions
 			}
 			else
 			{
-				//TODO: add default capacity
 				SqlStringBuilder sqlBuilder = new SqlStringBuilder(4 * columnNames.Length);
 
 				for (int i = 0; i < columnNames.Length; i++)
@@ -123,19 +115,19 @@ namespace NHibernate.Expressions
 			}
 		}
 
+		
+
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			object icvalue = _ignoreCase ? _value.ToString().ToLower() : _value;
-			return new TypedValue[]
-				{
-					criteriaQuery.GetTypedValue(criteria, _propertyName, icvalue)
-				};
+			object icvalue = ignoreCase ? value.ToString().ToLower() : value;
+
+			return CritertionUtil.GetTypedValues(criteriaQuery, criteria, projection,propertyName, icvalue);
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return _propertyName + Op + _value;
+			return (projection ?? (object)propertyName) + Op + value;
 		}
 
 		/// <summary>

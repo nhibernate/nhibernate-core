@@ -10,6 +10,33 @@ namespace NHibernate.Expressions
 	public class EqPropertyExpression : PropertyExpression
 	{
 		/// <summary>
+		/// Initializes a new instance of the <see cref="EqPropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsPropertyName">Name of the LHS property.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		public EqPropertyExpression(string lhsPropertyName, IProjection rhsProjection) : base(lhsPropertyName, rhsProjection)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EqPropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsProjection">The LHS projection.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		public EqPropertyExpression(IProjection lhsProjection, IProjection rhsProjection) : base(lhsProjection, rhsProjection)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EqPropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsProjection">The projection.</param>
+		/// <param name="rhsPropertyName">Name of the RHS property.</param>
+		public EqPropertyExpression(IProjection lhsProjection, string rhsPropertyName) : base(lhsProjection, rhsPropertyName)
+		{
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="EqPropertyExpression"/> class
 		/// that compares two mapped properties using an "equal" constraint.
 		/// </summary>

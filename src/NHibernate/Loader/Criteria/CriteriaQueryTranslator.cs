@@ -36,6 +36,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IDictionary<string, JoinType> associationPathJoinTypesMap = new LinkedHashMap<string, JoinType>();
 
 		private readonly ISessionFactoryImplementor sessionFactory;
+		private int indexForAlias = 0;
 
 		public CriteriaQueryTranslator(
 			ISessionFactoryImplementor factory,
@@ -69,6 +70,12 @@ namespace NHibernate.Loader.Criteria
 		public string GenerateSQLAlias()
 		{
 			return StringHelper.GenerateAlias(rootSQLAlias, aliasCount);
+		}
+
+
+		public int GetIndexForAlias()
+		{
+			return indexForAlias++;
 		}
 
 		private ICriteria GetAliasedCriteria(string alias)
@@ -394,7 +401,7 @@ namespace NHibernate.Loader.Criteria
 				rootCriteria.ProjectionCriteria,
 				0,
 				this,
-                enabledFilters
+				enabledFilters
 				);
 		}
 

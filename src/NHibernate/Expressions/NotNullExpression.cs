@@ -12,6 +12,16 @@ namespace NHibernate.Expressions
 	public class NotNullExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;
+		private IProjection projection;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NotNullExpression"/> class.
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		public NotNullExpression(IProjection projection)
+		{
+			this.projection = projection;
+		}
 
 		private static readonly TypedValue[] NoValues = new TypedValue[0];
 
@@ -30,7 +40,8 @@ namespace NHibernate.Expressions
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
+			SqlString[] columnNames =
+				CritertionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
 
 			bool opNeeded = false;
 
@@ -57,12 +68,15 @@ namespace NHibernate.Expressions
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return NoValues;
+			if (projection == null)
+				return NoValues;
+			else
+				return projection.GetTypedValues(criteria, criteriaQuery);
 		}
 
 		public override string ToString()
 		{
-			return _propertyName + " is not null";
+			return (projection ?? (object)_propertyName) + " is not null";
 		}
 	}
 }

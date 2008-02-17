@@ -13,8 +13,17 @@ namespace NHibernate.Expressions
 	[Serializable]
 	public class LikeExpression : SimpleExpression
 	{
+		public LikeExpression(IProjection projection, object value) : base(projection, value)
+		{
+		}
+
 		public LikeExpression(string propertyName, object value, bool ignoreCase)
 			: base(propertyName, value, ignoreCase)
+		{
+		}
+
+		public LikeExpression(IProjection projection, string value, MatchMode matchMode)
+			: this(projection, matchMode.ToMatchString(value))
 		{
 		}
 

@@ -18,8 +18,20 @@ namespace NHibernate.Expressions
 	[Serializable]
 	public class InExpression : AbstractCriterion
 	{
+		private readonly IProjection projection;
 		private readonly string _propertyName;
 		private object[] _values;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="InExpression"/> class.
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="_values">The _values.</param>
+		public InExpression(IProjection projection, object[] _values)
+		{
+			this.projection = projection;
+			this._values = _values;
+		}
 
 		/// <summary>
 		/// 
@@ -32,13 +44,11 @@ namespace NHibernate.Expressions
 			_values = values;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
+		                                      IDictionary<string, IFilter> enabledFilters)
 		{
-			IType type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
-			if (type.IsCollectionType)
-			{
-				throw new QueryException("Cannot use collections with InExpression");
-			}
+			if (projection == null)
+				AssertPropertyIsNotCollection(criteriaQuery, criteria);
 
 			if (_values.Length == 0)
 			{
@@ -48,14 +58,15 @@ namespace NHibernate.Expressions
 
 			//TODO: add default capacity
 			SqlStringBuilder result = new SqlStringBuilder();
-			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
-
+			SqlString[] columnNames =
+				CritertionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
+			
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...
 
 			for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
 			{
-				string columnName = columnNames[columnIndex];
+				SqlString columnName = columnNames[columnIndex];
 
 				if (columnIndex > 0)
 				{
@@ -81,10 +92,33 @@ namespace NHibernate.Expressions
 			return result.ToSqlString();
 		}
 
+		private void AssertPropertyIsNotCollection(ICriteriaQuery criteriaQuery, ICriteria criteria)
+		{
+			IType type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
+			if (type.IsCollectionType)
+			{
+				throw new QueryException("Cannot use collections with InExpression");
+			}
+		}
+
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			ArrayList list = new ArrayList();
-			IType type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
+			IType type;
+			if (projection == null)
+			{
+				type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
+			}
+			else
+			{
+				IType[] types = projection.GetTypes(criteria, criteriaQuery);
+				if(types.Length!=1)
+				{
+					throw new QueryException("Cannot use projections that return more than a single column with InExpression");
+				}
+				type = types[0];
+				list.AddRange(projection.GetTypedValues(criteria, criteriaQuery));
+			}
 
 			if (type.IsComponentType)
 			{
@@ -95,9 +129,11 @@ namespace NHibernate.Expressions
 				{
 					for (int j = 0; j < _values.Length; j++)
 					{
-						object subval = _values[j] == null ?
-						                null :
-						                actype.GetPropertyValues(_values[j], EntityMode.Poco)[i];
+						object subval = _values[j] == null
+						                	?
+						                		null
+						                	:
+						                		actype.GetPropertyValues(_values[j], EntityMode.Poco)[i];
 						list.Add(new TypedValue(types[i], subval));
 					}
 				}
@@ -110,7 +146,7 @@ namespace NHibernate.Expressions
 				}
 			}
 
-			return (TypedValue[]) list.ToArray(typeof(TypedValue));
+			return (TypedValue[]) list.ToArray(typeof (TypedValue));
 		}
 
 		public object[] Values
@@ -122,7 +158,7 @@ namespace NHibernate.Expressions
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return _propertyName + " in (" + StringHelper.ToString(_values) + ')';
+			return (projection ?? (object)_propertyName) + " in (" + StringHelper.ToString(_values) + ')';
 		}
 	}
 }

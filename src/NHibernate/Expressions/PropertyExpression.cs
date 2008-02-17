@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using NHibernate.Engine;
-using NHibernate.SqlCommand;
-using NHibernate.Util;
-
 namespace NHibernate.Expressions
 {
+	using System;
+	using System.Collections.Generic;
+	using Engine;
+	using SqlCommand;
+	using Util;
+
 	/// <summary>
 	/// Superclass for an <see cref="ICriterion"/> that represents a
 	/// constraint between two properties (with SQL binary operators).
@@ -13,56 +13,118 @@ namespace NHibernate.Expressions
 	[Serializable]
 	public abstract class PropertyExpression : AbstractCriterion
 	{
-		private string _lhsPropertyName;
-		private string _rhsPropertyName;
-
-		private static TypedValue[] NoTypedValues = new TypedValue[0];
+		private static readonly TypedValue[] NoTypedValues = new TypedValue[0];
+		private readonly string _lhsPropertyName;
+		private readonly string _rhsPropertyName;
+		private readonly IProjection _lhsProjection;
+		private readonly IProjection _rhsProjection;
 
 		/// <summary>
-		/// Initialize a new instance of the <see cref="PropertyExpression" /> class 
-		/// that compares two mapped properties.
+		/// Initializes a new instance of the <see cref="PropertyExpression"/> class.
 		/// </summary>
-		/// <param name="lhsPropertyName">The name of the Property to use as the left hand side.</param>
-		/// <param name="rhsPropertyName">The name of the Property to use as the right hand side.</param>
-		protected PropertyExpression(string lhsPropertyName, string rhsPropertyName)
+		/// <param name="lhsProjection">The projection.</param>
+		/// <param name="rhsPropertyName">Name of the RHS property.</param>
+		protected PropertyExpression(IProjection lhsProjection, string rhsPropertyName)
 		{
-			_lhsPropertyName = lhsPropertyName;
+			this._lhsProjection = lhsProjection;
 			_rhsPropertyName = rhsPropertyName;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsProjection">The LHS projection.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		protected PropertyExpression(IProjection lhsProjection, IProjection rhsProjection)
 		{
-			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _lhsPropertyName);
-			string[] otherColumnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _rhsPropertyName);
-
-			string result = string.Join(
-				" and ",
-				StringHelper.Add(columnNames, Op, otherColumnNames)
-				);
-
-			if (columnNames.Length > 1)
-			{
-				result = StringHelper.OpenParen + result + StringHelper.ClosedParen;
-			}
-
-			return new SqlString(result);
-			//TODO: get SQL rendering out of this package!
+			this._lhsProjection = lhsProjection;
+			this._rhsProjection = rhsProjection;
 		}
 
-		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsPropertyName">Name of the LHS property.</param>
+		/// <param name="rhsPropertyName">Name of the RHS property.</param>
+		protected PropertyExpression(string lhsPropertyName, string rhsPropertyName)
 		{
-			return NoTypedValues;
+			this._lhsPropertyName = lhsPropertyName;
+			this._rhsPropertyName = rhsPropertyName;
 		}
 
-		/// <summary></summary>
-		public override string ToString()
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsPropertyName">Name of the LHS property.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		protected PropertyExpression(string lhsPropertyName, IProjection rhsProjection)
 		{
-			return _lhsPropertyName + Op + _rhsPropertyName;
+			this._lhsPropertyName = lhsPropertyName;
+			this._rhsProjection = rhsProjection;
 		}
 
 		/// <summary>
 		/// Get the Sql operator to use for the property expression.
 		/// </summary>
 		protected abstract string Op { get; }
+
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
+											  IDictionary<string, IFilter> enabledFilters)
+		{
+			SqlString[] columnNames =
+				CritertionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria, enabledFilters);
+			SqlString[] otherColumnNames =
+				CritertionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria, enabledFilters);
+
+			SqlStringBuilder sb = new SqlStringBuilder();
+			if (columnNames.Length > 1)
+			{
+				sb.Add(StringHelper.OpenParen);
+			}
+			bool first = true;
+			foreach (SqlString sqlString in StringHelper.Add(columnNames, Op, otherColumnNames))
+			{
+				if (first == false)
+				{
+					sb.Add(" and ");
+				}
+				first = false;
+				sb.Add(sqlString);
+			}
+
+			if (columnNames.Length > 1)
+			{
+				sb.Add(StringHelper.ClosedParen);
+			}
+
+			return sb.ToSqlString();
+		}
+
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			if (_lhsProjection == null && _rhsProjection == null)
+			{
+				return NoTypedValues;
+			}
+			else
+			{
+				List<TypedValue> types = new List<TypedValue>();
+				if(_lhsProjection!=null)
+				{
+					types.AddRange(_lhsProjection.GetTypedValues(criteria, criteriaQuery));
+				}
+				if (_rhsProjection != null)
+				{
+					types.AddRange(_rhsProjection.GetTypedValues(criteria, criteriaQuery));
+				}
+				return types.ToArray();
+			}
+		}
+
+		/// <summary></summary>
+		public override string ToString()
+		{
+			return (_lhsProjection ?? (object)_lhsPropertyName) + Op + _rhsPropertyName;
+		}
 	}
 }

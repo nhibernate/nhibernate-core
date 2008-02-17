@@ -1,9 +1,13 @@
 namespace NHibernate.Test.Criteria
 {
+	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Reflection;
+	using System.Text;
 	using Engine;
 	using Expressions;
+	using Iesi.Collections.Generic;
 	using NUnit.Framework;
 	using SqlCommand;
 	using Type;
@@ -91,10 +95,10 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void CanUseParametersWithProjections()
 		{
-			using(ISession session = sessions.OpenSession())
+			using (ISession session = sessions.OpenSession())
 			{
 				long result = session.CreateCriteria(typeof(Student))
-					.SetProjection(new AddNumberProjection("id",15))
+					.SetProjection(new AddNumberProjection("id", 15))
 					.UniqueResult<long>();
 				Assert.AreEqual(42L, result);
 			}
@@ -108,7 +112,7 @@ namespace NHibernate.Test.Criteria
 				string result = session.CreateCriteria(typeof(Student))
 					.SetProjection(
 						Projections.Conditional(
-							Expression.Eq("id", 27L), 
+							Expression.Eq("id", 27L),
 							Projections.Constant("yes"),
 							Projections.Constant("no"))
 					)
@@ -127,5 +131,225 @@ namespace NHibernate.Test.Criteria
 				Assert.AreEqual("no", result);
 			}
 		}
+
+		[Test]
+		public void UseInWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.In(Projections.Id(), new object[] { 27 }))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+
+		[Test]
+		public void UseLikeWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.Like(Projections.Id(), "2", MatchMode.Start))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public void UseInsensitiveLikeWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.InsensitiveLike(Projections.Id(), "2", MatchMode.Start))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public void UseIdEqWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.IdEq(Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public void UseEqWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.Eq(Projections.Id(), 27L))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+
+		[Test]
+		public void UseGtWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.Gt(Projections.Id(), 2L))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public void UseLtWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.Lt(Projections.Id(), 200L))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public void UseLeWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.Le(Projections.Id(), 27L))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public void UseGeWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.Ge(Projections.Id(), 27L))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public void UseBetweenWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.Between(Projections.Id(), 10L, 28L))
+					.List<Student>();
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public void UseIsNullWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.IsNull(Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(0, list.Count);
+			}
+		}
+
+		[Test]
+		public void UseIsNotNullWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.IsNotNull(Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public void UseEqPropertyWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.EqProperty(Projections.Id(), Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public void UseGePropertyWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.GeProperty(Projections.Id(), Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public void UseGtPropertyWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.GtProperty(Projections.Id(), Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(0, list.Count);
+			}
+		}
+
+		[Test]
+		public void UseLtPropertyWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.LtProperty(Projections.Id(), Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(0, list.Count);
+			}
+		}
+
+		[Test]
+		public void UseLePropertyWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.LeProperty(Projections.Id(), Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public void UseNotEqPropertyWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = session.CreateCriteria(typeof(Student))
+					.Add(Expression.NotEqProperty("id", Projections.Id()))
+					.List<Student>();
+				Assert.AreEqual(0, list.Count);
+			}
+		}
+
+
 	}
 }

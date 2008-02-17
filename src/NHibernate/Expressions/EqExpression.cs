@@ -9,6 +9,15 @@ namespace NHibernate.Expressions
 	public class EqExpression : SimpleExpression
 	{
 		/// <summary>
+		/// Initializes a new instance of the <see cref="EqExpression"/> class.
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value.</param>
+		public EqExpression(IProjection projection, object value) : base(projection, value)
+		{
+		}
+
+		/// <summary>
 		/// Initialize a new instance of the <see cref="EqExpression" /> class for a named
 		/// Property and its value.
 		/// </summary>

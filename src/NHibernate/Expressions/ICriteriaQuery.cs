@@ -36,5 +36,6 @@ namespace NHibernate.Expressions
 		TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value);
 
 		string GenerateSQLAlias();
+		int GetIndexForAlias();
 	}
 }

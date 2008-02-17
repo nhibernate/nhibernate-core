@@ -79,12 +79,16 @@ namespace NHibernate.Util
 			return buf.ToSqlString();
 		}
 
-		public static string[] Add(string[] x, string sep, string[] y)
+		public static SqlString[] Add(SqlString[] x, string sep, SqlString[] y)
 		{
-			string[] result = new string[x.Length];
+			SqlString[] result = new SqlString[x.Length];
 			for (int i = 0; i < x.Length; i++)
 			{
-				result[i] = x[i] + sep + y[i];
+				result[i] = new SqlStringBuilder(3)
+					.Add(x[i])
+					.Add(sep)
+					.Add(y[i])
+					.ToSqlString();
 			}
 			return result;
 		}

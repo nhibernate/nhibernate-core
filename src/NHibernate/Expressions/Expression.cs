@@ -29,6 +29,16 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// Apply an "equal" constraint from the projection to the identifier property
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <returns>ICriterion</returns>
+		public static ICriterion IdEq(IProjection projection)
+		{
+			return new IdentifierEqExpression(projection);
+		}
+
+		/// <summary>
 		/// Apply an "equal" constraint to the named property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
@@ -37,6 +47,17 @@ namespace NHibernate.Expressions
 		public static SimpleExpression Eq(string propertyName, object value)
 		{
 			return new EqExpression(propertyName, value);
+		}
+
+		/// <summary>
+		/// Apply an "equal" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value for the Property.</param>
+		/// <returns>An <see cref="EqExpression"/>.</returns>
+		public static SimpleExpression Eq(IProjection projection, object value)
+		{
+			return new EqExpression(projection, value);
 		}
 
 		/// <summary>
@@ -50,6 +71,29 @@ namespace NHibernate.Expressions
 			return new LikeExpression(propertyName, value);
 		}
 
+		/// <summary>
+		/// Apply a "like" constraint to the project
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value for the Property.</param>
+		/// <returns>A <see cref="LikeExpression"/>.</returns>
+		public static SimpleExpression Like(IProjection projection, object value)
+		{
+			return new LikeExpression(projection, value);
+		}
+
+		/// <summary>
+		/// Apply a "like" constraint to the project
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value for the Property.</param>
+		/// <param name="matchMode">The match mode.</param>
+		/// <returns>A <see cref="LikeExpression"/>.</returns>
+		public static SimpleExpression Like(IProjection projection, string value, MatchMode matchMode)
+		{
+			return new LikeExpression(projection, value, matchMode);
+		}
+
 		public static SimpleExpression Like(string propertyName, string value, MatchMode matchMode)
 		{
 			return new LikeExpression(propertyName, value, matchMode);
@@ -58,6 +102,11 @@ namespace NHibernate.Expressions
 		public static AbstractCriterion InsensitiveLike(string propertyName, string value, MatchMode matchMode)
 		{
 			return new InsensitiveLikeExpression(propertyName, value, matchMode);
+		}
+
+		public static AbstractCriterion InsensitiveLike(IProjection projection, string value, MatchMode matchMode)
+		{
+			return new InsensitiveLikeExpression(projection, value, matchMode);
 		}
 
 		/// <summary>
@@ -72,6 +121,19 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// A case-insensitive "like", similar to Postgres "ilike" operator
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value for the Property.</param>
+		/// <returns>
+		/// An <see cref="InsensitiveLikeExpression"/>.
+		/// </returns>
+		public static AbstractCriterion InsensitiveLike(IProjection projection, object value)
+		{
+			return new InsensitiveLikeExpression(projection, value);
+		}
+
+		/// <summary>
 		/// Apply a "greater than" constraint to the named property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
@@ -83,6 +145,17 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// Apply a "greater than" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value for the Property.</param>
+		/// <returns>A <see cref="GtExpression"/>.</returns>
+		public static SimpleExpression Gt(IProjection projection, object value)
+		{
+			return new GtExpression(projection, value);
+		}
+
+		/// <summary>
 		/// Apply a "less than" constraint to the named property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
@@ -91,6 +164,18 @@ namespace NHibernate.Expressions
 		public static SimpleExpression Lt(string propertyName, object value)
 		{
 			return new LtExpression(propertyName, value);
+		}
+
+
+		/// <summary>
+		/// Apply a "less than" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value for the Property.</param>
+		/// <returns>A <see cref="LtExpression"/>.</returns>
+		public static SimpleExpression Lt(IProjection projection, object value)
+		{
+			return new LtExpression(projection, value);
 		}
 
 		/// <summary>
@@ -105,6 +190,17 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// Apply a "less than or equal" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value for the Property.</param>
+		/// <returns>A <see cref="LeExpression"/>.</returns>
+		public static SimpleExpression Le(IProjection projection, object value)
+		{
+			return new LeExpression(projection, value);
+		}
+
+		/// <summary>
 		/// Apply a "greater than or equal" constraint to the named property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
@@ -114,6 +210,18 @@ namespace NHibernate.Expressions
 		{
 			return new GeExpression(propertyName, value);
 		}
+
+		/// <summary>
+		/// Apply a "greater than or equal" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value for the Property.</param>
+		/// <returns>A <see cref="GtExpression"/>.</returns>
+		public static SimpleExpression Ge(IProjection projection, object value)
+		{
+			return new GeExpression(projection, value);
+		}
+
 
 		/// <summary>
 		/// Apply a "between" constraint to the named property
@@ -128,6 +236,18 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// Apply a "between" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="lo">The low value for the Property.</param>
+		/// <param name="hi">The high value for the Property.</param>
+		/// <returns>A <see cref="BetweenExpression"/>.</returns>
+		public static AbstractCriterion Between(IProjection projection, object lo, object hi)
+		{
+			return new BetweenExpression(projection, lo, hi);
+		}
+
+		/// <summary>
 		/// Apply an "in" constraint to the named property 
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
@@ -136,6 +256,30 @@ namespace NHibernate.Expressions
 		public static AbstractCriterion In(string propertyName, object[] values)
 		{
 			return new InExpression(propertyName, values);
+		}
+
+		/// <summary>
+		/// Apply an "in" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="values">An array of values.</param>
+		/// <returns>An <see cref="InExpression"/>.</returns>
+		public static AbstractCriterion In(IProjection projection, object[] values)
+		{
+			return new InExpression(projection, values);
+		}
+
+		/// <summary>
+		/// Apply an "in" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="values">An ICollection of values.</param>
+		/// <returns>An <see cref="InExpression"/>.</returns>
+		public static AbstractCriterion In(IProjection projection, ICollection values)
+		{
+			object[] ary = new object[values.Count];
+			values.CopyTo(ary, 0);
+			return new InExpression(projection, ary);
 		}
 
 		/// <summary>
@@ -172,6 +316,27 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// Apply an "in" constraint to the projection. This is the generic equivalent
+		/// of <see cref="In(string, ICollection)"/>, renamed to avoid ambiguity.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="projection">The projection.</param>
+		/// <param name="values">An <see cref="System.Collections.Generic.ICollection{T}"/>
+		/// of values.</param>
+		/// <returns>An <see cref="InExpression"/>.</returns>
+		public static AbstractCriterion InG<T>(IProjection projection, System.Collections.Generic.ICollection<T> values)
+		{
+			object[] array = new object[values.Count];
+			int i = 0;
+			foreach (T item in values)
+			{
+				array[i] = item;
+				i++;
+			}
+			return new InExpression(projection, array);
+		}
+
+		/// <summary>
 		/// Apply an "is null" constraint to the named property
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
@@ -179,6 +344,16 @@ namespace NHibernate.Expressions
 		public static AbstractCriterion IsNull(string propertyName)
 		{
 			return new NullExpression(propertyName);
+		}
+
+		/// <summary>
+		/// Apply an "is null" constraint to the projection
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <returns>A <see cref="NullExpression"/>.</returns>
+		public static AbstractCriterion IsNull(IProjection projection)
+		{
+			return new NullExpression(projection);
 		}
 
 		/// <summary>
@@ -193,6 +368,41 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// Apply an "equal" constraint to projection and property
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
+		public static AbstractCriterion EqProperty(IProjection projection, string otherPropertyName)
+		{
+			return new EqPropertyExpression(projection, otherPropertyName);
+		}
+
+
+		/// <summary>
+		/// Apply an "equal" constraint to lshProjection and rshProjection
+		/// </summary>
+		/// <param name="lshProjection">The LHS projection.</param>
+		/// <param name="rshProjection">The RSH projection.</param>
+		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
+		public static AbstractCriterion EqProperty(IProjection lshProjection, IProjection rshProjection)
+		{
+			return new EqPropertyExpression(lshProjection, rshProjection);
+		}
+
+
+		/// <summary>
+		/// Apply an "equal" constraint to the property and rshProjection
+		/// </summary>
+		/// <param name="propertyName">Name of the property.</param>
+		/// <param name="rshProjection">The RSH projection.</param>
+		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
+		public static AbstractCriterion EqProperty(string propertyName, IProjection rshProjection)
+		{
+			return new EqPropertyExpression(propertyName, rshProjection);
+		}
+
+		/// <summary>
 		/// Apply an "not equal" constraint to two properties
 		/// </summary>
 		/// <param name="propertyName">The lhs Property Name</param>
@@ -201,6 +411,39 @@ namespace NHibernate.Expressions
 		public static AbstractCriterion NotEqProperty(string propertyName, string otherPropertyName)
 		{
 			return new NotExpression(new EqPropertyExpression(propertyName, otherPropertyName));
+		}
+
+		/// <summary>
+		/// Apply an "not equal" constraint to projection and property
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
+		public static AbstractCriterion NotEqProperty(IProjection projection, string otherPropertyName)
+		{
+			return new NotExpression(new EqPropertyExpression(projection, otherPropertyName));
+		}
+
+		/// <summary>
+		/// Apply an "not equal" constraint to the projections
+		/// </summary>
+		/// <param name="lhsProjection">The LHS projection.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
+		public static AbstractCriterion NotEqProperty(IProjection lhsProjection, IProjection rhsProjection)
+		{
+			return new NotExpression(new EqPropertyExpression(lhsProjection, rhsProjection));
+		}
+
+		/// <summary>
+		/// Apply an "not equal" constraint to the projections
+		/// </summary>
+		/// <param name="propertyName">Name of the property.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		/// <returns>A <see cref="EqPropertyExpression"/> .</returns>
+		public static AbstractCriterion NotEqProperty(string propertyName, IProjection rhsProjection)
+		{
+			return new NotExpression(new EqPropertyExpression(propertyName, rhsProjection));
 		}
 
 		/// <summary>
@@ -215,6 +458,39 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// Apply a "greater than" constraint to two properties
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
+		public static AbstractCriterion GtProperty(IProjection projection, string otherPropertyName)
+		{
+			return new GtPropertyExpression(projection, otherPropertyName);
+		}
+
+		/// <summary>
+		/// Apply a "greater than" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">Name of the property.</param>
+		/// <param name="projection">The projection.</param>
+		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
+		public static AbstractCriterion GtProperty(string propertyName, IProjection projection)
+		{
+			return new GtPropertyExpression(propertyName, projection);
+		}
+
+		/// <summary>
+		/// Apply a "greater than" constraint to two properties
+		/// </summary>
+		/// <param name="lhsProjection">The LHS projection.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
+		public static AbstractCriterion GtProperty(IProjection lhsProjection, IProjection rhsProjection)
+		{
+			return new GtPropertyExpression(lhsProjection, rhsProjection);
+		}
+
+		/// <summary>
 		/// Apply a "greater than or equal" constraint to two properties
 		/// </summary>
 		/// <param name="propertyName">The lhs Property Name</param>
@@ -223,6 +499,40 @@ namespace NHibernate.Expressions
 		public static AbstractCriterion GeProperty(string propertyName, string otherPropertyName)
 		{
 			return new GePropertyExpression(propertyName, otherPropertyName);
+		}
+
+		/// <summary>
+		/// Apply a "greater than or equal" constraint to two properties
+		/// </summary>
+		/// <param name="lhsProjection">The LHS projection.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
+		public static AbstractCriterion GeProperty(IProjection lhsProjection, IProjection  rhsProjection)
+		{
+			return new GePropertyExpression(lhsProjection, rhsProjection);
+		}
+
+		/// <summary>
+		/// Apply a "greater than or equal" constraint to two properties
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
+		public static AbstractCriterion GeProperty(IProjection projection, string otherPropertyName)
+		{
+			return new GePropertyExpression(projection, otherPropertyName);
+		}
+
+
+		/// <summary>
+		/// Apply a "greater than or equal" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="projection">The projection.</param>
+		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
+		public static AbstractCriterion GeProperty(string propertyName, IProjection projection)
+		{
+			return new GePropertyExpression(propertyName, projection);
 		}
 
 		/// <summary>
@@ -237,6 +547,39 @@ namespace NHibernate.Expressions
 		}
 
 		/// <summary>
+		/// Apply a "less than" constraint to two properties
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
+		public static AbstractCriterion LtProperty(IProjection projection, string otherPropertyName)
+		{
+			return new LtPropertyExpression(projection, otherPropertyName);
+		}
+
+		/// <summary>
+		/// Apply a "less than" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="projection">The projection.</param>
+		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
+		public static AbstractCriterion LtProperty(string propertyName, IProjection projection)
+		{
+			return new LtPropertyExpression(propertyName, projection);
+		}
+
+		/// <summary>
+		/// Apply a "less than" constraint to two properties
+		/// </summary>
+		/// <param name="lhsProjection">The LHS projection.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		/// <returns>A <see cref="LtPropertyExpression"/> .</returns>
+		public static AbstractCriterion LtProperty(IProjection lhsProjection, IProjection rhsProjection)
+		{
+			return new LtPropertyExpression(lhsProjection, rhsProjection);
+		}
+
+		/// <summary>
 		/// Apply a "less than or equal" constraint to two properties
 		/// </summary>
 		/// <param name="propertyName">The lhs Property Name</param>
@@ -247,6 +590,43 @@ namespace NHibernate.Expressions
 			return new LePropertyExpression(propertyName, otherPropertyName);
 		}
 
+
+		/// <summary>
+		/// Apply a "less than or equal" constraint to two properties
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="otherPropertyName">The rhs Property Name</param>
+		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
+		public static AbstractCriterion LeProperty(IProjection projection, string otherPropertyName)
+		{
+			return new LePropertyExpression(projection, otherPropertyName);
+		}
+
+
+		/// <summary>
+		/// Apply a "less than or equal" constraint to two properties
+		/// </summary>
+		/// <param name="propertyName">The lhs Property Name</param>
+		/// <param name="projection">The projection.</param>
+		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
+		public static AbstractCriterion LeProperty(string propertyName, IProjection projection)
+		{
+			return new LePropertyExpression(propertyName, projection);
+		}
+
+
+		/// <summary>
+		/// Apply a "less than or equal" constraint to two properties
+		/// </summary>
+		/// <param name="lhsProjection">The LHS projection.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		/// <returns>A <see cref="LePropertyExpression"/> .</returns>
+		public static AbstractCriterion LeProperty(IProjection lhsProjection, IProjection rhsProjection)
+		{
+			return new LePropertyExpression(lhsProjection, rhsProjection);
+		}
+
+
 		/// <summary>
 		/// Apply an "is not null" constraint to the named property
 		/// </summary>
@@ -255,6 +635,16 @@ namespace NHibernate.Expressions
 		public static AbstractCriterion IsNotNull(string propertyName)
 		{
 			return new NotNullExpression(propertyName);
+		}
+
+		/// <summary>
+		/// Apply an "is not null" constraint to the named property
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <returns>A <see cref="NotNullExpression"/>.</returns>
+		public static AbstractCriterion IsNotNull(IProjection projection)
+		{
+			return new NotNullExpression(projection);
 		}
 
 		/// <summary>
@@ -330,7 +720,7 @@ namespace NHibernate.Expressions
 		/// <returns></returns>
 		public static AbstractCriterion Sql(SqlString sql, object value, IType type)
 		{
-			return Sql(sql, new object[] {value}, new IType[] {type});
+			return Sql(sql, new object[] { value }, new IType[] { type });
 		}
 
 		/// <summary>
@@ -338,7 +728,7 @@ namespace NHibernate.Expressions
 		/// </summary>
 		public static AbstractCriterion Sql(string sql, object value, IType type)
 		{
-			return Sql(sql, new object[] {value}, new IType[] {type});
+			return Sql(sql, new object[] { value }, new IType[] { type });
 		}
 
 		public static AbstractCriterion Sql(string sql, object[] values, IType[] types)

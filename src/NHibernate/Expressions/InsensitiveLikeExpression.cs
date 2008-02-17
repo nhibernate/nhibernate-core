@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using NHibernate.Dialect;
-using NHibernate.Engine;
-using NHibernate.SqlCommand;
-
 namespace NHibernate.Expressions
 {
+	using System;
+	using System.Collections.Generic;
+	using Dialect;
+	using Engine;
+	using SqlCommand;
+
 	/// <summary>
 	/// An <see cref="ICriterion"/> that represents an "like" constraint
 	/// that is <b>not</b> case sensitive.
@@ -16,6 +16,30 @@ namespace NHibernate.Expressions
 	{
 		private readonly string _propertyName;
 		private readonly object _value;
+		private readonly IProjection projection;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="InsensitiveLikeExpression"/> class.
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value.</param>
+		/// <param name="matchMode">The match mode.</param>
+		public InsensitiveLikeExpression(IProjection projection, string value, MatchMode matchMode)
+		{
+			this.projection = projection;
+			this._value = matchMode.ToMatchString(value);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="InsensitiveLikeExpression"/> class.
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="_value">The _value.</param>
+		public InsensitiveLikeExpression(IProjection projection, object _value)
+		{
+			this.projection = projection;
+			this._value = _value;
+		}
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="InsensitiveLikeExpression" /> 
@@ -34,11 +58,13 @@ namespace NHibernate.Expressions
 		{
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
+		                                      IDictionary<string, IFilter> enabledFilters)
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, _propertyName);
+			SqlString[] columnNames =
+				CritertionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
 
 			if (columnNames.Length != 1)
 			{
@@ -66,16 +92,13 @@ namespace NHibernate.Expressions
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[]
-				{
-					criteriaQuery.GetTypedValue(criteria, _propertyName, _value.ToString().ToLower())
-				};
+			return CritertionUtil.GetTypedValues(criteriaQuery, criteria, projection, _propertyName, _value);
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return _propertyName + " ilike " + _value;
+			return (projection ?? (object)_propertyName) + " ilike " + _value;
 		}
 	}
 }

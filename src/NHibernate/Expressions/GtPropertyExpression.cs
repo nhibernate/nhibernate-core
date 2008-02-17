@@ -10,6 +10,33 @@ namespace NHibernate.Expressions
 	public class GtPropertyExpression : PropertyExpression
 	{
 		/// <summary>
+		/// Initializes a new instance of the <see cref="GtPropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsPropertyName">Name of the LHS property.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		public GtPropertyExpression(string lhsPropertyName, IProjection rhsProjection) : base(lhsPropertyName, rhsProjection)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GtPropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsProjection">The LHS projection.</param>
+		/// <param name="rhsProjection">The RHS projection.</param>
+		public GtPropertyExpression(IProjection lhsProjection, IProjection rhsProjection) : base(lhsProjection, rhsProjection)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GtPropertyExpression"/> class.
+		/// </summary>
+		/// <param name="lhsProjection">The projection.</param>
+		/// <param name="rhsPropertyName">Name of the RHS property.</param>
+		public GtPropertyExpression(IProjection lhsProjection, string rhsPropertyName) : base(lhsProjection, rhsPropertyName)
+		{
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="GtPropertyExpression"/> class
 		/// that compares two mapped properties using an "greater than" constraint.
 		/// </summary>

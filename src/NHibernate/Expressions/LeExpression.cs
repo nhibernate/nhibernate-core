@@ -9,6 +9,15 @@ namespace NHibernate.Expressions
 	public class LeExpression : SimpleExpression
 	{
 		/// <summary>
+		/// Initializes a new instance of the <see cref="LeExpression"/> class.
+		/// </summary>
+		/// <param name="projection">The projection.</param>
+		/// <param name="value">The value.</param>
+		public LeExpression(IProjection projection, object value) : base(projection, value)
+		{
+		}
+
+		/// <summary>
 		/// Initialize a new instance of the <see cref="LeExpression" /> class for a named
 		/// Property and its value.
 		/// </summary>

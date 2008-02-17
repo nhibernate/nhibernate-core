@@ -14,6 +14,12 @@ namespace NHibernate.Expressions
 	{
 		private readonly object value;
 
+		public IdentifierEqExpression(IProjection projection)
+		{
+			this.projection = projection;
+		}
+
+		private readonly IProjection projection;
 		public IdentifierEqExpression(object value)
 		{
 			this.value = value;
@@ -39,8 +45,9 @@ namespace NHibernate.Expressions
 				}
 
 				result.Add(columns[i])
-					.Add(" = ")
-					.AddParameter();
+					.Add(" = ");
+
+				AddValueOrProjection(criteria, criteriaQuery, enabledFilters, result);
 			}
 
 			if (columns.Length > 1)
@@ -48,6 +55,19 @@ namespace NHibernate.Expressions
 				result.Add(StringHelper.ClosedParen);
 			}
 			return result.ToSqlString();
+		}
+
+		private void AddValueOrProjection(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder result)
+		{
+			if (projection == null)
+			{
+				result.AddParameter();
+			}
+			else
+			{
+				SqlString sql = projection.ToSqlString(criteria, GetHashCode(),criteriaQuery, enabledFilters);
+				result.Add(StringHelper.RemoveAsAliasesFromSql(sql));
+			}
 		}
 
 		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
