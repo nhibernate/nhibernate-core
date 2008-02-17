@@ -8,6 +8,11 @@ namespace NHibernate.Metadata
 	public interface IClassMetadata
 	{
 		/// <summary>
+		/// The name of the entity
+		/// </summary>
+		string EntityName{ get; }
+
+		/// <summary>
 		/// The persistent class
 		/// </summary>
 		System.Type MappedClass { get; }
