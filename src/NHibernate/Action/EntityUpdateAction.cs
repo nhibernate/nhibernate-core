@@ -187,7 +187,7 @@ namespace NHibernate.Action
 				PreUpdateEvent preEvent = new PreUpdateEvent(Instance, Id, state, previousState, Persister, Session);
 				foreach (IPreUpdateEventListener listener in preListeners)
 				{
-					veto |= listener.Equals(preEvent);
+					veto |= listener.OnPreUpdate(preEvent);
 				}
 			}
 			return veto;
