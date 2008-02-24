@@ -2119,7 +2119,7 @@ namespace NHibernate.Impl
 				{
 					return factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, entityMode);
 				}
-				catch (HibernateException e)
+				catch (HibernateException)
 				{
 					try
 					{

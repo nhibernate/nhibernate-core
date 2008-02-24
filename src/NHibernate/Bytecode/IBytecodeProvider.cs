@@ -20,15 +20,15 @@ namespace NHibernate.Bytecode
 		/// <returns>The reflection optimization delegate.</returns>
 		IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters);
 
-		/// <summary> Generate a ClassTransformer capable of performing bytecode manipulation. </summary>
-		/// <param name="classFilter">
-		/// filter used to limit which classes are to be instrumented via this ClassTransformer.
-		/// </param>
-		/// <param name="fieldFilter">
-		/// filter used to limit which fields are to be instrumented
-		/// via this ClassTransformer.
-		/// </param>
-		/// <returns> The appropriate ClassTransformer. </returns>
+		// <summary> Generate a ClassTransformer capable of performing bytecode manipulation. </summary>
+		// <param name="classFilter">
+		// filter used to limit which classes are to be instrumented via this ClassTransformer.
+		// </param>
+		// <param name="fieldFilter">
+		// filter used to limit which fields are to be instrumented
+		// via this ClassTransformer.
+		// </param>
+		// <returns> The appropriate ClassTransformer. </returns>
 		// Not ported
 		//ClassTransformer getTransformer(ClassFilter classFilter, FieldFilter fieldFilter);
 

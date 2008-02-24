@@ -29,8 +29,8 @@ namespace NHibernate.Cfg
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public HibernateConfigException(Exception inner)
-			: base(baseMessage, inner)
+		public HibernateConfigException(Exception innerException)
+			: base(baseMessage, innerException)
 		{
 		}
 
@@ -52,8 +52,8 @@ namespace NHibernate.Cfg
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public HibernateConfigException(string message, Exception inner)
-			: base(message, inner)
+		public HibernateConfigException(string message, Exception innerException)
+			: base(message, innerException)
 		{
 		}
 

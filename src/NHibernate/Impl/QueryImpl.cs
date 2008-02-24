@@ -10,7 +10,7 @@ namespace NHibernate.Impl
 	/// Default implementation of the <see cref="IQuery"/>,
 	/// for "ordinary" HQL queries (not collection filters)
 	/// </summary>
-	/// <seealso cref="CollectionFilterImpl">
+	/// <seealso cref="CollectionFilterImpl"/>
 	public class QueryImpl : AbstractQueryImpl
 	{
 		private readonly Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>(2);

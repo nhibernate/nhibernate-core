@@ -8,7 +8,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// </summary>
 	/// <remarks>
 	/// There are 3 possible combinations of mapping attributes
-	/// 1 - resource & assembly:  NHibernate will read the mapping resource from the specified assembly
+	/// 1 - resource and assembly:  NHibernate will read the mapping resource from the specified assembly
 	/// 2 - file only: NHibernate will read the mapping from the file.
 	/// 3 - assembly only: NHibernate will find all the resources ending in hbm.xml from the assembly.
 	/// </remarks>

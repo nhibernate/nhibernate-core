@@ -1271,7 +1271,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Overloaded form of <see cref="GetCreateSequenceString"/>, additionally
+		/// Overloaded form of <see cref="GetCreateSequenceString(string)"/>, additionally
 		/// taking the initial value and increment size to be applied to the sequence
 		/// definition.
 		///  </summary>
@@ -1280,7 +1280,7 @@ namespace NHibernate.Dialect
 		/// <param name="incrementSize">The increment value to apply to 'create sequence' statement </param>
 		/// <returns> The sequence creation command </returns>
 		/// <remarks>
-		/// The default definition is to suffix <see cref="GetCreateSequenceString"/>
+		/// The default definition is to suffix <see cref="GetCreateSequenceString(string,int,int)"/>
 		/// with the string: " start with {initialValue} increment by {incrementSize}" where
 		/// {initialValue} and {incrementSize} are replacement placeholders.  Generally
 		/// dialects should only need to override this method if different key phrases
@@ -1785,8 +1785,8 @@ namespace NHibernate.Dialect
 		/// <summary> 
 		/// Are subselects supported as the left-hand-side (LHS) of
 		/// IN-predicates.
-		/// <p/>
-		/// In other words, is syntax like "... <subquery> IN (1, 2, 3) ..." supported? 
+		/// <para/>
+		/// In other words, is syntax like "... {subquery} IN (1, 2, 3) ..." supported? 
 		/// </summary>
 		/// <returns> True if subselects can appear as the LHS of an in-predicate;false otherwise. </returns>
 		public virtual bool SupportsSubselectAsInPredicateLHS

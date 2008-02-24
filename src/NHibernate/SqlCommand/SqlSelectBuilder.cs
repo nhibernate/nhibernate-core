@@ -123,7 +123,7 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		// <summary>
+		/// <summary>
 		/// Sets the text for the SELECT
 		/// </summary>
 		/// <param name="selectClause">The selectClause to set</param>

@@ -14,8 +14,8 @@ namespace NHibernate
 	/// ignored by a stateless session. Operations performed via a
 	/// stateless session bypass Hibernate's event model and
 	/// interceptors. Stateless sessions are vulnerable to data
-	/// aliasing effects, due to the lack of a first-level cache.<br>
-	/// <br>
+	/// aliasing effects, due to the lack of a first-level cache.
+	/// <para/>
 	/// For certain kinds of transactions, a stateless session may
 	/// perform slightly faster than a stateful session. 
 	/// </remarks>

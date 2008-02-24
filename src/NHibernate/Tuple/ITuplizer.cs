@@ -1,31 +1,34 @@
+using NHibernate;
+
 namespace NHibernate.Tuple
 {
 	/// <summary> 
-	/// <para>
 	/// A tuplizer defines the contract for things which know how to manage
 	/// a particular representation of a piece of data, given that
-	/// representation's {@link org.hibernate.EntityMode} (the entity-mode
+	/// representation's <see cref="EntityMode"/> (the entity-mode
 	/// essentially defining which representation).
-	/// </para>
+	/// </summary>
+	/// <remarks>
 	/// If that given piece of data is thought of as a data structure, then a tuplizer
-	/// is the thing which knows how to
-	/// <ul>
-	/// <li>create such a data structure appropriately
-	/// <li>extract values from and inject values into such a data structure
-	/// </ul>
-	/// </p>
-	/// For example, a given piece of data might be represented as a POJO class.
-	/// Here, it's representation and entity-mode is POJO.  Well a tuplizer for POJO
-	/// entity-modes would know how to<ul>
-	/// <li>create the data structure by calling the POJO's constructor
-	/// <li>extract and inject values through getters/setter, or by direct field access, etc
-	/// </ul>
-	/// </p>
+	/// is the thing which knows how to:
+	/// <list type="bullet">
+	/// <item><description>create such a data structure appropriately</description></item>
+	/// <item><description>extract values from and inject values into such a data structure</description></item>
+	/// </list>
+	/// <para/>
+	/// For example, a given piece of data might be represented as a POCO class.
+	/// Here, it's representation and entity-mode is POCO.  Well a tuplizer for POCO
+	/// entity-modes would know how to:
+	/// <list type="bullet">
+	/// <item><description>create the data structure by calling the POCO's constructor</description></item>
+	/// <item><description>extract and inject values through getters/setter, or by direct field access, etc</description></item>
+	/// </list>
+	/// <para/>
 	/// That same piece of data might also be represented as a DOM structure, using
-	/// the tuplizer associated with the DOM4J entity-mode, which would generate instances
-	/// of {@link org.dom4j.Element} as the data structure and know how to access the
-	/// values as either nested {@link org.dom4j.Element}s or as {@link org.dom4j.Attribute}s.
-	///  </summary>
+	/// the tuplizer associated with the XML entity-mode, which would generate instances
+	/// of <see cref="System.Xml.XmlElement"/> as the data structure and know how to access the
+	/// values as either nested <see cref="System.Xml.XmlElement"/>s or as <see cref="System.Xml.XmlAttribute"/>s.
+	/// </remarks>
 	/// <seealso cref="Entity.IEntityTuplizer"/>
 	/// <seealso cref="Component.IComponentTuplizer"/>
 	public interface ITuplizer

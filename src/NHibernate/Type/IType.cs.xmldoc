@@ -207,6 +207,8 @@
 		state, stopping at entities and at collections.
 		</summary>
 		<param name="val">A Collection element or Entity field</param>
+		<param name="entityMode">The entityMode.</param>
+		<param name="factory">The session factory.</param>
 		<returns>A deep copy of the object.</returns>
 	</member>
 	

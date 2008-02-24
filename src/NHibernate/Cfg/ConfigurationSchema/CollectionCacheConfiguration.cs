@@ -27,6 +27,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			this.usage = usage;
 		}
 
+		/// <summary>
 		/// Initializes a new instance of the <see cref="CollectionCacheConfiguration"/> class.
 		/// </summary>
 		/// <param name="collection">The cache role.</param>
