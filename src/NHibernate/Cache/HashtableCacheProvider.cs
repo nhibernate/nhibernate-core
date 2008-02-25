@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Cache
 {
@@ -10,37 +10,20 @@ namespace NHibernate.Cache
 	{
 		#region ICacheProvider Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="regionName"></param>
-		/// <param name="properties"></param>
-		/// <returns></returns>
-		public ICache BuildCache(string regionName, IDictionary properties)
+		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			return new HashtableCache(regionName);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="properties"></param>
-		public void Start(IDictionary properties)
+		public void Start(IDictionary<string, string> properties)
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void Stop()
 		{
 		}

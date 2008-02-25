@@ -10,6 +10,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Id
 {
@@ -77,14 +78,14 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
 		/// <param name="dialect">The <see cref="Dialect"/> to help with Configuration.</param>
-		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
+		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 
 			tableName = PropertiesHelper.GetString(TableParamName, parms, DefaultTableName);
 			columnName = PropertiesHelper.GetString(ColumnParamName, parms, DefaultColumnName);
 			whereClause = PropertiesHelper.GetString(Where, parms, "");
-			string schemaName = (string)parms[PersistentIdGeneratorParmsNames.Schema];
-			string catalogName = (string)parms[PersistentIdGeneratorParmsNames.Catalog];
+			string schemaName = PropertiesHelper.GetString(PersistentIdGeneratorParmsNames.Schema, parms, null);
+			string catalogName = PropertiesHelper.GetString(PersistentIdGeneratorParmsNames.Catalog, parms, null);
 
 			if (tableName.IndexOf('.') < 0)
 			{
@@ -167,8 +168,6 @@ namespace NHibernate.Id
 				conn = session.Factory.OpenConnection();
 			}
 
-			long result;
-			int rows;
 			try
 			{
 				IDbTransaction trans = null;
@@ -177,6 +176,8 @@ namespace NHibernate.Id
 					trans = conn.BeginTransaction();
 				}
 
+				long result;
+				int rows;
 				do
 				{
 					//the loop ensure atomicitiy of the 

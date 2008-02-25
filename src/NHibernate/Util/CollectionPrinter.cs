@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections;
 
@@ -39,6 +40,27 @@ namespace NHibernate.Util
 				{
 					result.Append(", ");
 				}
+				AppendNullOrValue(result, de.Key);
+				result.Append("=");
+				AppendNullOrValue(result, de.Value);
+				first = false;
+			}
+
+			result.Append("}");
+			return result.ToString();
+		}
+
+		public static string ToString(IDictionary<string, string> dictionary)
+		{
+			StringBuilder result = new StringBuilder();
+			result.Append("{");
+
+			bool first = true;
+			foreach (KeyValuePair<string, string> de in dictionary)
+			{
+				if (!first)
+					result.Append(", ");
+
 				AppendNullOrValue(result, de.Key);
 				result.Append("=");
 				AppendNullOrValue(result, de.Value);

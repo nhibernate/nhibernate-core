@@ -3,10 +3,10 @@ using System.Collections;
 using System.Configuration;
 using System.Data;
 using log4net;
-using NHibernate.Cfg;
 using NHibernate.Driver;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
+using System.Collections.Generic;
 
 namespace NHibernate.Connection
 {
@@ -32,7 +32,7 @@ namespace NHibernate.Connection
 			}
 			catch (Exception e)
 			{
-				throw new ADOException("Could not close " + conn.GetType().ToString() + " connection", e);
+				throw new ADOException("Could not close " + conn.GetType() + " connection", e);
 			}
 		}
 
@@ -44,17 +44,14 @@ namespace NHibernate.Connection
 		/// Thrown when a <see cref="Cfg.Environment.ConnectionString"/> could not be found 
 		/// in the <c>settings</c> parameter or the Driver Class could not be loaded.
 		/// </exception>
-		public virtual void Configure(IDictionary settings)
+		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			log.Info("Configuring ConnectionProvider");
 
-			connString = settings[Environment.ConnectionString] as string;
-
 			// Connection string in the configuration overrides named connection string
-			if (connString == null)
-			{
+			if (!settings.TryGetValue(Environment.ConnectionString, out connString))
 				connString = GetNamedConnectionString(settings);
-			}
+
 			if (connString == null)
 			{
 				throw new HibernateException("Could not find connection string setting (set " +
@@ -74,11 +71,12 @@ namespace NHibernate.Connection
 		/// Thrown when a <see cref="Environment.ConnectionStringName"/> was found 
 		/// in the <c>settings</c> parameter but could not be found in the app.config
 		/// </exception>
-		protected virtual string GetNamedConnectionString(IDictionary settings)
+		protected virtual string GetNamedConnectionString(IDictionary<string, string> settings)
 		{
-			string connStringName = settings[Environment.ConnectionStringName] as string;
-			if (connStringName == null)
+			string connStringName;
+			if(!settings.TryGetValue(Environment.ConnectionStringName, out connStringName))
 				return null;
+
 			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
 			if (connectionStringSettings == null)
 				throw new HibernateException(string.Format("Could not find named connection string {0}", connStringName));
@@ -94,10 +92,10 @@ namespace NHibernate.Connection
 		/// found in the <c>settings</c> parameter or there is a problem with creating
 		/// the <see cref="IDriver"/>.
 		/// </exception>
-		protected virtual void ConfigureDriver(IDictionary settings)
+		protected virtual void ConfigureDriver(IDictionary<string, string> settings)
 		{
-			string driverClass = settings[Environment.ConnectionDriver] as string;
-			if (driverClass == null)
+			string driverClass;
+			if (!settings.TryGetValue(Environment.ConnectionDriver, out driverClass))
 			{
 				throw new HibernateException("The " + Environment.ConnectionDriver +
 				                             " must be specified in the NHibernate configuration section.");

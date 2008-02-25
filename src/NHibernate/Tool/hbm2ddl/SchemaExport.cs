@@ -20,11 +20,11 @@ namespace NHibernate.Tool.hbm2ddl
 	/// </remarks>
 	public class SchemaExport
 	{
-		private string[] dropSQL;
-		private string[] createSQL;
-		private IDictionary connectionProperties;
+		private readonly string[] dropSQL;
+		private readonly string[] createSQL;
+		private readonly IDictionary<string, string> connectionProperties;
 		private string outputFile = null;
-		private Dialect.Dialect dialect;
+		private readonly Dialect.Dialect dialect;
 		private string delimiter = null;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SchemaExport));
@@ -44,7 +44,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </summary>
 		/// <param name="cfg">The NHibernate Configuration to generate the schema from.</param>
 		/// <param name="connectionProperties">The Properties to use when connecting to the Database.</param>
-		public SchemaExport(Configuration cfg, IDictionary connectionProperties)
+		public SchemaExport(Configuration cfg, IDictionary<string,string> connectionProperties)
 		{
 			this.connectionProperties = connectionProperties;
 			dialect = Dialect.Dialect.GetDialect(connectionProperties);
@@ -237,7 +237,7 @@ namespace NHibernate.Tool.hbm2ddl
 			StreamWriter fileOutput = null;
 			IConnectionProvider connectionProvider = null;
 
-			IDictionary props = new Hashtable();
+			Dictionary<string, string> props = new Dictionary<string, string>();
 			foreach (KeyValuePair<string, string> de in dialect.DefaultProperties)
 			{
 				props[de.Key] = de.Value;
@@ -245,7 +245,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 			if (connectionProperties != null)
 			{
-				foreach (DictionaryEntry de in connectionProperties)
+				foreach (KeyValuePair<string, string> de in connectionProperties)
 				{
 					props[de.Key] = de.Value;
 				}

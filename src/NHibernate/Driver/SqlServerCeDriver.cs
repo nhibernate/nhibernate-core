@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Cfg;
 using NHibernate.SqlCommand;
@@ -25,7 +25,7 @@ namespace NHibernate.Driver
 
 		private bool prepareSql;
 
-		public override void Configure(IDictionary settings)
+		public override void Configure(IDictionary<string, string> settings)
 		{
 			base.Configure(settings);
 			prepareSql = PropertiesHelper.GetBoolean(Environment.PrepareSql, settings, false);

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using log4net;
 using NHibernate.Cache;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH720
 {
@@ -17,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			caches = new Hashtable();
 		}
 
-		public static ICache BuildCacheStatic(string regionName, IDictionary properties)
+		public static ICache BuildCacheStatic(string regionName, IDictionary<string,string> properties)
 		{
 			if (regionName != null && caches[regionName] != null)
 			{
@@ -30,17 +31,17 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			}
 			if (properties == null)
 			{
-				properties = new Hashtable();
+				properties = new Dictionary<string,string>();
 			}
 			if (log.IsDebugEnabled)
 			{
 				StringBuilder sb = new StringBuilder();
-				foreach (DictionaryEntry de in properties)
+				foreach (KeyValuePair<string, string> de in properties)
 				{
 					sb.Append("name=");
-					sb.Append(de.Key.ToString());
+					sb.Append(de.Key);
 					sb.Append("&value=");
-					sb.Append(de.Value.ToString());
+					sb.Append(de.Value);
 					sb.Append(";");
 				}
 				log.Debug("building cache with region: " + regionName + ", properties: " + sb.ToString());
@@ -50,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			return cache;
 		}
 
-		public ICache BuildCache(string regionName, IDictionary properties)
+		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			return BuildCacheStatic(regionName, properties);
 		}
@@ -74,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 
 		/// <summary></summary>
 		/// <param name="properties"></param>
-		public void Start(IDictionary properties)
+		public void Start(IDictionary<string, string> properties)
 		{
 		}
 
@@ -91,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		private TimeSpan _expiration;
 		public static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
 
-		public FooCache(string region, IDictionary properties)
+		public FooCache(string region, IDictionary<string, string> properties)
 		{
 			_region = region;
 
@@ -108,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			get { return _expiration; }
 		}
 
-		private void Configure(IDictionary props)
+		private void Configure(IDictionary<string, string> props)
 		{
 			if (props == null)
 			{
@@ -120,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			}
 			else
 			{
-				if (props["expiration"] != null)
+				if (props.ContainsKey("expiration"))
 				{
 					try
 					{

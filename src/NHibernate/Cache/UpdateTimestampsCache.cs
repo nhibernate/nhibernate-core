@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Iesi.Collections.Generic;
 using log4net;
@@ -26,12 +26,12 @@ namespace NHibernate.Cache
 			updateTimestamps.Clear();
 		}
 
-		public UpdateTimestampsCache(Settings settings, IDictionary props)
+		public UpdateTimestampsCache(Settings settings, IDictionary<string, string> props)
 		{
 			string prefix = settings.CacheRegionPrefix;
 			regionName = prefix == null ? regionName : prefix + '.' + regionName;
 			log.Info("starting update timestamps cache at region: " + regionName);
-			this.updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
+			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]

@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Cfg;
 
 namespace NHibernate.Cache
@@ -10,15 +9,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public interface IQueryCacheFactory
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="regionName"></param>
-		/// <param name="updateTimestampsCache"></param>
-		/// <param name="settings"></param>
-		/// <param name="props"></param>
-		/// <returns></returns>
 		IQueryCache GetQueryCache(string regionName, UpdateTimestampsCache updateTimestampsCache, Settings settings,
-		                          IDictionary props);
+		                          IDictionary<string, string> props);
 	}
 }

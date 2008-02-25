@@ -1,5 +1,6 @@
 using System.Collections;
 using log4net;
+using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -24,7 +25,6 @@ namespace NHibernate.Impl
 	{
 		// to stop this class from being unloaded - this is a comment
 		// from h2.0.3 - is this applicable to .net also???
-		private static readonly SessionFactoryObjectFactory Instance; // not used !?!
 		private static readonly ILog log;
 
 		// in h2.0.3 these use a class called "FastHashMap"
@@ -35,7 +35,6 @@ namespace NHibernate.Impl
 		static SessionFactoryObjectFactory()
 		{
 			log = LogManager.GetLogger(typeof(SessionFactoryObjectFactory));
-			Instance = new SessionFactoryObjectFactory();
 			log.Debug("initializing class SessionFactoryObjectFactory");
 		}
 
@@ -51,7 +50,7 @@ namespace NHibernate.Impl
 		/// <param name="name">The name of the ISessionFactory.</param>
 		/// <param name="instance">The ISessionFactory.</param>
 		/// <param name="properties">The configured properties for the ISessionFactory.</param>
-		public static void AddInstance(string uid, string name, ISessionFactory instance, IDictionary properties)
+		public static void AddInstance(string uid, string name, ISessionFactory instance, IDictionary<string, string> properties)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -78,7 +77,7 @@ namespace NHibernate.Impl
 		/// <param name="uid">The identifier of the ISessionFactory.</param>
 		/// <param name="name">The name of the ISessionFactory.</param>
 		/// <param name="properties">The configured properties for the ISessionFactory.</param>
-		public static void RemoveInstance(string uid, string name, IDictionary properties)
+		public static void RemoveInstance(string uid, string name, IDictionary<string, string> properties)
 		{
 			if (name != null && name.Length > 0)
 			{

@@ -189,7 +189,7 @@ namespace NHibernate.Id
 		/// <exception cref="MappingException">
 		/// Thrown if there are any exceptions while creating the <see cref="IIdentifierGenerator"/>.
 		/// </exception>
-		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary parms, Dialect.Dialect dialect)
+		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			try
 			{

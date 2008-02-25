@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -84,9 +85,9 @@ namespace NHibernate.Id
 		/// <exception cref="MappingException">
 		/// Thrown if the key <c>property</c> is not found in the <c>parms</c> parameter.
 		/// </exception>
-		public void Configure(IType type, IDictionary parms, Dialect.Dialect d)
+		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d)
 		{
-			propertyName = (string) parms["property"];
+			propertyName = parms["property"];
 			if (propertyName == null || propertyName.Length == 0)
 			{
 				throw new MappingException("param named \"property\" is required for foreign id generation strategy");

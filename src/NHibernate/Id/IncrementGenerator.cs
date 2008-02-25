@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -39,18 +39,21 @@ namespace NHibernate.Id
 		/// <param name="type"></param>
 		/// <param name="parms"></param>
 		/// <param name="d"></param>
-		public void Configure(IType type, IDictionary parms, Dialect.Dialect d)
+		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d)
 		{
-			string tableList = (string)parms["tables"];
-			if (tableList == null)
-				tableList = (string)parms[PersistentIdGeneratorParmsNames.Tables];
+			string tableList;
+			string column;
+			string schema;
+			string catalog;
+
+			if (!parms.TryGetValue("tables", out tableList))
+				parms.TryGetValue(PersistentIdGeneratorParmsNames.Tables, out tableList);
 			string[] tables = StringHelper.Split(", ", tableList);
-			string column = (string)parms["column"];
-			if (column == null)
-				column = (string)parms[PersistentIdGeneratorParmsNames.PK];
-			string schema = (string)parms[PersistentIdGeneratorParmsNames.Schema];
-			string catalog = (string)parms[PersistentIdGeneratorParmsNames.Catalog];
+			if (!parms.TryGetValue("column", out column))
+				parms.TryGetValue(PersistentIdGeneratorParmsNames.PK, out column);
 			returnClass = type.ReturnedClass;
+			parms.TryGetValue(PersistentIdGeneratorParmsNames.Schema, out schema);
+			parms.TryGetValue(PersistentIdGeneratorParmsNames.Catalog, out catalog);
 
 			StringBuilder buf = new StringBuilder();
 			for (int i = 0; i < tables.Length; i++)
@@ -105,7 +108,7 @@ namespace NHibernate.Id
 					{
 						if (rs.Read())
 						{
-							next = !rs.IsDBNull(0) ? Convert.ToInt64(rs.GetValue(0)) + 1: 1L;
+							next = !rs.IsDBNull(0) ? Convert.ToInt64(rs.GetValue(0)) + 1 : 1L;
 						}
 						else
 						{

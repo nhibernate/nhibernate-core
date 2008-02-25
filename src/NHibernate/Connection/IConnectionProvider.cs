@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Driver;
 
@@ -19,7 +19,7 @@ namespace NHibernate.Connection
 		/// Initialize the connection provider from the given properties.
 		/// </summary>
 		/// <param name="settings">The connection provider settings</param>
-		void Configure(IDictionary settings);
+		void Configure(IDictionary<string, string> settings);
 
 		/// <summary>
 		/// Dispose of a used <see cref="IDbConnection"/>

@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Cache
 {
@@ -13,7 +13,7 @@ namespace NHibernate.Cache
 		/// <param name="regionName">the name of the cache region</param>
 		/// <param name="properties">configuration settings</param>
 		/// <returns></returns>
-		ICache BuildCache(string regionName, IDictionary properties);
+		ICache BuildCache(string regionName, IDictionary<string, string> properties);
 
 		/// <summary>
 		/// generate a timestamp
@@ -26,7 +26,7 @@ namespace NHibernate.Cache
 		/// during ISessionFactory construction.
 		/// </summary>
 		/// <param name="properties">current configuration settings</param>
-		void Start(IDictionary properties);
+		void Start(IDictionary<string, string> properties);
 
 		/// <summary>
 		/// Callback to perform any necessary cleanup of the underlying cache implementation

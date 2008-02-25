@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Type;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Cache
 {
@@ -19,8 +19,8 @@ namespace NHibernate.Cache
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(StandardQueryCache));
 
-		private ICache queryCache;
-		private UpdateTimestampsCache updateTimestampsCache;
+		private readonly ICache queryCache;
+		private readonly UpdateTimestampsCache updateTimestampsCache;
 		private readonly string regionName;
 
 		public string RegionName
@@ -33,7 +33,7 @@ namespace NHibernate.Cache
 			queryCache.Clear();
 		}
 
-		public StandardQueryCache(Settings settings, IDictionary props, UpdateTimestampsCache updateTimestampsCache,
+		public StandardQueryCache(Settings settings, IDictionary<string,string> props, UpdateTimestampsCache updateTimestampsCache,
 		                          string regionName)
 		{
 			if (regionName == null)
@@ -44,7 +44,7 @@ namespace NHibernate.Cache
 			if (prefix != null) regionName = prefix + '.' + regionName;
 
 			log.Info("starting query cache at region: " + regionName);
-			this.queryCache = settings.CacheProvider.BuildCache(regionName, props);
+			queryCache = settings.CacheProvider.BuildCache(regionName, props);
 			this.updateTimestampsCache = updateTimestampsCache;
 			this.regionName = regionName;
 		}

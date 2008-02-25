@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using log4net;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
@@ -19,16 +19,11 @@ namespace NHibernate.Connection
 			throw new InvalidOperationException("ConnectionProviderFactory can not be instantiated.");
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <returns></returns>
-		public static IConnectionProvider NewConnectionProvider(IDictionary settings)
+		public static IConnectionProvider NewConnectionProvider(IDictionary<string, string> settings)
 		{
-			IConnectionProvider connections = null;
-			string providerClass = settings[Environment.ConnectionProvider] as string;
-			if (providerClass != null)
+			IConnectionProvider connections;
+			string providerClass;
+			if (settings.TryGetValue(Environment.ConnectionProvider, out providerClass))
 			{
 				try
 				{
@@ -41,7 +36,7 @@ namespace NHibernate.Connection
 					throw new HibernateException("Could not instantiate connection provider: " + providerClass, e);
 				}
 			}
-			else if (settings[Environment.ConnectionString] != null || settings[Environment.ConnectionStringName] != null)
+			else if (settings.ContainsKey(Environment.ConnectionString) || settings.ContainsKey(Environment.ConnectionStringName))
 			{
 				connections = new DriverConnectionProvider();
 			}

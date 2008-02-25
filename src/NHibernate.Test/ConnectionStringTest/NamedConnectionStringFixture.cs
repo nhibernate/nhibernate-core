@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Connection;
 using NUnit.Framework;
@@ -14,7 +14,7 @@ namespace NHibernate.Test.ConnectionStringTest
 		[ExpectedException(typeof(HibernateException), "Could not find named connection string MyConStr")]
 		public void InvalidNamedConnectedStringThrows()
 		{
-			Hashtable settings = new Hashtable();
+			Dictionary<string, string> settings = new Dictionary<string, string>();
 			settings.Add(Environment.ConnectionStringName, "MyConStr");
 			ConnectionProvider cp = new MockConnectionProvider();
 			cp.Configure(settings);
@@ -23,7 +23,7 @@ namespace NHibernate.Test.ConnectionStringTest
 		[Test]
 		public void ConnectionStringInSettingsOverrideNamedConnectionSTring()
 		{
-			Hashtable settings = new Hashtable();
+			Dictionary<string, string> settings = new Dictionary<string, string>();
 			string conStr = "Test Connection String";
 			settings.Add(Environment.ConnectionString, conStr);
 			settings.Add(Environment.ConnectionStringName, "MyConStr");
@@ -36,7 +36,7 @@ namespace NHibernate.Test.ConnectionStringTest
 		[Test]
 		public void CanGetNamedConnectionStringFromConfiguration()
 		{
-			Hashtable settings = new Hashtable();
+			Dictionary<string, string> settings = new Dictionary<string, string>();
 			settings.Add(Environment.ConnectionStringName, "TestConnectionString");
 			MockConnectionProvider cp = new MockConnectionProvider();
 			cp.Configure(settings);
@@ -65,7 +65,7 @@ namespace NHibernate.Test.ConnectionStringTest
 			throw new NotImplementedException();
 		}
 
-		protected override void ConfigureDriver(IDictionary settings)
+		protected override void ConfigureDriver(IDictionary<string, string> settings)
 		{
 			return;
 		}

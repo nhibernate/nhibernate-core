@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using log4net;
 using NHibernate.SqlCommand;
@@ -19,7 +19,7 @@ namespace NHibernate.Driver
 		private int commandTimeout;
 		private bool prepareSql;
 
-		public virtual void Configure(IDictionary settings)
+		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			// Command timeout
 			commandTimeout = PropertiesHelper.GetInt32(Environment.CommandTimeout, settings, -1);

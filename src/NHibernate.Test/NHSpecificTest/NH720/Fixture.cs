@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		[Test]
 		public void CacheTest()
 		{
-			IDictionary properties = new Hashtable();
+			Dictionary<string, string> properties = new Dictionary<string, string>();
 			properties["expiration"] = "60";
 			FooCacheProvider.BuildCacheStatic("xx", properties);
 			properties["expiration"] = "120";

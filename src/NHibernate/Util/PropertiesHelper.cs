@@ -1,96 +1,53 @@
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using System.Xml;
+using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
 	//Much of this code is taken from Maverick.NET
 	/// <summary></summary>
-	public sealed class PropertiesHelper
+	public static class PropertiesHelper
 	{
-		private PropertiesHelper()
+		public static bool GetBoolean(string property, IDictionary<string, string> properties, bool defaultValue)
 		{
-			// should not be created	
+			string toParse;
+			properties.TryGetValue(property, out toParse);
+
+			return toParse == null ? defaultValue : bool.Parse(toParse);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="properties"></param>
-		/// <param name="defaultValue"></param>
-		/// <returns></returns>
-		public static bool GetBoolean(string property, IDictionary properties, bool defaultValue)
+		public static bool GetBoolean(string property, IDictionary<string, string> properties)
 		{
-			return properties[property] == null ?
-			       defaultValue :
-			       bool.Parse(properties[property] as string);
+			string toParse;
+			properties.TryGetValue(property, out toParse);
+			return toParse == null ? false : bool.Parse(properties[property]);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="properties"></param>
-		/// <returns></returns>
-		public static bool GetBoolean(string property, IDictionary properties)
+		public static int GetInt32(string property, IDictionary<string, string> properties, int defaultValue)
 		{
-			return properties[property] == null ?
-			       false :
-			       bool.Parse(properties[property] as string);
+			string toParse;
+			properties.TryGetValue(property, out toParse);
+			return toParse == null ? defaultValue : int.Parse(toParse);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="properties"></param>
-		/// <param name="defaultValue"></param>
-		/// <returns></returns>
-		public static int GetInt32(string property, IDictionary properties, int defaultValue)
+		public static long GetInt64(string property, IDictionary<string, string> properties, long defaultValue)
 		{
-			string propValue = properties[property] as string;
-			return (propValue == null) ? defaultValue : int.Parse(propValue);
+			string toParse;
+			properties.TryGetValue(property, out toParse);
+			return toParse == null ? defaultValue : long.Parse(toParse);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="properties"></param>
-		/// <param name="defaultValue"></param>
-		/// <returns></returns>
-		public static long GetInt64(string property, IDictionary properties, long defaultValue)
+		public static string GetString(string property, IDictionary<string, string> properties, string defaultValue)
 		{
-			string propValue = properties[property] as string;
-			return (propValue == null) ? defaultValue : long.Parse(propValue);
+			string value;
+			properties.TryGetValue(property, out value);
+			return value ?? defaultValue;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="properties"></param>
-		/// <param name="defaultValue"></param>
-		/// <returns></returns>
-		public static string GetString(string property, IDictionary properties, string defaultValue)
-		{
-			string propValue = properties[property] as string;
-			return propValue ?? defaultValue;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="delim"></param>
-		/// <param name="properties"></param>
-		/// <returns></returns>
-		public static IDictionary<string, string> ToDictionary(string property, string delim, IDictionary properties)
+		public static IDictionary<string, string> ToDictionary(string property, string delim, IDictionary<string, string> properties)
 		{
 			IDictionary<string, string> map = new Dictionary<string, string>();
-			string propValue = (string) properties[property];
+			string propValue = properties[property];
 			if (propValue != null)
 			{
 				StringTokenizer tokens = new StringTokenizer(propValue, delim, false);
@@ -106,24 +63,11 @@ namespace NHibernate.Util
 			return map;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="delim"></param>
-		/// <param name="properties"></param>
-		/// <returns></returns>
 		public static string[] ToStringArray(string property, string delim, IDictionary properties)
 		{
 			return ToStringArray((string) properties[property], delim);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propValue"></param>
-		/// <param name="delim"></param>
-		/// <returns></returns>
 		public static string[] ToStringArray(string propValue, string delim)
 		{
 			if (propValue != null)
@@ -134,54 +78,6 @@ namespace NHibernate.Util
 			{
 				return new string[0];
 			}
-		}
-
-
-		/// <summary></summary>
-		public static readonly string TagParam = "param";
-
-		/// <summary></summary>
-		public static readonly string AttrValue = "value";
-
-		/// <summary></summary>
-		public static readonly string AttrName = "name";
-
-		/// <summary>
-		/// Extracts a set of param child nodes from the specified node
-		/// &lt;param name="theName" value="theValue"/&gt;
-		/// </summary>
-		/// <param name="node">Parent element.</param>
-		/// <returns>null if no parameters are found</returns>
-		public static IDictionary GetParams(XmlElement node)
-		{
-			IDictionary result = new Hashtable();
-
-			foreach (XmlElement paramNode in node.GetElementsByTagName(TagParam))
-			{
-				string name = GetAttribute(paramNode, AttrName);
-				string val = GetAttribute(paramNode, AttrValue);
-				if (val == null)
-					if (paramNode.HasChildNodes)
-					{
-						val = paramNode.InnerText; //TODO: allow for multiple values?
-					}
-					else
-					{
-						val = paramNode.InnerText;
-					}
-
-				result.Add(name, val);
-			}
-			return result;
-		}
-
-		private static string GetAttribute(XmlElement node, string attr)
-		{
-			string result = node.GetAttribute(attr);
-			if (result != null && result.Trim().Length == 0)
-				result = null;
-
-			return result;
 		}
 	}
 }

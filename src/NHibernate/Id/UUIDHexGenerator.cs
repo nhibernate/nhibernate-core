@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -51,8 +51,6 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class UUIDHexGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(UUIDHexGenerator));
-
 		protected string format = FormatWithDigitsOnly;
 		protected string sep;
 
@@ -62,11 +60,11 @@ namespace NHibernate.Id
 		#region IIdentifierGenerator Members
 
 		/// <summary>
-		/// Generate a new <see cref="String"/> for the identifier using the "uuid.hex" algorithm.
+		/// Generate a new <see cref="string"/> for the identifier using the "uuid.hex" algorithm.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
-		/// <returns>The new identifier as a <see cref="String"/>.</returns>
+		/// <returns>The new identifier as a <see cref="string"/>.</returns>
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
 			string guidString = GenerateNewGuid();
@@ -90,7 +88,7 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
-		public virtual void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
+		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			format = PropertiesHelper.GetString("format", parms, FormatWithDigitsOnly);
 

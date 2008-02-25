@@ -6,9 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using Iesi.Collections;
-
+using Iesi.Collections.Generic;
 using log4net;
-
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -26,16 +25,13 @@ using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
-using NHibernate.Proxy.Poco.Castle;
 using NHibernate.Stat;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;
 using NHibernate.Type;
 using NHibernate.Util;
-
-using Environment = NHibernate.Cfg.Environment;
+using Environment=NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -133,10 +129,10 @@ namespace NHibernate.Impl
 		private readonly Settings settings;
 
 		[NonSerialized]
-		private readonly IDictionary properties;
+		private readonly IDictionary<string, string> properties;
 
 		[NonSerialized]
-		private SchemaExport schemaExport;
+		private readonly SchemaExport schemaExport;
 
 		[NonSerialized]
 		private readonly IQueryCache queryCache;
@@ -151,13 +147,13 @@ namespace NHibernate.Impl
 		private readonly IDictionary allCacheRegions = new Hashtable();
 
 		[NonSerialized]
-		private EventListeners eventListeners;
+		private readonly EventListeners eventListeners;
 
 		[NonSerialized]
 		private readonly SQLFunctionRegistry sqlFunctionRegistry;
 
 		[NonSerialized]
-		private IEntityNotFoundDelegate entityNotFoundDelegate;
+		private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
 
 		[NonSerialized]
 		private StatisticsImpl statistics;
@@ -179,10 +175,10 @@ namespace NHibernate.Impl
 			Init();
 			log.Info("building session factory");
 
-			this.properties = cfg.Properties;
-			this.interceptor = cfg.Interceptor;
+			properties = cfg.Properties;
+			interceptor = cfg.Interceptor;
 			this.settings = settings;
-			this.sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
+			sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 			eventListeners = listeners;
 
 			if (log.IsDebugEnabled)
@@ -482,10 +478,10 @@ namespace NHibernate.Impl
 		[Serializable]
 		private class QueryCacheKey
 		{
-			private string _query;
-			private bool _scalar;
-			private ISet<string> _filterNames;
-			private int _hashCode;
+			private readonly string _query;
+			private readonly bool _scalar;
+			private readonly ISet<string> _filterNames;
+			private readonly int _hashCode;
 
 			internal QueryCacheKey(string query, bool scalar, IDictionary<string, IFilter> enabledFilters)
 			{
@@ -538,10 +534,10 @@ namespace NHibernate.Impl
 
 			public bool Equals(QueryCacheKey obj)
 			{
-				return this._hashCode == obj._hashCode &&
-				       this.Query.Equals(obj.Query) &&
-				       this.Scalar == obj.Scalar &&
-				       CollectionHelper.SetEquals(this.FilterNames, obj.FilterNames);
+				return _hashCode == obj._hashCode &&
+				       Query.Equals(obj.Query) &&
+				       Scalar == obj.Scalar &&
+				       CollectionHelper.SetEquals(FilterNames, obj.FilterNames);
 			}
 
 			public override int GetHashCode()
@@ -558,9 +554,9 @@ namespace NHibernate.Impl
 		/// </summary>
 		private class FilterCacheKey
 		{
-			private string _role;
-			private string _query;
-			private bool _scalar;
+			private readonly string _role;
+			private readonly string _query;
+			private readonly bool _scalar;
 
 			internal FilterCacheKey(string role, string query, bool scalar)
 			{
@@ -599,14 +595,14 @@ namespace NHibernate.Impl
 
 			public bool Equals(FilterCacheKey obj)
 			{
-				return this.Role.Equals(obj.Role) && this.Query.Equals(obj.Query) && this.Scalar == obj.Scalar;
+				return Role.Equals(obj.Role) && Query.Equals(obj.Query) && Scalar == obj.Scalar;
 			}
 
 			public override int GetHashCode()
 			{
 				unchecked
 				{
-					return this.Role.GetHashCode() + this.Query.GetHashCode() + this.Scalar.GetHashCode();
+					return Role.GetHashCode() + Query.GetHashCode() + Scalar.GetHashCode();
 				}
 			}
 
@@ -1046,7 +1042,7 @@ namespace NHibernate.Impl
 		}
 
 		private bool disposed;
-	  private IDictionary items = new Hashtable();
+	  private readonly IDictionary items = new Hashtable();
 
 		public void Dispose()
 		{
@@ -1438,7 +1434,7 @@ namespace NHibernate.Impl
 
 		private ICurrentSessionContext BuildCurrentSessionContext()
 		{
-			string impl = properties[Environment.CurrentSessionContextClass] as string;
+			string impl = PropertiesHelper.GetString(Environment.CurrentSessionContextClass, properties, null);
 
 			switch (impl)
 			{

@@ -26,10 +26,10 @@ namespace NHibernate.Test.CfgTest
 			Configuration cfg = new Configuration();
 			cfg.Configure("TestEnbeddedConfig.cfg.xml");
 
-			Assert.IsTrue(cfg.Properties.Contains(Environment.ShowSql));
-			Assert.IsTrue(cfg.Properties.Contains(Environment.UseQueryCache));
-			Assert.IsTrue(cfg.Properties.Contains(Environment.PrepareSql));
-			Assert.IsTrue(cfg.Properties.Contains(Environment.Isolation));
+			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.ShowSql));
+			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.UseQueryCache));
+			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.PrepareSql));
+			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.Isolation));
 			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
 			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
 			                cfg.Properties[Environment.ConnectionString]);

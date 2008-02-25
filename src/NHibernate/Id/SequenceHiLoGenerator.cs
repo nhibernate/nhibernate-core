@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using log4net;
 using NHibernate.Engine;
@@ -55,7 +56,7 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
-		public override void Configure(IType type, IDictionary parms, Dialect.Dialect dialect)
+		public override void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			base.Configure(type, parms, dialect);
 			maxLo = PropertiesHelper.GetInt32(MaxLo, parms, 9);

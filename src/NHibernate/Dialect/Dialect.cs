@@ -150,7 +150,7 @@ namespace NHibernate.Dialect
 			string dialectName;
 			try
 			{
-				dialectName = (string) Environment.Properties[Environment.Dialect];
+				dialectName = Environment.Properties[Environment.Dialect];
 			}
 			catch(Exception e)
 			{
@@ -166,11 +166,11 @@ namespace NHibernate.Dialect
 		/// <returns>An instance of <see cref="Dialect"/>.</returns>
 		/// <exception cref="ArgumentNullException">When <paramref name="props"/> is null.</exception>
 		/// <exception cref="HibernateException">When the property bag don't contains de property <see cref="Environment.Dialect"/>.</exception>
-		public static Dialect GetDialect(IDictionary props)
+		public static Dialect GetDialect(IDictionary<string, string> props)
 		{
 			if (props == null)
 				throw new ArgumentNullException("props");
-			string dialectName = (string)props[Environment.Dialect];
+			string dialectName = props[Environment.Dialect];
 			if (dialectName == null)
 			{
 				return GetDialect();

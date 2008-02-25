@@ -62,7 +62,7 @@ namespace NHibernate.Cfg
 		private IList<SecondPassCommand> secondPasses;
 		private IList<Mappings.PropertyReference> propertyReferences;
 		private IInterceptor interceptor;
-		private IDictionary properties;
+		private IDictionary<string, string> properties;
 		private IDictionary<string, FilterDefinition> filterDefinitions;
 		private IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 		private IDictionary<string, ISQLFunction> sqlFunctions;
@@ -144,7 +144,7 @@ namespace NHibernate.Cfg
 			public IType GetReferencedPropertyType(string className, string propertyName)
 			{
 				PersistentClass pc = GetPersistentClass(className);
-				NHibernate.Mapping.Property prop = pc.GetProperty(propertyName);
+				Property prop = pc.GetProperty(propertyName);
 
 				if (prop == null)
 				{
@@ -853,7 +853,7 @@ namespace NHibernate.Cfg
 					throw new MappingException("property-ref to unmapped class: " + upr.referencedClass);
 				}
 
-				NHibernate.Mapping.Property prop = clazz.GetReferencedProperty(upr.propertyName);
+				Property prop = clazz.GetReferencedProperty(upr.propertyName);
 				((SimpleValue)prop.Value).IsAlternateUniqueKey = true;
 			}
 
@@ -968,7 +968,8 @@ namespace NHibernate.Cfg
 			//http://jira.nhibernate.org/browse/NH-975
 
 			IInjectableProxyFactoryFactory ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
-			string pffClassName = (string)properties[Environment.ProxyFactoryFactoryClass];
+			string pffClassName;
+			properties.TryGetValue(Environment.ProxyFactoryFactoryClass, out pffClassName);
 			if (ipff != null && !string.IsNullOrEmpty(pffClassName))
 			{
 				ipff.SetProxyFactoryFactory(pffClassName);
@@ -1005,7 +1006,7 @@ namespace NHibernate.Cfg
 		/// The <see cref="IDictionary"/> that contains the configuration
 		/// properties and their values.
 		/// </value>
-		public IDictionary Properties
+		public IDictionary<string, string> Properties
 		{
 			get { return properties; }
 			set { properties = value; }
@@ -1057,7 +1058,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Specify a completely new set of properties
 		/// </summary>
-		public Configuration SetProperties(IDictionary newProperties)
+		public Configuration SetProperties(IDictionary<string, string> newProperties)
 		{
 			properties = newProperties;
 			return this;
@@ -1072,9 +1073,9 @@ namespace NHibernate.Cfg
 		/// <returns>
 		/// This <see cref="Configuration"/> object.
 		/// </returns>
-		public Configuration AddProperties(IDictionary additionalProperties)
+		public Configuration AddProperties(IDictionary<string, string> additionalProperties)
 		{
-			foreach (DictionaryEntry de in additionalProperties)
+			foreach (KeyValuePair<string, string> de in additionalProperties)
 			{
 				properties.Add(de.Key, de.Value);
 			}
@@ -1102,7 +1103,7 @@ namespace NHibernate.Cfg
 		/// <returns>The configured value of the property, or <see langword="null" /> if the property was not specified.</returns>
 		public string GetProperty(string name)
 		{
-			return properties[name] as string;
+			return properties[name];
 		}
 
 		private void AddProperties(IHibernateConfiguration hc)

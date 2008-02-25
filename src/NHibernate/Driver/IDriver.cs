@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -32,7 +32,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Configure the driver using <paramref name="settings"/>.
 		/// </summary>
-		void Configure(IDictionary settings);
+		void Configure(IDictionary<string, string> settings);
 
 		/// <summary>
 		/// Creates an uninitialized IDbConnection object for the specific Driver

@@ -23,14 +23,14 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 		}
 
-		public SchemaUpdate(Configuration cfg, IDictionary connectionProperties)
+		public SchemaUpdate(Configuration cfg, IDictionary<string, string> connectionProperties)
 		{
 			configuration = cfg;
 			dialect = NHibernate.Dialect.Dialect.GetDialect(connectionProperties);
 			Dictionary<string, string> props = new Dictionary<string, string>(dialect.DefaultProperties);
-			foreach (DictionaryEntry prop in connectionProperties)
+			foreach (KeyValuePair<string, string> prop in connectionProperties)
 			{
-				props[(string) prop.Key] = (string) prop.Value;
+				props[prop.Key] = prop.Value;
 			}
 			connectionHelper = new ManagedProviderConnectionHelper(props);
 			exceptions = new ArrayList();
@@ -38,7 +38,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public SchemaUpdate(Configuration cfg, Settings settings)
 		{
-			this.configuration = cfg;
+			configuration = cfg;
 			dialect = settings.Dialect;
 			connectionHelper = new SuppliedConnectionProviderConnectionHelper(
 				settings.ConnectionProvider

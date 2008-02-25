@@ -158,7 +158,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static void VerifyProperties(System.Collections.IDictionary props)
+		public static void VerifyProperties(IDictionary<string, string> props)
 		{
 		}
 
@@ -242,7 +242,7 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// This is the replacement for hibernate.properties
 		/// </remarks>
-		public static System.Collections.IDictionary Properties
+		public static IDictionary<string, string> Properties
 		{
 			get { return new Dictionary<string,string>(GlobalProperties); }
 		}
@@ -287,7 +287,7 @@ namespace NHibernate.Cfg
 			set { EnableReflectionOptimizer = value; }
 		}
 
-		public static IBytecodeProvider BuildBytecodeProvider(System.Collections.IDictionary properties)
+		public static IBytecodeProvider BuildBytecodeProvider(IDictionary<string, string> properties)
 		{
 			string defaultBytecodeProvider = "lcg";
 			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties,

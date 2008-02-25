@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using log4net;
 
@@ -54,7 +54,7 @@ namespace NHibernate.Connection
 		/// All other settings of the Connection are the responsibility of the User since they configured
 		/// NHibernate to use a Connection supplied by the User.
 		/// </remarks>
-		public override void Configure(IDictionary settings)
+		public override void Configure(IDictionary<string, string> settings)
 		{
 			log.Warn("No connection properties specified - the user must supply an ADO.NET connection");
 

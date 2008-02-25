@@ -21,21 +21,21 @@ namespace NHibernate.Cfg
 		private static readonly ILog log = LogManager.GetLogger(typeof(SettingsFactory));
 		private static readonly string DefaultCacheProvider = typeof(NoCacheProvider).AssemblyQualifiedName;
 
-		public Settings BuildSettings(IDictionary properties)
+		public Settings BuildSettings(IDictionary<string, string> properties)
 		{
 			Settings settings = new Settings();
 
-			Dialect.Dialect dialect = null;
+			Dialect.Dialect dialect;
 			try
 			{
 				dialect = Dialect.Dialect.GetDialect(properties);
-				IDictionary temp = new Hashtable();
+				Dictionary<string, string> temp = new Dictionary<string, string>();
 
 				foreach (KeyValuePair<string, string> de in dialect.DefaultProperties)
 				{
 					temp[de.Key] = de.Value;
 				}
-				foreach (DictionaryEntry de in properties)
+				foreach (KeyValuePair<string, string> de in properties)
 				{
 					temp[de.Key] = de.Value;
 				}
@@ -85,8 +85,8 @@ namespace NHibernate.Cfg
 			}
 			settings.ConnectionReleaseMode = releaseMode;
 
-			string defaultSchema = properties[Environment.DefaultSchema] as string;
-			string defaultCatalog = properties[Environment.DefaultCatalog] as string;
+			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			if (defaultSchema != null)
 				log.Info("Default schema: " + defaultSchema);
 			if (defaultCatalog != null)
@@ -121,7 +121,7 @@ namespace NHibernate.Cfg
 				log.Info("Query language substitutions: " + CollectionPrinter.ToString((IDictionary)querySubstitutions));
 			}
 
-			string autoSchemaExport = properties[Environment.Hbm2ddlAuto] as string;
+			string autoSchemaExport = PropertiesHelper.GetString(Environment.Hbm2ddlAuto, properties, null);
 			if ("update" == autoSchemaExport)
 			{
 				settings.IsAutoUpdateSchema = true;
@@ -151,14 +151,14 @@ namespace NHibernate.Cfg
 			}
 
 			string cacheRegionPrefix = PropertiesHelper.GetString(Environment.CacheRegionPrefix, properties, null);
-			if (StringHelper.IsEmpty(cacheRegionPrefix)) cacheRegionPrefix = null;
+			if (string.IsNullOrEmpty(cacheRegionPrefix)) cacheRegionPrefix = null;
 			if (cacheRegionPrefix != null) log.Info("Cache region prefix: " + cacheRegionPrefix);
 
 
 			if (useQueryCache)
 			{
 				string queryCacheFactoryClassName =
-					PropertiesHelper.GetString(Environment.QueryCacheFactory, properties, typeof(NHibernate.Cache.StandardQueryCacheFactory).FullName);
+					PropertiesHelper.GetString(Environment.QueryCacheFactory, properties, typeof(StandardQueryCacheFactory).FullName);
 				log.Info("query cache factory: " + queryCacheFactoryClassName);
 				try
 				{
@@ -171,7 +171,7 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			string sessionFactoryName = (string) properties[Environment.SessionFactoryName];
+			string sessionFactoryName = PropertiesHelper.GetString(Environment.SessionFactoryName, properties, null);
 
 			//ADO.NET and connection settings:
 
@@ -189,7 +189,7 @@ namespace NHibernate.Cfg
 				try
 				{
 					isolation = (IsolationLevel) Enum.Parse(typeof(IsolationLevel), isolationString);
-					log.Info("Using Isolation Level: " + isolation.ToString());
+					log.Info("Using Isolation Level: " + isolation);
 				}
 				catch (ArgumentException ae)
 				{
@@ -227,7 +227,7 @@ namespace NHibernate.Cfg
 			return settings;
 		}
 
-		private static IBatcherFactory CreateBatcherFactory(IDictionary properties, int batchSize, IConnectionProvider connectionProvider)
+		private static IBatcherFactory CreateBatcherFactory(IDictionary<string, string> properties, int batchSize, IConnectionProvider connectionProvider)
 		{
 			System.Type tBatcher = typeof (NonBatchingBatcherFactory);
 			string batcherClass = PropertiesHelper.GetString(Environment.BatchStrategy, properties, null);
@@ -261,7 +261,7 @@ namespace NHibernate.Cfg
 			return value ? "enabled" : "disabled";
 		}
 
-		private static ICacheProvider CreateCacheProvider(IDictionary properties)
+		private static ICacheProvider CreateCacheProvider(IDictionary<string, string> properties)
 		{
 			string cacheClassName = PropertiesHelper.GetString(Environment.CacheProvider, properties, DefaultCacheProvider);
 			log.Info("cache provider: " + cacheClassName);
@@ -296,10 +296,10 @@ namespace NHibernate.Cfg
 		}
 
 		// visibility changed and static modifier added until complete H3.2 porting of SettingsFactory
-		private static IQueryTranslatorFactory CreateQueryTranslatorFactory(IDictionary properties)
+		private static IQueryTranslatorFactory CreateQueryTranslatorFactory(IDictionary<string, string> properties)
 		{
 			string className = PropertiesHelper.GetString(
-				Environment.QueryTranslator, properties, typeof(NHibernate.Hql.Classic.ClassicQueryTranslatorFactory).FullName);
+				Environment.QueryTranslator, properties, typeof(Hql.Classic.ClassicQueryTranslatorFactory).FullName);
 			log.Info("Query translator: " + className);
 			try
 			{
@@ -311,10 +311,10 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static ITransactionFactory CreateTransactionFactory(IDictionary properties)
+		private static ITransactionFactory CreateTransactionFactory(IDictionary<string, string> properties)
 		{
 			string className = PropertiesHelper.GetString(
-				Environment.TransactionStrategy, properties, typeof(NHibernate.Transaction.AdoNetTransactionFactory).FullName);
+				Environment.TransactionStrategy, properties, typeof(AdoNetTransactionFactory).FullName);
 			log.Info("Transaction factory: " + className);
 
 			try

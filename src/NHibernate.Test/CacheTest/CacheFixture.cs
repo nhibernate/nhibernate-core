@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using NHibernate.Cache;
 using NUnit.Framework;
@@ -22,7 +22,7 @@ namespace NHibernate.Test.CacheTest
 
 		public void DoTestCache(ICacheProvider cacheProvider)
 		{
-			ICache cache = cacheProvider.BuildCache(typeof(String).FullName, new Hashtable());
+			ICache cache = cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
 
 			long longBefore = Timestamper.Next();
 
@@ -142,7 +142,7 @@ namespace NHibernate.Test.CacheTest
 		[Test]
 		public void MinValueTimestamp()
 		{
-			ICache cache = new HashtableCacheProvider().BuildCache("region", new Hashtable());
+			ICache cache = new HashtableCacheProvider().BuildCache("region", new Dictionary<string, string>());
 			ICacheConcurrencyStrategy strategy = new ReadWriteCache();
 			strategy.Cache = cache;
 

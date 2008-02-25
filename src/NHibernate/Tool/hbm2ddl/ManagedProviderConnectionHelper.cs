@@ -1,20 +1,20 @@
+using System.Collections.Generic;
+using System.Data;
+using NHibernate.Connection;
+
 namespace NHibernate.Tool.hbm2ddl
 {
-	using System.Collections;
-	using System.Data;
-	using Connection;
-
 	/// <summary>
 	/// A <seealso cref="IConnectionHelper"/> implementation based on an internally
 	///  built and managed <seealso cref="ConnectionProvider"/>.
 	/// </summary>
 	public class ManagedProviderConnectionHelper : IConnectionHelper
 	{
-		private readonly IDictionary cfgProperties;
+		private readonly IDictionary<string, string> cfgProperties;
 		private IConnectionProvider connectionProvider;
 		private IDbConnection connection;
 
-		public ManagedProviderConnectionHelper(IDictionary cfgProperties)
+		public ManagedProviderConnectionHelper(IDictionary<string, string> cfgProperties)
 		{
 			this.cfgProperties = cfgProperties;
 		}

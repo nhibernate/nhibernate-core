@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Cache
 {
@@ -14,7 +14,7 @@ namespace NHibernate.Cache
 		/// <param name="regionName">the name of the cache region</param>
 		/// <param name="properties">configuration settings</param>
 		/// <exception cref="CacheException" />
-		public ICache BuildCache(string regionName, IDictionary properties)
+		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			throw new NoCachingEnabledException();
 		}
@@ -35,7 +35,7 @@ namespace NHibernate.Cache
 		/// construction.
 		/// </summary>
 		/// <param name="properties">current configuration settings.</param>
-		public void Start(IDictionary properties)
+		public void Start(IDictionary<string, string> properties)
 		{
 			// this is called by SessionFactory irregardless; we just disregard here;
 			// could also add a check to SessionFactory to only conditionally call start

@@ -1,6 +1,7 @@
 using System.Collections;
 using log4net;
 using NHibernate.Cfg;
+using System.Collections.Generic;
 
 namespace NHibernate.Cache
 {
@@ -37,7 +38,7 @@ namespace NHibernate.Cache
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
 		// was private in h2.1
 		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, bool mutable, Settings settings,
-		                                                    IDictionary properties)
+		                                                    IDictionary<string,string> properties)
 		{
 			if (usage == null || !settings.IsSecondLevelCacheEnabled) return null; //no cache
 
