@@ -116,6 +116,9 @@
     <EmbeddedResource Include="Worker\Employer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Analyzer\" />
     <Folder Include="IndexingStrategy\" />
     <Folder Include="Optimizer\" />

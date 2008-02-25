@@ -1,9 +1,0 @@
-<NUnitProject>
-	<Settings activeconfig="Debug"/>
-	<Config name="Debug">
-		<assembly path="bin\Debug\NHibernate.Caches.Prevalence.Tests.dll"/>
-	</Config>
-	<Config name="Release">
-		<assembly path="bin\Release\NHibernate.Caches.Prevalence.Tests.dll"/>
-	</Config>
-</NUnitProject>
