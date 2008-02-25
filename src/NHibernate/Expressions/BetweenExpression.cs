@@ -52,7 +52,7 @@ namespace NHibernate.Expressions
 
 			//IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
 			SqlString[] columnNames =
-				CritertionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
 
 			if (columnNames.Length == 1)
 			{
@@ -94,7 +94,7 @@ namespace NHibernate.Expressions
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return CritertionUtil.GetTypedValues(criteriaQuery, criteria, _projection, _propertyName, _lo, _hi);
+			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, _propertyName, _lo, _hi);
 		}
 
 		/// <summary></summary>

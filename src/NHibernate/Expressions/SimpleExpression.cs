@@ -74,7 +74,7 @@ namespace NHibernate.Expressions
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString[] columnNames =
-				CritertionUtil.GetColumnNamesForSimpleExpression(propertyName, projection, criteriaQuery, criteria, enabledFilters,
+				CriterionUtil.GetColumnNamesForSimpleExpression(propertyName, projection, criteriaQuery, criteria, enabledFilters,
 				                                                 this, value);
 			
 
@@ -121,7 +121,7 @@ namespace NHibernate.Expressions
 		{
 			object icvalue = ignoreCase ? value.ToString().ToLower() : value;
 
-			return CritertionUtil.GetTypedValues(criteriaQuery, criteria, projection,propertyName, icvalue);
+			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection,propertyName, icvalue);
 		}
 
 		/// <summary></summary>

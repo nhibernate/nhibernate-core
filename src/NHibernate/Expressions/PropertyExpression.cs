@@ -72,9 +72,9 @@ namespace NHibernate.Expressions
 											  IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString[] columnNames =
-				CritertionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria, enabledFilters);
 			SqlString[] otherColumnNames =
-				CritertionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria, enabledFilters);
 
 			SqlStringBuilder sb = new SqlStringBuilder();
 			if (columnNames.Length > 1)

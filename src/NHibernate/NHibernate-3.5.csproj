@@ -1,0 +1,1095 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHibernate</RootNamespace>
+    <AssemblyName>NHibernate</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug-2.0\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <WarningsAsErrors>1717;1574</WarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release-2.0\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
+    <DefineConstants>TRACE;NET_2_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Castle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.DynamicProxy2, Version=2.0.0.1, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Castle.DynamicProxy2.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ADOException.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AssertionFailure.cs" />
+    <Compile Include="Cache\CachedItem.cs" />
+    <Compile Include="Cache\CacheException.cs" />
+    <Compile Include="Cache\CacheFactory.cs" />
+    <Compile Include="Cache\CacheLock.cs" />
+    <Compile Include="Cache\HashtableCache.cs" />
+    <Compile Include="Cache\HashtableCacheProvider.cs" />
+    <Compile Include="Cache\ICache.cs" />
+    <Compile Include="Cache\ICacheConcurrencyStrategy.cs" />
+    <Compile Include="Cache\ICacheProvider.cs" />
+    <Compile Include="Cache\IQueryCache.cs" />
+    <Compile Include="Cache\IQueryCacheFactory.cs" />
+    <Compile Include="Cache\ISoftLock.cs" />
+    <Compile Include="Cache\NonstrictReadWriteCache.cs" />
+    <Compile Include="Cache\QueryKey.cs" />
+    <Compile Include="Cache\ReadOnlyCache.cs" />
+    <Compile Include="Cache\ReadWriteCache.cs" />
+    <Compile Include="Cache\StandardQueryCache.cs" />
+    <Compile Include="Cache\StandardQueryCacheFactory.cs" />
+    <Compile Include="Cache\Timestamper.cs" />
+    <Compile Include="Cache\UpdateTimestampsCache.cs" />
+    <Compile Include="CallbackException.cs" />
+    <Compile Include="Cfg\MappingsQueue.cs" />
+    <Compile Include="Cfg\Configuration.cs" />
+    <Compile Include="Cfg\ConfigurationSectionHandler.cs" />
+    <Compile Include="Cfg\DefaultNamingStrategy.cs" />
+    <Compile Include="Cfg\Environment.cs" />
+    <Compile Include="Cfg\ImprovedNamingStrategy.cs" />
+    <Compile Include="Cfg\INamingStrategy.cs" />
+    <Compile Include="Cfg\Mappings.cs" />
+    <Compile Include="Cfg\Settings.cs" />
+    <Compile Include="Cfg\SettingsFactory.cs" />
+    <Compile Include="Collection\IPersistentCollection.cs" />
+    <Compile Include="Connection\ConnectionProvider.cs" />
+    <Compile Include="Connection\ConnectionProviderFactory.cs" />
+    <Compile Include="Connection\DriverConnectionProvider.cs" />
+    <Compile Include="Connection\IConnectionProvider.cs" />
+    <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="CriteriaUtil.cs" />
+    <Compile Include="Dialect\DB2Dialect.cs" />
+    <Compile Include="Dialect\Dialect.cs" />
+    <Compile Include="Dialect\FirebirdDialect.cs" />
+    <Compile Include="Dialect\GenericDialect.cs" />
+    <Compile Include="Dialect\MsSql2000Dialect.cs" />
+    <Compile Include="Dialect\MsSql7Dialect.cs" />
+    <Compile Include="Dialect\MySQLDialect.cs" />
+    <Compile Include="Dialect\Oracle9Dialect.cs" />
+    <Compile Include="Dialect\OracleDialect.cs" />
+    <Compile Include="Dialect\PostgreSQLDialect.cs" />
+    <Compile Include="Dialect\SQLiteDialect.cs" />
+    <Compile Include="Dialect\SybaseDialect.cs" />
+    <Compile Include="Dialect\TypeNames.cs" />
+    <Compile Include="Driver\DB2Driver.cs" />
+    <Compile Include="Driver\DriverBase.cs" />
+    <Compile Include="Driver\FirebirdDriver.cs" />
+    <Compile Include="Driver\IDriver.cs" />
+    <Compile Include="Driver\MySqlDataDriver.cs" />
+    <Compile Include="Driver\NDataReader.cs" />
+    <Compile Include="Driver\NHybridDataReader.cs" />
+    <Compile Include="Driver\NpgsqlDriver.cs" />
+    <Compile Include="Driver\OdbcDriver.cs" />
+    <Compile Include="Driver\OleDbDriver.cs" />
+    <Compile Include="Driver\OracleClientDriver.cs" />
+    <Compile Include="Driver\OracleDataClientDriver.cs" />
+    <Compile Include="Driver\SqlClientDriver.cs" />
+    <Compile Include="Driver\SQLiteDriver.cs" />
+    <Compile Include="Driver\SybaseClientDriver.cs" />
+    <Compile Include="Engine\Cascades.cs" />
+    <Compile Include="Engine\IBatcher.cs" />
+    <Compile Include="Engine\ICollectionSnapshot.cs" />
+    <Compile Include="Engine\IMapping.cs" />
+    <Compile Include="Engine\ISessionFactoryImplementor.cs" />
+    <Compile Include="Engine\ISessionImplementor.cs" />
+    <Compile Include="Engine\QueryParameters.cs" />
+    <Compile Include="Engine\RowSelection.cs" />
+    <Compile Include="Engine\TypedValue.cs" />
+    <Compile Include="Engine\UnsavedValueFactory.cs" />
+    <Compile Include="Engine\Versioning.cs" />
+    <Compile Include="Exceptions\ADOExceptionHelper.cs" />
+    <Compile Include="Expressions\AbstractCriterion.cs" />
+    <Compile Include="Expressions\AndExpression.cs" />
+    <Compile Include="Expressions\BetweenExpression.cs" />
+    <Compile Include="Expressions\Conjunction.cs" />
+    <Compile Include="Expressions\Disjunction.cs" />
+    <Compile Include="Expressions\EqExpression.cs" />
+    <Compile Include="Expressions\EqPropertyExpression.cs" />
+    <Compile Include="Expressions\Example.cs" />
+    <Compile Include="Expressions\Expression.cs" />
+    <Compile Include="Expressions\GeExpression.cs" />
+    <Compile Include="Expressions\GtExpression.cs" />
+    <Compile Include="Expressions\ICriterion.cs" />
+    <Compile Include="Expressions\InExpression.cs" />
+    <Compile Include="Expressions\InsensitiveLikeExpression.cs" />
+    <Compile Include="Expressions\Junction.cs" />
+    <Compile Include="Expressions\LeExpression.cs" />
+    <Compile Include="Expressions\LePropertyExpression.cs" />
+    <Compile Include="Expressions\LikeExpression.cs" />
+    <Compile Include="Expressions\LogicalExpression.cs" />
+    <Compile Include="Expressions\LtExpression.cs" />
+    <Compile Include="Expressions\LtPropertyExpression.cs" />
+    <Compile Include="Expressions\MatchMode.cs" />
+    <Compile Include="Expressions\NotExpression.cs" />
+    <Compile Include="Expressions\NotNullExpression.cs" />
+    <Compile Include="Expressions\NullExpression.cs" />
+    <Compile Include="Expressions\Order.cs" />
+    <Compile Include="Expressions\OrExpression.cs" />
+    <Compile Include="Expressions\PropertyExpression.cs" />
+    <Compile Include="Expressions\SimpleExpression.cs" />
+    <Compile Include="Expressions\SQLCriterion.cs" />
+    <Compile Include="FetchMode.cs" />
+    <Compile Include="FlushMode.cs" />
+    <Compile Include="HibernateException.cs" />
+    <Compile Include="Hql\Classic\ClauseParser.cs" />
+    <Compile Include="Hql\Classic\FromParser.cs" />
+    <Compile Include="Hql\Classic\FromPathExpressionParser.cs" />
+    <Compile Include="Hql\Classic\GroupByParser.cs" />
+    <Compile Include="Hql\Classic\HavingParser.cs" />
+    <Compile Include="Hql\Classic\IParser.cs" />
+    <Compile Include="Hql\Classic\OrderByParser.cs" />
+    <Compile Include="Hql\Classic\ParserHelper.cs" />
+    <Compile Include="Hql\Classic\PathExpressionParser.cs" />
+    <Compile Include="Hql\Classic\PreprocessingParser.cs" />
+    <Compile Include="Hql\Classic\QueryTranslator.cs" />
+    <Compile Include="Hql\Classic\SelectParser.cs" />
+    <Compile Include="Hql\Classic\SelectPathExpressionParser.cs" />
+    <Compile Include="Hql\Classic\WhereParser.cs" />
+    <Compile Include="ICriteria.cs" />
+    <Compile Include="IDatabinder.cs" />
+    <Compile Include="Id\Assigned.cs" />
+    <Compile Include="Id\CounterGenerator.cs" />
+    <Compile Include="Id\ForeignGenerator.cs" />
+    <Compile Include="Id\GuidCombGenerator.cs" />
+    <Compile Include="Id\GuidGenerator.cs" />
+    <Compile Include="Id\IConfigurable.cs" />
+    <Compile Include="Id\IdentifierGenerationException.cs" />
+    <Compile Include="Id\IdentifierGeneratorFactory.cs" />
+    <Compile Include="Id\IdentityGenerator.cs" />
+    <Compile Include="Id\IIdentifierGenerator.cs" />
+    <Compile Include="Id\IncrementGenerator.cs" />
+    <Compile Include="Id\IPersistentIdentifierGenerator.cs" />
+    <Compile Include="Id\SequenceGenerator.cs" />
+    <Compile Include="Id\SequenceHiLoGenerator.cs" />
+    <Compile Include="Id\TableGenerator.cs" />
+    <Compile Include="Id\TableHiLoGenerator.cs" />
+    <Compile Include="Id\UUIDHexGenerator.cs" />
+    <Compile Include="Id\UUIDStringGenerator.cs" />
+    <Compile Include="IInterceptor.cs" />
+    <Compile Include="Impl\AbstractQueryImpl.cs" />
+    <Compile Include="AdoNet\AbstractBatcher.cs" />
+    <Compile Include="AdoNet\OracleDataClientBatchingBatcher.cs" />
+    <Compile Include="AdoNet\SqlClientBatchingBatcher.cs" />
+    <Compile Include="Cache\Entry\CacheEntry.cs" />
+    <Compile Include="Engine\CollectionEntry.cs" />
+    <Compile Include="Engine\CollectionKey.cs" />
+    <Compile Include="Impl\CriteriaImpl.cs" />
+    <Compile Include="Engine\EntityEntry.cs" />
+    <Compile Include="Impl\EnumerableImpl.cs" />
+    <Compile Include="Impl\FilterImpl.cs" />
+    <Compile Include="Impl\MessageHelper.cs" />
+    <Compile Include="AdoNet\NonBatchingBatcher.cs" />
+    <Compile Include="Impl\Printer.cs" />
+    <Compile Include="Impl\QueryImpl.cs" />
+    <Compile Include="Event\Default\ReattachVisitor.cs" />
+    <Compile Include="Impl\SessionFactoryImpl.cs" />
+    <Compile Include="Impl\SessionFactoryObjectFactory.cs" />
+    <Compile Include="Impl\SessionImpl.cs" />
+    <Compile Include="Impl\SqlQueryImpl.cs" />
+    <Compile Include="Engine\Status.cs" />
+    <Compile Include="InstantiationException.cs" />
+    <Compile Include="IQuery.cs" />
+    <Compile Include="ISession.cs" />
+    <Compile Include="ISessionFactory.cs" />
+    <Compile Include="ITransaction.cs" />
+    <Compile Include="LazyInitializationException.cs" />
+    <Compile Include="Loader\Loader.cs" />
+    <Compile Include="Loader\OuterJoinLoader.cs" />
+    <Compile Include="LockMode.cs" />
+    <Compile Include="MappingException.cs" />
+    <Compile Include="Mapping\Any.cs" />
+    <Compile Include="Mapping\Array.cs" />
+    <Compile Include="Mapping\Bag.cs" />
+    <Compile Include="Mapping\Collection.cs" />
+    <Compile Include="Mapping\Column.cs" />
+    <Compile Include="Mapping\Component.cs" />
+    <Compile Include="Mapping\Constraint.cs" />
+    <Compile Include="Mapping\ForeignKey.cs" />
+    <Compile Include="Mapping\Formula.cs" />
+    <Compile Include="Mapping\IdentifierBag.cs" />
+    <Compile Include="Mapping\IdentifierCollection.cs" />
+    <Compile Include="Mapping\IFetchable.cs" />
+    <Compile Include="Mapping\Index.cs" />
+    <Compile Include="Mapping\IndexedCollection.cs" />
+    <Compile Include="Mapping\IRelationalModel.cs" />
+    <Compile Include="Mapping\IValue.cs" />
+    <Compile Include="Mapping\List.cs" />
+    <Compile Include="Mapping\ManyToOne.cs" />
+    <Compile Include="Mapping\Map.cs" />
+    <Compile Include="Mapping\MetaAttribute.cs" />
+    <Compile Include="Mapping\OneToMany.cs" />
+    <Compile Include="Mapping\OneToOne.cs" />
+    <Compile Include="Mapping\PersistentClass.cs" />
+    <Compile Include="Mapping\PrimaryKey.cs" />
+    <Compile Include="Mapping\PrimitiveArray.cs" />
+    <Compile Include="Mapping\Property.cs" />
+    <Compile Include="Mapping\RootClass.cs" />
+    <Compile Include="Mapping\Set.cs" />
+    <Compile Include="Mapping\SimpleValue.cs" />
+    <Compile Include="Mapping\Subclass.cs" />
+    <Compile Include="Mapping\Table.cs" />
+    <Compile Include="Mapping\ToOne.cs" />
+    <Compile Include="Mapping\UniqueKey.cs" />
+    <Compile Include="Metadata\IClassMetadata.cs" />
+    <Compile Include="Metadata\ICollectionMetadata.cs" />
+    <Compile Include="NHibernateUtil.cs" />
+    <Compile Include="NonUniqueObjectException.cs" />
+    <Compile Include="NonUniqueResultException.cs" />
+    <Compile Include="ObjectDeletedException.cs" />
+    <Compile Include="ObjectNotFoundException.cs" />
+    <Compile Include="PersistentObjectException.cs" />
+    <Compile Include="Persister\PersisterFactory.cs" />
+    <Compile Include="PropertyAccessException.cs" />
+    <Compile Include="PropertyNotFoundException.cs" />
+    <Compile Include="PropertyValueException.cs" />
+    <Compile Include="Properties\BasicPropertyAccessor.cs" />
+    <Compile Include="Properties\CamelCaseStrategy.cs" />
+    <Compile Include="Properties\CamelCaseUnderscoreStrategy.cs" />
+    <Compile Include="Properties\FieldAccessor.cs" />
+    <Compile Include="Properties\IFieldNamingStrategy.cs" />
+    <Compile Include="Properties\IGetter.cs" />
+    <Compile Include="Properties\IPropertyAccessor.cs" />
+    <Compile Include="Properties\ISetter.cs" />
+    <Compile Include="Properties\LowerCaseStrategy.cs" />
+    <Compile Include="Properties\LowerCaseUnderscoreStrategy.cs" />
+    <Compile Include="Properties\NoSetterAccessor.cs" />
+    <Compile Include="Properties\PascalCaseMUnderscoreStrategy.cs" />
+    <Compile Include="Properties\PascalCaseUnderscoreStrategy.cs" />
+    <Compile Include="Properties\PropertyAccessorFactory.cs" />
+    <Compile Include="Proxy\Poco\Castle\CastleLazyInitializer.cs" />
+    <Compile Include="Proxy\Poco\Castle\CastleProxyFactory.cs" />
+    <Compile Include="Proxy\INHibernateProxy.cs" />
+    <Compile Include="Proxy\IProxyFactory.cs" />
+    <Compile Include="Proxy\AbstractLazyInitializer.cs" />
+    <Compile Include="Proxy\NHibernateProxyHelper.cs" />
+    <Compile Include="Proxy\ProxyTypeValidator.cs" />
+    <Compile Include="QueryException.cs" />
+    <Compile Include="ReplicationMode.cs" />
+    <Compile Include="SqlCommand\Alias.cs" />
+    <Compile Include="SqlCommand\ANSICaseFragment.cs" />
+    <Compile Include="SqlCommand\ANSIJoinFragment.cs" />
+    <Compile Include="SqlCommand\CaseFragment.cs" />
+    <Compile Include="SqlCommand\ConditionalFragment.cs" />
+    <Compile Include="SqlCommand\DecodeCaseFragment.cs" />
+    <Compile Include="SqlCommand\DisjunctionFragment.cs" />
+    <Compile Include="SqlCommand\ForUpdateFragment.cs" />
+    <Compile Include="SqlCommand\InFragment.cs" />
+    <Compile Include="SqlCommand\ISqlStringBuilder.cs" />
+    <Compile Include="SqlCommand\JoinFragment.cs" />
+    <Compile Include="SqlCommand\OracleJoinFragment.cs" />
+    <Compile Include="SqlCommand\Parameter.cs" />
+    <Compile Include="SqlCommand\QueryJoinFragment.cs" />
+    <Compile Include="SqlCommand\QuerySelect.cs" />
+    <Compile Include="SqlCommand\SelectFragment.cs" />
+    <Compile Include="SqlCommand\SqlBaseBuilder.cs" />
+    <Compile Include="SqlCommand\SqlDeleteBuilder.cs" />
+    <Compile Include="SqlCommand\SqlInsertBuilder.cs" />
+    <Compile Include="SqlCommand\SqlSelectBuilder.cs" />
+    <Compile Include="SqlCommand\SqlSimpleSelectBuilder.cs" />
+    <Compile Include="SqlCommand\SqlString.cs" />
+    <Compile Include="SqlCommand\SqlStringBuilder.cs" />
+    <Compile Include="SqlCommand\SqlUpdateBuilder.cs" />
+    <Compile Include="SqlCommand\Template.cs" />
+    <Compile Include="SqlCommand\WhereBuilder.cs" />
+    <Compile Include="SqlTypes\AnsiStringFixedLengthSqlType.cs" />
+    <Compile Include="SqlTypes\AnsiStringSqlType.cs" />
+    <Compile Include="SqlTypes\BinaryBlobSqlType.cs" />
+    <Compile Include="SqlTypes\BinarySqlType.cs" />
+    <Compile Include="SqlTypes\SqlType.cs" />
+    <Compile Include="SqlTypes\SqlTypeFactory.cs" />
+    <Compile Include="SqlTypes\StringClobSqlType.cs" />
+    <Compile Include="SqlTypes\StringFixedLengthSqlType.cs" />
+    <Compile Include="SqlTypes\StringSqlType.cs" />
+    <Compile Include="StaleObjectStateException.cs" />
+    <Compile Include="Tool\hbm2ddl\AdoColumn.cs" />
+    <Compile Include="Tool\hbm2ddl\AdoTable.cs" />
+    <Compile Include="Tool\hbm2ddl\SchemaExport.cs" />
+    <Compile Include="TransactionException.cs" />
+    <Compile Include="Transaction\AdoTransaction.cs" />
+    <Compile Include="Transaction\ITransactionFactory.cs" />
+    <Compile Include="Transform\AliasToEntityMapResultTransformer.cs" />
+    <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
+    <Compile Include="Transform\IResultTransformer.cs" />
+    <Compile Include="Transform\RootEntityResultTransformer.cs" />
+    <Compile Include="TransientObjectException.cs" />
+    <Compile Include="Type\AbstractType.cs" />
+    <Compile Include="Type\AnsiStringType.cs" />
+    <Compile Include="Type\ArrayType.cs" />
+    <Compile Include="Type\BagType.cs" />
+    <Compile Include="Type\BinaryBlobType.cs" />
+    <Compile Include="Type\BinaryType.cs" />
+    <Compile Include="Type\BooleanType.cs" />
+    <Compile Include="Type\ByteType.cs" />
+    <Compile Include="Type\CharBooleanType.cs" />
+    <Compile Include="Type\CharType.cs" />
+    <Compile Include="Type\ComponentType.cs" />
+    <Compile Include="Type\CompositeCustomType.cs" />
+    <Compile Include="Type\CultureInfoType.cs" />
+    <Compile Include="Type\CustomType.cs" />
+    <Compile Include="Type\DateTimeType.cs" />
+    <Compile Include="Type\DateType.cs" />
+    <Compile Include="Type\DecimalType.cs" />
+    <Compile Include="Type\DoubleType.cs" />
+    <Compile Include="Type\EntityType.cs" />
+    <Compile Include="Type\EnumStringType.cs" />
+    <Compile Include="Type\GuidType.cs" />
+    <Compile Include="Type\IAbstractComponentType.cs" />
+    <Compile Include="Type\IAssociationType.cs" />
+    <Compile Include="Type\IdentifierBagType.cs" />
+    <Compile Include="Type\IDiscriminatorType.cs" />
+    <Compile Include="Type\IIdentifierType.cs" />
+    <Compile Include="Type\ILiteralType.cs" />
+    <Compile Include="Type\ImmutableType.cs" />
+    <Compile Include="Type\Int16Type.cs" />
+    <Compile Include="Type\Int32Type.cs" />
+    <Compile Include="Type\Int64Type.cs" />
+    <Compile Include="Type\IType.cs" />
+    <Compile Include="Type\IVersionType.cs" />
+    <Compile Include="Type\ListType.cs" />
+    <Compile Include="Type\ManyToOneType.cs" />
+    <Compile Include="Type\MapType.cs" />
+    <Compile Include="Type\MetaType.cs" />
+    <Compile Include="Type\MutableType.cs" />
+    <Compile Include="Type\NullableType.cs" />
+    <Compile Include="Type\OneToOneType.cs" />
+    <Compile Include="Type\PersistentEnumType.cs" />
+    <Compile Include="Type\SByteType.cs" />
+    <Compile Include="Type\SerializableType.cs" />
+    <Compile Include="Type\SerializationException.cs" />
+    <Compile Include="Type\SetType.cs" />
+    <Compile Include="Type\SingleType.cs" />
+    <Compile Include="Type\SortedMapType.cs" />
+    <Compile Include="Type\SortedSetType.cs" />
+    <Compile Include="Type\StringClobType.cs" />
+    <Compile Include="Type\StringType.cs" />
+    <Compile Include="Type\TicksType.cs" />
+    <Compile Include="Type\TimeSpanType.cs" />
+    <Compile Include="Type\TimestampType.cs" />
+    <Compile Include="Type\TimeType.cs" />
+    <Compile Include="Type\TrueFalseType.cs" />
+    <Compile Include="Type\TypeFactory.cs" />
+    <Compile Include="Type\TypeType.cs" />
+    <Compile Include="Type\UInt16Type.cs" />
+    <Compile Include="Type\UInt32Type.cs" />
+    <Compile Include="Type\UInt64Type.cs" />
+    <Compile Include="Type\PrimitiveType.cs" />
+    <Compile Include="Type\YesNoType.cs" />
+    <Compile Include="UnresolvableObjectException.cs" />
+    <Compile Include="Util\ADOExceptionReporter.cs" />
+    <Compile Include="Util\ArrayHelper.cs" />
+    <Compile Include="Util\CollectionPrinter.cs" />
+    <Compile Include="Util\IdentityMap.cs" />
+    <Compile Include="Util\JoinedEnumerable.cs" />
+    <Compile Include="Util\ObjectUtils.cs" />
+    <Compile Include="Util\PropertiesHelper.cs" />
+    <Compile Include="Util\ReflectHelper.cs" />
+    <Compile Include="Util\SequencedHashMap.cs" />
+    <Compile Include="Util\StringHelper.cs" />
+    <Compile Include="Util\StringTokenizer.cs" />
+    <Compile Include="WrongClassException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="nhibernate-generic.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Action\BulkOperationCleanupAction.cs" />
+    <Compile Include="Action\CollectionAction.cs" />
+    <Compile Include="Action\CollectionRecreateAction.cs" />
+    <Compile Include="Action\CollectionRemoveAction.cs" />
+    <Compile Include="Action\CollectionUpdateAction.cs" />
+    <Compile Include="Action\DelayedPostInsertIdentifier.cs" />
+    <Compile Include="Action\EntityAction.cs" />
+    <Compile Include="Action\EntityDeleteAction.cs" />
+    <Compile Include="Action\EntityIdentityInsertAction.cs" />
+    <Compile Include="Action\EntityInsertAction.cs" />
+    <Compile Include="Action\EntityUpdateAction.cs" />
+    <Compile Include="Action\IExecutable.cs" />
+    <Compile Include="AdoNet\ColumnNameCache.cs" />
+    <Compile Include="AdoNet\Expectations.cs" />
+    <Compile Include="AdoNet\IBatcherFactory.cs" />
+    <Compile Include="AdoNet\IExpectation.cs" />
+    <Compile Include="AdoNet\NonBatchingBatcherFactory.cs" />
+    <Compile Include="AdoNet\ResultSetWrapper.cs" />
+    <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
+    <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
+    <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
+    <Compile Include="Bytecode\IAccessOptimizer.cs" />
+    <Compile Include="Bytecode\IBytecodeProvider.cs" />
+    <Compile Include="Bytecode\IInjectableProxyFactoryFactory.cs" />
+    <Compile Include="Bytecode\IInstantiationOptimizer.cs" />
+    <Compile Include="Bytecode\IProxyFactoryFactory.cs" />
+    <Compile Include="Bytecode\IReflectionOptimizer.cs" />
+    <Compile Include="Bytecode\Lightweight\AccessOptimizer.cs" />
+    <Compile Include="Bytecode\Lightweight\BytecodeProviderImpl.cs" />
+    <Compile Include="Bytecode\Lightweight\Delegates.cs" />
+    <Compile Include="Bytecode\Lightweight\ReflectionOptimizer.cs" />
+    <Compile Include="Bytecode\NullBytecodeProvider.cs" />
+    <Compile Include="Bytecode\EmitUtil.cs" />
+    <Compile Include="CacheMode.cs" />
+    <Compile Include="Cache\CacheKey.cs" />
+    <Compile Include="Cache\Entry\CollectionCacheEntry.cs" />
+    <Compile Include="Cache\Entry\ICacheEntryStructure.cs" />
+    <Compile Include="Cache\Entry\StructuredCacheEntry.cs" />
+    <Compile Include="Cache\Entry\StructuredCollectionCacheEntry.cs" />
+    <Compile Include="Cache\Entry\StructuredMapCacheEntry.cs" />
+    <Compile Include="Cache\Entry\UnstructuredCacheEntry.cs" />
+    <Compile Include="Cache\FilterKey.cs" />
+    <Compile Include="Cache\IOptimisticCacheSource.cs" />
+    <Compile Include="Cache\NoCacheProvider.cs" />
+    <Compile Include="Cache\NoCachingEnabledException.cs" />
+    <Compile Include="Cfg\ClassExtractor.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\CfgXmlHelper.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\ClassCacheConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\CollectionCacheConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\EventConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\HibernateConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\ListenerConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\MappingConfiguration.cs" />
+    <Compile Include="Cfg\ConfigurationSchema\SessionFactoryConfiguration.cs" />
+    <Compile Include="Cfg\ExtendsQueueEntry.cs" />
+    <Compile Include="Cfg\HbmConstants.cs" />
+    <Compile Include="Cfg\HibernateConfigException.cs" />
+    <Compile Include="Cfg\IHibernateConfiguration.cs" />
+    <Compile Include="Cfg\NamedXmlDocument.cs" />
+    <Compile Include="Cfg\MappingsQueueEntry.cs" />
+    <Compile Include="Cfg\MappingSchema\EndsWithHbmXmlFilter.cs" />
+    <Compile Include="Cfg\MappingSchema\Hbm.generated.cs">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Cfg\MappingSchema\HbmBase.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmClass.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmDatabaseObject.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmMeta.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmParam.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmQuery.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmSqlQuery.cs" />
+    <Compile Include="Cfg\MappingSchema\IAssemblyResourceFilter.cs" />
+    <Compile Include="Cfg\MappingSchema\IMappingDocumentParser.cs" />
+    <Compile Include="Cfg\MappingSchema\MappingDocumentAggregator.cs" />
+    <Compile Include="Cfg\MappingSchema\MappingDocumentParser.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\AuxiliaryDatabaseObjectFactory.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmFilterDef.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\CacheModeConverter.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\ClassCompositeIdBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\ClassDiscriminatorBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\ClassIdBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\FilterDefinitionFactory.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\FlushModeConverter.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\ResultSetMappingBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\Binder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\ClassBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\CollectionBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\RootClassBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\JoinedSubclassBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\MappingRootBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\NamedQueryBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\NamedSQLQueryBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\SubclassBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\UnionSubclassBinder.cs" />
+    <Compile Include="Cfg\XmlSchemas.cs" />
+    <Compile Include="Classic\ILifecycle.cs" />
+    <Compile Include="Classic\IValidatable.cs" />
+    <Compile Include="Classic\ValidationFailure.cs" />
+    <Compile Include="Collection\AbstractPersistentCollection.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericSet.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericBag.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collection\Generic\PersistentGenericList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collection\Generic\PersistentGenericMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collection\Generic\PersistentGenericIdentifierBag.cs" />
+    <Compile Include="Collection\PersistentArrayHolder.cs" />
+    <Compile Include="Collection\PersistentBag.cs" />
+    <Compile Include="Collection\PersistentIdentifierBag.cs" />
+    <Compile Include="Collection\PersistentList.cs" />
+    <Compile Include="Collection\PersistentMap.cs" />
+    <Compile Include="Collection\PersistentSet.cs" />
+    <Compile Include="ConnectionReleaseMode.cs" />
+    <Compile Include="Context\CallSessionContext.cs" />
+    <Compile Include="Context\CurrentSessionContext.cs" />
+    <Compile Include="Context\ICurrentSessionContext.cs" />
+    <Compile Include="Context\ManagedWebSessionContext.cs" />
+    <Compile Include="Context\MapBasedSessionContext.cs" />
+    <Compile Include="Context\ThreadStaticSessionContext.cs" />
+    <Compile Include="Context\WebSessionContext.cs" />
+    <Compile Include="CriteriaTransformer.cs" />
+    <Compile Include="DebugHelpers\DictionaryProxy.cs" />
+    <Compile Include="DebugHelpers\CollectionProxy.cs" />
+    <Compile Include="Dialect\Function\AnsiExtractFunction.cs" />
+    <Compile Include="Dialect\Function\AnsiSubstringFunction.cs" />
+    <Compile Include="Dialect\Function\AnsiTrimEmulationFunction.cs" />
+    <Compile Include="Dialect\Function\AnsiTrimFunction.cs" />
+    <Compile Include="Dialect\Function\CastFunction.cs" />
+    <Compile Include="Dialect\Function\CharIndexFunction.cs" />
+    <Compile Include="Dialect\Function\ClassicAggregateFunction.cs" />
+    <Compile Include="Dialect\Function\ClassicAvgFunction.cs" />
+    <Compile Include="Dialect\Function\ClassicCountFunction.cs" />
+    <Compile Include="Dialect\Function\ClassicSumFunction.cs" />
+    <Compile Include="Dialect\Function\CommonGrammar.cs" />
+    <Compile Include="Dialect\Function\IFunctionGrammar.cs" />
+    <Compile Include="Dialect\Function\ISQLFunction.cs" />
+    <Compile Include="Dialect\Function\NoArgSQLFunction.cs" />
+    <Compile Include="Dialect\Function\NvlFunction.cs" />
+    <Compile Include="Dialect\Function\PositionSubstringFunction.cs" />
+    <Compile Include="Dialect\Function\SQLFunctionRegistry.cs" />
+    <Compile Include="Dialect\Function\SQLFunctionTemplate.cs" />
+    <Compile Include="Dialect\Function\StandardSafeSQLFunction.cs" />
+    <Compile Include="Dialect\Function\StandardSQLFunction.cs" />
+    <Compile Include="Dialect\Function\VarArgsSQLFunction.cs" />
+    <Compile Include="AdoNet\IEmbeddedBatcherFactoryProvider.cs" />
+    <Compile Include="Dialect\InformixDialect.cs" />
+    <Compile Include="Dialect\Lock\ILockingStrategy.cs" />
+    <Compile Include="Dialect\Lock\SelectLockingStrategy.cs" />
+    <Compile Include="Dialect\Lock\UpdateLockingStrategy.cs" />
+    <Compile Include="Dialect\MsSqlCeDialect.cs" />
+    <Compile Include="Dialect\MySQL5Dialect.cs" />
+    <Compile Include="Dialect\PostgreSQL82Dialect.cs" />
+    <Compile Include="Dialect\Sybase11Dialect.cs" />
+    <Compile Include="Driver\ISqlParameterFormatter.cs" />
+    <Compile Include="Driver\SqlStringFormatter.cs" />
+    <Compile Include="EmptyInterceptor.cs" />
+    <Compile Include="Engine\ActionQueue.cs" />
+    <Compile Include="Engine\AssociationKey.cs" />
+    <Compile Include="Engine\BatchFetchQueue.cs" />
+    <Compile Include="Engine\Collections.cs" />
+    <Compile Include="Engine\EntityUniqueKey.cs" />
+    <Compile Include="Engine\FilterDefinition.cs" />
+    <Compile Include="Engine\ForeignKeys.cs" />
+    <Compile Include="Engine\IdentifierValue.cs" />
+    <Compile Include="Engine\IPersistenceContext.cs" />
+    <Compile Include="Engine\Loading\CollectionLoadContext.cs" />
+    <Compile Include="Engine\Loading\EntityLoadContext.cs" />
+    <Compile Include="Engine\Loading\LoadContexts.cs" />
+    <Compile Include="Engine\Loading\LoadingCollectionEntry.cs" />
+    <Compile Include="Engine\Nullability.cs" />
+    <Compile Include="Engine\Query\HQLQueryPlan.cs" />
+    <Compile Include="Engine\Query\NamedParameterDescriptor.cs" />
+    <Compile Include="Engine\Query\NativeSQLQueryPlan.cs" />
+    <Compile Include="Engine\Query\OrdinalParameterDescriptor.cs" />
+    <Compile Include="Engine\Query\ParameterMetadata.cs" />
+    <Compile Include="Engine\Query\ParamLocationRecognizer.cs" />
+    <Compile Include="Engine\Query\QueryMetadata.cs" />
+    <Compile Include="Engine\Query\QueryPlanCache.cs" />
+    <Compile Include="Engine\Query\ReturnMetadata.cs" />
+    <Compile Include="Engine\Query\FilterQueryPlan.cs" />
+    <Compile Include="Engine\Query\Sql\INativeSQLQueryReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryCollectionReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryJoinReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryNonScalarReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryRootReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryScalarReturn.cs" />
+    <Compile Include="Engine\StatefulPersistenceContext.cs" />
+    <Compile Include="Engine\TwoPhaseLoad.cs" />
+    <Compile Include="Engine\ValueInclusion.cs" />
+    <Compile Include="Engine\VersionValue.cs" />
+    <Compile Include="EntityMode.cs" />
+    <Compile Include="Event\AbstractEvent.cs" />
+    <Compile Include="Event\AutoFlushEvent.cs" />
+    <Compile Include="Event\Default\AbstractFlushingEventListener.cs" />
+    <Compile Include="Event\Default\AbstractLockUpgradeEventListener.cs" />
+    <Compile Include="Event\Default\AbstractReassociateEventListener.cs" />
+    <Compile Include="Event\Default\AbstractSaveEventListener.cs" />
+    <Compile Include="Event\Default\AbstractVisitor.cs" />
+    <Compile Include="Event\Default\DefaultAutoFlushEventListener.cs" />
+    <Compile Include="Event\Default\DefaultDeleteEventListener.cs" />
+    <Compile Include="Event\Default\DefaultDirtyCheckEventListener.cs" />
+    <Compile Include="Event\Default\DefaultEvictEventListener.cs" />
+    <Compile Include="Event\Default\DefaultFlushEntityEventListener.cs" />
+    <Compile Include="Event\Default\DefaultFlushEventListener.cs" />
+    <Compile Include="Event\Default\DefaultInitializeCollectionEventListener.cs" />
+    <Compile Include="Event\Default\DefaultLoadEventListener.cs" />
+    <Compile Include="Event\Default\DefaultLockEventListener.cs" />
+    <Compile Include="Event\Default\DefaultMergeEventListener.cs" />
+    <Compile Include="Event\Default\DefaultPersistEventListener.cs" />
+    <Compile Include="Event\Default\DefaultPersistOnFlushEventListener.cs" />
+    <Compile Include="Event\Default\DefaultPostLoadEventListener.cs" />
+    <Compile Include="Event\Default\DefaultPreLoadEventListener.cs" />
+    <Compile Include="Event\Default\DefaultRefreshEventListener.cs" />
+    <Compile Include="Event\Default\DefaultReplicateEventListener.cs" />
+    <Compile Include="Event\Default\DefaultSaveEventListener.cs" />
+    <Compile Include="Event\Default\DefaultSaveOrUpdateCopyEventListener.cs" />
+    <Compile Include="Event\Default\DefaultSaveOrUpdateEventListener.cs" />
+    <Compile Include="Event\Default\DefaultUpdateEventListener.cs" />
+    <Compile Include="Event\Default\DirtyCollectionSearchVisitor.cs" />
+    <Compile Include="Event\Default\EvictVisitor.cs" />
+    <Compile Include="Event\Default\FlushVisitor.cs" />
+    <Compile Include="Event\Default\OnLockVisitor.cs" />
+    <Compile Include="Event\Default\OnReplicateVisitor.cs" />
+    <Compile Include="Event\Default\OnUpdateVisitor.cs" />
+    <Compile Include="Event\Default\ProxyVisitor.cs" />
+    <Compile Include="Event\Default\WrapVisitor.cs" />
+    <Compile Include="Event\DeleteEvent.cs" />
+    <Compile Include="Event\DirtyCheckEvent.cs" />
+    <Compile Include="Event\EventListeners.cs" />
+    <Compile Include="Event\EvictEvent.cs" />
+    <Compile Include="Event\FlushEntityEvent.cs" />
+    <Compile Include="Event\FlushEvent.cs" />
+    <Compile Include="Event\IAutoFlushEventListener.cs" />
+    <Compile Include="Event\IDeleteEventListener.cs" />
+    <Compile Include="Event\IDirtyCheckEventListener.cs" />
+    <Compile Include="Event\IEventSource.cs" />
+    <Compile Include="Event\IEvictEventListener.cs" />
+    <Compile Include="Event\IFlushEntityEventListener.cs" />
+    <Compile Include="Event\IFlushEventListener.cs" />
+    <Compile Include="Event\IInitializable.cs" />
+    <Compile Include="Event\IInitializeCollectionEventListener.cs" />
+    <Compile Include="Event\ILoadEventListener.cs" />
+    <Compile Include="Event\ILockEventListener.cs" />
+    <Compile Include="Event\IMergeEventListener.cs" />
+    <Compile Include="Event\InitializeCollectionEvent.cs" />
+    <Compile Include="Event\IPersistEventListener.cs" />
+    <Compile Include="Event\IPostDeleteEventListener.cs" />
+    <Compile Include="Event\IPostInsertEventListener.cs" />
+    <Compile Include="Event\IPostLoadEventListener.cs" />
+    <Compile Include="Event\IPostUpdateEventListener.cs" />
+    <Compile Include="Event\IPreDeleteEventListener.cs" />
+    <Compile Include="Event\IPreInsertEventListener.cs" />
+    <Compile Include="Event\IPreLoadEventListener.cs" />
+    <Compile Include="Event\IPreUpdateEventListener.cs" />
+    <Compile Include="Event\IRefreshEventListener.cs" />
+    <Compile Include="Event\IReplicateEventListener.cs" />
+    <Compile Include="Event\ISaveOrUpdateEventListener.cs" />
+    <Compile Include="Event\ListenerType.cs" />
+    <Compile Include="Event\LoadEvent.cs" />
+    <Compile Include="Event\LoadEventListener.cs" />
+    <Compile Include="Event\LoadType.cs" />
+    <Compile Include="Event\LockEvent.cs" />
+    <Compile Include="Event\MergeEvent.cs" />
+    <Compile Include="Event\PersistEvent.cs" />
+    <Compile Include="Event\PostDeleteEvent.cs" />
+    <Compile Include="Event\PostInsertEvent.cs" />
+    <Compile Include="Event\PostLoadEvent.cs" />
+    <Compile Include="Event\PostUpdateEvent.cs" />
+    <Compile Include="Event\PreDeleteEvent.cs" />
+    <Compile Include="Event\PreInsertEvent.cs" />
+    <Compile Include="Event\PreLoadEvent.cs" />
+    <Compile Include="Event\PreUpdateEvent.cs" />
+    <Compile Include="Event\RefreshEvent.cs" />
+    <Compile Include="Event\ReplicateEvent.cs" />
+    <Compile Include="Event\SaveOrUpdateEvent.cs" />
+    <Compile Include="Exceptions\GenericADOException.cs" />
+    <Compile Include="Exceptions\ISQLExceptionConverter.cs" />
+    <Compile Include="Exceptions\IViolatedConstraintNameExtracter.cs" />
+    <Compile Include="Exceptions\SQLStateConverter.cs" />
+    <Compile Include="Expressions\CastProjection.cs" />
+    <Compile Include="Expressions\ConditionalProjection.cs" />
+    <Compile Include="Expressions\ConstantProjection.cs" />
+    <Compile Include="Expressions\CriterionUtil.cs" />
+    <Compile Include="Expressions\SqlFunctionProjection.cs" />
+    <Compile Include="FKUnmatchingColumnsException.cs" />
+    <Compile Include="Id\AbstractPostInsertGenerator.cs" />
+    <Compile Include="Id\Insert\AbstractReturningDelegate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\AbstractSelectingDelegate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\IBinder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\IdentifierGeneratingInsert.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\IInsertGeneratedIdentifierDelegate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\Insert\InsertSelectIdentityInsert.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Id\IPostInsertIdentifierGenerator.cs" />
+    <Compile Include="Id\IPostInsertIdentityPersister.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Impl\AbstractDetachedQuery.cs" />
+    <Compile Include="Hql\Classic\FunctionStack.cs" />
+    <Compile Include="Impl\AbstractSessionImpl.cs" />
+    <Compile Include="Impl\DetachedNamedQuery.cs" />
+    <Compile Include="Impl\DetachedQuery.cs" />
+    <Compile Include="IDetachedQuery.cs" />
+    <Compile Include="IdentityEqualityComparer.cs" />
+    <Compile Include="Impl\IDetachedQueryImplementor.cs" />
+    <Compile Include="Impl\MultiCriteriaImpl.cs" />
+    <Compile Include="Impl\MultipleQueriesCacheAssembler.cs" />
+    <Compile Include="Impl\StatelessSessionImpl.cs" />
+    <Compile Include="IMultiCriteria.cs" />
+    <Compile Include="Intercept\AbstractFieldInterceptor.cs" />
+    <Compile Include="Intercept\FieldInterceptionHelper.cs" />
+    <Compile Include="Intercept\IFieldInterceptor.cs" />
+    <Compile Include="Intercept\ILazyPropertyInitializer.cs" />
+    <Compile Include="IStatelessSession.cs" />
+    <Compile Include="Mapping\Backref.cs" />
+    <Compile Include="Mapping\DenormalizedTable.cs" />
+    <Compile Include="Mapping\IMetaAttributable.cs" />
+    <Compile Include="Mapping\IndexBackref.cs" />
+    <Compile Include="Mapping\IPersistentClassVisitor.cs" />
+    <Compile Include="Mapping\IValueVisitor.cs" />
+    <Compile Include="Mapping\PropertyGeneration.cs" />
+    <Compile Include="Mapping\TypeDef.cs" />
+    <Compile Include="Mapping\UnionSubclass.cs" />
+    <Compile Include="Persister\Entity\ILockable.cs" />
+    <Compile Include="Persister\Entity\UnionSubclassEntityPersister.cs" />
+    <Compile Include="Properties\BackrefPropertyAccessor.cs" />
+    <Compile Include="Properties\EmbeddedPropertyAccessor.cs" />
+    <Compile Include="Properties\IndexPropertyAccessor.cs" />
+    <Compile Include="Properties\MapAccessor.cs" />
+    <Compile Include="Properties\NoopAccessor.cs" />
+    <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
+    <Compile Include="Proxy\ILazyInitializer.cs" />
+    <Compile Include="Proxy\Map\MapLazyInitializer.cs" />
+    <Compile Include="Proxy\Map\MapProxy.cs" />
+    <Compile Include="Proxy\Map\MapProxyFactory.cs" />
+    <Compile Include="Proxy\Poco\BasicLazyInitializer.cs" />
+    <Compile Include="QueryParameterException.cs" />
+    <Compile Include="SessionException.cs" />
+    <Compile Include="SqlCommand\SubselectClauseExtractor.cs" />
+    <Compile Include="Engine\SubselectFetch.cs" />
+    <Compile Include="Expressions\DetachedCriteria.cs" />
+    <Compile Include="Engine\JoinSequence.cs" />
+    <Compile Include="Expressions\ExistsSubqueryExpression.cs" />
+    <Compile Include="Expressions\GePropertyExpression.cs" />
+    <Compile Include="Expressions\GtPropertyExpression.cs" />
+    <Compile Include="Expressions\IdentifierEqExpression.cs" />
+    <Compile Include="Expressions\Property.cs" />
+    <Compile Include="Expressions\PropertySubqueryExpression.cs" />
+    <Compile Include="Expressions\SimpleSubqueryExpression.cs" />
+    <Compile Include="Expressions\Subqueries.cs" />
+    <Compile Include="Expressions\SubqueryExpression.cs" />
+    <Compile Include="Hql\Classic\ClassicQueryTranslatorFactory.cs" />
+    <Compile Include="Hql\CollectionSubqueryFactory.cs" />
+    <Compile Include="Expressions\IsEmptyExpression.cs" />
+    <Compile Include="Expressions\IsNotEmptyExpression.cs" />
+    <Compile Include="Hql\HolderInstantiator.cs" />
+    <Compile Include="Hql\IFilterTranslator.cs" />
+    <Compile Include="Hql\IParameterTranslations.cs" />
+    <Compile Include="Hql\IQueryTranslator.cs" />
+    <Compile Include="Hql\IQueryTranslatorFactory.cs" />
+    <Compile Include="Hql\NameGenerator.cs" />
+    <Compile Include="Hql\QueryExecutionRequestException.cs" />
+    <Compile Include="Hql\QuerySplitter.cs" />
+    <Compile Include="IFilter.cs" />
+    <Compile Include="Dialect\DB2400Dialect.cs" />
+    <Compile Include="Dialect\IngresDialect.cs" />
+    <Compile Include="Dialect\MsSql2005Dialect.cs" />
+    <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
+    <Compile Include="Dialect\SybaseAnywhereDialect.cs" />
+    <Compile Include="Driver\ASAClientDriver.cs" />
+    <Compile Include="Driver\DB2400Driver.cs" />
+    <Compile Include="Driver\FirebirdClientDriver.cs" />
+    <Compile Include="Driver\IngresDriver.cs" />
+    <Compile Include="Driver\ReflectionBasedDriver.cs" />
+    <Compile Include="Driver\SQLite20Driver.cs" />
+    <Compile Include="Driver\SqlServerCeDriver.cs" />
+    <Compile Include="DuplicateMappingException.cs" />
+    <Compile Include="Engine\EntityKey.cs" />
+    <Compile Include="Engine\ExecuteUpdateResultCheckStyle.cs" />
+    <Compile Include="Engine\JoinHelper.cs" />
+    <Compile Include="Engine\NamedQueryDefinition.cs" />
+    <Compile Include="Engine\NamedSQLQueryDefinition.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQuerySpecification.cs" />
+    <Compile Include="Engine\Query\ParameterParser.cs" />
+    <Compile Include="Engine\ResultSetMappingDefinition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Expressions\AbstractEmptinessExpression.cs" />
+    <Compile Include="Expressions\AggregateProjection.cs" />
+    <Compile Include="Expressions\AliasedProjection.cs" />
+    <Compile Include="Expressions\AvgProjection.cs" />
+    <Compile Include="Expressions\CountProjection.cs" />
+    <Compile Include="Expressions\Distinct.cs" />
+    <Compile Include="Expressions\ICriteriaQuery.cs" />
+    <Compile Include="Expressions\IdentifierProjection.cs" />
+    <Compile Include="Expressions\IProjection.cs" />
+    <Compile Include="Expressions\ProjectionList.cs" />
+    <Compile Include="Expressions\Projections.cs" />
+    <Compile Include="Expressions\PropertyProjection.cs" />
+    <Compile Include="Expressions\RowCountProjection.cs" />
+    <Compile Include="Expressions\SimpleProjection.cs" />
+    <Compile Include="Expressions\SQLProjection.cs" />
+    <Compile Include="Hql\Util\SessionFactoryHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AdoNet\ConnectionManager.cs" />
+    <Compile Include="Impl\MultiQueryImpl.cs" />
+    <Compile Include="AdoNet\SqlClientSqlCommandSet.cs" />
+    <Compile Include="Impl\CollectionFilterImpl.cs" />
+    <Compile Include="IMultiQuery.cs" />
+    <Compile Include="InvalidProxyTypeException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ISQLQuery.cs" />
+    <Compile Include="Loader\AbstractEntityJoinWalker.cs" />
+    <Compile Include="Loader\BasicLoader.cs" />
+    <Compile Include="Loader\Collection\BasicCollectionJoinWalker.cs" />
+    <Compile Include="Loader\Collection\BasicCollectionLoader.cs" />
+    <Compile Include="Loader\Collection\BatchingCollectionInitializer.cs" />
+    <Compile Include="Loader\Collection\CollectionJoinWalker.cs" />
+    <Compile Include="Loader\Collection\CollectionLoader.cs" />
+    <Compile Include="Loader\Collection\ICollectionInitializer.cs" />
+    <Compile Include="Loader\Collection\OneToManyJoinWalker.cs" />
+    <Compile Include="Loader\Collection\OneToManyLoader.cs" />
+    <Compile Include="Loader\Collection\SubselectCollectionLoader.cs" />
+    <Compile Include="Loader\Collection\SubselectOneToManyLoader.cs" />
+    <Compile Include="Loader\Criteria\CriteriaJoinWalker.cs" />
+    <Compile Include="Loader\Criteria\CriteriaLoader.cs" />
+    <Compile Include="Loader\Criteria\CriteriaQueryTranslator.cs" />
+    <Compile Include="Loader\Custom\CollectionFetchReturn.cs" />
+    <Compile Include="Loader\Custom\CollectionReturn.cs" />
+    <Compile Include="Loader\Custom\ColumnCollectionAliases.cs" />
+    <Compile Include="Loader\Custom\ColumnEntityAliases.cs" />
+    <Compile Include="Loader\Custom\CustomLoader.cs" />
+    <Compile Include="Loader\Custom\EntityFetchReturn.cs" />
+    <Compile Include="Loader\Custom\FetchReturn.cs" />
+    <Compile Include="Loader\Custom\ICustomQuery.cs" />
+    <Compile Include="Loader\Custom\IReturn.cs" />
+    <Compile Include="Loader\Custom\NonScalarReturn.cs" />
+    <Compile Include="Loader\Custom\RootReturn.cs" />
+    <Compile Include="Loader\Custom\ScalarReturn.cs" />
+    <Compile Include="Loader\Custom\Sql\SQLCustomQuery.cs" />
+    <Compile Include="Loader\Custom\Sql\SQLQueryParser.cs" />
+    <Compile Include="Loader\Custom\Sql\SQLQueryReturnProcessor.cs" />
+    <Compile Include="Loader\DefaultEntityAliases.cs" />
+    <Compile Include="Loader\Entity\AbstractEntityLoader.cs" />
+    <Compile Include="Loader\Entity\BatchingEntityLoader.cs" />
+    <Compile Include="Loader\Entity\CascadeEntityJoinWalker.cs" />
+    <Compile Include="Loader\Entity\EntityJoinWalker.cs" />
+    <Compile Include="Loader\Entity\EntityLoader.cs" />
+    <Compile Include="Loader\Entity\IUniqueEntityLoader.cs" />
+    <Compile Include="Loader\GeneratedCollectionAliases.cs" />
+    <Compile Include="Loader\ICollectionAliases.cs" />
+    <Compile Include="Loader\IEntityAliases.cs" />
+    <Compile Include="Loader\JoinWalker.cs" />
+    <Compile Include="Loader\OuterJoinableAssociation.cs" />
+    <Compile Include="Mapping\AbstractAuxiliaryDatabaseObject.cs" />
+    <Compile Include="Mapping\DependantValue.cs" />
+    <Compile Include="Mapping\IAuxiliaryDatabaseObject.cs" />
+    <Compile Include="Mapping\IFilterable.cs" />
+    <Compile Include="Mapping\IKeyValue.cs" />
+    <Compile Include="Mapping\ISelectable.cs" />
+    <Compile Include="Mapping\ITableOwner.cs" />
+    <Compile Include="Mapping\Join.cs" />
+    <Compile Include="Mapping\JoinedSubclass.cs" />
+    <Compile Include="Mapping\SimpleAuxiliaryDatabaseObject.cs" />
+    <Compile Include="Mapping\SingleTableSubclass.cs" />
+    <Compile Include="Persister\Collection\AbstractCollectionPersister.cs" />
+    <Compile Include="Persister\Collection\BasicCollectionPersister.cs" />
+    <Compile Include="Persister\Collection\CollectionPropertyMapping.cs" />
+    <Compile Include="Persister\Collection\CollectionPropertyNames.cs" />
+    <Compile Include="Persister\Collection\CompositeElementPropertyMapping.cs" />
+    <Compile Include="Persister\Collection\ElementPropertyMapping.cs" />
+    <Compile Include="Persister\Collection\ICollectionPersister.cs" />
+    <Compile Include="Persister\Collection\IQueryableCollection.cs" />
+    <Compile Include="Persister\Collection\ISqlLoadableCollection.cs" />
+    <Compile Include="Persister\Collection\NamedQueryCollectionInitializer.cs" />
+    <Compile Include="Persister\Collection\OneToManyPersister.cs" />
+    <Compile Include="Persister\Entity\AbstractEntityPersister.cs" />
+    <Compile Include="Persister\Entity\AbstractPropertyMapping.cs" />
+    <Compile Include="Persister\Entity\BasicEntityPropertyMapping.cs" />
+    <Compile Include="Persister\Entity\IEntityPersister.cs" />
+    <Compile Include="Persister\Entity\IJoinable.cs" />
+    <Compile Include="Persister\Entity\ILoadable.cs" />
+    <Compile Include="Persister\Entity\IOuterJoinLoadable.cs" />
+    <Compile Include="Persister\Entity\IPropertyMapping.cs" />
+    <Compile Include="Persister\Entity\IQueryable.cs" />
+    <Compile Include="Persister\Entity\ISqlLoadable.cs" />
+    <Compile Include="Persister\Entity\IUniqueKeyLoadable.cs" />
+    <Compile Include="Persister\Entity\JoinedSubclassEntityPersister.cs" />
+    <Compile Include="Persister\Entity\NamedQueryLoader.cs" />
+    <Compile Include="Persister\Entity\SingleTableEntityPersister.cs" />
+    <Compile Include="Properties\ChainedPropertyAccessor.cs" />
+    <Compile Include="Properties\IOptimizableGetter.cs" />
+    <Compile Include="Properties\IOptimizableSetter.cs" />
+    <Compile Include="Properties\PascalCaseMStrategy.cs" />
+    <Compile Include="SqlCommand\ISqlStringVisitor.cs" />
+    <Compile Include="SqlCommand\SqlCommandInfo.cs" />
+    <Compile Include="StaleStateException.cs" />
+    <Compile Include="Stat\CategorizedStatistics.cs" />
+    <Compile Include="Stat\CollectionStatistics.cs" />
+    <Compile Include="Stat\EntityStatistics.cs" />
+    <Compile Include="Stat\ISessionStatistics.cs" />
+    <Compile Include="Stat\IStatistics.cs" />
+    <Compile Include="Stat\IStatisticsImplementor.cs" />
+    <Compile Include="Stat\QueryStatistics.cs" />
+    <Compile Include="Stat\SecondLevelCacheStatistics.cs" />
+    <Compile Include="Stat\SessionStatisticsImpl.cs" />
+    <Compile Include="Stat\StatisticsImpl.cs" />
+    <Compile Include="Tool\hbm2ddl\ColumnMetadata.cs" />
+    <Compile Include="Tool\hbm2ddl\DatabaseMetadata.cs" />
+    <Compile Include="Tool\hbm2ddl\ForeignKeyMetadata.cs" />
+    <Compile Include="Tool\hbm2ddl\IConnectionHelper.cs" />
+    <Compile Include="Tool\hbm2ddl\IndexMetadata.cs" />
+    <Compile Include="Tool\hbm2ddl\ISchemaReader.cs" />
+    <Compile Include="Tool\hbm2ddl\ManagedProviderConnectionHelper.cs" />
+    <Compile Include="Tool\hbm2ddl\InformationSchemaReader.cs" />
+    <Compile Include="Tool\hbm2ddl\SchemaUpdate.cs" />
+    <Compile Include="Tool\hbm2ddl\SuppliedConnectionHelper.cs" />
+    <Compile Include="Tool\hbm2ddl\SuppliedConnectionProviderConnectionHelper.cs" />
+    <Compile Include="Tool\hbm2ddl\TableMetadata.cs" />
+    <Compile Include="Transaction\AdoNetTransactionFactory.cs" />
+    <Compile Include="Transform\AliasToBeanConstructorResultTransformer.cs" />
+    <Compile Include="Transform\AliasToBeanResultTransformer.cs" />
+    <Compile Include="Transform\PassThroughResultTransformer.cs" />
+    <Compile Include="Transform\Transformers.cs" />
+    <Compile Include="Tuple\Component\AbstractComponentTuplizer.cs" />
+    <Compile Include="Tuple\Component\ComponentEntityModeToTuplizerMapping.cs" />
+    <Compile Include="Tuple\Component\ComponentMetamodel.cs" />
+    <Compile Include="Tuple\Component\DynamicMapComponentTuplizer.cs" />
+    <Compile Include="Tuple\Component\IComponentTuplizer.cs" />
+    <Compile Include="Tuple\Component\PocoComponentTuplizer.cs" />
+    <Compile Include="Tuple\DynamicMapInstantiator.cs" />
+    <Compile Include="Tuple\EntityModeToTuplizerMapping.cs" />
+    <Compile Include="Tuple\Entity\AbstractEntityTuplizer.cs" />
+    <Compile Include="Tuple\Entity\DynamicMapEntityTuplizer.cs" />
+    <Compile Include="Tuple\Entity\EntityEntityModeToTuplizerMapping.cs" />
+    <Compile Include="Tuple\Entity\EntityMetamodel.cs" />
+    <Compile Include="Tuple\Entity\IEntityTuplizer.cs" />
+    <Compile Include="Tuple\Entity\PocoEntityTuplizer.cs" />
+    <Compile Include="Tuple\IdentifierProperty.cs" />
+    <Compile Include="Tuple\IInstantiator.cs" />
+    <Compile Include="Tuple\ITuplizer.cs" />
+    <Compile Include="Tuple\PocoInstantiator.cs" />
+    <Compile Include="Tuple\Property.cs" />
+    <Compile Include="Tuple\PropertyFactory.cs" />
+    <Compile Include="Tuple\StandardProperty.cs" />
+    <Compile Include="Tuple\VersionProperty.cs" />
+    <Compile Include="TypeMismatchException.cs" />
+    <Compile Include="Type\AbstractBynaryType.cs" />
+    <Compile Include="Type\AbstractStringType.cs" />
+    <Compile Include="Type\AnsiCharType.cs" />
+    <Compile Include="Type\AnyType.cs" />
+    <Compile Include="Type\AbstractCharType.cs" />
+    <Compile Include="Type\CollectionType.cs" />
+    <Compile Include="Type\CustomCollectionType.cs" />
+    <Compile Include="Type\EmbeddedComponentType.cs" />
+    <Compile Include="Type\ICacheAssembler.cs" />
+    <Compile Include="Type\OrderedSetType.cs" />
+    <Compile Include="Type\OrderedMapType.cs" />
+    <Compile Include="Type\GenericSortedDictionaryType.cs" />
+    <Compile Include="Type\GenericIdentifierBagType.cs" />
+    <Compile Include="Type\GenericSortedListType.cs" />
+    <Compile Include="Type\GenericSortedSetType.cs" />
+    <Compile Include="Type\GenericSetType.cs" />
+    <Compile Include="Type\ForeignKeyDirection.cs" />
+    <Compile Include="Type\GenericBagType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Type\GenericListType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Type\GenericMapType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Type\SpecialOneToOneType.cs" />
+    <Compile Include="UserTypes\ICompositeUserType.cs" />
+    <Compile Include="UserTypes\IEnhancedUserType.cs" />
+    <Compile Include="UserTypes\ILoggableUserType.cs" />
+    <Compile Include="UserTypes\INullableUserType.cs" />
+    <Compile Include="UserTypes\IParameterizedType.cs" />
+    <Compile Include="UserTypes\IUserCollectionType.cs" />
+    <Compile Include="UserTypes\IUserType.cs" />
+    <Compile Include="UserTypes\IUserVersionType.cs" />
+    <Compile Include="Util\AssemblyQualifiedTypeName.cs" />
+    <Compile Include="Util\CollectionHelper.cs" />
+    <Compile Include="Util\EqualsHelper.cs" />
+    <Compile Include="Util\FilterHelper.cs" />
+    <Compile Include="Util\IdentitySet.cs" />
+    <Compile Include="Util\LinkedHashMap.cs" />
+    <Compile Include="Util\LRUMap.cs" />
+    <Compile Include="Util\SafetyEnumerable.cs" />
+    <Compile Include="Util\SerializationHelper.cs" />
+    <Compile Include="Util\SimpleMRUCache.cs" />
+    <Compile Include="Util\SingletonEnumerable.cs" />
+    <Compile Include="Util\SoftLimitMRUCache.cs" />
+    <Compile Include="Util\TypeNameParser.cs" />
+    <Compile Include="Util\WeakHashtable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Util\XmlHelper.cs" />
+    <EmbeddedResource Include="nhibernate-configuration.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="nhibernate-configuration.xsx">
+      <DependentUpon>nhibernate-configuration.xsd</DependentUpon>
+    </None>
+    <None Include="nhibernate-generic.xsx">
+      <DependentUpon>nhibernate-generic.xsd</DependentUpon>
+    </None>
+    <EmbeddedResource Include="nhibernate-mapping.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="nhibernate-mapping.xsx">
+      <DependentUpon>nhibernate-mapping.xsd</DependentUpon>
+    </None>
+    <None Include="NHibernate.build" />
+    <None Include="Type\IType.cs.xmldoc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NamespaceSummary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Intercept\Castle\" />
+    <Folder Include="Loader\Hql\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

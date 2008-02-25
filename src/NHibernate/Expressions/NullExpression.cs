@@ -40,7 +40,7 @@ namespace NHibernate.Expressions
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
 			SqlString[] columnNames =
-				CritertionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
 
 			for (int i = 0; i < columnNames.Length; i++)
 			{

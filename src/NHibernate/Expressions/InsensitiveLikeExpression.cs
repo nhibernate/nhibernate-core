@@ -64,7 +64,7 @@ namespace NHibernate.Expressions
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 			SqlString[] columnNames =
-				CritertionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
 
 			if (columnNames.Length != 1)
 			{
@@ -92,7 +92,7 @@ namespace NHibernate.Expressions
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return CritertionUtil.GetTypedValues(criteriaQuery, criteria, projection, _propertyName, _value);
+			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, _propertyName, _value);
 		}
 
 		/// <summary></summary>
