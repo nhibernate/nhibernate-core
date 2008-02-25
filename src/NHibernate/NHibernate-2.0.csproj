@@ -721,7 +721,7 @@
     <Compile Include="Expressions\CastProjection.cs" />
     <Compile Include="Expressions\ConditionalProjection.cs" />
     <Compile Include="Expressions\ConstantProjection.cs" />
-    <Compile Include="Expressions\CritertionUtil.cs" />
+    <Compile Include="Expressions\CriterionUtil.cs" />
     <Compile Include="Expressions\SqlFunctionProjection.cs" />
     <Compile Include="FKUnmatchingColumnsException.cs" />
     <Compile Include="Id\AbstractPostInsertGenerator.cs" />
