@@ -96,6 +96,7 @@
 								<xs:enumeration value="default_catalog" />
 								<xs:enumeration value="proxyfactory.factory_class" />
 								<xs:enumeration value="adonet.factory_class" />
+								<xs:enumeration value="default_batch_fetch_size" />
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

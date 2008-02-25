@@ -144,6 +144,8 @@ namespace NHibernate.Cfg
 		public const string UseProxyValidator = "use_proxy_validator";
 		public const string ProxyFactoryFactoryClass = "proxyfactory.factory_class";
 
+		public const string DefaultBatchFetchSize = "default_batch_fetch_size";
+
 		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;

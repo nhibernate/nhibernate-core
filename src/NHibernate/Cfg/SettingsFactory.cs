@@ -94,6 +94,10 @@ namespace NHibernate.Cfg
 			settings.DefaultSchemaName=defaultSchema;
 			settings.DefaultCatalogName=defaultCatalog;
 
+			int batchFetchSize = PropertiesHelper.GetInt32(Environment.DefaultBatchFetchSize, properties, 1);
+			log.Info("Default batch fetch size: " + batchFetchSize);
+			settings.DefaultBatchFetchSize= batchFetchSize;
+
 			//Statistics and logging:
 
 			bool showSql = PropertiesHelper.GetBoolean(Environment.ShowSql, properties, false);
