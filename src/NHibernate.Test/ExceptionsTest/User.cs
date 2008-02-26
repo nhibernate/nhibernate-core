@@ -15,7 +15,7 @@ namespace NHibernate.Test.ExceptionsTest
 			set { id = value; }
 		}
 
-		public virtual string Username
+		public virtual string UserName
 		{
 			get { return username; }
 			set { username = value; }

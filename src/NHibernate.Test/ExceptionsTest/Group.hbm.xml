@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
 	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.Exception">
+	namespace="NHibernate.Test.ExceptionsTest">
 	
 	<class name="Group" table="T_GROUP" >
-		<id name="id" column="group_id" >
+		<id name="Id" column="group_id" >
 			<generator class="native"/>
 		</id>
-		<property name="name" type="string" column="name" />
-		<set name="members" inverse="true" table="T_MEMBERSHIP" cascade="none">
+		<property name="Name" type="string" column="Name" />
+		<set name="Members" inverse="true" table="T_MEMBERSHIP" cascade="none">
 			<key column="group_id"/>
 			<many-to-many class="User" column="user_id"/>
 		</set>

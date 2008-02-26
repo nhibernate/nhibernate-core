@@ -43,9 +43,20 @@ namespace NHibernate.Test.ExceptionsTest
 			{
 				ps = connection.CreateCommand();
 				ps.CommandType = CommandType.Text;
-				ps.CommandText = "INSERT INTO T_MEMBERSHIP (user_id, group_id) VALUES (?, ?)";
-				ps.Parameters[0] = 52134241L; // Non-existent user_id
-				ps.Parameters[1] = 5342L; // Non-existent group_id
+				ps.CommandText = "INSERT INTO T_MEMBERSHIP (user_id, group_id) VALUES (@p1, @p2)";
+				IDbDataParameter pr = ps.CreateParameter();
+				pr.ParameterName = "p1";
+				pr.DbType = DbType.Int64;
+				pr.Value = 52134241L; // Non-existent user_id
+				ps.Parameters.Add(pr);
+
+				pr = ps.CreateParameter();
+				pr.ParameterName = "p2";
+				pr.DbType = DbType.Int64;
+				pr.Value = 5342L; // Non-existent group_id
+				ps.Parameters.Add(pr);
+
+				session.Transaction.Enlist(ps);
 				ps.ExecuteNonQuery();
 
 				Assert.Fail("INSERT should have failed");
