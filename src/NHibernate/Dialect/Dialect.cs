@@ -1914,18 +1914,18 @@ namespace NHibernate.Dialect
 		#endregion
 
 		#region SQLException support
-		/// <summary> Build an instance of the SQLExceptionConverter preferred by this dialect for
-		/// converting SQLExceptions into Hibernate's JDBCException hierarchy.  The default
-		/// Dialect implementation simply returns a converter based on X/Open SQLState codes.
-		/// <p/>
+		/// <summary> 
+		/// Build an instance of the <see cref="ISQLExceptionConverter"/> preferred by this dialect for
+		/// converting <see cref="System.Data.Common.DbException"/> into NHibernate's ADOException hierarchy.  
+		/// </summary>
+		/// <returns> The Dialect's preferred <see cref="ISQLExceptionConverter"/>. </returns>
+		/// <remarks>
+		/// The default Dialect implementation simply returns a converter based on X/Open SQLState codes.
+		/// <para/>
 		/// It is strongly recommended that specific Dialect implementations override this
 		/// method, since interpretation of a SQL error is much more accurate when based on
-		/// the ErrorCode rather than the SQLState.  Unfortunately, the ErrorCode is a vendor-
-		/// specific approach.
-		/// 
-		/// </summary>
-		/// <returns> The Dialect's preferred SQLExceptionConverter.
-		/// </returns>
+		/// the ErrorCode rather than the SQLState. Unfortunately, the ErrorCode is a vendor-specific approach. 
+		/// </remarks>
 		public virtual ISQLExceptionConverter BuildSQLExceptionConverter()
 		{
 			// The default SQLExceptionConverter for all dialects is based on SQLState

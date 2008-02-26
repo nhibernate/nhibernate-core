@@ -20,17 +20,20 @@ namespace NHibernate.Test.ExceptionsTest
 			get { return new string[] { "ExceptionsTest.User.hbm.xml", "ExceptionsTest.Group.hbm.xml" }; }
 		}
 
+		protected override void Configure(Cfg.Configuration configuration)
+		{
+			if((Dialect.GetType() == typeof(Dialect.MsSql2005Dialect)) || (Dialect.GetType() == typeof(Dialect.MsSql2000Dialect)))
+			{
+				configuration.SetProperty(NHibernate.Cfg.Environment.SqlExceptionConverter,
+				                          typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
+			}
+		}
 
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void IntegrityViolation()
 		{
-			if (Dialect is Dialect.MySQLDialect)
-			{
-				Assert.Ignore("MySQL (ISAM) does not support FK violation checking", "exception conversion");
-				return;
-			}
-
-			ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
+			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
+			ISQLExceptionConverter converter = sessions.Settings.SqlExceptionConverter;
 
 			ISession session = OpenSession();
 			session.BeginTransaction();
@@ -89,10 +92,11 @@ namespace NHibernate.Test.ExceptionsTest
 			session.Close();
 		}
 
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void BadGrammar()
 		{
-			ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
+			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
+			ISQLExceptionConverter converter = sessions.Settings.SqlExceptionConverter;
 
 			ISession session = OpenSession();
 			IDbConnection connection = session.Connection;

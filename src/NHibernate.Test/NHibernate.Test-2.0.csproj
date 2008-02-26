@@ -123,6 +123,7 @@
     <Compile Include="DriverTest\OracleDataClientDriverFixture.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
     <Compile Include="ExceptionsTest\Group.cs" />
+    <Compile Include="ExceptionsTest\MSSQLExceptionConverterExample.cs" />
     <Compile Include="ExceptionsTest\PropertyAccessExceptionFixture.cs" />
     <Compile Include="ExceptionsTest\SQLExceptionConversionTest.cs" />
     <Compile Include="ExceptionsTest\User.cs" />

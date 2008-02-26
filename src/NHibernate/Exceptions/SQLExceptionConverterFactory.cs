@@ -40,7 +40,7 @@ namespace NHibernate.Exceptions
 
 			string converterClassName;
 			properties.TryGetValue(Cfg.Environment.SqlExceptionConverter, out converterClassName);
-			if (string.IsNullOrEmpty(converterClassName))
+			if (!string.IsNullOrEmpty(converterClassName))
 			{
 				converter = ConstructConverter(converterClassName, dialect.ViolatedConstraintNameExtracter);
 			}
