@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Exception">
+
+	<class name="User" table="T_USER" >
+		<id name="id" column="user_id" >
+			<generator class="native"/>
+		</id>
+		<property name="username" type="string" column="user_name" />
+		<set name="memberships" inverse="false" table="T_MEMBERSHIP" cascade="none">
+			<key column="user_id"/>
+			<many-to-many class="Group" column="group_id"/>
+		</set>
+	</class>
+</hibernate-mapping>

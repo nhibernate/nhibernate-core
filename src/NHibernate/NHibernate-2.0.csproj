@@ -714,9 +714,13 @@
     <Compile Include="Event\RefreshEvent.cs" />
     <Compile Include="Event\ReplicateEvent.cs" />
     <Compile Include="Event\SaveOrUpdateEvent.cs" />
+    <Compile Include="Exceptions\ConstraintViolationException.cs" />
     <Compile Include="Exceptions\GenericADOException.cs" />
+    <Compile Include="Exceptions\IConfigurable.cs" />
     <Compile Include="Exceptions\ISQLExceptionConverter.cs" />
     <Compile Include="Exceptions\IViolatedConstraintNameExtracter.cs" />
+    <Compile Include="Exceptions\SQLExceptionConverterFactory.cs" />
+    <Compile Include="Exceptions\SQLGrammarException.cs" />
     <Compile Include="Exceptions\SQLStateConverter.cs" />
     <Compile Include="Expressions\CastProjection.cs" />
     <Compile Include="Expressions\ConditionalProjection.cs" />

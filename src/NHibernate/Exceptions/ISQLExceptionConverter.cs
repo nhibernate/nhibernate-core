@@ -4,27 +4,27 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Exceptions
 {
 	/// <summary> 
-	/// Defines a contract for implementations that know how to convert a SQLException
-	/// into Hibernate's JDBCException hierarchy. 
+	/// Defines a contract for implementations that know how to convert a <see cref="System.Data.Common.DbException"/>
+	/// into NHibernate's <see cref="ADOException"/> hierarchy. 
 	/// </summary>
 	/// <remarks>
 	/// Inspired by Spring's SQLExceptionTranslator.
 	/// 
 	/// Implementations <b>must</b> have a constructor which takes a
-	/// {@link ViolatedConstraintNameExtracter} parameter.
-	/// <p/>
-	/// Implementations may implement {@link Configurable} if they need to perform
+	/// <see cref="IViolatedConstraintNameExtracter"/> parameter.
+	/// <para/>
+	/// Implementations may implement <see cref="IConfigurable"/> if they need to perform
 	/// configuration steps prior to first use.
 	/// </remarks>
 	public interface ISQLExceptionConverter
 	{
 		/// <summary> 
-		/// Convert the given SQLException into Hibernate's JDBCException hierarchy. 
+		/// Convert the given <see cref="System.Data.Common.DbException"/> into NHibernate's ADOException hierarchy. 
 		/// </summary>
-		/// <param name="sqlException">The SQLException to be converted. </param>
+		/// <param name="sqlException">The <see cref="System.Data.Common.DbException"/> to be converted. </param>
 		/// <param name="message"> An optional error message. </param>
 		/// <param name="sql">The SQL that generate the exception</param>
-		/// <returns> The resulting JDBCException. </returns>
+		/// <returns> The resulting ADOException. </returns>
 		ADOException Convert(Exception sqlException, string message, SqlString sql);
 	}
 }
