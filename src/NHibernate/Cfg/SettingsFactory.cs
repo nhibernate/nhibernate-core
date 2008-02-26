@@ -7,6 +7,7 @@ using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Dialect;
+using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Transaction;
 using NHibernate.Util;
@@ -48,14 +49,21 @@ namespace NHibernate.Cfg
 			}
 			settings.Dialect = dialect;
 
-			// TODO: SQLExceptionConverter
+			#region SQL Exception converter
 
-			// TODO: should this be enabled?
-//			int statementFetchSize = PropertiesHelper.GetInt32( Environment.StatementFetchSize, properties, -1 );
-//			if( statementFetchSize != -1 )
-//			{
-//				log.Info( "JDBC result set fetch size: " + statementFetchSize );
-//			}
+			ISQLExceptionConverter sqlExceptionConverter;
+			try
+			{
+				sqlExceptionConverter = SQLExceptionConverterFactory.BuildSQLExceptionConverter(dialect, properties);
+			}
+			catch (HibernateException)
+			{
+				log.Warn("Error building SQLExceptionConverter; using minimal converter");
+				sqlExceptionConverter = SQLExceptionConverterFactory.BuildMinimalSQLExceptionConverter();
+			}
+			settings.SqlExceptionConverter = sqlExceptionConverter;
+
+			#endregion
 
 			int maxFetchDepth = PropertiesHelper.GetInt32(Environment.MaxFetchDepth, properties, -1);
 			if (maxFetchDepth != -1)

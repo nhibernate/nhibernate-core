@@ -32,6 +32,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
+using NHibernate.Exceptions;
 
 namespace NHibernate.Impl
 {
@@ -1465,6 +1466,11 @@ namespace NHibernate.Impl
 		public SQLFunctionRegistry SQLFunctionRegistry
 		{
 			get { return sqlFunctionRegistry; }
+		}
+
+		public ISQLExceptionConverter SQLExceptionConverter
+		{
+			get{return settings.SqlExceptionConverter;}
 		}
 
 		public IEntityNotFoundDelegate EntityNotFoundDelegate

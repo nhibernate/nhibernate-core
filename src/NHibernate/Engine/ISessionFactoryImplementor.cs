@@ -3,6 +3,7 @@ using NHibernate.Cache;
 using NHibernate.Context;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
+using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -148,6 +149,10 @@ namespace NHibernate.Engine
 		ResultSetMappingDefinition GetResultSetMapping(string resultSetRef);
 
 		ITransactionFactory TransactionFactory { get; }
+
+		/// <summary> Retrieves the SQLExceptionConverter in effect for this SessionFactory. </summary>
+		/// <returns> The SQLExceptionConverter for this SessionFactory. </returns>
+		ISQLExceptionConverter SQLExceptionConverter { get;}
 
 		SQLFunctionRegistry SQLFunctionRegistry { get; }
 

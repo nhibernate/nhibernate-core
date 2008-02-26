@@ -16,6 +16,7 @@ namespace NHibernate.Exceptions
 	/// Implementations may implement <see cref="IConfigurable"/> if they need to perform
 	/// configuration steps prior to first use.
 	/// </remarks>
+	/// <seealso cref="SQLExceptionConverterFactory"/>
 	public interface ISQLExceptionConverter
 	{
 		/// <summary> 

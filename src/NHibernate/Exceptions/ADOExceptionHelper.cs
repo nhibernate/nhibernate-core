@@ -8,15 +8,44 @@ namespace NHibernate.Exceptions
 {
 	public sealed class ADOExceptionHelper
 	{
+		public const string SQLNotAvailable = "SQL not available";
+
 		private ADOExceptionHelper()
 		{
+		}
+
+		/// <summary> 
+		/// Converts the given SQLException into NHibernate's ADOException hierarchy, as well as performing
+		/// appropriate logging. 
+		/// </summary>
+		/// <param name="converter">The converter to use.</param>
+		/// <param name="sqlException">The exception to convert.</param>
+		/// <param name="message">An optional error message.</param>
+		/// <param name="sql">The SQL executed.</param>
+		/// <returns> The converted <see cref="ADOException"/>.</returns>
+		public static ADOException Convert(ISQLExceptionConverter converter, Exception sqlException, string message, SqlString sql)
+		{
+			ADOExceptionReporter.LogExceptions(sqlException, message + " [" + sql + "]");
+			return converter.Convert(sqlException, message, sql);
+		}
+
+		/// <summary> 
+		/// Converts the given SQLException into NHibernate's ADOException hierarchy, as well as performing
+		/// appropriate logging. 
+		/// </summary>
+		/// <param name="converter">The converter to use.</param>
+		/// <param name="sqlException">The exception to convert.</param>
+		/// <param name="message">An optional error message.</param>
+		/// <returns> The converted <see cref="ADOException"/>.</returns>
+		public static ADOException Convert(ISQLExceptionConverter converter, Exception sqlException, string message)
+		{
+			return Convert(converter, sqlException, message, new SqlString(SQLNotAvailable));
 		}
 
 		/// <summary>
 		/// Converts the given SQLException into NHibernate's ADOException hierarchy, as well as performing
 		/// appropriate logging.
 		/// </summary>
-		/// <!--<param name="converter">The converter to use.</param>-->
 		/// <param name="sqlException">The exception to convert.</param>
 		/// <param name="message">An optional error message.</param>
 		/// <returns>The converted ADOException.</returns>
